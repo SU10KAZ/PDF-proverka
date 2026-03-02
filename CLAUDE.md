@@ -535,12 +535,6 @@ projects/<name>/_output/tiles/page_XX/*.png
 Read("projects/<name>/_output/tiles/page_07/page_07_r1c1.png")
 ```
 
-#### Нарезка дополнительной страницы (если нужна)
-```bash
-python tile_pdf_pages.py 10        # нарезать только страницу 10
-python tile_pdf_pages.py 10 12 15  # нарезать страницы 10, 12, 15
-```
-
 #### Просмотр индекса тайлов страницы
 Каждая папка содержит `index.json` с координатами каждого блока в % от размера листа:
 ```
@@ -632,14 +626,6 @@ python merge_tile_results.py projects/133-23-GK-EM1 --cleanup  # удалить 
 | `update_norms_db.py` | Обновление централизованной базы норм |
 | `query_project.py` | Быстрый поиск по JSON-конвейеру (фильтры: `--critical`, `--cat`, `--sheet`, `--id`) |
 | `generate_excel_report.py` | Excel-сводка всех проектов → `audit_report_YYYYMMDD_HHMM.xlsx` |
-
-#### Устаревшие (не использовать напрямую)
-
-| Файл | Замена |
-|------|--------|
-| `extract_pdf.py` | → `process_project.py` |
-| `tile_pdf_pages.py` | → `process_project.py` |
-| `render_pdf_pages.py` | Резервный: полные страницы PDF → `pages_png/*.png` |
 
 ### Веб-приложение (webapp/)
 
