@@ -30,7 +30,8 @@
       "Bash(powershell.exe -Command \"Stop-Process -Id 15320 -Force -ErrorAction SilentlyContinue; Start-Sleep -Seconds 2\")",
       "Bash(powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"D:\\\\Отедел Системного Анализа\\\\1. Calude code\\\\kill_port.ps1\")",
       "Bash(done)",
-      "Bash(gh auth status)"
+      "Bash(gh auth status)",
+      "Bash(cmd.exe /c \"gh auth login --hostname github.com --git-protocol https --web\")"
     ]
   }
 }
