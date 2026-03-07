@@ -207,7 +207,7 @@ def f_description(f, _):
         parts.append(f"Норма: {norm}")
     # MD/PDF расхождение (если есть)
     disc = f.get("md_pdf_discrepancy")
-    if disc and disc.get("verdict"):
+    if disc and isinstance(disc, dict) and disc.get("verdict"):
         v = disc["verdict"]
         if "ошибка в самом проекте" not in v:
             parts.append(f"[MD↔PDF: {v}]")

@@ -1,113 +1,103 @@
 """
 Claude CLI runner.
-Формирование задач из шаблонов и запуск Claude CLI.
+Запуск Claude CLI для различных задач аудита.
+Формирование задач вынесено в task_builder.py, утилиты — в cli_utils.py.
 """
-import json
-import os
-from pathlib import Path
 from typing import Optional, Callable, Awaitable
 
 from webapp.config import (
-    BASE_DIR, PROJECTS_DIR,
-    AUDIT_TASK_TEMPLATE, TILE_BATCH_TASK_TEMPLATE,
-    NORM_VERIFY_TASK_TEMPLATE, NORM_FIX_TASK_TEMPLATE,
-    CLAUDE_CLI, TILE_AUDIT_TOOLS, MAIN_AUDIT_TOOLS, NORM_VERIFY_TOOLS,
+    CLAUDE_CLI,
+    TILE_AUDIT_TOOLS, MAIN_AUDIT_TOOLS, NORM_VERIFY_TOOLS,
+    TRIAGE_TOOLS, SMART_MERGE_TOOLS,
+    get_claude_model,
     CLAUDE_BATCH_TIMEOUT, CLAUDE_AUDIT_TIMEOUT,
+    CLAUDE_TRIAGE_TIMEOUT, CLAUDE_SMART_MERGE_TIMEOUT,
     CLAUDE_NORM_VERIFY_TIMEOUT, CLAUDE_NORM_FIX_TIMEOUT,
+    CLAUDE_OPTIMIZATION_TIMEOUT,
+)
+from webapp.services.cli_utils import (
+    is_cancelled, is_timeout, is_rate_limited,
+    parse_rate_limit_reset,
+    parse_cli_json_output, send_output,
+)
+from webapp.services.task_builder import (
+    prepare_tile_batch_task,
+    prepare_main_audit_task,
+    prepare_norm_verify_task,
+    prepare_norm_fix_task,
+    prepare_triage_task,
+    prepare_smart_merge_task,
+    prepare_optimization_task,
 )
 from webapp.services.process_runner import run_command
+from webapp.models.usage import CLIResult
+
+# Re-export для обратной совместимости (pipeline_service.py импортирует из claude_runner)
+__all__ = [
+    # cli_utils
+    "is_cancelled", "is_timeout", "is_rate_limited",
+    "parse_rate_limit_reset", "parse_cli_json_output",
+    # task_builder
+    "prepare_tile_batch_task", "prepare_main_audit_task",
+    "prepare_norm_verify_task", "prepare_norm_fix_task",
+    "prepare_triage_task", "prepare_smart_merge_task",
+    "prepare_optimization_task",
+    # runners
+    "run_tile_batch", "run_main_audit",
+    "run_norm_verify", "run_norm_fix",
+    "run_triage", "run_smart_merge",
+    "run_optimization",
+]
 
 
-def load_template(template_path: Path) -> str:
-    """Загрузить шаблон задачи."""
-    with open(template_path, "r", encoding="utf-8") as f:
-        return f.read()
+# ─── Вспомогательная функция для построения команды ───
+
+def _build_cmd(tools: str) -> list[str]:
+    """Построить базовую команду Claude CLI."""
+    return [
+        CLAUDE_CLI,
+        "-p",
+        "--model", get_claude_model(),
+        "--allowedTools", tools,
+        "--output-format", "json",
+    ]
 
 
-def prepare_tile_batch_task(
-    batch_data: dict,
-    project_info: dict,
-    project_id: str,
-    total_batches: int,
-) -> str:
+async def _run_cli(
+    task_text: str,
+    tools: str,
+    timeout: int,
+    on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+    include_stderr: bool = True,
+) -> tuple[int, str, CLIResult]:
     """
-    Подготовить задачу для одного пакета тайлов.
-    Подставляет плейсхолдеры из шаблона tile_batch_task.md.
+    Общий запуск Claude CLI.
+
+    Returns:
+        (exit_code, combined_text, cli_result)
     """
-    template = load_template(TILE_BATCH_TASK_TEMPLATE)
+    cmd = _build_cmd(tools)
 
-    batch_id = batch_data["batch_id"]
-    tiles = batch_data.get("tiles", [])
-    pages = batch_data.get("pages_included", [])
-
-    # Формируем список тайлов
-    tile_lines = []
-    for tile in tiles:
-        tile_path = str(PROJECTS_DIR / project_id / "_output" / "tiles" / tile["file"])
-        tile_lines.append(
-            f"- `{tile_path}` (стр. {tile.get('page', '?')}, "
-            f"r{tile.get('row', '?')}c{tile.get('col', '?')})"
-        )
-
-    project_path = str(PROJECTS_DIR / project_id)
-    output_path = str(PROJECTS_DIR / project_id / "_output")
-
-    # MD-файл (структурированный текст)
-    md_file = project_info.get("md_file")
-    if md_file:
-        md_file_path = str(PROJECTS_DIR / project_id / md_file)
-    else:
-        md_file_path = "(нет)"
-
-    task = (
-        template
-        .replace("{BATCH_ID}", str(batch_id))
-        .replace("{BATCH_ID_PADDED}", f"{batch_id:03d}")
-        .replace("{TOTAL_BATCHES}", str(total_batches))
-        .replace("{PROJECT_ID}", project_id)
-        .replace("{PROJECT_NAME}", project_info.get("name", project_id))
-        .replace("{PROJECT_PATH}", project_path)
-        .replace("{OUTPUT_PATH}", output_path)
-        .replace("{TILE_COUNT}", str(len(tiles)))
-        .replace("{PAGES_LIST}", ", ".join(str(p) for p in pages))
-        .replace("{TILE_LIST}", "\n".join(tile_lines))
-        .replace("{BASE_DIR}", str(BASE_DIR))
-        .replace("{MD_FILE_PATH}", md_file_path)
+    exit_code, stdout, stderr = await run_command(
+        cmd,
+        input_text=task_text,
+        on_output=None,
+        env_overrides={"CLAUDECODE": None},
+        timeout=timeout,
     )
 
-    return task
+    cli_result = parse_cli_json_output(stdout)
+    await send_output(on_output, cli_result.result_text)
+
+    combined = cli_result.result_text
+    if include_stderr and stderr and stderr.strip():
+        await send_output(on_output, f"[STDERR]: {stderr.strip()}")
+        combined += f"\n[STDERR]: {stderr.strip()}"
+
+    return exit_code, combined, cli_result
 
 
-def prepare_main_audit_task(
-    project_info: dict,
-    project_id: str,
-) -> str:
-    """
-    Подготовить задачу для основного аудита.
-    Подставляет пути проекта в audit_task.md.
-    """
-    template = load_template(AUDIT_TASK_TEMPLATE)
-
-    output_dir = str(PROJECTS_DIR / project_id / "_output")
-    project_path = str(PROJECTS_DIR / project_id)
-
-    # MD-файл (структурированный текст)
-    md_file = project_info.get("md_file")
-    if md_file:
-        md_file_path = str(PROJECTS_DIR / project_id / md_file)
-    else:
-        md_file_path = "(нет)"
-
-    task = (
-        template
-        .replace("project/document_pdf_extracted.txt", f"{output_dir}\\extracted_text.txt")
-        .replace("project/tiles", f"{output_dir}\\tiles")
-        .replace("133/23-ГК-ЭМ1", project_info.get("name", project_id))
-        .replace("{MD_FILE_PATH}", md_file_path)
-    )
-
-    return task
-
+# ─── Пакет тайлов ───
 
 async def run_tile_batch(
     batch_data: dict,
@@ -115,160 +105,79 @@ async def run_tile_batch(
     project_id: str,
     total_batches: int,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
-) -> tuple[int, str]:
-    """
-    Запустить Claude CLI для одного пакета тайлов.
-
-    Returns:
-        (exit_code, output_text)
-    """
+) -> tuple[int, str, CLIResult]:
+    """Запустить Claude CLI для одного пакета тайлов."""
     task_text = prepare_tile_batch_task(
         batch_data, project_info, project_id, total_batches
     )
+    return await _run_cli(task_text, TILE_AUDIT_TOOLS, CLAUDE_BATCH_TIMEOUT, on_output)
 
-    cmd = [
-        CLAUDE_CLI,
-        "-p",
-        "--allowedTools", TILE_AUDIT_TOOLS,
-        "--output-format", "text",
-    ]
 
-    exit_code, stdout, stderr = await run_command(
-        cmd,
-        input_text=task_text,
-        on_output=on_output,
-        env_overrides={"CLAUDECODE": None},  # Снимаем для вложенных сессий
-        timeout=CLAUDE_BATCH_TIMEOUT,
-    )
-
-    # Объединяем stdout + stderr для полной диагностики
-    combined = stdout
-    if stderr and stderr.strip():
-        combined += f"\n[STDERR]: {stderr.strip()}"
-    return exit_code, combined
-
+# ─── Основной аудит ───
 
 async def run_main_audit(
     project_info: dict,
     project_id: str,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
-) -> tuple[int, str]:
-    """
-    Запустить Claude CLI для основного аудита.
-
-    Returns:
-        (exit_code, output_text)
-    """
+) -> tuple[int, str, CLIResult]:
+    """Запустить Claude CLI для основного аудита."""
     task_text = prepare_main_audit_task(project_info, project_id)
-
-    cmd = [
-        CLAUDE_CLI,
-        "-p",
-        "--allowedTools", MAIN_AUDIT_TOOLS,
-        "--output-format", "text",
-    ]
-
-    exit_code, stdout, stderr = await run_command(
-        cmd,
-        input_text=task_text,
-        on_output=on_output,
-        env_overrides={"CLAUDECODE": None},
-        timeout=CLAUDE_AUDIT_TIMEOUT,
-    )
-
-    combined = stdout
-    if stderr and stderr.strip():
-        combined += f"\n[STDERR]: {stderr.strip()}"
-    return exit_code, combined
+    return await _run_cli(task_text, MAIN_AUDIT_TOOLS, CLAUDE_AUDIT_TIMEOUT, on_output)
 
 
 # ─── Верификация нормативных ссылок ───
-
-def prepare_norm_verify_task(
-    norms_list_text: str,
-    project_id: str,
-) -> str:
-    """Подготовить задачу для верификации нормативных ссылок."""
-    template = load_template(NORM_VERIFY_TASK_TEMPLATE)
-
-    project_path = str(PROJECTS_DIR / project_id)
-
-    task = (
-        template
-        .replace("{PROJECT_ID}", project_id)
-        .replace("{PROJECT_PATH}", project_path)
-        .replace("{BASE_DIR}", str(BASE_DIR))
-        .replace("{NORMS_LIST}", norms_list_text)
-    )
-    return task
-
-
-def prepare_norm_fix_task(
-    findings_to_fix_text: str,
-    project_id: str,
-) -> str:
-    """Подготовить задачу для пересмотра замечаний с устаревшими нормами."""
-    template = load_template(NORM_FIX_TASK_TEMPLATE)
-
-    project_path = str(PROJECTS_DIR / project_id)
-
-    task = (
-        template
-        .replace("{PROJECT_ID}", project_id)
-        .replace("{PROJECT_PATH}", project_path)
-        .replace("{BASE_DIR}", str(BASE_DIR))
-        .replace("{FINDINGS_TO_FIX}", findings_to_fix_text)
-    )
-    return task
-
 
 async def run_norm_verify(
     norms_list_text: str,
     project_id: str,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
-) -> tuple[int, str]:
+) -> tuple[int, str, CLIResult]:
     """Запустить Claude CLI для верификации нормативных ссылок через WebSearch."""
     task_text = prepare_norm_verify_task(norms_list_text, project_id)
-
-    cmd = [
-        CLAUDE_CLI,
-        "-p",
-        "--allowedTools", NORM_VERIFY_TOOLS,
-        "--output-format", "text",
-    ]
-
-    exit_code, stdout, stderr = await run_command(
-        cmd,
-        input_text=task_text,
-        on_output=on_output,
-        env_overrides={"CLAUDECODE": None},
-        timeout=CLAUDE_NORM_VERIFY_TIMEOUT,
-    )
-
-    return exit_code, stdout
+    return await _run_cli(task_text, NORM_VERIFY_TOOLS, CLAUDE_NORM_VERIFY_TIMEOUT, on_output, include_stderr=False)
 
 
 async def run_norm_fix(
     findings_to_fix_text: str,
     project_id: str,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
-) -> tuple[int, str]:
+) -> tuple[int, str, CLIResult]:
     """Запустить Claude CLI для пересмотра замечаний с учётом актуальных норм."""
     task_text = prepare_norm_fix_task(findings_to_fix_text, project_id)
+    return await _run_cli(task_text, NORM_VERIFY_TOOLS, CLAUDE_NORM_FIX_TIMEOUT, on_output, include_stderr=False)
 
-    cmd = [
-        CLAUDE_CLI,
-        "-p",
-        "--allowedTools", NORM_VERIFY_TOOLS,
-        "--output-format", "text",
-    ]
 
-    exit_code, stdout, stderr = await run_command(
-        cmd,
-        input_text=task_text,
-        on_output=on_output,
-        env_overrides={"CLAUDECODE": None},
-        timeout=CLAUDE_NORM_FIX_TIMEOUT,
-    )
+# ─── Триаж страниц (Smart Parallel) ───
 
-    return exit_code, stdout
+async def run_triage(
+    project_info: dict,
+    project_id: str,
+    on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+) -> tuple[int, str, CLIResult]:
+    """Запустить Claude CLI для триажа страниц."""
+    task_text = prepare_triage_task(project_info, project_id)
+    return await _run_cli(task_text, TRIAGE_TOOLS, CLAUDE_TRIAGE_TIMEOUT, on_output)
+
+
+# ─── Свод замечаний (Smart Parallel) ───
+
+async def run_smart_merge(
+    project_info: dict,
+    project_id: str,
+    on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+) -> tuple[int, str, CLIResult]:
+    """Запустить Claude CLI для свода замечаний и формирования отчёта."""
+    task_text = prepare_smart_merge_task(project_info, project_id)
+    return await _run_cli(task_text, SMART_MERGE_TOOLS, CLAUDE_SMART_MERGE_TIMEOUT, on_output)
+
+
+# ─── Оптимизация проектных решений ───
+
+async def run_optimization(
+    project_info: dict,
+    project_id: str,
+    on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+) -> tuple[int, str, CLIResult]:
+    """Запустить Claude CLI для анализа оптимизации."""
+    task_text = prepare_optimization_task(project_info, project_id)
+    return await _run_cli(task_text, MAIN_AUDIT_TOOLS, CLAUDE_OPTIMIZATION_TIMEOUT, on_output)

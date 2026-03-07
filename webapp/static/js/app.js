@@ -27,12 +27,32 @@ const app = createApp({
         const tilePages = ref([]);
         const selectedPage = ref(null);
         const selectedTile = ref(null);
+        const tileAnalysis = ref({});
+        const tileAnalysisLoading = ref(false);
 
-        // Log
+        // Page analysis (page_summaries)
+        const pageSummaries = ref({});       // {page_num: summary} — без full_text
+        const pageAnalysis = ref(null);      // полный анализ выбранной страницы
+        const pageAnalysisLoading = ref(false);
+        const showPageAnalysis = ref(true);  // показать/скрыть панель
+
+        // Optimization
+        const optimizationData = ref(null);
+        const optimizationLoading = ref(false);
+        const optimizationFilter = ref('');  // '' | 'cheaper_analog' | 'faster_install' | 'simpler_design' | 'lifecycle'
+
+        // Log — отдельное хранилище для каждого проекта
         const logProjectId = ref('');
-        const logEntries = ref([]);
+        const projectLogs = ref({});     // {projectId: [{time, level, message}]}
         const logAutoScroll = ref(true);
         const logContainer = ref(null);
+        const logLoading = ref(false);
+
+        // logEntries — computed, показывает логи текущего проекта
+        const logEntries = computed(() => {
+            const pid = logProjectId.value;
+            return pid ? (projectLogs.value[pid] || []) : [];
+        });
 
         // WebSocket
         const wsConnected = ref(false);
@@ -47,6 +67,31 @@ const app = createApp({
         const heartbeatData = ref({});       // {projectId: {stage, elapsed_sec, process_alive, eta_sec, ...}}
         const lastHeartbeatTime = ref({});   // {projectId: timestamp_ms последнего heartbeat}
 
+        // ─── Global Usage (как на дашборде Anthropic) ───
+        const globalUsage = ref({
+            session_5h_output_tokens: 0, session_5h_input_tokens: 0,
+            session_5h_cache_read_tokens: 0, session_5h_cache_create_tokens: 0,
+            session_5h_total_tokens: 0, session_5h_messages: 0,
+            session_5h_percent: 0, session_5h_limit: 12000000,
+            session_5h_resets_in_sec: 0, session_5h_resets_in_text: '',
+            weekly_all_output_tokens: 0, weekly_all_input_tokens: 0,
+            weekly_all_total_tokens: 0, weekly_all_messages: 0,
+            weekly_all_percent: 0, weekly_all_limit: 17000000,
+            weekly_resets_at: '', weekly_resets_in_sec: 0,
+            weekly_by_model: {},
+            scanned_files: 0, scanned_messages: 0, scan_duration_ms: 0,
+        });
+        const showUsageDetails = ref(false);
+        let usagePollTimer = null;
+
+        const sonnetPercent = computed(() => {
+            const m = globalUsage.value.weekly_by_model || {};
+            return (m.sonnet && m.sonnet.percent) || 0;
+        });
+
+        // Старые usageCounters оставляем для совместимости с webapp-трекингом
+        const usageCounters = ref({});
+
         async function pollLiveStatus() {
             try {
                 const resp = await fetch('/api/audit/live-status');
@@ -57,6 +102,7 @@ const app = createApp({
                     // Обновляем auditRunning на основе live-данных
                     const hasAny = Object.keys(data.running).length > 0;
                     auditRunning.value = hasAny;
+                    batchRunning.value = !!data.running['__BATCH__'];
 
                     // Backup heartbeat из polling (если WS не работает)
                     for (const [pid, info] of Object.entries(data.running || {})) {
@@ -157,6 +203,7 @@ const app = createApp({
                 'norm_fix': 'Пересмотр замечаний',
                 'full': 'Полный конвейер',
                 'excel': 'Excel-отчёт',
+                'optimization': 'Оптимизация',
             };
             return labels[stage] || stage || '';
         }
@@ -231,6 +278,53 @@ const app = createApp({
             return `<1 мин`;
         }
 
+        // ─── Usage Helpers ───
+        function formatTokens(n) {
+            if (n == null) return '0';
+            if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
+            if (n >= 1_000) return (n / 1_000).toFixed(1) + 'K';
+            return String(n);
+        }
+
+        function formatCost(usd) {
+            if (usd == null || usd === 0) return '$0.00';
+            if (usd < 0.01) return '<$0.01';
+            return '$' + usd.toFixed(2);
+        }
+
+        async function pollGlobalUsage() {
+            try {
+                const resp = await fetch('/api/usage/global');
+                if (resp.ok) {
+                    globalUsage.value = await resp.json();
+                }
+            } catch (e) {
+                // Не критично — тихо пропускаем
+            }
+        }
+
+        async function refreshGlobalUsage() {
+            try {
+                const resp = await fetch('/api/usage/global/refresh', { method: 'POST' });
+                if (resp.ok) {
+                    globalUsage.value = await resp.json();
+                }
+            } catch (e) {
+                console.error('Failed to refresh global usage:', e);
+            }
+        }
+
+        async function resetSessionCounter() {
+            try {
+                const resp = await fetch('/api/usage/reset-session', { method: 'POST' });
+                if (resp.ok) {
+                    await resp.json();
+                }
+            } catch (e) {
+                console.error('Failed to reset session counter:', e);
+            }
+        }
+
         function heartbeatStatusText(projectId) {
             if (!isProjectRunning(projectId)) return '';
             const sec = secondsSinceHeartbeat(projectId);
@@ -260,27 +354,100 @@ const app = createApp({
                 connectGlobalWS();  // Вернуться на global WS
                 refreshProjects();
             } else if (hash.match(/^\/project\/([^/]+)\/findings$/)) {
-                const id = hash.match(/^\/project\/([^/]+)\/findings$/)[1];
+                const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/findings$/)[1]);
                 currentView.value = 'findings';
                 connectGlobalWS();  // Не нужен project WS для findings
                 loadFindings(id);
             } else if (hash.match(/^\/project\/([^/]+)\/tiles$/)) {
-                const id = hash.match(/^\/project\/([^/]+)\/tiles$/)[1];
+                const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/tiles$/)[1]);
                 currentView.value = 'tiles';
                 connectGlobalWS();  // Не нужен project WS для tiles
                 loadTiles(id);
+            } else if (hash.match(/^\/project\/([^/]+)\/optimization$/)) {
+                const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/optimization$/)[1]);
+                currentView.value = 'optimization';
+                connectGlobalWS();
+                loadOptimization(id);
             } else if (hash.match(/^\/project\/([^/]+)\/log$/)) {
-                const id = hash.match(/^\/project\/([^/]+)\/log$/)[1];
+                const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/log$/)[1]);
                 currentView.value = 'log';
                 logProjectId.value = id;
                 loadProject(id);
+                // Загружаем историю логов из файла (если ещё не загружена)
+                if (!projectLogs.value[id] || projectLogs.value[id].length === 0) {
+                    loadProjectLog(id);
+                }
                 connectProjectWS(id);  // Project WS только для лога
             } else if (hash.match(/^\/project\/([^/]+)$/)) {
-                const id = hash.match(/^\/project\/([^/]+)$/)[1];
+                const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)$/)[1]);
                 currentView.value = 'project';
                 connectGlobalWS();  // Не нужен project WS
                 loadProject(id);
             }
+        }
+
+        // ─── Batch Selection (мультивыбор проектов) ───
+        const selectedProjects = ref(new Set());
+        const selectAllChecked = ref(false);
+        const batchRunning = ref(false);
+        const batchQueue = ref(null);
+
+        function toggleProjectSelection(projectId) {
+            const s = new Set(selectedProjects.value);
+            if (s.has(projectId)) s.delete(projectId);
+            else s.add(projectId);
+            selectedProjects.value = s;
+            selectAllChecked.value = s.size === projects.value.length && s.size > 0;
+        }
+
+        function toggleSelectAll() {
+            if (selectAllChecked.value) {
+                selectedProjects.value = new Set();
+                selectAllChecked.value = false;
+            } else {
+                selectedProjects.value = new Set(projects.value.map(p => p.project_id));
+                selectAllChecked.value = true;
+            }
+        }
+
+        function isProjectSelected(projectId) {
+            return selectedProjects.value.has(projectId);
+        }
+
+        const selectedCount = computed(() => selectedProjects.value.size);
+
+        async function startBatchAction(action) {
+            const ids = Array.from(selectedProjects.value);
+            const label = action === 'resume' ? 'Продолжить прерванные' : 'Запустить полный аудит';
+            if (!confirm(`${label} для ${ids.length} проектов?\n\nПроекты будут обработаны последовательно.`)) return;
+            try {
+                batchRunning.value = true;
+                const resp = await fetch('/api/audit/batch', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ project_ids: ids, action: action }),
+                });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || `API error: ${resp.status}`);
+                }
+                const data = await resp.json();
+                batchQueue.value = data.queue;
+                selectedProjects.value = new Set();
+                selectAllChecked.value = false;
+            } catch (e) {
+                alert(e.message);
+                batchRunning.value = false;
+            }
+        }
+
+        async function cancelBatch() {
+            if (!confirm('Отменить групповое действие?\n\nТекущий проект будет прерван.')) return;
+            try {
+                await fetch('/api/audit/batch/cancel', { method: 'DELETE' });
+                batchRunning.value = false;
+                batchQueue.value = null;
+            } catch (e) { alert(e.message); }
         }
 
         // ─── Audit Actions ───
@@ -295,11 +462,16 @@ const app = createApp({
             return resp.json();
         }
 
+        function _afterAuditStart(projectId) {
+            // Подключаем project WS для live-обновлений (прогресс, heartbeat, статус)
+            connectProjectWS(projectId);
+        }
+
         async function startPrepare(projectId) {
             try {
                 auditRunning.value = true;
                 await apiPost(`/audit/${projectId}/prepare`);
-                navigate(`/project/${projectId}/log`);
+                _afterAuditStart(projectId);
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
 
@@ -307,7 +479,7 @@ const app = createApp({
             try {
                 auditRunning.value = true;
                 await apiPost(`/audit/${projectId}/tile-audit?start_from=${startFrom}`);
-                navigate(`/project/${projectId}/log`);
+                _afterAuditStart(projectId);
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
 
@@ -315,7 +487,7 @@ const app = createApp({
             try {
                 auditRunning.value = true;
                 await apiPost(`/audit/${projectId}/main-audit`);
-                navigate(`/project/${projectId}/log`);
+                _afterAuditStart(projectId);
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
 
@@ -323,7 +495,15 @@ const app = createApp({
             try {
                 auditRunning.value = true;
                 await apiPost(`/audit/${projectId}/full`);
-                navigate(`/project/${projectId}/log`);
+                _afterAuditStart(projectId);
+            } catch (e) { alert(e.message); auditRunning.value = false; }
+        }
+
+        async function startSmartAudit(projectId) {
+            try {
+                auditRunning.value = true;
+                await apiPost(`/audit/${projectId}/smart-audit`);
+                _afterAuditStart(projectId);
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
 
@@ -331,7 +511,7 @@ const app = createApp({
             try {
                 auditRunning.value = true;
                 await apiPost(`/audit/${projectId}/verify-norms`);
-                navigate(`/project/${projectId}/log`);
+                _afterAuditStart(projectId);
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
 
@@ -339,7 +519,7 @@ const app = createApp({
             try {
                 auditRunning.value = true;
                 await apiPost(`/audit/${projectId}/resume`);
-                navigate(`/project/${projectId}/log`);
+                _afterAuditStart(projectId);
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
 
@@ -358,6 +538,48 @@ const app = createApp({
             try {
                 await fetch(`/api/audit/${projectId}/cancel`, { method: 'DELETE' });
                 auditRunning.value = false;
+            } catch (e) { alert(e.message); }
+        }
+
+        async function cleanProject(projectId) {
+            const name = currentProject.value?.name || projectId;
+            if (!confirm(`Очистить все результаты проекта "${name}"?\n\nБудут удалены:\n- Все тайлы и нарезки\n- Все JSON-этапы (00-03)\n- Батчи и логи\n- Отчёты\n\nPDF и MD файлы сохраняются.`)) {
+                return;
+            }
+            try {
+                const resp = await fetch(`/api/projects/${encodeURIComponent(projectId)}/clean`, { method: 'DELETE' });
+                const data = await resp.json();
+                if (!resp.ok) {
+                    alert(data.detail || 'Ошибка очистки');
+                    return;
+                }
+                alert(`Очищено: ${data.deleted_files} файлов, ${data.freed_mb} MB освобождено`);
+                // Обновляем данные проекта
+                await refreshProjects();
+                if (currentProject.value && currentProject.value.project_id === projectId) {
+                    const updated = await apiGet(`/projects/${encodeURIComponent(projectId)}`);
+                    if (updated) currentProject.value = updated;
+                }
+            } catch (e) { alert(e.message); }
+        }
+
+        async function retryStage(projectId, stage) {
+            try {
+                auditRunning.value = true;
+                await apiPost(`/audit/${projectId}/retry/${stage}`);
+                _afterAuditStart(projectId);
+            } catch (e) { alert(e.message); auditRunning.value = false; }
+        }
+
+        async function skipStage(projectId, stage) {
+            if (!confirm('Пропустить этап? Это может привести к неполному аудиту.')) return;
+            try {
+                await apiPost(`/audit/${projectId}/skip/${stage}`);
+                await refreshProjects();
+                if (currentProject.value && currentProject.value.project_id === projectId) {
+                    const data = await apiGet(`/projects/${projectId}`);
+                    if (data) currentProject.value = data;
+                }
             } catch (e) { alert(e.message); }
         }
 
@@ -385,6 +607,151 @@ const app = createApp({
                     window.open(`/api/export/download/${data.file}`, '_blank');
                 }
             } catch (e) { alert(e.message); }
+        }
+
+        // ─── Model Switcher ───
+        const currentModel = ref('claude-sonnet-4-6');
+        const modelOptions = ref([]);
+
+        async function loadModel() {
+            try {
+                const data = await api('/audit/model');
+                currentModel.value = data.model;
+                modelOptions.value = data.options;
+            } catch (e) { /* ignore */ }
+        }
+
+        async function switchModel(model) {
+            try {
+                const resp = await fetch(`/api/audit/model?model=${encodeURIComponent(model)}`, { method: 'POST' });
+                if (resp.ok) {
+                    const data = await resp.json();
+                    currentModel.value = data.model;
+                }
+            } catch (e) { alert('Ошибка: ' + e.message); }
+        }
+
+        function modelShortName(model) {
+            if (model.includes('sonnet')) return 'Sonnet';
+            if (model.includes('opus')) return 'Opus';
+            if (model.includes('haiku')) return 'Haiku';
+            return model;
+        }
+
+        // ─── Disciplines ───
+        const supportedDisciplines = ref([]);
+
+        async function loadDisciplines() {
+            try {
+                const data = await api('/projects/disciplines');
+                supportedDisciplines.value = data.disciplines;
+            } catch (e) {
+                console.error('Failed to load disciplines:', e);
+                supportedDisciplines.value = [
+                    { code: 'EM', name: 'Электроснабжение', short_name: 'ЭОМ/ЭС', color: '#f39c12' },
+                ];
+            }
+        }
+
+        function getDisciplineColor(code) {
+            const d = supportedDisciplines.value.find(x => x.code === code);
+            return d ? d.color : '#666';
+        }
+
+        function disciplineLabel(code) {
+            const d = supportedDisciplines.value.find(x => x.code === code);
+            return d ? d.short_name : code;
+        }
+
+        function disciplineBadgeStyle(code) {
+            const color = getDisciplineColor(code);
+            return {
+                background: color + '22',
+                color: color,
+                borderColor: color,
+                border: '1px solid ' + color,
+            };
+        }
+
+        async function detectDiscipline(folderName) {
+            try {
+                const resp = await fetch('/api/projects/detect-discipline', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ folder_name: folderName }),
+                });
+                if (resp.ok) {
+                    const data = await resp.json();
+                    return data.code;
+                }
+            } catch (e) {
+                console.error('Detect discipline error:', e);
+            }
+            return 'EM';
+        }
+
+        // ─── Add Project (scan & register) ───
+        const showAddProject = ref(false);
+        const unregisteredFolders = ref([]);
+        const addProjectLoading = ref(false);
+
+        async function scanFolders() {
+            addProjectLoading.value = true;
+            try {
+                const data = await api('/projects/scan');
+                // Для каждой папки автоматически определяем дисциплину
+                const folders = data.folders;
+                for (const f of folders) {
+                    const detected = await detectDiscipline(f.folder);
+                    f._detectedDiscipline = detected;
+                    f._selectedDiscipline = detected;
+                }
+                unregisteredFolders.value = folders;
+                showAddProject.value = true;
+            } catch (e) {
+                alert('Ошибка сканирования: ' + e.message);
+            }
+            addProjectLoading.value = false;
+        }
+
+        async function registerProject(folder) {
+            const folderInfo = unregisteredFolders.value.find(f => f.folder === folder);
+            if (!folderInfo) return;
+
+            addProjectLoading.value = true;
+            try {
+                const body = {
+                    folder: folder,
+                    pdf_file: folderInfo.pdf_files[0],
+                    md_file: folderInfo.md_files.length > 0 ? folderInfo.md_files[0] : null,
+                    name: folder,
+                    section: folderInfo._selectedDiscipline || 'EM',
+                    description: '',
+                };
+                const resp = await fetch('/api/projects/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || `Ошибка: ${resp.status}`);
+                }
+                // Убрать из списка незарегистрированных
+                unregisteredFolders.value = unregisteredFolders.value.filter(f => f.folder !== folder);
+                // Обновить список проектов
+                await refreshProjects();
+                if (unregisteredFolders.value.length === 0) {
+                    showAddProject.value = false;
+                }
+            } catch (e) {
+                alert('Ошибка регистрации: ' + e.message);
+            }
+            addProjectLoading.value = false;
+        }
+
+        function closeAddProject() {
+            showAddProject.value = false;
         }
 
         // ─── Data Loading ───
@@ -426,14 +793,162 @@ const app = createApp({
         async function loadTiles(id) {
             tilesProjectId.value = id;
             try {
-                const data = await api(`/tiles/${id}/pages`);
-                tilePages.value = data.pages;
-                if (data.pages.length > 0 && !selectedPage.value) {
-                    selectedPage.value = data.pages[0].page_num;
+                const [pagesData] = await Promise.all([
+                    api(`/tiles/${id}/pages`),
+                    loadTileAnalysis(id),
+                    loadPageSummaries(id),
+                ]);
+                tilePages.value = pagesData.pages;
+                if (pagesData.pages.length > 0 && !selectedPage.value) {
+                    selectedPage.value = pagesData.pages[0].page_num;
                 }
             } catch (e) {
                 console.error('Failed to load tiles:', e);
             }
+        }
+
+        // ─── Optimization ───
+        async function loadOptimization(id) {
+            currentProjectId.value = id;
+            optimizationLoading.value = true;
+            optimizationData.value = null;
+            try {
+                currentProject.value = await api(`/projects/${id}`);
+                const resp = await api(`/optimization/${id}`);
+                if (resp.has_data) {
+                    optimizationData.value = resp.data;
+                }
+            } catch (e) {
+                console.error('Failed to load optimization:', e);
+            }
+            optimizationLoading.value = false;
+        }
+
+        async function startOptimization(id) {
+            try {
+                await apiPost(`/optimization/${id}/run`);
+                if (currentView.value === 'project') loadProject(id);
+            } catch (e) {
+                alert('Ошибка запуска оптимизации: ' + (e.message || e));
+            }
+        }
+
+        const filteredOptimization = computed(() => {
+            if (!optimizationData.value) return [];
+            const items = optimizationData.value.items || [];
+            if (!optimizationFilter.value) return items;
+            return items.filter(i => i.type === optimizationFilter.value);
+        });
+
+        const optimizationTypeLabels = {
+            'cheaper_analog': 'Аналоги',
+            'faster_install': 'Монтаж',
+            'simpler_design': 'Конструктив',
+            'lifecycle': 'Жизн. цикл',
+        };
+
+        const optimizationTypeColors = {
+            'cheaper_analog': '#27ae60',
+            'faster_install': '#2980b9',
+            'simpler_design': '#e67e22',
+            'lifecycle': '#8e44ad',
+        };
+
+        function optTypeLabel(type) {
+            return optimizationTypeLabels[type] || type;
+        }
+
+        function optTypeColor(type) {
+            return optimizationTypeColors[type] || '#999';
+        }
+
+        async function loadTileAnalysis(id) {
+            tileAnalysisLoading.value = true;
+            try {
+                const data = await api(`/tiles/${id}/analysis`);
+                tileAnalysis.value = data.tiles || {};
+            } catch (e) {
+                tileAnalysis.value = {};
+            }
+            tileAnalysisLoading.value = false;
+        }
+
+        const selectedTileAnalysis = computed(() => {
+            if (!selectedTile.value) return null;
+            return tileAnalysis.value[selectedTile.value] || null;
+        });
+
+        function tileHasAnalysis(tileName) {
+            return !!tileAnalysis.value[tileName];
+        }
+
+        function tileFindingsCount(tileName) {
+            const info = tileAnalysis.value[tileName];
+            if (!info) return 0;
+            return (info.findings || []).length;
+        }
+
+        function tileMaxSeverity(tileName) {
+            const info = tileAnalysis.value[tileName];
+            if (!info || !info.findings || info.findings.length === 0) return null;
+            const order = ['КРИТИЧЕСКОЕ', 'ЭКОНОМИЧЕСКОЕ', 'ЭКСПЛУАТАЦИОННОЕ', 'РЕКОМЕНДАТЕЛЬНОЕ', 'ПРОВЕРИТЬ ПО СМЕЖНЫМ'];
+            let best = 999;
+            for (const f of info.findings) {
+                const s = (f.severity || '').toUpperCase();
+                for (let i = 0; i < order.length; i++) {
+                    if (s.includes(order[i].substring(0, 6)) && i < best) {
+                        best = i;
+                    }
+                }
+            }
+            return best < order.length ? order[best] : null;
+        }
+
+        // ─── Page Summaries ───
+        async function loadPageSummaries(id) {
+            try {
+                const data = await api(`/tiles/${id}/page-summaries`);
+                const map = {};
+                for (const ps of (data.page_summaries || [])) {
+                    map[ps.page] = ps;
+                }
+                pageSummaries.value = map;
+            } catch (e) {
+                pageSummaries.value = {};
+            }
+        }
+
+        async function loadPageAnalysis(projectId, pageNum) {
+            pageAnalysisLoading.value = true;
+            try {
+                const data = await api(`/tiles/${projectId}/page-analysis/${pageNum}`);
+                pageAnalysis.value = data;
+            } catch (e) {
+                pageAnalysis.value = null;
+            }
+            pageAnalysisLoading.value = false;
+        }
+
+        function sheetTypeIcon(sheetType) {
+            const icons = {
+                'single_line_diagram': 'SLD',
+                'panel_schedule': 'SCH',
+                'floor_plan': 'PLAN',
+                'parking_plan': 'PRK',
+                'cable_routing': 'CBL',
+                'grounding': 'GND',
+                'entry_node': 'ENT',
+                'specification': 'SPEC',
+                'title_block': 'TTL',
+                'general_notes': 'NOTE',
+                'detail': 'DET',
+                'other': '...',
+            };
+            return icons[sheetType] || '...';
+        }
+
+        function getPageSummary(pageNum) {
+            return pageSummaries.value[pageNum] || null;
         }
 
         // ─── Computed ───
@@ -456,8 +971,10 @@ const app = createApp({
         // ─── Helpers ───
         function stepClass(status) {
             if (status === 'done') return 'step-done';
+            if (status === 'error') return 'step-error';
             if (status === 'partial') return 'step-partial';
             if (status === 'running') return 'step-running';
+            if (status === 'skipped') return 'step-skipped';
             return '';
         }
 
@@ -502,7 +1019,35 @@ const app = createApp({
         }
 
         function clearLog() {
-            logEntries.value = [];
+            const pid = logProjectId.value;
+            if (pid) {
+                projectLogs.value[pid] = [];
+                // Очищаем и на сервере
+                fetch(`/api/audit/${encodeURIComponent(pid)}/log`, { method: 'DELETE' }).catch(() => {});
+            }
+        }
+
+        async function loadProjectLog(projectId) {
+            /**  Загрузить историю логов из файла проекта. */
+            if (!projectId) return;
+            logLoading.value = true;
+            try {
+                const resp = await fetch(`/api/audit/${encodeURIComponent(projectId)}/log?limit=500`);
+                if (resp.ok) {
+                    const data = await resp.json();
+                    const entries = (data.entries || []).map(e => ({
+                        time: e.timestamp ? new Date(e.timestamp).toLocaleTimeString() : '',
+                        level: e.level || 'info',
+                        message: e.message || '',
+                    }));
+                    // Инициализируем массив для проекта если нет, или заменяем
+                    projectLogs.value[projectId] = entries;
+                }
+            } catch (e) {
+                console.error('Failed to load project log:', e);
+            } finally {
+                logLoading.value = false;
+            }
         }
 
         // ─── WebSocket ───
@@ -596,29 +1141,47 @@ const app = createApp({
             };
         }
 
+        function pushToProjectLog(projectId, entry) {
+            /** Добавить запись в лог конкретного проекта. */
+            if (!projectId) return;
+            if (!projectLogs.value[projectId]) {
+                projectLogs.value[projectId] = [];
+            }
+            projectLogs.value[projectId].push(entry);
+            // Авто-скролл если просматриваем этот проект
+            if (logProjectId.value === projectId && logAutoScroll.value) {
+                nextTick(() => {
+                    const el = logContainer.value;
+                    if (el) el.scrollTop = el.scrollHeight;
+                });
+            }
+        }
+
         function handleWSMessage(msg) {
             const time = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString() : '';
+            const pid = msg.project;
 
             if (msg.type === 'log') {
-                logEntries.value.push({
+                pushToProjectLog(pid, {
                     time: time,
                     level: msg.data.level || 'info',
                     message: msg.data.message || '',
                 });
-                if (logAutoScroll.value) {
-                    nextTick(() => {
-                        const el = logContainer.value;
-                        if (el) el.scrollTop = el.scrollHeight;
-                    });
-                }
             } else if (msg.type === 'progress') {
                 // Update current project if viewing it
-                if (currentProject.value && currentProject.value.project_id === msg.project) {
+                if (currentProject.value && currentProject.value.project_id === pid) {
                     currentProject.value.completed_batches = msg.data.current;
                     currentProject.value.total_batches = msg.data.total;
                 }
+                // Авто-обновление анализа тайлов при завершении батча
+                if (currentView.value === 'tiles' && tilesProjectId.value === pid) {
+                    loadTileAnalysis(pid);
+                    loadPageSummaries(pid);
+                    if (selectedPage.value) {
+                        loadPageAnalysis(pid, parseInt(selectedPage.value));
+                    }
+                }
             } else if (msg.type === 'heartbeat') {
-                const pid = msg.project;
                 heartbeatData.value = {
                     ...heartbeatData.value,
                     [pid]: msg.data,
@@ -627,8 +1190,12 @@ const app = createApp({
                     ...lastHeartbeatTime.value,
                     [pid]: Date.now(),
                 };
+                // При heartbeat — обновляем глобальную статистику (если аудит идёт)
+                if (msg.data.tokens) {
+                    pollGlobalUsage();
+                }
             } else if (msg.type === 'complete') {
-                logEntries.value.push({
+                pushToProjectLog(pid, {
                     time: time,
                     level: 'success',
                     message: `Аудит завершён. Замечаний: ${msg.data.total_findings}. Время: ${msg.data.duration_minutes} мин.`,
@@ -636,15 +1203,54 @@ const app = createApp({
                 auditRunning.value = false;
                 // Обновляем данные при завершении
                 pollLiveStatus();
-                if (currentView.value === 'dashboard') refreshProjects();
+                refreshProjects();
+                // Обновить текущий проект если на его странице
+                if (currentView.value === 'project' && currentProject.value && currentProject.value.project_id === pid) {
+                    loadProject(pid);
+                }
+                // Обновить данные анализа тайлов если на странице тайлов
+                if (currentView.value === 'tiles' && tilesProjectId.value === pid) {
+                    loadTileAnalysis(pid);
+                    loadPageSummaries(pid);
+                    if (selectedPage.value) {
+                        loadPageAnalysis(pid, parseInt(selectedPage.value));
+                    }
+                }
+            } else if (msg.type === 'status') {
+                // Реактивное обновление pipeline-индикаторов
+                const pipeline = msg.data.pipeline;
+                if (pipeline) {
+                    if (currentProject.value && currentProject.value.project_id === pid) {
+                        currentProject.value.pipeline = pipeline;
+                    }
+                    const proj = projects.value.find(p => p.project_id === pid);
+                    if (proj) proj.pipeline = pipeline;
+                }
             } else if (msg.type === 'error') {
-                logEntries.value.push({
+                pushToProjectLog(pid, {
                     time: time,
                     level: 'error',
                     message: msg.data.message || 'Неизвестная ошибка',
                 });
+            } else if (msg.type === 'batch_progress') {
+                batchQueue.value = msg.data;
+                batchRunning.value = !msg.data.complete;
+                if (msg.data.complete) {
+                    refreshProjects();
+                    selectedProjects.value = new Set();
+                    selectAllChecked.value = false;
+                }
             }
         }
+
+        // Watch selectedPage → load page analysis
+        watch(selectedPage, (newPage) => {
+            if (newPage && tilesProjectId.value) {
+                loadPageAnalysis(tilesProjectId.value, parseInt(newPage));
+            } else {
+                pageAnalysis.value = null;
+            }
+        });
 
         // Watch severity filter
         watch(filterSeverity, () => {
@@ -659,10 +1265,16 @@ const app = createApp({
             handleRoute();
             connectGlobalWS();
             startPolling();
+            loadModel();
+            loadDisciplines();
+            // Глобальная статистика — первый вызов + polling каждые 60с
+            pollGlobalUsage();
+            usagePollTimer = setInterval(pollGlobalUsage, 60000);
         });
 
         onUnmounted(() => {
             stopPolling();
+            if (usagePollTimer) { clearInterval(usagePollTimer); usagePollTimer = null; }
         });
 
         return {
@@ -670,7 +1282,11 @@ const app = createApp({
             currentView, currentProject, projects, loading,
             findingsData, filterSeverity, filterSearch, severityOptions,
             tilesProjectId, tilePages, selectedPage, selectedTile,
-            logProjectId, logEntries, logAutoScroll, logContainer,
+            tileAnalysis, tileAnalysisLoading, selectedTileAnalysis,
+            tileHasAnalysis, tileFindingsCount, tileMaxSeverity,
+            pageSummaries, pageAnalysis, pageAnalysisLoading, showPageAnalysis,
+            sheetTypeIcon, getPageSummary,
+            logProjectId, logEntries, logAutoScroll, logContainer, logLoading,
             wsConnected,
             // Live status
             liveStatus,
@@ -687,8 +1303,29 @@ const app = createApp({
             // Audit actions
             auditRunning, allRunning,
             startPrepare, startTileAudit, startMainAudit, startFullAudit,
-            startNormVerify, cancelAudit, generateExcel, startAllProjects,
-            resumePipeline, resumeInfo,
+            startSmartAudit, startNormVerify, startOptimization, cancelAudit, generateExcel,
+            startAllProjects, resumePipeline, resumeInfo,
+            retryStage, skipStage, cleanProject,
+            // Batch selection
+            selectedProjects, selectAllChecked, selectedCount,
+            batchRunning, batchQueue,
+            toggleProjectSelection, toggleSelectAll, isProjectSelected,
+            startBatchAction, cancelBatch,
+            // Add project
+            showAddProject, unregisteredFolders, addProjectLoading,
+            scanFolders, registerProject, closeAddProject,
+            // Disciplines
+            supportedDisciplines, getDisciplineColor, disciplineLabel, disciplineBadgeStyle,
+            // Model switcher
+            currentModel, modelOptions, switchModel, modelShortName,
+            // Usage (global dashboard)
+            globalUsage, showUsageDetails, sonnetPercent,
+            formatTokens, formatCost, refreshGlobalUsage, resetSessionCounter,
+            usageCounters,
+            // Optimization
+            optimizationData, optimizationLoading, optimizationFilter,
+            filteredOptimization, optimizationTypeLabels, optimizationTypeColors,
+            optTypeLabel, optTypeColor, loadOptimization,
             // Computed
             filteredFindings, currentPageTiles,
         };

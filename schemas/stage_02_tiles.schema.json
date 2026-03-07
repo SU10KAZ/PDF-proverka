@@ -1,11 +1,15 @@
 {
-  "_schema_version": "1.0",
-  "_description": "Stage 02: Visual analysis of drawing tiles. Written after reading all key tiles.",
+  "_schema_version": "2.0",
+  "_description": "Stage 02: Visual analysis of drawing tiles (smart mode: selective pages + gap analysis).",
   "_file": "_output/02_tiles_analysis.json",
   "_reads_from": ["_output/01_text_analysis.json"],
 
   "meta": {
     "tiles_reviewed": 24,
+    "total_tiles_expected": 24,
+    "coverage_pct": 100.0,
+    "iteration": 1,
+    "pages_analyzed": [7, 9],
     "timestamp": "2026-02-26T23:58:00"
   },
 
@@ -96,5 +100,33 @@
       "norm":     "ГОСТ 32144-2013, п.5.4",
       "recommendation": "Перераспределить нагрузки для снижения перекоса до 5-8%"
     }
-  ]
+  ],
+
+  "page_summaries": [
+    {
+      "_description": "Синтез анализа на уровне страницы. Каждая запись — одна страница.",
+      "page": 7,
+      "sheet_type": "single_line_diagram | panel_schedule | floor_plan | parking_plan | cable_routing | grounding | entry_node | specification | title_block | general_notes | detail | other",
+      "sheet_type_label": "Однолинейная схема электроснабжения",
+      "is_partial": false,
+      "rows_covered": [1, 2, 3],
+      "rows_total": 3,
+      "full_text_content": "Весь текст страницы, склеенный из тайлов",
+      "key_values": ["АВ E3H 1600А", "Кабель ВВГнг(А)-FRLS 5x10"],
+      "findings_on_page": ["G-001", "G-002"],
+      "tile_count": 6,
+      "summary": "Краткое описание листа (2-4 предложения)"
+    }
+  ],
+
+  "gap_analysis": {
+    "_description": "Заполняется на этапе 02.5 — анализ пробелов. null если дополнительные страницы не нужны.",
+    "iteration": 1,
+    "additional_pages_needed": [14],
+    "reasons": [
+      {"page": 14, "reason": "Замечание G-001 по ТТ — нужна проверка узла ввода и сечений вводных кабелей"}
+    ],
+    "pages_analyzed_so_far": [7, 9],
+    "max_iterations": 3
+  }
 }

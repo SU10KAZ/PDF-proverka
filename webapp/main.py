@@ -23,13 +23,16 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 from webapp.config import APP_HOST, APP_PORT
-from webapp.routers import projects, findings, tiles, audit, export
+from webapp.routers import projects, findings, tiles, audit, export, usage, optimization
 from webapp.ws.manager import ws_manager
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup/shutdown lifecycle."""
+    # Startup: создать папку данных usage
+    data_dir = Path(__file__).parent / "data"
+    data_dir.mkdir(exist_ok=True)
     # Startup: очистить зомби-задачи
     from webapp.services.pipeline_service import pipeline_manager
     pipeline_manager.cleanup_zombies()
@@ -51,6 +54,8 @@ app.include_router(findings.router)
 app.include_router(tiles.router)
 app.include_router(audit.router)
 app.include_router(export.router)
+app.include_router(usage.router)
+app.include_router(optimization.router)
 
 # ─── WebSocket Endpoints ────────────────────────────────────
 @app.websocket("/ws/audit/{project_id}")

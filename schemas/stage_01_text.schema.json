@@ -1,8 +1,8 @@
 {
-  "_schema_version": "1.0",
-  "_description": "Stage 01: Text analysis of extracted PDF. Written after reading extracted_text.txt.",
+  "_schema_version": "2.0",
+  "_description": "Stage 01: Text analysis + page triage. Reads MD/extracted_text, determines which pages need tile analysis.",
   "_file": "_output/01_text_analysis.json",
-  "_reads_from": ["_output/00_init.json", "_output/extracted_text.txt"],
+  "_reads_from": ["_output/00_init.json", "MD-file or _output/extracted_text.txt"],
 
   "meta": {
     "pages_read": 21,
@@ -85,6 +85,37 @@
       "norm":     "ГОСТ Р 21.210-2014 — требования к обозначению цепей",
       "needs_tile_verification": true,
       "verify_tile": "page_09_r1c2.png"
+    }
+  ],
+
+  "page_triage": [
+    {
+      "page":     7,
+      "priority": "HIGH",
+      "type":     "Однолинейная схема",
+      "reason":   "Основная однолинейная — проверка номиналов АВ, кабелей, селективности",
+      "expected_checks": ["номиналы АВ", "марки кабелей", "УЗО/УЗДП", "ТТ"]
+    },
+    {
+      "page":     9,
+      "priority": "HIGH",
+      "type":     "Схемы щитов",
+      "reason":   "В тексте найден дубль Гр.В.4 — нужна визуальная проверка",
+      "expected_checks": ["группы", "дифавтоматы", "сечения"]
+    },
+    {
+      "page":     8,
+      "priority": "MEDIUM",
+      "type":     "План паркинга",
+      "reason":   "Проверить трассы ОКЛ и расположение щитов",
+      "expected_checks": ["трассы ОКЛ", "щиты на плане"]
+    },
+    {
+      "page":     15,
+      "priority": "SKIP",
+      "type":     "Условные обозначения",
+      "reason":   "Легенда — маловероятны замечания",
+      "expected_checks": []
     }
   ]
 }

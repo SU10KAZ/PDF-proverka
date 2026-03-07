@@ -2,10 +2,13 @@
 REST API для запуска и управления аудитом.
 """
 import asyncio
+import json
 import traceback
+from pathlib import Path
 from fastapi import APIRouter, HTTPException, Query
 from webapp.services.pipeline_service import pipeline_manager
 from webapp.services import project_service
+from webapp.config import get_claude_model, set_claude_model, CLAUDE_MODEL_OPTIONS, PROJECTS_DIR
 
 router = APIRouter(prefix="/api/audit", tags=["audit"])
 
@@ -25,6 +28,21 @@ async def _safe_task(coro, name: str = "task"):
 
 # ─── Статичные роуты (ПЕРЕД динамическими /{project_id}/...) ───
 
+@router.get("/model")
+async def get_model():
+    """Текущая модель Claude CLI."""
+    return {"model": get_claude_model(), "options": CLAUDE_MODEL_OPTIONS}
+
+
+@router.post("/model")
+async def switch_model(model: str = Query(..., description="ID модели")):
+    """Переключить модель Claude CLI."""
+    if model not in CLAUDE_MODEL_OPTIONS:
+        raise HTTPException(400, f"Неизвестная модель. Доступны: {CLAUDE_MODEL_OPTIONS}")
+    set_claude_model(model)
+    return {"model": get_claude_model()}
+
+
 @router.post("/all/full")
 async def start_all_projects():
     """Запустить полный конвейер для ВСЕХ проектов последовательно."""
@@ -35,6 +53,49 @@ async def start_all_projects():
         _safe_task(pipeline_manager.start_all_projects(), "start_all_projects")
     )
     return {"status": "started", "message": "Полный конвейер запущен для всех проектов"}
+
+
+@router.post("/batch")
+async def start_batch_action(request: dict):
+    """Запустить групповое действие для выбранных проектов."""
+    from webapp.models.audit import BatchRequest
+    req = BatchRequest(**request)
+
+    if pipeline_manager.is_running("__BATCH__"):
+        raise HTTPException(409, "Групповое действие уже выполняется")
+    if pipeline_manager.is_running("__ALL__"):
+        raise HTTPException(409, "Массовый аудит уже запущен")
+
+    # Валидация проектов
+    valid_ids = []
+    for pid in req.project_ids:
+        status = project_service.get_project_status(pid)
+        if status and status.has_pdf:
+            valid_ids.append(pid)
+
+    if not valid_ids:
+        raise HTTPException(400, "Нет валидных проектов для обработки")
+
+    queue = await pipeline_manager.start_batch(valid_ids, req.action.value)
+    return {"status": "started", "queue": queue.model_dump()}
+
+
+@router.get("/batch/status")
+async def get_batch_status():
+    """Статус текущей batch-очереди."""
+    queue = pipeline_manager.get_batch_queue()
+    if not queue:
+        return {"active": False}
+    return {"active": True, "queue": queue.model_dump()}
+
+
+@router.delete("/batch/cancel")
+async def cancel_batch():
+    """Отменить текущую batch-очередь."""
+    success = await pipeline_manager.cancel_batch()
+    if not success:
+        raise HTTPException(404, "Нет активной групповой очереди")
+    return {"status": "cancelled"}
 
 
 @router.get("/live-status")
@@ -58,8 +119,6 @@ async def get_all_live_status():
         }
 
     # Также отдаём актуальные completed_batches для всех проектов
-    from webapp.config import PROJECTS_DIR
-    import json
     batches_info = {}
     if PROJECTS_DIR.exists():
         for entry in PROJECTS_DIR.iterdir():
@@ -81,7 +140,59 @@ async def get_all_live_status():
             except Exception:
                 pass
 
-    return {"running": running, "batches": batches_info}
+    # Данные о потреблении токенов
+    from webapp.services.usage_service import usage_tracker
+    try:
+        usage = usage_tracker.get_counters().model_dump()
+    except Exception:
+        usage = None
+
+    return {"running": running, "batches": batches_info, "usage": usage}
+
+
+# ─── Логи проектов ───
+
+@router.get("/{project_id}/log")
+async def get_project_log(project_id: str, limit: int = 500, offset: int = 0):
+    """Получить персистентный лог аудита из audit_log.jsonl."""
+    log_path = PROJECTS_DIR / project_id / "_output" / "audit_log.jsonl"
+    if not log_path.exists():
+        return {"entries": [], "total": 0, "has_more": False}
+
+    entries = []
+    try:
+        with open(log_path, "r", encoding="utf-8") as f:
+            all_lines = f.readlines()
+        total = len(all_lines)
+        # Берём последние `limit` записей (или с offset)
+        if offset == 0:
+            # По умолчанию — последние N записей
+            start = max(0, total - limit)
+            selected = all_lines[start:]
+        else:
+            selected = all_lines[offset:offset + limit]
+
+        for line in selected:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                entries.append(json.loads(line))
+            except json.JSONDecodeError:
+                continue
+    except OSError:
+        return {"entries": [], "total": 0, "has_more": False}
+
+    return {"entries": entries, "total": total, "has_more": total > limit}
+
+
+@router.delete("/{project_id}/log")
+async def clear_project_log(project_id: str):
+    """Очистить лог аудита проекта."""
+    log_path = PROJECTS_DIR / project_id / "_output" / "audit_log.jsonl"
+    if log_path.exists():
+        log_path.unlink()
+    return {"status": "ok"}
 
 
 # ─── Динамические роуты /{project_id}/... ───
@@ -133,6 +244,17 @@ async def start_full_audit(project_id: str):
         raise HTTPException(409, str(e))
 
 
+@router.post("/{project_id}/smart-audit")
+async def start_smart_audit(project_id: str):
+    """Запустить интеллектуальный аудит (текст → триаж → выборочная нарезка → анализ → Excel)."""
+    _check_project(project_id)
+    try:
+        job = await pipeline_manager.start_smart_audit(project_id)
+        return {"status": "started", "mode": "smart", "job": job.model_dump()}
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
+
+
 @router.get("/{project_id}/resume-info")
 async def get_resume_info(project_id: str):
     """Определить, с какого этапа можно продолжить пайплайн."""
@@ -174,6 +296,44 @@ async def get_audit_status(project_id: str):
         "current_job": job.model_dump() if job else None,
         "pipeline": status.pipeline.model_dump() if status else None,
     }
+
+
+@router.post("/{project_id}/retry/{stage}")
+async def retry_stage(project_id: str, stage: str):
+    """Повторить конкретный этап конвейера."""
+    _check_project(project_id)
+
+    stage_methods = {
+        "prepare": lambda: pipeline_manager.start_prepare(project_id),
+        "tile_audit": lambda: pipeline_manager.start_tile_audit(project_id),
+        "main_audit": lambda: pipeline_manager.start_main_audit(project_id),
+        "norm_verify": lambda: pipeline_manager.start_norm_verify(project_id),
+    }
+
+    starter = stage_methods.get(stage)
+    if not starter:
+        raise HTTPException(400, f"Этап '{stage}' не поддерживает повтор")
+
+    try:
+        job = await starter()
+        return {"status": "started", "stage": stage, "job": job.model_dump()}
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
+
+
+@router.post("/{project_id}/skip/{stage}")
+async def skip_stage(project_id: str, stage: str):
+    """Пропустить ошибочный этап (пометить как skipped)."""
+    _check_project(project_id)
+
+    valid_stages = {"tile_audit", "main_audit", "norm_verify", "excel"}
+    if stage not in valid_stages:
+        raise HTTPException(400, f"Этап '{stage}' нельзя пропустить")
+
+    pipeline_manager._update_pipeline_log(
+        project_id, stage, "skipped", message="Пропущен пользователем"
+    )
+    return {"status": "skipped", "stage": stage}
 
 
 @router.delete("/{project_id}/cancel")

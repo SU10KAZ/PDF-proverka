@@ -17,7 +17,7 @@
 ПРОЧИТАТЬ: `{PROJECT_PATH}/_output/norm_checks.json`
 
 ### 3. Нормативный справочник
-ПРОЧИТАТЬ: `{BASE_DIR}/norms_reference.md`
+ПРОЧИТАТЬ: `{DISCIPLINE_NORMS_FILE}`
 
 ## Замечания для пересмотра
 {FINDINGS_TO_FIX}

@@ -78,9 +78,9 @@ def extract_norms_from_findings(findings_path: Path) -> dict:
 
     for finding in findings:
         fid = finding.get("id", "?")
-        norm_field = finding.get("norm", "")
-        problem_field = finding.get("finding", "") or finding.get("problem", "")
-        recommendation = finding.get("recommendation", "") or finding.get("solution", "")
+        norm_field = finding.get("norm") or ""
+        problem_field = finding.get("finding") or finding.get("problem") or ""
+        recommendation = finding.get("recommendation") or finding.get("solution") or ""
 
         # Извлекаем нормы из поля norm
         found_norms = extract_norms_from_text(norm_field)

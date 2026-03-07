@@ -24,6 +24,80 @@ from datetime import datetime
 BASE_DIR = r"D:\Отедел Системного Анализа\1. Calude code"
 
 
+def _merge_partial_page_summaries(parts, page_num):
+    """Сливает частичные page_summaries одной страницы (при разбивке по рядам).
+
+    Если страница была разбита на несколько пакетов (is_partial=true),
+    объединяет текст, ключевые значения и замечания.
+    """
+    if len(parts) == 1:
+        result = dict(parts[0])
+        result["is_partial"] = False
+        return result
+
+    # Сортируем по первому ряду в rows_covered
+    parts_sorted = sorted(parts, key=lambda p: min(p.get("rows_covered", [0])))
+
+    # sheet_type — берём из первого непустого
+    sheet_type = "other"
+    sheet_type_label = "Прочее"
+    for p in parts_sorted:
+        if p.get("sheet_type") and p["sheet_type"] != "other":
+            sheet_type = p["sheet_type"]
+            sheet_type_label = p.get("sheet_type_label", sheet_type)
+            break
+
+    # Объединяем rows_covered
+    all_rows = set()
+    rows_total = 0
+    for p in parts_sorted:
+        all_rows.update(p.get("rows_covered", []))
+        rows_total = max(rows_total, p.get("rows_total", 0))
+
+    # Склеиваем full_text_content по порядку рядов
+    text_parts = [p.get("full_text_content", "") for p in parts_sorted if p.get("full_text_content")]
+    full_text = "\n".join(text_parts)
+
+    # key_values — без дублей, сохраняя порядок
+    seen_kv = set()
+    key_values = []
+    for p in parts_sorted:
+        for kv in p.get("key_values", []):
+            if kv not in seen_kv:
+                seen_kv.add(kv)
+                key_values.append(kv)
+
+    # findings_on_page — без дублей
+    findings = []
+    seen_findings = set()
+    for p in parts_sorted:
+        for fid in p.get("findings_on_page", []):
+            if fid not in seen_findings:
+                seen_findings.add(fid)
+                findings.append(fid)
+
+    # tile_count — сумма
+    tile_count = sum(p.get("tile_count", 0) for p in parts_sorted)
+
+    # summary — объединяем (или берём самый длинный)
+    summaries = [p.get("summary", "") for p in parts_sorted if p.get("summary")]
+    summary = " ".join(summaries) if summaries else ""
+
+    return {
+        "page": page_num,
+        "sheet_type": sheet_type,
+        "sheet_type_label": sheet_type_label,
+        "is_partial": False,
+        "rows_covered": sorted(all_rows),
+        "rows_total": rows_total,
+        "full_text_content": full_text,
+        "key_values": key_values,
+        "findings_on_page": findings,
+        "tile_count": tile_count,
+        "summary": summary,
+    }
+
+
 def merge_project(project_path, cleanup=False):
     """Сливает tile_batch_*.json в 02_tiles_analysis.json для одного проекта."""
     output_dir = os.path.join(project_path, "_output")
@@ -66,6 +140,7 @@ def merge_project(project_path, cleanup=False):
     all_tiles_reviewed = []
     all_items_verified = []
     all_findings = []
+    all_page_summaries = {}  # {page_num: [partial_summary, ...]}
     processed_batch_ids = set()
     errors = []
 
@@ -93,9 +168,17 @@ def merge_project(project_path, cleanup=False):
         for finding in batch_data.get("preliminary_findings", []):
             all_findings.append(finding)
 
+        # Собираем page_summaries
+        for ps in batch_data.get("page_summaries", []):
+            page_num = ps.get("page", 0)
+            if page_num not in all_page_summaries:
+                all_page_summaries[page_num] = []
+            all_page_summaries[page_num].append(ps)
+
         tile_count = len(batch_data.get("tiles_reviewed", []))
         finding_count = len(batch_data.get("preliminary_findings", []))
-        print(f"    Пакет {batch_id:3d}: {tile_count} тайлов, {finding_count} находок")
+        ps_count = len(batch_data.get("page_summaries", []))
+        print(f"    Пакет {batch_id:3d}: {tile_count} тайлов, {finding_count} находок, {ps_count} page_summaries")
 
     # Выводим ошибки
     for err in errors:
@@ -142,6 +225,17 @@ def merge_project(project_path, cleanup=False):
         if old_fid in id_map:
             item["finding_id"] = id_map[old_fid]
 
+    # Сливаем page_summaries и обновляем ID замечаний
+    merged_page_summaries = []
+    for page_num in sorted(all_page_summaries.keys()):
+        parts = all_page_summaries[page_num]
+        merged = _merge_partial_page_summaries(parts, page_num)
+        # Обновляем ID замечаний через id_map
+        merged["findings_on_page"] = [
+            id_map.get(fid, fid) for fid in merged.get("findings_on_page", [])
+        ]
+        merged_page_summaries.append(merged)
+
     # Формируем итоговый JSON
     result = {
         "meta": {
@@ -150,11 +244,13 @@ def merge_project(project_path, cleanup=False):
             "coverage_pct": round(len(all_tiles_reviewed) / expected_tiles * 100, 1) if expected_tiles > 0 else 0,
             "batches_merged": len(batch_files),
             "findings_count": len(all_findings),
+            "page_summaries_count": len(merged_page_summaries),
             "timestamp": datetime.now().isoformat(timespec="seconds"),
         },
         "tiles_reviewed": all_tiles_reviewed,
         "items_verified_from_stage_01": all_items_verified,
         "preliminary_findings": all_findings,
+        "page_summaries": merged_page_summaries,
     }
 
     # Сохраняем 02_tiles_analysis.json
@@ -166,6 +262,13 @@ def merge_project(project_path, cleanup=False):
     print(f"    Тайлов проанализировано: {len(all_tiles_reviewed)}")
     print(f"    Находок (G-): {len(all_findings)}")
     print(f"    Верификаций из этапа 01: {len(all_items_verified)}")
+    print(f"    Page summaries: {len(merged_page_summaries)}")
+    if merged_page_summaries:
+        types = {}
+        for ps in merged_page_summaries:
+            st = ps.get("sheet_type", "other")
+            types[st] = types.get(st, 0) + 1
+        print(f"    Типы листов: {', '.join(f'{t}={c}' for t, c in types.items())}")
     print(f"    Сохранено: {out_path}")
 
     # Очистка промежуточных файлов

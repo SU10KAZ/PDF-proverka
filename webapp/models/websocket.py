@@ -56,7 +56,8 @@ class WSMessage(BaseModel):
     @classmethod
     def heartbeat(cls, project: str, stage: str = "", elapsed_sec: float = 0,
                   process_alive: bool = True, batch_current: int = 0,
-                  batch_total: int = 0, eta_sec: Optional[float] = None):
+                  batch_total: int = 0, eta_sec: Optional[float] = None,
+                  tokens: Optional[dict] = None):
         return cls(
             type="heartbeat",
             project=project,
@@ -68,6 +69,7 @@ class WSMessage(BaseModel):
                 "batch_current": batch_current,
                 "batch_total": batch_total,
                 "eta_sec": round(eta_sec, 0) if eta_sec is not None else None,
+                "tokens": tokens,
             },
         )
 

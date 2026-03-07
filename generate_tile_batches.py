@@ -3,8 +3,10 @@ generate_tile_batches.py
 ------------------------
 Разбивает тайлы проекта на пакеты для пакетного анализа Claude.
 
-Принцип: одна страница чертежа ВСЕГДА целиком в одном пакете.
-Пакет ~10 тайлов (маленькие страницы объединяются, большие — по одной).
+Принцип: «один чертёж = один батч».
+- Страница с 2+ тайлами → отдельный батч (Claude видит все части листа целиком)
+- Страницы с 1 тайлом → объединяются до ~batch_size (нет пространственного контекста)
+- Большие страницы (> batch_size) → разбиваются по рядам
 
 Использование:
   python generate_tile_batches.py projects/133-23-GK-EM1
@@ -22,10 +24,15 @@ BASE_DIR = r"D:\Отедел Системного Анализа\1. Calude code"
 DEFAULT_BATCH_SIZE = 10
 
 
-def find_project_tiles(project_path):
+def find_project_tiles(project_path, pages_filter=None):
     """Находит все тайлы проекта, сгруппированные по страницам.
 
-    Возвращает: [(page_num, [tile_info, ...]), ...] — отсортировано по page_num.
+    Args:
+        project_path: путь к папке проекта
+        pages_filter: опциональный список номеров страниц (например [7, 9, 11]).
+                      Если задан — возвращает тайлы только для этих страниц.
+
+    Возвращает: [{page, label, grid, tile_count, tiles}, ...] — отсортировано по page_num.
     """
     tiles_dir = os.path.join(project_path, "_output", "tiles")
     if not os.path.isdir(tiles_dir):
@@ -43,6 +50,11 @@ def find_project_tiles(project_path):
             index = json.load(f)
 
         page_num = index.get("page", 0)
+
+        # Фильтрация по списку страниц
+        if pages_filter and page_num not in pages_filter:
+            continue
+
         label = index.get("label", entry)
         grid = index.get("grid", "?x?")
         tiles = []
@@ -112,87 +124,126 @@ def split_page_by_rows(page_info, batch_size):
     return groups
 
 
+def _make_batch(batches, tiles, pages_included, pages_lookup):
+    """Создаёт батч с метаданными о типе и сетке."""
+    page_set = set(t["page"] for t in tiles)
+    is_single_page = len(page_set) == 1
+
+    batch = {
+        "batch_id": len(batches) + 1,
+        "tiles": tiles,
+        "pages_included": pages_included,
+        "tile_count": len(tiles),
+        "batch_type": "single_page" if is_single_page else "multi_page",
+    }
+
+    # Для single_page батчей — добавляем сетку для визуализации
+    if is_single_page:
+        pnum = pages_included[0]
+        pinfo = pages_lookup.get(pnum, {})
+        batch["page_grid"] = pinfo.get("grid", "?x?")
+        batch["page_label"] = pinfo.get("label", f"page_{pnum}")
+    else:
+        # Для multi_page — краткая сводка по страницам
+        batch["pages_detail"] = [
+            {"page": p, "grid": pages_lookup.get(p, {}).get("grid", "1x1"),
+             "tile_count": pages_lookup.get(p, {}).get("tile_count", 1)}
+            for p in pages_included
+        ]
+
+    return batch
+
+
 def generate_batches(pages, batch_size=DEFAULT_BATCH_SIZE):
     """Формирует пакеты из страниц.
 
-    Правила:
-    - Маленькие страницы (≤ batch_size) идут целиком, объединяются до ~batch_size
-    - Большие страницы (> batch_size) разбиваются по рядам
-    - Каждый ряд — логическая единица на чертеже (горизонтальная полоса)
+    Принцип: «один чертёж = один батч».
+    - Страница с 2+ тайлами → отдельный батч (Claude фокусируется на одном листе)
+    - Страницы с 1 тайлом → объединяются до ~batch_size
+    - Большие страницы (> batch_size) → разбиваются по рядам
+
+    Это позволяет Claude при анализе сетки 2×2 или 2×3 рассматривать
+    тайлы как фрагменты одного чертежа и прослеживать кабельные трассы,
+    связи элементов и подписи через границы тайлов.
     """
     batches = []
-    current_batch_tiles = []
+    current_batch_tiles = []  # буфер для одиночных страниц
     current_batch_pages = []
+
+    # Lookup для быстрого доступа к метаданным страницы
+    pages_lookup = {p["page"]: p for p in pages}
 
     for page_info in pages:
         page_tiles = page_info["tiles"]
         page_num = page_info["page"]
 
-        # Большая страница: разбиваем по рядам
+        # ─── Большая страница (> batch_size): разбиваем по рядам ───
         if len(page_tiles) > batch_size:
-            # Сначала закрываем текущий пакет если он не пуст
+            # Сначала закрываем буфер одиночных
             if current_batch_tiles:
-                batches.append({
-                    "batch_id": len(batches) + 1,
-                    "tiles": current_batch_tiles,
-                    "pages_included": current_batch_pages,
-                    "tile_count": len(current_batch_tiles),
-                })
+                batches.append(_make_batch(
+                    batches, current_batch_tiles, current_batch_pages, pages_lookup
+                ))
                 current_batch_tiles = []
                 current_batch_pages = []
 
-            # Разбиваем страницу на группы по рядам
             groups = split_page_by_rows(page_info, batch_size)
             for group in groups:
-                batches.append({
-                    "batch_id": len(batches) + 1,
-                    "tiles": group,
-                    "pages_included": [page_num],
-                    "tile_count": len(group),
-                })
+                batches.append(_make_batch(
+                    batches, group, [page_num], pages_lookup
+                ))
             continue
 
-        # Маленькая страница: объединяем с другими
-        # Если текущий пакет + эта страница > batch_size — закрываем текущий
-        if current_batch_tiles and (len(current_batch_tiles) + len(page_tiles)) > batch_size:
-            batches.append({
-                "batch_id": len(batches) + 1,
-                "tiles": current_batch_tiles,
-                "pages_included": current_batch_pages,
-                "tile_count": len(current_batch_tiles),
-            })
+        # ─── Мульти-тайл страница (2+ тайлов): отдельный батч ───
+        if len(page_tiles) >= 2:
+            # Сначала закрываем буфер одиночных
+            if current_batch_tiles:
+                batches.append(_make_batch(
+                    batches, current_batch_tiles, current_batch_pages, pages_lookup
+                ))
+                current_batch_tiles = []
+                current_batch_pages = []
+
+            batches.append(_make_batch(
+                batches, page_tiles, [page_num], pages_lookup
+            ))
+            continue
+
+        # ─── Одиночная страница (1 тайл): буферизуем ───
+        if current_batch_tiles and (len(current_batch_tiles) + 1) > batch_size:
+            batches.append(_make_batch(
+                batches, current_batch_tiles, current_batch_pages, pages_lookup
+            ))
             current_batch_tiles = []
             current_batch_pages = []
 
-        # Добавляем страницу в текущий пакет
         current_batch_tiles.extend(page_tiles)
         current_batch_pages.append(page_num)
 
-        # Если набрали >= batch_size — закрываем
         if len(current_batch_tiles) >= batch_size:
-            batches.append({
-                "batch_id": len(batches) + 1,
-                "tiles": current_batch_tiles,
-                "pages_included": current_batch_pages,
-                "tile_count": len(current_batch_tiles),
-            })
+            batches.append(_make_batch(
+                batches, current_batch_tiles, current_batch_pages, pages_lookup
+            ))
             current_batch_tiles = []
             current_batch_pages = []
 
-    # Остаток
+    # Остаток одиночных
     if current_batch_tiles:
-        batches.append({
-            "batch_id": len(batches) + 1,
-            "tiles": current_batch_tiles,
-            "pages_included": current_batch_pages,
-            "tile_count": len(current_batch_tiles),
-        })
+        batches.append(_make_batch(
+            batches, current_batch_tiles, current_batch_pages, pages_lookup
+        ))
 
     return batches
 
 
-def process_project(project_path, batch_size=DEFAULT_BATCH_SIZE):
-    """Генерирует tile_batches.json для одного проекта."""
+def process_project(project_path, batch_size=DEFAULT_BATCH_SIZE, pages_filter=None):
+    """Генерирует tile_batches.json для одного проекта.
+
+    Args:
+        project_path: путь к папке проекта
+        batch_size: целевое количество тайлов в пакете
+        pages_filter: опциональный список номеров страниц [7, 9, 11]
+    """
     # Читаем project_info.json
     info_path = os.path.join(project_path, "project_info.json")
     if not os.path.isfile(info_path):
@@ -204,8 +255,8 @@ def process_project(project_path, batch_size=DEFAULT_BATCH_SIZE):
 
     project_id = info.get("project_id", os.path.basename(project_path))
 
-    # Находим тайлы
-    pages = find_project_tiles(project_path)
+    # Находим тайлы (с опциональной фильтрацией по страницам)
+    pages = find_project_tiles(project_path, pages_filter=pages_filter)
     if not pages:
         print(f"  [SKIP] Нет тайлов: {project_path}")
         return None
@@ -245,9 +296,14 @@ def process_project(project_path, batch_size=DEFAULT_BATCH_SIZE):
     print(f"  Проект: {project_id}")
     print(f"  Страниц: {total_pages}, тайлов: {total_tiles}")
     print(f"  Пакетов: {len(batches)} (целевой размер: {batch_size})")
+    single_count = sum(1 for b in batches if b.get("batch_type") == "single_page")
+    multi_count = sum(1 for b in batches if b.get("batch_type") == "multi_page")
+    print(f"  Из них: {single_count} одностраничных, {multi_count} сборных")
     for b in batches:
         pages_str = ", ".join(str(p) for p in b["pages_included"])
-        print(f"    Пакет {b['batch_id']:3d}: {b['tile_count']:3d} тайлов  (стр. {pages_str})")
+        btype = "[1pg]" if b.get("batch_type") == "single_page" else "[mix]"
+        grid = f" [{b['page_grid']}]" if b.get("page_grid") else ""
+        print(f"    {btype} Пакет {b['batch_id']:3d}: {b['tile_count']:3d} тайлов  (стр. {pages_str}){grid}")
     print(f"  Сохранено: {out_path}")
 
     return result
@@ -260,14 +316,25 @@ def main():
                         help="Project folder (e.g. projects/133-23-GK-EM1)")
     parser.add_argument("--batch-size", type=int, default=DEFAULT_BATCH_SIZE,
                         help=f"Target tiles per batch (default: {DEFAULT_BATCH_SIZE})")
+    parser.add_argument("--pages", type=str, default=None,
+                        help="Comma-separated page numbers to include (e.g. --pages 7,9,11)")
     args = parser.parse_args()
+
+    # Парсинг --pages
+    pages_filter = None
+    if args.pages:
+        pages_filter = [int(p.strip()) for p in args.pages.split(",") if p.strip().isdigit()]
+        if not pages_filter:
+            print("[ERROR] --pages: укажите номера страниц через запятую")
+            sys.exit(1)
+        print(f"  [FILTER] Только страницы: {pages_filter}")
 
     if args.project:
         # Один проект
         project_path = args.project
         if not os.path.isabs(project_path):
             project_path = os.path.join(BASE_DIR, project_path)
-        process_project(project_path, args.batch_size)
+        process_project(project_path, args.batch_size, pages_filter=pages_filter)
     else:
         # Все проекты
         projects_dir = os.path.join(BASE_DIR, "projects")

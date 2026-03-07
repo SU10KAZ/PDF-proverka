@@ -14,6 +14,7 @@ class AuditStage(str, Enum):
     NORM_VERIFY = "norm_verify"
     NORM_FIX = "norm_fix"
     EXCEL = "excel"
+    OPTIMIZATION = "optimization"
 
 
 class JobStatus(str, Enum):
@@ -39,6 +40,11 @@ class AuditJob(BaseModel):
     last_heartbeat: Optional[str] = None       # ISO timestamp последнего heartbeat
     batch_started_at: Optional[str] = None      # когда начался текущий пакет
     batch_durations: list[float] = []            # длительности завершённых пакетов (сек)
+    # Потребление токенов
+    tokens_input: int = 0
+    tokens_output: int = 0
+    cost_usd: float = 0.0
+    cli_calls: int = 0
 
 
 class BatchStatus(BaseModel):
@@ -57,3 +63,37 @@ class AuditStatusResponse(BaseModel):
     is_running: bool = False
     current_job: Optional[AuditJob] = None
     batches: list[BatchStatus] = []
+
+
+# ─── Batch (групповые действия) ───
+
+class BatchAction(str, Enum):
+    """Тип группового действия."""
+    FULL = "full"
+    RESUME = "resume"
+
+
+class BatchRequest(BaseModel):
+    """Запрос на групповое действие."""
+    project_ids: list[str]
+    action: BatchAction
+
+
+class BatchQueueItem(BaseModel):
+    """Элемент очереди группового действия."""
+    project_id: str
+    action: str = "full"
+    status: str = "pending"  # pending / running / completed / failed / skipped / cancelled
+    error: Optional[str] = None
+
+
+class BatchQueueStatus(BaseModel):
+    """Состояние очереди группового действия."""
+    queue_id: str
+    action: str = "full"
+    items: list[BatchQueueItem] = []
+    current_index: int = 0
+    total: int = 0
+    completed: int = 0
+    failed: int = 0
+    status: str = "running"  # running / completed / cancelled

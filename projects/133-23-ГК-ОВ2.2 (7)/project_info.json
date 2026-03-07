@@ -1,0 +1,2105 @@
+{
+  "project_id": "133-23-ГК-ОВ2.2 (7)",
+  "name": "133-23-ГК-ОВ2.2 (7)",
+  "section": "OV",
+  "description": "",
+  "pdf_file": "133-23-ГК-ОВ2.2 (7).pdf",
+  "tile_config": {
+    "4": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_4"
+    ],
+    "5": [
+      1,
+      2,
+      2.5,
+      3,
+      "page_5"
+    ],
+    "6": [
+      1,
+      2,
+      2.5,
+      3,
+      "page_6"
+    ],
+    "7": [
+      1,
+      2,
+      2.5,
+      3,
+      "page_7"
+    ],
+    "8": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_8"
+    ],
+    "9": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_9"
+    ],
+    "10": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_10"
+    ],
+    "11": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_11"
+    ],
+    "12": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_12"
+    ],
+    "13": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_13"
+    ],
+    "14": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_14"
+    ],
+    "15": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_15"
+    ],
+    "16": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_16"
+    ],
+    "17": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_17"
+    ],
+    "18": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_18"
+    ],
+    "19": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_19"
+    ],
+    "20": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_20"
+    ],
+    "21": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_21"
+    ],
+    "22": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_22"
+    ],
+    "23": [
+      2,
+      3,
+      2.5,
+      3,
+      "page_23"
+    ],
+    "24": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_24"
+    ],
+    "25": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_25"
+    ],
+    "26": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_26"
+    ],
+    "27": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_27"
+    ],
+    "28": [
+      2,
+      1,
+      2.5,
+      3,
+      "page_28"
+    ],
+    "29": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_29"
+    ],
+    "30": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_30"
+    ],
+    "31": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_31"
+    ],
+    "32": [
+      2,
+      1,
+      2.5,
+      3,
+      "page_32"
+    ],
+    "33": [
+      2,
+      2,
+      2.5,
+      3,
+      "page_33"
+    ],
+    "34": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_34"
+    ],
+    "35": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_35"
+    ],
+    "36": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_36"
+    ],
+    "37": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_37"
+    ],
+    "38": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_38"
+    ],
+    "39": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_39"
+    ],
+    "40": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_40"
+    ],
+    "41": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_41"
+    ],
+    "42": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_42"
+    ],
+    "43": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_43"
+    ],
+    "44": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_44"
+    ],
+    "45": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_45"
+    ],
+    "46": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_46"
+    ],
+    "47": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_47"
+    ],
+    "48": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_48"
+    ],
+    "49": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_49"
+    ],
+    "50": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_50"
+    ],
+    "51": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_51"
+    ],
+    "52": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_52"
+    ],
+    "53": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_53"
+    ],
+    "54": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_54"
+    ],
+    "55": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_55"
+    ],
+    "56": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_56"
+    ],
+    "57": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_57"
+    ],
+    "58": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_58"
+    ],
+    "59": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_59"
+    ],
+    "60": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_60"
+    ],
+    "61": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_61"
+    ],
+    "62": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_62"
+    ],
+    "63": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_63"
+    ],
+    "64": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_64"
+    ],
+    "65": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_65"
+    ],
+    "66": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_66"
+    ],
+    "67": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_67"
+    ],
+    "68": [
+      1,
+      1,
+      2.5,
+      3,
+      "page_68"
+    ]
+  },
+  "text_extraction_quality": {
+    "total_pages": 144,
+    "direct_ok": 144,
+    "ocr_fallback": 0,
+    "corrupted_kept": 0,
+    "empty_pages": 0,
+    "corrupted_fonts": [
+      "ABQXFG+GOST Common",
+      "ASNRKW+GOST Common",
+      "ATZJHK+GOST Common",
+      "AVVODX+GOST Common",
+      "AYHCRE+GOST Common",
+      "BGQUTQ+GOST Common",
+      "BPWLRT+GOST Common",
+      "BZTASY+GOST Common",
+      "CCXADG+GOST Common",
+      "CFGNGG+GOST Common",
+      "CFWLUJ+GOST Common",
+      "CGZQHZ+GOST Common",
+      "CPICTR+GOST Common",
+      "CYGZQE+GOST Common",
+      "CZTHWI+GOST 2.304 type A",
+      "DAKRIY+ISOCPEUR",
+      "DCLIZA+ISOCPEUR",
+      "DCSVMK+GOST Common",
+      "DCUKTO+GOST Common",
+      "DEGMLG+GOST Common",
+      "DMIGET+GOST Common",
+      "DVOHZA+GOST Common",
+      "EDOZLI+GOST Common",
+      "EEHBKW+GOST Common",
+      "EFHSYD+GOST Common",
+      "EGMHMG+GOST Common",
+      "ELXRAT+GOST Common",
+      "EMRLOU+GOST Common",
+      "EWZNMY+ISOCPEUR",
+      "EZEEAM+ISOCPEUR",
+      "FDNUGO+GOST Common",
+      "FHRLOY+GOST Common",
+      "FKQUOG+GOST Common",
+      "FQOBSK+GOST Common",
+      "FQRZHH+GOST Common",
+      "FYNUPG+GOST Common",
+      "FZKOGW+GOST Common",
+      "GDMDXO+GOST Common",
+      "GEZUIH+GOST Common",
+      "GGRJXZ+ISOCPEUR",
+      "GJOCFA+GOST Common",
+      "GNPPJH+GOST Common",
+      "GOCXEV+GOST Common",
+      "GOST 2.304 type A",
+      "GOST Common",
+      "HCAWBX+GOST Common",
+      "HDKCAE+GOST Common",
+      "HJKMVQ+GOST Common",
+      "HWPXDV+GOST Common",
+      "HYRRUP+GOST Common",
+      "HZNZXI+GOST Common",
+      "IHOHGI+GOST Common",
+      "INXNRI+GOST Common",
+      "ISOCPEUR",
+      "IVTRXU+GOST Common",
+      "JAIVBU+GOST Common",
+      "JBFFGK+GOST Common",
+      "JGWISC+GOST Common",
+      "JJCPAB+GOST Common",
+      "JKROOF+GOST Common",
+      "JNDOLU+GOST Common",
+      "JTCSOC+GOST Common",
+      "JXBJOF+GOST Common",
+      "KKNJVA+GOST Common",
+      "KOVSMZ+GOST Common",
+      "KPPHST+GOST Common",
+      "LDLGHF+GOST Common",
+      "LGVGYW+GOST Common",
+      "LJCCKT+GOST Common",
+      "LKZWHA+GOST Common",
+      "LMFEFA+GOST Common",
+      "LPDFTH+GOST Common",
+      "LSTXSF+GOST Common",
+      "LUEQMM+GOST Common",
+      "LWIATK+ISOCPEUR",
+      "LYPIJH+GOST Common",
+      "MIVJEI+GOST Common",
+      "MMQMAL+GOST Common",
+      "MWRYNF+GOST Common",
+      "MZRHNZ+GOST Common",
+      "NAMLNB+GOST Common",
+      "NINQJQ+GOST Common",
+      "NNXBUX+GOST Common",
+      "NUWTUK+GOST Common",
+      "NZTGEK+ISOCPEUR",
+      "OSDRLT+GOST Common",
+      "OUCTOX+GOST Common",
+      "OVVUBT+GOST Common",
+      "OXAFFO+GOST Common",
+      "PGUQMG+GOST Common",
+      "PHMABP+GOST Common",
+      "PNPWFX+GOST Common",
+      "PUXFCL+GOST Common",
+      "QCJPSS+GOST Common",
+      "QEOFJW+GOST Common",
+      "QNDOTH+GOST Common",
+      "QTAAKA+ISOCPEUR",
+      "RDCENK+GOST Common",
+      "RVSCJG+GOST Common",
+      "RXWHUT+GOST Common",
+      "SGGPLD+GOST Common",
+      "SIQJYX+GOST Common",
+      "SKCXZY+GOST Common",
+      "SMNIHL+GOST Common",
+      "TIIEMV+GOST Common",
+      "TKNUYB+GOST Common",
+      "TLAWYT+GOST Common",
+      "TSAZVI+GOST Common",
+      "TTVLJP+GOST Common",
+      "TYWLWR+GOST Common",
+      "UACBLB+GOST Common",
+      "UGALUL+GOST Common",
+      "ULIDMQ+GOST Common",
+      "UNXZNO+GOST Common",
+      "UPXQZK+GOST Common",
+      "VEQNCA+GOST Common",
+      "VFIDSI+GOST Common",
+      "VZIVBM+GOST Common",
+      "WETCFK+GOST Common",
+      "WGEKPR+GOST Common",
+      "WHYBFG+GOST Common",
+      "WOIZHF+ISOCPEUR",
+      "YCLCPK+Calibri,BoldItalic",
+      "YKCCKK+GOST Common",
+      "YUDTFO+Arial,BoldItalic",
+      "YVSFAV+GOST Common",
+      "YYRKTK+GOST Common",
+      "ZABJLO+GOST Common",
+      "ZDNUED+GOST Common",
+      "ZIYPQQ+ISOCPEUR",
+      "ZWLNHX+GOST Common",
+      "ZZJGEX+GOST Common"
+    ],
+    "overall_quality": "OK",
+    "ocr_engine": "tesseract",
+    "pages": [
+      {
+        "page": 1,
+        "quality": "OK",
+        "method": "direct"
+      },
+      {
+        "page": 2,
+        "quality": "OK",
+        "method": "direct"
+      },
+      {
+        "page": 3,
+        "quality": "OK",
+        "method": "direct"
+      },
+      {
+        "page": 4,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "GOST Common",
+          "ZZJGEX+GOST Common",
+          "GOST Common",
+          "DEGMLG+GOST Common"
+        ]
+      },
+      {
+        "page": 5,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "UPXQZK+GOST Common",
+          "GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 6,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "SKCXZY+GOST Common",
+          "GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 7,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "DAKRIY+ISOCPEUR",
+          "KOVSMZ+GOST Common",
+          "GOST Common",
+          "GOST Common",
+          "SIQJYX+GOST Common"
+        ]
+      },
+      {
+        "page": 8,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "GOST Common",
+          "DCSVMK+GOST Common",
+          "GOST Common",
+          "JJCPAB+GOST Common"
+        ]
+      },
+      {
+        "page": 9,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "GOST Common",
+          "VEQNCA+GOST Common",
+          "GOST Common",
+          "EMRLOU+GOST Common"
+        ]
+      },
+      {
+        "page": 10,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "GOST Common",
+          "QCJPSS+GOST Common",
+          "GOST Common",
+          "SMNIHL+GOST Common"
+        ]
+      },
+      {
+        "page": 11,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "QTAAKA+ISOCPEUR",
+          "GOST Common",
+          "HZNZXI+GOST Common",
+          "GOST Common",
+          "MMQMAL+GOST Common"
+        ]
+      },
+      {
+        "page": 12,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "EWZNMY+ISOCPEUR",
+          "GOST Common",
+          "HJKMVQ+GOST Common",
+          "GOST Common",
+          "FZKOGW+GOST Common"
+        ]
+      },
+      {
+        "page": 13,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ZIYPQQ+ISOCPEUR",
+          "GOST Common",
+          "EEHBKW+GOST Common",
+          "GOST Common",
+          "JBFFGK+GOST Common"
+        ]
+      },
+      {
+        "page": 14,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "NZTGEK+ISOCPEUR",
+          "GOST Common",
+          "WGEKPR+GOST Common",
+          "GOST Common",
+          "GNPPJH+GOST Common"
+        ]
+      },
+      {
+        "page": 15,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "EZEEAM+ISOCPEUR",
+          "GOST Common",
+          "WHYBFG+GOST Common",
+          "GOST Common",
+          "AYHCRE+GOST Common"
+        ]
+      },
+      {
+        "page": 16,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "GGRJXZ+ISOCPEUR",
+          "GOST Common",
+          "ELXRAT+GOST Common",
+          "GOST Common",
+          "LUEQMM+GOST Common"
+        ]
+      },
+      {
+        "page": 17,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "WOIZHF+ISOCPEUR",
+          "GOST Common",
+          "OUCTOX+GOST Common",
+          "GOST Common",
+          "KPPHST+GOST Common"
+        ]
+      },
+      {
+        "page": 18,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "LWIATK+ISOCPEUR",
+          "GOST Common",
+          "GDMDXO+GOST Common",
+          "GOST Common",
+          "RVSCJG+GOST Common"
+        ]
+      },
+      {
+        "page": 19,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "GOST Common",
+          "TLAWYT+GOST Common",
+          "GOST Common",
+          "JNDOLU+GOST Common"
+        ]
+      },
+      {
+        "page": 20,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "GOST Common",
+          "LYPIJH+GOST Common",
+          "GOST Common",
+          "PUXFCL+GOST Common"
+        ]
+      },
+      {
+        "page": 21,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "GOST Common",
+          "TTVLJP+GOST Common",
+          "GOST Common",
+          "CYGZQE+GOST Common"
+        ]
+      },
+      {
+        "page": 22,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "GOST Common",
+          "TIIEMV+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 23,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "GOST Common",
+          "GOST Common",
+          "UNXZNO+GOST Common"
+        ]
+      },
+      {
+        "page": 24,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "GOST Common",
+          "OSDRLT+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 25,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "GOST Common",
+          "LDLGHF+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 26,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "LGVGYW+GOST Common",
+          "GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 27,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "GOST Common",
+          "FKQUOG+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 28,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "RXWHUT+GOST Common",
+          "GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 29,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "GOST Common",
+          "HWPXDV+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 30,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "GOST Common",
+          "GOST Common",
+          "CFWLUJ+GOST Common"
+        ]
+      },
+      {
+        "page": 31,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "GOST Common",
+          "ZDNUED+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 32,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "TKNUYB+GOST Common",
+          "GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 33,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "GOCXEV+GOST Common",
+          "GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 34,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "NUWTUK+GOST Common",
+          "GOST Common",
+          "PGUQMG+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 35,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "IVTRXU+GOST Common",
+          "GOST Common",
+          "EDOZLI+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 36,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ASNRKW+GOST Common",
+          "GOST Common",
+          "VFIDSI+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 37,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "DCUKTO+GOST Common",
+          "GOST Common",
+          "ULIDMQ+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 38,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "DMIGET+GOST Common",
+          "GOST Common",
+          "JXBJOF+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 39,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "HYRRUP+GOST Common",
+          "GOST Common",
+          "CFGNGG+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 40,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "UACBLB+GOST Common",
+          "GOST Common",
+          "TSAZVI+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 41,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "YKCCKK+GOST Common",
+          "GOST Common",
+          "CGZQHZ+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 42,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "LMFEFA+GOST Common",
+          "GOST Common",
+          "JGWISC+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 43,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "BPWLRT+GOST Common",
+          "GOST Common",
+          "CPICTR+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 44,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "JKROOF+GOST Common",
+          "GOST Common",
+          "LSTXSF+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 45,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "HDKCAE+GOST Common",
+          "GOST Common",
+          "QNDOTH+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 46,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "UGALUL+GOST Common",
+          "GOST Common",
+          "OVVUBT+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 47,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "FQRZHH+GOST Common",
+          "GOST Common",
+          "NINQJQ+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 48,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "AVVODX+GOST Common",
+          "GOST Common",
+          "GEZUIH+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 49,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "PNPWFX+GOST Common",
+          "GOST Common",
+          "NAMLNB+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 50,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "TYWLWR+GOST Common",
+          "GOST Common",
+          "PHMABP+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 51,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "EFHSYD+GOST Common",
+          "GOST Common",
+          "EGMHMG+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 52,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "NNXBUX+GOST Common",
+          "GOST Common",
+          "FDNUGO+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 53,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "RDCENK+GOST Common",
+          "GOST Common",
+          "MIVJEI+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 54,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "JTCSOC+GOST Common",
+          "GOST Common",
+          "CCXADG+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 55,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "KKNJVA+GOST Common",
+          "GOST Common",
+          "ZWLNHX+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 56,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "MZRHNZ+GOST Common",
+          "GOST Common",
+          "GJOCFA+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 57,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "INXNRI+GOST Common",
+          "GOST Common",
+          "IHOHGI+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 58,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "BZTASY+GOST Common",
+          "GOST Common",
+          "HCAWBX+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 59,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "MWRYNF+GOST Common",
+          "GOST Common",
+          "LJCCKT+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 60,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "WETCFK+GOST Common",
+          "GOST Common",
+          "FQOBSK+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 61,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "OXAFFO+GOST Common",
+          "GOST Common",
+          "SGGPLD+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 62,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "LPDFTH+GOST Common",
+          "GOST Common",
+          "ABQXFG+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 63,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "VZIVBM+GOST Common",
+          "GOST Common",
+          "ATZJHK+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 64,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "QEOFJW+GOST Common",
+          "GOST Common",
+          "ZABJLO+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 65,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "YYRKTK+GOST Common",
+          "GOST Common",
+          "BGQUTQ+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 66,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "FHRLOY+GOST Common",
+          "GOST Common",
+          "LKZWHA+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 67,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "GOST Common",
+          "YVSFAV+GOST Common",
+          "GOST Common",
+          "FYNUPG+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 68,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "JAIVBU+GOST Common",
+          "GOST Common",
+          "DVOHZA+GOST Common",
+          "GOST Common"
+        ]
+      },
+      {
+        "page": 69,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR",
+          "DCLIZA+ISOCPEUR",
+          "CZTHWI+GOST 2.304 type A",
+          "GOST 2.304 type A"
+        ]
+      },
+      {
+        "page": 70,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 71,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 72,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 73,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 74,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 75,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 76,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 77,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 78,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 79,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 80,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 81,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 82,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 83,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 84,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 85,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 86,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 87,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 88,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 89,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 90,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 91,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 92,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 93,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 94,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 95,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 96,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 97,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 98,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 99,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 100,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 101,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 102,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 103,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 104,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 105,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 106,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 107,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 108,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 109,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 110,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 111,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 112,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 113,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 114,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 115,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 116,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 117,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 118,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 119,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 120,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 121,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 122,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 123,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 124,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "YCLCPK+Calibri,BoldItalic",
+          "YUDTFO+Arial,BoldItalic",
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 125,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 126,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "YUDTFO+Arial,BoldItalic",
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 127,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "YUDTFO+Arial,BoldItalic",
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 128,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 129,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 130,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 131,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 132,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 133,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 134,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 135,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 136,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 137,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 138,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 139,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 140,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 141,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 142,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 143,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      },
+      {
+        "page": 144,
+        "quality": "OK",
+        "method": "direct",
+        "cad_fonts": [
+          "ISOCPEUR"
+        ]
+      }
+    ]
+  },
+  "text_source": "md",
+  "tile_config_source": "area_based",
+  "md_file": "133-23-ГК-ОВ2.2 (7)_document.md",
+  "md_file_size_kb": 861.6,
+  "md_page_classification": {
+    "total_pages": 144,
+    "image_pages": [
+      4,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      72,
+      75,
+      77,
+      80,
+      83,
+      86,
+      88,
+      91,
+      94,
+      96,
+      98,
+      101,
+      104,
+      106,
+      109,
+      114,
+      117,
+      122,
+      123,
+      124,
+      128,
+      129,
+      130,
+      131,
+      132,
+      133,
+      134,
+      135,
+      136,
+      137,
+      138,
+      139,
+      140,
+      141,
+      142,
+      143,
+      144
+    ],
+    "text_only_pages": [
+      1,
+      2,
+      3,
+      5,
+      6,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      73,
+      74,
+      76,
+      78,
+      79,
+      81,
+      82,
+      84,
+      85,
+      87,
+      89,
+      90,
+      92,
+      93,
+      95,
+      97,
+      99,
+      100,
+      102,
+      103,
+      105,
+      107,
+      108,
+      110,
+      111,
+      112,
+      113,
+      115,
+      116,
+      118,
+      119,
+      120,
+      121,
+      125,
+      126,
+      127
+    ]
+  }
+}

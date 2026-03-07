@@ -285,6 +285,99 @@ def auto_configure_tiles_from_md(pdf_path, md_pages, quality="standard"):
     return tile_cfg
 
 
+# ─── Инкрементальная нарезка выбранных страниц ───────────────────────────────
+
+def tile_specific_pages(project_dir, pages_list, quality="speed", force=False):
+    """
+    Нарезать тайлы ТОЛЬКО для указанных страниц (инкрементально).
+
+    Не удаляет существующие тайлы других страниц.
+    Если тайлы для запрошенной страницы уже есть и force=False — пропускает.
+
+    Args:
+        project_dir: путь к папке проекта
+        pages_list: список номеров страниц [7, 9, 11]
+        quality: профиль качества
+        force: пересоздать даже если тайлы уже существуют
+
+    Returns:
+        dict: {page_num: tile_count} — сколько тайлов создано для каждой страницы
+    """
+    info = load_project_info(project_dir)
+    pdf_name = info.get("pdf_file", "document.pdf")
+    pdf_path = os.path.join(project_dir, pdf_name)
+
+    if not os.path.exists(pdf_path):
+        print(f"  [ERROR] PDF not found: {pdf_path}")
+        return {}
+
+    out_dir = os.path.join(project_dir, "_output")
+    tiles_dir = os.path.join(out_dir, "tiles")
+    os.makedirs(tiles_dir, exist_ok=True)
+
+    doc = fitz.open(pdf_path)
+    total_pdf_pages = len(doc)
+    tile_cfg = info.get("tile_config", {})
+    result = {}
+
+    print(f"\n  [SMART] Инкрементальная нарезка: страницы {pages_list}")
+
+    for page_num in pages_list:
+        if page_num < 1 or page_num > total_pdf_pages:
+            print(f"  [WARN] Страница {page_num} вне диапазона (1-{total_pdf_pages})")
+            continue
+
+        page_dir = os.path.join(tiles_dir, f"page_{page_num:02d}")
+
+        # Проверка: уже нарезана?
+        if not force and os.path.isdir(page_dir) and any(
+            f.endswith(".png") for f in os.listdir(page_dir)
+        ):
+            existing = len([f for f in os.listdir(page_dir) if f.endswith(".png")])
+            print(f"  [SKIP] Страница {page_num} — уже нарезана ({existing} тайлов)")
+            result[page_num] = existing
+            continue
+
+        # Вычислить сетку для этой страницы
+        page = doc[page_num - 1]
+        grid = compute_adaptive_grid(page.rect.width, page.rect.height, quality=quality)
+
+        if grid is None:
+            # Страница <= A4 — один тайл целиком
+            profile = QUALITY_PROFILES.get(quality, QUALITY_PROFILES["standard"])
+            max_px = profile["max_tile_px"]
+            max_dim = max(page.rect.width, page.rect.height)
+            safe_scale = min(profile["scale"], max_px / max_dim) if max_dim > 0 else profile["scale"]
+            rows, cols, scale, overlap_pct = 1, 1, round(safe_scale, 2), 0
+            label = f"page_{page_num}"
+        else:
+            rows, cols, scale, overlap_pct = grid
+            label = f"page_{page_num}"
+
+        # Очистка при force
+        if force and os.path.isdir(page_dir):
+            old_files = [f for f in os.listdir(page_dir) if f.endswith(".png") or f == "index.json"]
+            for f in old_files:
+                os.remove(os.path.join(page_dir, f))
+
+        print(f"  Tiling page {page_num} ({rows}x{cols}, scale={scale}):")
+        n = tile_page(doc, page_num - 1, rows, cols, scale, overlap_pct, label, tiles_dir)
+        result[page_num] = n
+
+        # Обновить tile_config (инкрементально)
+        tile_cfg[str(page_num)] = [rows, cols, scale, overlap_pct, label]
+
+    doc.close()
+
+    # Сохранить обновлённый tile_config
+    info["tile_config"] = tile_cfg
+    save_project_info(project_dir, info)
+
+    total = sum(result.values())
+    print(f"\n  [SMART] Готово: {len(result)} страниц, {total} тайлов")
+    return result
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 
 def detect_md_file(project_dir, pdf_name):
@@ -643,6 +736,9 @@ def main():
     parser.add_argument("--quality", choices=["draft", "standard", "high", "detailed", "speed"],
                         default="speed",
                         help="Tile quality profile: speed (fast, default), draft, standard, high, detailed (max quality)")
+    parser.add_argument("--pages", type=str, default=None,
+                        help="Comma-separated page numbers to tile (e.g. --pages 7,9,11). "
+                             "Incremental: existing tiles are preserved.")
     parser.add_argument("--upgrade", action="store_true",
                         help="Re-process only projects that have MD files but use old area_based algorithm")
     args = parser.parse_args()
@@ -652,6 +748,16 @@ def main():
         project_dir = args.project_dir
         if not os.path.isabs(project_dir):
             project_dir = os.path.join(BASE_DIR, project_dir)
+
+        # --pages: инкрементальная нарезка выбранных страниц
+        if args.pages:
+            pages_list = [int(p.strip()) for p in args.pages.split(",") if p.strip().isdigit()]
+            if not pages_list:
+                print("[ERROR] --pages: укажите номера страниц через запятую (например: --pages 7,9,11)")
+                sys.exit(1)
+            tile_specific_pages(project_dir, pages_list,
+                                quality=args.quality, force=args.force)
+            sys.exit(0)
 
         if args.upgrade:
             if needs_upgrade(project_dir):

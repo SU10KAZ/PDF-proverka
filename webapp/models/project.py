@@ -13,11 +13,12 @@ class TextExtractionQuality(BaseModel):
 
 
 class PipelineStatus(BaseModel):
-    init: str = "pending"            # pending / done
-    text_analysis: str = "pending"   # pending / done
-    tiles_analysis: str = "pending"  # pending / done / running
-    findings: str = "pending"        # pending / done
-    norms_verified: str = "pending"  # pending / done / partial
+    init: str = "pending"            # pending / running / done / error / skipped
+    text_analysis: str = "pending"   # pending / running / done / error / skipped
+    tiles_analysis: str = "pending"  # pending / running / done / error / partial / skipped
+    findings: str = "pending"        # pending / running / done / error / skipped
+    norms_verified: str = "pending"  # pending / running / done / error / partial / skipped
+    optimization: str = "pending"    # pending / running / done / error / skipped
 
 
 class ProjectInfo(BaseModel):
