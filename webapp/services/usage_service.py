@@ -250,6 +250,86 @@ class UsageTracker:
         with _lock:
             return list(reversed(self._records[-limit:]))
 
+    # ── Per-project aggregation ─────────────────────────────
+
+    def get_project_usage(self, project_id: str) -> dict:
+        """Агрегация usage по проекту: total + по этапам (stages_summary)."""
+        import re
+        with _lock:
+            project_recs = [r for r in self._records if r.get("project_id") == project_id]
+
+        if not project_recs:
+            return {
+                "project_id": project_id,
+                "total_input_tokens": 0,
+                "total_output_tokens": 0,
+                "total_tokens": 0,
+                "total_cost_usd": 0.0,
+                "total_calls": 0,
+                "stages_summary": {},
+            }
+
+        t_in, t_out, t_cost, t_calls = self._sum_records(project_recs)
+
+        # Группировка по этапам: block_batch_*/tile_batch_* → block_analysis
+        stages: dict[str, list[dict]] = defaultdict(list)
+        _batch_re = re.compile(r"(block_batch|tile_batch)_\d+")
+        _legacy_map = {
+            "main_audit": "findings_merge",
+            "tile_audit": "block_analysis",
+            "triage": "text_analysis",
+        }
+        for r in project_recs:
+            stage = r.get("stage", "unknown")
+            if _batch_re.match(stage):
+                stage = "block_analysis"
+            else:
+                stage = _legacy_map.get(stage, stage)
+            stages[stage].append(r)
+
+        stages_summary = {}
+        for stage, recs in stages.items():
+            s_in, s_out, s_cost, s_calls = self._sum_records(recs)
+            stages_summary[stage] = {
+                "input_tokens": s_in,
+                "output_tokens": s_out,
+                "total_tokens": s_in + s_out,
+                "cost_usd": round(s_cost, 4),
+                "calls": s_calls,
+            }
+
+        return {
+            "project_id": project_id,
+            "total_input_tokens": t_in,
+            "total_output_tokens": t_out,
+            "total_tokens": t_in + t_out,
+            "total_cost_usd": round(t_cost, 4),
+            "total_calls": t_calls,
+            "stages_summary": stages_summary,
+        }
+
+    def get_all_projects_usage(self) -> dict:
+        """Краткая сводка usage по всем проектам."""
+        import re
+        with _lock:
+            records = list(self._records)
+
+        projects: dict[str, list[dict]] = defaultdict(list)
+        for r in records:
+            pid = r.get("project_id")
+            if pid:
+                projects[pid].append(r)
+
+        result = {}
+        for pid, recs in projects.items():
+            t_in, t_out, t_cost, t_calls = self._sum_records(recs)
+            result[pid] = {
+                "total_tokens": t_in + t_out,
+                "total_cost_usd": round(t_cost, 4),
+                "total_calls": t_calls,
+            }
+        return result
+
 
 # ══════════════════════════════════════════════════════════════
 # GlobalUsageScanner — парсинг ВСЕХ JSONL из ~/.claude/projects/

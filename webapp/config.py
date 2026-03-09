@@ -22,20 +22,36 @@ NORMS_FILE = BASE_DIR / "norms_reference.md"
 DISCIPLINES_DIR = BASE_DIR / "disciplines"
 
 # Шаблоны задач Claude
-AUDIT_TASK_TEMPLATE = BASE_DIR / ".claude" / "audit_task.md"
-TILE_BATCH_TASK_TEMPLATE = BASE_DIR / ".claude" / "tile_batch_task.md"
 NORM_VERIFY_TASK_TEMPLATE = BASE_DIR / ".claude" / "norm_verify_task.md"
 NORM_FIX_TASK_TEMPLATE = BASE_DIR / ".claude" / "norm_fix_task.md"
-TRIAGE_TASK_TEMPLATE = BASE_DIR / ".claude" / "triage_task.md"
-SMART_MERGE_TASK_TEMPLATE = BASE_DIR / ".claude" / "smart_merge_task.md"
 OPTIMIZATION_TASK_TEMPLATE = BASE_DIR / ".claude" / "optimization_task.md"
+TEXT_ANALYSIS_TASK_TEMPLATE = BASE_DIR / ".claude" / "text_analysis_task.md"
+BLOCK_ANALYSIS_TASK_TEMPLATE = BASE_DIR / ".claude" / "block_analysis_task.md"
+FINDINGS_MERGE_TASK_TEMPLATE = BASE_DIR / ".claude" / "findings_merge_task.md"
 
 # Скрипты
 PROCESS_PROJECT_SCRIPT = BASE_DIR / "process_project.py"
-GENERATE_BATCHES_SCRIPT = BASE_DIR / "generate_tile_batches.py"
-MERGE_RESULTS_SCRIPT = BASE_DIR / "merge_tile_results.py"
+CROP_BLOCKS_SCRIPT = BASE_DIR / "crop_blocks.py"
+GENERATE_BLOCK_BATCHES_SCRIPT = BASE_DIR / "generate_block_batches.py"
+MERGE_BLOCK_RESULTS_SCRIPT = BASE_DIR / "merge_block_results.py"
 GENERATE_EXCEL_SCRIPT = BASE_DIR / "generate_excel_report.py"
 VERIFY_NORMS_SCRIPT = BASE_DIR / "verify_norms.py"
+# Legacy aliases (используются в pipeline_service.py)
+GENERATE_BATCHES_SCRIPT = GENERATE_BLOCK_BATCHES_SCRIPT
+MERGE_RESULTS_SCRIPT = MERGE_BLOCK_RESULTS_SCRIPT
+DEFAULT_TILE_QUALITY = "standard"
+
+# Legacy aliases for tools (используются в claude_runner.py)
+TILE_AUDIT_TOOLS = "Read,Write,Grep,Glob,WebSearch,WebFetch"
+MAIN_AUDIT_TOOLS = "Read,Write,Edit,Bash,Grep,Glob,WebSearch,WebFetch"
+TRIAGE_TOOLS = "Read,Write,Grep,Glob"
+SMART_MERGE_TOOLS = "Read,Write,Grep,Glob,WebSearch,WebFetch"
+
+# Legacy aliases for timeouts
+CLAUDE_BATCH_TIMEOUT = 600
+CLAUDE_AUDIT_TIMEOUT = 3600
+CLAUDE_TRIAGE_TIMEOUT = 300
+CLAUDE_SMART_MERGE_TIMEOUT = 600
 
 # Порт веб-приложения
 APP_HOST = "0.0.0.0"
@@ -62,24 +78,20 @@ def _find_claude_cli() -> str:
     return "claude"
 
 CLAUDE_CLI = _find_claude_cli()
-TILE_AUDIT_TOOLS = "Read,Write,Edit,Bash(python *),Bash(powershell *),Bash(cmd *),Grep,Glob,WebSearch,WebFetch"
-MAIN_AUDIT_TOOLS = "Read,Write,Edit,Bash(python *),Bash(powershell *),Bash(cmd *),Bash(ls *),Bash(mkdir *),Grep,Glob,WebSearch,WebFetch"
 
 # Timeout для Claude-сессий (секунды)
-CLAUDE_BATCH_TIMEOUT = 600   # 10 мин на один пакет тайлов
-CLAUDE_AUDIT_TIMEOUT = 5400  # 90 мин на основной аудит (большие проекты 60+ стр.)
-CLAUDE_TRIAGE_TIMEOUT = 600       # 10 мин на триаж страниц
-CLAUDE_SMART_MERGE_TIMEOUT = 900  # 15 мин на свод замечаний + отчёт
 CLAUDE_NORM_VERIFY_TIMEOUT = 600  # 10 мин на верификацию норм
 CLAUDE_NORM_FIX_TIMEOUT = 600     # 10 мин на пересмотр замечаний
 CLAUDE_OPTIMIZATION_TIMEOUT = 3600  # 60 мин на оптимизацию
+CLAUDE_TEXT_ANALYSIS_TIMEOUT = 1800   # 30 мин на анализ текста MD
+CLAUDE_BLOCK_ANALYSIS_TIMEOUT = 600   # 10 мин на пакет блоков
+CLAUDE_FINDINGS_MERGE_TIMEOUT = 1800  # 30 мин на свод замечаний (02_blocks может быть >800KB)
 
-# Инструменты для триажа (чтение текста + запись JSON)
-TRIAGE_TOOLS = "Read,Write,Grep,Glob,WebSearch,WebFetch"
-# Инструменты для свода замечаний (чтение JSON + запись результатов)
-SMART_MERGE_TOOLS = "Read,Write,Edit,Grep,Glob,WebSearch,WebFetch"
-# Инструменты для верификации норм (WebSearch обязателен)
+# Инструменты для Claude CLI сессий
 NORM_VERIFY_TOOLS = "Read,Write,Grep,Glob,WebSearch,WebFetch"
+TEXT_ANALYSIS_TOOLS = "Read,Write,Grep,Glob,WebSearch,WebFetch"
+BLOCK_ANALYSIS_TOOLS = "Read,Write,Grep,Glob,WebSearch,WebFetch"
+FINDINGS_MERGE_TOOLS = "Read,Write,Grep,Glob,WebSearch,WebFetch"
 
 # Модель Claude CLI (sonnet = экономит лимит All models)
 # Варианты: "claude-sonnet-4-6", "claude-opus-4-6", "claude-haiku-4-5-20251001"
@@ -97,10 +109,7 @@ def set_claude_model(model: str):
     if model in CLAUDE_MODEL_OPTIONS:
         _current_model = model
 
-# Качество тайлов по умолчанию
-DEFAULT_TILE_QUALITY = "speed"
-
-# Параллельная обработка батчей тайлов
+# Параллельная обработка батчей блоков
 MAX_PARALLEL_BATCHES = 3  # одновременных Claude CLI сессий
 
 # ─── Rate Limit: пауза вместо ошибки ───

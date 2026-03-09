@@ -36,6 +36,13 @@ const app = createApp({
         const pageAnalysisLoading = ref(false);
         const showPageAnalysis = ref(true);  // показать/скрыть панель
 
+        // Blocks (OCR)
+        const blocksProjectId = ref('');
+        const blockPages = ref([]);
+        const selectedBlockPage = ref(null);
+        const selectedBlock = ref(null);
+        const blockAnalysis = ref({});
+
         // Optimization
         const optimizationData = ref(null);
         const optimizationLoading = ref(false);
@@ -52,6 +59,18 @@ const app = createApp({
         const logEntries = computed(() => {
             const pid = logProjectId.value;
             return pid ? (projectLogs.value[pid] || []) : [];
+        });
+
+        // Prompts
+        const promptsProjectId = ref('');
+        const templates = ref([]);
+        const promptsLoading = ref(false);
+        const activePromptTab = ref(0);
+        const promptsDiscipline = ref('');
+        const disciplines = ref([]);
+        const showDisciplineDropdown = ref(false);
+        const currentDiscipline = computed(() => {
+            return disciplines.value.find(d => d.code === promptsDiscipline.value) || {};
         });
 
         // WebSocket
@@ -91,6 +110,53 @@ const app = createApp({
 
         // Старые usageCounters оставляем для совместимости с webapp-трекингом
         const usageCounters = ref({});
+
+        // ─── Per-project usage (токены по проектам/этапам) ───
+        const projectUsage = ref({});  // {project_id: {total_tokens, total_cost_usd, total_calls, stages_summary}}
+
+        async function fetchAllProjectUsage() {
+            try {
+                const data = await api('/usage/projects-summary');
+                projectUsage.value = data || {};
+            } catch (e) {
+                console.error('Failed to load projects usage:', e);
+            }
+        }
+
+        async function fetchProjectUsage(projectId) {
+            try {
+                const data = await api(`/usage/project/${encodeURIComponent(projectId)}`);
+                if (data && data.total_tokens > 0) {
+                    projectUsage.value = { ...projectUsage.value, [projectId]: data };
+                }
+            } catch (e) {
+                console.error('Failed to load project usage:', e);
+            }
+        }
+
+        // Маппинг pipeline key → stage key в usage
+        const _pipelineToStage = {
+            'crop_blocks': 'crop_blocks',
+            'text_analysis': 'text_analysis',
+            'blocks_analysis': 'block_analysis',
+            'findings': 'findings_merge',
+            'norms_verified': 'norm_verify',
+            'optimization': 'optimization',
+        };
+
+        function stageTokens(pipelineKey) {
+            if (!currentProject.value) return null;
+            const usage = projectUsage.value[currentProject.value.project_id];
+            if (!usage || !usage.stages_summary) return null;
+            const stageKey = _pipelineToStage[pipelineKey] || pipelineKey;
+            return usage.stages_summary[stageKey] || null;
+        }
+
+        const currentProjectUsage = computed(() => {
+            if (!currentProject.value) return null;
+            const u = projectUsage.value[currentProject.value.project_id];
+            return (u && u.total_tokens > 0) ? u : null;
+        });
 
         async function pollLiveStatus() {
             try {
@@ -194,16 +260,21 @@ const app = createApp({
 
         function stageLabel(stage) {
             const labels = {
-                'prepare': 'Подготовка',
-                'tile_batches': 'Генерация пакетов',
-                'tile_audit': 'Анализ тайлов',
-                'main_audit': 'Основной аудит',
-                'merge': 'Слияние результатов',
+                'crop_blocks': 'Кроп блоков',
+                'text_analysis': 'Анализ текста',
+                'block_analysis': 'Анализ блоков',
+                'findings_merge': 'Свод замечаний',
                 'norm_verify': 'Верификация норм',
                 'norm_fix': 'Пересмотр замечаний',
-                'full': 'Полный конвейер',
                 'excel': 'Excel-отчёт',
                 'optimization': 'Оптимизация',
+                'full': 'Полный конвейер',
+                // Legacy aliases
+                'prepare': 'Подготовка',
+                'tile_batches': 'Генерация пакетов',
+                'tile_audit': 'Анализ блоков',
+                'main_audit': 'Свод замечаний',
+                'merge': 'Слияние результатов',
             };
             return labels[stage] || stage || '';
         }
@@ -239,7 +310,7 @@ const app = createApp({
                 const pct = r.progress_total > 0
                     ? Math.round(r.progress_current / r.progress_total * 100)
                     : 0;
-                if (r.stage === 'tile_audit' && b) {
+                if ((r.stage === 'block_analysis' || r.stage === 'tile_audit') && b) {
                     return `${stageLabel(r.stage)}: пакет ${b.completed}/${b.total} (${Math.round(b.completed / b.total * 100)}%)`;
                 }
                 if (r.progress_total > 0) {
@@ -358,6 +429,11 @@ const app = createApp({
                 currentView.value = 'findings';
                 connectGlobalWS();  // Не нужен project WS для findings
                 loadFindings(id);
+            } else if (hash.match(/^\/project\/([^/]+)\/blocks$/)) {
+                const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/blocks$/)[1]);
+                currentView.value = 'blocks';
+                connectGlobalWS();
+                loadBlocks(id);
             } else if (hash.match(/^\/project\/([^/]+)\/tiles$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/tiles$/)[1]);
                 currentView.value = 'tiles';
@@ -368,6 +444,18 @@ const app = createApp({
                 currentView.value = 'optimization';
                 connectGlobalWS();
                 loadOptimization(id);
+            } else if (hash.match(/^\/project\/([^/]+)\/prompts$/)) {
+                const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/prompts$/)[1]);
+                currentView.value = 'prompts';
+                promptsProjectId.value = id;
+                activePromptTab.value = 0;
+                connectGlobalWS();
+                loadDisciplines().then(() => {
+                    const proj = projects.value.find(p => p.name === id || p.project_id === id);
+                    const section = proj?.section || 'EM';
+                    promptsDiscipline.value = section;
+                    loadTemplates(section);
+                });
             } else if (hash.match(/^\/project\/([^/]+)\/log$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/log$/)[1]);
                 currentView.value = 'log';
@@ -391,6 +479,10 @@ const app = createApp({
         const selectAllChecked = ref(false);
         const batchRunning = ref(false);
         const batchQueue = ref(null);
+        const showBatchModal = ref(false);
+        const batchMode = ref('standard');   // standard | pro
+        const batchScope = ref('audit');     // audit | optimization | both
+        const batchModalCount = ref(0);
 
         function toggleProjectSelection(projectId) {
             const s = new Set(selectedProjects.value);
@@ -416,10 +508,27 @@ const app = createApp({
 
         const selectedCount = computed(() => selectedProjects.value.size);
 
+        function openBatchModal() {
+            batchModalCount.value = selectedProjects.value.size;
+            batchMode.value = 'standard';
+            batchScope.value = 'audit';
+            showBatchModal.value = true;
+        }
+
+        async function confirmBatchAction() {
+            showBatchModal.value = false;
+            // Формируем action: standard, pro, optimization, standard+optimization, pro+optimization
+            let action = batchMode.value;  // standard | pro
+            if (batchScope.value === 'optimization') {
+                action = 'optimization';
+            } else if (batchScope.value === 'both') {
+                action = batchMode.value + '+optimization';
+            }
+            await startBatchAction(action);
+        }
+
         async function startBatchAction(action) {
             const ids = Array.from(selectedProjects.value);
-            const label = action === 'resume' ? 'Продолжить прерванные' : 'Запустить полный аудит';
-            if (!confirm(`${label} для ${ids.length} проектов?\n\nПроекты будут обработаны последовательно.`)) return;
             try {
                 batchRunning.value = true;
                 const resp = await fetch('/api/audit/batch', {
@@ -439,6 +548,18 @@ const app = createApp({
                 alert(e.message);
                 batchRunning.value = false;
             }
+        }
+
+        function batchActionLabel(action) {
+            const labels = {
+                'resume': 'Продолжение прерванных',
+                'standard': 'Стандартный аудит',
+                'pro': 'PRO аудит',
+                'optimization': 'Оптимизация',
+                'standard+optimization': 'Стандартный + оптимизация',
+                'pro+optimization': 'PRO + оптимизация',
+            };
+            return labels[action] || action;
         }
 
         async function cancelBatch() {
@@ -491,18 +612,26 @@ const app = createApp({
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
 
-        async function startFullAudit(projectId) {
-            try {
-                auditRunning.value = true;
-                await apiPost(`/audit/${projectId}/full`);
-                _afterAuditStart(projectId);
-            } catch (e) { alert(e.message); auditRunning.value = false; }
-        }
-
         async function startSmartAudit(projectId) {
             try {
                 auditRunning.value = true;
                 await apiPost(`/audit/${projectId}/smart-audit`);
+                _afterAuditStart(projectId);
+            } catch (e) { alert(e.message); auditRunning.value = false; }
+        }
+
+        async function startStandardAudit(projectId) {
+            try {
+                auditRunning.value = true;
+                await apiPost(`/audit/${projectId}/standard-audit`);
+                _afterAuditStart(projectId);
+            } catch (e) { alert(e.message); auditRunning.value = false; }
+        }
+
+        async function startProAudit(projectId) {
+            try {
+                auditRunning.value = true;
+                await apiPost(`/audit/${projectId}/pro-audit`);
                 _afterAuditStart(projectId);
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
@@ -543,7 +672,7 @@ const app = createApp({
 
         async function cleanProject(projectId) {
             const name = currentProject.value?.name || projectId;
-            if (!confirm(`Очистить все результаты проекта "${name}"?\n\nБудут удалены:\n- Все тайлы и нарезки\n- Все JSON-этапы (00-03)\n- Батчи и логи\n- Отчёты\n\nPDF и MD файлы сохраняются.`)) {
+            if (!confirm(`Очистить все результаты проекта "${name}"?\n\nБудут удалены:\n- Все блоки и нарезки\n- Все JSON-этапы (00-03)\n- Батчи и логи\n- Отчёты\n\nPDF и MD файлы сохраняются.`)) {
                 return;
             }
             try {
@@ -589,7 +718,7 @@ const app = createApp({
         });
 
         async function startAllProjects() {
-            if (!confirm(`Запустить полный конвейер для всех ${projects.value.length} проектов?\n\nКаждый проект будет обработан последовательно: подготовка → тайлы → аудит → верификация норм → Excel.`)) {
+            if (!confirm(`Запустить полный конвейер для всех ${projects.value.length} проектов?\n\nКаждый проект будет обработан последовательно: подготовка → блоки → аудит → верификация норм → Excel.`)) {
                 return;
             }
             try {
@@ -760,6 +889,7 @@ const app = createApp({
             try {
                 const data = await api('/projects');
                 projects.value = data.projects;
+                fetchAllProjectUsage();  // загрузить usage для дашборда
             } catch (e) {
                 console.error('Failed to load projects:', e);
             }
@@ -771,6 +901,7 @@ const app = createApp({
             try {
                 currentProject.value = await api(`/projects/${id}`);
                 loadResumeInfo(id);
+                fetchProjectUsage(id);  // загрузить детальный usage
             } catch (e) {
                 console.error('Failed to load project:', e);
                 currentProject.value = null;
@@ -806,6 +937,75 @@ const app = createApp({
                 console.error('Failed to load tiles:', e);
             }
         }
+
+        // ─── Blocks (OCR) ───
+
+        async function loadBlocks(id) {
+            blocksProjectId.value = id;
+            selectedBlock.value = null;
+            try {
+                const [blocksData] = await Promise.all([
+                    api(`/tiles/${id}/blocks`),
+                    loadBlockAnalysis(id),
+                ]);
+                blockPages.value = blocksData.pages || [];
+                if (blockPages.value.length > 0 && !selectedBlockPage.value) {
+                    selectedBlockPage.value = blockPages.value[0].page_num;
+                }
+            } catch (e) {
+                console.error('Failed to load blocks:', e);
+                blockPages.value = [];
+            }
+        }
+
+        async function loadBlockAnalysis(id) {
+            try {
+                const data = await api(`/tiles/${id}/blocks/analysis`);
+                blockAnalysis.value = data.blocks || {};
+            } catch (e) {
+                blockAnalysis.value = {};
+            }
+        }
+
+        const currentPageBlocks = computed(() => {
+            if (!selectedBlockPage.value || !blockPages.value.length) return null;
+            return blockPages.value.find(p => p.page_num === selectedBlockPage.value) || null;
+        });
+
+        function openBlock(block) {
+            selectedBlock.value = block;
+        }
+
+        function blockHasAnalysis(blockId) {
+            return !!blockAnalysis.value[blockId];
+        }
+
+        function blockFindingsCount(blockId) {
+            const info = blockAnalysis.value[blockId];
+            if (!info) return 0;
+            return (info.findings || []).length;
+        }
+
+        function blockMaxSeverity(blockId) {
+            const info = blockAnalysis.value[blockId];
+            if (!info || !info.findings) return null;
+            const order = ['КРИТИЧЕСКОЕ', 'ЭКОНОМИЧЕСКОЕ', 'ЭКСПЛУАТАЦИОННОЕ', 'РЕКОМЕНДАТЕЛЬНОЕ', 'ПРОВЕРИТЬ ПО СМЕЖНЫМ'];
+            let best = 999;
+            for (const f of info.findings) {
+                const s = (f.severity || '').toUpperCase();
+                for (let i = 0; i < order.length; i++) {
+                    if (s.includes(order[i].substring(0, 6)) && i < best) {
+                        best = i;
+                    }
+                }
+            }
+            return best < order.length ? order[best] : null;
+        }
+
+        const selectedBlockAnalysis = computed(() => {
+            if (!selectedBlock.value) return null;
+            return blockAnalysis.value[selectedBlock.value.block_id] || null;
+        });
 
         // ─── Optimization ───
         async function loadOptimization(id) {
@@ -1016,6 +1216,82 @@ const app = createApp({
                 const match = hash.match(/^\/project\/([^/]+)\/findings$/);
                 if (match) loadFindings(match[1]);
             }, 400);
+        }
+
+        // ─── Prompts ───
+        async function loadDisciplines() {
+            try {
+                const resp = await fetch('/api/audit/disciplines');
+                if (!resp.ok) return;
+                const data = await resp.json();
+                disciplines.value = data.disciplines || [];
+            } catch (e) {
+                console.error('loadDisciplines error:', e);
+            }
+        }
+
+        async function loadTemplates(discipline) {
+            promptsLoading.value = true;
+            const qs = discipline ? `?discipline=${encodeURIComponent(discipline)}` : '';
+            try {
+                const resp = await fetch(`/api/audit/templates${qs}`);
+                if (!resp.ok) throw new Error(`${resp.status}`);
+                const data = await resp.json();
+                templates.value = (data.templates || []).map(t => ({
+                    ...t,
+                    _editContent: t.content,
+                    _dirty: false,
+                }));
+                if (activePromptTab.value >= templates.value.length) {
+                    activePromptTab.value = 0;
+                }
+            } catch (e) {
+                console.error('loadTemplates error:', e);
+                templates.value = [];
+            } finally {
+                promptsLoading.value = false;
+            }
+        }
+
+        async function switchDiscipline(code) {
+            promptsDiscipline.value = code;
+            showDisciplineDropdown.value = false;
+            await loadTemplates(code);
+        }
+
+        const PROMPT_PLACEHOLDERS = /(\{(?:PROJECT_ID|OUTPUT_PATH|MD_FILE_PATH|DISCIPLINE_CHECKLIST|DISCIPLINE_NORMS_FILE|DISCIPLINE_ROLE|DISCIPLINE_FINDING_CATEGORIES|DISCIPLINE_DRAWING_TYPES|BLOCK_LIST|BATCH_ID|TOTAL_BATCHES|BLOCK_COUNT|BATCH_ID_PADDED)\})/g;
+
+        function highlightPlaceholders(text) {
+            // Escape HTML, then wrap placeholders in <mark>
+            const escaped = text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+            return escaped.replace(PROMPT_PLACEHOLDERS, '<mark class="ph-mark">$1</mark>') + '\n';
+        }
+
+        function syncScroll(event) {
+            const textarea = event.target;
+            const overlay = textarea.previousElementSibling;
+            if (overlay) {
+                overlay.scrollTop = textarea.scrollTop;
+                overlay.scrollLeft = textarea.scrollLeft;
+            }
+        }
+
+        async function saveTemplate(stage, content) {
+            if (!confirm('Сохранить шаблон? Изменение применится для ВСЕХ проектов.')) return;
+            try {
+                const resp = await fetch(`/api/audit/templates/${stage}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content }),
+                });
+                if (!resp.ok) throw new Error(`${resp.status}`);
+                await loadTemplates(promptsDiscipline.value);
+            } catch (e) {
+                alert('Ошибка сохранения шаблона: ' + e.message);
+            }
         }
 
         function clearLog() {
@@ -1286,6 +1562,11 @@ const app = createApp({
             tileHasAnalysis, tileFindingsCount, tileMaxSeverity,
             pageSummaries, pageAnalysis, pageAnalysisLoading, showPageAnalysis,
             sheetTypeIcon, getPageSummary,
+            // Blocks (OCR)
+            blocksProjectId, blockPages, selectedBlockPage, selectedBlock,
+            blockAnalysis, selectedBlockAnalysis, currentPageBlocks,
+            blockHasAnalysis, blockFindingsCount, blockMaxSeverity,
+            openBlock, loadBlocks,
             logProjectId, logEntries, logAutoScroll, logContainer, logLoading,
             wsConnected,
             // Live status
@@ -1300,17 +1581,26 @@ const app = createApp({
             // Methods
             navigate, refreshProjects, stepClass, sevClass, sevIcon,
             tileImageUrl, openTile, debounceSearch, clearLog,
+            // Prompts
+            promptsProjectId, templates, promptsLoading,
+            activePromptTab, promptsDiscipline,
+            disciplines, showDisciplineDropdown, currentDiscipline,
+            loadTemplates, loadDisciplines,
+            switchDiscipline, saveTemplate, highlightPlaceholders, syncScroll,
             // Audit actions
             auditRunning, allRunning,
-            startPrepare, startTileAudit, startMainAudit, startFullAudit,
-            startSmartAudit, startNormVerify, startOptimization, cancelAudit, generateExcel,
+            startPrepare, startTileAudit, startMainAudit,
+            startSmartAudit, startStandardAudit, startProAudit,
+            startNormVerify, startOptimization, cancelAudit, generateExcel,
             startAllProjects, resumePipeline, resumeInfo,
             retryStage, skipStage, cleanProject,
             // Batch selection
             selectedProjects, selectAllChecked, selectedCount,
             batchRunning, batchQueue,
+            showBatchModal, batchMode, batchScope, batchModalCount,
             toggleProjectSelection, toggleSelectAll, isProjectSelected,
-            startBatchAction, cancelBatch,
+            openBatchModal, confirmBatchAction, startBatchAction, cancelBatch,
+            batchActionLabel,
             // Add project
             showAddProject, unregisteredFolders, addProjectLoading,
             scanFolders, registerProject, closeAddProject,
@@ -1322,6 +1612,8 @@ const app = createApp({
             globalUsage, showUsageDetails, sonnetPercent,
             formatTokens, formatCost, refreshGlobalUsage, resetSessionCounter,
             usageCounters,
+            // Usage (per-project)
+            projectUsage, currentProjectUsage, stageTokens,
             // Optimization
             optimizationData, optimizationLoading, optimizationFilter,
             filteredOptimization, optimizationTypeLabels, optimizationTypeColors,

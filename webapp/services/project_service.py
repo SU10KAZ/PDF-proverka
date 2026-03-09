@@ -89,6 +89,17 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
     else:
         text_source = "none"
 
+    # OCR result.json (от OCR-сервера)
+    has_ocr = bool(list(proj_dir.glob("*_result.json")))
+
+    # OCR-блоки (кропнутые image-блоки)
+    block_count = 0
+    blocks_index = output_dir / "blocks" / "index.json"
+    if blocks_index.exists():
+        bi = _load_json(blocks_index)
+        if bi:
+            block_count = bi.get("total_blocks", 0)
+
     # Тайлы
     tiles_dir = output_dir / "tiles"
     tile_count = 0
@@ -117,17 +128,20 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
                 findings_by_severity[sev] = findings_by_severity.get(sev, 0) + 1
             audit_date = fdata.get("audit_date", fdata.get("generated_at"))
 
-    # Пакеты тайлов
+    # Пакеты блоков (приоритет) или тайлов (legacy)
     total_batches = 0
     completed_batches = 0
-    batches_path = output_dir / "tile_batches.json"
+    batches_path = output_dir / "block_batches.json"
+    batch_prefix = "block_batch"
+    if not batches_path.exists():
+        batches_path = output_dir / "tile_batches.json"
+        batch_prefix = "tile_batch"
     if batches_path.exists():
         bdata = _load_json(batches_path)
         if bdata:
             total_batches = bdata.get("total_batches", len(bdata.get("batches", [])))
-            # Считаем завершённые
             for i in range(1, total_batches + 1):
-                batch_file = output_dir / f"tile_batch_{i:03d}.json"
+                batch_file = output_dir / f"{batch_prefix}_{i:03d}.json"
                 if batch_file.exists() and batch_file.stat().st_size > 100:
                     completed_batches += 1
 
@@ -154,6 +168,8 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
         last_audit_date=audit_date,
         total_batches=total_batches,
         completed_batches=completed_batches,
+        has_ocr=has_ocr,
+        block_count=block_count,
     )
 
 
@@ -238,27 +254,38 @@ def _get_pipeline_status(output_dir: Path) -> PipelineStatus:
         stages = log["stages"]
         # Маппинг: ключ в pipeline_log → поле PipelineStatus
         mapping = {
-            "prepare": "init",
+            "crop_blocks": "crop_blocks",
             "text_analysis": "text_analysis",
-            "tile_audit": "tiles_analysis",
-            "main_audit": "findings",
+            "block_analysis": "blocks_analysis",
+            "findings_merge": "findings",
             "norm_verify": "norms_verified",
             "optimization": "optimization",
+            # Legacy aliases
+            "prepare": "crop_blocks",
+            "tile_audit": "blocks_analysis",
+            "main_audit": "findings",
         }
-        valid_statuses = ("done", "error", "partial", "running", "skipped")
-        # Маппинг: поле pipeline_log → файл-индикатор завершения
+        valid_statuses = ("done", "error", "partial", "running", "skipped", "interrupted")
+        # Маппинг: ключ pipeline_log → файл-индикатор завершения
         output_files = {
-            "main_audit": "03_findings.json",
-            "tile_audit": "02_tiles_analysis.json",
-            "norm_verify": "03a_norms_verified.json",
+            "crop_blocks": "blocks/index.json",
             "text_analysis": "01_text_analysis.json",
-            "prepare": "00_init.json",
+            "block_analysis": "02_blocks_analysis.json",
+            "findings_merge": "03_findings.json",
+            "norm_verify": "03a_norms_verified.json",
             "optimization": "optimization.json",
+            # Legacy aliases
+            "prepare": "blocks/index.json",
+            "tile_audit": "02_blocks_analysis.json",
+            "main_audit": "03_findings.json",
         }
         for log_key, field in mapping.items():
             stage_info = stages.get(log_key, {})
             s = stage_info.get("status", "pending")
             if s in valid_statuses:
+                # "interrupted" (рестарт сервера) → показывать как "error"
+                if s == "interrupted":
+                    s = "error"
                 # Защита: если "running" но нет активного job → считать "error"
                 if s == "running":
                     from webapp.services.pipeline_service import pipeline_manager
@@ -275,17 +302,18 @@ def _get_pipeline_status(output_dir: Path) -> PipelineStatus:
                 setattr(status, field, s)
         return status
 
-    # 2. Fallback: старая логика по файлам (для проектов без pipeline_log.json)
-    if (output_dir / "00_init.json").exists():
-        status.init = "done"
+    # 2. Fallback: логика по файлам (для проектов без pipeline_log.json)
+    blocks_index = output_dir / "blocks" / "index.json"
+    if blocks_index.exists():
+        status.crop_blocks = "done"
 
     if (output_dir / "01_text_analysis.json").exists():
         status.text_analysis = "done"
 
-    if (output_dir / "02_tiles_analysis.json").exists():
-        status.tiles_analysis = "done"
-    elif list(output_dir.glob("tile_batch_*.json")):
-        status.tiles_analysis = "partial"
+    if (output_dir / "02_blocks_analysis.json").exists():
+        status.blocks_analysis = "done"
+    elif list(output_dir.glob("block_batch_*.json")):
+        status.blocks_analysis = "partial"
 
     if (output_dir / "03_findings.json").exists():
         status.findings = "done"

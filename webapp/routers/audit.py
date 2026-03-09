@@ -98,6 +98,37 @@ async def cancel_batch():
     return {"status": "cancelled"}
 
 
+@router.get("/disciplines")
+async def get_disciplines():
+    """Получить список поддерживаемых дисциплин для UI."""
+    from webapp.services.discipline_service import get_supported_disciplines
+    return {"disciplines": get_supported_disciplines()}
+
+
+@router.get("/templates")
+async def get_templates(
+    discipline: str = Query(None, description="Код дисциплины (EM, OV)"),
+):
+    """Получить сырые шаблоны промптов (с плейсхолдерами)."""
+    from webapp.services.task_builder import get_template_prompts
+    templates = get_template_prompts(discipline_code=discipline)
+    return {"templates": templates}
+
+
+@router.put("/templates/{stage}")
+async def save_template_endpoint(stage: str, body: dict):
+    """Сохранить шаблон промпта в .claude/*.md (глобально для всех проектов)."""
+    valid_stages = {"text_analysis", "block_analysis", "findings_merge", "optimization"}
+    if stage not in valid_stages:
+        raise HTTPException(400, f"Неизвестный этап: {stage}")
+    content = body.get("content")
+    if not content:
+        raise HTTPException(400, "Пустой контент")
+    from webapp.services.task_builder import save_template
+    save_template(stage, content)
+    return {"status": "saved", "stage": stage}
+
+
 @router.get("/live-status")
 async def get_all_live_status():
     """Быстрый polling: live-статус всех запущенных задач + обновлённые batches."""
@@ -124,7 +155,13 @@ async def get_all_live_status():
         for entry in PROJECTS_DIR.iterdir():
             if not entry.is_dir():
                 continue
-            batches_file = entry / "_output" / "tile_batches.json"
+            output_dir = entry / "_output"
+            # Приоритет: block_batches.json → tile_batches.json (legacy)
+            batches_file = output_dir / "block_batches.json"
+            batch_prefix = "block_batch"
+            if not batches_file.exists():
+                batches_file = output_dir / "tile_batches.json"
+                batch_prefix = "tile_batch"
             if not batches_file.exists():
                 continue
             try:
@@ -133,7 +170,7 @@ async def get_all_live_status():
                 total = bd.get("total_batches", len(bd.get("batches", [])))
                 completed = 0
                 for i in range(1, total + 1):
-                    bf = entry / "_output" / f"tile_batch_{i:03d}.json"
+                    bf = output_dir / f"{batch_prefix}_{i:03d}.json"
                     if bf.exists() and bf.stat().st_size > 100:
                         completed += 1
                 batches_info[entry.name] = {"total": total, "completed": completed}
@@ -197,6 +234,40 @@ async def clear_project_log(project_id: str):
 
 # ─── Динамические роуты /{project_id}/... ───
 
+@router.get("/{project_id}/prompts")
+async def get_prompts(
+    project_id: str,
+    discipline: str = Query(None, description="Код дисциплины (EM, OV и т.д.)"),
+):
+    """Получить все промпты (resolved) для проекта."""
+    _check_project(project_id)
+    from webapp.services.task_builder import get_resolved_prompts
+    prompts = get_resolved_prompts(project_id, discipline_override=discipline)
+    return {"prompts": prompts}
+
+
+@router.put("/{project_id}/prompts/{stage}")
+async def save_prompt(project_id: str, stage: str, body: dict):
+    """Сохранить кастомный промпт для этапа."""
+    _check_project(project_id)
+    valid_stages = {"text_analysis", "block_analysis", "findings_merge", "optimization"}
+    if stage not in valid_stages:
+        raise HTTPException(400, f"Неизвестный этап: {stage}")
+    from webapp.services.task_builder import save_prompt_override
+    content = body.get("content")
+    save_prompt_override(project_id, stage, content)
+    return {"status": "saved", "stage": stage}
+
+
+@router.delete("/{project_id}/prompts/{stage}")
+async def reset_prompt(project_id: str, stage: str):
+    """Сбросить кастомный промпт к стандартному."""
+    _check_project(project_id)
+    from webapp.services.task_builder import save_prompt_override
+    save_prompt_override(project_id, stage, None)
+    return {"status": "reset", "stage": stage}
+
+
 @router.post("/{project_id}/prepare")
 async def prepare_project(project_id: str):
     """Запустить подготовку проекта (текст + тайлы)."""
@@ -233,17 +304,6 @@ async def start_main_audit(project_id: str):
         raise HTTPException(409, str(e))
 
 
-@router.post("/{project_id}/full")
-async def start_full_audit(project_id: str):
-    """Запустить полный конвейер (подготовка -> тайлы -> аудит -> верификация норм -> Excel)."""
-    _check_project(project_id)
-    try:
-        job = await pipeline_manager.start_full_audit(project_id)
-        return {"status": "started", "job": job.model_dump()}
-    except RuntimeError as e:
-        raise HTTPException(409, str(e))
-
-
 @router.post("/{project_id}/smart-audit")
 async def start_smart_audit(project_id: str):
     """Запустить интеллектуальный аудит (текст → триаж → выборочная нарезка → анализ → Excel)."""
@@ -251,6 +311,28 @@ async def start_smart_audit(project_id: str):
     try:
         job = await pipeline_manager.start_smart_audit(project_id)
         return {"status": "started", "mode": "smart", "job": job.model_dump()}
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
+
+
+@router.post("/{project_id}/standard-audit")
+async def start_standard_audit(project_id: str):
+    """Стандартный аудит (OCR): кроп блоков → текст → выборочные блоки → свод."""
+    _check_project(project_id)
+    try:
+        job = await pipeline_manager.start_standard_audit(project_id)
+        return {"status": "started", "mode": "standard", "job": job.model_dump()}
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
+
+
+@router.post("/{project_id}/pro-audit")
+async def start_pro_audit(project_id: str):
+    """PRO аудит (OCR): кроп блоков → текст → ВСЕ блоки → свод."""
+    _check_project(project_id)
+    try:
+        job = await pipeline_manager.start_pro_audit(project_id)
+        return {"status": "started", "mode": "pro", "job": job.model_dump()}
     except RuntimeError as e:
         raise HTTPException(409, str(e))
 
@@ -304,10 +386,15 @@ async def retry_stage(project_id: str, stage: str):
     _check_project(project_id)
 
     stage_methods = {
-        "prepare": lambda: pipeline_manager.start_prepare(project_id),
-        "tile_audit": lambda: pipeline_manager.start_tile_audit(project_id),
-        "main_audit": lambda: pipeline_manager.start_main_audit(project_id),
+        "crop_blocks": lambda: pipeline_manager.start_standard_audit(project_id),
+        "text_analysis": lambda: pipeline_manager.start_standard_audit(project_id),
+        "block_analysis": lambda: pipeline_manager.start_standard_audit(project_id),
+        "findings_merge": lambda: pipeline_manager.start_standard_audit(project_id),
         "norm_verify": lambda: pipeline_manager.start_norm_verify(project_id),
+        # Legacy aliases
+        "prepare": lambda: pipeline_manager.start_standard_audit(project_id),
+        "tile_audit": lambda: pipeline_manager.start_standard_audit(project_id),
+        "main_audit": lambda: pipeline_manager.start_standard_audit(project_id),
     }
 
     starter = stage_methods.get(stage)
@@ -326,7 +413,8 @@ async def skip_stage(project_id: str, stage: str):
     """Пропустить ошибочный этап (пометить как skipped)."""
     _check_project(project_id)
 
-    valid_stages = {"tile_audit", "main_audit", "norm_verify", "excel"}
+    valid_stages = {"crop_blocks", "text_analysis", "block_analysis", "findings_merge", "norm_verify", "excel",
+                     "tile_audit", "main_audit", "prepare"}  # + legacy aliases
     if stage not in valid_stages:
         raise HTTPException(400, f"Этап '{stage}' нельзя пропустить")
 

@@ -13,12 +13,12 @@ class TextExtractionQuality(BaseModel):
 
 
 class PipelineStatus(BaseModel):
-    init: str = "pending"            # pending / running / done / error / skipped
-    text_analysis: str = "pending"   # pending / running / done / error / skipped
-    tiles_analysis: str = "pending"  # pending / running / done / error / partial / skipped
-    findings: str = "pending"        # pending / running / done / error / skipped
-    norms_verified: str = "pending"  # pending / running / done / error / partial / skipped
-    optimization: str = "pending"    # pending / running / done / error / skipped
+    crop_blocks: str = "pending"       # pending / running / done / error / skipped
+    text_analysis: str = "pending"     # pending / running / done / error / skipped
+    blocks_analysis: str = "pending"   # pending / running / done / error / partial / skipped
+    findings: str = "pending"          # pending / running / done / error / skipped
+    norms_verified: str = "pending"    # pending / running / done / error / partial / skipped
+    optimization: str = "pending"      # pending / running / done / error / skipped
 
 
 class ProjectInfo(BaseModel):
@@ -59,6 +59,9 @@ class ProjectStatus(BaseModel):
     # Пакетный анализ тайлов
     total_batches: int = 0
     completed_batches: int = 0
+    # OCR-данные (result.json от OCR-сервера)
+    has_ocr: bool = False
+    block_count: int = 0
 
 
 class ProjectCreate(BaseModel):

@@ -15,6 +15,11 @@ class AuditStage(str, Enum):
     NORM_FIX = "norm_fix"
     EXCEL = "excel"
     OPTIMIZATION = "optimization"
+    # OCR-пайплайн
+    CROP_BLOCKS = "crop_blocks"
+    TEXT_ANALYSIS = "text_analysis"
+    BLOCK_ANALYSIS = "block_analysis"
+    FINDINGS_MERGE = "findings_merge"
 
 
 class JobStatus(str, Enum):
@@ -71,6 +76,11 @@ class BatchAction(str, Enum):
     """Тип группового действия."""
     FULL = "full"
     RESUME = "resume"
+    STANDARD = "standard"
+    PRO = "pro"
+    OPTIMIZATION = "optimization"
+    STANDARD_OPTIMIZATION = "standard+optimization"
+    PRO_OPTIMIZATION = "pro+optimization"
 
 
 class BatchRequest(BaseModel):

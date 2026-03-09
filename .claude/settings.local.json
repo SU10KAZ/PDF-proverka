@@ -61,7 +61,8 @@
       "Bash(timeout 5)",
       "Bash(stat \"d:/Отедел Системного Анализа/1. Calude code/projects/133-23-ГК-ОВ2.2 \\(7\\)/_output/tile_batch_001.json\")",
       "Bash(ping -n 4 127.0.0.1)",
-      "Bash(xargs -I {} bash -c \"echo ''=== {} ==='' && head -30 ''{}''\")"
+      "Bash(xargs -I {} bash -c \"echo ''=== {} ==='' && head -30 ''{}''\")",
+      "Bash(echo \"EXIT:$?\")"
     ]
   }
 }

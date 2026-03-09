@@ -18,6 +18,8 @@ from webapp.config import (
     MAX_PARALLEL_BATCHES,
     RATE_LIMIT_THRESHOLD_PCT, RATE_LIMIT_CHECK_INTERVAL,
     RATE_LIMIT_MAX_WAIT, RATE_LIMIT_MAX_RETRIES,
+    CROP_BLOCKS_SCRIPT, GENERATE_BLOCK_BATCHES_SCRIPT,
+    MERGE_BLOCK_RESULTS_SCRIPT,
 )
 from webapp.models.audit import AuditJob, AuditStage, JobStatus, BatchQueueStatus, BatchQueueItem, BatchAction
 from webapp.models.websocket import WSMessage
@@ -225,6 +227,50 @@ class PipelineManager:
             print(f"[PipelineManager] Очистка зомби-задачи: {pid}")
             self._cleanup(pid)
 
+        # При старте сервера: пометить зависшие "running" этапы в pipeline_log.json
+        self._recover_stale_pipelines()
+
+    def _recover_stale_pipelines(self):
+        """Сканирует все pipeline_log.json и помечает зависшие 'running' как 'interrupted'.
+
+        Вызывается при старте сервера. Если сервер был перезапущен во время
+        активного аудита, процессы Claude CLI уже завершились, но pipeline_log
+        остался в состоянии 'running'. Помечаем как 'interrupted' чтобы:
+        1. UI показывал корректный статус (не вечный спиннер)
+        2. Resume мог подхватить с прерванного этапа
+        """
+        if not PROJECTS_DIR.exists():
+            return
+
+        recovered = 0
+        for project_dir in PROJECTS_DIR.iterdir():
+            if not project_dir.is_dir() or project_dir.name.startswith("_"):
+                continue
+            log_path = project_dir / "_output" / "pipeline_log.json"
+            if not log_path.exists():
+                continue
+            try:
+                data = json.loads(log_path.read_text(encoding="utf-8"))
+                stages = data.get("stages", {})
+                changed = False
+                for stage_key, stage_info in stages.items():
+                    if stage_info.get("status") == "running":
+                        # Этот этап остался "running" после рестарта — прерван
+                        stage_info["status"] = "interrupted"
+                        stage_info["error"] = "Сервер перезапущен во время выполнения"
+                        stage_info["interrupted_at"] = datetime.now().isoformat()
+                        changed = True
+                        print(f"[Recovery] {project_dir.name}: этап '{stage_key}' running → interrupted")
+                if changed:
+                    data["last_updated"] = datetime.now().isoformat()
+                    log_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+                    recovered += 1
+            except (json.JSONDecodeError, OSError) as e:
+                print(f"[Recovery] Ошибка чтения {log_path}: {e}")
+
+        if recovered:
+            print(f"[Recovery] Восстановлено {recovered} проектов с зависшими этапами")
+
     async def cancel(self, project_id: str) -> bool:
         """Отменить запущенный аудит."""
         job = self.active_jobs.get(project_id)
@@ -386,12 +432,34 @@ class PipelineManager:
         return job
 
     async def _run_resumed_pipeline(self, job: AuditJob, start_stage: str, resume_info: dict):
-        """Запуск пайплайна с указанного этапа."""
+        """Запуск OCR-пайплайна с указанного этапа."""
         start_time = datetime.now()
         pid = job.project_id
         try:
-            stages = ["prepare", "tile_audit", "main_audit", "norm_verify", "excel"]
-            start_idx = stages.index(start_stage) if start_stage in stages else 0
+            # OCR-пайплайн: этапы в правильном порядке
+            stages = [
+                "prepare",          # 1: crop_blocks.py
+                "crop_blocks",      # 1: кроп блоков (alias prepare)
+                "text_analysis",    # 2: Claude анализ текста MD
+                "block_analysis",   # 3-4: генерация пакетов + анализ блоков
+                "tile_audit",       # alias для block_analysis (legacy)
+                "findings_merge",   # 5: свод замечаний
+                "main_audit",       # alias для findings_merge (legacy)
+                "norm_verify",      # 6: верификация норм
+            ]
+
+            # Нормализация stage: legacy aliases → OCR stages
+            normalized = start_stage
+            if start_stage == "crop_blocks":
+                normalized = "prepare"
+            elif start_stage in ("tile_audit",):
+                normalized = "block_analysis"
+            elif start_stage == "main_audit":
+                normalized = "findings_merge"
+
+            # Порядок этапов OCR-пайплайна (без дублей)
+            ocr_stages = ["prepare", "text_analysis", "block_analysis", "findings_merge", "norm_verify", "excel"]
+            start_idx = ocr_stages.index(normalized) if normalized in ocr_stages else 0
 
             await self._log(
                 job,
@@ -400,70 +468,278 @@ class PipelineManager:
                 "info",
             )
 
-            # ЭТАП 1: Подготовка (если нужно)
+            output_dir = PROJECTS_DIR / pid / "_output"
+            info_path = PROJECTS_DIR / pid / "project_info.json"
+            with open(info_path, "r", encoding="utf-8") as f:
+                project_info = json.load(f)
+
+            # ═══ ЭТАП 1: Кроп image-блоков ═══
             if start_idx <= 0:
-                job.stage = AuditStage.PREPARE
-                self._update_pipeline_log(pid, "prepare", "running")
-                print(f"[{pid}:resume] ═══ ЭТАП 1: Подготовка ═══")
-                await self._log(job, "═══ ЭТАП 1: Подготовка (текст + тайлы) ═══")
+                job.stage = AuditStage.CROP_BLOCKS
+                self._update_pipeline_log(pid, "crop_blocks", "running")
+                print(f"[{pid}:resume] ═══ ЭТАП 1: Кроп image-блоков ═══")
+                await self._log(job, "═══ ЭТАП 1: Кроп image-блоков из PDF ═══")
                 exit_code, _, stderr = await run_script(
-                    str(PROCESS_PROJECT_SCRIPT),
-                    [f"projects/{pid}", "--quality", DEFAULT_TILE_QUALITY],
+                    str(CROP_BLOCKS_SCRIPT),
+                    [f"projects/{pid}"],
                     on_output=lambda msg: self._log(job, msg),
                 )
                 if exit_code != 0:
-                    self._update_pipeline_log(pid, "prepare", "error",
+                    self._update_pipeline_log(pid, "crop_blocks", "error",
                                                error=stderr or f"Exit code: {exit_code}")
-                    raise RuntimeError(f"Подготовка: {stderr}")
-                self._update_pipeline_log(pid, "prepare", "done", message="OK")
+                    raise RuntimeError(f"Кроп блоков: {stderr}")
+                self._update_pipeline_log(pid, "crop_blocks", "done", message="OK")
 
-                if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
+                if job.status == JobStatus.CANCELLED:
                     return
 
-            # ЭТАП 2: Пакетный анализ тайлов
+            # ═══ ЭТАП 2: Текстовый анализ MD (Claude) ═══
             if start_idx <= 1:
-                tile_start_from = resume_info.get("start_from", 1) if start_idx == 1 else 1
-                if start_idx == 1 and tile_start_from > 1:
-                    # Частичный resume — не удаляем уже обработанные батчи
-                    await self._log(job, f"Продолжение анализа тайлов с пакета {tile_start_from}")
-                else:
+                if start_idx == 1:
+                    # Resume с этого этапа — очистить старые результаты
                     self._clean_stage_files(pid, [
-                        "tile_batch_*.json", "02_tiles_analysis.json",
+                        "01_text_analysis.json", "02_blocks_analysis.json",
+                        "03_findings.json", "block_batch_*.json", "block_batches.json",
                     ])
-
                 self._reset_job_progress(job)
-                print(f"[{pid}:resume] ═══ ЭТАП 2: Тайлы (start_from={tile_start_from}) ═══")
-                await self._log(job, f"═══ ЭТАП 2: Пакетный анализ тайлов (с пакета {tile_start_from}) ═══")
-                await self._run_tile_audit(job, start_from=tile_start_from, standalone=False)
-
-                if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
-                    await self._log(job, f"ЭТАП 2 FAILED — остановка", "error")
-                    return
-
-                self.active_jobs[pid] = job
-                self._tasks[pid] = asyncio.current_task()
-
-            # ЭТАП 3: Основной аудит
-            if start_idx <= 2:
-                self._clean_stage_files(pid, [
-                    "00_init.json", "01_text_analysis.json", "03_findings.json",
-                ])
-                self._reset_job_progress(job)
-                job.stage = AuditStage.MAIN_AUDIT
+                job.stage = AuditStage.TEXT_ANALYSIS
                 job.status = JobStatus.RUNNING
-                print(f"[{pid}:resume] ═══ ЭТАП 3: Основной аудит ═══")
-                await self._log(job, "═══ ЭТАП 3: Основной аудит Claude ═══")
-                await self._run_main_audit(job, standalone=False)
+                self._update_pipeline_log(pid, "text_analysis", "running")
+                print(f"[{pid}:resume] ═══ ЭТАП 2: Текстовый анализ MD ═══")
+                await self._log(job, "═══ ЭТАП 2: Текстовый анализ MD (Claude) ═══")
+                await self._start_heartbeat(job)
 
-                if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
-                    await self._log(job, f"ЭТАП 3 FAILED — остановка", "error")
+                can_go = await self._check_before_launch(job)
+                if not can_go:
+                    raise RuntimeError("Rate limit: ожидание превышено или отменено")
+
+                exit_code, output, cli_result = await claude_runner.run_text_analysis(
+                    project_info, pid,
+                    on_output=lambda msg: self._log(job, msg),
+                )
+                self._record_cli_usage(job, cli_result, "text_analysis")
+
+                if claude_runner.is_cancelled(exit_code):
+                    job.status = JobStatus.CANCELLED
+                    return
+                if exit_code != 0:
+                    self._update_pipeline_log(pid, "text_analysis", "error",
+                                               error=f"Код {exit_code}")
+                    raise RuntimeError(f"Текстовый анализ: код {exit_code}")
+
+                text_analysis_path = output_dir / "01_text_analysis.json"
+                if not text_analysis_path.exists():
+                    raise RuntimeError("01_text_analysis.json не создан")
+
+                self._update_pipeline_log(pid, "text_analysis", "done", message="OK")
+
+                if job.status == JobStatus.CANCELLED:
+                    return
+
+            # ═══ ЭТАП 3-4: Генерация пакетов + анализ блоков (Claude) ═══
+            if start_idx <= 2:
+                batch_start_from = resume_info.get("start_from", 1) if start_idx == 2 else 1
+                batches_file = output_dir / "block_batches.json"
+
+                # Генерация пакетов (если нет или свежий старт)
+                need_generate = not batches_file.exists() or start_idx < 2
+                if need_generate:
+                    self._reset_job_progress(job)
+                    job.stage = AuditStage.CROP_BLOCKS  # reuse для генерации батчей
+
+                    gen_args = [f"projects/{pid}"]
+                    print(f"[{pid}:resume] ═══ ЭТАП 3: Генерация пакетов блоков ═══")
+                    await self._log(job, "═══ ЭТАП 3: Генерация пакетов блоков ═══")
+
+                    exit_code, _, stderr = await run_script(
+                        str(GENERATE_BLOCK_BATCHES_SCRIPT),
+                        gen_args,
+                        on_output=lambda msg: self._log(job, msg),
+                    )
+                    if exit_code != 0:
+                        raise RuntimeError(f"Генерация пакетов: {stderr}")
+
+                if not batches_file.exists():
+                    raise RuntimeError("block_batches.json не создан")
+
+                with open(batches_file, "r", encoding="utf-8") as f:
+                    batches_data = json.load(f)
+
+                batches = batches_data.get("batches", [])
+                total_batches = len(batches)
+
+                if total_batches == 0:
+                    await self._log(job, "Нет пакетов для анализа — переход к своду", "warn")
+                else:
+                    # Параллельный анализ блоков
+                    self._reset_job_progress(job)
+                    job.stage = AuditStage.BLOCK_ANALYSIS
+                    job.status = JobStatus.RUNNING
+                    job.progress_total = total_batches
+                    self._update_pipeline_log(pid, "block_analysis", "running")
+
+                    parallel = MAX_PARALLEL_BATCHES
+                    print(f"[{pid}:resume] ═══ ЭТАП 4: Анализ блоков ({total_batches} пакетов x{parallel}) ═══")
+                    await self._log(
+                        job,
+                        f"═══ ЭТАП 4: Анализ блоков ({total_batches} пакетов, x{parallel} параллельно) ═══"
+                    )
+
+                    semaphore = asyncio.Semaphore(parallel)
+                    completed_count = 0
+                    error_count = 0
+
+                    async def _process_batch(batch):
+                        nonlocal completed_count, error_count
+                        batch_id = batch["batch_id"]
+
+                        result_file = output_dir / f"block_batch_{batch_id:03d}.json"
+                        if result_file.exists() and result_file.stat().st_size > 100:
+                            completed_count += 1
+                            job.progress_current = completed_count
+                            await self._progress(job, completed_count, total_batches)
+                            return
+
+                        async with semaphore:
+                            if job.status == JobStatus.CANCELLED:
+                                return
+                            if error_count >= 5:
+                                return
+
+                            can_go = await self._check_before_launch(job)
+                            if not can_go:
+                                return
+
+                            block_count = batch.get("block_count", len(batch.get("blocks", [])))
+                            await self._log(job, f"Пакет {batch_id}/{total_batches}: {block_count} блоков...")
+
+                            retries = 0
+                            while retries <= RATE_LIMIT_MAX_RETRIES:
+                                batch_start_time = datetime.now()
+                                job.batch_started_at = batch_start_time.isoformat()
+
+                                exit_code, output_text, cli_result = await claude_runner.run_block_batch(
+                                    batch, project_info, pid, total_batches,
+                                    on_output=lambda msg: self._log(job, msg),
+                                )
+                                self._record_cli_usage(job, cli_result, f"block_batch_{batch_id:03d}")
+
+                                batch_duration = (datetime.now() - batch_start_time).total_seconds()
+                                job.batch_durations.append(batch_duration)
+
+                                if exit_code == 0:
+                                    if result_file.exists():
+                                        size_kb = round(result_file.stat().st_size / 1024, 1)
+                                        await self._log(
+                                            job,
+                                            f"Пакет {batch_id}/{total_batches}: OK ({size_kb} KB)"
+                                        )
+                                    break
+
+                                if claude_runner.is_cancelled(exit_code):
+                                    break
+
+                                stdout_text = output_text or ""
+                                stderr_text = cli_result.result_text if cli_result and cli_result.is_error else ""
+
+                                if claude_runner.is_rate_limited(exit_code, stdout_text, stderr_text):
+                                    retries += 1
+                                    if retries <= RATE_LIMIT_MAX_RETRIES:
+                                        can_continue = await self._wait_for_rate_limit(
+                                            job, f"пакет {batch_id}", cli_output=stdout_text
+                                        )
+                                        if not can_continue:
+                                            error_count += 1
+                                            break
+                                        continue
+                                else:
+                                    break
+
+                            if exit_code != 0 and not claude_runner.is_cancelled(exit_code):
+                                error_count += 1
+                                await self._log(job, f"Пакет {batch_id}: ошибка (код {exit_code})", "error")
+                            else:
+                                completed_count += 1
+                                job.progress_current = completed_count
+                                await self._progress(job, completed_count, total_batches)
+
+                    # Запуск батчей (готовые пропустятся внутри _process_batch)
+                    tasks = []
+                    for batch in batches:
+                        tasks.append(asyncio.create_task(_process_batch(batch)))
+
+                    if tasks:
+                        await asyncio.gather(*tasks, return_exceptions=True)
+
+                    if error_count > 0:
+                        self._update_pipeline_log(pid, "block_analysis", "error",
+                                                   error=f"{error_count} пакетов с ошибками")
+                        if error_count >= total_batches:
+                            raise RuntimeError(f"Все пакеты завершились с ошибками")
+                    else:
+                        self._update_pipeline_log(pid, "block_analysis", "done",
+                                                   message=f"OK ({total_batches} пакетов)")
+
+                # Слияние результатов
+                print(f"[{pid}:resume] Слияние block_batch_*.json → 02_blocks_analysis.json")
+                await self._log(job, "Слияние результатов блоков...")
+                exit_code, _, stderr = await run_script(
+                    str(MERGE_BLOCK_RESULTS_SCRIPT),
+                    [f"projects/{pid}"],
+                    on_output=lambda msg: self._log(job, msg),
+                )
+                if exit_code != 0:
+                    await self._log(job, f"Ошибка слияния: {stderr}", "warn")
+
+                if job.status == JobStatus.CANCELLED:
                     return
 
                 self.active_jobs[pid] = job
                 self._tasks[pid] = asyncio.current_task()
 
-            # ЭТАП 4: Верификация норм
+            # ═══ ЭТАП 5: Свод замечаний (Claude) ═══
             if start_idx <= 3:
+                self._clean_stage_files(pid, ["03_findings.json"])
+                self._reset_job_progress(job)
+                job.stage = AuditStage.FINDINGS_MERGE
+                job.status = JobStatus.RUNNING
+                self._update_pipeline_log(pid, "findings_merge", "running")
+                print(f"[{pid}:resume] ═══ ЭТАП 5: Свод замечаний ═══")
+                await self._log(job, "═══ ЭТАП 5: Свод замечаний (Claude) ═══")
+                await self._start_heartbeat(job)
+
+                can_go = await self._check_before_launch(job)
+                if not can_go:
+                    raise RuntimeError("Rate limit: ожидание превышено или отменено")
+
+                exit_code, output, cli_result = await claude_runner.run_findings_merge(
+                    project_info, pid,
+                    on_output=lambda msg: self._log(job, msg),
+                )
+                self._record_cli_usage(job, cli_result, "findings_merge")
+
+                if claude_runner.is_cancelled(exit_code):
+                    job.status = JobStatus.CANCELLED
+                    return
+                if exit_code != 0:
+                    self._update_pipeline_log(pid, "findings_merge", "error",
+                                               error=f"Код {exit_code}")
+                    raise RuntimeError(f"Свод замечаний: код {exit_code}")
+
+                findings_path = output_dir / "03_findings.json"
+                if not findings_path.exists():
+                    raise RuntimeError("03_findings.json не создан")
+
+                self._update_pipeline_log(pid, "findings_merge", "done", message="OK")
+
+                if job.status == JobStatus.CANCELLED:
+                    return
+
+                self.active_jobs[pid] = job
+                self._tasks[pid] = asyncio.current_task()
+
+            # ═══ ЭТАП 6: Верификация норм ═══
+            if start_idx <= 4:
                 self._clean_stage_files(pid, [
                     "03a_norms_verified.json", "norm_checks.json",
                 ])
@@ -472,8 +748,8 @@ class PipelineManager:
                 if findings_path.exists():
                     job.stage = AuditStage.NORM_VERIFY
                     job.status = JobStatus.RUNNING
-                    print(f"[{pid}:resume] ═══ ЭТАП 4: Верификация норм ═══")
-                    await self._log(job, "═══ ЭТАП 4: Верификация нормативных ссылок ═══")
+                    print(f"[{pid}:resume] ═══ ЭТАП 6: Верификация норм ═══")
+                    await self._log(job, "═══ ЭТАП 6: Верификация нормативных ссылок ═══")
                     await self._run_norm_verification(job, standalone=False)
 
                     if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
@@ -484,13 +760,13 @@ class PipelineManager:
                 else:
                     await self._log(job, "03_findings.json не найден — пропуск верификации", "warn")
 
-            # ЭТАП 5: Excel
+            # ═══ ЭТАП 7: Excel ═══
             self._reset_job_progress(job)
             job.stage = AuditStage.EXCEL
             job.status = JobStatus.RUNNING
             self._update_pipeline_log(pid, "excel", "running")
-            print(f"[{pid}:resume] ═══ ЭТАП 5: Excel ═══")
-            await self._log(job, "═══ ЭТАП 5: Генерация Excel ═══")
+            print(f"[{pid}:resume] ═══ ЭТАП 7: Excel ═══")
+            await self._log(job, "═══ ЭТАП 7: Генерация Excel ═══")
             project_path = str(PROJECTS_DIR / pid)
             exit_code, _, _ = await run_script(
                 str(GENERATE_EXCEL_SCRIPT),
@@ -1192,163 +1468,6 @@ class PipelineManager:
             await self._log(job, f"Предупреждение: не удалось обновить базу норм: {e}", "warn")
             print(f"[{job.project_id}:norms_db] Ошибка: {e}")
 
-    # ─── Полный конвейер ───
-    async def start_full_audit(self, project_id: str) -> AuditJob:
-        if project_id in self.active_jobs:
-            raise RuntimeError(f"Аудит уже запущен для {project_id}")
-
-        job = AuditJob(
-            job_id=str(uuid4()),
-            project_id=project_id,
-            stage=AuditStage.PREPARE,
-            status=JobStatus.RUNNING,
-            started_at=datetime.now().isoformat(),
-        )
-        self.active_jobs[project_id] = job
-        task = asyncio.create_task(self._run_full_pipeline(job))
-        self._tasks[project_id] = task
-        return job
-
-    async def _run_full_pipeline(self, job: AuditJob):
-        start_time = datetime.now()
-        pid = job.project_id
-        try:
-            # 1. Подготовка
-            job.stage = AuditStage.PREPARE
-            self._update_pipeline_log(pid, "prepare", "running")
-            print(f"[{pid}] ═══ ЭТАП 1: Подготовка ═══")
-            await self._log(job, "═══ ЭТАП 1: Подготовка (текст + тайлы) ═══")
-            exit_code, _, stderr = await run_script(
-                str(PROCESS_PROJECT_SCRIPT),
-                [f"projects/{job.project_id}", "--quality", DEFAULT_TILE_QUALITY],
-                on_output=lambda msg: self._log(job, msg),
-            )
-            if exit_code != 0:
-                print(f"[{pid}] ЭТАП 1 ОШИБКА: код {exit_code}, stderr: {stderr[:300] if stderr else 'N/A'}")
-                self._update_pipeline_log(pid, "prepare", "error",
-                                           error=stderr or f"Exit code: {exit_code}")
-                raise RuntimeError(f"Подготовка: {stderr}")
-            self._update_pipeline_log(pid, "prepare", "done", message="OK")
-            print(f"[{pid}] ЭТАП 1 OK")
-
-            if job.status == JobStatus.CANCELLED:
-                return
-
-            # 2. Пакетный анализ тайлов
-            # Очистка: удалить старые результаты тайлового анализа
-            self._clean_stage_files(pid, [
-                "tile_batch_*.json", "02_tiles_analysis.json",
-            ])
-            self._reset_job_progress(job)
-            print(f"[{pid}] ═══ ЭТАП 2: Пакетный анализ тайлов ═══")
-            await self._log(job, "═══ ЭТАП 2: Пакетный анализ тайлов ═══")
-            await self._run_tile_audit(job, start_from=1, standalone=False)
-            print(f"[{pid}] ЭТАП 2 завершён, status={job.status.value}")
-
-            if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
-                print(f"[{pid}] ЭТАП 2 завершён с ошибкой — конвейер остановлен")
-                await self._log(job, f"Этап 2 FAILED: {job.error_message or 'все пакеты ошибочны'} — остановка", "error")
-                return
-
-            # Reset status after tile audit
-            self.active_jobs[job.project_id] = job
-            self._tasks[job.project_id] = asyncio.current_task()
-
-            # 3. Основной аудит
-            # Очистка: удалить старые результаты текстового анализа и замечаний
-            self._clean_stage_files(pid, [
-                "00_init.json", "01_text_analysis.json", "03_findings.json",
-            ])
-            self._reset_job_progress(job)
-            job.stage = AuditStage.MAIN_AUDIT
-            job.status = JobStatus.RUNNING
-            print(f"[{pid}] ═══ ЭТАП 3: Основной аудит Claude ═══")
-            await self._log(job, "═══ ЭТАП 3: Основной аудит Claude ═══")
-            await self._run_main_audit(job, standalone=False)
-            print(f"[{pid}] ЭТАП 3 завершён, status={job.status.value}")
-
-            if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
-                print(f"[{pid}] ЭТАП 3 завершён с ошибкой — конвейер остановлен")
-                await self._log(job, f"Этап 3 FAILED: {job.error_message or 'ошибка аудита'} — остановка", "error")
-                return
-
-            # Reset
-            self.active_jobs[job.project_id] = job
-            self._tasks[job.project_id] = asyncio.current_task()
-
-            # 4. Верификация нормативных ссылок
-            # Очистка: удалить старые результаты верификации
-            self._clean_stage_files(pid, [
-                "03a_norms_verified.json", "norm_checks.json",
-            ])
-            self._reset_job_progress(job)
-            findings_path = PROJECTS_DIR / job.project_id / "_output" / "03_findings.json"
-            if findings_path.exists():
-                job.stage = AuditStage.NORM_VERIFY
-                job.status = JobStatus.RUNNING
-                print(f"[{pid}] ═══ ЭТАП 4: Верификация норм ═══")
-                await self._log(job, "═══ ЭТАП 4: Верификация нормативных ссылок ═══")
-                await self._run_norm_verification(job, standalone=False)
-                print(f"[{pid}] ЭТАП 4 завершён, status={job.status.value}")
-
-                if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
-                    print(f"[{pid}] ЭТАП 4 завершён с ошибкой — конвейер остановлен")
-                    return
-
-                # Reset
-                self.active_jobs[job.project_id] = job
-                self._tasks[job.project_id] = asyncio.current_task()
-            else:
-                print(f"[{pid}] ЭТАП 4 пропущен: 03_findings.json не найден")
-                await self._log(job, "03_findings.json не найден — пропуск верификации норм", "warn")
-
-            # 5. Excel (только для этого проекта, без автооткрытия)
-            self._reset_job_progress(job)
-            job.stage = AuditStage.EXCEL
-            job.status = JobStatus.RUNNING
-            self._update_pipeline_log(pid, "excel", "running")
-            print(f"[{pid}] ═══ ЭТАП 5: Excel ═══")
-            await self._log(job, "═══ ЭТАП 5: Генерация Excel ═══")
-            project_path = str(PROJECTS_DIR / job.project_id)
-            exit_code, _, _ = await run_script(
-                str(GENERATE_EXCEL_SCRIPT),
-                args=[project_path],
-                env_overrides={"AUDIT_NO_OPEN": "1"},
-                on_output=lambda msg: self._log(job, msg),
-            )
-            if exit_code == 0:
-                self._update_pipeline_log(pid, "excel", "done", message="OK")
-            else:
-                self._update_pipeline_log(pid, "excel", "error",
-                                           error=f"Exit code: {exit_code}")
-            print(f"[{pid}] ЭТАП 5 завершён, код={exit_code}")
-
-            duration = round((datetime.now() - start_time).total_seconds() / 60, 1)
-            job.status = JobStatus.COMPLETED
-            print(f"[{pid}] ═══ Полный конвейер завершён за {duration} мин ═══")
-            await self._log(job, f"Полный конвейер завершён за {duration} мин.", "info")
-
-            # Отправляем событие complete
-            await ws_manager.broadcast_to_project(
-                job.project_id,
-                WSMessage.complete(job.project_id, duration_minutes=duration),
-            )
-
-        except asyncio.CancelledError:
-            print(f"[{pid}] Конвейер ОТМЕНЁН")
-            job.status = JobStatus.CANCELLED
-        except Exception as e:
-            print(f"[{pid}] Конвейер ОШИБКА: {e}")
-            import traceback
-            traceback.print_exc()
-            job.status = JobStatus.FAILED
-            job.error_message = str(e)
-            await self._log(job, f"Исключение: {e}", "error")
-        finally:
-            job.completed_at = datetime.now().isoformat()
-            self._cleanup(job.project_id)
-
-
     # ─── Запуск интеллектуального аудита (smart) ───
     async def start_smart_audit(self, project_id: str) -> AuditJob:
         """Интеллектуальный аудит: текст → триаж → выборочная нарезка → анализ."""
@@ -1675,6 +1794,438 @@ class PipelineManager:
             job.completed_at = datetime.now().isoformat()
             self._cleanup(pid)
 
+    # ─── Стандартный аудит (OCR-пайплайн) ───
+    async def start_standard_audit(self, project_id: str) -> AuditJob:
+        """Стандартный аудит: кроп блоков → текстовый анализ → выборочные блоки → свод."""
+        if project_id in self.active_jobs:
+            raise RuntimeError(f"Аудит уже запущен для {project_id}")
+
+        job = AuditJob(
+            job_id=str(uuid4()),
+            project_id=project_id,
+            stage=AuditStage.CROP_BLOCKS,
+            status=JobStatus.RUNNING,
+            started_at=datetime.now().isoformat(),
+        )
+        self.active_jobs[project_id] = job
+        task = asyncio.create_task(self._run_standard_pipeline(job))
+        self._tasks[project_id] = task
+        return job
+
+    async def start_pro_audit(self, project_id: str) -> AuditJob:
+        """PRO аудит: кроп блоков → текстовый анализ → ВСЕ блоки → свод."""
+        if project_id in self.active_jobs:
+            raise RuntimeError(f"Аудит уже запущен для {project_id}")
+
+        job = AuditJob(
+            job_id=str(uuid4()),
+            project_id=project_id,
+            stage=AuditStage.CROP_BLOCKS,
+            status=JobStatus.RUNNING,
+            started_at=datetime.now().isoformat(),
+        )
+        self.active_jobs[project_id] = job
+        task = asyncio.create_task(self._run_pro_pipeline(job))
+        self._tasks[project_id] = task
+        return job
+
+    async def _run_ocr_pipeline(self, job: AuditJob, mode: str = "standard"):
+        """
+        Общий OCR-пайплайн для standard и pro режимов.
+
+        Этапы:
+        1. crop_blocks.py → _output/blocks/
+        2. Claude: text_analysis → 01_text_analysis.json + blocks_for_review[]
+        3. generate_block_batches.py → block_batches.json
+        4. Claude: block_batch (параллельно) → block_batch_NNN.json
+        5. merge_block_results.py → 02_blocks_analysis.json
+        6. Claude: findings_merge → 03_findings.json
+        7. norm_verify
+        8. Excel
+        """
+        start_time = datetime.now()
+        pid = job.project_id
+        try:
+            output_dir = PROJECTS_DIR / pid / "_output"
+            info_path = PROJECTS_DIR / pid / "project_info.json"
+
+            with open(info_path, "r", encoding="utf-8") as f:
+                project_info = json.load(f)
+
+            # ═══ ЭТАП 1: Кроп image-блоков ═══
+            job.stage = AuditStage.CROP_BLOCKS
+            self._update_pipeline_log(pid, "crop_blocks", "running")
+            print(f"[{pid}:{mode}] ═══ ЭТАП 1: Кроп image-блоков ═══")
+            await self._log(job, "═══ ЭТАП 1: Кроп image-блоков из PDF ═══")
+
+            exit_code, _, stderr = await run_script(
+                str(CROP_BLOCKS_SCRIPT),
+                [f"projects/{pid}"],
+                on_output=lambda msg: self._log(job, msg),
+            )
+            if exit_code != 0:
+                self._update_pipeline_log(pid, "crop_blocks", "error",
+                                           error=stderr or f"Exit code: {exit_code}")
+                raise RuntimeError(f"Кроп блоков: {stderr}")
+            self._update_pipeline_log(pid, "crop_blocks", "done", message="OK")
+            print(f"[{pid}:{mode}] ЭТАП 1 OK")
+
+            if job.status == JobStatus.CANCELLED:
+                return
+
+            # ═══ ЭТАП 2: Текстовый анализ MD (Claude) ═══
+            self._clean_stage_files(pid, [
+                "01_text_analysis.json", "02_blocks_analysis.json",
+                "03_findings.json", "block_batch_*.json", "block_batches.json",
+            ])
+            self._reset_job_progress(job)
+            job.stage = AuditStage.TEXT_ANALYSIS
+            job.status = JobStatus.RUNNING
+            self._update_pipeline_log(pid, "text_analysis", "running")
+            print(f"[{pid}:{mode}] ═══ ЭТАП 2: Текстовый анализ MD ═══")
+            await self._log(job, "═══ ЭТАП 2: Текстовый анализ MD (Claude) ═══")
+            await self._start_heartbeat(job)
+
+            can_go = await self._check_before_launch(job)
+            if not can_go:
+                raise RuntimeError("Rate limit: ожидание превышено или отменено")
+
+            exit_code, output, cli_result = await claude_runner.run_text_analysis(
+                project_info, pid,
+                on_output=lambda msg: self._log(job, msg),
+            )
+            self._record_cli_usage(job, cli_result, "text_analysis")
+
+            if claude_runner.is_cancelled(exit_code):
+                job.status = JobStatus.CANCELLED
+                return
+            if claude_runner.is_rate_limited(exit_code, output or "", ""):
+                await self._log(job, "Rate limit при текстовом анализе, ожидание...", "warn")
+                can_continue = await self._wait_for_rate_limit(
+                    job, "rate limit при текстовом анализе", cli_output=output or ""
+                )
+                if not can_continue:
+                    raise RuntimeError("Rate limit: ожидание превышено или отменено")
+                exit_code, output, cli_result = await claude_runner.run_text_analysis(
+                    project_info, pid,
+                    on_output=lambda msg: self._log(job, msg),
+                )
+                self._record_cli_usage(job, cli_result, "text_analysis_retry")
+            if exit_code != 0:
+                self._update_pipeline_log(pid, "text_analysis", "error",
+                                           error=f"Код {exit_code}")
+                raise RuntimeError(f"Текстовый анализ: код {exit_code}")
+
+            text_analysis_path = output_dir / "01_text_analysis.json"
+            if not text_analysis_path.exists():
+                raise RuntimeError("01_text_analysis.json не создан")
+
+            self._update_pipeline_log(pid, "text_analysis", "done", message="OK")
+            print(f"[{pid}:{mode}] ЭТАП 2 OK")
+
+            if job.status == JobStatus.CANCELLED:
+                return
+
+            # ═══ ЭТАП 3: Генерация пакетов блоков ═══
+            self._reset_job_progress(job)
+            job.stage = AuditStage.CROP_BLOCKS  # reuse для генерации батчей
+
+            # Определяем какие блоки анализировать
+            gen_args = [f"projects/{pid}"]
+            if mode == "standard":
+                # Только блоки из blocks_for_review
+                with open(text_analysis_path, "r", encoding="utf-8") as f:
+                    ta_data = json.load(f)
+                blocks_for_review = ta_data.get("blocks_for_review", [])
+                block_ids = [b["block_id"] for b in blocks_for_review]
+                if block_ids:
+                    gen_args += ["--block-ids", ",".join(block_ids)]
+                    await self._log(
+                        job,
+                        f"Стандартный режим: {len(block_ids)} блоков для визуальной проверки"
+                    )
+                else:
+                    await self._log(job, "Нет блоков для визуальной проверки — пропуск", "warn")
+            else:
+                # PRO: все блоки
+                await self._log(job, "PRO режим: анализ ВСЕХ image-блоков")
+
+            print(f"[{pid}:{mode}] ═══ ЭТАП 3: Генерация пакетов блоков ═══")
+            await self._log(job, "═══ ЭТАП 3: Генерация пакетов блоков ═══")
+
+            exit_code, _, stderr = await run_script(
+                str(GENERATE_BLOCK_BATCHES_SCRIPT),
+                gen_args,
+                on_output=lambda msg: self._log(job, msg),
+            )
+            if exit_code != 0:
+                raise RuntimeError(f"Генерация пакетов: {stderr}")
+
+            # Загружаем пакеты
+            batches_file = output_dir / "block_batches.json"
+            if not batches_file.exists():
+                raise RuntimeError("block_batches.json не создан")
+
+            with open(batches_file, "r", encoding="utf-8") as f:
+                batches_data = json.load(f)
+
+            batches = batches_data.get("batches", [])
+            total_batches = len(batches)
+
+            if total_batches == 0:
+                await self._log(job, "Нет пакетов для анализа — переход к своду", "warn")
+            else:
+                # ═══ ЭТАП 4: Параллельный анализ блоков (Claude) ═══
+                self._clean_stage_files(pid, ["block_batch_*.json"])
+                self._reset_job_progress(job)
+                job.stage = AuditStage.BLOCK_ANALYSIS
+                job.status = JobStatus.RUNNING
+                job.progress_total = total_batches
+                self._update_pipeline_log(pid, "block_analysis", "running")
+
+                parallel = MAX_PARALLEL_BATCHES
+                print(f"[{pid}:{mode}] ═══ ЭТАП 4: Анализ блоков ({total_batches} пакетов x{parallel}) ═══")
+                await self._log(
+                    job,
+                    f"═══ ЭТАП 4: Анализ блоков ({total_batches} пакетов, x{parallel} параллельно) ═══"
+                )
+
+                semaphore = asyncio.Semaphore(parallel)
+                completed_count = 0
+                error_count = 0
+
+                async def _process_block_batch(batch):
+                    nonlocal completed_count, error_count
+                    batch_id = batch["batch_id"]
+
+                    result_file = output_dir / f"block_batch_{batch_id:03d}.json"
+                    if result_file.exists() and result_file.stat().st_size > 100:
+                        completed_count += 1
+                        job.progress_current = completed_count
+                        await self._progress(job, completed_count, total_batches)
+                        return
+
+                    async with semaphore:
+                        if job.status == JobStatus.CANCELLED:
+                            return
+                        if error_count >= 5:
+                            return
+
+                        can_go = await self._check_before_launch(job)
+                        if not can_go:
+                            return
+
+                        block_count = batch.get("block_count", len(batch.get("blocks", [])))
+                        await self._log(job, f"Пакет {batch_id}/{total_batches}: {block_count} блоков...")
+
+                        retries = 0
+                        while retries <= RATE_LIMIT_MAX_RETRIES:
+                            batch_start_time = datetime.now()
+                            job.batch_started_at = batch_start_time.isoformat()
+
+                            exit_code, output_text, cli_result = await claude_runner.run_block_batch(
+                                batch, project_info, pid, total_batches,
+                                on_output=lambda msg: self._log(job, msg),
+                            )
+                            self._record_cli_usage(job, cli_result, f"block_batch_{batch_id:03d}")
+
+                            batch_duration = (datetime.now() - batch_start_time).total_seconds()
+                            job.batch_durations.append(batch_duration)
+
+                            if exit_code == 0:
+                                if result_file.exists():
+                                    size_kb = round(result_file.stat().st_size / 1024, 1)
+                                    await self._log(
+                                        job,
+                                        f"Пакет {batch_id}/{total_batches}: OK ({size_kb} KB)"
+                                    )
+                                break
+
+                            if claude_runner.is_cancelled(exit_code):
+                                break
+
+                            stdout_text = output_text or ""
+                            stderr_text = cli_result.result_text if cli_result and cli_result.is_error else ""
+                            if claude_runner.is_rate_limited(exit_code, stdout_text, stderr_text):
+                                retries += 1
+                                if retries > RATE_LIMIT_MAX_RETRIES:
+                                    error_count += 1
+                                    break
+                                can_continue = await self._wait_for_rate_limit(
+                                    job,
+                                    f"rate limit при пакете {batch_id}",
+                                    cli_output=f"{stdout_text}\n{stderr_text}",
+                                )
+                                if not can_continue:
+                                    error_count += 1
+                                    break
+                                continue
+                            else:
+                                error_count += 1
+                                await self._log(
+                                    job,
+                                    f"Пакет {batch_id}/{total_batches}: ОШИБКА (код {exit_code})",
+                                    "error",
+                                )
+                                break
+
+                        completed_count += 1
+                        job.progress_current = completed_count
+                        await self._progress(job, completed_count, total_batches)
+
+                tasks = [_process_block_batch(batch) for batch in batches]
+                await asyncio.gather(*tasks, return_exceptions=True)
+
+                if error_count >= total_batches:
+                    job.status = JobStatus.FAILED
+                    job.error_message = f"Все {total_batches} пакетов с ошибкой"
+                    self._update_pipeline_log(pid, "block_analysis", "error",
+                                               error=f"Все {total_batches} пакетов с ошибкой")
+                    return
+
+                # Шаг 5: Слияние результатов блоков
+                await self._log(job, "Слияние результатов анализа блоков...")
+                exit_code, _, stderr = await run_script(
+                    str(MERGE_BLOCK_RESULTS_SCRIPT),
+                    [f"projects/{pid}"],
+                    on_output=lambda msg: self._log(job, msg),
+                )
+                if exit_code == 0:
+                    await self._log(job, "02_blocks_analysis.json создан", "info")
+                else:
+                    await self._log(job, f"Ошибка слияния: {stderr}", "error")
+
+                if error_count > 0:
+                    self._update_pipeline_log(pid, "block_analysis", "error",
+                                               error=f"{error_count} из {total_batches} пакетов с ошибками")
+                else:
+                    self._update_pipeline_log(pid, "block_analysis", "done",
+                                               message=f"Все {total_batches} пакетов OK")
+
+            if job.status == JobStatus.CANCELLED:
+                return
+
+            # Re-register
+            self.active_jobs[pid] = job
+            self._tasks[pid] = asyncio.current_task()
+
+            # ═══ ЭТАП 6: Свод замечаний (Claude) ═══
+            self._reset_job_progress(job)
+            job.stage = AuditStage.FINDINGS_MERGE
+            job.status = JobStatus.RUNNING
+            self._update_pipeline_log(pid, "findings_merge", "running")
+            print(f"[{pid}:{mode}] ═══ ЭТАП 6: Свод замечаний ═══")
+            await self._log(job, "═══ ЭТАП 6: Свод замечаний (Claude) ═══")
+
+            can_go = await self._check_before_launch(job)
+            if not can_go:
+                raise RuntimeError("Rate limit: ожидание превышено или отменено")
+
+            exit_code, output, cli_result = await claude_runner.run_findings_merge(
+                project_info, pid,
+                on_output=lambda msg: self._log(job, msg),
+            )
+            self._record_cli_usage(job, cli_result, "findings_merge")
+
+            if claude_runner.is_cancelled(exit_code):
+                job.status = JobStatus.CANCELLED
+                return
+            if claude_runner.is_rate_limited(exit_code, output or "", ""):
+                await self._log(job, "Rate limit при своде замечаний, ожидание...", "warn")
+                can_continue = await self._wait_for_rate_limit(
+                    job, "rate limit при своде замечаний", cli_output=output or ""
+                )
+                if can_continue:
+                    exit_code, output, cli_result = await claude_runner.run_findings_merge(
+                        project_info, pid,
+                        on_output=lambda msg: self._log(job, msg),
+                    )
+                    self._record_cli_usage(job, cli_result, "findings_merge_retry")
+            if exit_code != 0:
+                self._update_pipeline_log(pid, "findings_merge", "error",
+                                           error=f"Код {exit_code}")
+                await self._log(job, f"Свод замечаний: код {exit_code}", "error")
+            else:
+                self._update_pipeline_log(pid, "findings_merge", "done", message="OK")
+
+            if job.status == JobStatus.CANCELLED:
+                return
+
+            # Re-register
+            self.active_jobs[pid] = job
+            self._tasks[pid] = asyncio.current_task()
+
+            # ═══ ЭТАП 7: Верификация норм ═══
+            self._clean_stage_files(pid, [
+                "03a_norms_verified.json", "norm_checks.json",
+            ])
+            self._reset_job_progress(job)
+            findings_path = PROJECTS_DIR / pid / "_output" / "03_findings.json"
+            if findings_path.exists():
+                job.stage = AuditStage.NORM_VERIFY
+                job.status = JobStatus.RUNNING
+                print(f"[{pid}:{mode}] ═══ ЭТАП 7: Верификация норм ═══")
+                await self._log(job, "═══ ЭТАП 7: Верификация нормативных ссылок ═══")
+                await self._run_norm_verification(job, standalone=False)
+
+                if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
+                    return
+
+                self.active_jobs[pid] = job
+                self._tasks[pid] = asyncio.current_task()
+            else:
+                await self._log(job, "03_findings.json не найден — пропуск верификации", "warn")
+
+            # ═══ ЭТАП 8: Excel ═══
+            self._reset_job_progress(job)
+            job.stage = AuditStage.EXCEL
+            job.status = JobStatus.RUNNING
+            self._update_pipeline_log(pid, "excel", "running")
+            print(f"[{pid}:{mode}] ═══ ЭТАП 8: Excel ═══")
+            await self._log(job, "═══ ЭТАП 8: Генерация Excel ═══")
+            project_path = str(PROJECTS_DIR / pid)
+            exit_code, _, _ = await run_script(
+                str(GENERATE_EXCEL_SCRIPT),
+                args=[project_path],
+                env_overrides={"AUDIT_NO_OPEN": "1"},
+                on_output=lambda msg: self._log(job, msg),
+            )
+            if exit_code == 0:
+                self._update_pipeline_log(pid, "excel", "done", message="OK")
+            else:
+                self._update_pipeline_log(pid, "excel", "error",
+                                           error=f"Exit code: {exit_code}")
+
+            duration = round((datetime.now() - start_time).total_seconds() / 60, 1)
+            job.status = JobStatus.COMPLETED
+            mode_label = "Стандартный" if mode == "standard" else "PRO"
+            print(f"[{pid}:{mode}] ═══ {mode_label} аудит завершён за {duration} мин ═══")
+            await self._log(job, f"{mode_label} аудит завершён за {duration} мин.", "info")
+
+            await ws_manager.broadcast_to_project(
+                pid, WSMessage.complete(pid, duration_minutes=duration),
+            )
+
+        except asyncio.CancelledError:
+            job.status = JobStatus.CANCELLED
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            job.status = JobStatus.FAILED
+            job.error_message = str(e)
+            await self._log(job, f"Исключение: {e}", "error")
+        finally:
+            job.completed_at = datetime.now().isoformat()
+            self._cleanup(pid)
+
+    async def _run_standard_pipeline(self, job: AuditJob):
+        """Стандартный аудит: выборочные блоки."""
+        await self._run_ocr_pipeline(job, mode="standard")
+
+    async def _run_pro_pipeline(self, job: AuditJob):
+        """PRO аудит: все блоки."""
+        await self._run_ocr_pipeline(job, mode="pro")
+
     # ─── Запуск ВСЕХ проектов последовательно ───
     # ─── Batch (групповые действия для выбранных проектов) ───
 
@@ -1757,7 +2308,8 @@ class PipelineManager:
                     self.active_jobs[pid] = job
                     self._tasks[pid] = asyncio.current_task()
 
-                    if queue.action == "resume":
+                    action = queue.action
+                    if action == "resume":
                         resume_info = self.detect_resume_stage(pid)
                         if not resume_info.get("can_resume"):
                             item.status = "skipped"
@@ -1767,9 +2319,33 @@ class PipelineManager:
                             )
                             continue
                         await self._run_resumed_pipeline(job, resume_info["stage"], resume_info)
+                    elif action == "optimization":
+                        await self._run_optimization(job)
+                    elif action in ("standard", "pro"):
+                        proj_dir = PROJECTS_DIR / pid
+                        if list(proj_dir.glob("*_result.json")):
+                            await self._run_ocr_pipeline(job, mode=action)
+                        else:
+                            await self._run_smart_pipeline(job)
+                    elif action in ("standard+optimization", "pro+optimization"):
+                        mode = action.split("+")[0]  # standard | pro
+                        proj_dir = PROJECTS_DIR / pid
+                        if list(proj_dir.glob("*_result.json")):
+                            await self._run_ocr_pipeline(job, mode=mode)
+                        else:
+                            await self._run_smart_pipeline(job)
+                        # После аудита — оптимизация (если аудит успешен)
+                        if job.status == JobStatus.COMPLETED:
+                            job.stage = AuditStage.OPTIMIZATION
+                            job.status = JobStatus.RUNNING
+                            await self._run_optimization(job)
                     else:
-                        # full
-                        await self._run_full_pipeline(job)
+                        # fallback: auto-detect
+                        proj_dir = PROJECTS_DIR / pid
+                        if list(proj_dir.glob("*_result.json")):
+                            await self._run_ocr_pipeline(job, mode="standard")
+                        else:
+                            await self._run_smart_pipeline(job)
 
                     if job.status == JobStatus.COMPLETED:
                         item.status = "completed"
@@ -1940,7 +2516,12 @@ class PipelineManager:
                     self.active_jobs[project_id] = job
                     self._tasks[project_id] = asyncio.current_task()
 
-                    await self._run_full_pipeline(job)
+                    # OCR → standard pipeline, иначе smart
+                    proj_dir = PROJECTS_DIR / project_id
+                    if list(proj_dir.glob("*_result.json")):
+                        await self._run_ocr_pipeline(job, mode="standard")
+                    else:
+                        await self._run_smart_pipeline(job)
 
                     if job.status == JobStatus.COMPLETED:
                         results[project_id] = "completed"

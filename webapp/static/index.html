@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Audit Manager</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <link rel="stylesheet" href="/static/css/styles.css?v=13">
+    <link rel="stylesheet" href="/static/css/styles.css?v=19">
 </head>
 <body>
     <div id="app">
@@ -120,7 +120,9 @@
             <span v-if="currentProject"> / {{ currentProject.name }}</span>
             <span v-if="currentView === 'findings'"> / Замечания</span>
             <span v-if="currentView === 'tiles'"> / Тайлы</span>
+            <span v-if="currentView === 'blocks'"> / Блоки</span>
             <span v-if="currentView === 'optimization'"> / Оптимизация</span>
+            <span v-if="currentView === 'prompts'"> / Промпты</span>
             <span v-if="currentView === 'log'"> / Лог</span>
         </nav>
 
@@ -164,15 +166,15 @@
 
                     <!-- Pipeline -->
                     <div class="pipeline">
-                        <div class="pipeline-step" :class="stepClass(p.pipeline.init)">00</div>
+                        <div class="pipeline-step" :class="stepClass(p.pipeline.crop_blocks)" title="Кроп блоков">01</div>
                         <div class="pipeline-line"></div>
-                        <div class="pipeline-step" :class="stepClass(p.pipeline.text_analysis)">01</div>
+                        <div class="pipeline-step" :class="stepClass(p.pipeline.text_analysis)" title="Анализ текста">02</div>
                         <div class="pipeline-line"></div>
-                        <div class="pipeline-step" :class="stepClass(p.pipeline.tiles_analysis)">02</div>
+                        <div class="pipeline-step" :class="stepClass(p.pipeline.blocks_analysis)" title="Анализ блоков">03</div>
                         <div class="pipeline-line"></div>
-                        <div class="pipeline-step" :class="stepClass(p.pipeline.findings)">03</div>
+                        <div class="pipeline-step" :class="stepClass(p.pipeline.findings)" title="Свод замечаний">04</div>
                         <div class="pipeline-line"></div>
-                        <div class="pipeline-step" :class="stepClass(p.pipeline.norms_verified)">03a</div>
+                        <div class="pipeline-step" :class="stepClass(p.pipeline.norms_verified)" title="Верификация норм">05</div>
                         <div class="pipeline-line"></div>
                         <div class="pipeline-step pipeline-step--opt" :class="stepClass(p.pipeline.optimization)" title="Оптимизация">OPT</div>
                     </div>
@@ -209,6 +211,15 @@
                         </div>
                     </div>
 
+                    <!-- Usage (токены) -->
+                    <div v-if="projectUsage[p.project_id] && projectUsage[p.project_id].total_tokens > 0"
+                         class="project-card__usage">
+                        <span class="usage-icon">⚡</span>
+                        {{ formatTokens(projectUsage[p.project_id].total_tokens) }} tok
+                        · ${{ formatCost(projectUsage[p.project_id].total_cost_usd) }}
+                        · {{ projectUsage[p.project_id].total_calls }} calls
+                    </div>
+
                     <!-- Severity badges -->
                     <div v-if="p.findings_count > 0" class="severity-badges">
                         <span v-for="(count, sev) in p.findings_by_severity" :key="sev"
@@ -239,7 +250,7 @@
                 <button class="btn btn-primary" @click="startBatchAction('resume')">
                     Продолжить прерванные
                 </button>
-                <button class="btn btn-accent" @click="startBatchAction('full')">
+                <button class="btn btn-accent" @click="openBatchModal">
                     Запустить все ({{ selectedCount }})
                 </button>
                 <button class="btn btn-outline" @click="selectedProjects = new Set(); selectAllChecked = false">
@@ -252,7 +263,7 @@
         <div v-if="batchRunning && batchQueue" class="batch-progress-bar">
             <div class="batch-progress-bar__header">
                 <span class="batch-progress-bar__title">
-                    {{ batchQueue.action === 'resume' ? 'Продолжение прерванных' : 'Полный аудит' }}
+                    {{ batchActionLabel(batchQueue.action) }}
                 </span>
                 <span class="batch-progress-bar__counter">
                     {{ (batchQueue.completed || 0) + (batchQueue.failed || 0) }} / {{ batchQueue.total }}
@@ -332,6 +343,69 @@
             </div>
         </div>
 
+        <!-- ═══ Batch Mode Modal ═══ -->
+        <div v-if="showBatchModal" class="modal-overlay" @click="showBatchModal = false">
+            <div class="modal-content modal-batch" @click.stop>
+                <button class="modal-close" @click="showBatchModal = false">&times;</button>
+                <h3>Запустить аудит ({{ batchModalCount }} проектов)</h3>
+                <p class="modal-subtitle">Выберите режим и объём проверки</p>
+
+                <div class="batch-modal-section">
+                    <label class="batch-modal-label">Режим анализа</label>
+                    <div class="batch-modal-options">
+                        <label class="batch-modal-radio" :class="{ active: batchMode === 'standard' }">
+                            <input type="radio" v-model="batchMode" value="standard">
+                            <div>
+                                <strong>Стандартный</strong>
+                                <span class="batch-modal-hint">Выборочные блоки по результатам текстового анализа</span>
+                            </div>
+                        </label>
+                        <label class="batch-modal-radio" :class="{ active: batchMode === 'pro' }">
+                            <input type="radio" v-model="batchMode" value="pro">
+                            <div>
+                                <strong>PRO</strong>
+                                <span class="batch-modal-hint">Все image-блоки — максимальное покрытие</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="batch-modal-section">
+                    <label class="batch-modal-label">Объём проверки</label>
+                    <div class="batch-modal-options">
+                        <label class="batch-modal-radio" :class="{ active: batchScope === 'audit' }">
+                            <input type="radio" v-model="batchScope" value="audit">
+                            <div>
+                                <strong>Только замечания</strong>
+                                <span class="batch-modal-hint">Поиск проблем и нарушений норм</span>
+                            </div>
+                        </label>
+                        <label class="batch-modal-radio" :class="{ active: batchScope === 'optimization' }">
+                            <input type="radio" v-model="batchScope" value="optimization">
+                            <div>
+                                <strong>Только оптимизация</strong>
+                                <span class="batch-modal-hint">Рекомендации по экономии</span>
+                            </div>
+                        </label>
+                        <label class="batch-modal-radio" :class="{ active: batchScope === 'both' }">
+                            <input type="radio" v-model="batchScope" value="both">
+                            <div>
+                                <strong>Оба вместе</strong>
+                                <span class="batch-modal-hint">Замечания + оптимизация последовательно</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="batch-modal-footer">
+                    <button class="btn btn-outline" @click="showBatchModal = false">Отмена</button>
+                    <button class="btn btn-accent" @click="confirmBatchAction">
+                        Запустить
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- ═══ Project Detail ═══ -->
         <div v-if="currentView === 'project'" class="container">
             <div v-if="currentProject" class="project-detail">
@@ -380,46 +454,71 @@
 
                 <!-- Pipeline visual -->
                 <div class="pipeline-detail">
-                    <div class="pipeline-stage" :class="stepClass(currentProject.pipeline.init)">
-                        <div class="stage-num">00</div>
-                        <div class="stage-label">Init</div>
+                    <div class="pipeline-stage" :class="stepClass(currentProject.pipeline.crop_blocks)">
+                        <div class="stage-num">01</div>
+                        <div class="stage-label">Кроп</div>
+                        <div class="stage-tokens" v-if="stageTokens('crop_blocks')">
+                            {{ formatTokens(stageTokens('crop_blocks').total_tokens) }}
+                        </div>
                     </div>
                     <div class="pipeline-arrow">&rarr;</div>
                     <div class="pipeline-stage" :class="stepClass(currentProject.pipeline.text_analysis)">
-                        <div class="stage-num">01</div>
+                        <div class="stage-num">02</div>
                         <div class="stage-label">Текст</div>
+                        <div class="stage-tokens" v-if="stageTokens('text_analysis')">
+                            {{ formatTokens(stageTokens('text_analysis').total_tokens) }}
+                        </div>
                     </div>
                     <div class="pipeline-arrow">&rarr;</div>
-                    <div class="pipeline-stage" :class="stepClass(currentProject.pipeline.tiles_analysis)">
-                        <div class="stage-num">02</div>
-                        <div class="stage-label">Тайлы</div>
+                    <div class="pipeline-stage" :class="stepClass(currentProject.pipeline.blocks_analysis)">
+                        <div class="stage-num">03</div>
+                        <div class="stage-label">Блоки</div>
+                        <div class="stage-tokens" v-if="stageTokens('blocks_analysis')">
+                            {{ formatTokens(stageTokens('blocks_analysis').total_tokens) }}
+                        </div>
                     </div>
                     <div class="pipeline-arrow">&rarr;</div>
                     <div class="pipeline-stage" :class="stepClass(currentProject.pipeline.findings)">
-                        <div class="stage-num">03</div>
+                        <div class="stage-num">04</div>
                         <div class="stage-label">Свод</div>
+                        <div class="stage-tokens" v-if="stageTokens('findings')">
+                            {{ formatTokens(stageTokens('findings').total_tokens) }}
+                        </div>
                     </div>
                     <div class="pipeline-arrow">&rarr;</div>
                     <div class="pipeline-stage" :class="stepClass(currentProject.pipeline.norms_verified)">
-                        <div class="stage-num">03a</div>
+                        <div class="stage-num">05</div>
                         <div class="stage-label">Нормы</div>
+                        <div class="stage-tokens" v-if="stageTokens('norms_verified')">
+                            {{ formatTokens(stageTokens('norms_verified').total_tokens) }}
+                        </div>
                     </div>
                     <div class="pipeline-arrow">&rarr;</div>
                     <div class="pipeline-stage pipeline-stage--opt" :class="stepClass(currentProject.pipeline.optimization)">
                         <div class="stage-num">OPT</div>
                         <div class="stage-label">Оптим.</div>
+                        <div class="stage-tokens" v-if="stageTokens('optimization')">
+                            {{ formatTokens(stageTokens('optimization').total_tokens) }}
+                        </div>
                     </div>
+                </div>
+
+                <!-- Общая сводка usage проекта -->
+                <div v-if="currentProjectUsage" class="usage-project-summary">
+                    <span>⚡ {{ formatTokens(currentProjectUsage.total_tokens) }} токенов</span>
+                    <span>· ${{ formatCost(currentProjectUsage.total_cost_usd) }}</span>
+                    <span>· {{ currentProjectUsage.total_calls }} вызовов Claude</span>
                 </div>
 
                 <!-- Кнопки Retry/Skip для ошибочных этапов -->
                 <div v-if="!auditRunning && !isProjectRunning(currentProject.project_id)"
                      style="display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 12px;">
                     <template v-for="si in [
-                        {key: 'init', logKey: 'prepare', label: '00 Init'},
-                        {key: 'text_analysis', logKey: 'text_analysis', label: '01 Текст'},
-                        {key: 'tiles_analysis', logKey: 'tile_audit', label: '02 Тайлы'},
-                        {key: 'findings', logKey: 'main_audit', label: '03 Свод'},
-                        {key: 'norms_verified', logKey: 'norm_verify', label: '03a Нормы'},
+                        {key: 'crop_blocks', logKey: 'crop_blocks', label: '01 Кроп'},
+                        {key: 'text_analysis', logKey: 'text_analysis', label: '02 Текст'},
+                        {key: 'blocks_analysis', logKey: 'block_analysis', label: '03 Блоки'},
+                        {key: 'findings', logKey: 'findings_merge', label: '04 Свод'},
+                        {key: 'norms_verified', logKey: 'norm_verify', label: '05 Нормы'},
                     ]">
                         <div v-if="currentProject.pipeline[si.key] === 'error'"
                              class="stage-error-actions">
@@ -458,7 +557,7 @@
                             <template v-else>Нет файла</template>
                         </div>
                     </div>
-                    <div class="info-card">
+                    <div class="info-card" v-if="!currentProject.has_ocr">
                         <div class="info-card__icon">TXT</div>
                         <div class="info-card__text">
                             <template v-if="currentProject.has_extracted_text">
@@ -468,13 +567,21 @@
                             <template v-else>Не извлечён</template>
                         </div>
                     </div>
-                    <div class="info-card">
+                    <!-- OCR: блоки -->
+                    <div class="info-card" v-if="currentProject.has_ocr">
+                        <div class="info-card__icon">Блоки</div>
+                        <div class="info-card__text">
+                            {{ currentProject.block_count }} image
+                        </div>
+                    </div>
+                    <!-- Legacy: тайлы -->
+                    <div class="info-card" v-if="!currentProject.has_ocr">
                         <div class="info-card__icon">Tiles</div>
                         <div class="info-card__text">
                             {{ currentProject.tile_count }} ({{ currentProject.tile_pages }} стр.)
                         </div>
                     </div>
-                    <div class="info-card">
+                    <div class="info-card" v-if="!currentProject.has_ocr">
                         <div class="info-card__icon">Batches</div>
                         <div class="info-card__text">
                             {{ currentProject.completed_batches }}/{{ currentProject.total_batches }}
@@ -482,8 +589,8 @@
                     </div>
                 </div>
 
-                <!-- Progress bar for tiles -->
-                <div v-if="currentProject.total_batches > 0" class="progress-section">
+                <!-- Progress bar for tiles (legacy only) -->
+                <div v-if="currentProject.total_batches > 0 && !currentProject.has_ocr" class="progress-section">
                     <div class="progress-label">
                         Пакетный анализ тайлов:
                         {{ Math.round(currentProject.completed_batches / currentProject.total_batches * 100) }}%
@@ -522,36 +629,26 @@
                         </div>
                     </div>
                     <div class="audit-buttons">
-                        <button class="btn" @click="startPrepare(currentProject.project_id)"
-                                :disabled="auditRunning || isProjectRunning(currentProject.project_id)">
-                            Подготовка
+                        <!-- OCR-пайплайн: Стандартный и PRO -->
+                        <button class="btn btn-accent" @click="startStandardAudit(currentProject.project_id)"
+                                :disabled="auditRunning || isProjectRunning(currentProject.project_id)"
+                                title="Стандартный аудит: кроп → текст → выборочные блоки → свод → нормы">
+                            Стандартный
                         </button>
-                        <button class="btn" @click="startTileAudit(currentProject.project_id)"
-                                :disabled="auditRunning || isProjectRunning(currentProject.project_id) || !currentProject.has_tiles">
-                            Анализ тайлов
-                        </button>
-                        <button class="btn" @click="startMainAudit(currentProject.project_id)"
-                                :disabled="auditRunning || isProjectRunning(currentProject.project_id)">
-                            Основной аудит
+                        <button class="btn btn-pro" @click="startProAudit(currentProject.project_id)"
+                                :disabled="auditRunning || isProjectRunning(currentProject.project_id)"
+                                title="PRO аудит: кроп → текст → ВСЕ image-блоки → свод → нормы (100% покрытие)">
+                            PRO
                         </button>
                         <button class="btn" @click="startNormVerify(currentProject.project_id)"
                                 :disabled="auditRunning || isProjectRunning(currentProject.project_id) || currentProject.findings_count === 0"
-                                :title="currentProject.findings_count === 0 ? 'Сначала выполните аудит (нужен 03_findings.json)' : 'Проверить актуальность нормативных ссылок через WebSearch'">
+                                :title="currentProject.findings_count === 0 ? 'Сначала выполните аудит (нужен 03_findings.json)' : 'Проверить актуальность нормативных ссылок'">
                             Верификация норм
-                        </button>
-                        <button class="btn btn-accent" @click="startSmartAudit(currentProject.project_id)"
-                                :disabled="auditRunning || isProjectRunning(currentProject.project_id)"
-                                title="Интеллектуальный аудит: текст → триаж → выборочная нарезка → анализ">
-                            Smart аудит
                         </button>
                         <button class="btn btn-optimization" @click="startOptimization(currentProject.project_id)"
                                 :disabled="auditRunning || isProjectRunning(currentProject.project_id)"
                                 title="Анализ оптимизации: замена аналогами, удешевление монтажа, упрощение конструктива">
                             Оптимизация
-                        </button>
-                        <button class="btn btn-primary" @click="startFullAudit(currentProject.project_id)"
-                                :disabled="auditRunning || isProjectRunning(currentProject.project_id)">
-                            Полный конвейер
                         </button>
                         <button class="btn btn-danger" @click="cancelAudit(currentProject.project_id)"
                                 v-if="auditRunning || isProjectRunning(currentProject.project_id)">
@@ -559,7 +656,7 @@
                         </button>
                         <button class="btn btn-danger-outline" @click="cleanProject(currentProject.project_id)"
                                 :disabled="auditRunning || isProjectRunning(currentProject.project_id)"
-                                title="Удалить все результаты аудита (тайлы, JSON, логи). PDF и MD сохраняются.">
+                                title="Удалить все результаты аудита (блоки, JSON, логи). PDF и MD сохраняются.">
                             Очистить
                         </button>
                     </div>
@@ -594,7 +691,11 @@
                             :disabled="currentProject.findings_count === 0">
                         Замечания ({{ currentProject.findings_count }})
                     </button>
-                    <button class="btn"
+                    <button v-if="currentProject.has_ocr" class="btn"
+                            @click="navigate('/project/' + currentProject.project_id + '/blocks')">
+                        Блоки ({{ currentProject.block_count || 0 }})
+                    </button>
+                    <button v-else class="btn"
                             @click="navigate('/project/' + currentProject.project_id + '/tiles')"
                             :disabled="!currentProject.has_tiles">
                         Тайлы ({{ currentProject.tile_count }})
@@ -602,6 +703,10 @@
                     <button class="btn btn-optimization"
                             @click="navigate('/project/' + currentProject.project_id + '/optimization')">
                         Оптимизация
+                    </button>
+                    <button class="btn"
+                            @click="navigate('/project/' + currentProject.project_id + '/prompts')">
+                        Промпты
                     </button>
                     <button class="btn"
                             @click="navigate('/project/' + currentProject.project_id + '/log')">
@@ -949,6 +1054,197 @@
             </div>
         </div>
 
+        <!-- ═══ Blocks Viewer (OCR) ═══ -->
+        <div v-if="currentView === 'blocks'" class="container">
+            <div class="tiles-page">
+                <h2>Блоки: {{ blocksProjectId }}</h2>
+
+                <!-- Page selector -->
+                <div class="page-selector">
+                    <button v-for="pg in blockPages" :key="pg.page_num"
+                            class="page-btn" :class="{'page-btn--active': selectedBlockPage === pg.page_num}"
+                            @click="selectedBlockPage = pg.page_num">
+                        <span>Стр. {{ pg.page_num }}</span>
+                        <span class="page-btn__count">({{ pg.block_count }})</span>
+                    </button>
+                </div>
+
+                <!-- Blocks grid for selected page -->
+                <div v-if="currentPageBlocks && currentPageBlocks.blocks.length" class="block-grid">
+                    <div v-for="block in currentPageBlocks.blocks" :key="block.block_id"
+                         class="block-item"
+                         :class="{'block-item--has-findings': blockFindingsCount(block.block_id) > 0,
+                                  'block-item--analyzed': blockHasAnalysis(block.block_id) && blockFindingsCount(block.block_id) === 0}"
+                         @click="openBlock(block)">
+                        <img :src="'/api/tiles/' + blocksProjectId + '/blocks/image/' + block.block_id"
+                             :alt="block.block_id" loading="lazy">
+                        <div class="block-label">
+                            <span class="block-label__id">{{ block.block_id }}</span>
+                            <span class="block-label__desc">{{ block.ocr_label }}</span>
+                        </div>
+                        <!-- Badge: количество замечаний -->
+                        <span v-if="blockFindingsCount(block.block_id) > 0"
+                              class="tile-badge" :class="'tile-badge--' + sevClass(blockMaxSeverity(block.block_id))">
+                            {{ blockFindingsCount(block.block_id) }}
+                        </span>
+                        <!-- Зелёная точка: проанализирован, без замечаний -->
+                        <span v-else-if="blockHasAnalysis(block.block_id)" class="tile-analyzed-dot"></span>
+                    </div>
+                </div>
+
+                <div v-else-if="blockPages.length === 0" class="tile-analysis-empty">
+                    <p>Блоки не найдены. Запустите аудит для кропинга image-блоков.</p>
+                </div>
+
+                <!-- Split-view overlay for block -->
+                <div v-if="selectedBlock" class="tile-split-overlay" @click="selectedBlock = null">
+                    <div class="tile-split-container" @click.stop>
+                        <button class="tile-split-close" @click="selectedBlock = null">&times;</button>
+
+                        <!-- Left: block image -->
+                        <div class="tile-split-image">
+                            <img :src="'/api/tiles/' + blocksProjectId + '/blocks/image/' + selectedBlock.block_id"
+                                 :alt="selectedBlock.block_id">
+                            <p class="tile-split-image__label">
+                                {{ selectedBlock.block_id }}
+                                <span style="opacity:0.6;margin-left:8px">стр. {{ selectedBlock.page }}</span>
+                            </p>
+                        </div>
+
+                        <!-- Right: analysis panel -->
+                        <div class="tile-split-analysis">
+                            <template v-if="selectedBlockAnalysis">
+                                <div class="tile-analysis-header">
+                                    <h3>{{ selectedBlockAnalysis.label || selectedBlock.ocr_label || 'Блок' }}</h3>
+                                </div>
+
+                                <div v-if="selectedBlockAnalysis.summary" class="tile-analysis-summary">
+                                    {{ selectedBlockAnalysis.summary }}
+                                </div>
+
+                                <!-- key_values_read -->
+                                <div v-if="selectedBlockAnalysis.key_values_read && selectedBlockAnalysis.key_values_read.length > 0"
+                                     class="tile-analysis-section">
+                                    <h4>Распознанные значения</h4>
+                                    <ul class="tile-kv-list">
+                                        <li v-for="(kv, i) in selectedBlockAnalysis.key_values_read" :key="i">
+                                            <template v-if="typeof kv === 'string'">{{ kv }}</template>
+                                            <template v-else>
+                                                <strong>{{ kv.key || kv.name || '' }}:</strong> {{ kv.value || kv.val || '' }}
+                                            </template>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <!-- findings -->
+                                <div v-if="selectedBlockAnalysis.findings && selectedBlockAnalysis.findings.length > 0"
+                                     class="tile-analysis-section">
+                                    <h4>Замечания ({{ selectedBlockAnalysis.findings.length }})</h4>
+                                    <div v-for="(f, i) in selectedBlockAnalysis.findings" :key="i"
+                                         class="tile-finding-card" :class="'tile-finding-card--' + sevClass(f.severity)">
+                                        <div class="tile-finding-card__header">
+                                            <span class="sev-badge sev-badge--sm" :class="'sev-' + sevClass(f.severity)">
+                                                {{ f.severity || 'N/A' }}
+                                            </span>
+                                            <span v-if="f.id" class="tile-finding-card__id">{{ f.id }}</span>
+                                        </div>
+                                        <div class="tile-finding-card__text">
+                                            {{ f.problem || f.finding || f.description || '' }}
+                                        </div>
+                                        <div v-if="f.norm" class="tile-finding-card__norm">
+                                            {{ f.norm }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div v-if="(!selectedBlockAnalysis.findings || selectedBlockAnalysis.findings.length === 0) && !selectedBlockAnalysis.summary"
+                                     class="tile-analysis-empty">
+                                    Анализ выполнен, данных мало.
+                                </div>
+                            </template>
+
+                            <template v-else>
+                                <div class="tile-analysis-empty">
+                                    <div class="tile-analysis-empty__icon">?</div>
+                                    <p>Данные анализа отсутствуют</p>
+                                    <p class="tile-analysis-empty__hint">Запустите аудит для получения результатов</p>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ Prompts Editor ═══ -->
+        <div v-if="currentView === 'prompts'" class="container">
+            <div class="prompts-page" @click="showDisciplineDropdown = false">
+                <!-- Toolbar: dropdown дисциплины + заголовок -->
+                <div class="prompts-toolbar">
+                    <div class="prompts-discipline-select" @click.stop>
+                        <div class="discipline-dropdown" @click="showDisciplineDropdown = !showDisciplineDropdown">
+                            <span class="discipline-dot" :style="{background: currentDiscipline.color || '#666'}"></span>
+                            <span class="discipline-label">{{ currentDiscipline.short_name || 'Система' }}</span>
+                            <span class="discipline-arrow">▼</span>
+                        </div>
+                        <div v-if="showDisciplineDropdown" class="discipline-dropdown-menu">
+                            <div v-for="d in disciplines" :key="d.code"
+                                 class="discipline-dropdown-item"
+                                 :class="{active: d.code === promptsDiscipline}"
+                                 @click="switchDiscipline(d.code)">
+                                <span class="discipline-dot" :style="{background: d.color}"></span>
+                                <span>{{ d.short_name }}</span>
+                                <span class="discipline-dropdown-name">{{ d.name }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="prompts-title-block">
+                        <h2>Промпты проекта: {{ promptsProjectId }}</h2>
+                        <p class="subtitle">Промпты отправляемые Claude для каждого этапа анализа. Можно редактировать.</p>
+                    </div>
+                </div>
+
+                <div v-if="promptsLoading" class="empty-state">Загрузка промптов...</div>
+
+                <div v-else>
+                    <!-- Chrome-style tabs -->
+                    <div class="prompt-tabs">
+                        <div v-for="(p, idx) in templates" :key="p.stage"
+                             class="prompt-tab"
+                             :class="{active: activePromptTab === idx}"
+                             @click="activePromptTab = idx">
+                            <span class="prompt-tab__label">{{ p.label }}</span>
+                            <span class="prompt-tab__chars">{{ p.char_count.toLocaleString() }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Active tab content -->
+                    <div v-if="templates[activePromptTab]" class="prompt-panel">
+                        <div class="prompt-panel__toolbar">
+                            <span class="prompt-panel__info">
+                                {{ (templates[activePromptTab]._editContent || '').length.toLocaleString() }} символов
+                            </span>
+                            <div class="prompt-panel__actions">
+                                <button v-if="templates[activePromptTab]._dirty"
+                                        class="btn btn-sm btn-accent"
+                                        @click="saveTemplate(templates[activePromptTab].stage, templates[activePromptTab]._editContent)">
+                                    Сохранить шаблон
+                                </button>
+                            </div>
+                        </div>
+                        <div class="prompt-editor-wrap">
+                            <div class="prompt-highlight-overlay" v-html="highlightPlaceholders(templates[activePromptTab]._editContent || '')"></div>
+                            <textarea class="prompt-textarea"
+                                      v-model="templates[activePromptTab]._editContent"
+                                      @input="templates[activePromptTab]._dirty = (templates[activePromptTab]._editContent !== templates[activePromptTab].content)"
+                                      @scroll="syncScroll($event)"
+                                      spellcheck="false"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- ═══ Live Log ═══ -->
         <div v-if="currentView === 'log'" class="container">
             <div class="log-page">
@@ -995,6 +1291,6 @@
         </div>
     </div>
 
-    <script src="/static/js/app.js?v=13"></script>
+    <script src="/static/js/app.js?v=14"></script>
 </body>
 </html>

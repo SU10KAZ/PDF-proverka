@@ -17,16 +17,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 # Подготовка проекта (текст + тайлы)
 python process_project.py projects/<name>
-python process_project.py projects/<name> --quality high --force
-python process_project.py projects/<name> --pages 7,9,11   # инкрементальная нарезка
 
-# Пакетный анализ тайлов (100% покрытие)
-python generate_tile_batches.py projects/<name>
-powershell .\run_tile_audit.ps1 -Project "<name>"
+# Кропинг image-блоков из PDF (по координатам OCR)
+python crop_blocks.py projects/<name>
 
+# Пакетный анализ блоков (100% покрытие)
+python generate_block_batches.py projects/<name>
 # Слияние результатов пакетного анализа
-python merge_tile_results.py projects/<name>
-python merge_tile_results.py projects/<name> --cleanup
+python merge_block_results.py projects/<name>
+python merge_block_results.py projects/<name> --cleanup
 
 # Запрос замечаний
 python query_project.py projects/<name>              # все
@@ -45,9 +44,6 @@ python generate_excel_report.py
 
 # Обработка всех проектов
 powershell .\run_all_projects.ps1
-
-# Автономный аудит одного проекта
-claude --allowedTools "Read,Write,Edit,Bash,Grep,Glob,WebSearch,WebFetch" --output-format text -p "@.claude\audit_task.md"
 ```
 
 ## Установка и зависимости
@@ -80,10 +76,10 @@ pip install -r webapp/requirements.txt
 │   │   ├── project_info.json         ← конфигурация, метаданные
 │   │   └── _output/                  ← генерируемые файлы
 │   │       ├── extracted_text.txt    ← текст из PDF
-│   │       ├── tiles/page_XX/        ← тайлы чертежей (PNG)
-│   │       ├── 00_init.json          ← этап 0: инициализация
-│   │       ├── 01_text_analysis.json ← этап 1: текст + триаж страниц
-│   │       ├── 02_tiles_analysis.json← этап 2: анализ тайлов
+│   │       ├── blocks/              ← кропнутые image-блоки (PNG)
+│   │       ├── block_batches.json   ← конфигурация пакетов блоков
+│   │       ├── 01_text_analysis.json ← этап 1: текст + приоритизация блоков
+│   │       ├── 02_blocks_analysis.json← этап 2: анализ блоков
 │   │       ├── 03_findings.json      ← этап 3: МАСТЕР замечаний
 │   │       └── audit_results_*.md    ← финальный отчёт
 │   └── _summary/                     ← сводки по всем проектам
@@ -91,11 +87,12 @@ pip install -r webapp/requirements.txt
 ├── norms_db.json                     ← кеш проверок норм
 ├── schemas/                          ← JSON-схемы этапов конвейера
 └── .claude/
-    ├── audit_task.md                 ← шаблон основного аудита
-    ├── tile_batch_task.md            ← шаблон анализа пакета тайлов
-    ├── triage_task.md                ← шаблон триажа страниц
-    ├── smart_merge_task.md           ← шаблон умного слияния
-    ├── norm_verify_task.md           ← шаблон верификации норм
+    ├── text_analysis_task.md         ← этап 01: анализ текста из MD
+    ├── block_analysis_task.md        ← этап 02: анализ image-блоков
+    ├── findings_merge_task.md        ← этап 03: свод замечаний + межблочная сверка
+    ├── norm_verify_task.md           ← верификация нормативных ссылок
+    ├── norm_fix_task.md              ← пересмотр замечаний при обновлении норм
+    ├── optimization_task.md          ← оптимизация проектных решений
     ├── settings.json                 ← разрешения инструментов
     └── hooks/load_context.py         ← SessionStart хук (автоскан проектов)
 ```
@@ -105,10 +102,10 @@ pip install -r webapp/requirements.txt
 | Файл | Назначение |
 |------|-----------|
 | `process_project.py` | Подготовка: извлечение текста + авто-нарезка тайлов |
-| `pdf_text_utils.py` | Детекция порчи CAD-шрифтов + OCR-фолбэк (вызывается из process_project.py) |
-| `generate_tile_batches.py` | Разбиение тайлов на пакеты (~10 шт, страница целиком) |
-| `merge_tile_results.py` | Слияние `tile_batch_*.json` → `02_tiles_analysis.json` |
-| `run_tile_audit.ps1` | Оркестратор: генерация пакетов → Claude-сессии → слияние |
+| `pdf_text_utils.py` | Детекция порчи CAD-шрифтов + OCR-фолбэк |
+| `crop_blocks.py` | Кропинг image-блоков из PDF по координатам OCR |
+| `generate_block_batches.py` | Группировка блоков в пакеты (~8 шт, по страницам) |
+| `merge_block_results.py` | Слияние `block_batch_*.json` → `02_blocks_analysis.json` |
 | `verify_norms.py` | Верификация нормативных ссылок через кеш + WebSearch |
 | `update_norms_db.py` | Обновление централизованной базы норм |
 | `query_project.py` | Быстрый поиск по JSON-конвейеру |
@@ -152,65 +149,56 @@ webapp/
 Каждый этап пишет JSON, следующий читает его (не сканирует контекст заново).
 При ответах на вопросы **сначала проверяй `03_findings.json`**.
 
-### Два режима аудита
-
-**Smart Audit (рекомендуется):** триаж страниц → выборочная нарезка → анализ → gap-analysis. Экономия 40-60%.
-
-**Full Audit:** все чертёжные страницы нарезаются и анализируются. 100% покрытие.
-
-### Smart Pipeline — цикл работы
+### Конвейер аудита (блочный метод)
 
 ```
-[00] Инициализация → python process_project.py projects/<name>
+[01] Анализ текста (MD-файл) → 01_text_analysis.json
+  ↓  Арифметика таблиц, перекрёстная сверка, нормативные ссылки
+  ↓  Приоритизация image-блоков (HIGH/MEDIUM/LOW/SKIP)
   ↓
-[01] Анализ текста + ТРИАЖ: HIGH (однолинейные, щиты, планы) / MEDIUM / LOW / SKIP
+[02] Кропинг + анализ блоков → 02_blocks_analysis.json
+  ↓  crop_blocks.py → generate_block_batches.py → N Claude-сессий → merge_block_results.py
+  ↓  Каждый блок — законченный фрагмент чертежа (не тайл-сетка)
+  ↓  Сверка значений на чертеже с project_params из этапа 01
   ↓
-[01.5] Выборочная нарезка → python process_project.py projects/<name> --pages 7,9,11
-  ↓
-[02] Анализ тайлов (итеративно, макс. 3 итерации с gap-analysis)
-  ↓
-[03] Свод замечаний → 03_findings.json
-  ↓
-[04] Финальный отчёт → audit_results_YYYYMMDD.md
+[03] Свод замечаний → 03_findings.json + audit_results_*.md
+     Межблочная и межстраничная сверка
+     Дедупликация T + G → F
 ```
 
-### Пакетный анализ тайлов
-
-Одна сессия Claude не покрывает все тайлы проекта (3-5% покрытие).
-Пакетная система обеспечивает 100%:
+### Пакетный анализ блоков
 
 ```
-generate_tile_batches.py → tile_batches.json → N Claude-сессий → merge_tile_results.py → 02_tiles_analysis.json
+crop_blocks.py → blocks/ + index.json → generate_block_batches.py → block_batches.json → N Claude-сессий → merge_block_results.py → 02_blocks_analysis.json
 ```
 
-**Правило:** основная сессия аудита читает готовый `02_tiles_analysis.json`, а НЕ тайлы напрямую.
+**Правило:** основная сессия аудита читает готовый `02_blocks_analysis.json`, а НЕ блоки напрямую.
 
 ### Правила работы с JSON
 
 | Вопрос | Источник |
 |--------|----------|
 | Замечание по ID/категории | `03_findings.json` |
-| Что видели на чертеже | `02_tiles_analysis.json` |
+| Что видели на чертеже | `02_blocks_analysis.json` |
 | Нормативные ссылки | `01_text_analysis.json` → `normative_refs_found` |
-| Статус аудита | `00_init.json` → `pipeline_status` |
 | `03_findings.json` не найден | Сообщить что аудит не завершён |
 
 ### JSON-схемы
 
-В папке `schemas/`: `stage_00_init.schema.json`, `stage_01_text.schema.json`, `stage_02_tiles.schema.json`, `stage_03_findings.schema.json`.
+В папке `schemas/`: `stage_01_text.schema.json`, `stage_02_blocks.schema.json`, `stage_03_findings.schema.json`.
 
 ## Приоритет источников данных
 
 ```
 Для текста:    MD-файл (Chandra)  >  extracted_text.txt (из PDF)
-Для графики:   PDF (тайлы)        >  MD-описания [IMAGE]
+Для графики:   PDF (блоки)        >  MD-описания [IMAGE]
 При конфликте: PDF                >  MD
 ```
 
 **MD-файл** (`*_document.md`) — первичный источник текста. Содержит `[TEXT]` и `[IMAGE]` блоки.
-При наличии MD → `process_project.py` пропускает извлечение текста, нарезает тайлы только для IMAGE-страниц.
+`crop_blocks.py` кропает image-блоки из PDF по координатам из `*_result.json` (OCR).
 
-При расхождении MD и тайла → фиксируй: `"В MD: XXX / В PDF: YYY / Принято: YYY (по PDF)"`
+При расхождении MD и блока → фиксируй: `"В MD: XXX / В PDF: YYY / Принято: YYY (по PDF)"`
 
 ### Поля text_source в project_info.json
 
@@ -218,48 +206,44 @@ generate_tile_batches.py → tile_batches.json → N Claude-сессий → mer
 - `"text_source": "extracted_text"` → текст извлечён из PDF
 - Поле отсутствует → запусти `process_project.py`
 
-## Система тайлов (обязательный этап)
+## Система блоков (обязательный этап)
 
-**Тайлы — ОБЯЗАТЕЛЬНЫ для аудита.** Текст ловит ~40% замечаний, визуальный анализ — остальные 60%.
+**Блоки — ОБЯЗАТЕЛЬНЫ для аудита.** Текст ловит ~40% замечаний, визуальный анализ — остальные 60%.
 
-### Почему тайлы, а не полные листы
+### Почему блоки, а не тайлы
 
-Полный лист А1 при сжатии теряет мелкие надписи (номиналы, марки кабелей). Тайлы — увеличенные фрагменты с 5% перекрытием.
+Тайлы (grid-нарезка) дают фрагменты без контекста, дублируют перекрытия и тратят ~5× больше токенов на изображения.
+Блоки — целые законченные чертежи (схемы, планы, узлы), кропнутые по координатам из OCR-результатов.
 
-### Авто-конфигурация
+| Параметр | Тайлы (старый) | Блоки (новый) |
+|----------|----------------|---------------|
+| Токенов на изображения | ~300K | ~58K (5× меньше) |
+| Информационная плотность | Низкая | Высокая |
+| Контекст | Фрагмент сетки | Целый чертёж |
 
-`process_project.py` определяет сетку тайлов по размерам страниц PDF. Страницы ≤ A4 пропускаются как текстовые.
+### Параметры кропинга (`crop_blocks.py`)
 
-| Профиль | Целевой тайл (px) | DPI | Overlap |
-|---------|-------------------|-----|---------|
-| `draft` | 1800 | 180 | 5% |
-| `standard` | 1500 | 216 | 5% |
-| `high` | 1200 | 216 | 5% |
+- `TARGET_LONG_SIDE_PX = 1500` — оптимальный размер для Claude
+- `MIN_BLOCK_AREA_PX2 = 50000` — фильтр мелких блоков и штампов
+- Масштабирование 1.0–8.0× для оптимального размера
 
-Claude масштабирует изображения до ~1568 px → тайлы >2000 px теряют детализацию.
+### Инициализация блоков
 
-### Инициализация тайлов
+1. Проверь `projects/<name>/_output/blocks/*.png` и `index.json`
+2. Если блоков нет → `python crop_blocks.py projects/<name>`
+3. Скрипт кропает все image-блоки из `*_result.json`
 
-1. Проверь `projects/<name>/_output/tiles/page_XX/*.png`
-2. Если тайлов нет → `python process_project.py projects/<name>`
-3. Скрипт автоматически определит чертёжные страницы и нарежет
-
-### Чтение тайлов
+### Структура блоков
 
 ```
-# Формат: projects/<name>/_output/tiles/page_XX/page_XX_r{row}c{col}.png
-# Индекс координат: projects/<name>/_output/tiles/page_XX/index.json
+# Файлы: projects/<name>/_output/blocks/block_<ID>.png
+# Индекс: projects/<name>/_output/blocks/index.json
+# Метаданные: block_id, page, ocr_label, ocr_text_len, size_kb
 ```
-
-### Цветовое кодирование на планах
-
-- Синий — нормальная силовая сеть (ЩД, ЩЗС)
-- Красный — ОКЛ, системы СПЗ (огнестойкие кабели)
-- Розовый/фиолетовый — слаботочные или резервные цепи
 
 ### Обработка CAD-шрифтов
 
-PDF из AutoCAD/BIM могут содержать ISOCPEUR/GOST с нестандартным Unicode → `pdf_text_utils.py` детектирует порчу и запускает OCR. Маркеры в `extracted_text.txt`: `[OCR]` (распознано), `[CAD_FONT_CORRUPTED]` (полагаться на тайлы).
+PDF из AutoCAD/BIM могут содержать ISOCPEUR/GOST с нестандартным Unicode → `pdf_text_utils.py` детектирует порчу и запускает OCR. Маркеры в `extracted_text.txt`: `[OCR]` (распознано), `[CAD_FONT_CORRUPTED]` (полагаться на блоки).
 
 ## Как добавить новый проект
 
@@ -276,7 +260,8 @@ PDF из AutoCAD/BIM могут содержать ISOCPEUR/GOST с нестан
 }
 ```
 4. Запустить `python process_project.py projects/<НомерПроекта>`
-5. Скрипт извлечёт текст + определит чертёжные страницы + нарежет тайлы
+5. Запустить `python crop_blocks.py projects/<НомерПроекта>`
+6. Скрипт извлечёт текст, crop_blocks кропает image-блоки из PDF
 
 ## Нормативная база — критические правила
 
@@ -359,18 +344,18 @@ PDF из AutoCAD/BIM могут содержать ISOCPEUR/GOST с нестан
 | Ситуация | Действие |
 |----------|----------|
 | Нужно запустить скрипт | Запускай без вопросов |
-| Нужно прочитать тайлы | Читай все по очереди |
+| Нужно прочитать блоки | Читай все по очереди |
 | Расхождение MD/PDF | Принимай PDF, фиксируй |
 | Не уверен в норме | Проверяй через WebSearch |
 | Нашёл замечание | Включай в отчёт |
-| Тайлов нет | Запусти `process_project.py` |
+| Блоков нет | Запусти `crop_blocks.py` |
 
 ### Порядок инициализации сеанса
 
 1. Определить источник текста (`text_source` в `project_info.json`)
-2. Проверить наличие тайлов (`_output/tiles/`) — если нет, запустить `process_project.py`
-3. При наличии MD — сверять графику на тайлах с `[IMAGE]` блоками
-4. Прочитать `norms_reference.md` для актуальных норм
+2. Проверить наличие блоков (`_output/blocks/`) — если нет, запустить `crop_blocks.py`
+3. При наличии MD — сверять графику на блоках с `[IMAGE]` описаниями
+4. Прочитать нормативную базу дисциплины для актуальных норм
 
 ## Запрещённые действия
 

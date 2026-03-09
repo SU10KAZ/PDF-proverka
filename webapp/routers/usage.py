@@ -53,6 +53,18 @@ async def reset_session():
     return {"status": "ok", "message": "Сессионный счётчик сброшен"}
 
 
+@router.get("/project/{project_id}")
+async def get_project_usage(project_id: str):
+    """Агрегация токенов по проекту: total + по этапам."""
+    return usage_tracker.get_project_usage(project_id)
+
+
+@router.get("/projects-summary")
+async def get_all_projects_usage():
+    """Краткая сводка токенов по всем проектам (для дашборда)."""
+    return usage_tracker.get_all_projects_usage()
+
+
 @router.get("/history")
 async def get_history(limit: int = 50):
     """Последние N записей потребления."""

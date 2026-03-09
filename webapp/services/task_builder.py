@@ -2,17 +2,170 @@
 Построение задач для Claude CLI из шаблонов.
 Подготовка текста промтов с подстановкой плейсхолдеров и инъекцией дисциплин.
 """
+import json
+from pathlib import Path
 from typing import Optional
 
 from webapp.config import (
     BASE_DIR, PROJECTS_DIR,
-    AUDIT_TASK_TEMPLATE, TILE_BATCH_TASK_TEMPLATE,
     NORM_VERIFY_TASK_TEMPLATE, NORM_FIX_TASK_TEMPLATE,
-    TRIAGE_TASK_TEMPLATE, SMART_MERGE_TASK_TEMPLATE,
     OPTIMIZATION_TASK_TEMPLATE,
+    TEXT_ANALYSIS_TASK_TEMPLATE, BLOCK_ANALYSIS_TASK_TEMPLATE,
+    FINDINGS_MERGE_TASK_TEMPLATE,
 )
-from webapp.services.cli_utils import load_template, build_grid_visual
+from webapp.services.cli_utils import load_template
 from webapp.services import discipline_service
+
+
+# ─── Prompt Overrides ───
+
+def _overrides_path(project_id: str) -> Path:
+    return PROJECTS_DIR / project_id / "_output" / "prompt_overrides.json"
+
+
+def _load_all_overrides(project_id: str) -> dict:
+    p = _overrides_path(project_id)
+    if p.exists():
+        try:
+            return json.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            return {}
+    return {}
+
+
+def _load_prompt_override(project_id: str, stage: str) -> str | None:
+    """Загрузить кастомный промпт для этапа, если есть."""
+    overrides = _load_all_overrides(project_id)
+    val = overrides.get(stage)
+    return val if val else None
+
+
+def save_prompt_override(project_id: str, stage: str, content: str | None):
+    """Сохранить или сбросить кастомный промпт."""
+    overrides = _load_all_overrides(project_id)
+    if content:
+        overrides[stage] = content
+    else:
+        overrides.pop(stage, None)
+    p = _overrides_path(project_id)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(overrides, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def _load_project_info(project_id: str) -> dict:
+    """Загрузить project_info.json."""
+    info_path = PROJECTS_DIR / project_id / "project_info.json"
+    if info_path.exists():
+        try:
+            return json.loads(info_path.read_text(encoding="utf-8"))
+        except Exception:
+            return {}
+    return {}
+
+
+def get_resolved_prompts(project_id: str, discipline_override: str | None = None) -> list[dict]:
+    """Получить все промпты (resolved) для отображения в UI.
+
+    discipline_override — код дисциплины (EM, OV и т.д.) для подмены section.
+    Если None — используется section из project_info.json.
+    """
+    project_info = _load_project_info(project_id)
+    # Подмена дисциплины для предпросмотра промптов другой системы
+    if discipline_override:
+        project_info = {**project_info, "section": discipline_override}
+    overrides = _load_all_overrides(project_id)
+
+    stages = [
+        ("text_analysis", "Анализ текста", lambda: prepare_text_analysis_task(project_info, project_id)),
+        ("block_analysis", "Анализ блоков", lambda: _get_block_analysis_example(project_info, project_id)),
+        ("findings_merge", "Свод замечаний", lambda: prepare_findings_merge_task(project_info, project_id)),
+        ("optimization", "Оптимизация", lambda: prepare_optimization_task(project_info, project_id)),
+    ]
+
+    result = []
+    for stage_key, label, resolver in stages:
+        is_custom = stage_key in overrides and overrides[stage_key]
+        try:
+            content = overrides[stage_key] if is_custom else resolver()
+        except Exception as e:
+            content = f"[Ошибка формирования промпта: {e}]"
+        result.append({
+            "stage": stage_key,
+            "label": label,
+            "content": content,
+            "is_custom": bool(is_custom),
+            "char_count": len(content),
+        })
+
+    return result
+
+
+# ─── Шаблоны (raw templates) ───
+
+_STAGE_TEMPLATE_MAP = {
+    "text_analysis": TEXT_ANALYSIS_TASK_TEMPLATE,
+    "block_analysis": BLOCK_ANALYSIS_TASK_TEMPLATE,
+    "findings_merge": FINDINGS_MERGE_TASK_TEMPLATE,
+    "optimization": OPTIMIZATION_TASK_TEMPLATE,
+}
+
+_STAGE_LABELS = {
+    "text_analysis": "Анализ текста",
+    "block_analysis": "Анализ блоков",
+    "findings_merge": "Свод замечаний",
+    "optimization": "Оптимизация",
+}
+
+
+def get_template_prompts(discipline_code: str | None = None) -> list[dict]:
+    """Получить сырые шаблоны с плейсхолдерами (без подстановки путей проекта).
+
+    discipline_code — если указан, инъектировать дисциплину в плейсхолдеры.
+    """
+    result = []
+    for stage_key, template_path in _STAGE_TEMPLATE_MAP.items():
+        try:
+            content = load_template(template_path)
+            # Инъекция дисциплины если указана
+            if discipline_code:
+                profile = discipline_service.load_discipline(discipline_code)
+                content = discipline_service.inject_discipline(content, profile)
+        except Exception as e:
+            content = f"[Ошибка загрузки шаблона: {e}]"
+        result.append({
+            "stage": stage_key,
+            "label": _STAGE_LABELS.get(stage_key, stage_key),
+            "content": content,
+            "char_count": len(content),
+        })
+    return result
+
+
+def save_template(stage: str, content: str):
+    """Сохранить шаблон промпта в .claude/*.md файл."""
+    template_path = _STAGE_TEMPLATE_MAP.get(stage)
+    if not template_path:
+        raise ValueError(f"Неизвестный этап: {stage}")
+    Path(template_path).write_text(content, encoding="utf-8")
+
+
+def _get_block_analysis_example(project_info: dict, project_id: str) -> str:
+    """Пример промпта для анализа блоков (первый пакет или шаблон)."""
+    batches_file = PROJECTS_DIR / project_id / "_output" / "block_batches.json"
+    if batches_file.exists():
+        try:
+            data = json.loads(batches_file.read_text(encoding="utf-8"))
+            batches = data.get("batches", [])
+            if batches:
+                return prepare_block_batch_task(
+                    batches[0], project_info, project_id, len(batches)
+                )
+        except Exception:
+            pass
+    # Если батчей нет — вернуть шаблон с незаполненными batch-плейсхолдерами
+    return prepare_block_batch_task(
+        {"batch_id": 1, "blocks": []}, project_info, project_id, 1
+    )
 
 
 def _inject_discipline(template: str, project_info: dict) -> str:
@@ -38,137 +191,23 @@ def _get_project_paths(project_id: str) -> tuple[str, str]:
     )
 
 
-# ─── Пакет тайлов ───
+# ─── Legacy stubs (для обратной совместимости с claude_runner.py) ───
 
-def prepare_tile_batch_task(
-    batch_data: dict,
-    project_info: dict,
-    project_id: str,
-    total_batches: int,
-) -> str:
-    """
-    Подготовить задачу для одного пакета тайлов.
-    Подставляет плейсхолдеры из шаблона tile_batch_task.md.
-    """
-    template = load_template(TILE_BATCH_TASK_TEMPLATE)
+def prepare_tile_batch_task(*args, **kwargs) -> str:
+    """Legacy stub — тайловый пайплайн заменён на блочный."""
+    return prepare_block_batch_task(*args, **kwargs)
 
-    batch_id = batch_data["batch_id"]
-    tiles = batch_data.get("tiles", [])
-    pages = batch_data.get("pages_included", [])
-    batch_type = batch_data.get("batch_type", "multi_page")
-    page_grid = batch_data.get("page_grid", "")
+def prepare_main_audit_task(project_id: str, project_info: dict = None, **kwargs) -> str:
+    """Legacy stub — основной аудит заменён на конвейер."""
+    return prepare_text_analysis_task(project_id, project_info)
 
-    # Формируем список тайлов
-    tile_lines = []
-    for tile in tiles:
-        tile_path = str(PROJECTS_DIR / project_id / "_output" / "tiles" / tile["file"])
-        tile_lines.append(
-            f"- `{tile_path}` (стр. {tile.get('page', '?')}, "
-            f"r{tile.get('row', '?')}c{tile.get('col', '?')})"
-        )
+def prepare_triage_task(project_id: str, project_info: dict = None, **kwargs) -> str:
+    """Legacy stub — триаж теперь часть text_analysis."""
+    return prepare_text_analysis_task(project_id, project_info)
 
-    project_path, output_path = _get_project_paths(project_id)
-    md_file_path = _get_md_file_path(project_info, project_id)
-
-    # ─── Тип батча и описание ───
-    if batch_type == "single_page" and page_grid:
-        batch_type_desc = (
-            f"ОДИН ЛИСТ (стр. {pages[0]}), сетка {page_grid} — "
-            f"все тайлы являются фрагментами одного чертежа"
-        )
-    else:
-        batch_type_desc = (
-            f"СБОРНЫЙ — {len(pages)} отдельных страниц с 1 тайлом каждая"
-        )
-
-    # ─── Информация о сетке (для single_page) ───
-    if batch_type == "single_page" and page_grid:
-        grid_visual = build_grid_visual(page_grid, tiles)
-        page_grid_info = f"""## Раскладка тайлов на листе (стр. {pages[0]})
-
-Этот пакет содержит **один чертёж**, разрезанный на сетку **{page_grid}**.
-Тайлы перекрываются на ~5% по краям. Мысленно собери лист целиком перед анализом.
-
-```
-{grid_visual}
-```
-
-**Порядок чтения:** сначала прочитай ВСЕ тайлы, затем анализируй лист как единое целое.
-Обращай внимание на элементы, пересекающие границы тайлов:
-- Кабельные трассы, идущие из одного тайла в соседний
-- Подписи и обозначения рядом с границей тайла
-- Однолинейные связи между элементами на разных тайлах
-- Таблицы, разделённые между тайлами"""
-    else:
-        page_grid_info = (
-            "Этот пакет содержит одиночные страницы (по 1 тайлу). "
-            "Каждый тайл — отдельный самостоятельный лист."
-        )
-
-    # ─── Инструкции по реконструкции ───
-    if batch_type == "single_page" and page_grid:
-        reconstruction = """**Этот батч — ОДИН ЛИСТ.** Алгоритм анализа:
-1. Прочитай ВСЕ тайлы последовательно (r1c1 → r1c2 → ... → r2c1 → r2c2 → ...)
-2. Мысленно собери полный лист из фрагментов по сетке выше
-3. Определи тип чертежа (однолинейная, план, схема щита, спецификация)
-4. Анализируй лист ЦЕЛИКОМ — ищи связи между элементами на разных тайлах
-5. Проверяй кабельные трассы и цепи, проходящие через границы тайлов
-6. Если текст или обозначение обрезано на краю тайла — ищи продолжение на соседнем"""
-    else:
-        reconstruction = (
-            "Каждый тайл — отдельная страница. Анализируй их независимо друг от друга."
-        )
-
-    template = _inject_discipline(template, project_info)
-
-    task = (
-        template
-        .replace("{BATCH_ID}", str(batch_id))
-        .replace("{BATCH_ID_PADDED}", f"{batch_id:03d}")
-        .replace("{TOTAL_BATCHES}", str(total_batches))
-        .replace("{PROJECT_ID}", project_id)
-        .replace("{PROJECT_NAME}", project_info.get("name", project_id))
-        .replace("{PROJECT_PATH}", project_path)
-        .replace("{OUTPUT_PATH}", output_path)
-        .replace("{TILE_COUNT}", str(len(tiles)))
-        .replace("{PAGES_LIST}", ", ".join(str(p) for p in pages))
-        .replace("{TILE_LIST}", "\n".join(tile_lines))
-        .replace("{BASE_DIR}", str(BASE_DIR))
-        .replace("{MD_FILE_PATH}", md_file_path)
-        .replace("{BATCH_TYPE_DESCRIPTION}", batch_type_desc)
-        .replace("{PAGE_GRID_INFO}", page_grid_info)
-        .replace("{RECONSTRUCTION_INSTRUCTIONS}", reconstruction)
-    )
-
-    return task
-
-
-# ─── Основной аудит ───
-
-def prepare_main_audit_task(
-    project_info: dict,
-    project_id: str,
-) -> str:
-    """
-    Подготовить задачу для основного аудита.
-    Подставляет пути проекта в audit_task.md.
-    """
-    template = load_template(AUDIT_TASK_TEMPLATE)
-
-    project_path, output_path = _get_project_paths(project_id)
-    md_file_path = _get_md_file_path(project_info, project_id)
-
-    template = _inject_discipline(template, project_info)
-
-    task = (
-        template
-        .replace("project/document_pdf_extracted.txt", f"{output_path}\\extracted_text.txt")
-        .replace("project/tiles", f"{output_path}\\tiles")
-        .replace("133/23-ГК-ЭМ1", project_info.get("name", project_id))
-        .replace("{MD_FILE_PATH}", md_file_path)
-    )
-
-    return task
+def prepare_smart_merge_task(project_id: str, project_info: dict = None, **kwargs) -> str:
+    """Legacy stub — smart merge заменён на findings_merge."""
+    return prepare_findings_merge_task(project_id, project_info)
 
 
 # ─── Верификация нормативных ссылок ───
@@ -215,16 +254,19 @@ def prepare_norm_fix_task(
     return task
 
 
-# ─── Триаж страниц ───
+# ─── Анализ текста ───
 
-def prepare_triage_task(
+def prepare_text_analysis_task(
     project_info: dict,
     project_id: str,
 ) -> str:
-    """Подготовить задачу для триажа страниц (определение приоритетов)."""
-    template = load_template(TRIAGE_TASK_TEMPLATE)
+    """Подготовить задачу для текстового анализа MD-файла."""
+    override = _load_prompt_override(project_id, "text_analysis")
+    if override:
+        return override
+    template = load_template(TEXT_ANALYSIS_TASK_TEMPLATE)
 
-    project_path, output_path = _get_project_paths(project_id)
+    _, output_path = _get_project_paths(project_id)
     md_file_path = _get_md_file_path(project_info, project_id)
 
     template = _inject_discipline(template, project_info)
@@ -232,24 +274,73 @@ def prepare_triage_task(
     task = (
         template
         .replace("{PROJECT_ID}", project_id)
-        .replace("{PROJECT_PATH}", project_path)
         .replace("{OUTPUT_PATH}", output_path)
-        .replace("{BASE_DIR}", str(BASE_DIR))
         .replace("{MD_FILE_PATH}", md_file_path)
     )
     return task
 
 
-# ─── Свод замечаний ───
+# ─── Анализ пакета image-блоков (OCR-пайплайн) ───
 
-def prepare_smart_merge_task(
+def prepare_block_batch_task(
+    batch_data: dict,
+    project_info: dict,
+    project_id: str,
+    total_batches: int,
+) -> str:
+    """Подготовить задачу для одного пакета image-блоков."""
+    override = _load_prompt_override(project_id, "block_analysis")
+    if override:
+        return override
+    template = load_template(BLOCK_ANALYSIS_TASK_TEMPLATE)
+
+    batch_id = batch_data["batch_id"]
+    blocks = batch_data.get("blocks", [])
+
+    # Формируем список блоков
+    block_lines = []
+    for block in blocks:
+        block_path = str(
+            PROJECTS_DIR / project_id / "_output" / "blocks" / block["file"]
+        )
+        block_lines.append(
+            f"- `{block_path}` (стр. {block.get('page', '?')}, "
+            f"block_id: {block['block_id']}, "
+            f"OCR: {block.get('ocr_label', 'image')})"
+        )
+
+    _, output_path = _get_project_paths(project_id)
+    md_file_path = _get_md_file_path(project_info, project_id)
+
+    template = _inject_discipline(template, project_info)
+
+    task = (
+        template
+        .replace("{BATCH_ID}", str(batch_id))
+        .replace("{BATCH_ID_PADDED}", f"{batch_id:03d}")
+        .replace("{TOTAL_BATCHES}", str(total_batches))
+        .replace("{PROJECT_ID}", project_id)
+        .replace("{OUTPUT_PATH}", output_path)
+        .replace("{BLOCK_COUNT}", str(len(blocks)))
+        .replace("{BLOCK_LIST}", "\n".join(block_lines))
+        .replace("{MD_FILE_PATH}", md_file_path)
+    )
+    return task
+
+
+# ─── Свод замечаний (OCR-пайплайн) ───
+
+def prepare_findings_merge_task(
     project_info: dict,
     project_id: str,
 ) -> str:
-    """Подготовить задачу для свода замечаний после параллельного анализа тайлов."""
-    template = load_template(SMART_MERGE_TASK_TEMPLATE)
+    """Подготовить задачу для свода замечаний из текста + блоков."""
+    override = _load_prompt_override(project_id, "findings_merge")
+    if override:
+        return override
+    template = load_template(FINDINGS_MERGE_TASK_TEMPLATE)
 
-    project_path, output_path = _get_project_paths(project_id)
+    _, output_path = _get_project_paths(project_id)
     md_file_path = _get_md_file_path(project_info, project_id)
 
     template = _inject_discipline(template, project_info)
@@ -257,9 +348,7 @@ def prepare_smart_merge_task(
     task = (
         template
         .replace("{PROJECT_ID}", project_id)
-        .replace("{PROJECT_PATH}", project_path)
         .replace("{OUTPUT_PATH}", output_path)
-        .replace("{BASE_DIR}", str(BASE_DIR))
         .replace("{MD_FILE_PATH}", md_file_path)
     )
     return task
@@ -272,16 +361,18 @@ def prepare_optimization_task(
     project_id: str,
 ) -> str:
     """Подготовить задачу для анализа оптимизации проектной документации."""
+    override = _load_prompt_override(project_id, "optimization")
+    if override:
+        return override
     template = load_template(OPTIMIZATION_TASK_TEMPLATE)
 
-    project_path, output_path = _get_project_paths(project_id)
+    _, output_path = _get_project_paths(project_id)
     md_file_path = _get_md_file_path(project_info, project_id)
 
     template = _inject_discipline(template, project_info)
 
     task = (
         template
-        .replace("{PROJECT_PATH}", project_path)
         .replace("{OUTPUT_PATH}", output_path)
         .replace("{MD_FILE_PATH}", md_file_path)
     )
