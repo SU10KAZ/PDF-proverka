@@ -8,7 +8,10 @@ from pathlib import Path
 from fastapi import APIRouter, HTTPException, Query
 from webapp.services.pipeline_service import pipeline_manager
 from webapp.services import project_service
-from webapp.config import get_claude_model, set_claude_model, CLAUDE_MODEL_OPTIONS, PROJECTS_DIR
+from webapp.config import (
+    get_claude_model, set_claude_model, CLAUDE_MODEL_OPTIONS, PROJECTS_DIR,
+    get_stage_models, set_stage_model, get_model_for_stage,
+)
 
 router = APIRouter(prefix="/api/audit", tags=["audit"])
 
@@ -41,6 +44,33 @@ async def switch_model(model: str = Query(..., description="ID модели")):
         raise HTTPException(400, f"Неизвестная модель. Доступны: {CLAUDE_MODEL_OPTIONS}")
     set_claude_model(model)
     return {"model": get_claude_model()}
+
+
+@router.get("/model/stages")
+async def get_stage_model_config():
+    """Настройки per-stage моделей (гибридный режим)."""
+    stages = get_stage_models()
+    default = get_claude_model()
+    return {
+        "default_model": default,
+        "stages": {k: (v or default) for k, v in stages.items()},
+        "options": CLAUDE_MODEL_OPTIONS,
+    }
+
+
+@router.post("/model/stages")
+async def set_stage_model_config(
+    stage: str = Query(..., description="Этап: text_analysis, block_batch, findings_merge, norm_verify, norm_fix, optimization"),
+    model: str = Query(..., description="Модель или 'default'"),
+):
+    """Установить модель для конкретного этапа ('default' = использовать общую)."""
+    if model == "default":
+        set_stage_model(stage, None)
+    elif model not in CLAUDE_MODEL_OPTIONS:
+        raise HTTPException(400, f"Неизвестная модель. Доступны: {CLAUDE_MODEL_OPTIONS}")
+    else:
+        set_stage_model(stage, model)
+    return {"stage": stage, "model": get_model_for_stage(stage)}
 
 
 @router.post("/all/full")

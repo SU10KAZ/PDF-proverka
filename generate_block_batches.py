@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 
-DEFAULT_BATCH_SIZE = 8  # блоков на пакет
+DEFAULT_BATCH_SIZE = 16  # блоков на пакет (было 8, увеличено для экономии токенов)
 
 
 def generate_block_batches(

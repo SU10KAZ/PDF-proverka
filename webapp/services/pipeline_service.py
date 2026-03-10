@@ -23,7 +23,7 @@ from webapp.config import (
 )
 from webapp.models.audit import AuditJob, AuditStage, JobStatus, BatchQueueStatus, BatchQueueItem, BatchAction
 from webapp.models.websocket import WSMessage
-from webapp.config import get_claude_model
+from webapp.config import get_claude_model, get_model_for_stage
 from webapp.models.usage import UsageRecord
 from webapp.services.process_runner import run_script
 from webapp.services import claude_runner
@@ -171,7 +171,7 @@ class PipelineManager:
             session_id=cli_result.session_id,
             project_id=job.project_id,
             stage=stage,
-            model=get_claude_model(),
+            model=get_model_for_stage(stage),
             cost_usd=cli_result.cost_usd,
             duration_ms=cli_result.duration_ms,
             num_turns=cli_result.num_turns,
@@ -1332,29 +1332,38 @@ class PipelineManager:
             if not can_go:
                 raise RuntimeError("Rate limit: ожидание превышено или отменено")
 
-            exit_code, output, cli_result = await claude_runner.run_norm_verify(
-                norms_list_text, job.project_id,
-                on_output=lambda msg: self._log(job, msg),
-            )
-            self._record_cli_usage(job, cli_result, "norm_verify")
+            max_retries = RATE_LIMIT_MAX_RETRIES
+            for attempt in range(1, max_retries + 1):
+                exit_code, output, cli_result = await claude_runner.run_norm_verify(
+                    norms_list_text, job.project_id,
+                    on_output=lambda msg: self._log(job, msg),
+                )
+                stage_label = "norm_verify" if attempt == 1 else f"norm_verify_retry_{attempt}"
+                self._record_cli_usage(job, cli_result, stage_label)
 
-            # Отмена (exit_code -2) — не ошибка, а отмена задачи
-            if claude_runner.is_cancelled(exit_code):
-                job.status = JobStatus.CANCELLED
-                await self._log(job, "Верификация норм отменена", "warn")
-                return
+                # Отмена — не ошибка
+                if claude_runner.is_cancelled(exit_code):
+                    job.status = JobStatus.CANCELLED
+                    await self._log(job, "Верификация норм отменена", "warn")
+                    return
 
-            if claude_runner.is_rate_limited(exit_code, output or "", ""):
-                await self._log(job, "Rate limit при верификации норм, ожидание...", "warn")
-                can_continue = await self._wait_for_rate_limit(job, "rate limit при верификации норм", cli_output=output or "")
-                if can_continue:
-                    exit_code, output, cli_result = await claude_runner.run_norm_verify(
-                        norms_list_text, job.project_id,
-                        on_output=lambda msg: self._log(job, msg),
-                    )
-                    self._record_cli_usage(job, cli_result, "norm_verify_retry")
+                # Успех
+                if exit_code == 0:
+                    break
 
-            if exit_code != 0:
+                # Rate limit или таймаут → ждём и повторяем
+                if claude_runner.is_rate_limited(exit_code, output or "", "") or claude_runner.is_timeout(exit_code):
+                    reason = "таймаут" if claude_runner.is_timeout(exit_code) else "rate limit"
+                    await self._log(job, f"{reason} при верификации норм (попытка {attempt}/{max_retries}), ожидание...", "warn")
+                    if attempt < max_retries:
+                        can_continue = await self._wait_for_rate_limit(job, f"{reason} при верификации норм", cli_output=output or "")
+                        if not can_continue:
+                            raise RuntimeError(f"Верификация норм: ожидание {reason} превышено или отменено")
+                        continue
+                    else:
+                        raise RuntimeError(f"Верификация норм: {max_retries} попыток исчерпано ({reason})")
+
+                # Другая ошибка — не повторяем
                 await self._log(job, f"Ошибка верификации (код {exit_code})", "error")
                 raise RuntimeError(f"Claude CLI norm_verify: exit code {exit_code}")
 
@@ -1473,6 +1482,8 @@ class PipelineManager:
         """Интеллектуальный аудит: текст → триаж → выборочная нарезка → анализ."""
         if project_id in self.active_jobs:
             raise RuntimeError(f"Аудит уже запущен для {project_id}")
+
+        usage_tracker.clear_project_usage(project_id)
 
         job = AuditJob(
             job_id=str(uuid4()),
@@ -1800,6 +1811,9 @@ class PipelineManager:
         if project_id in self.active_jobs:
             raise RuntimeError(f"Аудит уже запущен для {project_id}")
 
+        # Сброс счётчика токенов — показываем только текущий прогон
+        usage_tracker.clear_project_usage(project_id)
+
         job = AuditJob(
             job_id=str(uuid4()),
             project_id=project_id,
@@ -1816,6 +1830,9 @@ class PipelineManager:
         """PRO аудит: кроп блоков → текстовый анализ → ВСЕ блоки → свод."""
         if project_id in self.active_jobs:
             raise RuntimeError(f"Аудит уже запущен для {project_id}")
+
+        # Сброс счётчика токенов — показываем только текущий прогон
+        usage_tracker.clear_project_usage(project_id)
 
         job = AuditJob(
             job_id=str(uuid4()),
@@ -1933,22 +1950,29 @@ class PipelineManager:
             # Определяем какие блоки анализировать
             gen_args = [f"projects/{pid}"]
             if mode == "standard":
-                # Только блоки из blocks_for_review
+                # Только HIGH + MEDIUM блоки (LOW и SKIP пропускаются для экономии)
                 with open(text_analysis_path, "r", encoding="utf-8") as f:
                     ta_data = json.load(f)
                 blocks_for_review = ta_data.get("blocks_for_review", [])
+                all_count = len(blocks_for_review)
+                # Фильтрация: только HIGH и MEDIUM приоритеты
+                blocks_for_review = [
+                    b for b in blocks_for_review
+                    if b.get("priority", "").upper() in ("HIGH", "MEDIUM")
+                ]
                 block_ids = [b["block_id"] for b in blocks_for_review]
+                skipped_low = all_count - len(block_ids)
                 if block_ids:
                     gen_args += ["--block-ids", ",".join(block_ids)]
-                    await self._log(
-                        job,
-                        f"Стандартный режим: {len(block_ids)} блоков для визуальной проверки"
-                    )
+                    msg = f"Стандартный режим: {len(block_ids)} блоков (HIGH+MEDIUM)"
+                    if skipped_low > 0:
+                        msg += f", пропущено {skipped_low} LOW-приоритетных"
+                    await self._log(job, msg)
                 else:
                     await self._log(job, "Нет блоков для визуальной проверки — пропуск", "warn")
             else:
-                # PRO: все блоки
-                await self._log(job, "PRO режим: анализ ВСЕХ image-блоков")
+                # PRO: все блоки (включая LOW)
+                await self._log(job, "PRO режим: анализ ВСЕХ image-блоков (включая LOW)")
 
             print(f"[{pid}:{mode}] ═══ ЭТАП 3: Генерация пакетов блоков ═══")
             await self._log(job, "═══ ЭТАП 3: Генерация пакетов блоков ═══")

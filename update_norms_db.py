@@ -29,6 +29,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).parent
 NORMS_DB_PATH = BASE_DIR / "norms_db.json"
+NORMS_PARAGRAPHS_PATH = BASE_DIR / "norms_paragraphs.json"
 PROJECTS_DIR = BASE_DIR / "projects"
 
 
@@ -56,6 +57,73 @@ def save_norms_db(db: dict):
     db["meta"]["last_updated"] = datetime.now().isoformat()
     with open(NORMS_DB_PATH, "w", encoding="utf-8") as f:
         json.dump(db, f, ensure_ascii=False, indent=2)
+
+
+def load_norms_paragraphs() -> dict:
+    """Загрузить справочник проверенных параграфов."""
+    if not NORMS_PARAGRAPHS_PATH.exists():
+        return {
+            "meta": {
+                "description": "Проверенные цитаты конкретных пунктов нормативных документов",
+                "last_updated": None,
+                "total_paragraphs": 0,
+            },
+            "paragraphs": {},
+        }
+    with open(NORMS_PARAGRAPHS_PATH, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def save_norms_paragraphs(pdb: dict):
+    """Сохранить справочник параграфов."""
+    pdb["meta"]["total_paragraphs"] = len(pdb["paragraphs"])
+    pdb["meta"]["last_updated"] = datetime.now().isoformat()
+    with open(NORMS_PARAGRAPHS_PATH, "w", encoding="utf-8") as f:
+        json.dump(pdb, f, ensure_ascii=False, indent=2)
+
+
+def update_paragraphs_from_project(pdb: dict, project_path: Path) -> int:
+    """
+    Обновить справочник параграфов из paragraph_checks в norm_checks.json.
+    Возвращает количество добавленных/обновлённых параграфов.
+    """
+    norm_checks_path = project_path / "_output" / "norm_checks.json"
+    if not norm_checks_path.exists():
+        return 0
+
+    with open(norm_checks_path, "r", encoding="utf-8") as f:
+        checks_data = json.load(f)
+
+    paragraph_checks = checks_data.get("paragraph_checks", [])
+    if not paragraph_checks:
+        return 0
+
+    count = 0
+    for pc in paragraph_checks:
+        if not pc.get("paragraph_verified"):
+            continue
+
+        norm = pc.get("norm", "")
+        actual_quote = pc.get("actual_quote")
+        if not norm or not actual_quote:
+            continue
+
+        # Ключ: "СП 256.1325800.2016, п.14.9"
+        key = norm.strip()
+        existing = pdb["paragraphs"].get(key)
+
+        if existing and existing.get("quote") == actual_quote:
+            continue  # Уже есть такая же цитата
+
+        pdb["paragraphs"][key] = {
+            "norm": key,
+            "quote": actual_quote,
+            "verified_at": datetime.now().isoformat(),
+            "source_project": project_path.name,
+        }
+        count += 1
+
+    return count
 
 
 def normalize_doc_number(raw: str) -> str:
@@ -243,10 +311,15 @@ def print_stats(db: dict):
     stale = get_stale_norms(db)
     replacements = db.get("replacements", {})
 
+    # Загрузить справочник параграфов
+    pdb = load_norms_paragraphs()
+    total_paragraphs = len(pdb.get("paragraphs", {}))
+
     print(f"\n{'='*60}")
     print(f"  БАЗА НОРМАТИВНЫХ ДОКУМЕНТОВ — СТАТИСТИКА")
     print(f"{'='*60}")
     print(f"  Всего норм:         {total}")
+    print(f"  Проверенных цитат:  {total_paragraphs}")
     print(f"  Таблица замен:      {len(replacements)} записей")
     print(f"  Устаревших (>{db['meta'].get('stale_after_days', 30)} дн): {len(stale)}")
     print(f"  Последнее обновление: {db['meta'].get('last_updated', 'N/A')}")
@@ -305,6 +378,8 @@ def main():
 
         total_stats = {"added": 0, "updated": 0, "unchanged": 0, "skipped": 0}
         processed = 0
+        pdb = load_norms_paragraphs()
+        total_paragraphs = 0
 
         for project_dir in sorted(PROJECTS_DIR.iterdir()):
             if not project_dir.is_dir():
@@ -321,12 +396,18 @@ def main():
             processed += 1
             for key in total_stats:
                 total_stats[key] += stats.get(key, 0)
+
+            # Обновить справочник параграфов
+            p_count = update_paragraphs_from_project(pdb, project_dir)
+            total_paragraphs += p_count
+
             print(
                 f"  [{project_dir.name}] +"
                 f"{stats['added']} добавлено, "
                 f"{stats['updated']} обновлено, "
                 f"{stats['unchanged']} без изменений, "
                 f"{stats['skipped']} пропущено"
+                + (f", {p_count} параграфов" if p_count else "")
             )
 
         # Записать историю обновления
@@ -339,10 +420,14 @@ def main():
         })
 
         save_norms_db(db)
+        if total_paragraphs > 0:
+            save_norms_paragraphs(pdb)
         print(f"\nИтого из {processed} проектов: "
               f"+{total_stats['added']} добавлено, "
               f"{total_stats['updated']} обновлено, "
               f"{total_stats['unchanged']} без изменений")
+        if total_paragraphs > 0:
+            print(f"Параграфов добавлено: {total_paragraphs} (всего в базе: {len(pdb['paragraphs'])})")
         print(f"База сохранена: {NORMS_DB_PATH}")
         return
 
@@ -360,6 +445,12 @@ def main():
         print(stats["error"])
         sys.exit(1)
 
+    # Обновить справочник параграфов
+    pdb = load_norms_paragraphs()
+    p_count = update_paragraphs_from_project(pdb, project_path)
+    if p_count > 0:
+        save_norms_paragraphs(pdb)
+
     # Записать историю
     db["meta"]["update_history"] = db["meta"].get("update_history", [])[-9:]
     db["meta"]["update_history"].append({
@@ -375,6 +466,7 @@ def main():
         f"{stats['updated']} обновлено, "
         f"{stats['unchanged']} без изменений, "
         f"{stats['skipped']} пропущено"
+        + (f", {p_count} параграфов" if p_count else "")
     )
     print(f"База сохранена: {NORMS_DB_PATH}")
 

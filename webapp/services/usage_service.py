@@ -86,6 +86,15 @@ class UsageTracker:
 
     # ── Record ───────────────────────────────────────────────
 
+    def clear_project_usage(self, project_id: str):
+        """Удалить все записи проекта (при старте нового аудита)."""
+        with _lock:
+            self._records = [
+                r for r in self._records
+                if r.get("project_id") != project_id
+            ]
+            self._save()
+
     def record_usage(self, record: UsageRecord):
         """Добавить запись о потреблении после Claude CLI вызова."""
         with _lock:
@@ -290,12 +299,14 @@ class UsageTracker:
         stages_summary = {}
         for stage, recs in stages.items():
             s_in, s_out, s_cost, s_calls = self._sum_records(recs)
+            s_duration = sum(r.get("duration_ms", 0) for r in recs)
             stages_summary[stage] = {
                 "input_tokens": s_in,
                 "output_tokens": s_out,
                 "total_tokens": s_in + s_out,
                 "cost_usd": round(s_cost, 4),
                 "calls": s_calls,
+                "duration_ms": s_duration,
             }
 
         return {
@@ -309,10 +320,17 @@ class UsageTracker:
         }
 
     def get_all_projects_usage(self) -> dict:
-        """Краткая сводка usage по всем проектам."""
+        """Краткая сводка usage по всем проектам (с duration по этапам)."""
         import re
         with _lock:
             records = list(self._records)
+
+        _batch_re = re.compile(r"(block_batch|tile_batch)_\d+")
+        _legacy_map = {
+            "main_audit": "findings_merge",
+            "tile_audit": "block_analysis",
+            "triage": "text_analysis",
+        }
 
         projects: dict[str, list[dict]] = defaultdict(list)
         for r in records:
@@ -323,10 +341,31 @@ class UsageTracker:
         result = {}
         for pid, recs in projects.items():
             t_in, t_out, t_cost, t_calls = self._sum_records(recs)
+
+            # stages_summary с duration
+            stages: dict[str, list[dict]] = defaultdict(list)
+            for r in recs:
+                stage = r.get("stage", "unknown")
+                if _batch_re.match(stage):
+                    stage = "block_analysis"
+                else:
+                    stage = _legacy_map.get(stage, stage)
+                stages[stage].append(r)
+
+            stages_summary = {}
+            for stage, srecs in stages.items():
+                s_dur = sum(r.get("duration_ms", 0) for r in srecs)
+                s_in, s_out, s_cost, s_calls = self._sum_records(srecs)
+                stages_summary[stage] = {
+                    "total_tokens": s_in + s_out,
+                    "duration_ms": s_dur,
+                }
+
             result[pid] = {
                 "total_tokens": t_in + t_out,
                 "total_cost_usd": round(t_cost, 4),
                 "total_calls": t_calls,
+                "stages_summary": stages_summary,
             }
         return result
 

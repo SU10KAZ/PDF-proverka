@@ -39,6 +39,11 @@ python query_project.py                               # обзор всех пр
 # Веб-приложение
 cd webapp && python main.py    # http://localhost:8080
 
+# Нормативная база
+python verify_norms.py projects/<name> --extract-only  # извлечь нормы
+python update_norms_db.py --all                        # обновить кеш из всех проектов
+python update_norms_db.py --stats                      # статистика базы норм
+
 # Excel-отчёт по всем проектам
 python generate_excel_report.py
 
@@ -81,10 +86,13 @@ pip install -r webapp/requirements.txt
 │   │       ├── 01_text_analysis.json ← этап 1: текст + приоритизация блоков
 │   │       ├── 02_blocks_analysis.json← этап 2: анализ блоков
 │   │       ├── 03_findings.json      ← этап 3: МАСТЕР замечаний
+│   │       ├── optimization.json     ← сценарии оптимизации (meta.by_type, items)
+│   │       ├── norm_checks.json      ← результат верификации норм
 │   │       └── audit_results_*.md    ← финальный отчёт
 │   └── _summary/                     ← сводки по всем проектам
 ├── norms_reference.md                ← нормативная база РФ
-├── norms_db.json                     ← кеш проверок норм
+├── norms_db.json                     ← кеш проверок норм (176+ документов)
+├── norms_paragraphs.json             ← проверенные цитаты конкретных пунктов норм
 ├── schemas/                          ← JSON-схемы этапов конвейера
 └── .claude/
     ├── text_analysis_task.md         ← этап 01: анализ текста из MD
@@ -106,8 +114,9 @@ pip install -r webapp/requirements.txt
 | `crop_blocks.py` | Кропинг image-блоков из PDF по координатам OCR |
 | `generate_block_batches.py` | Группировка блоков в пакеты (~8 шт, по страницам) |
 | `merge_block_results.py` | Слияние `block_batch_*.json` → `02_blocks_analysis.json` |
-| `verify_norms.py` | Верификация нормативных ссылок через кеш + WebSearch |
-| `update_norms_db.py` | Обновление централизованной базы норм |
+| `verify_norms.py` | Извлечение нормативных ссылок из findings + подготовка для верификации |
+| `update_norms_db.py` | Обновление `norms_db.json` + `norms_paragraphs.json` из результатов верификации |
+| `update_stage01.py` | Обновление `01_text_analysis.json` (приоритизация блоков) |
 | `query_project.py` | Быстрый поиск по JSON-конвейеру |
 | `generate_excel_report.py` | Excel-сводка всех проектов |
 
@@ -123,20 +132,93 @@ webapp/
 │   ├── projects.py      ← /api/projects/* — список, статус
 │   ├── audit.py         ← /api/audit/* — запуск full+smart аудита
 │   ├── findings.py      ← /api/findings/* — фильтры замечаний
-│   ├── tiles.py         ← /api/tiles/* — просмотр PNG
-│   └── export.py        ← /api/export/* — Excel, CSV, Markdown
+│   ├── tiles.py         ← /api/tiles/* — просмотр PNG/блоков
+│   ├── export.py        ← /api/export/* — Excel, CSV, Markdown
+│   ├── usage.py         ← /api/usage/* — счётчики токенов (сессия, 5ч, неделя)
+│   └── optimization.py  ← /api/optimization/* — сценарии оптимизации
 ├── services/            ← бизнес-логика
-│   ├── pipeline_service.py  ← оркестрация аудита (PipelineManager)
-│   ├── claude_runner.py     ← формирование задач + запуск Claude CLI
+│   ├── pipeline_service.py  ← оркестрация аудита (PipelineManager, AuditJob)
+│   ├── claude_runner.py     ← запуск Claude CLI (wrapper)
+│   ├── task_builder.py      ← формирование промптов из .claude/*_task.md
+│   ├── cli_utils.py         ← парсинг JSON-вывода CLI, детекция rate limit
 │   ├── project_service.py   ← работа с проектами
 │   ├── findings_service.py  ← слияние findings
 │   ├── process_runner.py    ← async subprocess для Python-скриптов
+│   ├── usage_service.py     ← два трекера токенов (см. ниже)
+│   ├── discipline_service.py← загрузка профилей дисциплин (EM, OV)
+│   ├── resume_detector.py   ← детекция прерванного этапа для возобновления
+│   ├── audit_logger.py      ← логирование событий аудита в файл
 │   └── excel_service.py     ← генерация Excel
-├── models/              ← Pydantic-модели
-└── ws/manager.py        ← WebSocket live-лог (/ws/audit/{project_id})
+├── models/              ← Pydantic-модели (project, audit, findings, usage, websocket)
+├── ws/manager.py        ← WebSocket live-лог (/ws/audit/{project_id})
+└── data/                ← runtime-данные (usage_data.json и т.д.)
 ```
 
 **Ключевые параметры:** таймаут пакета 600с, аудита 3600с, до 3 параллельных Claude-сессий.
+
+**Гибридные модели per-stage:** `config.py` → `_stage_models` задаёт модель для каждого этапа. Sonnet (по умолчанию) для структурных задач, Opus для findings_merge и optimization. API: `GET/POST /api/audit/model/stages`.
+
+### Два трекера токенов (usage_service.py)
+
+Система имеет ДВА независимых источника данных о токенах:
+
+1. **UsageTracker** — записи только от webapp (файл `webapp/data/usage_data.json`)
+   - Создаётся запись при каждом вызове Claude CLI через PipelineManager
+   - Обогащается точными данными из JSONL сессии (enrich_from_jsonl)
+   - Используется для per-project usage (карточки на дашборде)
+   - Хранит записи до 30 дней
+
+2. **GlobalUsageScanner** — парсинг ВСЕХ JSONL из `~/.claude/projects/`
+   - Сканирует все сессии Claude Code (включая ручные, не через webapp)
+   - Используется для шапки дашборда: 5ч окно, недельный лимит, Sonnet %
+   - Кэш 30 секунд, фильтрация файлов по mtime
+
+**Важно:** per-project = all-time (до 30 дней), global Sonnet = только текущая неделя. Они НЕ сравнимы напрямую.
+
+### Модульная система дисциплин (disciplines/)
+
+```
+disciplines/
+├── _registry.json           ← реестр всех дисциплин (ID, цвета, ключевые слова)
+├── _common/
+│   └── severity_levels.md   ← уровни критичности (КРИТИЧЕСКОЕ и т.д.)
+├── EM/                      ← Электроснабжение (ЭОМ/ЭС/ЭМ)
+│   ├── config.json          ← конфигурация дисциплины
+│   ├── role.md              ← роль Claude как эксперта
+│   ├── norms_reference.md   ← нормативная база по электрике
+│   ├── checklist.md         ← контрольный список проверок
+│   ├── drawing_types.md     ← типы чертежей
+│   ├── finding_categories.md← категории замечаний
+│   └── project_params.md    ← типовые параметры проекта
+└── OV/                      ← Вентиляция и кондиционирование (аналогичная структура)
+```
+
+`discipline_service.py` загружает профиль по `section` из `project_info.json` и подставляет в промпты.
+
+### Фронтенд (webapp/static/)
+
+Vue 3 SPA (Composition API) без сборки — CDN-загрузка. Один HTML + один JS + один CSS.
+
+- `index.html` — шаблоны Vue (v-if/v-for), Google Fonts, CSS через `?v=N` для cache bust
+- `js/app.js` — вся логика: маршрутизация (dashboard/project/findings/tiles/blocks), API-вызовы, WebSocket, polling
+- `css/styles.css` — тема "Industrial Blueprint" (тёмная, cyan/indigo акценты)
+
+**Ключевые функции в app.js:**
+- `stepClass(step)` — возвращает CSS-класс для pipeline-индикатора (`step-done`, `step-error`, `step-running`...)
+- `pollGlobalUsage()` — опрос `/api/usage/global` каждые 60 сек
+- `fetchAllProjectUsage()` — загрузка per-project токенов для карточек
+- `stageTokens(key)` — маппинг pipeline key → stage key в usage data
+- `stageDurationForProject(projectId, key)` — время выполнения этапа (из usage)
+- `formatDuration(ms)` — форматирование длительности (5м32с, 1ч12м)
+- `optTypeLabel(type)` / `optTypeColor(type)` — метки и цвета типов оптимизации
+
+**Дашборд — карточки проектов показывают:**
+- Pipeline-кружки (01–05+OPT) с временем выполнения под каждым шагом
+- Severity-бейджи (цветные счётчики замечаний по критичности)
+- Optimization-бейджи (цветные счётчики по типам: cheaper_analog, faster_install, simpler_design, lifecycle)
+
+**При изменении CSS:** bump версию `?v=N` в `<link>` тег в index.html.
+**При изменении JS-классов:** CSS должен поддерживать обе формы (`.done` и `.step-done`).
 
 ### Startup Hook
 
@@ -286,6 +368,32 @@ PDF из AutoCAD/BIM могут содержать ISOCPEUR/GOST с нестан
 - СП 5.13130.2009 → заменён на СП 484/485/486.1311500.2020
 - ВСН 59-88 → заменён через цепочку на СП 256.1325800.2016
 
+### Верификация нормативных цитат (3-уровневая)
+
+Система защиты от ошибочных ссылок на нормы:
+
+```
+Уровень 1: norm_quote + norm_confidence
+  ↓ Каждое замечание содержит цитату нормы и уверенность (0.0–1.0)
+  ↓ Заполняется на этапах 01/02/03
+
+Уровень 2: paragraph_checks (при confidence < 0.8)
+  ↓ Верификатор проверяет конкретный пункт нормы через WebSearch
+  ↓ Результат: paragraph_verified true/false + actual_quote
+  ↓ Записывается в norm_checks.json → paragraph_checks[]
+
+Уровень 3: norms_paragraphs.json (накопительный кеш)
+  ↓ Подтверждённые цитаты сохраняются для будущих аудитов
+  ↓ update_norms_db.py автоматически пополняет из paragraph_checks
+```
+
+**Ключевые файлы:**
+- `norms_db.json` — статус документов (действует/заменён/отменён), 176+ записей
+- `norms_paragraphs.json` — проверенные цитаты конкретных пунктов
+- `norm_checks.json` (в _output/) — результат верификации проекта
+
+**Поля замечания:** `norm_quote` (цитата или null), `norm_confidence` (0.0–1.0)
+
 ### Формат ссылки
 
 ```
@@ -356,6 +464,12 @@ PDF из AutoCAD/BIM могут содержать ISOCPEUR/GOST с нестан
 2. Проверить наличие блоков (`_output/blocks/`) — если нет, запустить `crop_blocks.py`
 3. При наличии MD — сверять графику на блоках с `[IMAGE]` описаниями
 4. Прочитать нормативную базу дисциплины для актуальных норм
+
+## Legacy-код (не удалять, но не развивать)
+
+- `generate_tile_batches.py`, `merge_tile_results.py` — старый тайловый метод (заменён блоками)
+- `claude_runner.py`: `run_tile_batch`, `run_main_audit`, `run_triage`, `run_smart_merge` — стабы, перенаправляют на блоковые функции
+- `write_batch*.py` — тестовые скрипты для отладки пакетных результатов
 
 ## Запрещённые действия
 

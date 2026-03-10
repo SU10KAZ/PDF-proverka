@@ -428,6 +428,15 @@ def build_summary_sheet(wb, projects_data: list):
              align_h="left", font_size=9)
         ws.row_dimensions[row].height = 18
 
+    # ── Дата формирования отчёта ────────────────────────────────────────
+    row += 2
+    ws.merge_cells(f"A{row}:I{row}")
+    dt_cell = ws[f"A{row}"]
+    dt_cell.value = f"Отчёт сформирован: {datetime.now().strftime('%d.%m.%Y %H:%M')}"
+    dt_cell.font  = Font(italic=True, size=9, color="666666", name="Calibri")
+    dt_cell.alignment = Alignment(horizontal="right", vertical="center")
+    ws.row_dimensions[row].height = 16
+
     ws.freeze_panes = "A3"
 
 
@@ -476,13 +485,15 @@ def build_project_sheet(wb, pd_entry: dict):
 
     obj = pinfo.get("object") or pinfo.get("description") or ""
     total_cnt = meta.get("total_findings", len(findings))
+    report_dt = datetime.now().strftime("%d.%m.%Y %H:%M")
     proj_label = project_id
     if audit_dt:
-        proj_label += f"  |  от {audit_dt}"
+        proj_label += f"  |  аудит от {audit_dt}"
     if obj:
         proj_label += f"  |  {obj}"
     if total_cnt:
         proj_label += f"  |  замечаний: {total_cnt}"
+    proj_label += f"  |  отчёт: {report_dt}"
 
     ws.merge_cells(f"A{row}:{last_col_letter}{row}")
     hdr2 = ws[f"A{row}"]
@@ -631,7 +642,7 @@ def main():
         out_path = (args.out if os.path.isabs(args.out)
                     else os.path.join(BASE_DIR, args.out))
     else:
-        ts = datetime.now().strftime("%Y%m%d_%H%M")
+        ts = datetime.now().strftime("%d.%m.%Y")
         os.makedirs(REPORTS_DIR, exist_ok=True)
         out_path = os.path.join(REPORTS_DIR, f"audit_report_{ts}.xlsx")
 

@@ -48,6 +48,13 @@ const app = createApp({
         const optimizationLoading = ref(false);
         const optimizationFilter = ref('');  // '' | 'cheaper_analog' | 'faster_install' | 'simpler_design' | 'lifecycle'
 
+        // Document viewer (MD)
+        const documentProjectId = ref('');
+        const documentPages = ref([]);
+        const documentCurrentPage = ref(null);
+        const documentPageData = ref(null);
+        const documentLoading = ref(false);
+
         // Log — отдельное хранилище для каждого проекта
         const logProjectId = ref('');
         const projectLogs = ref({});     // {projectId: [{time, level, message}]}
@@ -150,6 +157,26 @@ const app = createApp({
             if (!usage || !usage.stages_summary) return null;
             const stageKey = _pipelineToStage[pipelineKey] || pipelineKey;
             return usage.stages_summary[stageKey] || null;
+        }
+
+        function stageDurationForProject(projectId, pipelineKey) {
+            const usage = projectUsage.value[projectId];
+            if (!usage || !usage.stages_summary) return null;
+            const stageKey = _pipelineToStage[pipelineKey] || pipelineKey;
+            const s = usage.stages_summary[stageKey];
+            return (s && s.duration_ms > 0) ? s.duration_ms : null;
+        }
+
+        function formatDuration(ms) {
+            if (!ms || ms <= 0) return '';
+            const sec = Math.round(ms / 1000);
+            if (sec < 60) return sec + 'с';
+            const min = Math.floor(sec / 60);
+            const remSec = sec % 60;
+            if (min < 60) return min + 'м' + (remSec > 0 ? remSec + 'с' : '');
+            const hr = Math.floor(min / 60);
+            const remMin = min % 60;
+            return hr + 'ч' + (remMin > 0 ? remMin + 'м' : '');
         }
 
         const currentProjectUsage = computed(() => {
@@ -444,6 +471,11 @@ const app = createApp({
                 currentView.value = 'optimization';
                 connectGlobalWS();
                 loadOptimization(id);
+            } else if (hash.match(/^\/project\/([^/]+)\/document$/)) {
+                const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/document$/)[1]);
+                currentView.value = 'document';
+                connectGlobalWS();
+                loadDocument(id);
             } else if (hash.match(/^\/project\/([^/]+)\/prompts$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/prompts$/)[1]);
                 currentView.value = 'prompts';
@@ -483,6 +515,7 @@ const app = createApp({
         const batchMode = ref('standard');   // standard | pro
         const batchScope = ref('audit');     // audit | optimization | both
         const batchModalCount = ref(0);
+        const batchAllMode = ref(false);  // true = запуск для ВСЕХ проектов
 
         function toggleProjectSelection(projectId) {
             const s = new Set(selectedProjects.value);
@@ -512,6 +545,7 @@ const app = createApp({
             batchModalCount.value = selectedProjects.value.size;
             batchMode.value = 'standard';
             batchScope.value = 'audit';
+            batchAllMode.value = false;
             showBatchModal.value = true;
         }
 
@@ -523,6 +557,13 @@ const app = createApp({
                 action = 'optimization';
             } else if (batchScope.value === 'both') {
                 action = batchMode.value + '+optimization';
+            }
+
+            if (batchAllMode.value) {
+                // Запуск для ВСЕХ проектов — выбираем все ID
+                const allIds = projects.value.map(p => p.project_id);
+                selectedProjects.value = new Set(allIds);
+                batchAllMode.value = false;
             }
             await startBatchAction(action);
         }
@@ -717,16 +758,13 @@ const app = createApp({
             return liveStatus.value.running && '__ALL__' in liveStatus.value.running;
         });
 
-        async function startAllProjects() {
-            if (!confirm(`Запустить полный конвейер для всех ${projects.value.length} проектов?\n\nКаждый проект будет обработан последовательно: подготовка → блоки → аудит → верификация норм → Excel.`)) {
-                return;
-            }
-            try {
-                auditRunning.value = true;
-                await apiPost('/audit/all/full');
-                // Сразу обновить список проектов, чтобы отобразить актуальные tile counts
-                await refreshProjects();
-            } catch (e) { alert(e.message); auditRunning.value = false; }
+        function startAllProjects() {
+            // Открываем ту же модалку выбора режима, но для ВСЕХ проектов
+            batchModalCount.value = projects.value.length;
+            batchMode.value = 'standard';
+            batchScope.value = 'audit';
+            batchAllMode.value = true;
+            showBatchModal.value = true;
         }
 
         async function generateExcel() {
@@ -738,34 +776,7 @@ const app = createApp({
             } catch (e) { alert(e.message); }
         }
 
-        // ─── Model Switcher ───
-        const currentModel = ref('claude-sonnet-4-6');
-        const modelOptions = ref([]);
-
-        async function loadModel() {
-            try {
-                const data = await api('/audit/model');
-                currentModel.value = data.model;
-                modelOptions.value = data.options;
-            } catch (e) { /* ignore */ }
-        }
-
-        async function switchModel(model) {
-            try {
-                const resp = await fetch(`/api/audit/model?model=${encodeURIComponent(model)}`, { method: 'POST' });
-                if (resp.ok) {
-                    const data = await resp.json();
-                    currentModel.value = data.model;
-                }
-            } catch (e) { alert('Ошибка: ' + e.message); }
-        }
-
-        function modelShortName(model) {
-            if (model.includes('sonnet')) return 'Sonnet';
-            if (model.includes('opus')) return 'Opus';
-            if (model.includes('haiku')) return 'Haiku';
-            return model;
-        }
+        // Model Switcher удалён — модели per-stage настроены в config.py → _stage_models
 
         // ─── Disciplines ───
         const supportedDisciplines = ref([]);
@@ -1008,6 +1019,60 @@ const app = createApp({
         });
 
         // ─── Optimization ───
+        // ─── Document Viewer (MD) ────────────────────────────
+        function renderMarkdown(text) {
+            if (!text) return '';
+            if (typeof marked !== 'undefined') {
+                try {
+                    return marked.parse(text, { breaks: true, gfm: true });
+                } catch (e) {
+                    return text.replace(/</g, '&lt;').replace(/\n/g, '<br>');
+                }
+            }
+            return text.replace(/</g, '&lt;').replace(/\n/g, '<br>');
+        }
+
+        async function loadDocument(id) {
+            documentProjectId.value = id;
+            documentLoading.value = true;
+            documentPages.value = [];
+            documentPageData.value = null;
+            documentCurrentPage.value = null;
+            try {
+                currentProject.value = await api(`/projects/${id}`);
+                const data = await api(`/document/${id}/pages`);
+                documentPages.value = data.pages || [];
+                if (data.pages && data.pages.length > 0) {
+                    await loadDocumentPage(id, data.pages[0].page_num);
+                }
+            } catch (e) {
+                console.error('Failed to load document:', e);
+                documentPages.value = [];
+            }
+            documentLoading.value = false;
+        }
+
+        async function loadDocumentPage(id, pageNum) {
+            documentCurrentPage.value = pageNum;
+            try {
+                const data = await api(`/document/${id}/page/${pageNum}`);
+                documentPageData.value = data;
+            } catch (e) {
+                console.error('Failed to load page:', e);
+                documentPageData.value = null;
+            }
+        }
+
+        function docPrevPage() {
+            const idx = documentPages.value.findIndex(p => p.page_num === documentCurrentPage.value);
+            if (idx > 0) loadDocumentPage(documentProjectId.value, documentPages.value[idx - 1].page_num);
+        }
+
+        function docNextPage() {
+            const idx = documentPages.value.findIndex(p => p.page_num === documentCurrentPage.value);
+            if (idx < documentPages.value.length - 1) loadDocumentPage(documentProjectId.value, documentPages.value[idx + 1].page_num);
+        }
+
         async function loadOptimization(id) {
             currentProjectId.value = id;
             optimizationLoading.value = true;
@@ -1541,7 +1606,6 @@ const app = createApp({
             handleRoute();
             connectGlobalWS();
             startPolling();
-            loadModel();
             loadDisciplines();
             // Глобальная статистика — первый вызов + polling каждые 60с
             pollGlobalUsage();
@@ -1597,7 +1661,7 @@ const app = createApp({
             // Batch selection
             selectedProjects, selectAllChecked, selectedCount,
             batchRunning, batchQueue,
-            showBatchModal, batchMode, batchScope, batchModalCount,
+            showBatchModal, batchMode, batchScope, batchModalCount, batchAllMode,
             toggleProjectSelection, toggleSelectAll, isProjectSelected,
             openBatchModal, confirmBatchAction, startBatchAction, cancelBatch,
             batchActionLabel,
@@ -1607,17 +1671,19 @@ const app = createApp({
             // Disciplines
             supportedDisciplines, getDisciplineColor, disciplineLabel, disciplineBadgeStyle,
             // Model switcher
-            currentModel, modelOptions, switchModel, modelShortName,
             // Usage (global dashboard)
             globalUsage, showUsageDetails, sonnetPercent,
             formatTokens, formatCost, refreshGlobalUsage, resetSessionCounter,
             usageCounters,
             // Usage (per-project)
-            projectUsage, currentProjectUsage, stageTokens,
+            projectUsage, currentProjectUsage, stageTokens, stageDurationForProject, formatDuration,
             // Optimization
             optimizationData, optimizationLoading, optimizationFilter,
             filteredOptimization, optimizationTypeLabels, optimizationTypeColors,
             optTypeLabel, optTypeColor, loadOptimization,
+            // Document viewer
+            documentProjectId, documentPages, documentCurrentPage, documentPageData, documentLoading,
+            loadDocument, loadDocumentPage, docPrevPage, docNextPage, renderMarkdown,
             // Computed
             filteredFindings, currentPageTiles,
         };

@@ -62,7 +62,15 @@
       "Bash(stat \"d:/Отедел Системного Анализа/1. Calude code/projects/133-23-ГК-ОВ2.2 \\(7\\)/_output/tile_batch_001.json\")",
       "Bash(ping -n 4 127.0.0.1)",
       "Bash(xargs -I {} bash -c \"echo ''=== {} ==='' && head -30 ''{}''\")",
-      "Bash(echo \"EXIT:$?\")"
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(grep -E \"\\\\.md$|\\\\.txt$|README\")",
+      "Bash(xargs grep -l \"input.*rate\\\\|output.*rate\\\\|price\\\\|cost_per\")",
+      "Bash(python3 -c \":*)",
+      "Read(//d//**)",
+      "Bash(mv \"d:/Отедел Системного Анализа/1. Calude code\" \"d:/Отедел Системного Анализа/1. Claude code\")",
+      "Bash(cat \"d:/Отедел Системного Анализа/1. Calude code/projects/133-23-ГК-ОВ2.2 \\(7\\)/project_info.json\")",
+      "Bash(grep -n \"v-if=\"\"currentView === ''tiles''\\\\|v-if=\"\"currentView === ''blocks''\")",
+      "Bash(xargs wc -l)"
     ]
   }
 }

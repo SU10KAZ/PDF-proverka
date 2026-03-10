@@ -17,6 +17,7 @@ REPORTS_DIR = BASE_DIR / "отчет"
 
 # Нормативный справочник
 NORMS_FILE = BASE_DIR / "norms_reference.md"
+NORMS_PARAGRAPHS_FILE = BASE_DIR / "norms_paragraphs.json"
 
 # Профили дисциплин
 DISCIPLINES_DIR = BASE_DIR / "disciplines"
@@ -101,13 +102,44 @@ CLAUDE_MODEL_OPTIONS = ["claude-sonnet-4-6", "claude-opus-4-6"]
 # Текущая модель (изменяемая в рантайме через API)
 _current_model = CLAUDE_MODEL_DEFAULT
 
+# Гибридный режим: per-stage модели (Opus для сложных рассуждений)
+# None = использовать _current_model (по умолчанию)
+_stage_models: dict[str, str | None] = {
+    "text_analysis":   None,           # Sonnet — структурная задача
+    "block_batch":     None,           # Sonnet — чтение чертежей, заполнение JSON
+    "findings_merge":  "claude-opus-4-6",  # Opus — межблочная сверка, дедупликация
+    "norm_verify":     None,           # Sonnet — поиск и сверка норм
+    "norm_fix":        None,           # Sonnet — пересмотр по нормам
+    "optimization":    "claude-opus-4-6",  # Opus — глубокий анализ оптимизаций
+}
+
 def get_claude_model() -> str:
+    """Модель по умолчанию (для обратной совместимости)."""
     return _current_model
+
+def get_model_for_stage(stage: str) -> str:
+    """Модель для конкретного этапа конвейера."""
+    # Нормализация: block_batch_001 → block_batch
+    stage_key = stage
+    if stage.startswith("block_batch"):
+        stage_key = "block_batch"
+    model = _stage_models.get(stage_key)
+    return model if model else _current_model
 
 def set_claude_model(model: str):
     global _current_model
     if model in CLAUDE_MODEL_OPTIONS:
         _current_model = model
+
+def set_stage_model(stage: str, model: str | None):
+    """Установить модель для конкретного этапа (None = default)."""
+    if model is not None and model not in CLAUDE_MODEL_OPTIONS:
+        return
+    _stage_models[stage] = model
+
+def get_stage_models() -> dict[str, str | None]:
+    """Текущие настройки per-stage моделей."""
+    return dict(_stage_models)
 
 # Параллельная обработка батчей блоков
 MAX_PARALLEL_BATCHES = 3  # одновременных Claude CLI сессий

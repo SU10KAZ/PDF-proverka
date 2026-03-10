@@ -6,8 +6,8 @@ echo ═════════════════════════
 
 cd /d "%~dp0"
 
-:: Проверяем, не запущен ли уже
-tasklist /FI "WINDOWTITLE eq AuditManager" 2>nul | find "python" >nul
+:: Проверяем, не запущен ли уже (по порту 8080)
+netstat -ano | findstr ":8080.*LISTENING" >nul 2>&1
 if not errorlevel 1 (
     echo.
     echo   Сервер уже запущен!
@@ -18,8 +18,8 @@ if not errorlevel 1 (
     exit /b
 )
 
-:: Запускаем в фоне
-start "AuditManager" /MIN python main.py
+:: Запускаем скрыто через pythonw (без окна консоли)
+start "" /B pythonw main.py
 
 echo.
 echo   Сервер запускается...

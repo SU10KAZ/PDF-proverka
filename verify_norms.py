@@ -98,6 +98,7 @@ def extract_norms_from_findings(findings_path: Path) -> dict:
                     "cited_as": [],
                     "affected_findings": [],
                     "contexts": [],
+                    "low_confidence_findings": [],
                 }
 
             if norm_field and norm_field not in norms_map[key]["cited_as"]:
@@ -109,6 +110,12 @@ def extract_norms_from_findings(findings_path: Path) -> dict:
             ctx = problem_field[:200] if problem_field else ""
             if ctx and ctx not in norms_map[key]["contexts"]:
                 norms_map[key]["contexts"].append(ctx)
+
+            # Отметить замечания с низкой уверенностью в цитате
+            confidence = finding.get("norm_confidence")
+            if confidence is not None and confidence < 0.8:
+                if fid not in norms_map[key]["low_confidence_findings"]:
+                    norms_map[key]["low_confidence_findings"].append(fid)
 
     return {
         "norms": norms_map,
@@ -123,11 +130,16 @@ def format_norms_for_template(norms_data: dict) -> str:
     for i, (norm, info) in enumerate(norms_data["norms"].items(), 1):
         findings_str = ", ".join(info["affected_findings"])
         cited = info["cited_as"][0] if info["cited_as"] else norm
-        lines.append(
+        entry = (
             f"{i}. **{norm}**\n"
             f"   - Как указано в проекте: `{cited}`\n"
             f"   - Затронутые замечания: {findings_str}"
         )
+        # Добавить информацию о цитатах с низкой уверенностью
+        low_conf = info.get("low_confidence_findings", [])
+        if low_conf:
+            entry += f"\n   - Требуют проверки цитат: {', '.join(low_conf)}"
+        lines.append(entry)
     return "\n".join(lines)
 
 
@@ -145,6 +157,8 @@ def format_findings_to_fix(norm_checks_path: Path, findings_path: Path) -> str:
     findings_map = {f["id"]: f for f in findings_data.get("findings", [])}
     lines = []
 
+    # Собрать замечания с проблемами по статусу нормы
+    revision_fids = set()
     for check in checks.get("checks", []):
         if not check.get("needs_revision", False):
             continue
@@ -154,6 +168,7 @@ def format_findings_to_fix(norm_checks_path: Path, findings_path: Path) -> str:
             if not finding:
                 continue
 
+            revision_fids.add(fid)
             lines.append(
                 f"### {fid}\n"
                 f"- **Текущая норма:** `{finding.get('norm', '?')}`\n"
@@ -161,6 +176,28 @@ def format_findings_to_fix(norm_checks_path: Path, findings_path: Path) -> str:
                 f"- **Актуальный документ:** `{check.get('current_version', '?')}`\n"
                 f"- **Замена:** `{check.get('replacement_doc') or 'нет'}`\n"
             )
+
+    # Добавить замечания с неподтверждёнными цитатами (paragraph_checks)
+    for pc in checks.get("paragraph_checks", []):
+        if pc.get("paragraph_verified", True):
+            continue  # Цитата подтверждена — всё ок
+
+        fid = pc.get("finding_id", "")
+        if fid in revision_fids:
+            continue  # Уже включено выше
+        finding = findings_map.get(fid)
+        if not finding:
+            continue
+
+        revision_fids.add(fid)
+        lines.append(
+            f"### {fid}\n"
+            f"- **Текущая норма:** `{finding.get('norm', '?')}`\n"
+            f"- **Проблема:** Цитата пункта не подтверждена\n"
+            f"- **Заявленная цитата:** `{pc.get('claimed_quote', '?')}`\n"
+            f"- **Реальный текст:** `{pc.get('actual_quote') or 'не найден'}`\n"
+            f"- **Расхождение:** {pc.get('mismatch_details', '?')}\n"
+        )
 
     if not lines:
         return "Все нормы актуальны. Пересмотр не требуется."

@@ -10,7 +10,7 @@ from webapp.config import (
     NORM_VERIFY_TOOLS,
     TEXT_ANALYSIS_TOOLS, BLOCK_ANALYSIS_TOOLS, FINDINGS_MERGE_TOOLS,
     TILE_AUDIT_TOOLS, MAIN_AUDIT_TOOLS, TRIAGE_TOOLS, SMART_MERGE_TOOLS,
-    get_claude_model,
+    get_claude_model, get_model_for_stage,
     CLAUDE_NORM_VERIFY_TIMEOUT, CLAUDE_NORM_FIX_TIMEOUT,
     CLAUDE_OPTIMIZATION_TIMEOUT,
     CLAUDE_TEXT_ANALYSIS_TIMEOUT, CLAUDE_BLOCK_ANALYSIS_TIMEOUT,
@@ -62,12 +62,12 @@ __all__ = [
 
 # ─── Вспомогательная функция для построения команды ───
 
-def _build_cmd(tools: str) -> list[str]:
+def _build_cmd(tools: str, model: str | None = None) -> list[str]:
     """Построить базовую команду Claude CLI."""
     return [
         CLAUDE_CLI,
         "-p",
-        "--model", get_claude_model(),
+        "--model", model or get_claude_model(),
         "--allowedTools", tools,
         "--output-format", "json",
     ]
@@ -79,6 +79,7 @@ async def _run_cli(
     timeout: int,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
     include_stderr: bool = True,
+    stage: str | None = None,
 ) -> tuple[int, str, CLIResult]:
     """
     Общий запуск Claude CLI.
@@ -86,7 +87,8 @@ async def _run_cli(
     Returns:
         (exit_code, combined_text, cli_result)
     """
-    cmd = _build_cmd(tools)
+    model = get_model_for_stage(stage) if stage else None
+    cmd = _build_cmd(tools, model=model)
 
     exit_code, stdout, stderr = await run_command(
         cmd,
@@ -116,7 +118,7 @@ async def run_norm_verify(
 ) -> tuple[int, str, CLIResult]:
     """Запустить Claude CLI для верификации нормативных ссылок через WebSearch."""
     task_text = prepare_norm_verify_task(norms_list_text, project_id)
-    return await _run_cli(task_text, NORM_VERIFY_TOOLS, CLAUDE_NORM_VERIFY_TIMEOUT, on_output, include_stderr=False)
+    return await _run_cli(task_text, NORM_VERIFY_TOOLS, CLAUDE_NORM_VERIFY_TIMEOUT, on_output, include_stderr=False, stage="norm_verify")
 
 
 async def run_norm_fix(
@@ -126,7 +128,7 @@ async def run_norm_fix(
 ) -> tuple[int, str, CLIResult]:
     """Запустить Claude CLI для пересмотра замечаний с учётом актуальных норм."""
     task_text = prepare_norm_fix_task(findings_to_fix_text, project_id)
-    return await _run_cli(task_text, NORM_VERIFY_TOOLS, CLAUDE_NORM_FIX_TIMEOUT, on_output, include_stderr=False)
+    return await _run_cli(task_text, NORM_VERIFY_TOOLS, CLAUDE_NORM_FIX_TIMEOUT, on_output, include_stderr=False, stage="norm_fix")
 
 
 # ─── Оптимизация проектных решений ───
@@ -138,7 +140,7 @@ async def run_optimization(
 ) -> tuple[int, str, CLIResult]:
     """Запустить Claude CLI для анализа оптимизации."""
     task_text = prepare_optimization_task(project_info, project_id)
-    return await _run_cli(task_text, TEXT_ANALYSIS_TOOLS, CLAUDE_OPTIMIZATION_TIMEOUT, on_output)
+    return await _run_cli(task_text, TEXT_ANALYSIS_TOOLS, CLAUDE_OPTIMIZATION_TIMEOUT, on_output, stage="optimization")
 
 
 # ─── Анализ текста ───
@@ -150,7 +152,7 @@ async def run_text_analysis(
 ) -> tuple[int, str, CLIResult]:
     """Запустить Claude CLI для текстового анализа MD-файла."""
     task_text = prepare_text_analysis_task(project_info, project_id)
-    return await _run_cli(task_text, TEXT_ANALYSIS_TOOLS, CLAUDE_TEXT_ANALYSIS_TIMEOUT, on_output)
+    return await _run_cli(task_text, TEXT_ANALYSIS_TOOLS, CLAUDE_TEXT_ANALYSIS_TIMEOUT, on_output, stage="text_analysis")
 
 
 # ─── Анализ пакета image-блоков ───
@@ -166,7 +168,7 @@ async def run_block_batch(
     task_text = prepare_block_batch_task(
         batch_data, project_info, project_id, total_batches
     )
-    return await _run_cli(task_text, BLOCK_ANALYSIS_TOOLS, CLAUDE_BLOCK_ANALYSIS_TIMEOUT, on_output)
+    return await _run_cli(task_text, BLOCK_ANALYSIS_TOOLS, CLAUDE_BLOCK_ANALYSIS_TIMEOUT, on_output, stage="block_batch")
 
 
 # ─── Свод замечаний ───
@@ -178,7 +180,7 @@ async def run_findings_merge(
 ) -> tuple[int, str, CLIResult]:
     """Запустить Claude CLI для свода замечаний из текста + блоков."""
     task_text = prepare_findings_merge_task(project_info, project_id)
-    return await _run_cli(task_text, FINDINGS_MERGE_TOOLS, CLAUDE_FINDINGS_MERGE_TIMEOUT, on_output)
+    return await _run_cli(task_text, FINDINGS_MERGE_TOOLS, CLAUDE_FINDINGS_MERGE_TIMEOUT, on_output, stage="findings_merge")
 
 
 # ─── Legacy stubs (перенаправляют на блоковый пайплайн) ───

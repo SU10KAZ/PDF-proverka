@@ -4,7 +4,9 @@
 """
 import json
 import os
+import re
 import shutil
+import time
 from pathlib import Path
 from typing import Optional
 from datetime import datetime
@@ -128,6 +130,18 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
                 findings_by_severity[sev] = findings_by_severity.get(sev, 0) + 1
             audit_date = fdata.get("audit_date", fdata.get("generated_at"))
 
+    # Оптимизации
+    optimization_count = 0
+    optimization_by_type = {}
+    optimization_savings_pct = 0
+    opt_path = output_dir / "optimization.json"
+    if opt_path.exists():
+        odata = _load_json(opt_path)
+        if odata and "meta" in odata:
+            optimization_count = odata["meta"].get("total_items", 0)
+            optimization_by_type = odata["meta"].get("by_type", {})
+            optimization_savings_pct = odata["meta"].get("estimated_savings_pct", 0)
+
     # Пакеты блоков (приоритет) или тайлов (legacy)
     total_batches = 0
     completed_batches = 0
@@ -165,6 +179,9 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
         pipeline=pipeline,
         findings_count=findings_count,
         findings_by_severity=findings_by_severity,
+        optimization_count=optimization_count,
+        optimization_by_type=optimization_by_type,
+        optimization_savings_pct=optimization_savings_pct,
         last_audit_date=audit_date,
         total_batches=total_batches,
         completed_batches=completed_batches,
@@ -684,3 +701,145 @@ def _load_json(path: Path) -> Optional[dict]:
             return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError, UnicodeDecodeError):
         return None
+
+
+# ─── Document (MD) Viewer ─────────────────────────────────────
+
+_document_cache: dict[str, dict] = {}  # {project_id: {ts, data}}
+_DOCUMENT_CACHE_TTL = 60  # секунд
+
+_PAGE_RE = re.compile(r'^## СТРАНИЦА (\d+)', re.MULTILINE)
+_BLOCK_RE = re.compile(r'^### BLOCK \[(TEXT|IMAGE)\]: (.+)$', re.MULTILINE)
+_SHEET_INFO_RE = re.compile(r'^\*\*Лист:\*\*\s*(.+)$', re.MULTILINE)
+_SHEET_NAME_RE = re.compile(r'^\*\*Наименование листа:\*\*\s*(.+)$', re.MULTILINE)
+
+
+def _parse_image_block(text: str) -> dict:
+    """Парсинг метаданных IMAGE-блока."""
+    result = {}
+    # Тип и оси из первой строки: **[ИЗОБРАЖЕНИЕ]** | Тип: XXX | Оси: YYY
+    first_line = text.split('\n')[0] if text else ''
+    m = re.search(r'\|\s*Тип:\s*(.+?)(?:\s*\||$)', first_line)
+    if m:
+        result['image_type'] = m.group(1).strip()
+    m = re.search(r'\|\s*Оси:\s*(.+?)(?:\s*\||$)', first_line)
+    if m:
+        result['axes'] = m.group(1).strip()
+
+    for field, pattern in [
+        ('brief', r'^\*\*Краткое описание:\*\*\s*(.+)$'),
+        ('description', r'^\*\*Описание:\*\*\s*(.+)$'),
+        ('text_on_drawing', r'^\*\*Текст на чертеже:\*\*\s*(.+)$'),
+        ('entities', r'^\*\*Сущности:\*\*\s*(.+)$'),
+    ]:
+        m = re.search(pattern, text, re.MULTILINE)
+        if m:
+            result[field] = m.group(1).strip()
+    return result
+
+
+def parse_md_document(project_id: str) -> Optional[dict]:
+    """Парсинг MD-файла проекта по страницам и блокам.
+
+    Возвращает: {project_id, md_file, total_pages, pages: [{page_num, sheet_info, sheet_label, blocks: [...]}]}
+    """
+    # Проверяем кэш
+    cached = _document_cache.get(project_id)
+    if cached and (time.time() - cached['ts']) < _DOCUMENT_CACHE_TTL:
+        return cached['data']
+
+    info = get_project_info(project_id)
+    if not info:
+        return None
+    md_file_name = info.get("md_file")
+    if not md_file_name:
+        return None
+
+    md_path = PROJECTS_DIR / project_id / md_file_name
+    if not md_path.exists():
+        return None
+
+    try:
+        md_text = md_path.read_text(encoding='utf-8')
+    except Exception:
+        return None
+
+    # Разбиваем по страницам
+    page_splits = list(_PAGE_RE.finditer(md_text))
+    if not page_splits:
+        return None
+
+    pages = []
+    for i, match in enumerate(page_splits):
+        page_num = int(match.group(1))
+        start = match.end()
+        end = page_splits[i + 1].start() if i + 1 < len(page_splits) else len(md_text)
+        page_text = md_text[start:end]
+
+        # Метаданные страницы
+        sheet_info = None
+        sheet_label = None
+        m = _SHEET_INFO_RE.search(page_text)
+        if m:
+            sheet_info = m.group(1).strip()
+        m = _SHEET_NAME_RE.search(page_text)
+        if m:
+            sheet_label = m.group(1).strip()
+
+        # Разбиваем на блоки
+        block_matches = list(_BLOCK_RE.finditer(page_text))
+        blocks = []
+        for j, bm in enumerate(block_matches):
+            block_type = bm.group(1)  # TEXT или IMAGE
+            block_id = bm.group(2).strip()
+            b_start = bm.end()
+            b_end = block_matches[j + 1].start() if j + 1 < len(block_matches) else len(page_text)
+            block_content = page_text[b_start:b_end].strip()
+
+            block = {"block_id": block_id, "type": block_type}
+            if block_type == "TEXT":
+                block["content"] = block_content
+            else:
+                block.update(_parse_image_block(block_content))
+                # Сохраняем и raw content для полноты
+                block["content"] = block_content
+            blocks.append(block)
+
+        text_blocks = sum(1 for b in blocks if b['type'] == 'TEXT')
+        image_blocks = sum(1 for b in blocks if b['type'] == 'IMAGE')
+
+        pages.append({
+            "page_num": page_num,
+            "sheet_info": sheet_info,
+            "sheet_label": sheet_label,
+            "text_blocks": text_blocks,
+            "image_blocks": image_blocks,
+            "blocks": blocks,
+        })
+
+    result = {
+        "project_id": project_id,
+        "md_file": md_file_name,
+        "total_pages": len(pages),
+        "pages": pages,
+    }
+
+    _document_cache[project_id] = {"ts": time.time(), "data": result}
+    return result
+
+
+def get_document_page(project_id: str, page_num: int) -> Optional[dict]:
+    """Получить данные одной страницы MD-документа."""
+    doc = parse_md_document(project_id)
+    if not doc:
+        return None
+    for page in doc['pages']:
+        if page['page_num'] == page_num:
+            return {
+                "project_id": project_id,
+                "page_num": page['page_num'],
+                "sheet_info": page['sheet_info'],
+                "sheet_label": page['sheet_label'],
+                "blocks": page['blocks'],
+            }
+    return None

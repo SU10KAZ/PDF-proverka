@@ -3,6 +3,7 @@
 Подготовка текста промтов с подстановкой плейсхолдеров и инъекцией дисциплин.
 """
 import json
+import re
 from pathlib import Path
 from typing import Optional
 
@@ -280,6 +281,77 @@ def prepare_text_analysis_task(
     return task
 
 
+# ─── Извлечение [IMAGE] контекста из MD ───
+
+def _extract_image_context_for_blocks(md_file_path: str, block_ids: list[str]) -> str:
+    """Извлечь из MD-файла секции [IMAGE] только для указанных block_id.
+
+    Вместо того чтобы Claude CLI читал весь MD (100-500 KB),
+    мы извлекаем только релевантные секции (~2-5 KB на пакет).
+    """
+    md_path = Path(md_file_path)
+    if not md_path.exists() or md_file_path == "(нет)":
+        return ""
+
+    try:
+        content = md_path.read_text(encoding="utf-8")
+    except OSError:
+        return ""
+
+    block_ids_set = set(block_ids)
+    if not block_ids_set:
+        return ""
+
+    # Парсим MD: ищем блоки ### BLOCK [IMAGE]: <block_id>
+    # Каждый блок заканчивается перед следующим ### BLOCK или ## СТРАНИЦА
+    sections = []
+    current_page_header = ""
+
+    for line in content.split("\n"):
+        # Трекинг текущей страницы
+        if line.startswith("## СТРАНИЦА "):
+            current_page_header = line
+            continue
+
+        # Начало IMAGE-блока
+        if line.startswith("### BLOCK [IMAGE]:"):
+            # Извлекаем block_id
+            bid = line.split(":", 1)[-1].strip()
+            if bid in block_ids_set:
+                sections.append({
+                    "block_id": bid,
+                    "page_header": current_page_header,
+                    "lines": [line],
+                    "active": True,
+                })
+            continue
+
+        # Начало другого блока — закрываем активный
+        if line.startswith("### BLOCK ") or line.startswith("## СТРАНИЦА "):
+            for s in sections:
+                s["active"] = False
+            if line.startswith("## СТРАНИЦА "):
+                current_page_header = line
+            continue
+
+        # Добавляем строки к активным секциям
+        for s in sections:
+            if s.get("active"):
+                s["lines"].append(line)
+
+    if not sections:
+        return ""
+
+    # Формируем компактный контекст
+    parts = []
+    for s in sections:
+        text = "\n".join(s["lines"]).strip()
+        if text:
+            parts.append(text)
+
+    return "\n\n".join(parts)
+
+
 # ─── Анализ пакета image-блоков (OCR-пайплайн) ───
 
 def prepare_block_batch_task(
@@ -312,6 +384,10 @@ def prepare_block_batch_task(
     _, output_path = _get_project_paths(project_id)
     md_file_path = _get_md_file_path(project_info, project_id)
 
+    # Извлекаем inline MD-контекст только для блоков этого пакета
+    batch_block_ids = [b["block_id"] for b in blocks]
+    md_context = _extract_image_context_for_blocks(md_file_path, batch_block_ids)
+
     template = _inject_discipline(template, project_info)
 
     task = (
@@ -324,8 +400,85 @@ def prepare_block_batch_task(
         .replace("{BLOCK_COUNT}", str(len(blocks)))
         .replace("{BLOCK_LIST}", "\n".join(block_lines))
         .replace("{MD_FILE_PATH}", md_file_path)
+        .replace("{BLOCK_MD_CONTEXT}", md_context if md_context else "(нет IMAGE-описаний для блоков этого пакета)")
     )
     return task
+
+
+# ─── Компактификация данных для findings_merge ───
+
+def _prepare_compact_findings_input(project_id: str) -> Path | None:
+    """Создать компактный JSON из 01+02 для findings_merge.
+
+    Убирает: полные block summaries, дублирующий контент.
+    Оставляет: findings, key_values, project_params, verified items.
+
+    Типичное сжатие: 800 KB → 100-200 KB (4-8x меньше).
+    """
+    output_dir = PROJECTS_DIR / project_id / "_output"
+    stage01 = output_dir / "01_text_analysis.json"
+    stage02 = output_dir / "02_blocks_analysis.json"
+    compact_path = output_dir / "_findings_compact.json"
+
+    compact = {}
+
+    # Из 01: project_params, normative_refs, text_findings
+    if stage01.exists():
+        try:
+            data01 = json.loads(stage01.read_text(encoding="utf-8"))
+            compact["project_params"] = data01.get("project_params", {})
+            compact["normative_refs_found"] = data01.get("normative_refs_found", [])
+            compact["text_findings"] = data01.get("text_findings", [])
+            # Информация о пропущенных блоках (для полноты картины)
+            skipped = data01.get("blocks_skipped", [])
+            compact["blocks_skipped_count"] = len(skipped)
+        except (json.JSONDecodeError, OSError):
+            return None
+
+    # Из 02: preliminary_findings, items_verified, key_values (без полных summary)
+    if stage02.exists():
+        try:
+            data02 = json.loads(stage02.read_text(encoding="utf-8"))
+
+            # Preliminary findings — полностью
+            compact["preliminary_findings"] = data02.get("preliminary_findings", [])
+
+            # Items verified — полностью
+            compact["items_verified_from_stage_01"] = data02.get(
+                "items_verified_from_stage_01", []
+            )
+
+            # Из block_analyses: только block_id, page, sheet_type, key_values_read, findings
+            # Без полных summary и label (экономия ~60% объёма 02)
+            block_analyses = data02.get("block_analyses", [])
+            compact["blocks_compact"] = [
+                {
+                    "block_id": ba.get("block_id", ""),
+                    "page": ba.get("page", 0),
+                    "sheet_type": ba.get("sheet_type", ""),
+                    "key_values_read": ba.get("key_values_read", []),
+                    "findings_count": len(ba.get("findings", [])),
+                    # findings уже в preliminary_findings — не дублируем
+                }
+                for ba in block_analyses
+            ]
+            compact["total_blocks_analyzed"] = len(block_analyses)
+        except (json.JSONDecodeError, OSError):
+            return None
+    else:
+        compact["preliminary_findings"] = []
+        compact["blocks_compact"] = []
+        compact["total_blocks_analyzed"] = 0
+
+    # Записываем компактный файл
+    try:
+        compact_path.write_text(
+            json.dumps(compact, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        return compact_path
+    except OSError:
+        return None
 
 
 # ─── Свод замечаний (OCR-пайплайн) ───
@@ -343,6 +496,9 @@ def prepare_findings_merge_task(
     _, output_path = _get_project_paths(project_id)
     md_file_path = _get_md_file_path(project_info, project_id)
 
+    # Создаём компактный input
+    compact_path = _prepare_compact_findings_input(project_id)
+
     template = _inject_discipline(template, project_info)
 
     task = (
@@ -351,6 +507,18 @@ def prepare_findings_merge_task(
         .replace("{OUTPUT_PATH}", output_path)
         .replace("{MD_FILE_PATH}", md_file_path)
     )
+
+    # Если компактный файл создан — заменяем ссылки на полные файлы
+    if compact_path and compact_path.exists():
+        task = task.replace(
+            f"`{output_path}/01_text_analysis.json`",
+            f"`{compact_path}` *(компактная версия)*",
+        )
+        task = task.replace(
+            f"`{output_path}/02_blocks_analysis.json`",
+            f"`{compact_path}` *(уже включено выше)*",
+        )
+
     return task
 
 

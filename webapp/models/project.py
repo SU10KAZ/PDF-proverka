@@ -55,6 +55,9 @@ class ProjectStatus(BaseModel):
     pipeline: PipelineStatus = PipelineStatus()
     findings_count: int = 0
     findings_by_severity: dict[str, int] = {}
+    optimization_count: int = 0
+    optimization_by_type: dict[str, int] = {}
+    optimization_savings_pct: int = 0
     last_audit_date: Optional[str] = None
     # Пакетный анализ тайлов
     total_batches: int = 0
