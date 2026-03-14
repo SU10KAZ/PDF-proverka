@@ -130,7 +130,12 @@
       "Bash(do echo:*)",
       "Read(//d/Отедел Системного Анализа/1. Calude code/disciplines/**)",
       "Bash(grep -E \"\\\\.py$\")",
-      "Bash(grep -l evidence d:Отедел Системного Анализа1. Calude code/projects/*/*/_output/03_findings.json)"
+      "Bash(grep -l evidence d:Отедел Системного Анализа1. Calude code/projects/*/*/_output/03_findings.json)",
+      "Bash(pythonw -c \"import sys; open\\(''_test_pythonw.txt'',''w''\\).write\\(sys.executable\\)\")",
+      "Bash(timeout 2)",
+      "Bash(rm -f _test_pythonw.txt)",
+      "Bash(pythonw -c \":*)",
+      "Bash(start //B pythonw main.py)"
     ]
   }
 }

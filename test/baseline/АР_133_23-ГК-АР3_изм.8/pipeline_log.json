@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "stages": {
+    "crop_blocks": {
+      "status": "done",
+      "started_at": "2026-03-13T01:30:11.721904",
+      "completed_at": "2026-03-13T01:30:42.380612",
+      "message": "OK"
+    },
+    "text_analysis": {
+      "status": "done",
+      "started_at": "2026-03-13T01:30:42.388922",
+      "error": "Сервер перезапущен во время выполнения",
+      "interrupted_at": "2026-03-13T01:30:47.451810",
+      "completed_at": "2026-03-13T01:40:08.532741",
+      "message": "OK"
+    },
+    "block_analysis": {
+      "status": "done",
+      "started_at": "2026-03-13T01:40:08.835820",
+      "error": "Сервер перезапущен во время выполнения",
+      "interrupted_at": "2026-03-13T01:40:47.446562",
+      "completed_at": "2026-03-13T02:04:43.017735",
+      "message": "Все 20 пакетов OK"
+    },
+    "findings_merge": {
+      "status": "done",
+      "started_at": "2026-03-13T02:04:43.025118",
+      "error": "Сервер перезапущен во время выполнения",
+      "interrupted_at": "2026-03-13T02:04:47.577920",
+      "completed_at": "2026-03-13T02:12:15.230122",
+      "message": "OK"
+    },
+    "norm_verify": {
+      "status": "done",
+      "started_at": "2026-03-13T02:12:15.242912",
+      "error": "Сервер перезапущен во время выполнения",
+      "interrupted_at": "2026-03-13T02:12:47.578679",
+      "completed_at": "2026-03-13T02:25:39.185289",
+      "message": "OK"
+    },
+    "excel": {
+      "status": "done",
+      "started_at": "2026-03-13T02:25:39.194393",
+      "completed_at": "2026-03-13T02:25:39.775433",
+      "message": "OK"
+    },
+    "optimization": {
+      "status": "done",
+      "started_at": "2026-03-13T02:25:39.785772",
+      "error": "Сервер перезапущен во время выполнения",
+      "interrupted_at": "2026-03-13T02:25:39.810257",
+      "completed_at": "2026-03-13T02:29:16.601374",
+      "message": "OK"
+    }
+  },
+  "last_updated": "2026-03-13T02:29:16.601374"
+}

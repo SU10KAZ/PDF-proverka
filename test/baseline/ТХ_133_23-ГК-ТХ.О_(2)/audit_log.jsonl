@@ -1,0 +1,173 @@
+{"timestamp": "2026-03-13T10:38:35.460750", "level": "info", "stage": "crop_blocks", "message": "═══ ЭТАП 1: Кроп image-блоков из PDF ═══"}
+{"timestamp": "2026-03-13T10:38:39.843216", "level": "info", "stage": "crop_blocks", "message": "  OCR result: 133_23-ГК-ТХ.О (2)_result.json"}
+{"timestamp": "2026-03-13T10:38:39.844524", "level": "info", "stage": "crop_blocks", "message": "  [SKIP] 67EF-LPD6-GKF: штамп (category_code=stamp)"}
+{"timestamp": "2026-03-13T10:38:39.845616", "level": "info", "stage": "crop_blocks", "message": "  [SKIP] 7RYH-PHCV-G7M: штамп (category_code=stamp)"}
+{"timestamp": "2026-03-13T10:38:39.846563", "level": "info", "stage": "crop_blocks", "message": "  [SKIP] 4U4E-AGLU-7RD: штамп (category_code=stamp)"}
+{"timestamp": "2026-03-13T10:38:39.848386", "level": "info", "stage": "crop_blocks", "message": "  [SKIP] QHWT-L6NA-APY: штамп (category_code=stamp)"}
+{"timestamp": "2026-03-13T10:38:39.850149", "level": "info", "stage": "crop_blocks", "message": "  [SKIP] 9JPX-NPKX-WGV: штамп (category_code=stamp)"}
+{"timestamp": "2026-03-13T10:38:39.851688", "level": "info", "stage": "crop_blocks", "message": "  Image-блоков для скачивания: 6"}
+{"timestamp": "2026-03-13T10:38:39.853136", "level": "info", "stage": "crop_blocks", "message": "  [DOWNLOAD] TTV7-QYRK-GHY: стр.5, 1500x690px, 232 KB"}
+{"timestamp": "2026-03-13T10:38:39.854262", "level": "info", "stage": "crop_blocks", "message": "  [DOWNLOAD] 4FKQ-RYHH-73E: стр.5, 1500x830px, 58 KB"}
+{"timestamp": "2026-03-13T10:38:39.855731", "level": "info", "stage": "crop_blocks", "message": "  [DOWNLOAD] DVLT-E6XR-JW4: стр.5, 1500x1022px, 98 KB"}
+{"timestamp": "2026-03-13T10:38:39.856738", "level": "info", "stage": "crop_blocks", "message": "  [DOWNLOAD] 6WP6-9J6Y-FMU: стр.6, 1500x1008px, 238 KB"}
+{"timestamp": "2026-03-13T10:38:39.857663", "level": "info", "stage": "crop_blocks", "message": "  [DOWNLOAD] 6AKX-RHRV-HMY: стр.6, 1500x929px, 56 KB"}
+{"timestamp": "2026-03-13T10:38:39.858597", "level": "info", "stage": "crop_blocks", "message": "  [DOWNLOAD] 4GGN-7Q9C-NEJ: стр.6, 1500x1036px, 94 KB"}
+{"timestamp": "2026-03-13T10:38:39.859513", "level": "info", "stage": "crop_blocks", "message": ""}
+{"timestamp": "2026-03-13T10:38:39.860436", "level": "info", "stage": "crop_blocks", "message": "  Итого: 6 блоков (6 скачано, 0 пропущено, 0 ошибок)"}
+{"timestamp": "2026-03-13T10:38:39.861400", "level": "info", "stage": "crop_blocks", "message": "  Index: projects\\ТХ\\133_23-ГК-ТХ.О (2)\\_output\\blocks\\index.json"}
+{"timestamp": "2026-03-13T10:38:39.862550", "level": "info", "stage": "crop_blocks", "message": "{\"total_blocks\": 6, \"cropped\": 6, \"skipped\": 0, \"errors\": 0}"}
+{"timestamp": "2026-03-13T10:38:39.904699", "level": "info", "stage": "text_analysis", "message": "═══ ЭТАП 2: Текстовый анализ MD (Claude) ═══"}
+{"timestamp": "2026-03-13T10:43:53.910047", "level": "info", "stage": "text_analysis", "message": "**Этап 01 завершён.** Результат записан в `projects/ТХ/133_23-ГК-ТХ.О (2)/_output/01_text_analysis.json`"}
+{"timestamp": "2026-03-13T10:43:53.911243", "level": "info", "stage": "text_analysis", "message": ""}
+{"timestamp": "2026-03-13T10:43:53.912103", "level": "info", "stage": "text_analysis", "message": "---"}
+{"timestamp": "2026-03-13T10:43:53.913384", "level": "info", "stage": "text_analysis", "message": ""}
+{"timestamp": "2026-03-13T10:43:53.914560", "level": "info", "stage": "text_analysis", "message": "**Итог анализа текста:**"}
+{"timestamp": "2026-03-13T10:43:53.915479", "level": "info", "stage": "text_analysis", "message": ""}
+{"timestamp": "2026-03-13T10:43:53.916366", "level": "info", "stage": "text_analysis", "message": "| # | Замечание | Severity | Категория |"}
+{"timestamp": "2026-03-13T10:43:53.917261", "level": "info", "stage": "text_analysis", "message": "|---|-----------|----------|-----------|"}
+{"timestamp": "2026-03-13T10:43:53.918291", "level": "info", "stage": "text_analysis", "message": "| T-001 | Тепловые завесы Пав.1 (2 шт.) и Пав.2 (≥2 шт.) **не включены в спецификацию** | ЭКОНОМИЧЕСКОЕ | documentation |"}
+{"timestamp": "2026-03-13T10:43:53.919413", "level": "info", "stage": "text_analysis", "message": "| T-002 | Мощность тепловых завес не определена, нагрузка не передана в ЭОМ | ПРОВЕРИТЬ ПО СМЕЖНЫМ | capacity |"}
+{"timestamp": "2026-03-13T10:43:53.920361", "level": "info", "stage": "text_analysis", "message": "| T-003 | Два помещения \"БКТ №1\" в Строении 2 — нарушение идентификации | ЭКОНОМИЧЕСКОЕ | documentation |"}
+{"timestamp": "2026-03-13T10:43:53.921263", "level": "info", "stage": "text_analysis", "message": "| T-004 | Подъёмник 1000 кг на Пав.2 без позиции в спецификации и без ссылки на ТХ.ВТ | ПРОВЕРИТЬ ПО СМЕЖНЫМ | documentation |"}
+{"timestamp": "2026-03-13T10:43:53.922153", "level": "info", "stage": "text_analysis", "message": "| T-005 | Некорректные габариты стола поз.11: \"1600х800=1100х750 мм\" | РЕКОМЕНДАТЕЛЬНОЕ | documentation |"}
+{"timestamp": "2026-03-13T10:43:53.923068", "level": "info", "stage": "text_analysis", "message": "| T-006 | Неполный перечень нормативных ссылок (нет СП 59, ГОСТ 21.110, СанПиН) | РЕКОМЕНДАТЕЛЬНОЕ | normative_refs |"}
+{"timestamp": "2026-03-13T10:43:53.923959", "level": "info", "stage": "text_analysis", "message": "| T-007 | Примечание о незавершённости спецификации противоречит статусу РД | РЕКОМЕНДАТЕЛЬНОЕ | documentation |"}
+{"timestamp": "2026-03-13T10:43:53.924852", "level": "info", "stage": "text_analysis", "message": "| T-008 | Опечатки в обозначении: \"ТХ.0\" (ноль) и \"TX.CO\" (латиница) | РЕКОМЕНДАТЕЛЬНОЕ | documentation |"}
+{"timestamp": "2026-03-13T10:43:53.925722", "level": "info", "stage": "text_analysis", "message": ""}
+{"timestamp": "2026-03-13T10:43:53.926572", "level": "info", "stage": "text_analysis", "message": "**Арифметика экспликаций:** ошибок нет ✅  "}
+{"timestamp": "2026-03-13T10:43:53.927440", "level": "info", "stage": "text_analysis", "message": "**Блоки для визуального анализа:** 2 HIGH, 3 LOW, 1 SKIP (из 6 блоков)  "}
+{"timestamp": "2026-03-13T10:43:53.928550", "level": "info", "stage": "text_analysis", "message": "**Нормативные ссылки:** обе актуальные, сверка выполнена ✅"}
+{"timestamp": "2026-03-13T10:43:53.952077", "level": "info", "stage": "crop_blocks", "message": "Анализ ВСЕХ image-блоков"}
+{"timestamp": "2026-03-13T10:43:53.953054", "level": "info", "stage": "crop_blocks", "message": "═══ ЭТАП 3: Генерация пакетов блоков ═══"}
+{"timestamp": "2026-03-13T10:43:54.202132", "level": "info", "stage": "crop_blocks", "message": "  Сгенерировано 2 пакетов (6 блоков)"}
+{"timestamp": "2026-03-13T10:43:54.203640", "level": "info", "stage": "crop_blocks", "message": "  Записано: projects\\ТХ\\133_23-ГК-ТХ.О (2)\\_output\\block_batches.json"}
+{"timestamp": "2026-03-13T10:43:54.250061", "level": "info", "stage": "block_analysis", "message": "═══ ЭТАП 4: Анализ блоков (2 пакетов, x3 параллельно) ═══"}
+{"timestamp": "2026-03-13T10:43:54.251557", "level": "info", "stage": "block_analysis", "message": "Пакет 1/2: 3 блоков..."}
+{"timestamp": "2026-03-13T10:43:54.261348", "level": "info", "stage": "block_analysis", "message": "Пакет 2/2: 3 блоков..."}
+{"timestamp": "2026-03-13T10:46:39.029279", "level": "info", "stage": "block_analysis", "message": "**Пакет 2 записан.** Итог по 3 блокам:"}
+{"timestamp": "2026-03-13T10:46:39.030532", "level": "info", "stage": "block_analysis", "message": ""}
+{"timestamp": "2026-03-13T10:46:39.031420", "level": "info", "stage": "block_analysis", "message": "**6WP6-9J6Y-FMU** — план 1 этажа Строения 2 (ПРИОРИТЕТНЫЙ):"}
+{"timestamp": "2026-03-13T10:46:39.032439", "level": "info", "stage": "block_analysis", "message": "- **G-001** (ЭКСПЛУАТАЦИОННОЕ) — зазоры 400–550 мм у рабочих мест поз.8, 11, 12, 13 не соответствуют СП 2.2.3670-20 (мин. 600–1000 мм)"}
+{"timestamp": "2026-03-13T10:46:39.033769", "level": "info", "stage": "block_analysis", "message": "- **G-002** (ЭКОНОМИЧЕСКОЕ) — 2 тепловые завесы у входов 2200 мм отсутствуют в спецификации — T-001 **подтверждён**"}
+{"timestamp": "2026-03-13T10:46:39.034844", "level": "info", "stage": "block_analysis", "message": "- **G-003** (ПРОВЕРИТЬ ПО СМЕЖНЫМ) — подъёмник 1000 кг без позиции в ТХ.О и без ссылки на ТХ.ВТ; зона наружных блоков кондиционеров перекрывается с зоной подъёмника — T-004 **подтверждён**"}
+{"timestamp": "2026-03-13T10:46:39.035779", "level": "info", "stage": "block_analysis", "message": "- **G-004** (ПРОВЕРИТЬ ПО СМЕЖНЫМ) — зона наружных блоков кондиционеров без привязки к ОВиК"}
+{"timestamp": "2026-03-13T10:46:39.036667", "level": "info", "stage": "block_analysis", "message": ""}
+{"timestamp": "2026-03-13T10:46:39.037615", "level": "info", "stage": "block_analysis", "message": "**6AKX-RHRV-HMY** — условные обозначения: замечаний нет"}
+{"timestamp": "2026-03-13T10:46:39.038601", "level": "info", "stage": "block_analysis", "message": ""}
+{"timestamp": "2026-03-13T10:46:39.039478", "level": "info", "stage": "block_analysis", "message": "**4GGN-7Q9C-NEJ** — ситуационная схема: замечаний нет"}
+{"timestamp": "2026-03-13T10:46:39.054106", "level": "info", "stage": "block_analysis", "message": "Пакет 2/2: OK (11.2 KB)"}
+{"timestamp": "2026-03-13T10:47:38.251549", "level": "info", "stage": "block_analysis", "message": "**Пакет 1 записан.** Итог анализа 3 блоков:"}
+{"timestamp": "2026-03-13T10:47:38.252770", "level": "info", "stage": "block_analysis", "message": ""}
+{"timestamp": "2026-03-13T10:47:38.253651", "level": "info", "stage": "block_analysis", "message": "| Блок | Тип | Замечания |"}
+{"timestamp": "2026-03-13T10:47:38.254585", "level": "info", "stage": "block_analysis", "message": "|------|-----|-----------|"}
+{"timestamp": "2026-03-13T10:47:38.255475", "level": "info", "stage": "block_analysis", "message": "| TTV7-QYRK-GHY | План 1 этажа Строения 1 | 3 замечания |"}
+{"timestamp": "2026-03-13T10:47:38.256368", "level": "info", "stage": "block_analysis", "message": "| 4FKQ-RYHH-73E | Условные обозначения | 1 замечание |"}
+{"timestamp": "2026-03-13T10:47:38.257243", "level": "info", "stage": "block_analysis", "message": "| DVLT-E6XR-JW4 | Схема застройки | 0 замечаний |"}
+{"timestamp": "2026-03-13T10:47:38.258357", "level": "info", "stage": "block_analysis", "message": ""}
+{"timestamp": "2026-03-13T10:47:38.259421", "level": "info", "stage": "block_analysis", "message": "**Ключевые находки:**"}
+{"timestamp": "2026-03-13T10:47:38.260411", "level": "info", "stage": "block_analysis", "message": "- **G-001** (ЭКОНОМИЧЕСКОЕ): Тепловая завеса на чертеже без позиции в спецификации → подтверждает T-001"}
+{"timestamp": "2026-03-13T10:47:38.261404", "level": "info", "stage": "block_analysis", "message": "- **G-002** (ПРОВЕРИТЬ ПО СМЕЖНЫМ): Мощность тепловой завесы не указана; суммарная нагрузка 8.5 кВт без учёта завесы → подтверждает T-002  "}
+{"timestamp": "2026-03-13T10:47:38.262324", "level": "info", "stage": "block_analysis", "message": "- **G-003** (ПРОВЕРИТЬ ПО СМЕЖНЫМ): С/У универсальный пом.4 (3.8 м²) — на нижней границе по требованиям СП 59 для МГН"}
+{"timestamp": "2026-03-13T10:47:38.263224", "level": "info", "stage": "block_analysis", "message": "- **G-004** (РЕКОМЕНДАТЕЛЬНОЕ): Легенда неполная — тепловая завеса не включена в условные обозначения"}
+{"timestamp": "2026-03-13T10:47:38.278107", "level": "info", "stage": "block_analysis", "message": "Пакет 1/2: OK (10.3 KB)"}
+{"timestamp": "2026-03-13T10:47:38.279711", "level": "info", "stage": "block_analysis", "message": "Слияние результатов анализа блоков..."}
+{"timestamp": "2026-03-13T10:47:38.532693", "level": "info", "stage": "block_analysis", "message": "  Найдено пакетов: 2"}
+{"timestamp": "2026-03-13T10:47:38.534032", "level": "info", "stage": "block_analysis", "message": "    block_batch_001.json: 3 блоков, 4 замечаний"}
+{"timestamp": "2026-03-13T10:47:38.535162", "level": "info", "stage": "block_analysis", "message": "    block_batch_002.json: 3 блоков, 4 замечаний"}
+{"timestamp": "2026-03-13T10:47:38.536055", "level": "info", "stage": "block_analysis", "message": ""}
+{"timestamp": "2026-03-13T10:47:38.537214", "level": "info", "stage": "block_analysis", "message": "  Итого: 6 блоков, 8 замечаний"}
+{"timestamp": "2026-03-13T10:47:38.538352", "level": "info", "stage": "block_analysis", "message": "  Покрытие: 100.0%"}
+{"timestamp": "2026-03-13T10:47:38.539336", "level": "info", "stage": "block_analysis", "message": "  Записано: projects\\ТХ\\133_23-ГК-ТХ.О (2)\\_output\\02_blocks_analysis.json"}
+{"timestamp": "2026-03-13T10:47:38.564175", "level": "info", "stage": "block_analysis", "message": "02_blocks_analysis.json создан"}
+{"timestamp": "2026-03-13T10:47:38.586138", "level": "info", "stage": "findings_merge", "message": "═══ ЭТАП 6: Свод замечаний (Claude) ═══"}
+{"timestamp": "2026-03-13T10:50:46.493953", "level": "info", "stage": "findings_merge", "message": "Файл `03_findings.json` записан. Краткий итог:"}
+{"timestamp": "2026-03-13T10:50:46.495284", "level": "info", "stage": "findings_merge", "message": ""}
+{"timestamp": "2026-03-13T10:50:46.496240", "level": "info", "stage": "findings_merge", "message": "**Проект:** 133_23-ГК-ТХ.О (2) — Технологические решения (Павильоны 1 и 2)"}
+{"timestamp": "2026-03-13T10:50:46.497184", "level": "info", "stage": "findings_merge", "message": "**Блоков проанализировано:** 6 (3 листа × 2 строения)"}
+{"timestamp": "2026-03-13T10:50:46.498087", "level": "info", "stage": "findings_merge", "message": ""}
+{"timestamp": "2026-03-13T10:50:46.499053", "level": "info", "stage": "findings_merge", "message": "### Итого замечаний: 12"}
+{"timestamp": "2026-03-13T10:50:46.499962", "level": "info", "stage": "findings_merge", "message": ""}
+{"timestamp": "2026-03-13T10:50:46.500841", "level": "info", "stage": "findings_merge", "message": "| Severity | Кол-во | Замечания |"}
+{"timestamp": "2026-03-13T10:50:46.501735", "level": "info", "stage": "findings_merge", "message": "|----------|--------|-----------|"}
+{"timestamp": "2026-03-13T10:50:46.502717", "level": "info", "stage": "findings_merge", "message": "| КРИТИЧЕСКОЕ | 0 | — |"}
+{"timestamp": "2026-03-13T10:50:46.503659", "level": "info", "stage": "findings_merge", "message": "| ЭКОНОМИЧЕСКОЕ | 2 | F-001 (завесы без спецификации), F-007 (дубль БКТ №1) |"}
+{"timestamp": "2026-03-13T10:50:46.504593", "level": "info", "stage": "findings_merge", "message": "| ЭКСПЛУАТАЦИОННОЕ | 1 | F-003 (проходы 400–550 мм < 600 мм нормы) |"}
+{"timestamp": "2026-03-13T10:50:46.505471", "level": "info", "stage": "findings_merge", "message": "| РЕКОМЕНДАТЕЛЬНОЕ | 5 | F-008–F-012 (легенда, ведомость, примечание РД, габариты стола, опечатки) |"}
+{"timestamp": "2026-03-13T10:50:46.506353", "level": "info", "stage": "findings_merge", "message": "| ПРОВЕРИТЬ ПО СМЕЖНЫМ | 4 | F-002 (мощность завес → ЭОМ), F-004 (С/У МГН → АР), F-005 (подъёмник → ТХ.ВТ), F-006 (кондиционеры → ОВиК) |"}
+{"timestamp": "2026-03-13T10:50:46.507451", "level": "info", "stage": "findings_merge", "message": ""}
+{"timestamp": "2026-03-13T10:50:46.508540", "level": "info", "stage": "findings_merge", "message": "**Дедупликация:** preliminary_findings содержали тройные дубликаты (3 батча); объединено в 12 уникальных замечаний. T-001+G → F-001, T-004+G → F-005."}
+{"timestamp": "2026-03-13T10:50:46.509475", "level": "info", "stage": "findings_merge", "message": ""}
+{"timestamp": "2026-03-13T10:50:46.510410", "level": "info", "stage": "findings_merge", "message": "**Межблочная сверка:** противоречий между блоками одной страницы не выявлено. Обнаружено совмещение зон подъёмника и кондиционеров (учтено в F-005)."}
+{"timestamp": "2026-03-13T10:50:46.536274", "level": "info", "stage": "norm_verify", "message": "═══ ЭТАП 7: Верификация нормативных ссылок ═══"}
+{"timestamp": "2026-03-13T10:50:46.547552", "level": "info", "stage": "norm_verify", "message": "Шаг 1: Извлечение нормативных ссылок из замечаний..."}
+{"timestamp": "2026-03-13T10:50:46.556457", "level": "info", "stage": "norm_verify", "message": "Найдено 7 уникальных нормативных ссылок"}
+{"timestamp": "2026-03-13T10:50:46.557459", "level": "info", "stage": "norm_verify", "message": "Шаг 2: Проверка актуальности 7 норм через WebSearch..."}
+{"timestamp": "2026-03-13T10:55:00.992280", "level": "info", "stage": "norm_verify", "message": "**Верификация завершена. Итог:**"}
+{"timestamp": "2026-03-13T10:55:00.993506", "level": "info", "stage": "norm_verify", "message": ""}
+{"timestamp": "2026-03-13T10:55:00.994409", "level": "info", "stage": "norm_verify", "message": "| | |"}
+{"timestamp": "2026-03-13T10:55:00.995327", "level": "info", "stage": "norm_verify", "message": "|---|---|"}
+{"timestamp": "2026-03-13T10:55:00.996306", "level": "info", "stage": "norm_verify", "message": "| Норм проверено | 8 |"}
+{"timestamp": "2026-03-13T10:55:00.997216", "level": "info", "stage": "norm_verify", "message": "| Из кеша | 6 |"}
+{"timestamp": "2026-03-13T10:55:00.998104", "level": "info", "stage": "norm_verify", "message": "| Через WebSearch | 2 (СП 2.2.3670-20, СанПиН 1.2.3685-21) |"}
+{"timestamp": "2026-03-13T10:55:00.999050", "level": "info", "stage": "norm_verify", "message": "| Цитат верифицировано | 5 |"}
+{"timestamp": "2026-03-13T10:55:00.999956", "level": "info", "stage": "norm_verify", "message": "| Расхождений | 4 |"}
+{"timestamp": "2026-03-13T10:55:01.001077", "level": "info", "stage": "norm_verify", "message": ""}
+{"timestamp": "2026-03-13T10:55:01.002182", "level": "info", "stage": "norm_verify", "message": "**Ключевые находки:**"}
+{"timestamp": "2026-03-13T10:55:01.003104", "level": "info", "stage": "norm_verify", "message": ""}
+{"timestamp": "2026-03-13T10:55:01.003995", "level": "info", "stage": "norm_verify", "message": "- **ГОСТ 21.1101-2013** → заменён на **ГОСТ Р 21.101-2020** (затронуты F-008, F-012)"}
+{"timestamp": "2026-03-13T10:55:01.004895", "level": "info", "stage": "norm_verify", "message": "- **F-001** — ссылка на п.4.2 ГОСТ 21.110-2013 не соответствует содержанию (п.4.2 про форматы, не состав спецификации)"}
+{"timestamp": "2026-03-13T10:55:01.005797", "level": "info", "stage": "norm_verify", "message": "- **F-003** — цитата содержит нормы из **отменённого** СанПиН 2.2.2/2.4.1340-03 вместо действующего СП 2.2.3670-20 (нормы расстояний разные: 2,0/1,2 м vs 1,5/1,0 м)"}
+{"timestamp": "2026-03-13T10:55:01.006716", "level": "info", "stage": "norm_verify", "message": ""}
+{"timestamp": "2026-03-13T10:55:01.007671", "level": "info", "stage": "norm_verify", "message": "Файл записан: `projects/ТХ/133_23-ГК-ТХ.О (2)/_output/norm_checks.json`"}
+{"timestamp": "2026-03-13T10:55:01.030099", "level": "info", "stage": "norm_verify", "message": "Результат: 7 актуальных, 0 устаревших, 1 заменённых, 0 отменённых"}
+{"timestamp": "2026-03-13T10:55:01.031202", "level": "info", "stage": "norm_fix", "message": "Шаг 3: Пересмотр 3 замечаний с устаревшими нормами..."}
+{"timestamp": "2026-03-13T10:59:10.131481", "level": "info", "stage": "norm_fix", "message": "Файл записан. Итог пересмотра:"}
+{"timestamp": "2026-03-13T10:59:10.132662", "level": "info", "stage": "norm_fix", "message": ""}
+{"timestamp": "2026-03-13T10:59:10.133537", "level": "info", "stage": "norm_fix", "message": "---"}
+{"timestamp": "2026-03-13T10:59:10.134440", "level": "info", "stage": "norm_fix", "message": ""}
+{"timestamp": "2026-03-13T10:59:10.135308", "level": "info", "stage": "norm_fix", "message": "**Пересмотрено замечаний: 5 из 6 запрошенных. Предупреждений: 1.**"}
+{"timestamp": "2026-03-13T10:59:10.136387", "level": "info", "stage": "norm_fix", "message": ""}
+{"timestamp": "2026-03-13T10:59:10.137424", "level": "info", "stage": "norm_fix", "message": "| ID | Статус | Что изменилось |"}
+{"timestamp": "2026-03-13T10:59:10.138483", "level": "info", "stage": "norm_fix", "message": "|----|--------|----------------|"}
+{"timestamp": "2026-03-13T10:59:10.139514", "level": "info", "stage": "norm_fix", "message": "| **F-001** | `revised` | Норма `п. 4.2` → `п. 4.1` ГОСТ 21.110-2013. П.4.2 описывает форматы выпуска спецификации, а не состав позиций. Цитата нормы обновлена. |"}
+{"timestamp": "2026-03-13T10:59:10.140548", "level": "info", "stage": "norm_fix", "message": "| **F-003** | `revised` | Нормативная цитата исправлена: значения `2,0 м / 1,2 м` из отменённого СанПиН 2.2.2/2.4.1340-03 заменены на актуальные `1,5 м / 1,0 м` по СП 2.2.3670-20. Факт нарушения (400–550 мм) сохраняется. |"}
+{"timestamp": "2026-03-13T10:59:10.141514", "level": "info", "stage": "norm_fix", "message": "| **F-008** | `revised` | Ссылка `ГОСТ 21.1101-2013, п. 5.7` → `ГОСТ Р 21.101-2020, п. 5.7`. Документ заменён. |"}
+{"timestamp": "2026-03-13T10:59:10.142420", "level": "info", "stage": "norm_fix", "message": "| **F-009** | `revised` | Норма ПП РФ №87 актуальна. Уточнён текст решения: при добавлении ГОСТ 21.110-2013 в ведомость теперь указывается `п.4.1` (состав спецификации). |"}
+{"timestamp": "2026-03-13T10:59:10.143404", "level": "info", "stage": "norm_fix", "message": "| **F-011** | `warning` | П.4.3 ГОСТ 21.110-2013 не верифицирован отдельно. Потенциально применим, но требует ручной проверки. |"}
+{"timestamp": "2026-03-13T10:59:10.144350", "level": "info", "stage": "norm_fix", "message": "| **F-012** | `revised` | Ссылка `ГОСТ 21.1101-2013, п. 5.3` → `ГОСТ Р 21.101-2020, п. 5.3`. Документ заменён. |"}
+{"timestamp": "2026-03-13T10:59:10.145239", "level": "info", "stage": "norm_fix", "message": ""}
+{"timestamp": "2026-03-13T10:59:10.146106", "level": "info", "stage": "norm_fix", "message": "Остальные 6 замечаний (F-002, F-004, F-005, F-006, F-007, F-010) — `ok`, нормы подтверждены без изменений."}
+{"timestamp": "2026-03-13T10:59:10.160435", "level": "info", "stage": "norm_fix", "message": "03a_norms_verified.json создан (27.9 KB)"}
+{"timestamp": "2026-03-13T10:59:10.169884", "level": "info", "stage": "norm_fix", "message": "База норм обновлена: +2 новых, 0 обновлено (всего в базе: 278)"}
+{"timestamp": "2026-03-13T10:59:10.170830", "level": "info", "stage": "norm_fix", "message": "Верификация нормативных ссылок завершена"}
+{"timestamp": "2026-03-13T10:59:10.189844", "level": "info", "stage": "excel", "message": "═══ ЭТАП 8: Генерация Excel ═══"}
+{"timestamp": "2026-03-13T10:59:10.681816", "level": "info", "stage": "excel", "message": ""}
+{"timestamp": "2026-03-13T10:59:10.683009", "level": "info", "stage": "excel", "message": "=============================================================="}
+{"timestamp": "2026-03-13T10:59:10.683963", "level": "info", "stage": "excel", "message": "  Генерация Excel-отчёта  |  проектов: 1"}
+{"timestamp": "2026-03-13T10:59:10.684901", "level": "info", "stage": "excel", "message": "=============================================================="}
+{"timestamp": "2026-03-13T10:59:10.685818", "level": "info", "stage": "excel", "message": "  [OK]  133_23-ГК-ТХ.О (2)                12 замечаний"}
+{"timestamp": "2026-03-13T10:59:10.686930", "level": "info", "stage": "excel", "message": "  [--]  133_23-ГК-ТХ.О (2)                нет optimization.json"}
+{"timestamp": "2026-03-13T10:59:10.688047", "level": "info", "stage": "excel", "message": ""}
+{"timestamp": "2026-03-13T10:59:10.688978", "level": "info", "stage": "excel", "message": "  Файл сохранён: D:\\Отедел Системного Анализа\\1. Calude code\\отчет\\audit_report_13.03.2026.xlsx"}
+{"timestamp": "2026-03-13T10:59:10.689992", "level": "info", "stage": "excel", "message": "=============================================================="}
+{"timestamp": "2026-03-13T10:59:10.690922", "level": "info", "stage": "excel", "message": ""}
+{"timestamp": "2026-03-13T10:59:10.716792", "level": "info", "stage": "excel", "message": "Аудит завершён за 20.6 мин."}
+{"timestamp": "2026-03-13T10:59:10.727657", "level": "info", "stage": "optimization", "message": "Запуск анализа оптимизации проектных решений..."}
+{"timestamp": "2026-03-13T11:01:14.705682", "level": "info", "stage": "optimization", "message": "Файл `optimization.json` записан. Результаты оптимизации:"}
+{"timestamp": "2026-03-13T11:01:14.706887", "level": "info", "stage": "optimization", "message": ""}
+{"timestamp": "2026-03-13T11:01:14.707749", "level": "info", "stage": "optimization", "message": "**9 позиций** найдено по 4 направлениям:"}
+{"timestamp": "2026-03-13T11:01:14.708835", "level": "info", "stage": "optimization", "message": ""}
+{"timestamp": "2026-03-13T11:01:14.709848", "level": "info", "stage": "optimization", "message": "| Тип | Кол-во | Ключевые предложения |"}
+{"timestamp": "2026-03-13T11:01:14.710731", "level": "info", "stage": "optimization", "message": "|-----|--------|---------------------|"}
+{"timestamp": "2026-03-13T11:01:14.711627", "level": "info", "stage": "optimization", "message": "| cheaper_analog | 3 | ПК → тонкие клиенты (−40%), МФУ цветное → монохромное (−35%), подъёмник 1000→250 кг (−30%) |"}
+{"timestamp": "2026-03-13T11:01:14.712539", "level": "info", "stage": "optimization", "message": "| simpler_design | 3 | Столы меньших габаритов (решает F-003), унификация шкафов, пластик вместо металла |"}
+{"timestamp": "2026-03-13T11:01:14.713462", "level": "info", "stage": "optimization", "message": "| faster_install | 1 | Напольные розетки → встраиваемые в столешницу блоки |"}
+{"timestamp": "2026-03-13T11:01:14.714446", "level": "info", "stage": "optimization", "message": "| lifecycle | 2 | Водяные завесы вместо электрических (снимает F-002), модульная мебель |"}
+{"timestamp": "2026-03-13T11:01:14.715457", "level": "info", "stage": "optimization", "message": ""}
+{"timestamp": "2026-03-13T11:01:14.716353", "level": "info", "stage": "optimization", "message": "**Согласованность с аудитом:**"}
+{"timestamp": "2026-03-13T11:01:14.717221", "level": "info", "stage": "optimization", "message": "- OPT-003 одновременно решает замечание **F-003** (недостаточные зазоры 400–550 мм)"}
+{"timestamp": "2026-03-13T11:01:14.718113", "level": "info", "stage": "optimization", "message": "- OPT-007 снимает риск из **F-002** (превышение электрической нагрузки на 9–27 кВт)"}
+{"timestamp": "2026-03-13T11:01:14.718991", "level": "info", "stage": "optimization", "message": "- OPT-009 учитывает замечание **F-010** (промежуточный статус РД)"}
+{"timestamp": "2026-03-13T11:01:14.719861", "level": "info", "stage": "optimization", "message": ""}
+{"timestamp": "2026-03-13T11:01:14.720718", "level": "info", "stage": "optimization", "message": "`estimated_savings_pct = 0` — невозможно корректно рассчитать средневзвешенную без данных о стоимости позиций в проекте."}
+{"timestamp": "2026-03-13T11:01:14.742656", "level": "info", "stage": "optimization", "message": "Оптимизация завершена: 9 предложений, ~0% средняя экономия (12.5 KB)"}

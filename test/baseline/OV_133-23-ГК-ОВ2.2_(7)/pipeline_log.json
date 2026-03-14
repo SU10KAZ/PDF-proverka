@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "stages": {
+    "crop_blocks": {
+      "status": "done",
+      "started_at": "2026-03-12T11:39:59.896020",
+      "error": "Сервер перезапущен во время выполнения",
+      "interrupted_at": "2026-03-12T11:40:01.377788",
+      "completed_at": "2026-03-12T11:42:16.193410",
+      "message": "OK"
+    },
+    "text_analysis": {
+      "status": "done",
+      "started_at": "2026-03-12T11:42:16.202000",
+      "error": "Сервер перезапущен во время выполнения",
+      "interrupted_at": "2026-03-12T11:42:16.389560",
+      "completed_at": "2026-03-12T12:11:56.681003",
+      "message": "OK"
+    },
+    "block_analysis": {
+      "status": "done",
+      "started_at": "2026-03-12T12:11:56.981289",
+      "error": "Сервер перезапущен во время выполнения",
+      "interrupted_at": "2026-03-12T12:12:46.699250",
+      "completed_at": "2026-03-12T13:41:19.148449",
+      "message": "Все 86 пакетов OK"
+    },
+    "findings_merge": {
+      "status": "done",
+      "started_at": "2026-03-12T13:41:19.157295",
+      "error": "Сервер перезапущен во время выполнения",
+      "interrupted_at": "2026-03-12T13:41:26.678843",
+      "completed_at": "2026-03-12T13:49:25.484027",
+      "message": "OK"
+    },
+    "norm_verify": {
+      "status": "done",
+      "started_at": "2026-03-12T13:49:25.493346",
+      "error": "Сервер перезапущен во время выполнения",
+      "interrupted_at": "2026-03-12T13:49:27.179238",
+      "completed_at": "2026-03-12T14:08:58.195365",
+      "message": "OK"
+    },
+    "excel": {
+      "status": "done",
+      "started_at": "2026-03-12T14:08:58.204468",
+      "completed_at": "2026-03-12T14:08:58.786534",
+      "message": "OK"
+    },
+    "optimization": {
+      "status": "done",
+      "started_at": "2026-03-12T14:08:58.796322",
+      "error": "Сервер перезапущен во время выполнения",
+      "interrupted_at": "2026-03-12T14:08:59.125481",
+      "completed_at": "2026-03-12T14:13:52.104079",
+      "message": "OK"
+    }
+  },
+  "last_updated": "2026-03-12T14:13:52.104079"
+}

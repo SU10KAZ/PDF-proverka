@@ -1,9 +1,12 @@
-# === Generated output ===
-projects/*/_output/
-projects/*/pages_png/
+# === Generated output (любая вложенность) ===
+**/projects/**/_output/
+**/projects/**/pages_png/
 
 # === PDF documents (too large for git) ===
 *.pdf
+
+# === Image blocks (generated, large) ===
+*.png
 
 # === Excel reports (generated) ===
 audit_report_*.xlsx

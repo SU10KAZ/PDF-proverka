@@ -4,6 +4,42 @@
   "section": "ТХ",
   "description": "",
   "pdf_file": "133-23-ГК-ТХ.А.pdf",
-  "tile_config": {},
-  "md_file": "133-23-ГК-ТХ.А_document.md"
+  "tile_config": {
+    "5": [
+      2,
+      5,
+      2.5,
+      3,
+      "План этажа, Узел, Схема"
+    ],
+    "6": [
+      2,
+      2,
+      2.5,
+      3,
+      "План этажа, Схема"
+    ]
+  },
+  "md_file": "133-23-ГК-ТХ.А_document.md",
+  "md_file_size_kb": 83.4,
+  "text_source": "md",
+  "md_page_classification": {
+    "total_pages": 11,
+    "image_pages": [
+      5,
+      6
+    ],
+    "text_only_pages": [
+      1,
+      2,
+      3,
+      4,
+      7,
+      8,
+      9,
+      10,
+      11
+    ]
+  },
+  "tile_config_source": "md_analysis"
 }

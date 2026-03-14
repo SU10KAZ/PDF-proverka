@@ -7,9 +7,10 @@ import os
 from pathlib import Path
 
 # Принудительно UTF-8 для stdout/stderr (Windows cp1251 ломает Unicode-вывод)
-if hasattr(sys.stdout, "reconfigure"):
+# pythonw запускается без stdout/stderr (None) — нужна проверка
+if sys.stdout is not None and hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-if hasattr(sys.stderr, "reconfigure"):
+if sys.stderr is not None and hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 # Добавляем корень проекта в sys.path чтобы webapp.* работал
