@@ -26,8 +26,10 @@ def get_findings(
     category: Optional[str] = None,
     sheet: Optional[str] = None,
     search: Optional[str] = None,
+    limit: Optional[int] = None,
+    offset: Optional[int] = None,
 ) -> Optional[FindingsResponse]:
-    """Получить замечания проекта с фильтрацией."""
+    """Получить замечания проекта с фильтрацией и пагинацией."""
     path = _get_findings_path(project_id)
     data = _load_json(path)
     if data is None:
@@ -64,9 +66,17 @@ def get_findings(
     sev_order = {s: cfg["order"] for s, cfg in SEVERITY_CONFIG.items()}
     filtered.sort(key=lambda f: sev_order.get(f.get("severity", ""), 99))
 
+    # Пагинация (после фильтрации и сортировки)
+    filtered_total = len(filtered)
+    if offset is not None:
+        filtered = filtered[offset:]
+    if limit is not None:
+        filtered = filtered[:limit]
+
     return FindingsResponse(
         project_id=project_id,
         total=len(items),
+        filtered_total=filtered_total,
         by_severity=by_severity,
         findings=filtered,
         audit_date=audit_date,

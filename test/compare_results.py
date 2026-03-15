@@ -218,8 +218,8 @@ def _print_comparison(r: dict):
         print(f"    {'Требуют пересмотра':<35} {bn['needs_revision']:>10} {cn['needs_revision']:>10}")
 
     print(f"\n  Новые компоненты:")
-    print(f"    document_graph.json:       {'✓' if r.get('has_document_graph') else '✗'}")
-    print(f"    03_findings_review.json:   {'✓' if r.get('has_findings_review') else '✗'}")
+    print(f"    document_graph.json:       {'YES' if r.get('has_document_graph') else 'NO'}")
+    print(f"    03_findings_review.json:   {'YES' if r.get('has_findings_review') else 'NO'}")
 
 
 def main():

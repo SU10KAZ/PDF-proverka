@@ -22,14 +22,18 @@ async def get_findings(
     category: Optional[str] = Query(None, description="Фильтр по категории"),
     sheet: Optional[str] = Query(None, description="Фильтр по листу"),
     search: Optional[str] = Query(None, description="Полнотекстовый поиск"),
+    limit: Optional[int] = Query(None, ge=1, le=500, description="Макс. замечаний"),
+    offset: Optional[int] = Query(None, ge=0, description="Смещение"),
 ):
-    """Замечания проекта с фильтрацией."""
+    """Замечания проекта с фильтрацией и пагинацией."""
     result = findings_service.get_findings(
         project_id,
         severity=severity,
         category=category,
         sheet=sheet,
         search=search,
+        limit=limit,
+        offset=offset,
     )
     if result is None:
         raise HTTPException(404, f"Замечания не найдены для '{project_id}'. Возможно, аудит ещё не проводился.")

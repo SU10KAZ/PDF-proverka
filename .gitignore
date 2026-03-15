@@ -1,22 +1,36 @@
-# === Generated output (любая вложенность) ===
-**/projects/**/_output/
-**/projects/**/pages_png/
-
-# === PDF documents (too large for git) ===
+# === Heavy source docs ===
 *.pdf
+!Алгоритм проверки документации.pdf
 
-# === Image blocks (generated, large) ===
+# === Images / crops / previews ===
 *.png
+*.jpg
+*.jpeg
+*.webp
+
+# === Project runtime artifacts ===
+projects/**/_output/
+projects/**/blocks/
+projects/**/images/
+projects/**/crops/
+projects/**/debug/
+projects/**/logs/
+
+# === Runtime data ===
+webapp/data/usage_data.json
+*.log
+*.tmp
+*.cache
+
+# === Local settings ===
+.claude/settings.local.json
+.env
+.env.*
 
 # === Excel reports (generated) ===
 audit_report_*.xlsx
 ~$*.xlsx
 отчет/
-
-# === Logs ===
-*.log
-server_startup.log
-_reprocess.log
 
 # === Python ===
 __pycache__/
@@ -36,7 +50,6 @@ Desktop.ini
 .DS_Store
 
 # === Temporary ===
-*.tmp
 *.bak
 *_temp.py
 check_*.py

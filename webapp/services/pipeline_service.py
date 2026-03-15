@@ -1396,6 +1396,60 @@ class PipelineManager:
         self._tasks[project_id] = task
         return job
 
+    @staticmethod
+    def _build_selective_review_input(output_dir: Path) -> dict:
+        """Отфильтровать risky findings для Selective Critic.
+
+        Risky = нет evidence, нет related_block_ids, или norm_confidence < 0.8.
+        Возвращает {"total", "risky", "skipped", "risky_ids"}.
+        Записывает 03_findings_review_input.json.
+        """
+        findings_path = output_dir / "03_findings.json"
+        if not findings_path.exists():
+            return {"total": 0, "risky": 0, "skipped": 0, "risky_ids": []}
+
+        data = json.loads(findings_path.read_text(encoding="utf-8"))
+        findings = data.get("findings", data.get("items", []))
+
+        risky = []
+        for f in findings:
+            evidence = f.get("evidence", [])
+            related = f.get("related_block_ids", [])
+            confidence = f.get("norm_confidence", 1.0)
+            has_image_evidence = any(
+                e.get("type") == "image" and e.get("source") != "grounding_service"
+                for e in evidence
+            )
+            if not has_image_evidence and not related:
+                risky.append(f)
+            elif confidence is not None and confidence < 0.8:
+                risky.append(f)
+
+        risky_ids = [f.get("id", "") for f in risky]
+
+        review_input = {
+            "meta": {
+                "source": "selective_critic",
+                "total_findings": len(findings),
+                "risky_count": len(risky),
+                "skipped_count": len(findings) - len(risky),
+            },
+            "findings": risky,
+        }
+
+        input_path = output_dir / "03_findings_review_input.json"
+        input_path.write_text(
+            json.dumps(review_input, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+
+        return {
+            "total": len(findings),
+            "risky": len(risky),
+            "skipped": len(findings) - len(risky),
+            "risky_ids": risky_ids,
+        }
+
     async def _run_findings_review(self, job: AuditJob, project_info: dict):
         """
         Critic + Corrector: проверка и корректировка замечаний.
@@ -1405,6 +1459,38 @@ class PipelineManager:
         """
         pid = job.project_id
         output_dir = resolve_project_dir(pid) / "_output"
+
+        # ── Pre-Critic: Python-level grounding ──
+        try:
+            from webapp.services.grounding_service import run_grounding
+            findings_path = output_dir / "03_findings.json"
+            blocks_path = output_dir / "02_blocks_analysis.json"
+            if findings_path.exists() and blocks_path.exists():
+                grounding_stats = run_grounding(findings_path, blocks_path)
+                await self._log(
+                    job,
+                    f"Grounding: {grounding_stats.get('grounding_candidates_added', 0)} "
+                    f"findings обогащены кандидатами "
+                    f"(уже привязано: {grounding_stats.get('already_grounded', 0)})",
+                )
+        except Exception as e:
+            await self._log(job, f"Grounding пропущен: {e}", "warn")
+
+        # ── Selective Critic: фильтрация risky findings ──
+        try:
+            sel = self._build_selective_review_input(output_dir)
+            await self._log(
+                job,
+                f"Selective Critic: {sel['risky']}/{sel['total']} findings требуют проверки "
+                f"({sel['skipped']} пропущены как хорошо привязанные)",
+            )
+            if sel["risky"] == 0:
+                await self._log(job, "Все findings хорошо привязаны — Critic не требуется")
+                self._update_pipeline_log(pid, "findings_critic", "done",
+                                           message="Skipped: 0 risky findings")
+                return
+        except Exception as e:
+            await self._log(job, f"Selective filter пропущен: {e}", "warn")
 
         # ── Critic ──
         self._reset_job_progress(job)
@@ -1514,15 +1600,26 @@ class PipelineManager:
                 generate_deterministic_checks,
                 format_llm_work_for_template,
                 merge_llm_norm_results,
+                merge_chunked_llm_results,
                 format_findings_to_fix,
                 validate_norm_checks,
             )
 
-            output_dir = resolve_project_dir(job.project_id) / "_output"
+            project_dir = resolve_project_dir(job.project_id)
+            output_dir = project_dir / "_output"
             findings_path = output_dir / "03_findings.json"
             norm_checks_path = output_dir / "norm_checks.json"
             norm_checks_llm_path = output_dir / "norm_checks_llm.json"
             verified_path = output_dir / "03a_norms_verified.json"
+
+            # Загрузить project_info для инъекции дисциплины в промпт
+            project_info = None
+            info_path = project_dir / "project_info.json"
+            if info_path.exists():
+                try:
+                    project_info = json.loads(info_path.read_text(encoding="utf-8"))
+                except (json.JSONDecodeError, OSError):
+                    pass
 
             # Проверка: нужен 03_findings.json
             if not findings_path.exists():
@@ -1547,7 +1644,7 @@ class PipelineManager:
 
             # ── Шаг 2: Детерминированная проверка из norms_db.json (Python) ──
             await self._log(job, "Шаг 2: Детерминированная проверка статусов из norms_db.json...")
-            det_result = generate_deterministic_checks(norms_data)
+            det_result = generate_deterministic_checks(norms_data, project_id=pid)
 
             det_meta = det_result["meta"]
             unknown_norms = det_result["unknown_norms"]
@@ -1573,9 +1670,6 @@ class PipelineManager:
             llm_needed = bool(unknown_norms) or bool(paragraphs_to_verify)
 
             if llm_needed:
-                llm_work_text = format_llm_work_for_template(
-                    unknown_norms, paragraphs_to_verify, findings_path,
-                )
                 llm_task_count = len(unknown_norms) + len(paragraphs_to_verify)
                 await self._log(
                     job,
@@ -1589,36 +1683,87 @@ class PipelineManager:
                 if not can_go:
                     raise RuntimeError("Rate limit: ожидание превышено или отменено")
 
-                max_retries = RATE_LIMIT_MAX_RETRIES
-                for attempt in range(1, max_retries + 1):
-                    exit_code, output, cli_result = await claude_runner.run_norm_verify(
-                        llm_work_text, job.project_id,
-                        on_output=lambda msg: self._log(job, msg),
+                # Chunked mode: разбиваем unknown_norms на чанки по 5
+                NORM_CHUNK_SIZE = 5
+                use_chunked = len(unknown_norms) > NORM_CHUNK_SIZE
+
+                if use_chunked:
+                    # ── Параллельная верификация по чанкам ──
+                    norm_chunks = [
+                        unknown_norms[i:i + NORM_CHUNK_SIZE]
+                        for i in range(0, len(unknown_norms), NORM_CHUNK_SIZE)
+                    ]
+                    # Первому чанку отдаём paragraphs_to_verify, остальным — пусто
+                    await self._log(job, f"Chunked mode: {len(norm_chunks)} чанков по ~{NORM_CHUNK_SIZE} норм")
+
+                    chunk_paths = []
+                    sem = asyncio.Semaphore(3)
+
+                    async def _run_chunk(idx: int, chunk_norms: list, chunk_paragraphs: list):
+                        async with sem:
+                            fname = f"norm_checks_llm_{idx + 1}.json"
+                            chunk_text = format_llm_work_for_template(chunk_norms, chunk_paragraphs, findings_path)
+                            exit_code, output, cli_result = await claude_runner.run_norm_verify(
+                                chunk_text, job.project_id,
+                                on_output=lambda msg: self._log(job, msg),
+                                project_info=project_info,
+                                llm_out_filename=fname,
+                            )
+                            self._record_cli_usage(job, cli_result, f"norm_verify_chunk_{idx + 1}")
+                            return output_dir / fname
+
+                    tasks = []
+                    for ci, chunk in enumerate(norm_chunks):
+                        pv = paragraphs_to_verify if ci == 0 else []
+                        tasks.append(_run_chunk(ci, chunk, pv))
+
+                    chunk_paths = await asyncio.gather(*tasks, return_exceptions=True)
+                    # Фильтруем ошибки
+                    valid_paths = [p for p in chunk_paths if isinstance(p, Path)]
+                    errors = [e for e in chunk_paths if isinstance(e, Exception)]
+                    if errors:
+                        await self._log(job, f"Chunked mode: {len(errors)} чанков с ошибками", "warn")
+
+                    # Merge чанков → norm_checks_llm.json
+                    if valid_paths:
+                        merge_chunked_llm_results(valid_paths, norm_checks_llm_path)
+                        await self._log(job, f"Chunked merge: {len(valid_paths)} чанков объединены")
+                else:
+                    # ── Последовательная верификация (как было) ──
+                    llm_work_text = format_llm_work_for_template(
+                        unknown_norms, paragraphs_to_verify, findings_path,
                     )
-                    stage_label = "norm_verify" if attempt == 1 else f"norm_verify_retry_{attempt}"
-                    self._record_cli_usage(job, cli_result, stage_label)
+                    max_retries = RATE_LIMIT_MAX_RETRIES
+                    for attempt in range(1, max_retries + 1):
+                        exit_code, output, cli_result = await claude_runner.run_norm_verify(
+                            llm_work_text, job.project_id,
+                            on_output=lambda msg: self._log(job, msg),
+                            project_info=project_info,
+                        )
+                        stage_label = "norm_verify" if attempt == 1 else f"norm_verify_retry_{attempt}"
+                        self._record_cli_usage(job, cli_result, stage_label)
 
-                    if claude_runner.is_cancelled(exit_code):
-                        job.status = JobStatus.CANCELLED
-                        await self._log(job, "Верификация норм отменена", "warn")
-                        return
+                        if claude_runner.is_cancelled(exit_code):
+                            job.status = JobStatus.CANCELLED
+                            await self._log(job, "Верификация норм отменена", "warn")
+                            return
 
-                    if exit_code == 0:
-                        break
+                        if exit_code == 0:
+                            break
 
-                    if claude_runner.is_rate_limited(exit_code, output or "", "") or claude_runner.is_timeout(exit_code):
-                        reason = "таймаут" if claude_runner.is_timeout(exit_code) else "rate limit"
-                        await self._log(job, f"{reason} при верификации норм (попытка {attempt}/{max_retries}), ожидание...", "warn")
-                        if attempt < max_retries:
-                            can_continue = await self._wait_for_rate_limit(job, f"{reason} при верификации норм", cli_output=output or "")
-                            if not can_continue:
-                                raise RuntimeError(f"Верификация норм: ожидание {reason} превышено или отменено")
-                            continue
-                        else:
-                            raise RuntimeError(f"Верификация норм: {max_retries} попыток исчерпано ({reason})")
+                        if claude_runner.is_rate_limited(exit_code, output or "", "") or claude_runner.is_timeout(exit_code):
+                            reason = "таймаут" if claude_runner.is_timeout(exit_code) else "rate limit"
+                            await self._log(job, f"{reason} при верификации норм (попытка {attempt}/{max_retries}), ожидание...", "warn")
+                            if attempt < max_retries:
+                                can_continue = await self._wait_for_rate_limit(job, f"{reason} при верификации норм", cli_output=output or "")
+                                if not can_continue:
+                                    raise RuntimeError(f"Верификация норм: ожидание {reason} превышено или отменено")
+                                continue
+                            else:
+                                raise RuntimeError(f"Верификация норм: {max_retries} попыток исчерпано ({reason})")
 
-                    await self._log(job, f"Ошибка верификации (код {exit_code})", "error")
-                    raise RuntimeError(f"Claude CLI norm_verify: exit code {exit_code}")
+                        await self._log(job, f"Ошибка верификации (код {exit_code})", "error")
+                        raise RuntimeError(f"Claude CLI norm_verify: exit code {exit_code}")
 
                 # ── Шаг 3b: Слияние результатов LLM ──
                 if norm_checks_llm_path.exists():
@@ -1695,6 +1840,7 @@ class PipelineManager:
                 exit_code, output, cli_result = await claude_runner.run_norm_fix(
                     findings_to_fix_text, job.project_id,
                     on_output=lambda msg: self._log(job, msg),
+                    project_info=project_info,
                 )
                 self._record_cli_usage(job, cli_result, "norm_fix")
 

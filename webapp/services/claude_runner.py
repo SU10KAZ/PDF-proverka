@@ -128,9 +128,11 @@ async def run_norm_verify(
     norms_list_text: str,
     project_id: str,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+    project_info: Optional[dict] = None,
+    llm_out_filename: str = "norm_checks_llm.json",
 ) -> tuple[int, str, CLIResult]:
     """Запустить Claude CLI для верификации нормативных ссылок через WebSearch."""
-    task_text = prepare_norm_verify_task(norms_list_text, project_id)
+    task_text = prepare_norm_verify_task(norms_list_text, project_id, project_info=project_info, llm_out_filename=llm_out_filename)
     return await _run_cli(task_text, NORM_VERIFY_TOOLS, CLAUDE_NORM_VERIFY_TIMEOUT, on_output, include_stderr=False, stage="norm_verify", project_id=project_id)
 
 
@@ -138,9 +140,10 @@ async def run_norm_fix(
     findings_to_fix_text: str,
     project_id: str,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+    project_info: Optional[dict] = None,
 ) -> tuple[int, str, CLIResult]:
     """Запустить Claude CLI для пересмотра замечаний с учётом актуальных норм."""
-    task_text = prepare_norm_fix_task(findings_to_fix_text, project_id)
+    task_text = prepare_norm_fix_task(findings_to_fix_text, project_id, project_info=project_info)
     return await _run_cli(task_text, NORM_VERIFY_TOOLS, CLAUDE_NORM_FIX_TIMEOUT, on_output, include_stderr=False, stage="norm_fix", project_id=project_id)
 
 

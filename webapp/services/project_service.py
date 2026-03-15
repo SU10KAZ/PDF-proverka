@@ -16,14 +16,27 @@ from webapp.models.project import (
     ProjectInfo, ProjectStatus, PipelineStatus, TextExtractionQuality,
 )
 
+# TTL-кеш для iter_project_dirs (30 сек)
+_PROJECT_DIRS_CACHE: list[tuple[str, Path]] = []
+_PROJECT_DIRS_CACHE_TIME: float = 0.0
+_PROJECT_DIRS_TTL: float = 30.0
 
-def iter_project_dirs() -> list[tuple[str, Path]]:
+
+def iter_project_dirs(force: bool = False) -> list[tuple[str, Path]]:
     """Рекурсивно найти все папки проектов (включая подпапки-группы).
 
     Возвращает [(project_id, path), ...] где project_id = имя папки.
     Проект = папка с project_info.json или PDF-файлами.
     Подпапка-группа (OV/, EM/ и т.д.) = папка без project_info.json и без PDF.
+
+    Кеш обновляется раз в 30 секунд (или force=True).
     """
+    global _PROJECT_DIRS_CACHE, _PROJECT_DIRS_CACHE_TIME
+
+    now = time.time()
+    if not force and _PROJECT_DIRS_CACHE and (now - _PROJECT_DIRS_CACHE_TIME) < _PROJECT_DIRS_TTL:
+        return _PROJECT_DIRS_CACHE
+
     results: list[tuple[str, Path]] = []
     if not PROJECTS_DIR.exists():
         return results
@@ -37,6 +50,9 @@ def iter_project_dirs() -> list[tuple[str, Path]]:
             for sub in sorted(entry.iterdir()):
                 if sub.is_dir() and not sub.name.startswith("_"):
                     results.append((sub.name, sub))
+
+    _PROJECT_DIRS_CACHE = results
+    _PROJECT_DIRS_CACHE_TIME = now
     return results
 
 

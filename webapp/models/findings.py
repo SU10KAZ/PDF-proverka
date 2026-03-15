@@ -37,6 +37,7 @@ class FindingsResponse(BaseModel):
     """Ответ API со списком замечаний."""
     project_id: str
     total: int = 0
+    filtered_total: Optional[int] = None  # кол-во после фильтрации (до пагинации)
     by_severity: dict[str, int] = {}
     findings: list[dict] = []            # raw dict для гибкости
     audit_date: Optional[str] = None

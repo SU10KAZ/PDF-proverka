@@ -232,11 +232,15 @@ def format_findings_to_fix(norm_checks_path: Path, findings_path: Path) -> str:
     return "\n".join(lines)
 
 
-def generate_deterministic_checks(norms_data: dict) -> dict:
+def generate_deterministic_checks(norms_data: dict, project_id: str = "") -> dict:
     """Детерминированная проверка статуса документов из norms_db.json.
 
     Python гарантирует актуальность документа (железобетон).
     Не использует LLM — только реестр + TTL-контроль.
+
+    Args:
+        norms_data: извлечённые нормы из findings.
+        project_id: идентификатор проекта (для трассировки в meta).
 
     Returns:
         {
@@ -344,23 +348,27 @@ def generate_deterministic_checks(norms_data: dict) -> dict:
         for fid in affected:
             low_conf = info.get("low_confidence_findings", [])
             if fid in low_conf:
-                # Проверить: может цитата уже в paragraphs кеше?
-                paragraph_key = f"{norm_key}, {fid}"  # примерный ключ
+                # Paragraph cache: ключ — полный текст ссылки на норму из finding
+                finding_norm = info.get("finding_norms", {}).get(fid, "")
+                paragraph_key = finding_norm.strip() if finding_norm else norm_key
                 if paragraph_key not in known_paragraphs:
                     paragraphs_to_verify.append({
                         "finding_id": fid,
                         "norm": norm_raw,
                         "norm_key": norm_key,
+                        "paragraph_key": paragraph_key,
                     })
 
     # Лимит на параграфы (как раньше — max 10)
     paragraphs_to_verify = paragraphs_to_verify[:10]
 
     meta = {
+        "project_id": project_id,
         "check_date": now.isoformat(),
         "total_checked": stats["total"],
         "from_db": stats["from_db"],
         "unknown_need_websearch": stats["unknown"],
+        "policy_violations": [],
         "results": {
             "active": stats["active"],
             "outdated_edition": stats["outdated_edition"],
@@ -504,6 +512,37 @@ def merge_llm_norm_results(
     }
 
 
+def merge_chunked_llm_results(chunk_paths: list[Path], merged_path: Path) -> dict:
+    """Слить несколько norm_checks_llm_*.json в один norm_checks_llm.json.
+
+    Используется при параллельной верификации норм (chunked mode).
+    """
+    all_checks = []
+    all_paragraphs = []
+    for cp in chunk_paths:
+        if not cp.exists():
+            continue
+        try:
+            data = json.loads(cp.read_text(encoding="utf-8"))
+            all_checks.extend(data.get("checks", []))
+            all_paragraphs.extend(data.get("paragraph_checks", []))
+        except (json.JSONDecodeError, OSError):
+            continue
+
+    merged = {
+        "meta": {
+            "merged_from": len(chunk_paths),
+            "merge_date": datetime.now().isoformat(),
+        },
+        "checks": all_checks,
+        "paragraph_checks": all_paragraphs,
+    }
+    merged_path.write_text(
+        json.dumps(merged, ensure_ascii=False, indent=2), encoding="utf-8",
+    )
+    return {"chunks_merged": len(chunk_paths), "checks": len(all_checks), "paragraphs": len(all_paragraphs)}
+
+
 def format_llm_work_for_template(
     unknown_norms: list[dict],
     paragraphs_to_verify: list[dict],
@@ -575,10 +614,8 @@ def validate_norm_checks(norm_checks_path: Path) -> dict:
                     f"{doc}: needs_revision принудительно=True (status={status})"
                 )
 
-        # Правило 2: если по данным кеша был force_websearch, а LLM ответил "cache"
-        # (Этот контроль — soft: мы не можем знать force_websearch на этом этапе,
-        # но можем проверить консистентность: stale кеш + verified_via="cache" = подозрительно)
-        if check.get("verified_via") == "cache":
+        # Правило 2: stale кеш + verified_via="cache" = policy_violation
+        if check.get("verified_via") in ("cache", "cache_stale"):
             db = load_norms_db()
             cached = db.get("norms", {}).get(normalize_doc_number(doc))
             if cached:
@@ -590,13 +627,23 @@ def validate_norm_checks(norm_checks_path: Path) -> dict:
                         is_stale = (datetime.now() - ver_date) > timedelta(days=stale_days)
                         if is_stale:
                             violations.append(
-                                f"{doc}: verified_via='cache' но кеш устарел "
+                                f"{doc}: verified_via='{check['verified_via']}' но кеш устарел "
                                 f"(last_verified={last_ver[:10]}, stale_days={stale_days})"
                             )
                             check["verified_via"] = "cache_stale"
-                            check["_validation_warning"] = "force_websearch ignored"
+                            check["_policy_violation"] = "stale_cache_used"
                     except (ValueError, TypeError):
                         pass
+
+        # Правило 3: outdated_edition не должен схлопываться в active
+        if status == "outdated_edition" and not check.get("needs_revision", False):
+            check["needs_revision"] = True
+            fixes.append(f"{doc}: outdated_edition принудительно needs_revision=True")
+
+    # Записать policy_violations в meta
+    meta = checks_data.get("meta", {})
+    meta["policy_violations"] = violations
+    checks_data["meta"] = meta
 
     # Записать исправления обратно
     if fixes or violations:
@@ -606,6 +653,7 @@ def validate_norm_checks(norm_checks_path: Path) -> dict:
     return {
         "valid": len(violations) == 0,
         "total_checks": len(checks),
+        "policy_violations": violations,
         "fixes_applied": fixes,
         "violations": violations,
     }

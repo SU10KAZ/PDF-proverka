@@ -223,12 +223,13 @@ def prepare_norm_verify_task(
     norms_list_text: str,
     project_id: str,
     project_info: Optional[dict] = None,
+    llm_out_filename: str = "norm_checks_llm.json",
 ) -> str:
     """Подготовить задачу для верификации нормативных ссылок.
 
     norms_list_text — отформатированная LLM-работа (unknown нормы + параграфы).
     Подставляется в плейсхолдер {LLM_WORK}.
-    Для обратной совместимости также подставляется в {NORMS_LIST} (если есть).
+    llm_out_filename — имя выходного файла LLM (для chunked mode).
     """
     template = load_template(NORM_VERIFY_TASK_TEMPLATE)
     template = _inject_discipline(template, project_info or {})
@@ -242,6 +243,7 @@ def prepare_norm_verify_task(
         .replace("{BASE_DIR}", str(BASE_DIR))
         .replace("{LLM_WORK}", norms_list_text)
         .replace("{NORMS_LIST}", norms_list_text)
+        .replace("norm_checks_llm.json", llm_out_filename)
     )
     return task
 
@@ -620,6 +622,9 @@ def _build_structured_block_context(
             section_lines.append("")
             section_lines.append("### Текст на странице:")
             for tb in text_blocks:
+                tb_id = tb.get("id", "")
+                if tb_id:
+                    section_lines.append(f"[text_block_id: {tb_id}]")
                 section_lines.append(tb["text"])
                 section_lines.append("")
 
@@ -782,6 +787,7 @@ def _prepare_compact_findings_input(project_id: str) -> Path | None:
             compact["preliminary_findings"] = all_block_findings + legacy_findings
 
             # Из block_analyses: только block_id, page, sheet_type, key_values_read
+            # + discipline-поля для discipline gate в merge
             compact["blocks_compact"] = [
                 {
                     "block_id": ba.get("block_id", ""),
@@ -789,6 +795,9 @@ def _prepare_compact_findings_input(project_id: str) -> Path | None:
                     "sheet_type": ba.get("sheet_type", ""),
                     "key_values_read": ba.get("key_values_read", []),
                     "findings_count": len(ba.get("findings", [])),
+                    "discipline_detected": ba.get("discipline_detected", ""),
+                    "discipline_mismatch": ba.get("discipline_mismatch", False),
+                    "discipline_note": ba.get("discipline_note", ""),
                 }
                 for ba in block_analyses
             ]
@@ -799,6 +808,23 @@ def _prepare_compact_findings_input(project_id: str) -> Path | None:
         compact["preliminary_findings"] = []
         compact["blocks_compact"] = []
         compact["total_blocks_analyzed"] = 0
+
+    # page_sheet_map из document_graph.json — для merge-этапа (не путать page и sheet)
+    graph_path = output_dir / "document_graph.json"
+    if graph_path.exists():
+        try:
+            graph = json.loads(graph_path.read_text(encoding="utf-8"))
+            page_sheet_map = {}
+            for pg in graph.get("pages", []):
+                page_num = pg.get("page")
+                sheet_no = pg.get("sheet_no")
+                if page_num is not None and sheet_no:
+                    page_sheet_map[str(page_num)] = sheet_no
+            compact["page_sheet_map"] = page_sheet_map
+        except (json.JSONDecodeError, OSError):
+            compact["page_sheet_map"] = {}
+    else:
+        compact["page_sheet_map"] = {}
 
     # Записываем компактный файл
     try:
