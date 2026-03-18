@@ -12,8 +12,10 @@ router = APIRouter(prefix="/api/projects", tags=["projects"])
 class RegisterProjectRequest(BaseModel):
     """Запрос на регистрацию проекта из папки projects/."""
     folder: str
-    pdf_file: str
+    pdf_file: str                          # основной PDF (обратная совместимость)
+    pdf_files: list[str] = []              # все PDF (если несколько)
     md_file: Optional[str] = None
+    md_files: list[str] = []               # все MD (если несколько)
     name: Optional[str] = None
     section: str = "EM"
     description: str = ""
@@ -115,7 +117,9 @@ async def register_project(req: RegisterProjectRequest):
         info = project_service.register_project(
             folder=req.folder,
             pdf_file=req.pdf_file,
+            pdf_files=req.pdf_files or [req.pdf_file],
             md_file=req.md_file,
+            md_files=req.md_files or ([req.md_file] if req.md_file else []),
             name=req.name,
             section=req.section,
             description=req.description,
@@ -132,7 +136,9 @@ class ScanExternalRequest(BaseModel):
 class RegisterExternalRequest(BaseModel):
     source_path: str
     pdf_file: str
+    pdf_files: list[str] = []
     md_file: Optional[str] = None
+    md_files: list[str] = []
     name: Optional[str] = None
     section: str = "EM"
     description: str = ""
@@ -152,7 +158,9 @@ async def register_external(req: RegisterExternalRequest):
         info = project_service.register_external_project(
             source_path=req.source_path,
             pdf_file=req.pdf_file,
+            pdf_files=req.pdf_files or [req.pdf_file],
             md_file=req.md_file,
+            md_files=req.md_files or ([req.md_file] if req.md_file else []),
             name=req.name,
             section=req.section,
             description=req.description,

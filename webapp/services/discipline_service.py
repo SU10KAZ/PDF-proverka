@@ -54,6 +54,16 @@ def _read_file(path: Path) -> str:
     return ""
 
 
+def _resolve_profile_dir(code: str, disc_info: dict) -> Path:
+    """Resolve discipline profile directory using profile_dir from registry.
+
+    Priority: profile_dir from registry > code as folder name.
+    This ensures portability: Cyrillic codes map to ASCII folder names.
+    """
+    profile_dir_name = disc_info.get("profile_dir", code)
+    return DISCIPLINES_DIR / profile_dir_name
+
+
 def load_discipline(code: str) -> DisciplineProfile:
     """Загрузить профиль дисциплины по коду. Кэширует результат."""
     if code in _profile_cache:
@@ -62,7 +72,7 @@ def load_discipline(code: str) -> DisciplineProfile:
     registry = _load_registry()
     disc_info = registry.get("disciplines", {}).get(code, {})
 
-    disc_dir = DISCIPLINES_DIR / code
+    disc_dir = _resolve_profile_dir(code, disc_info)
     if not disc_dir.exists():
         # Fallback на EM если профиль не найден
         if code != "EM":
@@ -146,7 +156,7 @@ def get_supported_disciplines() -> list[dict]:
     registry = _load_registry()
     result = []
     for code, disc in registry.get("disciplines", {}).items():
-        disc_dir = DISCIPLINES_DIR / code
+        disc_dir = _resolve_profile_dir(code, disc)
         result.append({
             "code": code,
             "name": disc.get("name", code),

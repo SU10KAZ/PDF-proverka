@@ -3,6 +3,8 @@ REST API для запуска и управления аудитом.
 """
 import asyncio
 import json
+import re
+import subprocess
 import traceback
 from pathlib import Path
 from fastapi import APIRouter, HTTPException, Query
@@ -10,6 +12,7 @@ from webapp.services.pipeline_service import pipeline_manager
 from webapp.services import project_service
 from webapp.services.project_service import resolve_project_dir
 from webapp.config import (
+    CLAUDE_CLI,
     get_claude_model, set_claude_model, CLAUDE_MODEL_OPTIONS,
     get_stage_models, set_stage_model, get_model_for_stage,
 )
@@ -72,6 +75,110 @@ async def set_stage_model_config(
     else:
         set_stage_model(stage, model)
     return {"stage": stage, "model": get_model_for_stage(stage)}
+
+
+@router.get("/account")
+async def get_claude_account():
+    """Получить информацию о текущем аккаунте Claude CLI."""
+    try:
+        result = subprocess.run(
+            [CLAUDE_CLI, "auth", "status", "--json"],
+            capture_output=True, text=True, timeout=10,
+            encoding="utf-8", errors="replace",
+            shell=CLAUDE_CLI.endswith(".cmd"),
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            data = json.loads(result.stdout.strip())
+            return {
+                "email": data.get("email", "—"),
+                "org": data.get("orgName", "—"),
+                "plan": data.get("subscriptionType", "—"),
+                "loggedIn": data.get("loggedIn", False),
+            }
+        return {"email": "—", "org": "—", "plan": "—", "loggedIn": False, "error": "CLI не авторизован"}
+    except Exception as e:
+        return {"email": "—", "org": "—", "plan": "—", "loggedIn": False, "error": str(e)}
+
+
+# ─── Смена аккаунта ───
+# Хранит текущий процесс login и auth URL
+_login_state: dict = {"proc": None, "url": None, "done": False}
+
+
+@router.post("/account/switch")
+async def switch_claude_account():
+    """Выйти из текущего аккаунта и начать логин в новый. Возвращает auth URL."""
+    global _login_state
+    shell = CLAUDE_CLI.endswith(".cmd")
+
+    # 1. Logout
+    subprocess.run(
+        [CLAUDE_CLI, "auth", "logout"],
+        capture_output=True, text=True, timeout=10,
+        encoding="utf-8", errors="replace", shell=shell,
+    )
+
+    # 2. Запустить login в фоне
+    import platform
+    kwargs = {}
+    if platform.system() == "Windows":
+        kwargs["creationflags"] = 0x08000000  # CREATE_NO_WINDOW
+
+    proc = subprocess.Popen(
+        [CLAUDE_CLI, "auth", "login"],
+        stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+        text=True, encoding="utf-8", errors="replace",
+        shell=shell, **kwargs,
+    )
+    _login_state = {"proc": proc, "url": None, "done": False}
+
+    # 3. Прочитать вывод до появления URL (макс 5 сек)
+    import threading
+
+    def _read_output():
+        for line in proc.stdout:
+            url_match = re.search(r'(https://claude\.ai/oauth/authorize\S+)', line)
+            if url_match:
+                _login_state["url"] = url_match.group(1)
+            if "Login successful" in line:
+                _login_state["done"] = True
+                break
+
+    t = threading.Thread(target=_read_output, daemon=True)
+    t.start()
+    t.join(timeout=5)
+
+    if _login_state["url"]:
+        return {"status": "waiting", "auth_url": _login_state["url"]}
+    return {"status": "started", "message": "Ожидание URL авторизации..."}
+
+
+@router.get("/account/switch/status")
+async def switch_account_status():
+    """Проверить статус login — завершён ли."""
+    if _login_state.get("done"):
+        # Получить данные нового аккаунта
+        try:
+            result = subprocess.run(
+                [CLAUDE_CLI, "auth", "status", "--json"],
+                capture_output=True, text=True, timeout=10,
+                encoding="utf-8", errors="replace",
+                shell=CLAUDE_CLI.endswith(".cmd"),
+            )
+            if result.returncode == 0 and result.stdout.strip():
+                data = json.loads(result.stdout.strip())
+                return {
+                    "status": "done",
+                    "email": data.get("email", "—"),
+                    "plan": data.get("subscriptionType", "—"),
+                }
+        except Exception:
+            pass
+        return {"status": "done"}
+
+    if _login_state.get("url"):
+        return {"status": "waiting", "auth_url": _login_state["url"]}
+    return {"status": "pending"}
 
 
 @router.post("/all/full")
@@ -145,6 +252,23 @@ async def add_to_batch(request: dict):
         raise HTTPException(409, str(e))
 
 
+@router.post("/batch/add-retry")
+async def add_retry_to_batch(request: dict):
+    """Добавить retry конкретного этапа в очередь (создаёт новую если нет)."""
+    project_id = request.get("project_id")
+    stage = request.get("stage")
+    if not project_id or not stage:
+        raise HTTPException(400, "project_id и stage обязательны")
+
+    _check_project(project_id)
+
+    try:
+        queue = await pipeline_manager.add_retry_to_batch(project_id, stage)
+        return {"status": "added", "queue": queue.model_dump()}
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
+
+
 @router.delete("/batch/cancel")
 async def cancel_batch():
     """Отменить текущую batch-очередь."""
@@ -152,6 +276,76 @@ async def cancel_batch():
     if not success:
         raise HTTPException(404, "Нет активной групповой очереди")
     return {"status": "cancelled"}
+
+
+# ─── Пауза / Возобновление ───
+
+@router.post("/pause")
+async def pause_pipeline(request: dict = {}):
+    """Поставить на паузу все активные процессы.
+
+    Body: {"mode": "finish_current" | "interrupt"}
+    - finish_current: дождаться завершения текущего Claude CLI, не запускать следующий
+    - interrupt: прервать текущий процесс немедленно
+    """
+    mode = request.get("mode", "finish_current")
+    if mode not in ("finish_current", "interrupt"):
+        raise HTTPException(400, f"Неизвестный режим: {mode}")
+    result = await pipeline_manager.pause(mode)
+    return result
+
+
+@router.post("/resume")
+async def resume_pipeline():
+    """Снять паузу — продолжить работу."""
+    result = await pipeline_manager.unpause()
+    return result
+
+
+@router.get("/pause/status")
+async def pause_status():
+    """Текущий статус паузы."""
+    return pipeline_manager.get_pause_status()
+
+
+@router.post("/batch/reorder")
+async def reorder_batch(request: dict):
+    """Переупорядочить pending-элементы очереди."""
+    new_order = request.get("order", [])
+    if not new_order:
+        raise HTTPException(400, "Пустой список порядка")
+    try:
+        queue = await pipeline_manager.reorder_batch(new_order)
+        return {"status": "reordered", "queue": queue.model_dump()}
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
+
+
+@router.post("/batch/remove")
+async def remove_batch_item(request: dict):
+    """Удалить pending-элемент из очереди."""
+    project_id = request.get("project_id")
+    if not project_id:
+        raise HTTPException(400, "project_id не указан")
+    try:
+        queue = await pipeline_manager.remove_from_batch(project_id)
+        return {"status": "removed", "queue": queue.model_dump()}
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
+
+
+@router.post("/batch/update-action")
+async def update_batch_item(request: dict):
+    """Изменить действие для pending-элемента очереди."""
+    project_id = request.get("project_id")
+    action = request.get("action")
+    if not project_id or not action:
+        raise HTTPException(400, "project_id и action обязательны")
+    try:
+        queue = await pipeline_manager.update_batch_item_action(project_id, action)
+        return {"status": "updated", "queue": queue.model_dump()}
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
 
 
 @router.get("/disciplines")
@@ -236,7 +430,9 @@ async def get_all_live_status():
     except Exception:
         usage = None
 
-    return {"running": running, "batches": batches_info, "usage": usage}
+    pause = pipeline_manager.get_pause_status()
+
+    return {"running": running, "batches": batches_info, "usage": usage, "paused": pause["paused"], "pause_mode": pause.get("mode")}
 
 
 # ─── Логи проектов ───
@@ -452,8 +648,13 @@ async def retry_stage(project_id: str, stage: str):
         "text_analysis": lambda: pipeline_manager.start_from_stage(project_id, "text_analysis"),
         "block_analysis": lambda: pipeline_manager.start_from_stage(project_id, "block_analysis"),
         "findings_merge": lambda: pipeline_manager.start_from_stage(project_id, "findings_merge"),
+        "findings_critic": lambda: pipeline_manager.start_from_stage(project_id, "findings_review"),
+        "findings_review": lambda: pipeline_manager.start_from_stage(project_id, "findings_review"),
+        "findings_corrector": lambda: pipeline_manager.start_from_stage(project_id, "findings_review"),
         "norm_verify": lambda: pipeline_manager.start_norm_verify(project_id),
         "optimization": lambda: pipeline_manager.start_optimization(project_id),
+        "optimization_critic": lambda: pipeline_manager.start_optimization_review(project_id),
+        "optimization_corrector": lambda: pipeline_manager.start_optimization_review(project_id),
         # Legacy aliases
         "prepare": lambda: pipeline_manager.start_from_stage(project_id, "prepare"),
         "tile_audit": lambda: pipeline_manager.start_from_stage(project_id, "block_analysis"),

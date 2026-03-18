@@ -113,6 +113,56 @@ const app = createApp({
         const showUsageDetails = ref(false);
         let usagePollTimer = null;
 
+        // ─── Account info ───
+        const accountInfo = ref({ email: '—', org: '—', plan: '—', loggedIn: false });
+        const showAccountInfo = ref(false);
+
+        const accountSwitching = ref(false);
+        const accountAuthUrl = ref(null);
+        let accountPollTimer = null;
+
+        async function fetchAccountInfo() {
+            try {
+                const data = await api('/audit/account');
+                accountInfo.value = data;
+            } catch (e) {
+                console.error('Failed to fetch account info:', e);
+            }
+        }
+
+        async function switchAccount() {
+            accountSwitching.value = true;
+            accountAuthUrl.value = null;
+            try {
+                const resp = await fetch('/api/audit/account/switch', { method: 'POST' });
+                const data = await resp.json();
+                if (data.auth_url) {
+                    accountAuthUrl.value = data.auth_url;
+                }
+                // Поллинг статуса каждые 2 секунды
+                accountPollTimer = setInterval(async () => {
+                    try {
+                        const st = await api('/audit/account/switch/status');
+                        if (st.auth_url && !accountAuthUrl.value) {
+                            accountAuthUrl.value = st.auth_url;
+                        }
+                        if (st.status === 'done') {
+                            clearInterval(accountPollTimer);
+                            accountPollTimer = null;
+                            accountSwitching.value = false;
+                            accountAuthUrl.value = null;
+                            await fetchAccountInfo();
+                        }
+                    } catch (e) {
+                        console.error('Poll switch status error:', e);
+                    }
+                }, 2000);
+            } catch (e) {
+                console.error('Switch account error:', e);
+                accountSwitching.value = false;
+            }
+        }
+
         const sonnetPercent = computed(() => {
             const m = globalUsage.value.weekly_by_model || {};
             return (m.sonnet && m.sonnet.percent) || 0;
@@ -195,10 +245,16 @@ const app = createApp({
                     const data = await resp.json();
                     liveStatus.value = data;
 
-                    // Обновляем auditRunning на основе live-данных
-                    const hasAny = Object.keys(data.running).length > 0;
-                    auditRunning.value = hasAny;
+                    // Обновляем auditRunning — только прямые запуски (не batch/all)
+                    const directRunning = Object.keys(data.running).filter(k => k !== '__BATCH__' && k !== '__ALL__');
+                    auditRunning.value = directRunning.length > 0;
                     batchRunning.value = !!data.running['__BATCH__'];
+
+                    // Pause status из live-status (piggyback)
+                    if (data.paused !== undefined) {
+                        isPaused.value = data.paused;
+                        pauseMode.value = data.pause_mode || null;
+                    }
 
                     // Backup heartbeat из polling (если WS не работает)
                     for (const [pid, info] of Object.entries(data.running || {})) {
@@ -405,6 +461,17 @@ const app = createApp({
             return '$' + usd.toFixed(2);
         }
 
+        function formatDurationSec(sec) {
+            if (sec == null) return '';
+            if (sec < 60) return sec + 'с';
+            const m = Math.floor(sec / 60);
+            const s = sec % 60;
+            if (m < 60) return m + 'м' + (s > 0 ? ' ' + s + 'с' : '');
+            const h = Math.floor(m / 60);
+            const rm = m % 60;
+            return h + 'ч' + (rm > 0 ? ' ' + rm + 'м' : '');
+        }
+
         async function pollGlobalUsage() {
             try {
                 const resp = await fetch('/api/usage/global');
@@ -464,7 +531,12 @@ const app = createApp({
             const hash = window.location.hash.slice(1) || '/';
             selectedTile.value = null;
 
-            if (hash === '/') {
+            if (hash === '/queue') {
+                currentView.value = 'queue';
+                connectGlobalWS();
+                refreshBatchQueue();
+                refreshProjects();  // для списка добавления
+            } else if (hash === '/') {
                 currentView.value = 'dashboard';
                 connectGlobalWS();  // Вернуться на global WS
                 refreshProjects();
@@ -534,6 +606,11 @@ const app = createApp({
         const batchScope = ref('audit');     // audit | optimization | both
         const batchModalCount = ref(0);
         const batchAllMode = ref(false);  // true = запуск для ВСЕХ проектов
+
+        // ─── Pause / Resume ───
+        const showPauseModal = ref(false);
+        const isPaused = ref(false);
+        const pauseMode = ref(null);
 
         function toggleProjectSelection(projectId) {
             const s = new Set(selectedProjects.value);
@@ -674,11 +751,181 @@ const app = createApp({
             }
         }
 
+        // ─── Queue Management ───
+        const queueAddMode = ref(false);         // показывать ли панель добавления
+        const queueAddAction = ref('audit');     // действие для добавляемых
+        const queueAddSelected = ref(new Set()); // выбранные для добавления
+        const queueDragIdx = ref(null);          // индекс перетаскиваемого элемента
+        const queueDragOverIdx = ref(null);      // индекс над которым dragging
+
+        async function refreshBatchQueue() {
+            try {
+                const resp = await fetch('/api/audit/batch/status');
+                const data = await resp.json();
+                batchRunning.value = data.active;
+                batchQueue.value = data.active ? data.queue : null;
+            } catch (e) { /* ignore */ }
+        }
+
+        async function removeFromQueue(projectId) {
+            try {
+                const resp = await fetch('/api/audit/batch/remove', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ project_id: projectId }),
+                });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || `Ошибка: ${resp.status}`);
+                }
+                const data = await resp.json();
+                batchQueue.value = data.queue;
+            } catch (e) { alert(e.message); }
+        }
+
+        async function updateQueueItemAction(projectId, action) {
+            try {
+                const resp = await fetch('/api/audit/batch/update-action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ project_id: projectId, action }),
+                });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || `Ошибка: ${resp.status}`);
+                }
+                const data = await resp.json();
+                batchQueue.value = data.queue;
+            } catch (e) { alert(e.message); }
+        }
+
+        async function reorderQueue(newOrder) {
+            try {
+                const resp = await fetch('/api/audit/batch/reorder', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ order: newOrder }),
+                });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || `Ошибка: ${resp.status}`);
+                }
+                const data = await resp.json();
+                batchQueue.value = data.queue;
+            } catch (e) { alert(e.message); }
+        }
+
+        // Drag and drop для queue items
+        function onQueueDragStart(idx) { queueDragIdx.value = idx; }
+        function onQueueDragOver(idx) { queueDragOverIdx.value = idx; }
+        function onQueueDragEnd() {
+            const from = queueDragIdx.value;
+            const to = queueDragOverIdx.value;
+            queueDragIdx.value = null;
+            queueDragOverIdx.value = null;
+            if (from === null || to === null || from === to) return;
+            if (!batchQueue.value) return;
+
+            // Собираем pending project_ids в новом порядке
+            const items = batchQueue.value.items;
+            const pendingItems = items.filter(i => i.status === 'pending');
+            if (pendingItems.length < 2) return;
+
+            // from/to — это индексы в полном списке, нужно перевести в pending
+            const fromItem = items[from];
+            const toItem = items[to];
+            if (!fromItem || !toItem || fromItem.status !== 'pending') return;
+
+            const pendingIds = pendingItems.map(i => i.project_id);
+            const fromPendingIdx = pendingIds.indexOf(fromItem.project_id);
+            const toPendingIdx = pendingIds.indexOf(toItem.project_id);
+            if (fromPendingIdx < 0) return;
+
+            // Переместить
+            pendingIds.splice(fromPendingIdx, 1);
+            const insertAt = toPendingIdx < 0 ? pendingIds.length : (fromPendingIdx < toPendingIdx ? toPendingIdx : toPendingIdx);
+            pendingIds.splice(insertAt, 0, fromItem.project_id);
+            reorderQueue(pendingIds);
+        }
+
+        function toggleQueueAddProject(projectId) {
+            const s = new Set(queueAddSelected.value);
+            if (s.has(projectId)) s.delete(projectId);
+            else s.add(projectId);
+            queueAddSelected.value = s;
+        }
+
+        async function confirmQueueAdd() {
+            const ids = Array.from(queueAddSelected.value);
+            if (!ids.length) return;
+            try {
+                const resp = await fetch('/api/audit/batch/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ project_ids: ids, action: queueAddAction.value }),
+                });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || `Ошибка: ${resp.status}`);
+                }
+                const data = await resp.json();
+                batchQueue.value = data.queue;
+                queueAddSelected.value = new Set();
+                queueAddMode.value = false;
+            } catch (e) { alert(e.message); }
+        }
+
+        // Начать очередь из queue view (если очередь не запущена)
+        async function startQueueFromView(action) {
+            const ids = Array.from(queueAddSelected.value);
+            if (!ids.length) return;
+            try {
+                batchRunning.value = true;
+                const resp = await fetch('/api/audit/batch', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ project_ids: ids, action: action }),
+                });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || `API error: ${resp.status}`);
+                }
+                const data = await resp.json();
+                batchQueue.value = data.queue;
+                queueAddSelected.value = new Set();
+                queueAddMode.value = false;
+            } catch (e) {
+                alert(e.message);
+                batchRunning.value = false;
+            }
+        }
+
+        // Проекты доступные для добавления в очередь
+        const queueAvailableProjects = computed(() => {
+            if (!projects.value) return [];
+            const inQueue = new Set();
+            if (batchQueue.value) {
+                for (const item of batchQueue.value.items) {
+                    if (item.status !== 'completed' && item.status !== 'failed' && item.status !== 'cancelled') {
+                        inQueue.add(item.project_id);
+                    }
+                }
+            }
+            return projects.value.filter(p => !inQueue.has(p.project_id));
+        });
+
         // ─── Audit Actions ───
         const auditRunning = ref(false);
+        // Диалог retry: запустить сейчас или добавить в очередь
+        const retryDialog = ref({ show: false, projectId: '', stage: '', stageLabel: '' });
 
-        async function apiPost(path) {
-            const resp = await fetch(`/api${path}`, { method: 'POST' });
+        async function apiPost(path, body) {
+            const opts = { method: 'POST' };
+            if (body !== undefined) {
+                opts.headers = { 'Content-Type': 'application/json' };
+                opts.body = JSON.stringify(body);
+            }
+            const resp = await fetch(`/api${path}`, opts);
             if (!resp.ok) {
                 const err = await resp.json().catch(() => ({}));
                 throw new Error(err.detail || `API error: ${resp.status}`);
@@ -751,6 +998,37 @@ const app = createApp({
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
 
+        // ─── Pause / Resume (global) ───
+        const anyRunning = computed(() => auditRunning.value || batchRunning.value);
+
+        async function pausePipeline(mode) {
+            showPauseModal.value = false;
+            try {
+                const resp = await apiPost('/audit/pause', { mode });
+                isPaused.value = true;
+                pauseMode.value = mode;
+            } catch (e) { alert('Ошибка паузы: ' + e.message); }
+        }
+
+        async function resumePipelineGlobal() {
+            try {
+                await apiPost('/audit/resume');
+                isPaused.value = false;
+                pauseMode.value = null;
+            } catch (e) { alert('Ошибка возобновления: ' + e.message); }
+        }
+
+        async function pollPauseStatus() {
+            try {
+                const resp = await fetch('/api/audit/pause/status');
+                if (resp.ok) {
+                    const data = await resp.json();
+                    isPaused.value = data.paused;
+                    pauseMode.value = data.mode || null;
+                }
+            } catch (_) {}
+        }
+
         // Маппинг pipeline key → API stage name
         const pipelineToStage = {
             'crop_blocks': 'prepare',
@@ -766,12 +1044,17 @@ const app = createApp({
             'text_analysis': 'Анализ текста',
             'block_analysis': 'Анализ блоков',
             'findings_merge': 'Свод замечаний',
+            'findings_critic': 'Critic замечаний',
+            'findings_review': 'Critic замечаний',
+            'findings_corrector': 'Corrector замечаний',
             'norm_verify': 'Верификация норм',
             'optimization': 'Оптимизация',
+            'optimization_critic': 'Critic оптимизации',
+            'optimization_corrector': 'Corrector оптимизации',
         };
 
         function canStartFrom(pipelineKey) {
-            if (auditRunning.value || !currentProject.value) return false;
+            if (!currentProject.value) return false;
             if (isProjectRunning(currentProject.value.project_id)) return false;
             const status = currentProject.value.pipeline?.[pipelineKey];
             return status === 'done' || status === 'error';
@@ -781,16 +1064,13 @@ const app = createApp({
             const stage = pipelineToStage[pipelineKey];
             if (!stage) return;
             const label = stageLabelMap[stage] || stage;
-            if (!confirm(`Запустить конвейер с этапа «${label}»?\nВсе последующие этапы будут пересчитаны.`)) return;
-            try {
-                auditRunning.value = true;
-                if (stage === 'optimization') {
-                    await apiPost(`/optimization/${projectId}/run`);
-                } else {
-                    await apiPost(`/audit/${projectId}/start-from?stage=${stage}`);
-                }
-                _afterAuditStart(projectId);
-            } catch (e) { alert(e.message); auditRunning.value = false; }
+            // Используем retry-диалог для выбора "сейчас" / "в очередь"
+            retryDialog.value = {
+                show: true,
+                projectId,
+                stage,
+                stageLabel: label,
+            };
         }
 
         const resumeInfo = ref(null);
@@ -833,12 +1113,52 @@ const app = createApp({
             } catch (e) { alert(e.message); }
         }
 
-        async function retryStage(projectId, stage) {
+        function retryStage(projectId, stage) {
+            const labels = {
+                'crop_blocks': 'Кроп блоков', 'text_analysis': 'Анализ текста',
+                'block_analysis': 'Анализ блоков', 'findings_merge': 'Свод замечаний',
+                'findings_critic': 'Critic замечаний', 'findings_review': 'Critic замечаний',
+                'norm_verify': 'Верификация норм', 'optimization': 'Оптимизация',
+            };
+            retryDialog.value = {
+                show: true,
+                projectId,
+                stage,
+                stageLabel: labels[stage] || stage,
+            };
+        }
+
+        async function retryStageNow() {
+            const { projectId, stage } = retryDialog.value;
+            retryDialog.value.show = false;
             try {
                 auditRunning.value = true;
-                await apiPost(`/audit/${projectId}/retry/${stage}`);
+                if (stage === 'optimization') {
+                    await apiPost(`/optimization/${projectId}/run`);
+                } else {
+                    await apiPost(`/audit/${projectId}/retry/${stage}`);
+                }
                 _afterAuditStart(projectId);
             } catch (e) { alert(e.message); auditRunning.value = false; }
+        }
+
+        async function retryStageToQueue() {
+            const { projectId, stage } = retryDialog.value;
+            retryDialog.value.show = false;
+            try {
+                const resp = await fetch('/api/audit/batch/add-retry', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ project_id: projectId, stage: stage }),
+                });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || `API error: ${resp.status}`);
+                }
+                const data = await resp.json();
+                batchQueue.value = data.queue;
+                batchRunning.value = true;
+            } catch (e) { alert(e.message); }
         }
 
         async function skipStage(projectId, stage) {
@@ -1186,6 +1506,8 @@ const app = createApp({
                     f._detectedDiscipline = detected;
                     f._selectedDiscipline = detected;
                     f._isExternal = false;
+                    f._selectedPdfs = [...f.pdf_files];   // все PDF выбраны по умолчанию
+                    f._selectedMds = [...f.md_files];      // все MD выбраны по умолчанию
                 }
                 unregisteredFolders.value = folders;
             } catch (e) {
@@ -1215,6 +1537,8 @@ const app = createApp({
                     f._detectedDiscipline = detected;
                     f._selectedDiscipline = detected;
                     f._isExternal = true;
+                    f._selectedPdfs = [...f.pdf_files];
+                    f._selectedMds = [...f.md_files];
                 }
                 unregisteredFolders.value = folders;
             } catch (e) {
@@ -1228,31 +1552,37 @@ const app = createApp({
             if (!folderInfo) return;
 
             addProjectLoading.value = true;
+            const selPdfs = folderInfo._selectedPdfs && folderInfo._selectedPdfs.length > 0
+                ? folderInfo._selectedPdfs : [folderInfo.pdf_files[0]];
+            const selMds = folderInfo._selectedMds && folderInfo._selectedMds.length > 0
+                ? folderInfo._selectedMds : (folderInfo.md_files.length > 0 ? [folderInfo.md_files[0]] : []);
             try {
                 let resp;
                 if (folderInfo._isExternal && folderInfo.full_path) {
-                    // Внешний проект — копируем в projects/
                     resp = await fetch('/api/projects/register-external', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             source_path: folderInfo.full_path,
-                            pdf_file: folderInfo.pdf_files[0],
-                            md_file: folderInfo.md_files.length > 0 ? folderInfo.md_files[0] : null,
+                            pdf_file: selPdfs[0],
+                            pdf_files: selPdfs,
+                            md_file: selMds.length > 0 ? selMds[0] : null,
+                            md_files: selMds,
                             name: folder,
                             section: folderInfo._selectedDiscipline || 'EM',
                             description: '',
                         }),
                     });
                 } else {
-                    // Локальный проект из projects/
                     resp = await fetch('/api/projects/register', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             folder: folder,
-                            pdf_file: folderInfo.pdf_files[0],
-                            md_file: folderInfo.md_files.length > 0 ? folderInfo.md_files[0] : null,
+                            pdf_file: selPdfs[0],
+                            pdf_files: selPdfs,
+                            md_file: selMds.length > 0 ? selMds[0] : null,
+                            md_files: selMds,
                             name: folder,
                             section: folderInfo._selectedDiscipline || 'EM',
                             description: '',
@@ -1272,6 +1602,69 @@ const app = createApp({
                 alert('Ошибка регистрации: ' + e.message);
             }
             addProjectLoading.value = false;
+        }
+
+        async function registerAllProjects() {
+            const folders = [...unregisteredFolders.value];
+            if (folders.length === 0) return;
+            if (!confirm(`Добавить все ${folders.length} проект(ов)?`)) return;
+            addProjectLoading.value = true;
+            let errors = [];
+            for (const folderInfo of folders) {
+                const sPdfs = folderInfo._selectedPdfs && folderInfo._selectedPdfs.length > 0
+                    ? folderInfo._selectedPdfs : [folderInfo.pdf_files[0]];
+                const sMds = folderInfo._selectedMds && folderInfo._selectedMds.length > 0
+                    ? folderInfo._selectedMds : (folderInfo.md_files.length > 0 ? [folderInfo.md_files[0]] : []);
+                try {
+                    let resp;
+                    if (folderInfo._isExternal && folderInfo.full_path) {
+                        resp = await fetch('/api/projects/register-external', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                source_path: folderInfo.full_path,
+                                pdf_file: sPdfs[0],
+                                pdf_files: sPdfs,
+                                md_file: sMds.length > 0 ? sMds[0] : null,
+                                md_files: sMds,
+                                name: folderInfo.folder,
+                                section: folderInfo._selectedDiscipline || 'EM',
+                                description: '',
+                            }),
+                        });
+                    } else {
+                        resp = await fetch('/api/projects/register', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                folder: folderInfo.folder,
+                                pdf_file: sPdfs[0],
+                                pdf_files: sPdfs,
+                                md_file: sMds.length > 0 ? sMds[0] : null,
+                                md_files: sMds,
+                                name: folderInfo.folder,
+                                section: folderInfo._selectedDiscipline || 'EM',
+                                description: '',
+                            }),
+                        });
+                    }
+                    if (!resp.ok) {
+                        const err = await resp.json().catch(() => ({}));
+                        throw new Error(err.detail || `Ошибка: ${resp.status}`);
+                    }
+                    unregisteredFolders.value = unregisteredFolders.value.filter(f => f.folder !== folderInfo.folder);
+                } catch (e) {
+                    errors.push(`${folderInfo.folder}: ${e.message}`);
+                }
+            }
+            await refreshProjects();
+            addProjectLoading.value = false;
+            if (errors.length > 0) {
+                alert('Ошибки при добавлении:\n' + errors.join('\n'));
+            }
+            if (unregisteredFolders.value.length === 0) {
+                showAddProject.value = false;
+            }
         }
 
         function closeAddProject() {
@@ -1764,6 +2157,29 @@ const app = createApp({
             return getProjectLiveInfo(currentProject.value.project_id);
         });
 
+        // Этапы которые не запускались (для pipeline summary)
+        const _allPipelineStages = [
+            {key: 'crop_blocks', label: 'Кроп блоков'},
+            {key: 'text_analysis', label: 'Анализ текста'},
+            {key: 'block_analysis', label: 'Анализ блоков'},
+            {key: 'findings_merge', label: 'Свод замечаний'},
+            {key: 'findings_critic', label: 'Critic замечаний'},
+            {key: 'findings_corrector', label: 'Corrector замечаний'},
+            {key: 'norm_verify', label: 'Верификация норм'},
+            {key: 'optimization', label: 'Оптимизация'},
+            {key: 'optimization_critic', label: 'Critic оптимизации'},
+            {key: 'optimization_corrector', label: 'Corrector оптимизации'},
+        ];
+        const pipelineMissingStages = computed(() => {
+            const p = currentProject.value;
+            if (!p || !p.pipeline_summary || p.pipeline_summary.length === 0) return [];
+            const present = new Set(p.pipeline_summary.map(s => s.key));
+            // Показывать пропущенные только если конвейер вообще запускался
+            return _allPipelineStages
+                .filter(s => !present.has(s.key))
+                .map(s => s.label);
+        });
+
         // ─── Helpers ───
         function stepClass(status) {
             if (status === 'done') return 'step-done';
@@ -2141,6 +2557,8 @@ const app = createApp({
             // Глобальная статистика — первый вызов + polling каждые 60с
             pollGlobalUsage();
             usagePollTimer = setInterval(pollGlobalUsage, 60000);
+            // Информация об аккаунте
+            fetchAccountInfo();
         });
 
         onUnmounted(() => {
@@ -2192,21 +2610,31 @@ const app = createApp({
             startNormVerify, startOptimization, cancelAudit, generateExcel,
             startAllProjects, resumePipeline, resumeInfo,
             startFromStage, canStartFrom, pipelineToStage,
-            retryStage, skipStage, cleanProject,
+            retryStage, retryDialog, retryStageNow, retryStageToQueue,
+            skipStage, cleanProject,
             // Batch selection
             selectedProjects, selectAllChecked, selectedCount,
             batchRunning, batchQueue,
             showBatchModal, batchMode, batchScope, batchModalCount, batchAllMode,
+            // Pause
+            showPauseModal, isPaused, pauseMode, anyRunning,
+            pausePipeline, resumePipelineGlobal,
             toggleProjectSelection, toggleSelectAll, isProjectSelected,
             isSectionSelected, toggleSectionSelection,
             sectionExcelLoading, exportSectionExcel,
             openBatchModal, confirmBatchAction, startBatchAction, cancelBatch, addToBatch,
             batchActionLabel,
+            // Queue management
+            queueAddMode, queueAddAction, queueAddSelected, queueDragIdx, queueDragOverIdx,
+            refreshBatchQueue, removeFromQueue, updateQueueItemAction, reorderQueue,
+            onQueueDragStart, onQueueDragOver, onQueueDragEnd,
+            toggleQueueAddProject, confirmQueueAdd, startQueueFromView,
+            queueAvailableProjects,
             // Add project
             showAddProject, addProjectStep, unregisteredFolders, addProjectLoading,
             openAddModal, goToAddSection, goToAddProject, addSection,
             newSectionName, newSectionCode, newSectionColor,
-            scanFolders, scanExternalFolder, registerProject, closeAddProject,
+            scanFolders, scanExternalFolder, registerProject, registerAllProjects, closeAddProject,
             externalPath, projectSource,
             // Disciplines
             supportedDisciplines, getDisciplineColor, disciplineLabel, disciplineBadgeStyle,
@@ -2219,10 +2647,14 @@ const app = createApp({
             // Model switcher
             // Usage (global dashboard)
             globalUsage, showUsageDetails, sonnetPercent,
-            formatTokens, formatCost, refreshGlobalUsage, resetSessionCounter,
+            accountInfo, showAccountInfo, fetchAccountInfo,
+            accountSwitching, accountAuthUrl, switchAccount,
+            formatTokens, formatCost, formatDurationSec, refreshGlobalUsage, resetSessionCounter,
             usageCounters,
             // Usage (per-project)
             projectUsage, currentProjectUsage, stageTokens, stageDurationForProject, formatDuration,
+            // Pipeline summary
+            pipelineMissingStages,
             // Optimization
             optimizationData, optimizationLoading, optimizationFilter,
             optBlockMap, optBlockInfo, expandedOptId,

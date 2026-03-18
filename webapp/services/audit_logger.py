@@ -45,7 +45,14 @@ def update_pipeline_log(
         stage_info["started_at"] = now
         stage_info.pop("error", None)
         stage_info.pop("detail", None)
-    elif status in ("done", "error", "skipped"):
+        stage_info.pop("interrupted_at", None)
+    elif status in ("done", "skipped"):
+        stage_info["completed_at"] = now
+        # Очистить ложные ошибки от recovery (если этап успешно завершился)
+        if not error:
+            stage_info.pop("error", None)
+            stage_info.pop("interrupted_at", None)
+    elif status == "error":
         stage_info["completed_at"] = now
 
     if message:

@@ -61,6 +61,9 @@ def resolve_project_dir(project_id: str) -> Path:
     direct = PROJECTS_DIR / project_id
     if direct.exists():
         return direct
+    # Если PROJECTS_DIR не существует — не падаем, возвращаем direct path
+    if not PROJECTS_DIR.exists():
+        return direct
     # Поиск в подпапках (1 уровень)
     for subdir in PROJECTS_DIR.iterdir():
         if subdir.is_dir() and not subdir.name.startswith("_"):
@@ -111,11 +114,18 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
 
     output_dir = proj_dir / "_output"
     pdf_file = info.get("pdf_file", "document.pdf")
+    pdf_files = info.get("pdf_files", [pdf_file])
     pdf_path = proj_dir / pdf_file
 
-    # Проверяем наличие файлов
+    # Проверяем наличие файлов — суммируем размеры всех PDF
     has_pdf = pdf_path.exists()
-    pdf_size_mb = round(pdf_path.stat().st_size / 1024 / 1024, 1) if has_pdf else 0.0
+    pdf_size_mb = 0.0
+    for pf in pdf_files:
+        pp = proj_dir / pf
+        if pp.exists():
+            has_pdf = True
+            pdf_size_mb += pp.stat().st_size / 1024 / 1024
+    pdf_size_mb = round(pdf_size_mb, 1)
 
     text_path = output_dir / "extracted_text.txt"
     has_text = text_path.exists() and text_path.stat().st_size > 0
@@ -210,6 +220,10 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
                 if batch_file.exists() and batch_file.stat().st_size > 100:
                     completed_batches += 1
 
+    # Детальное саммари конвейера
+    pipeline_summary = _build_pipeline_summary(output_dir)
+    pipeline_issues = _build_pipeline_issues(output_dir)
+
     return ProjectStatus(
         project_id=project_id,
         name=info.get("name", project_id),
@@ -218,6 +232,7 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
         object=info.get("object"),
         has_pdf=has_pdf,
         pdf_size_mb=pdf_size_mb,
+        pdf_files=[pf for pf in pdf_files if (proj_dir / pf).exists()],
         has_extracted_text=has_text,
         text_size_kb=text_size_kb,
         has_md_file=has_md,
@@ -240,6 +255,8 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
         block_count=block_count,
         block_errors=block_errors,
         block_expected=block_expected,
+        pipeline_summary=pipeline_summary,
+        pipeline_issues=pipeline_issues,
     )
 
 
@@ -404,6 +421,125 @@ def _load_pipeline_log(output_dir: Path) -> Optional[dict]:
     return _load_json(output_dir / "pipeline_log.json")
 
 
+# Порядок и человеко-понятные названия этапов конвейера
+_PIPELINE_STAGE_ORDER = [
+    ("crop_blocks", "Кроп блоков"),
+    ("text_analysis", "Анализ текста"),
+    ("block_analysis", "Анализ блоков"),
+    ("findings_merge", "Свод замечаний"),
+    ("findings_critic", "Critic замечаний"),
+    ("findings_corrector", "Corrector замечаний"),
+    ("norm_verify", "Верификация норм"),
+    ("optimization", "Оптимизация"),
+    ("optimization_critic", "Critic оптимизации"),
+    ("optimization_corrector", "Corrector оптимизации"),
+    ("excel", "Excel-отчёт"),
+]
+
+
+def _build_pipeline_issues(output_dir: Path) -> list[str]:
+    """Извлечь проблемы конвейера для индикатора на дашборде.
+
+    Проверяет:
+    - Этапы с ошибками (error/interrupted)
+    - Critic/Corrector пропущены при наличии findings
+    - Нормы/оптимизация не запускались
+    """
+    log = _load_pipeline_log(output_dir)
+    if not log or "stages" not in log:
+        return []
+
+    stages = log["stages"]
+    issues = []
+
+    # Этапы с ошибками
+    _labels = dict(_PIPELINE_STAGE_ORDER)
+    for key, label in _PIPELINE_STAGE_ORDER:
+        info = stages.get(key, {})
+        s = info.get("status", "")
+        if s in ("error", "interrupted"):
+            short_err = info.get("error", "")
+            if short_err and len(short_err) > 40:
+                short_err = short_err[:37] + "..."
+            issues.append(f"{label}: {short_err}" if short_err else f"{label}: ошибка")
+
+    # Findings есть, но critic/corrector не запускались
+    has_findings = (output_dir / "03_findings.json").exists()
+    if has_findings:
+        if "findings_critic" not in stages and "findings_merge" in stages:
+            issues.append("Critic замечаний: не запускался")
+        # Corrector пропущен при наличии проблем в review
+        review_path = output_dir / "03_findings_review.json"
+        if review_path.exists() and "findings_corrector" not in stages:
+            try:
+                import json
+                rd = json.loads(review_path.read_text(encoding="utf-8"))
+                verdicts = rd.get("meta", {}).get("verdicts", {})
+                total_pass = verdicts.get("pass", 0)
+                total_reviewed = rd.get("meta", {}).get("total_reviewed", 0)
+                if total_reviewed > total_pass:
+                    issues.append(f"Corrector: пропущен ({total_reviewed - total_pass} проблем)")
+            except Exception:
+                pass
+
+    # Нормы не запускались
+    if has_findings and "norm_verify" not in stages and "findings_merge" in stages:
+        issues.append("Верификация норм: не запускалась")
+
+    # Оптимизация не запускалась (не ошибка, но информация)
+    # — не добавляем, чтобы не шуметь
+
+    return issues
+
+
+def _build_pipeline_summary(output_dir: Path) -> list[dict]:
+    """Собрать детальное саммари конвейера из pipeline_log.json.
+
+    Возвращает список dict:
+      {key, label, status, message, duration_sec, error}
+    """
+    log = _load_pipeline_log(output_dir)
+    if not log or "stages" not in log:
+        return []
+
+    stages = log["stages"]
+    result = []
+    for key, label in _PIPELINE_STAGE_ORDER:
+        info = stages.get(key)
+        if not info:
+            continue
+        status = info.get("status", "pending")
+        message = info.get("message", "")
+
+        # Вычислить длительность
+        duration_sec = None
+        started = info.get("started_at")
+        completed = info.get("completed_at") or info.get("interrupted_at")
+        if started and completed:
+            try:
+                from datetime import datetime
+                t0 = datetime.fromisoformat(started)
+                t1 = datetime.fromisoformat(completed)
+                duration_sec = round((t1 - t0).total_seconds())
+            except Exception:
+                pass
+
+        entry = {
+            "key": key,
+            "label": label,
+            "status": status,
+        }
+        if message:
+            entry["message"] = message
+        if duration_sec is not None:
+            entry["duration_sec"] = duration_sec
+        if status in ("error", "interrupted") and info.get("error"):
+            entry["error"] = info["error"]
+
+        result.append(entry)
+    return result
+
+
 def scan_unregistered_folders() -> list[dict]:
     """Найти папки в projects/, которые содержат PDF, но не имеют project_info.json."""
     result = []
@@ -464,7 +600,9 @@ def scan_external_folder(folder_path: str) -> list[dict]:
 
 
 def register_external_project(source_path: str, pdf_file: str,
+                              pdf_files: list[str] | None = None,
                               md_file: Optional[str] = None,
+                              md_files: list[str] | None = None,
                               name: Optional[str] = None, section: str = "EM",
                               description: str = "") -> dict:
     """Скопировать проект из внешней папки в projects/ и создать project_info.json.
@@ -482,17 +620,24 @@ def register_external_project(source_path: str, pdf_file: str,
 
     dest.mkdir(parents=True, exist_ok=True)
 
-    # Копируем PDF
-    src_pdf = source / pdf_file
-    if not src_pdf.exists():
-        raise ValueError(f"PDF файл '{pdf_file}' не найден в '{source_path}'")
-    shutil.copy2(str(src_pdf), str(dest / pdf_file))
+    # Нормализуем списки
+    all_pdfs = pdf_files or [pdf_file]
+    all_pdfs = [p for p in all_pdfs if p]
+    all_mds = md_files or ([md_file] if md_file else [])
+    all_mds = [m for m in all_mds if m]
 
-    # Копируем MD если есть
-    if md_file:
-        src_md = source / md_file
+    # Копируем все PDF
+    for pf in all_pdfs:
+        src_pdf = source / pf
+        if not src_pdf.exists():
+            raise ValueError(f"PDF файл '{pf}' не найден в '{source_path}'")
+        shutil.copy2(str(src_pdf), str(dest / pf))
+
+    # Копируем все MD
+    for mf in all_mds:
+        src_md = source / mf
         if src_md.exists():
-            shutil.copy2(str(src_md), str(dest / md_file))
+            shutil.copy2(str(src_md), str(dest / mf))
 
     # Копируем *_result.json (нужен для blocks.py crop)
     for rj in source.glob("*_result.json"):
@@ -505,12 +650,14 @@ def register_external_project(source_path: str, pdf_file: str,
         "name": project_id,
         "section": section,
         "description": description,
-        "pdf_file": pdf_file,
+        "pdf_file": all_pdfs[0],
+        "pdf_files": all_pdfs,
         "source_path": str(source),
         "tile_config": {},
     }
-    if md_file:
-        info["md_file"] = md_file
+    if all_mds:
+        info["md_file"] = all_mds[0]
+        info["md_files"] = all_mds
 
     output_dir = dest / "_output"
     output_dir.mkdir(exist_ok=True)
@@ -522,35 +669,42 @@ def register_external_project(source_path: str, pdf_file: str,
     return info
 
 
-def register_project(folder: str, pdf_file: str, md_file: Optional[str] = None,
+def register_project(folder: str, pdf_file: str, pdf_files: list[str] | None = None,
+                     md_file: Optional[str] = None, md_files: list[str] | None = None,
                      name: Optional[str] = None, section: str = "EM",
                      description: str = "") -> dict:
     """Создать project_info.json для папки из projects/.
 
     Args:
         folder: имя папки в projects/
-        pdf_file: имя PDF-файла внутри папки
-        md_file: имя MD-файла (опционально)
-        name: название проекта (если не задано — используется имя папки)
-        section: раздел проекта (EM по умолчанию)
+        pdf_file: основной PDF-файл (обратная совместимость)
+        pdf_files: все PDF-файлы (если несколько)
+        md_file: основной MD-файл (опционально)
+        md_files: все MD-файлы (если несколько)
+        name: название проекта
+        section: раздел проекта
         description: описание
-
-    Returns:
-        dict с project_info или raises ValueError
     """
     proj_dir = resolve_project_dir(folder)
     if not proj_dir.exists():
         raise ValueError(f"Папка '{folder}' не найдена в projects/")
 
-    pdf_path = proj_dir / pdf_file
-    if not pdf_path.exists():
-        raise ValueError(f"PDF файл '{pdf_file}' не найден в папке '{folder}'")
+    # Нормализуем списки PDF
+    all_pdfs = pdf_files or [pdf_file]
+    all_pdfs = [p for p in all_pdfs if p]  # убрать пустые
+    if not all_pdfs:
+        raise ValueError("Не указан ни один PDF файл")
 
-    # Проверяем MD-файл если указан
-    if md_file:
-        md_path = proj_dir / md_file
-        if not md_path.exists():
-            raise ValueError(f"MD файл '{md_file}' не найден в папке '{folder}'")
+    for pf in all_pdfs:
+        if not (proj_dir / pf).exists():
+            raise ValueError(f"PDF файл '{pf}' не найден в папке '{folder}'")
+
+    # Нормализуем списки MD
+    all_mds = md_files or ([md_file] if md_file else [])
+    all_mds = [m for m in all_mds if m]
+    for mf in all_mds:
+        if not (proj_dir / mf).exists():
+            raise ValueError(f"MD файл '{mf}' не найден в папке '{folder}'")
 
     project_id = name or folder
     info = {
@@ -558,11 +712,13 @@ def register_project(folder: str, pdf_file: str, md_file: Optional[str] = None,
         "name": project_id,
         "section": section,
         "description": description,
-        "pdf_file": pdf_file,
+        "pdf_file": all_pdfs[0],
+        "pdf_files": all_pdfs,
         "tile_config": {},
     }
-    if md_file:
-        info["md_file"] = md_file
+    if all_mds:
+        info["md_file"] = all_mds[0]
+        info["md_files"] = all_mds
 
     # Создаём _output папку
     output_dir = proj_dir / "_output"

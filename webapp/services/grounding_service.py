@@ -156,13 +156,20 @@ def run_grounding(
     findings = findings_data.get("findings", findings_data.get("items", []))
     blocks_analysis = blocks_data.get("block_analyses", [])
 
-    already_grounded = sum(1 for f in findings if _finding_is_well_grounded(f))
+    # Запоминаем состояние ДО grounding
+    was_grounded = {
+        f.get("id", i): _finding_is_well_grounded(f)
+        for i, f in enumerate(findings)
+    }
+    already_grounded = sum(1 for v in was_grounded.values() if v)
 
     findings = compute_grounding_candidates(findings, blocks_analysis)
 
+    # newly_grounded = findings, которые НЕ были grounded до, а теперь — да
     newly_grounded = sum(
-        1 for f in findings
-        if f.get("grounding_candidates") and not _finding_is_well_grounded(f)
+        1 for i, f in enumerate(findings)
+        if not was_grounded.get(f.get("id", i), False)
+        and _finding_is_well_grounded(f)
     )
 
     # Записываем обратно

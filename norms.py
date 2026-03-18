@@ -97,12 +97,17 @@ def extract_norms_from_findings(findings_path: Path) -> dict:
                     "affected_findings": [],
                     "contexts": [],
                     "low_confidence_findings": [],
+                    "finding_norms": {},
                 }
 
             if norm_field and norm_field not in norms_map[key]["cited_as"]:
                 norms_map[key]["cited_as"].append(norm_field)
             if fid not in norms_map[key]["affected_findings"]:
                 norms_map[key]["affected_findings"].append(fid)
+
+            # Сохраняем полную ссылку на норму из finding для paragraph cache
+            if norm_field and fid not in norms_map[key].get("finding_norms", {}):
+                norms_map[key].setdefault("finding_norms", {})[fid] = norm_field
 
             ctx = problem_field[:200] if problem_field else ""
             if ctx and ctx not in norms_map[key]["contexts"]:
@@ -334,6 +339,7 @@ def generate_deterministic_checks(norms_data: dict, project_id: str = "") -> dic
                 "norm_as_cited": cited_as,
                 "doc_number": norm_key,
                 "status": "unknown",
+                "edition_status": "unknown",
                 "current_version": None,
                 "replacement_doc": None,
                 "source_url": None,
@@ -348,9 +354,11 @@ def generate_deterministic_checks(norms_data: dict, project_id: str = "") -> dic
         for fid in affected:
             low_conf = info.get("low_confidence_findings", [])
             if fid in low_conf:
-                # Paragraph cache: ключ — полный текст ссылки на норму из finding
+                # Paragraph cache: ключ — нормализованный текст ссылки на норму
                 finding_norm = info.get("finding_norms", {}).get(fid, "")
-                paragraph_key = finding_norm.strip() if finding_norm else norm_key
+                paragraph_key = normalize_paragraph_key(
+                    finding_norm.strip() if finding_norm else norm_key
+                )
                 if paragraph_key not in known_paragraphs:
                     paragraphs_to_verify.append({
                         "finding_id": fid,
@@ -407,10 +415,23 @@ def _build_check_from_cache(
     # needs_revision: детерминированно
     needs_revision = display_status in ("replaced", "cancelled", "outdated_edition")
 
+    # edition_status: явное значение для каждого check
+    # active — текущая редакция, outdated_edition — есть новая,
+    # replaced/cancelled — документ заменён/отменён, unknown — неизвестно
+    if display_status == "outdated_edition":
+        resolved_edition_status = "outdated_edition"
+    elif display_status in ("replaced", "cancelled"):
+        resolved_edition_status = display_status
+    elif display_status == "active":
+        resolved_edition_status = "active"
+    else:
+        resolved_edition_status = "unknown"
+
     return {
         "norm_as_cited": cited_as,
         "doc_number": norm_key,
         "status": display_status,
+        "edition_status": resolved_edition_status,
         "current_version": cached.get("current_version"),
         "replacement_doc": cached.get("replacement_doc"),
         "source_url": cached.get("source_url"),
@@ -734,7 +755,7 @@ def update_paragraphs_from_project(pdb: dict, project_path: Path) -> int:
         if not norm or not actual_quote:
             continue
 
-        key = norm.strip()
+        key = normalize_paragraph_key(norm.strip())
         existing = pdb["paragraphs"].get(key)
         if existing and existing.get("quote") == actual_quote:
             continue
@@ -748,6 +769,173 @@ def update_paragraphs_from_project(pdb: dict, project_path: Path) -> int:
         count += 1
 
     return count
+
+
+# ─── Paragraph Cache: helper-функции ──────────────────────────────────────────
+
+def normalize_paragraph_key(raw_key: str) -> str:
+    """Нормализовать ключ параграфа для стабильного lookup.
+
+    Убирает статусные хвосты (действует..., ред..., изм...),
+    нормализует пробелы. Ключ стабилен независимо от формата ссылки.
+
+    Примеры:
+        "СП 256.1325800.2016 (действует), п. 15.3" → "СП 256.1325800.2016, п. 15.3"
+        "СП 256.1325800.2016, п. 15.3"              → "СП 256.1325800.2016, п. 15.3"
+    """
+    key = raw_key.strip()
+    if not key:
+        return key
+    # Убрать хвосты в скобках: (действует...), (ред. ...), (изм. ...)
+    key = re.sub(
+        r'\s*\((?:действу|ред\.|изм\.|с изм|введ|утв|актуал|в ред)[^)]*\)',
+        '', key, flags=re.IGNORECASE,
+    )
+    # Убрать markdown
+    key = key.replace("**", "").replace("*", "")
+    # Нормализовать пробелы
+    key = re.sub(r'\s+', ' ', key).strip()
+    return key
+
+
+def get_paragraph(paragraph_key: str) -> dict | None:
+    """Прочитать одну запись из paragraph cache.
+
+    Ищет сначала по точному ключу, потом по нормализованному.
+
+    Returns: dict с полями {norm, quote, verified_at, ...} или None.
+    """
+    pdb = load_norms_paragraphs()
+    paragraphs = pdb.get("paragraphs", {})
+    key = paragraph_key.strip()
+    # Точный lookup
+    result = paragraphs.get(key)
+    if result:
+        return result
+    # Нормализованный lookup (для ключей со статусом)
+    norm_key = normalize_paragraph_key(key)
+    if norm_key != key:
+        result = paragraphs.get(norm_key)
+        if result:
+            return result
+    # Обратный поиск: нормализуем все ключи в cache
+    for cached_key, val in paragraphs.items():
+        if normalize_paragraph_key(cached_key) == norm_key:
+            return val
+    return None
+
+
+def upsert_paragraph(
+    paragraph_key: str,
+    quote: str,
+    norm_key: str = "",
+    verified_via: str = "manual",
+    confidence: float = 1.0,
+    project_id: str = "",
+    verified: bool = True,
+) -> str:
+    """Добавить или обновить запись в paragraph cache.
+
+    Не записывает неподтверждённые цитаты как подтверждённые.
+    Не перетирает active verified quote устаревшей.
+
+    Returns: "added" | "updated" | "skipped"
+    """
+    if not verified:
+        return "skipped"
+
+    paragraph_key = normalize_paragraph_key(paragraph_key.strip())
+    if not paragraph_key or not quote:
+        return "skipped"
+
+    pdb = load_norms_paragraphs()
+    existing = pdb["paragraphs"].get(paragraph_key)
+
+    if existing:
+        # Не перетираем, если та же цитата
+        if existing.get("quote") == quote:
+            return "skipped"
+        # Не понижаем confidence
+        if existing.get("confidence", 0) > confidence:
+            return "skipped"
+
+    pdb["paragraphs"][paragraph_key] = {
+        "norm": norm_key or paragraph_key,
+        "quote": quote,
+        "verified_at": datetime.now().isoformat(),
+        "verified_via": verified_via,
+        "confidence": confidence,
+        "source_project": project_id,
+    }
+    save_norms_paragraphs(pdb)
+    return "added" if not existing else "updated"
+
+
+def merge_paragraph_checks(paragraph_checks: list[dict], project_id: str = "") -> dict:
+    """Массовое слияние paragraph_checks в paragraph cache.
+
+    Args:
+        paragraph_checks: список из norm_checks.json / norm_checks_llm.json
+        project_id: идентификатор проекта
+
+    Returns: {added, updated, skipped}
+    """
+    stats = {"added": 0, "updated": 0, "skipped": 0}
+    pdb = load_norms_paragraphs()
+
+    for pc in paragraph_checks:
+        if not pc.get("paragraph_verified"):
+            stats["skipped"] += 1
+            continue
+
+        quote = pc.get("actual_quote") or ""
+        norm = pc.get("norm", "")
+        paragraph_key = normalize_paragraph_key(
+            pc.get("paragraph_key") or norm.strip()
+        )
+
+        if not paragraph_key or not quote:
+            stats["skipped"] += 1
+            continue
+
+        existing = pdb["paragraphs"].get(paragraph_key)
+        if existing and existing.get("quote") == quote:
+            stats["skipped"] += 1
+            continue
+
+        pdb["paragraphs"][paragraph_key] = {
+            "norm": norm,
+            "quote": quote,
+            "verified_at": datetime.now().isoformat(),
+            "verified_via": pc.get("verified_via", "websearch"),
+            "confidence": pc.get("confidence", 0.9),
+            "source_project": project_id,
+            "finding_id": pc.get("finding_id", ""),
+        }
+        stats["added" if not existing else "updated"] += 1
+
+    if stats["added"] + stats["updated"] > 0:
+        save_norms_paragraphs(pdb)
+
+    return stats
+
+
+def paragraph_cache_stats() -> dict:
+    """Статистика paragraph cache."""
+    pdb = load_norms_paragraphs()
+    paragraphs = pdb.get("paragraphs", {})
+    total = len(paragraphs)
+    empty_quote = sum(1 for p in paragraphs.values() if not p.get("quote"))
+    by_source = {}
+    for p in paragraphs.values():
+        via = p.get("verified_via", "unknown")
+        by_source[via] = by_source.get(via, 0) + 1
+    return {
+        "total": total,
+        "empty_quote": empty_quote,
+        "by_verified_via": by_source,
+        "last_updated": pdb.get("meta", {}).get("last_updated"),
+    }
 
 
 def _guess_category(doc_number: str) -> str:

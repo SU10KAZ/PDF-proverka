@@ -18,6 +18,7 @@ from webapp.config import (
     MAX_PARALLEL_BATCHES,
     RATE_LIMIT_THRESHOLD_PCT, RATE_LIMIT_CHECK_INTERVAL,
     RATE_LIMIT_MAX_WAIT, RATE_LIMIT_MAX_RETRIES,
+    CRITIC_CHUNK_SIZE,
 )
 from webapp.models.audit import AuditJob, AuditStage, JobStatus, BatchQueueStatus, BatchQueueItem, BatchAction
 from webapp.models.websocket import WSMessage
@@ -50,7 +51,113 @@ class PipelineManager:
         self._tasks: dict[str, asyncio.Task] = {}        # project_id -> asyncio.Task
         self._heartbeat_tasks: dict[str, asyncio.Task] = {}  # project_id -> heartbeat Task
 
+        # Пауза: Event set = работа, Event clear = пауза
+        self._pause_event = asyncio.Event()
+        self._pause_event.set()  # изначально НЕ на паузе
+        self._paused = False
+        self._pause_mode: str | None = None  # "finish_current" | "interrupt"
+
     ZOMBIE_TIMEOUT_SEC = 600  # 10 минут без heartbeat = зомби
+
+    # ─── Пауза/Возобновление ───
+
+    async def pause(self, mode: str = "finish_current") -> dict:
+        """
+        Поставить на паузу.
+
+        mode:
+          - "finish_current": дождаться завершения текущего этапа, не запускать следующий
+          - "interrupt": прервать текущий Claude CLI процесс
+        """
+        if self._paused:
+            return {"status": "already_paused"}
+
+        self._paused = True
+        self._pause_mode = mode
+        self._pause_event.clear()  # блокировать _check_pause()
+
+        # Логируем во все активные проекты
+        for pid, job in self.active_jobs.items():
+            await self._log(job, f"⏸ ПАУЗА ({mode})", "warn")
+
+        await ws_manager.broadcast_global(
+            WSMessage.log("__SYSTEM__", f"⏸ Пауза: {mode}", "warn")
+        )
+
+        if mode == "interrupt":
+            # Убить все активные Claude CLI процессы
+            for pid in list(self.active_jobs.keys()):
+                killed = await kill_all_processes(pid)
+                if killed:
+                    await self._log(
+                        self.active_jobs[pid],
+                        f"Прервано: {killed} процессов убито",
+                        "warn",
+                    )
+
+        return {
+            "status": "paused",
+            "mode": mode,
+            "active_projects": list(self.active_jobs.keys()),
+        }
+
+    async def unpause(self) -> dict:
+        """Снять паузу — продолжить работу."""
+        if not self._paused:
+            return {"status": "not_paused"}
+
+        self._paused = False
+        self._pause_mode = None
+        self._pause_event.set()  # разблокировать _check_pause()
+
+        for pid, job in self.active_jobs.items():
+            await self._log(job, "▶ Продолжение работы", "info")
+            # Восстановить pause_total_sec
+            if hasattr(job, '_pause_started_at') and job._pause_started_at:
+                pause_duration = (datetime.now() - job._pause_started_at).total_seconds()
+                job.pause_total_sec += pause_duration
+                job._pause_started_at = None
+
+        await ws_manager.broadcast_global(
+            WSMessage.log("__SYSTEM__", "▶ Продолжение работы", "info")
+        )
+
+        return {"status": "resumed"}
+
+    def get_pause_status(self) -> dict:
+        """Текущий статус паузы."""
+        return {
+            "paused": self._paused,
+            "mode": self._pause_mode,
+        }
+
+    async def _check_pause(self, job: AuditJob) -> bool:
+        """
+        Проверить паузу между этапами pipeline.
+
+        Вызывается перед каждым новым этапом. Если на паузе — ждёт.
+        Returns: True = можно продолжать, False = job отменён.
+        """
+        if not self._paused:
+            return job.status != JobStatus.CANCELLED
+
+        # Запомнить время начала паузы для ETA
+        job._pause_started_at = datetime.now()
+
+        await self._log(job, "⏸ Пауза — ожидание команды 'Продолжить'...", "warn")
+
+        # Отправляем WS-обновление
+        await ws_manager.broadcast_to_project(
+            job.project_id,
+            WSMessage.status(job.project_id, "paused"),
+        )
+
+        # Ждём unpause
+        await self._pause_event.wait()
+
+        await self._log(job, "▶ Возобновлено", "info")
+
+        return job.status != JobStatus.CANCELLED
 
     # ─── Rate Limit: ожидание сброса лимита ───
 
@@ -167,11 +274,16 @@ class PipelineManager:
 
     async def _check_before_launch(self, job: AuditJob) -> bool:
         """
-        Превентивная проверка rate limit перед запуском Claude CLI.
+        Превентивная проверка паузы + rate limit перед запуском Claude CLI.
 
         Returns:
             True если можно запускать, False если job отменён.
         """
+        # 1. Проверка паузы (ждёт если на паузе)
+        if not await self._check_pause(job):
+            return False
+
+        # 2. Проверка rate limit
         check = global_scanner.check_rate_limit(RATE_LIMIT_THRESHOLD_PCT)
         if check["can_proceed"]:
             return True
@@ -244,9 +356,6 @@ class PipelineManager:
             print(f"[PipelineManager] Очистка зомби-задачи: {pid}")
             self._cleanup(pid)
 
-        # При старте сервера: пометить зависшие "running" этапы в pipeline_log.json
-        self._recover_stale_pipelines()
-
     def _recover_stale_pipelines(self):
         """Сканирует все pipeline_log.json и помечает зависшие 'running' как 'interrupted'.
 
@@ -258,8 +367,14 @@ class PipelineManager:
         """
         from webapp.services.project_service import iter_project_dirs
 
+        # Собрать project_id активных задач, чтобы не трогать их
+        active_pids = set(self.active_jobs.keys())
+
         recovered = 0
         for _pid, project_dir in iter_project_dirs():
+            # Не трогать проекты с активным аудитом
+            if _pid in active_pids:
+                continue
             log_path = project_dir / "_output" / "pipeline_log.json"
             if not log_path.exists():
                 continue
@@ -335,6 +450,110 @@ class PipelineManager:
                 if path.exists():
                     path.unlink()
                     print(f"[{project_id}:clean] Удалён {filename}")
+
+    # ─── Валидация JSON после записи LLM ───
+
+    @staticmethod
+    def _validate_and_repair_json(file_path: Path) -> tuple[bool, str]:
+        """
+        Проверить JSON-файл и попытаться починить, если невалиден.
+
+        Типичная проблема: LLM пишет неэкранированные кавычки внутри строк,
+        например: "раздел ТХ.А "Технологические решения"" вместо
+                  "раздел ТХ.А \"Технологические решения\""
+
+        Returns:
+            (is_valid, message) — True если файл валиден (или починен).
+        """
+        import re
+
+        if not file_path.exists():
+            return False, "Файл не существует"
+
+        raw = file_path.read_text(encoding="utf-8")
+
+        # 1. Пробуем валидный JSON
+        try:
+            json.loads(raw)
+            return True, "OK"
+        except json.JSONDecodeError as original_err:
+            pass
+
+        # 2. Бэкап перед ремонтом
+        backup_path = file_path.with_suffix(".json.broken")
+        backup_path.write_text(raw, encoding="utf-8")
+
+        # 3. Ремонт: заменяем неэкранированные " внутри строковых значений
+        # Стратегия: ищем паттерны ": "...внутренние "кавычки"..." и экранируем
+        def _fix_inner_quotes(text: str) -> str:
+            """Экранировать неэкранированные кавычки внутри JSON-строк."""
+            result = []
+            i = 0
+            in_string = False
+            escape_next = False
+
+            while i < len(text):
+                ch = text[i]
+
+                if escape_next:
+                    result.append(ch)
+                    escape_next = False
+                    i += 1
+                    continue
+
+                if ch == '\\' and in_string:
+                    result.append(ch)
+                    escape_next = True
+                    i += 1
+                    continue
+
+                if ch == '"':
+                    if not in_string:
+                        in_string = True
+                        result.append(ch)
+                    else:
+                        # Это " внутри строки — конец строки или внутренняя кавычка?
+                        # Смотрим что после: если , ] } : или пробел+один из них — конец строки
+                        rest = text[i + 1:].lstrip()
+                        if not rest or rest[0] in (',', ']', '}', ':'):
+                            in_string = False
+                            result.append(ch)
+                        else:
+                            # Внутренняя кавычка — экранируем
+                            result.append('\\"')
+                    i += 1
+                    continue
+
+                result.append(ch)
+                i += 1
+
+            return ''.join(result)
+
+        fixed = _fix_inner_quotes(raw)
+
+        try:
+            json.loads(fixed)
+            file_path.write_text(fixed, encoding="utf-8")
+            return True, f"Repaired (бэкап: {backup_path.name})"
+        except json.JSONDecodeError:
+            pass
+
+        # 4. Fallback: замена типографских кавычек на экранированные
+        fixed2 = raw.replace('\u201c', '\\"').replace('\u201d', '\\"')
+        fixed2 = re.sub(
+            r'(?<=": ")(.+?)(?="[,\s\n\r]*[}\]])',
+            lambda m: m.group(0).replace('"', '\\"') if '"' in m.group(0) else m.group(0),
+            fixed2,
+        )
+
+        try:
+            json.loads(fixed2)
+            file_path.write_text(fixed2, encoding="utf-8")
+            return True, f"Repaired via fallback (бэкап: {backup_path.name})"
+        except json.JSONDecodeError as e:
+            # Не удалось починить — возвращаем оригинал
+            file_path.write_text(raw, encoding="utf-8")
+            return False, f"Ремонт не удался: {e}"
 
     # ─── Логирование (делегирование в audit_logger) ───
 
@@ -733,6 +952,21 @@ class PipelineManager:
                                 stdout_text = output_text or ""
                                 stderr_text = cli_result.result_text if cli_result and cli_result.is_error else ""
 
+                                # Таймаут + можно разбить → split & retry
+                                if claude_runner.is_timeout(exit_code) and block_count > 3:
+                                    await self._log(
+                                        job,
+                                        f"Пакет {batch_id}: таймаут ({block_count} блоков) — разбиваю пополам",
+                                        "warn",
+                                    )
+                                    split_ok = await self._retry_batch_split(
+                                        job, batch, project_info, pid,
+                                        total_batches, batch_id, output_dir,
+                                    )
+                                    if split_ok:
+                                        exit_code = 0  # считаем успехом
+                                    break
+
                                 # "Prompt is too long" — нерепетируемая, retry бесполезен
                                 if claude_runner.is_prompt_too_long(exit_code, stdout_text, stderr_text):
                                     await self._log(job, f"Prompt is too long", "error")
@@ -833,6 +1067,13 @@ class PipelineManager:
                 if not findings_path.exists():
                     raise RuntimeError("03_findings.json не создан")
 
+                # Валидация JSON после findings_merge
+                is_valid, repair_msg = self._validate_and_repair_json(findings_path)
+                if not is_valid:
+                    raise RuntimeError(f"03_findings.json невалиден: {repair_msg}")
+                if "Repaired" in repair_msg:
+                    await self._log(job, f"03_findings.json починен: {repair_msg}", "warn")
+
                 self._update_pipeline_log(pid, "findings_merge", "done", message="OK")
 
                 if job.status == JobStatus.CANCELLED:
@@ -841,31 +1082,12 @@ class PipelineManager:
                 self.active_jobs[pid] = job
                 self._tasks[pid] = asyncio.current_task()
 
-            # ═══ ЭТАП 5.5: Critic + Corrector ═══
-            if start_idx <= 4:
+            # ═══ ЭТАПЫ 5.5-6: Параллельный запуск critic + norms (+ optimization) ═══
+            if start_idx < 4:
+                # Полный post-findings: critic + norms + optimization (параллельно)
                 findings_path = resolve_project_dir(pid) / "_output" / "03_findings.json"
                 if findings_path.exists():
-                    await self._run_findings_review(job, project_info)
-
-                    if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
-                        return
-
-                    self.active_jobs[pid] = job
-                    self._tasks[pid] = asyncio.current_task()
-
-            # ═══ ЭТАП 6: Верификация норм ═══
-            if start_idx <= 4:
-                self._clean_stage_files(pid, [
-                    "03a_norms_verified.json", "norm_checks.json", "norm_checks_llm.json",
-                ])
-                self._reset_job_progress(job)
-                findings_path = resolve_project_dir(pid) / "_output" / "03_findings.json"
-                if findings_path.exists():
-                    job.stage = AuditStage.NORM_VERIFY
-                    job.status = JobStatus.RUNNING
-                    print(f"[{pid}:resume] ═══ ЭТАП 6: Верификация норм ═══")
-                    await self._log(job, "═══ ЭТАП 6: Верификация нормативных ссылок ═══")
-                    await self._run_norm_verification(job, standalone=False)
+                    await self._run_post_findings_parallel(job, project_info)
 
                     if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
                         return
@@ -874,6 +1096,41 @@ class PipelineManager:
                     self._tasks[pid] = asyncio.current_task()
                 else:
                     await self._log(job, "03_findings.json не найден — пропуск верификации", "warn")
+
+            # Resume только findings_review (critic+corrector) — без повтора norms/optimization
+            if start_idx == 4:
+                findings_path = resolve_project_dir(pid) / "_output" / "03_findings.json"
+                if findings_path.exists():
+                    await self._start_heartbeat(job)
+                    await self._run_findings_review(job, project_info)
+
+                    if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
+                        return
+
+                    self.active_jobs[pid] = job
+                    self._tasks[pid] = asyncio.current_task()
+                else:
+                    await self._log(job, "03_findings.json не найден — пропуск review", "warn")
+
+            # Если resume начался с norm_verify (start_idx=5) — запускать только norms
+            if start_idx == 5:
+                self._clean_stage_files(pid, [
+                    "03a_norms_verified.json", "norm_checks.json", "norm_checks_llm.json",
+                ])
+                self._reset_job_progress(job)
+                findings_path = resolve_project_dir(pid) / "_output" / "03_findings.json"
+                if findings_path.exists():
+                    job.stage = AuditStage.NORM_VERIFY
+                    job.status = JobStatus.RUNNING
+                    print(f"[{pid}:resume] ═══ Верификация норм ═══")
+                    await self._log(job, "═══ Верификация нормативных ссылок ═══")
+                    await self._run_norm_verification(job, standalone=False)
+
+                    if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
+                        return
+
+                    self.active_jobs[pid] = job
+                    self._tasks[pid] = asyncio.current_task()
 
             # ═══ ЭТАП 7: Excel ═══
             self._reset_job_progress(job)
@@ -1450,11 +1707,80 @@ class PipelineManager:
             "risky_ids": risky_ids,
         }
 
+    async def _retry_batch_split(
+        self,
+        job: AuditJob,
+        batch: dict,
+        project_info: dict,
+        pid: str,
+        total_batches: int,
+        original_batch_id: int,
+        output_dir: Path,
+    ) -> bool:
+        """Разбить упавший пакет пополам и запустить обе части.
+
+        Результаты записываются как block_batch_NNNa.json и block_batch_NNNb.json.
+        Слияние (blocks.py merge) подхватит все block_batch_*.json.
+
+        Returns: True если обе половины успешны.
+        """
+        blocks = batch.get("blocks", [])
+        mid = len(blocks) // 2
+        halves = [blocks[:mid], blocks[mid:]]
+        suffixes = ["a", "b"]
+        success = True
+
+        # Удалить частичный результат от таймаута
+        orig_file = output_dir / f"block_batch_{original_batch_id:03d}.json"
+        if orig_file.exists():
+            orig_file.unlink()
+
+        for half_blocks, suffix in zip(halves, suffixes):
+            if not half_blocks:
+                continue
+
+            sub_batch = {
+                "batch_id": original_batch_id,
+                "blocks": half_blocks,
+                "block_count": len(half_blocks),
+                "pages_included": sorted(set(b.get("page", 0) for b in half_blocks)),
+            }
+
+            sub_label = f"{original_batch_id}{suffix}"
+            await self._log(
+                job,
+                f"Пакет {sub_label}/{total_batches}: {len(half_blocks)} блоков (retry)...",
+            )
+
+            exit_code, output_text, cli_result = await claude_runner.run_block_batch(
+                sub_batch, project_info, pid, total_batches,
+                on_output=lambda msg: self._log(job, msg),
+            )
+            self._record_cli_usage(job, cli_result, f"block_batch_{original_batch_id:03d}{suffix}")
+
+            # Claude CLI пишет результат как block_batch_<batch_id>.json
+            # Переименовываем: block_batch_003.json → block_batch_003a.json
+            written_file = output_dir / f"block_batch_{original_batch_id:03d}.json"
+            split_file = output_dir / f"block_batch_{original_batch_id:03d}{suffix}.json"
+
+            if exit_code == 0 and written_file.exists():
+                written_file.rename(split_file)
+                size_kb = round(split_file.stat().st_size / 1024, 1)
+                await self._log(job, f"Пакет {sub_label}: OK ({size_kb} KB)")
+            elif exit_code == 0:
+                await self._log(job, f"Пакет {sub_label}: OK (файл не создан)", "warn")
+            else:
+                await self._log(job, f"Пакет {sub_label}: ошибка (код {exit_code})", "error")
+                success = False
+
+        return success
+
     async def _run_findings_review(self, job: AuditJob, project_info: dict):
         """
         Critic + Corrector: проверка и корректировка замечаний.
 
         1. Critic проверяет каждое F-замечание (evidence, grounding, page/sheet)
+           Если findings > CRITIC_CHUNK_SIZE — разбивает на чанки.
         2. Если есть отрицательные вердикты — Corrector исправляет
         """
         pid = job.project_id
@@ -1477,14 +1803,16 @@ class PipelineManager:
             await self._log(job, f"Grounding пропущен: {e}", "warn")
 
         # ── Selective Critic: фильтрация risky findings ──
+        risky_count = 0
         try:
             sel = self._build_selective_review_input(output_dir)
+            risky_count = sel["risky"]
             await self._log(
                 job,
                 f"Selective Critic: {sel['risky']}/{sel['total']} findings требуют проверки "
                 f"({sel['skipped']} пропущены как хорошо привязанные)",
             )
-            if sel["risky"] == 0:
+            if risky_count == 0:
                 await self._log(job, "Все findings хорошо привязаны — Critic не требуется")
                 self._update_pipeline_log(pid, "findings_critic", "done",
                                            message="Skipped: 0 risky findings")
@@ -1492,7 +1820,7 @@ class PipelineManager:
         except Exception as e:
             await self._log(job, f"Selective filter пропущен: {e}", "warn")
 
-        # ── Critic ──
+        # ── Critic (с chunking при большом кол-ве findings) ──
         self._reset_job_progress(job)
         job.stage = AuditStage.FINDINGS_REVIEW
         job.status = JobStatus.RUNNING
@@ -1500,41 +1828,270 @@ class PipelineManager:
         print(f"[{pid}] ═══ ЭТАП 6.5a: Critic (проверка замечаний) ═══")
         await self._log(job, "═══ ЭТАП 6.5a: Critic — проверка обоснованности замечаний ═══")
 
-        can_go = await self._check_before_launch(job)
-        if not can_go:
-            await self._log(job, "Rate limit: ожидание превышено или отменено", "warn")
-            return
+        # Определяем нужен ли chunking
+        input_path = output_dir / "03_findings_review_input.json"
+        need_chunks = False
+        all_findings = []
 
-        exit_code, output, cli_result = await claude_runner.run_findings_critic(
-            project_info, pid,
-            on_output=lambda msg: self._log(job, msg),
-        )
-        self._record_cli_usage(job, cli_result, "findings_critic")
+        if input_path.exists():
+            try:
+                input_data = json.loads(input_path.read_text(encoding="utf-8"))
+                all_findings = input_data.get("findings", [])
+                need_chunks = len(all_findings) > CRITIC_CHUNK_SIZE
+            except (json.JSONDecodeError, OSError):
+                pass
 
-        if claude_runner.is_cancelled(exit_code):
-            job.status = JobStatus.CANCELLED
-            return
+        if need_chunks:
+            # ── Chunked Critic (ПАРАЛЛЕЛЬНЫЙ) ──
+            total_findings = len(all_findings)
+            chunks = [
+                all_findings[i:i + CRITIC_CHUNK_SIZE]
+                for i in range(0, total_findings, CRITIC_CHUNK_SIZE)
+            ]
+            num_chunks = len(chunks)
+            await self._log(
+                job,
+                f"Chunked Critic (parallel): {total_findings} findings -> "
+                f"{num_chunks} чанков по ~{CRITIC_CHUNK_SIZE}",
+            )
 
-        if exit_code != 0:
-            self._update_pipeline_log(pid, "findings_critic", "error",
-                                       error=f"Код {exit_code}")
-            await self._log(job, f"Critic: код {exit_code}, пропуск корректировки", "warn")
-            return
+            # 1. Записываем chunk-specific input файлы (без конфликтов)
+            for chunk_idx, chunk_findings in enumerate(chunks, 1):
+                suffix = f"_{chunk_idx:03d}"
+                chunk_input = {
+                    "meta": {
+                        "source": "selective_critic",
+                        "total_findings": total_findings,
+                        "risky_count": len(chunk_findings),
+                        "skipped_count": 0,
+                        "chunk": chunk_idx,
+                        "total_chunks": num_chunks,
+                    },
+                    "findings": chunk_findings,
+                }
+                chunk_input_path = output_dir / f"03_findings_review_input{suffix}.json"
+                chunk_input_path.write_text(
+                    json.dumps(chunk_input, ensure_ascii=False, indent=2),
+                    encoding="utf-8",
+                )
 
-        self._update_pipeline_log(pid, "findings_critic", "done", message="OK")
+            # 2. Запускаем все чанки параллельно через семафор
+            critic_semaphore = asyncio.Semaphore(MAX_PARALLEL_BATCHES)
+            chunk_results: list[dict | None] = [None] * num_chunks  # slot per chunk
 
-        # Проверяем: нужен ли Corrector?
-        review_path = output_dir / "03_findings_review.json"
-        if not review_path.exists():
-            await self._log(job, "03_findings_review.json не создан — пропуск Corrector", "warn")
-            return
+            async def _run_critic_chunk(cidx: int) -> None:
+                """Запустить один чанк critic-а."""
+                suffix = f"_{cidx:03d}"
+                async with critic_semaphore:
+                    if job.status == JobStatus.CANCELLED:
+                        return
 
-        try:
-            review_data = json.loads(review_path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
-            await self._log(job, "Ошибка чтения 03_findings_review.json", "warn")
-            return
+                    await self._log(
+                        job,
+                        f"Critic чанк {cidx}/{num_chunks}: "
+                        f"{len(chunks[cidx - 1])} findings...",
+                    )
 
+                    can_go = await self._check_before_launch(job)
+                    if not can_go:
+                        await self._log(job, f"Critic чанк {cidx}: rate limit, пропуск", "warn")
+                        return
+
+                    exit_code, output, cli_result = await claude_runner.run_findings_critic(
+                        project_info, pid,
+                        on_output=lambda msg: self._log(job, msg),
+                        chunk_suffix=suffix,
+                    )
+                    self._record_cli_usage(job, cli_result, f"findings_critic_chunk{cidx}")
+
+                    if claude_runner.is_cancelled(exit_code):
+                        job.status = JobStatus.CANCELLED
+                        return
+
+                    # Читаем chunk-specific результат (проверяем файл НЕЗАВИСИМО от exit code)
+                    chunk_review_path = output_dir / f"03_findings_review{suffix}.json"
+                    if exit_code != 0 and not chunk_review_path.exists():
+                        await self._log(
+                            job,
+                            f"Critic чанк {cidx}/{num_chunks}: код {exit_code}, файл не создан",
+                            "warn",
+                        )
+                        return
+
+                    if exit_code != 0:
+                        await self._log(
+                            job,
+                            f"Critic чанк {cidx}/{num_chunks}: CLI код {exit_code}, "
+                            f"но файл создан — пробуем использовать",
+                            "warn",
+                        )
+
+                    if chunk_review_path.exists():
+                        try:
+                            chunk_review = json.loads(
+                                chunk_review_path.read_text(encoding="utf-8")
+                            )
+                            chunk_results[cidx - 1] = chunk_review
+                            chunk_meta = chunk_review.get("meta", {})
+                            await self._log(
+                                job,
+                                f"Critic чанк {cidx}: "
+                                f"{chunk_meta.get('total_reviewed', '?')} проверено, "
+                                f"{chunk_meta.get('verdicts', {}).get('pass', 0)} pass",
+                            )
+                        except (json.JSONDecodeError, OSError) as e:
+                            await self._log(
+                                job,
+                                f"Ошибка чтения результата чанка {cidx}: {e}",
+                                "warn",
+                            )
+
+            # Запуск всех чанков параллельно
+            tasks = [
+                asyncio.create_task(_run_critic_chunk(cidx))
+                for cidx in range(1, num_chunks + 1)
+            ]
+            await asyncio.gather(*tasks, return_exceptions=True)
+
+            if job.status == JobStatus.CANCELLED:
+                return
+
+            # 3. Слияние результатов
+            all_reviews = []
+            merged_verdicts = {}
+            total_reviewed_all = 0
+            chunks_ok = 0
+
+            for cr in chunk_results:
+                if cr is None:
+                    continue
+                chunks_ok += 1
+                chunk_reviews = cr.get("reviews", [])
+                all_reviews.extend(chunk_reviews)
+                chunk_meta = cr.get("meta", {})
+                total_reviewed_all += chunk_meta.get("total_reviewed", len(chunk_reviews))
+                for k, v in chunk_meta.get("verdicts", {}).items():
+                    merged_verdicts[k] = merged_verdicts.get(k, 0) + v
+
+            if not all_reviews and chunks_ok == 0:
+                self._update_pipeline_log(pid, "findings_critic", "error",
+                                           error="Все чанки провалились")
+                await self._log(job, "Critic: все чанки провалились, пропуск корректировки", "warn")
+                return
+
+            # Сливаем в единый 03_findings_review.json
+            merged_review = {
+                "meta": {
+                    "project_id": pid,
+                    "review_date": datetime.now().isoformat(),
+                    "total_reviewed": total_reviewed_all,
+                    "verdicts": merged_verdicts,
+                    "chunks_total": num_chunks,
+                    "chunks_ok": chunks_ok,
+                },
+                "reviews": all_reviews,
+            }
+            review_path = output_dir / "03_findings_review.json"
+            review_path.write_text(
+                json.dumps(merged_review, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+
+            # Восстанавливаем полный review_input (для corrector)
+            full_input = {
+                "meta": {
+                    "source": "selective_critic",
+                    "total_findings": total_findings,
+                    "risky_count": total_findings,
+                    "skipped_count": 0,
+                },
+                "findings": all_findings,
+            }
+            input_path.write_text(
+                json.dumps(full_input, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+
+            # Cleanup: удаляем chunk-specific файлы
+            for cidx in range(1, num_chunks + 1):
+                suffix = f"_{cidx:03d}"
+                for pattern in [f"03_findings_review_input{suffix}.json",
+                                f"03_findings_review{suffix}.json"]:
+                    p = output_dir / pattern
+                    if p.exists():
+                        p.unlink()
+
+            self._update_pipeline_log(pid, "findings_critic", "done",
+                                       message=f"Parallel: {num_chunks} chunks, {total_reviewed_all} reviewed")
+            review_data = merged_review
+
+        else:
+            # ── Single-shot Critic (как раньше) ──
+            can_go = await self._check_before_launch(job)
+            if not can_go:
+                await self._log(job, "Rate limit: ожидание превышено или отменено", "warn")
+                return
+
+            exit_code, output, cli_result = await claude_runner.run_findings_critic(
+                project_info, pid,
+                on_output=lambda msg: self._log(job, msg),
+            )
+            self._record_cli_usage(job, cli_result, "findings_critic")
+
+            if claude_runner.is_cancelled(exit_code):
+                job.status = JobStatus.CANCELLED
+                return
+
+            if claude_runner.is_cancelled(exit_code):
+                # Уже обработано выше, но на всякий случай
+                job.status = JobStatus.CANCELLED
+                return
+
+            # Читаем результат — проверяем файл НЕЗАВИСИМО от exit code
+            review_path = output_dir / "03_findings_review.json"
+            if exit_code != 0:
+                # CLI вернул ошибку, но файл мог быть записан до сбоя
+                if review_path.exists():
+                    try:
+                        review_data = json.loads(review_path.read_text(encoding="utf-8"))
+                        reviewed = review_data.get("meta", {}).get("total_reviewed", 0)
+                        if reviewed > 0:
+                            await self._log(
+                                job,
+                                f"Critic: CLI код {exit_code}, но review файл валиден "
+                                f"({reviewed} reviewed) — продолжаем",
+                                "warn",
+                            )
+                            self._update_pipeline_log(
+                                pid, "findings_critic", "done",
+                                message=f"OK (CLI код {exit_code}, файл валиден)",
+                            )
+                        else:
+                            raise ValueError("total_reviewed == 0")
+                    except (json.JSONDecodeError, OSError, ValueError):
+                        self._update_pipeline_log(pid, "findings_critic", "error",
+                                                   error=f"Код {exit_code}")
+                        await self._log(job, f"Critic: код {exit_code}, файл невалиден — пропуск", "warn")
+                        return
+                else:
+                    self._update_pipeline_log(pid, "findings_critic", "error",
+                                               error=f"Код {exit_code}")
+                    await self._log(job, f"Critic: код {exit_code}, файл не создан — пропуск", "warn")
+                    return
+            else:
+                self._update_pipeline_log(pid, "findings_critic", "done", message="OK")
+
+                if not review_path.exists():
+                    await self._log(job, "03_findings_review.json не создан — пропуск Corrector", "warn")
+                    return
+
+                try:
+                    review_data = json.loads(review_path.read_text(encoding="utf-8"))
+                except (json.JSONDecodeError, OSError):
+                    await self._log(job, "Ошибка чтения 03_findings_review.json", "warn")
+                    return
+
+        # ── Анализ результатов Critic ──
         verdicts = review_data.get("meta", {}).get("verdicts", {})
         total_pass = verdicts.get("pass", 0)
         total_reviewed = review_data.get("meta", {}).get("total_reviewed", 0)
@@ -1573,13 +2130,222 @@ class PipelineManager:
             return
 
         if exit_code != 0:
-            self._update_pipeline_log(pid, "findings_corrector", "error",
-                                       error=f"Код {exit_code}")
-            await self._log(job, f"Corrector: код {exit_code}", "warn")
+            # CLI может вернуть -1/1, но файл уже записан — проверяем
+            findings_path = output_dir / "03_findings.json"
+            pre_review = output_dir / "03_findings_pre_review.json"
+            if findings_path.exists() and pre_review.exists():
+                try:
+                    new_data = json.loads(findings_path.read_text(encoding="utf-8"))
+                    old_data = json.loads(pre_review.read_text(encoding="utf-8"))
+                    # Если findings изменился относительно pre_review — corrector сработал
+                    new_count = len(new_data.get("findings", []))
+                    old_count = len(old_data.get("findings", []))
+                    if new_count > 0 and new_data != old_data:
+                        await self._log(
+                            job,
+                            f"Corrector: CLI код {exit_code}, но 03_findings.json обновлён "
+                            f"({old_count} → {new_count}) — считаем успехом",
+                            "warn",
+                        )
+                        self._update_pipeline_log(
+                            pid, "findings_corrector", "done",
+                            message=f"OK (CLI код {exit_code}, файл обновлён)",
+                        )
+                        # Не return — продолжаем к валидации JSON ниже
+                    else:
+                        self._update_pipeline_log(pid, "findings_corrector", "error",
+                                                   error=f"Код {exit_code}")
+                        await self._log(job, f"Corrector: код {exit_code}, файл не изменился", "warn")
+                        return
+                except (json.JSONDecodeError, OSError):
+                    self._update_pipeline_log(pid, "findings_corrector", "error",
+                                               error=f"Код {exit_code}")
+                    await self._log(job, f"Corrector: код {exit_code}, JSON невалиден", "warn")
+                    return
+            else:
+                self._update_pipeline_log(pid, "findings_corrector", "error",
+                                           error=f"Код {exit_code}")
+                await self._log(job, f"Corrector: код {exit_code}", "warn")
+                return
+        else:
+            self._update_pipeline_log(pid, "findings_corrector", "done", message="OK")
+            await self._log(job, "Corrector завершён — 03_findings.json обновлён")
+
+        # Валидация JSON после corrector (LLM может записать невалидный JSON)
+        findings_path = output_dir / "03_findings.json"
+        if findings_path.exists():
+            is_valid, repair_msg = self._validate_and_repair_json(findings_path)
+            if not is_valid:
+                await self._log(
+                    job,
+                    f"ВНИМАНИЕ: 03_findings.json невалиден после Corrector: {repair_msg}. "
+                    f"Восстанавливаю pre_review версию.",
+                    "error",
+                )
+                # Fallback: восстанавливаем бэкап до corrector
+                pre_review = output_dir / "03_findings_pre_review.json"
+                if pre_review.exists():
+                    import shutil
+                    shutil.copy2(pre_review, findings_path)
+                    await self._log(job, "Восстановлен 03_findings_pre_review.json", "warn")
+            elif "Repaired" in repair_msg:
+                await self._log(job, f"JSON починен автоматически: {repair_msg}", "warn")
+
+        # Восстановление norm_quote/norm_confidence из pre_review (corrector может потерять)
+        await self._restore_norm_quotes(output_dir, job)
+
+    @staticmethod
+    async def _restore_norm_quotes(output_dir: Path, job: "AuditJob"):
+        """Восстановить norm_quote/norm_confidence из pre_review бэкапа.
+
+        Corrector может перезаписать findings без этих полей.
+        Берём их из бэкапа (до corrector) и подставляем обратно.
+        """
+        findings_path = output_dir / "03_findings.json"
+        pre_review_path = output_dir / "03_findings_pre_review.json"
+        if not findings_path.exists() or not pre_review_path.exists():
             return
 
-        self._update_pipeline_log(pid, "findings_corrector", "done", message="OK")
-        await self._log(job, "Corrector завершён — 03_findings.json обновлён")
+        try:
+            current = json.loads(findings_path.read_text(encoding="utf-8"))
+            backup = json.loads(pre_review_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            return
+
+        backup_map = {f.get("id"): f for f in backup.get("findings", [])}
+        restored = 0
+        for finding in current.get("findings", []):
+            fid = finding.get("id")
+            if not fid or fid not in backup_map:
+                continue
+            orig = backup_map[fid]
+            # Восстановить norm_quote если потерян
+            if not finding.get("norm_quote") and orig.get("norm_quote"):
+                finding["norm_quote"] = orig["norm_quote"]
+                restored += 1
+            # Восстановить norm_confidence если потерян
+            if finding.get("norm_confidence") is None and orig.get("norm_confidence") is not None:
+                finding["norm_confidence"] = orig["norm_confidence"]
+
+        if restored > 0:
+            findings_path.write_text(
+                json.dumps(current, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+
+    # ─── Параллельный запуск post-findings этапов ───
+
+    async def _run_post_findings_parallel(
+        self,
+        job: AuditJob,
+        project_info: dict,
+        include_optimization: bool = True,
+    ):
+        """
+        Параллельный запуск после findings_merge:
+
+        ┌─ findings_critic → corrector ──────────────┐
+        ├─ norm_verify ──────────────────────────────┼─→ (done)
+        └─ optimization → (ждёт corrector) → opt_review ─┘
+
+        Файловая безопасность:
+        - critic/corrector пишут: 03_findings_review*.json, 03_findings.json
+        - norm_verify пишет: norm_checks*.json, 03a_norms_verified.json
+        - optimization пишет: optimization*.json
+        Все три — разные файлы, конфликтов записи нет.
+        Corrector перезаписывает 03_findings.json ПОСЛЕ того как
+        norm_verify уже прочитал его (read перед write).
+        """
+        pid = job.project_id
+        corrector_done = asyncio.Event()
+        review_error = False
+
+        async def _task_findings_review():
+            """Задача A: Critic → Corrector → signal corrector_done."""
+            nonlocal review_error
+            try:
+                await self._run_findings_review(job, project_info)
+            except Exception as e:
+                await self._log(job, f"Findings review ошибка: {e}", "error")
+                review_error = True
+            finally:
+                corrector_done.set()
+
+        async def _task_norm_verify():
+            """Задача B: Верификация норм (параллельно с critic)."""
+            try:
+                self._clean_stage_files(pid, [
+                    "03a_norms_verified.json", "norm_checks.json", "norm_checks_llm.json",
+                ])
+                print(f"[{pid}] ═══ Верификация норм (параллельно) ═══")
+                await self._log(job, "═══ Верификация нормативных ссылок (параллельно с Critic) ═══")
+                await self._run_norm_verification(job, standalone=False)
+            except Exception as e:
+                await self._log(job, f"Norm verify ошибка: {e}", "error")
+                self._update_pipeline_log(pid, "norm_verify", "error", error=str(e))
+
+        async def _task_optimization():
+            """Задача C: Optimization → ждёт corrector → opt_critic → opt_corrector."""
+            try:
+                # Optimization сам по себе НЕ зависит от corrector
+                opt_job = AuditJob(
+                    job_id=job.job_id + "_opt",
+                    project_id=pid,
+                    stage=AuditStage.OPTIMIZATION,
+                    status=JobStatus.RUNNING,
+                    started_at=datetime.now().isoformat(),
+                )
+                print(f"[{pid}] ═══ Оптимизация (параллельно) ═══")
+                await self._log(job, "═══ Оптимизация (параллельно с Critic) ═══")
+
+                await self._run_optimization(opt_job, standalone=False)
+
+                if opt_job.status != JobStatus.COMPLETED:
+                    await self._log(
+                        job,
+                        f"Оптимизация: {opt_job.status.value}"
+                        + (f" — {opt_job.error_message}" if opt_job.error_message else ""),
+                        "warn",
+                    )
+                    return
+
+                # Opt_critic ЖДЁТ corrector (нужны финальные findings для проверки конфликтов)
+                await self._log(job, "Оптимизация готова, ожидание Corrector для opt_critic...")
+                await corrector_done.wait()
+
+                if job.status == JobStatus.CANCELLED:
+                    return
+
+                # Запускаем opt_critic → opt_corrector
+                await self._run_optimization_review(opt_job)
+
+                if opt_job.status == JobStatus.FAILED:
+                    await self._log(
+                        job,
+                        f"Optimization review: {opt_job.error_message or 'ошибка'}",
+                        "warn",
+                    )
+            except Exception as e:
+                await self._log(job, f"Optimization ошибка: {e}", "error")
+                self._update_pipeline_log(pid, "optimization", "error", error=str(e))
+
+        # Запускаем параллельные задачи
+        tasks = [
+            asyncio.create_task(_task_findings_review()),
+            asyncio.create_task(_task_norm_verify()),
+        ]
+
+        if include_optimization:
+            tasks.append(asyncio.create_task(_task_optimization()))
+
+        await self._log(
+            job,
+            f"═══ Параллельный запуск: Critic + Нормы"
+            + (" + Оптимизация" if include_optimization else "")
+            + " ═══",
+        )
+
+        await asyncio.gather(*tasks, return_exceptions=True)
 
     async def _run_norm_verification(self, job: AuditJob, standalone: bool = True):
         """
@@ -1860,6 +2626,11 @@ class PipelineManager:
             # ── Шаг 4: Обновление централизованной базы норм ──
             await self._update_norms_db(job)
 
+            # ── Шаг 5: Обогащение findings.norm_quote из paragraph_checks ──
+            enriched = self._enrich_norm_quotes_from_checks(output_dir)
+            if enriched > 0:
+                await self._log(job, f"norm_quote обогащён из paragraph_checks: {enriched} замечаний")
+
             job.status = JobStatus.COMPLETED
             await self._log(job, "Верификация нормативных ссылок завершена", "info")
             self._update_pipeline_log(pid, "norm_verify", "done", message="OK")
@@ -1909,6 +2680,59 @@ class PipelineManager:
             # Ошибка обновления базы не должна ронять основной процесс
             await self._log(job, f"Предупреждение: не удалось обновить базу норм: {e}", "warn")
             print(f"[{job.project_id}:norms_db] Ошибка: {e}")
+
+    @staticmethod
+    def _enrich_norm_quotes_from_checks(output_dir: Path) -> int:
+        """Обогатить findings.norm_quote из подтверждённых paragraph_checks.
+
+        Если norm_verify подтвердил цитату (paragraph_verified=True),
+        а в finding поле norm_quote пустое — подставляем actual_quote.
+
+        Returns: количество обогащённых findings.
+        """
+        findings_path = output_dir / "03_findings.json"
+        norm_checks_path = output_dir / "norm_checks.json"
+        if not findings_path.exists() or not norm_checks_path.exists():
+            return 0
+
+        try:
+            fd = json.loads(findings_path.read_text(encoding="utf-8"))
+            nc = json.loads(norm_checks_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            return 0
+
+        paragraph_checks = nc.get("paragraph_checks", [])
+        if not paragraph_checks:
+            return 0
+
+        # Маппинг finding_id → verified actual_quote
+        verified_quotes = {}
+        for pc in paragraph_checks:
+            if pc.get("paragraph_verified") and pc.get("actual_quote"):
+                fid = pc.get("finding_id", "")
+                if fid:
+                    verified_quotes[fid] = pc["actual_quote"]
+
+        if not verified_quotes:
+            return 0
+
+        enriched = 0
+        for finding in fd.get("findings", []):
+            fid = finding.get("id", "")
+            if fid in verified_quotes and not finding.get("norm_quote"):
+                finding["norm_quote"] = verified_quotes[fid]
+                # Поднять confidence если не было
+                if finding.get("norm_confidence") is None or finding["norm_confidence"] < 0.8:
+                    finding["norm_confidence"] = 0.9
+                enriched += 1
+
+        if enriched > 0:
+            findings_path.write_text(
+                json.dumps(fd, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+
+        return enriched
 
     # ─── Запуск интеллектуального аудита (smart) ───
     async def start_smart_audit(self, project_id: str) -> AuditJob:
@@ -2192,29 +3016,12 @@ class PipelineManager:
             self.active_jobs[pid] = job
             self._tasks[pid] = asyncio.current_task()
 
-            # ═══ ЭТАП 5.5: Critic + Corrector ═══
+            # ═══ ЭТАПЫ 5.5-6: Параллельный запуск critic + norms ═══
             findings_path = resolve_project_dir(pid) / "_output" / "03_findings.json"
             if findings_path.exists():
-                await self._run_findings_review(job, project_info)
-
-                if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
-                    return
-
-                self.active_jobs[pid] = job
-                self._tasks[pid] = asyncio.current_task()
-
-            # ═══ ЭТАП 6: Верификация норм ═══
-            self._clean_stage_files(pid, [
-                "03a_norms_verified.json", "norm_checks.json", "norm_checks_llm.json",
-            ])
-            self._reset_job_progress(job)
-            findings_path = resolve_project_dir(pid) / "_output" / "03_findings.json"
-            if findings_path.exists():
-                job.stage = AuditStage.NORM_VERIFY
-                job.status = JobStatus.RUNNING
-                print(f"[{pid}:smart] ═══ ЭТАП 6: Верификация норм ═══")
-                await self._log(job, "═══ ЭТАП 6: Верификация нормативных ссылок ═══")
-                await self._run_norm_verification(job)
+                await self._run_post_findings_parallel(
+                    job, project_info, include_optimization=False,
+                )
 
                 if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
                     return
@@ -2300,7 +3107,7 @@ class PipelineManager:
     start_standard_audit = start_audit
     start_pro_audit = start_audit
 
-    async def _run_ocr_pipeline(self, job: AuditJob):
+    async def _run_ocr_pipeline(self, job: AuditJob, include_optimization: bool = False):
         """
         OCR-пайплайн: полный аудит всех блоков.
 
@@ -2341,22 +3148,29 @@ class PipelineManager:
 
             # ═══ ЭТАП 1: Кроп image-блоков ═══
             job.stage = AuditStage.CROP_BLOCKS
-            self._update_pipeline_log(pid, "crop_blocks", "running")
-            print(f"[{pid}] ═══ ЭТАП 1: Кроп image-блоков ═══")
-            await self._log(job, "═══ ЭТАП 1: Кроп image-блоков из PDF ═══")
+            blocks_index = output_dir / "blocks" / "index.json"
+            if blocks_index.exists():
+                # Блоки уже скачаны (pre-crop из очереди)
+                self._update_pipeline_log(pid, "crop_blocks", "done", message="Pre-cropped")
+                print(f"[{pid}] ═══ ЭТАП 1: Кроп — уже готов (pre-crop) ═══")
+                await self._log(job, "═══ ЭТАП 1: Кроп image-блоков — уже готов (pre-crop) ═══")
+            else:
+                self._update_pipeline_log(pid, "crop_blocks", "running")
+                print(f"[{pid}] ═══ ЭТАП 1: Кроп image-блоков ═══")
+                await self._log(job, "═══ ЭТАП 1: Кроп image-блоков из PDF ═══")
 
-            exit_code, _, stderr = await self._run_script(
-                pid,
-                str(BLOCKS_SCRIPT),
-                ["crop", _project_path(pid)],
-                on_output=lambda msg: self._log(job, msg),
-            )
-            if exit_code != 0:
-                self._update_pipeline_log(pid, "crop_blocks", "error",
-                                           error=stderr or f"Exit code: {exit_code}")
-                raise RuntimeError(f"Кроп блоков: {stderr}")
-            self._update_pipeline_log(pid, "crop_blocks", "done", message="OK")
-            print(f"[{pid}] ЭТАП 1 OK")
+                exit_code, _, stderr = await self._run_script(
+                    pid,
+                    str(BLOCKS_SCRIPT),
+                    ["crop", _project_path(pid)],
+                    on_output=lambda msg: self._log(job, msg),
+                )
+                if exit_code != 0:
+                    self._update_pipeline_log(pid, "crop_blocks", "error",
+                                               error=stderr or f"Exit code: {exit_code}")
+                    raise RuntimeError(f"Кроп блоков: {stderr}")
+                self._update_pipeline_log(pid, "crop_blocks", "done", message="OK")
+                print(f"[{pid}] ЭТАП 1 OK")
 
             if job.status == JobStatus.CANCELLED:
                 return
@@ -2530,6 +3344,22 @@ class PipelineManager:
 
                             stdout_text = output_text or ""
                             stderr_text = cli_result.result_text if cli_result and cli_result.is_error else ""
+
+                            # Таймаут + можно разбить → split & retry
+                            if claude_runner.is_timeout(exit_code) and block_count > 3:
+                                await self._log(
+                                    job,
+                                    f"Пакет {batch_id}: таймаут ({block_count} блоков) — разбиваю пополам",
+                                    "warn",
+                                )
+                                split_ok = await self._retry_batch_split(
+                                    job, batch, project_info, pid,
+                                    total_batches, batch_id, output_dir,
+                                )
+                                if split_ok:
+                                    exit_code = 0
+                                break
+
                             if claude_runner.is_rate_limited(exit_code, stdout_text, stderr_text):
                                 retries += 1
                                 if retries > RATE_LIMIT_MAX_RETRIES:
@@ -2633,6 +3463,15 @@ class PipelineManager:
             else:
                 self._update_pipeline_log(pid, "findings_merge", "done", message="OK")
 
+                # Валидация JSON после findings_merge
+                findings_path = resolve_project_dir(pid) / "_output" / "03_findings.json"
+                if findings_path.exists():
+                    is_valid, repair_msg = self._validate_and_repair_json(findings_path)
+                    if not is_valid:
+                        await self._log(job, f"03_findings.json невалиден: {repair_msg}", "error")
+                    elif "Repaired" in repair_msg:
+                        await self._log(job, f"03_findings.json починен: {repair_msg}", "warn")
+
             if job.status == JobStatus.CANCELLED:
                 return
 
@@ -2640,29 +3479,15 @@ class PipelineManager:
             self.active_jobs[pid] = job
             self._tasks[pid] = asyncio.current_task()
 
-            # ═══ ЭТАП 6.5: Critic + Corrector (проверка замечаний) ═══
+            # ═══ ЭТАПЫ 6.5-7-OPT: Параллельный запуск после findings_merge ═══
+            # Critic+Corrector, Norm verify и Optimization — независимы.
+            # Optimization_critic ждёт corrector (нужны финальные findings).
             findings_path = resolve_project_dir(pid) / "_output" / "03_findings.json"
             if findings_path.exists():
-                await self._run_findings_review(job, project_info)
-
-                if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
-                    return
-
-                self.active_jobs[pid] = job
-                self._tasks[pid] = asyncio.current_task()
-
-            # ═══ ЭТАП 7: Верификация норм ═══
-            self._clean_stage_files(pid, [
-                "03a_norms_verified.json", "norm_checks.json", "norm_checks_llm.json",
-            ])
-            self._reset_job_progress(job)
-            findings_path = resolve_project_dir(pid) / "_output" / "03_findings.json"
-            if findings_path.exists():
-                job.stage = AuditStage.NORM_VERIFY
-                job.status = JobStatus.RUNNING
-                print(f"[{pid}] ═══ ЭТАП 7: Верификация норм ═══")
-                await self._log(job, "═══ ЭТАП 7: Верификация нормативных ссылок ═══")
-                await self._run_norm_verification(job, standalone=False)
+                await self._run_post_findings_parallel(
+                    job, project_info,
+                    include_optimization=include_optimization,
+                )
 
                 if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
                     return
@@ -2753,8 +3578,73 @@ class PipelineManager:
         self._tasks["__BATCH__"] = task
         return queue
 
+    # ─── Pre-crop: фоновая загрузка блоков для следующих проектов в очереди ───
+
+    async def _precrop_project(self, pid: str) -> bool:
+        """Кроп блоков для одного проекта (фоновая задача). Возвращает True при успехе."""
+        try:
+            proj_dir = resolve_project_dir(pid)
+            # Пропустить если блоки уже есть
+            blocks_dir = proj_dir / "_output" / "blocks"
+            index_file = blocks_dir / "index.json"
+            if index_file.exists():
+                print(f"[PRE-CROP] {pid}: блоки уже есть, пропуск")
+                return True
+            # Пропустить если нет result.json (не OCR-проект)
+            if not list(proj_dir.glob("*_result.json")):
+                return False
+
+            print(f"[PRE-CROP] {pid}: начинаю фоновый кроп блоков...")
+            await ws_manager.broadcast_global(
+                WSMessage.log("__BATCH__", f"  ⚡ Pre-crop: {pid}", "info")
+            )
+            exit_code, _, stderr = await run_script(
+                str(BLOCKS_SCRIPT),
+                ["crop", _project_path(pid)],
+                project_id=f"__PRECROP_{pid}__",
+            )
+            if exit_code == 0:
+                print(f"[PRE-CROP] {pid}: OK")
+                return True
+            else:
+                print(f"[PRE-CROP] {pid}: ошибка (код {exit_code})")
+                return False
+        except Exception as e:
+            print(f"[PRE-CROP] {pid}: исключение: {e}")
+            return False
+
+    async def _run_precrop_loop(self, queue: BatchQueueStatus):
+        """Фоновый цикл: кропит блоки для pending-проектов из очереди."""
+        precropped = set()
+        while queue.status == "running":
+            # Найти следующий pending OCR-проект для pre-crop
+            target = None
+            for item in queue.items:
+                if item.status != "pending":
+                    continue
+                if item.project_id in precropped:
+                    continue
+                action = item.action or queue.action
+                if action == "optimization":
+                    continue  # оптимизация не нуждается в кропе
+                proj_dir = resolve_project_dir(item.project_id)
+                if list(proj_dir.glob("*_result.json")):
+                    target = item.project_id
+                    break
+
+            if not target:
+                # Нет проектов для pre-crop, подождём и проверим снова
+                await asyncio.sleep(5)
+                continue
+
+            precropped.add(target)
+            await self._precrop_project(target)
+            # Небольшая пауза между кропами
+            await asyncio.sleep(1)
+
     async def _run_batch_queue(self, queue: BatchQueueStatus, meta_job: AuditJob):
         """Последовательная обработка очереди проектов."""
+        precrop_task = None
         try:
             await ws_manager.broadcast_global(
                 WSMessage.log(
@@ -2764,6 +3654,10 @@ class PipelineManager:
                 )
             )
 
+            # Запустить фоновый pre-crop для будущих проектов
+            if queue.total > 1:
+                precrop_task = asyncio.create_task(self._run_precrop_loop(queue))
+
             idx = 0
             while idx < len(queue.items):
                 item = queue.items[idx]
@@ -2771,6 +3665,16 @@ class PipelineManager:
                     item.status = "cancelled"
                     idx += 1
                     continue
+
+                # Проверка паузы перед следующим проектом
+                if self._paused:
+                    await self._log(
+                        meta_job,
+                        f"⏸ Очередь на паузе (перед проектом {idx + 1}/{queue.total})",
+                        "warn",
+                    )
+                    await self._pause_event.wait()
+                    await self._log(meta_job, "▶ Очередь продолжена", "info")
 
                 queue.current_index = idx
                 meta_job.progress_current = idx
@@ -2804,8 +3708,40 @@ class PipelineManager:
                     self.active_jobs[pid] = job
                     self._tasks[pid] = asyncio.current_task()
 
-                    action = queue.action
-                    if action == "resume":
+                    action = item.action or queue.action
+                    # Retry конкретного этапа (из кнопки ↻)
+                    if item.retry_stage:
+                        stage_label = {
+                            "prepare": "Кроп блоков",
+                            "text_analysis": "Анализ текста",
+                            "block_analysis": "Анализ блоков",
+                            "findings_merge": "Свод замечаний",
+                            "findings_review": "Проверка замечаний",
+                            "norm_verify": "Верификация норм",
+                            "optimization": "Оптимизация",
+                            "optimization_review": "Проверка оптимизации",
+                            "excel": "Excel-отчёт",
+                        }.get(item.retry_stage, item.retry_stage)
+
+                        # Optimization этапы обрабатываются отдельно (не через _run_resumed_pipeline)
+                        if item.retry_stage == "optimization":
+                            await self._log(job, f"▶ Повтор: {stage_label}", "info")
+                            await self._run_optimization(job, standalone=False)
+                            if job.status == JobStatus.COMPLETED:
+                                await self._run_optimization_review(job)
+                        elif item.retry_stage == "optimization_review":
+                            await self._log(job, f"▶ Повтор: {stage_label}", "info")
+                            await self._start_heartbeat(job)
+                            await self._run_optimization_review(job)
+                        else:
+                            resume_info = {
+                                "stage": item.retry_stage,
+                                "stage_label": stage_label,
+                                "detail": "Повтор этапа из очереди",
+                                "can_resume": True,
+                            }
+                            await self._run_resumed_pipeline(job, item.retry_stage, resume_info)
+                    elif action == "resume":
                         resume_info = self.detect_resume_stage(pid)
                         if not resume_info.get("can_resume"):
                             item.status = "skipped"
@@ -2828,16 +3764,10 @@ class PipelineManager:
                     elif action in ("audit+optimization", "standard+optimization", "pro+optimization"):
                         proj_dir = resolve_project_dir(pid)
                         if list(proj_dir.glob("*_result.json")):
-                            await self._run_ocr_pipeline(job)
+                            # Optimization запускается параллельно внутри pipeline
+                            await self._run_ocr_pipeline(job, include_optimization=True)
                         else:
                             await self._run_smart_pipeline(job)
-                        # После аудита — оптимизация (если аудит успешен)
-                        if job.status == JobStatus.COMPLETED:
-                            job.stage = AuditStage.OPTIMIZATION
-                            job.status = JobStatus.RUNNING
-                            await self._run_optimization(job)
-                            if job.status == JobStatus.COMPLETED:
-                                await self._run_optimization_review(job)
                     else:
                         # fallback: auto-detect
                         proj_dir = resolve_project_dir(pid)
@@ -2899,6 +3829,13 @@ class PipelineManager:
             import traceback
             traceback.print_exc()
         finally:
+            # Остановить фоновый pre-crop
+            if precrop_task and not precrop_task.done():
+                precrop_task.cancel()
+                try:
+                    await precrop_task
+                except (asyncio.CancelledError, Exception):
+                    pass
             self._cleanup("__BATCH__")
 
     async def cancel_batch(self) -> bool:
@@ -2943,9 +3880,148 @@ class PipelineManager:
 
         return queue
 
+    async def add_retry_to_batch(self, project_id: str, stage: str) -> BatchQueueStatus:
+        """Добавить retry конкретного этапа в очередь (создаёт новую если нет активной)."""
+        queue = self._batch_queue
+
+        # Маппинг ключей pipeline_summary → внутренних ключей этапов
+        stage_map = {
+            "crop_blocks": "prepare",
+            "text_analysis": "text_analysis",
+            "block_analysis": "block_analysis",
+            "findings_merge": "findings_merge",
+            "findings_critic": "findings_review",
+            "findings_review": "findings_review",
+            "findings_corrector": "findings_review",
+            "norm_verify": "norm_verify",
+            "optimization": "optimization",
+            "optimization_critic": "optimization_review",
+            "optimization_corrector": "optimization_review",
+            "prepare": "prepare",
+            "tile_audit": "block_analysis",
+            "main_audit": "findings_merge",
+        }
+        internal_stage = stage_map.get(stage, stage)
+
+        item = BatchQueueItem(
+            project_id=project_id,
+            action="retry_stage",
+            retry_stage=internal_stage,
+        )
+
+        if queue and queue.status == "running":
+            # Добавляем в существующую очередь
+            queue.items.append(item)
+            queue.total = len(queue.items)
+            meta_job = self.active_jobs.get("__BATCH__")
+            if meta_job:
+                meta_job.progress_total = queue.total
+            stage_label = {
+                "prepare": "Кроп блоков", "text_analysis": "Анализ текста",
+                "block_analysis": "Анализ блоков", "findings_merge": "Свод замечаний",
+                "findings_review": "Critic замечаний", "norm_verify": "Верификация норм",
+                "optimization": "Оптимизация", "optimization_review": "Проверка оптимизации",
+            }.get(internal_stage, internal_stage)
+            await ws_manager.broadcast_global(
+                WSMessage.log("__BATCH__", f"+ В очередь: {project_id} → {stage_label}", "info")
+            )
+            await self._broadcast_batch_progress(queue)
+            return queue
+        else:
+            # Создаём новую очередь
+            queue = BatchQueueStatus(
+                queue_id=str(uuid4()),
+                action="retry_stage",
+                items=[item],
+                total=1,
+                status="running",
+            )
+            self._batch_queue = queue
+
+            meta_job = AuditJob(
+                job_id=queue.queue_id,
+                project_id="__BATCH__",
+                stage=AuditStage.PREPARE,
+                status=JobStatus.RUNNING,
+                started_at=datetime.now().isoformat(),
+                progress_total=1,
+            )
+            self.active_jobs["__BATCH__"] = meta_job
+
+            task = asyncio.create_task(self._run_batch_queue(queue, meta_job))
+            self._tasks["__BATCH__"] = task
+            return queue
+
     def get_batch_queue(self) -> Optional[BatchQueueStatus]:
         """Получить текущую batch-очередь."""
         return self._batch_queue
+
+    async def reorder_batch(self, new_order: list[str]) -> BatchQueueStatus:
+        """Переупорядочить pending-элементы очереди. new_order — список project_id в новом порядке."""
+        queue = self._batch_queue
+        if not queue or queue.status != "running":
+            raise RuntimeError("Нет активной групповой очереди")
+
+        # Разделяем: обработанные (уже не pending) и pending
+        processed = []
+        pending_map = {}
+        for item in queue.items:
+            if item.status in ("completed", "failed", "skipped", "running"):
+                processed.append(item)
+            else:
+                pending_map[item.project_id] = item
+
+        # Собираем новый порядок pending из new_order
+        reordered_pending = []
+        for pid in new_order:
+            if pid in pending_map:
+                reordered_pending.append(pending_map.pop(pid))
+        # Добавляем оставшиеся pending (не упомянутые в new_order)
+        for item in pending_map.values():
+            reordered_pending.append(item)
+
+        queue.items = processed + reordered_pending
+        queue.total = len(queue.items)
+        await self._broadcast_batch_progress(queue)
+        return queue
+
+    async def remove_from_batch(self, project_id: str) -> BatchQueueStatus:
+        """Удалить pending-элемент из очереди."""
+        queue = self._batch_queue
+        if not queue or queue.status != "running":
+            raise RuntimeError("Нет активной групповой очереди")
+
+        original_len = len(queue.items)
+        queue.items = [item for item in queue.items
+                       if not (item.project_id == project_id and item.status == "pending")]
+
+        if len(queue.items) == original_len:
+            raise RuntimeError(f"Проект {project_id} не найден в очереди или уже обрабатывается")
+
+        queue.total = len(queue.items)
+        # Скорректировать current_index если удалённый элемент был до текущего
+        if queue.current_index >= len(queue.items):
+            queue.current_index = max(0, len(queue.items) - 1)
+
+        await ws_manager.broadcast_global(
+            WSMessage.log("__BATCH__", f"- Удалён из очереди: {project_id}", "info")
+        )
+        await self._broadcast_batch_progress(queue)
+        return queue
+
+    async def update_batch_item_action(self, project_id: str, action: str) -> BatchQueueStatus:
+        """Изменить действие (audit/optimization/audit+optimization) для pending-элемента."""
+        queue = self._batch_queue
+        if not queue or queue.status != "running":
+            raise RuntimeError("Нет активной групповой очереди")
+
+        for item in queue.items:
+            if item.project_id == project_id and item.status == "pending":
+                item.action = action
+                await self._broadcast_batch_progress(queue)
+                return queue
+
+        raise RuntimeError(f"Проект {project_id} не найден в очереди или уже обрабатывается")
 
     async def _broadcast_batch_progress(self, queue: BatchQueueStatus, complete: bool = False):
         """WS-уведомление о прогрессе batch-очереди."""
@@ -3139,14 +4215,62 @@ class PipelineManager:
         self._tasks[project_id] = task
         return job
 
+    async def start_optimization_review(self, project_id: str) -> AuditJob:
+        """Запустить только critic + corrector оптимизации (без перезапуска самой оптимизации)."""
+        if project_id in self.active_jobs:
+            raise RuntimeError(f"Аудит уже запущен для {project_id}")
+
+        # Проверяем наличие optimization.json
+        output_dir = resolve_project_dir(project_id) / "_output"
+        opt_path = output_dir / "optimization.json"
+        if not opt_path.exists():
+            raise RuntimeError("optimization.json не найден — сначала запустите оптимизацию")
+
+        # Очистка старых review-результатов
+        self._clean_stage_files(project_id, [
+            "optimization_review.json", "optimization_pre_review.json",
+        ])
+
+        job = AuditJob(
+            job_id=str(uuid4()),
+            project_id=project_id,
+            stage=AuditStage.OPTIMIZATION,
+            status=JobStatus.RUNNING,
+            started_at=datetime.now().isoformat(),
+        )
+        self.active_jobs[project_id] = job
+        task = asyncio.create_task(self._run_optimization_review_standalone(job))
+        self._tasks[project_id] = task
+        return job
+
+    async def _run_optimization_review_standalone(self, job: AuditJob):
+        """Critic + Corrector оптимизации (standalone запуск)."""
+        try:
+            await self._start_heartbeat(job)
+            await self._run_optimization_review(job)
+            if job.status == JobStatus.RUNNING:
+                job.status = JobStatus.COMPLETED
+        except asyncio.CancelledError:
+            job.status = JobStatus.CANCELLED
+        except Exception as e:
+            job.status = JobStatus.FAILED
+            job.error_message = str(e)
+            await self._log(job, f"Исключение: {e}", "error")
+        finally:
+            job.completed_at = datetime.now().isoformat()
+            self._cleanup(job.project_id)
+
     async def _run_optimization_with_review(self, job: AuditJob):
         """Оптимизация + critic/corrector."""
         await self._run_optimization(job)
         if job.status == JobStatus.COMPLETED:
             await self._run_optimization_review(job)
 
-    async def _run_optimization(self, job: AuditJob):
-        """Запуск Claude CLI для анализа оптимизации."""
+    async def _run_optimization(self, job: AuditJob, standalone: bool = True):
+        """Запуск Claude CLI для анализа оптимизации.
+
+        standalone=False: не делать cleanup в finally (для параллельного запуска).
+        """
         pid = job.project_id
         try:
             self._update_pipeline_log(pid, "optimization", "running")
@@ -3155,7 +4279,8 @@ class PipelineManager:
                 project_info = json.load(f)
 
             await self._log(job, "Запуск анализа оптимизации проектных решений...")
-            await self._start_heartbeat(job)
+            if standalone:
+                await self._start_heartbeat(job)
 
             # Проверка rate limit перед запуском
             can_go = await self._check_before_launch(job)
@@ -3244,7 +4369,8 @@ class PipelineManager:
             self._update_pipeline_log(pid, "optimization", "error", error=str(e))
         finally:
             job.completed_at = datetime.now().isoformat()
-            self._cleanup(pid)
+            if standalone:
+                self._cleanup(pid)
 
     async def _run_optimization_review(self, job: AuditJob):
         """
@@ -3285,12 +4411,37 @@ class PipelineManager:
             return
 
         if exit_code != 0:
-            self._update_pipeline_log(pid, "optimization_critic", "error",
-                                       error=f"Код {exit_code}")
-            await self._log(job, f"Optimization Critic: код {exit_code}, пропуск корректировки", "warn")
-            return
-
-        self._update_pipeline_log(pid, "optimization_critic", "done", message="OK")
+            # CLI может вернуть -1/1, но файл уже записан — проверяем
+            review_path_check = output_dir / "optimization_review.json"
+            if review_path_check.exists():
+                try:
+                    review_data_check = json.loads(review_path_check.read_text(encoding="utf-8"))
+                    reviewed = review_data_check.get("meta", {}).get("total_reviewed", 0)
+                    if reviewed > 0:
+                        await self._log(
+                            job,
+                            f"Optimization Critic: CLI код {exit_code}, но review файл валиден "
+                            f"({reviewed} reviewed) — продолжаем",
+                            "warn",
+                        )
+                        self._update_pipeline_log(
+                            pid, "optimization_critic", "done",
+                            message=f"OK (CLI код {exit_code}, файл валиден)",
+                        )
+                    else:
+                        raise ValueError("total_reviewed == 0")
+                except (json.JSONDecodeError, OSError, ValueError):
+                    self._update_pipeline_log(pid, "optimization_critic", "error",
+                                               error=f"Код {exit_code}")
+                    await self._log(job, f"Optimization Critic: код {exit_code}, файл невалиден", "warn")
+                    return
+            else:
+                self._update_pipeline_log(pid, "optimization_critic", "error",
+                                           error=f"Код {exit_code}")
+                await self._log(job, f"Optimization Critic: код {exit_code}, файл не создан", "warn")
+                return
+        else:
+            self._update_pipeline_log(pid, "optimization_critic", "done", message="OK")
 
         # Проверяем: нужен ли Corrector?
         review_path = output_dir / "optimization_review.json"
@@ -3319,6 +4470,17 @@ class PipelineManager:
             return
 
         # ── Corrector ──
+        # Pre-check: optimization.json должен быть валидным JSON
+        opt_check_path = output_dir / "optimization.json"
+        if opt_check_path.exists():
+            try:
+                json.loads(opt_check_path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError) as e:
+                await self._log(job, f"optimization.json невалиден перед Corrector: {e}", "warn")
+                self._update_pipeline_log(pid, "optimization_corrector", "error",
+                                           error="optimization.json невалиден")
+                return
+
         self._update_pipeline_log(pid, "optimization_corrector", "running")
         print(f"[{pid}] ═══ Optimization Corrector (корректировка оптимизации) ═══")
         await self._log(
@@ -3340,14 +4502,65 @@ class PipelineManager:
         if claude_runner.is_cancelled(exit_code):
             return
 
-        if exit_code != 0:
-            self._update_pipeline_log(pid, "optimization_corrector", "error",
-                                       error=f"Код {exit_code}")
-            await self._log(job, f"Optimization Corrector: код {exit_code}", "warn")
-            return
+        opt_path = output_dir / "optimization.json"
+        pre_review = output_dir / "optimization_pre_review.json"
 
-        self._update_pipeline_log(pid, "optimization_corrector", "done", message="OK")
-        await self._log(job, "Optimization Corrector завершён — optimization.json обновлён")
+        if exit_code != 0:
+            # CLI может вернуть -1/1, но файл уже записан — проверяем
+            if opt_path.exists() and pre_review.exists():
+                try:
+                    new_data = json.loads(opt_path.read_text(encoding="utf-8"))
+                    old_data = json.loads(pre_review.read_text(encoding="utf-8"))
+                    new_count = len(new_data.get("scenarios", new_data.get("optimizations", [])))
+                    old_count = len(old_data.get("scenarios", old_data.get("optimizations", [])))
+                    if new_count > 0 and new_data != old_data:
+                        await self._log(
+                            job,
+                            f"Optimization Corrector: CLI код {exit_code}, но optimization.json обновлён "
+                            f"({old_count} → {new_count}) — считаем успехом",
+                            "warn",
+                        )
+                        self._update_pipeline_log(
+                            pid, "optimization_corrector", "done",
+                            message=f"OK (CLI код {exit_code}, файл обновлён)",
+                        )
+                    else:
+                        raise ValueError("Файл не изменился")
+                except (json.JSONDecodeError, OSError, ValueError):
+                    self._update_pipeline_log(pid, "optimization_corrector", "error",
+                                               error=f"Код {exit_code}")
+                    await self._log(job, f"Optimization Corrector: код {exit_code}", "warn")
+                    # Fallback: восстановить pre_review при реальной ошибке
+                    if pre_review.exists() and opt_path.exists():
+                        import shutil
+                        shutil.copy2(pre_review, opt_path)
+                        await self._log(job, "Восстановлен optimization_pre_review.json после ошибки Corrector", "warn")
+                    return
+            else:
+                self._update_pipeline_log(pid, "optimization_corrector", "error",
+                                           error=f"Код {exit_code}")
+                await self._log(job, f"Optimization Corrector: код {exit_code}", "warn")
+                return
+        else:
+            self._update_pipeline_log(pid, "optimization_corrector", "done", message="OK")
+            await self._log(job, "Optimization Corrector завершён — optimization.json обновлён")
+
+        # Валидация JSON после opt corrector
+        if opt_path.exists():
+            is_valid, repair_msg = self._validate_and_repair_json(opt_path)
+            if not is_valid:
+                await self._log(
+                    job,
+                    f"ВНИМАНИЕ: optimization.json невалиден после Corrector: {repair_msg}. "
+                    f"Восстанавливаю pre_review версию.",
+                    "error",
+                )
+                if pre_review.exists():
+                    import shutil
+                    shutil.copy2(pre_review, opt_path)
+                    await self._log(job, "Восстановлен optimization_pre_review.json", "warn")
+            elif "Repaired" in repair_msg:
+                await self._log(job, f"optimization.json починен автоматически: {repair_msg}", "warn")
 
 
 # Глобальный экземпляр

@@ -883,8 +883,13 @@ def prepare_findings_merge_task(
 def prepare_findings_critic_task(
     project_info: dict,
     project_id: str,
+    chunk_suffix: str = "",
 ) -> str:
-    """Подготовить задачу для критической проверки замечаний."""
+    """Подготовить задачу для критической проверки замечаний.
+
+    chunk_suffix: если задан (напр. "_001") — подменяет имена input/output файлов
+    для параллельного запуска чанков без файловых конфликтов.
+    """
     template = load_template(FINDINGS_CRITIC_TASK_TEMPLATE)
 
     _, output_path = _get_project_paths(project_id)
@@ -894,6 +899,17 @@ def prepare_findings_critic_task(
         .replace("{PROJECT_ID}", project_id)
         .replace("{OUTPUT_PATH}", output_path)
     )
+
+    if chunk_suffix:
+        task = task.replace(
+            "03_findings_review_input.json",
+            f"03_findings_review_input{chunk_suffix}.json",
+        )
+        task = task.replace(
+            "03_findings_review.json",
+            f"03_findings_review{chunk_suffix}.json",
+        )
+
     return task
 
 

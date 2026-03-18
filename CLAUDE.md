@@ -65,6 +65,13 @@ pip install -r webapp/requirements.txt
 
 **Системные требования:** Python 3.9+, Claude CLI (установлен глобально)
 
+**Тесты:**
+```bash
+python -m pytest tests/                      # все тесты
+python -m pytest tests/test_norms.py -v      # конкретный тест
+python -m pytest tests/ -k "grounding"       # по шаблону
+```
+
 ## Архитектура проекта
 
 ### Структура папок
@@ -132,6 +139,13 @@ FastAPI на порту 8080. Запуск: `cd webapp && python main.py`
 **Гибридные модели per-stage:** `config.py` → `_stage_models` задаёт модель для каждого этапа. Sonnet (по умолчанию) для структурных задач, Opus для findings_merge и optimization. Все critic/corrector (findings и optimization) используют Sonnet. API: `GET/POST /api/audit/model/stages`.
 
 **Batch queue:** `pipeline_service.py` поддерживает групповые действия — последовательный аудит выбранных проектов. Очередь динамическая: можно добавлять проекты в работающую очередь через `POST /api/audit/batch/add`. Цикл обработки — `while`, не `for`, чтобы подхватывать добавленные элементы.
+
+**Пауза конвейера:** `PipelineManager` поддерживает `pause(mode)` / `unpause()` через `asyncio.Event`. Два режима: `finish_current` (дождаться текущего CLI) и `interrupt` (убить процесс). Проверка паузы встроена в `_check_before_launch()` — покрывает ВСЕ вызовы Claude CLI. API: `POST /api/audit/pause`, `POST /api/audit/resume`, `GET /api/audit/pause/status`. Статус паузы также приходит в `GET /api/audit/live-status` (piggyback).
+
+**Обработка ошибок LLM:**
+- `_validate_and_repair_json()` — автовалидация JSON после LLM-записи (findings_merge, correctors). Чинит unescaped кавычки внутри строк, делает бэкап `.json.broken`.
+- Critic: результат определяется по наличию файла review, а НЕ по exit code Claude CLI (CLI может вернуть -1 при успешной записи).
+- Retry: `POST /api/audit/{id}/retry/{stage}` — повтор конкретного этапа. На дашборде отображаются `pipeline_issues` (красные теги) для проектов с ошибками или пропущенными этапами.
 
 ### Два трекера токенов (usage_service.py)
 

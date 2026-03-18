@@ -616,6 +616,54 @@ def detect_md_file(project_dir, pdf_name):
     return None, 0
 
 
+def detect_all_md_files(project_dir, info):
+    """Найти все MD-файлы для проекта (поддержка нескольких PDF).
+
+    Приоритет:
+      1. md_files из project_info.json (если есть)
+      2. Автодетекция для каждого PDF из pdf_files
+      3. Fallback на detect_md_file (один файл)
+
+    Returns:
+        list[tuple[str, float]] — [(filename, size_kb), ...]
+    """
+    # Приоритет 1: явный список в project_info
+    md_files_list = info.get("md_files", [])
+    if md_files_list:
+        result = []
+        for mf in md_files_list:
+            fpath = os.path.join(project_dir, mf)
+            if os.path.isfile(fpath):
+                size_kb = round(os.path.getsize(fpath) / 1024, 1)
+                result.append((mf, size_kb))
+        if result:
+            return result
+
+    # Приоритет 2: автодетекция по каждому PDF
+    pdf_files = info.get("pdf_files", [])
+    if not pdf_files:
+        pf = info.get("pdf_file", "document.pdf")
+        pdf_files = [pf] if pf else []
+
+    if len(pdf_files) > 1:
+        result = []
+        seen = set()
+        for pf in pdf_files:
+            md_name, md_size = detect_md_file(project_dir, pf)
+            if md_name and md_name not in seen:
+                result.append((md_name, md_size))
+                seen.add(md_name)
+        if result:
+            return result
+
+    # Приоритет 3: обычная автодетекция (один файл)
+    pdf_name = info.get("pdf_file", "document.pdf")
+    md_name, md_size = detect_md_file(project_dir, pdf_name)
+    if md_name:
+        return [(md_name, md_size)]
+    return []
+
+
 def load_project_info(project_dir):
     info_path = os.path.join(project_dir, "project_info.json")
     if os.path.exists(info_path):
@@ -722,9 +770,22 @@ def process(project_dir, full_pages=False, force=False, quality="standard"):
     pdf_name = info.get("pdf_file", "document.pdf")
     pdf_path = os.path.join(project_dir, pdf_name)
 
-    if not os.path.exists(pdf_path):
+    # Проверяем наличие хотя бы одного PDF
+    pdf_files = info.get("pdf_files", [pdf_name])
+    has_any_pdf = any(
+        os.path.exists(os.path.join(project_dir, pf)) for pf in pdf_files
+    )
+    if not has_any_pdf:
         print(f"  [ERROR] PDF not found: {pdf_path}")
         return False
+
+    # Для tile_config используем первый существующий PDF
+    if not os.path.exists(pdf_path):
+        for pf in pdf_files:
+            candidate = os.path.join(project_dir, pf)
+            if os.path.exists(candidate):
+                pdf_path = candidate
+                break
 
     out_dir   = os.path.join(project_dir, "_output")
     tiles_dir = os.path.join(out_dir, "tiles")
@@ -733,23 +794,51 @@ def process(project_dir, full_pages=False, force=False, quality="standard"):
 
     print(f"\n{'='*60}")
     print(f"  PROJECT: {info.get('project_id', os.path.basename(project_dir))}")
-    print(f"  PDF:     {pdf_path}")
+    if len(pdf_files) > 1:
+        print(f"  PDF:     {', '.join(pdf_files)} (multi-PDF)")
+    else:
+        print(f"  PDF:     {pdf_path}")
     print(f"{'='*60}")
 
-    # ── Step 0: Detect MD file (structured text from external tool) ──
-    md_file, md_size_kb = detect_md_file(project_dir, pdf_name)
+    # ── Step 0: Detect MD file(s) ──
+    all_md = detect_all_md_files(project_dir, info)
     md_pages = None
 
-    if not md_file:
+    if not all_md:
         print(f"  [ERROR] MD-файл не найден в {project_dir}")
         print(f"  Анализ без MD-файла не поддерживается.")
         print(f"  Создайте MD-файл через Chandra OCR и положите в папку проекта.")
         return False
 
-    md_path = os.path.join(project_dir, md_file)
-    info["md_file"] = md_file
-    info["md_file_size_kb"] = md_size_kb
-    print(f"  [MD] Found: {md_file} ({md_size_kb} KB)")
+    if len(all_md) == 1:
+        md_file, md_size_kb = all_md[0]
+        md_path = os.path.join(project_dir, md_file)
+        info["md_file"] = md_file
+        info["md_file_size_kb"] = md_size_kb
+        print(f"  [MD] Found: {md_file} ({md_size_kb} KB)")
+    else:
+        # Несколько MD — конкатенируем во временный файл
+        combined_name = "_combined_document.md"
+        combined_path = os.path.join(out_dir, combined_name)
+        total_size = 0
+        with open(combined_path, "w", encoding="utf-8") as out_f:
+            for i, (mf, sz) in enumerate(all_md):
+                mpath = os.path.join(project_dir, mf)
+                with open(mpath, "r", encoding="utf-8") as in_f:
+                    content = in_f.read()
+                if i > 0:
+                    out_f.write("\n\n")  # разделитель между частями
+                out_f.write(content)
+                total_size += sz
+                print(f"  [MD] Part {i+1}: {mf} ({sz} KB)")
+
+        md_file = combined_name
+        md_path = combined_path
+        md_size_kb = round(os.path.getsize(combined_path) / 1024, 1)
+        info["md_file"] = all_md[0][0]  # основной — первый
+        info["md_files"] = [mf for mf, _ in all_md]
+        info["md_file_size_kb"] = md_size_kb
+        print(f"  [MD] Combined: {len(all_md)} файлов -> {md_size_kb} KB")
 
     # Анализ MD: определяем страницы с графикой
     md_pages = analyze_md_pages(md_path)

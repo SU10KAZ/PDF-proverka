@@ -37,22 +37,54 @@ MIN_BLOCK_AREA_PX2 = 50000
 
 
 def detect_result_json(project_dir: str) -> Path | None:
-    """Найти *_result.json в папке проекта."""
+    """Найти *_result.json в папке проекта (один — основной)."""
+    results = detect_all_result_jsons(project_dir)
+    return results[0] if results else None
+
+
+def detect_all_result_jsons(project_dir: str) -> list[Path]:
+    """Найти все *_result.json, соответствующие PDF-файлам проекта.
+
+    Если в project_info.json есть pdf_files — возвращает result.json
+    для каждого PDF (в порядке pdf_files). Иначе все найденные.
+    """
     project_path = Path(project_dir)
     candidates = list(project_path.glob("*_result.json"))
-    if len(candidates) == 1:
-        return candidates[0]
-    if len(candidates) > 1:
-        info_path = project_path / "project_info.json"
-        if info_path.exists():
+    if not candidates:
+        return []
+
+    info_path = project_path / "project_info.json"
+    if info_path.exists():
+        try:
             with open(info_path, "r", encoding="utf-8") as f:
                 info = json.load(f)
-            pdf_stem = Path(info.get("pdf_file", "")).stem
+        except (json.JSONDecodeError, OSError):
+            info = {}
+
+        pdf_files = info.get("pdf_files", [])
+        if not pdf_files:
+            pdf_file = info.get("pdf_file", "")
+            pdf_files = [pdf_file] if pdf_file else []
+
+        if pdf_files:
+            # Сопоставляем pdf_stem -> result.json
+            stem_to_candidate = {}
             for c in candidates:
-                if c.stem.replace("_result", "") == pdf_stem:
-                    return c
-        return candidates[0]
-    return None
+                stem = c.stem.replace("_result", "")
+                stem_to_candidate[stem] = c
+
+            ordered = []
+            for pf in pdf_files:
+                pdf_stem = Path(pf).stem
+                if pdf_stem in stem_to_candidate:
+                    ordered.append(stem_to_candidate[pdf_stem])
+            # Добавить непарные (на всякий случай)
+            for c in candidates:
+                if c not in ordered:
+                    ordered.append(c)
+            return ordered
+
+    return sorted(candidates)
 
 
 def extract_ocr_label(block: dict) -> str:
@@ -156,92 +188,113 @@ def crop_blocks(
     block_ids: list[str] | None = None,
     force: bool = False,
 ) -> dict:
-    """Скачать image-блоки по crop_url из result.json и сохранить как PNG."""
-    result_json_path = detect_result_json(project_dir)
-    if not result_json_path:
+    """Скачать image-блоки по crop_url из result.json и сохранить как PNG.
+
+    При наличии нескольких PDF (pdf_files в project_info.json) обрабатывает
+    все соответствующие *_result.json и объединяет блоки.
+    """
+    result_json_paths = detect_all_result_jsons(project_dir)
+    if not result_json_paths:
         print(f"[ERROR] *_result.json не найден в {project_dir}")
         return {"error": "result.json not found"}
 
-    print(f"  OCR result: {result_json_path.name}")
-
-    with open(result_json_path, "r", encoding="utf-8") as f:
-        ocr_data = json.load(f)
-
-    pages = ocr_data.get("pages", [])
-    if not pages:
-        print("[ERROR] Нет страниц в result.json")
-        return {"error": "no pages in result.json"}
-
-    # Собираем размеры страниц для fallback-кропинга из PDF
-    page_dimensions: dict[int, tuple[int, int]] = {}
-    for pg in pages:
-        pn = pg.get("page_number", 0)
-        pw = pg.get("width", 0)
-        ph = pg.get("height", 0)
-        if pw and ph:
-            page_dimensions[pn] = (pw, ph)
-
-    # Ищем PDF для fallback-кропинга
     project_path = Path(project_dir)
-    pdf_path: Path | None = None
+
+    # Загрузить project_info для списка PDF (fallback)
+    info = {}
     info_path = project_path / "project_info.json"
     if info_path.exists():
         try:
             with open(info_path, "r", encoding="utf-8") as f:
                 info = json.load(f)
-            pdf_name = info.get("pdf_file", "")
-            if pdf_name:
-                candidate = project_path / pdf_name
-                if candidate.exists():
-                    pdf_path = candidate
         except Exception:
             pass
-    if not pdf_path:
-        # Fallback: первый PDF в папке
-        pdfs = list(project_path.glob("*.pdf"))
-        if pdfs:
-            pdf_path = pdfs[0]
+
+    pdf_files = info.get("pdf_files", [])
+    if not pdf_files:
+        pf = info.get("pdf_file", "")
+        pdf_files = [pf] if pf else []
+
+    if len(result_json_paths) > 1:
+        print(f"  Multi-PDF: {len(result_json_paths)} result.json файлов")
 
     all_image_blocks = []
+    all_page_dimensions: dict[int, tuple[int, int]] = {}
+    # Карта page_num -> pdf_path для fallback кропинга
+    page_pdf_map: dict[int, Path] = {}
     no_url_count = 0
-    for page in pages:
-        page_num = page.get("page_number", 0)
-        for block in page.get("blocks", []):
-            if block.get("block_type") != "image":
-                continue
-            category = block.get("category_code", "")
-            if category == "stamp":
+
+    for rj_path in result_json_paths:
+        print(f"  OCR result: {rj_path.name}")
+        with open(rj_path, "r", encoding="utf-8") as f:
+            ocr_data = json.load(f)
+
+        pages = ocr_data.get("pages", [])
+        if not pages:
+            print(f"  [WARN] Нет страниц в {rj_path.name}")
+            continue
+
+        # Определяем PDF для этого result.json
+        rj_stem = rj_path.stem.replace("_result", "")
+        pdf_path: Path | None = None
+        for pf in pdf_files:
+            if Path(pf).stem == rj_stem:
+                candidate = project_path / pf
+                if candidate.exists():
+                    pdf_path = candidate
+                    break
+        if not pdf_path:
+            pdfs = list(project_path.glob("*.pdf"))
+            if pdfs:
+                pdf_path = pdfs[0]
+
+        for pg in pages:
+            pn = pg.get("page_number", 0)
+            pw = pg.get("width", 0)
+            ph = pg.get("height", 0)
+            if pw and ph:
+                all_page_dimensions[pn] = (pw, ph)
+            if pdf_path:
+                page_pdf_map[pn] = pdf_path
+
+        for page in pages:
+            page_num = page.get("page_number", 0)
+            for block in page.get("blocks", []):
+                if block.get("block_type") != "image":
+                    continue
+                category = block.get("category_code", "")
+                if category == "stamp":
+                    bid = block.get("id", "")
+                    print(f"  [SKIP] {bid}: штамп (category_code=stamp)")
+                    continue
+
                 bid = block.get("id", "")
-                print(f"  [SKIP] {bid}: штамп (category_code=stamp)")
-                continue
+                crop_url = block.get("crop_url", "")
 
-            bid = block.get("id", "")
-            crop_url = block.get("crop_url", "")
+                if block_ids and bid not in block_ids:
+                    continue
+                if not crop_url and not pdf_path:
+                    print(f"  [SKIP] {bid}: нет crop_url и PDF не найден")
+                    no_url_count += 1
+                    continue
 
-            if block_ids and bid not in block_ids:
-                continue
-            if not crop_url and not pdf_path:
-                print(f"  [SKIP] {bid}: нет crop_url и PDF не найден")
-                no_url_count += 1
-                continue
+                coords = block.get("coords_px", [0, 0, 0, 0])
+                x1, y1, x2, y2 = coords
+                w = x2 - x1
+                h = y2 - y1
+                area = w * h
+                if area < MIN_BLOCK_AREA_PX2:
+                    print(f"  [SKIP] {bid}: слишком мелкий ({w}x{h} = {area} px²)")
+                    continue
 
-            coords = block.get("coords_px", [0, 0, 0, 0])
-            x1, y1, x2, y2 = coords
-            w = x2 - x1
-            h = y2 - y1
-            area = w * h
-            if area < MIN_BLOCK_AREA_PX2:
-                print(f"  [SKIP] {bid}: слишком мелкий ({w}x{h} = {area} px²)")
-                continue
-
-            all_image_blocks.append({
-                "block_id": bid,
-                "page_num": page_num,
-                "crop_url": crop_url,
-                "coords_px": coords,
-                "ocr_text": block.get("ocr_text", ""),
-                "ocr_label": extract_ocr_label(block),
-            })
+                all_image_blocks.append({
+                    "block_id": bid,
+                    "page_num": page_num,
+                    "crop_url": crop_url,
+                    "coords_px": coords,
+                    "ocr_text": block.get("ocr_text", ""),
+                    "ocr_label": extract_ocr_label(block),
+                })
 
     if not all_image_blocks:
         print("[WARN] Нет image-блоков для скачивания")
@@ -298,11 +351,12 @@ def crop_blocks(
             e = download_error
             # Fallback: вырезаем из PDF по координатам
             pn = block_info["page_num"]
-            dims = page_dimensions.get(pn)
-            if pdf_path and dims:
+            dims = all_page_dimensions.get(pn)
+            fallback_pdf = page_pdf_map.get(pn)
+            if fallback_pdf and dims:
                 try:
                     w, h = crop_from_pdf(
-                        pdf_path, pn,
+                        fallback_pdf, pn,
                         block_info["coords_px"],
                         dims[0], dims[1],
                         out_file,
@@ -315,7 +369,7 @@ def crop_blocks(
                     continue
             else:
                 print(f"  [ERROR] {bid}: {e}" +
-                      ("" if pdf_path else " (PDF не найден для fallback)"))
+                      ("" if fallback_pdf else " (PDF не найден для fallback)"))
                 errors += 1
                 continue
 
@@ -349,7 +403,7 @@ def crop_blocks(
         "total_blocks": len(index_blocks),
         "total_expected": len(all_image_blocks),
         "errors": errors,
-        "source_result_json": result_json_path.name,
+        "source_result_json": [rj.name for rj in result_json_paths],
         "blocks": index_blocks,
     }
     index_path = output_dir / "index.json"
@@ -458,9 +512,11 @@ def _pack_blocks_adaptive(
         packed.append(current)
 
     # Если последний пакет слишком мелкий — присоединяем к предыдущему
+    # (но только если итого не превысит max_blocks)
     if len(packed) >= 2 and len(packed[-1]) < min_blocks:
-        tail = packed.pop()
-        packed[-1].extend(tail)
+        if len(packed[-2]) + len(packed[-1]) <= max_blocks:
+            tail = packed.pop()
+            packed[-1].extend(tail)
 
     # Добавляем соло-блоки как отдельные пакеты
     for b in solo:

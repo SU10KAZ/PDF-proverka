@@ -76,3 +76,18 @@ def test_pack_adaptive_mixed_sizes():
     assert len(packed) >= 2  # big blocks force separate batches
     all_ids = [b["block_id"] for group in packed for b in group]
     assert sorted(all_ids) == sorted(["small1", "small2", "big1", "small3", "big2"])
+
+
+def test_pack_adaptive_tail_merge_respects_max_blocks():
+    """Хвост не присоединяется если итого > max_blocks (баг АР3)."""
+    # 44 блока по ~100KB, max_blocks=15 → 3 пакета
+    # Без фикса: 15+15+14 → хвост 14 < min_blocks? нет.
+    # Кейс: 15+13+2 → хвост=2 < min_blocks=3, но 13+2=15 OK
+    # Кейс проблемный: 15+15+2 → хвост=2, но 15+2=17 > max_blocks!
+    blocks = [_make_block(f"b{i}", 100) for i in range(32)]
+    packed = _pack_blocks_adaptive(blocks, max_size_kb=50000, max_blocks=15)
+    for group in packed:
+        assert len(group) <= 15, f"Пакет из {len(group)} блоков превышает max_blocks=15"
+    # Все блоки на месте
+    all_ids = [b["block_id"] for group in packed for b in group]
+    assert len(all_ids) == 32

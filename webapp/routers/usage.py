@@ -39,7 +39,7 @@ async def update_limits(session_5h: int = 0, weekly_all: int = 0):
 
 
 @router.post("/global/weekly-reset")
-async def update_weekly_reset(weekday: int = 3, hour_utc: int = 17):
+async def update_weekly_reset(weekday: int = 4, hour_utc: int = 6):
     """Изменить день/время еженедельного сброса.
     weekday: 0=пн..6=вс, hour_utc: час UTC."""
     global_scanner.set_weekly_reset(weekday=weekday, hour_utc=hour_utc)

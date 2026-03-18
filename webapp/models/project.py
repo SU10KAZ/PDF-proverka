@@ -28,6 +28,7 @@ class ProjectInfo(BaseModel):
     section: str = "EM"
     description: str = ""
     pdf_file: str = "document.pdf"
+    pdf_files: list[str] = []          # несколько PDF в одном проекте
     tile_config: dict = {}
     tile_quality: str = "standard"
     text_extraction_quality: Optional[TextExtractionQuality] = None
@@ -42,6 +43,7 @@ class ProjectStatus(BaseModel):
     object: Optional[str] = None
     has_pdf: bool = False
     pdf_size_mb: float = 0.0
+    pdf_files: list[str] = []              # все PDF файлы проекта
     has_extracted_text: bool = False
     text_size_kb: float = 0.0
     # MD-файл (структурированный текст из внешнего OCR)
@@ -67,6 +69,10 @@ class ProjectStatus(BaseModel):
     block_count: int = 0
     block_errors: int = 0
     block_expected: int = 0
+    # Детальное саммари конвейера из pipeline_log.json
+    pipeline_summary: list[dict] = []
+    # Проблемы конвейера (для индикатора на дашборде)
+    pipeline_issues: list[str] = []
 
 
 class ProjectCreate(BaseModel):

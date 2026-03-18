@@ -227,9 +227,13 @@ async def run_findings_critic(
     project_info: dict,
     project_id: str,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+    chunk_suffix: str = "",
 ) -> tuple[int, str, CLIResult]:
-    """Запустить Claude CLI для критической проверки замечаний (Critic)."""
-    task_text = prepare_findings_critic_task(project_info, project_id)
+    """Запустить Claude CLI для критической проверки замечаний (Critic).
+
+    chunk_suffix: если задан — подменяет имена input/output файлов для параллельного запуска.
+    """
+    task_text = prepare_findings_critic_task(project_info, project_id, chunk_suffix=chunk_suffix)
     return await _run_cli(task_text, FINDINGS_REVIEW_TOOLS, CLAUDE_FINDINGS_CRITIC_TIMEOUT, on_output, stage="findings_critic", project_id=project_id)
 
 

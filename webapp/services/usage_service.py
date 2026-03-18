@@ -371,17 +371,40 @@ class UsageTracker:
         # Группировка по этапам: block_batch_*/tile_batch_* → block_analysis
         stages: dict[str, list[dict]] = defaultdict(list)
         _batch_re = re.compile(r"(block_batch|tile_batch)_\d+")
+        _norm_re = re.compile(r"norm_verify(_chunk_\d+|_retry_\d+)")
+        _findings_critic_re = re.compile(r"findings_critic(_chunk\d+)?")
+        _opt_critic_re = re.compile(r"optimization_critic(_retry_\d+)?")
+        _opt_corrector_re = re.compile(r"optimization_corrector(_retry_\d+)?")
         _legacy_map = {
             "main_audit": "findings_merge",
+            "main_audit_retry": "findings_merge",
             "tile_audit": "block_analysis",
             "triage": "text_analysis",
+            "triage_retry": "text_analysis",
+            "smart_merge": "findings_merge",
+            "smart_merge_retry": "findings_merge",
         }
+        # Generic retry suffix: *_retry, *_retry_N → base stage
+        _retry_re = re.compile(r"^(.+?)_retry(_\d+)?$")
         for r in project_recs:
             stage = r.get("stage", "unknown")
             if _batch_re.match(stage):
                 stage = "block_analysis"
+            elif _norm_re.match(stage):
+                stage = "norm_verify"
+            elif _findings_critic_re.match(stage):
+                stage = "findings_critic"
+            elif _opt_critic_re.match(stage):
+                stage = "optimization_critic"
+            elif _opt_corrector_re.match(stage):
+                stage = "optimization_corrector"
+            elif stage in _legacy_map:
+                stage = _legacy_map[stage]
             else:
-                stage = _legacy_map.get(stage, stage)
+                # Fallback: strip _retry/_retry_N suffix
+                m = _retry_re.match(stage)
+                if m:
+                    stage = _legacy_map.get(m.group(1), m.group(1))
             stages[stage].append(r)
 
         # Чистое время из pipeline_log (wall-clock: completed_at - started_at)
@@ -424,11 +447,20 @@ class UsageTracker:
             records = list(self._records)
 
         _batch_re = re.compile(r"(block_batch|tile_batch)_\d+")
+        _norm_re = re.compile(r"norm_verify(_chunk_\d+|_retry_\d+)")
+        _findings_critic_re = re.compile(r"findings_critic(_chunk\d+)?")
+        _opt_critic_re = re.compile(r"optimization_critic(_retry_\d+)?")
+        _opt_corrector_re = re.compile(r"optimization_corrector(_retry_\d+)?")
         _legacy_map = {
             "main_audit": "findings_merge",
+            "main_audit_retry": "findings_merge",
             "tile_audit": "block_analysis",
             "triage": "text_analysis",
+            "triage_retry": "text_analysis",
+            "smart_merge": "findings_merge",
+            "smart_merge_retry": "findings_merge",
         }
+        _retry_re = re.compile(r"^(.+?)_retry(_\d+)?$")
 
         projects: dict[str, list[dict]] = defaultdict(list)
         for r in records:
@@ -452,8 +484,20 @@ class UsageTracker:
                 stage = r.get("stage", "unknown")
                 if _batch_re.match(stage):
                     stage = "block_analysis"
+                elif _norm_re.match(stage):
+                    stage = "norm_verify"
+                elif _findings_critic_re.match(stage):
+                    stage = "findings_critic"
+                elif _opt_critic_re.match(stage):
+                    stage = "optimization_critic"
+                elif _opt_corrector_re.match(stage):
+                    stage = "optimization_corrector"
+                elif stage in _legacy_map:
+                    stage = _legacy_map[stage]
                 else:
-                    stage = _legacy_map.get(stage, stage)
+                    m = _retry_re.match(stage)
+                    if m:
+                        stage = _legacy_map.get(m.group(1), m.group(1))
                 stages[stage].append(r)
 
             # Чистое время из pipeline_log
@@ -546,10 +590,10 @@ class GlobalUsageScanner:
         self._cache: Optional[GlobalUsageCounters] = None
         self._cache_at: float = 0
         self._lock = threading.Lock()
-        # Настройки сброса (по умолчанию четверг 20:00 MSK = 17:00 UTC)
+        # Настройки сброса (по умолчанию пятница 9:00 MSK = 06:00 UTC)
         # Можно менять через set_weekly_reset()
-        self.weekly_reset_weekday = 3  # четверг
-        self.weekly_reset_hour_utc = 17  # 17:00 UTC = 20:00 MSK
+        self.weekly_reset_weekday = 4  # пятница
+        self.weekly_reset_hour_utc = 6  # 06:00 UTC = 09:00 MSK
         # Лимиты (output_tokens как основная метрика)
         self.session_5h_limit = WINDOW_5H_TOKEN_LIMIT
         self.weekly_all_limit = WEEKLY_TOKEN_LIMIT

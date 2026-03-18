@@ -34,9 +34,10 @@ async def lifespan(app: FastAPI):
     # Startup: создать папку данных usage
     data_dir = Path(__file__).parent / "data"
     data_dir.mkdir(exist_ok=True)
-    # Startup: очистить зомби-задачи
+    # Startup: очистить зомби-задачи и восстановить прерванные этапы
     from webapp.services.pipeline_service import pipeline_manager
     pipeline_manager.cleanup_zombies()
+    pipeline_manager._recover_stale_pipelines()
     yield
     # Shutdown: ничего особого
 

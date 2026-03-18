@@ -99,6 +99,7 @@ class BatchQueueItem(BaseModel):
     """Элемент очереди группового действия."""
     project_id: str
     action: str = "full"
+    retry_stage: Optional[str] = None  # конкретный этап для retry (например "block_analysis")
     status: str = "pending"  # pending / running / completed / failed / skipped / cancelled
     error: Optional[str] = None
 

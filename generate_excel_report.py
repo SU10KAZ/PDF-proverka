@@ -190,7 +190,11 @@ def cell(ws, row: int, col: int, value,
 # ═══════════════════════════════════════════════════════════════════════
 
 def f_num(f, idx):         return idx
-def f_sheet(f, _):         return f.get("sheet") or f.get("location") or ""
+def f_sheet(f, _):
+    v = f.get("sheet") or f.get("location") or ""
+    if isinstance(v, list):
+        v = ", ".join(str(x) for x in v)
+    return v
 def f_problem(f, _):
     """Короткое название проблемы (≤ 80 символов)."""
     s = (f.get("problem") or f.get("title") or f.get("finding") or "")
@@ -564,32 +568,38 @@ def build_project_sheet(wb, pd_entry: dict):
     # ── Строки замечаний ──────────────────────────────────────────────
     for idx, finding in enumerate(findings, 1):
         row += 1
-        sev     = normalize_sev(finding.get("severity") or "ПРОВЕРИТЬ ПО СМЕЖНЫМ")
-        cfg     = get_sev_cfg(sev)
-        row_bg  = cfg["bg"] if idx % 2 != 0 else cfg["bg_alt"]
+        try:
+            sev     = normalize_sev(finding.get("severity") or "ПРОВЕРИТЬ ПО СМЕЖНЫМ")
+            cfg     = get_sev_cfg(sev)
+            row_bg  = cfg["bg"] if idx % 2 != 0 else cfg["bg_alt"]
 
-        for col, (key, _, _) in enumerate(PROJ_COLUMNS, 1):
-            val = FIELD_FUNCS[key](finding, idx)
+            for col, (key, _, _) in enumerate(PROJ_COLUMNS, 1):
+                val = FIELD_FUNCS[key](finding, idx)
 
-            is_num = (key == "num")
-            is_sev = (key == "severity")
-            is_sm  = key in ("description", "norm")
+                is_num = (key == "num")
+                is_sev = (key == "severity")
+                is_sm  = key in ("description", "norm")
 
-            cell(ws, row, col, val,
-                 bg=row_bg,
-                 fg=cfg["fg"] if is_sev else "000000",
-                 bold=is_num or is_sev,
-                 align_h="center" if is_num else "left",
-                 align_v="top",
-                 font_size=9 if is_sm else 10)
+                cell(ws, row, col, val,
+                     bg=row_bg,
+                     fg=cfg["fg"] if is_sev else "000000",
+                     bold=is_num or is_sev,
+                     align_h="center" if is_num else "left",
+                     align_v="top",
+                     font_size=9 if is_sm else 10)
 
-        # Авто-высота по длине текста
-        max_len = max(
-            len(str(finding.get("description") or finding.get("finding") or "")),
-            len(str(finding.get("solution")    or finding.get("recommendation") or "")),
-            len(str(finding.get("norm") or ""))
-        )
-        ws.row_dimensions[row].height = max(35, min(130, max_len // 2))
+            # Авто-высота по длине текста
+            max_len = max(
+                len(str(finding.get("description") or finding.get("finding") or "")),
+                len(str(finding.get("solution")    or finding.get("recommendation") or "")),
+                len(str(finding.get("norm") or ""))
+            )
+            ws.row_dimensions[row].height = max(35, min(130, max_len // 2))
+        except Exception as e:
+            # Один битый finding не должен ломать весь Excel
+            cell(ws, row, 1, idx, bg="FFFFFF")
+            cell(ws, row, 2, f"[Ошибка чтения замечания: {e}]", bg="FFEEEE")
+            print(f"  [WARN] Пропущено замечание #{idx}: {e}")
 
     # ── Итоговая мини-строка ──────────────────────────────────────────
     row += 1
@@ -802,21 +812,27 @@ def build_optimization_project_sheet(wb, pd_entry: dict):
     # Строки данных
     for idx, item in enumerate(items, 1):
         row += 1
-        opt_type = item.get("type", "")
-        cfg = opt_type_cfg(opt_type)
-        row_bg = cfg["bg"] if idx % 2 != 0 else cfg["bg_alt"]
+        try:
+            opt_type = item.get("type", "") if isinstance(item, dict) else ""
+            cfg = opt_type_cfg(opt_type)
+            row_bg = cfg["bg"] if idx % 2 != 0 else cfg["bg_alt"]
 
-        vals = [
-            idx,
-            item.get("id", ""),
-            item.get("section", ""),
-            item.get("current", ""),
-            item.get("proposed", ""),
-            f"{cfg['icon']} {cfg['label']}",
-            f"{item.get('savings_pct', 0)}%" if item.get("savings_pct") else "—",
-            item.get("timeline_impact", ""),
-            item.get("risks", ""),
-        ]
+            vals = [
+                idx,
+                item.get("id", ""),
+                item.get("section", ""),
+                item.get("current", ""),
+                item.get("proposed", ""),
+                f"{cfg['icon']} {cfg['label']}",
+                f"{item.get('savings_pct', 0)}%" if item.get("savings_pct") else "—",
+                item.get("timeline_impact", ""),
+                item.get("risks", ""),
+            ]
+        except Exception as e:
+            cell(ws, row, 1, idx, bg="FFFFFF")
+            cell(ws, row, 2, f"[Ошибка чтения оптимизации: {e}]", bg="FFEEEE")
+            print(f"  [WARN] Пропущена оптимизация #{idx}: {e}")
+            continue
 
         for col, (key, _, _) in enumerate(OPT_COLUMNS, 1):
             val = vals[col - 1]
@@ -959,9 +975,18 @@ def main():
         os.makedirs(REPORTS_DIR, exist_ok=True)
         out_path = os.path.join(REPORTS_DIR, f"audit_report_{ts}.xlsx")
 
-    wb.save(out_path)
-    print(f"\n  Файл сохранён: {out_path}")
-    print(f"{'='*62}\n")
+    try:
+        wb.save(out_path)
+        print(f"\n  Файл сохранён: {out_path}")
+        print(f"{'='*62}\n")
+    except PermissionError as e:
+        print(f"\n  [ERR] Не удалось сохранить файл (занят?): {e}")
+        print(f"{'='*62}\n")
+        sys.exit(1)
+    except Exception as e:
+        print(f"\n  [ERR] Ошибка при сохранении Excel: {e}")
+        print(f"{'='*62}\n")
+        sys.exit(1)
 
     # Автооткрытие только при ручном запуске (не из webapp pipeline)
     if os.environ.get("AUDIT_NO_OPEN") != "1":

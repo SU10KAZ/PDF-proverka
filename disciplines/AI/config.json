@@ -1,0 +1,12 @@
+{
+  "code": "АИ",
+  "name": "Архитектурные решения (интерьер)",
+  "short_name": "АИ",
+  "role_file": "role.md",
+  "checklist_file": "checklist.md",
+  "triage_table_file": "triage_table.md",
+  "project_params_file": "project_params.md",
+  "drawing_types_file": "drawing_types.md",
+  "finding_categories_file": "finding_categories.md",
+  "norms_reference_file": "norms_reference.md"
+}
