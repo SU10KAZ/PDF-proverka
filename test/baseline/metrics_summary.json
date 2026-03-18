@@ -1,0 +1,181 @@
+[
+  {
+    "source": "D:\\Отедел Системного Анализа\\1. Calude code\\test\\baseline\\OV_133-23-ГК-ОВ2.2_(7)",
+    "findings": {
+      "total": 45,
+      "by_severity": {
+        "КРИТИЧЕСКОЕ": 10,
+        "ЭКОНОМИЧЕСКОЕ": 3,
+        "ЭКСПЛУАТАЦИОННОЕ": 10,
+        "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 12,
+        "РЕКОМЕНДАТЕЛЬНОЕ": 10
+      },
+      "evidence_coverage": 0.0,
+      "related_block_ids_coverage": 0.0,
+      "grounding_candidates_coverage": 0.0,
+      "norm_quote_coverage": 0.667,
+      "low_confidence_count": 35
+    },
+    "grounding": {},
+    "norms": {
+      "total_checks": 10,
+      "deterministic_count": 0,
+      "websearch_count": 1,
+      "cache_stale_count": 0,
+      "pending_websearch_count": 0,
+      "needs_revision_count": 5,
+      "policy_violations_count": 0,
+      "paragraph_cache_total": 10,
+      "paragraph_cache_verified": 1,
+      "paragraph_cache_misses": 9
+    },
+    "pipeline": {
+      "total_stages": 7,
+      "completed": 7,
+      "errors": 0
+    }
+  },
+  {
+    "source": "D:\\Отедел Системного Анализа\\1. Calude code\\test\\baseline\\АИ_133-23-ГК-АИ1_18.02.2026",
+    "findings": {
+      "total": 46,
+      "by_severity": {
+        "КРИТИЧЕСКОЕ": 12,
+        "ЭКОНОМИЧЕСКОЕ": 4,
+        "ЭКСПЛУАТАЦИОННОЕ": 8,
+        "РЕКОМЕНДАТЕЛЬНОЕ": 14,
+        "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 8
+      },
+      "evidence_coverage": 0.0,
+      "related_block_ids_coverage": 0.0,
+      "grounding_candidates_coverage": 0.0,
+      "norm_quote_coverage": 0.5,
+      "low_confidence_count": 36
+    },
+    "grounding": {},
+    "norms": {
+      "total_checks": 23,
+      "deterministic_count": 0,
+      "websearch_count": 10,
+      "cache_stale_count": 0,
+      "pending_websearch_count": 0,
+      "needs_revision_count": 7,
+      "policy_violations_count": 0,
+      "paragraph_cache_total": 5,
+      "paragraph_cache_verified": 0,
+      "paragraph_cache_misses": 5
+    },
+    "pipeline": {
+      "total_stages": 7,
+      "completed": 7,
+      "errors": 0
+    }
+  },
+  {
+    "source": "D:\\Отедел Системного Анализа\\1. Calude code\\test\\baseline\\АР_133-23-ГК-АР1",
+    "findings": {
+      "total": 48,
+      "by_severity": {
+        "КРИТИЧЕСКОЕ": 7,
+        "ЭКОНОМИЧЕСКОЕ": 6,
+        "ЭКСПЛУАТАЦИОННОЕ": 5,
+        "РЕКОМЕНДАТЕЛЬНОЕ": 21,
+        "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 9
+      },
+      "evidence_coverage": 0.0,
+      "related_block_ids_coverage": 0.0,
+      "grounding_candidates_coverage": 0.0,
+      "norm_quote_coverage": 0.312,
+      "low_confidence_count": 34
+    },
+    "grounding": {},
+    "norms": {
+      "total_checks": 33,
+      "deterministic_count": 0,
+      "websearch_count": 19,
+      "cache_stale_count": 0,
+      "pending_websearch_count": 0,
+      "needs_revision_count": 16,
+      "policy_violations_count": 0,
+      "paragraph_cache_total": 8,
+      "paragraph_cache_verified": 3,
+      "paragraph_cache_misses": 5
+    },
+    "pipeline": {
+      "total_stages": 7,
+      "completed": 7,
+      "errors": 0
+    }
+  },
+  {
+    "source": "D:\\Отедел Системного Анализа\\1. Calude code\\test\\baseline\\АР_133_23-ГК-АР3_изм.8",
+    "findings": {
+      "total": 45,
+      "by_severity": {
+        "КРИТИЧЕСКОЕ": 3,
+        "ЭКОНОМИЧЕСКОЕ": 1,
+        "ЭКСПЛУАТАЦИОННОЕ": 5,
+        "РЕКОМЕНДАТЕЛЬНОЕ": 22,
+        "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 14
+      },
+      "evidence_coverage": 0.0,
+      "related_block_ids_coverage": 0.0,
+      "grounding_candidates_coverage": 0.0,
+      "norm_quote_coverage": 0.444,
+      "low_confidence_count": 33
+    },
+    "grounding": {},
+    "norms": {
+      "total_checks": 22,
+      "deterministic_count": 0,
+      "websearch_count": 5,
+      "cache_stale_count": 0,
+      "pending_websearch_count": 0,
+      "needs_revision_count": 6,
+      "policy_violations_count": 0,
+      "paragraph_cache_total": 10,
+      "paragraph_cache_verified": 7,
+      "paragraph_cache_misses": 3
+    },
+    "pipeline": {
+      "total_stages": 7,
+      "completed": 7,
+      "errors": 0
+    }
+  },
+  {
+    "source": "D:\\Отедел Системного Анализа\\1. Calude code\\test\\baseline\\ТХ_133_23-ГК-ТХ.О_(2)",
+    "findings": {
+      "total": 12,
+      "by_severity": {
+        "ЭКОНОМИЧЕСКОЕ": 2,
+        "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 4,
+        "ЭКСПЛУАТАЦИОННОЕ": 1,
+        "РЕКОМЕНДАТЕЛЬНОЕ": 5
+      },
+      "evidence_coverage": 0.0,
+      "related_block_ids_coverage": 0.0,
+      "grounding_candidates_coverage": 0.0,
+      "norm_quote_coverage": 0.333,
+      "low_confidence_count": 12
+    },
+    "grounding": {},
+    "norms": {
+      "total_checks": 8,
+      "deterministic_count": 0,
+      "websearch_count": 2,
+      "cache_stale_count": 0,
+      "pending_websearch_count": 0,
+      "needs_revision_count": 3,
+      "policy_violations_count": 0,
+      "paragraph_cache_total": 5,
+      "paragraph_cache_verified": 1,
+      "paragraph_cache_misses": 4
+    },
+    "pipeline": {
+      "total_stages": 7,
+      "completed": 7,
+      "errors": 0
+    }
+  }
+]

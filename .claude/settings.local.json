@@ -144,7 +144,26 @@
       "Bash(test -f \"$outdir/norm_checks.json\")",
       "Bash(python -X utf8 -c \":*)",
       "Bash(grep -n \"CLAUDE_OPTIMIZATION_TIMEOUT\\\\|OPTIMIZATION_TIMEOUT\" \"d:/Отедел Системного Анализа/1. Calude code/webapp/services/\"*.py)",
-      "Bash(grep -A2 \"CLAUDE_OPTIMIZATION_TIMEOUT\\\\s*=\" \"d:/Отедел Системного Анализа/1. Calude code/webapp/\"services/*.py)"
+      "Bash(grep -A2 \"CLAUDE_OPTIMIZATION_TIMEOUT\\\\s*=\" \"d:/Отедел Системного Анализа/1. Calude code/webapp/\"services/*.py)",
+      "Bash(curl -s -X POST http://localhost:8080/api/audit/batch -H \"Content-Type: application/json\" -d '{\"\"\"\"project_ids\"\"\"\":[\"\"\"\"АИ/133_23-ГК-АИ4\"\"\"\"], \"\"\"\"action\"\"\"\":\"\"\"\"audit\"\"\"\"}')",
+      "Bash(node -e \":*)",
+      "Bash(mv \"АР\" \"AR\")",
+      "Bash(mv \"АИ\" \"AI\")",
+      "Bash(mv \"ТХ\" \"TX\")",
+      "Bash(mv \"ВК\" \"VK\")",
+      "Bash(mv \"КМ\" \"KM\")",
+      "Bash(mv \"СС\" \"SS\")",
+      "Bash(mv \"ПТ\" \"PT\")",
+      "Bash(mv \"ГП\" \"GP\")",
+      "Bash(mv \"ИТП\" \"ITP\")",
+      "Bash(mv \"ПС\" \"PS\")",
+      "Bash(mv \"ПОС\" \"POS\")",
+      "Read(//d/Отедел Системного Анализа/1. Calude code/$APPDATA/claude/**)",
+      "Read(//d/Отедел Системного Анализа/1. Calude code/$HOME/.claude/**)",
+      "Read(//d/Отедел Системного Анализа/1. Calude code/$HOME/**)",
+      "Bash(cat /c/Users/uzun.a.i/.claude/sessions/*.json)",
+      "Bash(python3 -c \"import sys,json; data=json.load\\(sys.stdin\\); print\\(json.dumps\\({k:v for k,v in data.items\\(\\) if ''''email'''' in k.lower\\(\\) or ''''user'''' in k.lower\\(\\) or ''''account'''' in k.lower\\(\\)}, indent=2\\)\\)\")",
+      "Bash(PYTHONIOENCODING=utf-8 python -X utf8 -c \":*)"
     ]
   }
 }
