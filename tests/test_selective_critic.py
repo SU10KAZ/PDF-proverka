@@ -57,6 +57,8 @@ def test_low_confidence_is_risky(tmp_path):
     findings = [
         {
             "id": "F-001",
+            "norm": "СП 256, п. 15.3",
+            "severity": "КРИТИЧЕСКОЕ",
             "evidence": [{"type": "image", "block_id": "b1"}],
             "related_block_ids": ["b1"],
             "norm_confidence": 0.5,

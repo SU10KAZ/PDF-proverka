@@ -28,12 +28,72 @@ except ImportError:
     sys.exit(1)
 
 
+# ─── Block ID normalization ────────────────────────────────────────────────
+
+def _normalize_block_id(raw: str | None) -> str:
+    """Canonical bare block_id: 'block_IMG-001.png' → 'IMG-001'."""
+    if not raw:
+        return ""
+    s = raw.strip()
+    if s.startswith("block_"):
+        s = s[6:]
+    for ext in (".png", ".jpg", ".jpeg", ".webp"):
+        if s.lower().endswith(ext):
+            s = s[:-len(ext)]
+            break
+    return s
+
+
+def _normalize_finding_block_ids(finding: dict):
+    """Нормализовать block identity в finding (in-place)."""
+    if "block_evidence" in finding:
+        finding["block_evidence"] = _normalize_block_id(finding["block_evidence"])
+    if "related_block_ids" in finding and isinstance(finding["related_block_ids"], list):
+        finding["related_block_ids"] = [
+            _normalize_block_id(b) for b in finding["related_block_ids"]
+            if _normalize_block_id(b)
+        ]
+    if "evidence" in finding and isinstance(finding["evidence"], list):
+        for ev in finding["evidence"]:
+            if isinstance(ev, dict) and "block_id" in ev:
+                ev["block_id"] = _normalize_block_id(ev["block_id"])
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # CROP — скачивание image-блоков по crop_url из result.json
 # ═══════════════════════════════════════════════════════════════════════════════
 
 TARGET_LONG_SIDE_PX = 1500
+TARGET_LONG_SIDE_PX_HIRES = 2500  # Для однолинейных схем и детальных чертежей
 MIN_BLOCK_AREA_PX2 = 50000
+
+# Паттерны в ocr_label, требующие повышенного разрешения
+_HIRES_PATTERNS = [
+    "однолинейн",
+    "принципиальн",
+    "расчётн",
+    "расчетн",
+    "щит",
+    "грщ",
+    "вру",
+    "уэрм",
+    "панел",
+]
+
+
+def _needs_hires(ocr_label: str) -> bool:
+    """Определить, нужно ли повышенное разрешение по ocr_label."""
+    if not ocr_label:
+        return False
+    label_lower = ocr_label.lower()
+    return any(p in label_lower for p in _HIRES_PATTERNS)
+
+
+def _get_target_px(ocr_label: str) -> int:
+    """Вернуть целевое разрешение для блока."""
+    if _needs_hires(ocr_label):
+        return TARGET_LONG_SIDE_PX_HIRES
+    return TARGET_LONG_SIDE_PX
 
 
 def detect_result_json(project_dir: str) -> Path | None:
@@ -109,8 +169,14 @@ def extract_ocr_label(block: dict) -> str:
     return clean if clean else "image"
 
 
-def download_and_convert(crop_url: str, out_png: Path, timeout: int = 30) -> tuple[int, int]:
+def download_and_convert(
+    crop_url: str,
+    out_png: Path,
+    timeout: int = 30,
+    target_px: int | None = None,
+) -> tuple[int, int]:
     """Скачать PDF-кроп по URL и конвертировать в PNG."""
+    target = target_px or TARGET_LONG_SIDE_PX
     req = urllib.request.Request(crop_url, headers={"User-Agent": "crop_blocks/1.0"})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         pdf_bytes = resp.read()
@@ -123,7 +189,7 @@ def download_and_convert(crop_url: str, out_png: Path, timeout: int = 30) -> tup
         doc.close()
         raise ValueError("Нулевой размер страницы в PDF-кропе")
 
-    render_scale = TARGET_LONG_SIDE_PX / long_side_pt
+    render_scale = target / long_side_pt
     render_scale = max(1.0, min(8.0, render_scale))
 
     mat = fitz.Matrix(render_scale, render_scale)
@@ -142,6 +208,7 @@ def crop_from_pdf(
     page_width: int,
     page_height: int,
     out_png: Path,
+    target_px: int | None = None,
 ) -> tuple[int, int]:
     """Вырезать блок из PDF по координатам (fallback при ошибке скачивания).
 
@@ -163,7 +230,7 @@ def crop_from_pdf(
         y2 * scale_y,
     )
 
-    # Масштаб рендеринга: длинная сторона вырезки → TARGET_LONG_SIDE_PX
+    # Масштаб рендеринга: длинная сторона вырезки → target_px
     clip_w = clip.width
     clip_h = clip.height
     long_side_pt = max(clip_w, clip_h)
@@ -171,7 +238,7 @@ def crop_from_pdf(
         doc.close()
         raise ValueError("Нулевой размер блока")
 
-    render_scale = TARGET_LONG_SIDE_PX / long_side_pt
+    render_scale = (target_px or TARGET_LONG_SIDE_PX) / long_side_pt
     render_scale = max(0.5, min(8.0, render_scale))  # допускаем уменьшение до 0.5×
 
     mat = fitz.Matrix(render_scale, render_scale)
@@ -339,9 +406,14 @@ def crop_blocks(
         crop_url = block_info["crop_url"]
         download_error = None
 
+        # Адаптивное разрешение по типу блока
+        target_px = _get_target_px(block_info.get("ocr_label", ""))
+        if target_px != TARGET_LONG_SIDE_PX:
+            print(f"  [HIRES] {bid}: {target_px}px (однолинейная/расчётная схема)")
+
         if crop_url:
             try:
-                w, h = download_and_convert(crop_url, out_file)
+                w, h = download_and_convert(crop_url, out_file, target_px=target_px)
             except Exception as e:
                 download_error = e
         else:
@@ -360,6 +432,7 @@ def crop_blocks(
                         block_info["coords_px"],
                         dims[0], dims[1],
                         out_file,
+                        target_px=target_px,
                     )
                     source = "pdf_fallback"
                     print(f"  [FALLBACK] {bid}: облако недоступно ({e}), вырезан из PDF")
@@ -629,6 +702,73 @@ def generate_block_batches(
 # MERGE — слияние результатов анализа блоков
 # ═══════════════════════════════════════════════════════════════════════════════
 
+def _backfill_locality_from_graph(output_dir: Path, block_analyses: list[dict]):
+    """Backfill locality полей в block_analyses из document_graph v2.
+
+    Если LLM заполнила selected_text_block_ids — оставляем как есть.
+    Если нет — заполняем из local_text_links графа.
+    Всегда гарантирует наличие полей (пустые списки если данных нет).
+    """
+    graph_path = output_dir / "document_graph.json"
+    if not graph_path.exists():
+        # Гарантируем поля даже без графа
+        for ba in block_analyses:
+            ba.setdefault("selected_text_block_ids", [])
+            ba.setdefault("evidence_text_refs", [])
+        return
+
+    try:
+        graph = json.loads(graph_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        for ba in block_analyses:
+            ba.setdefault("selected_text_block_ids", [])
+            ba.setdefault("evidence_text_refs", [])
+        return
+
+    if graph.get("version", 1) < 2:
+        for ba in block_analyses:
+            ba.setdefault("selected_text_block_ids", [])
+            ba.setdefault("evidence_text_refs", [])
+        return
+
+    # Индекс: block_id → page local_text_links
+    block_locality: dict[str, list[dict]] = {}
+    for pg in graph.get("pages", []):
+        local_links = pg.get("local_text_links", {})
+        for img_id, candidates in local_links.items():
+            block_locality[img_id] = candidates
+
+    backfilled = 0
+    for ba in block_analyses:
+        bid = ba.get("block_id", "")
+
+        # Гарантируем поля
+        ba.setdefault("selected_text_block_ids", [])
+        ba.setdefault("evidence_text_refs", [])
+
+        # Backfill только если LLM не заполнила
+        if not ba["selected_text_block_ids"] and bid in block_locality:
+            candidates = block_locality[bid]
+            ba["selected_text_block_ids"] = [c["text_block_id"] for c in candidates]
+            # Создаём базовые evidence_text_refs из locality
+            if not ba["evidence_text_refs"]:
+                ba["evidence_text_refs"] = [
+                    {
+                        "text_block_id": c["text_block_id"],
+                        "role": "other",
+                        "used_for": "cross_check",
+                        "confidence": round(c.get("score", 0.5), 2),
+                        "source": "graph_backfill",
+                    }
+                    for c in candidates
+                    if c.get("score", 0) > 0.1
+                ]
+            backfilled += 1
+
+    if backfilled:
+        print(f"  [LOCALITY] Backfill: {backfilled} блоков обогащены из document_graph v2")
+
+
 def merge_block_results(project_dir: str, cleanup: bool = False) -> dict:
     """Слить все block_batch_NNN.json в один 02_blocks_analysis.json."""
     output_dir = Path(project_dir) / "_output"
@@ -664,6 +804,8 @@ def merge_block_results(project_dir: str, cleanup: bool = False) -> dict:
                     # Добавляем block_id и page если не указаны
                     if "source" not in f and "block_evidence" not in f:
                         f["block_evidence"] = ba.get("block_id", "")
+                    # Нормализуем block identity → bare id
+                    _normalize_finding_block_ids(f)
                     all_findings.append(f)
             # Также собираем из preliminary_findings (legacy)
             legacy_findings = batch_data.get("preliminary_findings", [])
@@ -687,6 +829,10 @@ def merge_block_results(project_dir: str, cleanup: bool = False) -> dict:
         round(total_blocks_reviewed / expected_blocks * 100, 1)
         if expected_blocks > 0 else 0
     )
+
+    # Backfill locality полей из document_graph v2
+    # Если LLM не заполнила selected_text_block_ids — заполняем из graph
+    _backfill_locality_from_graph(output_dir, all_block_analyses)
 
     result = {
         "stage": "02_blocks_analysis",
@@ -715,6 +861,206 @@ def merge_block_results(project_dir: str, cleanup: bool = False) -> dict:
             print(f"  [DEL] {bf.name}")
 
     return result
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# RECROP — перекачка нечитаемых блоков с увеличенным разрешением (×2 итеративно)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+MAX_RECROP_SCALE = 8.0  # Максимальный масштаб (предел PyMuPDF)
+MAX_RECROP_ITERATIONS = 3  # Макс итераций (1500→3000→6000→стоп)
+
+
+def find_unreadable_blocks(project_dir: str) -> list[dict]:
+    """Найти блоки с unreadable_text=true в batch-файлах или 02_blocks_analysis.json."""
+    output_dir = Path(project_dir) / "_output"
+    unreadable = []
+
+    # Сначала проверить 02_blocks_analysis.json (результат merge)
+    merged = output_dir / "02_blocks_analysis.json"
+    if merged.exists():
+        try:
+            with open(merged, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            for ba in data.get("block_analyses") or data.get("blocks") or []:
+                if ba.get("unreadable_text"):
+                    unreadable.append({
+                        "block_id": ba["block_id"],
+                        "page": ba.get("page"),
+                        "details": ba.get("unreadable_details", ""),
+                    })
+        except Exception:
+            pass
+        return unreadable
+
+    # Fallback: сканировать batch-файлы
+    for bf in sorted(output_dir.glob("block_batch_*.json")):
+        try:
+            with open(bf, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            for ba in data.get("block_analyses") or []:
+                if ba.get("unreadable_text"):
+                    unreadable.append({
+                        "block_id": ba["block_id"],
+                        "page": ba.get("page"),
+                        "details": ba.get("unreadable_details", ""),
+                    })
+        except Exception:
+            continue
+
+    return unreadable
+
+
+def recrop_blocks(
+    project_dir: str,
+    block_ids: list[str],
+    scale_multiplier: float = 2.0,
+) -> dict:
+    """Перекачать указанные блоки с увеличенным разрешением.
+
+    Берёт текущее разрешение блока из index.json и умножает на scale_multiplier.
+    Ограничен MAX_RECROP_SCALE (8×).
+    """
+    project_path = Path(project_dir)
+    output_dir = project_path / "_output" / "blocks"
+    index_path = output_dir / "index.json"
+
+    if not index_path.exists():
+        return {"error": "index.json не найден — сначала выполните crop"}
+
+    with open(index_path, "r", encoding="utf-8") as f:
+        index_data = json.load(f)
+
+    # Построить маппинг block_id → index entry
+    blocks_by_id = {b["block_id"]: b for b in index_data.get("blocks", [])}
+
+    # Загрузить result.json для crop_url
+    result_json_paths = detect_all_result_jsons(project_dir)
+    ocr_blocks: dict[str, dict] = {}
+    all_page_dimensions: dict[int, tuple[int, int]] = {}
+    page_pdf_map: dict[int, Path] = {}
+
+    info = {}
+    info_path = project_path / "project_info.json"
+    if info_path.exists():
+        try:
+            with open(info_path, "r", encoding="utf-8") as f:
+                info = json.load(f)
+        except Exception:
+            pass
+    pdf_files = info.get("pdf_files", [])
+    if not pdf_files:
+        pf = info.get("pdf_file", "")
+        pdf_files = [pf] if pf else []
+
+    for rj_path in result_json_paths:
+        with open(rj_path, "r", encoding="utf-8") as f:
+            ocr_data = json.load(f)
+
+        rj_stem = rj_path.stem.replace("_result", "")
+        pdf_path: Path | None = None
+        for pf in pdf_files:
+            if Path(pf).stem == rj_stem:
+                candidate = project_path / pf
+                if candidate.exists():
+                    pdf_path = candidate
+                    break
+        if not pdf_path:
+            pdfs = list(project_path.glob("*.pdf"))
+            if pdfs:
+                pdf_path = pdfs[0]
+
+        for pg in ocr_data.get("pages", []):
+            pn = pg.get("page_number", 0)
+            pw, ph = pg.get("width", 0), pg.get("height", 0)
+            if pw and ph:
+                all_page_dimensions[pn] = (pw, ph)
+            if pdf_path:
+                page_pdf_map[pn] = pdf_path
+            for block in pg.get("blocks", []):
+                if block.get("block_type") == "image":
+                    ocr_blocks[block.get("id", "")] = block
+
+    recropped = 0
+    errors = 0
+
+    for bid in block_ids:
+        idx_entry = blocks_by_id.get(bid)
+        if not idx_entry:
+            print(f"  [SKIP] {bid}: не найден в index.json")
+            continue
+
+        # Определить текущее разрешение
+        render_size = idx_entry.get("render_size", [TARGET_LONG_SIDE_PX, TARGET_LONG_SIDE_PX])
+        current_long_side = max(render_size) if render_size else TARGET_LONG_SIDE_PX
+        new_target_px = int(current_long_side * scale_multiplier)
+
+        # Ограничение: нет смысла превышать max scale
+        # render_scale = target_px / long_side_pt, max 8.0
+        # Практический потолок зависит от размера блока в PDF, но 6000px — разумный лимит
+        new_target_px = min(new_target_px, 6000)
+
+        if new_target_px <= current_long_side:
+            print(f"  [SKIP] {bid}: уже на максимальном разрешении ({current_long_side}px)")
+            continue
+
+        print(f"  [RECROP] {bid}: {current_long_side}px → {new_target_px}px")
+
+        out_file = output_dir / f"block_{bid}.png"
+        ocr_block = ocr_blocks.get(bid, {})
+        crop_url = ocr_block.get("crop_url", "")
+        page_num = idx_entry.get("page", 0)
+
+        success = False
+        if crop_url:
+            try:
+                w, h = download_and_convert(crop_url, out_file, target_px=new_target_px)
+                success = True
+                source = "cloud"
+            except Exception as e:
+                print(f"  [WARN] {bid}: облако ({e}), пробую PDF fallback")
+
+        if not success:
+            dims = all_page_dimensions.get(page_num)
+            fallback_pdf = page_pdf_map.get(page_num)
+            coords = idx_entry.get("crop_px", ocr_block.get("coords_px", [0, 0, 0, 0]))
+            if fallback_pdf and dims and coords:
+                try:
+                    w, h = crop_from_pdf(
+                        fallback_pdf, page_num,
+                        coords, dims[0], dims[1],
+                        out_file, target_px=new_target_px,
+                    )
+                    success = True
+                    source = "pdf_fallback"
+                except Exception as e2:
+                    print(f"  [ERROR] {bid}: PDF fallback ({e2})")
+
+        if not success:
+            errors += 1
+            continue
+
+        size_kb = out_file.stat().st_size / 1024
+        print(f"  [OK] {bid}: {w}x{h}px, {size_kb:.0f} KB (source: {source})")
+
+        # Обновить index entry
+        idx_entry["render_size"] = [w, h]
+        idx_entry["size_kb"] = round(size_kb, 1)
+        idx_entry["source"] = source
+        idx_entry["recrop_target_px"] = new_target_px
+        idx_entry["recrop_iteration"] = idx_entry.get("recrop_iteration", 0) + 1
+        recropped += 1
+
+    # Сохранить обновлённый index.json
+    with open(index_path, "w", encoding="utf-8") as f:
+        json.dump(index_data, f, ensure_ascii=False, indent=2)
+
+    print(f"\n  Recrop: {recropped} блоков перекачано, {errors} ошибок")
+    return {
+        "recropped": recropped,
+        "errors": errors,
+        "block_ids": block_ids,
+    }
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -751,6 +1097,13 @@ def main():
     p_merge.add_argument("project_dir", help="Путь к папке проекта")
     p_merge.add_argument("--cleanup", action="store_true",
                          help="Удалить промежуточные файлы после слияния")
+
+    # recrop
+    p_recrop = subparsers.add_parser("recrop", help="Перекачать нечитаемые блоки в повышенном разрешении")
+    p_recrop.add_argument("project_dir", help="Путь к папке проекта")
+    p_recrop.add_argument("--block-ids", help="Список block_id через запятую (иначе — авто из unreadable_text)")
+    p_recrop.add_argument("--scale", type=float, default=2.0,
+                          help="Множитель разрешения (по умолчанию 2.0)")
 
     args = parser.parse_args()
 
@@ -790,6 +1143,25 @@ def main():
         result = merge_block_results(args.project_dir, cleanup=args.cleanup)
         if result.get("error"):
             sys.exit(1)
+
+    elif args.command == "recrop":
+        if args.block_ids:
+            block_ids = [b.strip() for b in args.block_ids.split(",")]
+        else:
+            # Авто-обнаружение из unreadable_text
+            unreadable = find_unreadable_blocks(args.project_dir)
+            if not unreadable:
+                print("Нет блоков с unreadable_text=true")
+                sys.exit(0)
+            block_ids = [u["block_id"] for u in unreadable]
+            print(f"Найдено {len(block_ids)} нечитаемых блоков:")
+            for u in unreadable:
+                print(f"  {u['block_id']}: {u.get('details', '')[:80]}")
+
+        result = recrop_blocks(args.project_dir, block_ids, scale_multiplier=args.scale)
+        if result.get("error"):
+            sys.exit(1)
+        print(json.dumps(result, ensure_ascii=False))
 
 
 if __name__ == "__main__":

@@ -31,6 +31,14 @@ import shutil
 
 # pdf_text_utils больше не используется — текст берётся из MD-файла (Chandra OCR)
 
+# graph_builder v2: canonical JSON → document_graph
+try:
+    from graph_builder import build_document_graph_v2, generate_locality_debug
+except ImportError:
+    build_document_graph_v2 = None
+    generate_locality_debug = None
+    print("  [WARNING] graph_builder.py not found — document_graph v2 unavailable, using MD-only v1")
+
 BASE_DIR = r"D:\Отедел Системного Анализа\1. Calude code"
 
 # Default tile config: page -> (rows, cols, scale, overlap_pct)
@@ -857,7 +865,21 @@ def process(project_dir, full_pages=False, force=False, quality="standard"):
     print(f"  [OK] MD — первичный источник текста")
 
     # ── Step 1: Build Document Knowledge Graph ──
-    build_document_graph(md_path, out_dir)
+    # Приоритет: v2 (из *_result.json с coords) → fallback v1 (из MD)
+    graph_built = False
+    if build_document_graph_v2 is not None:
+        graph_v2 = build_document_graph_v2(project_dir, out_dir)
+        if graph_v2:
+            graph_built = True
+            # Debug output для locality binding
+            if generate_locality_debug is not None:
+                debug_path = generate_locality_debug(graph_v2, out_dir)
+                if debug_path:
+                    print(f"  [GRAPH v2] Debug: {debug_path.name}")
+    if not graph_built:
+        project_id = info.get("project_id", os.path.basename(project_dir))
+        print(f"  [WARNING] [{project_id}] graph v2 not built — using MD-only v1 fallback")
+        build_document_graph(md_path, out_dir)
 
     # ── Step 2: Configure tiles ──
     tile_cfg = info.get("tile_config", {})

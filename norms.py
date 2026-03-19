@@ -345,7 +345,7 @@ def generate_deterministic_checks(norms_data: dict, project_id: str = "") -> dic
                 "source_url": None,
                 "details": "Норма не найдена в norms_db.json — требуется WebSearch",
                 "affected_findings": affected,
-                "needs_revision": False,  # Пока неизвестно
+                "needs_revision": True,  # Unknown = нужна ревизия до выяснения
                 "verified_via": "pending_websearch",
             })
             stats["unknown"] += 1
@@ -474,16 +474,20 @@ def merge_llm_norm_results(
             if old.get("status") == "unknown" or old.get("verified_via") in (
                 "pending_websearch", "cache_stale",
             ):
+                # Сохраняем provenance trace
+                prev_via = old.get("verified_via", "unknown")
                 # Обновить из LLM
                 old["status"] = llm_check.get("status", old["status"])
                 old["current_version"] = llm_check.get("current_version") or old.get("current_version")
                 old["replacement_doc"] = llm_check.get("replacement_doc") or old.get("replacement_doc")
                 old["source_url"] = llm_check.get("source_url") or old.get("source_url")
                 old["details"] = llm_check.get("details") or old.get("details", "")
+                # Provenance: сохраняем первичный источник
                 old["verified_via"] = llm_check.get("verified_via", "websearch")
-                # Пересчитать needs_revision
+                old["verified_via_primary"] = prev_via
+                # Пересчитать needs_revision — включая not_found
                 old["needs_revision"] = old["status"] in (
-                    "replaced", "cancelled", "outdated_edition",
+                    "replaced", "cancelled", "outdated_edition", "not_found",
                 )
                 updated += 1
         else:
@@ -666,8 +670,12 @@ def validate_norm_checks(norm_checks_path: Path) -> dict:
     meta["policy_violations"] = violations
     checks_data["meta"] = meta
 
-    # Записать исправления обратно
+    # Записать исправления обратно (включая violations в meta)
     if fixes or violations:
+        with open(norm_checks_path, "w", encoding="utf-8") as f:
+            json.dump(checks_data, f, ensure_ascii=False, indent=2)
+    elif meta.get("policy_violations"):
+        # Только violations без fixes — тоже записываем
         with open(norm_checks_path, "w", encoding="utf-8") as f:
             json.dump(checks_data, f, ensure_ascii=False, indent=2)
 
@@ -748,25 +756,42 @@ def update_paragraphs_from_project(pdb: dict, project_path: Path) -> int:
 
     count = 0
     for pc in paragraph_checks:
-        if not pc.get("paragraph_verified"):
-            continue
         norm = pc.get("norm", "")
-        actual_quote = pc.get("actual_quote")
-        if not norm or not actual_quote:
+        if not norm:
             continue
 
         key = normalize_paragraph_key(norm.strip())
-        existing = pdb["paragraphs"].get(key)
-        if existing and existing.get("quote") == actual_quote:
-            continue
+        verified = pc.get("paragraph_verified", False)
+        actual_quote = pc.get("actual_quote")
 
-        pdb["paragraphs"][key] = {
-            "norm": key,
-            "quote": actual_quote,
-            "verified_at": datetime.now().isoformat(),
-            "source_project": project_path.name,
-        }
-        count += 1
+        if verified and actual_quote:
+            # Positive result — сохраняем/обновляем цитату
+            existing = pdb["paragraphs"].get(key)
+            if existing and existing.get("quote") == actual_quote:
+                continue
+            pdb["paragraphs"][key] = {
+                "norm": key,
+                "quote": actual_quote,
+                "verified": True,
+                "verified_at": datetime.now().isoformat(),
+                "source_project": project_path.name,
+            }
+            count += 1
+        elif not verified:
+            # Negative result — кешируем чтобы не перепроверять
+            existing = pdb["paragraphs"].get(key)
+            # Не перезаписываем положительный результат отрицательным
+            if existing and existing.get("verified"):
+                continue
+            pdb["paragraphs"][key] = {
+                "norm": key,
+                "quote": actual_quote,
+                "verified": False,
+                "mismatch_details": pc.get("mismatch_details", ""),
+                "verified_at": datetime.now().isoformat(),
+                "source_project": project_path.name,
+            }
+            count += 1
 
     return count
 

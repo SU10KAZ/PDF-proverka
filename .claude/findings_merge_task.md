@@ -71,8 +71,13 @@
 - `norm`: документ + пункт (со статусом актуальности)
 - `solution`: конкретное действие по исправлению
 - `risk`: последствия если не исправить
-- `related_block_ids`: список block_id из `02_blocks_analysis.json`, на основе которых сформировано замечание
-- `evidence`: массив источников данных для замечания. Каждый элемент: `{type: "image"|"text", block_id: "...", page: N}`. type=image для графических блоков, type=text для текстовых блоков. Это обеспечивает точную трассировку замечания до конкретных фрагментов документа.
+- `merge_source_g_ids`: список ID исходных замечаний (G-NNN и/или T-NNN), из которых сформировано данное F-NNN. Для замечания из одного G → `["G-001"]`. Для объединённого T+G → `["T-003", "G-017"]`. Для нового (межблочная сверка) → `[]`.
+- `source_block_ids`: список block_id, ГДЕ замечание реально ОБНАРУЖЕНО (source-of-truth). Это block_id блоков, на которых LLM увидела проблему. Отличается от `related_block_ids`: source = "где нашли", related = "к чему относится".
+- `related_block_ids`: список block_id, К КОТОРЫМ замечание ОТНОСИТСЯ. Может включать блоки, где проблема не видна напрямую, но которые связаны (спецификация, каталожный лист и т.д.)
+- `selected_text_block_ids`: ID text-блоков (из контекста `[text_block_id: ...]` в блочном анализе), использованных как evidence. Если в `blocks_compact` есть `selected_text_block_ids` для source block — перенеси сюда.
+- `evidence_text_refs`: детальная трассировка text↔finding. Если в `blocks_compact` есть `evidence_text_refs` — перенеси и дедуплицируй.
+- `evidence`: массив источников данных. `{type: "image"|"text", block_id: "...", page: N}`. type=image для графических блоков, type=text для текстовых блоков.
+- `highlight_regions`: массив визуальных областей на блоке, где обнаружена проблема. Переноси из G-замечаний `02_blocks_analysis.json` → `findings[].highlight_regions`. Формат: `[{block_id: "...", x: 0.35, y: 0.40, w: 0.20, h: 0.15, label: "..."}]`. При объединении G-замечаний — собери все regions. Добавь `block_id` в каждый region чтобы знать к какому блоку относится область.
 
 ## Выходной файл
 
@@ -109,10 +114,19 @@
       "norm_confidence": 0.9,
       "solution": "Действие по исправлению",
       "risk": "Чем грозит",
-      "related_block_ids": ["block_007_1", "block_008_2"],
+      "merge_source_g_ids": ["G-001", "T-003"],
+      "source_block_ids": ["IMG-001"],
+      "related_block_ids": ["IMG-001", "IMG-008"],
+      "selected_text_block_ids": ["TB-SPEC-001"],
+      "evidence_text_refs": [
+        {"text_block_id": "TB-SPEC-001", "role": "table", "used_for": "value_extraction", "confidence": 0.9}
+      ],
       "evidence": [
-        {"type": "image", "block_id": "block_007_1", "page": 4},
+        {"type": "image", "block_id": "IMG-001", "page": 4},
         {"type": "text", "block_id": "RUXD-WP4R-6C3", "page": 4}
+      ],
+      "highlight_regions": [
+        {"block_id": "IMG-001", "x": 0.35, "y": 0.40, "w": 0.20, "h": 0.15, "label": "Марш Л-1, размер 1000"}
       ]
     }
   ]

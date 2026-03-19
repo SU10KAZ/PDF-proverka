@@ -4,17 +4,20 @@ Grounding Service — Python-level привязка findings к блокам.
 Запускается ПЕРЕД Critic, чтобы уменьшить ложную привязку и дать
 Critic более точные данные для проверки.
 
-Стратегия: простой lexical overlap + page-aware ranking.
+Стратегия: lexical overlap + page-aware ranking + locality signals.
 Не перетирает хорошие existing evidence.
 """
 
 from __future__ import annotations
 
 import json
+import logging
 import re
 from collections import Counter
 from pathlib import Path
 from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 
 def _tokenize(text: str) -> list[str]:
@@ -33,15 +36,62 @@ def _compute_overlap(tokens_a: list[str], tokens_b: list[str]) -> float:
     return intersection / union if union > 0 else 0.0
 
 
-def _finding_is_well_grounded(finding: dict) -> bool:
-    """Проверить, что finding уже хорошо привязан."""
+# ─── Grounding levels ─────────────────────────────────────────────────────
+
+def classify_grounding_level(finding: dict) -> str:
+    """Классифицировать уровень привязки finding.
+
+    Returns:
+        "grounded_strong" — есть source_block_ids + согласованный evidence
+        "grounded_weak"   — есть только related_block_ids или weak candidates
+        "ungrounded"      — нет привязки к блокам
+    """
+    source_blocks = finding.get("source_block_ids", [])
     evidence = finding.get("evidence", [])
     related = finding.get("related_block_ids", [])
-    if evidence and any(e.get("type") == "image" for e in evidence):
-        return True
-    if len(related) >= 1:
-        return True
-    return False
+    selected_text = finding.get("selected_text_block_ids", [])
+    evidence_text_refs = finding.get("evidence_text_refs", [])
+    candidates = finding.get("grounding_candidates", [])
+
+    # Strong: source_block_ids + evidence согласованы
+    if source_blocks:
+        evidence_block_ids = {
+            e.get("block_id") for e in evidence
+            if isinstance(e, dict) and e.get("source") != "grounding_service"
+        }
+        if evidence_block_ids & set(source_blocks):
+            return "grounded_strong"
+        # source_blocks есть + selected_text или evidence_text_refs
+        if selected_text or evidence_text_refs:
+            return "grounded_strong"
+
+    # Хороший non-grounding evidence (не от grounding_service)
+    real_image_evidence = [
+        e for e in evidence
+        if isinstance(e, dict)
+        and e.get("type") == "image"
+        and e.get("source") != "grounding_service"
+    ]
+    if real_image_evidence and related:
+        return "grounded_strong"
+
+    # Weak: только related без source/evidence, или только candidates
+    if related:
+        return "grounded_weak"
+    if candidates:
+        return "grounded_weak"
+    if evidence and all(
+        e.get("source") == "grounding_service"
+        for e in evidence if isinstance(e, dict)
+    ):
+        return "grounded_weak"
+
+    return "ungrounded"
+
+
+def _finding_is_well_grounded(finding: dict) -> bool:
+    """Проверить, что finding хорошо привязан (strong level)."""
+    return classify_grounding_level(finding) == "grounded_strong"
 
 
 def compute_grounding_candidates(
@@ -52,16 +102,16 @@ def compute_grounding_candidates(
 ) -> list[dict]:
     """Для каждого finding найти лучшие block-кандидаты.
 
-    Args:
-        findings: список замечаний из 03_findings.json.
-        blocks_analysis: block_analyses из 02_blocks_analysis.json.
-        max_candidates: максимум кандидатов на finding.
-        min_score: минимальный порог overlap.
+    Использует:
+    1. Lexical overlap (problem/description vs block summary/findings)
+    2. Page bonus (+50%)
+    3. Source block bonus (+100% если block_id есть в source_block_ids)
+    4. Selected text overlap (finding text vs block's selected_text content)
 
     Returns:
         Обогащённый список findings с полем grounding_candidates.
     """
-    # Индекс блоков: block_id -> {page, tokens, summary}
+    # Индекс блоков: block_id -> {page, tokens}
     block_index: dict[str, dict] = {}
     for ba in blocks_analysis:
         bid = ba.get("block_id", "")
@@ -71,8 +121,9 @@ def compute_grounding_candidates(
         if ba.get("summary"):
             text_parts.append(ba["summary"])
         for f in ba.get("findings", []):
-            if f.get("description"):
-                text_parts.append(f["description"])
+            desc = f.get("description") or f.get("finding") or ""
+            if desc:
+                text_parts.append(desc)
         for kv in ba.get("key_values_read", []):
             if isinstance(kv, str):
                 text_parts.append(kv)
@@ -84,8 +135,10 @@ def compute_grounding_candidates(
         }
 
     for finding in findings:
-        # Не трогаем хорошо привязанные findings
-        if _finding_is_well_grounded(finding):
+        # Не трогаем strong-grounded findings
+        level = classify_grounding_level(finding)
+        if level == "grounded_strong":
+            finding["grounding_level"] = level
             continue
 
         f_text = " ".join(filter(None, [
@@ -95,10 +148,12 @@ def compute_grounding_candidates(
         ]))
         f_tokens = _tokenize(f_text)
         if not f_tokens:
+            finding["grounding_level"] = level
             continue
 
         f_page = finding.get("page")
         f_pages = [f_page] if isinstance(f_page, int) else (f_page if isinstance(f_page, list) else [])
+        f_source_blocks = set(finding.get("source_block_ids", []))
 
         # Ранжируем блоки
         candidates = []
@@ -107,6 +162,9 @@ def compute_grounding_candidates(
             # Page bonus: +50% если на той же странице
             if f_pages and binfo["page"] in f_pages:
                 score *= 1.5
+            # Source block bonus: +100% если блок — source finding
+            if bid in f_source_blocks:
+                score *= 2.0
             if score >= min_score:
                 candidates.append({
                     "block_id": bid,
@@ -130,6 +188,9 @@ def compute_grounding_candidates(
                     "page": candidates[0]["page"],
                     "source": "grounding_service",
                 }]
+
+        # Записываем финальный уровень grounding
+        finding["grounding_level"] = classify_grounding_level(finding)
 
     return findings
 
@@ -183,6 +244,12 @@ def run_grounding(
         json.dumps(findings_data, ensure_ascii=False, indent=2), encoding="utf-8",
     )
 
+    # Статистика по уровням grounding
+    levels = {"grounded_strong": 0, "grounded_weak": 0, "ungrounded": 0}
+    for f in findings:
+        lv = f.get("grounding_level", classify_grounding_level(f))
+        levels[lv] = levels.get(lv, 0) + 1
+
     return {
         "total": len(findings),
         "already_grounded": already_grounded,
@@ -190,4 +257,5 @@ def run_grounding(
         "grounding_candidates_added": sum(
             1 for f in findings if f.get("grounding_candidates")
         ),
+        "grounding_levels": levels,
     }

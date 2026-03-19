@@ -564,14 +564,31 @@ def _build_structured_block_context(
 ) -> str:
     """Построить структурированный per-block контекст из document_graph.
 
-    Вместо «общего контекста страницы» формирует пакет для КАЖДОГО блока:
-    - Метаданные страницы (лист, наименование)
-    - Соседний текст (text_blocks той же страницы)
-    - OCR-описание этого конкретного блока
-    - Другие image-блоки на той же странице (для межблочной сверки)
+    Формирует 3-уровневый контекст для КАЖДОГО блока:
+    1. LOCAL TEXT CONTEXT — top-K ближайших text blocks (по geometry)
+    2. TARGET BLOCK OCR — normalized OCR этого image block
+    3. PAGE GLOBAL CONTEXT — fallback если local context бедный
 
-    Типичный объём: 3-10 KB (аналогично _extract_page_context_for_blocks).
+    graph v2: использует coords_norm и local_text_links для locality binding.
+    graph v1: fallback на старое поведение (все text_blocks страницы).
+
+    Типичный объём: 3-10 KB.
     """
+    # Импортируем compatibility-функции
+    try:
+        from graph_builder import (
+            is_graph_v2, get_page_sheet_no,
+            get_text_block_text, get_image_block_ocr,
+            is_good_local_candidate,
+        )
+        graph_is_v2 = is_graph_v2(graph)
+    except ImportError:
+        graph_is_v2 = False
+        is_good_local_candidate = None
+        logger.warning(
+            "graph_builder not importable — using v1 flat context for all blocks"
+        )
+
     block_ids_set = set(block_ids)
     target_pages = set(block_pages)
 
@@ -580,7 +597,7 @@ def _build_structured_block_context(
     for page in graph.get("pages", []):
         pages_index[page["page"]] = page
 
-    # Определяем релевантные страницы (либо target_pages, либо по block_ids)
+    # Определяем релевантные страницы
     relevant_pages: set[int] = set()
     if target_pages:
         relevant_pages = target_pages
@@ -593,6 +610,12 @@ def _build_structured_block_context(
     if not relevant_pages:
         return ""
 
+    # Индекс text blocks для быстрого доступа
+    text_block_index: dict[str, dict] = {}
+    for page in graph.get("pages", []):
+        for tb in page.get("text_blocks", []):
+            text_block_index[tb["id"]] = tb
+
     parts = []
 
     for page_num in sorted(relevant_pages):
@@ -600,7 +623,6 @@ def _build_structured_block_context(
         if not page:
             continue
 
-        # Собираем per-block контексты для блоков этого пакета на этой странице
         page_block_ids = [
             img["id"] for img in page.get("image_blocks", [])
             if img["id"] in block_ids_set
@@ -610,44 +632,92 @@ def _build_structured_block_context(
             continue
 
         # Заголовок страницы
+        if graph_is_v2:
+            sheet_no = page.get("sheet_no_raw") or page.get("sheet_no_normalized")
+        else:
+            sheet_no = page.get("sheet_no")
+        sheet_name = page.get("sheet_name")
+
         section_lines = [f"## СТРАНИЦА {page_num}"]
-        if page.get("sheet_no"):
-            section_lines.append(f"**Лист:** {page['sheet_no']}")
-        if page.get("sheet_name"):
-            section_lines.append(f"**Наименование листа:** {page['sheet_name']}")
+        if sheet_no:
+            section_lines.append(f"**Лист:** {sheet_no}")
+        if sheet_name:
+            section_lines.append(f"**Наименование листа:** {sheet_name}")
 
-        # Текст на странице (общий для всех блоков страницы)
-        text_blocks = page.get("text_blocks", [])
-        if text_blocks:
-            section_lines.append("")
-            section_lines.append("### Текст на странице:")
-            for tb in text_blocks:
-                tb_id = tb.get("id", "")
-                if tb_id:
-                    section_lines.append(f"[text_block_id: {tb_id}]")
-                section_lines.append(tb["text"])
-                section_lines.append("")
+        # Per-block 3-уровневый контекст (v2) или flat (v1 fallback)
+        if graph_is_v2 and page_block_ids:
+            local_links = page.get("local_text_links", {})
+            text_blocks = page.get("text_blocks", [])
 
-        # Per-block пакеты
-        if page_block_ids:
-            section_lines.append("")
-            section_lines.append("### Блоки этого пакета:")
             for bid in page_block_ids:
-                # Найти OCR-описание этого блока
+                section_lines.append("")
+                section_lines.append(f"#### block_id: {bid}")
+
                 img_entry = next(
                     (img for img in page.get("image_blocks", []) if img["id"] == bid),
                     None,
                 )
-                section_lines.append(f"")
-                section_lines.append(f"#### block_id: {bid}")
+
+                # ── LEVEL 2: TARGET BLOCK OCR ──
+                section_lines.append("")
+                section_lines.append("**[TARGET BLOCK OCR]**")
                 if img_entry:
                     if img_entry.get("type"):
-                        section_lines.append(f"**Тип:** {img_entry['type']}")
-                    if img_entry.get("ocr"):
-                        section_lines.append(f"**OCR-описание:**")
-                        section_lines.append(img_entry["ocr"])
+                        section_lines.append(f"Тип: {img_entry['type']}")
+                    section_lines.append(f"page: {page_num}, sheet: {sheet_no or 'N/A'}")
+                    ocr_text = get_image_block_ocr(img_entry) if graph_is_v2 else (img_entry.get("ocr") or "")
+                    if ocr_text:
+                        section_lines.append(ocr_text)
+                    else:
+                        section_lines.append("(OCR отсутствует)")
 
-            # Другие блоки на этой странице (не в текущем пакете)
+                # ── LEVEL 1: LOCAL TEXT CONTEXT ──
+                candidates = local_links.get(bid, [])
+                local_text_ids = set()
+
+                if candidates:
+                    section_lines.append("")
+                    section_lines.append("**[LOCAL TEXT CONTEXT]**")
+                    for cand in candidates:
+                        tb_id = cand["text_block_id"]
+                        local_text_ids.add(tb_id)
+                        tb = text_block_index.get(tb_id)
+                        if tb:
+                            tb_text = get_text_block_text(tb) if graph_is_v2 else tb.get("text", "")
+                            score = cand.get("score", 0)
+                            reason = cand.get("reason", "")
+                            section_lines.append(f"[text_block_id: {tb_id}, score: {score}, reason: {reason}]")
+                            section_lines.append(tb_text)
+                            section_lines.append("")
+
+                # ── LEVEL 3: PAGE GLOBAL CONTEXT (fallback) ──
+                # Используем strict check: далёкие/слабые кандидаты НЕ отключают fallback
+                if is_good_local_candidate is not None:
+                    has_good_local = any(is_good_local_candidate(c) for c in candidates)
+                else:
+                    has_good_local = any(c.get("score", 0) > 0.15 for c in candidates)
+
+                if not has_good_local and text_blocks:
+                    # Local context бедный — даём page-level fallback
+                    remaining = [tb for tb in text_blocks if tb["id"] not in local_text_ids]
+                    if remaining:
+                        section_lines.append("")
+                        section_lines.append("**[PAGE GLOBAL CONTEXT — fallback, local context insufficient]**")
+                        # Ограничиваем fallback: макс 3 блока, 2000 символов
+                        char_budget = 2000
+                        chars_used = 0
+                        for tb in remaining[:3]:
+                            tb_text = get_text_block_text(tb) if graph_is_v2 else tb.get("text", "")
+                            if chars_used + len(tb_text) > char_budget:
+                                tb_text = tb_text[:char_budget - chars_used] + "..."
+                            section_lines.append(f"[text_block_id: {tb['id']}]")
+                            section_lines.append(tb_text)
+                            section_lines.append("")
+                            chars_used += len(tb_text)
+                            if chars_used >= char_budget:
+                                break
+
+            # Другие блоки на этой странице
             other_blocks = [
                 img for img in page.get("image_blocks", [])
                 if img["id"] not in block_ids_set
@@ -656,8 +726,54 @@ def _build_structured_block_context(
                 section_lines.append("")
                 section_lines.append("### Другие блоки на этой странице:")
                 for ob in other_blocks:
-                    type_info = f" ({ob['type']})" if ob.get("type") else ""
+                    type_info = f" ({ob.get('type', '')})" if ob.get("type") else ""
                     section_lines.append(f"- {ob['id']}{type_info}")
+
+        else:
+            # ── v1 FALLBACK: старое поведение ──
+            logger.warning(
+                "Using v1 flat context for page %d (graph version: %s) — "
+                "all text blocks sent to every image block",
+                page_num, graph.get("version", "unknown"),
+            )
+            text_blocks = page.get("text_blocks", [])
+            if text_blocks:
+                section_lines.append("")
+                section_lines.append("### Текст на странице:")
+                for tb in text_blocks:
+                    tb_id = tb.get("id", "")
+                    if tb_id:
+                        section_lines.append(f"[text_block_id: {tb_id}]")
+                    section_lines.append(tb["text"])
+                    section_lines.append("")
+
+            if page_block_ids:
+                section_lines.append("")
+                section_lines.append("### Блоки этого пакета:")
+                for bid in page_block_ids:
+                    img_entry = next(
+                        (img for img in page.get("image_blocks", []) if img["id"] == bid),
+                        None,
+                    )
+                    section_lines.append(f"")
+                    section_lines.append(f"#### block_id: {bid}")
+                    if img_entry:
+                        if img_entry.get("type"):
+                            section_lines.append(f"**Тип:** {img_entry['type']}")
+                        if img_entry.get("ocr"):
+                            section_lines.append(f"**OCR-описание:**")
+                            section_lines.append(img_entry["ocr"])
+
+                other_blocks = [
+                    img for img in page.get("image_blocks", [])
+                    if img["id"] not in block_ids_set
+                ]
+                if other_blocks:
+                    section_lines.append("")
+                    section_lines.append("### Другие блоки на этой странице:")
+                    for ob in other_blocks:
+                        type_info = f" ({ob['type']})" if ob.get("type") else ""
+                        section_lines.append(f"- {ob['id']}{type_info}")
 
         parts.append("\n".join(section_lines))
 
@@ -736,6 +852,67 @@ def prepare_block_batch_task(
 
 # ─── Компактификация данных для findings_merge ───
 
+def _enrich_compact_from_graph_v2(compact: dict, graph: dict):
+    """Обогатить blocks_compact данными locality из document_graph v2.
+
+    Для каждого block_id находит:
+    - selected_text_block_ids из local_text_links
+    - local_text_excerpt (первые 300 символов ближайшего text-блока)
+    - block_ocr_excerpt (первые 200 символов OCR)
+    - sheet_no из страницы
+    """
+    # Индекс: page → page_data
+    pages_by_num = {p["page"]: p for p in graph.get("pages", [])}
+
+    # Индекс: block_id → page_num
+    block_to_page: dict[str, int] = {}
+    for pg in graph.get("pages", []):
+        for img in pg.get("image_blocks", []):
+            block_to_page[img["id"]] = pg["page"]
+
+    # Индекс text blocks
+    text_index: dict[str, dict] = {}
+    for pg in graph.get("pages", []):
+        for tb in pg.get("text_blocks", []):
+            text_index[tb["id"]] = tb
+
+    for bc in compact.get("blocks_compact", []):
+        bid = bc.get("block_id", "")
+        if not bid:
+            continue
+
+        page_num = block_to_page.get(bid, bc.get("page", 0))
+        pg = pages_by_num.get(page_num)
+        if not pg:
+            continue
+
+        # sheet_no
+        bc["sheet_no"] = pg.get("sheet_no_raw") or pg.get("sheet_no_normalized") or ""
+
+        # local_text_links
+        local_links = pg.get("local_text_links", {})
+        candidates = local_links.get(bid, [])
+
+        # Enrich only missing fields — don't overwrite primary data from block_analyses
+        if not bc.get("selected_text_block_ids") and candidates:
+            bc["selected_text_block_ids"] = [c["text_block_id"] for c in candidates]
+
+        # local_text_excerpt — текст лучшего кандидата (always enrich if empty)
+        if not bc.get("local_text_excerpt") and candidates:
+            best_tb_id = candidates[0]["text_block_id"]
+            best_tb = text_index.get(best_tb_id)
+            if best_tb:
+                bc["local_text_excerpt"] = (best_tb.get("text") or "")[:300]
+
+        # block_ocr_excerpt (always enrich if empty)
+        if not bc.get("block_ocr_excerpt"):
+            for img in pg.get("image_blocks", []):
+                if img["id"] == bid:
+                    ocr = img.get("ocr_text_normalized") or img.get("ocr") or ""
+                    bc["block_ocr_excerpt"] = ocr[:200]
+                    break
+
+
 def _prepare_compact_findings_input(project_id: str) -> Path | None:
     """Создать компактный JSON из 01+02 для findings_merge.
 
@@ -782,12 +959,19 @@ def _prepare_compact_findings_input(project_id: str) -> Path | None:
                 for f in ba.get("findings", []):
                     if "block_evidence" not in f:
                         f["block_evidence"] = ba.get("block_id", "")
+                    # Normalize block identity → bare id
+                    try:
+                        from graph_builder import normalize_block_ids_in_finding
+                        normalize_block_ids_in_finding(f)
+                    except ImportError:
+                        pass
                     all_block_findings.append(f)
             legacy_findings = data02.get("preliminary_findings", [])
             compact["preliminary_findings"] = all_block_findings + legacy_findings
 
-            # Из block_analyses: только block_id, page, sheet_type, key_values_read
+            # Из block_analyses: block_id, page, sheet_type, key_values_read
             # + discipline-поля для discipline gate в merge
+            # + locality fields (primary source: block_analyses after backfill)
             compact["blocks_compact"] = [
                 {
                     "block_id": ba.get("block_id", ""),
@@ -798,6 +982,13 @@ def _prepare_compact_findings_input(project_id: str) -> Path | None:
                     "discipline_detected": ba.get("discipline_detected", ""),
                     "discipline_mismatch": ba.get("discipline_mismatch", False),
                     "discipline_note": ba.get("discipline_note", ""),
+                    # Locality contract — primary source from block_analyses
+                    "selected_text_block_ids": ba.get("selected_text_block_ids", []),
+                    "evidence_text_refs": ba.get("evidence_text_refs", []),
+                    "local_text_excerpt": ba.get("local_text_excerpt", ""),
+                    "block_ocr_excerpt": ba.get("block_ocr_excerpt", ""),
+                    "sheet_no": ba.get("sheet_no", ""),
+                    "related_block_ids": ba.get("related_block_ids", []),
                 }
                 for ba in block_analyses
             ]
@@ -809,15 +1000,36 @@ def _prepare_compact_findings_input(project_id: str) -> Path | None:
         compact["blocks_compact"] = []
         compact["total_blocks_analyzed"] = 0
 
-    # page_sheet_map из document_graph.json — для merge-этапа (не путать page и sheet)
+    # Обогащаем blocks_compact из document_graph v2 (locality contract)
     graph_path = output_dir / "document_graph.json"
-    if graph_path.exists():
+    graph = None
+    if graph_path.exists() and compact.get("blocks_compact"):
         try:
             graph = json.loads(graph_path.read_text(encoding="utf-8"))
+            if graph.get("version", 1) >= 2:
+                _enrich_compact_from_graph_v2(compact, graph)
+            else:
+                logger.warning(
+                    "[%s] document_graph v%s — locality enrichment skipped, "
+                    "run process_project.py --force to upgrade",
+                    project_id, graph.get("version", 1),
+                )
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    # page_sheet_map из document_graph.json — для merge-этапа
+    if graph_path.exists():
+        try:
+            if graph is None:
+                graph = json.loads(graph_path.read_text(encoding="utf-8"))
             page_sheet_map = {}
             for pg in graph.get("pages", []):
                 page_num = pg.get("page")
-                sheet_no = pg.get("sheet_no")
+                sheet_no = (
+                    pg.get("sheet_no_raw")
+                    or pg.get("sheet_no_normalized")
+                    or pg.get("sheet_no")
+                )
                 if page_num is not None and sheet_no:
                     page_sheet_map[str(page_num)] = sheet_no
             compact["page_sheet_map"] = page_sheet_map
@@ -825,6 +1037,23 @@ def _prepare_compact_findings_input(project_id: str) -> Path | None:
             compact["page_sheet_map"] = {}
     else:
         compact["page_sheet_map"] = {}
+
+    # Fallback для v1: если page_sheet_map пуст, строим из MD-файла
+    if not compact["page_sheet_map"]:
+        md_file_path = _get_md_file_path(
+            _load_project_info(project_id), project_id
+        )
+        if md_file_path and md_file_path != "(нет)":
+            fallback_map = _extract_page_to_sheet_map(md_file_path)
+            if fallback_map:
+                compact["page_sheet_map"] = {
+                    str(k): v for k, v in fallback_map.items()
+                }
+                logger.warning(
+                    "[%s] page_sheet_map built from MD fallback (%d entries) — "
+                    "upgrade to graph v2 for stamp-based mapping",
+                    project_id, len(fallback_map),
+                )
 
     # Записываем компактный файл
     try:

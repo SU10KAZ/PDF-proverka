@@ -48,13 +48,15 @@ def test_compute_overlap_empty():
 
 
 def test_finding_is_well_grounded_with_image_evidence():
-    f = {"evidence": [{"type": "image", "block_id": "b1"}]}
+    # image evidence + related = strong
+    f = {"evidence": [{"type": "image", "block_id": "b1"}], "related_block_ids": ["b1"]}
     assert _finding_is_well_grounded(f) is True
 
 
 def test_finding_is_well_grounded_with_related():
+    # Only related without evidence = weak, not strong
     f = {"related_block_ids": ["b1"]}
-    assert _finding_is_well_grounded(f) is True
+    assert _finding_is_well_grounded(f) is False
 
 
 def test_finding_is_not_grounded():

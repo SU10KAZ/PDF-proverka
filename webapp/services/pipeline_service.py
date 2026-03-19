@@ -436,6 +436,139 @@ class PipelineManager:
         job.batch_durations = []
         job.batch_started_at = None
 
+    @staticmethod
+    def _backfill_text_evidence_in_findings(project_id: str):
+        """Backfill text-evidence + sheet в 03_findings.json.
+
+        1. selected_text_block_ids/evidence_text_refs — из compact layer
+        2. sheet — детерминированно из page_sheet_map
+        """
+        output_dir = resolve_project_dir(project_id) / "_output"
+        findings_path = output_dir / "03_findings.json"
+        compact_path = output_dir / "_findings_compact.json"
+
+        if not findings_path.exists() or not compact_path.exists():
+            return
+
+        try:
+            fd = json.loads(findings_path.read_text(encoding="utf-8"))
+            cd = json.loads(compact_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            return
+
+        # Индекс block_id → compact data
+        bc_index = {}
+        for bc in cd.get("blocks_compact", []):
+            bid = bc.get("block_id", "")
+            if bid:
+                bc_index[bid] = bc
+
+        # page_sheet_map для sheet backfill
+        psm = cd.get("page_sheet_map", {})
+
+        modified = 0
+        for finding in fd.get("findings", []):
+            # ── Text-evidence backfill ──
+            if not finding.get("selected_text_block_ids"):
+                source_blocks = finding.get("source_block_ids", [])
+                related_blocks = finding.get("related_block_ids", [])
+                lookup_blocks = source_blocks or related_blocks
+
+                all_stbi = []
+                all_etr = []
+                for bid in lookup_blocks:
+                    bc = bc_index.get(bid)
+                    if not bc:
+                        continue
+                    for stbi in bc.get("selected_text_block_ids", []):
+                        if stbi not in all_stbi:
+                            all_stbi.append(stbi)
+                    for etr in bc.get("evidence_text_refs", []):
+                        if etr not in all_etr:
+                            all_etr.append(etr)
+
+                if all_stbi:
+                    finding["selected_text_block_ids"] = all_stbi
+                    modified += 1
+                if all_etr and not finding.get("evidence_text_refs"):
+                    finding["evidence_text_refs"] = all_etr
+
+            # ── Sheet backfill (deterministic) ──
+            sheet = finding.get("sheet")
+            page = finding.get("page")
+            sheet_empty = sheet is None or (isinstance(sheet, str) and not sheet.strip())
+
+            if sheet_empty and page is not None and psm:
+                # Resolve sheet from page_sheet_map
+                pages_to_check = [page] if isinstance(page, int) else (
+                    page if isinstance(page, list) else []
+                )
+                resolved_sheets = []
+                for p in pages_to_check:
+                    s = psm.get(str(p))
+                    if s and s not in resolved_sheets:
+                        resolved_sheets.append(s)
+
+                if resolved_sheets:
+                    if len(resolved_sheets) == 1:
+                        finding["sheet"] = f"Лист {resolved_sheets[0]}"
+                    else:
+                        finding["sheet"] = "Листы " + ", ".join(resolved_sheets)
+                    modified += 1
+                else:
+                    # Page exists but not in map — mark explicitly
+                    finding["sheet_unavailable"] = True
+                    finding["sheet_unavailable_reason"] = "page_not_in_map"
+                    modified += 1
+
+            elif sheet_empty and page is None:
+                finding["sheet_unavailable"] = True
+                finding["sheet_unavailable_reason"] = "no_page"
+                modified += 1
+
+        if modified > 0:
+            findings_path.write_text(
+                json.dumps(fd, ensure_ascii=False, indent=2), encoding="utf-8"
+            )
+
+    async def _build_document_graph_v2(self, job: AuditJob):
+        """Построить document_graph v2 из *_result.json (Python, без LLM)."""
+        pid = job.project_id
+        try:
+            import sys
+            sys.path.insert(0, str(BASE_DIR))
+            from graph_builder import build_document_graph_v2, generate_locality_debug
+
+            project_dir = resolve_project_dir(pid)
+            output_dir = project_dir / "_output"
+
+            graph = build_document_graph_v2(project_dir, output_dir)
+            if graph:
+                debug_path = generate_locality_debug(graph, output_dir)
+                await self._log(
+                    job,
+                    f"document_graph v{graph['version']}: "
+                    f"{graph['total_pages']} стр., "
+                    f"{graph['total_text_blocks']} текст., "
+                    f"{graph['total_image_blocks']} граф."
+                    + (f", debug: {debug_path.name}" if debug_path else ""),
+                )
+            else:
+                await self._log(
+                    job,
+                    "document_graph v2 не построен (*_result.json не найден) — "
+                    "используется MD fallback",
+                    "warn",
+                )
+        except ImportError:
+            await self._log(
+                job, "graph_builder не найден — document_graph v2 недоступен", "warn"
+            )
+        except Exception as e:
+            await self._log(
+                job, f"document_graph v2 ошибка: {e}", "warn"
+            )
+
     def _clean_stage_files(self, project_id: str, files: list[str]):
         """Удалить устаревшие JSON-файлы этапов перед перезапуском."""
         output_dir = resolve_project_dir(project_id) / "_output"
@@ -788,6 +921,9 @@ class PipelineManager:
                     raise RuntimeError(f"Кроп блоков: {stderr}")
                 self._update_pipeline_log(pid, "crop_blocks", "done", message="OK")
 
+                # Построить document_graph v2 (Python, без LLM)
+                await self._build_document_graph_v2(job)
+
                 if job.status == JobStatus.CANCELLED:
                     return
 
@@ -1032,6 +1168,82 @@ class PipelineManager:
                 self.active_jobs[pid] = job
                 self._tasks[pid] = asyncio.current_task()
 
+                # ═══ ЭТАП 4b: Block Retry — перекачка нечитаемых блоков ═══
+                from blocks import find_unreadable_blocks, recrop_blocks, MAX_RECROP_ITERATIONS
+                for retry_iter in range(1, MAX_RECROP_ITERATIONS + 1):
+                    unreadable = find_unreadable_blocks(_project_path(pid))
+                    if not unreadable:
+                        if retry_iter == 1:
+                            await self._log(job, "Block retry: все блоки читаемы, пропуск")
+                        break
+
+                    block_ids = [u["block_id"] for u in unreadable]
+                    await self._log(job, f"Block retry (итерация {retry_iter}): {len(block_ids)} нечитаемых блоков → перекачка ×2")
+                    self._update_pipeline_log(pid, "block_retry", "running",
+                                              message=f"Итерация {retry_iter}: {len(block_ids)} блоков")
+
+                    # 1. Перекачка с увеличенным разрешением
+                    recrop_result = recrop_blocks(_project_path(pid), block_ids, scale_multiplier=2.0)
+                    if recrop_result.get("recropped", 0) == 0:
+                        await self._log(job, f"Block retry: все блоки уже на максимальном разрешении, стоп")
+                        break
+
+                    # 2. Создать мини-батч только для перекачанных блоков
+                    exit_code, _, _ = await self._run_script(
+                        pid, str(BLOCKS_SCRIPT),
+                        ["batches", _project_path(pid), "--block-ids", ",".join(block_ids)],
+                        on_output=lambda msg: self._log(job, msg),
+                    )
+                    if exit_code != 0:
+                        await self._log(job, "Block retry: ошибка создания пакетов", "warn")
+                        break
+
+                    # 3. Повторный анализ через Claude
+                    batches_file = output_dir / "block_batches.json"
+                    if batches_file.exists():
+                        with open(batches_file, "r", encoding="utf-8") as f:
+                            retry_batches_data = json.load(f)
+                        retry_batches = retry_batches_data.get("batches", [])
+                        retry_total = len(retry_batches)
+
+                        for rb in retry_batches:
+                            batch_id = rb.get("batch_id", 0)
+                            # Удалить старый файл результата чтобы пересоздался
+                            old_result = output_dir / f"block_batch_{batch_id:03d}.json"
+                            if old_result.exists():
+                                old_result.unlink()
+
+                            can_go = await self._check_before_launch(job)
+                            if not can_go:
+                                break
+
+                            exit_code, output, cli_result = await claude_runner.run_block_batch(
+                                rb, project_info, pid, retry_total,
+                            )
+                            self._record_cli_usage(job, cli_result, f"block_retry_iter{retry_iter}")
+                            if exit_code != 0:
+                                await self._log(job, f"Block retry batch {batch_id}: ошибка (код {exit_code})", "warn")
+
+                    # 4. Повторный merge
+                    exit_code, _, _ = await self._run_script(
+                        pid, str(BLOCKS_SCRIPT),
+                        ["merge", _project_path(pid)],
+                        on_output=lambda msg: self._log(job, msg),
+                    )
+                    await self._log(job, f"Block retry итерация {retry_iter}: merge завершён")
+
+                # Финальный статус block_retry
+                final_unreadable = find_unreadable_blocks(_project_path(pid))
+                if any(u for u in (unreadable if 'unreadable' in dir() else [])):
+                    if final_unreadable:
+                        self._update_pipeline_log(pid, "block_retry", "done",
+                                                  message=f"Осталось {len(final_unreadable)} нечитаемых (макс разрешение)")
+                    else:
+                        self._update_pipeline_log(pid, "block_retry", "done", message="OK")
+                else:
+                    self._update_pipeline_log(pid, "block_retry", "skipped",
+                                              message="Все блоки читаемы")
+
             # ═══ ЭТАП 5: Свод замечаний (Claude) ═══
             if start_idx <= 3:
                 self._clean_stage_files(pid, [
@@ -1075,6 +1287,9 @@ class PipelineManager:
                     await self._log(job, f"03_findings.json починен: {repair_msg}", "warn")
 
                 self._update_pipeline_log(pid, "findings_merge", "done", message="OK")
+
+                # Post-merge: backfill text-evidence из compact/graph
+                self._backfill_text_evidence_in_findings(pid)
 
                 if job.status == JobStatus.CANCELLED:
                     return
@@ -1657,10 +1872,12 @@ class PipelineManager:
     def _build_selective_review_input(output_dir: Path) -> dict:
         """Отфильтровать risky findings для Selective Critic.
 
-        Risky = нет evidence, нет related_block_ids, или norm_confidence < 0.8.
+        Risky = grounding_level != "grounded_strong" или norm_confidence < 0.8.
         Возвращает {"total", "risky", "skipped", "risky_ids"}.
         Записывает 03_findings_review_input.json.
         """
+        from webapp.services.grounding_service import classify_grounding_level
+
         findings_path = output_dir / "03_findings.json"
         if not findings_path.exists():
             return {"total": 0, "risky": 0, "skipped": 0, "risky_ids": []}
@@ -1668,19 +1885,31 @@ class PipelineManager:
         data = json.loads(findings_path.read_text(encoding="utf-8"))
         findings = data.get("findings", data.get("items", []))
 
+        # Попробуем использовать новый norm_contract
+        try:
+            from norm_contract import should_review_norm
+            has_norm_contract = True
+        except ImportError:
+            has_norm_contract = False
+
         risky = []
         for f in findings:
-            evidence = f.get("evidence", [])
-            related = f.get("related_block_ids", [])
-            confidence = f.get("norm_confidence", 1.0)
-            has_image_evidence = any(
-                e.get("type") == "image" and e.get("source") != "grounding_service"
-                for e in evidence
-            )
-            if not has_image_evidence and not related:
+            level = f.get("grounding_level") or classify_grounding_level(f)
+
+            # Evidence check: всегда для weak/ungrounded
+            if level != "grounded_strong":
                 risky.append(f)
-            elif confidence is not None and confidence < 0.8:
-                risky.append(f)
+                continue
+
+            # Norm check: дифференцированные пороги
+            if has_norm_contract:
+                if should_review_norm(f):
+                    risky.append(f)
+            else:
+                # Fallback: старый порог 0.8
+                confidence = f.get("norm_confidence", 1.0)
+                if confidence is not None and confidence < 0.8:
+                    risky.append(f)
 
         risky_ids = [f.get("id", "") for f in risky]
 
@@ -2478,10 +2707,14 @@ class PipelineManager:
                             self._record_cli_usage(job, cli_result, f"norm_verify_chunk_{idx + 1}")
                             return output_dir / fname
 
+                    # Распределяем paragraphs_to_verify равномерно по чанкам
+                    para_chunks = [[] for _ in norm_chunks]
+                    for pi, pv_item in enumerate(paragraphs_to_verify):
+                        para_chunks[pi % len(norm_chunks)].append(pv_item)
+
                     tasks = []
                     for ci, chunk in enumerate(norm_chunks):
-                        pv = paragraphs_to_verify if ci == 0 else []
-                        tasks.append(_run_chunk(ci, chunk, pv))
+                        tasks.append(_run_chunk(ci, chunk, para_chunks[ci]))
 
                     chunk_paths = await asyncio.gather(*tasks, return_exceptions=True)
                     # Фильтруем ошибки
@@ -2683,10 +2916,13 @@ class PipelineManager:
 
     @staticmethod
     def _enrich_norm_quotes_from_checks(output_dir: Path) -> int:
-        """Обогатить findings.norm_quote из подтверждённых paragraph_checks.
+        """Обогатить findings из norm_checks.json (полный norm contract).
 
-        Если norm_verify подтвердил цитату (paragraph_verified=True),
-        а в finding поле norm_quote пустое — подставляем actual_quote.
+        Обогащает:
+        - norm_verification: {status, edition_status, verified_via, ...}
+        - norm_status / norm_quote_status: classification
+        - norm_quote: actual_quote если найдена и лучше текущей
+        - norm_confidence: пересчитанный из verification данных
 
         Returns: количество обогащённых findings.
         """
@@ -2701,30 +2937,32 @@ class PipelineManager:
         except (json.JSONDecodeError, OSError):
             return 0
 
-        paragraph_checks = nc.get("paragraph_checks", [])
-        if not paragraph_checks:
+        findings = fd.get("findings", [])
+        if not findings:
             return 0
 
-        # Маппинг finding_id → verified actual_quote
-        verified_quotes = {}
-        for pc in paragraph_checks:
-            if pc.get("paragraph_verified") and pc.get("actual_quote"):
-                fid = pc.get("finding_id", "")
-                if fid:
-                    verified_quotes[fid] = pc["actual_quote"]
+        try:
+            from norm_contract import enrich_findings_from_norm_checks
+            stats = enrich_findings_from_norm_checks(findings, nc)
+            enriched = stats.get("enriched_verification", 0) + stats.get("enriched_quote", 0)
+        except ImportError:
+            # Fallback: старая логика для backward compat
+            paragraph_checks = nc.get("paragraph_checks", [])
+            verified_quotes = {}
+            for pc in paragraph_checks:
+                if pc.get("paragraph_verified") and pc.get("actual_quote"):
+                    fid = pc.get("finding_id", "")
+                    if fid:
+                        verified_quotes[fid] = pc["actual_quote"]
 
-        if not verified_quotes:
-            return 0
-
-        enriched = 0
-        for finding in fd.get("findings", []):
-            fid = finding.get("id", "")
-            if fid in verified_quotes and not finding.get("norm_quote"):
-                finding["norm_quote"] = verified_quotes[fid]
-                # Поднять confidence если не было
-                if finding.get("norm_confidence") is None or finding["norm_confidence"] < 0.8:
-                    finding["norm_confidence"] = 0.9
-                enriched += 1
+            enriched = 0
+            for finding in findings:
+                fid = finding.get("id", "")
+                if fid in verified_quotes and not finding.get("norm_quote"):
+                    finding["norm_quote"] = verified_quotes[fid]
+                    if finding.get("norm_confidence") is None or finding["norm_confidence"] < 0.8:
+                        finding["norm_confidence"] = 0.9
+                    enriched += 1
 
         if enriched > 0:
             findings_path.write_text(
@@ -3172,6 +3410,9 @@ class PipelineManager:
                 self._update_pipeline_log(pid, "crop_blocks", "done", message="OK")
                 print(f"[{pid}] ЭТАП 1 OK")
 
+            # Построить document_graph v2 (Python, без LLM)
+            await self._build_document_graph_v2(job)
+
             if job.status == JobStatus.CANCELLED:
                 return
 
@@ -3471,6 +3712,9 @@ class PipelineManager:
                         await self._log(job, f"03_findings.json невалиден: {repair_msg}", "error")
                     elif "Repaired" in repair_msg:
                         await self._log(job, f"03_findings.json починен: {repair_msg}", "warn")
+
+                # Post-merge: backfill text-evidence из compact/graph
+                self._backfill_text_evidence_in_findings(pid)
 
             if job.status == JobStatus.CANCELLED:
                 return
