@@ -45,6 +45,17 @@ const app = createApp({
         const selectedBlockPage = ref(null);
         const selectedBlock = ref(null);
         const blockAnalysis = ref({});
+        const blockImageContainer = ref(null);
+        const blockZoom = ref(1);       // 1 = fit-to-container
+        const blockPanX = ref(0);
+        const blockPanY = ref(0);
+        const blockPanning = ref(false);
+        const blockPanStartX = ref(0);
+        const blockPanStartY = ref(0);
+        const blockNatW = ref(0);       // natural width of loaded image
+        const blockNatH = ref(0);       // natural height of loaded image
+        const blockBaseScale = ref(1);  // scale to fit image into container
+        const highlightedFindingId = ref(null);  // ID замечания для подсветки на блоке
 
         // Optimization
         const optimizationData = ref(null);
@@ -199,9 +210,15 @@ const app = createApp({
             'crop_blocks': 'crop_blocks',
             'text_analysis': 'text_analysis',
             'blocks_analysis': 'block_analysis',
+            'block_retry': 'block_retry',
             'findings': 'findings_merge',
+            'findings_critic': 'findings_critic',
+            'findings_corrector': 'findings_corrector',
             'norms_verified': 'norm_verify',
             'optimization': 'optimization',
+            'optimization_critic': 'optimization_critic',
+            'optimization_corrector': 'optimization_corrector',
+            'excel': 'excel',
         };
 
         function stageTokens(pipelineKey) {
@@ -1843,6 +1860,106 @@ const app = createApp({
 
         function openBlock(block) {
             selectedBlock.value = block;
+            highlightedFindingId.value = null;
+            resetBlockZoom();
+        }
+
+        // Рассчитать scale и offset для вписывания картинки в контейнер
+        function computeFit() {
+            const container = blockImageContainer.value;
+            if (!container || !blockNatW.value || !blockNatH.value) return;
+            const cw = container.clientWidth - 32;  // padding 16*2
+            const ch = container.clientHeight - 48; // padding + label
+            const scaleX = cw / blockNatW.value;
+            const scaleY = ch / blockNatH.value;
+            blockBaseScale.value = Math.min(scaleX, scaleY, 1); // не больше 1:1
+        }
+
+        function onBlockImageLoad(e) {
+            const img = e.target;
+            blockNatW.value = img.naturalWidth;
+            blockNatH.value = img.naturalHeight;
+            Vue.nextTick(() => {
+                computeFit();
+                // Центрировать изображение в контейнере
+                centerBlockImage();
+            });
+        }
+
+        function centerBlockImage() {
+            const container = blockImageContainer.value;
+            if (!container) return;
+            const cw = container.clientWidth;
+            const ch = container.clientHeight - 30; // label
+            const scale = blockBaseScale.value * blockZoom.value;
+            const imgW = blockNatW.value * scale;
+            const imgH = blockNatH.value * scale;
+            blockPanX.value = (cw - imgW) / 2;
+            blockPanY.value = (ch - imgH) / 2;
+        }
+
+        const blockImageStyle = computed(() => {
+            const scale = blockBaseScale.value * blockZoom.value;
+            return {
+                width: blockNatW.value + 'px',
+                height: blockNatH.value + 'px',
+                maxWidth: 'none',
+                transform: `translate(${blockPanX.value}px, ${blockPanY.value}px) scale(${scale})`,
+                transformOrigin: '0 0',
+                cursor: blockZoom.value > 1 ? (blockPanning.value ? 'grabbing' : 'grab') : 'default',
+                transition: blockPanning.value ? 'none' : 'transform 0.15s ease',
+            };
+        });
+
+        function onBlockZoomWheel(e) {
+            const container = blockImageContainer.value;
+            if (!container) return;
+
+            const rect = container.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+
+            const oldScale = blockBaseScale.value * blockZoom.value;
+            const factor = e.deltaY > 0 ? 0.87 : 1.15;
+            let newZoom = blockZoom.value * factor;
+            newZoom = Math.min(Math.max(newZoom, 1), 12);
+            const newScale = blockBaseScale.value * newZoom;
+
+            if (newScale === oldScale) return;
+
+            // Точка под курсором в координатах натурального изображения
+            const imgX = (mx - blockPanX.value) / oldScale;
+            const imgY = (my - blockPanY.value) / oldScale;
+
+            // Новый pan: та же точка остаётся под курсором
+            blockPanX.value = mx - imgX * newScale;
+            blockPanY.value = my - imgY * newScale;
+            blockZoom.value = newZoom;
+        }
+
+        function onBlockPanStart(e) {
+            if (blockZoom.value <= 1) return;
+            e.preventDefault();
+            blockPanning.value = true;
+            blockPanStartX.value = e.clientX - blockPanX.value;
+            blockPanStartY.value = e.clientY - blockPanY.value;
+            const onMove = (ev) => {
+                if (!blockPanning.value) return;
+                blockPanX.value = ev.clientX - blockPanStartX.value;
+                blockPanY.value = ev.clientY - blockPanStartY.value;
+            };
+            const onUp = () => {
+                blockPanning.value = false;
+                window.removeEventListener('mousemove', onMove);
+                window.removeEventListener('mouseup', onUp);
+            };
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('mouseup', onUp);
+        }
+
+        function resetBlockZoom() {
+            blockZoom.value = 1;
+            centerBlockImage();
         }
 
         function blockHasAnalysis(blockId) {
@@ -1901,6 +2018,10 @@ const app = createApp({
                             problem: f.problem || f.finding || f.description || '',
                             norm: f.norm || '',
                             solution: f.solution || f.recommendation || '',
+                            highlight_regions: (f.highlight_regions || []).filter(r => {
+                                const rb = (r.block_id || '').replace(/^block_/, '');
+                                return rb === bid || !r.block_id;
+                            }),
                         });
                     }
                 }
@@ -1912,6 +2033,61 @@ const app = createApp({
 
         function getBlockFindings(blockId) {
             return blockToFindings.value[blockId] || [];
+        }
+
+        // ─── Highlight regions для текущего блока ───
+        const currentBlockHighlights = computed(() => {
+            if (!selectedBlock.value) return [];
+            const bid = selectedBlock.value.block_id;
+            const findings = getBlockFindings(bid);
+            const regions = [];
+            for (const f of findings) {
+                if (!f.highlight_regions || !f.highlight_regions.length) continue;
+                for (const r of f.highlight_regions) {
+                    regions.push({
+                        ...r,
+                        finding_id: f.id,
+                        severity: f.severity,
+                    });
+                }
+            }
+            // Также из блочного анализа (G-замечания)
+            const analysis = blockAnalysis.value[bid];
+            if (analysis && analysis.findings) {
+                for (const gf of analysis.findings) {
+                    if (!gf.highlight_regions || !gf.highlight_regions.length) continue;
+                    for (const r of gf.highlight_regions) {
+                        regions.push({
+                            ...r,
+                            finding_id: gf.id,
+                            severity: gf.severity,
+                        });
+                    }
+                }
+            }
+            return regions;
+        });
+
+        function highlightFinding(findingId) {
+            highlightedFindingId.value = highlightedFindingId.value === findingId ? null : findingId;
+        }
+
+        function severityColor(severity) {
+            const s = (severity || '').toUpperCase();
+            if (s.includes('КРИТИЧ')) return 'rgba(255, 60, 60, 0.25)';
+            if (s.includes('ЭКОНОМ')) return 'rgba(255, 180, 30, 0.25)';
+            if (s.includes('ЭКСПЛУАТ')) return 'rgba(100, 180, 255, 0.25)';
+            if (s.includes('РЕКОМЕНД')) return 'rgba(100, 220, 140, 0.25)';
+            return 'rgba(150, 150, 200, 0.25)';
+        }
+
+        function severityStroke(severity) {
+            const s = (severity || '').toUpperCase();
+            if (s.includes('КРИТИЧ')) return 'rgba(255, 60, 60, 0.8)';
+            if (s.includes('ЭКОНОМ')) return 'rgba(255, 180, 30, 0.8)';
+            if (s.includes('ЭКСПЛУАТ')) return 'rgba(100, 180, 255, 0.8)';
+            if (s.includes('РЕКОМЕНД')) return 'rgba(100, 220, 140, 0.8)';
+            return 'rgba(150, 150, 200, 0.8)';
         }
 
         // ─── Optimization ───
@@ -2162,6 +2338,7 @@ const app = createApp({
             {key: 'crop_blocks', label: 'Кроп блоков'},
             {key: 'text_analysis', label: 'Анализ текста'},
             {key: 'block_analysis', label: 'Анализ блоков'},
+            {key: 'block_retry', label: 'Retry нечитаемых блоков'},
             {key: 'findings_merge', label: 'Свод замечаний'},
             {key: 'findings_critic', label: 'Critic замечаний'},
             {key: 'findings_corrector', label: 'Corrector замечаний'},
@@ -2169,16 +2346,8 @@ const app = createApp({
             {key: 'optimization', label: 'Оптимизация'},
             {key: 'optimization_critic', label: 'Critic оптимизации'},
             {key: 'optimization_corrector', label: 'Corrector оптимизации'},
+            {key: 'excel', label: 'Excel-отчёт'},
         ];
-        const pipelineMissingStages = computed(() => {
-            const p = currentProject.value;
-            if (!p || !p.pipeline_summary || p.pipeline_summary.length === 0) return [];
-            const present = new Set(p.pipeline_summary.map(s => s.key));
-            // Показывать пропущенные только если конвейер вообще запускался
-            return _allPipelineStages
-                .filter(s => !present.has(s.key))
-                .map(s => s.label);
-        });
 
         // ─── Helpers ───
         function stepClass(status) {
@@ -2583,6 +2752,8 @@ const app = createApp({
             blockAnalysis, selectedBlockAnalysis, currentPageBlocks,
             blockHasAnalysis, blockFindingsCount, blockMaxSeverity,
             openBlock, loadBlocks, blockToFindings, getBlockFindings,
+            blockImageContainer, blockImageStyle, onBlockZoomWheel, onBlockPanStart, resetBlockZoom, onBlockImageLoad,
+            blockNatW, blockNatH, highlightedFindingId, currentBlockHighlights, highlightFinding, severityColor, severityStroke,
             logProjectId, logEntries, logAutoScroll, logContainer, logLoading,
             wsConnected,
             // Live status
@@ -2654,7 +2825,6 @@ const app = createApp({
             // Usage (per-project)
             projectUsage, currentProjectUsage, stageTokens, stageDurationForProject, formatDuration,
             // Pipeline summary
-            pipelineMissingStages,
             // Optimization
             optimizationData, optimizationLoading, optimizationFilter,
             optBlockMap, optBlockInfo, expandedOptId,

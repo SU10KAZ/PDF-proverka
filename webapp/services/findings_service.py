@@ -190,6 +190,10 @@ def get_finding_block_map(project_id: str) -> Optional[dict]:
     items = findings_data.get("findings", findings_data.get("items", []))
     result: dict[str, list[str]] = {}
 
+    def _norm_bid(bid: str) -> str:
+        """Нормализация block_id: убрать префикс 'block_' если есть."""
+        return bid[6:] if bid and bid.startswith("block_") else (bid or "")
+
     for f in items:
         fid = f.get("id", "")
         if not fid:
@@ -202,7 +206,8 @@ def get_finding_block_map(project_id: str) -> Optional[dict]:
         evidence = f.get("evidence")
         if evidence and isinstance(evidence, list):
             for ev in evidence:
-                bid = ev.get("block_id", "")
+                raw_bid = ev.get("block_id", "")
+                bid = _norm_bid(raw_bid)
                 if ev.get("type") == "image" and bid in all_block_ids and bid not in seen:
                     matched_blocks.append(bid)
                     seen.add(bid)
@@ -211,7 +216,8 @@ def get_finding_block_map(project_id: str) -> Optional[dict]:
         if not matched_blocks:
             related = f.get("related_block_ids")
             if related and isinstance(related, list):
-                for bid in related:
+                for raw_bid in related:
+                    bid = _norm_bid(raw_bid)
                     if bid in all_block_ids and bid not in seen:
                         matched_blocks.append(bid)
                         seen.add(bid)
@@ -227,7 +233,7 @@ def get_finding_block_map(project_id: str) -> Optional[dict]:
 
         # 3. По страницам из sheet (последний fallback)
         if not matched_blocks:
-            pages = _parse_pages_from_text(f.get("sheet", ""))
+            pages = _parse_pages_from_text(f.get("sheet") or "")
             for page in sorted(pages):
                 for bid in blocks_by_page.get(page, []):
                     if bid not in seen:
@@ -337,7 +343,8 @@ def _load_blocks_data(project_id: str) -> tuple[dict, dict, set]:
     blocks_path = resolve_project_dir(project_id) / "_output" / "02_blocks_analysis.json"
     blocks_data = _load_json(blocks_path)
     if blocks_data:
-        for block in blocks_data.get("blocks", []):
+        block_list = blocks_data.get("blocks") or blocks_data.get("block_analyses") or []
+        for block in block_list:
             bid = block.get("block_id", "")
             page = block.get("page")
             if bid and page is not None:

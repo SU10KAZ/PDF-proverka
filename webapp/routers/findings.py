@@ -15,7 +15,25 @@ async def get_all_summaries():
     return {"summaries": [s.model_dump() for s in summaries]}
 
 
-@router.get("/{project_id}")
+@router.get("/{project_id:path}/block-map")
+async def get_finding_block_map(project_id: str):
+    """Маппинг finding_id → [block_ids] для подсветки блоков при наведении."""
+    result = findings_service.get_finding_block_map(project_id)
+    if result is None:
+        raise HTTPException(404, f"Данные не найдены для '{project_id}'")
+    return result
+
+
+@router.get("/{project_id:path}/finding/{finding_id}")
+async def get_finding(project_id: str, finding_id: str):
+    """Одно замечание по ID."""
+    finding = findings_service.get_finding_by_id(project_id, finding_id)
+    if finding is None:
+        raise HTTPException(404, f"Замечание '{finding_id}' не найдено")
+    return finding
+
+
+@router.get("/{project_id:path}")
 async def get_findings(
     project_id: str,
     severity: Optional[str] = Query(None, description="Фильтр по критичности"),
@@ -38,21 +56,3 @@ async def get_findings(
     if result is None:
         raise HTTPException(404, f"Замечания не найдены для '{project_id}'. Возможно, аудит ещё не проводился.")
     return result.model_dump()
-
-
-@router.get("/{project_id}/block-map")
-async def get_finding_block_map(project_id: str):
-    """Маппинг finding_id → [block_ids] для подсветки блоков при наведении."""
-    result = findings_service.get_finding_block_map(project_id)
-    if result is None:
-        raise HTTPException(404, f"Данные не найдены для '{project_id}'")
-    return result
-
-
-@router.get("/{project_id}/{finding_id}")
-async def get_finding(project_id: str, finding_id: str):
-    """Одно замечание по ID."""
-    finding = findings_service.get_finding_by_id(project_id, finding_id)
-    if finding is None:
-        raise HTTPException(404, f"Замечание '{finding_id}' не найдено")
-    return finding

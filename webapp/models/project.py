@@ -13,12 +13,18 @@ class TextExtractionQuality(BaseModel):
 
 
 class PipelineStatus(BaseModel):
-    crop_blocks: str = "pending"       # pending / running / done / error / skipped
-    text_analysis: str = "pending"     # pending / running / done / error / skipped
-    blocks_analysis: str = "pending"   # pending / running / done / error / partial / skipped
-    findings: str = "pending"          # pending / running / done / error / skipped
-    norms_verified: str = "pending"    # pending / running / done / error / partial / skipped
-    optimization: str = "pending"      # pending / running / done / error / skipped
+    crop_blocks: str = "pending"            # pending / running / done / error / skipped
+    text_analysis: str = "pending"          # pending / running / done / error / skipped
+    blocks_analysis: str = "pending"        # pending / running / done / error / partial / skipped
+    block_retry: str = "pending"               # pending / running / done / error / skipped
+    findings: str = "pending"               # pending / running / done / error / skipped
+    findings_critic: str = "pending"        # pending / running / done / error / skipped
+    findings_corrector: str = "pending"     # pending / running / done / error / skipped
+    norms_verified: str = "pending"         # pending / running / done / error / partial / skipped
+    optimization: str = "pending"           # pending / running / done / error / skipped
+    optimization_critic: str = "pending"    # pending / running / done / error / skipped
+    optimization_corrector: str = "pending" # pending / running / done / error / skipped
+    excel: str = "pending"                  # pending / running / done / error / skipped
 
 
 class ProjectInfo(BaseModel):

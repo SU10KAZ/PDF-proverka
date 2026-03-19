@@ -344,9 +344,15 @@ def _get_pipeline_status(output_dir: Path) -> PipelineStatus:
             "crop_blocks": "crop_blocks",
             "text_analysis": "text_analysis",
             "block_analysis": "blocks_analysis",
+            "block_retry": "block_retry",
             "findings_merge": "findings",
+            "findings_critic": "findings_critic",
+            "findings_corrector": "findings_corrector",
             "norm_verify": "norms_verified",
             "optimization": "optimization",
+            "optimization_critic": "optimization_critic",
+            "optimization_corrector": "optimization_corrector",
+            "excel": "excel",
             # Legacy aliases
             "prepare": "crop_blocks",
             "tile_audit": "blocks_analysis",
@@ -359,8 +365,12 @@ def _get_pipeline_status(output_dir: Path) -> PipelineStatus:
             "text_analysis": "01_text_analysis.json",
             "block_analysis": "02_blocks_analysis.json",
             "findings_merge": "03_findings.json",
+            "findings_critic": "03_findings_review.json",
+            "findings_corrector": "03_findings.json",
             "norm_verify": "03a_norms_verified.json",
             "optimization": "optimization.json",
+            "optimization_critic": "optimization_review.json",
+            "optimization_corrector": "optimization.json",
             # Legacy aliases
             "prepare": "blocks/index.json",
             "tile_audit": "02_blocks_analysis.json",
@@ -426,6 +436,7 @@ _PIPELINE_STAGE_ORDER = [
     ("crop_blocks", "Кроп блоков"),
     ("text_analysis", "Анализ текста"),
     ("block_analysis", "Анализ блоков"),
+    ("block_retry", "Retry нечитаемых блоков"),
     ("findings_merge", "Свод замечаний"),
     ("findings_critic", "Critic замечаний"),
     ("findings_corrector", "Corrector замечаний"),
@@ -495,18 +506,20 @@ def _build_pipeline_issues(output_dir: Path) -> list[str]:
 def _build_pipeline_summary(output_dir: Path) -> list[dict]:
     """Собрать детальное саммари конвейера из pipeline_log.json.
 
+    Возвращает ВСЕ этапы конвейера. Если этап ещё не запускался —
+    возвращает его со статусом "pending".
+
     Возвращает список dict:
       {key, label, status, message, duration_sec, error}
     """
     log = _load_pipeline_log(output_dir)
-    if not log or "stages" not in log:
-        return []
+    stages = log.get("stages", {}) if log else {}
 
-    stages = log["stages"]
     result = []
     for key, label in _PIPELINE_STAGE_ORDER:
         info = stages.get(key)
         if not info:
+            result.append({"key": key, "label": label, "status": "pending"})
             continue
         status = info.get("status", "pending")
         message = info.get("message", "")

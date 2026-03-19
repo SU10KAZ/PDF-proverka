@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="/static/css/styles.css?v=81">
+    <link rel="stylesheet" href="/static/css/styles.css?v=88">
 </head>
 <body>
     <div id="app">
@@ -307,10 +307,22 @@
                             <div class="pipeline-step" :class="stepClass(p.pipeline.blocks_analysis)" title="Анализ блоков">03</div>
                             <div class="pipeline-step-time" v-if="stageDurationForProject(p.project_id, 'blocks_analysis')">{{ formatDuration(stageDurationForProject(p.project_id, 'blocks_analysis')) }}</div>
                         </div>
+                        <div class="pipeline-line pipeline-line--sm"></div>
+                        <div class="pipeline-step-wrap">
+                            <div class="pipeline-step pipeline-step--sm" :class="stepClass(p.pipeline.block_retry)" title="Retry нечитаемых блоков">R</div>
+                        </div>
                         <div class="pipeline-line"></div>
                         <div class="pipeline-step-wrap">
                             <div class="pipeline-step" :class="stepClass(p.pipeline.findings)" title="Свод замечаний">04</div>
                             <div class="pipeline-step-time" v-if="stageDurationForProject(p.project_id, 'findings')">{{ formatDuration(stageDurationForProject(p.project_id, 'findings')) }}</div>
+                        </div>
+                        <div class="pipeline-line"></div>
+                        <div class="pipeline-step-wrap">
+                            <div class="pipeline-step pipeline-step--sm" :class="stepClass(p.pipeline.findings_critic)" title="Critic замечаний">C</div>
+                        </div>
+                        <div class="pipeline-line pipeline-line--sm"></div>
+                        <div class="pipeline-step-wrap">
+                            <div class="pipeline-step pipeline-step--sm" :class="stepClass(p.pipeline.findings_corrector)" title="Corrector замечаний">F</div>
                         </div>
                         <div class="pipeline-line"></div>
                         <div class="pipeline-step-wrap">
@@ -321,6 +333,18 @@
                         <div class="pipeline-step-wrap">
                             <div class="pipeline-step pipeline-step--opt" :class="stepClass(p.pipeline.optimization)" title="Оптимизация">OPT</div>
                             <div class="pipeline-step-time" v-if="stageDurationForProject(p.project_id, 'optimization')">{{ formatDuration(stageDurationForProject(p.project_id, 'optimization')) }}</div>
+                        </div>
+                        <div class="pipeline-line pipeline-line--sm"></div>
+                        <div class="pipeline-step-wrap">
+                            <div class="pipeline-step pipeline-step--sm" :class="stepClass(p.pipeline.optimization_critic)" title="Critic оптимизации">C</div>
+                        </div>
+                        <div class="pipeline-line pipeline-line--sm"></div>
+                        <div class="pipeline-step-wrap">
+                            <div class="pipeline-step pipeline-step--sm" :class="stepClass(p.pipeline.optimization_corrector)" title="Corrector оптимизации">F</div>
+                        </div>
+                        <div class="pipeline-line"></div>
+                        <div class="pipeline-step-wrap">
+                            <div class="pipeline-step pipeline-step--sm" :class="stepClass(p.pipeline.excel)" title="Excel-отчёт">XL</div>
                         </div>
                     </div>
 
@@ -879,6 +903,13 @@
                             <div class="stage-label">Блоки</div>
                             <div class="stage-tokens" v-if="stageTokens('blocks_analysis')">{{ formatTokens(stageTokens('blocks_analysis').total_tokens) }}</div>
                         </div>
+                        <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
+                        <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(currentProject.pipeline.block_retry)"
+                             title="Retry нечитаемых блоков">
+                            <div class="stage-num">R</div>
+                            <div class="stage-label">Retry</div>
+                            <div class="stage-tokens" v-if="stageTokens('block_retry')">{{ formatTokens(stageTokens('block_retry').total_tokens) }}</div>
+                        </div>
                         <div class="pipeline-arrow">&rarr;</div>
                         <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.findings), {'pipeline-stage--clickable': canStartFrom('findings')}]"
                              @click="canStartFrom('findings') && startFromStage(currentProject.project_id, 'findings')"
@@ -886,6 +917,20 @@
                             <div class="stage-num">04</div>
                             <div class="stage-label">Свод</div>
                             <div class="stage-tokens" v-if="stageTokens('findings')">{{ formatTokens(stageTokens('findings').total_tokens) }}</div>
+                        </div>
+                        <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
+                        <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(currentProject.pipeline.findings_critic)"
+                             title="Critic замечаний">
+                            <div class="stage-num">C</div>
+                            <div class="stage-label">Critic</div>
+                            <div class="stage-tokens" v-if="stageTokens('findings_critic')">{{ formatTokens(stageTokens('findings_critic').total_tokens) }}</div>
+                        </div>
+                        <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
+                        <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(currentProject.pipeline.findings_corrector)"
+                             title="Corrector замечаний">
+                            <div class="stage-num">F</div>
+                            <div class="stage-label">Fix</div>
+                            <div class="stage-tokens" v-if="stageTokens('findings_corrector')">{{ formatTokens(stageTokens('findings_corrector').total_tokens) }}</div>
                         </div>
                         <div class="pipeline-arrow">&rarr;</div>
                         <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.norms_verified), {'pipeline-stage--clickable': canStartFrom('norms_verified')}]"
@@ -902,6 +947,26 @@
                             <div class="stage-num">OPT</div>
                             <div class="stage-label">Оптим.</div>
                             <div class="stage-tokens" v-if="stageTokens('optimization')">{{ formatTokens(stageTokens('optimization').total_tokens) }}</div>
+                        </div>
+                        <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
+                        <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(currentProject.pipeline.optimization_critic)"
+                             title="Critic оптимизации">
+                            <div class="stage-num">C</div>
+                            <div class="stage-label">Critic</div>
+                            <div class="stage-tokens" v-if="stageTokens('optimization_critic')">{{ formatTokens(stageTokens('optimization_critic').total_tokens) }}</div>
+                        </div>
+                        <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
+                        <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(currentProject.pipeline.optimization_corrector)"
+                             title="Corrector оптимизации">
+                            <div class="stage-num">F</div>
+                            <div class="stage-label">Fix</div>
+                            <div class="stage-tokens" v-if="stageTokens('optimization_corrector')">{{ formatTokens(stageTokens('optimization_corrector').total_tokens) }}</div>
+                        </div>
+                        <div class="pipeline-arrow">&rarr;</div>
+                        <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(currentProject.pipeline.excel)"
+                             title="Excel-отчёт">
+                            <div class="stage-num">XL</div>
+                            <div class="stage-label">Excel</div>
                         </div>
                     </div>
 
@@ -1047,6 +1112,7 @@
                                     <template v-else-if="s.status === 'error' || s.status === 'interrupted'">✗</template>
                                     <template v-else-if="s.status === 'running'">⟳</template>
                                     <template v-else-if="s.status === 'skipped'">—</template>
+                                    <template v-else-if="s.status === 'pending'">○</template>
                                     <template v-else>·</template>
                                 </span>
                                 <span class="ps-label">{{ s.label }}</span>
@@ -1057,10 +1123,6 @@
                                         class="ps-retry-btn" title="Перезапустить этап"
                                         @click="retryStage(currentProject.project_id, s.key)">↻</button>
                             </div>
-                        </div>
-                        <div class="pipeline-summary__missing" v-if="pipelineMissingStages.length > 0">
-                            <span class="ps-missing-label">Не запускались:</span>
-                            <span v-for="m in pipelineMissingStages" :key="m" class="ps-missing-tag">{{ m }}</span>
                         </div>
                     </div>
 
@@ -1529,12 +1591,46 @@
                         <button class="tile-split-close" @click="selectedBlock = null">&times;</button>
 
                         <!-- Left: block image -->
-                        <div class="tile-split-image">
+                        <div class="tile-split-image" ref="blockImageContainer"
+                             @wheel.prevent="onBlockZoomWheel"
+                             @mousedown="onBlockPanStart"
+                             @dblclick="resetBlockZoom">
                             <img :src="'/api/tiles/' + blocksProjectId + '/blocks/image/' + selectedBlock.block_id"
-                                 :alt="selectedBlock.block_id">
+                                 :alt="selectedBlock.block_id"
+                                 :style="blockImageStyle"
+                                 draggable="false"
+                                 @load="onBlockImageLoad">
+                            <!-- SVG overlay для подсветки замечаний -->
+                            <svg v-if="currentBlockHighlights.length > 0"
+                                 class="block-highlight-svg"
+                                 :style="blockImageStyle"
+                                 :viewBox="'0 0 ' + blockNatW + ' ' + blockNatH">
+                                <template v-for="(r, ri) in currentBlockHighlights" :key="ri">
+                                    <rect :x="r.x * blockNatW" :y="r.y * blockNatH"
+                                          :width="r.w * blockNatW" :height="r.h * blockNatH"
+                                          :fill="severityColor(r.severity)"
+                                          :stroke="severityStroke(r.severity)"
+                                          :stroke-width="highlightedFindingId === r.finding_id ? 3 : 1.5"
+                                          :opacity="highlightedFindingId && highlightedFindingId !== r.finding_id ? 0.3 : 1"
+                                          rx="4" ry="4"
+                                          class="block-highlight-rect"
+                                          :class="{'block-highlight-rect--active': highlightedFindingId === r.finding_id}"
+                                          @click.stop="highlightFinding(r.finding_id)" />
+                                    <text v-if="r.label && (!highlightedFindingId || highlightedFindingId === r.finding_id)"
+                                          :x="r.x * blockNatW + 4" :y="r.y * blockNatH - 4"
+                                          class="block-highlight-label"
+                                          :fill="severityStroke(r.severity)">
+                                        {{ r.label }}
+                                    </text>
+                                </template>
+                            </svg>
                             <p class="tile-split-image__label">
                                 {{ selectedBlock.block_id }}
                                 <span style="opacity:0.6;margin-left:8px">стр. {{ selectedBlock.page }}</span>
+                                <span v-if="currentBlockHighlights.length > 0"
+                                      style="opacity:0.7;margin-left:8px;color:var(--accent-cyan)">
+                                    &#9679; {{ currentBlockHighlights.length }} подсветок
+                                </span>
                             </p>
                         </div>
 
@@ -1568,12 +1664,20 @@
                                      class="tile-analysis-section">
                                     <h4>Замечания ({{ selectedBlockAnalysis.findings.length }})</h4>
                                     <div v-for="(f, i) in selectedBlockAnalysis.findings" :key="i"
-                                         class="tile-finding-card" :class="'tile-finding-card--' + sevClass(f.severity)">
+                                         class="tile-finding-card"
+                                         :class="['tile-finding-card--' + sevClass(f.severity),
+                                                   {'tile-finding-card--highlighted': highlightedFindingId === f.id,
+                                                    'tile-finding-card--has-regions': f.highlight_regions && f.highlight_regions.length > 0}]"
+                                         @click="f.highlight_regions && f.highlight_regions.length ? highlightFinding(f.id) : null"
+                                         :style="f.highlight_regions && f.highlight_regions.length ? {cursor: 'pointer'} : {}">
                                         <div class="tile-finding-card__header">
                                             <span class="sev-badge sev-badge--sm" :class="'sev-' + sevClass(f.severity)">
                                                 {{ f.severity || 'N/A' }}
                                             </span>
                                             <span v-if="f.id" class="tile-finding-card__id">{{ f.id }}</span>
+                                            <span v-if="f.highlight_regions && f.highlight_regions.length"
+                                                  class="tile-finding-card__locate"
+                                                  title="Показать на чертеже">&#9678;</span>
                                         </div>
                                         <div class="tile-finding-card__text">
                                             {{ f.problem || f.finding || f.description || '' }}
@@ -1594,12 +1698,20 @@
                                      class="tile-analysis-section tile-analysis-section--findings">
                                     <h4>Финальные замечания ({{ getBlockFindings(selectedBlock.block_id).length }})</h4>
                                     <div v-for="(f, i) in getBlockFindings(selectedBlock.block_id)" :key="'f-' + i"
-                                         class="tile-finding-card" :class="'tile-finding-card--' + sevClass(f.severity)">
+                                         class="tile-finding-card"
+                                         :class="['tile-finding-card--' + sevClass(f.severity),
+                                                   {'tile-finding-card--highlighted': highlightedFindingId === f.id,
+                                                    'tile-finding-card--has-regions': f.highlight_regions && f.highlight_regions.length > 0}]"
+                                         @click="f.highlight_regions && f.highlight_regions.length ? highlightFinding(f.id) : null"
+                                         :style="f.highlight_regions && f.highlight_regions.length ? {cursor: 'pointer'} : {}">
                                         <div class="tile-finding-card__header">
                                             <span class="sev-badge sev-badge--sm" :class="'sev-' + sevClass(f.severity)">
                                                 {{ f.severity || 'N/A' }}
                                             </span>
                                             <span class="tile-finding-card__id">{{ f.id }}</span>
+                                            <span v-if="f.highlight_regions && f.highlight_regions.length"
+                                                  class="tile-finding-card__locate"
+                                                  title="Показать на чертеже">&#9678;</span>
                                         </div>
                                         <div class="tile-finding-card__text">
                                             {{ f.problem }}
@@ -1827,6 +1939,6 @@
         </div>
     </div>
 
-    <script src="/static/js/app.js?v=46"></script>
+    <script src="/static/js/app.js?v=54"></script>
 </body>
 </html>
