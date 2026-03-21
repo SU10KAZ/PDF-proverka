@@ -54,6 +54,9 @@ Desktop.ini
 *_temp.py
 check_*.py
 find_sections*.py
+.codex_test_tmp/
+tmp_write_probe/
+autonomous_audit/
 
 # === Keep project_info.json and project structure ===
 # (PDF and _output are ignored, but config files are tracked)

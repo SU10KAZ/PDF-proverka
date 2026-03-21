@@ -24,8 +24,12 @@ from pathlib import Path
 try:
     import fitz  # PyMuPDF — для конвертации PDF→PNG
 except ImportError:
-    print("[ERROR] PyMuPDF не установлен: pip install PyMuPDF")
-    sys.exit(1)
+    fitz = None
+
+
+def _require_pymupdf():
+    if fitz is None:
+        raise RuntimeError("PyMuPDF не установлен: pip install PyMuPDF")
 
 
 # ─── Block ID normalization ────────────────────────────────────────────────
@@ -176,6 +180,7 @@ def download_and_convert(
     target_px: int | None = None,
 ) -> tuple[int, int]:
     """Скачать PDF-кроп по URL и конвертировать в PNG."""
+    _require_pymupdf()
     target = target_px or TARGET_LONG_SIDE_PX
     req = urllib.request.Request(crop_url, headers={"User-Agent": "crop_blocks/1.0"})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
@@ -215,6 +220,7 @@ def crop_from_pdf(
     coords_px: [x1, y1, x2, y2] в пиксельной системе result.json
     page_width, page_height: размеры страницы в пикселях из result.json
     """
+    _require_pymupdf()
     doc = fitz.open(str(pdf_path))
     page = doc[page_num - 1]  # page_num 1-based
 

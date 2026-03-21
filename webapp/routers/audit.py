@@ -367,7 +367,7 @@ async def get_templates(
 
 @router.put("/templates/{stage}")
 async def save_template_endpoint(stage: str, body: dict):
-    """Сохранить шаблон промпта в .claude/*.md (глобально для всех проектов)."""
+    """Сохранить русский шаблон промпта в .claude/*.md (глобально для всех проектов)."""
     valid_stages = {"text_analysis", "block_analysis", "findings_merge", "optimization"}
     if stage not in valid_stages:
         raise HTTPException(400, f"Неизвестный этап: {stage}")
@@ -377,6 +377,34 @@ async def save_template_endpoint(stage: str, body: dict):
     from webapp.services.task_builder import save_template
     save_template(stage, content)
     return {"status": "saved", "stage": stage}
+
+
+@router.put("/templates/{stage}/en")
+async def save_en_template_endpoint(stage: str, body: dict):
+    """Сохранить английскую версию шаблона в .claude/en/*.md."""
+    content = body.get("content")
+    if not content:
+        raise HTTPException(400, "Empty content")
+    from webapp.services.task_builder import save_en_template
+    try:
+        save_en_template(stage, content)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    return {"status": "saved", "stage": stage, "lang": "en"}
+
+
+@router.get("/templates/sync")
+async def get_templates_sync():
+    """Статус синхронизации русских и английских шаблонов."""
+    from webapp.services.task_builder import check_template_sync
+    sync = check_template_sync()
+    out_of_sync = [s for s in sync if s["en_exists"] and not s["synced"]]
+    missing_en = [s for s in sync if not s["en_exists"]]
+    return {
+        "templates": sync,
+        "out_of_sync_count": len(out_of_sync),
+        "missing_en_count": len(missing_en),
+    }
 
 
 @router.get("/live-status")

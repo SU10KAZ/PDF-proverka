@@ -151,7 +151,7 @@ def print_report(result: dict):
     if result["warnings"]:
         print(f"\n  WARNINGS:")
         for w in result["warnings"]:
-            print(f"    ⚠ {w}")
+            print(f"    ! {w}")
 
 
 def main():

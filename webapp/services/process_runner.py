@@ -4,6 +4,7 @@
 """
 import asyncio
 import os
+import subprocess
 import sys
 import platform
 from typing import Callable, Optional, Awaitable
@@ -14,6 +15,23 @@ from webapp.config import BASE_DIR
 _SUBPROCESS_FLAGS: dict = {}
 if platform.system() == "Windows":
     _SUBPROCESS_FLAGS["creationflags"] = 0x08000000  # CREATE_NO_WINDOW
+
+
+def _normalize_command_for_windows(cmd: list[str]) -> list[str]:
+    """Wrap .cmd/.bat launchers for asyncio on Windows.
+
+    create_subprocess_exec cannot reliably execute batch launchers directly and may
+    fail with WinError 5 (access denied). Running them via cmd.exe /c keeps the
+    rest of the callsites unchanged while preserving explicit argv handling.
+    """
+    if platform.system() != "Windows" or not cmd:
+        return cmd
+
+    executable = cmd[0].lower()
+    if executable.endswith(".cmd") or executable.endswith(".bat"):
+        return ["cmd.exe", "/c", *cmd]
+
+    return cmd
 
 
 # ─── Реестр активных процессов по project_id ───
@@ -189,15 +207,27 @@ async def run_command(
 
     work_dir = cwd or str(BASE_DIR)
 
-    proc = await asyncio.create_subprocess_exec(
-        *cmd,
-        stdin=asyncio.subprocess.PIPE if input_text else None,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
-        cwd=work_dir,
-        env=env,
-        **_SUBPROCESS_FLAGS,
-    )
+    normalized_cmd = _normalize_command_for_windows(cmd)
+
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            *normalized_cmd,
+            stdin=asyncio.subprocess.PIPE if input_text else None,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            cwd=work_dir,
+            env=env,
+            **_SUBPROCESS_FLAGS,
+        )
+    except PermissionError:
+        return await _run_command_blocking(
+            normalized_cmd,
+            on_output=on_output,
+            env=env,
+            cwd=work_dir,
+            timeout=timeout,
+            input_text=input_text,
+        )
     if project_id:
         register_process(project_id, proc)
 
@@ -284,3 +314,47 @@ async def run_command(
                 unregister_process(project_id, proc)
 
         return proc.returncode, "\n".join(stdout_lines), "\n".join(stderr_lines)
+
+
+async def _run_command_blocking(
+    cmd: list[str],
+    on_output: Optional[Callable[[str], Awaitable[None]]],
+    env: dict,
+    cwd: str,
+    timeout: Optional[int],
+    input_text: Optional[str],
+) -> tuple[int, str, str]:
+    """Fallback for Windows environments where asyncio subprocess is denied."""
+
+    def _communicate() -> tuple[int, str, str]:
+        kwargs = {
+            "cwd": cwd,
+            "env": env,
+            "stdout": subprocess.PIPE,
+            "stderr": subprocess.PIPE,
+            "text": True,
+            "encoding": "utf-8",
+            "errors": "replace",
+        }
+        if input_text is not None:
+            kwargs["stdin"] = subprocess.PIPE
+
+        proc = subprocess.Popen(cmd, **kwargs)
+        try:
+            stdout_text, stderr_text = proc.communicate(input=input_text, timeout=timeout)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            stdout_text, stderr_text = proc.communicate()
+            return -1, stdout_text or "", (stderr_text or "") + "\n[TIMEOUT]"
+        return proc.returncode, stdout_text or "", stderr_text or ""
+
+    exit_code, stdout_text, stderr_text = await asyncio.to_thread(_communicate)
+
+    if on_output and stdout_text.strip():
+        for line in stdout_text.splitlines():
+            try:
+                await on_output(line)
+            except Exception:
+                pass
+
+    return exit_code, stdout_text, stderr_text

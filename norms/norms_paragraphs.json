@@ -1,8 +1,8 @@
 {
   "meta": {
     "description": "Проверенные цитаты конкретных пунктов нормативных документов. Заполняется автоматически при верификации.",
-    "last_updated": "2026-03-11T12:00:00",
-    "total_paragraphs": 10
+    "last_updated": "2026-03-20T19:58:15.443391",
+    "total_paragraphs": 15
   },
   "paragraphs": {
     "СП 7.13130.2013_п.6.2": {
@@ -88,6 +88,48 @@
       "verified_date": "2026-03-11T12:00:00",
       "source": "websearch+webfetch",
       "project": "133-23-ГК-ОВ2.2 (7)"
+    },
+    "СП 1.2.3, п. 4.5": {
+      "norm": "СП 1.2.3",
+      "quote": "Тестовая цитата",
+      "verified_at": "2026-03-20T19:58:15.406564",
+      "verified_via": "manual",
+      "confidence": 1.0,
+      "source_project": ""
+    },
+    "СП 256.1325800.2016, п. 15.3": {
+      "norm": "СП 256.1325800.2016, п. 15.3",
+      "quote": "Сечение нулевых защитных проводников должно быть не менее...",
+      "verified_at": "2026-03-20T19:58:15.420304",
+      "verified_via": "manual",
+      "confidence": 1.0,
+      "source_project": ""
+    },
+    "СП 54.13330.2022, п. 4.6": {
+      "norm": "СП 54.13330.2022, п. 4.6",
+      "quote": "Другая цитата",
+      "verified_at": "2026-03-20T19:58:15.432079",
+      "verified_via": "manual",
+      "confidence": 0.5,
+      "source_project": ""
+    },
+    "СП 1.2.3, п. 1": {
+      "norm": "СП 1.2.3",
+      "quote": "Цитата номер один",
+      "verified_at": "2026-03-20T19:58:15.443365",
+      "verified_via": "websearch",
+      "confidence": 0.9,
+      "source_project": "test",
+      "finding_id": ""
+    },
+    "ГОСТ 4.5.6, п. 2": {
+      "norm": "ГОСТ 4.5.6",
+      "quote": "Цитата номер два",
+      "verified_at": "2026-03-20T19:58:15.443385",
+      "verified_via": "websearch",
+      "confidence": 0.9,
+      "source_project": "test",
+      "finding_id": ""
     }
   }
 }

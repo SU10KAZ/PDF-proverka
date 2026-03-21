@@ -18,7 +18,7 @@ REPORTS_DIR = BASE_DIR / "отчет"
 
 # Нормативный справочник
 NORMS_FILE = BASE_DIR / "norms_reference.md"
-NORMS_PARAGRAPHS_FILE = BASE_DIR / "norms_paragraphs.json"
+NORMS_PARAGRAPHS_FILE = BASE_DIR / "norms" / "norms_paragraphs.json"
 
 # Профили дисциплин
 DISCIPLINES_DIR = BASE_DIR / "disciplines"
@@ -38,7 +38,7 @@ OPTIMIZATION_CORRECTOR_TASK_TEMPLATE = BASE_DIR / ".claude" / "optimization_corr
 # Скрипты
 PROCESS_PROJECT_SCRIPT = BASE_DIR / "process_project.py"
 BLOCKS_SCRIPT = BASE_DIR / "blocks.py"          # субкоманды: crop, batches, merge
-NORMS_SCRIPT = BASE_DIR / "norms.py"             # субкоманды: verify, update
+NORMS_SCRIPT = BASE_DIR / "norms" / "_core.py"    # субкоманды: verify, update
 GENERATE_EXCEL_SCRIPT = BASE_DIR / "generate_excel_report.py"
 # Legacy aliases (для обратной совместимости)
 CROP_BLOCKS_SCRIPT = BLOCKS_SCRIPT

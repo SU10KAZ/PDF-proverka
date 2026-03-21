@@ -531,6 +531,22 @@ class PipelineManager:
                 json.dumps(fd, ensure_ascii=False, indent=2), encoding="utf-8"
             )
 
+    @staticmethod
+    def _refresh_finding_quality(
+        project_id: str,
+        filename: str = "03_findings.json",
+    ) -> dict | None:
+        """Refresh deterministic practicality metadata for findings."""
+        target_path = resolve_project_dir(project_id) / "_output" / filename
+        if not target_path.exists():
+            return None
+
+        try:
+            from webapp.services.finding_quality import enrich_findings_file
+            return enrich_findings_file(target_path)
+        except Exception:
+            return None
+
     async def _build_document_graph_v2(self, job: AuditJob):
         """Построить document_graph v2 из *_result.json (Python, без LLM)."""
         pid = job.project_id
@@ -1290,6 +1306,7 @@ class PipelineManager:
 
                 # Post-merge: backfill text-evidence из compact/graph
                 self._backfill_text_evidence_in_findings(pid)
+                self._refresh_finding_quality(pid)
 
                 if job.status == JobStatus.CANCELLED:
                     return
@@ -1876,6 +1893,10 @@ class PipelineManager:
         Возвращает {"total", "risky", "skipped", "risky_ids"}.
         Записывает 03_findings_review_input.json.
         """
+        from webapp.services.finding_quality import (
+            evaluate_finding_practicality,
+            should_review_practicality,
+        )
         from webapp.services.grounding_service import classify_grounding_level
 
         findings_path = output_dir / "03_findings.json"
@@ -1887,13 +1908,16 @@ class PipelineManager:
 
         # Попробуем использовать новый norm_contract
         try:
-            from norm_contract import should_review_norm
+            from norms import should_review_norm
             has_norm_contract = True
         except ImportError:
             has_norm_contract = False
 
         risky = []
         for f in findings:
+            if not isinstance(f.get("quality"), dict):
+                f["quality"] = evaluate_finding_practicality(f)
+
             level = f.get("grounding_level") or classify_grounding_level(f)
 
             # Evidence check: всегда для weak/ungrounded
@@ -1905,11 +1929,16 @@ class PipelineManager:
             if has_norm_contract:
                 if should_review_norm(f):
                     risky.append(f)
+                    continue
             else:
                 # Fallback: старый порог 0.8
                 confidence = f.get("norm_confidence", 1.0)
                 if confidence is not None and confidence < 0.8:
                     risky.append(f)
+                    continue
+
+            if should_review_practicality(f):
+                risky.append(f)
 
         risky_ids = [f.get("id", "") for f in risky]
 
@@ -2422,6 +2451,7 @@ class PipelineManager:
 
         # Восстановление norm_quote/norm_confidence из pre_review (corrector может потерять)
         await self._restore_norm_quotes(output_dir, job)
+        self._refresh_finding_quality(pid)
 
     @staticmethod
     async def _restore_norm_quotes(output_dir: Path, job: "AuditJob"):
@@ -2866,6 +2896,9 @@ class PipelineManager:
 
             job.status = JobStatus.COMPLETED
             await self._log(job, "Верификация нормативных ссылок завершена", "info")
+            self._refresh_finding_quality(pid)
+            if verified_path.exists():
+                self._refresh_finding_quality(pid, "03a_norms_verified.json")
             self._update_pipeline_log(pid, "norm_verify", "done", message="OK")
 
         except asyncio.CancelledError:
@@ -2942,7 +2975,7 @@ class PipelineManager:
             return 0
 
         try:
-            from norm_contract import enrich_findings_from_norm_checks
+            from norms import enrich_findings_from_norm_checks
             stats = enrich_findings_from_norm_checks(findings, nc)
             enriched = stats.get("enriched_verification", 0) + stats.get("enriched_quote", 0)
         except ImportError:
@@ -3715,6 +3748,7 @@ class PipelineManager:
 
                 # Post-merge: backfill text-evidence из compact/graph
                 self._backfill_text_evidence_in_findings(pid)
+                self._refresh_finding_quality(pid)
 
             if job.status == JobStatus.CANCELLED:
                 return

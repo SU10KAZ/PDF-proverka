@@ -20,6 +20,13 @@ def _get_findings_path(project_id: str) -> Path:
     return output_dir / "03_findings.json"
 
 
+def _practicality_score(finding: dict) -> int:
+    quality = finding.get("quality")
+    if isinstance(quality, dict):
+        return int(quality.get("practicality_score", 50))
+    return 50
+
+
 def get_findings(
     project_id: str,
     severity: Optional[str] = None,
@@ -64,7 +71,12 @@ def get_findings(
 
     # Сортировка по критичности
     sev_order = {s: cfg["order"] for s, cfg in SEVERITY_CONFIG.items()}
-    filtered.sort(key=lambda f: sev_order.get(f.get("severity", ""), 99))
+    filtered.sort(
+        key=lambda f: (
+            sev_order.get(f.get("severity", ""), 99),
+            -_practicality_score(f),
+        )
+    )
 
     # Пагинация (после фильтрации и сортировки)
     filtered_total = len(filtered)

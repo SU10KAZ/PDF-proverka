@@ -43,8 +43,8 @@ def test_deterministic_checks_active_norm(mock_norms_db):
             },
         },
     }
-    with patch("norms.load_norms_db", return_value=mock_norms_db), \
-         patch("norms.load_norms_paragraphs", return_value={"paragraphs": {}}):
+    with patch("norms._core.load_norms_db", return_value=mock_norms_db), \
+         patch("norms._core.load_norms_paragraphs", return_value={"paragraphs": {}}):
         result = generate_deterministic_checks(norms_data, project_id="test")
     assert len(result["checks"]) == 1
     check = result["checks"][0]
@@ -60,8 +60,8 @@ def test_deterministic_checks_replaced_norm(mock_norms_db):
             },
         },
     }
-    with patch("norms.load_norms_db", return_value=mock_norms_db), \
-         patch("norms.load_norms_paragraphs", return_value={"paragraphs": {}}):
+    with patch("norms._core.load_norms_db", return_value=mock_norms_db), \
+         patch("norms._core.load_norms_paragraphs", return_value={"paragraphs": {}}):
         result = generate_deterministic_checks(norms_data, project_id="test")
     assert len(result["checks"]) == 1
     check = result["checks"][0]
@@ -77,8 +77,8 @@ def test_deterministic_checks_unknown_norm(mock_norms_db):
             },
         },
     }
-    with patch("norms.load_norms_db", return_value=mock_norms_db), \
-         patch("norms.load_norms_paragraphs", return_value={"paragraphs": {}}):
+    with patch("norms._core.load_norms_db", return_value=mock_norms_db), \
+         patch("norms._core.load_norms_paragraphs", return_value={"paragraphs": {}}):
         result = generate_deterministic_checks(norms_data, project_id="test")
     assert len(result["unknown_norms"]) >= 1
 
