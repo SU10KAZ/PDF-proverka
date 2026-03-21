@@ -100,6 +100,27 @@ def test_review_input_file_created(tmp_path):
     assert data["findings"][0]["id"] == "F-001"
 
 
+def test_high_severity_formal_finding_is_risky(tmp_path):
+    findings = [
+        {
+            "id": "F-001",
+            "severity": "КРИТИЧЕСКОЕ",
+            "category": "normative_refs",
+            "problem": "Опечатка в номере нормативного документа",
+            "description": "В ведомости ссылочных документов указан неверный номер СП.",
+            "risk": "Формальное замечание экспертизы.",
+            "solution": "Исправить номер СП в ведомости ссылочных документов.",
+            "evidence": [{"type": "image", "block_id": "b1", "page": 1}],
+            "related_block_ids": ["b1"],
+            "norm_confidence": 0.95,
+        },
+    ]
+    output_dir = _write_findings(tmp_path, findings)
+    result = PipelineManager._build_selective_review_input(output_dir)
+    assert result["risky"] == 1
+    assert result["risky_ids"] == ["F-001"]
+
+
 def test_missing_findings_file(tmp_path):
     output_dir = tmp_path / "_output"
     output_dir.mkdir(parents=True, exist_ok=True)

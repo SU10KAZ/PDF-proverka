@@ -1,0 +1,45 @@
+{
+  "_comment": "Tracking sync between Russian and English templates",
+  "templates": {
+    "text_analysis_task.md": {
+      "ru_hash": "3205255dd1765ea304703806ec046e62",
+      "synced": true
+    },
+    "block_analysis_task.md": {
+      "ru_hash": "41447e2ed79e5124a5072466d2d07ce1",
+      "synced": true
+    },
+    "findings_merge_task.md": {
+      "ru_hash": "471c1d116dc4b8e5c7a9849fb62f77e7",
+      "synced": true
+    },
+    "findings_critic_task.md": {
+      "ru_hash": "da0a91b06ee51d3e57aa172696cd5326",
+      "synced": true
+    },
+    "findings_corrector_task.md": {
+      "ru_hash": "5b7d16e49532697414fda945789ae2d1",
+      "synced": true
+    },
+    "optimization_task.md": {
+      "ru_hash": "a3b2c9aa9754d6377aae70ca5318d174",
+      "synced": true
+    },
+    "optimization_critic_task.md": {
+      "ru_hash": "ef578d2256ddc455659d2b1b5ffac4a8",
+      "synced": true
+    },
+    "optimization_corrector_task.md": {
+      "ru_hash": "d03385d1e18135af5cd8a729cb7ba0a9",
+      "synced": true
+    },
+    "norm_verify_task.md": {
+      "ru_hash": "018f9b9e733708db23f94b0de7ea02be",
+      "synced": true
+    },
+    "norm_fix_task.md": {
+      "ru_hash": "db923316cfcb96a5ecb5a3c9b3c0ff04",
+      "synced": true
+    }
+  }
+}

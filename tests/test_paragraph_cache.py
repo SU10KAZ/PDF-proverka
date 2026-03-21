@@ -56,7 +56,7 @@ def populated_pdb():
 # ─── get_paragraph ──────────────────────────────────────────
 class TestGetParagraph:
     def test_get_existing(self, populated_pdb):
-        with patch("norms.load_norms_paragraphs", return_value=populated_pdb):
+        with patch("norms._core.load_norms_paragraphs", return_value=populated_pdb):
             from norms import get_paragraph
             result = get_paragraph("СП 256.1325800.2016, п. 15.3")
             assert result is not None
@@ -64,7 +64,7 @@ class TestGetParagraph:
             assert result["confidence"] == 0.95
 
     def test_get_nonexistent(self, empty_pdb):
-        with patch("norms.load_norms_paragraphs", return_value=empty_pdb):
+        with patch("norms._core.load_norms_paragraphs", return_value=empty_pdb):
             from norms import get_paragraph
             result = get_paragraph("несуществующий")
             assert result is None
@@ -76,8 +76,8 @@ class TestUpsertParagraph:
         saved = {}
         def mock_save(pdb):
             saved["pdb"] = pdb
-        with patch("norms.load_norms_paragraphs", return_value=empty_pdb), \
-             patch("norms.save_norms_paragraphs", side_effect=mock_save):
+        with patch("norms._core.load_norms_paragraphs", return_value=empty_pdb), \
+             patch("norms._core.save_norms_paragraphs", side_effect=mock_save):
             from norms import upsert_paragraph
             result = upsert_paragraph(
                 paragraph_key="СП 1.2.3, п. 4.5",
@@ -89,7 +89,7 @@ class TestUpsertParagraph:
             assert "СП 1.2.3, п. 4.5" in saved["pdb"]["paragraphs"]
 
     def test_skip_unverified(self, empty_pdb):
-        with patch("norms.load_norms_paragraphs", return_value=empty_pdb):
+        with patch("norms._core.load_norms_paragraphs", return_value=empty_pdb):
             from norms import upsert_paragraph
             result = upsert_paragraph(
                 paragraph_key="СП 1.2.3, п. 4.5",
@@ -99,7 +99,7 @@ class TestUpsertParagraph:
             assert result == "skipped"
 
     def test_skip_empty_quote(self, empty_pdb):
-        with patch("norms.load_norms_paragraphs", return_value=empty_pdb):
+        with patch("norms._core.load_norms_paragraphs", return_value=empty_pdb):
             from norms import upsert_paragraph
             result = upsert_paragraph(
                 paragraph_key="СП 1.2.3",
@@ -109,7 +109,7 @@ class TestUpsertParagraph:
             assert result == "skipped"
 
     def test_skip_duplicate(self, populated_pdb):
-        with patch("norms.load_norms_paragraphs", return_value=populated_pdb):
+        with patch("norms._core.load_norms_paragraphs", return_value=populated_pdb):
             from norms import upsert_paragraph
             result = upsert_paragraph(
                 paragraph_key="СП 256.1325800.2016, п. 15.3",
@@ -119,7 +119,7 @@ class TestUpsertParagraph:
             assert result == "skipped"
 
     def test_no_downgrade_confidence(self, populated_pdb):
-        with patch("norms.load_norms_paragraphs", return_value=populated_pdb):
+        with patch("norms._core.load_norms_paragraphs", return_value=populated_pdb):
             from norms import upsert_paragraph
             # Попытка записать с более низким confidence
             result = upsert_paragraph(
@@ -137,8 +137,8 @@ class TestMergeParagraphChecks:
         saved = {}
         def mock_save(pdb):
             saved["pdb"] = pdb
-        with patch("norms.load_norms_paragraphs", return_value=empty_pdb), \
-             patch("norms.save_norms_paragraphs", side_effect=mock_save):
+        with patch("norms._core.load_norms_paragraphs", return_value=empty_pdb), \
+             patch("norms._core.save_norms_paragraphs", side_effect=mock_save):
             from norms import merge_paragraph_checks
             checks = [
                 {
@@ -160,8 +160,8 @@ class TestMergeParagraphChecks:
             assert result["skipped"] == 0
 
     def test_merge_skips_unverified(self, empty_pdb):
-        with patch("norms.load_norms_paragraphs", return_value=empty_pdb), \
-             patch("norms.save_norms_paragraphs"):
+        with patch("norms._core.load_norms_paragraphs", return_value=empty_pdb), \
+             patch("norms._core.save_norms_paragraphs"):
             from norms import merge_paragraph_checks
             checks = [
                 {
@@ -175,7 +175,7 @@ class TestMergeParagraphChecks:
             assert result["added"] == 0
 
     def test_merge_empty_list(self, empty_pdb):
-        with patch("norms.load_norms_paragraphs", return_value=empty_pdb):
+        with patch("norms._core.load_norms_paragraphs", return_value=empty_pdb):
             from norms import merge_paragraph_checks
             result = merge_paragraph_checks([])
             assert result["added"] == 0
@@ -184,7 +184,7 @@ class TestMergeParagraphChecks:
 # ─── paragraph_cache_stats ────────────────────────────────────
 class TestParagraphCacheStats:
     def test_stats_populated(self, populated_pdb):
-        with patch("norms.load_norms_paragraphs", return_value=populated_pdb):
+        with patch("norms._core.load_norms_paragraphs", return_value=populated_pdb):
             from norms import paragraph_cache_stats
             result = paragraph_cache_stats()
             assert result["total"] == 2
@@ -193,7 +193,7 @@ class TestParagraphCacheStats:
             assert "manual" in result["by_verified_via"]
 
     def test_stats_empty(self, empty_pdb):
-        with patch("norms.load_norms_paragraphs", return_value=empty_pdb):
+        with patch("norms._core.load_norms_paragraphs", return_value=empty_pdb):
             from norms import paragraph_cache_stats
             result = paragraph_cache_stats()
             assert result["total"] == 0

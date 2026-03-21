@@ -163,7 +163,20 @@
       "Read(//d/Отедел Системного Анализа/1. Calude code/$HOME/**)",
       "Bash(cat /c/Users/uzun.a.i/.claude/sessions/*.json)",
       "Bash(python3 -c \"import sys,json; data=json.load\\(sys.stdin\\); print\\(json.dumps\\({k:v for k,v in data.items\\(\\) if ''''email'''' in k.lower\\(\\) or ''''user'''' in k.lower\\(\\) or ''''account'''' in k.lower\\(\\)}, indent=2\\)\\)\")",
-      "Bash(PYTHONIOENCODING=utf-8 python -X utf8 -c \":*)"
+      "Bash(PYTHONIOENCODING=utf-8 python -X utf8 -c \":*)",
+      "Bash(find 'd:/Отедел Системного Анализа/1. Calude code/webapp' -type f \\\\\\(-name *.py -o -name *.html -o -name *.js -o -name *.css -o -name *.json \\\\\\))",
+      "Bash(grep -r 'import blocks' 'd:/Отедел Системного Анализа/1. Calude code' --include=*.py)",
+      "Bash(grep \"\\\\.py$\")",
+      "Bash(grep -r \"from webapp.services\\\\|from \\\\.\\\\.services\" 'd:/Отедел Системного Анализа/1. Calude code/webapp/routers' --include=*.py)",
+      "Bash(grep -E \"\\\\.\\(py|bat|ps1\\)$\")",
+      "Bash(grep -l \"^from\\\\|^import\" *.py)",
+      "Bash(for f:*)",
+      "Bash(mkdir -p norms)",
+      "Bash(mv norms.py norms/_core.py)",
+      "Bash(mv norms_db.json norms/)",
+      "Bash(mv norms_paragraphs.json norms/)",
+      "Bash(grep -E \"\\\\.json$\")",
+      "Bash(grep -n \"class CLIResult\\\\|parse_cli_json_output\" \"d:/Отедел Системного Анализа/1. Calude code/webapp/services/\"*.py)"
     ]
   }
 }

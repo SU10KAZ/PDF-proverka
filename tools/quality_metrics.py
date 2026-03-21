@@ -49,6 +49,24 @@ def compute_metrics(output_dir: Path) -> dict:
         low_confidence = sum(1 for f in findings
                             if f.get("norm_confidence") is not None
                             and f["norm_confidence"] < 0.8)
+        quality_items = [
+            f.get("quality") for f in findings
+            if isinstance(f.get("quality"), dict)
+        ]
+        high_relevance = sum(
+            1 for q in quality_items
+            if q.get("engineering_relevance") == "high"
+        )
+        likely_formal_only = sum(
+            1 for q in quality_items
+            if q.get("likely_formal_only")
+        )
+        high_severity_formal_only = sum(
+            1 for f in findings
+            if isinstance(f.get("quality"), dict)
+            and f["quality"].get("likely_formal_only")
+            and f.get("severity") in ("КРИТИЧЕСКОЕ", "ЭКОНОМИЧЕСКОЕ", "ЭКСПЛУАТАЦИОННОЕ")
+        )
 
         by_severity = {}
         for f in findings:
@@ -63,6 +81,10 @@ def compute_metrics(output_dir: Path) -> dict:
             "grounding_candidates_coverage": round(with_candidates / total, 3) if total else 0,
             "norm_quote_coverage": round(with_norm_quote / total, 3) if total else 0,
             "low_confidence_count": low_confidence,
+            "quality_coverage": round(len(quality_items) / total, 3) if total else 0,
+            "high_relevance_count": high_relevance,
+            "likely_formal_only_count": likely_formal_only,
+            "high_severity_formal_only_count": high_severity_formal_only,
         }
 
     # --- Selective review -------------------------------------
@@ -133,6 +155,10 @@ def format_summary(metrics: dict) -> str:
         lines.append(f"  grounding_candidates:  {f.get('grounding_candidates_coverage', 0):.1%}")
         lines.append(f"  norm_quote coverage:   {f.get('norm_quote_coverage', 0):.1%}")
         lines.append(f"  low confidence:        {f.get('low_confidence_count', 0)}")
+        lines.append(f"  quality coverage:      {f.get('quality_coverage', 0):.1%}")
+        lines.append(f"  high relevance:        {f.get('high_relevance_count', 0)}")
+        lines.append(f"  likely formal only:    {f.get('likely_formal_only_count', 0)}")
+        lines.append(f"  high-sev formal only:  {f.get('high_severity_formal_only_count', 0)}")
         lines.append(f"  by severity: {f.get('by_severity', {})}")
 
     g = metrics.get("grounding", {})

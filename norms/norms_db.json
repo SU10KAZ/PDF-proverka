@@ -1,7 +1,7 @@
 {
   "meta": {
     "description": "Централизованная база нормативных документов с автообновлением из результатов верификации",
-    "last_updated": "2026-03-19T07:46:22.949044",
+    "last_updated": "2026-03-20T14:35:39.230112",
     "total_norms": 423,
     "stale_after_days": 30,
     "update_history": [
@@ -41,8 +41,8 @@
       "category": "sp",
       "notes": "Действует. Верифицирован по кешу от 2026-03-13.",
       "source_url": "https://www.consultant.ru/document/cons_doc_LAW_498653/",
-      "last_verified": "2026-03-19T03:32:29.855617",
-      "verified_by": "websearch:133_23-ГК-ЭО3",
+      "last_verified": "2026-03-20T14:35:39.230065",
+      "verified_by": "websearch:133_23-ГК-ТХ.М",
       "edition_status": "ok"
     },
     "СП 76.13330.2016": {
@@ -157,8 +157,8 @@
       "category": "sp",
       "notes": "Действует. Верифицирован по кешу от 2026-03-13.",
       "source_url": "https://docs.cntd.ru/document/1200190099",
-      "last_verified": "2026-03-19T07:46:22.948974",
-      "verified_by": "websearch:133_23-ГК-ОВ2.1",
+      "last_verified": "2026-03-20T14:35:39.230092",
+      "verified_by": "websearch:133_23-ГК-ТХ.М",
       "edition_status": "ok"
     },
     "СП 31-106-2002": {
@@ -656,8 +656,8 @@
       "category": "gost",
       "notes": "Действует. Верифицирован по кешу от 2026-03-13. Внимание: с 01.04.2026 вступает ГОСТ Р 21.101-2026.",
       "source_url": "https://docs.cntd.ru/document/1200173797",
-      "last_verified": "2026-03-19T05:45:18.803259",
-      "verified_by": "websearch:133_23-ГК-АР2_изм10",
+      "last_verified": "2026-03-20T14:35:39.230084",
+      "verified_by": "websearch:133_23-ГК-ТХ.М",
       "edition_status": "ok"
     },
     "ГОСТ Р 50462-2009": {
@@ -992,8 +992,8 @@
       "category": "pue",
       "notes": "ПУЭ-7 действует добровольно. Не зарегистрирован Минюстом. Ссылка в F-007 на «гл.1.7» корректна — гл.1.7 регламентирует заземление и защитные меры, включая требования к классу защиты оборудования.",
       "source_url": "https://www.consultant.ru/document/cons_doc_LAW_98464/",
-      "last_verified": "2026-03-19T03:32:29.855634",
-      "verified_by": "websearch:133_23-ГК-ЭО3",
+      "last_verified": "2026-03-20T14:35:39.230052",
+      "verified_by": "websearch:133_23-ГК-ТХ.М",
       "edition_status": "ok"
     },
     "СП 2.13130.2020": {
@@ -1565,8 +1565,8 @@
       "category": "gost",
       "notes": "Документ действует. Верифицирован по кешу от 2026-03-13.",
       "source_url": "http://docs.cntd.ru/document/1200107995",
-      "last_verified": "2026-03-17T10:57:41.585359",
-      "verified_by": "websearch:133_23-ГК-ТХ.О",
+      "last_verified": "2026-03-20T14:35:39.230075",
+      "verified_by": "websearch:133_23-ГК-ТХ.М",
       "edition_status": "ok"
     },
     "СП 44.13330.2011": {
@@ -2965,8 +2965,8 @@
       "category": "government_decree",
       "notes": "Действует. Последняя редакция от 21.10.2025. Постановление регулярно актуализируется. Ссылка в F-028 корректна.",
       "source_url": "https://www.consultant.ru/document/cons_doc_LAW_75048/",
-      "last_verified": "2026-03-18T01:54:36.867716",
-      "verified_by": "websearch:133_23-ГК-АИ4",
+      "last_verified": "2026-03-20T14:35:39.230100",
+      "verified_by": "websearch:133_23-ГК-ТХ.М",
       "edition_status": "ok"
     },
     "ГОСТ 31924-2011": {
@@ -4145,7 +4145,7 @@
       "category": "gost",
       "notes": "ДЕЙСТВУЕТ. Межгосударственный стандарт введён в действие с 1 июля 2015 г. Имеется Изменение №1 (docs.cntd.ru/document/1200195001). Заменил ГОСТ Р 54257-2010. Ссылка в F-066 актуальна.",
       "source_url": "http://docs.cntd.ru/document/1200115736",
-      "last_verified": "2026-03-17T02:11:05.417736",
+      "last_verified": "2026-03-20T14:35:39.230036",
       "verified_by": "websearch:133_23-ГК-ТХ.М",
       "edition_status": "ok"
     },

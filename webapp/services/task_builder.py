@@ -1,7 +1,13 @@
 """
 Построение задач для Claude CLI из шаблонов.
 Подготовка текста промтов с подстановкой плейсхолдеров и инъекцией дисциплин.
+
+Dual-language templates:
+  .claude/*.md        — русские шаблоны (редактируются в UI)
+  .claude/en/*.md     — английские шаблоны (отправляются в LLM)
+  .claude/en/_sync.json — трекинг синхронизации (ru_hash)
 """
+import hashlib
 import json
 import logging
 import re
@@ -22,6 +28,125 @@ from webapp.config import (
 from webapp.services.cli_utils import load_template
 from webapp.services import discipline_service
 from webapp.services.project_service import resolve_project_dir
+
+
+# ─── Dual-language templates (RU/EN) ───
+
+_EN_DIR = BASE_DIR / ".claude" / "en"
+_SYNC_FILE = _EN_DIR / "_sync.json"
+
+# Полный маппинг ВСЕХ шаблонов (включая critic/corrector/norm)
+_ALL_TEMPLATE_MAP = {
+    "text_analysis": TEXT_ANALYSIS_TASK_TEMPLATE,
+    "block_analysis": BLOCK_ANALYSIS_TASK_TEMPLATE,
+    "findings_merge": FINDINGS_MERGE_TASK_TEMPLATE,
+    "findings_critic": FINDINGS_CRITIC_TASK_TEMPLATE,
+    "findings_corrector": FINDINGS_CORRECTOR_TASK_TEMPLATE,
+    "optimization": OPTIMIZATION_TASK_TEMPLATE,
+    "optimization_critic": OPTIMIZATION_CRITIC_TASK_TEMPLATE,
+    "optimization_corrector": OPTIMIZATION_CORRECTOR_TASK_TEMPLATE,
+    "norm_verify": NORM_VERIFY_TASK_TEMPLATE,
+    "norm_fix": NORM_FIX_TASK_TEMPLATE,
+}
+
+
+def _file_hash(path: Path) -> str:
+    """MD5-хеш файла."""
+    return hashlib.md5(path.read_bytes()).hexdigest()
+
+
+def _load_sync_data() -> dict:
+    """Загрузить данные синхронизации."""
+    if _SYNC_FILE.exists():
+        try:
+            return json.loads(_SYNC_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    return {"templates": {}}
+
+
+def _save_sync_data(data: dict):
+    """Сохранить данные синхронизации."""
+    _EN_DIR.mkdir(parents=True, exist_ok=True)
+    _SYNC_FILE.write_text(
+        json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
+
+def _en_path_for(ru_path: Path) -> Path:
+    """Путь к английской версии шаблона."""
+    return _EN_DIR / ru_path.name
+
+
+def load_template_for_llm(ru_path: Path) -> str:
+    """Загрузить шаблон для отправки в LLM.
+
+    Приоритет: английская версия (.claude/en/) → русская (.claude/).
+    """
+    en_path = _en_path_for(ru_path)
+    if en_path.exists():
+        return en_path.read_text(encoding="utf-8")
+    # Fallback: русский шаблон (если английского ещё нет)
+    return load_template(ru_path)
+
+
+def save_en_template(stage: str, content: str):
+    """Сохранить английскую версию шаблона и пометить как синхронизированную."""
+    ru_path = _ALL_TEMPLATE_MAP.get(stage)
+    if not ru_path:
+        raise ValueError(f"Unknown stage: {stage}")
+
+    en_path = _en_path_for(Path(ru_path))
+    _EN_DIR.mkdir(parents=True, exist_ok=True)
+    en_path.write_text(content, encoding="utf-8")
+
+    # Обновить sync: зафиксировать хеш русского шаблона
+    sync = _load_sync_data()
+    ru_file = Path(ru_path)
+    sync["templates"][ru_file.name] = {
+        "ru_hash": _file_hash(ru_file) if ru_file.exists() else "",
+        "synced": True,
+    }
+    _save_sync_data(sync)
+
+
+def _mark_en_out_of_sync(ru_path: Path):
+    """Пометить английский шаблон как рассинхронизированный."""
+    sync = _load_sync_data()
+    entry = sync["templates"].get(ru_path.name)
+    if entry:
+        entry["synced"] = False
+        _save_sync_data(sync)
+
+
+def check_template_sync() -> list[dict]:
+    """Проверить синхронизацию всех шаблонов.
+
+    Возвращает список: [{stage, ru_file, en_exists, synced}, ...]
+    """
+    sync = _load_sync_data()
+    result = []
+
+    for stage, ru_path_raw in _ALL_TEMPLATE_MAP.items():
+        ru_path = Path(ru_path_raw)
+        en_path = _en_path_for(ru_path)
+        en_exists = en_path.exists()
+
+        synced = False
+        if en_exists and ru_path.exists():
+            entry = sync["templates"].get(ru_path.name, {})
+            stored_hash = entry.get("ru_hash", "")
+            current_hash = _file_hash(ru_path)
+            synced = entry.get("synced", False) and (stored_hash == current_hash)
+
+        result.append({
+            "stage": stage,
+            "ru_file": ru_path.name,
+            "en_exists": en_exists,
+            "synced": synced,
+        })
+
+    return result
 
 
 # ─── Prompt Overrides ───
@@ -149,11 +274,16 @@ def get_template_prompts(discipline_code: str | None = None) -> list[dict]:
 
 
 def save_template(stage: str, content: str):
-    """Сохранить шаблон промпта в .claude/*.md файл."""
+    """Сохранить русский шаблон промпта в .claude/*.md файл.
+
+    Если есть английская версия — помечает её как рассинхронизированную.
+    """
     template_path = _STAGE_TEMPLATE_MAP.get(stage)
     if not template_path:
         raise ValueError(f"Неизвестный этап: {stage}")
-    Path(template_path).write_text(content, encoding="utf-8")
+    ru_path = Path(template_path)
+    ru_path.write_text(content, encoding="utf-8")
+    _mark_en_out_of_sync(ru_path)
 
 
 def _get_block_analysis_example(project_info: dict, project_id: str) -> str:
@@ -206,15 +336,15 @@ def prepare_tile_batch_task(*args, **kwargs) -> str:
 
 def prepare_main_audit_task(project_id: str, project_info: dict = None, **kwargs) -> str:
     """Legacy stub — основной аудит заменён на конвейер."""
-    return prepare_text_analysis_task(project_id, project_info)
+    return prepare_text_analysis_task(project_info or {}, project_id)
 
 def prepare_triage_task(project_id: str, project_info: dict = None, **kwargs) -> str:
     """Legacy stub — триаж теперь часть text_analysis."""
-    return prepare_text_analysis_task(project_id, project_info)
+    return prepare_text_analysis_task(project_info or {}, project_id)
 
 def prepare_smart_merge_task(project_id: str, project_info: dict = None, **kwargs) -> str:
     """Legacy stub — smart merge заменён на findings_merge."""
-    return prepare_findings_merge_task(project_id, project_info)
+    return prepare_findings_merge_task(project_info or {}, project_id)
 
 
 # ─── Верификация нормативных ссылок ───
@@ -231,7 +361,7 @@ def prepare_norm_verify_task(
     Подставляется в плейсхолдер {LLM_WORK}.
     llm_out_filename — имя выходного файла LLM (для chunked mode).
     """
-    template = load_template(NORM_VERIFY_TASK_TEMPLATE)
+    template = load_template_for_llm(NORM_VERIFY_TASK_TEMPLATE)
     template = _inject_discipline(template, project_info or {})
 
     project_path, _ = _get_project_paths(project_id)
@@ -254,7 +384,7 @@ def prepare_norm_fix_task(
     project_info: Optional[dict] = None,
 ) -> str:
     """Подготовить задачу для пересмотра замечаний с устаревшими нормами."""
-    template = load_template(NORM_FIX_TASK_TEMPLATE)
+    template = load_template_for_llm(NORM_FIX_TASK_TEMPLATE)
     template = _inject_discipline(template, project_info or {})
 
     project_path, _ = _get_project_paths(project_id)
@@ -279,7 +409,7 @@ def prepare_text_analysis_task(
     override = _load_prompt_override(project_id, "text_analysis")
     if override:
         return override
-    template = load_template(TEXT_ANALYSIS_TASK_TEMPLATE)
+    template = load_template_for_llm(TEXT_ANALYSIS_TASK_TEMPLATE)
 
     _, output_path = _get_project_paths(project_id)
     md_file_path = _get_md_file_path(project_info, project_id)
@@ -293,6 +423,31 @@ def prepare_text_analysis_task(
         .replace("{MD_FILE_PATH}", md_file_path)
     )
     return task
+
+
+def build_text_analysis_prompt(
+    project_info: dict,
+    output_path: str,
+    md_file_path: str,
+) -> str:
+    """Compatibility wrapper used by legacy E2E tests/tools.
+
+    Unlike prepare_text_analysis_task(), this helper does not resolve paths from
+    the repository and instead trusts explicit output/md paths from the caller.
+    """
+    template = load_template_for_llm(TEXT_ANALYSIS_TASK_TEMPLATE)
+    template = _inject_discipline(template, project_info or {})
+    project_id = (
+        (project_info or {}).get("project_id")
+        or (project_info or {}).get("id")
+        or "adhoc-project"
+    )
+    return (
+        template
+        .replace("{PROJECT_ID}", project_id)
+        .replace("{OUTPUT_PATH}", output_path)
+        .replace("{MD_FILE_PATH}", md_file_path)
+    )
 
 
 # ─── Извлечение контекста страниц из MD ───
@@ -792,7 +947,7 @@ def prepare_block_batch_task(
     override = _load_prompt_override(project_id, "block_analysis")
     if override:
         return override
-    template = load_template(BLOCK_ANALYSIS_TASK_TEMPLATE)
+    template = load_template_for_llm(BLOCK_ANALYSIS_TASK_TEMPLATE)
 
     batch_id = batch_data["batch_id"]
     blocks = batch_data.get("blocks", [])
@@ -1076,7 +1231,7 @@ def prepare_findings_merge_task(
     override = _load_prompt_override(project_id, "findings_merge")
     if override:
         return override
-    template = load_template(FINDINGS_MERGE_TASK_TEMPLATE)
+    template = load_template_for_llm(FINDINGS_MERGE_TASK_TEMPLATE)
 
     _, output_path = _get_project_paths(project_id)
     md_file_path = _get_md_file_path(project_info, project_id)
@@ -1119,7 +1274,7 @@ def prepare_findings_critic_task(
     chunk_suffix: если задан (напр. "_001") — подменяет имена input/output файлов
     для параллельного запуска чанков без файловых конфликтов.
     """
-    template = load_template(FINDINGS_CRITIC_TASK_TEMPLATE)
+    template = load_template_for_llm(FINDINGS_CRITIC_TASK_TEMPLATE)
 
     _, output_path = _get_project_paths(project_id)
 
@@ -1147,7 +1302,7 @@ def prepare_findings_corrector_task(
     project_id: str,
 ) -> str:
     """Подготовить задачу для корректировки замечаний по вердиктам критика."""
-    template = load_template(FINDINGS_CORRECTOR_TASK_TEMPLATE)
+    template = load_template_for_llm(FINDINGS_CORRECTOR_TASK_TEMPLATE)
 
     _, output_path = _get_project_paths(project_id)
 
@@ -1249,7 +1404,7 @@ def prepare_optimization_task(
     override = _load_prompt_override(project_id, "optimization")
     if override:
         return override
-    template = load_template(OPTIMIZATION_TASK_TEMPLATE)
+    template = load_template_for_llm(OPTIMIZATION_TASK_TEMPLATE)
 
     _, output_path = _get_project_paths(project_id)
     md_file_path = _get_md_file_path(project_info, project_id)
@@ -1275,7 +1430,7 @@ def prepare_optimization_critic_task(
     project_id: str,
 ) -> str:
     """Подготовить задачу для критической проверки оптимизации (Critic)."""
-    template = load_template(OPTIMIZATION_CRITIC_TASK_TEMPLATE)
+    template = load_template_for_llm(OPTIMIZATION_CRITIC_TASK_TEMPLATE)
 
     _, output_path = _get_project_paths(project_id)
     md_file_path = _get_md_file_path(project_info, project_id)
@@ -1299,7 +1454,7 @@ def prepare_optimization_corrector_task(
     project_id: str,
 ) -> str:
     """Подготовить задачу для корректировки оптимизации по вердиктам критика (Corrector)."""
-    template = load_template(OPTIMIZATION_CORRECTOR_TASK_TEMPLATE)
+    template = load_template_for_llm(OPTIMIZATION_CORRECTOR_TASK_TEMPLATE)
 
     _, output_path = _get_project_paths(project_id)
     md_file_path = _get_md_file_path(project_info, project_id)
