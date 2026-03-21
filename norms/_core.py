@@ -97,7 +97,6 @@ def extract_norms_from_findings(findings_path: Path) -> dict:
                     "cited_as": [],
                     "affected_findings": [],
                     "contexts": [],
-                    "low_confidence_findings": [],
                     "finding_norms": {},
                 }
 
@@ -113,11 +112,6 @@ def extract_norms_from_findings(findings_path: Path) -> dict:
             ctx = problem_field[:200] if problem_field else ""
             if ctx and ctx not in norms_map[key]["contexts"]:
                 norms_map[key]["contexts"].append(ctx)
-
-            confidence = finding.get("norm_confidence")
-            if confidence is not None and confidence < 0.8:
-                if fid not in norms_map[key]["low_confidence_findings"]:
-                    norms_map[key]["low_confidence_findings"].append(fid)
 
     return {
         "norms": norms_map,
@@ -140,7 +134,7 @@ def format_norms_for_template(norms_data: dict) -> str:
     db = load_norms_db()
     db_norms = db.get("norms", {})
     now = datetime.now()
-    stale_days = db.get("meta", {}).get("stale_after_days", 30)
+    stale_days = db.get("meta", {}).get("stale_after_days", 180)
 
     lines = []
     for i, (norm, info) in enumerate(norms_data["norms"].items(), 1):
@@ -180,9 +174,6 @@ def format_norms_for_template(norms_data: dict) -> str:
             f"   - Затронутые замечания: {findings_str}\n"
             f"{cache_line}"
         )
-        low_conf = info.get("low_confidence_findings", [])
-        if low_conf:
-            entry += f"\n   - Требуют проверки цитат: {', '.join(low_conf)}"
         lines.append(entry)
     return "\n".join(lines)
 
@@ -260,7 +251,7 @@ def generate_deterministic_checks(norms_data: dict, project_id: str = "") -> dic
     db_norms = db.get("norms", {})
     replacements = db.get("replacements", {})
     now = datetime.now()
-    stale_days = db.get("meta", {}).get("stale_after_days", 30)
+    stale_days = db.get("meta", {}).get("stale_after_days", 180)
 
     # Загрузить параграфы для быстрой проверки
     pdb = load_norms_paragraphs()
@@ -351,25 +342,22 @@ def generate_deterministic_checks(norms_data: dict, project_id: str = "") -> dic
             })
             stats["unknown"] += 1
 
-        # Идентификация цитат для проверки LLM
+        # Идентификация цитат для проверки LLM (все findings проверяются)
         for fid in affected:
-            low_conf = info.get("low_confidence_findings", [])
-            if fid in low_conf:
-                # Paragraph cache: ключ — нормализованный текст ссылки на норму
-                finding_norm = info.get("finding_norms", {}).get(fid, "")
-                paragraph_key = normalize_paragraph_key(
-                    finding_norm.strip() if finding_norm else norm_key
-                )
-                if paragraph_key not in known_paragraphs:
-                    paragraphs_to_verify.append({
-                        "finding_id": fid,
-                        "norm": norm_raw,
-                        "norm_key": norm_key,
-                        "paragraph_key": paragraph_key,
-                    })
+            # Paragraph cache: ключ — нормализованный текст ссылки на норму
+            finding_norm = info.get("finding_norms", {}).get(fid, "")
+            paragraph_key = normalize_paragraph_key(
+                finding_norm.strip() if finding_norm else norm_key
+            )
+            if paragraph_key not in known_paragraphs:
+                paragraphs_to_verify.append({
+                    "finding_id": fid,
+                    "norm": norm_raw,
+                    "norm_key": norm_key,
+                    "paragraph_key": paragraph_key,
+                })
 
-    # Лимит на параграфы (как раньше — max 10)
-    paragraphs_to_verify = paragraphs_to_verify[:10]
+    # Без лимита — все цитаты проверяются, chunking в pipeline_service
 
     meta = {
         "project_id": project_id,
@@ -646,7 +634,7 @@ def validate_norm_checks(norm_checks_path: Path) -> dict:
             cached = db.get("norms", {}).get(normalize_doc_number(doc))
             if cached:
                 last_ver = cached.get("last_verified", "")
-                stale_days = db.get("meta", {}).get("stale_after_days", 30)
+                stale_days = db.get("meta", {}).get("stale_after_days", 180)
                 if last_ver:
                     try:
                         ver_date = datetime.fromisoformat(last_ver)
@@ -701,7 +689,7 @@ def load_norms_db() -> dict:
                 "description": "Централизованная база нормативных документов с автообновлением",
                 "last_updated": datetime.now().isoformat(),
                 "total_norms": 0,
-                "stale_after_days": 30,
+                "stale_after_days": 180,
                 "update_history": [],
             },
             "norms": {},
@@ -1129,7 +1117,7 @@ def update_from_project(db: dict, project_path: Path) -> dict:
 
 def get_stale_norms(db: dict) -> list:
     """Получить список норм, которые давно не проверялись."""
-    stale_days = db.get("meta", {}).get("stale_after_days", 30)
+    stale_days = db.get("meta", {}).get("stale_after_days", 180)
     threshold = datetime.now() - timedelta(days=stale_days)
     stale = []
     for doc_number, norm in db.get("norms", {}).items():
@@ -1170,7 +1158,7 @@ def print_stats(db: dict):
     print(f"  Всего норм:         {total}")
     print(f"  Проверенных цитат:  {total_paragraphs}")
     print(f"  Таблица замен:      {len(replacements)} записей")
-    print(f"  Устаревших (>{db['meta'].get('stale_after_days', 30)} дн): {len(stale)}")
+    print(f"  Устаревших (>{db['meta'].get('stale_after_days', 180)} дн): {len(stale)}")
     print(f"  Последнее обновление: {db['meta'].get('last_updated', 'N/A')}")
     print()
     print("  По статусу:")
@@ -1407,7 +1395,6 @@ def classify_norm_status(finding: dict) -> str:
     """
     norm = (finding.get("norm") or "").strip()
     norm_quote = finding.get("norm_quote")
-    conf = finding.get("norm_confidence") or 0
     # Поля от norm verification (если обогащены)
     verification = finding.get("norm_verification", {})
     check_status = verification.get("status", "")
@@ -1421,7 +1408,7 @@ def classify_norm_status(finding: dict) -> str:
         return "not_found"
 
     if norm_quote and isinstance(norm_quote, str) and len(norm_quote) > 10:
-        if conf >= 0.85:
+        if verification.get("paragraph_verified"):
             return "exact_quote"
         return "paraphrased"
 
@@ -1432,59 +1419,29 @@ def classify_norm_quote_status(finding: dict) -> str:
     """Классифицировать статус цитаты.
 
     Returns:
-        "exact"       — точная цитата с высокой уверенностью
-        "approximate" — цитата есть, но приблизительная
+        "exact"       — цитата подтверждена верификацией (paragraph_verified)
+        "approximate" — цитата есть, но не подтверждена
         "missing"     — цитата отсутствует
     """
     norm_quote = finding.get("norm_quote")
-    conf = finding.get("norm_confidence") or 0
+    verification = finding.get("norm_verification", {})
 
     if not norm_quote or not isinstance(norm_quote, str) or len(norm_quote) < 5:
         return "missing"
-    if conf >= 0.85:
+    if verification.get("paragraph_verified"):
         return "exact"
     return "approximate"
 
 
 def compute_norm_confidence(finding: dict) -> float:
-    """Вычислить norm_confidence из структурированных полей.
+    """Deprecated: norm_confidence больше не используется как критерий решения.
 
-    Backward-compatible: если raw norm_confidence есть — использовать его,
-    но корректировать вверх/вниз на основе verification данных.
+    Оставлена для backward-compatibility. Возвращает 1.0 для всех findings с нормой.
     """
-    raw_conf = finding.get("norm_confidence")
-    if raw_conf is None:
-        raw_conf = 0.0
-
     norm = (finding.get("norm") or "").strip()
-    norm_quote = finding.get("norm_quote")
-    verification = finding.get("norm_verification", {})
-
-    # Нет нормы — confidence = 0
     if not norm:
         return 0.0
-
-    base = float(raw_conf)
-
-    # Бонус за verified status
-    check_status = verification.get("status", "")
-    if check_status == "active":
-        base = max(base, 0.6)  # минимум 0.6 для подтверждённо действующей нормы
-    elif check_status in ("replaced", "cancelled"):
-        base = min(base, 0.3)  # не выше 0.3 для замёненной/отменённой
-
-    # Бонус за verified quote
-    if verification.get("paragraph_verified"):
-        base = max(base, 0.9)  # подтверждённая цитата
-    elif verification.get("actual_quote") and not norm_quote:
-        # Верификация нашла цитату, а в finding её нет — подтянуть
-        base = max(base, 0.75)
-
-    # Бонус за exact quote
-    if norm_quote and isinstance(norm_quote, str) and len(norm_quote) > 20:
-        base = max(base, 0.7)
-
-    return round(min(base, 1.0), 2)
+    return 1.0
 
 
 # ─── Enrichment: findings <- norm_checks ──────────────────────────────────
@@ -1500,7 +1457,6 @@ def enrich_findings_from_norm_checks(
     - norm_status: classification
     - norm_quote_status: classification
     - norm_quote: actual_quote если найдена и лучше текущей
-    - norm_confidence: пересчитанный
 
     Returns: статистика обогащения.
     """
@@ -1532,7 +1488,6 @@ def enrich_findings_from_norm_checks(
         "enriched_verification": 0,
         "enriched_quote": 0,
         "status_upgrade": 0,
-        "confidence_changed": 0,
     }
 
     for finding in findings:
@@ -1589,28 +1544,16 @@ def enrich_findings_from_norm_checks(
         finding["norm_quote_status"] = classify_norm_quote_status(finding)
         finding["norm_policy_class"] = compute_norm_policy_class(finding)
 
-        # Пересчитываем confidence
-        old_conf = finding.get("norm_confidence")
-        new_conf = compute_norm_confidence(finding)
-        if old_conf != new_conf:
-            stats["confidence_changed"] += 1
-        finding["norm_confidence"] = new_conf
-
     return stats
 
 
 # ─── Selective Critic calibration ──────────────────────────────────────────
 
-# Пороги norm_confidence по severity для Selective Critic
-NORM_CONFIDENCE_THRESHOLDS = {
-    "КРИТИЧЕСКОЕ": 0.7,
-    "ЭКОНОМИЧЕСКОЕ": 0.6,
-    "ЭКСПЛУАТАЦИОННОЕ": 0.5,
-    "РЕКОМЕНДАТЕЛЬНОЕ": 0.5,
-    "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 0.3,
-}
+# Deprecated: NORM_CONFIDENCE_THRESHOLDS больше не используются.
+# Оставлены для backward-compatibility импортов.
+NORM_CONFIDENCE_THRESHOLDS = {}
 
-DEFAULT_NORM_CONFIDENCE_THRESHOLD = 0.6
+DEFAULT_NORM_CONFIDENCE_THRESHOLD = 0.0
 
 
 # ─── Norm policy class ────────────────────────────────────────────────────
@@ -1634,7 +1577,8 @@ def compute_norm_policy_class(finding: dict) -> str:
 def should_review_norm(finding: dict) -> bool:
     """Определить, нужна ли проверка нормативной ссылки finding.
 
-    Учитывает norm_status, norm_policy_class, severity, norm_confidence.
+    Учитывает norm_status и norm_policy_class. Все цитаты проверяются
+    на этапе 04 независимо от самооценки LLM.
     """
     norm_status = finding.get("norm_status") or classify_norm_status(finding)
 
@@ -1647,11 +1591,8 @@ def should_review_norm(finding: dict) -> bool:
     if norm_status in ("not_found", "invalid_reference"):
         return True
 
-    # Дифференцированный порог по severity
-    severity = finding.get("severity", "")
-    threshold = NORM_CONFIDENCE_THRESHOLDS.get(
-        severity, DEFAULT_NORM_CONFIDENCE_THRESHOLD
-    )
+    # Непроверенные цитаты → отправить на проверку
+    if norm_status in ("paraphrased", "norm_detected_no_quote"):
+        return True
 
-    conf = finding.get("norm_confidence") or 0
-    return conf < threshold
+    return False

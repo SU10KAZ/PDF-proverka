@@ -39,6 +39,7 @@ goto wait_loop
 echo Server is up: http://localhost:8080
 echo Stdout log: %SCRIPT_DIR%server.log
 echo Stderr log: %SCRIPT_DIR%server.err.log
+start "" "http://localhost:8080"
 exit /b 0
 
 :server_fail

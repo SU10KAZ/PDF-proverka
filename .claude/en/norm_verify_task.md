@@ -69,7 +69,7 @@ For each finding from the "Part 2" section of the input data:
    - **Mismatch** → `paragraph_verified: false`, record actual text in `actual_quote`
    - **Clause not found** → `paragraph_verified: false`, `actual_quote: null`
 
-**Limit:** no more than 10 quotes per session. Priority: КРИТИЧЕСКОЕ/ЭКОНОМИЧЕСКОЕ.
+Verify ALL quotes listed in Part 2 input. Priority order: КРИТИЧЕСКОЕ → ЭКОНОМИЧЕСКОЕ → others.
 
 ## Output File Format
 
@@ -109,7 +109,6 @@ Python will automatically merge the results.
       "actual_quote": "Реальный текст пункта (из WebSearch) или null",
       "paragraph_verified": true,
       "mismatch_details": "null или описание расхождения",
-      "norm_confidence_original": 0.7,
       "verified_via": "websearch|norms_paragraphs"
     }
   ]

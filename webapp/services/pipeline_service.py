@@ -440,31 +440,50 @@ class PipelineManager:
     def _backfill_text_evidence_in_findings(project_id: str):
         """Backfill text-evidence + sheet в 03_findings.json.
 
-        1. selected_text_block_ids/evidence_text_refs — из compact layer
-        2. sheet — детерминированно из page_sheet_map
+        1. selected_text_block_ids/evidence_text_refs — из 02_blocks_analysis.json
+        2. sheet — детерминированно из document_graph.json page_sheet_map
         """
         output_dir = resolve_project_dir(project_id) / "_output"
         findings_path = output_dir / "03_findings.json"
-        compact_path = output_dir / "_findings_compact.json"
+        blocks_path = output_dir / "02_blocks_analysis.json"
+        graph_path = output_dir / "document_graph.json"
 
-        if not findings_path.exists() or not compact_path.exists():
+        if not findings_path.exists():
             return
 
         try:
             fd = json.loads(findings_path.read_text(encoding="utf-8"))
-            cd = json.loads(compact_path.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, OSError):
             return
 
-        # Индекс block_id → compact data
+        # Индекс block_id → block_analysis data из 02
         bc_index = {}
-        for bc in cd.get("blocks_compact", []):
-            bid = bc.get("block_id", "")
-            if bid:
-                bc_index[bid] = bc
+        if blocks_path.exists():
+            try:
+                data02 = json.loads(blocks_path.read_text(encoding="utf-8"))
+                for ba in data02.get("block_analyses", []):
+                    bid = ba.get("block_id", "")
+                    if bid:
+                        bc_index[bid] = ba
+            except (json.JSONDecodeError, OSError):
+                pass
 
-        # page_sheet_map для sheet backfill
-        psm = cd.get("page_sheet_map", {})
+        # page_sheet_map из document_graph.json
+        psm = {}
+        if graph_path.exists():
+            try:
+                graph = json.loads(graph_path.read_text(encoding="utf-8"))
+                for pg in graph.get("pages", []):
+                    page_num = pg.get("page")
+                    sheet_no = (
+                        pg.get("sheet_no_raw")
+                        or pg.get("sheet_no_normalized")
+                        or pg.get("sheet_no")
+                    )
+                    if page_num is not None and sheet_no:
+                        psm[str(page_num)] = sheet_no
+            except (json.JSONDecodeError, OSError):
+                pass
 
         modified = 0
         for finding in fd.get("findings", []):
@@ -1885,86 +1904,6 @@ class PipelineManager:
         self._tasks[project_id] = task
         return job
 
-    @staticmethod
-    def _build_selective_review_input(output_dir: Path) -> dict:
-        """Отфильтровать risky findings для Selective Critic.
-
-        Risky = grounding_level != "grounded_strong" или norm_confidence < 0.8.
-        Возвращает {"total", "risky", "skipped", "risky_ids"}.
-        Записывает 03_findings_review_input.json.
-        """
-        from webapp.services.finding_quality import (
-            evaluate_finding_practicality,
-            should_review_practicality,
-        )
-        from webapp.services.grounding_service import classify_grounding_level
-
-        findings_path = output_dir / "03_findings.json"
-        if not findings_path.exists():
-            return {"total": 0, "risky": 0, "skipped": 0, "risky_ids": []}
-
-        data = json.loads(findings_path.read_text(encoding="utf-8"))
-        findings = data.get("findings", data.get("items", []))
-
-        # Попробуем использовать новый norm_contract
-        try:
-            from norms import should_review_norm
-            has_norm_contract = True
-        except ImportError:
-            has_norm_contract = False
-
-        risky = []
-        for f in findings:
-            if not isinstance(f.get("quality"), dict):
-                f["quality"] = evaluate_finding_practicality(f)
-
-            level = f.get("grounding_level") or classify_grounding_level(f)
-
-            # Evidence check: всегда для weak/ungrounded
-            if level != "grounded_strong":
-                risky.append(f)
-                continue
-
-            # Norm check: дифференцированные пороги
-            if has_norm_contract:
-                if should_review_norm(f):
-                    risky.append(f)
-                    continue
-            else:
-                # Fallback: старый порог 0.8
-                confidence = f.get("norm_confidence", 1.0)
-                if confidence is not None and confidence < 0.8:
-                    risky.append(f)
-                    continue
-
-            if should_review_practicality(f):
-                risky.append(f)
-
-        risky_ids = [f.get("id", "") for f in risky]
-
-        review_input = {
-            "meta": {
-                "source": "selective_critic",
-                "total_findings": len(findings),
-                "risky_count": len(risky),
-                "skipped_count": len(findings) - len(risky),
-            },
-            "findings": risky,
-        }
-
-        input_path = output_dir / "03_findings_review_input.json"
-        input_path.write_text(
-            json.dumps(review_input, ensure_ascii=False, indent=2),
-            encoding="utf-8",
-        )
-
-        return {
-            "total": len(findings),
-            "risky": len(risky),
-            "skipped": len(findings) - len(risky),
-            "risky_ids": risky_ids,
-        }
-
     async def _retry_batch_split(
         self,
         job: AuditJob,
@@ -2060,23 +1999,7 @@ class PipelineManager:
         except Exception as e:
             await self._log(job, f"Grounding пропущен: {e}", "warn")
 
-        # ── Selective Critic: фильтрация risky findings ──
-        risky_count = 0
-        try:
-            sel = self._build_selective_review_input(output_dir)
-            risky_count = sel["risky"]
-            await self._log(
-                job,
-                f"Selective Critic: {sel['risky']}/{sel['total']} findings требуют проверки "
-                f"({sel['skipped']} пропущены как хорошо привязанные)",
-            )
-            if risky_count == 0:
-                await self._log(job, "Все findings хорошо привязаны — Critic не требуется")
-                self._update_pipeline_log(pid, "findings_critic", "done",
-                                           message="Skipped: 0 risky findings")
-                return
-        except Exception as e:
-            await self._log(job, f"Selective filter пропущен: {e}", "warn")
+        # Все замечания проверяются Critic'ом без фильтрации
 
         # ── Critic (с chunking при большом кол-ве findings) ──
         self._reset_job_progress(job)
@@ -2086,15 +2009,15 @@ class PipelineManager:
         print(f"[{pid}] ═══ ЭТАП 6.5a: Critic (проверка замечаний) ═══")
         await self._log(job, "═══ ЭТАП 6.5a: Critic — проверка обоснованности замечаний ═══")
 
-        # Определяем нужен ли chunking
-        input_path = output_dir / "03_findings_review_input.json"
+        # Определяем нужен ли chunking — все findings из 03_findings.json
+        findings_path = output_dir / "03_findings.json"
         need_chunks = False
         all_findings = []
 
-        if input_path.exists():
+        if findings_path.exists():
             try:
-                input_data = json.loads(input_path.read_text(encoding="utf-8"))
-                all_findings = input_data.get("findings", [])
+                findings_data = json.loads(findings_path.read_text(encoding="utf-8"))
+                all_findings = findings_data.get("findings", findings_data.get("items", []))
                 need_chunks = len(all_findings) > CRITIC_CHUNK_SIZE
             except (json.JSONDecodeError, OSError):
                 pass
@@ -2118,10 +2041,9 @@ class PipelineManager:
                 suffix = f"_{chunk_idx:03d}"
                 chunk_input = {
                     "meta": {
-                        "source": "selective_critic",
+                        "source": "full_review",
                         "total_findings": total_findings,
-                        "risky_count": len(chunk_findings),
-                        "skipped_count": 0,
+                        "chunk_count": len(chunk_findings),
                         "chunk": chunk_idx,
                         "total_chunks": num_chunks,
                     },
@@ -2449,16 +2371,16 @@ class PipelineManager:
             elif "Repaired" in repair_msg:
                 await self._log(job, f"JSON починен автоматически: {repair_msg}", "warn")
 
-        # Восстановление norm_quote/norm_confidence из pre_review (corrector может потерять)
+        # Восстановление norm_quote из pre_review (corrector может потерять)
         await self._restore_norm_quotes(output_dir, job)
         self._refresh_finding_quality(pid)
 
     @staticmethod
     async def _restore_norm_quotes(output_dir: Path, job: "AuditJob"):
-        """Восстановить norm_quote/norm_confidence из pre_review бэкапа.
+        """Восстановить norm_quote из pre_review бэкапа.
 
-        Corrector может перезаписать findings без этих полей.
-        Берём их из бэкапа (до corrector) и подставляем обратно.
+        Corrector может перезаписать findings без этого поля.
+        Берём его из бэкапа (до corrector) и подставляем обратно.
         """
         findings_path = output_dir / "03_findings.json"
         pre_review_path = output_dir / "03_findings_pre_review.json"
@@ -2482,10 +2404,6 @@ class PipelineManager:
             if not finding.get("norm_quote") and orig.get("norm_quote"):
                 finding["norm_quote"] = orig["norm_quote"]
                 restored += 1
-            # Восстановить norm_confidence если потерян
-            if finding.get("norm_confidence") is None and orig.get("norm_confidence") is not None:
-                finding["norm_confidence"] = orig["norm_confidence"]
-
         if restored > 0:
             findings_path.write_text(
                 json.dumps(current, ensure_ascii=False, indent=2),
@@ -2708,18 +2626,38 @@ class PipelineManager:
                 if not can_go:
                     raise RuntimeError("Rate limit: ожидание превышено или отменено")
 
-                # Chunked mode: разбиваем unknown_norms на чанки по 5
-                NORM_CHUNK_SIZE = 5
-                use_chunked = len(unknown_norms) > NORM_CHUNK_SIZE
+                # Chunked mode: чанкуем если общее кол-во задач > PARA_CHUNK_SIZE
+                NORM_CHUNK_SIZE = 5    # макс unknown_norms на чанк
+                PARA_CHUNK_SIZE = 15   # макс paragraph_checks на чанк
+                total_tasks = len(unknown_norms) + len(paragraphs_to_verify)
+                use_chunked = total_tasks > PARA_CHUNK_SIZE
 
                 if use_chunked:
                     # ── Параллельная верификация по чанкам ──
+                    # Чанкуем norms и paragraphs независимо, затем объединяем
                     norm_chunks = [
                         unknown_norms[i:i + NORM_CHUNK_SIZE]
-                        for i in range(0, len(unknown_norms), NORM_CHUNK_SIZE)
-                    ]
-                    # Первому чанку отдаём paragraphs_to_verify, остальным — пусто
-                    await self._log(job, f"Chunked mode: {len(norm_chunks)} чанков по ~{NORM_CHUNK_SIZE} норм")
+                        for i in range(0, max(1, len(unknown_norms)), NORM_CHUNK_SIZE)
+                    ] if unknown_norms else [[]]
+                    para_chunks = [
+                        paragraphs_to_verify[i:i + PARA_CHUNK_SIZE]
+                        for i in range(0, max(1, len(paragraphs_to_verify)), PARA_CHUNK_SIZE)
+                    ] if paragraphs_to_verify else [[]]
+
+                    # Объединяем: каждый чанк = порция норм + порция цитат
+                    num_chunks = max(len(norm_chunks), len(para_chunks))
+                    combined_chunks = []
+                    for ci in range(num_chunks):
+                        nc = norm_chunks[ci] if ci < len(norm_chunks) else []
+                        pc = para_chunks[ci] if ci < len(para_chunks) else []
+                        if nc or pc:
+                            combined_chunks.append((nc, pc))
+
+                    await self._log(
+                        job,
+                        f"Chunked mode: {len(combined_chunks)} чанков "
+                        f"({len(unknown_norms)} норм + {len(paragraphs_to_verify)} цитат)",
+                    )
 
                     chunk_paths = []
                     sem = asyncio.Semaphore(3)
@@ -2737,14 +2675,9 @@ class PipelineManager:
                             self._record_cli_usage(job, cli_result, f"norm_verify_chunk_{idx + 1}")
                             return output_dir / fname
 
-                    # Распределяем paragraphs_to_verify равномерно по чанкам
-                    para_chunks = [[] for _ in norm_chunks]
-                    for pi, pv_item in enumerate(paragraphs_to_verify):
-                        para_chunks[pi % len(norm_chunks)].append(pv_item)
-
                     tasks = []
-                    for ci, chunk in enumerate(norm_chunks):
-                        tasks.append(_run_chunk(ci, chunk, para_chunks[ci]))
+                    for ci, (cn, cp) in enumerate(combined_chunks):
+                        tasks.append(_run_chunk(ci, cn, cp))
 
                     chunk_paths = await asyncio.gather(*tasks, return_exceptions=True)
                     # Фильтруем ошибки
@@ -2955,7 +2888,6 @@ class PipelineManager:
         - norm_verification: {status, edition_status, verified_via, ...}
         - norm_status / norm_quote_status: classification
         - norm_quote: actual_quote если найдена и лучше текущей
-        - norm_confidence: пересчитанный из verification данных
 
         Returns: количество обогащённых findings.
         """
@@ -2993,8 +2925,6 @@ class PipelineManager:
                 fid = finding.get("id", "")
                 if fid in verified_quotes and not finding.get("norm_quote"):
                     finding["norm_quote"] = verified_quotes[fid]
-                    if finding.get("norm_confidence") is None or finding["norm_confidence"] < 0.8:
-                        finding["norm_confidence"] = 0.9
                     enriched += 1
 
         if enriched > 0:
@@ -3384,7 +3314,7 @@ class PipelineManager:
 
         Этапы:
         1. blocks.py crop → _output/blocks/
-        2. Claude: text_analysis → 01_text_analysis.json + blocks_for_review[]
+        2. Claude: text_analysis → 01_text_analysis.json
         3. blocks.py batches → block_batches.json
         4. Claude: block_batch (параллельно) → block_batch_NNN.json
         5. blocks.py merge → 02_blocks_analysis.json

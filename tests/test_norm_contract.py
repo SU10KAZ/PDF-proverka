@@ -20,16 +20,21 @@ from norms import (
 # ─── classify_norm_status ──────────────────────────────────────────────────
 
 class TestClassifyNormStatus:
-    def test_exact_quote(self):
-        f = {"norm": "СП 256, п. 15.3", "norm_quote": "Точная цитата из нормы длиннее десяти символов", "norm_confidence": 0.9}
+    def test_exact_quote_verified(self):
+        """exact_quote требует paragraph_verified из verification."""
+        f = {"norm": "СП 256, п. 15.3",
+             "norm_quote": "Точная цитата из нормы длиннее десяти символов",
+             "norm_verification": {"paragraph_verified": True}}
         assert classify_norm_status(f) == "exact_quote"
 
-    def test_paraphrased(self):
-        f = {"norm": "СП 256, п. 15.3", "norm_quote": "Приблизительная цитата из нормы", "norm_confidence": 0.7}
+    def test_paraphrased_without_verification(self):
+        """Цитата без paragraph_verified = paraphrased."""
+        f = {"norm": "СП 256, п. 15.3",
+             "norm_quote": "Приблизительная цитата из нормы"}
         assert classify_norm_status(f) == "paraphrased"
 
     def test_norm_detected_no_quote(self):
-        f = {"norm": "СП 256, п. 15.3", "norm_quote": None, "norm_confidence": 0.7}
+        f = {"norm": "СП 256, п. 15.3", "norm_quote": None}
         assert classify_norm_status(f) == "norm_detected_no_quote"
 
     def test_no_norm_cited(self):
@@ -52,12 +57,15 @@ class TestClassifyNormStatus:
 # ─── classify_norm_quote_status ────────────────────────────────────────────
 
 class TestClassifyNormQuoteStatus:
-    def test_exact(self):
-        f = {"norm_quote": "Длинная точная цитата из пункта нормы", "norm_confidence": 0.9}
+    def test_exact_with_verification(self):
+        """exact требует paragraph_verified."""
+        f = {"norm_quote": "Длинная точная цитата из пункта нормы",
+             "norm_verification": {"paragraph_verified": True}}
         assert classify_norm_quote_status(f) == "exact"
 
-    def test_approximate(self):
-        f = {"norm_quote": "Приблизительная цитата", "norm_confidence": 0.6}
+    def test_approximate_without_verification(self):
+        """Цитата без verification = approximate."""
+        f = {"norm_quote": "Приблизительная цитата"}
         assert classify_norm_quote_status(f) == "approximate"
 
     def test_missing(self):
@@ -69,41 +77,17 @@ class TestClassifyNormQuoteStatus:
         assert classify_norm_quote_status(f) == "missing"
 
 
-# ─── compute_norm_confidence ───────────────────────────────────────────────
+# ─── compute_norm_confidence (deprecated) ─────────────────────────────────
 
 class TestComputeNormConfidence:
     def test_no_norm_zero(self):
         f = {"norm": ""}
         assert compute_norm_confidence(f) == 0.0
 
-    def test_active_verification_boosts(self):
-        f = {"norm": "СП 256", "norm_confidence": 0.5,
-             "norm_verification": {"status": "active"}}
-        conf = compute_norm_confidence(f)
-        assert conf >= 0.6  # boosted to at least 0.6
-
-    def test_replaced_caps(self):
-        f = {"norm": "ГОСТ 13109-97", "norm_confidence": 0.9,
-             "norm_verification": {"status": "replaced"}}
-        conf = compute_norm_confidence(f)
-        assert conf <= 0.3  # capped
-
-    def test_paragraph_verified_high(self):
-        f = {"norm": "СП 256", "norm_confidence": 0.5,
-             "norm_verification": {"paragraph_verified": True}}
-        conf = compute_norm_confidence(f)
-        assert conf >= 0.9
-
-    def test_actual_quote_found_boosts(self):
-        f = {"norm": "СП 256", "norm_confidence": 0.5, "norm_quote": None,
-             "norm_verification": {"actual_quote": "Реальная цитата из нормы"}}
-        conf = compute_norm_confidence(f)
-        assert conf >= 0.75
-
-    def test_raw_conf_preserved_when_no_verification(self):
-        f = {"norm": "ПУЭ-7", "norm_confidence": 0.65}
-        conf = compute_norm_confidence(f)
-        assert conf == 0.65
+    def test_with_norm_returns_1(self):
+        """Deprecated: всегда возвращает 1.0 для findings с нормой."""
+        f = {"norm": "СП 256"}
+        assert compute_norm_confidence(f) == 1.0
 
 
 # ─── enrich_findings_from_norm_checks ──────────────────────────────────────
@@ -112,7 +96,7 @@ class TestEnrichFindings:
     def test_enriches_verification(self):
         findings = [
             {"id": "F-001", "norm": "СП 256.1325800.2016, п. 15.3",
-             "norm_quote": None, "norm_confidence": 0.6},
+             "norm_quote": None},
         ]
         norm_checks = {
             "checks": [
@@ -130,7 +114,7 @@ class TestEnrichFindings:
     def test_enriches_quote_from_paragraph_check(self):
         findings = [
             {"id": "F-001", "norm": "СП 256, п. 15.3",
-             "norm_quote": None, "norm_confidence": 0.5},
+             "norm_quote": None},
         ]
         norm_checks = {
             "checks": [],
@@ -143,12 +127,11 @@ class TestEnrichFindings:
         stats = enrich_findings_from_norm_checks(findings, norm_checks)
         assert stats["enriched_quote"] > 0
         assert findings[0]["norm_quote"] is not None
-        assert findings[0]["norm_confidence"] >= 0.9
 
     def test_does_not_overwrite_existing_quote(self):
         findings = [
             {"id": "F-001", "norm": "СП 256",
-             "norm_quote": "Существующая хорошая цитата", "norm_confidence": 0.9},
+             "norm_quote": "Существующая хорошая цитата"},
         ]
         norm_checks = {
             "checks": [],
@@ -163,8 +146,8 @@ class TestEnrichFindings:
 
     def test_norm_status_set(self):
         findings = [
-            {"id": "F-001", "norm": "СП 256", "norm_quote": None, "norm_confidence": 0.6},
-            {"id": "F-002", "norm": "", "norm_confidence": 0.0},
+            {"id": "F-001", "norm": "СП 256", "norm_quote": None},
+            {"id": "F-002", "norm": ""},
         ]
         enrich_findings_from_norm_checks(findings, {"checks": [], "paragraph_checks": []})
         assert findings[0]["norm_status"] == "norm_detected_no_quote"
@@ -190,7 +173,7 @@ class TestNormPolicyClass:
         assert compute_norm_policy_class({"severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"}) == "optional"
 
     def test_enrichment_sets_policy(self):
-        findings = [{"id": "F-1", "norm": "", "severity": "КРИТИЧЕСКОЕ", "norm_confidence": 0}]
+        findings = [{"id": "F-1", "norm": "", "severity": "КРИТИЧЕСКОЕ"}]
         enrich_findings_from_norm_checks(findings, {"checks": [], "paragraph_checks": []})
         assert findings[0]["norm_policy_class"] == "required"
 
@@ -212,7 +195,7 @@ class TestShouldReviewNorm:
         assert should_review_norm(f) is True
 
     def test_no_norm_skip(self):
-        """no_norm_cited + РЕКОМЕНДАТЕЛЬНОЕ → не проверять (backward compat alias)."""
+        """no_norm_cited + РЕКОМЕНДАТЕЛЬНОЕ → не проверять."""
         f = {"norm": "", "norm_status": "no_norm_cited", "severity": "РЕКОМЕНДАТЕЛЬНОЕ"}
         assert should_review_norm(f) is False
 
@@ -221,33 +204,23 @@ class TestShouldReviewNorm:
         f = {"norm": "ГОСТ 13109-97", "norm_status": "invalid_reference", "severity": "РЕКОМЕНДАТЕЛЬНОЕ"}
         assert should_review_norm(f) is True
 
-    def test_critical_low_conf_review(self):
-        """КРИТИЧЕСКОЕ с conf < 0.7 → проверять."""
-        f = {"norm": "ПУЭ-7, п. 3.1.8", "norm_status": "norm_detected_no_quote",
-             "severity": "КРИТИЧЕСКОЕ", "norm_confidence": 0.6}
+    def test_paraphrased_always_review(self):
+        """paraphrased → всегда проверять (все цитаты проверяются на этапе 04)."""
+        f = {"norm": "ПУЭ-7, п. 3.1.8", "norm_status": "paraphrased",
+             "severity": "КРИТИЧЕСКОЕ"}
         assert should_review_norm(f) is True
 
-    def test_critical_high_conf_skip(self):
-        """КРИТИЧЕСКОЕ с conf >= 0.7 → не проверять."""
-        f = {"norm": "ПУЭ-7, п. 3.1.8", "norm_status": "norm_detected_no_quote",
-             "severity": "КРИТИЧЕСКОЕ", "norm_confidence": 0.75}
-        assert should_review_norm(f) is False
-
-    def test_recommendation_low_conf_skip(self):
-        """РЕКОМЕНДАТЕЛЬНОЕ с conf 0.5 → не проверять (порог 0.5)."""
+    def test_norm_detected_no_quote_always_review(self):
+        """norm_detected_no_quote → всегда проверять."""
         f = {"norm": "ГОСТ 21.101", "norm_status": "norm_detected_no_quote",
-             "severity": "РЕКОМЕНДАТЕЛЬНОЕ", "norm_confidence": 0.5}
-        assert should_review_norm(f) is False
-
-    def test_recommendation_very_low_conf_review(self):
-        """РЕКОМЕНДАТЕЛЬНОЕ с conf < 0.5 → проверять."""
-        f = {"norm": "ГОСТ 21.101", "norm_status": "norm_detected_no_quote",
-             "severity": "РЕКОМЕНДАТЕЛЬНОЕ", "norm_confidence": 0.3}
+             "severity": "РЕКОМЕНДАТЕЛЬНОЕ"}
         assert should_review_norm(f) is True
 
-    def test_thresholds_differentiated(self):
-        """Пороги различаются по severity."""
-        assert NORM_CONFIDENCE_THRESHOLDS["КРИТИЧЕСКОЕ"] > NORM_CONFIDENCE_THRESHOLDS["РЕКОМЕНДАТЕЛЬНОЕ"]
+    def test_exact_quote_no_review(self):
+        """exact_quote (подтверждённая верификацией) → не проверять."""
+        f = {"norm": "СП 256, п. 15.3", "norm_status": "exact_quote",
+             "severity": "КРИТИЧЕСКОЕ"}
+        assert should_review_norm(f) is False
 
 
 # ─── Revision logic ───────────────────────────────────────────────────────

@@ -67,23 +67,6 @@ Any discrepancy → finding.
 
 **IMPORTANT:** If you cannot confidently read a value on the drawing (small text, low resolution, overlap) — write "нечитаемо" in `key_values_read`. DO NOT guess numbers or marks.
 
-## Discipline Gate (MANDATORY for each block)
-
-Expected project discipline: **{SECTION}**
-
-For each block, determine `discipline_detected` by priority:
-
-1. **Title block** (highest priority): discipline code from document_code in the stamp or page text (АР, ОВ, ТХ, ЭМ, КЖ, ВК, etc.)
-2. **Graphical symbols** (if no title block): types of conventional graphical designations on the drawing (electrical symbols → EM, ducts → OV, reinforcement/concrete sections → КЖ, plumbing fixtures → ВК)
-3. **Terminology** (if neither stamp nor characteristic symbols): concrete grade, rebar class → КЖ; cable cross-section, breaker → EM; air flow rate, duct → OV
-
-Then:
-- If `discipline_detected` == `{SECTION}` or it is a general sheet (stamp, table of contents, general notes, register) → **analyze normally** per checklist below
-- If `discipline_detected` != `{SECTION}`:
-  - DO NOT generate normative findings for this block
-  - severity of all findings for the block = "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
-  - In `discipline_note`, list 1-2 facts from the sheet that identified a different discipline
-
 ## What to Look For on Drawings
 
 {DISCIPLINE_CHECKLIST}
@@ -112,20 +95,15 @@ WRITE via Write tool: `{OUTPUT_PATH}/block_batch_{BATCH_ID_PADDED}.json`
       "sheet": "Лист 3",
       "label": "Описание что на чертеже",
       "sheet_type": "см. таблицу типов чертежей выше",
-      "discipline_detected": "АР",
-      "discipline_mismatch": false,
-      "discipline_note": null,
       "unreadable_text": false,
       "unreadable_details": null,
       "summary": "Краткое описание содержимого (2-4 предложения)",
       "key_values_read": ["АВ E3H 1600А", "Кабель ВВГнг(А)-FRLS 5x10"],
-      "selected_text_block_ids": ["TB_ID_1", "TB_ID_2"],
       "evidence_text_refs": [
         {
           "text_block_id": "TB_ID_1",
           "role": "caption|note|legend|title|table|other",
-          "used_for": "summary|finding|value_extraction|cross_check",
-          "confidence": 0.9
+          "used_for": "summary|finding|value_extraction|cross_check"
         }
       ],
       "findings": [
@@ -136,7 +114,6 @@ WRITE via Write tool: `{OUTPUT_PATH}/block_batch_{BATCH_ID_PADDED}.json`
           "finding": "Конкретное описание проблемы",
           "norm": "СП/ГОСТ/ПУЭ, пункт",
           "norm_quote": "Точная цитата из нормы, на которую опираешься (1-2 предложения). null если не помнишь точно.",
-          "norm_confidence": 0.9,
           "block_evidence": "BLOCK_ID",
           "value_found": "точная цитата с чертежа",
           "highlight_regions": [
@@ -165,32 +142,44 @@ WRITE via Write tool: `{OUTPUT_PATH}/block_batch_{BATCH_ID_PADDED}.json`
 
 ### Locality Fields (MANDATORY for each block_analysis):
 
-- **`selected_text_block_ids`** — list of text_block_id (from context `[text_block_id: ...]`) that you actually used when analyzing this block. If no text blocks were used — empty list `[]`.
-- **`evidence_text_refs`** — detailed traceability: for each used text block specify:
+- **`evidence_text_refs`** — traceability: for each used text block specify:
   - `text_block_id` — block ID
   - `role` — text block role: `"caption"`, `"note"`, `"legend"`, `"title"`, `"table"`, `"other"`
   - `used_for` — purpose: `"summary"`, `"finding"`, `"value_extraction"`, `"cross_check"`
-  - `confidence` — confidence (0.0–1.0) that the text block actually relates to this image block
 
-If text context did not contain `[text_block_id: ...]` markers, set `"selected_text_block_ids": []` and `"evidence_text_refs": []`.
+If text context did not contain `[text_block_id: ...]` markers, set `"evidence_text_refs": []`.
 
-## Visual Finding Anchoring (highlight_regions)
+## Visual Finding Anchoring (highlight_regions) — MANDATORY
 
-For EACH finding with `block_evidence` — provide `highlight_regions`: an array of rectangles showing WHERE on the block the issue is located.
+**EVERY finding MUST have a non-empty `highlight_regions` array.** This is used to show the user exactly where the problem is on the drawing.
 
 Coordinates are **normalized** (0.0–1.0) relative to block dimensions:
 - `x`, `y` — top-left corner of the region (fraction of block width/height)
 - `w`, `h` — width and height of the region (fraction of block width/height)
-- `label` — brief description (what is highlighted)
+- `label` — brief description of what is highlighted (equipment name, cable mark, dimension, etc.)
 
-**How to determine coordinates:**
-- Mentally divide the block into a 10×10 grid. If the issue is in the bottom-right corner → x≈0.7, y≈0.7
-- For text elements (marks, dimensions) — narrow rectangle around the label
-- For graphical elements (equipment, details) — rectangle around the element
-- If the issue concerns the entire block → `[{"x": 0, "y": 0, "w": 1, "h": 1, "label": "Весь чертёж"}]`
-- Multiple regions per finding are allowed (e.g., two conflicting locations)
+**Quick coordinate guide (pick the closest quadrant):**
 
-If you cannot determine a specific region — use empty array `[]`.
+| Location on drawing | x | y | Typical w | Typical h |
+|---------------------|-----|-----|-----------|-----------|
+| Top-left corner | 0.0 | 0.0 | 0.3 | 0.3 |
+| Top-center | 0.3 | 0.0 | 0.4 | 0.3 |
+| Top-right corner | 0.7 | 0.0 | 0.3 | 0.3 |
+| Center-left | 0.0 | 0.3 | 0.3 | 0.4 |
+| Center | 0.3 | 0.3 | 0.4 | 0.4 |
+| Center-right | 0.7 | 0.3 | 0.3 | 0.4 |
+| Bottom-left corner | 0.0 | 0.7 | 0.3 | 0.3 |
+| Bottom-center | 0.3 | 0.7 | 0.4 | 0.3 |
+| Bottom-right corner | 0.7 | 0.7 | 0.3 | 0.3 |
+
+**Rules:**
+1. For a specific element (cable, breaker, duct, label) — tight rectangle around it
+2. For a table/specification issue — rectangle around the relevant table area
+3. For a missing element — rectangle around the area where it SHOULD be
+4. Multiple regions allowed (e.g., two conflicting values in different locations)
+5. **Fallback: if the issue applies to the entire drawing** → `[{"x": 0, "y": 0, "w": 1, "h": 1, "label": "Entire drawing — <reason>"}]`
+
+**Never return an empty `highlight_regions: []`.** Use the whole-block fallback if you cannot pinpoint the exact location.
 
 ## Rules
 
@@ -203,17 +192,12 @@ If you cannot determine a specific region — use empty array `[]`.
 7. Write JSON via Write tool — DO NOT output to chat
 8. After writing, output a brief summary
 
-## Normative Accuracy (norm_quote + norm_confidence)
+## Normative Accuracy (norm_quote)
 
 For EACH finding with a `norm` field:
 - **`norm_quote`** — exact quote from the normative document (1-2 sentences). Set `null` if you don't remember the exact wording.
-- **`norm_confidence`** — confidence (0.0–1.0) that the specified clause actually contains this requirement:
-  - **1.0** — you know the clause text exactly (e.g., well-known ПУЭ/СП requirements)
-  - **0.7–0.9** — you remember the essence but are unsure of the exact wording or clause number
-  - **0.5–0.7** — you know the requirement exists but are unsure of the specific clause
-  - **< 0.5** — you're guessing → better to set `null` for norm_quote
 
-These fields are used during norm verification: at `confidence < 0.8` the verifier will check the quote via WebSearch.
+All quotes will be verified at the norm verification stage (stage 04) regardless of confidence.
 
 ## Normative Reference
 Normative verification is performed at the findings consolidation stage — here, only record facts from the drawings.

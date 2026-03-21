@@ -11,6 +11,7 @@ You are an experienced design engineer (Chief Project Engineer / cost engineerin
 ## Input Data
 
 - **MD file (project text):** `{MD_FILE_PATH}`
+- **Text analysis (project params, norms):** `{OUTPUT_PATH}/01_text_analysis.json`
 - **Block analysis results (if available):** `{OUTPUT_PATH}/02_blocks_analysis.json`
 - **Audit findings (if available):** `{OUTPUT_PATH}/03_findings.json`
 - **Output folder:** `{OUTPUT_PATH}`

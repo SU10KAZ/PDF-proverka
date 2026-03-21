@@ -6,7 +6,7 @@
 
 ## Входные данные
 
-1. **Замечания для проверки**: `{OUTPUT_PATH}/03_findings_review_input.json` (если существует — содержит только risky findings, отфильтрованные Python). Если файла нет — читай `{OUTPUT_PATH}/03_findings.json` целиком.
+1. **Замечания для проверки**: `{OUTPUT_PATH}/03_findings.json`
 2. **Анализ блоков**: `{OUTPUT_PATH}/02_blocks_analysis.json`
 3. **Document Graph**: `{OUTPUT_PATH}/document_graph.json`
 4. **Текстовый анализ**: `{OUTPUT_PATH}/01_text_analysis.json`

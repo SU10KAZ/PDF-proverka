@@ -217,18 +217,8 @@ class TestLegacyChecker:
                 {"page": 1, "sheet_no_raw": "1", "text_blocks": [], "image_blocks": []}
             ]}), encoding="utf-8"
         )
-        (output_dir / "_findings_compact.json").write_text(
-            json.dumps({
-                "page_sheet_map": {"1": "1"},
-                "blocks_compact": [],
-                "preliminary_findings": [
-                    {"id": "G-001", "block_evidence": "block_IMG.png"},
-                ],
-            }), encoding="utf-8"
-        )
-
         result = check_project(tmp_path)
-        assert result["findings_block_evidence_filename"] == 1
+        assert result["page_sheet_map_size"] == 1
 
     def test_ok_project_not_legacy(self, tmp_path):
         """Проект с v2 graph и полными данными → не legacy."""
@@ -244,18 +234,6 @@ class TestLegacyChecker:
                 {"page": 1, "sheet_no_raw": "1", "text_blocks": [], "image_blocks": []}
             ]}), encoding="utf-8"
         )
-        (output_dir / "_findings_compact.json").write_text(
-            json.dumps({
-                "page_sheet_map": {"1": "1"},
-                "blocks_compact": [
-                    {"block_id": "I1", "selected_text_block_ids": ["T1"]},
-                ],
-                "preliminary_findings": [
-                    {"id": "G-001", "block_evidence": "I1"},
-                ],
-            }), encoding="utf-8"
-        )
-
         result = check_project(tmp_path)
         assert result["is_legacy"] is False
 
@@ -263,12 +241,6 @@ class TestLegacyChecker:
 # ─── Merge output contract ────────────────────────────────────────────────
 
 class TestMergeContract:
-    def test_merge_source_g_ids_in_schema(self):
-        """merge_source_g_ids должен быть в merge prompt schema."""
-        prompt_path = Path(__file__).parent.parent / ".claude" / "findings_merge_task.md"
-        content = prompt_path.read_text(encoding="utf-8")
-        assert "merge_source_g_ids" in content
-
     def test_source_block_ids_in_schema(self):
         """source_block_ids должен быть в merge prompt schema."""
         prompt_path = Path(__file__).parent.parent / ".claude" / "findings_merge_task.md"

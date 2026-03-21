@@ -284,10 +284,6 @@ def build_local_text_links(
 
         candidates = []
         for tb in text_blocks:
-            # Stamp/metadata blocks не участвуют в locality scoring
-            if tb.get("is_stamp"):
-                continue
-
             tb_coords = tb.get("coords_norm")
             if not tb_coords:
                 continue
@@ -400,9 +396,6 @@ def build_document_graph_v2(
                 if not bid:
                     continue
 
-                # Определяем, является ли блок штампом/metadata
-                is_stamp = bool(block.get("stamp_data"))
-
                 if btype == "text":
                     text_blocks.append({
                         "id": bid,
@@ -411,7 +404,6 @@ def build_document_graph_v2(
                         "coords_norm": coords_norm,
                         "source": source,
                         "page": page_number,  # 1-based (unified)
-                        "is_stamp": is_stamp,
                     })
                 elif btype == "image":
                     image_blocks.append({

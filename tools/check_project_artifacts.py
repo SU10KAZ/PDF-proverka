@@ -58,45 +58,22 @@ def check_project(project_dir: str | Path) -> dict:
         warnings.append("document_graph.json отсутствует")
         result["is_legacy"] = True
 
-    # page_sheet_map в compact
-    compact_path = output_dir / "_findings_compact.json"
-    if compact_path.exists():
-        compact = json.loads(compact_path.read_text(encoding="utf-8"))
-        psm = compact.get("page_sheet_map", {})
+    # page_sheet_map из document_graph.json
+    if graph_path.exists():
+        psm = {}
+        for pg in graph.get("pages", []):
+            page_num = pg.get("page")
+            sheet_no = (
+                pg.get("sheet_no_raw")
+                or pg.get("sheet_no_normalized")
+                or pg.get("sheet_no")
+            )
+            if page_num is not None and sheet_no:
+                psm[str(page_num)] = sheet_no
         result["page_sheet_map_size"] = len(psm)
         if len(psm) == 0:
             warnings.append("page_sheet_map пуст — merge LLM будет угадывать sheet")
             result["is_legacy"] = True
-
-        # blocks_compact locality fields
-        bcs = compact.get("blocks_compact", [])
-        with_stbi = sum(1 for bc in bcs if bc.get("selected_text_block_ids"))
-        with_etr = sum(1 for bc in bcs if bc.get("evidence_text_refs"))
-        result["blocks_compact_total"] = len(bcs)
-        result["blocks_with_selected_text_block_ids"] = with_stbi
-        result["blocks_with_evidence_text_refs"] = with_etr
-        if len(bcs) > 0 and with_stbi == 0:
-            warnings.append(f"0/{len(bcs)} blocks_compact имеют selected_text_block_ids")
-            result["is_legacy"] = True
-
-        # preliminary_findings block_evidence format
-        pfs = compact.get("preliminary_findings", [])
-        filename_form = sum(
-            1 for pf in pfs
-            if pf.get("block_evidence", "").startswith("block_")
-            or pf.get("block_evidence", "").endswith(".png")
-        )
-        bare_form = sum(
-            1 for pf in pfs
-            if pf.get("block_evidence") and not (
-                pf["block_evidence"].startswith("block_")
-                or pf["block_evidence"].endswith(".png")
-            )
-        )
-        result["findings_block_evidence_filename"] = filename_form
-        result["findings_block_evidence_bare"] = bare_form
-        if filename_form > 0:
-            warnings.append(f"{filename_form} findings с block_evidence в filename-form (block_X.png)")
     else:
         result["page_sheet_map_size"] = None
 

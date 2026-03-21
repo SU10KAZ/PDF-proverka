@@ -8,7 +8,7 @@ You are an independent reviewer (Critic). Your task is to verify each finding fr
 
 ## Input Data
 
-1. **Findings to review**: `{OUTPUT_PATH}/03_findings_review_input.json` (if exists — contains only risky findings filtered by Python). If file doesn't exist — read `{OUTPUT_PATH}/03_findings.json` in full.
+1. **Findings to review**: `{OUTPUT_PATH}/03_findings.json`
 2. **Block analysis**: `{OUTPUT_PATH}/02_blocks_analysis.json`
 3. **Document Graph**: `{OUTPUT_PATH}/document_graph.json`
 4. **Text analysis**: `{OUTPUT_PATH}/01_text_analysis.json`

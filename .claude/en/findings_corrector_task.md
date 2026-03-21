@@ -95,4 +95,4 @@ Add to corrected file's `meta`:
 4. Priority: preserve with fix > remove
 5. Write JSON via Write tool — DO NOT output to chat
 6. After writing, output a brief summary: fixed, removed, downgraded counts
-7. **You MUST preserve `norm_quote` and `norm_confidence` fields** — during correction these fields must remain unchanged. DO NOT delete or nullify them.
+7. **You MUST preserve the `norm_quote` field** — during correction this field must remain unchanged. DO NOT delete or nullify it.
