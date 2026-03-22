@@ -1835,9 +1835,27 @@ a:hover { color: var(--text-bright); }
 }
 .stage-tokens {
     font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--text);
+    font-size: 9px;
     margin-top: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    line-height: 1.2;
+}
+.stage-tokens__in {
+    color: #4ade80;
+}
+.stage-tokens__out {
+    color: #f87171;
+}
+.stage-model {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: var(--text-dim);
+    margin-top: 2px;
+    text-align: center;
+    opacity: 0.7;
 }
 
 .pipeline-arrow {
@@ -4228,3 +4246,71 @@ a:hover { color: var(--text-bright); }
 .pause-modal__option.btn-primary:hover { background: rgba(99,102,241,0.2); border-color: rgba(99,102,241,0.5); }
 .pause-modal__option.btn-danger { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); color: var(--text); }
 .pause-modal__option.btn-danger:hover { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); }
+
+/* ═══ Model Config Modal ═══ */
+.model-config-modal {
+    background: var(--bg-card, #1a1f2e);
+    border: 1px solid rgba(0, 188, 212, 0.3);
+    border-radius: 10px;
+    padding: 24px;
+    max-width: 640px;
+    width: 90vw;
+}
+.model-config-modal h3 {
+    margin: 0 0 4px;
+    font-size: 16px;
+    color: var(--text, #e0e0e0);
+}
+.model-config-desc {
+    font-size: 12px;
+    color: var(--text-dim, #78909c);
+    margin: 0 0 16px;
+}
+.model-config-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 18px;
+}
+.model-config-table thead th {
+    padding: 8px 10px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #00bcd4;
+    border-bottom: 1px solid rgba(0, 188, 212, 0.2);
+    white-space: nowrap;
+}
+.model-config-stage-col {
+    text-align: left !important;
+    width: 40%;
+}
+.model-config-table tbody tr {
+    transition: background 0.12s;
+}
+.model-config-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+.model-config-stage-name {
+    padding: 7px 10px;
+    text-align: left;
+    font-size: 13px;
+    color: #b0bec5;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    white-space: nowrap;
+}
+.model-config-radio-cell {
+    padding: 7px 10px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.model-config-radio {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: #00bcd4;
+}
+.model-config-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}

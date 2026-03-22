@@ -15,6 +15,8 @@ from webapp.config import (
     CLAUDE_CLI,
     get_claude_model, set_claude_model, CLAUDE_MODEL_OPTIONS,
     get_stage_models, set_stage_model, get_model_for_stage,
+    STAGE_MODELS_OPENROUTER, GEMINI_MODEL, GPT_MODEL,
+    STAGE_MODEL_CONFIG, AVAILABLE_MODELS, get_stage_model, is_claude_stage,
 )
 
 router = APIRouter(prefix="/api/audit", tags=["audit"])
@@ -37,13 +39,22 @@ async def _safe_task(coro, name: str = "task"):
 
 @router.get("/model")
 async def get_model():
-    """Текущая модель Claude CLI."""
-    return {"model": get_claude_model(), "options": CLAUDE_MODEL_OPTIONS}
+    """Текущая модель (default) и доступные опции.
+
+    Возвращает как legacy Claude модели, так и OpenRouter модели.
+    """
+    openrouter_options = sorted(set(STAGE_MODELS_OPENROUTER.values()))
+    return {
+        "model": get_claude_model(),
+        "options": CLAUDE_MODEL_OPTIONS,
+        "openrouter_models": openrouter_options,
+        "openrouter_default": GPT_MODEL,
+    }
 
 
 @router.post("/model")
 async def switch_model(model: str = Query(..., description="ID модели")):
-    """Переключить модель Claude CLI."""
+    """Переключить модель (legacy Claude CLI)."""
     if model not in CLAUDE_MODEL_OPTIONS:
         raise HTTPException(400, f"Неизвестная модель. Доступны: {CLAUDE_MODEL_OPTIONS}")
     set_claude_model(model)
@@ -52,29 +63,45 @@ async def switch_model(model: str = Query(..., description="ID модели")):
 
 @router.get("/model/stages")
 async def get_stage_model_config():
-    """Настройки per-stage моделей (гибридный режим)."""
-    stages = get_stage_models()
-    default = get_claude_model()
+    """Настройки per-stage моделей (унифицированный конфиг).
+
+    Возвращает текущий маппинг этап → модель (Claude CLI + OpenRouter).
+    """
+    from webapp.config import STAGE_MODEL_RESTRICTIONS
     return {
-        "default_model": default,
-        "stages": {k: (v or default) for k, v in stages.items()},
-        "options": CLAUDE_MODEL_OPTIONS,
+        "stages": dict(STAGE_MODEL_CONFIG),
+        "available_models": AVAILABLE_MODELS,
+        "restrictions": STAGE_MODEL_RESTRICTIONS,
     }
 
 
 @router.post("/model/stages")
-async def set_stage_model_config(
-    stage: str = Query(..., description="Этап: text_analysis, block_batch, findings_merge, norm_verify, norm_fix, optimization"),
-    model: str = Query(..., description="Модель или 'default'"),
-):
-    """Установить модель для конкретного этапа ('default' = использовать общую)."""
-    if model == "default":
-        set_stage_model(stage, None)
-    elif model not in CLAUDE_MODEL_OPTIONS:
-        raise HTTPException(400, f"Неизвестная модель. Доступны: {CLAUDE_MODEL_OPTIONS}")
-    else:
-        set_stage_model(stage, model)
-    return {"stage": stage, "model": get_model_for_stage(stage)}
+async def set_stage_model_config(request: dict):
+    """Установить модели для всех этапов (bulk update).
+
+    Body: {"text_analysis": "openai/gpt-5.4", "block_batch": "google/gemini-3.1-pro-preview", ...}
+    """
+    from webapp.config import STAGE_MODEL_RESTRICTIONS
+    valid_model_ids = {m["id"] for m in AVAILABLE_MODELS}
+    updated = {}
+    for stage, model in request.items():
+        if stage not in STAGE_MODEL_CONFIG:
+            continue
+        if model not in valid_model_ids:
+            continue
+        # Проверка restrictions (например block_batch только OpenRouter)
+        allowed = STAGE_MODEL_RESTRICTIONS.get(stage)
+        if allowed and model not in allowed:
+            continue
+        STAGE_MODEL_CONFIG[stage] = model
+        # Синхронизация с legacy конфигами
+        STAGE_MODELS_OPENROUTER[stage] = model
+        if model.startswith("claude-"):
+            set_stage_model(stage, model)
+        else:
+            set_stage_model(stage, None)
+        updated[stage] = model
+    return {"status": "ok", "updated": updated, "stages": dict(STAGE_MODEL_CONFIG)}
 
 
 @router.get("/account")

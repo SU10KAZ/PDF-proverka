@@ -1,4 +1,5 @@
 > **OUTPUT LANGUAGE:** All text values in JSON output MUST be written in Russian.
+> **RESPONSE FORMAT:** Respond with valid JSON only. No explanations, no markdown, no text outside JSON.
 
 # FINDINGS CORRECTION — {PROJECT_ID}
 
@@ -8,22 +9,24 @@ You are a Corrector. The Critic has reviewed each finding and issued a verdict. 
 
 ## Input Data
 
-1. **Findings**: `{OUTPUT_PATH}/03_findings.json`
-2. **Critic verdicts**: `{OUTPUT_PATH}/03_findings_review.json`
-3. **Block analysis**: `{OUTPUT_PATH}/02_blocks_analysis.json`
-4. **Document Graph**: `{OUTPUT_PATH}/document_graph.json`
+READ via Read tool:
+
+1. **Findings** — `{OUTPUT_PATH}/03_findings.json`
+2. **Critic verdicts** — `{OUTPUT_PATH}/03_findings_review.json`
+3. **Block analysis** — `{OUTPUT_PATH}/02_blocks_analysis.json`
+4. **Document Graph** — `{OUTPUT_PATH}/document_graph.json`
 
 ## Task
 
-### Step 1: Load Data
+### Step 1: Analyze Verdicts
 
-Read `03_findings_review.json` → `reviews[]`. For each finding with a verdict other than `pass` — perform correction.
+From critic verdicts → `reviews[]`. For each finding with a verdict other than `pass` — perform correction.
 
 ### Step 2: Correction by Verdict Type
 
 #### `no_evidence` — no linkage to source data
 
-1. Try to find evidence: search `02_blocks_analysis.json` for blocks whose `key_values_read` or `findings[]` match the finding semantically
+1. Try to find evidence: search block analysis for blocks whose `key_values_read` or `findings[]` match the finding semantically
 2. If found → fill `evidence` and `related_block_ids`
 3. If NOT found → change severity to `"ПРОВЕРИТЬ ПО СМЕЖНЫМ"` with prefix `"[Critic: evidence не найден]"` in `description`
 
@@ -49,27 +52,24 @@ Three options (by priority):
 
 #### `contradicts_text` — contradicts document text
 
-1. Re-read `document_graph.json` → `text_blocks` for the finding's page
+1. Re-read document graph → `text_blocks` for the finding's page
 2. If contradiction is confirmed → **remove the finding** (add to `removed_findings`)
 3. If the finding can be reformulated without contradiction → fix `description`
 
-### Step 3: Save Result
+### Step 3: Write Corrected Findings
 
-1. **Backup**: copy contents of `03_findings.json` to `03_findings_pre_review.json`
-2. **Write**: corrected `03_findings.json` with:
-   - Fixed findings
-   - Removed findings excluded from `findings[]`
-   - Updated `meta` (recalculate `total_findings`, `by_severity`)
-   - Add to `meta`: `"review_applied": true`, `"review_stats": {...}`
+Backup: copy `03_findings.json` to `03_findings_pre_review.json` via Write tool.
+WRITE via Write tool: `{OUTPUT_PATH}/03_findings.json`
 
-## Output Files
+Include in the result:
+- Fixed findings
+- Removed findings excluded from `findings[]`
+- Updated `meta` (recalculate `total_findings`, `by_severity`)
+- Add to `meta`: `"review_applied": true`, `"review_stats": {...}`
 
-WRITE via Write tool:
+## Output JSON Schema
 
-1. `{OUTPUT_PATH}/03_findings_pre_review.json` — backup of original
-2. `{OUTPUT_PATH}/03_findings.json` — corrected version
-
-Add to corrected file's `meta`:
+Return corrected findings with updated meta:
 
 ```json
 {
@@ -83,7 +83,8 @@ Add to corrected file's `meta`:
       "removed": 1,
       "downgraded": 0
     }
-  }
+  },
+  "findings": ["...corrected findings array..."]
 }
 ```
 
@@ -94,5 +95,5 @@ Add to corrected file's `meta`:
 3. When removing a finding — DO NOT renumber the remaining ones (IDs stay)
 4. Priority: preserve with fix > remove
 5. Write JSON via Write tool — DO NOT output to chat
-6. After writing, output a brief summary: fixed, removed, downgraded counts
-7. **You MUST preserve `norm_quote` and `norm_confidence` fields** — during correction these fields must remain unchanged. DO NOT delete or nullify them.
+6. Respond with valid JSON matching the schema above
+7. **You MUST preserve the `norm_quote` field** — during correction this field must remain unchanged. DO NOT delete or nullify it.

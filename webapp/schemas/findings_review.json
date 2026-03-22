@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FindingsReview",
+  "description": "Stage 03b: Critic review of findings",
+  "type": "object",
+  "required": ["meta", "reviews"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["project_id", "review_date", "total_reviewed", "verdicts"],
+      "properties": {
+        "project_id": { "type": "string" },
+        "review_date": { "type": "string", "format": "date-time" },
+        "total_reviewed": { "type": "integer", "minimum": 0 },
+        "verdicts": {
+          "type": "object",
+          "required": ["pass", "no_evidence", "phantom_block", "weak_evidence", "page_mismatch", "contradicts_text"],
+          "properties": {
+            "pass": { "type": "integer", "minimum": 0 },
+            "no_evidence": { "type": "integer", "minimum": 0 },
+            "phantom_block": { "type": "integer", "minimum": 0 },
+            "weak_evidence": { "type": "integer", "minimum": 0 },
+            "page_mismatch": { "type": "integer", "minimum": 0 },
+            "contradicts_text": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "reviews": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["finding_id", "verdict"],
+        "properties": {
+          "finding_id": { "type": "string" },
+          "verdict": {
+            "type": "string",
+            "enum": ["pass", "no_evidence", "phantom_block", "weak_evidence", "page_mismatch", "contradicts_text"]
+          },
+          "details": { "type": ["string", "null"], "default": null },
+          "suggested_action": {
+            "type": ["string", "null"],
+            "enum": [null, "narrow_evidence", "downgrade_severity", "remove"],
+            "default": null
+          },
+          "correct_page": { "type": ["integer", "null"], "default": null },
+          "correct_sheet": { "type": ["string", "null"], "default": null }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

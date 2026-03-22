@@ -1,23 +1,21 @@
 > **OUTPUT LANGUAGE:** All text values in JSON output (finding, source, reason, etc.) MUST be written in Russian.
+> **RESPONSE FORMAT:** Respond with valid JSON only. No explanations, no markdown, no text outside JSON.
 
 # PROJECT TEXT ANALYSIS — {PROJECT_ID}
 
 ## Input Data
 
-1. **MD file** (primary text source): `{MD_FILE_PATH}`
+1. **MD file** (primary text source) — READ via Read tool: `{MD_FILE_PATH}`
    - `[TEXT]` blocks — text data (explanatory notes, specifications, tables)
    - `[IMAGE]` blocks — drawing descriptions (type, axes, entities, text on drawing)
 
-2. **Image block index**: `{OUTPUT_PATH}/blocks/index.json`
-   - `block_id`, `page`, `ocr_label`, `ocr_text_len`
-
-3. **Normative reference**: `{DISCIPLINE_NORMS_FILE}`
+2. **Normative reference** — READ via Read tool: `{DISCIPLINE_NORMS_FILE}` (if available)
 
 ## Task
 
 ### Stage 1: Text Data Analysis
 
-Read the MD file COMPLETELY. Extract:
+Analyze the MD content COMPLETELY. Extract:
 
 1. **Project parameters** (`project_params`):
    - Building type, number of floors, areas
@@ -56,24 +54,11 @@ Read the MD file COMPLETELY. Extract:
 
 {DISCIPLINE_CHECKLIST}
 
-### Stage 2: Image Block Prioritization
-
-For EACH block from `index.json`, determine priority:
-
-| Priority | Criteria |
-|----------|----------|
-| **HIGH** | Schematics, plans with routing, key drawings |
-| **MEDIUM** | Specifications, tables, details |
-| **LOW** | General views, facades |
-| **SKIP** | Title blocks, title pages, tables of contents |
-
 ## Finding Categories
 
 {DISCIPLINE_FINDING_CATEGORIES}
 
-## Output File
-
-WRITE via Write tool: `{OUTPUT_PATH}/01_text_analysis.json`
+## Output JSON Schema
 
 ```json
 {
@@ -103,31 +88,27 @@ WRITE via Write tool: `{OUTPUT_PATH}/01_text_analysis.json`
       "finding": "Описание замечания",
       "norm": "Документ, пункт",
       "norm_quote": "Точная цитата из нормы или null",
-      "norm_confidence": 0.9,
-      "needs_visual_check": true,
       "related_block_ids": ["block_id"]
     }
-  ],
-  "blocks_for_review": [
-    {"block_id": "...", "page": 7, "priority": "HIGH", "reason": "Описание"}
-  ],
-  "blocks_skipped": [
-    {"block_id": "...", "page": 3, "priority": "SKIP", "reason": "Штамп"}
   ]
 }
 ```
 
-## Normative Accuracy (norm_quote + norm_confidence)
+## Normative Accuracy (norm_quote)
 
 For EACH finding with a `norm` field:
 - **`norm_quote`** — exact quote from the norm clause (1-2 sentences). `null` if unsure.
-- **`norm_confidence`** — confidence 0.0–1.0. At < 0.8, the verifier will check via WebSearch.
+- All quotes will be verified at the norm verification stage (stage 04) regardless of confidence.
+
+## Output
+
+WRITE via Write tool: `{OUTPUT_PATH}/01_text_analysis.json`
 
 ## Rules
 
-1. Read the MD file COMPLETELY — do not skip sections
+1. Analyze the MD content COMPLETELY — do not skip sections
 2. `text_findings[]` — based on text data only (not drawings)
-3. `blocks_for_review[]` — fill for each block from index.json
-4. severity — ONLY one of the 5 values
-5. Write JSON via Write tool — DO NOT output to chat
-6. After writing, output a brief summary
+3. severity — ONLY one of the 5 values
+4. Write JSON via Write tool — DO NOT output to chat
+5. After writing, output a brief summary of what was found
+6. Respond with valid JSON matching the schema above

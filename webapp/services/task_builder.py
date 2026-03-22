@@ -1005,220 +1005,7 @@ def prepare_block_batch_task(
     return task
 
 
-# ─── Компактификация данных для findings_merge ───
-
-def _enrich_compact_from_graph_v2(compact: dict, graph: dict):
-    """Обогатить blocks_compact данными locality из document_graph v2.
-
-    Для каждого block_id находит:
-    - selected_text_block_ids из local_text_links
-    - local_text_excerpt (первые 300 символов ближайшего text-блока)
-    - block_ocr_excerpt (первые 200 символов OCR)
-    - sheet_no из страницы
-    """
-    # Индекс: page → page_data
-    pages_by_num = {p["page"]: p for p in graph.get("pages", [])}
-
-    # Индекс: block_id → page_num
-    block_to_page: dict[str, int] = {}
-    for pg in graph.get("pages", []):
-        for img in pg.get("image_blocks", []):
-            block_to_page[img["id"]] = pg["page"]
-
-    # Индекс text blocks
-    text_index: dict[str, dict] = {}
-    for pg in graph.get("pages", []):
-        for tb in pg.get("text_blocks", []):
-            text_index[tb["id"]] = tb
-
-    for bc in compact.get("blocks_compact", []):
-        bid = bc.get("block_id", "")
-        if not bid:
-            continue
-
-        page_num = block_to_page.get(bid, bc.get("page", 0))
-        pg = pages_by_num.get(page_num)
-        if not pg:
-            continue
-
-        # sheet_no
-        bc["sheet_no"] = pg.get("sheet_no_raw") or pg.get("sheet_no_normalized") or ""
-
-        # local_text_links
-        local_links = pg.get("local_text_links", {})
-        candidates = local_links.get(bid, [])
-
-        # Enrich only missing fields — don't overwrite primary data from block_analyses
-        if not bc.get("selected_text_block_ids") and candidates:
-            bc["selected_text_block_ids"] = [c["text_block_id"] for c in candidates]
-
-        # local_text_excerpt — текст лучшего кандидата (always enrich if empty)
-        if not bc.get("local_text_excerpt") and candidates:
-            best_tb_id = candidates[0]["text_block_id"]
-            best_tb = text_index.get(best_tb_id)
-            if best_tb:
-                bc["local_text_excerpt"] = (best_tb.get("text") or "")[:300]
-
-        # block_ocr_excerpt (always enrich if empty)
-        if not bc.get("block_ocr_excerpt"):
-            for img in pg.get("image_blocks", []):
-                if img["id"] == bid:
-                    ocr = img.get("ocr_text_normalized") or img.get("ocr") or ""
-                    bc["block_ocr_excerpt"] = ocr[:200]
-                    break
-
-
-def _prepare_compact_findings_input(project_id: str) -> Path | None:
-    """Создать компактный JSON из 01+02 для findings_merge.
-
-    Убирает: полные block summaries, дублирующий контент.
-    Оставляет: findings, key_values, project_params, verified items.
-
-    Типичное сжатие: 800 KB → 100-200 KB (4-8x меньше).
-    """
-    output_dir = resolve_project_dir(project_id) / "_output"
-    stage01 = output_dir / "01_text_analysis.json"
-    stage02 = output_dir / "02_blocks_analysis.json"
-    compact_path = output_dir / "_findings_compact.json"
-
-    compact = {}
-
-    # Из 01: project_params, normative_refs, text_findings
-    if stage01.exists():
-        try:
-            data01 = json.loads(stage01.read_text(encoding="utf-8"))
-            compact["project_params"] = data01.get("project_params", {})
-            compact["normative_refs_found"] = data01.get("normative_refs_found", [])
-            compact["text_findings"] = data01.get("text_findings", [])
-            # Информация о пропущенных блоках (для полноты картины)
-            skipped = data01.get("blocks_skipped", [])
-            compact["blocks_skipped_count"] = len(skipped)
-        except (json.JSONDecodeError, OSError):
-            return None
-
-    # Из 02: findings из block_analyses, items_verified, key_values (без полных summary)
-    if stage02.exists():
-        try:
-            data02 = json.loads(stage02.read_text(encoding="utf-8"))
-
-            # Items verified — полностью
-            compact["items_verified_from_stage_01"] = data02.get(
-                "items_verified_from_stage_01", []
-            )
-
-            # Собираем findings из block_analyses[].findings (основной источник)
-            # + legacy preliminary_findings
-            block_analyses = data02.get("block_analyses", [])
-            all_block_findings = []
-            for ba in block_analyses:
-                for f in ba.get("findings", []):
-                    if "block_evidence" not in f:
-                        f["block_evidence"] = ba.get("block_id", "")
-                    # Normalize block identity → bare id
-                    try:
-                        from graph_builder import normalize_block_ids_in_finding
-                        normalize_block_ids_in_finding(f)
-                    except ImportError:
-                        pass
-                    all_block_findings.append(f)
-            legacy_findings = data02.get("preliminary_findings", [])
-            compact["preliminary_findings"] = all_block_findings + legacy_findings
-
-            # Из block_analyses: block_id, page, sheet_type, key_values_read
-            # + discipline-поля для discipline gate в merge
-            # + locality fields (primary source: block_analyses after backfill)
-            compact["blocks_compact"] = [
-                {
-                    "block_id": ba.get("block_id", ""),
-                    "page": ba.get("page", 0),
-                    "sheet_type": ba.get("sheet_type", ""),
-                    "key_values_read": ba.get("key_values_read", []),
-                    "findings_count": len(ba.get("findings", [])),
-                    "discipline_detected": ba.get("discipline_detected", ""),
-                    "discipline_mismatch": ba.get("discipline_mismatch", False),
-                    "discipline_note": ba.get("discipline_note", ""),
-                    # Locality contract — primary source from block_analyses
-                    "selected_text_block_ids": ba.get("selected_text_block_ids", []),
-                    "evidence_text_refs": ba.get("evidence_text_refs", []),
-                    "local_text_excerpt": ba.get("local_text_excerpt", ""),
-                    "block_ocr_excerpt": ba.get("block_ocr_excerpt", ""),
-                    "sheet_no": ba.get("sheet_no", ""),
-                    "related_block_ids": ba.get("related_block_ids", []),
-                }
-                for ba in block_analyses
-            ]
-            compact["total_blocks_analyzed"] = len(block_analyses)
-        except (json.JSONDecodeError, OSError):
-            return None
-    else:
-        compact["preliminary_findings"] = []
-        compact["blocks_compact"] = []
-        compact["total_blocks_analyzed"] = 0
-
-    # Обогащаем blocks_compact из document_graph v2 (locality contract)
-    graph_path = output_dir / "document_graph.json"
-    graph = None
-    if graph_path.exists() and compact.get("blocks_compact"):
-        try:
-            graph = json.loads(graph_path.read_text(encoding="utf-8"))
-            if graph.get("version", 1) >= 2:
-                _enrich_compact_from_graph_v2(compact, graph)
-            else:
-                logger.warning(
-                    "[%s] document_graph v%s — locality enrichment skipped, "
-                    "run process_project.py --force to upgrade",
-                    project_id, graph.get("version", 1),
-                )
-        except (json.JSONDecodeError, OSError):
-            pass
-
-    # page_sheet_map из document_graph.json — для merge-этапа
-    if graph_path.exists():
-        try:
-            if graph is None:
-                graph = json.loads(graph_path.read_text(encoding="utf-8"))
-            page_sheet_map = {}
-            for pg in graph.get("pages", []):
-                page_num = pg.get("page")
-                sheet_no = (
-                    pg.get("sheet_no_raw")
-                    or pg.get("sheet_no_normalized")
-                    or pg.get("sheet_no")
-                )
-                if page_num is not None and sheet_no:
-                    page_sheet_map[str(page_num)] = sheet_no
-            compact["page_sheet_map"] = page_sheet_map
-        except (json.JSONDecodeError, OSError):
-            compact["page_sheet_map"] = {}
-    else:
-        compact["page_sheet_map"] = {}
-
-    # Fallback для v1: если page_sheet_map пуст, строим из MD-файла
-    if not compact["page_sheet_map"]:
-        md_file_path = _get_md_file_path(
-            _load_project_info(project_id), project_id
-        )
-        if md_file_path and md_file_path != "(нет)":
-            fallback_map = _extract_page_to_sheet_map(md_file_path)
-            if fallback_map:
-                compact["page_sheet_map"] = {
-                    str(k): v for k, v in fallback_map.items()
-                }
-                logger.warning(
-                    "[%s] page_sheet_map built from MD fallback (%d entries) — "
-                    "upgrade to graph v2 for stamp-based mapping",
-                    project_id, len(fallback_map),
-                )
-
-    # Записываем компактный файл
-    try:
-        compact_path.write_text(
-            json.dumps(compact, ensure_ascii=False, indent=2),
-            encoding="utf-8",
-        )
-        return compact_path
-    except OSError:
-        return None
+# ─── Свод замечаний (OCR-пайплайн) ───
 
 
 # ─── Свод замечаний (OCR-пайплайн) ───
@@ -1236,9 +1023,6 @@ def prepare_findings_merge_task(
     _, output_path = _get_project_paths(project_id)
     md_file_path = _get_md_file_path(project_info, project_id)
 
-    # Создаём компактный input
-    compact_path = _prepare_compact_findings_input(project_id)
-
     template = _inject_discipline(template, project_info)
 
     task = (
@@ -1247,17 +1031,6 @@ def prepare_findings_merge_task(
         .replace("{OUTPUT_PATH}", output_path)
         .replace("{MD_FILE_PATH}", md_file_path)
     )
-
-    # Если компактный файл создан — заменяем ссылки на полные файлы
-    if compact_path and compact_path.exists():
-        task = task.replace(
-            f"`{output_path}/01_text_analysis.json`",
-            f"`{compact_path}` *(компактная версия)*",
-        )
-        task = task.replace(
-            f"`{output_path}/02_blocks_analysis.json`",
-            f"`{compact_path}` *(уже включено выше)*",
-        )
 
     return task
 
@@ -1286,7 +1059,7 @@ def prepare_findings_critic_task(
 
     if chunk_suffix:
         task = task.replace(
-            "03_findings_review_input.json",
+            "03_findings.json",
             f"03_findings_review_input{chunk_suffix}.json",
         )
         task = task.replace(

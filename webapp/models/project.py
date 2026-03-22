@@ -57,9 +57,6 @@ class ProjectStatus(BaseModel):
     md_file_name: Optional[str] = None
     md_file_size_kb: float = 0.0
     text_source: str = "extracted_text"  # "md" | "extracted_text" | "none"
-    has_tiles: bool = False
-    tile_count: int = 0
-    tile_pages: int = 0
     pipeline: PipelineStatus = PipelineStatus()
     findings_count: int = 0
     findings_by_severity: dict[str, int] = {}

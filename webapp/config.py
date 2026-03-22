@@ -6,6 +6,9 @@ import os
 import shutil
 from pathlib import Path
 
+from dotenv import load_dotenv
+load_dotenv()
+
 # Корневая папка проекта (где лежат process_project.py и т.д.)
 # Приоритет: env AUDIT_BASE_DIR → автодетекция (webapp/../)
 BASE_DIR = Path(os.environ["AUDIT_BASE_DIR"]) if os.environ.get("AUDIT_BASE_DIR") else Path(__file__).resolve().parent.parent
@@ -134,6 +137,49 @@ _stage_models: dict[str, str | None] = {
     "optimization_corrector": None,        # Sonnet — корректировка оптимизаций
 }
 
+# ═══════════════════════════════════════════════════════════════════════════
+# Унифицированная конфигурация моделей по этапам (UI Stage Model Config)
+# Объединяет Claude CLI и OpenRouter модели в единый маппинг.
+# ═══════════════════════════════════════════════════════════════════════════
+
+STAGE_MODEL_CONFIG: dict[str, str] = {
+    "text_analysis":          "openai/gpt-5.4",
+    "block_batch":            "google/gemini-3.1-pro-preview",
+    "findings_merge":         "openai/gpt-5.4",
+    "findings_critic":        "openai/gpt-5.4",
+    "findings_corrector":     "openai/gpt-5.4",
+    "norm_verify":            "claude-opus-4-6",
+    "norm_fix":               "openai/gpt-5.4",
+    "optimization":           "google/gemini-3.1-pro-preview",
+    "optimization_critic":    "openai/gpt-5.4",
+    "optimization_corrector": "openai/gpt-5.4",
+}
+
+AVAILABLE_MODELS = [
+    {"id": "claude-opus-4-6", "label": "Opus", "provider": "claude_cli"},
+    {"id": "claude-sonnet-4-6", "label": "Sonnet", "provider": "claude_cli"},
+    {"id": "openai/gpt-5.4", "label": "GPT-5.4", "provider": "openrouter"},
+    {"id": "google/gemini-3.1-pro-preview", "label": "Gemini", "provider": "openrouter"},
+]
+
+# Этапы с ограничениями на выбор модели
+# block_batch: только OpenRouter (inline images, Claude CLI не поддерживает)
+STAGE_MODEL_RESTRICTIONS = {
+    "block_batch": ["openai/gpt-5.4", "google/gemini-3.1-pro-preview"],
+}
+
+def get_stage_model(stage: str) -> str:
+    """Получить модель для этапа из унифицированного конфига."""
+    stage_key = stage
+    if stage.startswith("block_batch"):
+        stage_key = "block_batch"
+    return STAGE_MODEL_CONFIG.get(stage_key, "openai/gpt-5.4")
+
+def is_claude_stage(stage: str) -> bool:
+    """Проверить, должен ли этап выполняться через Claude CLI."""
+    model = get_stage_model(stage)
+    return model.startswith("claude-")
+
 def get_claude_model() -> str:
     """Модель по умолчанию (для обратной совместимости)."""
     return _current_model
@@ -193,3 +239,45 @@ SEVERITY_CONFIG = {
     "РЕКОМЕНДАТЕЛЬНОЕ":   {"color": "#3498db", "bg": "#eaf2f8", "icon": "\U0001f535", "order": 4},
     "ПРОВЕРИТЬ ПО СМЕЖНЫМ": {"color": "#95a5a6", "bg": "#f2f3f4", "icon": "\u26aa", "order": 5},
 }
+
+# ═══════════════════════════════════════════════════════════════════════════
+# OpenRouter API — параллельный бэкенд для LLM (Gemini, GPT через единый API)
+# Старый Claude CLI бэкенд выше остаётся рабочим до полной миграции.
+# ═══════════════════════════════════════════════════════════════════════════
+
+# === OpenRouter ===
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+OPENROUTER_SITE_URL = "http://localhost:8080"
+OPENROUTER_SITE_NAME = "BIM Audit Pipeline"
+
+# === Модели OpenRouter ===
+GEMINI_MODEL = "google/gemini-3.1-pro-preview"
+GPT_MODEL = "openai/gpt-5.4"
+
+# === Per-stage модели (OpenRouter) ===
+STAGE_MODELS_OPENROUTER: dict[str, str] = {
+    "text_analysis":          GPT_MODEL,
+    "block_batch":            GEMINI_MODEL,
+    "findings_merge":         GPT_MODEL,
+    "findings_critic":        GPT_MODEL,
+    "findings_corrector":     GPT_MODEL,
+    "norm_verify":            GPT_MODEL,
+    "norm_fix":               GPT_MODEL,
+    "optimization":           GEMINI_MODEL,
+    "optimization_critic":    GPT_MODEL,
+    "optimization_corrector": GPT_MODEL,
+}
+
+# === Параметры генерации ===
+GEMINI_MAX_OUTPUT_TOKENS = 65536   # default 8192 — ОБЯЗАТЕЛЬНО задавать!
+GPT_MAX_OUTPUT_TOKENS = 128000
+DEFAULT_TEMPERATURE = 0.2
+
+# === Лимиты изображений ===
+GEMINI_MAX_IMAGES = 3600
+GPT_MAX_IMAGES = 500
+OPENROUTER_MAX_BLOCKS_PER_BATCH = 80
+
+# === JSON Schema для structured output ===
+SCHEMAS_DIR = Path(__file__).resolve().parent / "schemas"

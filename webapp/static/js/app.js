@@ -24,18 +24,8 @@ const app = createApp({
         ];
 
         // Tiles
-        const tilesProjectId = ref('');
-        const tilePages = ref([]);
-        const selectedPage = ref(null);
-        const selectedTile = ref(null);
-        const tileAnalysis = ref({});
-        const tileAnalysisLoading = ref(false);
 
         // Page analysis (page_summaries)
-        const pageSummaries = ref({});       // {page_num: summary} — без full_text
-        const pageAnalysis = ref(null);      // полный анализ выбранной страницы
-        const pageAnalysisLoading = ref(false);
-        const showPageAnalysis = ref(true);  // показать/скрыть панель
 
         // Blocks (OCR)
         const blocksProjectId = ref('');
@@ -175,6 +165,8 @@ const app = createApp({
         }
 
         const sonnetPercent = computed(() => {
+            // Legacy: процент Sonnet из JSONL-сканера (Claude Code sessions)
+            // При миграции на OpenRouter этот показатель уходит в 0 — это нормально
             const m = globalUsage.value.weekly_by_model || {};
             return (m.sonnet && m.sonnet.percent) || 0;
         });
@@ -227,6 +219,30 @@ const app = createApp({
             if (!usage || !usage.stages_summary) return null;
             const stageKey = _pipelineToStage[pipelineKey] || pipelineKey;
             return usage.stages_summary[stageKey] || null;
+        }
+
+        function stageTokensFormatted(pipelineKey) {
+            const s = stageTokens(pipelineKey);
+            if (!s) return null;
+            const inp = s.input_tokens || 0;
+            const out = s.output_tokens || 0;
+            if (inp === 0 && out === 0) return null;
+            return { inp: formatTokens(inp), out: formatTokens(out) };
+        }
+
+        function stageModel(pipelineKey) {
+            const s = stageTokens(pipelineKey);
+            if (!s || !s.model) return '';
+            // Краткое имя модели: google/gemini-3.1-pro-preview → Gemini, openai/gpt-5.4 → GPT
+            const m = s.model;
+            if (m.includes('gemini')) return 'Gemini';
+            if (m.includes('gpt')) return 'GPT';
+            if (m.includes('opus')) return 'Opus';
+            if (m.includes('sonnet')) return 'Sonnet';
+            if (m.includes('claude')) return 'Claude';
+            // Fallback: последняя часть после /
+            const parts = m.split('/');
+            return parts[parts.length - 1].substring(0, 10);
         }
 
         function stageDurationForProject(projectId, pipelineKey) {
@@ -374,8 +390,6 @@ const app = createApp({
                 'full': 'Полный конвейер',
                 // Legacy aliases
                 'prepare': 'Подготовка',
-                'tile_batches': 'Генерация пакетов',
-                'tile_audit': 'Анализ блоков',
                 'main_audit': 'Свод замечаний',
                 'merge': 'Слияние результатов',
             };
@@ -413,7 +427,7 @@ const app = createApp({
                 const pct = r.progress_total > 0
                     ? Math.round(r.progress_current / r.progress_total * 100)
                     : 0;
-                if ((r.stage === 'block_analysis' || r.stage === 'tile_audit') && b) {
+                if (r.stage === 'block_analysis' && b) {
                     return `${stageLabel(r.stage)}: пакет ${b.completed}/${b.total} (${Math.round(b.completed / b.total * 100)}%)`;
                 }
                 if (r.progress_total > 0) {
@@ -443,7 +457,7 @@ const app = createApp({
         // Этапы, где работает Claude CLI (и есть heartbeat)
         // Остальные (crop_blocks, excel, merge, prepare) — Python-скрипты без Claude
         function isClaudeStage(stage) {
-            const claudeStages = ['text_analysis', 'block_analysis', 'findings_merge', 'norm_verify', 'norm_fix', 'optimization', 'tile_audit', 'main_audit'];
+            const claudeStages = ['text_analysis', 'block_analysis', 'findings_merge', 'norm_verify', 'norm_fix', 'optimization', 'main_audit'];
             return claudeStages.includes(stage);
         }
 
@@ -546,7 +560,6 @@ const app = createApp({
 
         function handleRoute() {
             const hash = window.location.hash.slice(1) || '/';
-            selectedTile.value = null;
 
             if (hash === '/queue') {
                 currentView.value = 'queue';
@@ -568,11 +581,6 @@ const app = createApp({
                 currentView.value = 'blocks';
                 connectGlobalWS();
                 loadBlocks(id);
-            } else if (hash.match(/^\/project\/([^/]+)\/tiles$/)) {
-                const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/tiles$/)[1]);
-                currentView.value = 'tiles';
-                connectGlobalWS();  // Не нужен project WS для tiles
-                loadTiles(id);
             } else if (hash.match(/^\/project\/([^/]+)\/optimization$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/optimization$/)[1]);
                 currentView.value = 'optimization';
@@ -628,6 +636,67 @@ const app = createApp({
         const showPauseModal = ref(false);
         const isPaused = ref(false);
         const pauseMode = ref(null);
+
+        // ─── Model Config (per-stage) ───
+        const showModelConfig = ref(false);
+        const stageModelConfig = ref({});
+        const availableModels = ref([]);
+        const modelConfigPendingProjectId = ref(null);
+        const stageLabels = {
+            text_analysis: "01 Текст",
+            block_batch: "02 Блоки",
+            findings_merge: "03 Свод",
+            findings_critic: "C Critic",
+            findings_corrector: "F Fix",
+            norm_verify: "04 Нормы",
+            norm_fix: "04b Пересмотр",
+            optimization: "05 Оптимизация",
+            optimization_critic: "C OPT Critic",
+            optimization_corrector: "F OPT Fix",
+        };
+
+        const stageModelRestrictions = ref({});
+
+        function isModelAllowed(stageKey, modelId) {
+            const r = stageModelRestrictions.value[stageKey];
+            if (!r) return true;
+            return r.includes(modelId);
+        }
+
+        async function loadStageModels() {
+            try {
+                const data = await api('/audit/model/stages');
+                stageModelConfig.value = data.stages || {};
+                availableModels.value = data.available_models || [];
+                stageModelRestrictions.value = data.restrictions || {};
+            } catch (e) {
+                console.error('Failed to load stage models:', e);
+            }
+        }
+
+        async function saveStageModels() {
+            try {
+                await apiPost('/audit/model/stages', stageModelConfig.value);
+            } catch (e) {
+                console.error('Failed to save stage models:', e);
+            }
+        }
+
+        function openModelConfig(projectId) {
+            modelConfigPendingProjectId.value = projectId;
+            loadStageModels().then(() => {
+                showModelConfig.value = true;
+            });
+        }
+
+        async function saveAndStartAudit() {
+            await saveStageModels();
+            showModelConfig.value = false;
+            const pid = modelConfigPendingProjectId.value;
+            if (pid) {
+                startAuditDirect(pid);
+            }
+        }
 
         function toggleProjectSelection(projectId) {
             const s = new Set(selectedProjects.value);
@@ -963,14 +1032,6 @@ const app = createApp({
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
 
-        async function startTileAudit(projectId, startFrom = 1) {
-            try {
-                auditRunning.value = true;
-                await apiPost(`/audit/${projectId}/tile-audit?start_from=${startFrom}`);
-                _afterAuditStart(projectId);
-            } catch (e) { alert(e.message); auditRunning.value = false; }
-        }
-
         async function startMainAudit(projectId) {
             try {
                 auditRunning.value = true;
@@ -988,6 +1049,11 @@ const app = createApp({
         }
 
         async function startAudit(projectId) {
+            // Показать модальник с выбором моделей перед запуском
+            openModelConfig(projectId);
+        }
+
+        async function startAuditDirect(projectId) {
             try {
                 auditRunning.value = true;
                 await apiPost(`/audit/${projectId}/full-audit`);
@@ -1802,23 +1868,6 @@ const app = createApp({
             }
         }
 
-        async function loadTiles(id) {
-            tilesProjectId.value = id;
-            try {
-                const [pagesData] = await Promise.all([
-                    api(`/tiles/${id}/pages`),
-                    loadTileAnalysis(id),
-                    loadPageSummaries(id),
-                ]);
-                tilePages.value = pagesData.pages;
-                if (pagesData.pages.length > 0 && !selectedPage.value) {
-                    selectedPage.value = pagesData.pages[0].page_num;
-                }
-            } catch (e) {
-                console.error('Failed to load tiles:', e);
-            }
-        }
-
         // ─── Blocks (OCR) ───
 
         async function loadBlocks(id) {
@@ -2227,73 +2276,6 @@ const app = createApp({
             return optimizationTypeColors[type] || '#999';
         }
 
-        async function loadTileAnalysis(id) {
-            tileAnalysisLoading.value = true;
-            try {
-                const data = await api(`/tiles/${id}/analysis`);
-                tileAnalysis.value = data.tiles || {};
-            } catch (e) {
-                tileAnalysis.value = {};
-            }
-            tileAnalysisLoading.value = false;
-        }
-
-        const selectedTileAnalysis = computed(() => {
-            if (!selectedTile.value) return null;
-            return tileAnalysis.value[selectedTile.value] || null;
-        });
-
-        function tileHasAnalysis(tileName) {
-            return !!tileAnalysis.value[tileName];
-        }
-
-        function tileFindingsCount(tileName) {
-            const info = tileAnalysis.value[tileName];
-            if (!info) return 0;
-            return (info.findings || []).length;
-        }
-
-        function tileMaxSeverity(tileName) {
-            const info = tileAnalysis.value[tileName];
-            if (!info || !info.findings || info.findings.length === 0) return null;
-            const order = ['КРИТИЧЕСКОЕ', 'ЭКОНОМИЧЕСКОЕ', 'ЭКСПЛУАТАЦИОННОЕ', 'РЕКОМЕНДАТЕЛЬНОЕ', 'ПРОВЕРИТЬ ПО СМЕЖНЫМ'];
-            let best = 999;
-            for (const f of info.findings) {
-                const s = (f.severity || '').toUpperCase();
-                for (let i = 0; i < order.length; i++) {
-                    if (s.includes(order[i].substring(0, 6)) && i < best) {
-                        best = i;
-                    }
-                }
-            }
-            return best < order.length ? order[best] : null;
-        }
-
-        // ─── Page Summaries ───
-        async function loadPageSummaries(id) {
-            try {
-                const data = await api(`/tiles/${id}/page-summaries`);
-                const map = {};
-                for (const ps of (data.page_summaries || [])) {
-                    map[ps.page] = ps;
-                }
-                pageSummaries.value = map;
-            } catch (e) {
-                pageSummaries.value = {};
-            }
-        }
-
-        async function loadPageAnalysis(projectId, pageNum) {
-            pageAnalysisLoading.value = true;
-            try {
-                const data = await api(`/tiles/${projectId}/page-analysis/${pageNum}`);
-                pageAnalysis.value = data;
-            } catch (e) {
-                pageAnalysis.value = null;
-            }
-            pageAnalysisLoading.value = false;
-        }
-
         function sheetTypeIcon(sheetType) {
             const icons = {
                 'single_line_diagram': 'SLD',
@@ -2312,19 +2294,10 @@ const app = createApp({
             return icons[sheetType] || '...';
         }
 
-        function getPageSummary(pageNum) {
-            return pageSummaries.value[pageNum] || null;
-        }
-
         // ─── Computed ───
         const filteredFindings = computed(() => {
             if (!findingsData.value) return [];
             return findingsData.value.findings;
-        });
-
-        const currentPageTiles = computed(() => {
-            if (!selectedPage.value || !tilePages.value.length) return null;
-            return tilePages.value.find(p => p.page_num === selectedPage.value);
         });
 
         // Live-статус текущего проекта (для Project Detail)
@@ -2376,17 +2349,6 @@ const app = createApp({
             if (s.includes('ЭКСПЛУАТ')) return '\uD83D\uDFE1';
             if (s.includes('РЕКОМЕНД')) return '\uD83D\uDD35';
             return '\u26AA';
-        }
-
-        function tileImageUrl(projectId, pageNum, tileName) {
-            // tileName = "page_07_r1c2.png"
-            const match = tileName.match(/r(\d+)c(\d+)/);
-            if (!match) return '';
-            return `/api/tiles/${projectId}/image/${pageNum}/${match[1]}_${match[2]}`;
-        }
-
-        function openTile(tileName) {
-            selectedTile.value = tileName;
         }
 
         let searchTimeout = null;
@@ -2482,6 +2444,34 @@ const app = createApp({
                 // Очищаем и на сервере
                 fetch(`/api/audit/${encodeURIComponent(pid)}/log`, { method: 'DELETE' }).catch(() => {});
             }
+        }
+
+        function copyLog(event) {
+            const entries = logEntries.value;
+            if (!entries.length) return;
+            const text = entries.map(e => `[${e.time}] ${e.message}`).join('\n');
+            const btn = event?.target;
+            const done = () => {
+                if (btn) { btn.textContent = 'Скопировано!'; setTimeout(() => btn.textContent = 'Скопировать', 1500); }
+            };
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(done).catch(() => {
+                    fallbackCopy(text); done();
+                });
+            } else {
+                fallbackCopy(text); done();
+            }
+        }
+
+        function fallbackCopy(text) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
         }
 
         async function loadProjectLog(projectId) {
@@ -2630,14 +2620,6 @@ const app = createApp({
                     currentProject.value.completed_batches = msg.data.current;
                     currentProject.value.total_batches = msg.data.total;
                 }
-                // Авто-обновление анализа тайлов при завершении батча
-                if (currentView.value === 'tiles' && tilesProjectId.value === pid) {
-                    loadTileAnalysis(pid);
-                    loadPageSummaries(pid);
-                    if (selectedPage.value) {
-                        loadPageAnalysis(pid, parseInt(selectedPage.value));
-                    }
-                }
             } else if (msg.type === 'heartbeat') {
                 heartbeatData.value = {
                     ...heartbeatData.value,
@@ -2665,14 +2647,6 @@ const app = createApp({
                 if (currentView.value === 'project' && currentProject.value && currentProject.value.project_id === pid) {
                     loadProject(pid);
                 }
-                // Обновить данные анализа тайлов если на странице тайлов
-                if (currentView.value === 'tiles' && tilesProjectId.value === pid) {
-                    loadTileAnalysis(pid);
-                    loadPageSummaries(pid);
-                    if (selectedPage.value) {
-                        loadPageAnalysis(pid, parseInt(selectedPage.value));
-                    }
-                }
             } else if (msg.type === 'status') {
                 // Реактивное обновление pipeline-индикаторов
                 const pipeline = msg.data.pipeline;
@@ -2699,15 +2673,6 @@ const app = createApp({
                 }
             }
         }
-
-        // Watch selectedPage → load page analysis
-        watch(selectedPage, (newPage) => {
-            if (newPage && tilesProjectId.value) {
-                loadPageAnalysis(tilesProjectId.value, parseInt(newPage));
-            } else {
-                pageAnalysis.value = null;
-            }
-        });
 
         // Watch severity filter
         watch(filterSeverity, () => {
@@ -2741,11 +2706,6 @@ const app = createApp({
             findingsData, filterSeverity, filterSearch, severityOptions,
             findingBlockMap, findingBlockInfo, expandedFindingId,
             toggleFindingBlocks, getFindingBlocks, navigateToBlock, blockBackRoute, goBackFromBlock,
-            tilesProjectId, tilePages, selectedPage, selectedTile,
-            tileAnalysis, tileAnalysisLoading, selectedTileAnalysis,
-            tileHasAnalysis, tileFindingsCount, tileMaxSeverity,
-            pageSummaries, pageAnalysis, pageAnalysisLoading, showPageAnalysis,
-            sheetTypeIcon, getPageSummary,
             // Blocks (OCR)
             blocksProjectId, blockPages, blockCropErrors, blockTotalExpected,
             selectedBlockPage, selectedBlock,
@@ -2767,7 +2727,7 @@ const app = createApp({
             formatETA, heartbeatStatusText, isClaudeStage, getRunningStage,
             // Methods
             navigate, refreshProjects, stepClass, sevClass, sevIcon,
-            tileImageUrl, openTile, debounceSearch, clearLog,
+            debounceSearch, clearLog, copyLog,
             // Prompts
             promptsProjectId, templates, promptsLoading,
             activePromptTab, promptsDiscipline,
@@ -2776,7 +2736,7 @@ const app = createApp({
             switchDiscipline, saveTemplate, highlightPlaceholders, syncScroll,
             // Audit actions
             auditRunning, allRunning,
-            startPrepare, startTileAudit, startMainAudit,
+            startPrepare, startMainAudit,
             startSmartAudit, startAudit, startStandardAudit, startProAudit,
             startNormVerify, startOptimization, cancelAudit, generateExcel,
             startAllProjects, resumePipeline, resumeInfo,
@@ -2790,6 +2750,11 @@ const app = createApp({
             // Pause
             showPauseModal, isPaused, pauseMode, anyRunning,
             pausePipeline, resumePipelineGlobal,
+            // Model config
+            showModelConfig, stageModelConfig, availableModels, stageLabels,
+            stageModelRestrictions, isModelAllowed,
+            loadStageModels, saveStageModels, openModelConfig, saveAndStartAudit,
+            startAuditDirect,
             toggleProjectSelection, toggleSelectAll, isProjectSelected,
             isSectionSelected, toggleSectionSelection,
             sectionExcelLoading, exportSectionExcel,
@@ -2823,7 +2788,7 @@ const app = createApp({
             formatTokens, formatCost, formatDurationSec, refreshGlobalUsage, resetSessionCounter,
             usageCounters,
             // Usage (per-project)
-            projectUsage, currentProjectUsage, stageTokens, stageDurationForProject, formatDuration,
+            projectUsage, currentProjectUsage, stageTokens, stageTokensFormatted, stageModel, stageDurationForProject, formatDuration,
             // Pipeline summary
             // Optimization
             optimizationData, optimizationLoading, optimizationFilter,
@@ -2835,7 +2800,7 @@ const app = createApp({
             documentProjectId, documentPages, documentCurrentPage, documentPageData, documentLoading,
             loadDocument, loadDocumentPage, docPrevPage, docNextPage, renderMarkdown,
             // Computed
-            filteredFindings, currentPageTiles,
+            filteredFindings,
         };
     }
 });

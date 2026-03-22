@@ -1,25 +1,22 @@
 > **OUTPUT LANGUAGE:** All text values in JSON output MUST be written in Russian.
+> **RESPONSE FORMAT:** Respond with valid JSON only. No explanations, no markdown, no text outside JSON.
 
 # FINDINGS REVISION WITH UPDATED NORMS
 
 ## Operating Mode
 Work AUTONOMOUSLY. Do not ask questions.
-Revise the specified findings, update normative references, write the result.
+Revise the specified findings, update normative references, return the result.
 
 ## Project
 - **ID:** {PROJECT_ID}
-- **Folder:** {PROJECT_PATH}
 
 ## Input Data
 
-### 1. Current Findings
-READ: `{PROJECT_PATH}/_output/03_findings.json`
+READ via Read tool:
 
-### 2. Norm Verification Results
-READ: `{PROJECT_PATH}/_output/norm_checks.json`
-
-### 3. Normative Reference
-READ: `{DISCIPLINE_NORMS_FILE}`
+1. **Current Findings** — `{PROJECT_PATH}/_output/03_findings.json`
+2. **Norm Verification Results** — `{PROJECT_PATH}/_output/norm_checks.json`
+3. **Normative Reference** — provided in system context.
 
 ## Findings to Revise
 {FINDINGS_TO_FIX}
@@ -28,9 +25,9 @@ READ: `{DISCIPLINE_NORMS_FILE}`
 
 For EACH finding from the list above:
 
-1. Read the current wording from `03_findings.json`
-2. Read the norm verification result from `norm_checks.json`
-3. Check `paragraph_checks` in `norm_checks.json`:
+1. Read the current wording from findings data
+2. Read the norm verification result from norm checks data
+3. Check `paragraph_checks` in norm checks:
    - If the finding has an entry with `paragraph_verified: false` — **the norm quote is incorrect**.
      Use `actual_quote` to fix the wording.
    - If `paragraph_verified: true` — quote is confirmed, use as-is.
@@ -50,11 +47,9 @@ For EACH finding from the list above:
    - Updated wording
    - What exactly changed and why
 
-## Output File Format
+## Output JSON Schema
 
-WRITE: `{PROJECT_PATH}/_output/03a_norms_verified.json`
-
-The file must be a **complete copy** of `03_findings.json` with the following additions:
+The result must be a **complete copy** of findings with the following additions:
 
 ```json
 {
@@ -86,6 +81,10 @@ The file must be a **complete copy** of `03_findings.json` with the following ad
 }
 ```
 
+## Output
+
+WRITE via Write tool: `{PROJECT_PATH}/_output/03_findings.json`
+
 ## Rules
 
 1. DO NOT delete or add findings — only update existing ones
@@ -94,4 +93,4 @@ The file must be a **complete copy** of `03_findings.json` with the following ad
 4. For uncertain cases: `norm_status: "warning"` + explain in `revision_reason`
 5. Preserve ALL original fields of each finding — add new ones, do not remove old ones
 6. Write JSON via Write tool — DO NOT output to chat
-7. After writing, output summary: how many findings revised, what changed
+7. Respond with valid JSON matching the schema above

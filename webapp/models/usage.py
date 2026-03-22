@@ -1,5 +1,8 @@
 """Pydantic-модели для трекинга потребления токенов."""
 
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from pydantic import BaseModel
 from typing import Optional
 
@@ -123,3 +126,33 @@ class CLIResult(BaseModel):
     duration_api_ms: int = 0
     num_turns: int = 0
     session_id: Optional[str] = None
+
+
+@dataclass
+class LLMResult:
+    """Результат вызова LLM через OpenRouter API."""
+    text: str = ""
+    json_data: dict | None = None
+    input_tokens: int = 0
+    output_tokens: int = 0
+    cost_usd: float = 0.0
+    duration_ms: int = 0
+    model: str = ""
+    is_error: bool = False
+    error_message: str = ""
+
+    @property
+    def result_text(self) -> str:
+        return self.text
+
+    @property
+    def session_id(self) -> str | None:
+        return None
+
+    @property
+    def num_turns(self) -> int:
+        return 1
+
+    @property
+    def duration_api_ms(self) -> int:
+        return self.duration_ms

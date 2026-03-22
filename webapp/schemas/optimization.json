@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Optimization",
+  "description": "Stage 05: Design solution optimization proposals",
+  "type": "object",
+  "required": ["meta", "items"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["project_id", "project_name", "analysis_date", "total_items", "by_type", "estimated_savings_pct", "top3_summary"],
+      "properties": {
+        "project_id": { "type": "string" },
+        "project_name": { "type": "string" },
+        "analysis_date": { "type": "string", "format": "date" },
+        "total_items": { "type": "integer", "minimum": 0 },
+        "by_type": {
+          "type": "object",
+          "required": ["cheaper_analog", "faster_install", "simpler_design", "lifecycle"],
+          "properties": {
+            "cheaper_analog": { "type": "integer", "minimum": 0 },
+            "faster_install": { "type": "integer", "minimum": 0 },
+            "simpler_design": { "type": "integer", "minimum": 0 },
+            "lifecycle": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        "estimated_savings_pct": { "type": "number", "minimum": 0 },
+        "top3_summary": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "section", "page", "sheet", "spec_items", "current", "proposed", "type", "savings_pct", "savings_basis", "timeline_impact", "risks", "status", "norm"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^OPT-\\d{3}$"
+          },
+          "section": { "type": "string" },
+          "page": {
+            "oneOf": [
+              { "type": "integer" },
+              { "type": "array", "items": { "type": "integer" } }
+            ]
+          },
+          "sheet": { "type": "string" },
+          "spec_items": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "current": { "type": "string" },
+          "proposed": { "type": "string" },
+          "type": {
+            "type": "string",
+            "enum": ["cheaper_analog", "faster_install", "simpler_design", "lifecycle"]
+          },
+          "savings_pct": { "type": "number", "minimum": 0 },
+          "savings_basis": {
+            "type": "string",
+            "enum": ["расчёт", "экспертная оценка", "не определено"]
+          },
+          "timeline_impact": { "type": "string" },
+          "risks": { "type": "string" },
+          "status": { "type": "string" },
+          "norm": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

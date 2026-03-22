@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NormChecksLLM",
+  "description": "Stage 04 (LLM part): Normative reference verification via WebSearch",
+  "type": "object",
+  "required": ["meta", "checks", "paragraph_checks"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["project_id", "check_date", "total_checked_by_llm", "norms_searched", "paragraphs_verified"],
+      "properties": {
+        "project_id": { "type": "string" },
+        "check_date": { "type": "string", "format": "date-time" },
+        "total_checked_by_llm": { "type": "integer", "minimum": 0 },
+        "norms_searched": { "type": "integer", "minimum": 0 },
+        "paragraphs_verified": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["norm_as_cited", "doc_number", "status"],
+        "properties": {
+          "norm_as_cited": { "type": "string" },
+          "doc_number": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["active", "outdated_edition", "replaced", "cancelled", "not_found"]
+          },
+          "current_version": { "type": ["string", "null"], "default": null },
+          "replacement_doc": { "type": ["string", "null"], "default": null },
+          "source_url": { "type": ["string", "null"], "default": null },
+          "details": { "type": "string", "default": "" },
+          "affected_findings": {
+            "type": "array",
+            "items": { "type": "string" },
+            "default": []
+          },
+          "needs_revision": { "type": "boolean", "default": false },
+          "verified_via": {
+            "type": "string",
+            "enum": ["websearch", "norms_paragraphs", "deterministic"],
+            "default": "websearch"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "paragraph_checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["finding_id", "norm", "paragraph_verified"],
+        "properties": {
+          "finding_id": { "type": "string" },
+          "norm": { "type": "string" },
+          "claimed_quote": { "type": ["string", "null"], "default": null },
+          "actual_quote": { "type": ["string", "null"], "default": null },
+          "paragraph_verified": { "type": "boolean" },
+          "mismatch_details": { "type": ["string", "null"], "default": null },
+          "verified_via": {
+            "type": "string",
+            "enum": ["websearch", "norms_paragraphs"],
+            "default": "websearch"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

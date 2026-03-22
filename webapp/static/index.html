@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="/static/css/styles.css?v=88">
+    <link rel="stylesheet" href="/static/css/styles.css?v=93">
 </head>
 <body>
     <div id="app">
@@ -79,7 +79,7 @@
                             </div>
                             <span class="usage-row__pct">{{ Math.round(globalUsage.weekly_all_percent || 0) }}%</span>
                         </div>
-                        <div class="usage-row"
+                        <div class="usage-row" v-if="sonnetPercent > 0"
                              :class="{'usage-row--warning': sonnetPercent > 70,
                                       'usage-row--danger': sonnetPercent > 90}">
                             <span class="usage-row__label">Sonnet</span>
@@ -123,20 +123,20 @@
 
                     <div class="usage-details__footer">
                         <button class="btn btn--small" @click.stop="refreshGlobalUsage">Обновить</button>
-                        <span class="usage-details__note">Только Claude Code (не claude.ai)</span>
+                        <span class="usage-details__note">Claude Code сессии (legacy)</span>
                     </div>
                 </div>
 
                 <!-- Account info button -->
                 <button class="account-btn" @click="showAccountInfo = !showAccountInfo"
                         :class="{'account-btn--error': !accountInfo.loggedIn}"
-                        title="Аккаунт Claude CLI">
+                        title="Аккаунт LLM">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                     </svg>
                 </button>
                 <div class="account-panel" v-if="showAccountInfo">
-                    <div class="account-panel__header">Аккаунт Claude CLI</div>
+                    <div class="account-panel__header">Аккаунт LLM</div>
                     <div class="account-panel__row">
                         <span class="account-panel__label">Email:</span>
                         <span class="account-panel__value">{{ accountInfo.email }}</span>
@@ -182,7 +182,6 @@
             <a href="#" @click.prevent="navigate('/')">Проекты</a>
             <span v-if="currentProject"> / <a href="#" @click.prevent="navigate('/project/' + currentProject.project_id)">{{ currentProject.name }}</a></span>
             <span v-if="currentView === 'findings'"> / Замечания</span>
-            <span v-if="currentView === 'tiles'"> / Тайлы</span>
             <span v-if="currentView === 'blocks'"> / Блоки</span>
             <span v-if="currentView === 'document'"> / Документ</span>
             <span v-if="currentView === 'optimization'"> / Оптимизация</span>
@@ -280,7 +279,7 @@
                 </div>
                 <div v-show="!collapsedSections[sectionCode]" class="projects-grid">
                 <div v-for="p in sectionProjects" :key="p.project_id"
-                     class="project-card" :class="{'project-card--ready': p.has_tiles, 'project-card--running': isProjectRunning(p.project_id), 'project-card--selected': isProjectSelected(p.project_id)}"
+                     class="project-card" :class="{'project-card--ready': p.has_blocks, 'project-card--running': isProjectRunning(p.project_id), 'project-card--selected': isProjectSelected(p.project_id)}"
                      @click="navigate('/project/' + p.project_id)">
                     <!-- Checkbox -->
                     <label class="project-card__checkbox" @click.stop>
@@ -294,17 +293,12 @@
                     <!-- Pipeline -->
                     <div class="pipeline">
                         <div class="pipeline-step-wrap">
-                            <div class="pipeline-step" :class="stepClass(p.pipeline.crop_blocks)" title="Кроп блоков">01</div>
-                            <div class="pipeline-step-time" v-if="stageDurationForProject(p.project_id, 'crop_blocks')">{{ formatDuration(stageDurationForProject(p.project_id, 'crop_blocks')) }}</div>
-                        </div>
-                        <div class="pipeline-line"></div>
-                        <div class="pipeline-step-wrap">
-                            <div class="pipeline-step" :class="stepClass(p.pipeline.text_analysis)" title="Анализ текста">02</div>
+                            <div class="pipeline-step" :class="stepClass(p.pipeline.text_analysis)" title="Анализ текста">01</div>
                             <div class="pipeline-step-time" v-if="stageDurationForProject(p.project_id, 'text_analysis')">{{ formatDuration(stageDurationForProject(p.project_id, 'text_analysis')) }}</div>
                         </div>
                         <div class="pipeline-line"></div>
                         <div class="pipeline-step-wrap">
-                            <div class="pipeline-step" :class="stepClass(p.pipeline.blocks_analysis)" title="Анализ блоков">03</div>
+                            <div class="pipeline-step" :class="stepClass(p.pipeline.blocks_analysis)" title="Анализ блоков">02</div>
                             <div class="pipeline-step-time" v-if="stageDurationForProject(p.project_id, 'blocks_analysis')">{{ formatDuration(stageDurationForProject(p.project_id, 'blocks_analysis')) }}</div>
                         </div>
                         <div class="pipeline-line pipeline-line--sm"></div>
@@ -313,7 +307,7 @@
                         </div>
                         <div class="pipeline-line"></div>
                         <div class="pipeline-step-wrap">
-                            <div class="pipeline-step" :class="stepClass(p.pipeline.findings)" title="Свод замечаний">04</div>
+                            <div class="pipeline-step" :class="stepClass(p.pipeline.findings)" title="Свод замечаний">03</div>
                             <div class="pipeline-step-time" v-if="stageDurationForProject(p.project_id, 'findings')">{{ formatDuration(stageDurationForProject(p.project_id, 'findings')) }}</div>
                         </div>
                         <div class="pipeline-line"></div>
@@ -326,7 +320,7 @@
                         </div>
                         <div class="pipeline-line"></div>
                         <div class="pipeline-step-wrap">
-                            <div class="pipeline-step" :class="stepClass(p.pipeline.norms_verified)" title="Верификация норм">05</div>
+                            <div class="pipeline-step" :class="stepClass(p.pipeline.norms_verified)" title="Верификация норм">04</div>
                             <div class="pipeline-step-time" v-if="stageDurationForProject(p.project_id, 'norms_verified')">{{ formatDuration(stageDurationForProject(p.project_id, 'norms_verified')) }}</div>
                         </div>
                         <div class="pipeline-line"></div>
@@ -341,10 +335,6 @@
                         <div class="pipeline-line pipeline-line--sm"></div>
                         <div class="pipeline-step-wrap">
                             <div class="pipeline-step pipeline-step--sm" :class="stepClass(p.pipeline.optimization_corrector)" title="Corrector оптимизации">F</div>
-                        </div>
-                        <div class="pipeline-line"></div>
-                        <div class="pipeline-step-wrap">
-                            <div class="pipeline-step pipeline-step--sm" :class="stepClass(p.pipeline.excel)" title="Excel-отчёт">XL</div>
                         </div>
                     </div>
 
@@ -746,6 +736,40 @@
             </div>
         </div>
 
+        <!-- ═══ Model Config Modal ═══ -->
+        <div v-if="showModelConfig" class="modal-overlay" @click.self="showModelConfig = false">
+            <div class="modal-content model-config-modal" @click.stop>
+                <button class="modal-close" @click="showModelConfig = false">&times;</button>
+                <h3>Конфигурация моделей</h3>
+                <p class="model-config-desc">Выберите модель для каждого этапа аудита</p>
+                <table class="model-config-table">
+                    <thead>
+                        <tr>
+                            <th class="model-config-stage-col">Этап</th>
+                            <th v-for="m in availableModels" :key="m.id">{{ m.label }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(label, key) in stageLabels" :key="key">
+                            <td class="model-config-stage-name">{{ label }}</td>
+                            <td v-for="m in availableModels" :key="m.id" class="model-config-radio-cell">
+                                <input type="radio"
+                                       :name="'model-' + key"
+                                       :value="m.id"
+                                       v-model="stageModelConfig[key]"
+                                       :disabled="!isModelAllowed(key, m.id)"
+                                       class="model-config-radio">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="model-config-actions">
+                    <button class="btn" @click="showModelConfig = false">Отмена</button>
+                    <button class="btn btn-accent" @click="saveAndStartAudit()">Запустить аудит</button>
+                </div>
+            </div>
+        </div>
+
         <!-- ═══ Queue View ═══ -->
         <div v-if="currentView === 'queue'" class="container">
             <div class="queue-view">
@@ -880,65 +904,85 @@
 
                     <!-- Pipeline -->
                     <div class="pipeline-detail">
-                        <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.crop_blocks), {'pipeline-stage--clickable': canStartFrom('crop_blocks')}]"
-                             @click="canStartFrom('crop_blocks') && startFromStage(currentProject.project_id, 'crop_blocks')"
-                             :title="canStartFrom('crop_blocks') ? 'Клик: запустить с этого этапа' : 'Кроп блоков'">
-                            <div class="stage-num">01</div>
-                            <div class="stage-label">Кроп</div>
-                            <div class="stage-tokens" v-if="stageTokens('crop_blocks')">{{ formatTokens(stageTokens('crop_blocks').total_tokens) }}</div>
-                        </div>
-                        <div class="pipeline-arrow">&rarr;</div>
                         <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.text_analysis), {'pipeline-stage--clickable': canStartFrom('text_analysis')}]"
                              @click="canStartFrom('text_analysis') && startFromStage(currentProject.project_id, 'text_analysis')"
                              :title="canStartFrom('text_analysis') ? 'Клик: запустить с этого этапа' : 'Анализ текста'">
-                            <div class="stage-num">02</div>
+                            <div class="stage-num">01</div>
                             <div class="stage-label">Текст</div>
-                            <div class="stage-tokens" v-if="stageTokens('text_analysis')">{{ formatTokens(stageTokens('text_analysis').total_tokens) }}</div>
+                            <div class="stage-tokens" v-if="stageTokensFormatted('text_analysis')">
+                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('text_analysis').inp }}</span>
+                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('text_analysis').out }}</span>
+                            </div>
+                            <div class="stage-model" v-if="stageModel('text_analysis')">{{ stageModel('text_analysis') }}</div>
                         </div>
                         <div class="pipeline-arrow">&rarr;</div>
                         <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.blocks_analysis), {'pipeline-stage--clickable': canStartFrom('blocks_analysis')}]"
                              @click="canStartFrom('blocks_analysis') && startFromStage(currentProject.project_id, 'blocks_analysis')"
                              :title="canStartFrom('blocks_analysis') ? 'Клик: запустить с этого этапа' : 'Анализ блоков'">
-                            <div class="stage-num">03</div>
+                            <div class="stage-num">02</div>
                             <div class="stage-label">Блоки</div>
-                            <div class="stage-tokens" v-if="stageTokens('blocks_analysis')">{{ formatTokens(stageTokens('blocks_analysis').total_tokens) }}</div>
+                            <div class="stage-tokens" v-if="stageTokensFormatted('blocks_analysis')">
+                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('blocks_analysis').inp }}</span>
+                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('blocks_analysis').out }}</span>
+                            </div>
+                            <div class="stage-model" v-if="stageModel('blocks_analysis')">{{ stageModel('blocks_analysis') }}</div>
                         </div>
                         <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
                         <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(currentProject.pipeline.block_retry)"
                              title="Retry нечитаемых блоков">
                             <div class="stage-num">R</div>
                             <div class="stage-label">Retry</div>
-                            <div class="stage-tokens" v-if="stageTokens('block_retry')">{{ formatTokens(stageTokens('block_retry').total_tokens) }}</div>
+                            <div class="stage-tokens" v-if="stageTokensFormatted('block_retry')">
+                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('block_retry').inp }}</span>
+                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('block_retry').out }}</span>
+                            </div>
+                            <div class="stage-model" v-if="stageModel('block_retry')">{{ stageModel('block_retry') }}</div>
                         </div>
                         <div class="pipeline-arrow">&rarr;</div>
                         <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.findings), {'pipeline-stage--clickable': canStartFrom('findings')}]"
                              @click="canStartFrom('findings') && startFromStage(currentProject.project_id, 'findings')"
                              :title="canStartFrom('findings') ? 'Клик: запустить с этого этапа' : 'Свод замечаний'">
-                            <div class="stage-num">04</div>
+                            <div class="stage-num">03</div>
                             <div class="stage-label">Свод</div>
-                            <div class="stage-tokens" v-if="stageTokens('findings')">{{ formatTokens(stageTokens('findings').total_tokens) }}</div>
+                            <div class="stage-tokens" v-if="stageTokensFormatted('findings')">
+                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('findings').inp }}</span>
+                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('findings').out }}</span>
+                            </div>
+                            <div class="stage-model" v-if="stageModel('findings')">{{ stageModel('findings') }}</div>
                         </div>
                         <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
                         <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(currentProject.pipeline.findings_critic)"
                              title="Critic замечаний">
                             <div class="stage-num">C</div>
                             <div class="stage-label">Critic</div>
-                            <div class="stage-tokens" v-if="stageTokens('findings_critic')">{{ formatTokens(stageTokens('findings_critic').total_tokens) }}</div>
+                            <div class="stage-tokens" v-if="stageTokensFormatted('findings_critic')">
+                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('findings_critic').inp }}</span>
+                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('findings_critic').out }}</span>
+                            </div>
+                            <div class="stage-model" v-if="stageModel('findings_critic')">{{ stageModel('findings_critic') }}</div>
                         </div>
                         <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
                         <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(currentProject.pipeline.findings_corrector)"
                              title="Corrector замечаний">
                             <div class="stage-num">F</div>
                             <div class="stage-label">Fix</div>
-                            <div class="stage-tokens" v-if="stageTokens('findings_corrector')">{{ formatTokens(stageTokens('findings_corrector').total_tokens) }}</div>
+                            <div class="stage-tokens" v-if="stageTokensFormatted('findings_corrector')">
+                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('findings_corrector').inp }}</span>
+                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('findings_corrector').out }}</span>
+                            </div>
+                            <div class="stage-model" v-if="stageModel('findings_corrector')">{{ stageModel('findings_corrector') }}</div>
                         </div>
                         <div class="pipeline-arrow">&rarr;</div>
                         <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.norms_verified), {'pipeline-stage--clickable': canStartFrom('norms_verified')}]"
                              @click="canStartFrom('norms_verified') && startFromStage(currentProject.project_id, 'norms_verified')"
                              :title="canStartFrom('norms_verified') ? 'Клик: запустить с этого этапа' : 'Верификация норм'">
-                            <div class="stage-num">05</div>
+                            <div class="stage-num">04</div>
                             <div class="stage-label">Нормы</div>
-                            <div class="stage-tokens" v-if="stageTokens('norms_verified')">{{ formatTokens(stageTokens('norms_verified').total_tokens) }}</div>
+                            <div class="stage-tokens" v-if="stageTokensFormatted('norms_verified')">
+                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('norms_verified').inp }}</span>
+                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('norms_verified').out }}</span>
+                            </div>
+                            <div class="stage-model" v-if="stageModel('norms_verified')">{{ stageModel('norms_verified') }}</div>
                         </div>
                         <div class="pipeline-arrow">&rarr;</div>
                         <div class="pipeline-stage pipeline-stage--opt" :class="[stepClass(currentProject.pipeline.optimization), {'pipeline-stage--clickable': canStartFrom('optimization')}]"
@@ -946,27 +990,33 @@
                              :title="canStartFrom('optimization') ? 'Клик: запустить с этого этапа' : 'Оптимизация'">
                             <div class="stage-num">OPT</div>
                             <div class="stage-label">Оптим.</div>
-                            <div class="stage-tokens" v-if="stageTokens('optimization')">{{ formatTokens(stageTokens('optimization').total_tokens) }}</div>
+                            <div class="stage-tokens" v-if="stageTokensFormatted('optimization')">
+                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('optimization').inp }}</span>
+                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('optimization').out }}</span>
+                            </div>
+                            <div class="stage-model" v-if="stageModel('optimization')">{{ stageModel('optimization') }}</div>
                         </div>
                         <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
                         <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(currentProject.pipeline.optimization_critic)"
                              title="Critic оптимизации">
                             <div class="stage-num">C</div>
                             <div class="stage-label">Critic</div>
-                            <div class="stage-tokens" v-if="stageTokens('optimization_critic')">{{ formatTokens(stageTokens('optimization_critic').total_tokens) }}</div>
+                            <div class="stage-tokens" v-if="stageTokensFormatted('optimization_critic')">
+                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('optimization_critic').inp }}</span>
+                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('optimization_critic').out }}</span>
+                            </div>
+                            <div class="stage-model" v-if="stageModel('optimization_critic')">{{ stageModel('optimization_critic') }}</div>
                         </div>
                         <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
                         <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(currentProject.pipeline.optimization_corrector)"
                              title="Corrector оптимизации">
                             <div class="stage-num">F</div>
                             <div class="stage-label">Fix</div>
-                            <div class="stage-tokens" v-if="stageTokens('optimization_corrector')">{{ formatTokens(stageTokens('optimization_corrector').total_tokens) }}</div>
-                        </div>
-                        <div class="pipeline-arrow">&rarr;</div>
-                        <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(currentProject.pipeline.excel)"
-                             title="Excel-отчёт">
-                            <div class="stage-num">XL</div>
-                            <div class="stage-label">Excel</div>
+                            <div class="stage-tokens" v-if="stageTokensFormatted('optimization_corrector')">
+                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('optimization_corrector').inp }}</span>
+                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('optimization_corrector').out }}</span>
+                            </div>
+                            <div class="stage-model" v-if="stageModel('optimization_corrector')">{{ stageModel('optimization_corrector') }}</div>
                         </div>
                     </div>
 
@@ -1041,23 +1091,7 @@
                         </div>
                     </div>
 
-                    <!-- Retry/Skip for error stages -->
-                    <div v-if="!isProjectRunning(currentProject.project_id)"
-                         class="stage-error-row">
-                        <template v-for="si in [
-                            {key: 'crop_blocks', logKey: 'crop_blocks', label: '01 Кроп'},
-                            {key: 'text_analysis', logKey: 'text_analysis', label: '02 Текст'},
-                            {key: 'blocks_analysis', logKey: 'block_analysis', label: '03 Блоки'},
-                            {key: 'findings', logKey: 'findings_merge', label: '04 Свод'},
-                            {key: 'norms_verified', logKey: 'norm_verify', label: '05 Нормы'},
-                        ]">
-                            <div v-if="currentProject.pipeline[si.key] === 'error'" class="stage-error-actions">
-                                <span class="stage-error-label">{{ si.label }}: ошибка</span>
-                                <button class="btn btn-sm btn-primary" @click="retryStage(currentProject.project_id, si.logKey)">Повторить</button>
-                                <button class="btn btn-sm" @click="skipStage(currentProject.project_id, si.logKey)">Пропустить</button>
-                            </div>
-                        </template>
-                    </div>
+                    <!-- Retry/Skip for error stages — скрыт, retry доступен через ↻ на этапе -->
 
                     <!-- Block crop errors warning -->
                     <div v-if="currentProject.pipeline.crop_blocks === 'error'" class="block-crop-warning block-crop-warning--compact">
@@ -1354,185 +1388,6 @@
                 <!-- Нет данных -->
                 <div v-else class="empty-state">
                     Анализ оптимизации ещё не проводился. Нажмите «Запустить анализ».
-                </div>
-            </div>
-        </div>
-
-        <!-- ═══ Tiles Viewer ═══ -->
-        <div v-if="currentView === 'tiles'" class="container">
-            <div class="tiles-page">
-                <h2>Тайлы: {{ tilesProjectId }}</h2>
-
-                <!-- Page selector -->
-                <div class="page-selector">
-                    <button v-for="pg in tilePages" :key="pg.page_num"
-                            class="page-btn" :class="{'page-btn--active': selectedPage === pg.page_num}"
-                            @click="selectedPage = pg.page_num">
-                        <span v-if="getPageSummary(pg.page_num)" class="page-btn__type"
-                              :title="getPageSummary(pg.page_num).sheet_type_label">
-                            {{ sheetTypeIcon(getPageSummary(pg.page_num).sheet_type) }}
-                        </span>
-                        <span>Стр. {{ pg.page_num }}</span>
-                        <span class="page-btn__count">({{ pg.tile_count }})</span>
-                    </button>
-                </div>
-
-                <!-- Page analysis panel -->
-                <div v-if="showPageAnalysis && pageAnalysis && pageAnalysis.page_summary"
-                     class="page-analysis-panel">
-                    <div class="page-analysis-panel__header">
-                        <div class="page-analysis-panel__title">
-                            <span class="sheet-type-badge"
-                                  :title="pageAnalysis.page_summary.sheet_type">
-                                {{ sheetTypeIcon(pageAnalysis.page_summary.sheet_type) }}
-                            </span>
-                            <span>{{ pageAnalysis.page_summary.sheet_type_label || 'Анализ страницы' }}</span>
-                        </div>
-                        <button class="btn btn-sm" @click="showPageAnalysis = false">Скрыть</button>
-                    </div>
-
-                    <div v-if="pageAnalysis.page_summary.summary" class="page-analysis-panel__summary">
-                        {{ pageAnalysis.page_summary.summary }}
-                    </div>
-
-                    <!-- key_values -->
-                    <div v-if="pageAnalysis.page_summary.key_values && pageAnalysis.page_summary.key_values.length > 0"
-                         class="page-analysis-panel__section">
-                        <h4>Ключевые значения</h4>
-                        <div class="page-kv-grid">
-                            <span v-for="(kv, i) in pageAnalysis.page_summary.key_values" :key="i"
-                                  class="page-kv-item">{{ kv }}</span>
-                        </div>
-                    </div>
-
-                    <!-- findings on page -->
-                    <div v-if="pageAnalysis.page_summary.findings_on_page && pageAnalysis.page_summary.findings_on_page.length > 0"
-                         class="page-analysis-panel__section">
-                        <h4>Замечания на странице</h4>
-                        <div class="page-findings-list">
-                            <span v-for="fid in pageAnalysis.page_summary.findings_on_page" :key="fid"
-                                  class="page-finding-id">{{ fid }}</span>
-                        </div>
-                    </div>
-
-                    <!-- full_text_content (collapsible) -->
-                    <details v-if="pageAnalysis.page_summary.full_text_content"
-                             class="page-analysis-panel__section">
-                        <summary>Полный текст страницы</summary>
-                        <pre class="page-full-text">{{ pageAnalysis.page_summary.full_text_content }}</pre>
-                    </details>
-                </div>
-
-                <!-- Toggle button if panel is hidden -->
-                <div v-else-if="!showPageAnalysis && pageAnalysis && pageAnalysis.page_summary"
-                     style="margin-bottom: 12px;">
-                    <button class="btn btn-sm" @click="showPageAnalysis = true">
-                        Показать анализ страницы
-                    </button>
-                </div>
-
-                <div v-if="pageAnalysisLoading" class="page-analysis-loading">
-                    Загрузка анализа страницы...
-                </div>
-
-                <!-- Tile grid -->
-                <div v-if="currentPageTiles" class="tile-grid"
-                     :style="{gridTemplateColumns: 'repeat(' + currentPageTiles.cols + ', 1fr)'}">
-                    <div v-for="tile in currentPageTiles.tiles" :key="tile"
-                         class="tile-item" :class="{'tile-item--has-findings': tileFindingsCount(tile) > 0, 'tile-item--analyzed': tileHasAnalysis(tile) && tileFindingsCount(tile) === 0}"
-                         @click="openTile(tile)">
-                        <img :src="tileImageUrl(tilesProjectId, currentPageTiles.page_num, tile)"
-                             :alt="tile" loading="lazy">
-                        <span class="tile-label">{{ tile.replace('.png','') }}</span>
-                        <!-- Badge: количество замечаний -->
-                        <span v-if="tileFindingsCount(tile) > 0"
-                              class="tile-badge" :class="'tile-badge--' + sevClass(tileMaxSeverity(tile))">
-                            {{ tileFindingsCount(tile) }}
-                        </span>
-                        <!-- Зелёная точка: проанализирован, без замечаний -->
-                        <span v-else-if="tileHasAnalysis(tile)" class="tile-analyzed-dot"></span>
-                    </div>
-                </div>
-
-                <!-- Split-view overlay -->
-                <div v-if="selectedTile" class="tile-split-overlay" @click="selectedTile = null">
-                    <div class="tile-split-container" @click.stop>
-                        <button class="tile-split-close" @click="selectedTile = null">&times;</button>
-
-                        <!-- Left: image -->
-                        <div class="tile-split-image">
-                            <img :src="tileImageUrl(tilesProjectId, selectedPage, selectedTile)"
-                                 :alt="selectedTile">
-                            <p class="tile-split-image__label">{{ selectedTile }}</p>
-                        </div>
-
-                        <!-- Right: analysis panel -->
-                        <div class="tile-split-analysis">
-                            <template v-if="selectedTileAnalysis">
-                                <div class="tile-analysis-header">
-                                    <h3>{{ selectedTileAnalysis.label || 'Без заголовка' }}</h3>
-                                    <span v-if="selectedTileAnalysis.page" class="tile-analysis-page">
-                                        стр. {{ selectedTileAnalysis.page }}
-                                    </span>
-                                </div>
-
-                                <div v-if="selectedTileAnalysis.summary" class="tile-analysis-summary">
-                                    {{ selectedTileAnalysis.summary }}
-                                </div>
-
-                                <!-- key_values_read -->
-                                <div v-if="selectedTileAnalysis.key_values_read && selectedTileAnalysis.key_values_read.length > 0"
-                                     class="tile-analysis-section">
-                                    <h4>Распознанные значения</h4>
-                                    <ul class="tile-kv-list">
-                                        <li v-for="(kv, i) in selectedTileAnalysis.key_values_read" :key="i">
-                                            <template v-if="typeof kv === 'string'">{{ kv }}</template>
-                                            <template v-else>
-                                                <strong>{{ kv.key || kv.name || '' }}:</strong> {{ kv.value || kv.val || '' }}
-                                            </template>
-                                        </li>
-                                    </ul>
-                                </div>
-
-                                <!-- findings -->
-                                <div v-if="selectedTileAnalysis.findings && selectedTileAnalysis.findings.length > 0"
-                                     class="tile-analysis-section">
-                                    <h4>Замечания ({{ selectedTileAnalysis.findings.length }})</h4>
-                                    <div v-for="(f, i) in selectedTileAnalysis.findings" :key="i"
-                                         class="tile-finding-card" :class="'tile-finding-card--' + sevClass(f.severity)">
-                                        <div class="tile-finding-card__header">
-                                            <span class="sev-badge sev-badge--sm" :class="'sev-' + sevClass(f.severity)">
-                                                {{ f.severity || 'N/A' }}
-                                            </span>
-                                            <span v-if="f.id" class="tile-finding-card__id">{{ f.id }}</span>
-                                        </div>
-                                        <div class="tile-finding-card__text">
-                                            {{ f.problem || f.finding || f.description || '' }}
-                                        </div>
-                                        <div v-if="f.norm" class="tile-finding-card__norm">
-                                            {{ f.norm }}
-                                        </div>
-                                        <div v-if="f.quote || f.evidence" class="tile-finding-card__quote">
-                                            &laquo;{{ f.quote || f.evidence }}&raquo;
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div v-if="(!selectedTileAnalysis.findings || selectedTileAnalysis.findings.length === 0) && !selectedTileAnalysis.summary"
-                                     class="tile-analysis-empty">
-                                    Анализ выполнен, данных мало.
-                                </div>
-                            </template>
-
-                            <template v-else>
-                                <div class="tile-analysis-empty">
-                                    <div class="tile-analysis-empty__icon">?</div>
-                                    <p>Данные анализа отсутствуют</p>
-                                    <p class="tile-analysis-empty__hint">Запустите «Анализ тайлов» для получения результатов</p>
-                                </div>
-                            </template>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -1893,6 +1748,7 @@
             <div class="log-page">
                 <div class="log-controls">
                     <button class="btn btn-sm" @click="clearLog">Очистить</button>
+                    <button class="btn btn-sm" @click="copyLog($event)">Скопировать</button>
                     <label><input type="checkbox" v-model="logAutoScroll"> Автоскролл</label>
                     <span class="log-count" v-if="logEntries.length > 0">
                         {{ logEntries.length }} записей
@@ -1939,6 +1795,6 @@
         </div>
     </div>
 
-    <script src="/static/js/app.js?v=54"></script>
+    <script src="/static/js/app.js?v=60"></script>
 </body>
 </html>

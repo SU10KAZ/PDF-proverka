@@ -103,53 +103,11 @@ class UsageTracker:
             self._save()
 
     def enrich_from_jsonl(self, session_id: str, record_timestamp: str):
-        """Обогатить запись точными данными из JSONL файла сессии Claude."""
-        if not session_id:
-            return
+        """Legacy no-op. Токены теперь приходят напрямую из OpenRouter API.
 
-        jsonl_path = self._find_jsonl(session_id)
-        if not jsonl_path or not jsonl_path.exists():
-            return
-
-        total_input = 0
-        total_output = 0
-        total_cache_create = 0
-        total_cache_read = 0
-
-        try:
-            with open(jsonl_path, "r", encoding="utf-8") as f:
-                for line in f:
-                    line = line.strip()
-                    if not line:
-                        continue
-                    try:
-                        obj = json.loads(line)
-                    except json.JSONDecodeError:
-                        continue
-                    msg = obj.get("message", {})
-                    if isinstance(msg, dict) and "usage" in msg:
-                        u = msg["usage"]
-                        total_input += u.get("input_tokens", 0)
-                        total_output += u.get("output_tokens", 0)
-                        total_cache_create += u.get(
-                            "cache_creation_input_tokens", 0
-                        )
-                        total_cache_read += u.get("cache_read_input_tokens", 0)
-        except OSError:
-            return
-
-        if total_input == 0 and total_output == 0:
-            return
-
-        with _lock:
-            for rec in reversed(self._records):
-                if rec.get("timestamp") == record_timestamp:
-                    rec["input_tokens"] = total_input
-                    rec["output_tokens"] = total_output
-                    rec["cache_creation_tokens"] = total_cache_create
-                    rec["cache_read_tokens"] = total_cache_read
-                    break
-            self._save()
+        Метод сохранён для обратной совместимости (может вызываться из старого кода).
+        """
+        return
 
     def _find_jsonl(self, session_id: str) -> Optional[Path]:
         """Найти JSONL-файл сессии Claude по session_id."""
@@ -421,6 +379,12 @@ class UsageTracker:
                 non_retry = [r for r in deduped if not r.get("is_retry", False)]
                 dur_recs = non_retry if non_retry else deduped
                 s_duration = sum(r.get("duration_ms", 0) for r in dur_recs)
+            # Определить модель этапа: последняя (не retry) запись
+            stage_model = ""
+            non_retry_recs = [r for r in recs if not r.get("is_retry", False)]
+            model_recs = non_retry_recs if non_retry_recs else recs
+            if model_recs:
+                stage_model = model_recs[-1].get("model", "")
             stages_summary[stage] = {
                 "input_tokens": s_in,
                 "output_tokens": s_out,
@@ -428,6 +392,7 @@ class UsageTracker:
                 "cost_usd": round(s_cost, 4),
                 "calls": s_calls,
                 "duration_ms": s_duration,
+                "model": stage_model,
             }
 
         return {

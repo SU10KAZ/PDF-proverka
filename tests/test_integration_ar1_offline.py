@@ -9,7 +9,6 @@ import pytest
 from pathlib import Path
 
 from webapp.services.grounding_service import compute_grounding_candidates
-from webapp.services.pipeline_service import PipelineManager
 from norms import validate_norm_checks
 
 # ─── Пути ────────────────────────────────────────────────────────────
@@ -151,29 +150,6 @@ class TestGrounding:
                 grounded += 1
         pct = grounded / len(result) * 100 if result else 0
         assert pct >= 60, f"Только {pct:.0f}% замечаний привязаны к блокам (ожидается ≥60%)"
-
-
-# ─── Selective Review Input ────────────────────────────────────────────
-class TestSelectiveReview:
-    def test_builds_review_input(self, work_dir):
-        result = PipelineManager._build_selective_review_input(work_dir)
-        assert "total" in result
-        assert "risky" in result
-        assert "skipped" in result
-        assert result["total"] > 0
-
-    def test_review_input_file_created(self, work_dir):
-        result = PipelineManager._build_selective_review_input(work_dir)
-        if result["risky"] > 0:
-            input_path = work_dir / "03_findings_review_input.json"
-            assert input_path.exists()
-            data = json.loads(input_path.read_text(encoding="utf-8"))
-            assert data["meta"]["risky_count"] == result["risky"]
-            assert len(data["findings"]) == result["risky"]
-
-    def test_risky_plus_skipped_equals_total(self, work_dir):
-        result = PipelineManager._build_selective_review_input(work_dir)
-        assert result["risky"] + result["skipped"] == result["total"]
 
 
 # ─── norm_checks.json: структура и валидация ──────────────────────────

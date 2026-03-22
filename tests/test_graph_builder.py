@@ -217,12 +217,11 @@ class TestBuildLocalTextLinks:
         assert left_first == "T_LEFT"
         assert right_first == "T_RIGHT"
 
-    def test_stamp_blocks_excluded_from_locality(self):
-        """Stamp/metadata блоки не должны участвовать в locality."""
+    def test_all_text_blocks_participate_in_locality(self):
+        """Все text-блоки участвуют в locality (stamp_data — метаданные документа, не фильтр)."""
         page = {
             "text_blocks": [
-                {"id": "STAMP1", "text": "ООО Проект", "coords_norm": [0.1, 0.1, 0.3, 0.2],
-                 "is_stamp": True},
+                {"id": "T_META", "text": "ООО Проект", "coords_norm": [0.1, 0.1, 0.3, 0.2]},
                 {"id": "T1", "text": "Спецификация", "coords_norm": [0.1, 0.3, 0.3, 0.4]},
             ],
             "image_blocks": [
@@ -231,7 +230,7 @@ class TestBuildLocalTextLinks:
         }
         result = build_local_text_links(page)
         candidate_ids = [c["text_block_id"] for c in result.get("I1", [])]
-        assert "STAMP1" not in candidate_ids
+        assert "T_META" in candidate_ids
         assert "T1" in candidate_ids
 
 
@@ -379,21 +378,21 @@ class TestGraphBuilderPreservesData:
         assert graph is not None
         assert graph["total_pages"] == 2
 
-    def test_stamp_blocks_marked(self, tmp_path):
-        """Stamp blocks получают is_stamp=True."""
+    def test_text_blocks_no_is_stamp_field(self, tmp_path):
+        """Text blocks не содержат поле is_stamp (stamp_data — метаданные документа, не признак блока)."""
         result_json = {
             "pages": [{
                 "page_number": 1, "width": 100, "height": 100,
                 "blocks": [
-                    {"id": "STAMP", "page_index": 1,
+                    {"id": "B1", "page_index": 1,
                      "coords_px": [0,0,50,50], "coords_norm": [0,0,0.5,0.5],
                      "block_type": "text", "source": "user",
-                     "shape_type": "rectangle", "ocr_text": "Stamp",
+                     "shape_type": "rectangle", "ocr_text": "Текст блока",
                      "stamp_data": {"sheet_number": "1"}},
-                    {"id": "NORMAL", "page_index": 1,
+                    {"id": "B2", "page_index": 1,
                      "coords_px": [50,0,100,50], "coords_norm": [0.5,0,1,0.5],
                      "block_type": "text", "source": "user",
-                     "shape_type": "rectangle", "ocr_text": "Normal"},
+                     "shape_type": "rectangle", "ocr_text": "Другой блок"},
                 ],
             }],
         }
@@ -402,10 +401,8 @@ class TestGraphBuilderPreservesData:
 
         graph = build_document_graph_v2(tmp_path, tmp_path / "_output")
         tbs = graph["pages"][0]["text_blocks"]
-        stamp_tb = next(t for t in tbs if t["id"] == "STAMP")
-        normal_tb = next(t for t in tbs if t["id"] == "NORMAL")
-        assert stamp_tb["is_stamp"] is True
-        assert normal_tb["is_stamp"] is False
+        for tb in tbs:
+            assert "is_stamp" not in tb
 
 
 # ─── page_sheet_map for v2 graph ──────────────────────────────────────────
