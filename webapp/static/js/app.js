@@ -165,6 +165,8 @@ const app = createApp({
         }
 
         const sonnetPercent = computed(() => {
+            // Legacy: процент Sonnet из JSONL-сканера (Claude Code sessions)
+            // При миграции на OpenRouter этот показатель уходит в 0 — это нормально
             const m = globalUsage.value.weekly_by_model || {};
             return (m.sonnet && m.sonnet.percent) || 0;
         });
@@ -226,6 +228,21 @@ const app = createApp({
             const out = s.output_tokens || 0;
             if (inp === 0 && out === 0) return null;
             return { inp: formatTokens(inp), out: formatTokens(out) };
+        }
+
+        function stageModel(pipelineKey) {
+            const s = stageTokens(pipelineKey);
+            if (!s || !s.model) return '';
+            // Краткое имя модели: google/gemini-3.1-pro-preview → Gemini, openai/gpt-5.4 → GPT
+            const m = s.model;
+            if (m.includes('gemini')) return 'Gemini';
+            if (m.includes('gpt')) return 'GPT';
+            if (m.includes('opus')) return 'Opus';
+            if (m.includes('sonnet')) return 'Sonnet';
+            if (m.includes('claude')) return 'Claude';
+            // Fallback: последняя часть после /
+            const parts = m.split('/');
+            return parts[parts.length - 1].substring(0, 10);
         }
 
         function stageDurationForProject(projectId, pipelineKey) {
@@ -620,6 +637,67 @@ const app = createApp({
         const isPaused = ref(false);
         const pauseMode = ref(null);
 
+        // ─── Model Config (per-stage) ───
+        const showModelConfig = ref(false);
+        const stageModelConfig = ref({});
+        const availableModels = ref([]);
+        const modelConfigPendingProjectId = ref(null);
+        const stageLabels = {
+            text_analysis: "01 Текст",
+            block_batch: "02 Блоки",
+            findings_merge: "03 Свод",
+            findings_critic: "C Critic",
+            findings_corrector: "F Fix",
+            norm_verify: "04 Нормы",
+            norm_fix: "04b Пересмотр",
+            optimization: "05 Оптимизация",
+            optimization_critic: "C OPT Critic",
+            optimization_corrector: "F OPT Fix",
+        };
+
+        const stageModelRestrictions = ref({});
+
+        function isModelAllowed(stageKey, modelId) {
+            const r = stageModelRestrictions.value[stageKey];
+            if (!r) return true;
+            return r.includes(modelId);
+        }
+
+        async function loadStageModels() {
+            try {
+                const data = await api('/audit/model/stages');
+                stageModelConfig.value = data.stages || {};
+                availableModels.value = data.available_models || [];
+                stageModelRestrictions.value = data.restrictions || {};
+            } catch (e) {
+                console.error('Failed to load stage models:', e);
+            }
+        }
+
+        async function saveStageModels() {
+            try {
+                await apiPost('/audit/model/stages', stageModelConfig.value);
+            } catch (e) {
+                console.error('Failed to save stage models:', e);
+            }
+        }
+
+        function openModelConfig(projectId) {
+            modelConfigPendingProjectId.value = projectId;
+            loadStageModels().then(() => {
+                showModelConfig.value = true;
+            });
+        }
+
+        async function saveAndStartAudit() {
+            await saveStageModels();
+            showModelConfig.value = false;
+            const pid = modelConfigPendingProjectId.value;
+            if (pid) {
+                startAuditDirect(pid);
+            }
+        }
+
         function toggleProjectSelection(projectId) {
             const s = new Set(selectedProjects.value);
             if (s.has(projectId)) s.delete(projectId);
@@ -971,6 +1049,11 @@ const app = createApp({
         }
 
         async function startAudit(projectId) {
+            // Показать модальник с выбором моделей перед запуском
+            openModelConfig(projectId);
+        }
+
+        async function startAuditDirect(projectId) {
             try {
                 auditRunning.value = true;
                 await apiPost(`/audit/${projectId}/full-audit`);
@@ -2363,6 +2446,34 @@ const app = createApp({
             }
         }
 
+        function copyLog(event) {
+            const entries = logEntries.value;
+            if (!entries.length) return;
+            const text = entries.map(e => `[${e.time}] ${e.message}`).join('\n');
+            const btn = event?.target;
+            const done = () => {
+                if (btn) { btn.textContent = 'Скопировано!'; setTimeout(() => btn.textContent = 'Скопировать', 1500); }
+            };
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(done).catch(() => {
+                    fallbackCopy(text); done();
+                });
+            } else {
+                fallbackCopy(text); done();
+            }
+        }
+
+        function fallbackCopy(text) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+        }
+
         async function loadProjectLog(projectId) {
             /**  Загрузить историю логов из файла проекта. */
             if (!projectId) return;
@@ -2616,7 +2727,7 @@ const app = createApp({
             formatETA, heartbeatStatusText, isClaudeStage, getRunningStage,
             // Methods
             navigate, refreshProjects, stepClass, sevClass, sevIcon,
-            debounceSearch, clearLog,
+            debounceSearch, clearLog, copyLog,
             // Prompts
             promptsProjectId, templates, promptsLoading,
             activePromptTab, promptsDiscipline,
@@ -2639,6 +2750,11 @@ const app = createApp({
             // Pause
             showPauseModal, isPaused, pauseMode, anyRunning,
             pausePipeline, resumePipelineGlobal,
+            // Model config
+            showModelConfig, stageModelConfig, availableModels, stageLabels,
+            stageModelRestrictions, isModelAllowed,
+            loadStageModels, saveStageModels, openModelConfig, saveAndStartAudit,
+            startAuditDirect,
             toggleProjectSelection, toggleSelectAll, isProjectSelected,
             isSectionSelected, toggleSectionSelection,
             sectionExcelLoading, exportSectionExcel,
@@ -2672,7 +2788,7 @@ const app = createApp({
             formatTokens, formatCost, formatDurationSec, refreshGlobalUsage, resetSessionCounter,
             usageCounters,
             // Usage (per-project)
-            projectUsage, currentProjectUsage, stageTokens, stageTokensFormatted, stageDurationForProject, formatDuration,
+            projectUsage, currentProjectUsage, stageTokens, stageTokensFormatted, stageModel, stageDurationForProject, formatDuration,
             // Pipeline summary
             // Optimization
             optimizationData, optimizationLoading, optimizationFilter,

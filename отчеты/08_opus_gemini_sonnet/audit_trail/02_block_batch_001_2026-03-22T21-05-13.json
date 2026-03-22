@@ -1,0 +1,343 @@
+{
+  "stage": "02_block_batch_001",
+  "model": "google/gemini-3.1-pro-preview",
+  "timestamp": "2026-03-22T21:05:13.206250",
+  "input_tokens": 40232,
+  "output_tokens": 3675,
+  "duration_ms": 32462,
+  "result": {
+    "batch_id": 1,
+    "project_id": "133_23-ГК-ТХ.М",
+    "timestamp": "2024-05-24T12:00:00Z",
+    "block_analyses": [
+      {
+        "block_id": "9DYC-NTHR-9E9",
+        "page": 5,
+        "sheet": "2",
+        "label": "План 1 этажа",
+        "sheet_type": "floor_plan_tech",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "План 1 этажа с размещением подъемника г/п 1000 кг, зоны установки наружных блоков кондиционеров, тепловой завесы и резервного контейнера ТБО. Указаны отметки высот и пределы огнестойкости дверей.",
+        "key_values_read": [
+          "Подъемник г/п 1000 кг",
+          "Зона установки наружных блоков кондиционеров",
+          "Размещение резервного контейнера ТБО",
+          "Тепловая завеса",
+          "EI30",
+          "EI60",
+          "-0,510",
+          "-0,330",
+          "169,08",
+          "169,30"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "7XH6-3NUF-EDP",
+            "role": "table",
+            "used_for": "cross_check"
+          }
+        ],
+        "findings": []
+      },
+      {
+        "block_id": "9E9V-UFC7-YAD",
+        "page": 5,
+        "sheet": "2",
+        "label": "Фрагмент плана -2 этажа",
+        "sheet_type": "floor_plan_tech",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "Фрагмент плана -2 этажа с размещением подъемника г/п 1000 кг, гидравлической станции, электрического щита управления и поливочного крана. Показана зона обслуживания гидравлической станции и парковочное место.",
+        "key_values_read": [
+          "Подъемник г/п 1000 кг",
+          "Станция гидравлическая 800х800х1100(h) мм",
+          "Эл.щит управления гидр.станцией 300х750х750(h) мм",
+          "Кран поливочный ХВ, ГВ Q=0,3 л/с h=1100 мм",
+          "Зона обслуживания гидр.станции",
+          "EIS60",
+          "EI60",
+          "1%",
+          "0,5%"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "9TGM-4HLQ-MFY",
+            "role": "table",
+            "used_for": "cross_check"
+          }
+        ],
+        "findings": [
+          {
+            "id": "G-001",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "equipment_layout",
+            "finding": "Гидравлическая станция размещена в помещении при шахте. Не указана необходимая температура в помещении гидростанции (для корректной работы гидравлического масла обычно требуется +5...+40°C).",
+            "norm": null,
+            "norm_quote": null,
+            "block_evidence": "9E9V-UFC7-YAD",
+            "value_found": "Станция гидравлическая 800х800х1100(h) мм",
+            "highlight_regions": [
+              {
+                "x": 0.2,
+                "y": 0.3,
+                "w": 0.3,
+                "h": 0.2,
+                "label": "Размещение гидравлической станции"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "block_id": "4CWU-7KFW-U66",
+        "page": 5,
+        "sheet": "2",
+        "label": "Разрез 1-1",
+        "sheet_type": "section",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "Вертикальный разрез 1-1 здания с указанием высотных отметок, конструктивных слоев и типов конструкций. Показана шахта подъемника.",
+        "key_values_read": [
+          "Разрез 1-1",
+          "К2.1",
+          "+5,750",
+          "+4,400",
+          "-0,280 (169,32)",
+          "-0,330",
+          "-0,500 (169,10)",
+          "-2,950",
+          "Тип 1",
+          "Тип 4",
+          "Тип 4.1",
+          "Тип 6"
+        ],
+        "evidence_text_refs": [],
+        "findings": []
+      },
+      {
+        "block_id": "7JGV-PTLY-RGJ",
+        "page": 7,
+        "sheet": "1",
+        "label": "Схема установки мачты",
+        "sheet_type": "detail",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "Схема установки и крепления вертикальной мачты подъемного механизма к стене. Указаны рабочая высота подъема, толщина платформы и расположение опорной пластины.",
+        "key_values_read": [
+          "H.0= 5400 мм рабочая высота подъема",
+          "125 мм толщина платформы",
+          "1210 мм",
+          "Опорная пластина"
+        ],
+        "evidence_text_refs": [],
+        "findings": []
+      },
+      {
+        "block_id": "9GKW-NUHR-KQJ",
+        "page": 7,
+        "sheet": "1",
+        "label": "Узел крепления мачты",
+        "sheet_type": "detail",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "Чертеж узла крепления мачты подъемника в шахте. Показаны базовая и дополнительная секции, анкерные пластины, приямок и шаг креплений.",
+        "key_values_read": [
+          "Анкерная пластина",
+          "H.1=3900 мм базовая секция",
+          "H.2= 2400 мм дополнительная секция",
+          "600мм",
+          "P= 130 мм приямок",
+          "0",
+          "1"
+        ],
+        "evidence_text_refs": [],
+        "findings": []
+      },
+      {
+        "block_id": "6K93-AA9R-3MY",
+        "page": 7,
+        "sheet": "1",
+        "label": "Тип ограждения на платформе",
+        "sheet_type": "other",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "Фрагмент опросного листа с выбором типа ограждения на платформе. Отмечен вариант 'Металлические трубы без заполнения'.",
+        "key_values_read": [
+          "Тип ограждения на платформе",
+          "Отметить тип ограждения",
+          "Металлические трубы без заполнения"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "ACFE-6FUT-6FK",
+            "role": "table",
+            "used_for": "value_extraction"
+          }
+        ],
+        "findings": []
+      },
+      {
+        "block_id": "66DX-7RE9-PG9",
+        "page": 7,
+        "sheet": "1",
+        "label": "Габариты платформы и шахты",
+        "sheet_type": "detail",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "Схема габаритов лифтовой платформы и шахты в плане. Указаны общие и полезные габариты платформы, размеры шахты/приямка/проема.",
+        "key_values_read": [
+          "A.0= 1770 мм шахта/приямок/проем",
+          "A.1= 1410 мм полезный габарит",
+          "A.2= 1500 мм общий габарит платформы",
+          "B.0= 1580 мм шахта/приямок/проем",
+          "B.1= 1410 полезный габарит",
+          "B.2= 1500 мм общий габарит платформы",
+          "B.3= 390 мм",
+          "800 мм",
+          "230 мм",
+          "X",
+          "Y",
+          "Z"
+        ],
+        "evidence_text_refs": [],
+        "findings": []
+      },
+      {
+        "block_id": "A9EM-TR7F-AXG",
+        "page": 7,
+        "sheet": "1",
+        "label": "Гидравлическая станция (вид сверху)",
+        "sheet_type": "detail",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "Чертеж вида сверху гидравлической станции. Указан максимальный габаритный размер и линия разреза 1-1.",
+        "key_values_read": [
+          "ГИДРАВЛИЧЕСКАЯ СТАНЦИЯ",
+          "1",
+          "500 max"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "4JWJ-D44L-R6G",
+            "role": "title",
+            "used_for": "summary"
+          }
+        ],
+        "findings": []
+      },
+      {
+        "block_id": "4C34-EGKE-U66",
+        "page": 7,
+        "sheet": "1",
+        "label": "Электрический щит управления",
+        "sheet_type": "detail",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "Чертеж общего вида электрического щита управления. Указаны габаритные размеры (300х750) и сечения.",
+        "key_values_read": [
+          "ЭЛЕКТРИЧЕСКИЙ ЩИТ УПРАВЛЕНИЯ",
+          "2",
+          "300",
+          "750"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "DGNL-RWHC-6YH",
+            "role": "title",
+            "used_for": "summary"
+          }
+        ],
+        "findings": []
+      },
+      {
+        "block_id": "7H3H-VCX6-4HD",
+        "page": 7,
+        "sheet": "1",
+        "label": "Разрез 1-1 гидравлической станции",
+        "sheet_type": "section",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "Разрез 1-1 гидравлической станции. Указаны габаритные размеры по высоте и ширине.",
+        "key_values_read": [
+          "1-1",
+          "600",
+          "850 max",
+          "485 max"
+        ],
+        "evidence_text_refs": [],
+        "findings": []
+      },
+      {
+        "block_id": "673E-9ANU-DTJ",
+        "page": 7,
+        "sheet": "1",
+        "label": "Опорная пластина",
+        "sheet_type": "detail",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "Чертеж детали 'Опорная пластина'. Указаны габаритные размеры, межосевое расстояние и параметры отверстий.",
+        "key_values_read": [
+          "ОПОРНАЯ ПЛАСТИНА",
+          "800",
+          "740",
+          "100",
+          "30",
+          "Ø18 4 отв."
+        ],
+        "evidence_text_refs": [],
+        "findings": []
+      },
+      {
+        "block_id": "66EX-R3YX-3N6",
+        "page": 7,
+        "sheet": "1",
+        "label": "Анкерная пластина",
+        "sheet_type": "detail",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "Чертеж детали 'Анкерная пластина'. Указаны габаритные размеры, межосевое расстояние и параметры отверстий.",
+        "key_values_read": [
+          "АНКЕРНАЯ ПЛАСТИНА",
+          "800",
+          "760",
+          "60",
+          "2xØ15"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "9EDM-9HHW-ANV",
+            "role": "title",
+            "used_for": "summary"
+          }
+        ],
+        "findings": []
+      },
+      {
+        "block_id": "9KQL-XPTY-AGV",
+        "page": 7,
+        "sheet": "1",
+        "label": "Система координат",
+        "sheet_type": "other",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "Изображение трехмерной системы координат с обозначением осей X, Y и Z для ориентации чертежа.",
+        "key_values_read": [
+          "Ось X",
+          "Ось Y",
+          "Ось Z"
+        ],
+        "evidence_text_refs": [],
+        "findings": []
+      }
+    ],
+    "items_verified_from_stage_01": [
+      {
+        "finding_id": "T-015",
+        "block_id": "9E9V-UFC7-YAD",
+        "confirmed": true,
+        "evidence": "На плане -2 этажа (блок 9E9V-UFC7-YAD) станция показана в помещении при шахте с обозначением 'зона обслуживания гидр.станции'. Не указана необходимая температура в помещении гидростанции."
+      }
+    ]
+  }
+}

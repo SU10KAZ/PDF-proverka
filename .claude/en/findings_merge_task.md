@@ -1,18 +1,19 @@
 > **OUTPUT LANGUAGE:** All text values in JSON output (problem, description, solution, risk, etc.) MUST be written in Russian.
+> **RESPONSE FORMAT:** Respond with valid JSON only. No explanations, no markdown, no text outside JSON.
 
 # FINDINGS CONSOLIDATION — {PROJECT_ID}
 
 ## Input Data
 
-1. **Text analysis**: `{OUTPUT_PATH}/01_text_analysis.json`
+1. **Text analysis** — READ via Read tool: `{OUTPUT_PATH}/01_text_analysis.json`
    - `text_findings` (T-001...), `normative_refs_found`, `project_params`
 
-2. **Block analysis**: `{OUTPUT_PATH}/02_blocks_analysis.json`
+2. **Block analysis** — READ via Read tool: `{OUTPUT_PATH}/02_blocks_analysis.json`
    - `block_analyses` (findings G-001... within each block), `items_verified_from_stage_01`
 
-3. **MD file** (for context): `{MD_FILE_PATH}`
+3. **MD file** (for context) — READ via Read tool: `{MD_FILE_PATH}`
 
-4. **Normative reference**: `{DISCIPLINE_NORMS_FILE}`
+4. **Normative reference** — provided in system context.
 
 ## Task
 
@@ -53,7 +54,7 @@ Before merging — process `items_verified_from_stage_01`:
 2. **Severity elevation**: text finding confirmed by drawing → severity increases (see items_verified above)
 3. **Severity reduction**: text suspicion NOT confirmed by drawing → downgrade or remove
 4. **Renumbering**: final IDs: F-001, F-002...
-5. **Block linkage**: for each F-NNN fill `related_block_ids` — list of block_id from `02_blocks_analysis.json` that are the source. For G-NNN → block's block_id. For T-NNN → block_ids that confirmed the text finding (from `items_verified`). For cross-block → all participating block_ids.
+5. **Block linkage**: for each F-NNN fill `related_block_ids` — list of block_id from block analysis that are the source. For G-NNN → block's block_id. For T-NNN → block_ids that confirmed the text finding (from `items_verified`). For cross-block → all participating block_ids.
 
 ### Finding Fields
 
@@ -65,13 +66,11 @@ Before merging — process `items_verified_from_stage_01`:
 - `risk`: consequences if not fixed
 - `source_block_ids`: block_ids WHERE the finding was actually DETECTED (source-of-truth). Differs from `related_block_ids`: source = "where found", related = "what it relates to".
 - `related_block_ids`: block_ids the finding RELATES TO. May include blocks where the problem is not directly visible but are connected.
-- `evidence_text_refs`: detailed text↔finding traceability. Transfer from `02_blocks_analysis.json` and deduplicate.
+- `evidence_text_refs`: detailed text↔finding traceability. Transfer from block analysis and deduplicate.
 - `evidence`: array of data sources. `{type: "image"|"text", block_id: "...", page: N}`.
 - `highlight_regions`: visual regions on the block. Transfer from G-findings. Format: `[{block_id: "...", x: 0.35, y: 0.40, w: 0.20, h: 0.15, label: "..."}]`. Add `block_id` to each region.
 
-## Output File
-
-WRITE via Write tool: `{OUTPUT_PATH}/03_findings.json`
+## Output JSON Schema
 
 ```json
 {
@@ -120,10 +119,10 @@ WRITE via Write tool: `{OUTPUT_PATH}/03_findings.json`
 
 ### Sheet and Page Rules (MANDATORY)
 
-- `sheet` — sheet number **from the title block** (`sheet_no` from page context / `02_blocks_analysis`). Format: "Лист 7" or "Листы 3, 5". DO NOT confuse with PDF page number!
+- `sheet` — sheet number **from the title block** (`sheet_no` from page context / block analysis). Format: "Лист 7" or "Листы 3, 5". DO NOT confuse with PDF page number!
 - `page` — PDF page number (integer). If finding spans multiple pages — array `[12, 13]`.
 
-**STRICT RULE:** Use sheet numbers from `02_blocks_analysis.json` block entries (field `sheet`). If a block has `sheet: "Лист 7"`, use that value. If sheet is not available — set `"sheet": null` and DO NOT guess.
+**STRICT RULE:** Use sheet numbers from block analysis block entries (field `sheet`). If a block has `sheet: "Лист 7"`, use that value. If sheet is not available — set `"sheet": null` and DO NOT guess.
 
 ## Normative Accuracy (norm_quote)
 
@@ -135,9 +134,14 @@ If two findings merge into one:
 For new findings (cross-block verification):
 - Fill `norm_quote` using the same rules
 
+## Output
+
+WRITE via Write tool: `{OUTPUT_PATH}/03_findings.json`
+
 ## Rules
 
 1. Write JSON via Write tool — DO NOT output to chat
-2. Finding IDs: F-001, F-002... (sequential numbering)
-3. When referencing a norm — indicate status (действует/заменён/отменён)
-4. After writing, output a brief summary: finding count by severity
+2. After writing, output a brief summary of findings
+3. Finding IDs: F-001, F-002... (sequential numbering)
+4. When referencing a norm — indicate status (действует/заменён/отменён)
+5. Respond with valid JSON matching the schema above

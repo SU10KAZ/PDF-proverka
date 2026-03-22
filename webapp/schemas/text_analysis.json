@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TextAnalysis",
+  "description": "Stage 01: Text analysis of project MD file",
+  "type": "object",
+  "required": ["stage", "project_id", "text_source", "timestamp", "project_params", "normative_refs_found", "text_findings"],
+  "additionalProperties": false,
+  "properties": {
+    "stage": {
+      "type": "string",
+      "const": "01_text_analysis"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "text_source": {
+      "type": "string",
+      "enum": ["md", "extracted_text"]
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "project_params": {
+      "type": "object",
+      "properties": {
+        "object_type": { "type": "string" },
+        "total_load_kw": { "type": "number" },
+        "key_equipment": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "normative_refs_found": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["ref", "status"],
+        "properties": {
+          "ref": { "type": "string" },
+          "status": { "type": "string" },
+          "edition": { "type": "string", "default": "" },
+          "note": { "type": "string", "default": "" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "text_findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "severity", "category", "source", "finding"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^T-\\d{3}$"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["КРИТИЧЕСКОЕ", "ЭКОНОМИЧЕСКОЕ", "ЭКСПЛУАТАЦИОННОЕ", "РЕКОМЕНДАТЕЛЬНОЕ", "ПРОВЕРИТЬ ПО СМЕЖНЫМ"]
+          },
+          "category": { "type": "string" },
+          "source": { "type": "string" },
+          "finding": { "type": "string" },
+          "norm": { "type": "string", "default": "" },
+          "norm_quote": { "type": ["string", "null"], "default": null },
+          "related_block_ids": {
+            "type": "array",
+            "items": { "type": "string" },
+            "default": []
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

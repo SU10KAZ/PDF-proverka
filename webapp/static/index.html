@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="/static/css/styles.css?v=90">
+    <link rel="stylesheet" href="/static/css/styles.css?v=93">
 </head>
 <body>
     <div id="app">
@@ -79,7 +79,7 @@
                             </div>
                             <span class="usage-row__pct">{{ Math.round(globalUsage.weekly_all_percent || 0) }}%</span>
                         </div>
-                        <div class="usage-row"
+                        <div class="usage-row" v-if="sonnetPercent > 0"
                              :class="{'usage-row--warning': sonnetPercent > 70,
                                       'usage-row--danger': sonnetPercent > 90}">
                             <span class="usage-row__label">Sonnet</span>
@@ -123,20 +123,20 @@
 
                     <div class="usage-details__footer">
                         <button class="btn btn--small" @click.stop="refreshGlobalUsage">Обновить</button>
-                        <span class="usage-details__note">Только Claude Code (не claude.ai)</span>
+                        <span class="usage-details__note">Claude Code сессии (legacy)</span>
                     </div>
                 </div>
 
                 <!-- Account info button -->
                 <button class="account-btn" @click="showAccountInfo = !showAccountInfo"
                         :class="{'account-btn--error': !accountInfo.loggedIn}"
-                        title="Аккаунт Claude CLI">
+                        title="Аккаунт LLM">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                     </svg>
                 </button>
                 <div class="account-panel" v-if="showAccountInfo">
-                    <div class="account-panel__header">Аккаунт Claude CLI</div>
+                    <div class="account-panel__header">Аккаунт LLM</div>
                     <div class="account-panel__row">
                         <span class="account-panel__label">Email:</span>
                         <span class="account-panel__value">{{ accountInfo.email }}</span>
@@ -736,6 +736,40 @@
             </div>
         </div>
 
+        <!-- ═══ Model Config Modal ═══ -->
+        <div v-if="showModelConfig" class="modal-overlay" @click.self="showModelConfig = false">
+            <div class="modal-content model-config-modal" @click.stop>
+                <button class="modal-close" @click="showModelConfig = false">&times;</button>
+                <h3>Конфигурация моделей</h3>
+                <p class="model-config-desc">Выберите модель для каждого этапа аудита</p>
+                <table class="model-config-table">
+                    <thead>
+                        <tr>
+                            <th class="model-config-stage-col">Этап</th>
+                            <th v-for="m in availableModels" :key="m.id">{{ m.label }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(label, key) in stageLabels" :key="key">
+                            <td class="model-config-stage-name">{{ label }}</td>
+                            <td v-for="m in availableModels" :key="m.id" class="model-config-radio-cell">
+                                <input type="radio"
+                                       :name="'model-' + key"
+                                       :value="m.id"
+                                       v-model="stageModelConfig[key]"
+                                       :disabled="!isModelAllowed(key, m.id)"
+                                       class="model-config-radio">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="model-config-actions">
+                    <button class="btn" @click="showModelConfig = false">Отмена</button>
+                    <button class="btn btn-accent" @click="saveAndStartAudit()">Запустить аудит</button>
+                </div>
+            </div>
+        </div>
+
         <!-- ═══ Queue View ═══ -->
         <div v-if="currentView === 'queue'" class="container">
             <div class="queue-view">
@@ -879,6 +913,7 @@
                                 <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('text_analysis').inp }}</span>
                                 <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('text_analysis').out }}</span>
                             </div>
+                            <div class="stage-model" v-if="stageModel('text_analysis')">{{ stageModel('text_analysis') }}</div>
                         </div>
                         <div class="pipeline-arrow">&rarr;</div>
                         <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.blocks_analysis), {'pipeline-stage--clickable': canStartFrom('blocks_analysis')}]"
@@ -890,6 +925,7 @@
                                 <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('blocks_analysis').inp }}</span>
                                 <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('blocks_analysis').out }}</span>
                             </div>
+                            <div class="stage-model" v-if="stageModel('blocks_analysis')">{{ stageModel('blocks_analysis') }}</div>
                         </div>
                         <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
                         <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(currentProject.pipeline.block_retry)"
@@ -900,6 +936,7 @@
                                 <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('block_retry').inp }}</span>
                                 <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('block_retry').out }}</span>
                             </div>
+                            <div class="stage-model" v-if="stageModel('block_retry')">{{ stageModel('block_retry') }}</div>
                         </div>
                         <div class="pipeline-arrow">&rarr;</div>
                         <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.findings), {'pipeline-stage--clickable': canStartFrom('findings')}]"
@@ -911,6 +948,7 @@
                                 <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('findings').inp }}</span>
                                 <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('findings').out }}</span>
                             </div>
+                            <div class="stage-model" v-if="stageModel('findings')">{{ stageModel('findings') }}</div>
                         </div>
                         <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
                         <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(currentProject.pipeline.findings_critic)"
@@ -921,6 +959,7 @@
                                 <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('findings_critic').inp }}</span>
                                 <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('findings_critic').out }}</span>
                             </div>
+                            <div class="stage-model" v-if="stageModel('findings_critic')">{{ stageModel('findings_critic') }}</div>
                         </div>
                         <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
                         <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(currentProject.pipeline.findings_corrector)"
@@ -931,6 +970,7 @@
                                 <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('findings_corrector').inp }}</span>
                                 <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('findings_corrector').out }}</span>
                             </div>
+                            <div class="stage-model" v-if="stageModel('findings_corrector')">{{ stageModel('findings_corrector') }}</div>
                         </div>
                         <div class="pipeline-arrow">&rarr;</div>
                         <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.norms_verified), {'pipeline-stage--clickable': canStartFrom('norms_verified')}]"
@@ -942,6 +982,7 @@
                                 <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('norms_verified').inp }}</span>
                                 <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('norms_verified').out }}</span>
                             </div>
+                            <div class="stage-model" v-if="stageModel('norms_verified')">{{ stageModel('norms_verified') }}</div>
                         </div>
                         <div class="pipeline-arrow">&rarr;</div>
                         <div class="pipeline-stage pipeline-stage--opt" :class="[stepClass(currentProject.pipeline.optimization), {'pipeline-stage--clickable': canStartFrom('optimization')}]"
@@ -953,6 +994,7 @@
                                 <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('optimization').inp }}</span>
                                 <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('optimization').out }}</span>
                             </div>
+                            <div class="stage-model" v-if="stageModel('optimization')">{{ stageModel('optimization') }}</div>
                         </div>
                         <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
                         <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(currentProject.pipeline.optimization_critic)"
@@ -963,6 +1005,7 @@
                                 <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('optimization_critic').inp }}</span>
                                 <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('optimization_critic').out }}</span>
                             </div>
+                            <div class="stage-model" v-if="stageModel('optimization_critic')">{{ stageModel('optimization_critic') }}</div>
                         </div>
                         <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
                         <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(currentProject.pipeline.optimization_corrector)"
@@ -973,6 +1016,7 @@
                                 <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('optimization_corrector').inp }}</span>
                                 <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('optimization_corrector').out }}</span>
                             </div>
+                            <div class="stage-model" v-if="stageModel('optimization_corrector')">{{ stageModel('optimization_corrector') }}</div>
                         </div>
                     </div>
 
@@ -1704,6 +1748,7 @@
             <div class="log-page">
                 <div class="log-controls">
                     <button class="btn btn-sm" @click="clearLog">Очистить</button>
+                    <button class="btn btn-sm" @click="copyLog($event)">Скопировать</button>
                     <label><input type="checkbox" v-model="logAutoScroll"> Автоскролл</label>
                     <span class="log-count" v-if="logEntries.length > 0">
                         {{ logEntries.length }} записей
@@ -1750,6 +1795,6 @@
         </div>
     </div>
 
-    <script src="/static/js/app.js?v=56"></script>
+    <script src="/static/js/app.js?v=60"></script>
 </body>
 </html>

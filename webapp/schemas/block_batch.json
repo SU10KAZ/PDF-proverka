@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BlockBatchAnalysis",
+  "description": "Stage 02: Image block analysis batch result",
+  "type": "object",
+  "required": ["batch_id", "project_id", "timestamp", "block_analyses"],
+  "additionalProperties": false,
+  "properties": {
+    "batch_id": {
+      "type": "integer"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "block_analyses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["block_id", "page", "label", "summary", "key_values_read", "findings"],
+        "properties": {
+          "block_id": { "type": "string" },
+          "page": { "type": "integer" },
+          "sheet": { "type": ["string", "null"], "default": null },
+          "label": { "type": "string" },
+          "sheet_type": { "type": "string", "default": "" },
+          "unreadable_text": { "type": "boolean", "default": false },
+          "unreadable_details": { "type": ["string", "null"], "default": null },
+          "summary": { "type": "string" },
+          "key_values_read": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "evidence_text_refs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["text_block_id", "role", "used_for"],
+              "properties": {
+                "text_block_id": { "type": "string" },
+                "role": {
+                  "type": "string",
+                  "enum": ["caption", "note", "legend", "title", "table", "other"]
+                },
+                "used_for": {
+                  "type": "string",
+                  "enum": ["summary", "finding", "value_extraction", "cross_check"]
+                }
+              },
+              "additionalProperties": false
+            },
+            "default": []
+          },
+          "findings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "severity", "category", "finding"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^G-\\d{3}$"
+                },
+                "severity": {
+                  "type": "string",
+                  "enum": ["КРИТИЧЕСКОЕ", "ЭКОНОМИЧЕСКОЕ", "ЭКСПЛУАТАЦИОННОЕ", "РЕКОМЕНДАТЕЛЬНОЕ", "ПРОВЕРИТЬ ПО СМЕЖНЫМ"]
+                },
+                "category": { "type": "string" },
+                "finding": { "type": "string" },
+                "norm": { "type": "string", "default": "" },
+                "norm_quote": { "type": ["string", "null"], "default": null },
+                "block_evidence": { "type": "string", "default": "" },
+                "value_found": { "type": "string", "default": "" },
+                "highlight_regions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["x", "y", "w", "h", "label"],
+                    "properties": {
+                      "x": { "type": "number", "minimum": 0, "maximum": 1 },
+                      "y": { "type": "number", "minimum": 0, "maximum": 1 },
+                      "w": { "type": "number", "minimum": 0, "maximum": 1 },
+                      "h": { "type": "number", "minimum": 0, "maximum": 1 },
+                      "label": { "type": "string" }
+                    },
+                    "additionalProperties": false
+                  },
+                  "minItems": 1
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "items_verified_from_stage_01": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["finding_id", "block_id", "confirmed", "evidence"],
+        "properties": {
+          "finding_id": { "type": "string" },
+          "block_id": { "type": "string" },
+          "confirmed": { "type": "boolean" },
+          "evidence": { "type": "string" }
+        },
+        "additionalProperties": false
+      },
+      "default": []
+    }
+  }
+}

@@ -1,20 +1,21 @@
 > **OUTPUT LANGUAGE:** All text values in JSON output (finding, source, reason, etc.) MUST be written in Russian.
+> **RESPONSE FORMAT:** Respond with valid JSON only. No explanations, no markdown, no text outside JSON.
 
 # PROJECT TEXT ANALYSIS — {PROJECT_ID}
 
 ## Input Data
 
-1. **MD file** (primary text source): `{MD_FILE_PATH}`
+1. **MD file** (primary text source) — READ via Read tool: `{MD_FILE_PATH}`
    - `[TEXT]` blocks — text data (explanatory notes, specifications, tables)
    - `[IMAGE]` blocks — drawing descriptions (type, axes, entities, text on drawing)
 
-2. **Normative reference**: `{DISCIPLINE_NORMS_FILE}`
+2. **Normative reference** — READ via Read tool: `{DISCIPLINE_NORMS_FILE}` (if available)
 
 ## Task
 
 ### Stage 1: Text Data Analysis
 
-Read the MD file COMPLETELY. Extract:
+Analyze the MD content COMPLETELY. Extract:
 
 1. **Project parameters** (`project_params`):
    - Building type, number of floors, areas
@@ -57,9 +58,7 @@ Read the MD file COMPLETELY. Extract:
 
 {DISCIPLINE_FINDING_CATEGORIES}
 
-## Output File
-
-WRITE via Write tool: `{OUTPUT_PATH}/01_text_analysis.json`
+## Output JSON Schema
 
 ```json
 {
@@ -91,7 +90,7 @@ WRITE via Write tool: `{OUTPUT_PATH}/01_text_analysis.json`
       "norm_quote": "Точная цитата из нормы или null",
       "related_block_ids": ["block_id"]
     }
-  ],
+  ]
 }
 ```
 
@@ -101,10 +100,15 @@ For EACH finding with a `norm` field:
 - **`norm_quote`** — exact quote from the norm clause (1-2 sentences). `null` if unsure.
 - All quotes will be verified at the norm verification stage (stage 04) regardless of confidence.
 
+## Output
+
+WRITE via Write tool: `{OUTPUT_PATH}/01_text_analysis.json`
+
 ## Rules
 
-1. Read the MD file COMPLETELY — do not skip sections
+1. Analyze the MD content COMPLETELY — do not skip sections
 2. `text_findings[]` — based on text data only (not drawings)
 3. severity — ONLY one of the 5 values
 4. Write JSON via Write tool — DO NOT output to chat
-5. After writing, output a brief summary
+5. After writing, output a brief summary of what was found
+6. Respond with valid JSON matching the schema above

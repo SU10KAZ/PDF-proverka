@@ -1,4 +1,5 @@
 > **OUTPUT LANGUAGE:** All text values in JSON output (current, proposed, risks, top3_summary, etc.) MUST be written in Russian.
+> **RESPONSE FORMAT:** Respond with valid JSON only. No explanations, no markdown, no text outside JSON.
 
 # Task: Design Solution Optimization
 
@@ -10,17 +11,12 @@ You are an experienced design engineer (Chief Project Engineer / cost engineerin
 
 ## Input Data
 
-- **MD file (project text):** `{MD_FILE_PATH}`
-- **Text analysis (project params, norms):** `{OUTPUT_PATH}/01_text_analysis.json`
-- **Block analysis results (if available):** `{OUTPUT_PATH}/02_blocks_analysis.json`
-- **Audit findings (if available):** `{OUTPUT_PATH}/03_findings.json`
-- **Output folder:** `{OUTPUT_PATH}`
+READ via Read tool:
 
-**MD file** is the primary working file. Contains exact text: numbers, tables, specifications, designations.
-
-**02_blocks_analysis.json** — completed drawing analysis (if available). Read it for visual data.
-
-**03_findings.json** — audit findings (if available). Read it to NOT contradict identified violations.
+- **MD file (project text)** — `{MD_FILE_PATH}` — primary working file. Contains exact text: numbers, tables, specifications, designations.
+- **Text analysis (project params, norms)** — `{OUTPUT_PATH}/01_text_analysis.json` — from stage 01.
+- **Block analysis results (if available)** — `{OUTPUT_PATH}/02_blocks_analysis.json` — completed drawing analysis from stage 02.
+- **Audit findings (if available)** — `{OUTPUT_PATH}/03_findings.json` — from stage 03. DO NOT contradict identified violations.
 
 ### Vendor List (approved manufacturers)
 
@@ -48,7 +44,7 @@ Solutions more expensive during construction but with savings over 10-25 years: 
 - DO NOT propose replacements that reduce reliability or fire safety
 - When in doubt → `"status": "требует проверки"`
 - Priority: large items with maximum effect first
-- **Audit findings consistency:** if `03_findings.json` contains a finding about non-compliance — DO NOT propose a cheap analog. Instead, note that the item requires replacement for regulatory reasons (status: "обязательное исправление")
+- **Audit findings consistency:** if audit findings contain a finding about non-compliance — DO NOT propose a cheap analog. Instead, note that the item requires replacement for regulatory reasons (status: "обязательное исправление")
 - **Vendor list is mandatory:** propose ONLY manufacturers from the vendor list
 - **Item count determined by actual analysis** — as many as actually found. Could be 3 or 30. DO NOT round to a neat number
 - **Distribution by type** — as many as found per category, not evenly
@@ -60,17 +56,14 @@ Solutions more expensive during construction but with savings over 10-25 years: 
 
 ## Work Sequence
 
-1. Read the MD file completely — building type, technical specifications, loads, equipment
-2. Read `02_blocks_analysis.json` (if available)
-3. Read `03_findings.json` (if available) — to not contradict audit findings
+1. Analyze the MD content completely — building type, technical specifications, loads, equipment
+2. Analyze block analysis data (if available)
+3. Analyze audit findings (if available) — to not contradict audit findings
 4. Check against vendor list above — approved manufacturers for replacements
 5. Analyze specifications — primary source of items for optimization
 6. Create optimization list (replacements only from vendor list)
-7. Write result
 
-## Output File
-
-WRITE via Write tool: `{OUTPUT_PATH}/optimization.json`
+## Output JSON Schema
 
 **STRICTLY FOLLOW THE SCHEMA. Each item is a flat object with these fields:**
 
@@ -113,10 +106,16 @@ WRITE via Write tool: `{OUTPUT_PATH}/optimization.json`
 
 **Value types:** `total_items`, `by_type.*`, `estimated_savings_pct`, `savings_pct`, `page` — numbers. `spec_items` — string array. Everything else — strings. Empty values: `""` for strings, `0` for numbers, `[]` for arrays.
 
+## Output
+
+WRITE via Write tool: `{OUTPUT_PATH}/optimization.json`
+
 ### Restrictions
 
 - DO NOT create nested objects — only flat strings
 - DO NOT rename fields
 - DO NOT add fields not in the schema
 - DO NOT use `null` — use `""` or `0`
-- DO NOT create an MD report — only `optimization.json`
+- Write JSON via Write tool — DO NOT output to chat
+- After writing, output a brief summary
+- Respond with valid JSON matching the schema above

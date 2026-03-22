@@ -274,56 +274,123 @@ class PipelineManager:
 
     async def _check_before_launch(self, job: AuditJob) -> bool:
         """
-        Превентивная проверка паузы + rate limit перед запуском Claude CLI.
+        Превентивная проверка паузы перед запуском LLM.
+
+        OpenRouter имеет встроенные retries при rate limit (в llm_runner),
+        поэтому проверка global_scanner больше не нужна.
 
         Returns:
             True если можно запускать, False если job отменён.
         """
-        # 1. Проверка паузы (ждёт если на паузе)
+        # Проверка паузы (ждёт если на паузе)
         if not await self._check_pause(job):
             return False
 
-        # 2. Проверка rate limit
-        check = global_scanner.check_rate_limit(RATE_LIMIT_THRESHOLD_PCT)
-        if check["can_proceed"]:
-            return True
-        return await self._wait_for_rate_limit(job, check.get("reason", ""))
+        return True
 
     def _record_cli_usage(self, job: AuditJob, cli_result, stage: str, is_retry: bool = False):
-        """Записать использование токенов после Claude CLI вызова."""
+        """Записать использование токенов после LLM вызова.
+
+        Работает как с LLMResult (OpenRouter), так и с CLIResult (legacy).
+        Токены берутся напрямую из result — обогащение из JSONL не требуется.
+        Также обогащает pipeline_log.json полями model/input_tokens/output_tokens.
+        """
         if not cli_result:
             return
+
+        # LLMResult имеет input_tokens/output_tokens напрямую
+        input_tokens = getattr(cli_result, "input_tokens", 0) or 0
+        output_tokens = getattr(cli_result, "output_tokens", 0) or 0
+        model = getattr(cli_result, "model", "") or get_model_for_stage(stage)
+
         record = UsageRecord(
             timestamp=datetime.now().isoformat(),
             session_id=cli_result.session_id,
             project_id=job.project_id,
             stage=stage,
-            model=get_model_for_stage(stage),
+            model=model,
             cost_usd=cli_result.cost_usd,
             duration_ms=cli_result.duration_ms,
             duration_api_ms=cli_result.duration_api_ms,
             num_turns=cli_result.num_turns,
             is_retry=is_retry,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
         )
         usage_tracker.record_usage(record)
         job.cost_usd += cli_result.cost_usd
         job.cli_calls += 1
 
-        # Обогатить из JSONL в фоне (если session_id есть)
-        if cli_result.session_id:
-            asyncio.create_task(
-                self._enrich_usage_async(cli_result.session_id, record.timestamp)
-            )
+        # Обогатить pipeline_log.json полями model/tokens для текущего этапа
+        self._enrich_pipeline_log(job.project_id, stage, model, input_tokens, output_tokens)
+
+    def _enrich_pipeline_log(self, project_id: str, stage: str, model: str,
+                              input_tokens: int, output_tokens: int):
+        """Добавить model и tokens в запись pipeline_log.json для этапа.
+
+        Агрегирует токены для batch-этапов (block_batch_001..N → block_analysis).
+        """
+        import re
+        # Нормализуем stage key для pipeline_log
+        _batch_re = re.compile(r"(block_batch|tile_batch)_\d+")
+        _norm_re = re.compile(r"norm_verify(_chunk_\d+|_retry_\d+)")
+        _critic_re = re.compile(r"findings_critic(_chunk\d+)?")
+        _opt_critic_re = re.compile(r"optimization_critic(_retry_\d+)?")
+        _opt_corrector_re = re.compile(r"optimization_corrector(_retry_\d+)?")
+        _retry_re = re.compile(r"^(.+?)_retry(_\d+)?$")
+
+        log_key = stage
+        if _batch_re.match(stage):
+            log_key = "block_analysis"
+        elif _norm_re.match(stage):
+            log_key = "norm_verify"
+        elif _critic_re.match(stage):
+            log_key = "findings_critic"
+        elif _opt_critic_re.match(stage):
+            log_key = "optimization_critic"
+        elif _opt_corrector_re.match(stage):
+            log_key = "optimization_corrector"
+        else:
+            m = _retry_re.match(stage)
+            if m:
+                log_key = m.group(1)
+
+        try:
+            output_dir = resolve_project_dir(project_id) / "_output"
+            log_path = output_dir / "pipeline_log.json"
+            if not log_path.exists():
+                return
+
+            with open(log_path, "r", encoding="utf-8") as f:
+                log_data = json.load(f)
+
+            stage_info = log_data.get("stages", {}).get(log_key, {})
+            if not stage_info:
+                return
+
+            # Для batch-этапов: агрегируем токены
+            prev_in = stage_info.get("input_tokens", 0)
+            prev_out = stage_info.get("output_tokens", 0)
+            is_aggregate = log_key in ("block_analysis", "norm_verify",
+                                        "findings_critic", "optimization_critic")
+            if is_aggregate and (prev_in > 0 or prev_out > 0):
+                stage_info["input_tokens"] = prev_in + input_tokens
+                stage_info["output_tokens"] = prev_out + output_tokens
+            else:
+                stage_info["input_tokens"] = input_tokens
+                stage_info["output_tokens"] = output_tokens
+
+            stage_info["model"] = model
+
+            log_data["stages"][log_key] = stage_info
+            with open(log_path, "w", encoding="utf-8") as f:
+                json.dump(log_data, f, ensure_ascii=False, indent=2)
+        except Exception:
+            pass  # Не ронять pipeline из-за обогащения лога
 
     async def _enrich_usage_async(self, session_id: str, record_timestamp: str):
-        """Обогатить запись из JSONL в фоновом потоке."""
-        try:
-            loop = asyncio.get_event_loop()
-            await loop.run_in_executor(
-                None, usage_tracker.enrich_from_jsonl, session_id, record_timestamp
-            )
-        except Exception:
-            pass  # Не критично — enrichment best-effort
+        """Legacy no-op. Обогащение из JSONL больше не требуется (токены приходят из API)."""
+        pass
 
     def is_running(self, project_id: str) -> bool:
         return project_id in self.active_jobs
@@ -2177,20 +2244,8 @@ class PipelineManager:
                 encoding="utf-8",
             )
 
-            # Восстанавливаем полный review_input (для corrector)
-            full_input = {
-                "meta": {
-                    "source": "selective_critic",
-                    "total_findings": total_findings,
-                    "risky_count": total_findings,
-                    "skipped_count": 0,
-                },
-                "findings": all_findings,
-            }
-            input_path.write_text(
-                json.dumps(full_input, ensure_ascii=False, indent=2),
-                encoding="utf-8",
-            )
+            # Corrector теперь читает 03_findings.json напрямую через prompt_builder,
+            # поэтому отдельный review_input файл не нужен.
 
             # Cleanup: удаляем chunk-specific файлы
             for cidx in range(1, num_chunks + 1):
@@ -2463,6 +2518,7 @@ class PipelineManager:
 
         async def _task_optimization():
             """Задача C: Optimization → ждёт corrector → opt_critic → opt_corrector."""
+            print(f"[{pid}] _task_optimization STARTED")
             try:
                 # Optimization сам по себе НЕ зависит от corrector
                 opt_job = AuditJob(
@@ -2522,7 +2578,15 @@ class PipelineManager:
             + " ═══",
         )
 
-        await asyncio.gather(*tasks, return_exceptions=True)
+        print(f"[{pid}] Parallel tasks created: {len(tasks)} (include_optimization={include_optimization})")
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        print(f"[{pid}] Parallel tasks completed: {[type(r).__name__ if isinstance(r, Exception) else 'ok' for r in results]}")
+        # Логируем ошибки из параллельных задач
+        for i, result in enumerate(results):
+            if isinstance(result, Exception):
+                task_name = ["findings_review", "norm_verify", "optimization"][i] if i < 3 else f"task_{i}"
+                await self._log(job, f"Параллельная задача {task_name} упала: {result}", "error")
+                print(f"[{pid}] Parallel task {task_name} exception: {result}")
 
     async def _run_norm_verification(self, job: AuditJob, standalone: bool = True):
         """
@@ -3300,7 +3364,7 @@ class PipelineManager:
             started_at=datetime.now().isoformat(),
         )
         self.active_jobs[project_id] = job
-        task = asyncio.create_task(self._run_ocr_pipeline(job))
+        task = asyncio.create_task(self._run_ocr_pipeline(job, include_optimization=True))
         self._tasks[project_id] = task
         return job
 
@@ -3308,7 +3372,7 @@ class PipelineManager:
     start_standard_audit = start_audit
     start_pro_audit = start_audit
 
-    async def _run_ocr_pipeline(self, job: AuditJob, include_optimization: bool = False):
+    async def _run_ocr_pipeline(self, job: AuditJob, include_optimization: bool = True):
         """
         OCR-пайплайн: полный аудит всех блоков.
 

@@ -1,4 +1,5 @@
 > **OUTPUT LANGUAGE:** All text values in JSON output (summary, finding, label, description, key_values_read, highlight_regions.label, etc.) MUST be written in Russian.
+> **RESPONSE FORMAT:** Respond with valid JSON only. No explanations, no markdown, no text outside JSON.
 
 # IMAGE BLOCK ANALYSIS — Batch {BATCH_ID} of {TOTAL_BATCHES}
 
@@ -7,10 +8,10 @@
 
 ## Input Data
 
-1. **Text analysis context**: `{OUTPUT_PATH}/01_text_analysis.json`
+1. **Text analysis context** — provided inline.
    - `text_findings` — text-based findings (for verification against drawings)
    - `project_params` — project parameters (loads, capacities, equipment marks)
-   If the file does not exist — proceed without context.
+   If not available — proceed without context.
 
 2. **Structured page context** (from Document Knowledge Graph):
 
@@ -25,7 +26,7 @@
    **IMPORTANT:** Cross-check drawing data (PNG) against text on the same page.
    Discrepancies between the drawing and text on the same page → finding.
 
-3. **Blocks to analyze** (read EACH one via Read):
+3. **Blocks to analyze** (read EACH one via Read tool):
 {BLOCK_LIST}
 
 Each block is a cropped drawing fragment (a complete area: schematic, plan, table, or detail). Analyze each block as an independent drawing.
@@ -55,7 +56,7 @@ If all text is readable — set `unreadable_text: false`.
 
 ## Cross-Check with Text Analysis (MANDATORY)
 
-From `01_text_analysis.json` → `project_params`, extract numerical data.
+From text analysis context → `project_params`, extract numerical data.
 On EACH drawing, cross-check visible values against text data:
 - Flow rates, loads, powers — match the tables?
 - Diameters, cross-sections — match the specification?
@@ -79,9 +80,7 @@ Any discrepancy → finding.
 
 {DISCIPLINE_DRAWING_TYPES}
 
-## Output File
-
-WRITE via Write tool: `{OUTPUT_PATH}/block_batch_{BATCH_ID_PADDED}.json`
+## Output JSON Schema
 
 ```json
 {
@@ -181,16 +180,21 @@ Coordinates are **normalized** (0.0–1.0) relative to block dimensions:
 
 **Never return an empty `highlight_regions: []`.** Use the whole-block fallback if you cannot pinpoint the exact location.
 
+## Output
+
+WRITE via Write tool: `{OUTPUT_PATH}/block_batch_{BATCH_ID_PADDED}.json`
+
 ## Rules
 
-1. Read EACH block — do not skip any
+1. Read EACH block via Read tool — do not skip any
 2. For each block, MANDATORY: summary and key_values_read
 3. Title blocks → summary: "Штамп / служебная информация"
 4. findings may be empty `[]` if no issues found
 5. Numbering: G-001, G-002... (within the batch)
 6. severity — ONLY one of the 5 values
 7. Write JSON via Write tool — DO NOT output to chat
-8. After writing, output a brief summary
+8. After writing, output a brief summary of what was found
+9. Respond with valid JSON matching the schema above
 
 ## Normative Accuracy (norm_quote)
 
