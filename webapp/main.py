@@ -21,10 +21,10 @@ import uvicorn
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 
 from webapp.config import APP_HOST, APP_PORT
-from webapp.routers import projects, findings, blocks, audit, export, usage, optimization, document
+from webapp.routers import projects, findings, blocks, audit, export, usage, optimization, document, discussions
 from webapp.ws.manager import ws_manager
 
 
@@ -59,6 +59,7 @@ app.include_router(export.router)
 app.include_router(usage.router)
 app.include_router(optimization.router)
 app.include_router(document.router)
+app.include_router(discussions.router)
 
 # ─── WebSocket Endpoints ────────────────────────────────────
 @app.websocket("/ws/audit/{project_id}")
@@ -107,11 +108,17 @@ if static_dir.exists():
 
 @app.get("/")
 async def serve_spa():
-    """Отдать SPA index.html."""
+    """Отдать SPA index.html с автоверсиями CSS/JS (cache bust)."""
     index_path = static_dir / "index.html"
-    if index_path.exists():
-        return FileResponse(str(index_path))
-    return {"message": "Audit Manager API. Frontend пока не создан. Используйте /docs для Swagger."}
+    if not index_path.exists():
+        return {"message": "Audit Manager API. Frontend пока не создан. Используйте /docs для Swagger."}
+    css_path = static_dir / "css" / "styles.css"
+    js_path = static_dir / "js" / "app.js"
+    css_ver = int(css_path.stat().st_mtime) if css_path.exists() else 0
+    js_ver = int(js_path.stat().st_mtime) if js_path.exists() else 0
+    html = index_path.read_text(encoding="utf-8")
+    html = html.replace("{{css_version}}", str(css_ver)).replace("{{js_version}}", str(js_ver))
+    return HTMLResponse(html)
 
 
 # ─── Запуск ─────────────────────────────────────────────────

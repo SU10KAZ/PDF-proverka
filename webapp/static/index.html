@@ -8,9 +8,15 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="/static/css/styles.css?v=93">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css?v={{css_version}}">
 </head>
 <body>
+    <!-- Ambient background orbs -->
+    <div class="bg-orb bg-orb--1"></div>
+    <div class="bg-orb bg-orb--2"></div>
+    <div class="bg-orb bg-orb--3"></div>
+
     <div id="app">
         <!-- Header -->
         <header class="header">
@@ -37,6 +43,15 @@
                 </button>
             </div>
             <div class="header-right">
+                <!-- Theme toggle -->
+                <button class="theme-toggle-btn" @click="toggleTheme()" :title="theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'">
+                    <svg v-if="theme === 'dark'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                    <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
                 <!-- Usage icon button -->
                 <button class="usage-toggle-btn" @click="showUsageDetails = !showUsageDetails"
                         :class="{'usage-toggle-btn--warning': globalUsage.session_5h_percent > 70 || globalUsage.weekly_all_percent > 70,
@@ -123,6 +138,7 @@
 
                     <div class="usage-details__footer">
                         <button class="btn btn--small" @click.stop="refreshGlobalUsage">Обновить</button>
+                        <button class="btn btn--small btn--danger" @click.stop="clearUsageCounter">Очистить счётчик</button>
                         <span class="usage-details__note">Claude Code сессии (legacy)</span>
                     </div>
                 </div>
@@ -177,21 +193,13 @@
             </div>
         </header>
 
-        <!-- Navigation breadcrumb -->
+        <!-- Navigation breadcrumb + Project Tabs (merged into one bar) -->
         <nav class="breadcrumb" v-if="currentView !== 'dashboard'">
-            <a href="#" @click.prevent="navigate('/')">Проекты</a>
-            <span v-if="currentProject"> / <a href="#" @click.prevent="navigate('/project/' + currentProject.project_id)">{{ currentProject.name }}</a></span>
-            <span v-if="currentView === 'findings'"> / Замечания</span>
-            <span v-if="currentView === 'blocks'"> / Блоки</span>
-            <span v-if="currentView === 'document'"> / Документ</span>
-            <span v-if="currentView === 'optimization'"> / Оптимизация</span>
-            <span v-if="currentView === 'prompts'"> / Промпты</span>
-            <span v-if="currentView === 'log'"> / Лог</span>
-        </nav>
-
-        <!-- ═══ Project Tabs (global, visible on all project sub-pages) ═══ -->
-        <div v-if="currentProject && currentView !== 'dashboard'" class="container container--tabs">
-            <div class="project-tabs">
+            <div class="breadcrumb__left">
+                <a href="#" @click.prevent="navigate('/')">Проекты</a>
+                <span v-if="currentProject"> / <a href="#" @click.prevent="navigate('/project/' + currentProject.project_id)">{{ currentProject.name }}</a></span>
+            </div>
+            <div v-if="currentProject" class="project-tabs">
                 <button class="project-tab" :class="{'project-tab--active': currentView === 'project'}"
                         @click="navigate('/project/' + currentProject.project_id)">Инфо</button>
                 <button class="project-tab" :class="{'project-tab--active': currentView === 'blocks'}"
@@ -210,8 +218,12 @@
                         @click="navigate('/project/' + currentProject.project_id + '/optimization')">
                     Оптимизация<span v-if="currentProject.optimization_count" class="project-tab__count project-tab__count--purple">{{ currentProject.optimization_count }}</span>
                 </button>
+                <button class="project-tab" :class="{'project-tab--active': currentView === 'discussions'}"
+                        @click="navigate('/project/' + currentProject.project_id + '/discussions')">
+                    Проработка замечаний
+                </button>
             </div>
-        </div>
+        </nav>
 
         <!-- ═══ Dashboard ═══ -->
         <div v-if="currentView === 'dashboard'" class="container">
@@ -301,22 +313,14 @@
                             <div class="pipeline-step" :class="stepClass(p.pipeline.blocks_analysis)" title="Анализ блоков">02</div>
                             <div class="pipeline-step-time" v-if="stageDurationForProject(p.project_id, 'blocks_analysis')">{{ formatDuration(stageDurationForProject(p.project_id, 'blocks_analysis')) }}</div>
                         </div>
-                        <div class="pipeline-line pipeline-line--sm"></div>
-                        <div class="pipeline-step-wrap">
-                            <div class="pipeline-step pipeline-step--sm" :class="stepClass(p.pipeline.block_retry)" title="Retry нечитаемых блоков">R</div>
-                        </div>
                         <div class="pipeline-line"></div>
                         <div class="pipeline-step-wrap">
                             <div class="pipeline-step" :class="stepClass(p.pipeline.findings)" title="Свод замечаний">03</div>
                             <div class="pipeline-step-time" v-if="stageDurationForProject(p.project_id, 'findings')">{{ formatDuration(stageDurationForProject(p.project_id, 'findings')) }}</div>
                         </div>
-                        <div class="pipeline-line"></div>
-                        <div class="pipeline-step-wrap">
-                            <div class="pipeline-step pipeline-step--sm" :class="stepClass(p.pipeline.findings_critic)" title="Critic замечаний">C</div>
-                        </div>
                         <div class="pipeline-line pipeline-line--sm"></div>
                         <div class="pipeline-step-wrap">
-                            <div class="pipeline-step pipeline-step--sm" :class="stepClass(p.pipeline.findings_corrector)" title="Corrector замечаний">F</div>
+                            <div class="pipeline-step pipeline-step--sm pipeline-step--cf" :class="stepClass(combinedCriticStatus(p.pipeline.findings_critic, p.pipeline.findings_corrector))" title="Critic + Fix замечаний">CF</div>
                         </div>
                         <div class="pipeline-line"></div>
                         <div class="pipeline-step-wrap">
@@ -330,18 +334,14 @@
                         </div>
                         <div class="pipeline-line pipeline-line--sm"></div>
                         <div class="pipeline-step-wrap">
-                            <div class="pipeline-step pipeline-step--sm" :class="stepClass(p.pipeline.optimization_critic)" title="Critic оптимизации">C</div>
-                        </div>
-                        <div class="pipeline-line pipeline-line--sm"></div>
-                        <div class="pipeline-step-wrap">
-                            <div class="pipeline-step pipeline-step--sm" :class="stepClass(p.pipeline.optimization_corrector)" title="Corrector оптимизации">F</div>
+                            <div class="pipeline-step pipeline-step--sm pipeline-step--cf" :class="stepClass(combinedCriticStatus(p.pipeline.optimization_critic, p.pipeline.optimization_corrector))" title="Critic + Fix оптимизации">CF</div>
                         </div>
                     </div>
 
-                    <!-- Pipeline Issues -->
-                    <div v-if="p.pipeline_issues && p.pipeline_issues.length > 0" class="pipeline-issues">
-                        <span v-for="(issue, i) in p.pipeline_issues" :key="i" class="pipeline-issue-tag">⚠ {{ issue }}</span>
-                    </div>
+                    <!-- Pipeline Issues — compact dot -->
+                    <span v-if="p.pipeline_issues && p.pipeline_issues.length > 0"
+                          class="pipeline-issues-dot"
+                          :title="p.pipeline_issues.join('\n')">!</span>
 
                     <!-- Live Status Indicator -->
                     <div v-if="isProjectRunning(p.project_id)" class="live-status-bar"
@@ -388,7 +388,7 @@
                     <div v-if="p.optimization_count > 0" class="project-card__badges-row">
                         <div class="severity-badges opt-badges">
                             <span v-for="(count, type) in p.optimization_by_type" :key="type"
-                                  class="sev-badge" :style="{ background: optTypeColor(type) + '22', color: optTypeColor(type), border: '1px solid ' + optTypeColor(type) + '40' }"
+                                  class="sev-badge" :class="'sev-opt-' + type" :style="{ background: optTypeColor(type) + '22', color: optTypeColor(type) }"
                                   :title="optTypeLabel(type)">
                                 {{ count }}
                             </span>
@@ -742,6 +742,14 @@
                 <button class="modal-close" @click="showModelConfig = false">&times;</button>
                 <h3>Конфигурация моделей</h3>
                 <p class="model-config-desc">Выберите модель для каждого этапа аудита</p>
+                <div class="model-preset-buttons">
+                    <button class="btn btn-preset"
+                            :class="{ active: activePreset === 'openrouter' }"
+                            @click="applyPreset('openrouter')">OpenRouter</button>
+                    <button class="btn btn-preset"
+                            :class="{ active: activePreset === 'claude_cli' }"
+                            @click="applyPreset('claude_cli')">Claude CLI</button>
+                </div>
                 <table class="model-config-table">
                     <thead>
                         <tr>
@@ -927,17 +935,6 @@
                             </div>
                             <div class="stage-model" v-if="stageModel('blocks_analysis')">{{ stageModel('blocks_analysis') }}</div>
                         </div>
-                        <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
-                        <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(currentProject.pipeline.block_retry)"
-                             title="Retry нечитаемых блоков">
-                            <div class="stage-num">R</div>
-                            <div class="stage-label">Retry</div>
-                            <div class="stage-tokens" v-if="stageTokensFormatted('block_retry')">
-                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('block_retry').inp }}</span>
-                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('block_retry').out }}</span>
-                            </div>
-                            <div class="stage-model" v-if="stageModel('block_retry')">{{ stageModel('block_retry') }}</div>
-                        </div>
                         <div class="pipeline-arrow">&rarr;</div>
                         <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.findings), {'pipeline-stage--clickable': canStartFrom('findings')}]"
                              @click="canStartFrom('findings') && startFromStage(currentProject.project_id, 'findings')"
@@ -951,26 +948,14 @@
                             <div class="stage-model" v-if="stageModel('findings')">{{ stageModel('findings') }}</div>
                         </div>
                         <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
-                        <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(currentProject.pipeline.findings_critic)"
-                             title="Critic замечаний">
-                            <div class="stage-num">C</div>
-                            <div class="stage-label">Critic</div>
-                            <div class="stage-tokens" v-if="stageTokensFormatted('findings_critic')">
-                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('findings_critic').inp }}</span>
-                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('findings_critic').out }}</span>
+                        <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(combinedCriticStatus(currentProject.pipeline.findings_critic, currentProject.pipeline.findings_corrector))"
+                             title="Critic + Fix замечаний">
+                            <div class="stage-num">CF</div>
+                            <div class="stage-label">Crit/Fix</div>
+                            <div class="stage-tokens" v-if="stageTokensFormatted('findings_critic') || stageTokensFormatted('findings_corrector')">
+                                <span class="stage-tokens__in" v-if="stageTokensFormatted('findings_critic')">C: &#8595;{{ stageTokensFormatted('findings_critic').inp }}</span>
+                                <span class="stage-tokens__out" v-if="stageTokensFormatted('findings_corrector')">F: &#8595;{{ stageTokensFormatted('findings_corrector').inp }}</span>
                             </div>
-                            <div class="stage-model" v-if="stageModel('findings_critic')">{{ stageModel('findings_critic') }}</div>
-                        </div>
-                        <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
-                        <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(currentProject.pipeline.findings_corrector)"
-                             title="Corrector замечаний">
-                            <div class="stage-num">F</div>
-                            <div class="stage-label">Fix</div>
-                            <div class="stage-tokens" v-if="stageTokensFormatted('findings_corrector')">
-                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('findings_corrector').inp }}</span>
-                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('findings_corrector').out }}</span>
-                            </div>
-                            <div class="stage-model" v-if="stageModel('findings_corrector')">{{ stageModel('findings_corrector') }}</div>
                         </div>
                         <div class="pipeline-arrow">&rarr;</div>
                         <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.norms_verified), {'pipeline-stage--clickable': canStartFrom('norms_verified')}]"
@@ -997,55 +982,43 @@
                             <div class="stage-model" v-if="stageModel('optimization')">{{ stageModel('optimization') }}</div>
                         </div>
                         <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
-                        <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(currentProject.pipeline.optimization_critic)"
-                             title="Critic оптимизации">
-                            <div class="stage-num">C</div>
-                            <div class="stage-label">Critic</div>
-                            <div class="stage-tokens" v-if="stageTokensFormatted('optimization_critic')">
-                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('optimization_critic').inp }}</span>
-                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('optimization_critic').out }}</span>
+                        <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(combinedCriticStatus(currentProject.pipeline.optimization_critic, currentProject.pipeline.optimization_corrector))"
+                             title="Critic + Fix оптимизации">
+                            <div class="stage-num">CF</div>
+                            <div class="stage-label">Crit/Fix</div>
+                            <div class="stage-tokens" v-if="stageTokensFormatted('optimization_critic') || stageTokensFormatted('optimization_corrector')">
+                                <span class="stage-tokens__in" v-if="stageTokensFormatted('optimization_critic')">C: &#8595;{{ stageTokensFormatted('optimization_critic').inp }}</span>
+                                <span class="stage-tokens__out" v-if="stageTokensFormatted('optimization_corrector')">F: &#8595;{{ stageTokensFormatted('optimization_corrector').inp }}</span>
                             </div>
-                            <div class="stage-model" v-if="stageModel('optimization_critic')">{{ stageModel('optimization_critic') }}</div>
                         </div>
-                        <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
-                        <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(currentProject.pipeline.optimization_corrector)"
-                             title="Corrector оптимизации">
-                            <div class="stage-num">F</div>
-                            <div class="stage-label">Fix</div>
-                            <div class="stage-tokens" v-if="stageTokensFormatted('optimization_corrector')">
-                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('optimization_corrector').inp }}</span>
-                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('optimization_corrector').out }}</span>
-                            </div>
-                            <div class="stage-model" v-if="stageModel('optimization_corrector')">{{ stageModel('optimization_corrector') }}</div>
+                        <!-- Audit actions (inline with pipeline) -->
+                        <div class="audit-buttons-inline">
+                            <button class="btn btn-success" @click="startAudit(currentProject.project_id)"
+                                    :disabled="isProjectRunning(currentProject.project_id)"
+                                    title="Аудит: кроп → текст → блоки → свод → нормы → оптимизация">
+                                &#9654; Запустить аудит
+                            </button>
+                            <button class="btn btn-danger" @click="cancelAudit(currentProject.project_id)"
+                                    v-if="isProjectRunning(currentProject.project_id)">
+                                Отменить
+                            </button>
+                            <button class="btn btn-maroon" @click="cleanProject(currentProject.project_id)"
+                                    :disabled="isProjectRunning(currentProject.project_id)"
+                                    title="Удалить все результаты аудита">
+                                Очистить
+                            </button>
+                            <button class="btn btn-excel" @click="exportProjectExcel(currentProject.project_id)"
+                                    :disabled="projectExcelLoading"
+                                    title="Скачать Excel-отчёт по этому проекту">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="flex-shrink:0">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" fill="rgba(255,255,255,0.15)" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M14 2v6h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M8 13l2.5 3M13 13l-2.5 3M8 16l2.5-3M13 16l-2.5-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    <line x1="8" y1="10" x2="13" y2="10" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+                                </svg>
+                                {{ projectExcelLoading ? 'Генерация...' : 'Отчёт' }}
+                            </button>
                         </div>
-                    </div>
-
-                    <!-- Audit actions -->
-                    <div class="audit-buttons">
-                        <button class="btn btn-accent" @click="startAudit(currentProject.project_id)"
-                                :disabled="isProjectRunning(currentProject.project_id)"
-                                title="Аудит: кроп → текст → все блоки → свод → нормы">
-                            Аудит
-                        </button>
-                        <button class="btn" @click="startNormVerify(currentProject.project_id)"
-                                :disabled="isProjectRunning(currentProject.project_id) || currentProject.findings_count === 0"
-                                :title="currentProject.findings_count === 0 ? 'Сначала выполните аудит' : 'Верификация нормативных ссылок'">
-                            Нормы
-                        </button>
-                        <button class="btn btn-optimization" @click="startOptimization(currentProject.project_id)"
-                                :disabled="isProjectRunning(currentProject.project_id)"
-                                title="Оптимизация: аналоги, монтаж, конструктив">
-                            Оптимизация
-                        </button>
-                        <button class="btn btn-danger" @click="cancelAudit(currentProject.project_id)"
-                                v-if="isProjectRunning(currentProject.project_id)">
-                            Отменить
-                        </button>
-                        <button class="btn btn-danger-outline" @click="cleanProject(currentProject.project_id)"
-                                :disabled="isProjectRunning(currentProject.project_id)"
-                                title="Удалить все результаты аудита">
-                            Очистить
-                        </button>
                     </div>
 
                     <!-- Live Status Banner -->
@@ -1124,7 +1097,7 @@
                             <span class="info-tab-summary__label">Оптимизация</span>
                             <div class="severity-badges opt-badges">
                                 <span v-for="(count, type) in currentProject.optimization_by_type" :key="type"
-                                      class="sev-badge" :style="{ background: optTypeColor(type) + '22', color: optTypeColor(type), border: '1px solid ' + optTypeColor(type) + '40' }"
+                                      class="sev-badge" :class="'sev-opt-' + type" :style="{ background: optTypeColor(type) + '22', color: optTypeColor(type) }"
                                       :title="optTypeLabel(type)">
                                     {{ count }}
                                 </span>
@@ -1177,7 +1150,8 @@
                     <!-- Usage -->
                     <div v-if="currentProjectUsage && currentProjectUsage.total_tokens > 0" class="info-tab-usage">
                         <span class="usage-icon">⚡</span>
-                        {{ formatTokens(currentProjectUsage.total_tokens) }} tok
+                        <span style="color:#22c55e">&#8595;{{ formatTokens(currentProjectUsage.total_input_tokens) }}</span>
+                        <span style="color:#ef4444">&#8593;{{ formatTokens(currentProjectUsage.total_output_tokens) }}</span>
                         · ${{ formatCost(currentProjectUsage.total_cost_usd) }}
                         · {{ currentProjectUsage.total_calls }} calls
                     </div>
@@ -1214,12 +1188,13 @@
                     <table class="findings-table" v-if="findingsData">
                         <thead>
                             <tr>
-                                <th style="width:70px">ID</th>
-                                <th style="width:110px">Критичность</th>
-                                <th style="width:160px">Лист</th>
+                                <th style="width:70px; text-align:center">ID</th>
+                                <th style="width:115px; text-align:center; padding-left:4px; padding-right:4px">Критичность</th>
+                                <th style="width:120px; text-align:center">Лист</th>
                                 <th style="width:50%">Замечание</th>
                                 <th style="width:160px">Норма</th>
                                 <th style="width:50%">Рекомендация</th>
+                                <th style="width:36px"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1227,7 +1202,7 @@
                                 <tr :class="['row-' + sevClass(f.severity), { 'row-expanded': expandedFindingId === f.id }]">
                                     <td class="id-cell"
                                         @click="toggleFindingBlocks(f.id)"
-                                        :style="{ cursor: (findingBlockMap[f.id] && findingBlockMap[f.id].length) ? 'pointer' : 'default' }">
+                                        :style="{ cursor: ((findingBlockMap[f.id] && findingBlockMap[f.id].length) || (findingTextEvidence[f.id] && findingTextEvidence[f.id].length)) ? 'pointer' : 'default' }">
                                         <span class="finding-id-link">{{ f.id }}</span>
                                         <span v-if="findingBlockMap[f.id] && findingBlockMap[f.id].length"
                                               class="finding-blocks-count"
@@ -1235,26 +1210,35 @@
                                             {{ findingBlockMap[f.id].length }}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td style="text-align:center; padding-left:4px; padding-right:4px">
                                         <span class="sev-badge sev-badge--sm" :class="'sev-' + sevClass(f.severity)">
                                             {{ f.severity }}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td style="text-align:center">
                                         <div>{{ f.sheet }}</div>
                                         <div v-if="f.page" style="font-size:11px; opacity:0.55; margin-top:2px">
                                             стр. PDF {{ Array.isArray(f.page) ? f.page.join(', ') : f.page }}
                                         </div>
                                     </td>
-                                    <td class="desc-cell">{{ f.problem || f.finding || f.description || '' }}</td>
+                                    <td class="desc-cell">{{ f.description || f.problem || f.finding || '' }}</td>
                                     <td class="norm-cell">{{ f.norm }}</td>
                                     <td class="rec-cell">{{ f.solution || f.recommendation || '' }}</td>
+                                    <td class="discuss-cell">
+                                        <button class="btn-discuss-icon" @click.stop="navigate('/project/' + currentProjectId + '/discussions/' + f.id)"
+                                                title="Обсудить">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                            </svg>
+                                        </button>
+                                    </td>
                                 </tr>
-                                <!-- Раскрывающаяся полоска блоков -->
-                                <tr v-if="expandedFindingId === f.id && getFindingBlocks(f.id).length > 0"
+                                <!-- Раскрывающаяся полоска: блоки + текстовые evidence -->
+                                <tr v-if="expandedFindingId === f.id && (getFindingBlocks(f.id).length > 0 || getFindingTextEvidence(f.id).length > 0)"
                                     class="finding-blocks-row">
-                                    <td colspan="6">
-                                        <div class="finding-blocks-strip">
+                                    <td colspan="7">
+                                        <!-- Графические блоки -->
+                                        <div v-if="getFindingBlocks(f.id).length > 0" class="finding-blocks-strip">
                                             <div v-for="b in getFindingBlocks(f.id)" :key="b.block_id"
                                                  class="finding-block-thumb"
                                                  @click.stop="navigateToBlock(b.block_id, b.page)"
@@ -1264,6 +1248,17 @@
                                                 <div class="finding-block-thumb__label">
                                                     <span>стр. {{ b.page }}</span>
                                                 </div>
+                                            </div>
+                                        </div>
+                                        <!-- Текстовые evidence -->
+                                        <div v-if="getFindingTextEvidence(f.id).length > 0" class="finding-text-evidence">
+                                            <div v-for="te in getFindingTextEvidence(f.id)" :key="te.text_block_id"
+                                                 class="finding-text-card">
+                                                <div class="finding-text-card__header">
+                                                    <span class="finding-text-card__role">{{ te.role || 'текст' }}</span>
+                                                    <span class="finding-text-card__page">стр. {{ te.page }}</span>
+                                                </div>
+                                                <div class="finding-text-card__body">{{ te.text }}</div>
                                             </div>
                                         </div>
                                     </td>
@@ -1310,13 +1305,14 @@
                     <table class="optimization-table" v-if="filteredOptimization.length > 0">
                         <thead>
                             <tr>
-                                <th style="width:60px">ID</th>
-                                <th style="width:120px">Тип</th>
-                                <th>Текущее решение</th>
-                                <th>Предложение</th>
-                                <th style="width:80px">Экономия</th>
-                                <th>Риски</th>
-                                <th style="width:100px">Норма</th>
+                                <th class="opt-col-id">ID</th>
+                                <th class="opt-col-type">Тип</th>
+                                <th class="opt-col-text">Текущее решение</th>
+                                <th class="opt-col-text">Предложение</th>
+                                <th class="opt-col-savings">Экономия</th>
+                                <th class="opt-col-risks">Риски</th>
+                                <th class="opt-col-norm">Норма</th>
+                                <th class="opt-col-action"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1358,11 +1354,19 @@
                                     </td>
                                     <td class="opt-risks">{{ item.risks }}</td>
                                     <td class="opt-norm">{{ item.norm || '—' }}</td>
+                                    <td class="discuss-cell">
+                                        <button class="btn-discuss-icon" @click.stop="navigate('/project/' + currentProjectId + '/discussions/' + item.id)"
+                                                title="Обсудить">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                            </svg>
+                                        </button>
+                                    </td>
                                 </tr>
                                 <!-- Раскрывающаяся полоска блоков -->
                                 <tr v-if="expandedOptId === item.id && getOptBlocks(item.id).length > 0"
                                     class="finding-blocks-row">
-                                    <td colspan="7">
+                                    <td colspan="8">
                                         <div class="finding-blocks-strip">
                                             <div v-for="b in getOptBlocks(item.id)" :key="b.block_id"
                                                  class="finding-block-thumb"
@@ -1535,7 +1539,7 @@
                                                   title="Показать на чертеже">&#9678;</span>
                                         </div>
                                         <div class="tile-finding-card__text">
-                                            {{ f.problem || f.finding || f.description || '' }}
+                                            {{ f.description || f.problem || f.finding || '' }}
                                         </div>
                                         <div v-if="f.norm" class="tile-finding-card__norm">
                                             {{ f.norm }}
@@ -1569,7 +1573,7 @@
                                                   title="Показать на чертеже">&#9678;</span>
                                         </div>
                                         <div class="tile-finding-card__text">
-                                            {{ f.problem }}
+                                            {{ f.description || f.problem || '' }}
                                         </div>
                                         <div v-if="f.norm" class="tile-finding-card__norm">
                                             {{ f.norm }}
@@ -1586,6 +1590,432 @@
                                 </div>
                             </template>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ Discussions (чат по замечаниям/оптимизациям) ═══ -->
+        <div v-if="currentView === 'discussions'" class="container container--discussions">
+            <!-- Шапка чата: полные данные замечания -->
+            <div v-if="activeDiscussion" class="discussion-header">
+                <div class="discussion-header__left">
+                    <button class="btn btn-sm btn-back" @click="closeDiscussion()">&larr; К списку</button>
+                    <select v-model="discussionModel" class="discussion-model-select">
+                        <option v-for="m in discussionModels" :key="m.id" :value="m.id">{{ m.label }}</option>
+                    </select>
+                    <span v-if="discussionCost > 0" class="discussion-cost">{{ formatCostUSD(discussionCost) }}</span>
+                </div>
+            </div>
+
+            <!-- Полная карточка замечания в чате -->
+            <div v-if="activeDiscussion && activeDiscussionItem" class="discussion-finding-card">
+                <table class="discussion-finding-table">
+                    <thead>
+                        <tr>
+                            <th style="width:60px">ID</th>
+                            <th style="width:100px">Критичность</th>
+                            <th style="width:120px">Лист</th>
+                            <th>Замечание</th>
+                            <th style="width:140px">Норма</th>
+                            <th>Рекомендация</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="discussion-finding-table__id">{{ activeDiscussionItem.id || activeDiscussionItem.item_id }}</td>
+                            <td>
+                                <span class="sev-badge sev-badge--sm" :class="'sev-' + sevClass(activeDiscussionItem.severity || '')">
+                                    {{ activeDiscussionItem.severity || activeDiscussionItem.type || '' }}
+                                </span>
+                            </td>
+                            <td>
+                                <div>{{ activeDiscussionItem.sheet || '' }}</div>
+                                <div v-if="activeDiscussionItem.page" style="font-size:11px; opacity:0.55; margin-top:2px">
+                                    стр. PDF {{ Array.isArray(activeDiscussionItem.page) ? activeDiscussionItem.page.join(', ') : activeDiscussionItem.page }}
+                                </div>
+                            </td>
+                            <td>{{ activeDiscussionItem.problem || activeDiscussionItem.finding || activeDiscussionItem.description || activeDiscussionItem.current || '' }}</td>
+                            <td class="norm-cell">{{ activeDiscussionItem.norm || activeDiscussionItem.norm_reference || '' }}</td>
+                            <td>{{ activeDiscussionItem.solution || activeDiscussionItem.recommendation || activeDiscussionItem.proposed || '' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- Блоки (миниатюры) — по клику -->
+                <div v-if="activeDiscussionBlocks.length" class="discussion-finding-blocks-toggle">
+                    <button class="btn btn-sm btn-outline" @click="showDiscussionBlocks = !showDiscussionBlocks">
+                        {{ showDiscussionBlocks ? 'Скрыть блоки' : 'Показать блоки (' + activeDiscussionBlocks.length + ')' }}
+                    </button>
+                    <div v-if="showDiscussionBlocks" class="discussion-finding-blocks">
+                        <div v-for="b in activeDiscussionBlocks" :key="b.block_id" class="discussion-block-thumb"
+                             @click="navigateToBlock(b.block_id, b.page)"
+                             :title="b.ocr_label || b.block_id">
+                            <img :src="'/api/tiles/' + currentProjectId + '/blocks/image/' + b.block_id"
+                                 loading="lazy" :alt="b.block_id">
+                            <span class="discussion-block-thumb__label">{{ b.block_id }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Табы + контролы в одну строку -->
+            <div v-if="!activeDiscussion" class="discussion-toolbar">
+                <div class="discussion-toolbar__tabs">
+                    <button class="discussion-tab" :class="{'discussion-tab--active': discussionTab === 'finding'}"
+                            @click="switchDiscussionTab('finding')">Замечания</button>
+                    <button class="discussion-tab" :class="{'discussion-tab--active': discussionTab === 'optimization'}"
+                            @click="switchDiscussionTab('optimization')">Оптимизация</button>
+                </div>
+                <div class="discussion-toolbar__controls">
+                    <select v-model="discussionModel" class="discussion-model-select">
+                        <option v-for="m in discussionModels" :key="m.id" :value="m.id">{{ m.label }}</option>
+                    </select>
+                    <button class="btn btn-sm btn-outline"
+                            @click="downloadAuditPackage()"
+                            :disabled="auditPackageLoading"
+                            title="Скачать ZIP-архив с результатами аудита для обсуждения в любой нейронке">
+                        <span v-if="auditPackageLoading">Формируется...</span>
+                        <span v-else>&#128230; Скачать пакет аудита</span>
+                    </button>
+                    <button class="btn btn-sm"
+                            :class="allDiscussionsResolved ? 'btn-resolved-ready' : 'btn-success'"
+                            @click="downloadResolvedFindings()"
+                            :disabled="resolvedFindingsLoading || resolvedFindingsCount === 0"
+                            :title="allDiscussionsResolved ? 'Все замечания отработаны! Скачать Excel' : 'Скачать Excel с согласованными замечаниями'">
+                        <span v-if="resolvedFindingsLoading">Формируется...</span>
+                        <span v-else>&#9989; Отработанные замечания ({{ resolvedFindingsCount }})</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Список элементов (когда чат не открыт) -->
+            <div v-if="!activeDiscussion && !discussionLoading" class="discussion-list">
+
+                <!-- ═══ Таблица замечаний (полная копия findings) ═══ -->
+                <div v-if="discussionTab === 'finding' && activeDiscussionItems.length">
+                    <!-- Severity badges -->
+                    <div class="severity-badges severity-badges--large" style="margin-bottom:12px">
+                        <span v-for="(count, sev) in discussionSeverityCounts" :key="sev"
+                              class="sev-badge" :class="'sev-' + sevClass(sev)">
+                            {{ sevIcon(sev) }} {{ count }}
+                        </span>
+                        <span class="findings-total">Всего: {{ activeDiscussionItems.length }}</span>
+                    </div>
+                    <div class="table-container">
+                    <table class="findings-table">
+                        <thead>
+                            <tr>
+                                <th style="width:70px; text-align:center">ID</th>
+                                <th style="width:115px; text-align:center; padding-left:4px; padding-right:4px">Критичность</th>
+                                <th style="width:120px; text-align:center">Лист</th>
+                                <th style="width:50%">Замечание</th>
+                                <th style="width:160px">Норма</th>
+                                <th style="width:50%">Рекомендация</th>
+                                <th style="width:36px"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template v-for="item in activeDiscussionItems" :key="item.item_id">
+                                <tr :class="['row-' + sevClass(item.severity), { 'row-expanded': expandedFindingId === item.item_id }]">
+                                    <td class="id-cell"
+                                        @click="toggleFindingBlocks(item.item_id)"
+                                        :style="{ cursor: (findingBlockMap[item.item_id] && findingBlockMap[item.item_id].length) ? 'pointer' : 'default' }">
+                                        <span class="finding-id-link">{{ item.item_id }}</span>
+                                        <span v-if="findingBlockMap[item.item_id] && findingBlockMap[item.item_id].length"
+                                              class="finding-blocks-count"
+                                              :title="findingBlockMap[item.item_id].length + ' блоков'">
+                                            {{ findingBlockMap[item.item_id].length }}
+                                        </span>
+                                        <div v-if="item.discussion_status" style="font-size:10px; margin-top:2px">{{ discussionStatusIcon(item.discussion_status) }}</div>
+                                    </td>
+                                    <td style="text-align:center; padding-left:4px; padding-right:4px">
+                                        <span class="sev-badge sev-badge--sm" :class="'sev-' + sevClass(item.severity)">{{ item.severity }}</span>
+                                    </td>
+                                    <td style="text-align:center">
+                                        <div>{{ item.sheet }}</div>
+                                        <div v-if="item.page" style="font-size:11px; opacity:0.55; margin-top:2px">
+                                            стр. PDF {{ Array.isArray(item.page) ? item.page.join(', ') : item.page }}
+                                        </div>
+                                    </td>
+                                    <td class="desc-cell">{{ item.problem }}</td>
+                                    <td class="norm-cell">{{ item.norm }}</td>
+                                    <td class="rec-cell">{{ item.recommendation }}</td>
+                                    <td class="discuss-cell">
+                                        <button class="btn-discuss-icon" @click.stop="openDiscussion(currentProjectId, item.item_id)"
+                                                :title="item.has_discussion ? 'Продолжить (' + item.message_count + ')' : 'Обсудить'">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                            </svg>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- Раскрывающиеся блоки + текстовые evidence -->
+                                <tr v-if="expandedFindingId === item.item_id && (getFindingBlocks(item.item_id).length > 0 || getFindingTextEvidence(item.item_id).length > 0)"
+                                    class="finding-blocks-row">
+                                    <td colspan="7">
+                                        <div v-if="getFindingBlocks(item.item_id).length > 0" class="finding-blocks-strip">
+                                            <div v-for="b in getFindingBlocks(item.item_id)" :key="b.block_id"
+                                                 class="finding-block-thumb"
+                                                 @click.stop="navigateToBlock(b.block_id, b.page)"
+                                                 :title="b.ocr_label || b.block_id">
+                                                <img :src="'/api/tiles/' + currentProjectId + '/blocks/image/' + b.block_id"
+                                                     :alt="b.block_id" loading="lazy">
+                                                <div class="finding-block-thumb__label">
+                                                    <span>стр. {{ b.page }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div v-if="getFindingTextEvidence(item.item_id).length > 0" class="finding-text-evidence">
+                                            <div v-for="te in getFindingTextEvidence(item.item_id)" :key="te.text_block_id"
+                                                 class="finding-text-card">
+                                                <div class="finding-text-card__header">
+                                                    <span class="finding-text-card__role">{{ te.role || 'текст' }}</span>
+                                                    <span class="finding-text-card__page">стр. {{ te.page }}</span>
+                                                </div>
+                                                <div class="finding-text-card__body">{{ te.text }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+
+                <!-- ═══ Таблица оптимизаций (полная копия optimization) ═══ -->
+                <div v-if="discussionTab === 'optimization' && activeDiscussionItems.length">
+                    <!-- Type badges -->
+                    <div class="severity-badges severity-badges--large" style="margin-bottom:12px">
+                        <span v-for="(count, type) in discussionOptTypeCounts" :key="type"
+                              class="opt-type-badge" :style="{ background: optTypeColor(type), color: '#fff' }">
+                            {{ optTypeLabel(type) }} {{ count }}
+                        </span>
+                        <span class="findings-total">Всего: {{ activeDiscussionItems.length }}</span>
+                    </div>
+                    <div class="table-container">
+                    <table class="optimization-table">
+                        <thead>
+                            <tr>
+                                <th class="opt-col-id">ID</th>
+                                <th class="opt-col-type">Тип</th>
+                                <th class="opt-col-text">Текущее решение</th>
+                                <th class="opt-col-text">Предложение</th>
+                                <th class="opt-col-savings">Экономия</th>
+                                <th class="opt-col-risks">Риски</th>
+                                <th class="opt-col-norm">Норма</th>
+                                <th class="opt-col-action"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template v-for="item in activeDiscussionItems" :key="item.item_id">
+                                <tr :class="{ 'row-expanded': expandedOptId === item.item_id }">
+                                    <td class="opt-id"
+                                        @click="toggleOptBlocks(item.item_id)"
+                                        :style="{ cursor: (optBlockMap[item.item_id] && optBlockMap[item.item_id].length) ? 'pointer' : 'default' }">
+                                        <span class="finding-id-link">{{ item.item_id }}</span>
+                                        <span v-if="optBlockMap[item.item_id] && optBlockMap[item.item_id].length"
+                                              class="finding-blocks-count"
+                                              :title="optBlockMap[item.item_id].length + ' блоков'">
+                                            {{ optBlockMap[item.item_id].length }}
+                                        </span>
+                                        <div v-if="item.discussion_status" style="font-size:10px; margin-top:2px">{{ discussionStatusIcon(item.discussion_status) }}</div>
+                                    </td>
+                                    <td>
+                                        <span class="opt-type-badge" :style="{ background: optTypeColor(item.opt_type), color: '#fff' }">
+                                            {{ optTypeLabel(item.opt_type) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="opt-section" v-if="item.section">
+                                            {{ item.section }}
+                                            <span v-if="item.page" style="font-size:11px; opacity:0.55; margin-left:4px">
+                                                (стр. PDF {{ Array.isArray(item.page) ? item.page.join(', ') : item.page }})
+                                            </span>
+                                        </div>
+                                        {{ item.current || item.problem }}
+                                        <div v-if="item.spec_items && item.spec_items.length" class="opt-spec-items">
+                                            <div v-for="si in item.spec_items" :key="si" class="opt-spec-item">{{ si }}</div>
+                                        </div>
+                                    </td>
+                                    <td class="opt-proposed">{{ item.proposed }}</td>
+                                    <td class="opt-savings-cell">
+                                        <span class="opt-savings-badge" v-if="item.savings_pct">~{{ item.savings_pct }}%</span>
+                                        <div v-if="item.savings_basis && item.savings_basis !== 'не определено'" style="font-size:10px; opacity:0.5; margin-top:2px">
+                                            {{ item.savings_basis }}
+                                        </div>
+                                    </td>
+                                    <td class="opt-risks">{{ item.risks }}</td>
+                                    <td class="opt-norm">{{ item.norm || '—' }}</td>
+                                    <td class="discuss-cell">
+                                        <button class="btn-discuss-icon" @click.stop="openDiscussion(currentProjectId, item.item_id)"
+                                                :title="item.has_discussion ? 'Продолжить (' + item.message_count + ')' : 'Обсудить'">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                            </svg>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- Раскрывающиеся блоки -->
+                                <tr v-if="expandedOptId === item.item_id && getOptBlocks(item.item_id).length > 0"
+                                    class="finding-blocks-row">
+                                    <td colspan="8">
+                                        <div class="finding-blocks-strip">
+                                            <div v-for="b in getOptBlocks(item.item_id)" :key="b.block_id"
+                                                 class="finding-block-thumb"
+                                                 @click.stop="navigateToBlock(b.block_id, b.page)"
+                                                 :title="b.ocr_label || b.block_id">
+                                                <img :src="'/api/tiles/' + currentProjectId + '/blocks/image/' + b.block_id"
+                                                     :alt="b.block_id" loading="lazy">
+                                                <div class="finding-block-thumb__label">
+                                                    <span>стр. {{ b.page }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+
+                <!-- Секция "Отменённые" -->
+                <div v-if="rejectedDiscussionItems.length" class="discussion-rejected-section">
+                    <h3 class="discussion-rejected-title">Отменённые ({{ rejectedDiscussionItems.length }})</h3>
+                    <div v-for="item in rejectedDiscussionItems" :key="item.item_id" class="discussion-item discussion-item--rejected">
+                        <div class="discussion-item__info">
+                            <span class="discussion-item__status">&#x274C;</span>
+                            <span class="discussion-item__id discussion-item__id--rejected">{{ item.item_id }}</span>
+                            <span class="discussion-item__problem discussion-item__problem--rejected">{{ item.problem }}</span>
+                        </div>
+                        <div class="discussion-item__actions">
+                            <button class="btn btn-sm btn-discuss"
+                                    @click="openDiscussion(currentProjectId, item.item_id)">Открыть</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="discussionItems.length === 0" class="empty-state">
+                    Нет данных. Сначала выполните аудит проекта.
+                </div>
+            </div>
+
+            <div v-if="!activeDiscussion && discussionLoading" class="loading-state">Загрузка...</div>
+
+            <!-- Чат (когда открыт) -->
+            <div v-if="activeDiscussion" class="discussion-chat" :class="{'discussion-chat--expanded': discussionMessages.length > 0}">
+
+                <!-- Сообщения -->
+                <div class="discussion-chat__messages" ref="chatMessagesContainer" @click="onChatClick($event)">
+                    <div v-for="(msg, idx) in discussionMessages" :key="idx"
+                         class="chat-message" :class="'chat-message--' + msg.role">
+                        <!-- Режим редактирования user-сообщения -->
+                        <template v-if="msg.role === 'user' && editingMessageIdx === idx">
+                            <div class="chat-message__role">Вы (редактирование)</div>
+                            <textarea v-model="editingMessageText" class="chat-edit-textarea" rows="3"></textarea>
+                            <div class="chat-edit-actions">
+                                <button class="btn btn-sm btn-send-sm" @click="submitEditMessage()">Отправить</button>
+                                <button class="btn btn-sm" @click="cancelEditMessage()">Отмена</button>
+                            </div>
+                        </template>
+                        <!-- Обычное отображение -->
+                        <template v-else>
+                            <div class="chat-message__role">
+                                {{ msg.role === 'user' ? 'Вы' : 'AI' }}
+                                <button v-if="msg.role === 'user' && !discussionSending"
+                                        class="chat-message__edit-btn" @click="startEditMessage(idx)"
+                                        title="Редактировать и переотправить">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <img v-if="msg.image" :src="msg.image" class="chat-message__image" alt="Прикреплённое фото">
+                            <div class="chat-message__content">
+                                <span v-if="msg.streaming" style="white-space: pre-wrap"><span v-if="!msg.content" class="streaming-thinking">Думаю...</span>{{ msg.content }}<span class="streaming-cursor">|</span></span>
+                                <span v-else v-html="renderDiscussionContent(msg.content)"></span>
+                            </div>
+                            <div v-if="msg.cost_usd" class="chat-message__meta">
+                                {{ msg.input_tokens + msg.output_tokens }} tok | {{ formatCostUSD(msg.cost_usd) }}
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Revision diff -->
+                <div v-if="revisionData" class="discussion-revision">
+                    <h4>Предложенные изменения:</h4>
+                    <p class="revision-explanation">{{ revisionData.explanation }}</p>
+                    <table class="revision-table">
+                        <thead>
+                            <tr><th>Поле</th><th>Было</th><th>Стало</th></tr>
+                        </thead>
+                        <tbody>
+                            <template v-for="key in Object.keys(revisionData.revised || {})" :key="key">
+                                <tr v-if="JSON.stringify(revisionData.original?.[key]) !== JSON.stringify(revisionData.revised[key])">
+                                    <td class="revision-table__field">{{ formatRevisionField(key) }}</td>
+                                    <td class="revision-table__old">{{ formatRevisionValue(revisionData.original?.[key]) }}</td>
+                                    <td class="revision-table__new">{{ formatRevisionValue(revisionData.revised[key]) }}</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                    <div class="revision-actions">
+                        <button class="btn btn-confirm" @click="applyRevision()">Применить</button>
+                        <button class="btn btn-sm" @click="rejectRevision()">Отмена</button>
+                    </div>
+                </div>
+
+                <!-- Ввод сообщения + кнопки -->
+                <div class="discussion-chat__bottom">
+                    <div class="chat-input-wrap">
+                        <textarea v-model="chatInput" class="chat-textarea"
+                                  placeholder="Задайте вопрос по замечанию... (Enter — отправить, Shift+Enter — новая строка)"
+                                  @keydown.enter.exact.prevent="sendDiscussionMessage()"
+                                  @input="autoResizeChatInput($event)"
+                                  @paste="handleChatPaste($event)"
+                                  :disabled="discussionSending"
+                                  rows="1"></textarea>
+                        <!-- Attach button -->
+                        <button class="chat-attach-btn" @click="$refs.chatFileInput.click()" title="Прикрепить фото">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                            </svg>
+                        </button>
+                        <input type="file" ref="chatFileInput" accept="image/*" @change="handleChatFileSelect($event)" style="display:none">
+                        <!-- Image preview -->
+                        <div v-if="chatAttachedImage" class="chat-image-preview">
+                            <img :src="chatAttachedImage" alt="Прикреплённое фото">
+                            <button class="chat-image-preview__remove" @click="chatAttachedImage = null" title="Удалить">&times;</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-send" @click="sendDiscussionMessage()"
+                            :disabled="discussionSending || (!chatInput.trim() && !chatAttachedImage)"
+                            title="Отправить (Ctrl+Enter)">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                    <div class="discussion-resolution-buttons">
+                        <button class="btn-circle btn-circle--confirm" @click="resolveDiscussion('confirmed')"
+                                :disabled="discussionSending" title="Подтвердить">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </button>
+                        <button class="btn-circle btn-circle--reject" @click="resolveDiscussion('rejected')"
+                                :disabled="discussionSending" title="Отклонить">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                        <button class="btn-circle btn-circle--revise" @click="requestRevision()"
+                                :disabled="discussionSending || revisionLoading" title="Изменить">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                            </svg>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1795,6 +2225,6 @@
         </div>
     </div>
 
-    <script src="/static/js/app.js?v=60"></script>
+    <script src="/static/js/app.js?v={{js_version}}"></script>
 </body>
 </html>

@@ -1,0 +1,1062 @@
+{
+  "stage": "03c_findings_corrector",
+  "model": "openai/gpt-5.4",
+  "timestamp": "2026-03-23T00:13:58.437193",
+  "input_tokens": 52554,
+  "output_tokens": 10971,
+  "duration_ms": 132782,
+  "result": {
+    "meta": {
+      "project_id": "133_23-ГК-ТХ.М",
+      "audit_completed": "2026-02-05T14:00:00Z",
+      "total_findings": 17,
+      "blocks_analyzed": 13,
+      "by_severity": {
+        "КРИТИЧЕСКОЕ": 2,
+        "ЭКОНОМИЧЕСКОЕ": 1,
+        "ЭКСПЛУАТАЦИОННОЕ": 4,
+        "РЕКОМЕНДАТЕЛЬНОЕ": 6,
+        "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 4
+      },
+      "quality_summary": {
+        "total": 17,
+        "high_relevance": 6,
+        "medium_relevance": 5,
+        "low_relevance": 6,
+        "likely_formal_only": 4,
+        "high_severity_formal_only": 2
+      },
+      "review_applied": true,
+      "review_stats": {
+        "total_reviewed": 17,
+        "passed": 10,
+        "fixed": 7,
+        "removed": 0,
+        "downgraded": 0
+      }
+    },
+    "findings": [
+      {
+        "id": "F-001",
+        "severity": "КРИТИЧЕСКОЕ",
+        "category": "waste",
+        "sheet": "Лист 2",
+        "page": [
+          4,
+          5
+        ],
+        "problem": "Противоречие в расположении мусоросборной камеры между текстом и экспликациями",
+        "description": "В тексте «Общие данные» указано, что помещение для сбора мусора запроектировано на первом подземном этаже (-1 этаж). Однако в экспликации помещений -2-го этажа присутствует «Помещение ТБО» (пом. 11, пл. 15,7 м², кат. В1), а в экспликации 1-го этажа указан только «Тамбур ТБО» (пом. 5, пл. 2,5 м²). Экспликация -1 этажа в документации отсутствует. Это подтверждает противоречие между текстом на листе общих данных и экспликациями помещений.",
+        "norm": "ПП РФ №87 (действует), п. 27",
+        "norm_quote": null,
+        "solution": "Уточнить фактический этаж размещения мусоросборной камеры. Привести в соответствие текстовую часть пояснительной записки и экспликации помещений. Если камера на -2 этаже — исправить текст «Общие данные».",
+        "risk": "Противоречие в проектной документации может привести к отказу в прохождении экспертизы и ошибкам при строительстве.",
+        "source_block_ids": [
+          "9XCR-3VNT-DQG",
+          "9TGM-4HLQ-MFY"
+        ],
+        "related_block_ids": [
+          "9XCR-3VNT-DQG",
+          "9TGM-4HLQ-MFY",
+          "7XH6-3NUF-EDP"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "9XCR-3VNT-DQG",
+            "role": "description",
+            "used_for": "value_extraction"
+          },
+          {
+            "text_block_id": "9TGM-4HLQ-MFY",
+            "role": "table",
+            "used_for": "cross_check"
+          },
+          {
+            "text_block_id": "7XH6-3NUF-EDP",
+            "role": "table",
+            "used_for": "cross_check"
+          }
+        ],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "9XCR-3VNT-DQG",
+            "page": 4
+          },
+          {
+            "type": "text",
+            "block_id": "9TGM-4HLQ-MFY",
+            "page": 5
+          },
+          {
+            "type": "text",
+            "block_id": "7XH6-3NUF-EDP",
+            "page": 5
+          }
+        ],
+        "highlight_regions": [],
+        "quality": {
+          "practicality_score": 37,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "expertise_formality",
+            "reference_maintenance"
+          ],
+          "likely_formal_only": true,
+          "severity_mismatch": true,
+          "review_priority": "high"
+        },
+        "grounding_level": "grounded_strong"
+      },
+      {
+        "id": "F-002",
+        "severity": "КРИТИЧЕСКОЕ",
+        "category": "documentation",
+        "sheet": "Лист 2 (из 2)",
+        "page": 5,
+        "problem": "Пропуск номера помещения в экспликации -2 этажа",
+        "description": "В экспликации помещений -2-го этажа отсутствует помещение с номером 5 — нумерация перескакивает с 4 на 6. Возможно, пропущено помещение или допущена ошибка нумерации. Это может свидетельствовать о потере данных при оформлении документации.",
+        "norm": "ГОСТ 21.501-2018 (действует)",
+        "norm_quote": null,
+        "solution": "Проверить экспликацию помещений -2 этажа, восстановить пропущенное помещение №5 или исправить нумерацию.",
+        "risk": "Неполная экспликация может привести к отсутствию проектных решений для одного из помещений, ошибкам при строительстве и замечаниям экспертизы.",
+        "source_block_ids": [
+          "9TGM-4HLQ-MFY"
+        ],
+        "related_block_ids": [
+          "9TGM-4HLQ-MFY"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "9TGM-4HLQ-MFY",
+            "role": "table",
+            "used_for": "value_extraction"
+          }
+        ],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "9TGM-4HLQ-MFY",
+            "page": 5
+          }
+        ],
+        "highlight_regions": [],
+        "quality": {
+          "practicality_score": 27,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "expertise_formality",
+            "reference_maintenance"
+          ],
+          "likely_formal_only": true,
+          "severity_mismatch": true,
+          "review_priority": "high"
+        },
+        "grounding_level": "grounded_strong"
+      },
+      {
+        "id": "F-003",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "documentation",
+        "sheet": "Лист 1",
+        "page": 7,
+        "problem": "Противоречие в значении нагрузки Fy на анкерную пластину: 15 кН vs 12 кН",
+        "description": "В таблице параметров подъемника указано Fy = 15 кН, а в примечании к той же странице — Fy = 12 кН. Расхождение составляет 3 кН (20%). На чертеже анкерной пластины (блок 66EX-R3YX-3N6) размеры пластины 800×760 мм с отверстиями 2×Ø15 мм — конструкция пластины не позволяет однозначно определить, на какую нагрузку она рассчитана. Некорректное значение нагрузки может привести к ошибке в задании на раздел КР.",
+        "norm": null,
+        "norm_quote": null,
+        "solution": "Уточнить корректное значение нагрузки Fy у производителя подъемника PANDA LIFT для высоты подъёма H.0 = 5400 мм. Привести в соответствие таблицу параметров и примечание. Передать уточнённое значение в раздел КР.",
+        "risk": "Занижение нагрузки на 20% может привести к недостаточной несущей способности крепления мачты подъемника к стене, что создаёт угрозу аварии при эксплуатации.",
+        "source_block_ids": [
+          "79QQ-GPNV-9KP",
+          "PXEQ-JWHL-WVC"
+        ],
+        "related_block_ids": [
+          "79QQ-GPNV-9KP",
+          "PXEQ-JWHL-WVC",
+          "66EX-R3YX-3N6",
+          "9GKW-NUHR-KQJ"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "79QQ-GPNV-9KP",
+            "role": "table",
+            "used_for": "value_extraction"
+          },
+          {
+            "text_block_id": "PXEQ-JWHL-WVC",
+            "role": "note",
+            "used_for": "cross_check"
+          }
+        ],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "79QQ-GPNV-9KP",
+            "page": 7
+          },
+          {
+            "type": "text",
+            "block_id": "PXEQ-JWHL-WVC",
+            "page": 7
+          },
+          {
+            "type": "image",
+            "block_id": "66EX-R3YX-3N6",
+            "page": 7
+          }
+        ],
+        "highlight_regions": [],
+        "quality": {
+          "practicality_score": 95,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "operations"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        },
+        "grounding_level": "grounded_strong"
+      },
+      {
+        "id": "F-004",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "capacity",
+        "sheet": "Лист 1",
+        "page": 7,
+        "problem": "Нагрузки от подъемника следует передать в раздел КР для проверки",
+        "description": "В представленных материалах по подъемнику приведены расчетные нагрузки: Q = 13,6 кН; Fz = 25,96 кН; Fx = 5 кН; Fy = 12–15 кН (см. F-003 о противоречии). На основании этих данных требуется координационная проверка с разделом КР на предмет учета нагрузок и проверки несущей способности стен и перекрытий в зоне установки подъемника.",
+        "norm": null,
+        "norm_quote": null,
+        "solution": "Передать нагрузки (Fz = 25,96 кН, Fx = 5 кН, Fy = 12–15 кН) в раздел КР. Получить подтверждение достаточности несущей способности конструкций.",
+        "risk": "Без проверки по разделу КР невозможно гарантировать безопасность крепления подъемника к несущим конструкциям здания.",
+        "source_block_ids": [
+          "79QQ-GPNV-9KP",
+          "PXEQ-JWHL-WVC"
+        ],
+        "related_block_ids": [
+          "79QQ-GPNV-9KP",
+          "PXEQ-JWHL-WVC",
+          "673E-9ANU-DTJ",
+          "66EX-R3YX-3N6",
+          "9GKW-NUHR-KQJ"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "79QQ-GPNV-9KP",
+            "role": "table",
+            "used_for": "value_extraction"
+          },
+          {
+            "text_block_id": "PXEQ-JWHL-WVC",
+            "role": "note",
+            "used_for": "cross_check"
+          }
+        ],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "79QQ-GPNV-9KP",
+            "page": 7
+          },
+          {
+            "type": "text",
+            "block_id": "PXEQ-JWHL-WVC",
+            "page": 7
+          },
+          {
+            "type": "image",
+            "block_id": "673E-9ANU-DTJ",
+            "page": 7
+          }
+        ],
+        "highlight_regions": [],
+        "quality": {
+          "practicality_score": 95,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "grounding_level": "grounded_strong"
+      },
+      {
+        "id": "F-005",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "utility_connections",
+        "sheet": "Лист 2",
+        "page": [
+          4,
+          5
+        ],
+        "problem": "Необходимо проверить подводку ГВС/ХВС, канализационный трап и отопление в помещении ТБО",
+        "description": "В тексте указано, что мусоросборная камера обеспечена подводкой ГВС и ХВС, трапом в канализацию, подключением к системе отопления. На чертеже плана -2 этажа (блок 9E9V-UFC7-YAD) указан «Кран поливочный ХВ, ГВ Q=0,3 л/с h=1100 мм», что подтверждает наличие водоснабжения на чертеже. Однако необходимо проверить по смежным разделам (ВК, ОВ): 1) фактическое наличие подводки ГВС/ХВС к помещению ТБО на -2 этаже; 2) наличие канализационного трапа (на чертеже указаны уклоны пола 1% и 0,5%); 3) подключение к системе отопления с обеспечением температуры не ниже +5°C.",
+        "norm": "СП 54.13330.2022 (действует)",
+        "norm_quote": null,
+        "solution": "Запросить у смежных разделов (ВК, ОВ) подтверждение наличия подводок ГВС/ХВС, канализационного трапа и отопления в помещении ТБО на -2 этаже.",
+        "risk": "Отсутствие инженерных коммуникаций в помещении ТБО нарушает санитарные требования и делает невозможной влажную уборку камеры.",
+        "source_block_ids": [
+          "9XCR-3VNT-DQG",
+          "9E9V-UFC7-YAD"
+        ],
+        "related_block_ids": [
+          "9XCR-3VNT-DQG",
+          "9E9V-UFC7-YAD"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "9XCR-3VNT-DQG",
+            "role": "description",
+            "used_for": "value_extraction"
+          },
+          {
+            "text_block_id": "9TGM-4HLQ-MFY",
+            "role": "table",
+            "used_for": "cross_check"
+          }
+        ],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "9XCR-3VNT-DQG",
+            "page": 4
+          },
+          {
+            "type": "image",
+            "block_id": "9E9V-UFC7-YAD",
+            "page": 5
+          }
+        ],
+        "highlight_regions": [
+          {
+            "block_id": "9E9V-UFC7-YAD",
+            "x": 0.6,
+            "y": 0.25,
+            "w": 0.2,
+            "h": 0.15,
+            "label": "Поливочный кран ХВ, ГВ"
+          }
+        ],
+        "selected_text_block_ids": [
+          "9TGM-4HLQ-MFY"
+        ],
+        "quality": {
+          "practicality_score": 67,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "grounding_level": "grounded_strong"
+      },
+      {
+        "id": "F-006",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "utility_connections",
+        "sheet": "Лист 1 (из 1)",
+        "page": [
+          6,
+          7
+        ],
+        "problem": "Необходимо проверить наличие электропитания 380В/2,2 кВт для подъемника в разделе ЭОМ",
+        "description": "Подъемник HULKER L-1000 требует подвода электропитания 380В/2,2 кВт (3-фазное) кабелем ВВГнг с 3-фазным пакетным выключателем. На чертеже плана -2 этажа (блок 9E9V-UFC7-YAD) обозначен электрощит управления гидравлической станцией 300×750×750(h) мм. Чертеж электрощита (блок 4C34-EGKE-U66) подтверждает габариты 300×750 мм. Необходимо проверить по разделу ЭОМ: 1) учтена ли нагрузка 2,2 кВт в балансе электрических мощностей; 2) предусмотрена ли линия питания к щиту управления подъемником.",
+        "norm": null,
+        "norm_quote": null,
+        "solution": "Запросить у раздела ЭОМ подтверждение учёта нагрузки 2,2 кВт и наличия линии питания 380В к щиту управления подъемником на -2 этаже.",
+        "risk": "Отсутствие электропитания сделает невозможной эксплуатацию подъемника.",
+        "source_block_ids": [
+          "TUKH-FHXK-QQC",
+          "PXEQ-JWHL-WVC"
+        ],
+        "related_block_ids": [
+          "TUKH-FHXK-QQC",
+          "PXEQ-JWHL-WVC",
+          "9E9V-UFC7-YAD",
+          "4C34-EGKE-U66"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "TUKH-FHXK-QQC",
+            "role": "table",
+            "used_for": "value_extraction"
+          },
+          {
+            "text_block_id": "PXEQ-JWHL-WVC",
+            "role": "note",
+            "used_for": "cross_check"
+          }
+        ],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "TUKH-FHXK-QQC",
+            "page": 6
+          },
+          {
+            "type": "text",
+            "block_id": "PXEQ-JWHL-WVC",
+            "page": 7
+          },
+          {
+            "type": "image",
+            "block_id": "4C34-EGKE-U66",
+            "page": 7
+          }
+        ],
+        "highlight_regions": [],
+        "quality": {
+          "practicality_score": 79,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "operations",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "grounding_level": "grounded_strong"
+      },
+      {
+        "id": "F-007",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "waste",
+        "sheet": "Лист 1 (из 2)",
+        "page": 4,
+        "problem": "В разделе ТХ.М отсутствует расчёт достаточности количества контейнеров для ТКО",
+        "description": "По материалам раздела ТХ.М предусмотрено 8 контейнеров по 0,36 м³ (суммарный объём 2,88 м³). При этом в представленном разделе не приведён расчёт, обосновывающий достаточность этого количества контейнеров для объекта. Данные о количестве квартир и жителей в данном разделе также не приведены.",
+        "norm": "СанПиН 2.1.3684-21 (действует)",
+        "norm_quote": "Накопление твёрдых коммунальных отходов допускается только в установленных местах накопления отходов.",
+        "solution": "Проверить, где в составе проекта выполнен расчёт необходимого количества контейнеров. При отсутствии такого расчёта — добавить обоснование принятого количества контейнеров или сослаться на смежный раздел.",
+        "risk": "Без расчётного обоснования невозможно подтвердить достаточность принятого количества контейнеров для эксплуатации объекта.",
+        "source_block_ids": [
+          "9XCR-3VNT-DQG"
+        ],
+        "related_block_ids": [
+          "9XCR-3VNT-DQG",
+          "TUKH-FHXK-QQC"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "9XCR-3VNT-DQG",
+            "role": "description",
+            "used_for": "value_extraction"
+          },
+          {
+            "text_block_id": "TUKH-FHXK-QQC",
+            "role": "table",
+            "used_for": "cross_check"
+          }
+        ],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "9XCR-3VNT-DQG",
+            "page": 4
+          },
+          {
+            "type": "text",
+            "block_id": "TUKH-FHXK-QQC",
+            "page": 6
+          }
+        ],
+        "highlight_regions": [],
+        "quality": {
+          "practicality_score": 41,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_maintenance",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "grounding_level": "grounded_strong"
+      },
+      {
+        "id": "F-008",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "waste",
+        "sheet": "Лист 1 (из 2)",
+        "page": 4,
+        "problem": "В разделе ТХ.М не раскрыто решение по раздельному сбору отходов",
+        "description": "В представленных материалах указаны только контейнеры одного типа GPLAST 0,36 м³ в количестве 8 шт. В разделе ТХ.М не показано, предусмотрено ли разделение контейнеров по фракциям, маркировке или иному признаку раздельного накопления отходов. По представленным данным решение о раздельном сборе не раскрыто.",
+        "norm": "ФЗ-89 «Об отходах производства и потребления» (действует), ст. 13.4",
+        "norm_quote": null,
+        "solution": "Уточнить в проектной документации, каким образом организован раздельный сбор отходов: за счёт маркировки контейнеров, разных типов емкостей или решений смежных разделов/эксплуатации. При необходимости дополнить пояснительную записку.",
+        "risk": "Недостаточная проработка решения по раздельному сбору может вызвать замечания при согласовании и эксплуатации объекта.",
+        "source_block_ids": [
+          "9XCR-3VNT-DQG"
+        ],
+        "related_block_ids": [
+          "9XCR-3VNT-DQG",
+          "TUKH-FHXK-QQC"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "9XCR-3VNT-DQG",
+            "role": "description",
+            "used_for": "value_extraction"
+          },
+          {
+            "text_block_id": "TUKH-FHXK-QQC",
+            "role": "table",
+            "used_for": "cross_check"
+          }
+        ],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "TUKH-FHXK-QQC",
+            "page": 6
+          }
+        ],
+        "highlight_regions": [],
+        "quality": {
+          "practicality_score": 75,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "cost",
+            "operations"
+          ],
+          "formalism_flags": [
+            "expertise_formality"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        },
+        "grounding_level": "grounded_strong"
+      },
+      {
+        "id": "F-009",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_layout",
+        "sheet": "Лист 2",
+        "page": [
+          5,
+          7
+        ],
+        "problem": "Необходимо проверить достаточность зоны обслуживания гидравлической станции (≥1 м²)",
+        "description": "В примечании к подъемнику указано: «Обеспечить не менее 1 кв. м свободного пространства перед станцией для проведения технического обслуживания». На фрагменте плана -2 этажа (блок 9E9V-UFC7-YAD) обозначена «Зона обслуживания гидр. станции», однако её фактические размеры по чертежу не поддаются точной верификации. Гидравлическая станция имеет габариты 800×800×1100(h) мм.",
+        "norm": "Требования производителя PANDA LIFT",
+        "norm_quote": null,
+        "solution": "Проверить на чертеже, что зона обслуживания перед гидравлической станцией составляет не менее 1 м². При необходимости скорректировать компоновку помещения ТБО.",
+        "risk": "Недостаточная зона обслуживания затруднит техническое обслуживание и ремонт гидравлической станции, что может привести к простоям подъемника.",
+        "source_block_ids": [
+          "9E9V-UFC7-YAD",
+          "PXEQ-JWHL-WVC"
+        ],
+        "related_block_ids": [
+          "9E9V-UFC7-YAD",
+          "PXEQ-JWHL-WVC",
+          "A9EM-TR7F-AXG"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "PXEQ-JWHL-WVC",
+            "role": "note",
+            "used_for": "value_extraction"
+          }
+        ],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "9E9V-UFC7-YAD",
+            "page": 5
+          },
+          {
+            "type": "text",
+            "block_id": "PXEQ-JWHL-WVC",
+            "page": 7
+          }
+        ],
+        "highlight_regions": [
+          {
+            "block_id": "9E9V-UFC7-YAD",
+            "x": 0.25,
+            "y": 0.3,
+            "w": 0.2,
+            "h": 0.15,
+            "label": "Зона обслуживания гидр. станции"
+          }
+        ],
+        "selected_text_block_ids": [
+          "9TGM-4HLQ-MFY"
+        ],
+        "quality": {
+          "practicality_score": 79,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "operations",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        },
+        "grounding_level": "grounded_strong"
+      },
+      {
+        "id": "F-010",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "equipment_layout",
+        "sheet": "Листы 1, 2",
+        "page": [
+          5,
+          7
+        ],
+        "problem": "Рабочая высота подъёма 5400 мм не соответствует разнице отметок этажей (~2620–2670 мм) по разрезу 1-1",
+        "description": "Рабочая высота подъёма подъемника H.0 = 5400 мм (подтверждена на чертеже блока 7JGV-PTLY-RGJ). По разрезу 1-1 (блок 4CWU-7KFW-U66) отметки: уровень -2 этажа примерно -2,950, уровень 1 этажа примерно -0,280/-0,330. Разница отметок составляет около 2620–2670 мм, что значительно меньше 5400 мм. Возможно, подъемник обслуживает не только -2 и 1 этажи, а поднимается до отметки +2,450 (верхняя отметка +5,750 минус запас), либо на разрезе показаны не все обслуживаемые уровни.",
+        "norm": null,
+        "norm_quote": null,
+        "solution": "Уточнить по разделу АР/КР фактическую разницу отметок между уровнем пола помещения ТБО на -2 этаже и уровнем выгрузки. Обосновать принятую высоту подъёма 5400 мм.",
+        "risk": "Несоответствие высоты подъёма фактическим отметкам может привести к невозможности эксплуатации подъемника или необходимости дорогостоящей переделки шахты.",
+        "source_block_ids": [
+          "4CWU-7KFW-U66",
+          "79QQ-GPNV-9KP"
+        ],
+        "related_block_ids": [
+          "4CWU-7KFW-U66",
+          "79QQ-GPNV-9KP",
+          "7JGV-PTLY-RGJ",
+          "9GKW-NUHR-KQJ",
+          "9DYC-NTHR-9E9"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "79QQ-GPNV-9KP",
+            "role": "table",
+            "used_for": "value_extraction"
+          },
+          {
+            "text_block_id": "7XH6-3NUF-EDP",
+            "role": "other",
+            "used_for": "cross_check"
+          }
+        ],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "4CWU-7KFW-U66",
+            "page": 5
+          },
+          {
+            "type": "text",
+            "block_id": "79QQ-GPNV-9KP",
+            "page": 7
+          },
+          {
+            "type": "image",
+            "block_id": "7JGV-PTLY-RGJ",
+            "page": 7
+          }
+        ],
+        "highlight_regions": [
+          {
+            "block_id": "4CWU-7KFW-U66",
+            "x": 0.05,
+            "y": 0.35,
+            "w": 0.15,
+            "h": 0.4,
+            "label": "Высотные отметки -2,950 / -0,330"
+          }
+        ],
+        "selected_text_block_ids": [
+          "9TGM-4HLQ-MFY",
+          "7XH6-3NUF-EDP"
+        ],
+        "quality": {
+          "practicality_score": 83,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "rework",
+            "operations"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "grounding_level": "grounded_strong"
+      },
+      {
+        "id": "F-011",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "waste",
+        "sheet": "Лист 1 (из 2)",
+        "page": 4,
+        "problem": "Устаревший термин «полигон ТБО» в тексте пояснительной записки",
+        "description": "В тексте указано: «Вывоз мусора осуществляется ежедневно эксплуатирующей организацией непосредственно на полигон ТБО». Термин «полигон ТБО» устарел — в соответствии с ФЗ-89 и действующим законодательством г. Москвы вывоз осуществляется региональным оператором на объекты обработки/размещения отходов.",
+        "norm": "ФЗ-89 «Об отходах производства и потребления» (действует)",
+        "norm_quote": null,
+        "solution": "Скорректировать формулировку: заменить «полигон ТБО» на «объект обработки/размещения отходов», указать вывоз региональным оператором.",
+        "risk": "Замечание экспертизы по несоответствию терминологии действующему законодательству.",
+        "source_block_ids": [
+          "9XCR-3VNT-DQG"
+        ],
+        "related_block_ids": [
+          "9XCR-3VNT-DQG"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "9XCR-3VNT-DQG",
+            "role": "description",
+            "used_for": "value_extraction"
+          }
+        ],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "9XCR-3VNT-DQG",
+            "page": 4
+          }
+        ],
+        "highlight_regions": [],
+        "quality": {
+          "practicality_score": 39,
+          "engineering_relevance": "low",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [
+            "expertise_formality",
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "grounding_level": "grounded_strong"
+      },
+      {
+        "id": "F-012",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "sanitary",
+        "sheet": "Лист 1 (из 2)",
+        "page": 4,
+        "problem": "Опечатки в тексте пояснительной записки",
+        "description": "В тексте допущены опечатки: «водомульционное покрытие» (вместо «водоэмульсионное покрытие»), «защищу населения» (вместо «защиту населения»), «защищу окружающей природной среды» (вместо «защиту окружающей природной среды»).",
+        "norm": null,
+        "norm_quote": null,
+        "solution": "Исправить опечатки в пояснительной записке.",
+        "risk": "Снижение качества оформления проектной документации, возможные замечания экспертизы.",
+        "source_block_ids": [
+          "9XCR-3VNT-DQG"
+        ],
+        "related_block_ids": [
+          "9XCR-3VNT-DQG"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "9XCR-3VNT-DQG",
+            "role": "description",
+            "used_for": "value_extraction"
+          }
+        ],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "9XCR-3VNT-DQG",
+            "page": 4
+          }
+        ],
+        "highlight_regions": [],
+        "quality": {
+          "practicality_score": 17,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "editorial_issue",
+            "expertise_formality",
+            "editorial_fix"
+          ],
+          "likely_formal_only": true,
+          "severity_mismatch": false,
+          "review_priority": "normal"
+        },
+        "grounding_level": "grounded_strong"
+      },
+      {
+        "id": "F-013",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "normative_refs",
+        "sheet": "Лист 1 (из 2)",
+        "page": 4,
+        "problem": "Ведомость ссылочных документов выглядит ограниченной для раскрытых в разделе решений",
+        "description": "В ведомости ссылочных и прилагаемых документов приведены только СП 118.13330.2022, СП 2.2.3670-20 и СТУ. При этом в самом комплекте ТХ.М рассматриваются вопросы мусороудаления, мусоросборной камеры и оборудования для перемещения контейнеров, поэтому состав ссылочных документов целесообразно дополнительно проверить на полноту и достаточность для данного раздела.",
+        "norm": null,
+        "norm_quote": null,
+        "solution": "Проверить полноту ведомости ссылочных документов и при необходимости дополнить её нормативными документами, фактически используемыми при разработке раздела ТХ.М.",
+        "risk": "Неполная ведомость ссылочных документов может вызвать замечания по оформлению и обоснованности принятых решений.",
+        "source_block_ids": [
+          "9YRN-PKKU-XUR"
+        ],
+        "related_block_ids": [
+          "9YRN-PKKU-XUR"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "9YRN-PKKU-XUR",
+            "role": "table",
+            "used_for": "value_extraction"
+          }
+        ],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "9YRN-PKKU-XUR",
+            "page": 4
+          }
+        ],
+        "highlight_regions": [],
+        "quality": {
+          "practicality_score": 0,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "formal_reference_category",
+            "expertise_formality",
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": true,
+          "severity_mismatch": false,
+          "review_priority": "normal"
+        },
+        "grounding_level": "grounded_strong"
+      },
+      {
+        "id": "F-014",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "waste",
+        "sheet": "Лист 1 (из 2)",
+        "page": 4,
+        "problem": "Формулировка о «непосредственном выходе наружу» требует уточнения применительно к проектному решению",
+        "description": "В тексте общих данных указано, что помещение для сбора мусора имеет «непосредственный выход наружу». При этом на графических материалах показаны помещение ТБО на -2 этаже, подъемник, тамбур ТБО на 1 этаже и зона размещения резервного контейнера. По представленным материалам проектное решение реализовано через систему перемещения контейнеров между уровнями, поэтому текстовую формулировку целесообразно уточнить, чтобы однозначно описать фактическую схему удаления контейнеров.",
+        "norm": "СП 54.13330.2022 (действует), п. 9.31",
+        "norm_quote": null,
+        "solution": "Уточнить описание проектного решения в пояснительной записке: явно указать, каким образом обеспечивается связь мусоросборной камеры с выходом наружу и как осуществляется перемещение контейнеров.",
+        "risk": "Неоднозначная формулировка может вызвать замечания экспертизы и затруднить интерпретацию проектного решения.",
+        "source_block_ids": [
+          "9XCR-3VNT-DQG"
+        ],
+        "related_block_ids": [
+          "9XCR-3VNT-DQG",
+          "9DYC-NTHR-9E9",
+          "9E9V-UFC7-YAD"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "9XCR-3VNT-DQG",
+            "role": "description",
+            "used_for": "value_extraction"
+          }
+        ],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "9XCR-3VNT-DQG",
+            "page": 4
+          },
+          {
+            "type": "image",
+            "block_id": "9DYC-NTHR-9E9",
+            "page": 5
+          },
+          {
+            "type": "image",
+            "block_id": "9E9V-UFC7-YAD",
+            "page": 5
+          }
+        ],
+        "highlight_regions": [],
+        "quality": {
+          "practicality_score": 47,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [
+            "expertise_formality"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "grounding_level": "grounded_strong"
+      },
+      {
+        "id": "F-015",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "sanitary",
+        "sheet": "Лист 1 (из 2)",
+        "page": 4,
+        "problem": "В тексте общих данных не раскрыты требования к вентиляции мусоросборной камеры",
+        "description": "В блоке «Общие данные» перечислены требования к воде, трапу, отоплению, освещению и отделке мусоросборной камеры, однако требования к вентиляции в этом фрагменте не указаны. Для полноты описания решения по помещению ТБО целесообразно проверить, где в составе проекта раскрыты требования к вентиляции и при необходимости дать соответствующую ссылку или уточнение.",
+        "norm": "СП 54.13330.2022 (действует)",
+        "norm_quote": null,
+        "solution": "Проверить, в каком разделе проекта учтены решения по вентиляции помещения ТБО. При необходимости дополнить текст общих данных ссылкой на соответствующий раздел или кратким указанием требований.",
+        "risk": "Недостаточная раскрытость требований к вентиляции может привести к замечаниям по полноте проектной документации и необходимости дополнительных согласований.",
+        "source_block_ids": [
+          "9XCR-3VNT-DQG"
+        ],
+        "related_block_ids": [
+          "9XCR-3VNT-DQG"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "9XCR-3VNT-DQG",
+            "role": "description",
+            "used_for": "value_extraction"
+          }
+        ],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "9XCR-3VNT-DQG",
+            "page": 4
+          }
+        ],
+        "highlight_regions": [],
+        "quality": {
+          "practicality_score": 49,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "grounding_level": "grounded_strong"
+      },
+      {
+        "id": "F-016",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "sheet": "Лист 1 (из 1)",
+        "page": 6,
+        "problem": "Неполное заполнение граф спецификации оборудования",
+        "description": "В спецификации оборудования для контейнера GPLAST не указаны: тип/марка, код продукции, масса единицы. Для подъемника HULKER L-1000 также не указаны: код продукции, масса единицы. Спецификация заполнена не в полном соответствии с ГОСТ 21.110-2013.",
+        "norm": "ГОСТ 21.110-2013 (действует)",
+        "norm_quote": null,
+        "solution": "Заполнить все графы спецификации оборудования в соответствии с ГОСТ 21.110-2013: указать тип/марку, код продукции и массу для каждой позиции.",
+        "risk": "Замечание экспертизы по оформлению спецификации. Затруднения при комплектации оборудования на этапе строительства.",
+        "source_block_ids": [
+          "TUKH-FHXK-QQC"
+        ],
+        "related_block_ids": [
+          "TUKH-FHXK-QQC"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "TUKH-FHXK-QQC",
+            "role": "table",
+            "used_for": "value_extraction"
+          }
+        ],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "TUKH-FHXK-QQC",
+            "page": 6
+          }
+        ],
+        "highlight_regions": [],
+        "quality": {
+          "practicality_score": 35,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "expertise_formality"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "grounding_level": "grounded_strong"
+      },
+      {
+        "id": "F-017",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "loading",
+        "sheet": "Лист 2",
+        "page": 5,
+        "problem": "Необходимо проверить обеспеченность подъезда мусоровоза и организацию зоны выката контейнеров",
+        "description": "На плане 1 этажа обозначена зона «Размещение резервного контейнера ТБО» и показан выход из тамбура ТБО наружу. По представленным материалам целесообразно проверить по смежным разделам АР/ГП организацию маршрута выката контейнеров, наличие площадки для временного размещения и обеспеченность подъезда мусоровоза. Размер «900», присутствующий на плане, не позволяет однозначно подтвердить ширину конкретного дверного проёма именно для выката контейнера.",
+        "norm": "СанПиН 2.1.3684-21 (действует)",
+        "norm_quote": null,
+        "solution": "Проверить по разделам АР/ГП наличие подъезда мусоровоза, организацию площадки и достаточность маршрута выката контейнеров. При необходимости отдельно подтвердить ширину соответствующих дверных проёмов.",
+        "risk": "Недостаточная проработка маршрута перемещения контейнеров может затруднить вывоз отходов при эксплуатации объекта.",
+        "source_block_ids": [
+          "9DYC-NTHR-9E9"
+        ],
+        "related_block_ids": [
+          "9DYC-NTHR-9E9",
+          "7XH6-3NUF-EDP"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "7XH6-3NUF-EDP",
+            "role": "table",
+            "used_for": "cross_check"
+          }
+        ],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "9DYC-NTHR-9E9",
+            "page": 5
+          }
+        ],
+        "highlight_regions": [
+          {
+            "block_id": "9DYC-NTHR-9E9",
+            "x": 0.15,
+            "y": 0.65,
+            "w": 0.25,
+            "h": 0.15,
+            "label": "Зона размещения резервного контейнера ТБО"
+          }
+        ],
+        "selected_text_block_ids": [
+          "7XH6-3NUF-EDP",
+          "9TGM-4HLQ-MFY"
+        ],
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "grounding_level": "grounded_strong"
+      }
+    ]
+  }
+}

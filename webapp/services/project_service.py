@@ -406,8 +406,8 @@ def _build_pipeline_issues(output_dir: Path) -> list[str]:
         s = info.get("status", "")
         if s in ("error", "interrupted"):
             short_err = info.get("error", "")
-            if short_err and len(short_err) > 40:
-                short_err = short_err[:37] + "..."
+            if short_err and len(short_err) > 80:
+                short_err = short_err[:77] + "..."
             issues.append(f"{label}: {short_err}" if short_err else f"{label}: ошибка")
 
     # Findings есть, но critic/corrector не запускались

@@ -293,6 +293,13 @@ class UsageTracker:
             self._session_reset_at = datetime.now().isoformat()
             self._save()
 
+    def clear_all(self):
+        """Полная очистка всех записей usage."""
+        with _lock:
+            self._records = []
+            self._session_reset_at = datetime.now().isoformat()
+            self._save()
+
     # ── History ──────────────────────────────────────────────
 
     def get_recent(self, limit: int = 50) -> list[dict]:

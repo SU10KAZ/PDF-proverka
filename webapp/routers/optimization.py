@@ -19,7 +19,7 @@ async def get_all_optimization_summaries():
     return {"summaries": summaries}
 
 
-@router.post("/{project_id}/run")
+@router.post("/{project_id:path}/run")
 async def start_optimization(project_id: str):
     """Запустить анализ оптимизации проектной документации."""
     _check_project(project_id)
@@ -30,7 +30,7 @@ async def start_optimization(project_id: str):
         raise HTTPException(409, str(e))
 
 
-@router.get("/{project_id}/block-map")
+@router.get("/{project_id:path}/block-map")
 async def get_optimization_block_map(project_id: str):
     """Маппинг optimization_id → [block_ids] для подсветки блоков."""
     from webapp.services.findings_service import get_optimization_block_map as _get_map
@@ -40,7 +40,7 @@ async def get_optimization_block_map(project_id: str):
     return result
 
 
-@router.get("/{project_id}/status")
+@router.get("/{project_id:path}/status")
 async def get_optimization_status(project_id: str):
     """Статус оптимизации проекта."""
     status = project_service.get_project_status(project_id)
@@ -65,7 +65,7 @@ async def get_optimization_status(project_id: str):
     }
 
 
-@router.get("/{project_id}")
+@router.get("/{project_id:path}")
 async def get_optimization(project_id: str):
     """Получить результаты оптимизации (optimization.json)."""
     opt_path = resolve_project_dir(project_id) / "_output" / "optimization.json"
@@ -80,7 +80,7 @@ async def get_optimization(project_id: str):
         raise HTTPException(500, f"Ошибка чтения optimization.json: {e}")
 
 
-@router.delete("/{project_id}/cancel")
+@router.delete("/{project_id:path}/cancel")
 async def cancel_optimization(project_id: str):
     """Отменить запущенную оптимизацию."""
     success = await pipeline_manager.cancel(project_id)

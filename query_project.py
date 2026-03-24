@@ -45,7 +45,7 @@ if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
     except Exception:
         pass
 
-BASE = r"D:\Отедел Системного Анализа\1. Calude code"
+BASE = r"D:\Отедел Системного Анализа\1. Audit Manager"
 
 # ── Каноничные категории (по CLAUDE.md) ─────────────────────────────────
 SEV_ORDER = [

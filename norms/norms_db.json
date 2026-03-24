@@ -1,7 +1,7 @@
 {
   "meta": {
     "description": "Централизованная база нормативных документов с автообновлением из результатов верификации",
-    "last_updated": "2026-03-22T22:30:17.439453",
+    "last_updated": "2026-03-24T19:10:06.223259",
     "total_norms": 439,
     "stale_after_days": 180,
     "update_history": [
@@ -157,8 +157,8 @@
       "category": "sp",
       "notes": "Действует. Верифицирован по кешу от 2026-03-13.",
       "source_url": "https://docs.cntd.ru/document/1200190099",
-      "last_verified": "2026-03-22T21:09:58.613580",
-      "verified_by": "websearch:133_23-ГК-ТХ.М",
+      "last_verified": "2026-03-24T12:16:12.700517",
+      "verified_by": "websearch:133-23-ГК-ОВ2.2",
       "edition_status": "ok"
     },
     "СП 31-106-2002": {
@@ -1018,7 +1018,7 @@
       "category": "sp_fire",
       "notes": "Действует. Верифицирован по кешу от 2026-03-13.",
       "source_url": "https://docs.cntd.ru/document/1200101523",
-      "last_verified": "2026-03-21T21:09:18.967649",
+      "last_verified": "2026-03-24T19:10:06.223205",
       "verified_by": "websearch:133-23-ГК-ОВ3",
       "edition_status": "ok"
     },
@@ -1081,8 +1081,8 @@
       "category": "sp",
       "notes": "Действует с Изменениями 1-3. Верифицирован по кешу от 2026-03-13.",
       "source_url": "https://docs.cntd.ru/document/566265847",
-      "last_verified": "2026-03-22T17:11:13.689809",
-      "verified_by": "websearch:133_23-ГК-ТХ.М",
+      "last_verified": "2026-03-24T19:10:06.223233",
+      "verified_by": "websearch:133-23-ГК-ОВ3",
       "edition_status": "ok"
     },
     "СП 54.13330.2016": {
@@ -1106,8 +1106,8 @@
       "category": "vsn",
       "notes": "Действует. Ведомственный стандарт СССР, формально не отменён, специализированной альтернативы нет. Применяется в части, не противоречащей действующим СП и ГОСТ. Ссылка допустима.",
       "source_url": "http://docs.cntd.ru/document/1200026982",
-      "last_verified": "2026-03-19T07:46:22.948959",
-      "verified_by": "websearch:133_23-ГК-ОВ2.1",
+      "last_verified": "2026-03-24T12:45:04.536492",
+      "verified_by": "websearch:133-23-ГК-ОВ3",
       "edition_status": "ok"
     },
     "ГОСТ Р 70349-2022": {
@@ -1206,8 +1206,8 @@
       "category": "gost",
       "notes": "Документ действует без изменений. Ссылка в замечаниях корректна. Внимание: в ряде источников встречается обозначение «ГОСТ Р 21.602-2016» — это устаревшее обозначение, заменено на «ГОСТ 21.602-2016» (без префикса «Р»).",
       "source_url": "https://docs.cntd.ru/document/1200140320",
-      "last_verified": "2026-03-21T23:29:04.386497",
-      "verified_by": "websearch:133_23-ГК-ОВ1.2",
+      "last_verified": "2026-03-24T19:10:06.223224",
+      "verified_by": "websearch:133-23-ГК-ОВ3",
       "edition_status": "ok"
     },
     "ГОСТ 21.613-2014": {
@@ -1317,8 +1317,8 @@
       "category": "sp",
       "notes": "Документ действует, актуальная редакция включает Изм. №1 и №2. Ссылка корректна.",
       "source_url": "https://docs.cntd.ru/document/456029018",
-      "last_verified": "2026-03-21T23:29:04.386636",
-      "verified_by": "websearch:133_23-ГК-ОВ1.2",
+      "last_verified": "2026-03-24T12:16:12.700501",
+      "verified_by": "websearch:133-23-ГК-ОВ2.2",
       "edition_status": "ok"
     },
     "СП 61.13330.2016": {
@@ -1418,7 +1418,7 @@
       "category": "snip",
       "notes": "Не действует. Актуализированная редакция — СП 73.13330.2016. Замечание F-024 корректно указывает на устаревшую ссылку в проекте.",
       "source_url": "http://sniprf.ru/razdel-3/3-05-01-85",
-      "last_verified": "2026-03-21T20:02:24.871424",
+      "last_verified": "2026-03-24T12:16:12.700509",
       "verified_by": "websearch:133-23-ГК-ОВ2.2"
     },
     "СП 73.13330.2012": {
@@ -1454,7 +1454,7 @@
       "category": "gost",
       "notes": "Действует. Верифицирован по кешу от 2026-03-13.",
       "source_url": "https://docs.cntd.ru/document/1200162008",
-      "last_verified": "2026-03-22T17:11:13.689779",
+      "last_verified": "2026-03-23T00:13:09.456044",
       "verified_by": "websearch:133_23-ГК-ТХ.М",
       "edition_status": "ok"
     },
@@ -1467,7 +1467,7 @@
       "category": "sp",
       "notes": "Документ действует с Изм.1-5. Верифицирован по кешу от 2026-03-13.",
       "source_url": "https://docs.cntd.ru/document/351102147",
-      "last_verified": "2026-03-22T22:30:17.439433",
+      "last_verified": "2026-03-22T23:26:53.729231",
       "verified_by": "websearch:133_23-ГК-ТХ.М",
       "edition_status": "ok"
     },
@@ -1565,7 +1565,7 @@
       "category": "gost",
       "notes": "Документ действует. Верифицирован по кешу от 2026-03-13.",
       "source_url": "http://docs.cntd.ru/document/1200107995",
-      "last_verified": "2026-03-22T22:30:17.439421",
+      "last_verified": "2026-03-23T00:13:09.456106",
       "verified_by": "websearch:133_23-ГК-ТХ.М",
       "edition_status": "ok"
     },
@@ -1713,7 +1713,7 @@
       "category": "gost",
       "notes": "Документ действует. Введён в 2022 г., устанавливает правила устройства огнестойких воздуховодов. Ссылка корректна.",
       "source_url": "https://docs.cntd.ru/document/1200193180",
-      "last_verified": "2026-03-18T06:34:30.604536",
+      "last_verified": "2026-03-24T12:16:12.700493",
       "verified_by": "websearch:133-23-ГК-ОВ2.2",
       "edition_status": "ok"
     },
@@ -2085,8 +2085,8 @@
       "category": "gost",
       "notes": "Действует. Верифицирован по кешу от 2026-03-13.",
       "source_url": "https://docs.cntd.ru/document/1200173797",
-      "last_verified": "2026-03-22T20:15:17.972584",
-      "verified_by": "websearch:133_23-ГК-ТХ.М",
+      "last_verified": "2026-03-24T19:10:06.223241",
+      "verified_by": "websearch:133-23-ГК-ОВ3",
       "edition_status": "ok"
     },
     "ГОСТ 24751-81": {
@@ -2966,7 +2966,7 @@
       "category": "government_decree",
       "notes": "Действует. Последняя редакция от 21.10.2025. Постановление регулярно актуализируется. Ссылка в F-028 корректна.",
       "source_url": "https://www.consultant.ru/document/cons_doc_LAW_75048/",
-      "last_verified": "2026-03-22T22:30:17.439443",
+      "last_verified": "2026-03-23T00:13:09.456021",
       "verified_by": "websearch:133_23-ГК-ТХ.М",
       "edition_status": "ok"
     },
@@ -5434,7 +5434,7 @@
       "category": "federal_law",
       "notes": "Закон действует, активно обновляется. Последняя редакция от 31.07.2025. Статья 13.4 (требования к местам накопления отходов, включая раздельное накопление) и ст. 24.6 (региональный оператор) — действующие. Ссылка в F-003 и F-008 корректна.",
       "source_url": "https://www.consultant.ru/document/cons_doc_LAW_19109/",
-      "last_verified": "2026-03-22T21:09:58.613588",
+      "last_verified": "2026-03-23T00:13:09.456083",
       "verified_by": "websearch:133_23-ГК-ТХ.М",
       "edition_status": "ok"
     },

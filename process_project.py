@@ -25,7 +25,7 @@ import re
 
 from graph_builder import build_document_graph_v2, generate_locality_debug
 
-BASE_DIR = r"D:\Отедел Системного Анализа\1. Calude code"
+BASE_DIR = r"D:\Отедел Системного Анализа\1. Audit Manager"
 
 
 

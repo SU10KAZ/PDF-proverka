@@ -255,11 +255,102 @@ def get_finding_block_map(project_id: str) -> Optional[dict]:
         if matched_blocks:
             result[fid] = matched_blocks
 
+    # ── Текстовые evidence из document_graph ──
+    text_evidence = _build_text_evidence(project_id, items)
+
     return {
         "project_id": project_id,
         "block_map": result,
         "block_info": block_info,
+        "text_evidence": text_evidence,
     }
+
+
+def _build_text_evidence(project_id: str, findings: list[dict]) -> dict[str, list[dict]]:
+    """Маппинг finding_id → [{text_block_id, role, text, page}] из document_graph."""
+    output_dir = resolve_project_dir(project_id) / "_output"
+    graph_path = output_dir / "document_graph.json"
+    if not graph_path.exists():
+        return {}
+
+    try:
+        graph = json.loads(graph_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {}
+
+    # Индекс text_block_id → {text, page}
+    text_index: dict[str, dict] = {}
+    for page_data in graph.get("pages", []):
+        page_num = page_data.get("page", 0)
+        for tb in page_data.get("text_blocks", []):
+            tb_id = tb.get("id", "")
+            if tb_id:
+                text_index[tb_id] = {
+                    "text": (tb.get("text") or "")[:500],
+                    "page": page_num,
+                }
+
+    result: dict[str, list[dict]] = {}
+    for f in findings:
+        fid = f.get("id", "")
+        if not fid:
+            continue
+
+        text_refs: list[dict] = []
+        seen: set[str] = set()
+
+        # 1. evidence_text_refs (приоритет — точная трассировка с ролями)
+        etr = f.get("evidence_text_refs")
+        if etr and isinstance(etr, list):
+            for ref in etr:
+                tb_id = ref.get("text_block_id", "")
+                if tb_id and tb_id in text_index and tb_id not in seen:
+                    seen.add(tb_id)
+                    info = text_index[tb_id]
+                    text_refs.append({
+                        "text_block_id": tb_id,
+                        "role": ref.get("role", ""),
+                        "used_for": ref.get("used_for", ""),
+                        "text": info["text"],
+                        "page": info["page"],
+                    })
+
+        # 2. evidence[type=text] (fallback)
+        ev = f.get("evidence")
+        if ev and isinstance(ev, list):
+            for e in ev:
+                if e.get("type") == "text":
+                    tb_id = e.get("block_id", "")
+                    if tb_id and tb_id in text_index and tb_id not in seen:
+                        seen.add(tb_id)
+                        info = text_index[tb_id]
+                        text_refs.append({
+                            "text_block_id": tb_id,
+                            "role": "",
+                            "used_for": "",
+                            "text": info["text"],
+                            "page": info["page"],
+                        })
+
+        # 3. source_block_ids (last fallback — могут быть текстовые)
+        sids = f.get("source_block_ids")
+        if sids and isinstance(sids, list):
+            for tb_id in sids:
+                if tb_id and tb_id in text_index and tb_id not in seen:
+                    seen.add(tb_id)
+                    info = text_index[tb_id]
+                    text_refs.append({
+                        "text_block_id": tb_id,
+                        "role": "",
+                        "used_for": "",
+                        "text": info["text"],
+                        "page": info["page"],
+                    })
+
+        if text_refs:
+            result[fid] = text_refs
+
+    return result
 
 
 def _enrich_sheet_page(findings: list[dict], project_id: str):

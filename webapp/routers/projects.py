@@ -172,7 +172,7 @@ async def register_external(req: RegisterExternalRequest):
 
 # ─── Динамические роуты /{project_id}/... ───
 
-@router.get("/{project_id}")
+@router.get("/{project_id:path}")
 async def get_project(project_id: str):
     """Детали одного проекта."""
     status = project_service.get_project_status(project_id)
@@ -181,7 +181,7 @@ async def get_project(project_id: str):
     return status.model_dump()
 
 
-@router.get("/{project_id}/config")
+@router.get("/{project_id:path}/config")
 async def get_project_config(project_id: str):
     """Сырой project_info.json."""
     info = project_service.get_project_info(project_id)
@@ -190,7 +190,7 @@ async def get_project_config(project_id: str):
     return info
 
 
-@router.delete("/{project_id}/clean")
+@router.delete("/{project_id:path}/clean")
 async def clean_project(project_id: str):
     """Очистить все результаты аудита (сохраняет PDF, MD, project_info.json).
 

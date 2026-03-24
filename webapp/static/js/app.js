@@ -7,6 +7,9 @@ const { createApp, ref, computed, watch, onMounted, onUnmounted, nextTick } = Vu
 const app = createApp({
     setup() {
         // ─── State ───
+        const theme = ref(localStorage.getItem('audit-theme') || 'dark');
+        document.documentElement.setAttribute('data-theme', theme.value);
+
         const currentView = ref('dashboard');
         const blockBackRoute = ref(null);  // куда вернуться из просмотра блока
         const currentProjectId = ref(null);
@@ -51,6 +54,33 @@ const app = createApp({
         const optimizationData = ref(null);
         const optimizationLoading = ref(false);
         const optimizationFilter = ref('');  // '' | 'cheaper_analog' | 'faster_install' | 'simpler_design' | 'lifecycle'
+
+        // Discussions (чат по замечаниям/оптимизациям)
+        const discussionItems = ref([]);
+        const discussionTab = ref('finding');  // 'finding' | 'optimization'
+        const discussionModel = ref('');
+        const discussionModels = ref([]);
+        const activeDiscussion = ref(null);    // item_id открытого чата или null
+        const activeDiscussionItem = ref(null); // полные данные текущего замечания/оптимизации (из findings API)
+        const activeDiscussionBlocks = ref([]); // блоки привязанные к замечанию
+        const showDiscussionBlocks = ref(false);
+        const discussionMessages = ref([]);
+        const discussionLoading = ref(false);
+        const discussionSending = ref(false);
+        const chatAttachedImage = ref(null); // base64 data URL
+        const discussionCost = ref(0);
+        const discussionContextTokens = ref(null); // {total_tokens, context_tokens, image_tokens, ...}
+        const resolvedFindingsLoading = ref(false);
+        const chatInput = ref('');
+        const chatMessagesContainer = ref(null);
+        // Редактирование сообщения
+        const editingMessageIdx = ref(null);   // индекс редактируемого user-сообщения
+        const editingMessageText = ref('');
+        // Revision (кнопка "Изменить")
+        const revisionData = ref(null);        // {original, revised, explanation}
+        const revisionLoading = ref(false);
+        // Скачать пакет аудита
+        const auditPackageLoading = ref(false);
 
         // Document viewer (MD)
         const documentProjectId = ref('');
@@ -536,6 +566,18 @@ const app = createApp({
             }
         }
 
+        async function clearUsageCounter() {
+            if (!confirm('Очистить все записи usage? Счётчики на карточках проектов обнулятся.')) return;
+            try {
+                const resp = await fetch('/api/usage/clear-all', { method: 'POST' });
+                if (resp.ok) {
+                    await refreshGlobalUsage();
+                }
+            } catch (e) {
+                console.error('Failed to clear usage:', e);
+            }
+        }
+
         function heartbeatStatusText(projectId) {
             if (!isProjectRunning(projectId)) return '';
             const stage = getRunningStage(projectId);
@@ -551,6 +593,13 @@ const app = createApp({
             const resp = await fetch(`/api${path}`);
             if (!resp.ok) throw new Error(`API error: ${resp.status}`);
             return resp.json();
+        }
+
+        // ─── Theme ───
+        function toggleTheme() {
+            theme.value = theme.value === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', theme.value);
+            localStorage.setItem('audit-theme', theme.value);
         }
 
         // ─── Navigation ───
@@ -574,29 +623,60 @@ const app = createApp({
                 const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/findings$/)[1]);
                 currentView.value = 'findings';
                 currentProjectId.value = id;
-                connectGlobalWS();  // Не нужен project WS для findings
+                connectGlobalWS();
+                loadProject(id);
                 loadFindings(id);
             } else if (hash.match(/^\/project\/([^/]+)\/blocks$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/blocks$/)[1]);
                 currentView.value = 'blocks';
+                currentProjectId.value = id;
                 connectGlobalWS();
+                loadProject(id);
                 loadBlocks(id);
             } else if (hash.match(/^\/project\/([^/]+)\/optimization$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/optimization$/)[1]);
                 currentView.value = 'optimization';
+                currentProjectId.value = id;
                 connectGlobalWS();
+                loadProject(id);
                 loadOptimization(id);
+            } else if (hash.match(/^\/project\/([^/]+)\/discussions\/([^/]+)$/)) {
+                const m = hash.match(/^\/project\/([^/]+)\/discussions\/([^/]+)$/);
+                const id = decodeURIComponent(m[1]);
+                const itemId = decodeURIComponent(m[2]);
+                currentView.value = 'discussions';
+                currentProjectId.value = id;
+                // Определить тип по префиксу ID
+                discussionTab.value = itemId.startsWith('OPT') ? 'optimization' : 'finding';
+                connectGlobalWS();
+                loadProject(id);
+                loadDiscussionModels();
+                loadDiscussionItems(id, discussionTab.value).then(() => openDiscussion(id, itemId));
+            } else if (hash.match(/^\/project\/([^/]+)\/discussions$/)) {
+                const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/discussions$/)[1]);
+                currentView.value = 'discussions';
+                currentProjectId.value = id;
+                activeDiscussion.value = null;
+                discussionMessages.value = [];
+                connectGlobalWS();
+                loadProject(id);
+                loadDiscussionModels();
+                loadDiscussionItems(id, discussionTab.value);
             } else if (hash.match(/^\/project\/([^/]+)\/document$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/document$/)[1]);
                 currentView.value = 'document';
+                currentProjectId.value = id;
                 connectGlobalWS();
+                loadProject(id);
                 loadDocument(id);
             } else if (hash.match(/^\/project\/([^/]+)\/prompts$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/prompts$/)[1]);
                 currentView.value = 'prompts';
+                currentProjectId.value = id;
                 promptsProjectId.value = id;
                 activePromptTab.value = 0;
                 connectGlobalWS();
+                loadProject(id);
                 loadPromptDisciplines().then(() => {
                     const proj = projects.value.find(p => p.name === id || p.project_id === id);
                     const section = proj?.section || 'EM';
@@ -606,6 +686,7 @@ const app = createApp({
             } else if (hash.match(/^\/project\/([^/]+)\/log$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/log$/)[1]);
                 currentView.value = 'log';
+                currentProjectId.value = id;
                 logProjectId.value = id;
                 loadProject(id);
                 // Загружаем историю логов из файла (если ещё не загружена)
@@ -657,6 +738,47 @@ const app = createApp({
 
         const stageModelRestrictions = ref({});
 
+        const modelPresets = {
+            openrouter: {
+                label: "OpenRouter",
+                config: {
+                    text_analysis:          "anthropic/claude-opus-4-6",
+                    block_batch:            "google/gemini-3.1-pro-preview",
+                    findings_merge:         "anthropic/claude-opus-4-6",
+                    findings_critic:        "openai/gpt-5.4",
+                    findings_corrector:     "openai/gpt-5.4",
+                    norm_verify:            "claude-opus-4-6",
+                    norm_fix:               "anthropic/claude-opus-4-6",
+                    optimization:           "google/gemini-3.1-pro-preview",
+                    optimization_critic:    "anthropic/claude-sonnet-4-6",
+                    optimization_corrector: "anthropic/claude-sonnet-4-6",
+                },
+            },
+            claude_cli: {
+                label: "Claude CLI",
+                config: {
+                    text_analysis:          "claude-opus-4-6",
+                    block_batch:            "google/gemini-3.1-pro-preview",
+                    findings_merge:         "claude-opus-4-6",
+                    findings_critic:        "openai/gpt-5.4",
+                    findings_corrector:     "claude-sonnet-4-6",
+                    norm_verify:            "claude-opus-4-6",
+                    norm_fix:               "claude-opus-4-6",
+                    optimization:           "google/gemini-3.1-pro-preview",
+                    optimization_critic:    "claude-sonnet-4-6",
+                    optimization_corrector: "claude-sonnet-4-6",
+                },
+            },
+        };
+        const activePreset = ref(null);
+
+        function applyPreset(presetKey) {
+            const preset = modelPresets[presetKey];
+            if (!preset) return;
+            stageModelConfig.value = { ...preset.config };
+            activePreset.value = presetKey;
+        }
+
         function isModelAllowed(stageKey, modelId) {
             const r = stageModelRestrictions.value[stageKey];
             if (!r) return true;
@@ -682,8 +804,12 @@ const app = createApp({
             }
         }
 
-        function openModelConfig(projectId) {
+        // pendingRetryStage: если задан — после сохранения моделей запустить retry этапа, а не полный аудит
+        const pendingRetryStage = ref(null);
+
+        function openModelConfig(projectId, retryStage = null) {
             modelConfigPendingProjectId.value = projectId;
+            pendingRetryStage.value = retryStage;
             loadStageModels().then(() => {
                 showModelConfig.value = true;
             });
@@ -693,8 +819,14 @@ const app = createApp({
             await saveStageModels();
             showModelConfig.value = false;
             const pid = modelConfigPendingProjectId.value;
+            const retryStg = pendingRetryStage.value;
+            pendingRetryStage.value = null;
             if (pid) {
-                startAuditDirect(pid);
+                if (retryStg) {
+                    _executeRetryStage(pid, retryStg);
+                } else {
+                    startAuditDirect(pid);
+                }
             }
         }
 
@@ -1005,6 +1137,15 @@ const app = createApp({
         // Диалог retry: запустить сейчас или добавить в очередь
         const retryDialog = ref({ show: false, projectId: '', stage: '', stageLabel: '' });
 
+        async function apiGet(path) {
+            const resp = await fetch(`/api${path}`);
+            if (!resp.ok) {
+                const err = await resp.json().catch(() => ({}));
+                throw new Error(err.detail || `API error: ${resp.status}`);
+            }
+            return resp.json();
+        }
+
         async function apiPost(path, body) {
             const opts = { method: 'POST' };
             if (body !== undefined) {
@@ -1027,7 +1168,7 @@ const app = createApp({
         async function startPrepare(projectId) {
             try {
                 auditRunning.value = true;
-                await apiPost(`/audit/${projectId}/prepare`);
+                await apiPost(`/audit/${encodeURIComponent(projectId)}/prepare`);
                 _afterAuditStart(projectId);
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
@@ -1035,7 +1176,7 @@ const app = createApp({
         async function startMainAudit(projectId) {
             try {
                 auditRunning.value = true;
-                await apiPost(`/audit/${projectId}/main-audit`);
+                await apiPost(`/audit/${encodeURIComponent(projectId)}/main-audit`);
                 _afterAuditStart(projectId);
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
@@ -1043,7 +1184,7 @@ const app = createApp({
         async function startSmartAudit(projectId) {
             try {
                 auditRunning.value = true;
-                await apiPost(`/audit/${projectId}/smart-audit`);
+                await apiPost(`/audit/${encodeURIComponent(projectId)}/smart-audit`);
                 _afterAuditStart(projectId);
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
@@ -1056,7 +1197,7 @@ const app = createApp({
         async function startAuditDirect(projectId) {
             try {
                 auditRunning.value = true;
-                await apiPost(`/audit/${projectId}/full-audit`);
+                await apiPost(`/audit/${encodeURIComponent(projectId)}/full-audit`);
                 _afterAuditStart(projectId);
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
@@ -1068,7 +1209,7 @@ const app = createApp({
         async function startNormVerify(projectId) {
             try {
                 auditRunning.value = true;
-                await apiPost(`/audit/${projectId}/verify-norms`);
+                await apiPost(`/audit/${encodeURIComponent(projectId)}/verify-norms`);
                 _afterAuditStart(projectId);
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
@@ -1076,7 +1217,7 @@ const app = createApp({
         async function resumePipeline(projectId) {
             try {
                 auditRunning.value = true;
-                await apiPost(`/audit/${projectId}/resume`);
+                await apiPost(`/audit/${encodeURIComponent(projectId)}/resume`);
                 _afterAuditStart(projectId);
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
@@ -1160,7 +1301,7 @@ const app = createApp({
 
         async function loadResumeInfo(projectId) {
             try {
-                const resp = await fetch(`/api/audit/${projectId}/resume-info`);
+                const resp = await fetch(`/api/audit/${encodeURIComponent(projectId)}/resume-info`);
                 if (resp.ok) {
                     resumeInfo.value = await resp.json();
                 }
@@ -1169,7 +1310,7 @@ const app = createApp({
 
         async function cancelAudit(projectId) {
             try {
-                await fetch(`/api/audit/${projectId}/cancel`, { method: 'DELETE' });
+                await fetch(`/api/audit/${encodeURIComponent(projectId)}/cancel`, { method: 'DELETE' });
                 auditRunning.value = false;
             } catch (e) { alert(e.message); }
         }
@@ -1214,12 +1355,17 @@ const app = createApp({
         async function retryStageNow() {
             const { projectId, stage } = retryDialog.value;
             retryDialog.value.show = false;
+            // Открываем диалог выбора моделей, после сохранения запустится retry
+            openModelConfig(projectId, stage);
+        }
+
+        async function _executeRetryStage(projectId, stage) {
             try {
                 auditRunning.value = true;
                 if (stage === 'optimization') {
-                    await apiPost(`/optimization/${projectId}/run`);
+                    await apiPost(`/optimization/${encodeURIComponent(projectId)}/run`);
                 } else {
-                    await apiPost(`/audit/${projectId}/retry/${stage}`);
+                    await apiPost(`/audit/${encodeURIComponent(projectId)}/retry/${stage}`);
                 }
                 _afterAuditStart(projectId);
             } catch (e) { alert(e.message); auditRunning.value = false; }
@@ -1247,10 +1393,10 @@ const app = createApp({
         async function skipStage(projectId, stage) {
             if (!confirm('Пропустить этап? Это может привести к неполному аудиту.')) return;
             try {
-                await apiPost(`/audit/${projectId}/skip/${stage}`);
+                await apiPost(`/audit/${encodeURIComponent(projectId)}/skip/${stage}`);
                 await refreshProjects();
                 if (currentProject.value && currentProject.value.project_id === projectId) {
-                    const data = await apiGet(`/projects/${projectId}`);
+                    const data = await apiGet(`/projects/${encodeURIComponent(projectId)}`);
                     if (data) currentProject.value = data;
                 }
             } catch (e) { alert(e.message); }
@@ -1359,6 +1505,34 @@ const app = createApp({
                 showEditSection.value = false;
             } catch (e) {
                 alert('Ошибка: ' + e.message);
+            }
+        }
+
+        // ─── Excel по одному проекту ───
+        const projectExcelLoading = ref(false);
+
+        async function exportProjectExcel(projectId) {
+            if (!projectId) return;
+            projectExcelLoading.value = true;
+            try {
+                const resp = await fetch('/api/export/excel/section', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        section: '',
+                        project_ids: [projectId],
+                    }),
+                });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || resp.statusText);
+                }
+                const data = await resp.json();
+                window.open('/api/export/download/' + encodeURIComponent(data.file), '_blank');
+            } catch (e) {
+                alert('Ошибка генерации Excel: ' + e.message);
+            } finally {
+                projectExcelLoading.value = false;
             }
         }
 
@@ -1783,6 +1957,7 @@ const app = createApp({
         // ─── Finding → Block map ───
         const findingBlockMap = ref({});   // {finding_id: [block_ids]}
         const findingBlockInfo = ref({});  // {block_id: {block_id, page, ocr_label}}
+        const findingTextEvidence = ref({}); // {finding_id: [{text_block_id, role, text, page}]}
         const expandedFindingId = ref(null); // какой finding сейчас раскрыт
 
         async function loadFindingBlockMap(id) {
@@ -1790,9 +1965,11 @@ const app = createApp({
                 const data = await api(`/findings/${id}/block-map`);
                 findingBlockMap.value = data.block_map || {};
                 findingBlockInfo.value = data.block_info || {};
+                findingTextEvidence.value = data.text_evidence || {};
             } catch (e) {
                 findingBlockMap.value = {};
                 findingBlockInfo.value = {};
+                findingTextEvidence.value = {};
             }
         }
 
@@ -1803,6 +1980,10 @@ const app = createApp({
         function getFindingBlocks(findingId) {
             const blockIds = findingBlockMap.value[findingId] || [];
             return blockIds.map(bid => findingBlockInfo.value[bid] || { block_id: bid, page: null, ocr_label: '' });
+        }
+
+        function getFindingTextEvidence(findingId) {
+            return findingTextEvidence.value[findingId] || [];
         }
 
         function navigateToBlock(blockId, page) {
@@ -2276,6 +2457,517 @@ const app = createApp({
             return optimizationTypeColors[type] || '#999';
         }
 
+        // ─── Discussions (чат по замечаниям/оптимизациям) ─────────────
+
+        async function loadDiscussionModels() {
+            try {
+                const data = await api('/discussions/models');
+                discussionModels.value = data.models || [];
+                if (!discussionModel.value && data.default) {
+                    discussionModel.value = data.default;
+                }
+            } catch (e) {
+                console.error('Failed to load discussion models:', e);
+            }
+        }
+
+        async function loadDiscussionItems(projectId, type) {
+            discussionLoading.value = true;
+            try {
+                const data = await api(`/discussions/${encodeURIComponent(projectId)}/list?type=${type}`);
+                discussionItems.value = data.items || [];
+                // Load block maps for table view
+                if (type === 'finding') {
+                    loadFindingBlockMap(projectId);
+                } else {
+                    loadOptBlockMap(projectId);
+                }
+            } catch (e) {
+                console.error('Failed to load discussion items:', e);
+                discussionItems.value = [];
+            }
+            discussionLoading.value = false;
+        }
+
+        function switchDiscussionTab(type) {
+            discussionTab.value = type;
+            activeDiscussion.value = null;
+            discussionMessages.value = [];
+            revisionData.value = null;
+            if (currentProjectId.value) {
+                loadDiscussionItems(currentProjectId.value, type);
+            }
+        }
+
+        async function openDiscussion(projectId, itemId) {
+            activeDiscussion.value = itemId;
+            activeDiscussionItem.value = null;
+            activeDiscussionBlocks.value = [];
+            showDiscussionBlocks.value = false;
+            discussionMessages.value = [];
+            discussionCost.value = 0;
+            discussionContextTokens.value = null;
+            revisionData.value = null;
+            chatInput.value = '';
+            try {
+                // Параллельно: история чата + полные данные замечания + блоки
+                const type = discussionTab.value;
+                const isOpt = type === 'optimization';
+                const pid = encodeURIComponent(projectId);
+
+                const [discData, findingsResp, blockMapResp] = await Promise.all([
+                    api(`/discussions/${pid}/${encodeURIComponent(itemId)}`),
+                    isOpt
+                        ? api(`/optimization/${pid}`)
+                        : api(`/findings/${pid}`),
+                    isOpt
+                        ? api(`/findings/${pid}/optimization-block-map`).catch(() => null)
+                        : api(`/findings/${pid}/block-map`).catch(() => null),
+                ]);
+
+                // История чата
+                discussionMessages.value = discData.messages || [];
+                discussionCost.value = discData.total_cost_usd || 0;
+
+                // Полные данные замечания
+                if (isOpt) {
+                    const items = findingsResp.data?.items || [];
+                    activeDiscussionItem.value = items.find(i => i.id === itemId) || null;
+                } else {
+                    const items = findingsResp.findings || [];
+                    activeDiscussionItem.value = items.find(i => i.id === itemId) || null;
+                }
+
+                // Блоки
+                if (blockMapResp) {
+                    const blockIds = (blockMapResp.block_map || {})[itemId] || [];
+                    const blockInfo = blockMapResp.block_info || {};
+                    activeDiscussionBlocks.value = blockIds.map(bid => ({
+                        block_id: bid,
+                        page: blockInfo[bid]?.page,
+                        ocr_label: blockInfo[bid]?.ocr_label || '',
+                    }));
+                }
+
+                // Загрузить оценку токенов (в фоне)
+                loadDiscussionTokens(projectId, itemId);
+
+                // Fallback для списка
+                if (!discussionItems.value.length) {
+                    const listData = await api(`/discussions/${pid}/list?type=${type}`);
+                    discussionItems.value = listData.items || [];
+                }
+            } catch (e) {
+                console.error('Failed to load discussion:', e);
+            }
+            await Vue.nextTick();
+            scrollChatToBottom();
+        }
+
+        async function loadDiscussionTokens(projectId, itemId) {
+            try {
+                const pid = encodeURIComponent(projectId);
+                const iid = encodeURIComponent(itemId);
+                const type = discussionTab.value;
+                discussionContextTokens.value = await api(`/discussions/${pid}/${iid}/estimate-tokens?type=${type}`);
+            } catch (e) {
+                console.error('Failed to estimate tokens:', e);
+                discussionContextTokens.value = null;
+            }
+        }
+
+        function closeDiscussion() {
+            activeDiscussion.value = null;
+            discussionMessages.value = [];
+            revisionData.value = null;
+            if (currentProjectId.value) {
+                loadDiscussionItems(currentProjectId.value, discussionTab.value);
+                navigate('/project/' + currentProjectId.value + '/discussions');
+            }
+        }
+
+        async function downloadAuditPackage() {
+            if (!currentProjectId.value) return;
+            auditPackageLoading.value = true;
+            try {
+                const url = `/api/export/audit-package/${encodeURIComponent(currentProjectId.value)}`;
+                const resp = await fetch(url);
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || `Ошибка ${resp.status}`);
+                }
+                const blob = await resp.blob();
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                const disposition = resp.headers.get('Content-Disposition') || '';
+                // Prefer filename* (RFC 5987, supports UTF-8) over plain filename
+                const matchStar = disposition.match(/filename\*=UTF-8''([^;]+)/i);
+                const matchPlain = disposition.match(/filename="?([^";]+)"?/);
+                let dlName = `audit_package_${currentProjectId.value}.zip`;
+                if (matchStar) { try { dlName = decodeURIComponent(matchStar[1]); } catch(e) { /* fallback */ } }
+                else if (matchPlain) { dlName = matchPlain[1]; }
+                a.download = dlName;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(a.href);
+            } catch (e) {
+                alert('Ошибка скачивания: ' + e.message);
+            } finally {
+                auditPackageLoading.value = false;
+            }
+        }
+
+        // Resolved findings — count and download
+        const resolvedFindingsCount = computed(() => {
+            return discussionItems.value.filter(item =>
+                item.discussion_status === 'confirmed' || item.discussion_status === 'revised'
+            ).length;
+        });
+        const allDiscussionsResolved = computed(() => {
+            const items = discussionItems.value;
+            if (items.length === 0) return false;
+            return items.every(item =>
+                item.discussion_status === 'confirmed' ||
+                item.discussion_status === 'rejected' ||
+                item.discussion_status === 'revised'
+            );
+        });
+
+        async function downloadResolvedFindings() {
+            if (resolvedFindingsLoading.value) return;
+            resolvedFindingsLoading.value = true;
+            try {
+                const pid = currentProjectId.value;
+                const resp = await fetch(`/api/discussions/${encodeURIComponent(pid)}/resolved/excel?type=${discussionTab.value}`);
+                if (!resp.ok) throw new Error(await resp.text());
+                const blob = await resp.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `resolved_${pid.replace(/\//g, '_')}_${discussionTab.value}.xlsx`;
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch (e) {
+                console.error('Download resolved findings error:', e);
+                alert('Ошибка скачивания: ' + e.message);
+            } finally {
+                resolvedFindingsLoading.value = false;
+            }
+        }
+
+        function handleChatFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file || !file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = (e) => { chatAttachedImage.value = e.target.result; };
+            reader.readAsDataURL(file);
+            event.target.value = ''; // reset input
+        }
+
+        function handleChatPaste(event) {
+            const items = event.clipboardData?.items;
+            if (!items) return;
+            for (const item of items) {
+                if (item.type.startsWith('image/')) {
+                    event.preventDefault();
+                    const file = item.getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = (e) => { chatAttachedImage.value = e.target.result; };
+                    reader.readAsDataURL(file);
+                    return;
+                }
+            }
+        }
+
+        async function sendDiscussionMessage() {
+            const msg = chatInput.value.trim();
+            const hasImage = !!chatAttachedImage.value;
+            if ((!msg && !hasImage) || discussionSending.value) return;
+
+            discussionSending.value = true;
+            const imageData = chatAttachedImage.value;
+            chatInput.value = '';
+            chatAttachedImage.value = null;
+            // Сбросить высоту textarea
+            const ta = document.querySelector('.chat-textarea');
+            if (ta) ta.style.height = 'auto';
+
+            // Добавить user-сообщение (с фото если есть)
+            discussionMessages.value.push({
+                role: 'user', content: msg, timestamp: new Date().toISOString(),
+                image: imageData || null,
+            });
+
+            // Добавить пустое assistant-сообщение для стриминга
+            const assistantMsg = Vue.reactive({
+                role: 'assistant', content: '', timestamp: new Date().toISOString(),
+                input_tokens: 0, output_tokens: 0, cost_usd: 0, streaming: true,
+            });
+            discussionMessages.value.push(assistantMsg);
+            await Vue.nextTick();
+            scrollChatToBottom();
+
+            try {
+                const url = `/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(activeDiscussion.value)}/chat/stream?type=${discussionTab.value}`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg || '(фото)', model: discussionModel.value, image: imageData || undefined }),
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+                let scrollThrottle = 0;
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const parts = buffer.split('\n\n');
+                    buffer = parts.pop();
+
+                    for (const part of parts) {
+                        if (!part.startsWith('data: ')) continue;
+                        let data;
+                        try { data = JSON.parse(part.slice(6)); } catch { continue; }
+
+                        if (data.type === 'start') {
+                            // Соединение установлено, LLM думает
+                            continue;
+                        } else if (data.type === 'delta') {
+                            assistantMsg.content += data.text;
+                            // Скролл с throttle
+                            if (++scrollThrottle % 5 === 0) {
+                                await Vue.nextTick();
+                                scrollChatToBottom();
+                            }
+                        } else if (data.type === 'done') {
+                            assistantMsg.content = data.text;
+                            assistantMsg.input_tokens = data.input_tokens || 0;
+                            assistantMsg.output_tokens = data.output_tokens || 0;
+                            assistantMsg.cost_usd = data.cost_usd || 0;
+                            assistantMsg.streaming = false;
+                        } else if (data.type === 'saved') {
+                            discussionCost.value = data.total_cost_usd || 0;
+                            // Обновить оценку токенов (история выросла)
+                            loadDiscussionTokens(currentProjectId.value, activeDiscussion.value);
+                        } else if (data.type === 'error') {
+                            assistantMsg.content = 'Ошибка: ' + data.message;
+                            assistantMsg.streaming = false;
+                        }
+                    }
+                }
+            } catch (e) {
+                assistantMsg.content = 'Ошибка: ' + (e.message || e);
+                assistantMsg.streaming = false;
+            }
+
+            assistantMsg.streaming = false;
+            discussionSending.value = false;
+            await Vue.nextTick();
+            scrollChatToBottom();
+        }
+
+        function startEditMessage(idx) {
+            editingMessageIdx.value = idx;
+            editingMessageText.value = discussionMessages.value[idx].content;
+        }
+
+        function cancelEditMessage() {
+            editingMessageIdx.value = null;
+            editingMessageText.value = '';
+        }
+
+        async function submitEditMessage() {
+            const idx = editingMessageIdx.value;
+            if (idx === null) return;
+            const newText = editingMessageText.value.trim();
+            if (!newText) return;
+
+            // Обрезать: удалить это сообщение и всё после него
+            discussionMessages.value = discussionMessages.value.slice(0, idx);
+            editingMessageIdx.value = null;
+            editingMessageText.value = '';
+
+            // Сохранить обрезанную историю на сервер
+            try {
+                await apiPost(
+                    `/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(activeDiscussion.value)}/truncate`,
+                    { keep_count: idx }
+                );
+            } catch (e) {
+                console.error('Failed to truncate:', e);
+            }
+
+            // Отправить изменённое сообщение как новое
+            chatInput.value = newText;
+            await sendDiscussionMessage();
+        }
+
+        async function resolveDiscussion(status) {
+            if (!activeDiscussion.value) return;
+            const summary = status === 'rejected'
+                ? 'Отклонено по результатам обсуждения'
+                : status === 'confirmed'
+                    ? 'Подтверждено по результатам обсуждения'
+                    : '';
+            try {
+                await apiPost(
+                    `/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(activeDiscussion.value)}/resolve?type=${discussionTab.value}`,
+                    { status, summary }
+                );
+                // Обновить список
+                loadDiscussionItems(currentProjectId.value, discussionTab.value);
+                if (status !== 'revised') {
+                    closeDiscussion();
+                }
+            } catch (e) {
+                alert('Ошибка: ' + (e.message || e));
+            }
+        }
+
+        async function requestRevision() {
+            if (!activeDiscussion.value) return;
+            revisionLoading.value = true;
+            revisionData.value = null;
+            try {
+                const data = await apiPost(
+                    `/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(activeDiscussion.value)}/revise?type=${discussionTab.value}`,
+                    { model: discussionModel.value }
+                );
+                revisionData.value = data;
+                discussionCost.value = data.total_cost_usd || discussionCost.value;
+            } catch (e) {
+                alert('Ошибка генерации: ' + (e.message || e));
+            }
+            revisionLoading.value = false;
+        }
+
+        async function applyRevision() {
+            if (!revisionData.value?.revised) return;
+            try {
+                await apiPost(
+                    `/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(activeDiscussion.value)}/apply-revision?type=${discussionTab.value}`,
+                    revisionData.value.revised
+                );
+                await resolveDiscussion('revised');
+                revisionData.value = null;
+            } catch (e) {
+                alert('Ошибка применения: ' + (e.message || e));
+            }
+        }
+
+        function rejectRevision() {
+            revisionData.value = null;
+        }
+
+        const _fieldNames = {
+            id: 'ID', title: 'Заголовок', description: 'Описание', category: 'Категория',
+            severity: 'Критичность', recommendation: 'Рекомендация', norm_ref: 'Ссылка на норму',
+            norm_quote: 'Цитата нормы', norm_confidence: 'Уверенность', page: 'Страница PDF',
+            sheet: 'Лист', evidence: 'Обоснование', related_block_ids: 'Связанные блоки',
+            status: 'Статус', type: 'Тип', savings_pct: 'Экономия %', savings_basis: 'Основа расчёта',
+            spec_items: 'Позиции спецификации', current: 'Текущее решение', proposed: 'Предложение',
+            justification: 'Обоснование', vendor: 'Производитель', grounding: 'Привязка',
+            tags: 'Теги', notes: 'Примечания', comment: 'Комментарий',
+            problem: 'Проблема', norm: 'Норматив', solution: 'Решение', risk: 'Риск',
+            location: 'Расположение', source: 'Источник', priority: 'Приоритет',
+            affected_systems: 'Затронутые системы', cost_impact: 'Влияние на стоимость',
+            responsible: 'Ответственный', deadline: 'Срок', reference: 'Ссылка',
+            reason: 'Причина', impact: 'Последствия', action: 'Действие',
+            finding_id: 'ID замечания', block_id: 'ID блока', sheet_name: 'Название листа',
+            summary: 'Резюме', details: 'Детали', fix: 'Исправление',
+        };
+        function formatRevisionField(key) {
+            return _fieldNames[key] || key;
+        }
+        function formatRevisionValue(val) {
+            if (val === null || val === undefined) return '—';
+            if (Array.isArray(val)) return val.join(', ');
+            if (typeof val === 'object') return JSON.stringify(val, null, 2);
+            return String(val);
+        }
+
+        function scrollChatToBottom() {
+            const el = chatMessagesContainer.value;
+            if (el) el.scrollTop = el.scrollHeight;
+        }
+
+        function autoResizeChatInput(event) {
+            const el = event.target;
+            el.style.height = 'auto';
+            const maxH = 200; // ~4x от начальной высоты 48px
+            el.style.height = Math.min(el.scrollHeight, maxH) + 'px';
+        }
+
+        function onChatClick(event) {
+            // Делегирование: перехватить клик по block-id-link
+            const link = event.target.closest('.block-id-link');
+            if (link) {
+                event.preventDefault();
+                const blockId = link.dataset.blockId;
+                if (blockId && currentProjectId.value) {
+                    navigateToBlock(blockId, null);
+                }
+            }
+        }
+
+        const activeDiscussionItems = computed(() => {
+            return discussionItems.value.filter(i => i.discussion_status !== 'rejected');
+        });
+
+        const rejectedDiscussionItems = computed(() => {
+            return discussionItems.value.filter(i => i.discussion_status === 'rejected');
+        });
+
+        const discussionSeverityCounts = computed(() => {
+            const counts = {};
+            for (const item of activeDiscussionItems.value) {
+                const sev = item.severity || 'Неизвестно';
+                counts[sev] = (counts[sev] || 0) + 1;
+            }
+            return counts;
+        });
+
+        const discussionOptTypeCounts = computed(() => {
+            const counts = {};
+            for (const item of activeDiscussionItems.value) {
+                const t = item.opt_type || 'other';
+                counts[t] = (counts[t] || 0) + 1;
+            }
+            return counts;
+        });
+
+        function discussionStatusIcon(status) {
+            if (status === 'confirmed') return '\u2705';
+            if (status === 'rejected') return '\u274C';
+            if (status === 'revised') return '\u270F\uFE0F';
+            return '';
+        }
+
+        function formatCostUSD(val) {
+            if (!val || val < 0.001) return '$0.00';
+            return '$' + val.toFixed(3);
+        }
+
+        function renderDiscussionContent(text) {
+            // Сначала markdown
+            let html = renderMarkdown ? renderMarkdown(text) : text;
+            // Затем заменить block_id паттерны на кликабельные ссылки
+            // Паттерн: XXXX-XXXX-XXX (3-5 символов через дефис, 3 группы)
+            const blockIdRe = /\b([A-Z0-9]{3,5}-[A-Z0-9]{3,5}-[A-Z0-9]{2,4})\b/g;
+            const pid = currentProjectId.value;
+            if (pid) {
+                html = html.replace(blockIdRe, (match) => {
+                    return `<a href="#" class="block-id-link" data-block-id="${match}" title="Открыть блок ${match}">${match}</a>`;
+                });
+            }
+            return html;
+        }
+
         function sheetTypeIcon(sheetType) {
             const icons = {
                 'single_line_diagram': 'SLD',
@@ -2329,6 +3021,25 @@ const app = createApp({
             if (status === 'partial') return 'step-partial';
             if (status === 'running') return 'step-running';
             if (status === 'skipped') return 'step-skipped';
+            return '';
+        }
+
+        // Объединённый статус critic + corrector → один pill "CF"
+        function combinedCriticStatus(criticStatus, correctorStatus) {
+            // Если хоть один running — running
+            if (criticStatus === 'running' || correctorStatus === 'running') return 'running';
+            // Если хоть один error — error
+            if (criticStatus === 'error' || correctorStatus === 'error') return 'error';
+            // Если оба done — done
+            if (criticStatus === 'done' && correctorStatus === 'done') return 'done';
+            // Если critic done, corrector skipped (не нужен) — done
+            if (criticStatus === 'done' && (correctorStatus === 'skipped' || !correctorStatus)) return 'done';
+            // Partial
+            if (criticStatus === 'partial' || correctorStatus === 'partial') return 'partial';
+            // Critic done но corrector ещё idle — partial (в процессе)
+            if (criticStatus === 'done') return 'partial';
+            // Skipped
+            if (criticStatus === 'skipped') return 'skipped';
             return '';
         }
 
@@ -2531,7 +3242,7 @@ const app = createApp({
             wsCurrentProjectId = projectId;
             wsProjectReconnects = 0;
             const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            wsProject = new WebSocket(`${proto}//${location.host}/ws/audit/${projectId}`);
+            wsProject = new WebSocket(`${proto}//${location.host}/ws/audit/${encodeURIComponent(projectId)}`);
             wsProject.onopen = () => {
                 wsConnected.value = true;
                 wsProjectReconnects = 0;
@@ -2701,11 +3412,13 @@ const app = createApp({
         });
 
         return {
+            // Theme
+            theme, toggleTheme,
             // State
             currentView, currentProject, currentProjectId, projects, loading,
             findingsData, filterSeverity, filterSearch, severityOptions,
             findingBlockMap, findingBlockInfo, expandedFindingId,
-            toggleFindingBlocks, getFindingBlocks, navigateToBlock, blockBackRoute, goBackFromBlock,
+            toggleFindingBlocks, getFindingBlocks, getFindingTextEvidence, findingTextEvidence, navigateToBlock, blockBackRoute, goBackFromBlock,
             // Blocks (OCR)
             blocksProjectId, blockPages, blockCropErrors, blockTotalExpected,
             selectedBlockPage, selectedBlock,
@@ -2726,7 +3439,7 @@ const app = createApp({
             secondsSinceHeartbeat, isHeartbeatStale, getHeartbeatInfo,
             formatETA, heartbeatStatusText, isClaudeStage, getRunningStage,
             // Methods
-            navigate, refreshProjects, stepClass, sevClass, sevIcon,
+            navigate, refreshProjects, stepClass, combinedCriticStatus, sevClass, sevIcon,
             debounceSearch, clearLog, copyLog,
             // Prompts
             promptsProjectId, templates, promptsLoading,
@@ -2753,11 +3466,13 @@ const app = createApp({
             // Model config
             showModelConfig, stageModelConfig, availableModels, stageLabels,
             stageModelRestrictions, isModelAllowed,
+            modelPresets, activePreset, applyPreset,
             loadStageModels, saveStageModels, openModelConfig, saveAndStartAudit,
             startAuditDirect,
             toggleProjectSelection, toggleSelectAll, isProjectSelected,
             isSectionSelected, toggleSectionSelection,
             sectionExcelLoading, exportSectionExcel,
+            projectExcelLoading, exportProjectExcel,
             openBatchModal, confirmBatchAction, startBatchAction, cancelBatch, addToBatch,
             batchActionLabel,
             // Queue management
@@ -2785,7 +3500,7 @@ const app = createApp({
             globalUsage, showUsageDetails, sonnetPercent,
             accountInfo, showAccountInfo, fetchAccountInfo,
             accountSwitching, accountAuthUrl, switchAccount,
-            formatTokens, formatCost, formatDurationSec, refreshGlobalUsage, resetSessionCounter,
+            formatTokens, formatCost, formatDurationSec, refreshGlobalUsage, resetSessionCounter, clearUsageCounter,
             usageCounters,
             // Usage (per-project)
             projectUsage, currentProjectUsage, stageTokens, stageTokensFormatted, stageModel, stageDurationForProject, formatDuration,
@@ -2799,6 +3514,20 @@ const app = createApp({
             // Document viewer
             documentProjectId, documentPages, documentCurrentPage, documentPageData, documentLoading,
             loadDocument, loadDocumentPage, docPrevPage, docNextPage, renderMarkdown,
+            // Discussions
+            discussionItems, discussionTab, discussionModel, discussionModels,
+            activeDiscussion, activeDiscussionItem, activeDiscussionBlocks, showDiscussionBlocks, discussionMessages, discussionLoading, discussionSending,
+            discussionCost, discussionContextTokens, chatInput, chatMessagesContainer,
+            revisionData, revisionLoading,
+            activeDiscussionItems, rejectedDiscussionItems, discussionSeverityCounts, discussionOptTypeCounts,
+            loadDiscussionModels, loadDiscussionItems, switchDiscussionTab,
+            openDiscussion, closeDiscussion, sendDiscussionMessage, downloadAuditPackage, auditPackageLoading,
+            chatAttachedImage, handleChatFileSelect, handleChatPaste,
+            resolvedFindingsCount, allDiscussionsResolved, resolvedFindingsLoading, downloadResolvedFindings,
+            editingMessageIdx, editingMessageText,
+            startEditMessage, cancelEditMessage, submitEditMessage,
+            resolveDiscussion, requestRevision, applyRevision, rejectRevision, formatRevisionField, formatRevisionValue,
+            discussionStatusIcon, formatCostUSD, renderDiscussionContent, onChatClick, autoResizeChatInput,
             // Computed
             filteredFindings,
         };

@@ -156,8 +156,10 @@ STAGE_MODEL_CONFIG: dict[str, str] = {
 }
 
 AVAILABLE_MODELS = [
-    {"id": "claude-opus-4-6", "label": "Opus", "provider": "claude_cli"},
-    {"id": "claude-sonnet-4-6", "label": "Sonnet", "provider": "claude_cli"},
+    {"id": "claude-opus-4-6", "label": "Opus (CLI)", "provider": "claude_cli"},
+    {"id": "claude-sonnet-4-6", "label": "Sonnet (CLI)", "provider": "claude_cli"},
+    {"id": "anthropic/claude-opus-4-6", "label": "Opus", "provider": "openrouter"},
+    {"id": "anthropic/claude-sonnet-4-6", "label": "Sonnet", "provider": "openrouter"},
     {"id": "openai/gpt-5.4", "label": "GPT-5.4", "provider": "openrouter"},
     {"id": "google/gemini-3.1-pro-preview", "label": "Gemini", "provider": "openrouter"},
 ]
@@ -281,3 +283,18 @@ OPENROUTER_MAX_BLOCKS_PER_BATCH = 80
 
 # === JSON Schema для structured output ===
 SCHEMAS_DIR = Path(__file__).resolve().parent / "schemas"
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Обсуждения (Discussions) — чат по замечаниям/оптимизациям через OpenRouter
+# ═══════════════════════════════════════════════════════════════════════════
+DISCUSSION_MODELS = [
+    {"id": "claude-cli", "label": "Claude CLI", "provider": "claude_cli"},
+    {"id": "openai/gpt-4.1-mini", "label": "GPT-4.1 mini", "provider": "openrouter"},
+    {"id": "google/gemini-3.1-pro-preview", "label": "Gemini 3.1 Pro", "provider": "openrouter"},
+]
+DISCUSSION_DEFAULT_MODEL = "claude-cli"
+DISCUSSION_CLI_TIMEOUT = 120  # секунд на один вызов Claude CLI для чата
+DISCUSSION_MAX_OUTPUT_TOKENS = 16384
+DISCUSSION_TEMPERATURE = 0.3
+DISCUSSION_TIMEOUT = 120  # секунд на один запрос чата
+DISCUSSION_SUMMARY_THRESHOLD = 10  # после скольких сообщений сжимать историю

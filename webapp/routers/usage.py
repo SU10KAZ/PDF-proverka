@@ -53,7 +53,14 @@ async def reset_session():
     return {"status": "ok", "message": "Сессионный счётчик сброшен"}
 
 
-@router.get("/project/{project_id}")
+@router.post("/clear-all")
+async def clear_all_usage():
+    """Полная очистка всех записей usage (счётчик на карточках проектов)."""
+    usage_tracker.clear_all()
+    return {"status": "ok", "message": "Все записи usage очищены"}
+
+
+@router.get("/project/{project_id:path}")
 async def get_project_usage(project_id: str):
     """Агрегация токенов по проекту: total + по этапам."""
     return usage_tracker.get_project_usage(project_id)

@@ -39,6 +39,46 @@ def _project_path(pid: str) -> str:
         return str(resolved.relative_to(BASE_DIR))
     except ValueError:
         return str(resolved)
+
+
+def _extract_error_detail(exit_code: int, output: str, max_len: int = 120) -> str:
+    """Извлечь полезное сообщение об ошибке из CLI output.
+
+    Ищет последние значимые строки stderr/stdout, убирает мусор.
+    Возвращает строку до max_len символов.
+    """
+    if not output:
+        return f"Exit code {exit_code}"
+
+    lines = output.strip().splitlines()
+    # Фильтруем пустые и мусорные строки
+    useful = []
+    skip_prefixes = ("╭", "╰", "│", "─", "⎿", "⏎", "\\", "  ", "Usage:", "Duration:")
+    for line in reversed(lines):
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if any(stripped.startswith(p) for p in skip_prefixes):
+            continue
+        # Ищем строки с реальным содержанием ошибки
+        lower = stripped.lower()
+        if any(kw in lower for kw in ("error", "ошибка", "failed", "timeout", "timed out",
+                                       "rate limit", "overloaded", "connection", "refused",
+                                       "exception", "traceback", "permission", "not found",
+                                       "invalid", "json", "unable", "cannot")):
+            useful.insert(0, stripped)
+            if len(useful) >= 3:
+                break
+        elif not useful:
+            # Берём последнюю непустую строку как fallback
+            useful.append(stripped)
+
+    if useful:
+        msg = " | ".join(useful)
+        if len(msg) > max_len:
+            msg = msg[:max_len - 3] + "..."
+        return msg
+    return f"Exit code {exit_code}"
 from webapp.services.project_service import resolve_project_dir
 from webapp.ws.manager import ws_manager
 
@@ -1060,7 +1100,7 @@ class PipelineManager:
                     return
                 if exit_code != 0:
                     self._update_pipeline_log(pid, "text_analysis", "error",
-                                               error=f"Код {exit_code}")
+                                               error=_extract_error_detail(exit_code, output))
                     raise RuntimeError(f"Текстовый анализ: код {exit_code}")
 
                 text_analysis_path = output_dir / "01_text_analysis.json"
@@ -1374,7 +1414,7 @@ class PipelineManager:
                     return
                 if exit_code != 0:
                     self._update_pipeline_log(pid, "findings_merge", "error",
-                                               error=f"Код {exit_code}")
+                                               error=_extract_error_detail(exit_code, output))
                     raise RuntimeError(f"Свод замечаний: код {exit_code}")
 
                 findings_path = output_dir / "03_findings.json"
@@ -1458,7 +1498,7 @@ class PipelineManager:
             print(f"[{pid}:resume] ═══ ЭТАП 7: Excel ═══")
             await self._log(job, "═══ ЭТАП 7: Генерация Excel ═══")
             project_path = str(resolve_project_dir(pid))
-            exit_code, _, _ = await self._run_script(
+            exit_code, _xls_out, _xls_err = await self._run_script(
                 pid,
                 str(GENERATE_EXCEL_SCRIPT),
                 args=[project_path],
@@ -1469,7 +1509,7 @@ class PipelineManager:
                 self._update_pipeline_log(pid, "excel", "done", message="OK")
             else:
                 self._update_pipeline_log(pid, "excel", "error",
-                                           error=f"Exit code: {exit_code}")
+                                           error=_extract_error_detail(exit_code, (_xls_err or "") + "\n" + (_xls_out or "")))
 
             wall_sec = (datetime.now() - start_time).total_seconds()
             net_sec = max(0, wall_sec - job.pause_total_sec)
@@ -1923,7 +1963,7 @@ class PipelineManager:
                         job.status = JobStatus.FAILED
                         job.error_message = f"Exit code: {exit_code} (после rate limit retry)"
                         self._update_pipeline_log(pid, "main_audit", "error",
-                                                   error=f"Exit code: {exit_code}")
+                                                   error=_extract_error_detail(exit_code, output))
                 else:
                     job.status = JobStatus.FAILED
                     job.error_message = "Rate limit: ожидание превышено или отменено"
@@ -1934,7 +1974,7 @@ class PipelineManager:
                 job.status = JobStatus.FAILED
                 job.error_message = f"Exit code: {exit_code}"
                 self._update_pipeline_log(pid, "main_audit", "error",
-                                           error=f"Exit code: {exit_code}")
+                                           error=_extract_error_detail(exit_code, output))
 
         except asyncio.CancelledError:
             job.status = JobStatus.CANCELLED
@@ -2305,12 +2345,12 @@ class PipelineManager:
                             raise ValueError("total_reviewed == 0")
                     except (json.JSONDecodeError, OSError, ValueError):
                         self._update_pipeline_log(pid, "findings_critic", "error",
-                                                   error=f"Код {exit_code}")
+                                                   error=_extract_error_detail(exit_code, output))
                         await self._log(job, f"Critic: код {exit_code}, файл невалиден — пропуск", "warn")
                         return
                 else:
                     self._update_pipeline_log(pid, "findings_critic", "error",
-                                               error=f"Код {exit_code}")
+                                               error=_extract_error_detail(exit_code, output))
                     await self._log(job, f"Critic: код {exit_code}, файл не создан — пропуск", "warn")
                     return
             else:
@@ -2389,17 +2429,17 @@ class PipelineManager:
                         # Не return — продолжаем к валидации JSON ниже
                     else:
                         self._update_pipeline_log(pid, "findings_corrector", "error",
-                                                   error=f"Код {exit_code}")
+                                                   error=_extract_error_detail(exit_code, output))
                         await self._log(job, f"Corrector: код {exit_code}, файл не изменился", "warn")
                         return
                 except (json.JSONDecodeError, OSError):
                     self._update_pipeline_log(pid, "findings_corrector", "error",
-                                               error=f"Код {exit_code}")
+                                               error=_extract_error_detail(exit_code, output))
                     await self._log(job, f"Corrector: код {exit_code}, JSON невалиден", "warn")
                     return
             else:
                 self._update_pipeline_log(pid, "findings_corrector", "error",
-                                           error=f"Код {exit_code}")
+                                           error=_extract_error_detail(exit_code, output))
                 await self._log(job, f"Corrector: код {exit_code}", "warn")
                 return
         else:
@@ -3304,7 +3344,7 @@ class PipelineManager:
             print(f"[{pid}:smart] ═══ ЭТАП 7: Excel ═══")
             await self._log(job, "═══ ЭТАП 7: Генерация Excel ═══")
             project_path = str(resolve_project_dir(pid))
-            exit_code, _, _ = await self._run_script(
+            exit_code, _xls_out, _xls_err = await self._run_script(
                 pid,
                 str(GENERATE_EXCEL_SCRIPT),
                 args=[project_path],
@@ -3315,7 +3355,7 @@ class PipelineManager:
                 self._update_pipeline_log(pid, "excel", "done", message="OK")
             else:
                 self._update_pipeline_log(pid, "excel", "error",
-                                           error=f"Exit code: {exit_code}")
+                                           error=_extract_error_detail(exit_code, (_xls_err or "") + "\n" + (_xls_out or "")))
 
             wall_sec = (datetime.now() - start_time).total_seconds()
             net_sec = max(0, wall_sec - job.pause_total_sec)
@@ -3484,7 +3524,7 @@ class PipelineManager:
                 self._record_cli_usage(job, cli_result, "text_analysis_retry")
             if exit_code != 0:
                 self._update_pipeline_log(pid, "text_analysis", "error",
-                                           error=f"Код {exit_code}")
+                                           error=_extract_error_detail(exit_code, output))
                 raise RuntimeError(f"Текстовый анализ: код {exit_code}")
 
             text_analysis_path = output_dir / "01_text_analysis.json"
@@ -3726,7 +3766,7 @@ class PipelineManager:
                     self._record_cli_usage(job, cli_result, "findings_merge_retry")
             if exit_code != 0:
                 self._update_pipeline_log(pid, "findings_merge", "error",
-                                           error=f"Код {exit_code}")
+                                           error=_extract_error_detail(exit_code, output))
                 await self._log(job, f"Свод замечаний: код {exit_code}", "error")
             else:
                 self._update_pipeline_log(pid, "findings_merge", "done", message="OK")
@@ -3777,7 +3817,7 @@ class PipelineManager:
             print(f"[{pid}] ═══ ЭТАП 8: Excel ═══")
             await self._log(job, "═══ ЭТАП 8: Генерация Excel ═══")
             project_path = str(resolve_project_dir(pid))
-            exit_code, _, _ = await self._run_script(
+            exit_code, _xls_out, _xls_err = await self._run_script(
                 pid,
                 str(GENERATE_EXCEL_SCRIPT),
                 args=[project_path],
@@ -3788,7 +3828,7 @@ class PipelineManager:
                 self._update_pipeline_log(pid, "excel", "done", message="OK")
             else:
                 self._update_pipeline_log(pid, "excel", "error",
-                                           error=f"Exit code: {exit_code}")
+                                           error=_extract_error_detail(exit_code, (_xls_err or "") + "\n" + (_xls_out or "")))
 
             wall_sec = (datetime.now() - start_time).total_seconds()
             net_sec = max(0, wall_sec - job.pause_total_sec)
@@ -4618,7 +4658,7 @@ class PipelineManager:
                         job.status = JobStatus.FAILED
                         job.error_message = f"Exit code: {exit_code}"
                         self._update_pipeline_log(pid, "optimization", "error",
-                                                   error=f"Exit code: {exit_code}")
+                                                   error=_extract_error_detail(exit_code, output))
                 else:
                     job.status = JobStatus.FAILED
                     job.error_message = "Rate limit: ожидание превышено или отменено"
@@ -4629,7 +4669,7 @@ class PipelineManager:
                 job.status = JobStatus.FAILED
                 job.error_message = f"Exit code: {exit_code}"
                 self._update_pipeline_log(pid, "optimization", "error",
-                                           error=f"Exit code: {exit_code}")
+                                           error=_extract_error_detail(exit_code, output))
 
         except asyncio.CancelledError:
             job.status = JobStatus.CANCELLED
@@ -4704,12 +4744,12 @@ class PipelineManager:
                         raise ValueError("total_reviewed == 0")
                 except (json.JSONDecodeError, OSError, ValueError):
                     self._update_pipeline_log(pid, "optimization_critic", "error",
-                                               error=f"Код {exit_code}")
+                                               error=_extract_error_detail(exit_code, output))
                     await self._log(job, f"Optimization Critic: код {exit_code}, файл невалиден", "warn")
                     return
             else:
                 self._update_pipeline_log(pid, "optimization_critic", "error",
-                                           error=f"Код {exit_code}")
+                                           error=_extract_error_detail(exit_code, output))
                 await self._log(job, f"Optimization Critic: код {exit_code}, файл не создан", "warn")
                 return
         else:
@@ -4800,7 +4840,7 @@ class PipelineManager:
                         raise ValueError("Файл не изменился")
                 except (json.JSONDecodeError, OSError, ValueError):
                     self._update_pipeline_log(pid, "optimization_corrector", "error",
-                                               error=f"Код {exit_code}")
+                                               error=_extract_error_detail(exit_code, output))
                     await self._log(job, f"Optimization Corrector: код {exit_code}", "warn")
                     # Fallback: восстановить pre_review при реальной ошибке
                     if pre_review.exists() and opt_path.exists():
@@ -4810,7 +4850,7 @@ class PipelineManager:
                     return
             else:
                 self._update_pipeline_log(pid, "optimization_corrector", "error",
-                                           error=f"Код {exit_code}")
+                                           error=_extract_error_detail(exit_code, output))
                 await self._log(job, f"Optimization Corrector: код {exit_code}", "warn")
                 return
         else:
