@@ -19,6 +19,7 @@ from webapp.config import (
     RATE_LIMIT_THRESHOLD_PCT, RATE_LIMIT_CHECK_INTERVAL,
     RATE_LIMIT_MAX_WAIT, RATE_LIMIT_MAX_RETRIES,
     CRITIC_CHUNK_SIZE,
+    CORRECTOR_CHUNK_SIZE,
 )
 from webapp.models.audit import AuditJob, AuditStage, JobStatus, BatchQueueStatus, BatchQueueItem, BatchAction
 from webapp.models.websocket import WSMessage
@@ -334,6 +335,8 @@ class PipelineManager:
         Работает как с LLMResult (OpenRouter), так и с CLIResult (legacy).
         Токены берутся напрямую из result — обогащение из JSONL не требуется.
         Также обогащает pipeline_log.json полями model/input_tokens/output_tokens.
+
+        CLI-модели (подписка) — cost_usd=0 (бесплатно), оригинал в cost_usd_notional.
         """
         if not cli_result:
             return
@@ -343,13 +346,19 @@ class PipelineManager:
         output_tokens = getattr(cli_result, "output_tokens", 0) or 0
         model = getattr(cli_result, "model", "") or get_model_for_stage(stage)
 
+        # CLI-модели работают по подписке — реальная стоимость = $0
+        raw_cost = cli_result.cost_usd or 0.0
+        is_cli = model.startswith("claude-") and "/" not in model
+        actual_cost = 0.0 if is_cli else raw_cost
+
         record = UsageRecord(
             timestamp=datetime.now().isoformat(),
             session_id=cli_result.session_id,
             project_id=job.project_id,
             stage=stage,
             model=model,
-            cost_usd=cli_result.cost_usd,
+            cost_usd=actual_cost,
+            cost_usd_notional=raw_cost if is_cli else 0.0,
             duration_ms=cli_result.duration_ms,
             duration_api_ms=cli_result.duration_api_ms,
             num_turns=cli_result.num_turns,
@@ -358,7 +367,7 @@ class PipelineManager:
             output_tokens=output_tokens,
         )
         usage_tracker.record_usage(record)
-        job.cost_usd += cli_result.cost_usd
+        job.cost_usd += actual_cost
         job.cli_calls += 1
 
         # Обогатить pipeline_log.json полями model/tokens для текущего этапа
@@ -2381,70 +2390,127 @@ class PipelineManager:
             await self._log(job, "Все замечания обоснованы — Corrector не требуется")
             return
 
-        # ── Corrector ──
+        # ── Corrector (с поддержкой чанков) ──
         self._update_pipeline_log(pid, "findings_corrector", "running")
         print(f"[{pid}] ═══ ЭТАП 6.5b: Corrector (корректировка замечаний) ═══")
-        await self._log(
-            job,
-            f"═══ ЭТАП 6.5b: Corrector — корректировка {total_issues} замечаний ═══",
-        )
 
-        can_go = await self._check_before_launch(job)
-        if not can_go:
-            await self._log(job, "Rate limit: ожидание превышено или отменено", "warn")
-            return
+        # Извлекаем ID замечаний с проблемами из review
+        issue_ids: list[str] = []
+        for rev in review_data.get("reviews", []):
+            if rev.get("verdict", "pass") != "pass":
+                fid = rev.get("finding_id") or rev.get("id", "")
+                if fid:
+                    issue_ids.append(fid)
+        if not issue_ids:
+            issue_ids = [f"F-{i:03d}" for i in range(1, total_issues + 1)]
 
-        exit_code, output, cli_result = await claude_runner.run_findings_corrector(
-            project_info, pid,
-            on_output=lambda msg: self._log(job, msg),
-        )
-        self._record_cli_usage(job, cli_result, "findings_corrector")
+        need_chunks = total_issues > CORRECTOR_CHUNK_SIZE
+        if need_chunks:
+            chunks = [
+                issue_ids[i:i + CORRECTOR_CHUNK_SIZE]
+                for i in range(0, len(issue_ids), CORRECTOR_CHUNK_SIZE)
+            ]
+            await self._log(
+                job,
+                f"═══ ЭТАП 6.5b: Corrector — {total_issues} замечаний → "
+                f"{len(chunks)} чанков по ~{CORRECTOR_CHUNK_SIZE} ═══",
+            )
+        else:
+            chunks = [issue_ids]
+            await self._log(
+                job,
+                f"═══ ЭТАП 6.5b: Corrector — корректировка {total_issues} замечаний ═══",
+            )
 
-        if claude_runner.is_cancelled(exit_code):
-            job.status = JobStatus.CANCELLED
-            return
+        corrector_ok = False
+        for cidx, chunk_ids in enumerate(chunks):
+            chunk_label = f" (чанк {cidx + 1}/{len(chunks)})" if need_chunks else ""
 
-        if exit_code != 0:
-            # CLI может вернуть -1/1, но файл уже записан — проверяем
-            findings_path = output_dir / "03_findings.json"
-            pre_review = output_dir / "03_findings_pre_review.json"
-            if findings_path.exists() and pre_review.exists():
-                try:
-                    new_data = json.loads(findings_path.read_text(encoding="utf-8"))
-                    old_data = json.loads(pre_review.read_text(encoding="utf-8"))
-                    # Если findings изменился относительно pre_review — corrector сработал
-                    new_count = len(new_data.get("findings", []))
-                    old_count = len(old_data.get("findings", []))
-                    if new_count > 0 and new_data != old_data:
-                        await self._log(
-                            job,
-                            f"Corrector: CLI код {exit_code}, но 03_findings.json обновлён "
-                            f"({old_count} → {new_count}) — считаем успехом",
-                            "warn",
-                        )
-                        self._update_pipeline_log(
-                            pid, "findings_corrector", "done",
-                            message=f"OK (CLI код {exit_code}, файл обновлён)",
-                        )
-                        # Не return — продолжаем к валидации JSON ниже
-                    else:
+            # Для чанков: перезаписываем 03_findings_review.json, оставляя только нужные findings
+            # (corrector читает именно этот файл — и CLI и OpenRouter)
+            review_path = output_dir / "03_findings_review.json"
+            if need_chunks:
+                chunk_review = dict(review_data)
+                chunk_review["reviews"] = [
+                    r for r in review_data.get("reviews", [])
+                    if (r.get("finding_id") or r.get("id", "")) in chunk_ids
+                ]
+                chunk_meta = dict(chunk_review.get("meta", {}))
+                chunk_meta["total_reviewed"] = len(chunk_review["reviews"])
+                chunk_meta["chunk"] = f"{cidx + 1}/{len(chunks)}"
+                chunk_review["meta"] = chunk_meta
+                review_path.write_text(
+                    json.dumps(chunk_review, ensure_ascii=False, indent=2), encoding="utf-8",
+                )
+                await self._log(job, f"Corrector{chunk_label}: {', '.join(chunk_ids)}")
+
+            can_go = await self._check_before_launch(job)
+            if not can_go:
+                await self._log(job, "Rate limit: ожидание превышено или отменено", "warn")
+                return
+
+            exit_code, output, cli_result = await claude_runner.run_findings_corrector(
+                project_info, pid,
+                on_output=lambda msg: self._log(job, msg),
+            )
+            self._record_cli_usage(job, cli_result, f"findings_corrector{f'_chunk{cidx}' if need_chunks else ''}")
+
+            if claude_runner.is_cancelled(exit_code):
+                job.status = JobStatus.CANCELLED
+                return
+
+            if exit_code != 0:
+                # CLI может вернуть -1/1, но файл уже записан — проверяем
+                findings_path = output_dir / "03_findings.json"
+                pre_review = output_dir / "03_findings_pre_review.json"
+                if findings_path.exists() and pre_review.exists():
+                    try:
+                        new_data = json.loads(findings_path.read_text(encoding="utf-8"))
+                        old_data = json.loads(pre_review.read_text(encoding="utf-8"))
+                        new_count = len(new_data.get("findings", []))
+                        old_count = len(old_data.get("findings", []))
+                        if new_count > 0 and new_data != old_data:
+                            await self._log(
+                                job,
+                                f"Corrector{chunk_label}: CLI код {exit_code}, но файл обновлён "
+                                f"({old_count} → {new_count}) — считаем успехом",
+                                "warn",
+                            )
+                            corrector_ok = True
+                        else:
+                            await self._log(job, f"Corrector{chunk_label}: код {exit_code}, файл не изменился", "warn")
+                            if not need_chunks:
+                                self._update_pipeline_log(pid, "findings_corrector", "error",
+                                                           error=_extract_error_detail(exit_code, output))
+                                return
+                    except (json.JSONDecodeError, OSError):
+                        await self._log(job, f"Corrector{chunk_label}: код {exit_code}, JSON невалиден", "warn")
+                        if not need_chunks:
+                            self._update_pipeline_log(pid, "findings_corrector", "error",
+                                                       error=_extract_error_detail(exit_code, output))
+                            return
+                else:
+                    await self._log(job, f"Corrector{chunk_label}: код {exit_code}", "warn")
+                    if not need_chunks:
                         self._update_pipeline_log(pid, "findings_corrector", "error",
                                                    error=_extract_error_detail(exit_code, output))
-                        await self._log(job, f"Corrector: код {exit_code}, файл не изменился", "warn")
                         return
-                except (json.JSONDecodeError, OSError):
-                    self._update_pipeline_log(pid, "findings_corrector", "error",
-                                               error=_extract_error_detail(exit_code, output))
-                    await self._log(job, f"Corrector: код {exit_code}, JSON невалиден", "warn")
-                    return
             else:
-                self._update_pipeline_log(pid, "findings_corrector", "error",
-                                           error=_extract_error_detail(exit_code, output))
-                await self._log(job, f"Corrector: код {exit_code}", "warn")
-                return
+                corrector_ok = True
+                await self._log(job, f"Corrector{chunk_label} завершён — 03_findings.json обновлён")
+
+        # Восстановить полный review после всех чанков
+        if need_chunks:
+            review_path = output_dir / "03_findings_review.json"
+            review_path.write_text(
+                json.dumps(review_data, ensure_ascii=False, indent=2), encoding="utf-8",
+            )
+
+        if corrector_ok:
+            self._update_pipeline_log(pid, "findings_corrector", "done",
+                                       message=f"OK ({len(chunks)} чанков)" if need_chunks else "OK")
         else:
-            self._update_pipeline_log(pid, "findings_corrector", "done", message="OK")
-            await self._log(job, "Corrector завершён — 03_findings.json обновлён")
+            self._update_pipeline_log(pid, "findings_corrector", "error", error="Все чанки провалились")
 
         # Валидация JSON после corrector (LLM может записать невалидный JSON)
         findings_path = output_dir / "03_findings.json"
@@ -2522,11 +2588,10 @@ class PipelineManager:
 
         Файловая безопасность:
         - critic/corrector пишут: 03_findings_review*.json, 03_findings.json
-        - norm_verify пишет: norm_checks*.json, 03a_norms_verified.json
+        - norm_verify пишет: norm_checks*.json, norm_fix пишет 03_findings.json
         - optimization пишет: optimization*.json
-        Все три — разные файлы, конфликтов записи нет.
-        Corrector перезаписывает 03_findings.json ПОСЛЕ того как
-        norm_verify уже прочитал его (read перед write).
+        Corrector и norm_fix оба пишут в 03_findings.json →
+        norm_fix ждёт corrector_done перед записью (через wait_before_fix).
         """
         pid = job.project_id
         corrector_done = asyncio.Event()
@@ -2544,14 +2609,20 @@ class PipelineManager:
                 corrector_done.set()
 
         async def _task_norm_verify():
-            """Задача B: Верификация норм (параллельно с critic)."""
+            """Задача B: Верификация норм (параллельно с critic).
+
+            Шаги 1-2 + LLM WebSearch работают параллельно с critic/corrector.
+            Шаг norm_fix ждёт corrector_done (оба пишут в 03_findings.json).
+            """
             try:
                 self._clean_stage_files(pid, [
                     "03a_norms_verified.json", "norm_checks.json", "norm_checks_llm.json",
                 ])
                 print(f"[{pid}] ═══ Верификация норм (параллельно) ═══")
                 await self._log(job, "═══ Верификация нормативных ссылок (параллельно с Critic) ═══")
-                await self._run_norm_verification(job, standalone=False)
+                await self._run_norm_verification(
+                    job, standalone=False, wait_before_fix=corrector_done,
+                )
             except Exception as e:
                 await self._log(job, f"Norm verify ошибка: {e}", "error")
                 self._update_pipeline_log(pid, "norm_verify", "error", error=str(e))
@@ -2628,7 +2699,12 @@ class PipelineManager:
                 await self._log(job, f"Параллельная задача {task_name} упала: {result}", "error")
                 print(f"[{pid}] Parallel task {task_name} exception: {result}")
 
-    async def _run_norm_verification(self, job: AuditJob, standalone: bool = True):
+    async def _run_norm_verification(
+        self,
+        job: AuditJob,
+        standalone: bool = True,
+        wait_before_fix: asyncio.Event | None = None,
+    ):
         """
         Верификация нормативных ссылок (детерминированный режим):
         1. Извлечь нормы из 03_findings.json (Python)
@@ -2636,6 +2712,7 @@ class PipelineManager:
         3. LLM WebSearch ТОЛЬКО для unknown/stale норм + верификация цитат
         4. Слияние результатов LLM в norm_checks.json (Python)
         5. Если есть устаревшие — пересмотреть замечания через Claude CLI
+           (ждёт wait_before_fix, т.к. corrector тоже пишет в 03_findings.json)
         """
         pid = job.project_id
         try:
@@ -2890,6 +2967,13 @@ class PipelineManager:
 
             # ── Шаг 3: Пересмотр замечаний (если нужен) ──
             if needs_fix:
+                # Ждём завершения Corrector — оба пишут в 03_findings.json
+                if wait_before_fix is not None and not wait_before_fix.is_set():
+                    await self._log(job, "Ожидание завершения Corrector перед пересмотром норм...")
+                    await wait_before_fix.wait()
+                    if job.status == JobStatus.CANCELLED:
+                        return
+
                 job.stage = AuditStage.NORM_FIX
                 await self._log(
                     job,
@@ -2897,6 +2981,12 @@ class PipelineManager:
                 )
 
                 findings_to_fix_text = format_findings_to_fix(norm_checks_path, findings_path)
+
+                # Бэкап findings ДО norm_fix (Python, надёжно)
+                import shutil
+                pre_norm_path = output_dir / "03_findings_pre_norm.json"
+                if findings_path.exists():
+                    shutil.copy2(findings_path, pre_norm_path)
 
                 # ── Проверка rate limit перед пересмотром замечаний ──
                 can_go = await self._check_before_launch(job)
@@ -2915,11 +3005,17 @@ class PipelineManager:
                     await self._log(job, "Пересмотр замечаний отменён", "warn")
                     return
 
-                if exit_code == 0 and verified_path.exists():
+                # LLM пишет прямо в 03_findings.json — Python создаёт 03a как снэпшот
+                if exit_code == 0 and findings_path.exists():
+                    shutil.copy2(findings_path, verified_path)
                     size_kb = round(verified_path.stat().st_size / 1024, 1)
-                    await self._log(job, f"03a_norms_verified.json создан ({size_kb} KB)", "info")
-                else:
-                    await self._log(job, "Предупреждение: 03a_norms_verified.json не создан", "warn")
+                    await self._log(job, f"03a_norms_verified.json создан ({size_kb} KB)")
+                elif exit_code != 0:
+                    await self._log(job, f"Norm fix: код {exit_code}", "warn")
+                    # Восстановить бэкап при ошибке
+                    if pre_norm_path.exists():
+                        shutil.copy2(pre_norm_path, findings_path)
+                        await self._log(job, "Восстановлен 03_findings.json из бэкапа", "warn")
             else:
                 await self._log(job, "Все нормы актуальны — пересмотр не требуется", "info")
 

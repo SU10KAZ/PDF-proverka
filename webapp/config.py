@@ -102,7 +102,8 @@ CLAUDE_BLOCK_ANALYSIS_TIMEOUT = 600   # 10 мин на пакет блоков
 CLAUDE_FINDINGS_MERGE_TIMEOUT = 1800  # 30 мин на свод замечаний (02_blocks может быть >800KB)
 CLAUDE_FINDINGS_CRITIC_TIMEOUT = 600   # 10 мин — critic проверяет готовые замечания
 CRITIC_CHUNK_SIZE = 50                 # макс. замечаний на 1 запуск Critic
-CLAUDE_FINDINGS_CORRECTOR_TIMEOUT = 600  # 10 мин — corrector исправляет по вердиктам
+CLAUDE_FINDINGS_CORRECTOR_TIMEOUT = 1200  # 20 мин — Sonnet CLI может быть медленнее Opus
+CORRECTOR_CHUNK_SIZE = 5                 # макс. замечаний на 1 запуск Corrector
 CLAUDE_OPTIMIZATION_CRITIC_TIMEOUT = 600   # 10 мин — critic проверяет оптимизацию
 CLAUDE_OPTIMIZATION_CORRECTOR_TIMEOUT = 600  # 10 мин — corrector исправляет оптимизацию
 
@@ -143,16 +144,16 @@ _stage_models: dict[str, str | None] = {
 # ═══════════════════════════════════════════════════════════════════════════
 
 STAGE_MODEL_CONFIG: dict[str, str] = {
-    "text_analysis":          "openai/gpt-5.4",
-    "block_batch":            "google/gemini-3.1-pro-preview",
-    "findings_merge":         "openai/gpt-5.4",
+    "text_analysis":          "claude-opus-4-6",
+    "block_batch":            "openai/gpt-5.4",
+    "findings_merge":         "claude-opus-4-6",
     "findings_critic":        "openai/gpt-5.4",
-    "findings_corrector":     "openai/gpt-5.4",
+    "findings_corrector":     "claude-opus-4-6",
     "norm_verify":            "claude-opus-4-6",
-    "norm_fix":               "openai/gpt-5.4",
-    "optimization":           "google/gemini-3.1-pro-preview",
-    "optimization_critic":    "openai/gpt-5.4",
-    "optimization_corrector": "openai/gpt-5.4",
+    "norm_fix":               "claude-opus-4-6",
+    "optimization":           "claude-opus-4-6",
+    "optimization_critic":    "claude-sonnet-4-6",
+    "optimization_corrector": "claude-sonnet-4-6",
 }
 
 AVAILABLE_MODELS = [
@@ -168,6 +169,20 @@ AVAILABLE_MODELS = [
 # block_batch: только OpenRouter (inline images, Claude CLI не поддерживает)
 STAGE_MODEL_RESTRICTIONS = {
     "block_batch": ["openai/gpt-5.4", "google/gemini-3.1-pro-preview"],
+}
+
+# Подсказки при выборе модели для этапа (отображаются в UI)
+STAGE_MODEL_HINTS: dict[str, str] = {
+    "text_analysis": "Opus CLI рекомендуется. Sonnet допустим.",
+    "block_batch": "Только OpenRouter (изображения). GPT-5.4 лучше Gemini по качеству.",
+    "findings_merge": "Минимум Opus CLI — межблочная сверка требует сильной модели.",
+    "findings_critic": "GPT-5.4 оптимален: быстро и дёшево.",
+    "findings_corrector": "Минимум Opus CLI. Sonnet не успевает (таймаут). GPT-5.4 — альтернатива.",
+    "norm_verify": "Opus CLI рекомендуется (WebSearch + анализ норм).",
+    "norm_fix": "Opus CLI рекомендуется.",
+    "optimization": "Opus CLI или GPT-5.4. Gemini находит мало предложений.",
+    "optimization_critic": "GPT-5.4 или Sonnet CLI.",
+    "optimization_corrector": "GPT-5.4 или Sonnet CLI.",
 }
 
 def get_stage_model(stage: str) -> str:

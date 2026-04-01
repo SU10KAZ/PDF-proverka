@@ -400,7 +400,8 @@ async def run_norm_fix(
     result = await llm_runner.run_llm(stage="norm_fix", messages=messages, timeout=600)
 
     if result.json_data and not result.is_error:
-        output_path = _resolve_output_dir(project_id) / "03a_norms_verified.json"
+        # Пишем в 03_findings.json (pipeline сам создаст 03a как снэпшот)
+        output_path = _resolve_output_dir(project_id) / "03_findings.json"
         _write_json(output_path, result.json_data)
 
     await _send_status_llm(on_output, result)

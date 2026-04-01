@@ -8,30 +8,90 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/styles.css?v={{css_version}}">
 </head>
 <body>
-    <!-- Ambient background orbs -->
-    <div class="bg-orb bg-orb--1"></div>
-    <div class="bg-orb bg-orb--2"></div>
-    <div class="bg-orb bg-orb--3"></div>
-
     <div id="app">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-logo" @click="navigate('/')">
+                <div class="logo-bars">
+                    <span></span><span></span><span></span><span></span><span></span>
+                </div>
+                <div class="logo-name">Audit<b>Manager</b></div>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-label">Обзор</div>
+                <div class="nav-item" :class="{active: currentView === 'dashboard'}" @click="navigate('/')">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M2 9L8 3l6 6"/><path d="M4 7v6h3v-3h2v3h3V7"/>
+                    </svg>
+                    Главная
+                </div>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-label">Управление</div>
+                <div class="nav-item">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="8" cy="5" r="2.5"/><path d="M3 14c0-3 2-5 5-5s5 2 5 5"/>
+                    </svg>
+                    Пользователи
+                </div>
+                <div class="nav-item-parent" :class="{open: sidebarSectionsOpen}" @click="sidebarSectionsOpen = !sidebarSectionsOpen">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="1" y="3" width="6" height="10" rx="1.5"/>
+                        <rect x="9" y="3" width="6" height="10" rx="1.5"/>
+                    </svg>
+                    Разделы
+                    <svg class="nav-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M4 6l4 4 4-4"/>
+                    </svg>
+                </div>
+                <div class="nav-submenu" :class="{open: sidebarSectionsOpen}">
+                    <div class="nav-sub-item" @click="navigate('/'); sidebarFilterSection = null"
+                         :class="{active: currentView === 'dashboard' && !sidebarFilterSection}">
+                        <div class="nav-sub-dot"></div>
+                        Все разделы
+                        <span class="nav-sub-badge">{{ projects.length }}</span>
+                    </div>
+                    <div v-for="[code, items] in projectsBySection" :key="'sb-'+code"
+                         class="nav-sub-item"
+                         @click="navigate('/'); sidebarFilterSection = code"
+                         :class="{active: currentView === 'dashboard' && sidebarFilterSection === code}">
+                        <div class="nav-sub-dot" :style="{background: getDisciplineColor(code), opacity: 1}"></div>
+                        {{ code }}
+                        <span class="nav-sub-badge">{{ items.length }}</span>
+                    </div>
+                </div>
+                <div class="nav-item" :class="{active: currentView === 'queue'}" @click="navigate('/queue')">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="1" y="2" width="14" height="3" rx="1"/>
+                        <rect x="1" y="7" width="14" height="3" rx="1"/>
+                        <rect x="1" y="12" width="8" height="3" rx="1"/>
+                    </svg>
+                    Очередь
+                    <span v-if="batchRunning && batchQueue" class="nav-badge">{{ batchQueue.items.filter(i => i.status === 'pending' || i.status === 'running').length }}</span>
+                </div>
+                <div class="nav-item" @click="showModelConfig = true">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="8" cy="8" r="2"/>
+                        <path d="M8 2v2M8 12v2M2 8h2M12 8h2"/>
+                    </svg>
+                    Настройки моделей
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN AREA -->
+        <div class="main-area">
+
         <!-- Header -->
         <header class="header">
             <div class="header-left">
-                <h1 class="logo" @click="navigate('/')">Audit Manager</h1>
-                <button class="queue-header-btn" :class="{'queue-header-btn--active': batchRunning, 'queue-header-btn--current': currentView === 'queue'}"
-                        @click="navigate('/queue')"
-                        :title="batchRunning ? 'Очередь (' + (batchQueue ? batchQueue.items.length : 0) + ')' : 'Очередь'">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
-                        <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
-                    </svg>
-                    <span>Очередь</span>
-                    <span v-if="batchRunning && batchQueue" class="queue-header-btn__badge">{{ batchQueue.items.filter(i => i.status === 'pending').length + batchQueue.items.filter(i => i.status === 'running').length }}</span>
-                </button>
+                <span style="font-size:14px;font-weight:700;color:var(--text);white-space:nowrap">{{ objectName || 'Объект' }}</span>
                 <!-- Pause / Resume button -->
                 <button v-if="anyRunning && !isPaused" class="pause-btn" @click="showPauseModal = true" title="Поставить на паузу">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
@@ -237,7 +297,7 @@
                     </button>
                 </h2>
                 <div class="dashboard-actions">
-                    <button class="btn btn-outline btn-sm" @click="toggleAllSections"
+                    <button v-if="!sidebarFilterSection" class="btn btn-outline btn-sm" @click="toggleAllSections"
                             :title="allSectionsCollapsed ? 'Развернуть все разделы' : 'Свернуть все разделы'">
                         {{ allSectionsCollapsed ? '&#9660; Развернуть' : '&#9650; Свернуть' }}
                     </button>
@@ -258,15 +318,17 @@
             </div>
 
             <div v-for="[sectionCode, sectionProjects] in projectsBySection" :key="sectionCode" class="section-group"
+                 v-show="!sidebarFilterSection || sidebarFilterSection === sectionCode"
                  draggable="true"
                  @dragstart="onSectionDragStart($event, sectionCode)"
                  @dragover.prevent="onSectionDragOver($event, sectionCode)"
                  @drop.prevent="onSectionDragEnd"
                  @dragend="onSectionDragEnd"
                  :class="{ 'section-group--dragging': dragSectionCode === sectionCode, 'section-group--over': dragOverCode === sectionCode && dragSectionCode !== sectionCode }">
-                <div class="section-divider" @click="toggleSection(sectionCode)">
+                <div class="section-divider" @click="!sidebarFilterSection && toggleSection(sectionCode)">
                     <span class="section-divider__drag" @mousedown.stop title="Перетащите для перемещения">⠿</span>
-                    <span class="section-divider__icon">{{ collapsedSections[sectionCode] ? '▶' : '▼' }}</span>
+                    <span v-if="!sidebarFilterSection" class="section-divider__icon">{{ collapsedSections[sectionCode] ? '▶' : '▼' }}</span>
+                    <span v-else class="section-divider__icon" style="visibility:hidden">▼</span>
                     <span class="section-divider__badge" :style="sectionProjects.length ? disciplineBadgeStyle(sectionCode) : null" :class="{ 'section-divider__badge--empty': !sectionProjects.length }">{{ sectionCode }}</span>
                     <span class="section-divider__name" :class="{ 'section-divider__name--empty': !sectionProjects.length }">{{ disciplineLabel(sectionCode) }}</span>
                     <label class="section-divider__check" @click.stop>
@@ -289,7 +351,7 @@
                     <button class="section-divider__edit" @click.stop="openEditSection(sectionCode)" title="Редактировать раздел">&#9998;</button>
                     <div class="section-divider__line"></div>
                 </div>
-                <div v-show="!collapsedSections[sectionCode]" class="projects-grid">
+                <div v-show="sidebarFilterSection || !collapsedSections[sectionCode]" class="projects-grid">
                 <div v-for="p in sectionProjects" :key="p.project_id"
                      class="project-card" :class="{'project-card--ready': p.has_blocks, 'project-card--running': isProjectRunning(p.project_id), 'project-card--selected': isProjectSelected(p.project_id)}"
                      @click="navigate('/project/' + p.project_id)">
@@ -407,9 +469,14 @@
         </div>
 
         <!-- ═══ Batch Action Bar ═══ -->
-        <div v-if="selectedCount > 0 && !batchRunning" class="batch-action-bar">
+        <div v-if="selectedCount > 0 && !batchRunning && currentView === 'dashboard'" class="batch-action-bar">
             <span class="batch-action-bar__count">Выбрано: {{ selectedCount }}</span>
             <div class="batch-action-bar__actions">
+                <button class="btn btn-outline" :disabled="batchPackageLoading"
+                        @click="downloadBatchAuditPackages">
+                    <span v-if="batchPackageLoading">&#128230; Формируется...</span>
+                    <span v-else>&#128230; Скачать пакеты аудита</span>
+                </button>
                 <button class="btn btn-primary" @click="startBatchAction('resume')">
                     Продолжить прерванные
                 </button>
@@ -423,7 +490,7 @@
         </div>
 
         <!-- ═══ Add to Queue Bar (when batch is running) ═══ -->
-        <div v-if="selectedCount > 0 && batchRunning" class="batch-action-bar batch-action-bar--add">
+        <div v-if="selectedCount > 0 && batchRunning && currentView === 'dashboard'" class="batch-action-bar batch-action-bar--add">
             <span class="batch-action-bar__count">Выбрано: {{ selectedCount }}</span>
             <div class="batch-action-bar__actions">
                 <button class="btn btn-accent" @click="addToBatch">
@@ -436,7 +503,7 @@
         </div>
 
         <!-- ═══ Batch Progress ═══ -->
-        <div v-if="batchRunning && batchQueue" class="batch-progress-bar">
+        <div v-if="false" class="batch-progress-bar">
             <div class="batch-progress-bar__header">
                 <span class="batch-progress-bar__title">
                     {{ batchActionLabel(batchQueue.action) }}
@@ -749,6 +816,9 @@
                     <button class="btn btn-preset"
                             :class="{ active: activePreset === 'claude_cli' }"
                             @click="applyPreset('claude_cli')">Claude CLI</button>
+                    <button class="btn btn-preset"
+                            :class="{ active: activePreset === 'optimal' }"
+                            @click="applyPreset('optimal')">Оптимальный</button>
                 </div>
                 <table class="model-config-table">
                     <thead>
@@ -758,17 +828,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(label, key) in stageLabels" :key="key">
-                            <td class="model-config-stage-name">{{ label }}</td>
-                            <td v-for="m in availableModels" :key="m.id" class="model-config-radio-cell">
-                                <input type="radio"
-                                       :name="'model-' + key"
-                                       :value="m.id"
-                                       v-model="stageModelConfig[key]"
-                                       :disabled="!isModelAllowed(key, m.id)"
-                                       class="model-config-radio">
-                            </td>
-                        </tr>
+                        <template v-for="(label, key) in stageLabels" :key="key">
+                            <tr>
+                                <td class="model-config-stage-name">{{ label }}</td>
+                                <td v-for="m in availableModels" :key="m.id" class="model-config-radio-cell">
+                                    <input type="radio"
+                                           :name="'model-' + key"
+                                           :value="m.id"
+                                           v-model="stageModelConfig[key]"
+                                           :disabled="!isModelAllowed(key, m.id)"
+                                           class="model-config-radio">
+                                </td>
+                            </tr>
+                        </template>
                     </tbody>
                 </table>
                 <div class="model-config-actions">
@@ -805,9 +877,8 @@
                 </div>
 
                 <!-- Пустая очередь -->
-                <div v-if="!batchRunning || !batchQueue" class="queue-empty">
+                <div v-if="!batchQueue || !batchQueue.items || batchQueue.items.length === 0" class="queue-empty">
                     <p>Очередь пуста. Выберите проекты и добавьте их в очередь.</p>
-                    <button class="btn btn-accent" @click="queueAddMode = true" v-if="!queueAddMode">+ Добавить проекты</button>
                 </div>
 
                 <!-- Элементы очереди -->
@@ -1152,7 +1223,11 @@
                         <span class="usage-icon">⚡</span>
                         <span style="color:#22c55e">&#8595;{{ formatTokens(currentProjectUsage.total_input_tokens) }}</span>
                         <span style="color:#ef4444">&#8593;{{ formatTokens(currentProjectUsage.total_output_tokens) }}</span>
-                        · ${{ formatCost(currentProjectUsage.total_cost_usd) }}
+                        · {{ formatCost(currentProjectUsage.total_cost_usd) }}
+                        <span v-if="currentProjectUsage.notional_cost_usd > 0"
+                              style="color:#a78bfa; font-size:0.8em"
+                              :title="'Сэкономлено по подписке CLI: $' + currentProjectUsage.notional_cost_usd.toFixed(2)"
+                        >(−${{ currentProjectUsage.notional_cost_usd.toFixed(2) }} CLI)</span>
                         · {{ currentProjectUsage.total_calls }} calls
                     </div>
 
@@ -1188,12 +1263,12 @@
                     <table class="findings-table" v-if="findingsData">
                         <thead>
                             <tr>
-                                <th style="width:70px; text-align:center">ID</th>
-                                <th style="width:115px; text-align:center; padding-left:4px; padding-right:4px">Критичность</th>
-                                <th style="width:120px; text-align:center">Лист</th>
-                                <th style="width:50%">Замечание</th>
-                                <th style="width:160px">Норма</th>
-                                <th style="width:50%">Рекомендация</th>
+                                <th style="width:60px; text-align:center">ID</th>
+                                <th style="width:100px; text-align:center; padding-left:4px; padding-right:4px">Критичность</th>
+                                <th style="width:65px; text-align:center">Лист</th>
+                                <th style="width:35%">Замечание</th>
+                                <th style="width:120px">Норма</th>
+                                <th style="width:30%">Рекомендация</th>
                                 <th style="width:36px"></th>
                             </tr>
                         </thead>
@@ -1258,7 +1333,7 @@
                                                     <span class="finding-text-card__role">{{ te.role || 'текст' }}</span>
                                                     <span class="finding-text-card__page">стр. {{ te.page }}</span>
                                                 </div>
-                                                <div class="finding-text-card__body">{{ te.text }}</div>
+                                                <div class="finding-text-card__body" v-html="te.html || renderMarkdown(te.text)"></div>
                                             </div>
                                         </div>
                                     </td>
@@ -1276,8 +1351,15 @@
         <!-- ═══ Optimization ═══ -->
         <div v-if="currentView === 'optimization'" class="container">
             <div class="optimization-page">
-                <div class="optimization-header">
-                    <button class="btn btn-optimization"
+                <!-- Фильтры (как в замечаниях) -->
+                <div class="filters">
+                    <select v-model="optimizationFilter" class="filter-select">
+                        <option value="">Все типы</option>
+                        <option v-for="(label, type) in optimizationTypeLabels" :key="type" :value="type">{{ label }}</option>
+                    </select>
+                    <input v-model="optimizationSearch" class="filter-input"
+                           placeholder="Поиск по тексту...">
+                    <button class="btn btn-optimization btn-sm"
                             @click="startOptimization(currentProjectId)"
                             :disabled="isProjectRunning(currentProjectId)">
                         Запустить анализ
@@ -1288,20 +1370,18 @@
 
                 <!-- Результаты -->
                 <div v-else-if="optimizationData">
-                    <!-- Фильтр по типу -->
-                    <div class="optimization-filters">
-                        <button class="btn btn-sm" :class="{ active: !optimizationFilter }"
-                                @click="optimizationFilter = ''">Все</button>
-                        <button v-for="(label, type) in optimizationTypeLabels" :key="type"
-                                class="btn btn-sm"
-                                :class="{ active: optimizationFilter === type }"
-                                :style="optimizationFilter === type ? { background: optTypeColor(type), color: '#fff', borderColor: optTypeColor(type) } : {}"
-                                @click="optimizationFilter = type">
-                            {{ label }}
-                        </button>
+                    <!-- Сводка по типам -->
+                    <div class="severity-badges severity-badges--large">
+                        <span v-for="(count, type) in optimizationData.by_type" :key="type"
+                              class="opt-type-badge" :style="{ background: optTypeColor(type) }"
+                              @click="optimizationFilter = type" style="cursor:pointer">
+                            {{ count }}
+                        </span>
+                        <span class="findings-total" style="color: var(--green)">Всего: {{ optimizationData.total }}</span>
                     </div>
 
                     <!-- Таблица -->
+                    <div class="table-container">
                     <table class="optimization-table" v-if="filteredOptimization.length > 0">
                         <thead>
                             <tr>
@@ -1384,7 +1464,8 @@
                             </template>
                         </tbody>
                     </table>
-                    <div v-else class="empty-state">
+                    </div><!-- /table-container -->
+                    <div v-if="filteredOptimization.length === 0" class="empty-state">
                         Нет предложений для выбранного фильтра.
                     </div>
                 </div>
@@ -1521,15 +1602,38 @@
                                 <!-- findings -->
                                 <div v-if="selectedBlockAnalysis.findings && selectedBlockAnalysis.findings.length > 0"
                                      class="tile-analysis-section">
-                                    <h4>Замечания ({{ selectedBlockAnalysis.findings.length }})</h4>
+                                    <div class="tile-analysis-section__header">
+                                        <h4>Замечания ({{ selectedBlockAnalysis.findings.length }})</h4>
+                                        <button class="btn-toggle-highlights" @click="toggleAllHighlights"
+                                                :title="allHighlightsVisible ? 'Скрыть все подсветки' : 'Показать все подсветки'">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <template v-if="allHighlightsVisible">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                                    <circle cx="12" cy="12" r="3"/>
+                                                </template>
+                                                <template v-else>
+                                                    <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 01-4.24-4.24"/>
+                                                    <line x1="1" y1="1" x2="23" y2="23"/>
+                                                </template>
+                                            </svg>
+                                        </button>
+                                    </div>
                                     <div v-for="(f, i) in selectedBlockAnalysis.findings" :key="i"
                                          class="tile-finding-card"
                                          :class="['tile-finding-card--' + sevClass(f.severity),
                                                    {'tile-finding-card--highlighted': highlightedFindingId === f.id,
+                                                    'tile-finding-card--dimmed': f.id && !isFindingHighlightVisible(f.id),
                                                     'tile-finding-card--has-regions': f.highlight_regions && f.highlight_regions.length > 0}]"
                                          @click="f.highlight_regions && f.highlight_regions.length ? highlightFinding(f.id) : null"
                                          :style="f.highlight_regions && f.highlight_regions.length ? {cursor: 'pointer'} : {}">
                                         <div class="tile-finding-card__header">
+                                            <label v-if="f.id && f.highlight_regions && f.highlight_regions.length"
+                                                   class="finding-visibility-toggle" @click.stop
+                                                   :title="isFindingHighlightVisible(f.id) ? 'Скрыть подсветку' : 'Показать подсветку'">
+                                                <input type="checkbox"
+                                                       :checked="isFindingHighlightVisible(f.id)"
+                                                       @change="toggleFindingHighlight(f.id)">
+                                            </label>
                                             <span class="sev-badge sev-badge--sm" :class="'sev-' + sevClass(f.severity)">
                                                 {{ f.severity || 'N/A' }}
                                             </span>
@@ -1555,15 +1659,38 @@
                                 <!-- Связанные F-замечания (из 03_findings) -->
                                 <div v-if="getBlockFindings(selectedBlock.block_id).length > 0"
                                      class="tile-analysis-section tile-analysis-section--findings">
-                                    <h4>Финальные замечания ({{ getBlockFindings(selectedBlock.block_id).length }})</h4>
+                                    <div class="tile-analysis-section__header">
+                                        <h4>Финальные замечания ({{ getBlockFindings(selectedBlock.block_id).length }})</h4>
+                                        <button class="btn-toggle-highlights" @click="toggleAllHighlights"
+                                                :title="allHighlightsVisible ? 'Скрыть все подсветки' : 'Показать все подсветки'">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <template v-if="allHighlightsVisible">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                                    <circle cx="12" cy="12" r="3"/>
+                                                </template>
+                                                <template v-else>
+                                                    <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 01-4.24-4.24"/>
+                                                    <line x1="1" y1="1" x2="23" y2="23"/>
+                                                </template>
+                                            </svg>
+                                        </button>
+                                    </div>
                                     <div v-for="(f, i) in getBlockFindings(selectedBlock.block_id)" :key="'f-' + i"
                                          class="tile-finding-card"
                                          :class="['tile-finding-card--' + sevClass(f.severity),
                                                    {'tile-finding-card--highlighted': highlightedFindingId === f.id,
+                                                    'tile-finding-card--dimmed': !isFindingHighlightVisible(f.id),
                                                     'tile-finding-card--has-regions': f.highlight_regions && f.highlight_regions.length > 0}]"
                                          @click="f.highlight_regions && f.highlight_regions.length ? highlightFinding(f.id) : null"
                                          :style="f.highlight_regions && f.highlight_regions.length ? {cursor: 'pointer'} : {}">
                                         <div class="tile-finding-card__header">
+                                            <label v-if="f.highlight_regions && f.highlight_regions.length"
+                                                   class="finding-visibility-toggle" @click.stop
+                                                   :title="isFindingHighlightVisible(f.id) ? 'Скрыть подсветку' : 'Показать подсветку'">
+                                                <input type="checkbox"
+                                                       :checked="isFindingHighlightVisible(f.id)"
+                                                       @change="toggleFindingHighlight(f.id)">
+                                            </label>
                                             <span class="sev-badge sev-badge--sm" :class="'sev-' + sevClass(f.severity)">
                                                 {{ f.severity || 'N/A' }}
                                             </span>
@@ -1604,6 +1731,12 @@
                     <select v-model="discussionModel" class="discussion-model-select">
                         <option v-for="m in discussionModels" :key="m.id" :value="m.id">{{ m.label }}</option>
                     </select>
+                    <span v-if="discussionContextTokens" class="discussion-tokens"
+                          :title="'Контекст: ' + formatTokens(discussionContextTokens.context_tokens)
+                              + (discussionContextTokens.image_count ? ' + ' + discussionContextTokens.image_count + ' изобр. (~' + formatTokens(discussionContextTokens.image_tokens) + ')' : '')
+                              + (discussionContextTokens.history_tokens ? ' + история: ' + formatTokens(discussionContextTokens.history_tokens) + ' (' + discussionContextTokens.history_messages + ' сообщ.)' : '')">
+                        ~{{ formatTokens(discussionContextTokens.total_tokens) }} tok
+                    </span>
                     <span v-if="discussionCost > 0" class="discussion-cost">{{ formatCostUSD(discussionCost) }}</span>
                 </div>
             </div>
@@ -1705,12 +1838,12 @@
                     <table class="findings-table">
                         <thead>
                             <tr>
-                                <th style="width:70px; text-align:center">ID</th>
-                                <th style="width:115px; text-align:center; padding-left:4px; padding-right:4px">Критичность</th>
-                                <th style="width:120px; text-align:center">Лист</th>
-                                <th style="width:50%">Замечание</th>
-                                <th style="width:160px">Норма</th>
-                                <th style="width:50%">Рекомендация</th>
+                                <th style="width:60px; text-align:center">ID</th>
+                                <th style="width:100px; text-align:center; padding-left:4px; padding-right:4px">Критичность</th>
+                                <th style="width:65px; text-align:center">Лист</th>
+                                <th style="width:35%">Замечание</th>
+                                <th style="width:120px">Норма</th>
+                                <th style="width:30%">Рекомендация</th>
                                 <th style="width:36px"></th>
                             </tr>
                         </thead>
@@ -1772,7 +1905,7 @@
                                                     <span class="finding-text-card__role">{{ te.role || 'текст' }}</span>
                                                     <span class="finding-text-card__page">стр. {{ te.page }}</span>
                                                 </div>
-                                                <div class="finding-text-card__body">{{ te.text }}</div>
+                                                <div class="finding-text-card__body" v-html="te.html || renderMarkdown(te.text)"></div>
                                             </div>
                                         </div>
                                     </td>
@@ -2109,7 +2242,7 @@
         </div>
 
         <!-- ═══ Prompts Editor ═══ -->
-        <div v-if="currentView === 'prompts'" class="container">
+        <div v-if="currentView === 'prompts'" class="container container--flex">
             <div class="prompts-page" @click="showDisciplineDropdown = false">
                 <!-- Toolbar: dropdown дисциплины + заголовок -->
                 <div class="prompts-toolbar">
@@ -2134,7 +2267,7 @@
 
                 <div v-if="promptsLoading" class="empty-state">Загрузка промптов...</div>
 
-                <div v-else>
+                <div v-else style="display:flex;flex-direction:column;flex:1;min-height:0">
                     <!-- Chrome-style tabs -->
                     <div class="prompt-tabs">
                         <div v-for="(p, idx) in templates" :key="p.stage"
@@ -2174,7 +2307,7 @@
         </div>
 
         <!-- ═══ Live Log ═══ -->
-        <div v-if="currentView === 'log'" class="container">
+        <div v-if="currentView === 'log'" class="container container--flex">
             <div class="log-page">
                 <div class="log-controls">
                     <button class="btn btn-sm" @click="clearLog">Очистить</button>
@@ -2223,6 +2356,7 @@
                 </div>
             </div>
         </div>
+        </div><!-- /main-area -->
     </div>
 
     <script src="/static/js/app.js?v={{js_version}}"></script>

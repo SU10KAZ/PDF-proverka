@@ -16,7 +16,8 @@ class UsageRecord(BaseModel):
     stage: str = ""  # tile_batch, main_audit, triage, etc.
     model: str = ""
     # Из JSON output (мгновенные):
-    cost_usd: float = 0.0
+    cost_usd: float = 0.0           # реальная стоимость (0 для CLI по подписке)
+    cost_usd_notional: float = 0.0  # "сколько бы стоило" на API (только для CLI)
     duration_ms: int = 0          # полное время сессии (включая паузы)
     duration_api_ms: int = 0      # чистое время API-вызовов (без пауз)
     num_turns: int = 0

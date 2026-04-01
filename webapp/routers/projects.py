@@ -17,7 +17,7 @@ class RegisterProjectRequest(BaseModel):
     md_file: Optional[str] = None
     md_files: list[str] = []               # все MD (если несколько)
     name: Optional[str] = None
-    section: str = "EM"
+    section: str = "EOM"
     description: str = ""
 
 
@@ -140,7 +140,7 @@ class RegisterExternalRequest(BaseModel):
     md_file: Optional[str] = None
     md_files: list[str] = []
     name: Optional[str] = None
-    section: str = "EM"
+    section: str = "EOM"
     description: str = ""
 
 

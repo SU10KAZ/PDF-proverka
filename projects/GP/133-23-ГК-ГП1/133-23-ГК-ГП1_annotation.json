@@ -1,0 +1,594 @@
+{
+  "pdf_path": "D:\\ОСА нейросеть\\cache\\f8f58bb5-ab5f-48c7-bf9a-18564581eca7\\133-23-ГК-ГП1.pdf",
+  "pages": [
+    {
+      "page_number": 0,
+      "width": 1241,
+      "height": 1754,
+      "blocks": [
+        {
+          "id": "67G3-QNF7-FPM",
+          "page_index": 0,
+          "coords_px": [
+            0,
+            236,
+            1190,
+            1076
+          ],
+          "coords_norm": [
+            0.0,
+            0.13511972633979474,
+            0.958904109589041,
+            0.61345496009122
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-01-14 09:49:19"
+        }
+      ]
+    },
+    {
+      "page_number": 1,
+      "width": 1241,
+      "height": 1754,
+      "blocks": [
+        {
+          "id": "4CCV-393D-TAD",
+          "page_index": 1,
+          "coords_px": [
+            63,
+            236,
+            1241,
+            1350
+          ],
+          "coords_norm": [
+            0.05076551168412571,
+            0.1345496009122007,
+            1.0,
+            0.7696693272519954
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-01-14 09:49:19"
+        }
+      ]
+    },
+    {
+      "page_number": 2,
+      "width": 1241,
+      "height": 1754,
+      "blocks": [
+        {
+          "id": "4RKK-MXQM-LYD",
+          "page_index": 2,
+          "coords_px": [
+            119,
+            35,
+            1216,
+            353
+          ],
+          "coords_norm": [
+            0.0958904109589041,
+            0.019954389965792473,
+            0.9798549556809025,
+            0.20125427594070697
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-01-14 09:49:19"
+        },
+        {
+          "id": "4EG4-L6UT-YVX",
+          "page_index": 2,
+          "coords_px": [
+            121,
+            1591,
+            1213,
+            1715
+          ],
+          "coords_norm": [
+            0.09794437726723096,
+            0.9073546180159635,
+            0.9778315195485692,
+            0.9777651083238312
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "category_id": "fd6ce354-3699-47de-8e14-15f1fd42fd2d",
+          "category_code": "stamp",
+          "created_at": "2026-01-14 09:49:19"
+        }
+      ]
+    },
+    {
+      "page_number": 3,
+      "width": 2482,
+      "height": 1755,
+      "blocks": [
+        {
+          "id": "4YAK-YM46-FGG",
+          "page_index": 3,
+          "coords_px": [
+            113,
+            27,
+            1206,
+            318
+          ],
+          "coords_norm": [
+            0.045738464638323595,
+            0.01567398119122257,
+            0.4861978641950433,
+            0.18153320034197779
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-01-14 09:49:19"
+        },
+        {
+          "id": "9K46-D7KP-EY4",
+          "page_index": 3,
+          "coords_px": [
+            113,
+            328,
+            1210,
+            790
+          ],
+          "coords_norm": [
+            0.045738464638323595,
+            0.18723282986605871,
+            0.48780979246423534,
+            0.4505557138785979
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-01-14 09:49:19"
+        },
+        {
+          "id": "4X7K-33KF-HFH",
+          "page_index": 3,
+          "coords_px": [
+            127,
+            808,
+            1278,
+            1551
+          ],
+          "coords_norm": [
+            0.05117872254684667,
+            0.4608150470219436,
+            0.5152125730404997,
+            0.8840125391849529
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-01-14 09:49:19"
+        },
+        {
+          "id": "MTYQ-FWDJ-YEX",
+          "page_index": 3,
+          "coords_px": [
+            1364,
+            33,
+            2453,
+            647
+          ],
+          "coords_norm": [
+            0.5496675397944791,
+            0.01909375890567113,
+            0.9887165021156559,
+            0.3687660302080365
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-01-14 09:49:19"
+        },
+        {
+          "id": "67L6-RYAK-AGX",
+          "page_index": 3,
+          "coords_px": [
+            1364,
+            961,
+            2437,
+            1294
+          ],
+          "coords_norm": [
+            0.5496675397944791,
+            0.5480193787403819,
+            0.9822687890388878,
+            0.737817041892277
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-01-14 09:49:19"
+        },
+        {
+          "id": "6GLY-RG3W-YDP",
+          "page_index": 3,
+          "coords_px": [
+            1354,
+            1404,
+            2449,
+            1730
+          ],
+          "coords_norm": [
+            0.545637719121499,
+            0.8002279851809633,
+            0.9871045738464639,
+            0.9863208891422057
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "category_id": "fd6ce354-3699-47de-8e14-15f1fd42fd2d",
+          "category_code": "stamp",
+          "created_at": "2026-01-14 09:49:19"
+        }
+      ]
+    },
+    {
+      "page_number": 4,
+      "width": 3509,
+      "height": 2482,
+      "blocks": [
+        {
+          "id": "4JJ7-3TGQ-XKP",
+          "page_index": 4,
+          "coords_px": [
+            115,
+            33,
+            1464,
+            1728
+          ],
+          "coords_norm": [
+            0.0327775402593701,
+            0.013499899254483175,
+            0.41727233860624197,
+            0.696554503324602
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "hint": "Разбивочный план",
+          "created_at": "2026-01-14 09:49:19"
+        },
+        {
+          "id": "7NJJ-KNMC-MUR",
+          "page_index": 4,
+          "coords_px": [
+            1092,
+            1768,
+            2199,
+            2401
+          ],
+          "coords_norm": [
+            0.311386632464016,
+            0.7124722949828732,
+            0.6267635741769987,
+            0.9677614346161596
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "linked_block_id": "6MF4-ERLM-A7U",
+          "created_at": "2026-01-14 09:49:19"
+        },
+        {
+          "id": "6MF4-ERLM-A7U",
+          "page_index": 4,
+          "coords_px": [
+            1092,
+            1768,
+            2199,
+            2401
+          ],
+          "coords_norm": [
+            0.311386632464016,
+            0.7124722949828732,
+            0.6267635741769987,
+            0.9677614346161596
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "linked_block_id": "7NJJ-KNMC-MUR",
+          "created_at": "2026-01-14 09:49:19"
+        },
+        {
+          "id": "47A3-AM6H-NHU",
+          "page_index": 4,
+          "coords_px": [
+            2399,
+            487,
+            3133,
+            993
+          ],
+          "coords_norm": [
+            0.6837679920193815,
+            0.19625226677412855,
+            0.8931167165455323,
+            0.4003626838605682
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "linked_block_id": "6FMU-7MNC-FNQ",
+          "created_at": "2026-01-14 09:49:19"
+        },
+        {
+          "id": "6FMU-7MNC-FNQ",
+          "page_index": 4,
+          "coords_px": [
+            2399,
+            487,
+            3133,
+            993
+          ],
+          "coords_norm": [
+            0.6837679920193815,
+            0.19625226677412855,
+            0.8931167165455323,
+            0.4003626838605682
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "linked_block_id": "47A3-AM6H-NHU",
+          "created_at": "2026-01-14 09:49:19"
+        },
+        {
+          "id": "FCJY-JT7X-DQQ",
+          "page_index": 4,
+          "coords_px": [
+            1472,
+            11,
+            2351,
+            1160
+          ],
+          "coords_norm": [
+            0.4194927329723568,
+            0.004431909750201451,
+            0.6699914505557139,
+            0.467365028203062
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-01-14 09:49:19",
+          "is_correction": true
+        },
+        {
+          "id": "4DT7-T7RN-HT3",
+          "page_index": 4,
+          "coords_px": [
+            2384,
+            25,
+            3483,
+            430
+          ],
+          "coords_norm": [
+            0.6793958392704474,
+            0.010072522159548751,
+            0.9925904816186948,
+            0.17324738114423852
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-01-14 09:49:19",
+          "is_correction": true
+        },
+        {
+          "id": "7UAE-RKGA-CWY",
+          "page_index": 4,
+          "coords_px": [
+            2365,
+            1041,
+            3460,
+            1402
+          ],
+          "coords_norm": [
+            0.6740772409861764,
+            0.41970582309087245,
+            0.9863189397178281,
+            0.5649808583518033
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-01-14 09:49:19"
+        },
+        {
+          "id": "DNY6-XYGF-LNL",
+          "page_index": 4,
+          "coords_px": [
+            129,
+            1804,
+            1092,
+            1945
+          ],
+          "coords_norm": [
+            0.036910360552942854,
+            0.7271811404392504,
+            0.311386632464016,
+            0.7840016119282692
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-01-14 09:49:19"
+        },
+        {
+          "id": "4GUF-V7QV-6EQ",
+          "page_index": 4,
+          "coords_px": [
+            2384,
+            2123,
+            3477,
+            2446
+          ],
+          "coords_norm": [
+            0.6796351717258088,
+            0.8555309288736651,
+            0.9911643152344307,
+            0.9858956276445698
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "category_id": "fd6ce354-3699-47de-8e14-15f1fd42fd2d",
+          "category_code": "stamp",
+          "created_at": "2026-01-14 09:49:19"
+        }
+      ]
+    },
+    {
+      "page_number": 5,
+      "width": 7042,
+      "height": 4973,
+      "blocks": [
+        {
+          "id": "9NNW-A7RW-A3G",
+          "page_index": 5,
+          "coords_px": [
+            298,
+            135,
+            5939,
+            4209
+          ],
+          "coords_norm": [
+            0.04251531120922945,
+            0.027179383933964164,
+            0.8458908987323743,
+            0.8473927924300383
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "hint": "план осей здания",
+          "created_at": "2026-01-14 09:49:19"
+        },
+        {
+          "id": "49N6-TEKG-VJJ",
+          "page_index": 5,
+          "coords_px": [
+            5863,
+            4409,
+            6814,
+            4572
+          ],
+          "coords_norm": [
+            0.8350662298817833,
+            0.8877592107912221,
+            0.970517020367469,
+            0.9204751358969196
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "linked_block_id": "HQEN-UVDV-UMM",
+          "created_at": "2026-01-14 09:49:19"
+        },
+        {
+          "id": "HQEN-UVDV-UMM",
+          "page_index": 5,
+          "coords_px": [
+            5863,
+            4409,
+            6814,
+            4572
+          ],
+          "coords_norm": [
+            0.8350662298817833,
+            0.8877592107912221,
+            0.970517020367469,
+            0.9204751358969196
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "linked_block_id": "49N6-TEKG-VJJ",
+          "created_at": "2026-01-14 09:49:19"
+        },
+        {
+          "id": "AAVX-4LCC-A6X",
+          "page_index": 5,
+          "coords_px": [
+            5898,
+            4610,
+            6992,
+            4923
+          ],
+          "coords_norm": [
+            0.840051274747187,
+            0.9281256291524059,
+            0.9959407491810284,
+            0.9912421985101671
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "category_id": "fd6ce354-3699-47de-8e14-15f1fd42fd2d",
+          "category_code": "stamp",
+          "created_at": "2026-01-14 09:49:19"
+        }
+      ]
+    }
+  ],
+  "format_version": 2
+}

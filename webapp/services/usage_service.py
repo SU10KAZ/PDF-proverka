@@ -204,6 +204,11 @@ class UsageTracker:
         return total_input, total_output, total_cost, len(records)
 
     @staticmethod
+    def _sum_notional(records: list[dict]) -> float:
+        """Суммирование 'теоретической' стоимости CLI (сэкономлено по подписке)."""
+        return sum(r.get("cost_usd_notional", 0.0) for r in records)
+
+    @staticmethod
     def _dedup_for_duration(records: list[dict]) -> list[dict]:
         """
         Дедупликация записей по original stage для подсчёта duration.
@@ -402,12 +407,16 @@ class UsageTracker:
                 "model": stage_model,
             }
 
+        # "Сэкономлено" — теоретическая стоимость CLI-вызовов (по подписке = $0)
+        notional = self._sum_notional(project_recs)
+
         return {
             "project_id": project_id,
             "total_input_tokens": t_in,
             "total_output_tokens": t_out,
             "total_tokens": t_in + t_out,
             "total_cost_usd": round(t_cost, 4),
+            "notional_cost_usd": round(notional, 4),
             "total_calls": t_calls,
             "stages_summary": stages_summary,
         }

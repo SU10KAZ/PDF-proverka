@@ -8,7 +8,7 @@ def test_build_text_analysis_prompt_uses_explicit_paths():
         {
             "project_id": "compat-project",
             "name": "Compatibility Project",
-            "section": "EM",
+            "section": "EOM",
         },
         output_path="/tmp/out",
         md_file_path="/tmp/project.md",
@@ -29,9 +29,9 @@ def test_prepare_main_audit_task_uses_legacy_argument_order(monkeypatch):
 
     monkeypatch.setattr(task_builder, "prepare_text_analysis_task", fake_prepare)
 
-    result = task_builder.prepare_main_audit_task("P-001", {"section": "EM"})
+    result = task_builder.prepare_main_audit_task("P-001", {"section": "EOM"})
     assert result == "ok"
-    assert captured == {"project_info": {"section": "EM"}, "project_id": "P-001"}
+    assert captured == {"project_info": {"section": "EOM"}, "project_id": "P-001"}
 
 
 def test_prepare_triage_task_uses_legacy_argument_order(monkeypatch):

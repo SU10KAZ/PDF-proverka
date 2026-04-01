@@ -31,7 +31,7 @@ class ProjectInfo(BaseModel):
     project_id: str
     name: str
     object: Optional[str] = None
-    section: str = "EM"
+    section: str = "EOM"
     description: str = ""
     pdf_file: str = "document.pdf"
     pdf_files: list[str] = []          # несколько PDF в одном проекте
@@ -45,7 +45,7 @@ class ProjectStatus(BaseModel):
     project_id: str
     name: str
     description: str = ""
-    section: str = "EM"
+    section: str = "EOM"
     object: Optional[str] = None
     has_pdf: bool = False
     pdf_size_mb: float = 0.0
@@ -82,6 +82,6 @@ class ProjectCreate(BaseModel):
     """Запрос на создание проекта."""
     project_id: str
     name: str
-    section: str = "EM"
+    section: str = "EOM"
     description: str = ""
     object: Optional[str] = None

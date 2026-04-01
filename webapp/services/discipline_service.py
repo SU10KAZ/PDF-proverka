@@ -74,10 +74,10 @@ def load_discipline(code: str) -> DisciplineProfile:
 
     disc_dir = _resolve_profile_dir(code, disc_info)
     if not disc_dir.exists():
-        # Fallback на EM если профиль не найден
-        if code != "EM":
-            return load_discipline("EM")
-        # Если даже EM нет — возвращаем пустой профиль
+        # Fallback на EOM если профиль не найден
+        if code != "EOM":
+            return load_discipline("EOM")
+        # Если даже EOM нет — возвращаем пустой профиль
         return DisciplineProfile(
             code=code,
             name=disc_info.get("name", code),
@@ -121,7 +121,7 @@ def detect_discipline(folder_name: str, text_sample: str = "") -> str:
     Приоритет:
     1. Имя папки → поиск folder_patterns из _registry.json
     2. Текст → подсчёт text_keywords, порог >= 2 совпадения
-    3. Fallback → "EM"
+    3. Fallback → "EOM"
     """
     registry = _load_registry()
     disciplines = registry.get("disciplines", {})
@@ -148,7 +148,7 @@ def detect_discipline(folder_name: str, text_sample: str = "") -> str:
                 return best
 
     # Fallback
-    return "EM"
+    return "EOM"
 
 
 def get_supported_disciplines() -> list[dict]:

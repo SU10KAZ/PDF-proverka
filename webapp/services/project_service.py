@@ -27,7 +27,7 @@ def iter_project_dirs(force: bool = False) -> list[tuple[str, Path]]:
 
     Возвращает [(project_id, path), ...] где project_id = имя папки.
     Проект = папка с project_info.json или PDF-файлами.
-    Подпапка-группа (OV/, EM/ и т.д.) = папка без project_info.json и без PDF.
+    Подпапка-группа (OV/, EOM/ и т.д.) = папка без project_info.json и без PDF.
 
     Кеш обновляется раз в 30 секунд (или force=True).
     """
@@ -218,7 +218,7 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
         project_id=project_id,
         name=info.get("name", project_id),
         description=info.get("description", ""),
-        section=info.get("section", "EM"),
+        section=info.get("section", "EOM"),
         object=info.get("object"),
         has_pdf=has_pdf,
         pdf_size_mb=pdf_size_mb,
@@ -552,7 +552,7 @@ def register_external_project(source_path: str, pdf_file: str,
                               pdf_files: list[str] | None = None,
                               md_file: Optional[str] = None,
                               md_files: list[str] | None = None,
-                              name: Optional[str] = None, section: str = "EM",
+                              name: Optional[str] = None, section: str = "EOM",
                               description: str = "") -> dict:
     """Скопировать проект из внешней папки в projects/ и создать project_info.json.
 
@@ -620,7 +620,7 @@ def register_external_project(source_path: str, pdf_file: str,
 
 def register_project(folder: str, pdf_file: str, pdf_files: list[str] | None = None,
                      md_file: Optional[str] = None, md_files: list[str] | None = None,
-                     name: Optional[str] = None, section: str = "EM",
+                     name: Optional[str] = None, section: str = "EOM",
                      description: str = "") -> dict:
     """Создать project_info.json для папки из projects/.
 

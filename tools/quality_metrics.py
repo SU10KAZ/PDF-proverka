@@ -3,7 +3,7 @@
 
 Использование:
     python tools/quality_metrics.py test/baseline/АР_133-23-ГК-АР1
-    python tools/quality_metrics.py projects/EM/133_23-ГК-ЭМ1/_output
+    python tools/quality_metrics.py projects/EOM/133_23-ГК-ЭМ1/_output
     python tools/quality_metrics.py --all-baselines
 
 Выход:

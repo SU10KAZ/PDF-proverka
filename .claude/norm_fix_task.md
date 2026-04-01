@@ -48,48 +48,22 @@
    - Обновлённую формулировку
    - Что именно изменилось и почему
 
-## Формат выходного файла
+## Выходной файл
 
-ЗАПИСАТЬ: `{PROJECT_PATH}/_output/03a_norms_verified.json`
+ЗАПИСАТЬ: `{PROJECT_PATH}/_output/03_findings.json`
 
-Файл должен быть **полной копией** `03_findings.json` со следующими изменениями:
+Прочитай текущий `03_findings.json`, обнови ТОЛЬКО замечания из списка выше, запиши обратно.
 
-```json
-{{
-  "meta": {{
-    "...все поля из 03_findings.json...",
-    "norm_verification": {{
-      "verified_at": "<ISO datetime>",
-      "total_norms_checked": N,
-      "norms_ok": N,
-      "norms_revised": N,
-      "findings_revised": ["F-002", "F-003"]
-    }}
-  }},
-  "findings": [
-    {{
-      "...все поля из оригинала...",
-      "norm_verified": true,
-      "norm_status": "ok|revised|warning",
-      "norm_revision": {{
-        "original_norm": "старая ссылка",
-        "revised_norm": "новая ссылка (или null если не менялась)",
-        "original_text": "старая формулировка замечания (или null)",
-        "revised_text": "новая формулировка (или null)",
-        "revision_reason": "Причина изменения"
-      }}
-    }}
-  ],
-  "quick_index": "...как в оригинале..."
-}}
-```
+Для каждого обновлённого finding добавь поля:
+- `"norm_verified": true`
+- `"norm_status": "revised"` (или `"warning"` если неопределённо)
+- `"norm_revision"`: `{{"original_norm": "...", "revised_norm": "...", "revision_reason": "..."}}`
+
+Для остальных (не в списке): добавь `"norm_verified": true, "norm_status": "ok"`.
 
 ## Правила
 
 1. НЕ удаляй и НЕ добавляй замечания — только обновляй существующие
-2. Для замечаний без проблем с нормами: `norm_verified: true, norm_status: "ok", norm_revision: null`
-3. Для исправленных: `norm_status: "revised"` + заполни `norm_revision`
-4. Для неопределённых: `norm_status: "warning"` + объясни в `revision_reason`
-5. Сохрани ВСЕ оригинальные поля каждого finding — добавляй новые, не удаляй старые
-6. Пиши JSON через Write — НЕ выводи в чат
-7. После записи выведи итог: сколько замечаний пересмотрено, что изменилось
+2. Сохрани ВСЕ оригинальные поля каждого finding — добавляй новые, не удаляй старые
+3. Пиши JSON через Write — НЕ выводи в чат
+4. После записи выведи краткий итог: что изменилось

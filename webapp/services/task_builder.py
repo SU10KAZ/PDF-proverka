@@ -198,7 +198,7 @@ def _load_project_info(project_id: str) -> dict:
 def get_resolved_prompts(project_id: str, discipline_override: str | None = None) -> list[dict]:
     """Получить все промпты (resolved) для отображения в UI.
 
-    discipline_override — код дисциплины (EM, OV и т.д.) для подмены section.
+    discipline_override — код дисциплины (EOM, OV и т.д.) для подмены section.
     Если None — используется section из project_info.json.
     """
     project_info = _load_project_info(project_id)
@@ -307,7 +307,7 @@ def _get_block_analysis_example(project_info: dict, project_id: str) -> str:
 
 def _inject_discipline(template: str, project_info: dict) -> str:
     """Инъекция дисциплинарного контента в шаблон."""
-    section = (project_info or {}).get("section", "EM")
+    section = (project_info or {}).get("section", "EOM")
     profile = discipline_service.load_discipline(section)
     return discipline_service.inject_discipline(template, profile)
 
@@ -1000,7 +1000,7 @@ def prepare_block_batch_task(
         .replace("{BLOCK_LIST}", "\n".join(block_lines))
         .replace("{MD_FILE_PATH}", md_file_path)
         .replace("{BLOCK_MD_CONTEXT}", md_context if md_context else "(нет IMAGE-описаний для блоков этого пакета)")
-        .replace("{SECTION}", (project_info or {}).get("section", "EM"))
+        .replace("{SECTION}", (project_info or {}).get("section", "EOM"))
     )
     return task
 
@@ -1097,7 +1097,7 @@ _VENDOR_SECTIONS_BY_DISCIPLINE: dict[str, list[str]] = {
         "Холодоснабжение",
         "Автоматизация и диспетчеризация",
     ],
-    "EM": [
+    "EOM": [
         "Электроснабжение и освещение",
         "Автоматизация и диспетчеризация",
     ],
@@ -1183,7 +1183,7 @@ def prepare_optimization_task(
     md_file_path = _get_md_file_path(project_info, project_id)
 
     # Вендор-лист — отфильтрованный по дисциплине
-    section = (project_info or {}).get("section", "EM")
+    section = (project_info or {}).get("section", "EOM")
     vendor_list_text = _load_vendor_list_for_discipline(section)
 
     template = _inject_discipline(template, project_info)
@@ -1209,7 +1209,7 @@ def prepare_optimization_critic_task(
     md_file_path = _get_md_file_path(project_info, project_id)
 
     # Вендор-лист — отфильтрованный по дисциплине
-    section = (project_info or {}).get("section", "EM")
+    section = (project_info or {}).get("section", "EOM")
     vendor_list_text = _load_vendor_list_for_discipline(section)
 
     task = (
@@ -1233,7 +1233,7 @@ def prepare_optimization_corrector_task(
     md_file_path = _get_md_file_path(project_info, project_id)
 
     # Вендор-лист — отфильтрованный по дисциплине
-    section = (project_info or {}).get("section", "EM")
+    section = (project_info or {}).get("section", "EOM")
     vendor_list_text = _load_vendor_list_for_discipline(section)
 
     task = (

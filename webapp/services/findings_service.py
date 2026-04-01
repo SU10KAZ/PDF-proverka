@@ -3,6 +3,7 @@
 Чтение, фильтрация, сводка из 03_findings.json.
 """
 import json
+import re
 from pathlib import Path
 from typing import Optional
 
@@ -266,9 +267,423 @@ def get_finding_block_map(project_id: str) -> Optional[dict]:
     }
 
 
+def _escape_with_markdown(text: str) -> str:
+    """Экранирует HTML, но сохраняет markdown **bold** → <strong>."""
+    import html as html_mod
+    # Разбиваем на фрагменты: **bold** и обычный текст
+    parts = re.split(r'(\*\*[^*]+\*\*)', text)
+    result = []
+    for part in parts:
+        if part.startswith("**") and part.endswith("**") and len(part) > 4:
+            inner = html_mod.escape(part[2:-2])
+            result.append(f"<strong>{inner}</strong>")
+        else:
+            result.append(html_mod.escape(part))
+    return "".join(result)
+
+
+def _clean_latex(text: str) -> str:
+    """Конвертирует LaTeX-разметку из OCR в читаемый plain text."""
+    if not text or '\\' not in text:
+        return text
+    # \text{ кг/м} → кг/м
+    text = re.sub(r'\\text\s*\{([^}]*)\}', r'\1', text)
+    # ^{...} → (...)  |  ^3 → ³  |  ^2 → ²
+    text = text.replace('^3', '³').replace('^2', '²')
+    text = re.sub(r'\^\{([^}]*)\}', r'\1', text)
+    # \frac{a}{b} → a/b
+    text = re.sub(r'\\frac\s*\{([^}]*)\}\s*\{([^}]*)\}', r'\1/\2', text)
+    # Символы: \cdot → ·, \times → ×, \leq → ≤, \geq → ≥, \pm → ±, \degree → °
+    _latex_symbols = {
+        '\\cdot': '·', '\\times': '×', '\\leq': '≤', '\\geq': '≥',
+        '\\pm': '±', '\\degree': '°', '\\infty': '∞', '\\approx': '≈',
+        '\\neq': '≠', '\\sim': '~', '\\sqrt': '√',
+    }
+    for cmd, char in _latex_symbols.items():
+        text = text.replace(cmd, char)
+    # Оставшиеся \command → убрать бэкслеш
+    text = re.sub(r'\\([a-zA-Z]+)', r'\1', text)
+    return text
+
+
+def _text_to_html(raw: str) -> str:
+    """Конвертирует raw текст из document_graph в HTML.
+
+    Формат данных из OCR (Chandra):
+    - Табличные ячейки: каждая на отдельной строке, заканчивается \\t
+    - Строки таблицы разделены пустыми строками
+    - Заголовки столбцов: обычные строки без \\t перед первым табличным рядом
+    - Обычный текст: строки без \\t
+    - **bold** → <strong>
+    - LaTeX-разметка (\text{}, ^3 и др.) → читаемый текст
+    """
+    import html as html_mod
+    raw = _clean_latex(raw)
+    lines = raw.split("\n")
+
+    # Нормализация: strip пробелы, объединить строки-только-\t с последней непустой строкой
+    normalized: list[str] = []
+    for ln in lines:
+        s = ln.strip(" ")
+        if s.strip("\t ") == "" and "\t" in s:
+            # Строка содержит только \t (и пробелы) — присоединяем к последней непустой строке
+            for j in range(len(normalized) - 1, -1, -1):
+                if normalized[j].strip():
+                    normalized[j] = normalized[j].rstrip() + "\t"
+                    break
+        elif s.strip() == "":
+            normalized.append("")
+        else:
+            normalized.append(s.strip())
+    lines = normalized
+
+    # Trim
+    while lines and not lines[-1].strip():
+        lines.pop()
+    while lines and not lines[0].strip():
+        lines.pop(0)
+    if not lines:
+        return ""
+
+    # Определяем наличие табличных строк (содержат \t)
+    tab_line_indices = [i for i, ln in enumerate(lines) if "\t" in ln]
+    non_empty = [i for i, ln in enumerate(lines) if ln.strip()]
+    has_table = len(tab_line_indices) > 0 and len(tab_line_indices) / max(len(non_empty), 1) > 0.2
+
+    if has_table:
+        return _render_table_block(lines, tab_line_indices, html_mod)
+    else:
+        return _render_text_block(lines, html_mod)
+
+
+def _render_table_block(lines: list[str], tab_line_indices: list[int], html_mod) -> str:
+    """Рендерит блок с табличными данными.
+
+    Поддерживает два формата OCR:
+    - Формат A: каждая строка = полный ряд с \t между столбцами
+      (1.1\tКладовая\t57,3\tВ1)
+    - Формат B: каждая ячейка на своей строке, заканчивается \t,
+      ряды разделены пустыми строками
+    """
+    parts: list[str] = []
+    first_tab = tab_line_indices[0]
+
+    # --- Заголовок (строки до первого таба) ---
+    pre_lines = [ln.strip() for ln in lines[:first_tab] if ln.strip()]
+
+    # --- Определяем формат: A (multi-tab per line) vs B (single-tab per line) ---
+    tab_counts = []
+    for i in tab_line_indices:
+        ln = lines[i]
+        tab_counts.append(ln.count("\t"))
+    avg_tabs = sum(tab_counts) / max(len(tab_counts), 1)
+
+    # Формат A: среднее кол-во табов на строку > 1.5
+    is_format_a = avg_tabs > 1.5
+
+    if is_format_a:
+        return _render_table_format_a(lines, first_tab, tab_line_indices, pre_lines, parts)
+    else:
+        return _render_table_format_b(lines, first_tab, tab_line_indices, pre_lines, parts)
+
+
+def _render_table_format_a(lines, first_tab, tab_line_indices, pre_lines, parts):
+    """Формат A: каждая строка — полный ряд таблицы с \t-разделителями."""
+
+    # Заголовок
+    if pre_lines:
+        parts.append("<div class='te-header'>" + "<br>".join(
+            _escape_with_markdown(ln) for ln in pre_lines
+        ) + "</div>")
+
+    # Собираем ряды таблицы
+    table_rows: list[list[str]] = []
+    tail_start = len(lines)
+
+    for i in range(first_tab, len(lines)):
+        ln = lines[i]
+        if "\t" in ln and ln.strip():
+            cells = [c.strip() for c in ln.split("\t")]
+            # Убираем пустые trailing ячейки
+            while cells and not cells[-1]:
+                cells.pop()
+            if cells:
+                table_rows.append(cells)
+            tail_start = i + 1
+        elif ln.strip() and not table_rows:
+            # Обычная строка до таблицы — добавляем к заголовку
+            continue
+        elif ln.strip():
+            # Обычная строка после таблицы — начало хвоста
+            tail_start = i
+            break
+
+    # Убираем полностью пустые столбцы
+    if table_rows:
+        max_cols = max(len(r) for r in table_rows)
+        # Определяем непустые столбцы
+        non_empty_cols = []
+        for ci in range(max_cols):
+            has_data = any(ci < len(r) and r[ci] for r in table_rows)
+            if has_data:
+                non_empty_cols.append(ci)
+
+        thtml = "<table class='te-table'>"
+        for row in table_rows:
+            thtml += "<tr>"
+            for ci in non_empty_cols:
+                cell = _escape_with_markdown(row[ci]) if ci < len(row) else ""
+                thtml += f"<td>{cell}</td>"
+            thtml += "</tr>"
+        thtml += "</table>"
+        parts.append(thtml)
+
+    # Хвост
+    tail = [ln.strip() for ln in lines[tail_start:] if ln.strip()]
+    if tail:
+        parts.append("<div class='te-note'>" + "<br>".join(
+            _escape_with_markdown(ln) for ln in tail
+        ) + "</div>")
+
+    return "\n".join(parts)
+
+
+def _render_table_format_b(lines, first_tab, tab_line_indices, pre_lines, parts):
+    """Формат B: каждая ячейка на отдельной строке, заканчивается \t."""
+
+    # Собираем ВСЕ ряды сначала, чтобы определить кол-во столбцов по моде
+    all_row_sizes: list[int] = []
+    current_size = 0
+    for i in range(first_tab, len(lines)):
+        ln = lines[i]
+        if "\t" in ln and ln.strip():
+            current_size += 1
+        elif not ln.strip():
+            if current_size > 0:
+                all_row_sizes.append(current_size)
+                current_size = 0
+    if current_size > 0:
+        all_row_sizes.append(current_size)
+
+    # Определяем кол-во столбцов по самому частому размеру ряда (моде)
+    if all_row_sizes:
+        from collections import Counter
+        size_counts = Counter(all_row_sizes)
+        num_cols = size_counts.most_common(1)[0][0]
+    else:
+        num_cols = 1
+
+    # Разделяем pre_lines на заголовок и названия столбцов
+    title_lines: list[str] = []
+    col_headers: list[str] = []
+
+    # Если num_cols == 1 но pre_lines содержит несколько коротких строк — это заголовки столбцов
+    # Переопределяем num_cols по количеству заголовков
+    if num_cols == 1 and pre_lines and len(pre_lines) >= 3:
+        # Ищем паттерн: первые строки = название, последние N = заголовки столбцов
+        # Эвристика: берём максимальное N с title, где заголовки короткие
+        total_cells = sum(all_row_sizes)
+        best_cols = None
+        best_title = None
+        best_headers = None
+        for n_headers in range(min(len(pre_lines), 8), 1, -1):
+            candidate_headers = pre_lines[-n_headers:]
+            candidate_title = pre_lines[:-n_headers]
+            if any(len(h) > 40 for h in candidate_headers):
+                continue
+            if not candidate_title:
+                continue  # Нужен хотя бы заголовок таблицы
+            # Берём первый подходящий (максимальный n_headers с title)
+            best_cols = n_headers
+            best_title = candidate_title
+            best_headers = candidate_headers
+            break
+        if best_cols and best_cols >= 2:
+            num_cols = best_cols
+            col_headers = best_headers
+            title_lines = best_title
+        else:
+            title_lines = pre_lines
+    elif pre_lines and num_cols > 1 and len(pre_lines) >= num_cols:
+        col_headers = pre_lines[-num_cols:]
+        title_lines = pre_lines[:-num_cols]
+    elif pre_lines:
+        title_lines = pre_lines
+
+    if title_lines:
+        parts.append("<div class='te-header'>" + "<br>".join(
+            _escape_with_markdown(ln) for ln in title_lines
+        ) + "</div>")
+
+    # Группируем ячейки по рядам
+    # Non-tab строки внутри ряда = продолжение предыдущей ячейки (описание)
+    table_rows: list[list[str]] = []
+    current_row: list[str] = []
+    tail_start = len(lines)
+
+    i = first_tab
+    in_table = True
+    while i < len(lines) and in_table:
+        ln = lines[i]
+        if "\t" in ln and ln.strip():
+            current_row.append(ln.strip().strip("\t").strip())
+        elif not ln.strip():
+            if current_row:
+                table_rows.append(current_row)
+                current_row = []
+            has_more_tabs = any(j > i for j in tab_line_indices)
+            if not has_more_tabs:
+                tail_start = i + 1
+                in_table = False
+        elif ln.strip():
+            # Non-tab строка — продолжение предыдущей ячейки
+            # (описание без \t) ИЛИ конец таблицы
+            has_more_tabs = any(j > i for j in tab_line_indices)
+            if has_more_tabs and current_row:
+                # Дописываем к предыдущей ячейке
+                current_row[-1] += " " + ln.strip()
+            elif has_more_tabs and not current_row:
+                # Начало нового ряда без таба — первая ячейка
+                current_row.append(ln.strip())
+            else:
+                if current_row:
+                    table_rows.append(current_row)
+                    current_row = []
+                tail_start = i
+                in_table = False
+        i += 1
+
+    if current_row:
+        table_rows.append(current_row)
+        tail_start = i
+
+    # Перегруппировка: если все/почти все ряды одноячеечные — группировать по num_cols
+    if table_rows and num_cols > 1:
+        single_count = sum(1 for r in table_rows if len(r) == 1)
+        if single_count > len(table_rows) * 0.7:
+            flat = []
+            for r in table_rows:
+                flat.extend(r)
+
+            # Проверим — нужен ли дополнительный столбец (безымянный, для кодов типа A.0)
+            # Эвристика: первая ячейка при num_cols+1 группировке — короткий код (< 8 символов)
+            if col_headers and len(flat) >= num_cols + 1:
+                nc_plus = num_cols + 1
+                # Проверяем первые 3 ряда при nc_plus: первая ячейка каждого ряда должна быть короткой
+                sample_firsts = [flat[i] for i in range(0, min(len(flat), nc_plus * 3), nc_plus)]
+                avg_first_len = sum(len(c) for c in sample_firsts) / max(len(sample_firsts), 1)
+                if avg_first_len < 10:
+                    col_headers = [""] + col_headers
+                    num_cols = nc_plus
+
+            table_rows = [flat[i:i+num_cols] for i in range(0, len(flat), num_cols)]
+
+    # Рендер
+    if table_rows:
+        max_cols = max(len(r) for r in table_rows)
+        thtml = "<table class='te-table'>"
+        if col_headers and len(col_headers) == max_cols:
+            thtml += "<tr>"
+            for h in col_headers:
+                thtml += f"<th>{_escape_with_markdown(h)}</th>"
+            thtml += "</tr>"
+        for row in table_rows:
+            thtml += "<tr>"
+            for ci in range(max_cols):
+                cell = _escape_with_markdown(row[ci]) if ci < len(row) else ""
+                thtml += f"<td>{cell}</td>"
+            thtml += "</tr>"
+        thtml += "</table>"
+        parts.append(thtml)
+
+    tail = [ln.strip() for ln in lines[tail_start:] if ln.strip()]
+    if tail:
+        parts.append("<div class='te-note'>" + "<br>".join(
+            _escape_with_markdown(ln) for ln in tail
+        ) + "</div>")
+
+    return "\n".join(parts)
+
+
+def _render_text_block(lines: list[str], html_mod) -> str:
+    """Рендерит обычный текстовый блок в HTML параграфы."""
+    paragraphs: list[str] = []
+    current: list[str] = []
+    for ln in lines:
+        stripped = ln.strip()
+        if stripped:
+            current.append(_escape_with_markdown(stripped))
+        else:
+            if current:
+                paragraphs.append("<br>".join(current))
+                current = []
+    if current:
+        paragraphs.append("<br>".join(current))
+
+    if len(paragraphs) == 1:
+        return f"<p>{paragraphs[0]}</p>"
+    return "\n".join(f"<p>{p}</p>" for p in paragraphs)
+
+
+def _build_ocr_html_index(project_dir: Path) -> dict[str, str]:
+    """Индекс block_id → HTML-контент из OCR HTML файла.
+
+    OCR HTML содержит готовые таблицы и текст с правильным форматированием.
+    Каждый блок начинается с <p>BLOCK: XXXX-XXXX-XXX</p> внутри div.block-content.
+    """
+    # Ищем *_ocr.html в папке проекта
+    ocr_files = list(project_dir.glob("*_ocr.html"))
+    if not ocr_files:
+        return {}
+
+    ocr_path = ocr_files[0]
+    try:
+        html_content = ocr_path.read_text(encoding="utf-8")
+    except OSError:
+        return {}
+
+    index: dict[str, str] = {}
+
+    # Разбиваем на блоки по div.block
+    block_pattern = re.compile(
+        r'<div\s+class="block[^"]*">\s*'
+        r'<div\s+class="block-header">[^<]*</div>\s*'
+        r'<div\s+class="block-content">\s*'
+        r'(.*?)'
+        r'</div>\s*</div>',
+        re.DOTALL
+    )
+
+    for match in block_pattern.finditer(html_content):
+        content = match.group(1)
+        # Ищем BLOCK: ID
+        block_id_match = re.search(r'<p>BLOCK:\s*([A-Z0-9]+-[A-Z0-9]+-[A-Z0-9]+)</p>', content)
+        if not block_id_match:
+            continue
+        block_id = block_id_match.group(1)
+
+        # Убираем служебные строки (BLOCK: ..., Created: ..., stamp-info)
+        cleaned = content
+        # Удаляем <p>BLOCK: ...</p>
+        cleaned = re.sub(r'<p>BLOCK:\s*[^<]+</p>\s*', '', cleaned)
+        # Удаляем <p><b>Created:</b>...</p>
+        cleaned = re.sub(r'<p><b>Created:</b>[^<]*</p>\s*', '', cleaned)
+        # Удаляем stamp-info div
+        cleaned = re.sub(r'<div\s+class="stamp-info[^"]*">[^<]*(?:<[^>]+>[^<]*)*</div>\s*', '', cleaned)
+        # Удаляем лишние пустые теги
+        cleaned = re.sub(r'<p>\s*</p>', '', cleaned)
+
+        cleaned = cleaned.strip()
+        if cleaned:
+            index[block_id] = cleaned
+
+    return index
+
+
 def _build_text_evidence(project_id: str, findings: list[dict]) -> dict[str, list[dict]]:
     """Маппинг finding_id → [{text_block_id, role, text, page}] из document_graph."""
     output_dir = resolve_project_dir(project_id) / "_output"
+    project_dir = resolve_project_dir(project_id)
     graph_path = output_dir / "document_graph.json"
     if not graph_path.exists():
         return {}
@@ -278,15 +693,22 @@ def _build_text_evidence(project_id: str, findings: list[dict]) -> dict[str, lis
     except (json.JSONDecodeError, OSError):
         return {}
 
-    # Индекс text_block_id → {text, page}
+    # Пробуем загрузить готовый HTML из OCR файла (приоритет)
+    ocr_index = _build_ocr_html_index(project_dir)
+
+    # Индекс text_block_id → {text, html, page}
     text_index: dict[str, dict] = {}
     for page_data in graph.get("pages", []):
         page_num = page_data.get("page", 0)
         for tb in page_data.get("text_blocks", []):
             tb_id = tb.get("id", "")
             if tb_id:
+                raw = (tb.get("text") or "")[:2000]
+                # Приоритет: OCR HTML → fallback на _text_to_html
+                html = ocr_index.get(tb_id) or _text_to_html(raw)
                 text_index[tb_id] = {
-                    "text": (tb.get("text") or "")[:500],
+                    "text": raw[:500],
+                    "html": html,
                     "page": page_num,
                 }
 
@@ -312,6 +734,7 @@ def _build_text_evidence(project_id: str, findings: list[dict]) -> dict[str, lis
                         "role": ref.get("role", ""),
                         "used_for": ref.get("used_for", ""),
                         "text": info["text"],
+                        "html": info["html"],
                         "page": info["page"],
                     })
 
@@ -329,6 +752,7 @@ def _build_text_evidence(project_id: str, findings: list[dict]) -> dict[str, lis
                             "role": "",
                             "used_for": "",
                             "text": info["text"],
+                            "html": info["html"],
                             "page": info["page"],
                         })
 
@@ -344,6 +768,7 @@ def _build_text_evidence(project_id: str, findings: list[dict]) -> dict[str, lis
                         "role": "",
                         "used_for": "",
                         "text": info["text"],
+                        "html": info["html"],
                         "page": info["page"],
                     })
 

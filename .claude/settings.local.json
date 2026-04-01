@@ -2,6 +2,8 @@
   "permissions": {
     "allow": [
       "mcp__Claude_Preview__preview_start",
+      "Bash(cp *)",
+      "Bash(mv *)",
       "Bash(curl:*)",
       "Bash(netstat:*)",
       "Bash(taskkill:*)",
@@ -242,7 +244,35 @@
       "mcp__playwright__browser_wait_for",
       "mcp__playwright__browser_evaluate",
       "Bash(grep -n \"v-if=\"\"currentView === ''discussions''\"\"\" \"d:\\\\Отедел Системного Анализа\\\\1. Audit Manager\\\\webapp\\\\static\\\\index.html\")",
-      "Bash(PYTHONUTF8=1 python -u -c \":*)"
+      "Bash(PYTHONUTF8=1 python -u -c \":*)",
+      "Bash(grep -l \"prompt\\\\|injection\\\\|security\\\\|token\" tests/test_*.py)",
+      "Bash(grep -E \"eval|exec|subprocess|os.system|open.*w.*|Write\" .claude/*.md)",
+      "Bash(grep -l \"sys.path\\\\|import.*json\\\\|pickle\\\\|load\" tests/test_*.py)",
+      "Bash(grep -r \"from webapp\\\\|import webapp\" tests/test_*.py)",
+      "Bash(grep -c \"def test_\" tests/*.py)",
+      "Bash(python -u -c \":*)",
+      "Bash(grep \"\\\\.md$\")",
+      "Bash(ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@REDACTED_HOST \"uname -a && cat /etc/os-release | head -5\")",
+      "Bash(\"C:/Program Files/PuTTY/plink.exe\" -ssh root@REDACTED_HOST -pw \"REDACTED_PASSWORD\" \"uname -a\")",
+      "Bash(\"C:/Program Files/PuTTY/plink.exe\" -ssh -batch root@REDACTED_HOST -pw \"REDACTED_PASSWORD\" \"echo connected\")",
+      "Bash(\"C:/Program Files/PuTTY/plink.exe\" -ssh root@REDACTED_HOST -pw \"REDACTED_PASSWORD\" \"echo connected\")",
+      "Bash(\"C:/Program Files/PuTTY/plink.exe\" -ssh -hostkey \"SHA256:REDACTED_HOSTKEY\" -batch root@REDACTED_HOST -pw \"REDACTED_PASSWORD\" \"apt update && apt install -y docker.io docker-compose curl\")",
+      "Bash(\"C:/Program Files/PuTTY/plink.exe\" -ssh -hostkey \"SHA256:REDACTED_HOSTKEY\" -batch root@REDACTED_HOST -pw \"REDACTED_PASSWORD\" \"docker run -d --name amnezia-awg --cap-add NET_ADMIN --cap-add SYS_MODULE --sysctl net.ipv4.conf.all.src_valid_mark=1 --sysctl net.ipv4.ip_forward=1 -p 51820:51820/udp -v /opt/amnezia/awg:/etc/amnezia/amneziawg amneziavpn/amnezia-wg:latest\")",
+      "Bash(\"C:/Program Files/PuTTY/plink.exe\" -ssh -hostkey \"SHA256:REDACTED_HOSTKEY\" -batch root@REDACTED_HOST -pw \"REDACTED_PASSWORD\" \"docker logs amnezia-awg\")",
+      "Bash(\"C:/Program Files/PuTTY/plink.exe\" -ssh -hostkey \"SHA256:REDACTED_HOSTKEY\" -batch root@REDACTED_HOST -pw \"REDACTED_PASSWORD\" \"docker rm amnezia-awg && apt install -y wireguard-tools && wg genkey | tee /opt/amnezia/server_private.key | wg pubkey > /opt/amnezia/server_public.key && wg genkey | tee /opt/amnezia/client_private.key | wg pubkey > /opt/amnezia/client_public.key && cat /opt/amnezia/server_private.key /opt/amnezia/server_public.key /opt/amnezia/client_private.key /opt/amnezia/client_public.key\")",
+      "Bash(\"C:/Program Files/PuTTY/plink.exe\" -ssh -hostkey \"SHA256:REDACTED_HOSTKEY\" -batch root@REDACTED_HOST -pw \"REDACTED_PASSWORD\" \"docker exec amnezia-awg ip a && echo ''===='' && docker exec amnezia-awg iptables -t nat -L -n -v 2>&1 && echo ''===='' && docker exec amnezia-awg wg show\")",
+      "Bash(ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@REDACTED_HOST \"echo ''=== IP Forwarding ==='' && sysctl net.ipv4.ip_forward && echo ''=== NAT Rules ==='' && iptables -t nat -L POSTROUTING -n -v && echo ''=== Interfaces ==='' && ip a && echo ''=== DNS ==='' && cat /etc/resolv.conf && echo ''=== Active containers ==='' && docker ps 2>/dev/null || echo ''no docker''\")",
+      "Bash(sshpass -p 'REDACTED_PASSWORD' ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@REDACTED_HOST \"echo ''=== IP Forwarding ==='' && sysctl net.ipv4.ip_forward && echo ''=== NAT Rules ==='' && iptables -t nat -L POSTROUTING -n -v && echo ''=== Interfaces ==='' && ip a && echo ''=== DNS ==='' && cat /etc/resolv.conf\")",
+      "Bash(ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@REDACTED_HOST \"echo connected\")",
+      "Bash(/dev/null cat:*)",
+      "Bash(ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@103.54.16.82 \"uname -a && cat /etc/os-release && free -h && nproc && df -h /\")",
+      "Bash(PYTHONIOENCODING=utf-8 python << 'PYEOF':*)",
+      "Bash(ping -n 4 103.54.16.82)",
+      "Bash(ssh -v -o ConnectTimeout=10 103.54.16.82 echo \"OK\")",
+      "Bash(for port:*)",
+      "Bash(timeout 5 bash -c \"echo >/dev/tcp/103.54.16.82/$port\")",
+      "Bash(nslookup 103.54.16.82)",
+      "Bash(ssh-copy-id -i ~/.ssh/id_rsa.pub root@REDACTED_HOST)"
     ]
   }
 }

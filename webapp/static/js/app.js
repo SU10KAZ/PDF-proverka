@@ -17,6 +17,10 @@ const app = createApp({
         const projects = ref([]);
         const loading = ref(false);
 
+        // Sidebar
+        const sidebarSectionsOpen = ref(true);
+        const sidebarFilterSection = ref(null);  // null = все разделы
+
         // Findings
         const findingsData = ref(null);
         const filterSeverity = ref('');
@@ -49,11 +53,14 @@ const app = createApp({
         const blockNatH = ref(0);       // natural height of loaded image
         const blockBaseScale = ref(1);  // scale to fit image into container
         const highlightedFindingId = ref(null);  // ID замечания для подсветки на блоке
+        const allHighlightsVisible = ref(true);           // глобальный вкл/выкл подсветок
+        const hiddenHighlightFindings = ref(new Set());   // finding_id с выключенной подсветкой
 
         // Optimization
         const optimizationData = ref(null);
         const optimizationLoading = ref(false);
         const optimizationFilter = ref('');  // '' | 'cheaper_analog' | 'faster_install' | 'simpler_design' | 'lifecycle'
+        const optimizationSearch = ref('');
 
         // Discussions (чат по замечаниям/оптимизациям)
         const discussionItems = ref([]);
@@ -81,6 +88,7 @@ const app = createApp({
         const revisionLoading = ref(false);
         // Скачать пакет аудита
         const auditPackageLoading = ref(false);
+        const batchPackageLoading = ref(false);
 
         // Document viewer (MD)
         const documentProjectId = ref('');
@@ -679,7 +687,7 @@ const app = createApp({
                 loadProject(id);
                 loadPromptDisciplines().then(() => {
                     const proj = projects.value.find(p => p.name === id || p.project_id === id);
-                    const section = proj?.section || 'EM';
+                    const section = proj?.section || 'EOM';
                     promptsDiscipline.value = section;
                     loadTemplates(section);
                 });
@@ -737,6 +745,7 @@ const app = createApp({
         };
 
         const stageModelRestrictions = ref({});
+        const stageModelHints = ref({});
 
         const modelPresets = {
             openrouter: {
@@ -758,13 +767,28 @@ const app = createApp({
                 label: "Claude CLI",
                 config: {
                     text_analysis:          "claude-opus-4-6",
-                    block_batch:            "google/gemini-3.1-pro-preview",
+                    block_batch:            "openai/gpt-5.4",
                     findings_merge:         "claude-opus-4-6",
                     findings_critic:        "openai/gpt-5.4",
-                    findings_corrector:     "claude-sonnet-4-6",
+                    findings_corrector:     "claude-opus-4-6",
                     norm_verify:            "claude-opus-4-6",
                     norm_fix:               "claude-opus-4-6",
-                    optimization:           "google/gemini-3.1-pro-preview",
+                    optimization:           "claude-opus-4-6",
+                    optimization_critic:    "claude-sonnet-4-6",
+                    optimization_corrector: "claude-sonnet-4-6",
+                },
+            },
+            optimal: {
+                label: "Оптимальный",
+                config: {
+                    text_analysis:          "claude-opus-4-6",
+                    block_batch:            "openai/gpt-5.4",
+                    findings_merge:         "claude-opus-4-6",
+                    findings_critic:        "claude-sonnet-4-6",
+                    findings_corrector:     "claude-sonnet-4-6",
+                    norm_verify:            "claude-opus-4-6",
+                    norm_fix:               "claude-sonnet-4-6",
+                    optimization:           "claude-opus-4-6",
                     optimization_critic:    "claude-sonnet-4-6",
                     optimization_corrector: "claude-sonnet-4-6",
                 },
@@ -791,6 +815,7 @@ const app = createApp({
                 stageModelConfig.value = data.stages || {};
                 availableModels.value = data.available_models || [];
                 stageModelRestrictions.value = data.restrictions || {};
+                stageModelHints.value = data.hints || {};
             } catch (e) {
                 console.error('Failed to load stage models:', e);
             }
@@ -806,10 +831,13 @@ const app = createApp({
 
         // pendingRetryStage: если задан — после сохранения моделей запустить retry этапа, а не полный аудит
         const pendingRetryStage = ref(null);
+        // pendingActionFn: произвольный callback, выполняется после сохранения моделей (приоритет над retryStage/pid)
+        const pendingActionFn = ref(null);
 
-        function openModelConfig(projectId, retryStage = null) {
+        function openModelConfig(projectId, retryStage = null, afterSaveFn = null) {
             modelConfigPendingProjectId.value = projectId;
             pendingRetryStage.value = retryStage;
+            pendingActionFn.value = afterSaveFn;
             loadStageModels().then(() => {
                 showModelConfig.value = true;
             });
@@ -818,6 +846,12 @@ const app = createApp({
         async function saveAndStartAudit() {
             await saveStageModels();
             showModelConfig.value = false;
+            if (pendingActionFn.value) {
+                const fn = pendingActionFn.value;
+                pendingActionFn.value = null;
+                await fn();
+                return;
+            }
             const pid = modelConfigPendingProjectId.value;
             const retryStg = pendingRetryStage.value;
             pendingRetryStage.value = null;
@@ -897,7 +931,8 @@ const app = createApp({
                 selectedProjects.value = new Set(allIds);
                 batchAllMode.value = false;
             }
-            await startBatchAction(action);
+            // Показываем выбор моделей перед запуском пакета
+            openModelConfig(null, null, () => startBatchAction(action));
         }
 
         async function startBatchAction(action) {
@@ -1374,20 +1409,23 @@ const app = createApp({
         async function retryStageToQueue() {
             const { projectId, stage } = retryDialog.value;
             retryDialog.value.show = false;
-            try {
-                const resp = await fetch('/api/audit/batch/add-retry', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ project_id: projectId, stage: stage }),
-                });
-                if (!resp.ok) {
-                    const err = await resp.json().catch(() => ({}));
-                    throw new Error(err.detail || `API error: ${resp.status}`);
-                }
-                const data = await resp.json();
-                batchQueue.value = data.queue;
-                batchRunning.value = true;
-            } catch (e) { alert(e.message); }
+            // Показываем выбор моделей перед добавлением в очередь
+            openModelConfig(projectId, null, async () => {
+                try {
+                    const resp = await fetch('/api/audit/batch/add-retry', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ project_id: projectId, stage: stage }),
+                    });
+                    if (!resp.ok) {
+                        const err = await resp.json().catch(() => ({}));
+                        throw new Error(err.detail || `API error: ${resp.status}`);
+                    }
+                    const data = await resp.json();
+                    batchQueue.value = data.queue;
+                    batchRunning.value = true;
+                } catch (e) { alert(e.message); }
+            });
         }
 
         async function skipStage(projectId, stage) {
@@ -1648,7 +1686,7 @@ const app = createApp({
             } catch (e) {
                 console.error('Failed to load disciplines:', e);
                 supportedDisciplines.value = [
-                    { code: 'EM', name: 'Электроснабжение и электрооборудование', short_name: 'ЭОМ/ЭС', color: '#f39c12' },
+                    { code: 'EOM', name: 'Электроснабжение и электрооборудование', short_name: 'ЭОМ/ЭС', color: '#f39c12' },
                     { code: 'OV', name: 'Отопление, вентиляция и кондиционирование', short_name: 'ОВиК', color: '#3498db' },
                 ];
             }
@@ -1688,7 +1726,7 @@ const app = createApp({
             } catch (e) {
                 console.error('Detect discipline error:', e);
             }
-            return 'EM';
+            return 'EOM';
         }
 
         // ─── Add Project (scan & register) ───
@@ -1826,7 +1864,7 @@ const app = createApp({
                             md_file: selMds.length > 0 ? selMds[0] : null,
                             md_files: selMds,
                             name: folder,
-                            section: folderInfo._selectedDiscipline || 'EM',
+                            section: folderInfo._selectedDiscipline || 'EOM',
                             description: '',
                         }),
                     });
@@ -1841,7 +1879,7 @@ const app = createApp({
                             md_file: selMds.length > 0 ? selMds[0] : null,
                             md_files: selMds,
                             name: folder,
-                            section: folderInfo._selectedDiscipline || 'EM',
+                            section: folderInfo._selectedDiscipline || 'EOM',
                             description: '',
                         }),
                     });
@@ -1885,7 +1923,7 @@ const app = createApp({
                                 md_file: sMds.length > 0 ? sMds[0] : null,
                                 md_files: sMds,
                                 name: folderInfo.folder,
-                                section: folderInfo._selectedDiscipline || 'EM',
+                                section: folderInfo._selectedDiscipline || 'EOM',
                                 description: '',
                             }),
                         });
@@ -1900,7 +1938,7 @@ const app = createApp({
                                 md_file: sMds.length > 0 ? sMds[0] : null,
                                 md_files: sMds,
                                 name: folderInfo.folder,
-                                section: folderInfo._selectedDiscipline || 'EM',
+                                section: folderInfo._selectedDiscipline || 'EOM',
                                 description: '',
                             }),
                         });
@@ -2091,6 +2129,8 @@ const app = createApp({
         function openBlock(block) {
             selectedBlock.value = block;
             highlightedFindingId.value = null;
+            allHighlightsVisible.value = true;
+            hiddenHighlightFindings.value = new Set();
             resetBlockZoom();
         }
 
@@ -2269,10 +2309,12 @@ const app = createApp({
         const currentBlockHighlights = computed(() => {
             if (!selectedBlock.value) return [];
             const bid = selectedBlock.value.block_id;
+            const hidden = hiddenHighlightFindings.value;
             const findings = getBlockFindings(bid);
             const regions = [];
             for (const f of findings) {
                 if (!f.highlight_regions || !f.highlight_regions.length) continue;
+                if (hidden.has(f.id)) continue;
                 for (const r of f.highlight_regions) {
                     regions.push({
                         ...r,
@@ -2286,6 +2328,7 @@ const app = createApp({
             if (analysis && analysis.findings) {
                 for (const gf of analysis.findings) {
                     if (!gf.highlight_regions || !gf.highlight_regions.length) continue;
+                    if (hidden.has(gf.id)) continue;
                     for (const r of gf.highlight_regions) {
                         regions.push({
                             ...r,
@@ -2300,6 +2343,43 @@ const app = createApp({
 
         function highlightFinding(findingId) {
             highlightedFindingId.value = highlightedFindingId.value === findingId ? null : findingId;
+        }
+
+        function toggleFindingHighlight(findingId) {
+            const s = new Set(hiddenHighlightFindings.value);
+            if (s.has(findingId)) s.delete(findingId); else s.add(findingId);
+            hiddenHighlightFindings.value = s;
+            // Обновить глобальный флаг
+            allHighlightsVisible.value = s.size === 0;
+        }
+
+        function isFindingHighlightVisible(findingId) {
+            return !hiddenHighlightFindings.value.has(findingId);
+        }
+
+        function toggleAllHighlights() {
+            if (allHighlightsVisible.value) {
+                // Выключить все — собрать все finding_id с регионами
+                const allIds = new Set();
+                if (selectedBlock.value) {
+                    const bid = selectedBlock.value.block_id;
+                    for (const f of getBlockFindings(bid)) {
+                        if (f.highlight_regions && f.highlight_regions.length) allIds.add(f.id);
+                    }
+                    const analysis = blockAnalysis.value[bid];
+                    if (analysis && analysis.findings) {
+                        for (const gf of analysis.findings) {
+                            if (gf.highlight_regions && gf.highlight_regions.length && gf.id) allIds.add(gf.id);
+                        }
+                    }
+                }
+                hiddenHighlightFindings.value = allIds;
+                allHighlightsVisible.value = false;
+            } else {
+                // Включить все
+                hiddenHighlightFindings.value = new Set();
+                allHighlightsVisible.value = true;
+            }
         }
 
         function severityColor(severity) {
@@ -2322,8 +2402,30 @@ const app = createApp({
 
         // ─── Optimization ───
         // ─── Document Viewer (MD) ────────────────────────────
+        function cleanLatex(text) {
+            if (!text) return text;
+            // \text{ кг/м} → кг/м
+            text = text.replace(/\\text\s*\{([^}]*)\}/g, '$1');
+            // ^3 → ³, ^2 → ², ^{...} → (...)
+            text = text.replace(/\^3/g, '³');
+            text = text.replace(/\^2/g, '²');
+            text = text.replace(/\^\{([^}]*)\}/g, '$1');
+            // \cdot → ·, \times → ×, \leq → ≤, \geq → ≥, \pm → ±
+            text = text.replace(/\\cdot/g, '·');
+            text = text.replace(/\\times/g, '×');
+            text = text.replace(/\\leq/g, '≤');
+            text = text.replace(/\\geq/g, '≥');
+            text = text.replace(/\\pm/g, '±');
+            // \frac{a}{b} → a/b
+            text = text.replace(/\\frac\s*\{([^}]*)\}\s*\{([^}]*)\}/g, '$1/$2');
+            // remaining \command → remove backslash
+            text = text.replace(/\\([a-zA-Z]+)/g, '$1');
+            return text;
+        }
+
         function renderMarkdown(text) {
             if (!text) return '';
+            text = cleanLatex(text);
             if (typeof marked !== 'undefined') {
                 try {
                     return marked.parse(text, { breaks: true, gfm: true });
@@ -2419,19 +2521,30 @@ const app = createApp({
         }
 
         async function startOptimization(id) {
-            try {
-                await apiPost(`/optimization/${id}/run`);
-                if (currentView.value === 'project') loadProject(id);
-            } catch (e) {
-                alert('Ошибка запуска оптимизации: ' + (e.message || e));
-            }
+            openModelConfig(id, null, async () => {
+                try {
+                    await apiPost(`/optimization/${id}/run`);
+                    if (currentView.value === 'project') loadProject(id);
+                } catch (e) {
+                    alert('Ошибка запуска оптимизации: ' + (e.message || e));
+                }
+            });
         }
 
         const _optTypeOrder = { 'cheaper_analog': 0, 'faster_install': 1, 'simpler_design': 2, 'lifecycle': 3 };
         const filteredOptimization = computed(() => {
             if (!optimizationData.value) return [];
             const items = optimizationData.value.items || [];
-            const filtered = optimizationFilter.value ? items.filter(i => i.type === optimizationFilter.value) : items;
+            let filtered = optimizationFilter.value ? items.filter(i => i.type === optimizationFilter.value) : items;
+            if (optimizationSearch.value.trim()) {
+                const q = optimizationSearch.value.toLowerCase();
+                filtered = filtered.filter(i =>
+                    (i.current || '').toLowerCase().includes(q) ||
+                    (i.proposed || '').toLowerCase().includes(q) ||
+                    (i.id || '').toLowerCase().includes(q) ||
+                    (i.norm || '').toLowerCase().includes(q)
+                );
+            }
             return [...filtered].sort((a, b) => (_optTypeOrder[a.type] ?? 9) - (_optTypeOrder[b.type] ?? 9));
         });
 
@@ -2615,6 +2728,46 @@ const app = createApp({
                 alert('Ошибка скачивания: ' + e.message);
             } finally {
                 auditPackageLoading.value = false;
+            }
+        }
+
+        async function downloadBatchAuditPackages() {
+            const ids = Array.from(selectedProjects.value);
+            if (!ids.length) return;
+            batchPackageLoading.value = true;
+            let downloaded = 0;
+            let errors = [];
+            for (const pid of ids) {
+                try {
+                    const url = `/api/export/audit-package/${encodeURIComponent(pid)}`;
+                    const resp = await fetch(url);
+                    if (!resp.ok) {
+                        const err = await resp.json().catch(() => ({}));
+                        errors.push(`${pid}: ${err.detail || resp.status}`);
+                        continue;
+                    }
+                    const blob = await resp.blob();
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    const disposition = resp.headers.get('Content-Disposition') || '';
+                    const matchStar = disposition.match(/filename\*=UTF-8''([^;]+)/i);
+                    const matchPlain = disposition.match(/filename="?([^";]+)"?/);
+                    let dlName = `audit_package_${pid}.zip`;
+                    if (matchStar) { try { dlName = decodeURIComponent(matchStar[1]); } catch(e) {} }
+                    else if (matchPlain) { dlName = matchPlain[1]; }
+                    a.download = dlName;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(a.href);
+                    downloaded++;
+                } catch (e) {
+                    errors.push(`${pid}: ${e.message}`);
+                }
+            }
+            batchPackageLoading.value = false;
+            if (errors.length > 0) {
+                alert(`Скачано: ${downloaded}/${ids.length}\nОшибки:\n${errors.join('\n')}`);
             }
         }
 
@@ -3427,6 +3580,7 @@ const app = createApp({
             openBlock, loadBlocks, blockToFindings, getBlockFindings,
             blockImageContainer, blockImageStyle, onBlockZoomWheel, onBlockPanStart, resetBlockZoom, onBlockImageLoad,
             blockNatW, blockNatH, highlightedFindingId, currentBlockHighlights, highlightFinding, severityColor, severityStroke,
+            allHighlightsVisible, hiddenHighlightFindings, toggleFindingHighlight, isFindingHighlightVisible, toggleAllHighlights,
             logProjectId, logEntries, logAutoScroll, logContainer, logLoading,
             wsConnected,
             // Live status
@@ -3465,7 +3619,7 @@ const app = createApp({
             pausePipeline, resumePipelineGlobal,
             // Model config
             showModelConfig, stageModelConfig, availableModels, stageLabels,
-            stageModelRestrictions, isModelAllowed,
+            stageModelRestrictions, stageModelHints, isModelAllowed,
             modelPresets, activePreset, applyPreset,
             loadStageModels, saveStageModels, openModelConfig, saveAndStartAudit,
             startAuditDirect,
@@ -3490,6 +3644,7 @@ const app = createApp({
             // Disciplines
             supportedDisciplines, getDisciplineColor, disciplineLabel, disciplineBadgeStyle,
             objectName, projectsBySection, collapsedSections, toggleSection,
+            sidebarSectionsOpen, sidebarFilterSection,
             allSectionsCollapsed, toggleAllSections,
             showEditSection, editSectionCode, editSectionName, editSectionColor,
             openEditSection, saveEditSection, deleteSection,
@@ -3506,7 +3661,7 @@ const app = createApp({
             projectUsage, currentProjectUsage, stageTokens, stageTokensFormatted, stageModel, stageDurationForProject, formatDuration,
             // Pipeline summary
             // Optimization
-            optimizationData, optimizationLoading, optimizationFilter,
+            optimizationData, optimizationLoading, optimizationFilter, optimizationSearch,
             optBlockMap, optBlockInfo, expandedOptId,
             toggleOptBlocks, getOptBlocks,
             filteredOptimization, optimizationTypeLabels, optimizationTypeColors,
@@ -3522,6 +3677,7 @@ const app = createApp({
             activeDiscussionItems, rejectedDiscussionItems, discussionSeverityCounts, discussionOptTypeCounts,
             loadDiscussionModels, loadDiscussionItems, switchDiscussionTab,
             openDiscussion, closeDiscussion, sendDiscussionMessage, downloadAuditPackage, auditPackageLoading,
+            downloadBatchAuditPackages, batchPackageLoading,
             chatAttachedImage, handleChatFileSelect, handleChatPaste,
             resolvedFindingsCount, allDiscussionsResolved, resolvedFindingsLoading, downloadResolvedFindings,
             editingMessageIdx, editingMessageText,

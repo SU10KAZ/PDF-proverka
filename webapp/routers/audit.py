@@ -67,11 +67,12 @@ async def get_stage_model_config():
 
     Возвращает текущий маппинг этап → модель (Claude CLI + OpenRouter).
     """
-    from webapp.config import STAGE_MODEL_RESTRICTIONS
+    from webapp.config import STAGE_MODEL_RESTRICTIONS, STAGE_MODEL_HINTS
     return {
         "stages": dict(STAGE_MODEL_CONFIG),
         "available_models": AVAILABLE_MODELS,
         "restrictions": STAGE_MODEL_RESTRICTIONS,
+        "hints": STAGE_MODEL_HINTS,
     }
 
 
@@ -277,6 +278,10 @@ async def add_to_batch(request: dict):
         return {"status": "added", "added": len(valid_ids), "queue": queue.model_dump()}
     except RuntimeError as e:
         raise HTTPException(409, str(e))
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(500, f"Ошибка добавления в очередь: {e}")
 
 
 @router.post("/batch/add-retry")
@@ -384,7 +389,7 @@ async def get_disciplines():
 
 @router.get("/templates")
 async def get_templates(
-    discipline: str = Query(None, description="Код дисциплины (EM, OV)"),
+    discipline: str = Query(None, description="Код дисциплины (EOM, OV)"),
 ):
     """Получить сырые шаблоны промптов (с плейсхолдерами)."""
     from webapp.services.task_builder import get_template_prompts
@@ -540,7 +545,7 @@ async def clear_project_log(project_id: str):
 @router.get("/{project_id:path}/prompts")
 async def get_prompts(
     project_id: str,
-    discipline: str = Query(None, description="Код дисциплины (EM, OV и т.д.)"),
+    discipline: str = Query(None, description="Код дисциплины (EOM, OV и т.д.)"),
 ):
     """Получить все промпты (resolved) для проекта."""
     _check_project(project_id)

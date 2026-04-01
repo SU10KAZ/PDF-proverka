@@ -11,6 +11,8 @@
       "Bash(type *)",
       "Bash(ls *)",
       "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
       "Bash(where *)",
       "Bash(wc *)",
       "Bash(tesseract *)",

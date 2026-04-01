@@ -63,7 +63,7 @@ class TestTaskBuilder:
         project_info = {
             "project_id": "test-e2e",
             "name": "E2E Test Project",
-            "section": "EM",
+            "section": "EOM",
         }
         output_path = "/tmp/test_output"
         md_file_path = "/tmp/test.md"

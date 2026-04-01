@@ -1,8 +1,8 @@
 {
   "disciplines": {
-    "EM": {
-      "code": "EM",
-      "profile_dir": "EM",
+    "EOM": {
+      "code": "EOM",
+      "profile_dir": "EOM",
       "name": "Электроснабжение и электрооборудование",
       "short_name": "Электроснабжение и электрооборудование",
       "folder_patterns": [
@@ -67,8 +67,8 @@
       "color": "#3498db",
       "order": 6
     },
-    "АР": {
-      "code": "АР",
+    "AR": {
+      "code": "AR",
       "profile_dir": "AR",
       "name": "Архитектурные решения",
       "short_name": "Архитектурные решения",
@@ -101,8 +101,8 @@
       "color": "#e74c3c",
       "order": 0
     },
-    "АИ": {
-      "code": "АИ",
+    "AI": {
+      "code": "AI",
       "profile_dir": "AI",
       "name": "Архитектурные решения (интерьер)",
       "short_name": "Архитектурные решения (интерьер)",
@@ -113,8 +113,8 @@
       "text_keywords": [],
       "order": 1
     },
-    "ТХ": {
-      "code": "ТХ",
+    "TX": {
+      "code": "TX",
       "profile_dir": "TX",
       "name": "Технологические решения",
       "short_name": "Технологические решения",
@@ -141,8 +141,8 @@
       "color": "#9128af",
       "order": 2
     },
-    "СС": {
-      "code": "СС",
+    "SS": {
+      "code": "SS",
       "profile_dir": "SS",
       "name": "Слаботочные системы",
       "short_name": "Слаботочные системы",
@@ -153,8 +153,8 @@
       "text_keywords": [],
       "order": 5
     },
-    "ВК": {
-      "code": "ВК",
+    "VK": {
+      "code": "VK",
       "profile_dir": "VK",
       "name": "Водоснабжение и канализация",
       "short_name": "Водоснабжение и канализация",
@@ -165,8 +165,8 @@
       "text_keywords": [],
       "order": 7
     },
-    "ПТ": {
-      "code": "ПТ",
+    "PT": {
+      "code": "PT",
       "profile_dir": "PT",
       "name": "Противопожарный водопровод",
       "short_name": "Противопожарный водопровод",
@@ -177,8 +177,8 @@
       "text_keywords": [],
       "order": 8
     },
-    "ГП": {
-      "code": "ГП",
+    "GP": {
+      "code": "GP",
       "profile_dir": "GP",
       "name": "Генеральный план",
       "short_name": "Генеральный план",
@@ -189,8 +189,8 @@
       "text_keywords": [],
       "order": 10
     },
-    "ИТП": {
-      "code": "ИТП",
+    "ITP": {
+      "code": "ITP",
       "profile_dir": "ITP",
       "name": "Индивидуальный тепловой пункт",
       "short_name": "Индивидуальный тепловой пункт",
@@ -201,8 +201,8 @@
       "text_keywords": [],
       "order": 9
     },
-    "ПС": {
-      "code": "ПС",
+    "PS": {
+      "code": "PS",
       "profile_dir": "PS",
       "name": "Пояснительная записка",
       "short_name": "Пояснительная записка",
@@ -213,8 +213,8 @@
       "text_keywords": [],
       "order": 11
     },
-    "ПОС": {
-      "code": "ПОС",
+    "POS": {
+      "code": "POS",
       "profile_dir": "POS",
       "name": "Проект организации строительства",
       "short_name": "Проект организации строительства",
@@ -225,8 +225,8 @@
       "text_keywords": [],
       "order": 12
     },
-    "КМ": {
-      "code": "КМ",
+    "KM": {
+      "code": "KM",
       "profile_dir": "KM",
       "name": "Конструкции металлические",
       "short_name": "Конструкции металлические",
