@@ -24,7 +24,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, HTMLResponse
 
 from webapp.config import APP_HOST, APP_PORT
-from webapp.routers import projects, findings, blocks, audit, export, usage, optimization, document, discussions
+from webapp.routers import projects, findings, blocks, audit, export, usage, optimization, document, discussions, knowledge_base
 from webapp.ws.manager import ws_manager
 
 
@@ -60,6 +60,7 @@ app.include_router(usage.router)
 app.include_router(optimization.router)
 app.include_router(document.router)
 app.include_router(discussions.router)
+app.include_router(knowledge_base.router)
 
 # ─── WebSocket Endpoints ────────────────────────────────────
 @app.websocket("/ws/audit/{project_id}")

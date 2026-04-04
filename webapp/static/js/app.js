@@ -90,6 +90,22 @@ const app = createApp({
         const auditPackageLoading = ref(false);
         const batchPackageLoading = ref(false);
 
+        // Expert Review (экспертная оценка)
+        const expertReviewMode = ref(false);
+        const expertDecisions = ref({});  // { item_id: { decision: 'accepted'|'rejected'|null, rejection_reason: '' } }
+        const expertReviewSaving = ref(false);
+
+        // Knowledge Base (база знаний)
+        const kbTab = ref('rejected');  // 'rejected' | 'accepted' | 'customer_confirmed'
+        const kbEntries = ref([]);
+        const kbStats = ref({ rejected: 0, accepted: 0, customer_confirmed: 0, total: 0 });
+        const kbLoading = ref(false);
+        const kbSearch = ref('');
+        const kbSectionFilter = ref('');
+        const kbPatterns = ref([]);
+        const kbPatternsLoading = ref(false);
+        const kbUploadLoading = ref(false);
+
         // Document viewer (MD)
         const documentProjectId = ref('');
         const documentPages = ref([]);
@@ -618,7 +634,12 @@ const app = createApp({
         function handleRoute() {
             const hash = window.location.hash.slice(1) || '/';
 
-            if (hash === '/queue') {
+            if (hash === '/knowledge-base') {
+                currentView.value = 'knowledge-base';
+                connectGlobalWS();
+                loadKnowledgeBase();
+                loadKBStats();
+            } else if (hash === '/queue') {
                 currentView.value = 'queue';
                 connectGlobalWS();
                 refreshBatchQueue();
@@ -634,6 +655,7 @@ const app = createApp({
                 connectGlobalWS();
                 loadProject(id);
                 loadFindings(id);
+                loadExpertDecisions();
             } else if (hash.match(/^\/project\/([^/]+)\/blocks$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/blocks$/)[1]);
                 currentView.value = 'blocks';
@@ -648,6 +670,7 @@ const app = createApp({
                 connectGlobalWS();
                 loadProject(id);
                 loadOptimization(id);
+                loadExpertDecisions();
             } else if (hash.match(/^\/project\/([^/]+)\/discussions\/([^/]+)$/)) {
                 const m = hash.match(/^\/project\/([^/]+)\/discussions\/([^/]+)$/);
                 const id = decodeURIComponent(m[1]);
@@ -1118,8 +1141,10 @@ const app = createApp({
                     body: JSON.stringify({ project_ids: ids, action: queueAddAction.value }),
                 });
                 if (!resp.ok) {
-                    const err = await resp.json().catch(() => ({}));
-                    throw new Error(err.detail || `Ошибка: ${resp.status}`);
+                    const text = await resp.text();
+                    let detail = `Ошибка: ${resp.status}`;
+                    try { detail = JSON.parse(text).detail || detail; } catch {}
+                    throw new Error(detail);
                 }
                 const data = await resp.json();
                 batchQueue.value = data.queue;
@@ -3145,6 +3170,33 @@ const app = createApp({
             return findingsData.value.findings;
         });
 
+        // Сортировка: отклонённые всегда внизу (если есть решения)
+        const sortedFindings = computed(() => {
+            const items = filteredFindings.value;
+            if (!Object.keys(expertDecisions.value).length) return items;
+            const accepted = [], pending = [], rejected = [];
+            for (const f of items) {
+                const d = getExpertDecision(f.id);
+                if (d === 'rejected') rejected.push(f);
+                else if (d === 'accepted') accepted.push(f);
+                else pending.push(f);
+            }
+            return [...pending, ...accepted, ...rejected];
+        });
+
+        const sortedOptimization = computed(() => {
+            const items = filteredOptimization.value;
+            if (!Object.keys(expertDecisions.value).length) return items;
+            const accepted = [], pending = [], rejected = [];
+            for (const item of items) {
+                const d = getExpertDecision(item.id);
+                if (d === 'rejected') rejected.push(item);
+                else if (d === 'accepted') accepted.push(item);
+                else pending.push(item);
+            }
+            return [...pending, ...accepted, ...rejected];
+        });
+
         // Live-статус текущего проекта (для Project Detail)
         const currentProjectLive = computed(() => {
             if (!currentProject.value) return null;
@@ -3538,6 +3590,285 @@ const app = createApp({
             }
         }
 
+        // ─── Expert Review (экспертная оценка) ───
+        async function toggleExpertReview() {
+            expertReviewMode.value = !expertReviewMode.value;
+            if (expertReviewMode.value && currentProjectId.value) {
+                await loadExpertDecisions();
+            }
+        }
+
+        async function loadExpertDecisions() {
+            if (!currentProjectId.value) return;
+            const map = {};
+            // 1. Загрузить из expert_review.json
+            try {
+                const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}`);
+                const data = await resp.json();
+                if (data.has_review && data.data && data.data.decisions) {
+                    for (const d of data.data.decisions) {
+                        map[d.item_id] = { decision: d.decision, rejection_reason: d.rejection_reason || '', item_type: d.item_type || 'finding' };
+                    }
+                }
+            } catch (e) { console.warn('Failed to load expert review:', e); }
+
+            // 2. Дополнить из статусов обсуждений (если есть confirmed/rejected)
+            try {
+                for (const tab of ['finding', 'optimization']) {
+                    const resp = await fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/items?type=${tab}`);
+                    const data = await resp.json();
+                    for (const item of (data.items || [])) {
+                        if (item.discussion_status && !map[item.item_id]) {
+                            if (item.discussion_status === 'confirmed') {
+                                map[item.item_id] = { decision: 'accepted', rejection_reason: '', item_type: tab };
+                            } else if (item.discussion_status === 'rejected') {
+                                map[item.item_id] = { decision: 'rejected', rejection_reason: item.resolution_summary || '', item_type: tab };
+                            }
+                        }
+                    }
+                }
+            } catch (e) { /* discussions API may not have items */ }
+
+            expertDecisions.value = map;
+        }
+
+        function setExpertDecision(itemId, itemType, decision) {
+            const existing = expertDecisions.value[itemId] || { decision: null, rejection_reason: '' };
+            if (existing.decision === decision) {
+                // Toggle off
+                existing.decision = null;
+            } else {
+                existing.decision = decision;
+            }
+            existing.item_type = itemType;
+            expertDecisions.value = { ...expertDecisions.value, [itemId]: existing };
+
+            // Синхронизация с системой обсуждений (confirmed/rejected)
+            if (currentProjectId.value && existing.decision) {
+                const discType = itemId.startsWith('OPT') ? 'optimization' : 'finding';
+                const status = existing.decision === 'accepted' ? 'confirmed' : 'rejected';
+                const summary = status === 'confirmed' ? 'Принято экспертом' : 'Отклонено экспертом';
+                fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(itemId)}/resolve?type=${discType}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status, summary }),
+                }).catch(() => {}); // fire-and-forget
+            }
+        }
+
+        function setExpertReason(itemId, reason) {
+            const existing = expertDecisions.value[itemId] || { decision: 'rejected', rejection_reason: '' };
+            existing.rejection_reason = reason;
+            expertDecisions.value = { ...expertDecisions.value, [itemId]: existing };
+        }
+
+        async function submitExpertReview() {
+            if (!currentProjectId.value) return;
+            expertReviewSaving.value = true;
+            try {
+                const decisions = [];
+                for (const [itemId, d] of Object.entries(expertDecisions.value)) {
+                    if (d.decision) {
+                        decisions.push({
+                            item_id: itemId,
+                            item_type: d.item_type || (itemId.startsWith('OPT') ? 'optimization' : 'finding'),
+                            decision: d.decision,
+                            rejection_reason: d.decision === 'rejected' ? d.rejection_reason : null,
+                            timestamp: new Date().toISOString(),
+                        });
+                    }
+                }
+                const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ decisions, reviewer: '' }),
+                });
+                const result = await resp.json();
+                if (result.status === 'ok') {
+                    alert(`Сохранено: ${result.accepted} принято, ${result.rejected} отклонено`);
+                }
+            } catch (e) {
+                console.error('Submit expert review error:', e);
+                alert('Ошибка сохранения решений');
+            } finally {
+                expertReviewSaving.value = false;
+            }
+        }
+
+        function getExpertDecision(itemId) {
+            return (expertDecisions.value[itemId] || {}).decision || null;
+        }
+        function getExpertReason(itemId) {
+            return (expertDecisions.value[itemId] || {}).rejection_reason || '';
+        }
+        function expertReviewSummary() {
+            const vals = Object.values(expertDecisions.value);
+            return {
+                total: vals.filter(d => d.decision).length,
+                accepted: vals.filter(d => d.decision === 'accepted').length,
+                rejected: vals.filter(d => d.decision === 'rejected').length,
+            };
+        }
+
+        // ─── Knowledge Base (база знаний) ───
+        async function loadKnowledgeBase() {
+            kbLoading.value = true;
+            try {
+                const params = new URLSearchParams({ status: kbTab.value, limit: '200', offset: '0' });
+                if (kbSearch.value) params.set('search', kbSearch.value);
+                if (kbSectionFilter.value) params.set('section', kbSectionFilter.value);
+                const resp = await fetch(`/api/knowledge-base/entries?${params}`);
+                const data = await resp.json();
+                kbEntries.value = data.entries || [];
+            } catch (e) {
+                console.error('Load KB error:', e);
+            } finally {
+                kbLoading.value = false;
+            }
+        }
+
+        async function loadKBStats() {
+            try {
+                const resp = await fetch('/api/knowledge-base/stats');
+                kbStats.value = await resp.json();
+            } catch (e) { console.warn('KB stats error:', e); }
+        }
+
+        function switchKBTab(tab) {
+            kbTab.value = tab;
+            loadKnowledgeBase();
+        }
+
+        async function confirmCustomer(entryIds) {
+            try {
+                await fetch('/api/knowledge-base/customer-confirm', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ entry_ids: entryIds }),
+                });
+                loadKnowledgeBase();
+                loadKBStats();
+            } catch (e) { console.error('Customer confirm error:', e); }
+        }
+
+        async function unconfirmCustomer(entryIds) {
+            try {
+                await fetch('/api/knowledge-base/customer-unconfirm', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ entry_ids: entryIds }),
+                });
+                loadKnowledgeBase();
+                loadKBStats();
+            } catch (e) { console.error('Customer unconfirm error:', e); }
+        }
+
+        async function revokeKBDecision(entry) {
+            try {
+                await fetch('/api/knowledge-base/revoke', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ entry_id: entry.id, project_id: entry.source_project, item_id: entry.item_id }),
+                });
+                // Убрать из локального кеша решений
+                if (expertDecisions.value[entry.item_id]) {
+                    const updated = { ...expertDecisions.value };
+                    delete updated[entry.item_id];
+                    expertDecisions.value = updated;
+                }
+                loadKnowledgeBase();
+                loadKBStats();
+            } catch (e) { console.error('Revoke error:', e); }
+        }
+
+        async function loadKBPatterns() {
+            kbPatternsLoading.value = true;
+            try {
+                const resp = await fetch('/api/knowledge-base/patterns');
+                const data = await resp.json();
+                kbPatterns.value = data.patterns || [];
+            } catch (e) { console.error('Load patterns error:', e); }
+            finally { kbPatternsLoading.value = false; }
+        }
+
+        async function detectPatterns() {
+            kbPatternsLoading.value = true;
+            try {
+                const resp = await fetch('/api/knowledge-base/patterns/detect', { method: 'POST' });
+                const data = await resp.json();
+                kbPatterns.value = data.patterns || [];
+            } catch (e) { console.error('Detect patterns error:', e); }
+            finally { kbPatternsLoading.value = false; }
+        }
+
+        async function approvePattern(patternId) {
+            await fetch(`/api/knowledge-base/patterns/${patternId}/approve`, { method: 'POST' });
+            loadKBPatterns();
+        }
+
+        async function dismissPattern(patternId) {
+            await fetch(`/api/knowledge-base/patterns/${patternId}/dismiss`, { method: 'POST' });
+            loadKBPatterns();
+        }
+
+        async function uploadDecisionsExcel(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            kbUploadLoading.value = true;
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                const resp = await fetch('/api/knowledge-base/upload-excel', { method: 'POST', body: formData });
+                const data = await resp.json();
+                if (data.status === 'ok') {
+                    alert('Решения загружены: ' + Object.keys(data.projects).length + ' проектов');
+                    loadKnowledgeBase();
+                    loadKBStats();
+                }
+            } catch (e) {
+                console.error('Upload error:', e);
+                alert('Ошибка загрузки файла');
+            } finally {
+                kbUploadLoading.value = false;
+                event.target.value = '';
+            }
+        }
+
+        async function uploadAndApplyDecisions(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            kbUploadLoading.value = true;
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                const resp = await fetch('/api/knowledge-base/upload-excel', { method: 'POST', body: formData });
+                const data = await resp.json();
+                if (data.status === 'ok') {
+                    const count = Object.keys(data.projects).length;
+                    // Загрузить решения для текущего проекта и включить режим оценки
+                    if (currentProjectId.value) {
+                        const revResp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}`);
+                        const revData = await revResp.json();
+                        if (revData.has_review && revData.data && revData.data.decisions) {
+                            const map = {};
+                            for (const d of revData.data.decisions) {
+                                map[d.item_id] = { decision: d.decision, rejection_reason: d.rejection_reason || '', item_type: d.item_type || 'finding' };
+                            }
+                            expertDecisions.value = map;
+                            expertReviewMode.value = true;
+                        }
+                    }
+                    alert(`Решения загружены (${count} проектов). Колонки заполнены автоматически.`);
+                }
+            } catch (e) {
+                console.error('Upload & apply error:', e);
+                alert('Ошибка загрузки файла');
+            } finally {
+                kbUploadLoading.value = false;
+                event.target.value = '';
+            }
+        }
+
         // Watch severity filter
         watch(filterSeverity, () => {
             const hash = window.location.hash.slice(1);
@@ -3685,7 +4016,18 @@ const app = createApp({
             resolveDiscussion, requestRevision, applyRevision, rejectRevision, formatRevisionField, formatRevisionValue,
             discussionStatusIcon, formatCostUSD, renderDiscussionContent, onChatClick, autoResizeChatInput,
             // Computed
-            filteredFindings,
+            filteredFindings, sortedFindings, sortedOptimization,
+            // Expert Review
+            expertReviewMode, expertDecisions, expertReviewSaving,
+            toggleExpertReview, loadExpertDecisions, setExpertDecision, setExpertReason, submitExpertReview,
+            getExpertDecision, getExpertReason, expertReviewSummary,
+            // Knowledge Base
+            kbTab, kbEntries, kbStats, kbLoading, kbSearch, kbSectionFilter,
+            kbPatterns, kbPatternsLoading, kbUploadLoading,
+            loadKnowledgeBase, loadKBStats, switchKBTab,
+            confirmCustomer, unconfirmCustomer, revokeKBDecision,
+            loadKBPatterns, detectPatterns, approvePattern, dismissPattern,
+            uploadDecisionsExcel, uploadAndApplyDecisions,
         };
     }
 });

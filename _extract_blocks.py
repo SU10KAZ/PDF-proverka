@@ -25,7 +25,7 @@ TARGET_TEXT_IDS = [
 ]
 
 # FILE 1: 02_blocks_analysis.json
-blocks_path = "D:/Отедел Системного Анализа/1. Audit Manager/projects/VK/133_23-ГК-ВК1/_output/02_blocks_analysis.json"
+blocks_path = "D:/Отдел Системного Анализа/1. Audit Manager/projects/VK/133_23-ГК-ВК1/_output/02_blocks_analysis.json"
 with open(blocks_path, 'r', encoding='utf-8') as f:
     blocks_data = json.load(f)
 
@@ -51,7 +51,7 @@ missing_img = [bid for bid in TARGET_IMAGE_IDS if bid not in image_results]
 print(f"Missing image blocks: {missing_img}")
 
 # FILE 2: document_graph.json
-graph_path = "D:/Отедел Системного Анализа/1. Audit Manager/projects/VK/133_23-ГК-ВК1/_output/document_graph.json"
+graph_path = "D:/Отдел Системного Анализа/1. Audit Manager/projects/VK/133_23-ГК-ВК1/_output/document_graph.json"
 with open(graph_path, 'r', encoding='utf-8') as f:
     graph_data = json.load(f)
 

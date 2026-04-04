@@ -129,13 +129,16 @@ TOTAL_BG    = "2E3F50"   # тёмный для итоговой строки
 # ── Структура столбцов листа проекта ─────────────────────────────────
 # (ключ,          заголовок,          ширина)
 PROJ_COLUMNS = [
-    ("num",         "№",               5),
-    ("sheet",       "Лист/Раздел",    24),
-    ("problem",     "Проблема",       28),
-    ("description", "Описание",       52),
-    ("solution",    "Решение",        48),
-    ("severity",    "Категория",      22),
-    ("risk",        "Чем грозит",     32),
+    ("num",              "№",                    5),
+    ("finding_id",       "ID",                  12),
+    ("sheet",            "Лист/Раздел",         24),
+    ("problem",          "Проблема",            28),
+    ("description",      "Описание",            52),
+    ("solution",         "Решение",             48),
+    ("severity",         "Категория",           22),
+    ("risk",             "Чем грозит",          32),
+    ("expert_decision",  "Решение эксперта",    16),
+    ("rejection_reason", "Причина отклонения",  32),
 ]
 
 # Столбцы листа СВОДКА (ширины)
@@ -190,6 +193,7 @@ def cell(ws, row: int, col: int, value,
 # ═══════════════════════════════════════════════════════════════════════
 
 def f_num(f, idx):         return idx
+def f_finding_id(f, _):    return f.get("id", "")
 def f_sheet(f, _):
     v = f.get("sheet") or f.get("location") or ""
     if isinstance(v, list):
@@ -226,14 +230,58 @@ def f_severity(f, _):
     return f"{cfg['icon']} {sev}"
 
 
+# Экспертные решения — подгружаются из expert_review.json
+_expert_review_cache = {}  # folder_path -> {item_id: {decision, rejection_reason}}
+
+def _load_expert_review(folder: str) -> dict:
+    """Загрузить решения эксперта для проекта (кешировано)."""
+    if folder in _expert_review_cache:
+        return _expert_review_cache[folder]
+    path = os.path.join(folder, "_output", "expert_review.json")
+    result = {}
+    if os.path.isfile(path):
+        try:
+            with open(path, "r", encoding="utf-8-sig") as f:
+                data = json.load(f)
+            for d in data.get("decisions", []):
+                result[d.get("item_id", "")] = {
+                    "decision": d.get("decision", ""),
+                    "rejection_reason": d.get("rejection_reason", ""),
+                }
+        except Exception:
+            pass
+    _expert_review_cache[folder] = result
+    return result
+
+def f_expert_decision(f, _, folder=""):
+    review = _load_expert_review(folder)
+    item_id = f.get("id", "")
+    d = review.get(item_id, {})
+    dec = d.get("decision", "")
+    if dec == "accepted":
+        return "Принято"
+    elif dec == "rejected":
+        return "Отклонено"
+    return ""
+
+def f_rejection_reason(f, _, folder=""):
+    review = _load_expert_review(folder)
+    item_id = f.get("id", "")
+    d = review.get(item_id, {})
+    return d.get("rejection_reason", "") or ""
+
+
 FIELD_FUNCS = {
-    "num":         f_num,
-    "sheet":       f_sheet,
-    "problem":     f_problem,
-    "description": f_description,
-    "solution":    f_solution,
-    "severity":    f_severity,
-    "risk":        f_risk,
+    "num":              f_num,
+    "finding_id":       f_finding_id,
+    "sheet":            f_sheet,
+    "problem":          f_problem,
+    "description":      f_description,
+    "solution":         f_solution,
+    "severity":         f_severity,
+    "risk":             f_risk,
+    "expert_decision":  f_expert_decision,
+    "rejection_reason": f_rejection_reason,
 }
 
 
@@ -249,15 +297,17 @@ OPT_TYPE_CONFIG = {
 }
 
 OPT_COLUMNS = [
-    ("num",       "№",                5),
-    ("id",        "ID",              10),
-    ("section",   "Раздел/Лист",    24),
-    ("current",   "Текущее решение", 42),
-    ("proposed",  "Предложение",     42),
-    ("type",      "Тип",            20),
-    ("savings",   "Экономия",       12),
-    ("timeline",  "Сроки",          14),
-    ("risks",     "Риски",          32),
+    ("num",              "№",                    5),
+    ("id",               "ID",                  10),
+    ("section",          "Раздел/Лист",         24),
+    ("current",          "Текущее решение",     42),
+    ("proposed",         "Предложение",         42),
+    ("type",             "Тип",                 20),
+    ("savings",          "Экономия",            12),
+    ("timeline",         "Сроки",               14),
+    ("risks",            "Риски",               32),
+    ("expert_decision",  "Решение эксперта",    16),
+    ("rejection_reason", "Причина отклонения",  32),
 ]
 
 def opt_type_label(t):
@@ -554,6 +604,14 @@ def build_project_sheet(wb, pd_entry: dict):
     hdr2.alignment = Alignment(horizontal="left", vertical="center", indent=1)
     ws.row_dimensions[row].height = 22
 
+    # Скрытый столбец: полный project_id (для обратной загрузки решений)
+    pid_col = len(PROJ_COLUMNS) + 1
+    pid_letter = get_column_letter(pid_col)
+    cell(ws, 1, pid_col, "project_id", bg=HEADER_BG, fg=HEADER_FG, bold=True, font_size=8)
+    cell(ws, 2, pid_col, project_id, bg=PROJ_HDR_BG, fg=PROJ_HDR_FG, font_size=8)
+    ws.column_dimensions[pid_letter].hidden = True
+    ws.column_dimensions[pid_letter].width = 1
+
     # ── Нет данных ────────────────────────────────────────────────────
     if not findings:
         row += 1
@@ -574,7 +632,11 @@ def build_project_sheet(wb, pd_entry: dict):
             row_bg  = cfg["bg"] if idx % 2 != 0 else cfg["bg_alt"]
 
             for col, (key, _, _) in enumerate(PROJ_COLUMNS, 1):
-                val = FIELD_FUNCS[key](finding, idx)
+                func = FIELD_FUNCS[key]
+                if key in ("expert_decision", "rejection_reason"):
+                    val = func(finding, idx, folder=pd_entry.get("folder", ""))
+                else:
+                    val = func(finding, idx)
 
                 is_num = (key == "num")
                 is_sev = (key == "severity")
@@ -799,6 +861,14 @@ def build_optimization_project_sheet(wb, pd_entry: dict):
     hdr2.alignment = Alignment(horizontal="left", vertical="center", indent=1)
     ws.row_dimensions[row].height = 22
 
+    # Скрытый столбец: полный project_id (для обратной загрузки решений)
+    pid_col = len(OPT_COLUMNS) + 1
+    pid_letter = get_column_letter(pid_col)
+    cell(ws, 1, pid_col, "project_id", bg=HEADER_BG, fg=HEADER_FG, bold=True, font_size=8)
+    cell(ws, 2, pid_col, project_id, bg="1B7F4B", fg="FFFFFF", font_size=8)
+    ws.column_dimensions[pid_letter].hidden = True
+    ws.column_dimensions[pid_letter].width = 1
+
     if not items:
         row += 1
         ws.merge_cells(f"A{row}:{last_col_letter}{row}")
@@ -817,6 +887,13 @@ def build_optimization_project_sheet(wb, pd_entry: dict):
             cfg = opt_type_cfg(opt_type)
             row_bg = cfg["bg"] if idx % 2 != 0 else cfg["bg_alt"]
 
+            # Загрузить экспертные решения для оптимизаций
+            review = _load_expert_review(pd_entry.get("folder", ""))
+            item_review = review.get(item.get("id", ""), {})
+            dec = item_review.get("decision", "")
+            dec_label = "Принято" if dec == "accepted" else ("Отклонено" if dec == "rejected" else "")
+            rej_reason = item_review.get("rejection_reason", "") or ""
+
             vals = [
                 idx,
                 item.get("id", ""),
@@ -827,6 +904,8 @@ def build_optimization_project_sheet(wb, pd_entry: dict):
                 f"{item.get('savings_pct', 0)}%" if item.get("savings_pct") else "—",
                 item.get("timeline_impact", ""),
                 item.get("risks", ""),
+                dec_label,
+                rej_reason,
             ]
         except Exception as e:
             cell(ws, row, 1, idx, bg="FFFFFF")
@@ -869,6 +948,57 @@ def build_optimization_project_sheet(wb, pd_entry: dict):
     summary_cell.border = thin_border()
 
     ws.freeze_panes = "A3"
+
+
+# ═══════════════════════════════════════════════════════════════════════
+#  ЛИСТ ИНСТРУКЦИЯ (для оффлайн-заполнения экспертных решений)
+# ═══════════════════════════════════════════════════════════════════════
+
+def build_instruction_sheet(wb):
+    """Лист с инструкцией по заполнению решений эксперта."""
+    ws = wb.create_sheet(title="ИНСТРУКЦИЯ")
+    ws.sheet_view.showGridLines = False
+    ws.sheet_view.zoomScale = 100
+
+    ws.column_dimensions["A"].width = 4
+    ws.column_dimensions["B"].width = 80
+
+    instructions = [
+        ("ИНСТРУКЦИЯ ПО ЗАПОЛНЕНИЮ РЕШЕНИЙ ЭКСПЕРТА", True, 14, HEADER_BG, HEADER_FG),
+        ("", False, 10, None, None),
+        ("Этот файл содержит результаты аудита проектной документации.", False, 11, None, None),
+        ("Ваша задача — проверить каждое замечание и оптимизацию, и указать своё решение.", False, 11, None, None),
+        ("", False, 10, None, None),
+        ("ПОРЯДОК ЗАПОЛНЕНИЯ:", True, 12, "2E75B6", "FFFFFF"),
+        ("", False, 10, None, None),
+        ('1. Откройте лист нужного проекта (вкладка внизу Excel).', False, 11, None, None),
+        ('2. Найдите колонку "Решение эксперта" (предпоследняя).', False, 11, None, None),
+        ('3. Для каждого замечания укажите: Принято или Отклонено', False, 11, None, None),
+        ('4. Если выбрано "Отклонено" — ОБЯЗАТЕЛЬНО заполните колонку "Причина отклонения".', False, 11, "FFCCCC", None),
+        ('5. Повторите для всех замечаний и оптимизаций.', False, 11, None, None),
+        ('6. Сохраните файл и загрузите на платформу:', False, 11, None, None),
+        ('   Дашборд → База знаний → Загрузить Excel', False, 11, None, None),
+        ("", False, 10, None, None),
+        ("ДОПУСТИМЫЕ ЗНАЧЕНИЯ В КОЛОНКЕ «РЕШЕНИЕ ЭКСПЕРТА»:", True, 12, "2E75B6", "FFFFFF"),
+        ("", False, 10, None, None),
+        ('• Принято — замечание/оптимизация подтверждены, будут отправлены заказчику', False, 11, None, None),
+        ('• Отклонено — замечание/оптимизация ошибочны или неприменимы', False, 11, None, None),
+        ('• (пусто) — ещё не проверено', False, 11, None, None),
+        ("", False, 10, None, None),
+        ("ВАЖНО:", True, 12, "C00000", "FFFFFF"),
+        ("", False, 10, None, None),
+        ('• Не удаляйте и не переименовывайте колонки — система ищет по названию.', False, 11, None, None),
+        ('• Не меняйте ID замечаний (колонка № или ID).', False, 11, None, None),
+        ('• Причина отклонения обязательна — она попадёт в базу знаний для улучшения системы.', False, 11, None, None),
+    ]
+
+    for idx, (text, bold, size, bg, fg) in enumerate(instructions, 1):
+        c = ws.cell(row=idx, column=2, value=text)
+        c.font = Font(bold=bold, size=size, color=fg or "333333", name="Calibri")
+        if bg:
+            c.fill = make_fill(bg)
+        c.alignment = Alignment(wrap_text=True, vertical="center")
+        ws.row_dimensions[idx].height = 22 if text else 10
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -965,6 +1095,9 @@ def main():
             build_project_sheet(wb, p)
         for p in projects:
             build_optimization_project_sheet(wb, p)
+
+    # ── Лист ИНСТРУКЦИЯ ──────────────────────────────────────────────
+    build_instruction_sheet(wb)
 
     # ── Сохранить ─────────────────────────────────────────────────────
     if args.out:

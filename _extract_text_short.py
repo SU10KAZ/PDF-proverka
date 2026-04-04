@@ -11,7 +11,7 @@ TARGET_TEXT_IDS = [
     "GUDF-FVGR-7TL",
 ]
 
-graph_path = "D:/Отедел Системного Анализа/1. Audit Manager/projects/VK/133_23-ГК-ВК1/_output/document_graph.json"
+graph_path = "D:/Отдел Системного Анализа/1. Audit Manager/projects/VK/133_23-ГК-ВК1/_output/document_graph.json"
 with open(graph_path, 'r', encoding='utf-8') as f:
     graph_data = json.load(f)
 

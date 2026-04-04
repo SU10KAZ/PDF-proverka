@@ -75,6 +75,13 @@
                     Очередь
                     <span v-if="batchRunning && batchQueue" class="nav-badge">{{ batchQueue.items.filter(i => i.status === 'pending' || i.status === 'running').length }}</span>
                 </div>
+                <div class="nav-item" :class="{active: currentView === 'knowledge-base'}" @click="navigate('/knowledge-base')">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M2 2h12v12H2z"/><path d="M5 5h6M5 8h6M5 11h3"/>
+                    </svg>
+                    База знаний
+                    <span v-if="kbStats.total" class="nav-badge">{{ kbStats.total }}</span>
+                </div>
                 <div class="nav-item" @click="showModelConfig = true">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <circle cx="8" cy="8" r="2"/>
@@ -254,7 +261,7 @@
         </header>
 
         <!-- Navigation breadcrumb + Project Tabs (merged into one bar) -->
-        <nav class="breadcrumb" v-if="currentView !== 'dashboard'">
+        <nav class="breadcrumb" v-if="currentView !== 'dashboard' && currentView !== 'queue' && currentView !== 'knowledge-base'">
             <div class="breadcrumb__left">
                 <a href="#" @click.prevent="navigate('/')">Проекты</a>
                 <span v-if="currentProject"> / <a href="#" @click.prevent="navigate('/project/' + currentProject.project_id)">{{ currentProject.name }}</a></span>
@@ -1248,14 +1255,35 @@
                            placeholder="Поиск по тексту..." @input="debounceSearch">
                 </div>
 
-                <!-- Summary -->
-                <div v-if="findingsData" class="severity-badges severity-badges--large">
+                <!-- Summary + Expert Review (одна строка) -->
+                <div v-if="findingsData" class="severity-badges severity-badges--large" style="display:flex; align-items:center; flex-wrap:wrap;">
                     <span v-for="(count, sev) in findingsData.by_severity" :key="sev"
                           class="sev-badge" :class="'sev-' + sevClass(sev)"
                           @click="filterSeverity = sev" style="cursor:pointer">
                         {{ sevIcon(sev) }} {{ count }}
                     </span>
                     <span class="findings-total">Всего: {{ findingsData.total }}</span>
+
+                    <div class="expert-review-inline">
+                        <label class="btn-expert-toggle" :class="{ disabled: kbUploadLoading }" title="Загрузить решения из Excel">
+                            <input type="file" accept=".xlsx" @change="uploadAndApplyDecisions" style="display:none">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            {{ kbUploadLoading ? 'Загрузка...' : 'Загрузить решения' }}
+                        </label>
+                        <button class="btn-expert-toggle" :class="{ active: expertReviewMode }" @click="toggleExpertReview()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                            {{ expertReviewMode ? 'Скрыть оценку' : 'Экспертная оценка' }}
+                        </button>
+                        <template v-if="expertReviewMode">
+                            <span class="expert-review-counter">
+                                Принято: <b style="color:#22c55e">{{ expertReviewSummary().accepted }}</b>
+                                Отклонено: <b style="color:#ef4444">{{ expertReviewSummary().rejected }}</b>
+                            </span>
+                            <button class="btn-expert-save" @click="submitExpertReview()" :disabled="expertReviewSaving || expertReviewSummary().total === 0">
+                                {{ expertReviewSaving ? 'Сохранение...' : 'Сохранить решения' }}
+                            </button>
+                        </template>
+                    </div>
                 </div>
 
                 <!-- Table -->
@@ -1268,13 +1296,15 @@
                                 <th style="width:65px; text-align:center">Лист</th>
                                 <th style="width:35%">Замечание</th>
                                 <th style="width:120px">Норма</th>
-                                <th style="width:30%">Рекомендация</th>
+                                <th :style="{ width: expertReviewMode ? '20%' : '30%' }">Рекомендация</th>
+                                <th v-if="expertReviewMode" style="width:90px; text-align:center">Решение</th>
+                                <th v-if="expertReviewMode" style="width:150px">Причина отклонения</th>
                                 <th style="width:36px"></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <template v-for="f in filteredFindings" :key="f.id">
-                                <tr :class="['row-' + sevClass(f.severity), { 'row-expanded': expandedFindingId === f.id }]">
+                            <template v-for="f in sortedFindings" :key="f.id">
+                                <tr :class="['row-' + sevClass(f.severity), { 'row-expanded': expandedFindingId === f.id, 'row-accepted': getExpertDecision(f.id) === 'accepted', 'row-rejected': getExpertDecision(f.id) === 'rejected' }]">
                                     <td class="id-cell"
                                         @click="toggleFindingBlocks(f.id)"
                                         :style="{ cursor: ((findingBlockMap[f.id] && findingBlockMap[f.id].length) || (findingTextEvidence[f.id] && findingTextEvidence[f.id].length)) ? 'pointer' : 'default' }">
@@ -1299,6 +1329,26 @@
                                     <td class="desc-cell">{{ f.description || f.problem || f.finding || '' }}</td>
                                     <td class="norm-cell">{{ f.norm }}</td>
                                     <td class="rec-cell">{{ f.solution || f.recommendation || '' }}</td>
+                                    <td v-if="expertReviewMode" class="decision-cell" style="text-align:center">
+                                        <div class="decision-toggle">
+                                            <button class="btn-decision btn-accept" :class="{ active: getExpertDecision(f.id) === 'accepted' }"
+                                                    @click.stop="setExpertDecision(f.id, 'finding', 'accepted')" title="Принять">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                                            </button>
+                                            <button class="btn-decision btn-reject" :class="{ active: getExpertDecision(f.id) === 'rejected' }"
+                                                    @click.stop="setExpertDecision(f.id, 'finding', 'rejected')" title="Отклонить">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M6 18L18 6"/></svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td v-if="expertReviewMode" class="reason-cell">
+                                        <textarea v-if="getExpertDecision(f.id) === 'rejected'"
+                                                  class="rejection-reason-input"
+                                                  :value="getExpertReason(f.id)"
+                                                  @input="setExpertReason(f.id, $event.target.value)"
+                                                  placeholder="Причина отклонения..."
+                                                  rows="2"></textarea>
+                                    </td>
                                     <td class="discuss-cell">
                                         <button class="btn-discuss-icon" @click.stop="navigate('/project/' + currentProjectId + '/discussions/' + f.id)"
                                                 title="Обсудить">
@@ -1311,7 +1361,7 @@
                                 <!-- Раскрывающаяся полоска: блоки + текстовые evidence -->
                                 <tr v-if="expandedFindingId === f.id && (getFindingBlocks(f.id).length > 0 || getFindingTextEvidence(f.id).length > 0)"
                                     class="finding-blocks-row">
-                                    <td colspan="7">
+                                    <td :colspan="expertReviewMode ? 9 : 7">
                                         <!-- Графические блоки -->
                                         <div v-if="getFindingBlocks(f.id).length > 0" class="finding-blocks-strip">
                                             <div v-for="b in getFindingBlocks(f.id)" :key="b.block_id"
@@ -1370,14 +1420,35 @@
 
                 <!-- Результаты -->
                 <div v-else-if="optimizationData">
-                    <!-- Сводка по типам -->
-                    <div class="severity-badges severity-badges--large">
+                    <!-- Сводка по типам + Expert Review (одна строка) -->
+                    <div class="severity-badges severity-badges--large" style="display:flex; align-items:center; flex-wrap:wrap;">
                         <span v-for="(count, type) in optimizationData.by_type" :key="type"
                               class="opt-type-badge" :style="{ background: optTypeColor(type) }"
                               @click="optimizationFilter = type" style="cursor:pointer">
                             {{ count }}
                         </span>
                         <span class="findings-total" style="color: var(--green)">Всего: {{ optimizationData.total }}</span>
+
+                        <div class="expert-review-inline" v-if="filteredOptimization.length > 0">
+                            <label class="btn-expert-toggle" :class="{ disabled: kbUploadLoading }" title="Загрузить решения из Excel">
+                                <input type="file" accept=".xlsx" @change="uploadAndApplyDecisions" style="display:none">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                {{ kbUploadLoading ? 'Загрузка...' : 'Загрузить решения' }}
+                            </label>
+                            <button class="btn-expert-toggle" :class="{ active: expertReviewMode }" @click="toggleExpertReview()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                                {{ expertReviewMode ? 'Скрыть оценку' : 'Экспертная оценка' }}
+                            </button>
+                            <template v-if="expertReviewMode">
+                                <span class="expert-review-counter">
+                                    Принято: <b style="color:#22c55e">{{ expertReviewSummary().accepted }}</b>
+                                    Отклонено: <b style="color:#ef4444">{{ expertReviewSummary().rejected }}</b>
+                                </span>
+                                <button class="btn-expert-save" @click="submitExpertReview()" :disabled="expertReviewSaving || expertReviewSummary().total === 0">
+                                    {{ expertReviewSaving ? 'Сохранение...' : 'Сохранить решения' }}
+                                </button>
+                            </template>
+                        </div>
                     </div>
 
                     <!-- Таблица -->
@@ -1392,12 +1463,14 @@
                                 <th class="opt-col-savings">Экономия</th>
                                 <th class="opt-col-risks">Риски</th>
                                 <th class="opt-col-norm">Норма</th>
+                                <th v-if="expertReviewMode" style="width:90px; text-align:center">Решение</th>
+                                <th v-if="expertReviewMode" style="width:150px">Причина отклонения</th>
                                 <th class="opt-col-action"></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <template v-for="item in filteredOptimization" :key="item.id">
-                                <tr :class="{ 'row-expanded': expandedOptId === item.id }">
+                            <template v-for="item in sortedOptimization" :key="item.id">
+                                <tr :class="{ 'row-expanded': expandedOptId === item.id, 'row-accepted': getExpertDecision(item.id) === 'accepted', 'row-rejected': getExpertDecision(item.id) === 'rejected' }">
                                     <td class="opt-id"
                                         @click="toggleOptBlocks(item.id)"
                                         :style="{ cursor: (optBlockMap[item.id] && optBlockMap[item.id].length) ? 'pointer' : 'default' }">
@@ -1434,6 +1507,26 @@
                                     </td>
                                     <td class="opt-risks">{{ item.risks }}</td>
                                     <td class="opt-norm">{{ item.norm || '—' }}</td>
+                                    <td v-if="expertReviewMode" class="decision-cell" style="text-align:center">
+                                        <div class="decision-toggle">
+                                            <button class="btn-decision btn-accept" :class="{ active: getExpertDecision(item.id) === 'accepted' }"
+                                                    @click.stop="setExpertDecision(item.id, 'optimization', 'accepted')" title="Принять">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                                            </button>
+                                            <button class="btn-decision btn-reject" :class="{ active: getExpertDecision(item.id) === 'rejected' }"
+                                                    @click.stop="setExpertDecision(item.id, 'optimization', 'rejected')" title="Отклонить">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M6 18L18 6"/></svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td v-if="expertReviewMode" class="reason-cell">
+                                        <textarea v-if="getExpertDecision(item.id) === 'rejected'"
+                                                  class="rejection-reason-input"
+                                                  :value="getExpertReason(item.id)"
+                                                  @input="setExpertReason(item.id, $event.target.value)"
+                                                  placeholder="Причина отклонения..."
+                                                  rows="2"></textarea>
+                                    </td>
                                     <td class="discuss-cell">
                                         <button class="btn-discuss-icon" @click.stop="navigate('/project/' + currentProjectId + '/discussions/' + item.id)"
                                                 title="Обсудить">
@@ -1446,7 +1539,7 @@
                                 <!-- Раскрывающаяся полоска блоков -->
                                 <tr v-if="expandedOptId === item.id && getOptBlocks(item.id).length > 0"
                                     class="finding-blocks-row">
-                                    <td colspan="8">
+                                    <td :colspan="expertReviewMode ? 10 : 8">
                                         <div class="finding-blocks-strip">
                                             <div v-for="b in getOptBlocks(item.id)" :key="b.block_id"
                                                  class="finding-block-thumb"
@@ -1473,6 +1566,157 @@
                 <!-- Нет данных -->
                 <div v-else class="empty-state">
                     Анализ оптимизации ещё не проводился. Нажмите «Запустить анализ».
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ Knowledge Base (База знаний) ═══ -->
+        <div v-if="currentView === 'knowledge-base'" class="container">
+            <div class="kb-page">
+                <div class="kb-header">
+                    <h2 class="kb-title">База знаний</h2>
+                    <div class="kb-header-actions">
+                        <label class="btn btn-sm btn-upload" :class="{ disabled: kbUploadLoading }">
+                            <input type="file" accept=".xlsx" @change="uploadDecisionsExcel" style="display:none">
+                            {{ kbUploadLoading ? 'Загрузка...' : 'Загрузить Excel' }}
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="kb-tabs">
+                    <button class="kb-tab" :class="{ active: kbTab === 'rejected' }" @click="switchKBTab('rejected')">
+                        <span class="kb-tab-icon" style="color:#ef4444">&#10005;</span>
+                        Отклонённые
+                        <span class="kb-tab-count">{{ kbStats.rejected }}</span>
+                    </button>
+                    <button class="kb-tab" :class="{ active: kbTab === 'accepted' }" @click="switchKBTab('accepted')">
+                        <span class="kb-tab-icon" style="color:#22c55e">&#10003;</span>
+                        Принятые
+                        <span class="kb-tab-count">{{ kbStats.accepted }}</span>
+                    </button>
+                    <button class="kb-tab" :class="{ active: kbTab === 'customer_confirmed' }" @click="switchKBTab('customer_confirmed')">
+                        <span class="kb-tab-icon" style="color:#f59e0b">&#9733;</span>
+                        Согласованные заказчиком
+                        <span class="kb-tab-count">{{ kbStats.customer_confirmed }}</span>
+                    </button>
+                </div>
+
+                <!-- Filters -->
+                <div class="kb-filters">
+                    <input v-model="kbSearch" class="filter-input" placeholder="Поиск..."
+                           @input="loadKnowledgeBase()" style="max-width:300px">
+                    <select v-model="kbSectionFilter" class="filter-select" @change="loadKnowledgeBase()" style="max-width:180px">
+                        <option value="">Все дисциплины</option>
+                        <option v-for="[code] in projectsBySection" :key="'kb-'+code" :value="code">{{ code }}</option>
+                    </select>
+                </div>
+
+                <!-- Table -->
+                <div v-if="kbLoading" class="loading">Загрузка...</div>
+                <div v-else-if="kbEntries.length > 0" class="table-container">
+                    <table class="kb-table">
+                        <thead>
+                            <tr>
+                                <th style="width:90px">ID</th>
+                                <th style="width:70px">Тип</th>
+                                <th style="width:100px">Проект</th>
+                                <th style="width:70px">Дисц.</th>
+                                <th style="width:80px">Критичн.</th>
+                                <th style="width:30%">Суть</th>
+                                <th style="width:25%">Причина решения</th>
+                                <th style="width:90px">Дата</th>
+                                <th v-if="kbTab === 'accepted'" style="width:60px; text-align:center">Заказчик</th>
+                                <th v-if="kbTab === 'customer_confirmed'" style="width:60px; text-align:center">Снять</th>
+                                <th style="width:45px"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="entry in kbEntries" :key="entry.id" class="kb-row"
+                                :class="{ 'kb-row--rejected': entry.expert_decision === 'rejected', 'kb-row--accepted': entry.expert_decision === 'accepted' }">
+                                <td>
+                                    <span class="kb-item-id">{{ entry.item_id }}</span>
+                                    <div style="font-size:10px; opacity:0.5">{{ entry.id }}</div>
+                                </td>
+                                <td>
+                                    <span class="kb-type-badge" :class="'kb-type--' + entry.item_type">
+                                        {{ entry.item_type === 'finding' ? 'Замеч.' : 'Оптим.' }}
+                                    </span>
+                                </td>
+                                <td style="font-size:12px">{{ entry.source_project }}</td>
+                                <td>
+                                    <span class="kb-section-badge" v-if="entry.section">{{ entry.section }}</span>
+                                </td>
+                                <td>
+                                    <span v-if="entry.severity" class="sev-badge sev-badge--sm" :class="'sev-' + sevClass(entry.severity)">
+                                        {{ entry.severity }}
+                                    </span>
+                                </td>
+                                <td class="desc-cell">{{ entry.summary }}</td>
+                                <td class="reason-cell-kb">
+                                    <template v-if="entry.expert_decision === 'rejected'">
+                                        {{ entry.expert_reason }}
+                                    </template>
+                                    <template v-else>
+                                        <span style="opacity:0.4">Принято</span>
+                                    </template>
+                                </td>
+                                <td style="font-size:11px; opacity:0.6">{{ (entry.expert_date || '').slice(0, 10) }}</td>
+                                <td v-if="kbTab === 'accepted'" style="text-align:center">
+                                    <button class="btn-decision btn-accept btn-sm" @click="confirmCustomer([entry.id])" title="Заказчик согласовал">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                                    </button>
+                                </td>
+                                <td v-if="kbTab === 'customer_confirmed'" style="text-align:center">
+                                    <button class="btn-decision btn-reject btn-sm" @click="unconfirmCustomer([entry.id])" title="Снять согласование">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M6 18L18 6"/></svg>
+                                    </button>
+                                </td>
+                                <td style="text-align:center">
+                                    <button class="btn-kb-revoke" @click="revokeKBDecision(entry)" title="Отменить решение — вернуть в раздел">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div v-else class="empty-state">
+                    Нет записей для выбранной вкладки.
+                </div>
+
+                <!-- Patterns Section (только для вкладки Отклонённые) -->
+                <div v-if="kbTab === 'rejected' && kbEntries.length > 0" class="kb-patterns-section">
+                    <div class="kb-patterns-header">
+                        <h3>Обнаруженные паттерны</h3>
+                        <button class="btn btn-sm" @click="detectPatterns()" :disabled="kbPatternsLoading">
+                            {{ kbPatternsLoading ? 'Анализ...' : 'Найти паттерны' }}
+                        </button>
+                    </div>
+                    <div v-if="kbPatterns.length > 0" class="kb-patterns-list">
+                        <div v-for="p in kbPatterns" :key="p.pattern_id" class="kb-pattern-card"
+                             :class="{ 'kb-pattern--applied': p.status === 'applied', 'kb-pattern--dismissed': p.status === 'dismissed' }">
+                            <div class="kb-pattern-header">
+                                <span class="kb-pattern-id">{{ p.pattern_id }}</span>
+                                <span class="kb-pattern-freq">{{ p.frequency }} повторений</span>
+                                <span class="kb-pattern-status" :class="'kb-ps--' + p.status">{{ p.status }}</span>
+                            </div>
+                            <div class="kb-pattern-desc">{{ p.description }}</div>
+                            <div class="kb-pattern-fix">
+                                <strong>Предложение:</strong> {{ p.suggested_fix }}
+                            </div>
+                            <div v-if="p.target_file" class="kb-pattern-target">
+                                Файл: {{ p.target_file }}
+                            </div>
+                            <div v-if="p.status === 'pending'" class="kb-pattern-actions">
+                                <button class="btn btn-sm btn-accept-pattern" @click="approvePattern(p.pattern_id)">Применить</button>
+                                <button class="btn btn-sm btn-dismiss-pattern" @click="dismissPattern(p.pattern_id)">Отклонить</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else-if="!kbPatternsLoading" class="empty-state" style="padding:16px; font-size:13px">
+                        Нажмите «Найти паттерны» для анализа отклонённых решений.
+                    </div>
                 </div>
             </div>
         </div>

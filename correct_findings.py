@@ -1,6 +1,6 @@
 import json, shutil, os
 
-base = r'D:\Отедел Системного Анализа\1. Audit Manager\projects\EOM\133_23-ГК-ГРЩ\_output'
+base = r'D:\Отдел Системного Анализа\1. Audit Manager\projects\EOM\133_23-ГК-ГРЩ\_output'
 src = os.path.join(base, '03_findings.json')
 bak = os.path.join(base, '03_findings_pre_review.json')
 

@@ -23,6 +23,11 @@ REPORTS_DIR = BASE_DIR / "отчет"
 NORMS_FILE = BASE_DIR / "norms_reference.md"
 NORMS_PARAGRAPHS_FILE = BASE_DIR / "norms" / "norms_paragraphs.json"
 
+# База знаний (экспертные решения, паттерны)
+KNOWLEDGE_BASE_DIR = BASE_DIR / "knowledge_base"
+DECISIONS_LOG_FILE = KNOWLEDGE_BASE_DIR / "decisions_log.json"
+PATTERNS_FILE = KNOWLEDGE_BASE_DIR / "patterns.json"
+
 # Профили дисциплин
 DISCIPLINES_DIR = BASE_DIR / "disciplines"
 

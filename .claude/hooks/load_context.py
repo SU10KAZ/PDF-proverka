@@ -11,7 +11,7 @@ import json
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-BASE        = r"D:\Отедел Системного Анализа\1. Audit Manager"
+BASE        = r"D:\Отдел Системного Анализа\1. Audit Manager"
 PROJ_ROOT   = os.path.join(BASE, "projects")
 NORM_FILE   = os.path.join(BASE, "norms_reference.md")
 
