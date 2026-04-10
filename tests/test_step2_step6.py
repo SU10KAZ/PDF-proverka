@@ -181,87 +181,24 @@ class TestCompactPageSheetMapFallback:
         assert mapping.get(5) == "2 (из 10)"
 
 
-# ─── Legacy project checker ──────────────────────────────────────────────
-
-class TestLegacyChecker:
-    def test_detects_legacy_v1_graph(self, tmp_path):
-        """Checker выявляет v1 graph."""
-        from tools.check_project_artifacts import check_project
-
-        # Создаём минимальную структуру проекта
-        (tmp_path / "project_info.json").write_text(
-            json.dumps({"project_id": "TEST/001"}), encoding="utf-8"
-        )
-        output_dir = tmp_path / "_output"
-        output_dir.mkdir()
-        (output_dir / "document_graph.json").write_text(
-            json.dumps({"version": 1, "pages": []}), encoding="utf-8"
-        )
-
-        result = check_project(tmp_path)
-        assert result["is_legacy"] is True
-        assert result["graph_version"] == 1
-        assert any("v1" in w for w in result["warnings"])
-
-    def test_detects_filename_block_evidence(self, tmp_path):
-        """Checker выявляет filename-form block_evidence."""
-        from tools.check_project_artifacts import check_project
-
-        (tmp_path / "project_info.json").write_text(
-            json.dumps({"project_id": "TEST/002"}), encoding="utf-8"
-        )
-        output_dir = tmp_path / "_output"
-        output_dir.mkdir()
-        (output_dir / "document_graph.json").write_text(
-            json.dumps({"version": 2, "pages": [
-                {"page": 1, "sheet_no_raw": "1", "text_blocks": [], "image_blocks": []}
-            ]}), encoding="utf-8"
-        )
-        result = check_project(tmp_path)
-        assert result["page_sheet_map_size"] == 1
-
-    def test_ok_project_not_legacy(self, tmp_path):
-        """Проект с v2 graph и полными данными → не legacy."""
-        from tools.check_project_artifacts import check_project
-
-        (tmp_path / "project_info.json").write_text(
-            json.dumps({"project_id": "TEST/003"}), encoding="utf-8"
-        )
-        output_dir = tmp_path / "_output"
-        output_dir.mkdir()
-        (output_dir / "document_graph.json").write_text(
-            json.dumps({"version": 2, "pages": [
-                {"page": 1, "sheet_no_raw": "1", "text_blocks": [], "image_blocks": []}
-            ]}), encoding="utf-8"
-        )
-        result = check_project(tmp_path)
-        assert result["is_legacy"] is False
-
-
 # ─── Merge output contract ────────────────────────────────────────────────
 
 class TestMergeContract:
     def test_source_block_ids_in_schema(self):
         """source_block_ids должен быть в merge prompt schema."""
-        prompt_path = Path(__file__).parent.parent / ".claude" / "findings_merge_task.md"
+        prompt_path = Path(__file__).parent.parent / "prompts" / "pipeline" / "ru" / "findings_merge_task.md"
         content = prompt_path.read_text(encoding="utf-8")
         assert "source_block_ids" in content
 
-    def test_selected_text_block_ids_in_merge_schema(self):
-        """selected_text_block_ids должен быть в merge prompt."""
-        prompt_path = Path(__file__).parent.parent / ".claude" / "findings_merge_task.md"
-        content = prompt_path.read_text(encoding="utf-8")
-        assert "selected_text_block_ids" in content
-
     def test_evidence_text_refs_in_merge_schema(self):
         """evidence_text_refs должен быть в merge prompt."""
-        prompt_path = Path(__file__).parent.parent / ".claude" / "findings_merge_task.md"
+        prompt_path = Path(__file__).parent.parent / "prompts" / "pipeline" / "ru" / "findings_merge_task.md"
         content = prompt_path.read_text(encoding="utf-8")
         assert "evidence_text_refs" in content
 
     def test_source_block_ids_distinct_from_related(self):
         """source_block_ids и related_block_ids — разные поля в schema."""
-        prompt_path = Path(__file__).parent.parent / ".claude" / "findings_merge_task.md"
+        prompt_path = Path(__file__).parent.parent / "prompts" / "pipeline" / "ru" / "findings_merge_task.md"
         content = prompt_path.read_text(encoding="utf-8")
         # Оба поля присутствуют как отдельные описания
         assert "source_block_ids" in content

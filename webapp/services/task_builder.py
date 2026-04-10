@@ -3,9 +3,9 @@
 Подготовка текста промтов с подстановкой плейсхолдеров и инъекцией дисциплин.
 
 Dual-language templates:
-  .claude/*.md        — русские шаблоны (редактируются в UI)
-  .claude/en/*.md     — английские шаблоны (отправляются в LLM)
-  .claude/en/_sync.json — трекинг синхронизации (ru_hash)
+  prompts/pipeline/ru/*.md  — русские шаблоны (редактируются в UI)
+  prompts/pipeline/en/*.md  — английские шаблоны (отправляются в LLM)
+  prompts/pipeline/en/_sync.json — трекинг синхронизации (ru_hash)
 """
 import hashlib
 import json
@@ -32,7 +32,7 @@ from webapp.services.project_service import resolve_project_dir
 
 # ─── Dual-language templates (RU/EN) ───
 
-_EN_DIR = BASE_DIR / ".claude" / "en"
+_EN_DIR = BASE_DIR / "prompts" / "pipeline" / "en"
 _SYNC_FILE = _EN_DIR / "_sync.json"
 
 # Полный маппинг ВСЕХ шаблонов (включая critic/corrector/norm)
@@ -81,7 +81,7 @@ def _en_path_for(ru_path: Path) -> Path:
 def load_template_for_llm(ru_path: Path) -> str:
     """Загрузить шаблон для отправки в LLM.
 
-    Приоритет: английская версия (.claude/en/) → русская (.claude/).
+    Приоритет: английская версия (prompts/pipeline/en/) → русская (prompts/pipeline/ru/).
     """
     en_path = _en_path_for(ru_path)
     if en_path.exists():
@@ -274,7 +274,7 @@ def get_template_prompts(discipline_code: str | None = None) -> list[dict]:
 
 
 def save_template(stage: str, content: str):
-    """Сохранить русский шаблон промпта в .claude/*.md файл.
+    """Сохранить русский шаблон промпта в prompts/pipeline/ru/*.md файл.
 
     Если есть английская версия — помечает её как рассинхронизированную.
     """

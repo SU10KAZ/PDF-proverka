@@ -29,19 +29,20 @@ DECISIONS_LOG_FILE = KNOWLEDGE_BASE_DIR / "decisions_log.json"
 PATTERNS_FILE = KNOWLEDGE_BASE_DIR / "patterns.json"
 
 # Профили дисциплин
-DISCIPLINES_DIR = BASE_DIR / "disciplines"
+DISCIPLINES_DIR = BASE_DIR / "prompts" / "disciplines"
 
-# Шаблоны задач Claude
-NORM_VERIFY_TASK_TEMPLATE = BASE_DIR / ".claude" / "norm_verify_task.md"
-NORM_FIX_TASK_TEMPLATE = BASE_DIR / ".claude" / "norm_fix_task.md"
-OPTIMIZATION_TASK_TEMPLATE = BASE_DIR / ".claude" / "optimization_task.md"
-TEXT_ANALYSIS_TASK_TEMPLATE = BASE_DIR / ".claude" / "text_analysis_task.md"
-BLOCK_ANALYSIS_TASK_TEMPLATE = BASE_DIR / ".claude" / "block_analysis_task.md"
-FINDINGS_MERGE_TASK_TEMPLATE = BASE_DIR / ".claude" / "findings_merge_task.md"
-FINDINGS_CRITIC_TASK_TEMPLATE = BASE_DIR / ".claude" / "findings_critic_task.md"
-FINDINGS_CORRECTOR_TASK_TEMPLATE = BASE_DIR / ".claude" / "findings_corrector_task.md"
-OPTIMIZATION_CRITIC_TASK_TEMPLATE = BASE_DIR / ".claude" / "optimization_critic_task.md"
-OPTIMIZATION_CORRECTOR_TASK_TEMPLATE = BASE_DIR / ".claude" / "optimization_corrector_task.md"
+# Шаблоны задач Claude (RU-мастер в prompts/pipeline/ru/, EN для LLM в prompts/pipeline/en/)
+_PIPELINE_RU = BASE_DIR / "prompts" / "pipeline" / "ru"
+NORM_VERIFY_TASK_TEMPLATE = _PIPELINE_RU / "norm_verify_task.md"
+NORM_FIX_TASK_TEMPLATE = _PIPELINE_RU / "norm_fix_task.md"
+OPTIMIZATION_TASK_TEMPLATE = _PIPELINE_RU / "optimization_task.md"
+TEXT_ANALYSIS_TASK_TEMPLATE = _PIPELINE_RU / "text_analysis_task.md"
+BLOCK_ANALYSIS_TASK_TEMPLATE = _PIPELINE_RU / "block_analysis_task.md"
+FINDINGS_MERGE_TASK_TEMPLATE = _PIPELINE_RU / "findings_merge_task.md"
+FINDINGS_CRITIC_TASK_TEMPLATE = _PIPELINE_RU / "findings_critic_task.md"
+FINDINGS_CORRECTOR_TASK_TEMPLATE = _PIPELINE_RU / "findings_corrector_task.md"
+OPTIMIZATION_CRITIC_TASK_TEMPLATE = _PIPELINE_RU / "optimization_critic_task.md"
+OPTIMIZATION_CORRECTOR_TASK_TEMPLATE = _PIPELINE_RU / "optimization_corrector_task.md"
 
 # Скрипты
 PROCESS_PROJECT_SCRIPT = BASE_DIR / "process_project.py"

@@ -98,9 +98,11 @@ async def delete_discipline(code: str):
 @router.get("")
 async def list_projects():
     """Список всех проектов с их статусом."""
-    from webapp.config import OBJECT_NAME
+    from webapp.services.object_service import get_current_object
+    current_obj = get_current_object()
+    object_name = current_obj["name"] if current_obj else "Объект"
     projects = project_service.list_projects()
-    return {"projects": [p.model_dump() for p in projects], "object_name": OBJECT_NAME}
+    return {"projects": [p.model_dump() for p in projects], "object_name": object_name}
 
 
 @router.get("/scan")

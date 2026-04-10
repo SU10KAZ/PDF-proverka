@@ -1489,6 +1489,88 @@ const app = createApp({
 
         // Model Switcher удалён — модели per-stage настроены в config.py → _stage_models
 
+        // ─── Objects (строительные объекты) ───
+        const objectsList = ref([]);
+        const currentObjectId = ref(null);
+        const showObjectPicker = ref(false);
+        const showAddObjectModal = ref(false);
+        const newObjectName = ref('');
+
+        async function loadObjects() {
+            try {
+                const data = await api('/objects');
+                objectsList.value = data.objects || [];
+                currentObjectId.value = data.current_id;
+            } catch (e) {
+                console.error('Failed to load objects:', e);
+            }
+        }
+
+        async function switchObject(id) {
+            try {
+                await apiPost('/objects/switch', { id });
+                currentObjectId.value = id;
+                const obj = objectsList.value.find(o => o.id === id);
+                if (obj) objectName.value = obj.name;
+                showObjectPicker.value = false;
+                await refreshProjects();
+            } catch (e) {
+                console.error('Failed to switch object:', e);
+            }
+        }
+
+        async function addNewObject() {
+            const name = newObjectName.value.trim();
+            if (!name) return;
+            try {
+                const data = await apiPost('/objects', { name });
+                objectsList.value.push(data.object);
+                newObjectName.value = '';
+                showAddObjectModal.value = false;
+                // Переключаемся на новый объект
+                await switchObject(data.object.id);
+            } catch (e) {
+                console.error('Failed to add object:', e);
+            }
+        }
+
+        // ─── Dashboard Aggregated Stats ───
+        const auditedProjectsCount = computed(() => {
+            return projects.value.filter(p => p.findings_count > 0).length;
+        });
+
+        const totalFindings = computed(() => {
+            return projects.value.reduce((sum, p) => sum + (p.findings_count || 0), 0);
+        });
+
+        const totalBySeverity = computed(() => {
+            const totals = {};
+            for (const p of projects.value) {
+                if (!p.findings_by_severity) continue;
+                for (const [sev, count] of Object.entries(p.findings_by_severity)) {
+                    totals[sev] = (totals[sev] || 0) + count;
+                }
+            }
+            return totals;
+        });
+
+        function sevPercent(sev) {
+            const total = totalFindings.value;
+            if (!total) return 0;
+            return Math.round(((totalBySeverity.value[sev] || 0) / total) * 100);
+        }
+
+        function sectionFindingsCount(code) {
+            return projects.value
+                .filter(p => p.section === code)
+                .reduce((sum, p) => sum + (p.findings_count || 0), 0);
+        }
+
+        const filteredSectionProjects = computed(() => {
+            if (!sidebarFilterSection.value) return [];
+            return projects.value.filter(p => p.section === sidebarFilterSection.value);
+        });
+
         // ─── Disciplines & Section Groups ───
         const objectName = ref('');
         const supportedDisciplines = ref([]);
@@ -3883,6 +3965,7 @@ const app = createApp({
             connectGlobalWS();
             startPolling();
             loadDisciplines();
+            loadObjects();
             // Глобальная статистика — первый вызов + polling каждые 60с
             pollGlobalUsage();
             usagePollTimer = setInterval(pollGlobalUsage, 60000);
@@ -3972,6 +4055,12 @@ const app = createApp({
             newSectionName, newSectionCode, newSectionColor,
             scanFolders, scanExternalFolder, registerProject, registerAllProjects, closeAddProject,
             externalPath, projectSource,
+            // Objects
+            objectsList, currentObjectId, showObjectPicker, showAddObjectModal, newObjectName,
+            loadObjects, switchObject, addNewObject,
+            // Dashboard stats
+            auditedProjectsCount, totalFindings, totalBySeverity, sevPercent,
+            sectionFindingsCount, filteredSectionProjects,
             // Disciplines
             supportedDisciplines, getDisciplineColor, disciplineLabel, disciplineBadgeStyle,
             objectName, projectsBySection, collapsedSections, toggleSection,

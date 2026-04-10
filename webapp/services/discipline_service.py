@@ -8,9 +8,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
-from webapp.config import BASE_DIR
-
-DISCIPLINES_DIR = BASE_DIR / "disciplines"
+from webapp.config import BASE_DIR, DISCIPLINES_DIR
 REGISTRY_FILE = DISCIPLINES_DIR / "_registry.json"
 
 # Кэш загруженных профилей (дисциплины не меняются в рантайме)
@@ -31,6 +29,7 @@ class DisciplineProfile:
     project_params: str = ""
     drawing_types: str = ""
     finding_categories: str = ""
+    compact_strategy: str = ""
     norms_reference_path: str = ""
 
 
@@ -107,6 +106,7 @@ def load_discipline(code: str) -> DisciplineProfile:
         project_params=_read_file(disc_dir / config.get("project_params_file", "project_params.md")),
         drawing_types=_read_file(disc_dir / config.get("drawing_types_file", "drawing_types.md")),
         finding_categories=_read_file(disc_dir / config.get("finding_categories_file", "finding_categories.md")),
+        compact_strategy=_read_file(disc_dir / config.get("compact_strategy_file", "compact_strategy.md")),
         norms_reference_path=str(norms_path) if norms_path.exists() else str(BASE_DIR / "norms_reference.md"),
     )
 
@@ -185,6 +185,7 @@ def inject_discipline(template: str, profile: DisciplineProfile) -> str:
         "{DISCIPLINE_TEXT_ANALYSIS}": _extract_text_analysis(profile.project_params),
         "{DISCIPLINE_DRAWING_TYPES}": profile.drawing_types,
         "{DISCIPLINE_FINDING_CATEGORIES}": profile.finding_categories,
+        "{DISCIPLINE_COMPACT_STRATEGY}": profile.compact_strategy,
         "{DISCIPLINE_NORMS_FILE}": profile.norms_reference_path,
     }
 
