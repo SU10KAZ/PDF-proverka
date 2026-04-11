@@ -1,9 +1,0 @@
-{
-  "stage": "03b_findings_critic",
-  "model": "claude-opus-4-6",
-  "timestamp": "2026-03-22T20:16:44.407853",
-  "input_tokens": 0,
-  "output_tokens": 0,
-  "duration_ms": 158720,
-  "result": "```json\n{\n  \"meta\": {\n    \"project_id\": \"133_23-ГК-ТХ.М\",\n    \"review_date\": \"2026-03-22T15:45:00Z\",\n    \"total_reviewed\": 12,\n    \"verdicts\": {\n      \"pass\": 12,\n      \"no_evidence\": 0,\n      \"phantom_block\": 0,\n      \"weak_evidence\": 0,\n      \"page_mismatch\": 0,\n      \"contradicts_text\": 0\n    }\n  }\n}"
-}

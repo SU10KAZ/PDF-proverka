@@ -105,7 +105,7 @@ def _load_and_clean_template(
     template = _clean_template_for_api(template)
 
     # Стандартные подстановки
-    section = (project_info or {}).get("section", "EM")
+    section = (project_info or {}).get("section", "EOM")
     template = template.replace("{PROJECT_ID}", project_id)
     template = template.replace("{SECTION}", section)
 
@@ -145,7 +145,7 @@ def _read_norms_reference(project_info: dict) -> str:
     """Прочитать нормативную базу дисциплины (norms_reference.md) inline."""
     try:
         from webapp.services.discipline_service import load_discipline
-        section = (project_info or {}).get("section", "EM")
+        section = (project_info or {}).get("section", "EOM")
         profile = load_discipline(section)
         norms_path = profile.norms_reference_path if profile else None
         if norms_path and Path(norms_path).exists():
@@ -599,7 +599,7 @@ def build_optimization_messages(
     system: шаблон optimization с vendor_list и инъекцией дисциплины
     user: MD-текст + 01_text_analysis.json + 03_findings.json + PNG планов/схем
     """
-    section = (project_info or {}).get("section", "EM")
+    section = (project_info or {}).get("section", "EOM")
     vendor_list = _load_vendor_list_for_discipline(section)
 
     system_prompt = _load_and_clean_template(
@@ -661,7 +661,7 @@ def build_optimization_critic_messages(
     system: шаблон optimization_critic с vendor_list
     user: optimization.json + 03_findings.json
     """
-    section = (project_info or {}).get("section", "EM")
+    section = (project_info or {}).get("section", "EOM")
     vendor_list = _load_vendor_list_for_discipline(section)
 
     system_prompt = _load_and_clean_template(
@@ -692,7 +692,7 @@ def build_optimization_corrector_messages(
     system: шаблон optimization_corrector с vendor_list
     user: optimization.json + optimization_review.json
     """
-    section = (project_info or {}).get("section", "EM")
+    section = (project_info or {}).get("section", "EOM")
     vendor_list = _load_vendor_list_for_discipline(section)
 
     system_prompt = _load_and_clean_template(

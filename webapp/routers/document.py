@@ -7,7 +7,7 @@ from webapp.services import project_service
 router = APIRouter(prefix="/api/document", tags=["document"])
 
 
-@router.get("/{project_id}/pages")
+@router.get("/{project_id:path}/pages")
 async def get_document_pages(project_id: str):
     """Оглавление MD-документа: список страниц с метаданными (без содержимого блоков)."""
     doc = project_service.parse_md_document(project_id)
@@ -31,7 +31,7 @@ async def get_document_pages(project_id: str):
     }
 
 
-@router.get("/{project_id}/page/{page_num}")
+@router.get("/{project_id:path}/page/{page_num}")
 async def get_document_page(project_id: str, page_num: int):
     """Содержимое одной страницы MD-документа (все блоки)."""
     page = project_service.get_document_page(project_id, page_num)

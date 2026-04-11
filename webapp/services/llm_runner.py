@@ -24,6 +24,9 @@ from webapp.models.usage import LLMResult
 
 logger = logging.getLogger(__name__)
 
+# Sentinel: "не задано" (отличает от явного None = "без формата")
+_UNSET = object()
+
 # Единый клиент -- создаётся лениво (чтобы не падать при импорте без ключа)
 _client: AsyncOpenAI | None = None
 
@@ -38,13 +41,34 @@ def _get_client() -> AsyncOpenAI:
     return _client
 
 
+# Цены моделей OpenRouter ($/1M токенов) — обновлять при изменении
+_MODEL_PRICES = {
+    "google/gemini-2.5-pro":          {"input": 1.25,  "output": 10.0},
+    "google/gemini-3.1-pro-preview":  {"input": 2.0,   "output": 12.0},
+    "anthropic/claude-opus-4-6":      {"input": 15.0,  "output": 75.0},
+    "anthropic/claude-sonnet-4-6":    {"input": 3.0,   "output": 15.0},
+    "openai/gpt-5.4":                {"input": 2.50,  "output": 15.0},
+    "openai/gpt-4.1":               {"input": 2.00,  "output": 8.0},
+}
+
+
+def _estimate_cost(model: str, input_tokens: int, output_tokens: int) -> float:
+    """Оценить стоимость запроса на основе токенов и цен модели."""
+    prices = _MODEL_PRICES.get(model)
+    if not prices:
+        return 0.0
+    cost = (input_tokens * prices["input"] + output_tokens * prices["output"]) / 1_000_000
+    return round(cost, 6)
+
+
 async def run_llm(
     stage: str,
     messages: list[dict],
-    response_format: dict | None = None,
+    response_format: dict | None = _UNSET,
     temperature: float | None = None,
     timeout: int = 600,
     max_retries: int = 3,
+    model_override: str | None = None,
 ) -> LLMResult:
     """Единый вызов LLM через OpenRouter.
 
@@ -55,6 +79,7 @@ async def run_llm(
         temperature: температура генерации (по умолчанию из config)
         timeout: таймаут запроса в секундах
         max_retries: макс. число повторов при rate limit / timeout
+        model_override: явная модель (если задана — игнорирует stage config)
 
     Returns:
         LLMResult с текстом, распарсенным JSON, токенами и метриками.
@@ -64,7 +89,7 @@ async def run_llm(
     if stage.startswith("block_batch"):
         stage_key = "block_batch"
 
-    model = get_stage_model(stage_key)
+    model = model_override or get_stage_model(stage_key)
     max_tokens = (
         GEMINI_MAX_OUTPUT_TOKENS if "gemini" in model
         else GPT_MAX_OUTPUT_TOKENS
@@ -75,18 +100,25 @@ async def run_llm(
     for attempt in range(1, max_retries + 1):
         start = time.monotonic()
         try:
-            response = await client.chat.completions.create(
+            # response_format: _UNSET → json_object (default), None → без формата (свободный текст), dict → как есть
+            effective_format = (
+                {"type": "json_object"} if response_format is _UNSET
+                else response_format  # None или явный dict
+            )
+            create_kwargs = dict(
                 model=model,
                 messages=messages,
                 max_tokens=max_tokens,
                 temperature=temp,
-                response_format=response_format or {"type": "json_object"},
                 timeout=timeout,
                 extra_headers={
                     "HTTP-Referer": OPENROUTER_SITE_URL,
                     "X-Title": OPENROUTER_SITE_NAME,
                 },
             )
+            if effective_format is not None:
+                create_kwargs["response_format"] = effective_format
+            response = await client.chat.completions.create(**create_kwargs)
         except RateLimitError as e:
             if attempt < max_retries:
                 wait = min(60, 2 ** attempt * 5)
@@ -129,24 +161,40 @@ async def run_llm(
         elapsed_ms = int((time.monotonic() - start) * 1000)
         content = response.choices[0].message.content or ""
 
-        # Парсинг JSON
+        # Парсинг JSON (с поддержкой markdown-обёрнутого JSON)
         json_data = None
         try:
             json_data = json.loads(content)
         except json.JSONDecodeError:
-            pass
+            # Попытка извлечь JSON из markdown ```json...```
+            import re
+            md_match = re.search(r'```(?:json)?\s*\n(.*?)\n```', content, re.DOTALL)
+            if md_match:
+                try:
+                    json_data = json.loads(md_match.group(1))
+                except json.JSONDecodeError:
+                    pass
+            if json_data is None:
+                # Попытка найти первый { ... } блок
+                brace_match = re.search(r'\{.*\}', content, re.DOTALL)
+                if brace_match:
+                    try:
+                        json_data = json.loads(brace_match.group(0))
+                    except json.JSONDecodeError:
+                        pass
 
         # Usage
         usage = response.usage
         input_tokens = usage.prompt_tokens if usage else 0
         output_tokens = usage.completion_tokens if usage else 0
+        cost = _estimate_cost(model, input_tokens, output_tokens)
 
         return LLMResult(
             text=content,
             json_data=json_data,
             input_tokens=input_tokens,
             output_tokens=output_tokens,
-            cost_usd=0.0,
+            cost_usd=cost,
             duration_ms=elapsed_ms,
             model=model,
         )
@@ -157,6 +205,71 @@ async def run_llm(
         error_message="Max retries exhausted",
         model=model,
     )
+
+
+from typing import AsyncGenerator
+
+
+async def run_llm_stream(
+    messages: list[dict],
+    model_override: str,
+    temperature: float | None = None,
+    timeout: int = 120,
+) -> AsyncGenerator[dict, None]:
+    """Стриминг ответа через OpenRouter (SSE).
+
+    Yields:
+        {"type": "delta", "text": "..."} — фрагмент текста
+        {"type": "done", "text": "...", "input_tokens": N, "output_tokens": N, "cost_usd": F}
+    """
+    model = model_override
+    max_tokens = (
+        GEMINI_MAX_OUTPUT_TOKENS if "gemini" in model
+        else GPT_MAX_OUTPUT_TOKENS
+    )
+    temp = temperature if temperature is not None else DEFAULT_TEMPERATURE
+    client = _get_client()
+
+    full_text = ""
+    input_tokens = 0
+    output_tokens = 0
+
+    try:
+        stream = await client.chat.completions.create(
+            model=model,
+            messages=messages,
+            max_tokens=max_tokens,
+            temperature=temp,
+            stream=True,
+            timeout=timeout,
+            extra_headers={
+                "HTTP-Referer": OPENROUTER_SITE_URL,
+                "X-Title": OPENROUTER_SITE_NAME,
+            },
+        )
+
+        async for chunk in stream:
+            if chunk.choices and chunk.choices[0].delta.content:
+                delta = chunk.choices[0].delta.content
+                full_text += delta
+                yield {"type": "delta", "text": delta}
+            # Некоторые провайдеры отдают usage в последнем chunk
+            if hasattr(chunk, 'usage') and chunk.usage:
+                input_tokens = chunk.usage.prompt_tokens or 0
+                output_tokens = chunk.usage.completion_tokens or 0
+
+    except Exception as e:
+        yield {"type": "error", "message": str(e)}
+        return
+
+    cost = _estimate_cost(model, input_tokens, output_tokens)
+    yield {
+        "type": "done",
+        "text": full_text,
+        "input_tokens": input_tokens,
+        "output_tokens": output_tokens,
+        "cost_usd": cost,
+    }
 
 
 def make_image_content(image_path: str | Path, detail: str = "high") -> dict:

@@ -23,20 +23,26 @@ REPORTS_DIR = BASE_DIR / "отчет"
 NORMS_FILE = BASE_DIR / "norms_reference.md"
 NORMS_PARAGRAPHS_FILE = BASE_DIR / "norms" / "norms_paragraphs.json"
 
-# Профили дисциплин
-DISCIPLINES_DIR = BASE_DIR / "disciplines"
+# База знаний (экспертные решения, паттерны)
+KNOWLEDGE_BASE_DIR = BASE_DIR / "knowledge_base"
+DECISIONS_LOG_FILE = KNOWLEDGE_BASE_DIR / "decisions_log.json"
+PATTERNS_FILE = KNOWLEDGE_BASE_DIR / "patterns.json"
 
-# Шаблоны задач Claude
-NORM_VERIFY_TASK_TEMPLATE = BASE_DIR / ".claude" / "norm_verify_task.md"
-NORM_FIX_TASK_TEMPLATE = BASE_DIR / ".claude" / "norm_fix_task.md"
-OPTIMIZATION_TASK_TEMPLATE = BASE_DIR / ".claude" / "optimization_task.md"
-TEXT_ANALYSIS_TASK_TEMPLATE = BASE_DIR / ".claude" / "text_analysis_task.md"
-BLOCK_ANALYSIS_TASK_TEMPLATE = BASE_DIR / ".claude" / "block_analysis_task.md"
-FINDINGS_MERGE_TASK_TEMPLATE = BASE_DIR / ".claude" / "findings_merge_task.md"
-FINDINGS_CRITIC_TASK_TEMPLATE = BASE_DIR / ".claude" / "findings_critic_task.md"
-FINDINGS_CORRECTOR_TASK_TEMPLATE = BASE_DIR / ".claude" / "findings_corrector_task.md"
-OPTIMIZATION_CRITIC_TASK_TEMPLATE = BASE_DIR / ".claude" / "optimization_critic_task.md"
-OPTIMIZATION_CORRECTOR_TASK_TEMPLATE = BASE_DIR / ".claude" / "optimization_corrector_task.md"
+# Профили дисциплин
+DISCIPLINES_DIR = BASE_DIR / "prompts" / "disciplines"
+
+# Шаблоны задач Claude (RU-мастер в prompts/pipeline/ru/, EN для LLM в prompts/pipeline/en/)
+_PIPELINE_RU = BASE_DIR / "prompts" / "pipeline" / "ru"
+NORM_VERIFY_TASK_TEMPLATE = _PIPELINE_RU / "norm_verify_task.md"
+NORM_FIX_TASK_TEMPLATE = _PIPELINE_RU / "norm_fix_task.md"
+OPTIMIZATION_TASK_TEMPLATE = _PIPELINE_RU / "optimization_task.md"
+TEXT_ANALYSIS_TASK_TEMPLATE = _PIPELINE_RU / "text_analysis_task.md"
+BLOCK_ANALYSIS_TASK_TEMPLATE = _PIPELINE_RU / "block_analysis_task.md"
+FINDINGS_MERGE_TASK_TEMPLATE = _PIPELINE_RU / "findings_merge_task.md"
+FINDINGS_CRITIC_TASK_TEMPLATE = _PIPELINE_RU / "findings_critic_task.md"
+FINDINGS_CORRECTOR_TASK_TEMPLATE = _PIPELINE_RU / "findings_corrector_task.md"
+OPTIMIZATION_CRITIC_TASK_TEMPLATE = _PIPELINE_RU / "optimization_critic_task.md"
+OPTIMIZATION_CORRECTOR_TASK_TEMPLATE = _PIPELINE_RU / "optimization_corrector_task.md"
 
 # Скрипты
 PROCESS_PROJECT_SCRIPT = BASE_DIR / "process_project.py"
@@ -98,11 +104,12 @@ CLAUDE_NORM_VERIFY_TIMEOUT = 600  # 10 мин на верификацию нор
 CLAUDE_NORM_FIX_TIMEOUT = 600     # 10 мин на пересмотр замечаний
 CLAUDE_OPTIMIZATION_TIMEOUT = 3600  # 60 мин на оптимизацию
 CLAUDE_TEXT_ANALYSIS_TIMEOUT = 1800   # 30 мин на анализ текста MD
-CLAUDE_BLOCK_ANALYSIS_TIMEOUT = 600   # 10 мин на пакет блоков
+CLAUDE_BLOCK_ANALYSIS_TIMEOUT = 1800  # 30 мин на пакет блоков (Opus CLI Vision медленнее GPT/Gemini)
 CLAUDE_FINDINGS_MERGE_TIMEOUT = 1800  # 30 мин на свод замечаний (02_blocks может быть >800KB)
 CLAUDE_FINDINGS_CRITIC_TIMEOUT = 600   # 10 мин — critic проверяет готовые замечания
 CRITIC_CHUNK_SIZE = 50                 # макс. замечаний на 1 запуск Critic
-CLAUDE_FINDINGS_CORRECTOR_TIMEOUT = 600  # 10 мин — corrector исправляет по вердиктам
+CLAUDE_FINDINGS_CORRECTOR_TIMEOUT = 1200  # 20 мин — Sonnet CLI может быть медленнее Opus
+CORRECTOR_CHUNK_SIZE = 5                 # макс. замечаний на 1 запуск Corrector
 CLAUDE_OPTIMIZATION_CRITIC_TIMEOUT = 600   # 10 мин — critic проверяет оптимизацию
 CLAUDE_OPTIMIZATION_CORRECTOR_TIMEOUT = 600  # 10 мин — corrector исправляет оптимизацию
 
@@ -143,29 +150,51 @@ _stage_models: dict[str, str | None] = {
 # ═══════════════════════════════════════════════════════════════════════════
 
 STAGE_MODEL_CONFIG: dict[str, str] = {
-    "text_analysis":          "openai/gpt-5.4",
-    "block_batch":            "google/gemini-3.1-pro-preview",
-    "findings_merge":         "openai/gpt-5.4",
+    "text_analysis":          "claude-opus-4-6",
+    "block_batch":            "openai/gpt-5.4",
+    "findings_merge":         "claude-opus-4-6",
     "findings_critic":        "openai/gpt-5.4",
-    "findings_corrector":     "openai/gpt-5.4",
+    "findings_corrector":     "claude-opus-4-6",
     "norm_verify":            "claude-opus-4-6",
-    "norm_fix":               "openai/gpt-5.4",
-    "optimization":           "google/gemini-3.1-pro-preview",
-    "optimization_critic":    "openai/gpt-5.4",
-    "optimization_corrector": "openai/gpt-5.4",
+    "norm_fix":               "claude-opus-4-6",
+    "optimization":           "claude-opus-4-6",
+    "optimization_critic":    "claude-sonnet-4-6",
+    "optimization_corrector": "claude-sonnet-4-6",
 }
 
 AVAILABLE_MODELS = [
-    {"id": "claude-opus-4-6", "label": "Opus", "provider": "claude_cli"},
-    {"id": "claude-sonnet-4-6", "label": "Sonnet", "provider": "claude_cli"},
+    {"id": "claude-opus-4-6", "label": "Opus (CLI)", "provider": "claude_cli"},
+    {"id": "claude-sonnet-4-6", "label": "Sonnet (CLI)", "provider": "claude_cli"},
+    {"id": "anthropic/claude-opus-4-6", "label": "Opus", "provider": "openrouter"},
+    {"id": "anthropic/claude-sonnet-4-6", "label": "Sonnet", "provider": "openrouter"},
     {"id": "openai/gpt-5.4", "label": "GPT-5.4", "provider": "openrouter"},
     {"id": "google/gemini-3.1-pro-preview", "label": "Gemini", "provider": "openrouter"},
 ]
 
 # Этапы с ограничениями на выбор модели
-# block_batch: только OpenRouter (inline images, Claude CLI не поддерживает)
+# block_batch: OpenRouter (GPT/Gemini) + экспериментально Claude CLI (Opus/Sonnet)
+# Claude CLI читает PNG через Read tool (Vision поддержка).
 STAGE_MODEL_RESTRICTIONS = {
-    "block_batch": ["openai/gpt-5.4", "google/gemini-3.1-pro-preview"],
+    "block_batch": [
+        "openai/gpt-5.4",
+        "google/gemini-3.1-pro-preview",
+        "claude-opus-4-6",        # экспериментально — CLI + Vision
+        "claude-sonnet-4-6",      # экспериментально — CLI + Vision
+    ],
+}
+
+# Подсказки при выборе модели для этапа (отображаются в UI)
+STAGE_MODEL_HINTS: dict[str, str] = {
+    "text_analysis": "Opus CLI рекомендуется. Sonnet допустим.",
+    "block_batch": "GPT-5.4 / Gemini (OpenRouter) или Opus / Sonnet (Claude CLI, Vision через Read). Opus CLI — эксперимент, медленнее и жрёт CLI-лимит.",
+    "findings_merge": "Минимум Opus CLI — межблочная сверка требует сильной модели.",
+    "findings_critic": "GPT-5.4 оптимален: быстро и дёшево.",
+    "findings_corrector": "Минимум Opus CLI. Sonnet не успевает (таймаут). GPT-5.4 — альтернатива.",
+    "norm_verify": "Opus CLI рекомендуется (WebSearch + анализ норм).",
+    "norm_fix": "Opus CLI рекомендуется.",
+    "optimization": "Opus CLI или GPT-5.4. Gemini находит мало предложений.",
+    "optimization_critic": "GPT-5.4 или Sonnet CLI.",
+    "optimization_corrector": "GPT-5.4 или Sonnet CLI.",
 }
 
 def get_stage_model(stage: str) -> str:
@@ -209,7 +238,7 @@ def get_stage_models() -> dict[str, str | None]:
     return dict(_stage_models)
 
 # Параллельная обработка батчей блоков
-MAX_PARALLEL_BATCHES = 3  # одновременных Claude CLI сессий
+MAX_PARALLEL_BATCHES = 1  # ВРЕМЕННО для эксперимента Opus CLI — обычно 3
 
 # ─── Rate Limit: пауза вместо ошибки ───
 RATE_LIMIT_THRESHOLD_PCT = 90   # при 90% лимита — предварительная проверка перед запуском
@@ -281,3 +310,18 @@ OPENROUTER_MAX_BLOCKS_PER_BATCH = 80
 
 # === JSON Schema для structured output ===
 SCHEMAS_DIR = Path(__file__).resolve().parent / "schemas"
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Обсуждения (Discussions) — чат по замечаниям/оптимизациям через OpenRouter
+# ═══════════════════════════════════════════════════════════════════════════
+DISCUSSION_MODELS = [
+    {"id": "claude-cli", "label": "Claude CLI", "provider": "claude_cli"},
+    {"id": "openai/gpt-4.1-mini", "label": "GPT-4.1 mini", "provider": "openrouter"},
+    {"id": "google/gemini-3.1-pro-preview", "label": "Gemini 3.1 Pro", "provider": "openrouter"},
+]
+DISCUSSION_DEFAULT_MODEL = "claude-cli"
+DISCUSSION_CLI_TIMEOUT = 120  # секунд на один вызов Claude CLI для чата
+DISCUSSION_MAX_OUTPUT_TOKENS = 16384
+DISCUSSION_TEMPERATURE = 0.3
+DISCUSSION_TIMEOUT = 120  # секунд на один запрос чата
+DISCUSSION_SUMMARY_THRESHOLD = 10  # после скольких сообщений сжимать историю

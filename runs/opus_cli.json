@@ -1,0 +1,178 @@
+{
+  "project": "projects\\EOM\\133_23-ГК-ГРЩ",
+  "totals": {
+    "findings": 33,
+    "etalon_entries": 74,
+    "etalon_keeps": 5,
+    "tp": 3,
+    "fp": 11,
+    "partial": 1,
+    "unknown": 5,
+    "novel": 13,
+    "missed_keeps": 2
+  },
+  "metrics": {
+    "recall_definite": 0.6,
+    "precision_definite": 0.21428571428571427,
+    "precision_potential": 0.42105263157894735
+  },
+  "tp": [
+    {
+      "finding_id": "F-012",
+      "etalon_n": 2,
+      "score": 90
+    },
+    {
+      "finding_id": "F-023",
+      "etalon_n": 55,
+      "score": 63
+    },
+    {
+      "finding_id": "F-003",
+      "etalon_n": 7,
+      "score": 56
+    }
+  ],
+  "fp": [
+    {
+      "finding_id": "F-005",
+      "etalon_n": 29,
+      "score": 100
+    },
+    {
+      "finding_id": "F-010",
+      "etalon_n": 8,
+      "score": 100
+    },
+    {
+      "finding_id": "F-017",
+      "etalon_n": 9,
+      "score": 100
+    },
+    {
+      "finding_id": "F-004",
+      "etalon_n": 20,
+      "score": 89
+    },
+    {
+      "finding_id": "F-009",
+      "etalon_n": 4,
+      "score": 89
+    },
+    {
+      "finding_id": "F-024",
+      "etalon_n": 22,
+      "score": 87
+    },
+    {
+      "finding_id": "F-029",
+      "etalon_n": 10,
+      "score": 87
+    },
+    {
+      "finding_id": "F-018",
+      "etalon_n": 17,
+      "score": 83
+    },
+    {
+      "finding_id": "F-013",
+      "etalon_n": 38,
+      "score": 75
+    },
+    {
+      "finding_id": "F-002",
+      "etalon_n": 3,
+      "score": 69
+    },
+    {
+      "finding_id": "F-015",
+      "etalon_n": 21,
+      "score": 64
+    }
+  ],
+  "partial": [
+    {
+      "finding_id": "F-001",
+      "etalon_n": 1,
+      "score": 92
+    }
+  ],
+  "unknown": [
+    {
+      "finding_id": "F-011",
+      "etalon_n": 23,
+      "score": 87
+    },
+    {
+      "finding_id": "F-022",
+      "etalon_n": 53,
+      "score": 74
+    },
+    {
+      "finding_id": "F-030",
+      "etalon_n": 69,
+      "score": 64
+    },
+    {
+      "finding_id": "F-027",
+      "etalon_n": 67,
+      "score": 57
+    },
+    {
+      "finding_id": "F-006",
+      "etalon_n": 35,
+      "score": 50
+    }
+  ],
+  "novel": [
+    {
+      "finding_id": "F-007"
+    },
+    {
+      "finding_id": "F-008"
+    },
+    {
+      "finding_id": "F-014"
+    },
+    {
+      "finding_id": "F-016"
+    },
+    {
+      "finding_id": "F-019"
+    },
+    {
+      "finding_id": "F-020"
+    },
+    {
+      "finding_id": "F-021"
+    },
+    {
+      "finding_id": "F-025"
+    },
+    {
+      "finding_id": "F-026"
+    },
+    {
+      "finding_id": "F-028"
+    },
+    {
+      "finding_id": "F-031"
+    },
+    {
+      "finding_id": "F-032"
+    },
+    {
+      "finding_id": "F-033"
+    }
+  ],
+  "missed_keeps": [
+    {
+      "etalon_n": 5,
+      "text": "Дублирующийся маркер М-1.5 на схеме РП1: две линии (ВРУ-ИТП и ВРУ-НС)"
+    },
+    {
+      "etalon_n": 18,
+      "text": "Расхождение PE-проводников кабеля ВРУ-1 (М-1.1/М-2.1): 1 vs 2 PE"
+    }
+  ]
+}

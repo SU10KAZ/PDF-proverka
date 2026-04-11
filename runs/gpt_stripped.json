@@ -1,0 +1,133 @@
+{
+  "project": "projects\\EOM\\133_23-ГК-ГРЩ",
+  "totals": {
+    "findings": 18,
+    "etalon_entries": 74,
+    "etalon_keeps": 5,
+    "tp": 1,
+    "fp": 13,
+    "partial": 1,
+    "unknown": 1,
+    "novel": 2,
+    "missed_keeps": 4
+  },
+  "metrics": {
+    "recall_definite": 0.2,
+    "precision_definite": 0.07142857142857142,
+    "precision_potential": 0.13333333333333333
+  },
+  "tp": [
+    {
+      "finding_id": "F-005",
+      "etalon_n": 18,
+      "score": 95
+    }
+  ],
+  "fp": [
+    {
+      "finding_id": "F-002",
+      "etalon_n": 29,
+      "score": 100
+    },
+    {
+      "finding_id": "F-007",
+      "etalon_n": 10,
+      "score": 95
+    },
+    {
+      "finding_id": "F-011",
+      "etalon_n": 9,
+      "score": 90
+    },
+    {
+      "finding_id": "F-014",
+      "etalon_n": 17,
+      "score": 90
+    },
+    {
+      "finding_id": "F-012",
+      "etalon_n": 28,
+      "score": 88
+    },
+    {
+      "finding_id": "F-016",
+      "etalon_n": 38,
+      "score": 88
+    },
+    {
+      "finding_id": "F-008",
+      "etalon_n": 31,
+      "score": 82
+    },
+    {
+      "finding_id": "F-001",
+      "etalon_n": 4,
+      "score": 79
+    },
+    {
+      "finding_id": "F-003",
+      "etalon_n": 19,
+      "score": 78
+    },
+    {
+      "finding_id": "F-013",
+      "etalon_n": 21,
+      "score": 76
+    },
+    {
+      "finding_id": "F-004",
+      "etalon_n": 3,
+      "score": 66
+    },
+    {
+      "finding_id": "F-009",
+      "etalon_n": 14,
+      "score": 63
+    },
+    {
+      "finding_id": "F-018",
+      "etalon_n": 20,
+      "score": 63
+    }
+  ],
+  "partial": [
+    {
+      "finding_id": "F-006",
+      "etalon_n": 1,
+      "score": 95
+    }
+  ],
+  "unknown": [
+    {
+      "finding_id": "F-010",
+      "etalon_n": 23,
+      "score": 59
+    }
+  ],
+  "novel": [
+    {
+      "finding_id": "F-015"
+    },
+    {
+      "finding_id": "F-017"
+    }
+  ],
+  "missed_keeps": [
+    {
+      "etalon_n": 2,
+      "text": "Перепутаны позиции ЩУ-2/Т и ЩУ-12/Т в спецификации"
+    },
+    {
+      "etalon_n": 5,
+      "text": "Дублирующийся маркер М-1.5 на схеме РП1: две линии (ВРУ-ИТП и ВРУ-НС)"
+    },
+    {
+      "etalon_n": 7,
+      "text": "Расхождение сечения нейтрали кабелей: схема 1×150 мм² vs узлы 1×120 мм²"
+    },
+    {
+      "etalon_n": 55,
+      "text": "Нет уставок электронных расцепителей (ВА-335А vs примечание)"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "blocks": [
+    {
+      "id": "4JJ7-3TGQ-XKP",
+      "page_index": 4,
+      "block_type": "image",
+      "category_code": null,
+      "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/f8f58bb5-ab5f-48c7-bf9a-18564581eca7/crops/4JJ7-3TGQ-XKP.pdf"
+    },
+    {
+      "id": "9NNW-A7RW-A3G",
+      "page_index": 5,
+      "block_type": "image",
+      "category_code": null,
+      "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/f8f58bb5-ab5f-48c7-bf9a-18564581eca7/crops/9NNW-A7RW-A3G.pdf"
+    },
+    {
+      "id": "4GER-WGGW-39G",
+      "page_index": 5,
+      "block_type": "image",
+      "category_code": null,
+      "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/f8f58bb5-ab5f-48c7-bf9a-18564581eca7/crops/4GER-WGGW-39G.pdf"
+    }
+  ]
+}

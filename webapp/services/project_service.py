@@ -11,10 +11,20 @@ from pathlib import Path
 from typing import Optional
 from datetime import datetime
 
-from webapp.config import PROJECTS_DIR, SEVERITY_CONFIG
+from webapp.config import PROJECTS_DIR as _DEFAULT_PROJECTS_DIR, SEVERITY_CONFIG
 from webapp.models.project import (
     ProjectInfo, ProjectStatus, PipelineStatus, TextExtractionQuality,
 )
+
+
+def _get_projects_dir() -> Path:
+    """Получить папку проектов текущего объекта (или дефолт)."""
+    try:
+        from webapp.services.object_service import get_current_projects_dir
+        return get_current_projects_dir()
+    except Exception:
+        return _DEFAULT_PROJECTS_DIR
+
 
 # TTL-кеш для iter_project_dirs (30 сек)
 _PROJECT_DIRS_CACHE: list[tuple[str, Path]] = []
@@ -27,7 +37,7 @@ def iter_project_dirs(force: bool = False) -> list[tuple[str, Path]]:
 
     Возвращает [(project_id, path), ...] где project_id = имя папки.
     Проект = папка с project_info.json или PDF-файлами.
-    Подпапка-группа (OV/, EM/ и т.д.) = папка без project_info.json и без PDF.
+    Подпапка-группа (OV/, EOM/ и т.д.) = папка без project_info.json и без PDF.
 
     Кеш обновляется раз в 30 секунд (или force=True).
     """
@@ -38,9 +48,10 @@ def iter_project_dirs(force: bool = False) -> list[tuple[str, Path]]:
         return _PROJECT_DIRS_CACHE
 
     results: list[tuple[str, Path]] = []
-    if not PROJECTS_DIR.exists():
+    projects_dir = _get_projects_dir()
+    if not projects_dir.exists():
         return results
-    for entry in sorted(PROJECTS_DIR.iterdir()):
+    for entry in sorted(projects_dir.iterdir()):
         if not entry.is_dir() or entry.name.startswith("_"):
             continue
         if (entry / "project_info.json").exists() or list(entry.glob("*.pdf")):
@@ -58,14 +69,15 @@ def iter_project_dirs(force: bool = False) -> list[tuple[str, Path]]:
 
 def resolve_project_dir(project_id: str) -> Path:
     """Найти папку проекта по ID (имя папки), с поиском в подпапках."""
-    direct = PROJECTS_DIR / project_id
+    projects_dir = _get_projects_dir()
+    direct = projects_dir / project_id
     if direct.exists():
         return direct
-    # Если PROJECTS_DIR не существует — не падаем, возвращаем direct path
-    if not PROJECTS_DIR.exists():
+    # Если projects_dir не существует — не падаем, возвращаем direct path
+    if not projects_dir.exists():
         return direct
     # Поиск в подпапках (1 уровень)
-    for subdir in PROJECTS_DIR.iterdir():
+    for subdir in projects_dir.iterdir():
         if subdir.is_dir() and not subdir.name.startswith("_"):
             candidate = subdir / project_id
             if candidate.exists():
@@ -218,7 +230,7 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
         project_id=project_id,
         name=info.get("name", project_id),
         description=info.get("description", ""),
-        section=info.get("section", "EM"),
+        section=info.get("section", "EOM"),
         object=info.get("object"),
         has_pdf=has_pdf,
         pdf_size_mb=pdf_size_mb,
@@ -406,8 +418,8 @@ def _build_pipeline_issues(output_dir: Path) -> list[str]:
         s = info.get("status", "")
         if s in ("error", "interrupted"):
             short_err = info.get("error", "")
-            if short_err and len(short_err) > 40:
-                short_err = short_err[:37] + "..."
+            if short_err and len(short_err) > 80:
+                short_err = short_err[:77] + "..."
             issues.append(f"{label}: {short_err}" if short_err else f"{label}: ошибка")
 
     # Findings есть, но critic/corrector не запускались
@@ -552,7 +564,7 @@ def register_external_project(source_path: str, pdf_file: str,
                               pdf_files: list[str] | None = None,
                               md_file: Optional[str] = None,
                               md_files: list[str] | None = None,
-                              name: Optional[str] = None, section: str = "EM",
+                              name: Optional[str] = None, section: str = "EOM",
                               description: str = "") -> dict:
     """Скопировать проект из внешней папки в projects/ и создать project_info.json.
 
@@ -563,7 +575,7 @@ def register_external_project(source_path: str, pdf_file: str,
         raise ValueError(f"Папка '{source_path}' не найдена")
 
     folder_name = name or source.name
-    dest = PROJECTS_DIR / folder_name
+    dest = _get_projects_dir() / folder_name
     if dest.exists() and (dest / "project_info.json").exists():
         raise ValueError(f"Проект '{folder_name}' уже существует в projects/")
 
@@ -620,7 +632,7 @@ def register_external_project(source_path: str, pdf_file: str,
 
 def register_project(folder: str, pdf_file: str, pdf_files: list[str] | None = None,
                      md_file: Optional[str] = None, md_files: list[str] | None = None,
-                     name: Optional[str] = None, section: str = "EM",
+                     name: Optional[str] = None, section: str = "EOM",
                      description: str = "") -> dict:
     """Создать project_info.json для папки из projects/.
 

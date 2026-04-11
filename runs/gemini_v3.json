@@ -1,0 +1,96 @@
+{
+  "project": "projects\\EOM\\133_23-ГК-ГРЩ",
+  "totals": {
+    "findings": 10,
+    "etalon_entries": 74,
+    "etalon_keeps": 5,
+    "tp": 0,
+    "fp": 6,
+    "partial": 1,
+    "unknown": 1,
+    "novel": 2,
+    "missed_keeps": 5
+  },
+  "metrics": {
+    "recall_definite": 0.0,
+    "precision_definite": 0.0,
+    "precision_potential": 0.14285714285714285
+  },
+  "tp": [],
+  "fp": [
+    {
+      "finding_id": "F-008",
+      "etalon_n": 9,
+      "score": 90
+    },
+    {
+      "finding_id": "F-006",
+      "etalon_n": 20,
+      "score": 84
+    },
+    {
+      "finding_id": "F-009",
+      "etalon_n": 21,
+      "score": 76
+    },
+    {
+      "finding_id": "F-002",
+      "etalon_n": 29,
+      "score": 73
+    },
+    {
+      "finding_id": "F-004",
+      "etalon_n": 3,
+      "score": 66
+    },
+    {
+      "finding_id": "F-007",
+      "etalon_n": 4,
+      "score": 56
+    }
+  ],
+  "partial": [
+    {
+      "finding_id": "F-001",
+      "etalon_n": 1,
+      "score": 95
+    }
+  ],
+  "unknown": [
+    {
+      "finding_id": "F-010",
+      "etalon_n": 60,
+      "score": 67
+    }
+  ],
+  "novel": [
+    {
+      "finding_id": "F-003"
+    },
+    {
+      "finding_id": "F-005"
+    }
+  ],
+  "missed_keeps": [
+    {
+      "etalon_n": 2,
+      "text": "Перепутаны позиции ЩУ-2/Т и ЩУ-12/Т в спецификации"
+    },
+    {
+      "etalon_n": 5,
+      "text": "Дублирующийся маркер М-1.5 на схеме РП1: две линии (ВРУ-ИТП и ВРУ-НС)"
+    },
+    {
+      "etalon_n": 7,
+      "text": "Расхождение сечения нейтрали кабелей: схема 1×150 мм² vs узлы 1×120 мм²"
+    },
+    {
+      "etalon_n": 18,
+      "text": "Расхождение PE-проводников кабеля ВРУ-1 (М-1.1/М-2.1): 1 vs 2 PE"
+    },
+    {
+      "etalon_n": 55,
+      "text": "Нет уставок электронных расцепителей (ВА-335А vs примечание)"
+    }
+  ]
+}

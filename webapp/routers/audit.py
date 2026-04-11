@@ -67,11 +67,12 @@ async def get_stage_model_config():
 
     Возвращает текущий маппинг этап → модель (Claude CLI + OpenRouter).
     """
-    from webapp.config import STAGE_MODEL_RESTRICTIONS
+    from webapp.config import STAGE_MODEL_RESTRICTIONS, STAGE_MODEL_HINTS
     return {
         "stages": dict(STAGE_MODEL_CONFIG),
         "available_models": AVAILABLE_MODELS,
         "restrictions": STAGE_MODEL_RESTRICTIONS,
+        "hints": STAGE_MODEL_HINTS,
     }
 
 
@@ -277,6 +278,10 @@ async def add_to_batch(request: dict):
         return {"status": "added", "added": len(valid_ids), "queue": queue.model_dump()}
     except RuntimeError as e:
         raise HTTPException(409, str(e))
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(500, f"Ошибка добавления в очередь: {e}")
 
 
 @router.post("/batch/add-retry")
@@ -384,7 +389,7 @@ async def get_disciplines():
 
 @router.get("/templates")
 async def get_templates(
-    discipline: str = Query(None, description="Код дисциплины (EM, OV)"),
+    discipline: str = Query(None, description="Код дисциплины (EOM, OV)"),
 ):
     """Получить сырые шаблоны промптов (с плейсхолдерами)."""
     from webapp.services.task_builder import get_template_prompts
@@ -492,7 +497,7 @@ async def get_all_live_status():
 
 # ─── Логи проектов ───
 
-@router.get("/{project_id}/log")
+@router.get("/{project_id:path}/log")
 async def get_project_log(project_id: str, limit: int = 500, offset: int = 0):
     """Получить персистентный лог аудита из audit_log.jsonl."""
     log_path = resolve_project_dir(project_id) / "_output" / "audit_log.jsonl"
@@ -526,7 +531,7 @@ async def get_project_log(project_id: str, limit: int = 500, offset: int = 0):
     return {"entries": entries, "total": total, "has_more": total > limit}
 
 
-@router.delete("/{project_id}/log")
+@router.delete("/{project_id:path}/log")
 async def clear_project_log(project_id: str):
     """Очистить лог аудита проекта."""
     log_path = resolve_project_dir(project_id) / "_output" / "audit_log.jsonl"
@@ -537,10 +542,10 @@ async def clear_project_log(project_id: str):
 
 # ─── Динамические роуты /{project_id}/... ───
 
-@router.get("/{project_id}/prompts")
+@router.get("/{project_id:path}/prompts")
 async def get_prompts(
     project_id: str,
-    discipline: str = Query(None, description="Код дисциплины (EM, OV и т.д.)"),
+    discipline: str = Query(None, description="Код дисциплины (EOM, OV и т.д.)"),
 ):
     """Получить все промпты (resolved) для проекта."""
     _check_project(project_id)
@@ -549,7 +554,7 @@ async def get_prompts(
     return {"prompts": prompts}
 
 
-@router.put("/{project_id}/prompts/{stage}")
+@router.put("/{project_id:path}/prompts/{stage}")
 async def save_prompt(project_id: str, stage: str, body: dict):
     """Сохранить кастомный промпт для этапа."""
     _check_project(project_id)
@@ -562,7 +567,7 @@ async def save_prompt(project_id: str, stage: str, body: dict):
     return {"status": "saved", "stage": stage}
 
 
-@router.delete("/{project_id}/prompts/{stage}")
+@router.delete("/{project_id:path}/prompts/{stage}")
 async def reset_prompt(project_id: str, stage: str):
     """Сбросить кастомный промпт к стандартному."""
     _check_project(project_id)
@@ -571,7 +576,7 @@ async def reset_prompt(project_id: str, stage: str):
     return {"status": "reset", "stage": stage}
 
 
-@router.post("/{project_id}/prepare")
+@router.post("/{project_id:path}/prepare")
 async def prepare_project(project_id: str):
     """Запустить подготовку проекта (текст + тайлы)."""
     _check_project(project_id)
@@ -582,7 +587,7 @@ async def prepare_project(project_id: str):
         raise HTTPException(409, str(e))
 
 
-@router.post("/{project_id}/tile-audit")
+@router.post("/{project_id:path}/tile-audit")
 async def start_tile_audit(
     project_id: str,
     start_from: int = Query(1, description="Начать с пакета N"),
@@ -596,7 +601,7 @@ async def start_tile_audit(
         raise HTTPException(409, str(e))
 
 
-@router.post("/{project_id}/main-audit")
+@router.post("/{project_id:path}/main-audit")
 async def start_main_audit(project_id: str):
     """Запустить основной аудит (Claude CLI)."""
     _check_project(project_id)
@@ -607,7 +612,7 @@ async def start_main_audit(project_id: str):
         raise HTTPException(409, str(e))
 
 
-@router.post("/{project_id}/smart-audit")
+@router.post("/{project_id:path}/smart-audit")
 async def start_smart_audit(project_id: str):
     """Запустить интеллектуальный аудит (текст → триаж → выборочная нарезка → анализ → Excel)."""
     _check_project(project_id)
@@ -618,7 +623,7 @@ async def start_smart_audit(project_id: str):
         raise HTTPException(409, str(e))
 
 
-@router.post("/{project_id}/full-audit")
+@router.post("/{project_id:path}/full-audit")
 async def start_audit(project_id: str):
     """Аудит (OCR): кроп блоков → текст → все блоки → свод → нормы."""
     _check_project(project_id)
@@ -630,16 +635,16 @@ async def start_audit(project_id: str):
 
 
 # Legacy aliases
-@router.post("/{project_id}/standard-audit")
+@router.post("/{project_id:path}/standard-audit")
 async def start_standard_audit(project_id: str):
     return await start_audit(project_id)
 
-@router.post("/{project_id}/pro-audit")
+@router.post("/{project_id:path}/pro-audit")
 async def start_pro_audit(project_id: str):
     return await start_audit(project_id)
 
 
-@router.get("/{project_id}/resume-info")
+@router.get("/{project_id:path}/resume-info")
 async def get_resume_info(project_id: str):
     """Определить, с какого этапа можно продолжить пайплайн."""
     _check_project(project_id)
@@ -647,7 +652,7 @@ async def get_resume_info(project_id: str):
     return info
 
 
-@router.post("/{project_id}/resume")
+@router.post("/{project_id:path}/resume")
 async def resume_pipeline(project_id: str):
     """Продолжить пайплайн с места ошибки/остановки."""
     _check_project(project_id)
@@ -658,7 +663,7 @@ async def resume_pipeline(project_id: str):
         raise HTTPException(409, str(e))
 
 
-@router.post("/{project_id}/start-from")
+@router.post("/{project_id:path}/start-from")
 async def start_from_stage(project_id: str, stage: str = Query(..., description="Этап: prepare, text_analysis, block_analysis, findings_merge, norm_verify, excel")):
     """Запустить конвейер с указанного этапа (все последующие пересчитываются)."""
     _check_project(project_id)
@@ -669,7 +674,7 @@ async def start_from_stage(project_id: str, stage: str = Query(..., description=
         raise HTTPException(409, str(e))
 
 
-@router.post("/{project_id}/verify-norms")
+@router.post("/{project_id:path}/verify-norms")
 async def start_norm_verification(project_id: str):
     """Запустить верификацию нормативных ссылок через WebSearch."""
     _check_project(project_id)
@@ -680,7 +685,7 @@ async def start_norm_verification(project_id: str):
         raise HTTPException(409, str(e))
 
 
-@router.get("/{project_id}/status")
+@router.get("/{project_id:path}/status")
 async def get_audit_status(project_id: str):
     """Получить текущий статус аудита."""
     job = pipeline_manager.get_job(project_id)
@@ -693,7 +698,7 @@ async def get_audit_status(project_id: str):
     }
 
 
-@router.post("/{project_id}/retry/{stage}")
+@router.post("/{project_id:path}/retry/{stage}")
 async def retry_stage(project_id: str, stage: str):
     """Повторить конкретный этап конвейера."""
     _check_project(project_id)
@@ -727,7 +732,7 @@ async def retry_stage(project_id: str, stage: str):
         raise HTTPException(409, str(e))
 
 
-@router.post("/{project_id}/skip/{stage}")
+@router.post("/{project_id:path}/skip/{stage}")
 async def skip_stage(project_id: str, stage: str):
     """Пропустить ошибочный этап (пометить как skipped)."""
     _check_project(project_id)
@@ -743,7 +748,7 @@ async def skip_stage(project_id: str, stage: str):
     return {"status": "skipped", "stage": stage}
 
 
-@router.delete("/{project_id}/cancel")
+@router.delete("/{project_id:path}/cancel")
 async def cancel_audit(project_id: str):
     """Отменить запущенный аудит."""
     success = await pipeline_manager.cancel(project_id)

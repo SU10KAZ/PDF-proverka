@@ -7,12 +7,19 @@ const { createApp, ref, computed, watch, onMounted, onUnmounted, nextTick } = Vu
 const app = createApp({
     setup() {
         // ─── State ───
+        const theme = ref(localStorage.getItem('audit-theme') || 'dark');
+        document.documentElement.setAttribute('data-theme', theme.value);
+
         const currentView = ref('dashboard');
         const blockBackRoute = ref(null);  // куда вернуться из просмотра блока
         const currentProjectId = ref(null);
         const currentProject = ref(null);
         const projects = ref([]);
         const loading = ref(false);
+
+        // Sidebar
+        const sidebarSectionsOpen = ref(true);
+        const sidebarFilterSection = ref(null);  // null = все разделы
 
         // Findings
         const findingsData = ref(null);
@@ -46,11 +53,58 @@ const app = createApp({
         const blockNatH = ref(0);       // natural height of loaded image
         const blockBaseScale = ref(1);  // scale to fit image into container
         const highlightedFindingId = ref(null);  // ID замечания для подсветки на блоке
+        const allHighlightsVisible = ref(true);           // глобальный вкл/выкл подсветок
+        const hiddenHighlightFindings = ref(new Set());   // finding_id с выключенной подсветкой
 
         // Optimization
         const optimizationData = ref(null);
         const optimizationLoading = ref(false);
         const optimizationFilter = ref('');  // '' | 'cheaper_analog' | 'faster_install' | 'simpler_design' | 'lifecycle'
+        const optimizationSearch = ref('');
+
+        // Discussions (чат по замечаниям/оптимизациям)
+        const discussionItems = ref([]);
+        const discussionTab = ref('finding');  // 'finding' | 'optimization'
+        const discussionModel = ref('');
+        const discussionModels = ref([]);
+        const activeDiscussion = ref(null);    // item_id открытого чата или null
+        const activeDiscussionItem = ref(null); // полные данные текущего замечания/оптимизации (из findings API)
+        const activeDiscussionBlocks = ref([]); // блоки привязанные к замечанию
+        const showDiscussionBlocks = ref(false);
+        const discussionMessages = ref([]);
+        const discussionLoading = ref(false);
+        const discussionSending = ref(false);
+        const chatAttachedImage = ref(null); // base64 data URL
+        const discussionCost = ref(0);
+        const discussionContextTokens = ref(null); // {total_tokens, context_tokens, image_tokens, ...}
+        const resolvedFindingsLoading = ref(false);
+        const chatInput = ref('');
+        const chatMessagesContainer = ref(null);
+        // Редактирование сообщения
+        const editingMessageIdx = ref(null);   // индекс редактируемого user-сообщения
+        const editingMessageText = ref('');
+        // Revision (кнопка "Изменить")
+        const revisionData = ref(null);        // {original, revised, explanation}
+        const revisionLoading = ref(false);
+        // Скачать пакет аудита
+        const auditPackageLoading = ref(false);
+        const batchPackageLoading = ref(false);
+
+        // Expert Review (экспертная оценка)
+        const expertReviewMode = ref(false);
+        const expertDecisions = ref({});  // { item_id: { decision: 'accepted'|'rejected'|null, rejection_reason: '' } }
+        const expertReviewSaving = ref(false);
+
+        // Knowledge Base (база знаний)
+        const kbTab = ref('rejected');  // 'rejected' | 'accepted' | 'customer_confirmed'
+        const kbEntries = ref([]);
+        const kbStats = ref({ rejected: 0, accepted: 0, customer_confirmed: 0, total: 0 });
+        const kbLoading = ref(false);
+        const kbSearch = ref('');
+        const kbSectionFilter = ref('');
+        const kbPatterns = ref([]);
+        const kbPatternsLoading = ref(false);
+        const kbUploadLoading = ref(false);
 
         // Document viewer (MD)
         const documentProjectId = ref('');
@@ -61,15 +115,28 @@ const app = createApp({
 
         // Log — отдельное хранилище для каждого проекта
         const logProjectId = ref('');
-        const projectLogs = ref({});     // {projectId: [{time, level, message}]}
+        // Каждая запись: либо log-строка {kind:'log', time, level, message},
+        // либо finding-карточка {kind:'finding', time, finding_id, severity, category, problem, sheet, page, status, rejectReason}
+        const projectLogs = ref({});
         const logAutoScroll = ref(true);
         const logContainer = ref(null);
         const logLoading = ref(false);
+
+        // Текущая фаза «размышления модели»: merge | critic | corrector | done | ''
+        const findingStage = ref({});     // {projectId: 'merge'|...}
+        // Быстрый индекс finding_id → entry в projectLogs[pid] для обновления статуса
+        const findingIndex = ref({});     // {projectId: {finding_id: entry}}
 
         // logEntries — computed, показывает логи текущего проекта
         const logEntries = computed(() => {
             const pid = logProjectId.value;
             return pid ? (projectLogs.value[pid] || []) : [];
+        });
+
+        // Текущая фаза для отображаемого проекта
+        const currentFindingStage = computed(() => {
+            const pid = logProjectId.value;
+            return pid ? (findingStage.value[pid] || '') : '';
         });
 
         // Prompts
@@ -536,6 +603,18 @@ const app = createApp({
             }
         }
 
+        async function clearUsageCounter() {
+            if (!confirm('Очистить все записи usage? Счётчики на карточках проектов обнулятся.')) return;
+            try {
+                const resp = await fetch('/api/usage/clear-all', { method: 'POST' });
+                if (resp.ok) {
+                    await refreshGlobalUsage();
+                }
+            } catch (e) {
+                console.error('Failed to clear usage:', e);
+            }
+        }
+
         function heartbeatStatusText(projectId) {
             if (!isProjectRunning(projectId)) return '';
             const stage = getRunningStage(projectId);
@@ -553,6 +632,13 @@ const app = createApp({
             return resp.json();
         }
 
+        // ─── Theme ───
+        function toggleTheme() {
+            theme.value = theme.value === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', theme.value);
+            localStorage.setItem('audit-theme', theme.value);
+        }
+
         // ─── Navigation ───
         function navigate(path) {
             window.location.hash = path;
@@ -561,7 +647,12 @@ const app = createApp({
         function handleRoute() {
             const hash = window.location.hash.slice(1) || '/';
 
-            if (hash === '/queue') {
+            if (hash === '/knowledge-base') {
+                currentView.value = 'knowledge-base';
+                connectGlobalWS();
+                loadKnowledgeBase();
+                loadKBStats();
+            } else if (hash === '/queue') {
                 currentView.value = 'queue';
                 connectGlobalWS();
                 refreshBatchQueue();
@@ -574,38 +665,72 @@ const app = createApp({
                 const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/findings$/)[1]);
                 currentView.value = 'findings';
                 currentProjectId.value = id;
-                connectGlobalWS();  // Не нужен project WS для findings
+                connectGlobalWS();
+                loadProject(id);
                 loadFindings(id);
+                loadExpertDecisions();
             } else if (hash.match(/^\/project\/([^/]+)\/blocks$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/blocks$/)[1]);
                 currentView.value = 'blocks';
+                currentProjectId.value = id;
                 connectGlobalWS();
+                loadProject(id);
                 loadBlocks(id);
             } else if (hash.match(/^\/project\/([^/]+)\/optimization$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/optimization$/)[1]);
                 currentView.value = 'optimization';
+                currentProjectId.value = id;
                 connectGlobalWS();
+                loadProject(id);
                 loadOptimization(id);
+                loadExpertDecisions();
+            } else if (hash.match(/^\/project\/([^/]+)\/discussions\/([^/]+)$/)) {
+                const m = hash.match(/^\/project\/([^/]+)\/discussions\/([^/]+)$/);
+                const id = decodeURIComponent(m[1]);
+                const itemId = decodeURIComponent(m[2]);
+                currentView.value = 'discussions';
+                currentProjectId.value = id;
+                // Определить тип по префиксу ID
+                discussionTab.value = itemId.startsWith('OPT') ? 'optimization' : 'finding';
+                connectGlobalWS();
+                loadProject(id);
+                loadDiscussionModels();
+                loadDiscussionItems(id, discussionTab.value).then(() => openDiscussion(id, itemId));
+            } else if (hash.match(/^\/project\/([^/]+)\/discussions$/)) {
+                const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/discussions$/)[1]);
+                currentView.value = 'discussions';
+                currentProjectId.value = id;
+                activeDiscussion.value = null;
+                discussionMessages.value = [];
+                connectGlobalWS();
+                loadProject(id);
+                loadDiscussionModels();
+                loadDiscussionItems(id, discussionTab.value);
             } else if (hash.match(/^\/project\/([^/]+)\/document$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/document$/)[1]);
                 currentView.value = 'document';
+                currentProjectId.value = id;
                 connectGlobalWS();
+                loadProject(id);
                 loadDocument(id);
             } else if (hash.match(/^\/project\/([^/]+)\/prompts$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/prompts$/)[1]);
                 currentView.value = 'prompts';
+                currentProjectId.value = id;
                 promptsProjectId.value = id;
                 activePromptTab.value = 0;
                 connectGlobalWS();
+                loadProject(id);
                 loadPromptDisciplines().then(() => {
                     const proj = projects.value.find(p => p.name === id || p.project_id === id);
-                    const section = proj?.section || 'EM';
+                    const section = proj?.section || 'EOM';
                     promptsDiscipline.value = section;
                     loadTemplates(section);
                 });
             } else if (hash.match(/^\/project\/([^/]+)\/log$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/log$/)[1]);
                 currentView.value = 'log';
+                currentProjectId.value = id;
                 logProjectId.value = id;
                 loadProject(id);
                 // Загружаем историю логов из файла (если ещё не загружена)
@@ -656,6 +781,63 @@ const app = createApp({
         };
 
         const stageModelRestrictions = ref({});
+        const stageModelHints = ref({});
+
+        const modelPresets = {
+            openrouter: {
+                label: "OpenRouter",
+                config: {
+                    text_analysis:          "anthropic/claude-opus-4-6",
+                    block_batch:            "google/gemini-3.1-pro-preview",
+                    findings_merge:         "anthropic/claude-opus-4-6",
+                    findings_critic:        "openai/gpt-5.4",
+                    findings_corrector:     "openai/gpt-5.4",
+                    norm_verify:            "claude-opus-4-6",
+                    norm_fix:               "anthropic/claude-opus-4-6",
+                    optimization:           "google/gemini-3.1-pro-preview",
+                    optimization_critic:    "anthropic/claude-sonnet-4-6",
+                    optimization_corrector: "anthropic/claude-sonnet-4-6",
+                },
+            },
+            claude_cli: {
+                label: "Claude CLI",
+                config: {
+                    text_analysis:          "claude-opus-4-6",
+                    block_batch:            "openai/gpt-5.4",
+                    findings_merge:         "claude-opus-4-6",
+                    findings_critic:        "openai/gpt-5.4",
+                    findings_corrector:     "claude-opus-4-6",
+                    norm_verify:            "claude-opus-4-6",
+                    norm_fix:               "claude-opus-4-6",
+                    optimization:           "claude-opus-4-6",
+                    optimization_critic:    "claude-sonnet-4-6",
+                    optimization_corrector: "claude-sonnet-4-6",
+                },
+            },
+            optimal: {
+                label: "Оптимальный",
+                config: {
+                    text_analysis:          "claude-opus-4-6",
+                    block_batch:            "openai/gpt-5.4",
+                    findings_merge:         "claude-opus-4-6",
+                    findings_critic:        "claude-sonnet-4-6",
+                    findings_corrector:     "claude-sonnet-4-6",
+                    norm_verify:            "claude-opus-4-6",
+                    norm_fix:               "claude-sonnet-4-6",
+                    optimization:           "claude-opus-4-6",
+                    optimization_critic:    "claude-sonnet-4-6",
+                    optimization_corrector: "claude-sonnet-4-6",
+                },
+            },
+        };
+        const activePreset = ref(null);
+
+        function applyPreset(presetKey) {
+            const preset = modelPresets[presetKey];
+            if (!preset) return;
+            stageModelConfig.value = { ...preset.config };
+            activePreset.value = presetKey;
+        }
 
         function isModelAllowed(stageKey, modelId) {
             const r = stageModelRestrictions.value[stageKey];
@@ -669,6 +851,7 @@ const app = createApp({
                 stageModelConfig.value = data.stages || {};
                 availableModels.value = data.available_models || [];
                 stageModelRestrictions.value = data.restrictions || {};
+                stageModelHints.value = data.hints || {};
             } catch (e) {
                 console.error('Failed to load stage models:', e);
             }
@@ -682,8 +865,15 @@ const app = createApp({
             }
         }
 
-        function openModelConfig(projectId) {
+        // pendingRetryStage: если задан — после сохранения моделей запустить retry этапа, а не полный аудит
+        const pendingRetryStage = ref(null);
+        // pendingActionFn: произвольный callback, выполняется после сохранения моделей (приоритет над retryStage/pid)
+        const pendingActionFn = ref(null);
+
+        function openModelConfig(projectId, retryStage = null, afterSaveFn = null) {
             modelConfigPendingProjectId.value = projectId;
+            pendingRetryStage.value = retryStage;
+            pendingActionFn.value = afterSaveFn;
             loadStageModels().then(() => {
                 showModelConfig.value = true;
             });
@@ -692,9 +882,21 @@ const app = createApp({
         async function saveAndStartAudit() {
             await saveStageModels();
             showModelConfig.value = false;
+            if (pendingActionFn.value) {
+                const fn = pendingActionFn.value;
+                pendingActionFn.value = null;
+                await fn();
+                return;
+            }
             const pid = modelConfigPendingProjectId.value;
+            const retryStg = pendingRetryStage.value;
+            pendingRetryStage.value = null;
             if (pid) {
-                startAuditDirect(pid);
+                if (retryStg) {
+                    _executeRetryStage(pid, retryStg);
+                } else {
+                    startAuditDirect(pid);
+                }
             }
         }
 
@@ -765,7 +967,8 @@ const app = createApp({
                 selectedProjects.value = new Set(allIds);
                 batchAllMode.value = false;
             }
-            await startBatchAction(action);
+            // Показываем выбор моделей перед запуском пакета
+            openModelConfig(null, null, () => startBatchAction(action));
         }
 
         async function startBatchAction(action) {
@@ -951,8 +1154,10 @@ const app = createApp({
                     body: JSON.stringify({ project_ids: ids, action: queueAddAction.value }),
                 });
                 if (!resp.ok) {
-                    const err = await resp.json().catch(() => ({}));
-                    throw new Error(err.detail || `Ошибка: ${resp.status}`);
+                    const text = await resp.text();
+                    let detail = `Ошибка: ${resp.status}`;
+                    try { detail = JSON.parse(text).detail || detail; } catch {}
+                    throw new Error(detail);
                 }
                 const data = await resp.json();
                 batchQueue.value = data.queue;
@@ -1005,6 +1210,15 @@ const app = createApp({
         // Диалог retry: запустить сейчас или добавить в очередь
         const retryDialog = ref({ show: false, projectId: '', stage: '', stageLabel: '' });
 
+        async function apiGet(path) {
+            const resp = await fetch(`/api${path}`);
+            if (!resp.ok) {
+                const err = await resp.json().catch(() => ({}));
+                throw new Error(err.detail || `API error: ${resp.status}`);
+            }
+            return resp.json();
+        }
+
         async function apiPost(path, body) {
             const opts = { method: 'POST' };
             if (body !== undefined) {
@@ -1027,7 +1241,7 @@ const app = createApp({
         async function startPrepare(projectId) {
             try {
                 auditRunning.value = true;
-                await apiPost(`/audit/${projectId}/prepare`);
+                await apiPost(`/audit/${encodeURIComponent(projectId)}/prepare`);
                 _afterAuditStart(projectId);
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
@@ -1035,7 +1249,7 @@ const app = createApp({
         async function startMainAudit(projectId) {
             try {
                 auditRunning.value = true;
-                await apiPost(`/audit/${projectId}/main-audit`);
+                await apiPost(`/audit/${encodeURIComponent(projectId)}/main-audit`);
                 _afterAuditStart(projectId);
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
@@ -1043,7 +1257,7 @@ const app = createApp({
         async function startSmartAudit(projectId) {
             try {
                 auditRunning.value = true;
-                await apiPost(`/audit/${projectId}/smart-audit`);
+                await apiPost(`/audit/${encodeURIComponent(projectId)}/smart-audit`);
                 _afterAuditStart(projectId);
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
@@ -1056,7 +1270,7 @@ const app = createApp({
         async function startAuditDirect(projectId) {
             try {
                 auditRunning.value = true;
-                await apiPost(`/audit/${projectId}/full-audit`);
+                await apiPost(`/audit/${encodeURIComponent(projectId)}/full-audit`);
                 _afterAuditStart(projectId);
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
@@ -1068,7 +1282,7 @@ const app = createApp({
         async function startNormVerify(projectId) {
             try {
                 auditRunning.value = true;
-                await apiPost(`/audit/${projectId}/verify-norms`);
+                await apiPost(`/audit/${encodeURIComponent(projectId)}/verify-norms`);
                 _afterAuditStart(projectId);
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
@@ -1076,7 +1290,7 @@ const app = createApp({
         async function resumePipeline(projectId) {
             try {
                 auditRunning.value = true;
-                await apiPost(`/audit/${projectId}/resume`);
+                await apiPost(`/audit/${encodeURIComponent(projectId)}/resume`);
                 _afterAuditStart(projectId);
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
@@ -1160,7 +1374,7 @@ const app = createApp({
 
         async function loadResumeInfo(projectId) {
             try {
-                const resp = await fetch(`/api/audit/${projectId}/resume-info`);
+                const resp = await fetch(`/api/audit/${encodeURIComponent(projectId)}/resume-info`);
                 if (resp.ok) {
                     resumeInfo.value = await resp.json();
                 }
@@ -1169,7 +1383,7 @@ const app = createApp({
 
         async function cancelAudit(projectId) {
             try {
-                await fetch(`/api/audit/${projectId}/cancel`, { method: 'DELETE' });
+                await fetch(`/api/audit/${encodeURIComponent(projectId)}/cancel`, { method: 'DELETE' });
                 auditRunning.value = false;
             } catch (e) { alert(e.message); }
         }
@@ -1214,12 +1428,17 @@ const app = createApp({
         async function retryStageNow() {
             const { projectId, stage } = retryDialog.value;
             retryDialog.value.show = false;
+            // Открываем диалог выбора моделей, после сохранения запустится retry
+            openModelConfig(projectId, stage);
+        }
+
+        async function _executeRetryStage(projectId, stage) {
             try {
                 auditRunning.value = true;
                 if (stage === 'optimization') {
-                    await apiPost(`/optimization/${projectId}/run`);
+                    await apiPost(`/optimization/${encodeURIComponent(projectId)}/run`);
                 } else {
-                    await apiPost(`/audit/${projectId}/retry/${stage}`);
+                    await apiPost(`/audit/${encodeURIComponent(projectId)}/retry/${stage}`);
                 }
                 _afterAuditStart(projectId);
             } catch (e) { alert(e.message); auditRunning.value = false; }
@@ -1228,29 +1447,32 @@ const app = createApp({
         async function retryStageToQueue() {
             const { projectId, stage } = retryDialog.value;
             retryDialog.value.show = false;
-            try {
-                const resp = await fetch('/api/audit/batch/add-retry', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ project_id: projectId, stage: stage }),
-                });
-                if (!resp.ok) {
-                    const err = await resp.json().catch(() => ({}));
-                    throw new Error(err.detail || `API error: ${resp.status}`);
-                }
-                const data = await resp.json();
-                batchQueue.value = data.queue;
-                batchRunning.value = true;
-            } catch (e) { alert(e.message); }
+            // Показываем выбор моделей перед добавлением в очередь
+            openModelConfig(projectId, null, async () => {
+                try {
+                    const resp = await fetch('/api/audit/batch/add-retry', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ project_id: projectId, stage: stage }),
+                    });
+                    if (!resp.ok) {
+                        const err = await resp.json().catch(() => ({}));
+                        throw new Error(err.detail || `API error: ${resp.status}`);
+                    }
+                    const data = await resp.json();
+                    batchQueue.value = data.queue;
+                    batchRunning.value = true;
+                } catch (e) { alert(e.message); }
+            });
         }
 
         async function skipStage(projectId, stage) {
             if (!confirm('Пропустить этап? Это может привести к неполному аудиту.')) return;
             try {
-                await apiPost(`/audit/${projectId}/skip/${stage}`);
+                await apiPost(`/audit/${encodeURIComponent(projectId)}/skip/${stage}`);
                 await refreshProjects();
                 if (currentProject.value && currentProject.value.project_id === projectId) {
-                    const data = await apiGet(`/projects/${projectId}`);
+                    const data = await apiGet(`/projects/${encodeURIComponent(projectId)}`);
                     if (data) currentProject.value = data;
                 }
             } catch (e) { alert(e.message); }
@@ -1279,6 +1501,88 @@ const app = createApp({
         }
 
         // Model Switcher удалён — модели per-stage настроены в config.py → _stage_models
+
+        // ─── Objects (строительные объекты) ───
+        const objectsList = ref([]);
+        const currentObjectId = ref(null);
+        const showObjectPicker = ref(false);
+        const showAddObjectModal = ref(false);
+        const newObjectName = ref('');
+
+        async function loadObjects() {
+            try {
+                const data = await api('/objects');
+                objectsList.value = data.objects || [];
+                currentObjectId.value = data.current_id;
+            } catch (e) {
+                console.error('Failed to load objects:', e);
+            }
+        }
+
+        async function switchObject(id) {
+            try {
+                await apiPost('/objects/switch', { id });
+                currentObjectId.value = id;
+                const obj = objectsList.value.find(o => o.id === id);
+                if (obj) objectName.value = obj.name;
+                showObjectPicker.value = false;
+                await refreshProjects();
+            } catch (e) {
+                console.error('Failed to switch object:', e);
+            }
+        }
+
+        async function addNewObject() {
+            const name = newObjectName.value.trim();
+            if (!name) return;
+            try {
+                const data = await apiPost('/objects', { name });
+                objectsList.value.push(data.object);
+                newObjectName.value = '';
+                showAddObjectModal.value = false;
+                // Переключаемся на новый объект
+                await switchObject(data.object.id);
+            } catch (e) {
+                console.error('Failed to add object:', e);
+            }
+        }
+
+        // ─── Dashboard Aggregated Stats ───
+        const auditedProjectsCount = computed(() => {
+            return projects.value.filter(p => p.findings_count > 0).length;
+        });
+
+        const totalFindings = computed(() => {
+            return projects.value.reduce((sum, p) => sum + (p.findings_count || 0), 0);
+        });
+
+        const totalBySeverity = computed(() => {
+            const totals = {};
+            for (const p of projects.value) {
+                if (!p.findings_by_severity) continue;
+                for (const [sev, count] of Object.entries(p.findings_by_severity)) {
+                    totals[sev] = (totals[sev] || 0) + count;
+                }
+            }
+            return totals;
+        });
+
+        function sevPercent(sev) {
+            const total = totalFindings.value;
+            if (!total) return 0;
+            return Math.round(((totalBySeverity.value[sev] || 0) / total) * 100);
+        }
+
+        function sectionFindingsCount(code) {
+            return projects.value
+                .filter(p => p.section === code)
+                .reduce((sum, p) => sum + (p.findings_count || 0), 0);
+        }
+
+        const filteredSectionProjects = computed(() => {
+            if (!sidebarFilterSection.value) return [];
+            return projects.value.filter(p => p.section === sidebarFilterSection.value);
+        });
 
         // ─── Disciplines & Section Groups ───
         const objectName = ref('');
@@ -1359,6 +1663,34 @@ const app = createApp({
                 showEditSection.value = false;
             } catch (e) {
                 alert('Ошибка: ' + e.message);
+            }
+        }
+
+        // ─── Excel по одному проекту ───
+        const projectExcelLoading = ref(false);
+
+        async function exportProjectExcel(projectId) {
+            if (!projectId) return;
+            projectExcelLoading.value = true;
+            try {
+                const resp = await fetch('/api/export/excel/section', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        section: '',
+                        project_ids: [projectId],
+                    }),
+                });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || resp.statusText);
+                }
+                const data = await resp.json();
+                window.open('/api/export/download/' + encodeURIComponent(data.file), '_blank');
+            } catch (e) {
+                alert('Ошибка генерации Excel: ' + e.message);
+            } finally {
+                projectExcelLoading.value = false;
             }
         }
 
@@ -1474,7 +1806,7 @@ const app = createApp({
             } catch (e) {
                 console.error('Failed to load disciplines:', e);
                 supportedDisciplines.value = [
-                    { code: 'EM', name: 'Электроснабжение и электрооборудование', short_name: 'ЭОМ/ЭС', color: '#f39c12' },
+                    { code: 'EOM', name: 'Электроснабжение и электрооборудование', short_name: 'ЭОМ/ЭС', color: '#f39c12' },
                     { code: 'OV', name: 'Отопление, вентиляция и кондиционирование', short_name: 'ОВиК', color: '#3498db' },
                 ];
             }
@@ -1514,7 +1846,7 @@ const app = createApp({
             } catch (e) {
                 console.error('Detect discipline error:', e);
             }
-            return 'EM';
+            return 'EOM';
         }
 
         // ─── Add Project (scan & register) ───
@@ -1652,7 +1984,7 @@ const app = createApp({
                             md_file: selMds.length > 0 ? selMds[0] : null,
                             md_files: selMds,
                             name: folder,
-                            section: folderInfo._selectedDiscipline || 'EM',
+                            section: folderInfo._selectedDiscipline || 'EOM',
                             description: '',
                         }),
                     });
@@ -1667,7 +1999,7 @@ const app = createApp({
                             md_file: selMds.length > 0 ? selMds[0] : null,
                             md_files: selMds,
                             name: folder,
-                            section: folderInfo._selectedDiscipline || 'EM',
+                            section: folderInfo._selectedDiscipline || 'EOM',
                             description: '',
                         }),
                     });
@@ -1711,7 +2043,7 @@ const app = createApp({
                                 md_file: sMds.length > 0 ? sMds[0] : null,
                                 md_files: sMds,
                                 name: folderInfo.folder,
-                                section: folderInfo._selectedDiscipline || 'EM',
+                                section: folderInfo._selectedDiscipline || 'EOM',
                                 description: '',
                             }),
                         });
@@ -1726,7 +2058,7 @@ const app = createApp({
                                 md_file: sMds.length > 0 ? sMds[0] : null,
                                 md_files: sMds,
                                 name: folderInfo.folder,
-                                section: folderInfo._selectedDiscipline || 'EM',
+                                section: folderInfo._selectedDiscipline || 'EOM',
                                 description: '',
                             }),
                         });
@@ -1783,6 +2115,7 @@ const app = createApp({
         // ─── Finding → Block map ───
         const findingBlockMap = ref({});   // {finding_id: [block_ids]}
         const findingBlockInfo = ref({});  // {block_id: {block_id, page, ocr_label}}
+        const findingTextEvidence = ref({}); // {finding_id: [{text_block_id, role, text, page}]}
         const expandedFindingId = ref(null); // какой finding сейчас раскрыт
 
         async function loadFindingBlockMap(id) {
@@ -1790,9 +2123,11 @@ const app = createApp({
                 const data = await api(`/findings/${id}/block-map`);
                 findingBlockMap.value = data.block_map || {};
                 findingBlockInfo.value = data.block_info || {};
+                findingTextEvidence.value = data.text_evidence || {};
             } catch (e) {
                 findingBlockMap.value = {};
                 findingBlockInfo.value = {};
+                findingTextEvidence.value = {};
             }
         }
 
@@ -1803,6 +2138,10 @@ const app = createApp({
         function getFindingBlocks(findingId) {
             const blockIds = findingBlockMap.value[findingId] || [];
             return blockIds.map(bid => findingBlockInfo.value[bid] || { block_id: bid, page: null, ocr_label: '' });
+        }
+
+        function getFindingTextEvidence(findingId) {
+            return findingTextEvidence.value[findingId] || [];
         }
 
         function navigateToBlock(blockId, page) {
@@ -1910,6 +2249,8 @@ const app = createApp({
         function openBlock(block) {
             selectedBlock.value = block;
             highlightedFindingId.value = null;
+            allHighlightsVisible.value = true;
+            hiddenHighlightFindings.value = new Set();
             resetBlockZoom();
         }
 
@@ -2088,10 +2429,12 @@ const app = createApp({
         const currentBlockHighlights = computed(() => {
             if (!selectedBlock.value) return [];
             const bid = selectedBlock.value.block_id;
+            const hidden = hiddenHighlightFindings.value;
             const findings = getBlockFindings(bid);
             const regions = [];
             for (const f of findings) {
                 if (!f.highlight_regions || !f.highlight_regions.length) continue;
+                if (hidden.has(f.id)) continue;
                 for (const r of f.highlight_regions) {
                     regions.push({
                         ...r,
@@ -2105,6 +2448,7 @@ const app = createApp({
             if (analysis && analysis.findings) {
                 for (const gf of analysis.findings) {
                     if (!gf.highlight_regions || !gf.highlight_regions.length) continue;
+                    if (hidden.has(gf.id)) continue;
                     for (const r of gf.highlight_regions) {
                         regions.push({
                             ...r,
@@ -2119,6 +2463,43 @@ const app = createApp({
 
         function highlightFinding(findingId) {
             highlightedFindingId.value = highlightedFindingId.value === findingId ? null : findingId;
+        }
+
+        function toggleFindingHighlight(findingId) {
+            const s = new Set(hiddenHighlightFindings.value);
+            if (s.has(findingId)) s.delete(findingId); else s.add(findingId);
+            hiddenHighlightFindings.value = s;
+            // Обновить глобальный флаг
+            allHighlightsVisible.value = s.size === 0;
+        }
+
+        function isFindingHighlightVisible(findingId) {
+            return !hiddenHighlightFindings.value.has(findingId);
+        }
+
+        function toggleAllHighlights() {
+            if (allHighlightsVisible.value) {
+                // Выключить все — собрать все finding_id с регионами
+                const allIds = new Set();
+                if (selectedBlock.value) {
+                    const bid = selectedBlock.value.block_id;
+                    for (const f of getBlockFindings(bid)) {
+                        if (f.highlight_regions && f.highlight_regions.length) allIds.add(f.id);
+                    }
+                    const analysis = blockAnalysis.value[bid];
+                    if (analysis && analysis.findings) {
+                        for (const gf of analysis.findings) {
+                            if (gf.highlight_regions && gf.highlight_regions.length && gf.id) allIds.add(gf.id);
+                        }
+                    }
+                }
+                hiddenHighlightFindings.value = allIds;
+                allHighlightsVisible.value = false;
+            } else {
+                // Включить все
+                hiddenHighlightFindings.value = new Set();
+                allHighlightsVisible.value = true;
+            }
         }
 
         function severityColor(severity) {
@@ -2141,8 +2522,30 @@ const app = createApp({
 
         // ─── Optimization ───
         // ─── Document Viewer (MD) ────────────────────────────
+        function cleanLatex(text) {
+            if (!text) return text;
+            // \text{ кг/м} → кг/м
+            text = text.replace(/\\text\s*\{([^}]*)\}/g, '$1');
+            // ^3 → ³, ^2 → ², ^{...} → (...)
+            text = text.replace(/\^3/g, '³');
+            text = text.replace(/\^2/g, '²');
+            text = text.replace(/\^\{([^}]*)\}/g, '$1');
+            // \cdot → ·, \times → ×, \leq → ≤, \geq → ≥, \pm → ±
+            text = text.replace(/\\cdot/g, '·');
+            text = text.replace(/\\times/g, '×');
+            text = text.replace(/\\leq/g, '≤');
+            text = text.replace(/\\geq/g, '≥');
+            text = text.replace(/\\pm/g, '±');
+            // \frac{a}{b} → a/b
+            text = text.replace(/\\frac\s*\{([^}]*)\}\s*\{([^}]*)\}/g, '$1/$2');
+            // remaining \command → remove backslash
+            text = text.replace(/\\([a-zA-Z]+)/g, '$1');
+            return text;
+        }
+
         function renderMarkdown(text) {
             if (!text) return '';
+            text = cleanLatex(text);
             if (typeof marked !== 'undefined') {
                 try {
                     return marked.parse(text, { breaks: true, gfm: true });
@@ -2238,19 +2641,30 @@ const app = createApp({
         }
 
         async function startOptimization(id) {
-            try {
-                await apiPost(`/optimization/${id}/run`);
-                if (currentView.value === 'project') loadProject(id);
-            } catch (e) {
-                alert('Ошибка запуска оптимизации: ' + (e.message || e));
-            }
+            openModelConfig(id, null, async () => {
+                try {
+                    await apiPost(`/optimization/${id}/run`);
+                    if (currentView.value === 'project') loadProject(id);
+                } catch (e) {
+                    alert('Ошибка запуска оптимизации: ' + (e.message || e));
+                }
+            });
         }
 
         const _optTypeOrder = { 'cheaper_analog': 0, 'faster_install': 1, 'simpler_design': 2, 'lifecycle': 3 };
         const filteredOptimization = computed(() => {
             if (!optimizationData.value) return [];
             const items = optimizationData.value.items || [];
-            const filtered = optimizationFilter.value ? items.filter(i => i.type === optimizationFilter.value) : items;
+            let filtered = optimizationFilter.value ? items.filter(i => i.type === optimizationFilter.value) : items;
+            if (optimizationSearch.value.trim()) {
+                const q = optimizationSearch.value.toLowerCase();
+                filtered = filtered.filter(i =>
+                    (i.current || '').toLowerCase().includes(q) ||
+                    (i.proposed || '').toLowerCase().includes(q) ||
+                    (i.id || '').toLowerCase().includes(q) ||
+                    (i.norm || '').toLowerCase().includes(q)
+                );
+            }
             return [...filtered].sort((a, b) => (_optTypeOrder[a.type] ?? 9) - (_optTypeOrder[b.type] ?? 9));
         });
 
@@ -2276,6 +2690,557 @@ const app = createApp({
             return optimizationTypeColors[type] || '#999';
         }
 
+        // ─── Discussions (чат по замечаниям/оптимизациям) ─────────────
+
+        async function loadDiscussionModels() {
+            try {
+                const data = await api('/discussions/models');
+                discussionModels.value = data.models || [];
+                if (!discussionModel.value && data.default) {
+                    discussionModel.value = data.default;
+                }
+            } catch (e) {
+                console.error('Failed to load discussion models:', e);
+            }
+        }
+
+        async function loadDiscussionItems(projectId, type) {
+            discussionLoading.value = true;
+            try {
+                const data = await api(`/discussions/${encodeURIComponent(projectId)}/list?type=${type}`);
+                discussionItems.value = data.items || [];
+                // Load block maps for table view
+                if (type === 'finding') {
+                    loadFindingBlockMap(projectId);
+                } else {
+                    loadOptBlockMap(projectId);
+                }
+            } catch (e) {
+                console.error('Failed to load discussion items:', e);
+                discussionItems.value = [];
+            }
+            discussionLoading.value = false;
+        }
+
+        function switchDiscussionTab(type) {
+            discussionTab.value = type;
+            activeDiscussion.value = null;
+            discussionMessages.value = [];
+            revisionData.value = null;
+            if (currentProjectId.value) {
+                loadDiscussionItems(currentProjectId.value, type);
+            }
+        }
+
+        async function openDiscussion(projectId, itemId) {
+            activeDiscussion.value = itemId;
+            activeDiscussionItem.value = null;
+            activeDiscussionBlocks.value = [];
+            showDiscussionBlocks.value = false;
+            discussionMessages.value = [];
+            discussionCost.value = 0;
+            discussionContextTokens.value = null;
+            revisionData.value = null;
+            chatInput.value = '';
+            try {
+                // Параллельно: история чата + полные данные замечания + блоки
+                const type = discussionTab.value;
+                const isOpt = type === 'optimization';
+                const pid = encodeURIComponent(projectId);
+
+                const [discData, findingsResp, blockMapResp] = await Promise.all([
+                    api(`/discussions/${pid}/${encodeURIComponent(itemId)}`),
+                    isOpt
+                        ? api(`/optimization/${pid}`)
+                        : api(`/findings/${pid}`),
+                    isOpt
+                        ? api(`/findings/${pid}/optimization-block-map`).catch(() => null)
+                        : api(`/findings/${pid}/block-map`).catch(() => null),
+                ]);
+
+                // История чата
+                discussionMessages.value = discData.messages || [];
+                discussionCost.value = discData.total_cost_usd || 0;
+
+                // Полные данные замечания
+                if (isOpt) {
+                    const items = findingsResp.data?.items || [];
+                    activeDiscussionItem.value = items.find(i => i.id === itemId) || null;
+                } else {
+                    const items = findingsResp.findings || [];
+                    activeDiscussionItem.value = items.find(i => i.id === itemId) || null;
+                }
+
+                // Блоки
+                if (blockMapResp) {
+                    const blockIds = (blockMapResp.block_map || {})[itemId] || [];
+                    const blockInfo = blockMapResp.block_info || {};
+                    activeDiscussionBlocks.value = blockIds.map(bid => ({
+                        block_id: bid,
+                        page: blockInfo[bid]?.page,
+                        ocr_label: blockInfo[bid]?.ocr_label || '',
+                    }));
+                }
+
+                // Загрузить оценку токенов (в фоне)
+                loadDiscussionTokens(projectId, itemId);
+
+                // Fallback для списка
+                if (!discussionItems.value.length) {
+                    const listData = await api(`/discussions/${pid}/list?type=${type}`);
+                    discussionItems.value = listData.items || [];
+                }
+            } catch (e) {
+                console.error('Failed to load discussion:', e);
+            }
+            await Vue.nextTick();
+            scrollChatToBottom();
+        }
+
+        async function loadDiscussionTokens(projectId, itemId) {
+            try {
+                const pid = encodeURIComponent(projectId);
+                const iid = encodeURIComponent(itemId);
+                const type = discussionTab.value;
+                discussionContextTokens.value = await api(`/discussions/${pid}/${iid}/estimate-tokens?type=${type}`);
+            } catch (e) {
+                console.error('Failed to estimate tokens:', e);
+                discussionContextTokens.value = null;
+            }
+        }
+
+        function closeDiscussion() {
+            activeDiscussion.value = null;
+            discussionMessages.value = [];
+            revisionData.value = null;
+            if (currentProjectId.value) {
+                loadDiscussionItems(currentProjectId.value, discussionTab.value);
+                navigate('/project/' + currentProjectId.value + '/discussions');
+            }
+        }
+
+        async function downloadAuditPackage() {
+            if (!currentProjectId.value) return;
+            auditPackageLoading.value = true;
+            try {
+                const url = `/api/export/audit-package/${encodeURIComponent(currentProjectId.value)}`;
+                const resp = await fetch(url);
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || `Ошибка ${resp.status}`);
+                }
+                const blob = await resp.blob();
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                const disposition = resp.headers.get('Content-Disposition') || '';
+                // Prefer filename* (RFC 5987, supports UTF-8) over plain filename
+                const matchStar = disposition.match(/filename\*=UTF-8''([^;]+)/i);
+                const matchPlain = disposition.match(/filename="?([^";]+)"?/);
+                let dlName = `audit_package_${currentProjectId.value}.zip`;
+                if (matchStar) { try { dlName = decodeURIComponent(matchStar[1]); } catch(e) { /* fallback */ } }
+                else if (matchPlain) { dlName = matchPlain[1]; }
+                a.download = dlName;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(a.href);
+            } catch (e) {
+                alert('Ошибка скачивания: ' + e.message);
+            } finally {
+                auditPackageLoading.value = false;
+            }
+        }
+
+        async function downloadBatchAuditPackages() {
+            const ids = Array.from(selectedProjects.value);
+            if (!ids.length) return;
+            batchPackageLoading.value = true;
+            let downloaded = 0;
+            let errors = [];
+            for (const pid of ids) {
+                try {
+                    const url = `/api/export/audit-package/${encodeURIComponent(pid)}`;
+                    const resp = await fetch(url);
+                    if (!resp.ok) {
+                        const err = await resp.json().catch(() => ({}));
+                        errors.push(`${pid}: ${err.detail || resp.status}`);
+                        continue;
+                    }
+                    const blob = await resp.blob();
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    const disposition = resp.headers.get('Content-Disposition') || '';
+                    const matchStar = disposition.match(/filename\*=UTF-8''([^;]+)/i);
+                    const matchPlain = disposition.match(/filename="?([^";]+)"?/);
+                    let dlName = `audit_package_${pid}.zip`;
+                    if (matchStar) { try { dlName = decodeURIComponent(matchStar[1]); } catch(e) {} }
+                    else if (matchPlain) { dlName = matchPlain[1]; }
+                    a.download = dlName;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(a.href);
+                    downloaded++;
+                } catch (e) {
+                    errors.push(`${pid}: ${e.message}`);
+                }
+            }
+            batchPackageLoading.value = false;
+            if (errors.length > 0) {
+                alert(`Скачано: ${downloaded}/${ids.length}\nОшибки:\n${errors.join('\n')}`);
+            }
+        }
+
+        // Resolved findings — count and download
+        const resolvedFindingsCount = computed(() => {
+            return discussionItems.value.filter(item =>
+                item.discussion_status === 'confirmed' || item.discussion_status === 'revised'
+            ).length;
+        });
+        const allDiscussionsResolved = computed(() => {
+            const items = discussionItems.value;
+            if (items.length === 0) return false;
+            return items.every(item =>
+                item.discussion_status === 'confirmed' ||
+                item.discussion_status === 'rejected' ||
+                item.discussion_status === 'revised'
+            );
+        });
+
+        async function downloadResolvedFindings() {
+            if (resolvedFindingsLoading.value) return;
+            resolvedFindingsLoading.value = true;
+            try {
+                const pid = currentProjectId.value;
+                const resp = await fetch(`/api/discussions/${encodeURIComponent(pid)}/resolved/excel?type=${discussionTab.value}`);
+                if (!resp.ok) throw new Error(await resp.text());
+                const blob = await resp.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `resolved_${pid.replace(/\//g, '_')}_${discussionTab.value}.xlsx`;
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch (e) {
+                console.error('Download resolved findings error:', e);
+                alert('Ошибка скачивания: ' + e.message);
+            } finally {
+                resolvedFindingsLoading.value = false;
+            }
+        }
+
+        function handleChatFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file || !file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = (e) => { chatAttachedImage.value = e.target.result; };
+            reader.readAsDataURL(file);
+            event.target.value = ''; // reset input
+        }
+
+        function handleChatPaste(event) {
+            const items = event.clipboardData?.items;
+            if (!items) return;
+            for (const item of items) {
+                if (item.type.startsWith('image/')) {
+                    event.preventDefault();
+                    const file = item.getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = (e) => { chatAttachedImage.value = e.target.result; };
+                    reader.readAsDataURL(file);
+                    return;
+                }
+            }
+        }
+
+        async function sendDiscussionMessage() {
+            const msg = chatInput.value.trim();
+            const hasImage = !!chatAttachedImage.value;
+            if ((!msg && !hasImage) || discussionSending.value) return;
+
+            discussionSending.value = true;
+            const imageData = chatAttachedImage.value;
+            chatInput.value = '';
+            chatAttachedImage.value = null;
+            // Сбросить высоту textarea
+            const ta = document.querySelector('.chat-textarea');
+            if (ta) ta.style.height = 'auto';
+
+            // Добавить user-сообщение (с фото если есть)
+            discussionMessages.value.push({
+                role: 'user', content: msg, timestamp: new Date().toISOString(),
+                image: imageData || null,
+            });
+
+            // Добавить пустое assistant-сообщение для стриминга
+            const assistantMsg = Vue.reactive({
+                role: 'assistant', content: '', timestamp: new Date().toISOString(),
+                input_tokens: 0, output_tokens: 0, cost_usd: 0, streaming: true,
+            });
+            discussionMessages.value.push(assistantMsg);
+            await Vue.nextTick();
+            scrollChatToBottom();
+
+            try {
+                const url = `/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(activeDiscussion.value)}/chat/stream?type=${discussionTab.value}`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg || '(фото)', model: discussionModel.value, image: imageData || undefined }),
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+                let scrollThrottle = 0;
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const parts = buffer.split('\n\n');
+                    buffer = parts.pop();
+
+                    for (const part of parts) {
+                        if (!part.startsWith('data: ')) continue;
+                        let data;
+                        try { data = JSON.parse(part.slice(6)); } catch { continue; }
+
+                        if (data.type === 'start') {
+                            // Соединение установлено, LLM думает
+                            continue;
+                        } else if (data.type === 'delta') {
+                            assistantMsg.content += data.text;
+                            // Скролл с throttle
+                            if (++scrollThrottle % 5 === 0) {
+                                await Vue.nextTick();
+                                scrollChatToBottom();
+                            }
+                        } else if (data.type === 'done') {
+                            assistantMsg.content = data.text;
+                            assistantMsg.input_tokens = data.input_tokens || 0;
+                            assistantMsg.output_tokens = data.output_tokens || 0;
+                            assistantMsg.cost_usd = data.cost_usd || 0;
+                            assistantMsg.streaming = false;
+                        } else if (data.type === 'saved') {
+                            discussionCost.value = data.total_cost_usd || 0;
+                            // Обновить оценку токенов (история выросла)
+                            loadDiscussionTokens(currentProjectId.value, activeDiscussion.value);
+                        } else if (data.type === 'error') {
+                            assistantMsg.content = 'Ошибка: ' + data.message;
+                            assistantMsg.streaming = false;
+                        }
+                    }
+                }
+            } catch (e) {
+                assistantMsg.content = 'Ошибка: ' + (e.message || e);
+                assistantMsg.streaming = false;
+            }
+
+            assistantMsg.streaming = false;
+            discussionSending.value = false;
+            await Vue.nextTick();
+            scrollChatToBottom();
+        }
+
+        function startEditMessage(idx) {
+            editingMessageIdx.value = idx;
+            editingMessageText.value = discussionMessages.value[idx].content;
+        }
+
+        function cancelEditMessage() {
+            editingMessageIdx.value = null;
+            editingMessageText.value = '';
+        }
+
+        async function submitEditMessage() {
+            const idx = editingMessageIdx.value;
+            if (idx === null) return;
+            const newText = editingMessageText.value.trim();
+            if (!newText) return;
+
+            // Обрезать: удалить это сообщение и всё после него
+            discussionMessages.value = discussionMessages.value.slice(0, idx);
+            editingMessageIdx.value = null;
+            editingMessageText.value = '';
+
+            // Сохранить обрезанную историю на сервер
+            try {
+                await apiPost(
+                    `/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(activeDiscussion.value)}/truncate`,
+                    { keep_count: idx }
+                );
+            } catch (e) {
+                console.error('Failed to truncate:', e);
+            }
+
+            // Отправить изменённое сообщение как новое
+            chatInput.value = newText;
+            await sendDiscussionMessage();
+        }
+
+        async function resolveDiscussion(status) {
+            if (!activeDiscussion.value) return;
+            const summary = status === 'rejected'
+                ? 'Отклонено по результатам обсуждения'
+                : status === 'confirmed'
+                    ? 'Подтверждено по результатам обсуждения'
+                    : '';
+            try {
+                await apiPost(
+                    `/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(activeDiscussion.value)}/resolve?type=${discussionTab.value}`,
+                    { status, summary }
+                );
+                // Обновить список
+                loadDiscussionItems(currentProjectId.value, discussionTab.value);
+                if (status !== 'revised') {
+                    closeDiscussion();
+                }
+            } catch (e) {
+                alert('Ошибка: ' + (e.message || e));
+            }
+        }
+
+        async function requestRevision() {
+            if (!activeDiscussion.value) return;
+            revisionLoading.value = true;
+            revisionData.value = null;
+            try {
+                const data = await apiPost(
+                    `/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(activeDiscussion.value)}/revise?type=${discussionTab.value}`,
+                    { model: discussionModel.value }
+                );
+                revisionData.value = data;
+                discussionCost.value = data.total_cost_usd || discussionCost.value;
+            } catch (e) {
+                alert('Ошибка генерации: ' + (e.message || e));
+            }
+            revisionLoading.value = false;
+        }
+
+        async function applyRevision() {
+            if (!revisionData.value?.revised) return;
+            try {
+                await apiPost(
+                    `/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(activeDiscussion.value)}/apply-revision?type=${discussionTab.value}`,
+                    revisionData.value.revised
+                );
+                await resolveDiscussion('revised');
+                revisionData.value = null;
+            } catch (e) {
+                alert('Ошибка применения: ' + (e.message || e));
+            }
+        }
+
+        function rejectRevision() {
+            revisionData.value = null;
+        }
+
+        const _fieldNames = {
+            id: 'ID', title: 'Заголовок', description: 'Описание', category: 'Категория',
+            severity: 'Критичность', recommendation: 'Рекомендация', norm_ref: 'Ссылка на норму',
+            norm_quote: 'Цитата нормы', norm_confidence: 'Уверенность', page: 'Страница PDF',
+            sheet: 'Лист', evidence: 'Обоснование', related_block_ids: 'Связанные блоки',
+            status: 'Статус', type: 'Тип', savings_pct: 'Экономия %', savings_basis: 'Основа расчёта',
+            spec_items: 'Позиции спецификации', current: 'Текущее решение', proposed: 'Предложение',
+            justification: 'Обоснование', vendor: 'Производитель', grounding: 'Привязка',
+            tags: 'Теги', notes: 'Примечания', comment: 'Комментарий',
+            problem: 'Проблема', norm: 'Норматив', solution: 'Решение', risk: 'Риск',
+            location: 'Расположение', source: 'Источник', priority: 'Приоритет',
+            affected_systems: 'Затронутые системы', cost_impact: 'Влияние на стоимость',
+            responsible: 'Ответственный', deadline: 'Срок', reference: 'Ссылка',
+            reason: 'Причина', impact: 'Последствия', action: 'Действие',
+            finding_id: 'ID замечания', block_id: 'ID блока', sheet_name: 'Название листа',
+            summary: 'Резюме', details: 'Детали', fix: 'Исправление',
+        };
+        function formatRevisionField(key) {
+            return _fieldNames[key] || key;
+        }
+        function formatRevisionValue(val) {
+            if (val === null || val === undefined) return '—';
+            if (Array.isArray(val)) return val.join(', ');
+            if (typeof val === 'object') return JSON.stringify(val, null, 2);
+            return String(val);
+        }
+
+        function scrollChatToBottom() {
+            const el = chatMessagesContainer.value;
+            if (el) el.scrollTop = el.scrollHeight;
+        }
+
+        function autoResizeChatInput(event) {
+            const el = event.target;
+            el.style.height = 'auto';
+            const maxH = 200; // ~4x от начальной высоты 48px
+            el.style.height = Math.min(el.scrollHeight, maxH) + 'px';
+        }
+
+        function onChatClick(event) {
+            // Делегирование: перехватить клик по block-id-link
+            const link = event.target.closest('.block-id-link');
+            if (link) {
+                event.preventDefault();
+                const blockId = link.dataset.blockId;
+                if (blockId && currentProjectId.value) {
+                    navigateToBlock(blockId, null);
+                }
+            }
+        }
+
+        const activeDiscussionItems = computed(() => {
+            return discussionItems.value.filter(i => i.discussion_status !== 'rejected');
+        });
+
+        const rejectedDiscussionItems = computed(() => {
+            return discussionItems.value.filter(i => i.discussion_status === 'rejected');
+        });
+
+        const discussionSeverityCounts = computed(() => {
+            const counts = {};
+            for (const item of activeDiscussionItems.value) {
+                const sev = item.severity || 'Неизвестно';
+                counts[sev] = (counts[sev] || 0) + 1;
+            }
+            return counts;
+        });
+
+        const discussionOptTypeCounts = computed(() => {
+            const counts = {};
+            for (const item of activeDiscussionItems.value) {
+                const t = item.opt_type || 'other';
+                counts[t] = (counts[t] || 0) + 1;
+            }
+            return counts;
+        });
+
+        function discussionStatusIcon(status) {
+            if (status === 'confirmed') return '\u2705';
+            if (status === 'rejected') return '\u274C';
+            if (status === 'revised') return '\u270F\uFE0F';
+            return '';
+        }
+
+        function formatCostUSD(val) {
+            if (!val || val < 0.001) return '$0.00';
+            return '$' + val.toFixed(3);
+        }
+
+        function renderDiscussionContent(text) {
+            // Сначала markdown
+            let html = renderMarkdown ? renderMarkdown(text) : text;
+            // Затем заменить block_id паттерны на кликабельные ссылки
+            // Паттерн: XXXX-XXXX-XXX (3-5 символов через дефис, 3 группы)
+            const blockIdRe = /\b([A-Z0-9]{3,5}-[A-Z0-9]{3,5}-[A-Z0-9]{2,4})\b/g;
+            const pid = currentProjectId.value;
+            if (pid) {
+                html = html.replace(blockIdRe, (match) => {
+                    return `<a href="#" class="block-id-link" data-block-id="${match}" title="Открыть блок ${match}">${match}</a>`;
+                });
+            }
+            return html;
+        }
+
         function sheetTypeIcon(sheetType) {
             const icons = {
                 'single_line_diagram': 'SLD',
@@ -2298,6 +3263,33 @@ const app = createApp({
         const filteredFindings = computed(() => {
             if (!findingsData.value) return [];
             return findingsData.value.findings;
+        });
+
+        // Сортировка: отклонённые всегда внизу (если есть решения)
+        const sortedFindings = computed(() => {
+            const items = filteredFindings.value;
+            if (!Object.keys(expertDecisions.value).length) return items;
+            const accepted = [], pending = [], rejected = [];
+            for (const f of items) {
+                const d = getExpertDecision(f.id);
+                if (d === 'rejected') rejected.push(f);
+                else if (d === 'accepted') accepted.push(f);
+                else pending.push(f);
+            }
+            return [...pending, ...accepted, ...rejected];
+        });
+
+        const sortedOptimization = computed(() => {
+            const items = filteredOptimization.value;
+            if (!Object.keys(expertDecisions.value).length) return items;
+            const accepted = [], pending = [], rejected = [];
+            for (const item of items) {
+                const d = getExpertDecision(item.id);
+                if (d === 'rejected') rejected.push(item);
+                else if (d === 'accepted') accepted.push(item);
+                else pending.push(item);
+            }
+            return [...pending, ...accepted, ...rejected];
         });
 
         // Live-статус текущего проекта (для Project Detail)
@@ -2329,6 +3321,25 @@ const app = createApp({
             if (status === 'partial') return 'step-partial';
             if (status === 'running') return 'step-running';
             if (status === 'skipped') return 'step-skipped';
+            return '';
+        }
+
+        // Объединённый статус critic + corrector → один pill "CF"
+        function combinedCriticStatus(criticStatus, correctorStatus) {
+            // Если хоть один running — running
+            if (criticStatus === 'running' || correctorStatus === 'running') return 'running';
+            // Если хоть один error — error
+            if (criticStatus === 'error' || correctorStatus === 'error') return 'error';
+            // Если оба done — done
+            if (criticStatus === 'done' && correctorStatus === 'done') return 'done';
+            // Если critic done, corrector skipped (не нужен) — done
+            if (criticStatus === 'done' && (correctorStatus === 'skipped' || !correctorStatus)) return 'done';
+            // Partial
+            if (criticStatus === 'partial' || correctorStatus === 'partial') return 'partial';
+            // Critic done но corrector ещё idle — partial (в процессе)
+            if (criticStatus === 'done') return 'partial';
+            // Skipped
+            if (criticStatus === 'skipped') return 'skipped';
             return '';
         }
 
@@ -2441,6 +3452,8 @@ const app = createApp({
             const pid = logProjectId.value;
             if (pid) {
                 projectLogs.value[pid] = [];
+                findingIndex.value[pid] = {};
+                findingStage.value = { ...findingStage.value, [pid]: '' };
                 // Очищаем и на сервере
                 fetch(`/api/audit/${encodeURIComponent(pid)}/log`, { method: 'DELETE' }).catch(() => {});
             }
@@ -2475,25 +3488,90 @@ const app = createApp({
         }
 
         async function loadProjectLog(projectId) {
-            /**  Загрузить историю логов из файла проекта. */
+            /**  Загрузить историю логов из файла проекта + восстановить структурированные карточки. */
             if (!projectId) return;
             logLoading.value = true;
             try {
                 const resp = await fetch(`/api/audit/${encodeURIComponent(projectId)}/log?limit=500`);
                 if (resp.ok) {
                     const data = await resp.json();
-                    const entries = (data.entries || []).map(e => ({
-                        time: e.timestamp ? new Date(e.timestamp).toLocaleTimeString() : '',
-                        level: e.level || 'info',
-                        message: e.message || '',
-                    }));
-                    // Инициализируем массив для проекта если нет, или заменяем
+                    const entries = (data.entries || []).map(e => {
+                        const time = e.timestamp ? new Date(e.timestamp).toLocaleTimeString() : '';
+                        // Структурированная запись cli_summary — восстанавливаем красивую карточку
+                        if (e.kind === 'cli_summary') {
+                            return {
+                                kind: 'cli_summary',
+                                time: time,
+                                stage: e.stage || '',
+                                resultHtml: renderSimpleMarkdown(e.result_md || ''),
+                                duration_sec: e.duration_sec || 0,
+                                cost_usd: e.cost_usd || 0,
+                                output_tokens: e.output_tokens || 0,
+                                cache_read: e.cache_read || 0,
+                                cache_creation: e.cache_creation || 0,
+                                model: e.model || '',
+                                is_error: !!e.is_error,
+                                expanded: true,
+                            };
+                        }
+                        return {
+                            kind: 'log',
+                            time: time,
+                            level: e.level || 'info',
+                            message: e.message || '',
+                        };
+                    });
                     projectLogs.value[projectId] = entries;
+                    findingIndex.value[projectId] = {};
+
+                    // Восстановить finding-карточки из 03_findings.json + 03_findings_review.json
+                    await restoreFindingCards(projectId);
                 }
             } catch (e) {
                 console.error('Failed to load project log:', e);
             } finally {
                 logLoading.value = false;
+            }
+        }
+
+        async function restoreFindingCards(projectId) {
+            /** Восстановить finding-карточки после refresh из файлов _output/. */
+            try {
+                const resp = await fetch(`/api/findings/${encodeURIComponent(projectId)}`);
+                if (!resp.ok) return;
+                const fd = await resp.json();
+                const findings = (fd && fd.findings) || [];
+                if (findings.length === 0) return;
+
+                if (!findingIndex.value[projectId]) findingIndex.value[projectId] = {};
+
+                // Добавить карточку «Размышление завершено» + карточки всех замечаний
+                const pseudoTime = '';
+                for (const f of findings) {
+                    const card = {
+                        kind: 'finding',
+                        time: pseudoTime,
+                        finding_id: f.id || '',
+                        severity: f.severity || '',
+                        category: f.category || '',
+                        problem: f.problem || f.title || '',
+                        sheet: f.sheet,
+                        page: f.page,
+                        status: 'confirmed',  // все замечания в итоговом файле уже прошли critic/corrector
+                        rejectVerdict: '',
+                        rejectReason: '',
+                    };
+                    projectLogs.value[projectId].push(card);
+                    if (card.finding_id) {
+                        findingIndex.value[projectId][card.finding_id] = card;
+                    }
+                }
+                findingStage.value = {
+                    ...findingStage.value,
+                    [projectId]: 'done',
+                };
+            } catch (e) {
+                console.warn('Failed to restore finding cards:', e);
             }
         }
 
@@ -2531,7 +3609,7 @@ const app = createApp({
             wsCurrentProjectId = projectId;
             wsProjectReconnects = 0;
             const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            wsProject = new WebSocket(`${proto}//${location.host}/ws/audit/${projectId}`);
+            wsProject = new WebSocket(`${proto}//${location.host}/ws/audit/${encodeURIComponent(projectId)}`);
             wsProject.onopen = () => {
                 wsConnected.value = true;
                 wsProjectReconnects = 0;
@@ -2594,6 +3672,8 @@ const app = createApp({
             if (!projectLogs.value[projectId]) {
                 projectLogs.value[projectId] = [];
             }
+            // Проставляем kind='log' по умолчанию для обратной совместимости
+            if (!entry.kind) entry.kind = 'log';
             projectLogs.value[projectId].push(entry);
             // Авто-скролл если просматриваем этот проект
             if (logProjectId.value === projectId && logAutoScroll.value) {
@@ -2601,6 +3681,38 @@ const app = createApp({
                     const el = logContainer.value;
                     if (el) el.scrollTop = el.scrollHeight;
                 });
+            }
+        }
+
+        function pushFindingCard(projectId, card) {
+            /** Добавить карточку замечания в unified-поток и проиндексировать по finding_id. */
+            if (!projectId) return;
+            if (!projectLogs.value[projectId]) projectLogs.value[projectId] = [];
+            if (!findingIndex.value[projectId]) findingIndex.value[projectId] = {};
+            projectLogs.value[projectId].push(card);
+            if (card.finding_id) {
+                findingIndex.value[projectId][card.finding_id] = card;
+            }
+            if (logProjectId.value === projectId && logAutoScroll.value) {
+                nextTick(() => {
+                    const el = logContainer.value;
+                    if (el) el.scrollTop = el.scrollHeight;
+                });
+            }
+        }
+
+        function applyFindingVerdict(projectId, verdictMsg) {
+            /** Обновить статус карточки по вердикту критика. */
+            const idx = findingIndex.value[projectId];
+            if (!idx) return;
+            const card = idx[verdictMsg.finding_id];
+            if (!card) return;
+            if (verdictMsg.verdict === 'pass') {
+                card.status = 'confirmed';
+            } else {
+                card.status = 'rejected';
+                card.rejectVerdict = verdictMsg.verdict || '';
+                card.rejectReason = verdictMsg.details || '';
             }
         }
 
@@ -2671,6 +3783,392 @@ const app = createApp({
                     selectedProjects.value = new Set();
                     selectAllChecked.value = false;
                 }
+            } else if (msg.type === 'finding_stage') {
+                // Смена фазы «размышления модели»
+                findingStage.value = {
+                    ...findingStage.value,
+                    [pid]: msg.data.stage || '',
+                };
+                // При начале новой фазы merge — сбрасываем индекс (новый запуск конвейера)
+                if (msg.data.stage === 'merge') {
+                    findingIndex.value[pid] = {};
+                }
+            } else if (msg.type === 'finding_added') {
+                pushFindingCard(pid, {
+                    kind: 'finding',
+                    time: time,
+                    finding_id: msg.data.finding_id,
+                    severity: msg.data.severity || '',
+                    category: msg.data.category || '',
+                    problem: msg.data.problem || '',
+                    sheet: msg.data.sheet,
+                    page: msg.data.page,
+                    status: 'pending',
+                    rejectVerdict: '',
+                    rejectReason: '',
+                });
+            } else if (msg.type === 'finding_verdict') {
+                applyFindingVerdict(pid, msg.data);
+            } else if (msg.type === 'cli_summary') {
+                pushToProjectLog(pid, {
+                    kind: 'cli_summary',
+                    time: time,
+                    stage: msg.data.stage || '',
+                    resultHtml: renderSimpleMarkdown(msg.data.result_md || ''),
+                    duration_sec: msg.data.duration_sec || 0,
+                    cost_usd: msg.data.cost_usd || 0,
+                    output_tokens: msg.data.output_tokens || 0,
+                    cache_read: msg.data.cache_read || 0,
+                    cache_creation: msg.data.cache_creation || 0,
+                    model: msg.data.model || '',
+                    is_error: !!msg.data.is_error,
+                    expanded: true,
+                });
+            }
+        }
+
+        // ─── Простой Markdown-рендер (без внешних библиотек) ───
+        function renderSimpleMarkdown(text) {
+            if (!text) return '';
+            // 1. Экранирование HTML
+            const escape = (s) => s
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+            let s = escape(text);
+
+            // 2. Таблицы — превращаем pipe-таблицы в <table>
+            // Паттерн: несколько строк подряд, все начинаются с |
+            const lines = s.split('\n');
+            const out = [];
+            let i = 0;
+            while (i < lines.length) {
+                const line = lines[i];
+                if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+                    // Собираем все строки таблицы
+                    const tableLines = [];
+                    while (i < lines.length && lines[i].trim().startsWith('|') && lines[i].trim().endsWith('|')) {
+                        tableLines.push(lines[i].trim());
+                        i++;
+                    }
+                    if (tableLines.length >= 2) {
+                        // Первая — заголовок, вторая — разделитель, остальные — данные
+                        const parseRow = (row) => row.slice(1, -1).split('|').map(c => c.trim());
+                        const header = parseRow(tableLines[0]);
+                        const rows = tableLines.slice(2).map(parseRow);
+                        let tbl = '<table class="md-table"><thead><tr>';
+                        header.forEach(h => { tbl += '<th>' + h + '</th>'; });
+                        tbl += '</tr></thead><tbody>';
+                        rows.forEach(r => {
+                            tbl += '<tr>';
+                            r.forEach(c => { tbl += '<td>' + c + '</td>'; });
+                            tbl += '</tr>';
+                        });
+                        tbl += '</tbody></table>';
+                        out.push(tbl);
+                        continue;
+                    } else {
+                        out.push(...tableLines);
+                    }
+                } else {
+                    out.push(line);
+                    i++;
+                }
+            }
+            s = out.join('\n');
+
+            // 3. Инлайн: **bold**, `code`
+            s = s.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+            s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+
+            // 4. Списки: строки, начинающиеся с "- "
+            s = s.replace(/(^|\n)- (.+)/g, '$1<li>$2</li>');
+            s = s.replace(/(<li>[^]*?<\/li>(?:\n<li>[^]*?<\/li>)*)/g, (m) => '<ul>' + m.replace(/\n/g, '') + '</ul>');
+
+            // 5. Переносы строк (вне таблиц/списков)
+            s = s.replace(/\n/g, '<br>');
+            // Убираем лишние <br> вокруг блочных элементов
+            s = s.replace(/<br>(<table|<ul|<\/table>|<\/ul>)/g, '$1');
+            s = s.replace(/(<\/table>|<\/ul>)<br>/g, '$1');
+            return s;
+        }
+
+        // ─── Expert Review (экспертная оценка) ───
+        async function toggleExpertReview() {
+            expertReviewMode.value = !expertReviewMode.value;
+            if (expertReviewMode.value && currentProjectId.value) {
+                await loadExpertDecisions();
+            }
+        }
+
+        async function loadExpertDecisions() {
+            if (!currentProjectId.value) return;
+            const map = {};
+            // 1. Загрузить из expert_review.json
+            try {
+                const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}`);
+                const data = await resp.json();
+                if (data.has_review && data.data && data.data.decisions) {
+                    for (const d of data.data.decisions) {
+                        map[d.item_id] = { decision: d.decision, rejection_reason: d.rejection_reason || '', item_type: d.item_type || 'finding' };
+                    }
+                }
+            } catch (e) { console.warn('Failed to load expert review:', e); }
+
+            // 2. Дополнить из статусов обсуждений (если есть confirmed/rejected)
+            try {
+                for (const tab of ['finding', 'optimization']) {
+                    const resp = await fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/items?type=${tab}`);
+                    const data = await resp.json();
+                    for (const item of (data.items || [])) {
+                        if (item.discussion_status && !map[item.item_id]) {
+                            if (item.discussion_status === 'confirmed') {
+                                map[item.item_id] = { decision: 'accepted', rejection_reason: '', item_type: tab };
+                            } else if (item.discussion_status === 'rejected') {
+                                map[item.item_id] = { decision: 'rejected', rejection_reason: item.resolution_summary || '', item_type: tab };
+                            }
+                        }
+                    }
+                }
+            } catch (e) { /* discussions API may not have items */ }
+
+            expertDecisions.value = map;
+        }
+
+        function setExpertDecision(itemId, itemType, decision) {
+            const existing = expertDecisions.value[itemId] || { decision: null, rejection_reason: '' };
+            if (existing.decision === decision) {
+                // Toggle off
+                existing.decision = null;
+            } else {
+                existing.decision = decision;
+            }
+            existing.item_type = itemType;
+            expertDecisions.value = { ...expertDecisions.value, [itemId]: existing };
+
+            // Синхронизация с системой обсуждений (confirmed/rejected)
+            if (currentProjectId.value && existing.decision) {
+                const discType = itemId.startsWith('OPT') ? 'optimization' : 'finding';
+                const status = existing.decision === 'accepted' ? 'confirmed' : 'rejected';
+                const summary = status === 'confirmed' ? 'Принято экспертом' : 'Отклонено экспертом';
+                fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(itemId)}/resolve?type=${discType}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status, summary }),
+                }).catch(() => {}); // fire-and-forget
+            }
+        }
+
+        function setExpertReason(itemId, reason) {
+            const existing = expertDecisions.value[itemId] || { decision: 'rejected', rejection_reason: '' };
+            existing.rejection_reason = reason;
+            expertDecisions.value = { ...expertDecisions.value, [itemId]: existing };
+        }
+
+        async function submitExpertReview() {
+            if (!currentProjectId.value) return;
+            expertReviewSaving.value = true;
+            try {
+                const decisions = [];
+                for (const [itemId, d] of Object.entries(expertDecisions.value)) {
+                    if (d.decision) {
+                        decisions.push({
+                            item_id: itemId,
+                            item_type: d.item_type || (itemId.startsWith('OPT') ? 'optimization' : 'finding'),
+                            decision: d.decision,
+                            rejection_reason: d.decision === 'rejected' ? d.rejection_reason : null,
+                            timestamp: new Date().toISOString(),
+                        });
+                    }
+                }
+                const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ decisions, reviewer: '' }),
+                });
+                const result = await resp.json();
+                if (result.status === 'ok') {
+                    alert(`Сохранено: ${result.accepted} принято, ${result.rejected} отклонено`);
+                }
+            } catch (e) {
+                console.error('Submit expert review error:', e);
+                alert('Ошибка сохранения решений');
+            } finally {
+                expertReviewSaving.value = false;
+            }
+        }
+
+        function getExpertDecision(itemId) {
+            return (expertDecisions.value[itemId] || {}).decision || null;
+        }
+        function getExpertReason(itemId) {
+            return (expertDecisions.value[itemId] || {}).rejection_reason || '';
+        }
+        function expertReviewSummary() {
+            const vals = Object.values(expertDecisions.value);
+            return {
+                total: vals.filter(d => d.decision).length,
+                accepted: vals.filter(d => d.decision === 'accepted').length,
+                rejected: vals.filter(d => d.decision === 'rejected').length,
+            };
+        }
+
+        // ─── Knowledge Base (база знаний) ───
+        async function loadKnowledgeBase() {
+            kbLoading.value = true;
+            try {
+                const params = new URLSearchParams({ status: kbTab.value, limit: '200', offset: '0' });
+                if (kbSearch.value) params.set('search', kbSearch.value);
+                if (kbSectionFilter.value) params.set('section', kbSectionFilter.value);
+                const resp = await fetch(`/api/knowledge-base/entries?${params}`);
+                const data = await resp.json();
+                kbEntries.value = data.entries || [];
+            } catch (e) {
+                console.error('Load KB error:', e);
+            } finally {
+                kbLoading.value = false;
+            }
+        }
+
+        async function loadKBStats() {
+            try {
+                const resp = await fetch('/api/knowledge-base/stats');
+                kbStats.value = await resp.json();
+            } catch (e) { console.warn('KB stats error:', e); }
+        }
+
+        function switchKBTab(tab) {
+            kbTab.value = tab;
+            loadKnowledgeBase();
+        }
+
+        async function confirmCustomer(entryIds) {
+            try {
+                await fetch('/api/knowledge-base/customer-confirm', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ entry_ids: entryIds }),
+                });
+                loadKnowledgeBase();
+                loadKBStats();
+            } catch (e) { console.error('Customer confirm error:', e); }
+        }
+
+        async function unconfirmCustomer(entryIds) {
+            try {
+                await fetch('/api/knowledge-base/customer-unconfirm', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ entry_ids: entryIds }),
+                });
+                loadKnowledgeBase();
+                loadKBStats();
+            } catch (e) { console.error('Customer unconfirm error:', e); }
+        }
+
+        async function revokeKBDecision(entry) {
+            try {
+                await fetch('/api/knowledge-base/revoke', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ entry_id: entry.id, project_id: entry.source_project, item_id: entry.item_id }),
+                });
+                // Убрать из локального кеша решений
+                if (expertDecisions.value[entry.item_id]) {
+                    const updated = { ...expertDecisions.value };
+                    delete updated[entry.item_id];
+                    expertDecisions.value = updated;
+                }
+                loadKnowledgeBase();
+                loadKBStats();
+            } catch (e) { console.error('Revoke error:', e); }
+        }
+
+        async function loadKBPatterns() {
+            kbPatternsLoading.value = true;
+            try {
+                const resp = await fetch('/api/knowledge-base/patterns');
+                const data = await resp.json();
+                kbPatterns.value = data.patterns || [];
+            } catch (e) { console.error('Load patterns error:', e); }
+            finally { kbPatternsLoading.value = false; }
+        }
+
+        async function detectPatterns() {
+            kbPatternsLoading.value = true;
+            try {
+                const resp = await fetch('/api/knowledge-base/patterns/detect', { method: 'POST' });
+                const data = await resp.json();
+                kbPatterns.value = data.patterns || [];
+            } catch (e) { console.error('Detect patterns error:', e); }
+            finally { kbPatternsLoading.value = false; }
+        }
+
+        async function approvePattern(patternId) {
+            await fetch(`/api/knowledge-base/patterns/${patternId}/approve`, { method: 'POST' });
+            loadKBPatterns();
+        }
+
+        async function dismissPattern(patternId) {
+            await fetch(`/api/knowledge-base/patterns/${patternId}/dismiss`, { method: 'POST' });
+            loadKBPatterns();
+        }
+
+        async function uploadDecisionsExcel(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            kbUploadLoading.value = true;
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                const resp = await fetch('/api/knowledge-base/upload-excel', { method: 'POST', body: formData });
+                const data = await resp.json();
+                if (data.status === 'ok') {
+                    alert('Решения загружены: ' + Object.keys(data.projects).length + ' проектов');
+                    loadKnowledgeBase();
+                    loadKBStats();
+                }
+            } catch (e) {
+                console.error('Upload error:', e);
+                alert('Ошибка загрузки файла');
+            } finally {
+                kbUploadLoading.value = false;
+                event.target.value = '';
+            }
+        }
+
+        async function uploadAndApplyDecisions(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            kbUploadLoading.value = true;
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                const resp = await fetch('/api/knowledge-base/upload-excel', { method: 'POST', body: formData });
+                const data = await resp.json();
+                if (data.status === 'ok') {
+                    const count = Object.keys(data.projects).length;
+                    // Загрузить решения для текущего проекта и включить режим оценки
+                    if (currentProjectId.value) {
+                        const revResp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}`);
+                        const revData = await revResp.json();
+                        if (revData.has_review && revData.data && revData.data.decisions) {
+                            const map = {};
+                            for (const d of revData.data.decisions) {
+                                map[d.item_id] = { decision: d.decision, rejection_reason: d.rejection_reason || '', item_type: d.item_type || 'finding' };
+                            }
+                            expertDecisions.value = map;
+                            expertReviewMode.value = true;
+                        }
+                    }
+                    alert(`Решения загружены (${count} проектов). Колонки заполнены автоматически.`);
+                }
+            } catch (e) {
+                console.error('Upload & apply error:', e);
+                alert('Ошибка загрузки файла');
+            } finally {
+                kbUploadLoading.value = false;
+                event.target.value = '';
             }
         }
 
@@ -2688,6 +4186,7 @@ const app = createApp({
             connectGlobalWS();
             startPolling();
             loadDisciplines();
+            loadObjects();
             // Глобальная статистика — первый вызов + polling каждые 60с
             pollGlobalUsage();
             usagePollTimer = setInterval(pollGlobalUsage, 60000);
@@ -2701,11 +4200,13 @@ const app = createApp({
         });
 
         return {
+            // Theme
+            theme, toggleTheme,
             // State
             currentView, currentProject, currentProjectId, projects, loading,
             findingsData, filterSeverity, filterSearch, severityOptions,
             findingBlockMap, findingBlockInfo, expandedFindingId,
-            toggleFindingBlocks, getFindingBlocks, navigateToBlock, blockBackRoute, goBackFromBlock,
+            toggleFindingBlocks, getFindingBlocks, getFindingTextEvidence, findingTextEvidence, navigateToBlock, blockBackRoute, goBackFromBlock,
             // Blocks (OCR)
             blocksProjectId, blockPages, blockCropErrors, blockTotalExpected,
             selectedBlockPage, selectedBlock,
@@ -2714,7 +4215,9 @@ const app = createApp({
             openBlock, loadBlocks, blockToFindings, getBlockFindings,
             blockImageContainer, blockImageStyle, onBlockZoomWheel, onBlockPanStart, resetBlockZoom, onBlockImageLoad,
             blockNatW, blockNatH, highlightedFindingId, currentBlockHighlights, highlightFinding, severityColor, severityStroke,
+            allHighlightsVisible, hiddenHighlightFindings, toggleFindingHighlight, isFindingHighlightVisible, toggleAllHighlights,
             logProjectId, logEntries, logAutoScroll, logContainer, logLoading,
+            currentFindingStage,
             wsConnected,
             // Live status
             liveStatus,
@@ -2726,7 +4229,7 @@ const app = createApp({
             secondsSinceHeartbeat, isHeartbeatStale, getHeartbeatInfo,
             formatETA, heartbeatStatusText, isClaudeStage, getRunningStage,
             // Methods
-            navigate, refreshProjects, stepClass, sevClass, sevIcon,
+            navigate, refreshProjects, stepClass, combinedCriticStatus, sevClass, sevIcon,
             debounceSearch, clearLog, copyLog,
             // Prompts
             promptsProjectId, templates, promptsLoading,
@@ -2752,12 +4255,14 @@ const app = createApp({
             pausePipeline, resumePipelineGlobal,
             // Model config
             showModelConfig, stageModelConfig, availableModels, stageLabels,
-            stageModelRestrictions, isModelAllowed,
+            stageModelRestrictions, stageModelHints, isModelAllowed,
+            modelPresets, activePreset, applyPreset,
             loadStageModels, saveStageModels, openModelConfig, saveAndStartAudit,
             startAuditDirect,
             toggleProjectSelection, toggleSelectAll, isProjectSelected,
             isSectionSelected, toggleSectionSelection,
             sectionExcelLoading, exportSectionExcel,
+            projectExcelLoading, exportProjectExcel,
             openBatchModal, confirmBatchAction, startBatchAction, cancelBatch, addToBatch,
             batchActionLabel,
             // Queue management
@@ -2772,9 +4277,16 @@ const app = createApp({
             newSectionName, newSectionCode, newSectionColor,
             scanFolders, scanExternalFolder, registerProject, registerAllProjects, closeAddProject,
             externalPath, projectSource,
+            // Objects
+            objectsList, currentObjectId, showObjectPicker, showAddObjectModal, newObjectName,
+            loadObjects, switchObject, addNewObject,
+            // Dashboard stats
+            auditedProjectsCount, totalFindings, totalBySeverity, sevPercent,
+            sectionFindingsCount, filteredSectionProjects,
             // Disciplines
             supportedDisciplines, getDisciplineColor, disciplineLabel, disciplineBadgeStyle,
             objectName, projectsBySection, collapsedSections, toggleSection,
+            sidebarSectionsOpen, sidebarFilterSection,
             allSectionsCollapsed, toggleAllSections,
             showEditSection, editSectionCode, editSectionName, editSectionColor,
             openEditSection, saveEditSection, deleteSection,
@@ -2785,13 +4297,13 @@ const app = createApp({
             globalUsage, showUsageDetails, sonnetPercent,
             accountInfo, showAccountInfo, fetchAccountInfo,
             accountSwitching, accountAuthUrl, switchAccount,
-            formatTokens, formatCost, formatDurationSec, refreshGlobalUsage, resetSessionCounter,
+            formatTokens, formatCost, formatDurationSec, refreshGlobalUsage, resetSessionCounter, clearUsageCounter,
             usageCounters,
             // Usage (per-project)
             projectUsage, currentProjectUsage, stageTokens, stageTokensFormatted, stageModel, stageDurationForProject, formatDuration,
             // Pipeline summary
             // Optimization
-            optimizationData, optimizationLoading, optimizationFilter,
+            optimizationData, optimizationLoading, optimizationFilter, optimizationSearch,
             optBlockMap, optBlockInfo, expandedOptId,
             toggleOptBlocks, getOptBlocks,
             filteredOptimization, optimizationTypeLabels, optimizationTypeColors,
@@ -2799,8 +4311,34 @@ const app = createApp({
             // Document viewer
             documentProjectId, documentPages, documentCurrentPage, documentPageData, documentLoading,
             loadDocument, loadDocumentPage, docPrevPage, docNextPage, renderMarkdown,
+            // Discussions
+            discussionItems, discussionTab, discussionModel, discussionModels,
+            activeDiscussion, activeDiscussionItem, activeDiscussionBlocks, showDiscussionBlocks, discussionMessages, discussionLoading, discussionSending,
+            discussionCost, discussionContextTokens, chatInput, chatMessagesContainer,
+            revisionData, revisionLoading,
+            activeDiscussionItems, rejectedDiscussionItems, discussionSeverityCounts, discussionOptTypeCounts,
+            loadDiscussionModels, loadDiscussionItems, switchDiscussionTab,
+            openDiscussion, closeDiscussion, sendDiscussionMessage, downloadAuditPackage, auditPackageLoading,
+            downloadBatchAuditPackages, batchPackageLoading,
+            chatAttachedImage, handleChatFileSelect, handleChatPaste,
+            resolvedFindingsCount, allDiscussionsResolved, resolvedFindingsLoading, downloadResolvedFindings,
+            editingMessageIdx, editingMessageText,
+            startEditMessage, cancelEditMessage, submitEditMessage,
+            resolveDiscussion, requestRevision, applyRevision, rejectRevision, formatRevisionField, formatRevisionValue,
+            discussionStatusIcon, formatCostUSD, renderDiscussionContent, onChatClick, autoResizeChatInput,
             // Computed
-            filteredFindings,
+            filteredFindings, sortedFindings, sortedOptimization,
+            // Expert Review
+            expertReviewMode, expertDecisions, expertReviewSaving,
+            toggleExpertReview, loadExpertDecisions, setExpertDecision, setExpertReason, submitExpertReview,
+            getExpertDecision, getExpertReason, expertReviewSummary,
+            // Knowledge Base
+            kbTab, kbEntries, kbStats, kbLoading, kbSearch, kbSectionFilter,
+            kbPatterns, kbPatternsLoading, kbUploadLoading,
+            loadKnowledgeBase, loadKBStats, switchKBTab,
+            confirmCustomer, unconfirmCustomer, revokeKBDecision,
+            loadKBPatterns, detectPatterns, approvePattern, dismissPattern,
+            uploadDecisionsExcel, uploadAndApplyDecisions,
         };
     }
 });

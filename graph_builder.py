@@ -35,8 +35,11 @@ def _normalize_ocr_text(raw: str | None) -> str:
 
     text = raw
 
-    # Убираем HTML-теги
+    # Убираем HTML-теги, сохраняя форматирование
     if "<" in text and ">" in text:
+        # Сохраняем жирный текст как markdown **bold**
+        text = re.sub(r'<(?:b|strong)(?:\s[^>]*)?>', '**', text, flags=re.IGNORECASE)
+        text = re.sub(r'</(?:b|strong)>', '**', text, flags=re.IGNORECASE)
         # Заменяем <br>, <br/>, </p>, </div>, </tr> на переводы строк
         text = re.sub(r'<br\s*/?>', '\n', text, flags=re.IGNORECASE)
         text = re.sub(r'</(?:p|div|tr|li|h[1-6])>', '\n', text, flags=re.IGNORECASE)

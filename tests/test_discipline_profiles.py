@@ -8,11 +8,11 @@ import json
 import pytest
 from pathlib import Path
 
-DISCIPLINES_DIR = Path(__file__).resolve().parent.parent / "disciplines"
+DISCIPLINES_DIR = Path(__file__).resolve().parent.parent / "prompts" / "disciplines"
 REGISTRY_PATH = DISCIPLINES_DIR / "_registry.json"
 
 # Ключевые дисциплины (коды из registry, НЕ имена папок)
-KEY_DISCIPLINES = ["EM", "OV", "АР", "АИ", "ТХ", "ВК", "КМ"]
+KEY_DISCIPLINES = ["EOM", "OV", "AR", "AI", "TX", "VK", "KM"]
 
 # Файлы стандартного профиля
 PROFILE_FILES = ["role.md", "checklist.md", "finding_categories.md"]

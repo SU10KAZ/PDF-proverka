@@ -87,3 +87,76 @@ class WSMessage(BaseModel):
                 "pause_minutes": pause_minutes,
             },
         )
+
+    # --- "Размышление модели": структурированный поток замечаний ---
+
+    @classmethod
+    def finding_stage(cls, project: str, stage: str, extra: Optional[dict] = None):
+        """Смена фазы в потоке замечаний: merge | critic | corrector | done."""
+        data = {"stage": stage}
+        if extra:
+            data.update(extra)
+        return cls(
+            type="finding_stage",
+            project=project,
+            timestamp=datetime.now().isoformat(),
+            data=data,
+        )
+
+    @classmethod
+    def finding_added(cls, project: str, finding: dict):
+        """Найдено новое замечание — публикуется после этапа findings_merge."""
+        return cls(
+            type="finding_added",
+            project=project,
+            timestamp=datetime.now().isoformat(),
+            data={
+                "finding_id": finding.get("id") or finding.get("finding_id") or "",
+                "severity": finding.get("severity", ""),
+                "category": finding.get("category", ""),
+                "problem": finding.get("problem") or finding.get("title") or "",
+                "sheet": finding.get("sheet"),
+                "page": finding.get("page"),
+            },
+        )
+
+    @classmethod
+    def cli_summary(cls, project: str, stage: str, result_md: str,
+                    duration_sec: float = 0, cost_usd: float = 0,
+                    input_tokens: int = 0, output_tokens: int = 0,
+                    cache_read: int = 0, cache_creation: int = 0,
+                    model: str = "", is_error: bool = False):
+        """Форматированная сводка результата выполнения Claude CLI (вместо сырого JSON)."""
+        return cls(
+            type="cli_summary",
+            project=project,
+            timestamp=datetime.now().isoformat(),
+            data={
+                "stage": stage,
+                "result_md": result_md,
+                "duration_sec": round(duration_sec, 1),
+                "cost_usd": round(cost_usd, 4),
+                "input_tokens": input_tokens,
+                "output_tokens": output_tokens,
+                "cache_read": cache_read,
+                "cache_creation": cache_creation,
+                "model": model,
+                "is_error": is_error,
+            },
+        )
+
+    @classmethod
+    def finding_verdict(cls, project: str, finding_id: str, verdict: str,
+                        details: str = "", suggested_action: Optional[str] = None):
+        """Вердикт критика по замечанию."""
+        return cls(
+            type="finding_verdict",
+            project=project,
+            timestamp=datetime.now().isoformat(),
+            data={
+                "finding_id": finding_id,
+                "verdict": verdict,
+                "details": details,
+                "suggested_action": suggested_action,
+            },
+        )

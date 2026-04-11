@@ -12,7 +12,7 @@ router = APIRouter(prefix="/api/tiles", tags=["blocks"])
 
 # ─── OCR-блоки ───
 
-@router.get("/{project_id}/blocks")
+@router.get("/{project_id:path}/blocks")
 async def get_blocks(project_id: str):
     """Список image-блоков, сгруппированных по страницам."""
     blocks_dir = resolve_project_dir(project_id) / "_output" / "blocks"
@@ -47,7 +47,7 @@ async def get_blocks(project_id: str):
     }
 
 
-@router.get("/{project_id}/blocks/analysis")
+@router.get("/{project_id:path}/blocks/analysis")
 async def get_blocks_analysis(project_id: str):
     """Агрегированные данные анализа блоков из block_batch_*.json."""
     output_dir = resolve_project_dir(project_id) / "_output"
@@ -74,7 +74,7 @@ async def get_blocks_analysis(project_id: str):
     }
 
 
-@router.get("/{project_id}/blocks/image/{block_id}")
+@router.get("/{project_id:path}/blocks/image/{block_id}")
 async def get_block_image(project_id: str, block_id: str):
     """PNG-файл кропнутого блока."""
     block_path = resolve_project_dir(project_id) / "_output" / "blocks" / f"block_{block_id}.png"

@@ -17,7 +17,7 @@ class RegisterProjectRequest(BaseModel):
     md_file: Optional[str] = None
     md_files: list[str] = []               # все MD (если несколько)
     name: Optional[str] = None
-    section: str = "EM"
+    section: str = "EOM"
     description: str = ""
 
 
@@ -98,9 +98,11 @@ async def delete_discipline(code: str):
 @router.get("")
 async def list_projects():
     """Список всех проектов с их статусом."""
-    from webapp.config import OBJECT_NAME
+    from webapp.services.object_service import get_current_object
+    current_obj = get_current_object()
+    object_name = current_obj["name"] if current_obj else "Объект"
     projects = project_service.list_projects()
-    return {"projects": [p.model_dump() for p in projects], "object_name": OBJECT_NAME}
+    return {"projects": [p.model_dump() for p in projects], "object_name": object_name}
 
 
 @router.get("/scan")
@@ -140,7 +142,7 @@ class RegisterExternalRequest(BaseModel):
     md_file: Optional[str] = None
     md_files: list[str] = []
     name: Optional[str] = None
-    section: str = "EM"
+    section: str = "EOM"
     description: str = ""
 
 
@@ -172,7 +174,7 @@ async def register_external(req: RegisterExternalRequest):
 
 # ─── Динамические роуты /{project_id}/... ───
 
-@router.get("/{project_id}")
+@router.get("/{project_id:path}")
 async def get_project(project_id: str):
     """Детали одного проекта."""
     status = project_service.get_project_status(project_id)
@@ -181,7 +183,7 @@ async def get_project(project_id: str):
     return status.model_dump()
 
 
-@router.get("/{project_id}/config")
+@router.get("/{project_id:path}/config")
 async def get_project_config(project_id: str):
     """Сырой project_info.json."""
     info = project_service.get_project_info(project_id)
@@ -190,7 +192,7 @@ async def get_project_config(project_id: str):
     return info
 
 
-@router.delete("/{project_id}/clean")
+@router.delete("/{project_id:path}/clean")
 async def clean_project(project_id: str):
     """Очистить все результаты аудита (сохраняет PDF, MD, project_info.json).
 

@@ -358,3 +358,69 @@ async def _run_command_blocking(
                 pass
 
     return exit_code, stdout_text, stderr_text
+
+
+from typing import AsyncGenerator
+
+
+async def run_command_stream(
+    cmd: list[str],
+    input_text: str | None = None,
+    env_overrides: dict | None = None,
+    cwd: str | None = None,
+    timeout: int | None = None,
+) -> AsyncGenerator[str, None]:
+    """Запустить команду и yield-ить stdout построчно по мере генерации.
+
+    Используется для стриминга ответов Claude CLI (--output-format stream-json).
+    Каждая yield-строка — одна строка stdout.
+    """
+    env = os.environ.copy()
+    env["PYTHONIOENCODING"] = "utf-8"
+    env["PYTHONUNBUFFERED"] = "1"
+
+    if env_overrides:
+        if env_overrides.get("CLAUDECODE") is None:
+            for k in [k for k in env if k.startswith("CLAUDE")]:
+                env.pop(k, None)
+        for k, v in env_overrides.items():
+            if v is None:
+                env.pop(k, None)
+            elif v is not None:
+                env[k] = v
+
+    work_dir = cwd or str(BASE_DIR)
+    normalized_cmd = _normalize_command_for_windows(cmd)
+
+    proc = await asyncio.create_subprocess_exec(
+        *normalized_cmd,
+        stdin=asyncio.subprocess.PIPE if input_text else None,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+        cwd=work_dir,
+        env=env,
+        **_SUBPROCESS_FLAGS,
+    )
+
+    # Записать input в stdin и закрыть
+    if input_text and proc.stdin:
+        proc.stdin.write(input_text.encode("utf-8"))
+        await proc.stdin.drain()
+        proc.stdin.close()
+        await proc.stdin.wait_closed()
+
+    # Читать stdout построчно
+    try:
+        while proc.stdout:
+            line = await asyncio.wait_for(proc.stdout.readline(), timeout=timeout or 300)
+            if not line:
+                break
+            yield line.decode("utf-8", errors="replace").rstrip()
+    except asyncio.TimeoutError:
+        proc.kill()
+        yield '[TIMEOUT]'
+    except asyncio.CancelledError:
+        proc.kill()
+        raise
+    finally:
+        await proc.wait()

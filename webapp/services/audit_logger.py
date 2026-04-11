@@ -81,8 +81,14 @@ def update_pipeline_log(
         pass  # WS broadcast не должен ломать основной процесс
 
 
-def persist_log(project_id: str, message: str, level: str, stage: str):
-    """Сохранить запись лога в audit_log.jsonl проекта."""
+def persist_log(project_id: str, message: str, level: str, stage: str,
+                extras: dict | None = None):
+    """Сохранить запись лога в audit_log.jsonl проекта.
+
+    extras: опциональные доп. поля (kind, result_md, duration_sec и т.п.) —
+    используются для структурированных записей типа cli_summary, которые
+    нужно восстанавливать после refresh браузера.
+    """
     try:
         output_dir = resolve_project_dir(project_id) / "_output"
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -93,6 +99,8 @@ def persist_log(project_id: str, message: str, level: str, stage: str):
             "stage": stage,
             "message": message,
         }
+        if extras:
+            entry.update(extras)
         with open(log_path, "a", encoding="utf-8") as f:
             f.write(json.dumps(entry, ensure_ascii=False) + "\n")
     except OSError:
