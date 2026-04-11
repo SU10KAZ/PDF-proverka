@@ -115,15 +115,28 @@ const app = createApp({
 
         // Log — отдельное хранилище для каждого проекта
         const logProjectId = ref('');
-        const projectLogs = ref({});     // {projectId: [{time, level, message}]}
+        // Каждая запись: либо log-строка {kind:'log', time, level, message},
+        // либо finding-карточка {kind:'finding', time, finding_id, severity, category, problem, sheet, page, status, rejectReason}
+        const projectLogs = ref({});
         const logAutoScroll = ref(true);
         const logContainer = ref(null);
         const logLoading = ref(false);
+
+        // Текущая фаза «размышления модели»: merge | critic | corrector | done | ''
+        const findingStage = ref({});     // {projectId: 'merge'|...}
+        // Быстрый индекс finding_id → entry в projectLogs[pid] для обновления статуса
+        const findingIndex = ref({});     // {projectId: {finding_id: entry}}
 
         // logEntries — computed, показывает логи текущего проекта
         const logEntries = computed(() => {
             const pid = logProjectId.value;
             return pid ? (projectLogs.value[pid] || []) : [];
+        });
+
+        // Текущая фаза для отображаемого проекта
+        const currentFindingStage = computed(() => {
+            const pid = logProjectId.value;
+            return pid ? (findingStage.value[pid] || '') : '';
         });
 
         // Prompts
@@ -3439,6 +3452,8 @@ const app = createApp({
             const pid = logProjectId.value;
             if (pid) {
                 projectLogs.value[pid] = [];
+                findingIndex.value[pid] = {};
+                findingStage.value = { ...findingStage.value, [pid]: '' };
                 // Очищаем и на сервере
                 fetch(`/api/audit/${encodeURIComponent(pid)}/log`, { method: 'DELETE' }).catch(() => {});
             }
@@ -3473,25 +3488,90 @@ const app = createApp({
         }
 
         async function loadProjectLog(projectId) {
-            /**  Загрузить историю логов из файла проекта. */
+            /**  Загрузить историю логов из файла проекта + восстановить структурированные карточки. */
             if (!projectId) return;
             logLoading.value = true;
             try {
                 const resp = await fetch(`/api/audit/${encodeURIComponent(projectId)}/log?limit=500`);
                 if (resp.ok) {
                     const data = await resp.json();
-                    const entries = (data.entries || []).map(e => ({
-                        time: e.timestamp ? new Date(e.timestamp).toLocaleTimeString() : '',
-                        level: e.level || 'info',
-                        message: e.message || '',
-                    }));
-                    // Инициализируем массив для проекта если нет, или заменяем
+                    const entries = (data.entries || []).map(e => {
+                        const time = e.timestamp ? new Date(e.timestamp).toLocaleTimeString() : '';
+                        // Структурированная запись cli_summary — восстанавливаем красивую карточку
+                        if (e.kind === 'cli_summary') {
+                            return {
+                                kind: 'cli_summary',
+                                time: time,
+                                stage: e.stage || '',
+                                resultHtml: renderSimpleMarkdown(e.result_md || ''),
+                                duration_sec: e.duration_sec || 0,
+                                cost_usd: e.cost_usd || 0,
+                                output_tokens: e.output_tokens || 0,
+                                cache_read: e.cache_read || 0,
+                                cache_creation: e.cache_creation || 0,
+                                model: e.model || '',
+                                is_error: !!e.is_error,
+                                expanded: true,
+                            };
+                        }
+                        return {
+                            kind: 'log',
+                            time: time,
+                            level: e.level || 'info',
+                            message: e.message || '',
+                        };
+                    });
                     projectLogs.value[projectId] = entries;
+                    findingIndex.value[projectId] = {};
+
+                    // Восстановить finding-карточки из 03_findings.json + 03_findings_review.json
+                    await restoreFindingCards(projectId);
                 }
             } catch (e) {
                 console.error('Failed to load project log:', e);
             } finally {
                 logLoading.value = false;
+            }
+        }
+
+        async function restoreFindingCards(projectId) {
+            /** Восстановить finding-карточки после refresh из файлов _output/. */
+            try {
+                const resp = await fetch(`/api/findings/${encodeURIComponent(projectId)}`);
+                if (!resp.ok) return;
+                const fd = await resp.json();
+                const findings = (fd && fd.findings) || [];
+                if (findings.length === 0) return;
+
+                if (!findingIndex.value[projectId]) findingIndex.value[projectId] = {};
+
+                // Добавить карточку «Размышление завершено» + карточки всех замечаний
+                const pseudoTime = '';
+                for (const f of findings) {
+                    const card = {
+                        kind: 'finding',
+                        time: pseudoTime,
+                        finding_id: f.id || '',
+                        severity: f.severity || '',
+                        category: f.category || '',
+                        problem: f.problem || f.title || '',
+                        sheet: f.sheet,
+                        page: f.page,
+                        status: 'confirmed',  // все замечания в итоговом файле уже прошли critic/corrector
+                        rejectVerdict: '',
+                        rejectReason: '',
+                    };
+                    projectLogs.value[projectId].push(card);
+                    if (card.finding_id) {
+                        findingIndex.value[projectId][card.finding_id] = card;
+                    }
+                }
+                findingStage.value = {
+                    ...findingStage.value,
+                    [projectId]: 'done',
+                };
+            } catch (e) {
+                console.warn('Failed to restore finding cards:', e);
             }
         }
 
@@ -3592,6 +3672,8 @@ const app = createApp({
             if (!projectLogs.value[projectId]) {
                 projectLogs.value[projectId] = [];
             }
+            // Проставляем kind='log' по умолчанию для обратной совместимости
+            if (!entry.kind) entry.kind = 'log';
             projectLogs.value[projectId].push(entry);
             // Авто-скролл если просматриваем этот проект
             if (logProjectId.value === projectId && logAutoScroll.value) {
@@ -3599,6 +3681,38 @@ const app = createApp({
                     const el = logContainer.value;
                     if (el) el.scrollTop = el.scrollHeight;
                 });
+            }
+        }
+
+        function pushFindingCard(projectId, card) {
+            /** Добавить карточку замечания в unified-поток и проиндексировать по finding_id. */
+            if (!projectId) return;
+            if (!projectLogs.value[projectId]) projectLogs.value[projectId] = [];
+            if (!findingIndex.value[projectId]) findingIndex.value[projectId] = {};
+            projectLogs.value[projectId].push(card);
+            if (card.finding_id) {
+                findingIndex.value[projectId][card.finding_id] = card;
+            }
+            if (logProjectId.value === projectId && logAutoScroll.value) {
+                nextTick(() => {
+                    const el = logContainer.value;
+                    if (el) el.scrollTop = el.scrollHeight;
+                });
+            }
+        }
+
+        function applyFindingVerdict(projectId, verdictMsg) {
+            /** Обновить статус карточки по вердикту критика. */
+            const idx = findingIndex.value[projectId];
+            if (!idx) return;
+            const card = idx[verdictMsg.finding_id];
+            if (!card) return;
+            if (verdictMsg.verdict === 'pass') {
+                card.status = 'confirmed';
+            } else {
+                card.status = 'rejected';
+                card.rejectVerdict = verdictMsg.verdict || '';
+                card.rejectReason = verdictMsg.details || '';
             }
         }
 
@@ -3669,7 +3783,114 @@ const app = createApp({
                     selectedProjects.value = new Set();
                     selectAllChecked.value = false;
                 }
+            } else if (msg.type === 'finding_stage') {
+                // Смена фазы «размышления модели»
+                findingStage.value = {
+                    ...findingStage.value,
+                    [pid]: msg.data.stage || '',
+                };
+                // При начале новой фазы merge — сбрасываем индекс (новый запуск конвейера)
+                if (msg.data.stage === 'merge') {
+                    findingIndex.value[pid] = {};
+                }
+            } else if (msg.type === 'finding_added') {
+                pushFindingCard(pid, {
+                    kind: 'finding',
+                    time: time,
+                    finding_id: msg.data.finding_id,
+                    severity: msg.data.severity || '',
+                    category: msg.data.category || '',
+                    problem: msg.data.problem || '',
+                    sheet: msg.data.sheet,
+                    page: msg.data.page,
+                    status: 'pending',
+                    rejectVerdict: '',
+                    rejectReason: '',
+                });
+            } else if (msg.type === 'finding_verdict') {
+                applyFindingVerdict(pid, msg.data);
+            } else if (msg.type === 'cli_summary') {
+                pushToProjectLog(pid, {
+                    kind: 'cli_summary',
+                    time: time,
+                    stage: msg.data.stage || '',
+                    resultHtml: renderSimpleMarkdown(msg.data.result_md || ''),
+                    duration_sec: msg.data.duration_sec || 0,
+                    cost_usd: msg.data.cost_usd || 0,
+                    output_tokens: msg.data.output_tokens || 0,
+                    cache_read: msg.data.cache_read || 0,
+                    cache_creation: msg.data.cache_creation || 0,
+                    model: msg.data.model || '',
+                    is_error: !!msg.data.is_error,
+                    expanded: true,
+                });
             }
+        }
+
+        // ─── Простой Markdown-рендер (без внешних библиотек) ───
+        function renderSimpleMarkdown(text) {
+            if (!text) return '';
+            // 1. Экранирование HTML
+            const escape = (s) => s
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+            let s = escape(text);
+
+            // 2. Таблицы — превращаем pipe-таблицы в <table>
+            // Паттерн: несколько строк подряд, все начинаются с |
+            const lines = s.split('\n');
+            const out = [];
+            let i = 0;
+            while (i < lines.length) {
+                const line = lines[i];
+                if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+                    // Собираем все строки таблицы
+                    const tableLines = [];
+                    while (i < lines.length && lines[i].trim().startsWith('|') && lines[i].trim().endsWith('|')) {
+                        tableLines.push(lines[i].trim());
+                        i++;
+                    }
+                    if (tableLines.length >= 2) {
+                        // Первая — заголовок, вторая — разделитель, остальные — данные
+                        const parseRow = (row) => row.slice(1, -1).split('|').map(c => c.trim());
+                        const header = parseRow(tableLines[0]);
+                        const rows = tableLines.slice(2).map(parseRow);
+                        let tbl = '<table class="md-table"><thead><tr>';
+                        header.forEach(h => { tbl += '<th>' + h + '</th>'; });
+                        tbl += '</tr></thead><tbody>';
+                        rows.forEach(r => {
+                            tbl += '<tr>';
+                            r.forEach(c => { tbl += '<td>' + c + '</td>'; });
+                            tbl += '</tr>';
+                        });
+                        tbl += '</tbody></table>';
+                        out.push(tbl);
+                        continue;
+                    } else {
+                        out.push(...tableLines);
+                    }
+                } else {
+                    out.push(line);
+                    i++;
+                }
+            }
+            s = out.join('\n');
+
+            // 3. Инлайн: **bold**, `code`
+            s = s.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+            s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+
+            // 4. Списки: строки, начинающиеся с "- "
+            s = s.replace(/(^|\n)- (.+)/g, '$1<li>$2</li>');
+            s = s.replace(/(<li>[^]*?<\/li>(?:\n<li>[^]*?<\/li>)*)/g, (m) => '<ul>' + m.replace(/\n/g, '') + '</ul>');
+
+            // 5. Переносы строк (вне таблиц/списков)
+            s = s.replace(/\n/g, '<br>');
+            // Убираем лишние <br> вокруг блочных элементов
+            s = s.replace(/<br>(<table|<ul|<\/table>|<\/ul>)/g, '$1');
+            s = s.replace(/(<\/table>|<\/ul>)<br>/g, '$1');
+            return s;
         }
 
         // ─── Expert Review (экспертная оценка) ───
@@ -3996,6 +4217,7 @@ const app = createApp({
             blockNatW, blockNatH, highlightedFindingId, currentBlockHighlights, highlightFinding, severityColor, severityStroke,
             allHighlightsVisible, hiddenHighlightFindings, toggleFindingHighlight, isFindingHighlightVisible, toggleAllHighlights,
             logProjectId, logEntries, logAutoScroll, logContainer, logLoading,
+            currentFindingStage,
             wsConnected,
             // Live status
             liveStatus,

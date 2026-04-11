@@ -847,8 +847,202 @@ class PipelineManager:
         audit_logger.update_pipeline_log(project_id, stage_key, status, message, error, detail)
 
     async def _log(self, job: AuditJob, message: str, level: str = "info"):
-        """Записать лог в консоль, файл и WebSocket."""
+        """Записать лог в консоль, файл и WebSocket.
+
+        Перехватывает финальный JSON-ответ Claude CLI ({"type":"result",...})
+        и превращает его в красивую cli_summary карточку вместо сырого JSON-мусора.
+        Промежуточные stream-json сообщения (type=assistant/user/system) подавляются.
+        """
+        # Быстрый фильтр — обычные строки идут как есть
+        stripped = (message or "").lstrip()
+        if stripped.startswith('{"type":"'):
+            try:
+                payload = json.loads(stripped)
+            except (json.JSONDecodeError, ValueError):
+                payload = None
+            if isinstance(payload, dict) and "type" in payload:
+                msg_type = payload.get("type")
+                if msg_type == "result":
+                    await self._emit_cli_summary(job, payload)
+                    return
+                # Прочие технические типы stream-json не захламляют лог
+                if msg_type in ("assistant", "user", "system", "tool_use", "tool_result"):
+                    return
+
         await audit_logger.log_to_project(job, message, level)
+
+    async def _emit_cli_summary(self, job: AuditJob, payload: dict):
+        """
+        Преобразовать {"type":"result",...} JSON от Claude CLI в:
+          1) короткую строку в persisted-лог (для истории),
+          2) структурированное cli_summary WS-сообщение для красивой карточки.
+        """
+        pid = job.project_id
+        stage_val = job.stage.value if job.stage else ""
+
+        result_md = payload.get("result") or ""
+        if not isinstance(result_md, str):
+            result_md = str(result_md)
+
+        is_error = bool(payload.get("is_error", False))
+        duration_ms = payload.get("duration_ms", 0) or 0
+        duration_sec = duration_ms / 1000.0 if duration_ms else 0
+        cost_usd = payload.get("total_cost_usd", 0) or 0
+
+        usage = payload.get("usage", {}) or {}
+        input_tokens = usage.get("input_tokens", 0) or 0
+        output_tokens = usage.get("output_tokens", 0) or 0
+        cache_read = usage.get("cache_read_input_tokens", 0) or 0
+        cache_creation = usage.get("cache_creation_input_tokens", 0) or 0
+
+        # Извлекаем имя модели из modelUsage (берём первую — обычно там одна)
+        model = ""
+        model_usage = payload.get("modelUsage") or {}
+        if isinstance(model_usage, dict) and model_usage:
+            model = next(iter(model_usage.keys()), "")
+
+        # 1. Структурированная запись в persisted log (для восстановления после refresh)
+        short_duration = f"{int(duration_sec // 60)}м {int(duration_sec % 60)}с" if duration_sec >= 60 else f"{duration_sec:.1f}с"
+        short_msg = (
+            f"✓ Claude завершил: {short_duration}, ${cost_usd:.2f}, "
+            f"{output_tokens} out / {cache_creation} cache_new / {cache_read} cache_hit"
+        )
+        if is_error:
+            short_msg = "✗ Claude завершил с ошибкой — см. карточку сводки"
+
+        level = "error" if is_error else "info"
+        # Пишем структурированную запись в audit_log.jsonl —
+        # loadProjectLog восстановит красивую карточку при refresh
+        audit_logger.persist_log(
+            pid,
+            short_msg,
+            level,
+            stage_val,
+            extras={
+                "kind": "cli_summary",
+                "result_md": result_md,
+                "duration_sec": round(duration_sec, 1),
+                "cost_usd": round(cost_usd, 4),
+                "output_tokens": output_tokens,
+                "cache_read": cache_read,
+                "cache_creation": cache_creation,
+                "model": model,
+                "is_error": is_error,
+            },
+        )
+
+        # 2. Красивая карточка через отдельный WS-тип
+        try:
+            await ws_manager.broadcast_to_project(
+                pid,
+                WSMessage.cli_summary(
+                    project=pid,
+                    stage=stage_val,
+                    result_md=result_md,
+                    duration_sec=duration_sec,
+                    cost_usd=cost_usd,
+                    input_tokens=input_tokens,
+                    output_tokens=output_tokens,
+                    cache_read=cache_read,
+                    cache_creation=cache_creation,
+                    model=model,
+                    is_error=is_error,
+                ),
+            )
+        except Exception as e:
+            print(f"[{pid}] _emit_cli_summary failed: {e}")
+
+    async def _stream_findings_events(self, job: AuditJob, stage: str):
+        """
+        Публикует структурированные события в WebSocket для «размышления модели».
+
+        stage:
+          - "merge"     — читает 03_findings.json → finding_added[] (по одному, с паузой)
+          - "critic"    — читает 03_findings_review.json → finding_verdict[] (с паузой)
+          - "corrector" — только finding_stage("corrector")
+          - "done"      — финальный finding_stage("done") + final_count из 03_findings.json
+
+        Все данные берутся из уже готовых JSON-файлов, LLM не вовлекается.
+        Ошибки чтения подавляются — это «косметический» стрим, он не должен ломать конвейер.
+        """
+        pid = job.project_id
+        try:
+            output_dir = resolve_project_dir(pid) / "_output"
+
+            if stage == "merge":
+                findings_path = output_dir / "03_findings.json"
+                if not findings_path.exists():
+                    return
+                try:
+                    data = json.loads(findings_path.read_text(encoding="utf-8"))
+                except (json.JSONDecodeError, OSError):
+                    return
+                findings = data.get("findings", []) or []
+                await ws_manager.broadcast_to_project(
+                    pid, WSMessage.finding_stage(pid, "merge", {"total": len(findings)}),
+                )
+                for f in findings:
+                    if job.status == JobStatus.CANCELLED:
+                        return
+                    await ws_manager.broadcast_to_project(
+                        pid, WSMessage.finding_added(pid, f),
+                    )
+                    await asyncio.sleep(0.15)
+                return
+
+            if stage == "critic":
+                review_path = output_dir / "03_findings_review.json"
+                if not review_path.exists():
+                    return
+                try:
+                    data = json.loads(review_path.read_text(encoding="utf-8"))
+                except (json.JSONDecodeError, OSError):
+                    return
+                reviews = data.get("reviews", []) or []
+                await ws_manager.broadcast_to_project(
+                    pid, WSMessage.finding_stage(pid, "critic", {"total": len(reviews)}),
+                )
+                for r in reviews:
+                    if job.status == JobStatus.CANCELLED:
+                        return
+                    fid = r.get("finding_id") or r.get("id", "")
+                    if not fid:
+                        continue
+                    await ws_manager.broadcast_to_project(
+                        pid,
+                        WSMessage.finding_verdict(
+                            pid,
+                            finding_id=fid,
+                            verdict=r.get("verdict", "pass"),
+                            details=r.get("details", "") or "",
+                            suggested_action=r.get("suggested_action"),
+                        ),
+                    )
+                    await asyncio.sleep(0.2)
+                return
+
+            if stage == "corrector":
+                await ws_manager.broadcast_to_project(
+                    pid, WSMessage.finding_stage(pid, "corrector"),
+                )
+                return
+
+            if stage == "done":
+                final_count = 0
+                findings_path = output_dir / "03_findings.json"
+                if findings_path.exists():
+                    try:
+                        data = json.loads(findings_path.read_text(encoding="utf-8"))
+                        final_count = len(data.get("findings", []) or [])
+                    except (json.JSONDecodeError, OSError):
+                        pass
+                await ws_manager.broadcast_to_project(
+                    pid, WSMessage.finding_stage(pid, "done", {"final_count": final_count}),
+                )
+                return
+        except Exception as e:
+            # Никогда не ломаем конвейер из-за косметического стрима
+            print(f"[{pid}] _stream_findings_events({stage}) failed: {e}")
 
     async def _progress(self, job: AuditJob, current: int, total: int):
         """Отправить обновление прогресса."""
@@ -1442,6 +1636,9 @@ class PipelineManager:
                 # Post-merge: backfill text-evidence из compact/graph
                 self._backfill_text_evidence_in_findings(pid)
                 self._refresh_finding_quality(pid)
+
+                # «Размышление модели»: стрим найденных замечаний в live-лог
+                await self._stream_findings_events(job, "merge")
 
                 if job.status == JobStatus.CANCELLED:
                     return
@@ -2375,6 +2572,9 @@ class PipelineManager:
                     await self._log(job, "Ошибка чтения 03_findings_review.json", "warn")
                     return
 
+        # «Размышление модели»: стрим вердиктов критика (единая точка для parallel и single)
+        await self._stream_findings_events(job, "critic")
+
         # ── Анализ результатов Critic ──
         verdicts = review_data.get("meta", {}).get("verdicts", {})
         total_pass = verdicts.get("pass", 0)
@@ -2388,11 +2588,15 @@ class PipelineManager:
 
         if total_issues == 0:
             await self._log(job, "Все замечания обоснованы — Corrector не требуется")
+            await self._stream_findings_events(job, "done")
             return
 
         # ── Corrector (с поддержкой чанков) ──
         self._update_pipeline_log(pid, "findings_corrector", "running")
         print(f"[{pid}] ═══ ЭТАП 6.5b: Corrector (корректировка замечаний) ═══")
+
+        # «Размышление модели»: сигнал смены фазы на corrector
+        await self._stream_findings_events(job, "corrector")
 
         # Извлекаем ID замечаний с проблемами из review
         issue_ids: list[str] = []
@@ -2535,6 +2739,9 @@ class PipelineManager:
         # Восстановление norm_quote из pre_review (corrector может потерять)
         await self._restore_norm_quotes(output_dir, job)
         self._refresh_finding_quality(pid)
+
+        # «Размышление модели»: финальный сигнал — поток завершён
+        await self._stream_findings_events(job, "done")
 
     @staticmethod
     async def _restore_norm_quotes(output_dir: Path, job: "AuditJob"):
@@ -3879,6 +4086,9 @@ class PipelineManager:
                 # Post-merge: backfill text-evidence из compact/graph
                 self._backfill_text_evidence_in_findings(pid)
                 self._refresh_finding_quality(pid)
+
+                # «Размышление модели»: стрим найденных замечаний в live-лог
+                await self._stream_findings_events(job, "merge")
 
             if job.status == JobStatus.CANCELLED:
                 return

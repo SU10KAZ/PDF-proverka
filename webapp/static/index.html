@@ -1053,6 +1053,19 @@
                         </div>
                     </div>
 
+                    <!-- Usage (сразу под пайплайном) -->
+                    <div v-if="currentProjectUsage && currentProjectUsage.total_tokens > 0" class="info-tab-usage">
+                        <span class="usage-icon">⚡</span>
+                        <span style="color:#22c55e">&#8595;{{ formatTokens(currentProjectUsage.total_input_tokens) }}</span>
+                        <span style="color:#ef4444">&#8593;{{ formatTokens(currentProjectUsage.total_output_tokens) }}</span>
+                        · {{ formatCost(currentProjectUsage.total_cost_usd) }}
+                        <span v-if="currentProjectUsage.notional_cost_usd > 0"
+                              style="color:#a78bfa; font-size:0.8em"
+                              :title="'Сэкономлено по подписке CLI: $' + currentProjectUsage.notional_cost_usd.toFixed(2)"
+                        >(−${{ currentProjectUsage.notional_cost_usd.toFixed(2) }} CLI)</span>
+                        · {{ currentProjectUsage.total_calls }} calls
+                    </div>
+
                     <!-- Live Status Banner -->
                     <div v-if="currentProjectLive && currentProjectLive.running" class="live-banner"
                          :class="{'live-banner--stale': isClaudeStage(currentProjectLive.stage) && isHeartbeatStale(currentProject.project_id)}">
@@ -1177,19 +1190,6 @@
                                 <button class="btn btn-ghost btn-sm" @click="retryDialog.show = false">Отмена</button>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Usage -->
-                    <div v-if="currentProjectUsage && currentProjectUsage.total_tokens > 0" class="info-tab-usage">
-                        <span class="usage-icon">⚡</span>
-                        <span style="color:#22c55e">&#8595;{{ formatTokens(currentProjectUsage.total_input_tokens) }}</span>
-                        <span style="color:#ef4444">&#8593;{{ formatTokens(currentProjectUsage.total_output_tokens) }}</span>
-                        · {{ formatCost(currentProjectUsage.total_cost_usd) }}
-                        <span v-if="currentProjectUsage.notional_cost_usd > 0"
-                              style="color:#a78bfa; font-size:0.8em"
-                              :title="'Сэкономлено по подписке CLI: $' + currentProjectUsage.notional_cost_usd.toFixed(2)"
-                        >(−${{ currentProjectUsage.notional_cost_usd.toFixed(2) }} CLI)</span>
-                        · {{ currentProjectUsage.total_calls }} calls
                     </div>
 
                 </div><!-- /info-tab-content -->
@@ -2515,15 +2515,79 @@
                         {{ logEntries.length }} записей
                     </span>
                 </div>
+                <!-- Статус-полоса «Размышление модели» -->
+                <div v-if="currentFindingStage" class="finding-stage-bar"
+                     :class="'finding-stage-bar--' + currentFindingStage">
+                    <span class="finding-stage-bar__dot"></span>
+                    <span v-if="currentFindingStage === 'merge'">Модель ищет замечания...</span>
+                    <span v-else-if="currentFindingStage === 'critic'">Критик проверяет обоснованность...</span>
+                    <span v-else-if="currentFindingStage === 'corrector'">Корректор исправляет...</span>
+                    <span v-else-if="currentFindingStage === 'done'">Размышление завершено</span>
+                </div>
                 <div class="log-container" ref="logContainer">
                     <div v-if="logLoading" class="empty-state">
                         Загрузка истории логов...
                     </div>
-                    <div v-for="(entry, i) in logEntries" :key="i"
-                         class="log-entry" :class="'log-' + entry.level">
-                        <span class="log-time">{{ entry.time }}</span>
-                        <span class="log-msg">{{ entry.message }}</span>
-                    </div>
+                    <template v-for="(entry, i) in logEntries" :key="i">
+                        <!-- Сводка Claude CLI — красивая карточка вместо сырого JSON -->
+                        <div v-if="entry.kind === 'cli_summary'"
+                             class="cli-summary" :class="{'cli-summary--error': entry.is_error}">
+                            <div class="cli-summary__header">
+                                <span class="cli-summary__icon">{{ entry.is_error ? '✗' : '✓' }}</span>
+                                <span class="cli-summary__title">
+                                    {{ entry.is_error ? 'Claude завершил с ошибкой' : 'Claude завершил этап' }}
+                                    <span v-if="entry.stage" class="cli-summary__stage">{{ entry.stage }}</span>
+                                </span>
+                                <span class="cli-summary__time">{{ entry.time }}</span>
+                                <button class="cli-summary__toggle" @click="entry.expanded = !entry.expanded">
+                                    {{ entry.expanded ? '▾' : '▸' }}
+                                </button>
+                            </div>
+                            <div v-show="entry.expanded" class="cli-summary__body" v-html="entry.resultHtml"></div>
+                            <div class="cli-summary__meta">
+                                <span v-if="entry.duration_sec">⏱ {{ Math.floor(entry.duration_sec / 60) }}м {{ Math.round(entry.duration_sec % 60) }}с</span>
+                                <span v-if="entry.cost_usd">💰 ${{ entry.cost_usd.toFixed(2) }}</span>
+                                <span v-if="entry.output_tokens">📊 {{ entry.output_tokens.toLocaleString() }} out</span>
+                                <span v-if="entry.cache_creation">+ {{ entry.cache_creation.toLocaleString() }} cache_new</span>
+                                <span v-if="entry.cache_read">♻ {{ entry.cache_read.toLocaleString() }} cache_hit</span>
+                                <span v-if="entry.model" class="cli-summary__model">{{ entry.model }}</span>
+                            </div>
+                        </div>
+                        <!-- Обычная log-строка -->
+                        <div v-else-if="entry.kind !== 'finding'"
+                             class="log-entry" :class="'log-' + entry.level">
+                            <span class="log-time">{{ entry.time }}</span>
+                            <span class="log-msg">{{ entry.message }}</span>
+                        </div>
+                        <!-- Finding-карточка «размышления модели» -->
+                        <div v-else class="finding-card"
+                             :class="'finding-card--' + entry.status">
+                            <div class="finding-card__header">
+                                <span class="finding-card__icon">
+                                    <template v-if="entry.status === 'pending'">🔍</template>
+                                    <template v-else-if="entry.status === 'confirmed'">✓</template>
+                                    <template v-else>✕</template>
+                                </span>
+                                <span class="finding-card__id">{{ entry.finding_id }}</span>
+                                <span v-if="entry.severity" class="finding-card__severity"
+                                      :class="'finding-card__severity--' + entry.severity">
+                                    {{ entry.severity }}
+                                </span>
+                                <span v-if="entry.category" class="finding-card__category">{{ entry.category }}</span>
+                                <span class="finding-card__time">{{ entry.time }}</span>
+                            </div>
+                            <div class="finding-card__problem">{{ entry.problem }}</div>
+                            <div v-if="entry.sheet || entry.page" class="finding-card__meta">
+                                <span v-if="entry.sheet">Лист {{ entry.sheet }}</span>
+                                <span v-if="entry.page">стр. PDF {{ entry.page }}</span>
+                            </div>
+                            <div v-if="entry.status === 'rejected'" class="finding-card__reject-reason">
+                                <strong>КРИТИК ОТКЛОНИЛ:</strong>
+                                <span class="finding-card__verdict-tag">{{ entry.rejectVerdict }}</span>
+                                {{ entry.rejectReason }}
+                            </div>
+                        </div>
+                    </template>
                     <div v-if="!logLoading && logEntries.length === 0" class="empty-state">
                         Лог пуст. Запустите аудит для получения событий.
                     </div>

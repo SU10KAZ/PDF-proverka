@@ -1081,6 +1081,255 @@ body {
 .log-heartbeat--stale { color: var(--amber); background: var(--amber-light); border-color: rgba(196,115,0,0.2); }
 .log-heartbeat__eta { margin-left: auto; font-family: 'JetBrains Mono', monospace; }
 
+/* ── «Размышление модели»: статус-полоса фазы ─────────────────── */
+.finding-stage-bar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px; margin-bottom: 8px;
+    font-family: 'Inter', system-ui, sans-serif; font-size: 12px; font-weight: 600;
+    border-radius: var(--radius-lg); border: 1px solid var(--border);
+    background: var(--card-bg); color: var(--text2);
+    transition: all 0.25s;
+}
+.finding-stage-bar__dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--teal);
+    box-shadow: 0 0 0 0 var(--teal-mid);
+    animation: finding-pulse 1.6s infinite;
+}
+.finding-stage-bar--merge    { border-color: var(--teal-border); background: var(--teal-light); color: var(--teal); }
+.finding-stage-bar--critic   { border-color: rgba(196,115,0,0.35); background: var(--amber-light); color: var(--amber); }
+.finding-stage-bar--critic .finding-stage-bar__dot   { background: var(--amber); }
+.finding-stage-bar--corrector { border-color: rgba(102,51,153,0.35); background: #efe8f7; color: #663399; }
+.finding-stage-bar--corrector .finding-stage-bar__dot { background: #663399; }
+.finding-stage-bar--done     { border-color: rgba(0,122,84,0.25); background: var(--green-light); color: var(--green); }
+.finding-stage-bar--done .finding-stage-bar__dot     { background: var(--green); animation: none; }
+
+@keyframes finding-pulse {
+    0%   { box-shadow: 0 0 0 0 currentColor; opacity: 1; }
+    70%  { box-shadow: 0 0 0 6px transparent; opacity: 0.7; }
+    100% { box-shadow: 0 0 0 0 transparent; opacity: 1; }
+}
+
+/* ── Finding-карточка (появляется в unified-потоке) ─────────────── */
+.finding-card {
+    margin: 6px 12px;
+    padding: 10px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+    transition: all 0.3s ease;
+    animation: finding-card-in 0.35s ease-out;
+}
+@keyframes finding-card-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.finding-card__header {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+}
+.finding-card__icon { font-size: 14px; line-height: 1; }
+.finding-card__id {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700; font-size: 11px;
+    color: var(--text);
+}
+.finding-card__severity {
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.3px;
+    background: var(--border); color: var(--text2);
+}
+.finding-card__severity--КРИТИЧЕСКОЕ,
+.finding-card__severity--critical { background: var(--red-light); color: var(--red); }
+.finding-card__severity--ЭКОНОМИЧЕСКОЕ,
+.finding-card__severity--economic { background: var(--amber-light); color: var(--amber); }
+.finding-card__severity--ЭКСПЛУАТАЦИОННОЕ,
+.finding-card__severity--operational { background: #e0ecff; color: #1d4ed8; }
+.finding-card__severity--РЕКОМЕНДАТЕЛЬНОЕ,
+.finding-card__severity--advisory { background: var(--teal-light); color: var(--teal); }
+.finding-card__category {
+    font-size: 10px; color: var(--text3);
+    padding: 2px 6px; border: 1px dashed var(--border2); border-radius: 8px;
+}
+.finding-card__time {
+    margin-left: auto;
+    font-size: 10px; color: var(--text3);
+    font-family: 'JetBrains Mono', monospace;
+}
+.finding-card__problem {
+    color: var(--text);
+    font-weight: 500;
+}
+.finding-card__meta {
+    margin-top: 4px;
+    font-size: 10px; color: var(--text3);
+    display: flex; gap: 12px;
+    font-family: 'JetBrains Mono', monospace;
+}
+.finding-card__reject-reason {
+    margin-top: 8px;
+    padding: 6px 10px;
+    border-left: 3px solid var(--red);
+    background: var(--red-light);
+    color: var(--red);
+    font-size: 11px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+}
+.finding-card__verdict-tag {
+    display: inline-block;
+    padding: 1px 6px;
+    margin: 0 4px;
+    border-radius: 6px;
+    background: rgba(212,24,58,0.15);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+/* Состояния: pending / confirmed / rejected */
+.finding-card--pending {
+    border-color: var(--teal-border);
+    background: color-mix(in srgb, var(--teal-light) 30%, var(--card-bg));
+}
+.finding-card--pending .finding-card__icon { color: var(--teal); }
+
+.finding-card--confirmed {
+    border-color: rgba(0,122,84,0.35);
+    background: color-mix(in srgb, var(--green-light) 40%, var(--card-bg));
+}
+.finding-card--confirmed .finding-card__icon { color: var(--green); font-weight: 700; }
+
+.finding-card--rejected {
+    border-color: var(--border);
+    background: var(--card2-bg);
+    opacity: 0.7;
+}
+.finding-card--rejected .finding-card__id,
+.finding-card--rejected .finding-card__problem {
+    text-decoration: line-through;
+    color: var(--text3);
+}
+.finding-card--rejected .finding-card__icon { color: var(--red); }
+
+/* ── Сводка Claude CLI (вместо сырого JSON в логе) ───────────── */
+.cli-summary {
+    margin: 10px 12px;
+    padding: 12px 14px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--teal-border);
+    background: color-mix(in srgb, var(--teal-light) 25%, var(--card-bg));
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 12px;
+    animation: finding-card-in 0.35s ease-out;
+}
+.cli-summary--error {
+    border-color: rgba(212,24,58,0.4);
+    background: color-mix(in srgb, var(--red-light) 30%, var(--card-bg));
+}
+.cli-summary__header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 6px;
+}
+.cli-summary__icon {
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    background: var(--green); color: white;
+    font-size: 13px; font-weight: 700;
+    flex-shrink: 0;
+}
+.cli-summary--error .cli-summary__icon { background: var(--red); }
+.cli-summary__title {
+    font-weight: 600; color: var(--text);
+    flex: 1;
+    display: flex; align-items: center; gap: 8px;
+}
+.cli-summary__stage {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: var(--teal-mid); color: var(--teal);
+}
+.cli-summary__time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--text3);
+}
+.cli-summary__toggle {
+    background: transparent; border: 1px solid var(--border);
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text2);
+    font-size: 11px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+}
+.cli-summary__toggle:hover { background: var(--card2-bg); color: var(--text); }
+.cli-summary__body {
+    padding: 10px 12px;
+    margin: 8px 0;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-size: 12px;
+    line-height: 1.6;
+    max-height: 500px;
+    overflow-y: auto;
+}
+.cli-summary__body strong { color: var(--text); font-weight: 700; }
+.cli-summary__body code {
+    padding: 1px 5px;
+    background: var(--card2-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--teal);
+}
+.cli-summary__body ul { margin: 6px 0 6px 20px; padding: 0; }
+.cli-summary__body li { margin-bottom: 3px; }
+.cli-summary__body .md-table {
+    border-collapse: collapse;
+    margin: 8px 0;
+    font-size: 11px;
+    width: auto;
+}
+.cli-summary__body .md-table th,
+.cli-summary__body .md-table td {
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    text-align: left;
+}
+.cli-summary__body .md-table th {
+    background: var(--card2-bg);
+    font-weight: 700;
+    color: var(--text);
+}
+.cli-summary__body .md-table td { color: var(--text2); }
+.cli-summary__meta {
+    display: flex; flex-wrap: wrap; gap: 14px;
+    margin-top: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+}
+.cli-summary__model {
+    margin-left: auto;
+    padding: 1px 6px;
+    border-radius: 5px;
+    background: var(--card2-bg);
+    border: 1px solid var(--border);
+}
+
 /* ══════════════════════════════════════════════════════════════
    MODALS
    ══════════════════════════════════════════════════════════════ */

@@ -104,7 +104,7 @@ CLAUDE_NORM_VERIFY_TIMEOUT = 600  # 10 мин на верификацию нор
 CLAUDE_NORM_FIX_TIMEOUT = 600     # 10 мин на пересмотр замечаний
 CLAUDE_OPTIMIZATION_TIMEOUT = 3600  # 60 мин на оптимизацию
 CLAUDE_TEXT_ANALYSIS_TIMEOUT = 1800   # 30 мин на анализ текста MD
-CLAUDE_BLOCK_ANALYSIS_TIMEOUT = 600   # 10 мин на пакет блоков
+CLAUDE_BLOCK_ANALYSIS_TIMEOUT = 1800  # 30 мин на пакет блоков (Opus CLI Vision медленнее GPT/Gemini)
 CLAUDE_FINDINGS_MERGE_TIMEOUT = 1800  # 30 мин на свод замечаний (02_blocks может быть >800KB)
 CLAUDE_FINDINGS_CRITIC_TIMEOUT = 600   # 10 мин — critic проверяет готовые замечания
 CRITIC_CHUNK_SIZE = 50                 # макс. замечаний на 1 запуск Critic
@@ -172,15 +172,21 @@ AVAILABLE_MODELS = [
 ]
 
 # Этапы с ограничениями на выбор модели
-# block_batch: только OpenRouter (inline images, Claude CLI не поддерживает)
+# block_batch: OpenRouter (GPT/Gemini) + экспериментально Claude CLI (Opus/Sonnet)
+# Claude CLI читает PNG через Read tool (Vision поддержка).
 STAGE_MODEL_RESTRICTIONS = {
-    "block_batch": ["openai/gpt-5.4", "google/gemini-3.1-pro-preview"],
+    "block_batch": [
+        "openai/gpt-5.4",
+        "google/gemini-3.1-pro-preview",
+        "claude-opus-4-6",        # экспериментально — CLI + Vision
+        "claude-sonnet-4-6",      # экспериментально — CLI + Vision
+    ],
 }
 
 # Подсказки при выборе модели для этапа (отображаются в UI)
 STAGE_MODEL_HINTS: dict[str, str] = {
     "text_analysis": "Opus CLI рекомендуется. Sonnet допустим.",
-    "block_batch": "Только OpenRouter (изображения). GPT-5.4 лучше Gemini по качеству.",
+    "block_batch": "GPT-5.4 / Gemini (OpenRouter) или Opus / Sonnet (Claude CLI, Vision через Read). Opus CLI — эксперимент, медленнее и жрёт CLI-лимит.",
     "findings_merge": "Минимум Opus CLI — межблочная сверка требует сильной модели.",
     "findings_critic": "GPT-5.4 оптимален: быстро и дёшево.",
     "findings_corrector": "Минимум Opus CLI. Sonnet не успевает (таймаут). GPT-5.4 — альтернатива.",
@@ -232,7 +238,7 @@ def get_stage_models() -> dict[str, str | None]:
     return dict(_stage_models)
 
 # Параллельная обработка батчей блоков
-MAX_PARALLEL_BATCHES = 3  # одновременных Claude CLI сессий
+MAX_PARALLEL_BATCHES = 1  # ВРЕМЕННО для эксперимента Opus CLI — обычно 3
 
 # ─── Rate Limit: пауза вместо ошибки ───
 RATE_LIMIT_THRESHOLD_PCT = 90   # при 90% лимита — предварительная проверка перед запуском

@@ -6,10 +6,6 @@
 ## Project: {PROJECT_ID} | Discipline: {SECTION}
 - Batch {BATCH_ID} of {TOTAL_BATCHES}, blocks: {BLOCK_COUNT}
 
-## Role
-
-{DISCIPLINE_ROLE}
-
 ## Input Data
 
 1. **Text analysis context** — provided inline.
@@ -71,6 +67,31 @@ On EACH drawing, cross-check visible values against text data:
 Any discrepancy → finding.
 
 **IMPORTANT:** If you cannot confidently read a value on the drawing (small text, low resolution, overlap) — write "нечитаемо" in `key_values_read`. DO NOT guess numbers or marks.
+
+## Compact Execution Mode (MANDATORY)
+
+For each block, run 4 passes:
+1. **Applicability + drawing type** — decide whether the block is relevant for the discipline and which sheet type it belongs to.
+2. **Consistency** — `block ↔ page text ↔ stage_01 params ↔ specification/table` on the same page.
+3. **Numeric verification** — recalculate only when the values are readable and the formula is obvious.
+4. **Domain engineering check** — apply the compact discipline logic below.
+
+Use triage as follows:
+- `HIGH` → full 1–4 pass;
+- `MEDIUM` → targeted verification of relevant elements only;
+- `LOW` → use mostly as corroborating context; findings only when the error is explicit;
+- `SKIP` → `summary` without independent findings unless the block confirms an already known issue.
+
+**Hard checks → findings:** provable discrepancy, calculation error, missing mandatory element, engineeringly incorrect visible solution.
+**Soft checks → NOT findings:** title blocks, legends, cosmetics, OCR artifacts, doubtful interpretations, rounding-only differences within 2%.
+
+## Sheet-Type Priority
+
+{DISCIPLINE_TRIAGE_TABLE}
+
+## Compact Discipline Logic
+
+{DISCIPLINE_COMPACT_STRATEGY}
 
 ## What to Look For on Drawings
 

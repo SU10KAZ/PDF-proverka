@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "stages": {
+    "block_analysis": {
+      "status": "done",
+      "completed_at": "2026-04-11T11:17:06.084005",
+      "message": "OK (3 пакетов)",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-opus-4-6"
+    },
+    "findings_merge": {
+      "status": "running",
+      "started_at": "2026-04-11T11:17:06.505862",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-opus-4-6",
+      "completed_at": "2026-04-11T11:03:31.940953",
+      "message": "OK"
+    },
+    "findings_critic": {
+      "status": "done",
+      "started_at": "2026-04-11T11:03:32.596507",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-sonnet-4-6",
+      "completed_at": "2026-04-11T11:04:55.620390",
+      "message": "OK"
+    },
+    "norm_verify": {
+      "status": "running",
+      "started_at": "2026-04-11T11:03:32.621193",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-opus-4-6"
+    },
+    "optimization": {
+      "status": "error",
+      "started_at": "2026-04-11T11:03:32.646422",
+      "completed_at": "2026-04-11T11:03:32.655648",
+      "error": "[Errno 2] No such file or directory: 'D:\\\\1.OSA\\\\1. Audit Manager\\\\projects_objects\\\\214._Alia_(ASTERUS)\\\\133_23-ГК-ГРЩ\\\\project_info.json'"
+    },
+    "block_retry": {
+      "status": "skipped",
+      "completed_at": "2026-04-11T11:17:06.497764",
+      "message": "Все блоки читаемы"
+    }
+  },
+  "last_updated": "2026-04-11T11:17:06.505862"
+}

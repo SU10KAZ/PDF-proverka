@@ -3,10 +3,6 @@
 
 # PROJECT TEXT ANALYSIS — {PROJECT_ID}
 
-## Role
-
-{DISCIPLINE_ROLE}
-
 ## Input Data
 
 1. **MD file** (primary text source) — READ via Read tool: `{MD_FILE_PATH}`
@@ -16,6 +12,26 @@
 2. **Normative reference** — READ via Read tool: `{DISCIPLINE_NORMS_FILE}` (if available)
 
 ## Task
+
+## Compact Execution Mode (MANDATORY)
+
+Work in short passes and do not mix error types:
+1. **Applicability** — first decide whether the text/tables actually contain discipline-relevant data; if data is limited, `project_params` may be partial and `text_findings` may stay empty.
+2. **Consistency** — literal discrepancies between the explanatory note, general notes, tables, specifications, and `[IMAGE]` mentions.
+3. **Arithmetic** — recalculate only the numbers and formulas that are explicitly present and readable.
+4. **Domain engineering check** — apply the compact discipline logic below.
+5. **Norms** — if a finding is already proven by calculation or factual discrepancy, do not add a norm formally just for decoration.
+
+**Hard checks → findings:** provable error, mandatory omission, data conflict, clearly incorrect engineering decision.
+**Soft checks → NOT findings:** title blocks, legends, cosmetics, OCR artifacts, speculative assumptions without data, rounding-only differences within 2%.
+
+## What to Extract from Text for This Discipline
+
+{DISCIPLINE_TEXT_ANALYSIS}
+
+## Compact Discipline Logic
+
+{DISCIPLINE_COMPACT_STRATEGY}
 
 ### Stage 1: Text Data Analysis
 

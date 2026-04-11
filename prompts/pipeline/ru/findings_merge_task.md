@@ -1,5 +1,9 @@
 # СВОД ЗАМЕЧАНИЙ — {PROJECT_ID}
 
+## Роль
+
+{DISCIPLINE_ROLE}
+
 ## Входные данные
 
 1. **Текстовый анализ**: `{OUTPUT_PATH}/01_text_analysis.json`

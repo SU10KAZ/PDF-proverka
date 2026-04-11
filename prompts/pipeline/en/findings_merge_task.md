@@ -3,6 +3,10 @@
 
 # FINDINGS CONSOLIDATION — {PROJECT_ID}
 
+## Role
+
+{DISCIPLINE_ROLE}
+
 ## Input Data
 
 1. **Text analysis** — READ via Read tool: `{OUTPUT_PATH}/01_text_analysis.json`
