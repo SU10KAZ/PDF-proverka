@@ -1,0 +1,846 @@
+{
+  "by_generator": {
+    "class2_identity": [
+      {
+        "candidate_id": "C2-М-1.5-Лист 3",
+        "issue_class_id": 2,
+        "issue_class": "identity_addressing",
+        "subtype": "non_unique_identifier",
+        "entity_key": "line:М-1.5",
+        "field": "identifier_uniqueness",
+        "matching_policy": "exact_line_id_only",
+        "generator": {
+          "name": "gen_class2_identity",
+          "version": "v2"
+        },
+        "candidate_claim": {
+          "kind": "non_unique_identifier",
+          "summary": "Идентификатор М-1.5 использован для разных сущностей на Лист 3: destinations=['ВРУ-ИТП', 'ВРУ-НС']",
+          "proposed_severity": "CRITICAL"
+        },
+        "values": [
+          {
+            "label": "mention_1",
+            "value_raw": "ВРУ-ИТП",
+            "value_norm": "ВРУ-ИТП",
+            "mention_id": "M-005"
+          },
+          {
+            "label": "mention_2",
+            "value_raw": "ВРУ-НС",
+            "value_norm": "ВРУ-НС",
+            "mention_id": "M-006"
+          }
+        ],
+        "evidence": [
+          {
+            "mention_id": "M-005",
+            "page": 7,
+            "sheet": "Лист 3",
+            "block_id": "block_schema",
+            "view_type": "single_line_scheme",
+            "raw_excerpt": null
+          },
+          {
+            "mention_id": "M-006",
+            "page": 7,
+            "sheet": "Лист 3",
+            "block_id": "block_schema",
+            "view_type": "single_line_scheme",
+            "raw_excerpt": null
+          }
+        ],
+        "flags": {
+          "likely_ocr_artifact": false,
+          "needs_adjacent_sections": false,
+          "out_of_scope": false
+        },
+        "source_mention_ids": [
+          "M-005",
+          "M-006"
+        ],
+        "suggested_judge_question": "Относится ли идентификатор М-1.5 к одной сущности или это действительно дубликат на одном листе?"
+      }
+    ],
+    "class3_cross_view": [
+      {
+        "candidate_id": "C3-line-М-1.1-pe_count",
+        "issue_class_id": 3,
+        "issue_class": "cross_view_consistency",
+        "subtype": "cross_view_attribute_mismatch",
+        "entity_key": "line:М-1.1",
+        "field": "pe_count",
+        "matching_policy": "exact_line_id_only",
+        "generator": {
+          "name": "gen_class3_cross_view",
+          "version": "v2"
+        },
+        "candidate_claim": {
+          "kind": "attribute_mismatch",
+          "summary": "line М-1.1: поле pe_count имеет разные значения: [1, 2]",
+          "proposed_severity": "CRITICAL"
+        },
+        "values": [
+          {
+            "label": "value_1",
+            "value_raw": "1",
+            "value_norm": 1,
+            "mention_id": "M-001"
+          },
+          {
+            "label": "value_2",
+            "value_raw": "2",
+            "value_norm": 2,
+            "mention_id": "M-002"
+          }
+        ],
+        "evidence": [
+          {
+            "mention_id": "M-001",
+            "page": 7,
+            "sheet": "Лист 3",
+            "block_id": "block_schema",
+            "view_type": "single_line_scheme",
+            "raw_excerpt": null
+          },
+          {
+            "mention_id": "M-002",
+            "page": 14,
+            "sheet": "Лист 10",
+            "block_id": "block_node1",
+            "view_type": "cable_layout_node",
+            "raw_excerpt": null
+          }
+        ],
+        "flags": {
+          "likely_ocr_artifact": false,
+          "needs_adjacent_sections": false,
+          "out_of_scope": false
+        },
+        "source_mention_ids": [
+          "M-001",
+          "M-002"
+        ]
+      },
+      {
+        "candidate_id": "C3-line-М-1.4-pe_section_mm2",
+        "issue_class_id": 3,
+        "issue_class": "cross_view_consistency",
+        "subtype": "cross_view_attribute_mismatch",
+        "entity_key": "line:М-1.4",
+        "field": "pe_section_mm2",
+        "matching_policy": "exact_line_id_only",
+        "generator": {
+          "name": "gen_class3_cross_view",
+          "version": "v2"
+        },
+        "candidate_claim": {
+          "kind": "attribute_mismatch",
+          "summary": "line М-1.4: поле pe_section_mm2 имеет разные значения: [120, 150]",
+          "proposed_severity": "CRITICAL"
+        },
+        "values": [
+          {
+            "label": "value_1",
+            "value_raw": "150",
+            "value_norm": 150,
+            "mention_id": "M-003"
+          },
+          {
+            "label": "value_2",
+            "value_raw": "120",
+            "value_norm": 120,
+            "mention_id": "M-004"
+          }
+        ],
+        "evidence": [
+          {
+            "mention_id": "M-003",
+            "page": 7,
+            "sheet": "Лист 3",
+            "block_id": "block_schema",
+            "view_type": "single_line_scheme",
+            "raw_excerpt": null
+          },
+          {
+            "mention_id": "M-004",
+            "page": 14,
+            "sheet": "Лист 10",
+            "block_id": "block_node1",
+            "view_type": "cable_layout_node",
+            "raw_excerpt": null
+          }
+        ],
+        "flags": {
+          "likely_ocr_artifact": false,
+          "needs_adjacent_sections": false,
+          "out_of_scope": false
+        },
+        "source_mention_ids": [
+          "M-003",
+          "M-004"
+        ]
+      },
+      {
+        "candidate_id": "C3-line-М-1.5-phase_section_mm2",
+        "issue_class_id": 3,
+        "issue_class": "cross_view_consistency",
+        "subtype": "cross_view_attribute_mismatch",
+        "entity_key": "line:М-1.5",
+        "field": "phase_section_mm2",
+        "matching_policy": "exact_line_id_only",
+        "generator": {
+          "name": "gen_class3_cross_view",
+          "version": "v2"
+        },
+        "candidate_claim": {
+          "kind": "attribute_mismatch",
+          "summary": "line М-1.5: поле phase_section_mm2 имеет разные значения: [120, 16]",
+          "proposed_severity": "CRITICAL"
+        },
+        "values": [
+          {
+            "label": "value_1",
+            "value_raw": "120",
+            "value_norm": 120,
+            "mention_id": "M-005"
+          },
+          {
+            "label": "value_2",
+            "value_raw": "16",
+            "value_norm": 16,
+            "mention_id": "M-006"
+          }
+        ],
+        "evidence": [
+          {
+            "mention_id": "M-005",
+            "page": 7,
+            "sheet": "Лист 3",
+            "block_id": "block_schema",
+            "view_type": "single_line_scheme",
+            "raw_excerpt": null
+          },
+          {
+            "mention_id": "M-006",
+            "page": 7,
+            "sheet": "Лист 3",
+            "block_id": "block_schema",
+            "view_type": "single_line_scheme",
+            "raw_excerpt": null
+          }
+        ],
+        "flags": {
+          "likely_ocr_artifact": false,
+          "needs_adjacent_sections": false,
+          "out_of_scope": false
+        },
+        "source_mention_ids": [
+          "M-005",
+          "M-006"
+        ]
+      },
+      {
+        "candidate_id": "C3-line-М-1.5-destination_panel",
+        "issue_class_id": 3,
+        "issue_class": "cross_view_consistency",
+        "subtype": "cross_view_attribute_mismatch",
+        "entity_key": "line:М-1.5",
+        "field": "destination_panel",
+        "matching_policy": "exact_line_id_only",
+        "generator": {
+          "name": "gen_class3_cross_view",
+          "version": "v2"
+        },
+        "candidate_claim": {
+          "kind": "attribute_mismatch",
+          "summary": "line М-1.5: поле destination_panel имеет разные значения: ['ВРУ-ИТП', 'ВРУ-НС']",
+          "proposed_severity": "CRITICAL"
+        },
+        "values": [
+          {
+            "label": "value_1",
+            "value_raw": "ВРУ-ИТП",
+            "value_norm": "ВРУ-ИТП",
+            "mention_id": "M-005"
+          },
+          {
+            "label": "value_2",
+            "value_raw": "ВРУ-НС",
+            "value_norm": "ВРУ-НС",
+            "mention_id": "M-006"
+          }
+        ],
+        "evidence": [
+          {
+            "mention_id": "M-005",
+            "page": 7,
+            "sheet": "Лист 3",
+            "block_id": "block_schema",
+            "view_type": "single_line_scheme",
+            "raw_excerpt": null
+          },
+          {
+            "mention_id": "M-006",
+            "page": 7,
+            "sheet": "Лист 3",
+            "block_id": "block_schema",
+            "view_type": "single_line_scheme",
+            "raw_excerpt": null
+          }
+        ],
+        "flags": {
+          "likely_ocr_artifact": false,
+          "needs_adjacent_sections": false,
+          "out_of_scope": false
+        },
+        "source_mention_ids": [
+          "M-005",
+          "M-006"
+        ]
+      },
+      {
+        "candidate_id": "C3_SWAP-ЩУ-2/Т-ЩУ-12/Т",
+        "issue_class_id": 3,
+        "issue_class": "cross_view_consistency",
+        "subtype": "panel_designation_description_swap",
+        "entity_key": "panel_pair:ЩУ-2/Т|ЩУ-12/Т",
+        "secondary_entity_key": "panel:ЩУ-12/Т",
+        "field": "designation_description_mapping",
+        "matching_policy": "pairwise_swap_check",
+        "generator": {
+          "name": "gen_class3_swap_detect",
+          "version": "v2"
+        },
+        "candidate_claim": {
+          "kind": "designation_description_swap",
+          "summary": "Описания щитов ЩУ-2/Т и ЩУ-12/Т вероятно перепутаны: первый описан как 12-счётчиковый, второй как 2-счётчиковый",
+          "proposed_severity": "CRITICAL"
+        },
+        "values": [
+          {
+            "label": "ЩУ-2/Т",
+            "value_raw": "Шкаф учета на 12 счетчиков трансф.вкл.",
+            "value_norm": 12,
+            "mention_id": "M-011"
+          },
+          {
+            "label": "ЩУ-12/Т",
+            "value_raw": "Шкаф учета на два счетчика трансф.вкл.",
+            "value_norm": 2,
+            "mention_id": "M-012"
+          }
+        ],
+        "evidence": [
+          {
+            "mention_id": "M-011",
+            "page": 15,
+            "sheet": "Лист 11",
+            "block_id": "block_spec",
+            "view_type": "specification",
+            "raw_excerpt": null
+          },
+          {
+            "mention_id": "M-012",
+            "page": 15,
+            "sheet": "Лист 11",
+            "block_id": "block_spec",
+            "view_type": "specification",
+            "raw_excerpt": null
+          }
+        ],
+        "flags": {
+          "likely_ocr_artifact": false,
+          "needs_adjacent_sections": false,
+          "out_of_scope": false
+        },
+        "source_mention_ids": [
+          "M-011",
+          "M-012"
+        ]
+      }
+    ],
+    "class4_requirement_conflict": [
+      {
+        "candidate_id": "C4-QF1.1-R-electronic_trip",
+        "issue_class_id": 4,
+        "issue_class": "requirement_compatibility",
+        "subtype": "requirement_selected_part_conflict",
+        "entity_key": "breaker:QF1.1",
+        "field": "trip_unit_type",
+        "matching_policy": "rule_applicability_check",
+        "generator": {
+          "name": "gen_class4_req_conflict",
+          "version": "v2"
+        },
+        "candidate_claim": {
+          "kind": "requirement_conflict",
+          "summary": "Автомат QF1.1 (ВА-335А, термомагнитный) не соответствует требованию 'Автоматические выключатели отходящих линий ГРЩ применить с электронными расцепителями, обладающими с'",
+          "proposed_severity": "CRITICAL"
+        },
+        "values": [
+          {
+            "label": "required",
+            "value_raw": "Автоматические выключатели отходящих линий ГРЩ применить с электронными расцепителями, обладающими селективной задержкой срабатывания от КЗ.",
+            "value_norm": "электронный"
+          },
+          {
+            "label": "actual",
+            "value_raw": "ВА-335А",
+            "value_norm": "термомагнитный",
+            "mention_id": "M-009"
+          }
+        ],
+        "evidence": [
+          {
+            "mention_id": "M-009",
+            "page": 7,
+            "sheet": "Лист 3",
+            "block_id": "block_schema",
+            "view_type": "single_line_scheme",
+            "raw_excerpt": null
+          },
+          {
+            "mention_id": "M-010",
+            "page": 7,
+            "sheet": "Лист 3",
+            "block_id": "block_schema",
+            "view_type": "single_line_scheme",
+            "raw_excerpt": null
+          }
+        ],
+        "flags": {
+          "likely_ocr_artifact": false,
+          "needs_adjacent_sections": false,
+          "out_of_scope": false
+        },
+        "source_mention_ids": [
+          "M-009",
+          "M-010"
+        ]
+      }
+    ]
+  },
+  "all_candidates": [
+    {
+      "candidate_id": "C2-М-1.5-Лист 3",
+      "issue_class_id": 2,
+      "issue_class": "identity_addressing",
+      "subtype": "non_unique_identifier",
+      "entity_key": "line:М-1.5",
+      "field": "identifier_uniqueness",
+      "matching_policy": "exact_line_id_only",
+      "generator": {
+        "name": "gen_class2_identity",
+        "version": "v2"
+      },
+      "candidate_claim": {
+        "kind": "non_unique_identifier",
+        "summary": "Идентификатор М-1.5 использован для разных сущностей на Лист 3: destinations=['ВРУ-ИТП', 'ВРУ-НС']",
+        "proposed_severity": "CRITICAL"
+      },
+      "values": [
+        {
+          "label": "mention_1",
+          "value_raw": "ВРУ-ИТП",
+          "value_norm": "ВРУ-ИТП",
+          "mention_id": "M-005"
+        },
+        {
+          "label": "mention_2",
+          "value_raw": "ВРУ-НС",
+          "value_norm": "ВРУ-НС",
+          "mention_id": "M-006"
+        }
+      ],
+      "evidence": [
+        {
+          "mention_id": "M-005",
+          "page": 7,
+          "sheet": "Лист 3",
+          "block_id": "block_schema",
+          "view_type": "single_line_scheme",
+          "raw_excerpt": null
+        },
+        {
+          "mention_id": "M-006",
+          "page": 7,
+          "sheet": "Лист 3",
+          "block_id": "block_schema",
+          "view_type": "single_line_scheme",
+          "raw_excerpt": null
+        }
+      ],
+      "flags": {
+        "likely_ocr_artifact": false,
+        "needs_adjacent_sections": false,
+        "out_of_scope": false
+      },
+      "source_mention_ids": [
+        "M-005",
+        "M-006"
+      ],
+      "suggested_judge_question": "Относится ли идентификатор М-1.5 к одной сущности или это действительно дубликат на одном листе?"
+    },
+    {
+      "candidate_id": "C3-line-М-1.1-pe_count",
+      "issue_class_id": 3,
+      "issue_class": "cross_view_consistency",
+      "subtype": "cross_view_attribute_mismatch",
+      "entity_key": "line:М-1.1",
+      "field": "pe_count",
+      "matching_policy": "exact_line_id_only",
+      "generator": {
+        "name": "gen_class3_cross_view",
+        "version": "v2"
+      },
+      "candidate_claim": {
+        "kind": "attribute_mismatch",
+        "summary": "line М-1.1: поле pe_count имеет разные значения: [1, 2]",
+        "proposed_severity": "CRITICAL"
+      },
+      "values": [
+        {
+          "label": "value_1",
+          "value_raw": "1",
+          "value_norm": 1,
+          "mention_id": "M-001"
+        },
+        {
+          "label": "value_2",
+          "value_raw": "2",
+          "value_norm": 2,
+          "mention_id": "M-002"
+        }
+      ],
+      "evidence": [
+        {
+          "mention_id": "M-001",
+          "page": 7,
+          "sheet": "Лист 3",
+          "block_id": "block_schema",
+          "view_type": "single_line_scheme",
+          "raw_excerpt": null
+        },
+        {
+          "mention_id": "M-002",
+          "page": 14,
+          "sheet": "Лист 10",
+          "block_id": "block_node1",
+          "view_type": "cable_layout_node",
+          "raw_excerpt": null
+        }
+      ],
+      "flags": {
+        "likely_ocr_artifact": false,
+        "needs_adjacent_sections": false,
+        "out_of_scope": false
+      },
+      "source_mention_ids": [
+        "M-001",
+        "M-002"
+      ]
+    },
+    {
+      "candidate_id": "C3-line-М-1.4-pe_section_mm2",
+      "issue_class_id": 3,
+      "issue_class": "cross_view_consistency",
+      "subtype": "cross_view_attribute_mismatch",
+      "entity_key": "line:М-1.4",
+      "field": "pe_section_mm2",
+      "matching_policy": "exact_line_id_only",
+      "generator": {
+        "name": "gen_class3_cross_view",
+        "version": "v2"
+      },
+      "candidate_claim": {
+        "kind": "attribute_mismatch",
+        "summary": "line М-1.4: поле pe_section_mm2 имеет разные значения: [120, 150]",
+        "proposed_severity": "CRITICAL"
+      },
+      "values": [
+        {
+          "label": "value_1",
+          "value_raw": "150",
+          "value_norm": 150,
+          "mention_id": "M-003"
+        },
+        {
+          "label": "value_2",
+          "value_raw": "120",
+          "value_norm": 120,
+          "mention_id": "M-004"
+        }
+      ],
+      "evidence": [
+        {
+          "mention_id": "M-003",
+          "page": 7,
+          "sheet": "Лист 3",
+          "block_id": "block_schema",
+          "view_type": "single_line_scheme",
+          "raw_excerpt": null
+        },
+        {
+          "mention_id": "M-004",
+          "page": 14,
+          "sheet": "Лист 10",
+          "block_id": "block_node1",
+          "view_type": "cable_layout_node",
+          "raw_excerpt": null
+        }
+      ],
+      "flags": {
+        "likely_ocr_artifact": false,
+        "needs_adjacent_sections": false,
+        "out_of_scope": false
+      },
+      "source_mention_ids": [
+        "M-003",
+        "M-004"
+      ]
+    },
+    {
+      "candidate_id": "C3-line-М-1.5-phase_section_mm2",
+      "issue_class_id": 3,
+      "issue_class": "cross_view_consistency",
+      "subtype": "cross_view_attribute_mismatch",
+      "entity_key": "line:М-1.5",
+      "field": "phase_section_mm2",
+      "matching_policy": "exact_line_id_only",
+      "generator": {
+        "name": "gen_class3_cross_view",
+        "version": "v2"
+      },
+      "candidate_claim": {
+        "kind": "attribute_mismatch",
+        "summary": "line М-1.5: поле phase_section_mm2 имеет разные значения: [120, 16]",
+        "proposed_severity": "CRITICAL"
+      },
+      "values": [
+        {
+          "label": "value_1",
+          "value_raw": "120",
+          "value_norm": 120,
+          "mention_id": "M-005"
+        },
+        {
+          "label": "value_2",
+          "value_raw": "16",
+          "value_norm": 16,
+          "mention_id": "M-006"
+        }
+      ],
+      "evidence": [
+        {
+          "mention_id": "M-005",
+          "page": 7,
+          "sheet": "Лист 3",
+          "block_id": "block_schema",
+          "view_type": "single_line_scheme",
+          "raw_excerpt": null
+        },
+        {
+          "mention_id": "M-006",
+          "page": 7,
+          "sheet": "Лист 3",
+          "block_id": "block_schema",
+          "view_type": "single_line_scheme",
+          "raw_excerpt": null
+        }
+      ],
+      "flags": {
+        "likely_ocr_artifact": false,
+        "needs_adjacent_sections": false,
+        "out_of_scope": false
+      },
+      "source_mention_ids": [
+        "M-005",
+        "M-006"
+      ]
+    },
+    {
+      "candidate_id": "C3-line-М-1.5-destination_panel",
+      "issue_class_id": 3,
+      "issue_class": "cross_view_consistency",
+      "subtype": "cross_view_attribute_mismatch",
+      "entity_key": "line:М-1.5",
+      "field": "destination_panel",
+      "matching_policy": "exact_line_id_only",
+      "generator": {
+        "name": "gen_class3_cross_view",
+        "version": "v2"
+      },
+      "candidate_claim": {
+        "kind": "attribute_mismatch",
+        "summary": "line М-1.5: поле destination_panel имеет разные значения: ['ВРУ-ИТП', 'ВРУ-НС']",
+        "proposed_severity": "CRITICAL"
+      },
+      "values": [
+        {
+          "label": "value_1",
+          "value_raw": "ВРУ-ИТП",
+          "value_norm": "ВРУ-ИТП",
+          "mention_id": "M-005"
+        },
+        {
+          "label": "value_2",
+          "value_raw": "ВРУ-НС",
+          "value_norm": "ВРУ-НС",
+          "mention_id": "M-006"
+        }
+      ],
+      "evidence": [
+        {
+          "mention_id": "M-005",
+          "page": 7,
+          "sheet": "Лист 3",
+          "block_id": "block_schema",
+          "view_type": "single_line_scheme",
+          "raw_excerpt": null
+        },
+        {
+          "mention_id": "M-006",
+          "page": 7,
+          "sheet": "Лист 3",
+          "block_id": "block_schema",
+          "view_type": "single_line_scheme",
+          "raw_excerpt": null
+        }
+      ],
+      "flags": {
+        "likely_ocr_artifact": false,
+        "needs_adjacent_sections": false,
+        "out_of_scope": false
+      },
+      "source_mention_ids": [
+        "M-005",
+        "M-006"
+      ]
+    },
+    {
+      "candidate_id": "C3_SWAP-ЩУ-2/Т-ЩУ-12/Т",
+      "issue_class_id": 3,
+      "issue_class": "cross_view_consistency",
+      "subtype": "panel_designation_description_swap",
+      "entity_key": "panel_pair:ЩУ-2/Т|ЩУ-12/Т",
+      "secondary_entity_key": "panel:ЩУ-12/Т",
+      "field": "designation_description_mapping",
+      "matching_policy": "pairwise_swap_check",
+      "generator": {
+        "name": "gen_class3_swap_detect",
+        "version": "v2"
+      },
+      "candidate_claim": {
+        "kind": "designation_description_swap",
+        "summary": "Описания щитов ЩУ-2/Т и ЩУ-12/Т вероятно перепутаны: первый описан как 12-счётчиковый, второй как 2-счётчиковый",
+        "proposed_severity": "CRITICAL"
+      },
+      "values": [
+        {
+          "label": "ЩУ-2/Т",
+          "value_raw": "Шкаф учета на 12 счетчиков трансф.вкл.",
+          "value_norm": 12,
+          "mention_id": "M-011"
+        },
+        {
+          "label": "ЩУ-12/Т",
+          "value_raw": "Шкаф учета на два счетчика трансф.вкл.",
+          "value_norm": 2,
+          "mention_id": "M-012"
+        }
+      ],
+      "evidence": [
+        {
+          "mention_id": "M-011",
+          "page": 15,
+          "sheet": "Лист 11",
+          "block_id": "block_spec",
+          "view_type": "specification",
+          "raw_excerpt": null
+        },
+        {
+          "mention_id": "M-012",
+          "page": 15,
+          "sheet": "Лист 11",
+          "block_id": "block_spec",
+          "view_type": "specification",
+          "raw_excerpt": null
+        }
+      ],
+      "flags": {
+        "likely_ocr_artifact": false,
+        "needs_adjacent_sections": false,
+        "out_of_scope": false
+      },
+      "source_mention_ids": [
+        "M-011",
+        "M-012"
+      ]
+    },
+    {
+      "candidate_id": "C4-QF1.1-R-electronic_trip",
+      "issue_class_id": 4,
+      "issue_class": "requirement_compatibility",
+      "subtype": "requirement_selected_part_conflict",
+      "entity_key": "breaker:QF1.1",
+      "field": "trip_unit_type",
+      "matching_policy": "rule_applicability_check",
+      "generator": {
+        "name": "gen_class4_req_conflict",
+        "version": "v2"
+      },
+      "candidate_claim": {
+        "kind": "requirement_conflict",
+        "summary": "Автомат QF1.1 (ВА-335А, термомагнитный) не соответствует требованию 'Автоматические выключатели отходящих линий ГРЩ применить с электронными расцепителями, обладающими с'",
+        "proposed_severity": "CRITICAL"
+      },
+      "values": [
+        {
+          "label": "required",
+          "value_raw": "Автоматические выключатели отходящих линий ГРЩ применить с электронными расцепителями, обладающими селективной задержкой срабатывания от КЗ.",
+          "value_norm": "электронный"
+        },
+        {
+          "label": "actual",
+          "value_raw": "ВА-335А",
+          "value_norm": "термомагнитный",
+          "mention_id": "M-009"
+        }
+      ],
+      "evidence": [
+        {
+          "mention_id": "M-009",
+          "page": 7,
+          "sheet": "Лист 3",
+          "block_id": "block_schema",
+          "view_type": "single_line_scheme",
+          "raw_excerpt": null
+        },
+        {
+          "mention_id": "M-010",
+          "page": 7,
+          "sheet": "Лист 3",
+          "block_id": "block_schema",
+          "view_type": "single_line_scheme",
+          "raw_excerpt": null
+        }
+      ],
+      "flags": {
+        "likely_ocr_artifact": false,
+        "needs_adjacent_sections": false,
+        "out_of_scope": false
+      },
+      "source_mention_ids": [
+        "M-009",
+        "M-010"
+      ]
+    }
+  ],
+  "stats": {
+    "class2_identity": 1,
+    "class3_cross_view": 5,
+    "class4_requirement_conflict": 1,
+    "total": 7
+  }
+}

@@ -1,7 +1,7 @@
 {
   "meta": {
     "description": "Централизованная база нормативных документов с автообновлением из результатов верификации",
-    "last_updated": "2026-04-11T12:30:58.790637",
+    "last_updated": "2026-04-11T13:57:19.525439",
     "total_norms": 691,
     "stale_after_days": 180,
     "update_history": [
@@ -54,8 +54,8 @@
       "category": "sp",
       "notes": "Действует. Верифицирован по кешу от 2026-03-13.",
       "source_url": "https://www.consultant.ru/document/cons_doc_LAW_498653/",
-      "last_verified": "2026-04-11T12:30:58.790441",
-      "verified_by": "websearch:133_23-ГК-ГРЩ",
+      "last_verified": "2026-04-11T13:57:19.525366",
+      "verified_by": "websearch:133_23-ГК-НС.ЭМ",
       "edition_status": "ok"
     },
     "СП 76.13330.2016": {
@@ -105,8 +105,8 @@
       "category": "sp_fire",
       "notes": "Действует. Приказом МЧС от 29.12.2025 №1263 утверждена новая редакция, вступающая в силу ~июнь 2026. До этого момента текущая редакция остаётся действующей. Ссылка корректна.",
       "source_url": "https://docs.cntd.ru/document/603668016",
-      "last_verified": "2026-04-11T12:30:58.790585",
-      "verified_by": "websearch:133_23-ГК-ГРЩ",
+      "last_verified": "2026-04-11T13:57:19.525414",
+      "verified_by": "websearch:133_23-ГК-НС.ЭМ",
       "edition_status": "ok"
     },
     "СП 484.1311500.2020": {
@@ -195,8 +195,8 @@
       "category": "pue",
       "notes": "ПУЭ-7 не зарегистрирован Минюстом, применяется добровольно. В F-021 ссылка на ПУЭ для контура заземления без параллельной ссылки на ГОСТ — замечание корректно. Рекомендуется добавить ссылку на ГОСТ 33984.1-2023.",
       "source_url": "https://www.consultant.ru/document/cons_doc_LAW_98464/",
-      "last_verified": "2026-04-11T11:07:02.313567",
-      "verified_by": "websearch:133_23-ГК-ГРЩ",
+      "last_verified": "2026-04-11T13:57:19.525347",
+      "verified_by": "websearch:133_23-ГК-НС.ЭМ",
       "edition_status": "ok"
     },
     "ПУЭ-6": {
@@ -221,8 +221,8 @@
       "category": "gost",
       "notes": "Действует. С 01.09.2021 вступило Изменение №1. Ссылка корректна.",
       "source_url": "https://docs.cntd.ru/document/1200102744",
-      "last_verified": "2026-04-11T08:14:54.982640",
-      "verified_by": "websearch:133_23-ГК-ГРЩ",
+      "last_verified": "2026-04-11T13:57:19.525407",
+      "verified_by": "websearch:133_23-ГК-НС.ЭМ",
       "edition_status": "ok"
     },
     "ГОСТ 31565-2012": {
@@ -310,8 +310,8 @@
       "category": "gost",
       "notes": "Действует. Введён 01.03.2021. Заменяет ГОСТ 32395-2013. Ссылка корректна.",
       "source_url": "https://docs.cntd.ru/document/566422800",
-      "last_verified": "2026-04-11T12:30:58.790546",
-      "verified_by": "websearch:133_23-ГК-ГРЩ",
+      "last_verified": "2026-04-11T13:57:19.525392",
+      "verified_by": "websearch:133_23-ГК-НС.ЭМ",
       "edition_status": "ok"
     },
     "ГОСТ 30331.1-2013": {
@@ -613,7 +613,7 @@
       "category": "gost",
       "notes": "Действует. Введён 01.01.1977. Применяется как дополнительное защитное средство в электроустановках.",
       "source_url": "https://docs.cntd.ru/document/1200017863",
-      "last_verified": "2026-03-27T01:11:15.308043",
+      "last_verified": "2026-04-11T13:57:19.525422",
       "verified_by": "websearch:133_23-ГК-НС.ЭМ",
       "edition_status": "ok"
     },
@@ -676,8 +676,8 @@
       "category": "gost",
       "notes": "Действует. Верифицирован по кешу от 2026-03-13. Внимание: с 01.04.2026 вступает ГОСТ Р 21.101-2026.",
       "source_url": "https://docs.cntd.ru/document/1200173797",
-      "last_verified": "2026-04-11T12:30:58.790576",
-      "verified_by": "websearch:133_23-ГК-ГРЩ",
+      "last_verified": "2026-04-11T13:57:19.525376",
+      "verified_by": "websearch:133_23-ГК-НС.ЭМ",
       "edition_status": "ok"
     },
     "ГОСТ Р 50462-2009": {
@@ -962,8 +962,8 @@
       "category": "gost",
       "notes": "Действует. Межгосударственный стандарт на провода и кабели до 450/750 В. Заменяет ГОСТ Р 53768-2010 (который ранее заменил ГОСТ 6323-79). С 2025 г. введено Изменение №2. Ссылка в проекте корректна.",
       "source_url": "http://docs.cntd.ru/document/1200102743",
-      "last_verified": "2026-03-27T01:36:22.239754",
-      "verified_by": "websearch:133_23-ГК-ЭГ",
+      "last_verified": "2026-04-11T13:57:19.525400",
+      "verified_by": "websearch:133_23-ГК-НС.ЭМ",
       "edition_status": "ok"
     },
     "ГОСТ 103-2006": {
@@ -1000,8 +1000,8 @@
       "category": "pue",
       "notes": "ПУЭ-7 действует добровольно. Не зарегистрирован Минюстом. Ссылка в F-007 на «гл.1.7» корректна — гл.1.7 регламентирует заземление и защитные меры, включая требования к классу защиты оборудования.",
       "source_url": "https://www.consultant.ru/document/cons_doc_LAW_98464/",
-      "last_verified": "2026-04-11T11:07:02.313646",
-      "verified_by": "websearch:133_23-ГК-ГРЩ",
+      "last_verified": "2026-04-11T13:57:19.525384",
+      "verified_by": "websearch:133_23-ГК-НС.ЭМ",
       "edition_status": "ok"
     },
     "СП 2.13130.2020": {
