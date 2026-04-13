@@ -52,6 +52,7 @@ app = FastAPI(
 
 # ─── REST Routers ───────────────────────────────────────────
 app.include_router(projects.router)
+app.include_router(projects.groups_router)
 app.include_router(findings.router)
 app.include_router(blocks.router)
 app.include_router(audit.router)

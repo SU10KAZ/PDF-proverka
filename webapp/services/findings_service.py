@@ -36,6 +36,7 @@ def get_findings(
     search: Optional[str] = None,
     limit: Optional[int] = None,
     offset: Optional[int] = None,
+    group: bool = False,
 ) -> Optional[FindingsResponse]:
     """Получить замечания проекта с фильтрацией и пагинацией."""
     path = _get_findings_path(project_id)
@@ -78,6 +79,10 @@ def get_findings(
             -_practicality_score(f),
         )
     )
+
+    # Группировка похожих (до пагинации)
+    if group:
+        filtered = group_similar_findings(filtered)
 
     # Пагинация (после фильтрации и сортировки)
     filtered_total = len(filtered)
@@ -1014,6 +1019,100 @@ def get_optimization_block_map(project_id: str) -> Optional[dict]:
         "block_map": result,
         "block_info": block_info,
     }
+
+
+def _normalize_problem_pattern(text: str) -> str:
+    """Нормализует текст замечания для группировки: убирает конкретные числа, марки, номера."""
+    if not text:
+        return ""
+    s = text.strip()
+    # Марки элементов (В4-13, А4-14, ДВ12-5П, ОГ-8, К6.2 и т.д.)
+    s = re.sub(r'[А-ЯA-Z]{1,4}\d[\w.*-]*', '_MARK_', s)
+    # Названия материалов в кавычках
+    s = re.sub(r'[«"].*?[»"]', '_MAT_', s)
+    # Числа с единицами (площади, длины, массы и т.д.)
+    s = re.sub(r'\d+[\s,.]?\d*\s*(?:м[²³]|мм|кг(?:/м)?|шт\.?|%)', '_NUM_', s)
+    # Номера помещений, листов, страниц
+    s = re.sub(r'(?:пом(?:ещени[еяй])?|комнат[аыу]|зон[аыу]?)[\s.]*(?:№?\s*)?\d+\w*', '_ROOM_', s, flags=re.IGNORECASE)
+    s = re.sub(r'(?:лист(?:ы|а|ов)?)\s*\d+[\s,и\d]*', '_SHEET_', s, flags=re.IGNORECASE)
+    s = re.sub(r'(?:стр\.?\s*(?:PDF\s*)?)\d+', '_PAGE_', s, flags=re.IGNORECASE)
+    # Содержимое скобок (детали конкретного экземпляра)
+    s = re.sub(r'\([^)]*\)', '(...)', s)
+    # Оставшиеся числа (id, коэффициенты, проценты)
+    s = re.sub(r'\b\d+[.,]?\d*\b', '_N_', s)
+    # Нормализовать пробелы
+    s = re.sub(r'\s+', ' ', s).strip()
+    return s
+
+
+def group_similar_findings(findings: list[dict]) -> list[dict]:
+    """Группирует похожие замечания по нормализованному паттерну problem + severity + category.
+
+    Возвращает список, где каждый элемент — либо одиночное замечание (без изменений),
+    либо объединённая группа с полем `_group`.
+    """
+    from collections import OrderedDict
+
+    groups: OrderedDict[str, list[dict]] = OrderedDict()
+
+    for f in findings:
+        problem = f.get("problem") or f.get("description") or f.get("finding") or ""
+        severity = f.get("severity", "")
+        category = f.get("category", "")
+
+        pattern = _normalize_problem_pattern(problem)
+        key = f"{severity}||{category}||{pattern}"
+
+        if key not in groups:
+            groups[key] = []
+        groups[key].append(f)
+
+    result = []
+    for key, items in groups.items():
+        if len(items) == 1:
+            result.append(items[0])
+        else:
+            # Собрать объединённую группу
+            # Лидер — первый по порядку
+            leader = items[0]
+
+            # Собрать все sheet/page
+            all_sheets = []
+            all_pages = []
+            all_block_ids = []
+            all_evidence = []
+            for it in items:
+                sh = it.get("sheet")
+                if sh and sh not in all_sheets:
+                    all_sheets.append(sh)
+                pg = it.get("page")
+                if pg:
+                    if isinstance(pg, list):
+                        all_pages.extend(pg)
+                    elif pg not in all_pages:
+                        all_pages.append(pg)
+                for bid in (it.get("related_block_ids") or []):
+                    if bid not in all_block_ids:
+                        all_block_ids.append(bid)
+                for ev in (it.get("evidence") or []):
+                    all_evidence.append(ev)
+
+            # Объединённое замечание
+            merged = {
+                **leader,
+                "_group": {
+                    "count": len(items),
+                    "merged_ids": [it.get("id", "") for it in items],
+                    "items": items,
+                },
+                "sheet": ", ".join(all_sheets) if all_sheets else leader.get("sheet", ""),
+                "page": sorted(set(all_pages)) if all_pages else leader.get("page"),
+                "related_block_ids": all_block_ids,
+                "evidence": all_evidence,
+            }
+            result.append(merged)
+
+    return result
 
 
 def _load_json(path: Path) -> Optional[dict]:

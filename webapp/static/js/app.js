@@ -278,6 +278,11 @@ const app = createApp({
             'optimization_critic': 'optimization_critic',
             'optimization_corrector': 'optimization_corrector',
             'excel': 'excel',
+            // V4 pipeline stages
+            'v4_extraction': 'v4_extraction',
+            'v4_memory': 'v4_memory',
+            'v4_candidates': 'v4_candidates',
+            'v4_formatter': 'v4_formatter',
         };
 
         function stageTokens(pipelineKey) {
@@ -336,6 +341,20 @@ const app = createApp({
             if (!currentProject.value) return null;
             const u = projectUsage.value[currentProject.value.project_id];
             return (u && u.total_tokens > 0) ? u : null;
+        });
+
+        const pipelineTotalDuration = computed(() => {
+            if (!currentProject.value) return null;
+            const summary = currentProject.value.pipeline_summary || [];
+            let totalSec = 0;
+            for (const s of summary) {
+                if (s.duration_sec && s.status === 'done') totalSec += s.duration_sec;
+            }
+            if (totalSec <= 0) return null;
+            if (totalSec < 60) return `${totalSec} сек`;
+            const min = Math.floor(totalSec / 60);
+            const sec = totalSec % 60;
+            return sec > 0 ? `${min} мин ${sec} сек` : `${min} мин`;
         });
 
         async function pollLiveStatus() {
@@ -787,16 +806,16 @@ const app = createApp({
             openrouter: {
                 label: "OpenRouter",
                 config: {
-                    text_analysis:          "anthropic/claude-opus-4-6",
+                    text_analysis:          "claude-opus-4-6",
                     block_batch:            "google/gemini-3.1-pro-preview",
-                    findings_merge:         "anthropic/claude-opus-4-6",
+                    findings_merge:         "claude-opus-4-6",
                     findings_critic:        "openai/gpt-5.4",
                     findings_corrector:     "openai/gpt-5.4",
                     norm_verify:            "claude-opus-4-6",
-                    norm_fix:               "anthropic/claude-opus-4-6",
+                    norm_fix:               "claude-opus-4-6",
                     optimization:           "google/gemini-3.1-pro-preview",
-                    optimization_critic:    "anthropic/claude-sonnet-4-6",
-                    optimization_corrector: "anthropic/claude-sonnet-4-6",
+                    optimization_critic:    "claude-sonnet-4-6",
+                    optimization_corrector: "claude-sonnet-4-6",
                 },
             },
             claude_cli: {
@@ -869,18 +888,75 @@ const app = createApp({
         const pendingRetryStage = ref(null);
         // pendingActionFn: произвольный callback, выполняется после сохранения моделей (приоритет над retryStage/pid)
         const pendingActionFn = ref(null);
+        // v4 pipeline toggle — выбирается пользователем в модалке "Конфигурация моделей"
+        const pendingPipelineV4 = ref(false);
+        // Чтобы знать изначальный state и только сохранять на изменение
+        const _initialPipelineV4 = ref(false);
 
         function openModelConfig(projectId, retryStage = null, afterSaveFn = null) {
             modelConfigPendingProjectId.value = projectId;
             pendingRetryStage.value = retryStage;
             pendingActionFn.value = afterSaveFn;
+
+            // Узнать текущий pipeline_version проекта
+            pendingPipelineV4.value = false;
+            _initialPipelineV4.value = false;
+            if (projectId) {
+                const proj = projects.value.find(p => p.project_id === projectId);
+                if (proj && proj.pipeline_version === "v4") {
+                    pendingPipelineV4.value = true;
+                    _initialPipelineV4.value = true;
+                }
+            }
+
             loadStageModels().then(() => {
                 showModelConfig.value = true;
             });
         }
 
+        function onV4ToggleChange() {
+            // Ничего не делаем — просто обновляем state, сохранение при старте аудита
+        }
+
+        async function _persistPipelineVersion(projectId) {
+            // Сохранить только если изменилось
+            if (pendingPipelineV4.value === _initialPipelineV4.value) return;
+            const version = pendingPipelineV4.value ? "v4" : "legacy";
+            try {
+                const resp = await fetch(`/api/projects/${encodeURIComponent(projectId)}/pipeline-version`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pipeline_version: version }),
+                });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || `HTTP ${resp.status}`);
+                }
+                _initialPipelineV4.value = pendingPipelineV4.value;
+                // Обновить локальное состояние проекта
+                const proj = projects.value.find(p => p.project_id === projectId);
+                if (proj) proj.pipeline_version = version;
+            } catch (e) {
+                console.error('Failed to set pipeline_version:', e);
+                alert(`Ошибка сохранения pipeline_version: ${e.message || e}`);
+                throw e;
+            }
+        }
+
         async function saveAndStartAudit() {
             await saveStageModels();
+
+            // Сохранить pipeline_version: если есть конкретный проект — для него,
+            // если batch — для всех выбранных
+            const pid = modelConfigPendingProjectId.value;
+            if (pid) {
+                try {
+                    await _persistPipelineVersion(pid);
+                } catch (e) {
+                    return; // Не закрываем модалку, даём пользователю исправить
+                }
+            }
+
             showModelConfig.value = false;
             if (pendingActionFn.value) {
                 const fn = pendingActionFn.value;
@@ -888,7 +964,6 @@ const app = createApp({
                 await fn();
                 return;
             }
-            const pid = modelConfigPendingProjectId.value;
             const retryStg = pendingRetryStage.value;
             pendingRetryStage.value = null;
             if (pid) {
@@ -1295,6 +1370,23 @@ const app = createApp({
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
 
+        async function resumeToQueue(projectId) {
+            try {
+                const resp = await fetch('/api/audit/batch/add-resume', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ project_id: projectId }),
+                });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || `API error: ${resp.status}`);
+                }
+                const data = await resp.json();
+                batchQueue.value = data.queue;
+                batchRunning.value = true;
+            } catch (e) { alert(e.message); }
+        }
+
         // ─── Pause / Resume (global) ───
         const anyRunning = computed(() => auditRunning.value || batchRunning.value);
 
@@ -1332,8 +1424,17 @@ const app = createApp({
             'text_analysis': 'text_analysis',
             'blocks_analysis': 'block_analysis',
             'findings': 'findings_merge',
+            'findings_critic': 'findings_critic',
+            'findings_corrector': 'findings_corrector',
             'norms_verified': 'norm_verify',
             'optimization': 'optimization',
+            'optimization_critic': 'optimization_critic',
+            'optimization_corrector': 'optimization_corrector',
+            // V4 pipeline stages
+            'v4_extraction': 'v4_extraction',
+            'v4_memory': 'v4_memory',
+            'v4_candidates': 'v4_candidates',
+            'v4_formatter': 'v4_formatter',
         };
 
         const stageLabelMap = {
@@ -1348,13 +1449,17 @@ const app = createApp({
             'optimization': 'Оптимизация',
             'optimization_critic': 'Critic оптимизации',
             'optimization_corrector': 'Corrector оптимизации',
+            'v4_extraction': 'Извлечение фактов',
+            'v4_memory': 'Канонический граф',
+            'v4_candidates': 'Генерация кандидатов',
+            'v4_formatter': 'Формирование замечаний',
         };
 
         function canStartFrom(pipelineKey) {
             if (!currentProject.value) return false;
             if (isProjectRunning(currentProject.value.project_id)) return false;
             const status = currentProject.value.pipeline?.[pipelineKey];
-            return status === 'done' || status === 'error';
+            return status === 'done' || status === 'error' || status === 'skipped';
         }
 
         async function startFromStage(projectId, pipelineKey) {
@@ -1415,7 +1520,11 @@ const app = createApp({
                 'crop_blocks': 'Кроп блоков', 'text_analysis': 'Анализ текста',
                 'block_analysis': 'Анализ блоков', 'findings_merge': 'Свод замечаний',
                 'findings_critic': 'Critic замечаний', 'findings_review': 'Critic замечаний',
+                'findings_corrector': 'Corrector замечаний',
                 'norm_verify': 'Верификация норм', 'optimization': 'Оптимизация',
+                'optimization_critic': 'Critic оптимизации', 'optimization_corrector': 'Corrector оптимизации',
+                'v4_extraction': 'Извлечение фактов', 'v4_memory': 'Канонический граф',
+                'v4_candidates': 'Генерация кандидатов', 'v4_formatter': 'Формирование замечаний',
             };
             retryDialog.value = {
                 show: true,
@@ -1847,6 +1956,175 @@ const app = createApp({
                 console.error('Detect discipline error:', e);
             }
             return 'EOM';
+        }
+
+        // ─── Группы проектов (папки внутри секции) ───
+        const projectGroups = ref({});       // { section: [{id, name, order, project_ids}] }
+        const showCreateGroup = ref(false);
+        const newGroupName = ref('');
+        const editingGroupId = ref(null);
+        const editingGroupName = ref('');
+
+        // Drag-and-drop для проектов и групп
+        const dragProjectId = ref(null);
+        const dragGroupId = ref(null);
+        const dragOverGroupId = ref(null);
+
+        async function loadProjectGroups() {
+            try {
+                const data = await api('/project-groups');
+                projectGroups.value = data.groups || {};
+            } catch (e) {
+                console.error('Failed to load project groups:', e);
+                projectGroups.value = {};
+            }
+        }
+
+        async function saveProjectGroups(section) {
+            try {
+                await fetch('/api/project-groups/' + encodeURIComponent(section), {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ groups: projectGroups.value[section] || [] }),
+                });
+            } catch (e) {
+                console.error('Ошибка сохранения групп:', e);
+            }
+        }
+
+        function createGroup(section, name) {
+            if (!name || !name.trim()) return;
+            const groups = projectGroups.value[section] || [];
+            const maxOrder = groups.reduce((m, g) => Math.max(m, g.order || 0), -1);
+            groups.push({ id: 'g_' + Date.now(), name: name.trim(), order: maxOrder + 1, project_ids: [] });
+            projectGroups.value[section] = groups;
+            saveProjectGroups(section);
+        }
+
+        function renameGroup(section, groupId, name) {
+            const groups = projectGroups.value[section] || [];
+            const g = groups.find(x => x.id === groupId);
+            if (g) { g.name = name.trim(); saveProjectGroups(section); }
+            editingGroupId.value = null;
+            editingGroupName.value = '';
+        }
+
+        function startRenameGroup(group) {
+            editingGroupId.value = group.id;
+            editingGroupName.value = group.name;
+        }
+
+        async function deleteProjectGroup(section, groupId) {
+            const groups = projectGroups.value[section] || [];
+            projectGroups.value[section] = groups.filter(g => g.id !== groupId);
+            saveProjectGroups(section);
+        }
+
+        const groupedSectionProjects = computed(() => {
+            const section = sidebarFilterSection.value;
+            if (!section || section === '__all__') return [];
+
+            const sectionProjects = projects.value.filter(p => p.section === section);
+            const groups = (projectGroups.value[section] || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
+
+            // Если групп нет — одна виртуальная без заголовка
+            if (groups.length === 0) {
+                return [{ id: '__ungrouped__', name: '', order: 0, project_ids: [], projects: sectionProjects, isVirtual: true, noHeader: true }];
+            }
+
+            const assignedIds = new Set(groups.flatMap(g => g.project_ids || []));
+            const result = groups.map(g => ({
+                ...g,
+                projects: (g.project_ids || []).map(id => sectionProjects.find(p => p.project_id === id)).filter(Boolean),
+                isVirtual: false,
+            }));
+
+            const ungrouped = sectionProjects.filter(p => !assignedIds.has(p.project_id));
+            if (ungrouped.length > 0) {
+                result.push({ id: '__ungrouped__', name: 'Без группы', order: 99999, project_ids: [], projects: ungrouped, isVirtual: true });
+            }
+
+            return result;
+        });
+
+        // Drag: проект → группа
+        function onProjectDragStart(e, projectId) {
+            dragProjectId.value = projectId;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('application/project-id', projectId);
+        }
+
+        function onGroupDragOver(e, groupId) {
+            // Разрешить drop
+            e.preventDefault();
+            if (dragProjectId.value) {
+                dragOverGroupId.value = groupId;
+                e.dataTransfer.dropEffect = 'move';
+            } else if (dragGroupId.value && dragGroupId.value !== groupId && groupId !== '__ungrouped__') {
+                dragOverGroupId.value = groupId;
+                e.dataTransfer.dropEffect = 'move';
+                // Live-swap групп
+                const section = sidebarFilterSection.value;
+                const groups = projectGroups.value[section] || [];
+                const now = Date.now();
+                if (now - lastGroupDragSwap < 100) return;
+                lastGroupDragSwap = now;
+                const fromIdx = groups.findIndex(g => g.id === dragGroupId.value);
+                const toIdx = groups.findIndex(g => g.id === groupId);
+                if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) {
+                    const [moved] = groups.splice(fromIdx, 1);
+                    groups.splice(toIdx, 0, moved);
+                    // Обновить order
+                    groups.forEach((g, i) => g.order = i);
+                }
+            }
+        }
+
+        function onGroupDragLeave(e, groupId) {
+            if (dragOverGroupId.value === groupId) {
+                dragOverGroupId.value = null;
+            }
+        }
+
+        function onProjectDropOnGroup(e, targetGroupId, section) {
+            e.preventDefault();
+            const projectId = dragProjectId.value || e.dataTransfer.getData('application/project-id');
+            if (!projectId) return;
+
+            const groups = projectGroups.value[section] || [];
+            // Убрать проект из всех групп этой секции
+            for (const g of groups) {
+                g.project_ids = (g.project_ids || []).filter(id => id !== projectId);
+            }
+            // Добавить в целевую (если не "Без группы")
+            if (targetGroupId !== '__ungrouped__') {
+                const target = groups.find(g => g.id === targetGroupId);
+                if (target) {
+                    target.project_ids.push(projectId);
+                }
+            }
+            projectGroups.value[section] = groups;
+            saveProjectGroups(section);
+            dragProjectId.value = null;
+            dragOverGroupId.value = null;
+        }
+
+        // Drag: реордер групп
+        let lastGroupDragSwap = 0;
+
+        function onGroupHeaderDragStart(e, groupId) {
+            dragGroupId.value = groupId;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('application/group-id', groupId);
+        }
+
+        function onGroupHeaderDragEnd() {
+            if (dragGroupId.value) {
+                const section = sidebarFilterSection.value;
+                saveProjectGroups(section);
+            }
+            dragGroupId.value = null;
+            dragOverGroupId.value = null;
         }
 
         // ─── Add Project (scan & register) ───
@@ -2690,6 +2968,11 @@ const app = createApp({
             return optimizationTypeColors[type] || '#999';
         }
 
+        function optTypeClass(type) {
+            const map = { 'cheaper_analog': 'sev-opt-cheaper', 'faster_install': 'sev-opt-faster', 'simpler_design': 'sev-opt-simpler', 'lifecycle': 'sev-opt-lifecycle' };
+            return map[type] || '';
+        }
+
         // ─── Discussions (чат по замечаниям/оптимизациям) ─────────────
 
         async function loadDiscussionModels() {
@@ -3257,6 +3540,14 @@ const app = createApp({
                 'other': '...',
             };
             return icons[sheetType] || '...';
+        }
+
+        function cleanSubProblem(text) {
+            if (!text) return '';
+            return text
+                .replace(/\s*\(на разных листах проекта\)\s*/gi, '')
+                .replace(/\s*\(на разных листах\)\s*/gi, '')
+                .trim();
         }
 
         // ─── Computed ───
@@ -3976,7 +4267,7 @@ const app = createApp({
                             item_id: itemId,
                             item_type: d.item_type || (itemId.startsWith('OPT') ? 'optimization' : 'finding'),
                             decision: d.decision,
-                            rejection_reason: d.decision === 'rejected' ? d.rejection_reason : null,
+                            rejection_reason: d.rejection_reason || null,
                             timestamp: new Date().toISOString(),
                         });
                     }
@@ -4186,6 +4477,7 @@ const app = createApp({
             connectGlobalWS();
             startPolling();
             loadDisciplines();
+            loadProjectGroups();
             loadObjects();
             // Глобальная статистика — первый вызов + polling каждые 60с
             pollGlobalUsage();
@@ -4205,7 +4497,7 @@ const app = createApp({
             // State
             currentView, currentProject, currentProjectId, projects, loading,
             findingsData, filterSeverity, filterSearch, severityOptions,
-            findingBlockMap, findingBlockInfo, expandedFindingId,
+            findingBlockMap, findingBlockInfo, expandedFindingId, cleanSubProblem,
             toggleFindingBlocks, getFindingBlocks, getFindingTextEvidence, findingTextEvidence, navigateToBlock, blockBackRoute, goBackFromBlock,
             // Blocks (OCR)
             blocksProjectId, blockPages, blockCropErrors, blockTotalExpected,
@@ -4242,7 +4534,7 @@ const app = createApp({
             startPrepare, startMainAudit,
             startSmartAudit, startAudit, startStandardAudit, startProAudit,
             startNormVerify, startOptimization, cancelAudit, generateExcel,
-            startAllProjects, resumePipeline, resumeInfo,
+            startAllProjects, resumePipeline, resumeToQueue, resumeInfo,
             startFromStage, canStartFrom, pipelineToStage,
             retryStage, retryDialog, retryStageNow, retryStageToQueue,
             skipStage, cleanProject,
@@ -4259,6 +4551,8 @@ const app = createApp({
             modelPresets, activePreset, applyPreset,
             loadStageModels, saveStageModels, openModelConfig, saveAndStartAudit,
             startAuditDirect,
+            // V4 pipeline toggle в модалке
+            pendingPipelineV4, onV4ToggleChange, modelConfigPendingProjectId,
             toggleProjectSelection, toggleSelectAll, isProjectSelected,
             isSectionSelected, toggleSectionSelection,
             sectionExcelLoading, exportSectionExcel,
@@ -4292,6 +4586,13 @@ const app = createApp({
             openEditSection, saveEditSection, deleteSection,
             dragSectionCode, dragOverCode,
             onSectionDragStart, onSectionDragOver, onSectionDragEnd,
+            // Project groups
+            projectGroups, groupedSectionProjects,
+            showCreateGroup, newGroupName, editingGroupId, editingGroupName,
+            createGroup, renameGroup, startRenameGroup, deleteProjectGroup,
+            dragProjectId, dragGroupId, dragOverGroupId,
+            onProjectDragStart, onGroupDragOver, onGroupDragLeave, onProjectDropOnGroup,
+            onGroupHeaderDragStart, onGroupHeaderDragEnd,
             // Model switcher
             // Usage (global dashboard)
             globalUsage, showUsageDetails, sonnetPercent,
@@ -4300,14 +4601,14 @@ const app = createApp({
             formatTokens, formatCost, formatDurationSec, refreshGlobalUsage, resetSessionCounter, clearUsageCounter,
             usageCounters,
             // Usage (per-project)
-            projectUsage, currentProjectUsage, stageTokens, stageTokensFormatted, stageModel, stageDurationForProject, formatDuration,
+            projectUsage, currentProjectUsage, pipelineTotalDuration, stageTokens, stageTokensFormatted, stageModel, stageDurationForProject, formatDuration,
             // Pipeline summary
             // Optimization
             optimizationData, optimizationLoading, optimizationFilter, optimizationSearch,
             optBlockMap, optBlockInfo, expandedOptId,
             toggleOptBlocks, getOptBlocks,
             filteredOptimization, optimizationTypeLabels, optimizationTypeColors,
-            optTypeLabel, optTypeColor, loadOptimization,
+            optTypeLabel, optTypeColor, optTypeClass, loadOptimization,
             // Document viewer
             documentProjectId, documentPages, documentCurrentPage, documentPageData, documentLoading,
             loadDocument, loadDocumentPage, docPrevPage, docNextPage, renderMarkdown,

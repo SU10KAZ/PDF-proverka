@@ -17,6 +17,7 @@ from webapp.config import (
     get_stage_models, set_stage_model, get_model_for_stage,
     STAGE_MODELS_OPENROUTER, GEMINI_MODEL, GPT_MODEL,
     STAGE_MODEL_CONFIG, AVAILABLE_MODELS, get_stage_model, is_claude_stage,
+    _save_stage_model_config,
 )
 
 router = APIRouter(prefix="/api/audit", tags=["audit"])
@@ -102,6 +103,9 @@ async def set_stage_model_config(request: dict):
         else:
             set_stage_model(stage, None)
         updated[stage] = model
+    # Персистим на диск — переживёт рестарт сервера
+    if updated:
+        _save_stage_model_config()
     return {"status": "ok", "updated": updated, "stages": dict(STAGE_MODEL_CONFIG)}
 
 
@@ -296,6 +300,22 @@ async def add_retry_to_batch(request: dict):
 
     try:
         queue = await pipeline_manager.add_retry_to_batch(project_id, stage)
+        return {"status": "added", "queue": queue.model_dump()}
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
+
+
+@router.post("/batch/add-resume")
+async def add_resume_to_batch(request: dict):
+    """Добавить resume (продолжение) проекта в очередь (создаёт новую если нет)."""
+    project_id = request.get("project_id")
+    if not project_id:
+        raise HTTPException(400, "project_id обязателен")
+
+    _check_project(project_id)
+
+    try:
+        queue = await pipeline_manager.add_resume_to_batch(project_id)
         return {"status": "added", "queue": queue.model_dump()}
     except RuntimeError as e:
         raise HTTPException(409, str(e))
@@ -715,6 +735,11 @@ async def retry_stage(project_id: str, stage: str):
         "optimization": lambda: pipeline_manager.start_optimization(project_id),
         "optimization_critic": lambda: pipeline_manager.start_optimization_review(project_id),
         "optimization_corrector": lambda: pipeline_manager.start_optimization_review(project_id),
+        # V4 pipeline stages
+        "v4_extraction": lambda: pipeline_manager.start_from_stage(project_id, "block_analysis"),
+        "v4_memory": lambda: pipeline_manager.start_from_stage(project_id, "findings_merge"),
+        "v4_candidates": lambda: pipeline_manager.start_from_stage(project_id, "findings_merge"),
+        "v4_formatter": lambda: pipeline_manager.start_from_stage(project_id, "findings_merge"),
         # Legacy aliases
         "prepare": lambda: pipeline_manager.start_from_stage(project_id, "prepare"),
         "tile_audit": lambda: pipeline_manager.start_from_stage(project_id, "block_analysis"),

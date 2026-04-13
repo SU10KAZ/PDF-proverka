@@ -1,0 +1,188 @@
+{
+  "schema_version": "1.0",
+  "discipline": "PS",
+  "discipline_label": "Пояснительная записка",
+
+  "extraction": {
+    "scope_label": "ПЗ (разделы, таблицы, параметры, ссылки)",
+    "scope_included": ["TEP", "Description", "NormReference", "Table", "Parameter"],
+    "scope_excluded": ["DetailedDrawings", "Specifications", "CostEstimate"],
+    "entity_types": ["section_ps", "table", "parameter", "reference", "spec_row", "note", "other"],
+    "exact_key_fields": {
+      "section_ps": "title",
+      "table": "table_id",
+      "parameter": "designation",
+      "reference": "document_id",
+      "spec_row": "spec_position"
+    },
+    "attribute_enum": {
+      "section_ps": [
+        "title", "content_summary", "subsection_count",
+        "completeness", "pp87_clause"
+      ],
+      "table": [
+        "table_id", "title", "row_count", "column_count",
+        "has_totals", "cross_ref_section"
+      ],
+      "parameter": [
+        "designation", "value", "unit",
+        "source_section", "cross_ref_value",
+        "cross_ref_section", "match_status"
+      ],
+      "reference": [
+        "document_id", "document_title", "status",
+        "edition_year", "is_mandatory"
+      ],
+      "note": ["note_text", "requirement_type"],
+      "spec_row": ["designation", "description"],
+      "other": ["designation", "description"]
+    },
+    "priority_tasks": [
+      {
+        "id": 1,
+        "title": "Технико-экономические показатели (ТЭП)",
+        "critical": true,
+        "description": "Извлечь все ТЭП: площадь участка, площадь застройки, общая площадь, жилая площадь, этажность, количество квартир, машиномест. Сверить ТЭП между ПЗ и другими разделами (АР, ГП). Проверить арифметику (сумма площадей квартир = жилая площадь)."
+      },
+      {
+        "id": 2,
+        "title": "Нормативные ссылки — актуальность",
+        "critical": true,
+        "description": "Извлечь все нормативные документы, на которые ссылается ПЗ. Проверить статус каждого документа (действующий/заменён/отменён). Выявить ссылки на устаревшие нормы."
+      },
+      {
+        "id": 3,
+        "title": "Параметры проекта — перекрёстная сверка",
+        "critical": true,
+        "description": "Сверить ключевые параметры (мощности, расходы, нагрузки) между ПЗ и профильными разделами. Класс ответственности, степень огнестойкости, категория электроснабжения должны совпадать."
+      },
+      {
+        "id": 4,
+        "title": "Полнота состава по ПП РФ №87",
+        "critical": false,
+        "description": "Проверить наличие всех обязательных подразделов ПЗ по Постановлению Правительства РФ №87, ст. 10. Отметить отсутствующие разделы."
+      },
+      {
+        "id": 5,
+        "title": "Описание инженерных систем",
+        "critical": false,
+        "description": "Проверить полноту описания каждой инженерной системы (водоснабжение, канализация, теплоснабжение, вентиляция, электроснабжение). Сверить параметры с профильными разделами."
+      }
+    ]
+  },
+
+  "canonical_memory": {
+    "entity_type_aliases": {
+      "section": "section_ps",
+      "norm": "reference",
+      "indicator": "parameter"
+    },
+    "attr_aliases": {
+      "name": "designation",
+      "norm_id": "document_id",
+      "section_title": "title"
+    },
+    "ocr_normalized_fields": ["designation", "document_id", "title"]
+  },
+
+  "generators": {
+    "class2_identity": {
+      "eligible_types": ["parameter", "reference"],
+      "unique_per_sheet_types": []
+    },
+    "class3_cross_view": {
+      "watch_fields": {
+        "parameter": ["designation", "value", "unit", "cross_ref_value", "match_status"],
+        "section_ps": ["title", "content_summary", "completeness"]
+      },
+      "safety_critical_fields": [
+        "value", "cross_ref_value", "match_status"
+      ],
+      "topology_fields": ["source_section", "cross_ref_section"]
+    },
+    "class4_requirement_conflict": {
+      "knowledge_base_file": null,
+      "note_requirement_patterns": [
+        {
+          "pattern_id": "pp87_completeness",
+          "regex": "состав\\s*проектной\\s*документации|ПП\\s*(?:РФ\\s*)?№?\\s*87",
+          "applies_to": "section_ps",
+          "required_field": "completeness",
+          "required_value": true
+        },
+        {
+          "pattern_id": "energy_class",
+          "regex": "класс\\s*энергоэффективности|энергетическ",
+          "applies_to": "parameter",
+          "required_field": "value",
+          "required_value": "not_empty"
+        }
+      ]
+    }
+  },
+
+  "field_labels": {
+    "title": "заголовок раздела",
+    "content_summary": "краткое содержание",
+    "subsection_count": "количество подразделов",
+    "completeness": "полнота",
+    "pp87_clause": "пункт ПП РФ №87",
+    "table_id": "номер таблицы",
+    "row_count": "количество строк",
+    "column_count": "количество столбцов",
+    "has_totals": "наличие итогов",
+    "cross_ref_section": "сверка с разделом",
+    "designation": "обозначение",
+    "value": "значение",
+    "unit": "единица измерения",
+    "source_section": "раздел-источник",
+    "cross_ref_value": "значение в смежном разделе",
+    "match_status": "статус совпадения",
+    "document_id": "номер документа",
+    "document_title": "название документа",
+    "status": "статус (действ./заменён/отменён)",
+    "edition_year": "год редакции",
+    "is_mandatory": "обязательный к применению",
+    "description": "описание"
+  },
+
+  "field_units": {
+    "area_m2": "м\u00b2",
+    "volume_m3": "м\u00b3",
+    "floors": "эт.",
+    "capacity": "чел.",
+    "apartments": "кв.",
+    "parking_spaces": "м/м"
+  },
+
+  "norms": {
+    "class2": {
+      "default_norm": "ГОСТ 21.501-2018 — оформление проектной документации",
+      "default_risk": "Несоответствие оформления → замечания экспертизы"
+    },
+    "class3": {
+      "tep_fields": {
+        "norm": "Постановление Правительства РФ №87, ст. 10 — состав и содержание пояснительной записки",
+        "risk": "Расхождение ТЭП между разделами → недостоверность проекта, отказ в экспертизе"
+      },
+      "reference_fields": {
+        "norm": "ГОСТ Р 21.101-2020 — ссылочные нормативные документы должны быть актуальными",
+        "risk": "Ссылка на устаревший документ → применение отменённых требований"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие между ПЗ и профильными разделами → ошибки при экспертизе"
+      }
+    },
+    "class4": {
+      "pp87_completeness": {
+        "norm": "Постановление Правительства РФ №87 — обязательный состав проектной документации",
+        "risk": "Отсутствие обязательного раздела → возврат из экспертизы"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие нормативному требованию"
+      }
+    }
+  }
+}

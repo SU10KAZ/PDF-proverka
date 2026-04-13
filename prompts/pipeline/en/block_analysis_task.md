@@ -35,7 +35,7 @@
 
 Each block is a cropped drawing fragment (a complete area: schematic, plan, table, or detail). Analyze each block as an independent drawing.
 
-**IMPORTANT: page vs sheet.** `page` = PDF page number (physical numbering). `sheet` = sheet number from the title block (logical numbering from the stamp). They do NOT match: Sheet 1 may be on PDF page 5. Both are listed above. For `sheet`, use the sheet number from the title block or from the page context (`**Лист:**`).
+**IMPORTANT: page vs sheet.** `page` = page number (physical numbering). `sheet` = sheet number from the title block (logical numbering from the stamp). They do NOT match: Sheet 1 may be on page 5. Both are listed above. For `sheet`, use the sheet number from the title block or from the page context (`**Лист:**`).
 
 ## SINGLE-LINE AND CALCULATION DIAGRAMS — FULL TEXT RECOGNITION (MANDATORY)
 
@@ -101,7 +101,7 @@ Any discrepancy → finding.
       "unreadable_text": false,
       "unreadable_details": null,
       "summary": "Краткое описание содержимого (2-4 предложения)",
-      "key_values_read": ["АВ E3H 1600А", "Кабель ВВГнг(А)-FRLS 5x10"],
+      "key_values_read": ["АВ E3H 1600А", "Кабель ВВГнг(А)-FRLS 5x10, L=48м"],
       "evidence_text_refs": [
         {
           "text_block_id": "TB_ID_1",
@@ -142,6 +142,24 @@ Any discrepancy → finding.
   ]
 }
 ```
+
+### key_values_read Format — HUMAN-READABLE LANGUAGE
+
+`key_values_read` is shown directly to the auditor engineer on screen. Write in **human-readable Russian**, NOT as technical field dumps.
+
+**BAD** (technical dump):
+- `"opening Р-1: opening_type: решетка, width_mm: 752, height_mm: 550"`
+- `"room_name: Жилая комната, purpose: жилая, area_m2: 15.6"`
+
+**GOOD** (human-readable):
+- `"Решетка Р-1: 752×550 мм"`
+- `"Жилая комната — 15,6 м²"`
+- `"Проём Д-3: ширина 900 мм, EI 60"`
+- `"Помещение 101 «Лобби»: 42,3 м², класс Ф3.1"`
+- `"АВ E3H 1600А, Iку=50кА"`
+- `"Кабель ВВГнг(А)-FRLS 5×10, L=48 м"`
+
+**Rule:** include units of measurement. Start with the label/mark (Р-1, Д-3, поз. 5) if one exists.
 
 ### Locality Fields (MANDATORY for each block_analysis):
 

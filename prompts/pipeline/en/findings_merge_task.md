@@ -123,8 +123,8 @@ Before merging — process `items_verified_from_stage_01`:
 
 ### Sheet and Page Rules (MANDATORY)
 
-- `sheet` — sheet number **from the title block** (`sheet_no` from page context / block analysis). Format: "Лист 7" or "Листы 3, 5". DO NOT confuse with PDF page number!
-- `page` — PDF page number (integer). If finding spans multiple pages — array `[12, 13]`.
+- `sheet` — sheet number **from the title block** (`sheet_no` from page context / block analysis). Format: "Лист 7" or "Листы 3, 5". DO NOT confuse with page number!
+- `page` — page number (integer). If finding spans multiple pages — array `[12, 13]`.
 
 **STRICT RULE:** Use sheet numbers from block analysis block entries (field `sheet`). If a block has `sheet: "Лист 7"`, use that value. If sheet is not available — set `"sheet": null` and DO NOT guess.
 

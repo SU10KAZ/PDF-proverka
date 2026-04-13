@@ -1,0 +1,230 @@
+{
+  "schema_version": "1.0",
+  "discipline": "GP",
+  "discipline_label": "Генеральный план",
+
+  "extraction": {
+    "scope_label": "Генплан (здания, дороги, сети, зоны, парковки, благоустройство)",
+    "scope_included": ["Building", "Road", "Network", "Zone", "Parking", "Landscape"],
+    "scope_excluded": ["InteriorLayout", "StructuralDetails", "MEPEquipment"],
+    "entity_types": ["building", "road", "network_gp", "zone", "parking", "landscape", "spec_row", "note", "other"],
+    "exact_key_fields": {
+      "building": "designation",
+      "road": "designation",
+      "network_gp": "designation",
+      "zone": "zone_type",
+      "parking": "designation",
+      "landscape": "designation",
+      "spec_row": "spec_position"
+    },
+    "attribute_enum": {
+      "building": [
+        "designation", "area_m2", "height_m", "floors",
+        "footprint_m2", "setback_m", "fire_resistance_class",
+        "functional_class"
+      ],
+      "road": [
+        "designation", "width_m", "category", "type",
+        "length_m", "surface_type", "slope_pct",
+        "turning_radius_m"
+      ],
+      "network_gp": [
+        "designation", "network_type", "diameter_mm",
+        "material", "length_m", "depth_m",
+        "protection_zone_m"
+      ],
+      "zone": [
+        "zone_type", "area_m2", "designation",
+        "restriction", "setback_m"
+      ],
+      "parking": [
+        "designation", "capacity", "mgn_spaces",
+        "space_width_m", "space_length_m",
+        "aisle_width_m", "distance_to_building_m"
+      ],
+      "landscape": [
+        "designation", "type", "area_m2",
+        "equipment_list", "distance_to_windows_m",
+        "surface_type"
+      ],
+      "note": ["note_text", "requirement_type"],
+      "spec_row": ["designation", "description", "quantity"],
+      "other": ["designation", "description"]
+    },
+    "priority_tasks": [
+      {
+        "id": 1,
+        "title": "Расстояния между зданиями и объектами",
+        "critical": true,
+        "description": "Проверить противопожарные расстояния между зданиями, расстояния от парковок до жилых домов, от площадок до окон. Пожарные проезды: ширина не менее 3.5 м, расстояние до стены 5-8 м (до 28 м высоты) или 8-10 м (свыше 28 м)."
+      },
+      {
+        "id": 2,
+        "title": "Инженерные сети — трассировка и расстояния",
+        "critical": true,
+        "description": "Для каждой сети извлечь тип, диаметр, материал, длину, глубину заложения. Проверить расстояния между параллельными сетями по СП 42.13330, табл. 12.5. Охранные зоны."
+      },
+      {
+        "id": 3,
+        "title": "Дороги и проезды",
+        "critical": true,
+        "description": "Извлечь ширину, категорию, тип покрытия всех дорог и проездов. Проверить ширину пожарного проезда (не менее 3.5 м), радиусы поворотов (не менее 10 м), разворотные площадки (15x15 м при тупиках более 150 м)."
+      },
+      {
+        "id": 4,
+        "title": "Благоустройство и озеленение",
+        "critical": false,
+        "description": "Проверить баланс территории (сумма = 100%), площадь озеленения (не менее 25%), расстояния от площадок до окон жилых зданий. Детские площадки: 0.7 м2/жителя, ударопоглощающее покрытие."
+      },
+      {
+        "id": 5,
+        "title": "Парковки и доступность для МГН",
+        "critical": false,
+        "description": "Проверить размеры машиномест (2.5x5.3 м, 3.5x5.3 м для МГН), долю мест МГН (не менее 10%), ширину проездов на парковке (не менее 6.0 м). Пешеходные пути МГН: уклон не более 5%, ширина не менее 1.8 м."
+      }
+    ]
+  },
+
+  "canonical_memory": {
+    "entity_type_aliases": {
+      "network": "network_gp",
+      "utility": "network_gp",
+      "playground": "landscape"
+    },
+    "attr_aliases": {
+      "name": "designation",
+      "pipe_diameter": "diameter_mm",
+      "stories": "floors"
+    },
+    "ocr_normalized_fields": ["designation", "network_type", "surface_type"]
+  },
+
+  "generators": {
+    "class2_identity": {
+      "eligible_types": ["building", "network_gp", "parking"],
+      "unique_per_sheet_types": ["building"]
+    },
+    "class3_cross_view": {
+      "watch_fields": {
+        "building": ["area_m2", "height_m", "floors", "footprint_m2"],
+        "road": ["width_m", "category", "turning_radius_m"],
+        "network_gp": ["diameter_mm", "material", "length_m", "depth_m"]
+      },
+      "safety_critical_fields": [
+        "height_m", "floors", "width_m",
+        "distance_to_building_m", "setback_m"
+      ],
+      "topology_fields": ["designation"]
+    },
+    "class4_requirement_conflict": {
+      "knowledge_base_file": null,
+      "note_requirement_patterns": [
+        {
+          "pattern_id": "fire_road_width",
+          "regex": "пожарн\\w*\\s*проезд|fire\\s*access",
+          "applies_to": "road",
+          "required_field": "width_m",
+          "required_value": ">=3.5"
+        },
+        {
+          "pattern_id": "mgn_parking",
+          "regex": "МГН|маломобильн|инвалид",
+          "applies_to": "parking",
+          "required_field": "mgn_spaces",
+          "required_value": ">=10%"
+        }
+      ]
+    }
+  },
+
+  "field_labels": {
+    "area_m2": "площадь",
+    "height_m": "высота",
+    "floors": "этажность",
+    "footprint_m2": "площадь застройки",
+    "setback_m": "отступ",
+    "fire_resistance_class": "степень огнестойкости",
+    "functional_class": "класс функциональной пожарной опасности",
+    "width_m": "ширина",
+    "category": "категория",
+    "length_m": "длина",
+    "surface_type": "тип покрытия",
+    "slope_pct": "уклон",
+    "turning_radius_m": "радиус поворота",
+    "network_type": "тип сети",
+    "diameter_mm": "диаметр",
+    "material": "материал",
+    "depth_m": "глубина заложения",
+    "protection_zone_m": "охранная зона",
+    "zone_type": "тип зоны",
+    "restriction": "ограничение",
+    "capacity": "вместимость",
+    "mgn_spaces": "места для МГН",
+    "space_width_m": "ширина места",
+    "space_length_m": "длина места",
+    "aisle_width_m": "ширина проезда",
+    "distance_to_building_m": "расстояние до здания",
+    "equipment_list": "перечень оборудования",
+    "distance_to_windows_m": "расстояние до окон",
+    "designation": "обозначение",
+    "description": "описание"
+  },
+
+  "field_units": {
+    "area_m2": "м\u00b2",
+    "height_m": "м",
+    "footprint_m2": "м\u00b2",
+    "setback_m": "м",
+    "width_m": "м",
+    "length_m": "м",
+    "slope_pct": "%",
+    "turning_radius_m": "м",
+    "diameter_mm": "мм",
+    "depth_m": "м",
+    "protection_zone_m": "м",
+    "space_width_m": "м",
+    "space_length_m": "м",
+    "aisle_width_m": "м",
+    "distance_to_building_m": "м",
+    "distance_to_windows_m": "м"
+  },
+
+  "norms": {
+    "class2": {
+      "default_norm": "ГОСТ 21.508-2020 — обозначения на генплане должны быть уникальными и соответствовать условным знакам",
+      "default_risk": "Путаница при привязке объектов, ошибки при строительстве"
+    },
+    "class3": {
+      "section_fields": {
+        "norm": "СП 42.13330.2016 — параметры планировки и застройки территорий",
+        "risk": "Несоответствие нормативным расстояниям → отказ в экспертизе"
+      },
+      "fire_fields": {
+        "norm": "СП 4.13130.2013 — противопожарные расстояния, проезды и подъезды для пожарной техники",
+        "risk": "Недоступность здания для пожарной техники → угроза жизни при пожаре"
+      },
+      "network_fields": {
+        "norm": "СП 42.13330.2016, табл. 12.5 — минимальные расстояния между инженерными сетями",
+        "risk": "Нарушение охранных зон → повреждение сетей при строительстве или эксплуатации"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие между чертежами → ошибки при строительстве"
+      }
+    },
+    "class4": {
+      "fire_access": {
+        "norm": "СП 4.13130.2013, п. 8.6 — ширина пожарного проезда не менее 3.5 м",
+        "risk": "Недостаточная ширина проезда → невозможность подъезда пожарной техники"
+      },
+      "mgn_access": {
+        "norm": "СП 59.13330.2020 — доступность зданий и сооружений для МГН",
+        "risk": "Недоступность объекта для маломобильных групп населения"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие нормативному требованию"
+      }
+    }
+  }
+}

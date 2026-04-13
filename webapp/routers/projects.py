@@ -4,7 +4,7 @@ REST API для проектов.
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional
-from webapp.services import project_service, discipline_service
+from webapp.services import project_service, discipline_service, group_service
 
 router = APIRouter(prefix="/api/projects", tags=["projects"])
 
@@ -91,6 +91,36 @@ async def delete_discipline(code: str):
         return {"status": "ok"}
     except ValueError as e:
         raise HTTPException(400, str(e))
+
+
+# ─── Группы проектов ───
+
+groups_router = APIRouter(prefix="/api/project-groups", tags=["groups"])
+
+
+@groups_router.get("")
+async def list_groups():
+    """Все группы всех секций."""
+    return {"groups": group_service.load_groups()}
+
+
+class SaveSectionGroupsRequest(BaseModel):
+    groups: list[dict]
+
+
+@groups_router.put("/{section}")
+async def save_section_groups(section: str, req: SaveSectionGroupsRequest):
+    """Сохранить группы секции целиком."""
+    group_service.save_section_groups(section, req.groups)
+    return {"status": "ok"}
+
+
+@groups_router.delete("/{section}/{group_id}")
+async def delete_group(section: str, group_id: str):
+    """Удалить одну группу."""
+    if not group_service.delete_group(section, group_id):
+        raise HTTPException(404, "Group not found")
+    return {"status": "ok"}
 
 
 # ─── Статичные роуты (ПЕРЕД динамическими /{project_id}/...) ───
@@ -190,6 +220,32 @@ async def get_project_config(project_id: str):
     if not info:
         raise HTTPException(404, f"project_info.json не найден для '{project_id}'")
     return info
+
+
+class PipelineVersionRequest(BaseModel):
+    pipeline_version: str  # "legacy" | "v4"
+
+
+@router.put("/{project_id:path}/pipeline-version")
+async def set_pipeline_version(project_id: str, req: PipelineVersionRequest):
+    """Переключить pipeline_version проекта (legacy / v4).
+    Сохраняется в project_info.json.
+    """
+    if req.pipeline_version not in ("legacy", "v4"):
+        raise HTTPException(400, f"Неверный pipeline_version: {req.pipeline_version}. Допустимо: legacy, v4")
+
+    from webapp.services.pipeline_service import pipeline_manager
+    if pipeline_manager.is_running(project_id):
+        raise HTTPException(409, "Аудит проекта сейчас выполняется. Сначала отмените.")
+
+    info = project_service.get_project_info(project_id)
+    if not info:
+        raise HTTPException(404, f"project_info.json не найден для '{project_id}'")
+
+    info["pipeline_version"] = req.pipeline_version
+    project_service.save_project_info(project_id, info)
+
+    return {"status": "ok", "project_id": project_id, "pipeline_version": req.pipeline_version}
 
 
 @router.delete("/{project_id:path}/clean")

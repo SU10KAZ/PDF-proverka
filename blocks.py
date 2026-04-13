@@ -68,7 +68,8 @@ def _normalize_finding_block_ids(finding: dict):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 TARGET_LONG_SIDE_PX = 1500
-TARGET_LONG_SIDE_PX_HIRES = 2500  # Для однолинейных схем и детальных чертежей
+TARGET_LONG_SIDE_PX_COMPACT = 800   # Compact-режим: дешевле по токенам, retry full если нечитаемо
+TARGET_LONG_SIDE_PX_HIRES = 2500    # Для однолинейных схем и детальных чертежей
 MIN_BLOCK_AREA_PX2 = 50000
 
 # Паттерны в ocr_label, требующие повышенного разрешения
@@ -173,19 +174,12 @@ def extract_ocr_label(block: dict) -> str:
     return clean if clean else "image"
 
 
-def download_and_convert(
-    crop_url: str,
+def _render_pdf_bytes_to_png(
+    pdf_bytes: bytes,
     out_png: Path,
-    timeout: int = 30,
-    target_px: int | None = None,
+    target_px: int,
 ) -> tuple[int, int]:
-    """Скачать PDF-кроп по URL и конвертировать в PNG."""
-    _require_pymupdf()
-    target = target_px or TARGET_LONG_SIDE_PX
-    req = urllib.request.Request(crop_url, headers={"User-Agent": "crop_blocks/1.0"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        pdf_bytes = resp.read()
-
+    """Рендерить PDF-байты в PNG с заданным target_px. Возвращает (w, h)."""
     doc = fitz.open(stream=pdf_bytes, filetype="pdf")
     page = doc[0]
 
@@ -194,7 +188,7 @@ def download_and_convert(
         doc.close()
         raise ValueError("Нулевой размер страницы в PDF-кропе")
 
-    render_scale = target / long_side_pt
+    render_scale = target_px / long_side_pt
     render_scale = max(1.0, min(8.0, render_scale))
 
     mat = fitz.Matrix(render_scale, render_scale)
@@ -206,6 +200,34 @@ def download_and_convert(
     return w, h
 
 
+def download_and_convert(
+    crop_url: str,
+    out_png: Path,
+    timeout: int = 30,
+    target_px: int | None = None,
+    also_save_full: Path | None = None,
+    full_target_px: int | None = None,
+) -> tuple[int, int]:
+    """Скачать PDF-кроп по URL и конвертировать в PNG.
+
+    also_save_full: если указан — дополнительно рендерит full-версию в этот путь.
+    """
+    _require_pymupdf()
+    target = target_px or TARGET_LONG_SIDE_PX
+    req = urllib.request.Request(crop_url, headers={"User-Agent": "crop_blocks/1.0"})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        pdf_bytes = resp.read()
+
+    w, h = _render_pdf_bytes_to_png(pdf_bytes, out_png, target)
+
+    # Дополнительный рендер full-версии из тех же байт (без повторного скачивания)
+    if also_save_full:
+        full_px = full_target_px or TARGET_LONG_SIDE_PX
+        _render_pdf_bytes_to_png(pdf_bytes, also_save_full, full_px)
+
+    return w, h
+
+
 def crop_from_pdf(
     pdf_path: Path,
     page_num: int,
@@ -214,11 +236,14 @@ def crop_from_pdf(
     page_height: int,
     out_png: Path,
     target_px: int | None = None,
+    also_save_full: Path | None = None,
+    full_target_px: int | None = None,
 ) -> tuple[int, int]:
     """Вырезать блок из PDF по координатам (fallback при ошибке скачивания).
 
     coords_px: [x1, y1, x2, y2] в пиксельной системе result.json
     page_width, page_height: размеры страницы в пикселях из result.json
+    also_save_full: если указан — дополнительно рендерит full-версию.
     """
     _require_pymupdf()
     doc = fitz.open(str(pdf_path))
@@ -236,7 +261,6 @@ def crop_from_pdf(
         y2 * scale_y,
     )
 
-    # Масштаб рендеринга: длинная сторона вырезки → target_px
     clip_w = clip.width
     clip_h = clip.height
     long_side_pt = max(clip_w, clip_h)
@@ -244,14 +268,19 @@ def crop_from_pdf(
         doc.close()
         raise ValueError("Нулевой размер блока")
 
-    render_scale = (target_px or TARGET_LONG_SIDE_PX) / long_side_pt
-    render_scale = max(0.5, min(8.0, render_scale))  # допускаем уменьшение до 0.5×
+    def _render_clip(target: int, output: Path):
+        rs = target / long_side_pt
+        rs = max(0.5, min(8.0, rs))
+        mat = fitz.Matrix(rs, rs)
+        pix = page.get_pixmap(matrix=mat, clip=clip, alpha=False)
+        pix.save(str(output))
+        return pix.width, pix.height
 
-    mat = fitz.Matrix(render_scale, render_scale)
-    pix = page.get_pixmap(matrix=mat, clip=clip, alpha=False)
-    pix.save(str(out_png))
+    w, h = _render_clip(target_px or TARGET_LONG_SIDE_PX, out_png)
 
-    w, h = pix.width, pix.height
+    if also_save_full:
+        _render_clip(full_target_px or TARGET_LONG_SIDE_PX, also_save_full)
+
     doc.close()
     return w, h
 
@@ -260,8 +289,13 @@ def crop_blocks(
     project_dir: str,
     block_ids: list[str] | None = None,
     force: bool = False,
+    compact: bool = False,
 ) -> dict:
     """Скачать image-блоки по crop_url из result.json и сохранить как PNG.
+
+    compact=True: сохраняет ДВЕ версии каждого блока:
+      - block_<ID>.png       — compact (800px) — используется в батчах
+      - block_<ID>_full.png  — full (1500px+)  — для retry нечитаемых
 
     При наличии нескольких PDF (pdf_files в project_info.json) обрабатывает
     все соответствующие *_result.json и объединяет блоки.
@@ -375,6 +409,9 @@ def crop_blocks(
             print(f"  ({no_url_count} блоков без crop_url)")
         return {"total_blocks": 0, "cropped": 0, "skipped": 0, "errors": 0, "blocks": []}
 
+    if compact:
+        print(f"  [COMPACT] Режим compact: {TARGET_LONG_SIDE_PX_COMPACT}px + full-версии")
+
     print(f"  Image-блоков для скачивания: {len(all_image_blocks)}")
     if no_url_count:
         print(f"  ({no_url_count} блоков пропущено — нет crop_url)")
@@ -390,12 +427,16 @@ def crop_blocks(
     for block_info in all_image_blocks:
         bid = block_info["block_id"]
         out_file = output_dir / f"block_{bid}.png"
+        full_file = output_dir / f"block_{bid}_full.png"
 
         if out_file.exists() and not force:
             size_kb = out_file.stat().st_size / 1024
             if size_kb > 1:
-                print(f"  [EXISTS] {bid} ({size_kb:.0f} KB)")
-                index_blocks.append({
+                has_full = full_file.exists()
+                full_kb = round(full_file.stat().st_size / 1024, 1) if has_full else None
+                print(f"  [EXISTS] {bid} ({size_kb:.0f} KB)" +
+                      (f" +full({full_kb:.0f} KB)" if has_full else ""))
+                entry = {
                     "block_id": bid,
                     "page": block_info["page_num"],
                     "file": f"block_{bid}.png",
@@ -404,7 +445,12 @@ def crop_blocks(
                     "block_type": "image",
                     "ocr_label": block_info["ocr_label"],
                     "ocr_text_len": len(block_info["ocr_text"]),
-                })
+                }
+                if has_full:
+                    entry["file_full"] = f"block_{bid}_full.png"
+                    entry["size_kb_full"] = full_kb
+                    entry["compact"] = True
+                index_blocks.append(entry)
                 skipped += 1
                 continue
 
@@ -413,13 +459,25 @@ def crop_blocks(
         download_error = None
 
         # Адаптивное разрешение по типу блока
-        target_px = _get_target_px(block_info.get("ocr_label", ""))
-        if target_px != TARGET_LONG_SIDE_PX:
-            print(f"  [HIRES] {bid}: {target_px}px (однолинейная/расчётная схема)")
+        full_target_px = _get_target_px(block_info.get("ocr_label", ""))
+        if compact:
+            target_px = TARGET_LONG_SIDE_PX_COMPACT
+        else:
+            target_px = full_target_px
+
+        if full_target_px != TARGET_LONG_SIDE_PX:
+            print(f"  [HIRES] {bid}: full={full_target_px}px (однолинейная/расчётная схема)")
+
+        save_full = full_file if compact else None
 
         if crop_url:
             try:
-                w, h = download_and_convert(crop_url, out_file, target_px=target_px)
+                w, h = download_and_convert(
+                    crop_url, out_file,
+                    target_px=target_px,
+                    also_save_full=save_full,
+                    full_target_px=full_target_px,
+                )
             except Exception as e:
                 download_error = e
         else:
@@ -439,6 +497,8 @@ def crop_blocks(
                         dims[0], dims[1],
                         out_file,
                         target_px=target_px,
+                        also_save_full=save_full,
+                        full_target_px=full_target_px,
                     )
                     source = "pdf_fallback"
                     print(f"  [FALLBACK] {bid}: облако недоступно ({e}), вырезан из PDF")
@@ -453,10 +513,12 @@ def crop_blocks(
                 continue
 
         size_kb = out_file.stat().st_size / 1024
+        full_kb = round(full_file.stat().st_size / 1024, 1) if compact and full_file.exists() else None
         label = "DOWNLOAD" if source == "cloud" else "PDF-CROP"
+        compact_tag = f" +full({full_kb:.0f} KB)" if full_kb else ""
         print(f"  [{label}] {bid}: стр.{block_info['page_num']}, "
-              f"{w}x{h}px, {size_kb:.0f} KB")
-        index_blocks.append({
+              f"{w}x{h}px, {size_kb:.0f} KB{compact_tag}")
+        entry = {
             "block_id": bid,
             "page": block_info["page_num"],
             "file": f"block_{bid}.png",
@@ -467,12 +529,19 @@ def crop_blocks(
             "ocr_label": block_info["ocr_label"],
             "ocr_text_len": len(block_info["ocr_text"]),
             "source": source,
-        })
+        }
+        if compact and full_kb is not None:
+            entry["file_full"] = f"block_{bid}_full.png"
+            entry["size_kb_full"] = full_kb
+            entry["compact"] = True
+        index_blocks.append(entry)
         cropped += 1
 
     # Cleanup только при полном прогоне
     if not block_ids:
         valid_files = {f"block_{b['block_id']}.png" for b in index_blocks}
+        if compact:
+            valid_files |= {f"block_{b['block_id']}_full.png" for b in index_blocks}
         for old_png in output_dir.glob("block_*.png"):
             if old_png.name not in valid_files:
                 print(f"  [CLEANUP] {old_png.name}")
@@ -482,6 +551,7 @@ def crop_blocks(
         "total_blocks": len(index_blocks),
         "total_expected": len(all_image_blocks),
         "errors": errors,
+        "compact": compact,
         "source_result_json": [rj.name for rj in result_json_paths],
         "blocks": index_blocks,
     }
@@ -517,11 +587,105 @@ def crop_blocks(
 
 DEFAULT_BATCH_SIZE = 10
 
+# Укрупнение мелких блоков: если на странице > N блоков < M KB — рендерим страницу целиком
+PAGE_MERGE_MIN_BLOCKS = 8     # минимум мелких блоков для укрупнения
+PAGE_MERGE_THRESHOLD_KB = 100  # блоки меньше этого считаются "мелкими"
+
 # Гибридная стратегия: ограничение по объёму И по количеству
 MAX_BATCH_SIZE_KB = 5 * 1024   # 5 MB целевой объём пакета
 MAX_BLOCKS_PER_BATCH = 15      # макс блоков (даже если суммарно мало весят)
 MIN_BLOCKS_PER_BATCH = 3       # мин блоков (не дробить на слишком мелкие пакеты)
 SOLO_BLOCK_THRESHOLD_KB = 3 * 1024  # блок > 3 MB — отдельный пакет
+
+
+def _render_full_page(pdf_path: Path, page_num: int, output_path: Path,
+                      target_px: int = TARGET_LONG_SIDE_PX) -> dict | None:
+    """Рендерить полную страницу PDF как PNG. Возвращает dict с метаданными блока."""
+    _require_pymupdf()
+    try:
+        doc = fitz.open(str(pdf_path))
+        # page_num в index.json — 1-based
+        page_idx = page_num - 1
+        if page_idx < 0 or page_idx >= len(doc):
+            doc.close()
+            return None
+
+        page = doc[page_idx]
+        rect = page.rect
+        long_side = max(rect.width, rect.height)
+        scale = target_px / long_side if long_side > 0 else 1.0
+        mat = fitz.Matrix(scale, scale)
+        pix = page.get_pixmap(matrix=mat, alpha=False)
+
+        pix.save(str(output_path))
+        size_kb = output_path.stat().st_size / 1024
+        doc.close()
+
+        return {
+            "block_id": f"page_{page_num:03d}",
+            "page": page_num,
+            "file": output_path.name,
+            "size_kb": round(size_kb, 1),
+            "ocr_label": f"Полная страница {page_num}",
+            "is_full_page": True,
+        }
+    except Exception as e:
+        print(f"  [WARN] Не удалось отрендерить стр. {page_num}: {e}")
+        return None
+
+
+def _consolidate_small_blocks(
+    pages_map: dict[int, list[dict]],
+    project_dir: Path,
+    blocks_dir: Path,
+    min_blocks: int = PAGE_MERGE_MIN_BLOCKS,
+    threshold_kb: float = PAGE_MERGE_THRESHOLD_KB,
+) -> dict[int, list[dict]]:
+    """Заменить страницы с множеством мелких блоков на полностраничные изображения.
+
+    Returns: обновлённый pages_map.
+    """
+    # Найти PDF
+    info_path = project_dir / "project_info.json"
+    if not info_path.exists():
+        return pages_map
+
+    info = json.loads(info_path.read_text(encoding="utf-8"))
+    pdf_file = info.get("pdf_file", "")
+    if not pdf_file:
+        pdf_files = info.get("pdf_files", [])
+        pdf_file = pdf_files[0] if pdf_files else ""
+    if not pdf_file:
+        return pages_map
+
+    pdf_path = project_dir / pdf_file
+    if not pdf_path.exists():
+        return pages_map
+
+    if fitz is None:
+        return pages_map
+
+    consolidated = {}
+    for page_num, page_blocks in pages_map.items():
+        small = [b for b in page_blocks if b.get("size_kb", 0) < threshold_kb]
+        big = [b for b in page_blocks if b.get("size_kb", 0) >= threshold_kb]
+
+        if len(small) >= min_blocks:
+            # Рендерим полную страницу
+            out_path = blocks_dir / f"block_page_{page_num:03d}.png"
+            merged_labels = [b.get("ocr_label", "") for b in small[:5]]
+            page_block = _render_full_page(pdf_path, page_num, out_path)
+            if page_block:
+                page_block["ocr_label"] = f"Полная стр. {page_num} ({len(small)} блоков: {', '.join(l[:30] for l in merged_labels if l)[:100]})"
+                page_block["merged_block_ids"] = [b["block_id"] for b in small]
+                consolidated[page_num] = big + [page_block]
+                print(f"  Стр. {page_num}: {len(small)} мелких блоков -> 1 полная страница ({page_block['size_kb']:.0f} KB)"
+                      + (f" + {len(big)} крупных" if big else ""))
+                continue
+
+        consolidated[page_num] = page_blocks
+
+    return consolidated
 
 
 def _make_batch_entry(batch_id: int, blocks_list: list[dict]) -> dict:
@@ -627,6 +791,12 @@ def generate_block_batches(
     with open(index_path, "r", encoding="utf-8") as f:
         index_data = json.load(f)
 
+    # Compact-режим: автоматически увеличиваем max_blocks (блоки легче)
+    is_compact = index_data.get("compact", False)
+    if is_compact and max_blocks == MAX_BLOCKS_PER_BATCH:
+        max_blocks = 30  # compact блоки ~2-3x легче, можно больше в батч
+        print(f"  [COMPACT] Авто-увеличение max_blocks: {MAX_BLOCKS_PER_BATCH} -> {max_blocks}")
+
     blocks = index_data.get("blocks", [])
     if block_ids:
         blocks = [b for b in blocks if b["block_id"] in block_ids]
@@ -640,6 +810,17 @@ def generate_block_batches(
     for block in blocks:
         page = block.get("page", 0)
         pages_map.setdefault(page, []).append(block)
+
+    # Укрупнение: страницы с множеством мелких блоков → полностраничное изображение
+    original_count = len(blocks)
+    pages_map = _consolidate_small_blocks(
+        pages_map,
+        project_dir=Path(project_dir),
+        blocks_dir=output_dir / "blocks",
+    )
+    new_count = sum(len(v) for v in pages_map.values())
+    if new_count < original_count:
+        print(f"  Укрупнение: {original_count} -> {new_count} блоков")
 
     batches = []
     batch_id = 0
@@ -870,6 +1051,73 @@ def merge_block_results(project_dir: str, cleanup: bool = False) -> dict:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# PROMOTE — подмена compact→full для нечитаемых блоков (без повторного скачивания)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+def promote_to_full(project_dir: str, block_ids: list[str]) -> dict:
+    """Подменить compact-версии блоков на full-версии (уже скачанные).
+
+    Для каждого block_id: переименовывает block_<ID>_full.png → block_<ID>.png
+    и обновляет index.json (size_kb, compact=False).
+
+    Возвращает {"promoted": N, "missing": N, "block_ids_promoted": [...]}.
+    """
+    output_dir = Path(project_dir) / "_output" / "blocks"
+    index_path = output_dir / "index.json"
+
+    if not index_path.exists():
+        return {"error": "index.json не найден"}
+
+    with open(index_path, "r", encoding="utf-8") as f:
+        index_data = json.load(f)
+
+    blocks_by_id = {b["block_id"]: b for b in index_data.get("blocks", [])}
+
+    promoted = 0
+    missing = 0
+    promoted_ids = []
+
+    for bid in block_ids:
+        compact_file = output_dir / f"block_{bid}.png"
+        full_file = output_dir / f"block_{bid}_full.png"
+
+        if not full_file.exists():
+            print(f"  [SKIP] {bid}: full-версия не найдена")
+            missing += 1
+            continue
+
+        # Заменяем compact на full
+        if compact_file.exists():
+            compact_file.unlink()
+        full_file.rename(compact_file)
+
+        # Обновляем index
+        if bid in blocks_by_id:
+            entry = blocks_by_id[bid]
+            entry["size_kb"] = round(compact_file.stat().st_size / 1024, 1)
+            entry.pop("file_full", None)
+            entry.pop("size_kb_full", None)
+            entry["compact"] = False
+            entry["promoted_to_full"] = True
+
+        promoted += 1
+        promoted_ids.append(bid)
+        print(f"  [PROMOTE] {bid}: compact -> full ({blocks_by_id.get(bid, {}).get('size_kb', '?')} KB)")
+
+    # Сохраняем обновлённый index
+    with open(index_path, "w", encoding="utf-8") as f:
+        json.dump(index_data, f, ensure_ascii=False, indent=2)
+
+    print(f"  Итого: {promoted} промоутнуто, {missing} без full-версии")
+    return {
+        "promoted": promoted,
+        "missing": missing,
+        "block_ids_promoted": promoted_ids,
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # RECROP — перекачка нечитаемых блоков с увеличенным разрешением (×2 итеративно)
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -1010,7 +1258,7 @@ def recrop_blocks(
             print(f"  [SKIP] {bid}: уже на максимальном разрешении ({current_long_side}px)")
             continue
 
-        print(f"  [RECROP] {bid}: {current_long_side}px → {new_target_px}px")
+        print(f"  [RECROP] {bid}: {current_long_side}px -> {new_target_px}px")
 
         out_file = output_dir / f"block_{bid}.png"
         ocr_block = ocr_blocks.get(bid, {})
@@ -1084,6 +1332,8 @@ def main():
     p_crop.add_argument("project_dir", help="Путь к папке проекта")
     p_crop.add_argument("--block-ids", help="Список block_id через запятую")
     p_crop.add_argument("--force", action="store_true", help="Перезаписать существующие PNG")
+    p_crop.add_argument("--compact", action="store_true",
+                         help="Compact-режим: 800px для батчей + full-версия для retry нечитаемых")
 
     # batches
     p_batch = subparsers.add_parser("batches", help="Сгенерировать пакеты блоков")
@@ -1111,6 +1361,12 @@ def main():
     p_recrop.add_argument("--scale", type=float, default=2.0,
                           help="Множитель разрешения (по умолчанию 2.0)")
 
+    # promote
+    p_promote = subparsers.add_parser("promote",
+        help="Подменить compact→full для нечитаемых блоков (без повторного скачивания)")
+    p_promote.add_argument("project_dir", help="Путь к папке проекта")
+    p_promote.add_argument("--block-ids", help="Список block_id через запятую (иначе — авто из unreadable_text)")
+
     args = parser.parse_args()
 
     if not os.path.isdir(args.project_dir):
@@ -1119,7 +1375,8 @@ def main():
 
     if args.command == "crop":
         block_ids = [b.strip() for b in args.block_ids.split(",")] if args.block_ids else None
-        result = crop_blocks(args.project_dir, block_ids=block_ids, force=args.force)
+        result = crop_blocks(args.project_dir, block_ids=block_ids, force=args.force,
+                             compact=getattr(args, "compact", False))
         if result.get("error"):
             sys.exit(1)
         print(json.dumps({
@@ -1165,6 +1422,24 @@ def main():
                 print(f"  {u['block_id']}: {u.get('details', '')[:80]}")
 
         result = recrop_blocks(args.project_dir, block_ids, scale_multiplier=args.scale)
+        if result.get("error"):
+            sys.exit(1)
+
+    elif args.command == "promote":
+        if args.block_ids:
+            block_ids = [b.strip() for b in args.block_ids.split(",")]
+        else:
+            # Авто-обнаружение из unreadable_text
+            unreadable = find_unreadable_blocks(args.project_dir)
+            if not unreadable:
+                print("Нет блоков с unreadable_text=true")
+                sys.exit(0)
+            block_ids = [u["block_id"] for u in unreadable]
+            print(f"Найдено {len(block_ids)} нечитаемых блоков:")
+            for u in unreadable:
+                print(f"  {u['block_id']}: {u.get('details', '')[:80]}")
+
+        result = promote_to_full(args.project_dir, block_ids)
         if result.get("error"):
             sys.exit(1)
         print(json.dumps(result, ensure_ascii=False))

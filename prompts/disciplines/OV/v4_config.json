@@ -1,0 +1,246 @@
+{
+  "schema_version": "1.0",
+  "discipline": "OV",
+  "discipline_label": "Отопление, вентиляция, кондиционирование",
+
+  "extraction": {
+    "scope_label": "Системы вентиляции, отопления, кондиционирования, дымоудаления",
+    "scope_included": ["ventilation", "heating", "smoke_exhaust", "air_conditioning"],
+    "scope_excluded": ["BMS_automation_details", "electrical_power_supply"],
+    "entity_types": ["duct_section", "fan", "damper", "fire_damper", "heater", "diffuser", "air_handling_unit", "spec_row", "note", "room", "other"],
+    "exact_key_fields": {
+      "duct_section": "section_id",
+      "fan": "fan_id",
+      "damper": "damper_id",
+      "fire_damper": "fire_damper_id",
+      "heater": "heater_id",
+      "diffuser": "diffuser_id",
+      "air_handling_unit": "ahu_id",
+      "room": "room_no",
+      "spec_row": "spec_position"
+    },
+    "attribute_enum": {
+      "duct_section": [
+        "duct_diameter_mm", "duct_width_mm", "duct_height_mm",
+        "airflow_m3h", "velocity_ms", "system_id",
+        "duct_material", "fire_resistance_class"
+      ],
+      "fan": [
+        "airflow_m3h", "pressure_pa", "power_kw",
+        "fan_type", "system_id", "designation"
+      ],
+      "damper": [
+        "damper_type", "size_mm", "system_id", "designation"
+      ],
+      "fire_damper": [
+        "fire_resistance_ei", "size_mm", "system_id",
+        "actuator_type", "designation"
+      ],
+      "heater": [
+        "thermal_power_kw", "coolant_type", "system_id", "designation"
+      ],
+      "diffuser": [
+        "airflow_m3h", "size_mm", "diffuser_type", "system_id", "designation"
+      ],
+      "air_handling_unit": [
+        "airflow_m3h", "pressure_pa", "power_kw",
+        "heating_power_kw", "cooling_power_kw",
+        "filter_class", "system_id", "designation", "description"
+      ],
+      "note": ["note_text", "requirement_type"],
+      "spec_row": ["designation", "description"],
+      "room": ["room_no"]
+    },
+    "priority_tasks": [
+      {
+        "id": 1,
+        "title": "Парсинг маркировки систем П/В/ПД",
+        "critical": true,
+        "description": "Везде где видишь маркировку систем вентиляции (П1, П2, В1, В2, ПД1, ВД1 и т.д.) — извлеки system_id и тип системы (приточная/вытяжная/дымоудаление/подпор).",
+        "examples": [
+          {"input": "П1 L=5000 м³/ч", "output": "system_id=П1, airflow_m3h=5000, тип=приточная"},
+          {"input": "ВД1 (дымоудаление)", "output": "system_id=ВД1, тип=дымоудаление"},
+          {"input": "ПД2 подпор в ЛК", "output": "system_id=ПД2, тип=подпор воздуха"}
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Расходы воздуха и сечения воздуховодов",
+        "critical": true,
+        "description": "Для каждого участка воздуховода — извлеки airflow_m3h, размеры сечения (diameter или width×height), скорость. Сверь расход на схеме и на плане.",
+        "key_phrases": ["м³/ч", "L=", "расход воздуха", "сечение", "Ø"]
+      },
+      {
+        "id": 3,
+        "title": "Огнезадерживающие клапаны",
+        "critical": true,
+        "description": "Все КОЗ/ОЗК — извлечь fire_resistance_ei, размер, привязку к системе и к противопожарной преграде. Проверить наличие в местах пересечения противопожарных преград.",
+        "key_phrases": ["КОЗ", "ОЗК", "огнезадерживающий", "EI 60", "EI 90", "EI 120"]
+      },
+      {
+        "id": 4,
+        "title": "Примечания с требованиями",
+        "critical": true,
+        "description": "Примечания на чертежах — прочитай дословно.",
+        "key_phrases": [
+          "огнестойкость воздуховодов",
+          "компенсация при дымоудалении",
+          "подпор воздуха в ЛК",
+          "не менее",
+          "EI 150",
+          "EI 60"
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Параметры оборудования",
+        "critical": false,
+        "description": "Каждая единица оборудования (вентустановка, вентилятор, калорифер) — извлечь designation, airflow_m3h, pressure_pa, power_kw, thermal_power_kw."
+      }
+    ]
+  },
+
+  "canonical_memory": {
+    "entity_type_aliases": {
+      "ahu": "air_handling_unit",
+      "koz": "fire_damper",
+      "ozk": "fire_damper"
+    },
+    "attr_aliases": {
+      "L": "airflow_m3h",
+      "расход": "airflow_m3h",
+      "диаметр": "duct_diameter_mm",
+      "напор": "pressure_pa",
+      "мощность": "power_kw",
+      "text_verbatim": "note_text",
+      "text": "note_text",
+      "name": "designation"
+    },
+    "ocr_normalized_fields": ["designation", "system_id", "duct_material"]
+  },
+
+  "generators": {
+    "class2_identity": {
+      "eligible_types": ["duct_section", "fan", "fire_damper"],
+      "unique_per_sheet_types": ["duct_section"]
+    },
+    "class3_cross_view": {
+      "watch_fields": {
+        "duct_section": [
+          "duct_diameter_mm", "duct_width_mm", "duct_height_mm",
+          "airflow_m3h", "velocity_ms", "system_id", "duct_material"
+        ],
+        "fan": [
+          "airflow_m3h", "pressure_pa", "power_kw"
+        ],
+        "air_handling_unit": [
+          "airflow_m3h", "pressure_pa", "power_kw",
+          "heating_power_kw", "designation"
+        ],
+        "fire_damper": [
+          "fire_resistance_ei", "size_mm", "system_id"
+        ]
+      },
+      "safety_critical_fields": [
+        "airflow_m3h", "duct_diameter_mm",
+        "duct_width_mm", "duct_height_mm",
+        "fire_resistance_ei"
+      ],
+      "topology_fields": ["system_id"]
+    },
+    "class4_requirement_conflict": {
+      "knowledge_base_file": null,
+      "note_requirement_patterns": [
+        {
+          "pattern_id": "duct_fire_resistance",
+          "regex": "огнестойкост\\w*\\s*воздуховод\\w*.*EI\\s*\\d+",
+          "applies_to": "smoke_exhaust_ducts",
+          "required_field": "fire_resistance_class",
+          "required_value": "EI 150"
+        },
+        {
+          "pattern_id": "fire_damper_required",
+          "regex": "огнезадержива\\w*\\s*клапан",
+          "applies_to": "duct_through_firewall",
+          "required_field": "has_fire_damper",
+          "required_value": true
+        }
+      ]
+    }
+  },
+
+  "field_labels": {
+    "duct_diameter_mm": "диаметр воздуховода",
+    "duct_width_mm": "ширина воздуховода",
+    "duct_height_mm": "высота воздуховода",
+    "airflow_m3h": "расход воздуха",
+    "velocity_ms": "скорость воздуха",
+    "system_id": "маркировка системы",
+    "duct_material": "материал воздуховода",
+    "pressure_pa": "давление (напор)",
+    "power_kw": "мощность",
+    "thermal_power_kw": "тепловая мощность",
+    "cooling_power_kw": "холодопроизводительность",
+    "fire_resistance_ei": "предел огнестойкости",
+    "fire_resistance_class": "класс огнестойкости",
+    "fan_type": "тип вентилятора",
+    "filter_class": "класс фильтрации",
+    "designation": "обозначение",
+    "description": "описание",
+    "size_mm": "размер",
+    "actuator_type": "тип привода",
+    "coolant_type": "тип теплоносителя",
+    "diffuser_type": "тип диффузора",
+    "damper_type": "тип клапана",
+    "heating_power_kw": "мощность нагрева"
+  },
+
+  "field_units": {
+    "duct_diameter_mm": "мм",
+    "duct_width_mm": "мм",
+    "duct_height_mm": "мм",
+    "airflow_m3h": "м\u00b3/ч",
+    "velocity_ms": "м/с",
+    "pressure_pa": "Па",
+    "power_kw": "кВт",
+    "thermal_power_kw": "кВт",
+    "cooling_power_kw": "кВт",
+    "fire_resistance_ei": "мин",
+    "size_mm": "мм"
+  },
+
+  "norms": {
+    "class2": {
+      "default_norm": "ГОСТ 21.602-2016, п. 4 — обозначения систем вентиляции должны быть уникальными и соответствовать спецификации",
+      "default_risk": "Путаница при монтаже, неоднозначность привязки оборудования к системе"
+    },
+    "class3": {
+      "airflow_fields": {
+        "norm": "СП 60.13330.2020, п. 7 — расходы воздуха должны быть согласованы между схемами и планами",
+        "risk": "Несоответствие расходов воздуха расчёту → недостаточная вентиляция, нарушение микроклимата"
+      },
+      "fire_resistance_fields": {
+        "norm": "СП 7.13130.2013, п. 6.8 — огнестойкость воздуховодов и клапанов в системах ПДВ",
+        "risk": "Нарушение противодымной защиты → угроза жизни при пожаре"
+      },
+      "topology_fields": {
+        "norm": null,
+        "risk": "Ошибка в привязке оборудования к системе → проблемы при монтаже и пуско-наладке"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие между чертежами → ошибки при монтаже"
+      }
+    },
+    "class4": {
+      "fire_damper": {
+        "norm": "СП 7.13130.2013, п. 6.18 — огнезадерживающие клапаны в местах пересечения противопожарных преград",
+        "risk": "Отсутствие КОЗ → распространение огня и дыма через воздуховоды"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие нормативному требованию"
+      }
+    }
+  }
+}

@@ -1,0 +1,241 @@
+{
+  "schema_version": "1.0",
+  "discipline": "AI",
+  "discipline_label": "Архитектурные решения (интерьер)",
+
+  "extraction": {
+    "scope_label": "Отделка, материалы, санузлы, кухни, полы, потолки, двери",
+    "scope_included": ["finishes", "floors", "ceilings", "walls", "doors", "bathrooms", "kitchens"],
+    "scope_excluded": ["structural_elements", "MEP_routing"],
+    "entity_types": ["material", "finish", "fixture", "door", "ceiling", "floor_finish", "spec_row", "note", "room", "other"],
+    "exact_key_fields": {
+      "material": "material_id",
+      "finish": "finish_id",
+      "fixture": "fixture_id",
+      "door": "door_id",
+      "ceiling": "ceiling_id",
+      "floor_finish": "floor_id",
+      "room": "room_no",
+      "spec_row": "spec_position"
+    },
+    "attribute_enum": {
+      "material": [
+        "fire_class_km", "designation", "description",
+        "manufacturer", "emission_class"
+      ],
+      "finish": [
+        "designation", "description", "finish_type",
+        "fire_class_km", "moisture_resistant"
+      ],
+      "fixture": [
+        "fixture_type", "designation", "description",
+        "quantity", "installation_height_mm"
+      ],
+      "door": [
+        "width_mm", "height_mm", "door_type",
+        "fire_resistance", "sound_insulation_db",
+        "direction", "designation"
+      ],
+      "ceiling": [
+        "ceiling_type", "height_m", "material",
+        "fire_class_km", "designation"
+      ],
+      "floor_finish": [
+        "covering_type", "designation", "description",
+        "wear_class", "has_waterproofing",
+        "has_sound_insulation", "slope"
+      ],
+      "note": ["note_text", "requirement_type"],
+      "spec_row": ["designation", "description"],
+      "room": ["room_no"],
+      "other": []
+    },
+    "priority_tasks": [
+      {
+        "id": 1,
+        "title": "Класс пожароопасности материалов отделки",
+        "critical": true,
+        "description": "Для каждого отделочного материала — извлечь fire_class_km (КМ0-КМ5). Проверить соответствие назначению помещения: пути эвакуации — не выше КМ1 (стены/потолки), КМ2 (полы).",
+        "examples": [
+          {"input": "Керамогранит 600x600 КМ0", "output": "designation=Керамогранит 600x600, fire_class_km=КМ0"},
+          {"input": "Ламинат КМ5", "output": "designation=Ламинат, fire_class_km=КМ5, WARNING: не допускается на путях эвакуации"}
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Спецификация отделки помещений",
+        "critical": true,
+        "description": "Ведомость отделки — извлечь все строки: помещение, тип отделки (пол/стены/потолок), материал, fire_class_km. Проверить полноту (все помещения должны быть в ведомости).",
+        "key_phrases": ["ведомость отделки", "тип покрытия", "отделка стен", "отделка потолка", "отделка пола"]
+      },
+      {
+        "id": 3,
+        "title": "Примечания с требованиями",
+        "critical": true,
+        "description": "Примечания на чертежах — прочитай дословно.",
+        "key_phrases": [
+          "класс пожарной опасности",
+          "КМ0", "КМ1", "КМ2",
+          "гидроизоляция",
+          "влагостойкий",
+          "класс истираемости"
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Двери и проёмы",
+        "critical": false,
+        "description": "Типоразмеры дверей, направление открывания (санузлы — наружу), звукоизоляция, противопожарные двери.",
+        "key_phrases": ["ДП", "ДГ", "EI 30", "EI 60", "открывание"]
+      },
+      {
+        "id": 5,
+        "title": "Санузлы и мокрые зоны",
+        "critical": false,
+        "description": "Гидроизоляция (высота заведения >= 200 мм), уклоны к трапу, влагостойкие материалы, размещение сантехприборов.",
+        "key_phrases": ["гидроизоляция", "трап", "уклон", "влагостойкий"]
+      }
+    ]
+  },
+
+  "canonical_memory": {
+    "entity_type_aliases": {
+      "wall_finish": "finish",
+      "floor_covering": "floor_finish",
+      "sanitary_fixture": "fixture"
+    },
+    "attr_aliases": {
+      "КМ": "fire_class_km",
+      "тип": "finish_type",
+      "покрытие": "covering_type",
+      "text_verbatim": "note_text",
+      "text": "note_text",
+      "name": "designation"
+    },
+    "ocr_normalized_fields": ["designation", "description", "manufacturer"]
+  },
+
+  "generators": {
+    "class2_identity": {
+      "eligible_types": ["material", "door", "fixture"],
+      "unique_per_sheet_types": ["material"]
+    },
+    "class3_cross_view": {
+      "watch_fields": {
+        "material": [
+          "fire_class_km", "designation", "description"
+        ],
+        "finish": [
+          "designation", "description", "fire_class_km",
+          "moisture_resistant"
+        ],
+        "door": [
+          "width_mm", "height_mm", "fire_resistance",
+          "sound_insulation_db", "direction"
+        ],
+        "floor_finish": [
+          "covering_type", "designation",
+          "has_waterproofing", "wear_class"
+        ],
+        "ceiling": [
+          "ceiling_type", "height_m", "fire_class_km"
+        ]
+      },
+      "safety_critical_fields": [
+        "fire_class_km", "fire_resistance",
+        "has_waterproofing"
+      ],
+      "topology_fields": ["room_no"]
+    },
+    "class4_requirement_conflict": {
+      "knowledge_base_file": null,
+      "note_requirement_patterns": [
+        {
+          "pattern_id": "evacuation_finish_class",
+          "regex": "(?:пут\\w*\\s*эвакуаци|коридор\\w*\\s*МОП).*КМ[0-2]",
+          "applies_to": "evacuation_route_finishes",
+          "required_field": "fire_class_km",
+          "required_value": "КМ1"
+        },
+        {
+          "pattern_id": "waterproofing_required",
+          "regex": "гидроизоляц\\w*.*(?:санузел|ванн|душев|мокр)",
+          "applies_to": "wet_zone_floors",
+          "required_field": "has_waterproofing",
+          "required_value": true
+        }
+      ]
+    }
+  },
+
+  "field_labels": {
+    "fire_class_km": "класс пожарной опасности",
+    "designation": "обозначение",
+    "description": "описание",
+    "manufacturer": "производитель",
+    "emission_class": "класс эмиссии",
+    "finish_type": "тип отделки",
+    "moisture_resistant": "влагостойкость",
+    "fixture_type": "тип изделия",
+    "quantity": "количество",
+    "installation_height_mm": "высота установки",
+    "width_mm": "ширина",
+    "height_mm": "высота",
+    "door_type": "тип двери",
+    "fire_resistance": "предел огнестойкости",
+    "sound_insulation_db": "звукоизоляция",
+    "direction": "направление открывания",
+    "ceiling_type": "тип потолка",
+    "height_m": "высота потолка",
+    "material": "материал",
+    "covering_type": "тип покрытия",
+    "wear_class": "класс истираемости",
+    "has_waterproofing": "наличие гидроизоляции",
+    "has_sound_insulation": "наличие звукоизоляции",
+    "slope": "уклон"
+  },
+
+  "field_units": {
+    "width_mm": "мм",
+    "height_mm": "мм",
+    "installation_height_mm": "мм",
+    "height_m": "м",
+    "sound_insulation_db": "дБ",
+    "fire_resistance": "мин"
+  },
+
+  "norms": {
+    "class2": {
+      "default_norm": "ГОСТ 21.501-2018 — обозначения материалов и изделий должны быть уникальными и соответствовать спецификации",
+      "default_risk": "Путаница при отделочных работах, несоответствие материалов проекту"
+    },
+    "class3": {
+      "fire_class_fields": {
+        "norm": "Федеральный закон №123-ФЗ, ст. 134 — требования к классу пожарной опасности отделочных материалов на путях эвакуации",
+        "risk": "Применение горючих материалов на путях эвакуации → угроза жизни при пожаре"
+      },
+      "finish_fields": {
+        "norm": "СП 54.13330.2022 — требования к отделке жилых помещений",
+        "risk": "Несоответствие отделки назначению помещения → нарушение эксплуатационных требований"
+      },
+      "waterproofing_fields": {
+        "norm": "СП 29.13330.2011, п. 4.7 — гидроизоляция полов в мокрых помещениях",
+        "risk": "Отсутствие гидроизоляции → протечки, повреждение конструкций, спор с жильцами"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие между чертежами и ведомостью отделки → ошибки при строительстве"
+      }
+    },
+    "class4": {
+      "fire_class_km": {
+        "norm": "Федеральный закон №123-ФЗ, ст. 134, табл. 28, 29 — допустимые классы КМ для отделочных материалов",
+        "risk": "Несоответствие класса пожарной опасности → отказ в экспертизе, угроза безопасности"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие нормативному требованию"
+      }
+    }
+  }
+}

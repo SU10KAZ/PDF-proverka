@@ -40,7 +40,7 @@ For EACH finding in `findings[]`, check 5 criteria:
 
 ### Criterion 4: Page/Sheet Correctness
 
-- Finding's `sheet` contains a sheet number and/or PDF page
+- Finding's `sheet` contains a sheet number and/or page number
 - Cross-check against `page` of evidence blocks — does the page match?
 - If document graph specifies `sheet_no` for this page — does it match the finding's `sheet`?
 - If page/sheet are mixed up → `verdict: "page_mismatch"`, provide correct values
@@ -51,15 +51,36 @@ For EACH finding in `findings[]`, check 5 criteria:
 - Does the page text directly contradict the finding? (e.g., finding says "X is missing" but X is clearly stated in the text)
 - If there is a direct contradiction → `verdict: "contradicts_text"`, provide the quote
 
+### Criterion 6: Practical Significance
+
+The finding must identify a **real design error** that would affect construction. Test: "if built exactly per this drawing — would there be a problem?"
+
+Formal/clerical findings → `verdict: "not_practical"`:
+- Typo in GOST number, but the drawing/detail is correct
+- Error in client address or name
+- Incomplete year in document designation (25772-21 instead of 25772-2021)
+- Sheet name mismatch between table of contents and heading
+- Inconsistent document set codes (13АВ-РД vs 13АВ-Р)
+- Duplicate text in general notes
+- Typo in manufacturer name (if product is unambiguously identified)
+
+NOT formal (keep as `pass`):
+- Reference to a **non-existent** or **cancelled** standard (not a typo — the referenced document doesn't exist → could lead to incorrect construction)
+- Dimension/area discrepancies between drawings (affects procurement and installation)
+- Calculation errors (loads, cross-sections, slopes)
+- Incorrect detail/node design
+- Fire safety, evacuation, accessibility violations
+
 ## Final Verdict per Finding
 
 For each finding, one of:
-- **`pass`** — all 5 criteria passed, finding is well-grounded
+- **`pass`** — all 6 criteria passed, finding is well-grounded
 - **`no_evidence`** — no evidence/related_block_ids
 - **`phantom_block`** — block_id does not exist in the data
 - **`weak_evidence`** — evidence does not support the finding's substance
 - **`page_mismatch`** — page/sheet are mixed up
 - **`contradicts_text`** — finding contradicts the document text
+- **`not_practical`** — formal finding with no impact on construction
 
 When multiple issues exist — report the MOST SERIOUS one (priority top to bottom).
 
@@ -77,13 +98,14 @@ When multiple issues exist — report the MOST SERIOUS one (priority top to bott
       "phantom_block": 0,
       "weak_evidence": 0,
       "page_mismatch": 0,
-      "contradicts_text": 0
+      "contradicts_text": 0,
+      "not_practical": 0
     }
   },
   "reviews": [
     {
       "finding_id": "F-001",
-      "verdict": "pass|no_evidence|phantom_block|weak_evidence|page_mismatch|contradicts_text",
+      "verdict": "pass|no_evidence|phantom_block|weak_evidence|page_mismatch|contradicts_text|not_practical",
       "details": "null или описание проблемы",
       "suggested_action": "null|narrow_evidence|downgrade_severity|remove",
       "correct_page": null,

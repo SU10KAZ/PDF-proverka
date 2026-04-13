@@ -1,0 +1,231 @@
+{
+  "schema_version": "1.0",
+  "discipline": "TX",
+  "discipline_label": "Технологические решения",
+
+  "extraction": {
+    "scope_label": "Оборудование, зонирование, проходы, коммуникации встроенных помещений",
+    "scope_included": ["Catering", "Medical", "Parking", "Retail", "WasteDisposal", "Commercial"],
+    "scope_excluded": ["StructuralElements", "HVAC_units", "Electrical_panels"],
+    "entity_types": ["equipment_tx", "zone", "passage", "sink", "ventilation_unit", "spec_row", "note", "room", "other"],
+    "exact_key_fields": {
+      "equipment_tx": "equipment_id",
+      "zone": "zone_id",
+      "passage": "passage_id",
+      "sink": "sink_id",
+      "ventilation_unit": "unit_id",
+      "room": "room_no",
+      "spec_row": "spec_position"
+    },
+    "attribute_enum": {
+      "equipment_tx": [
+        "designation", "description", "model",
+        "manufacturer", "power_kw", "voltage_v",
+        "dimensions", "weight_kg", "water_connection",
+        "drain_connection", "ventilation_connection"
+      ],
+      "zone": [
+        "area_m2", "purpose", "zone_type",
+        "cleanliness_class", "temperature_c",
+        "floor_finish", "wall_finish"
+      ],
+      "passage": [
+        "width_m", "passage_type", "between_objects",
+        "min_required_m"
+      ],
+      "sink": [
+        "designation", "sink_type", "compartment_count",
+        "hot_water", "cold_water", "drain_diameter_mm"
+      ],
+      "ventilation_unit": [
+        "designation", "unit_type", "airflow_m3h",
+        "connected_equipment"
+      ],
+      "note": ["note_text", "requirement_type"],
+      "spec_row": ["designation", "description", "power_kw", "quantity", "dimensions"],
+      "room": ["room_no", "area_m2", "purpose"],
+      "other": []
+    },
+    "priority_tasks": [
+      {
+        "id": 1,
+        "title": "Технологическое оборудование",
+        "critical": true,
+        "description": "Для каждой единицы оборудования — обозначение, модель, мощность, габариты, подключения (вода, канализация, электричество, вентиляция). Сверка с разделами ЭОМ, ВК, ОВиК.",
+        "examples": [
+          {"input": "Поз. 1 — Пароконвектомат RATIONAL iCombi Pro 20-1/1, 37 кВт", "output": "designation=Поз. 1, description=Пароконвектомат, model=RATIONAL iCombi Pro 20-1/1, power_kw=37"},
+          {"input": "Поз. 5 — Холодильный шкаф Polair CM114-S, 0.35 кВт", "output": "designation=Поз. 5, description=Холодильный шкаф, model=Polair CM114-S, power_kw=0.35"}
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Проходы между оборудованием",
+        "critical": true,
+        "description": "Ширина проходов: рабочие >= 0.7 м, основные >= 1.2 м, эвакуационные >= 1.0 м. Проходы для МГН >= 0.9 м. Зазоры до стен.",
+        "key_phrases": [
+          "проход", "зазор", "расстояние между", "ширина прохода",
+          "доступ для обслуживания", "эвакуационный проход"
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Зонирование помещений",
+        "critical": true,
+        "description": "Функциональное зонирование: чистые/грязные зоны, потоки сырья и готовой продукции, разделение посетителей и персонала. Загрузочные зоны.",
+        "key_phrases": [
+          "чистая зона", "грязная зона", "загрузочная",
+          "поток сырья", "поток готовой продукции",
+          "вход персонала", "вход посетителей"
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Примечания с требованиями",
+        "critical": false,
+        "description": "Примечания на чертежах — прочитай дословно. Требования к отделке, температурному режиму, вентиляции, санитарным нормам.",
+        "key_phrases": [
+          "жироуловитель", "трап напольный", "влагостойкая отделка",
+          "бактерицидный", "температурный режим", "класс чистоты"
+        ]
+      }
+    ]
+  },
+
+  "canonical_memory": {
+    "entity_type_aliases": {
+      "appliance": "equipment_tx",
+      "machine": "equipment_tx",
+      "washbasin": "sink",
+      "hood": "ventilation_unit",
+      "area": "zone"
+    },
+    "attr_aliases": {
+      "power": "power_kw",
+      "watt": "power_kw",
+      "size": "dimensions",
+      "name": "designation",
+      "text_verbatim": "note_text",
+      "text": "note_text"
+    },
+    "ocr_normalized_fields": ["model", "designation", "description", "manufacturer"]
+  },
+
+  "generators": {
+    "class2_identity": {
+      "eligible_types": ["equipment_tx", "sink", "ventilation_unit"],
+      "unique_per_sheet_types": ["equipment_tx"]
+    },
+    "class3_cross_view": {
+      "watch_fields": {
+        "equipment_tx": [
+          "designation", "description", "model",
+          "power_kw", "dimensions", "water_connection"
+        ],
+        "zone": ["area_m2", "purpose", "zone_type"],
+        "passage": ["width_m", "passage_type", "min_required_m"],
+        "spec_row": ["designation", "description", "power_kw", "quantity"]
+      },
+      "safety_critical_fields": [
+        "power_kw", "width_m", "area_m2",
+        "drain_diameter_mm"
+      ],
+      "topology_fields": ["water_connection", "drain_connection", "ventilation_connection"]
+    },
+    "class4_requirement_conflict": {
+      "note_requirement_patterns": [
+        {
+          "pattern_id": "grease_trap_required",
+          "regex": "(?:жироуловител|жироулавливающ)",
+          "applies_to": "catering_drains",
+          "required_field": "grease_trap",
+          "required_value": true
+        },
+        {
+          "pattern_id": "floor_drain_required",
+          "regex": "(?:трап\\s*напольн|напольный\\s*трап|трап\\s*в\\s*полу)",
+          "applies_to": "wet_zones",
+          "required_field": "floor_drain",
+          "required_value": true
+        }
+      ]
+    }
+  },
+
+  "field_labels": {
+    "designation": "обозначение",
+    "description": "описание",
+    "model": "модель",
+    "manufacturer": "производитель",
+    "power_kw": "мощность",
+    "voltage_v": "напряжение",
+    "dimensions": "габариты",
+    "weight_kg": "масса",
+    "water_connection": "подключение воды",
+    "drain_connection": "подключение канализации",
+    "ventilation_connection": "подключение вентиляции",
+    "area_m2": "площадь",
+    "purpose": "назначение",
+    "zone_type": "тип зоны",
+    "cleanliness_class": "класс чистоты",
+    "temperature_c": "температура",
+    "floor_finish": "отделка пола",
+    "wall_finish": "отделка стен",
+    "width_m": "ширина прохода",
+    "passage_type": "тип прохода",
+    "min_required_m": "минимальная ширина",
+    "sink_type": "тип мойки",
+    "compartment_count": "количество секций",
+    "drain_diameter_mm": "диаметр слива",
+    "airflow_m3h": "расход воздуха",
+    "unit_type": "тип установки",
+    "note_text": "текст примечания",
+    "identifier_uniqueness": "уникальность маркера"
+  },
+
+  "field_units": {
+    "power_kw": "кВт",
+    "voltage_v": "В",
+    "weight_kg": "кг",
+    "area_m2": "м²",
+    "temperature_c": "°C",
+    "width_m": "м",
+    "min_required_m": "м",
+    "drain_diameter_mm": "мм",
+    "airflow_m3h": "м³/ч"
+  },
+
+  "norms": {
+    "class2": {
+      "default_norm": "ГОСТ 21.114-2013 — позиции оборудования на планах должны быть уникальными и соответствовать спецификации",
+      "default_risk": "Путаница при комплектации и монтаже оборудования"
+    },
+    "class3": {
+      "equipment_fields": {
+        "norm": "СП 118.13330.2022, разд. 5 — характеристики оборудования должны быть согласованы между планами, спецификацией и смежными разделами",
+        "risk": "Несоответствие мощности/габаритов → ошибки в электроснабжении, вентиляции, водоснабжении"
+      },
+      "passage_fields": {
+        "norm": "СП 118.13330.2022, п. 6.30 — ширина проходов между оборудованием не менее нормативной",
+        "risk": "Узкие проходы → нарушение охраны труда, невозможность эвакуации"
+      },
+      "zone_fields": {
+        "norm": "СанПиН 2.3/2.4.3590-20 — функциональное зонирование предприятий общественного питания",
+        "risk": "Пересечение потоков сырья и готовой продукции → санитарные нарушения"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие между чертежами → ошибки при монтаже"
+      }
+    },
+    "class4": {
+      "passage_width": {
+        "norm": "СП 118.13330.2022, п. 6.30; СП 1.13130.2020 — проходы и пути эвакуации",
+        "risk": "Недостаточная ширина прохода → нарушение пожарной безопасности и охраны труда"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие нормативному требованию"
+      }
+    }
+  }
+}

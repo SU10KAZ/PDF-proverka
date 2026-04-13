@@ -56,6 +56,11 @@ Three options (by priority):
 2. If contradiction is confirmed → **remove the finding** (add to `removed_findings`)
 3. If the finding can be reformulated without contradiction → fix `description`
 
+#### `not_practical` — formal finding with no construction impact
+
+1. **Remove the finding** — formal typos, address errors, code inconsistencies do not affect construction
+2. Add to `removed_findings` with reason "formal finding, no construction impact"
+
 ### Step 3: Write Corrected Findings
 
 Backup: copy `03_findings.json` to `03_findings_pre_review.json` via Write tool.

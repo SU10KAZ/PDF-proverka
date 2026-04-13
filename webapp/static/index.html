@@ -339,73 +339,95 @@
                     <span class="section-badge" :style="disciplineBadgeStyle(sidebarFilterSection)">{{ sidebarFilterSection }}</span>
                     {{ disciplineLabel(sidebarFilterSection) }}
                     <span class="dashboard-header__count">({{ filteredSectionProjects.length }})</span>
+                    <label class="section-select-all" @click.stop title="Выбрать все проекты раздела">
+                        <input type="checkbox" :checked="isSectionSelected(sidebarFilterSection)"
+                               @change="toggleSectionSelection(sidebarFilterSection)">
+                    </label>
                 </h2>
                 <div class="dashboard-actions">
+                    <button class="btn btn-outline" @click="showCreateGroup = true" title="Создать группу">+ Группа</button>
                     <button class="btn btn-success" @click="openAddModal" :disabled="addProjectLoading">+ Добавить</button>
                     <button class="btn btn-primary" @click="refreshProjects" :disabled="loading">Обновить</button>
                 </div>
             </div>
-            <div class="projects-grid">
-                <div v-for="p in filteredSectionProjects" :key="p.project_id"
-                     class="project-card" :class="{'project-card--ready': p.has_blocks, 'project-card--running': isProjectRunning(p.project_id), 'project-card--selected': isProjectSelected(p.project_id)}"
-                     @click="navigate('/project/' + p.project_id)">
-                    <label class="project-card__checkbox" @click.stop>
-                        <input type="checkbox" :checked="isProjectSelected(p.project_id)"
-                               @change="toggleProjectSelection(p.project_id)">
-                    </label>
-                    <div class="project-card__header">
-                        <h3>{{ p.name }} <span class="section-badge" :style="disciplineBadgeStyle(p.section)">{{ p.section }}</span></h3>
-                    </div>
-                    <div class="pipeline">
-                        <div class="pipeline-step-wrap">
-                            <div class="pipeline-step" :class="stepClass(p.pipeline.text_analysis)" title="Анализ текста">01</div>
+
+            <!-- Создание группы -->
+            <div v-if="showCreateGroup" class="group-create-row">
+                <input v-model="newGroupName" class="input" placeholder="Название группы..."
+                       @keyup.enter="createGroup(sidebarFilterSection, newGroupName); newGroupName=''; showCreateGroup=false"
+                       ref="groupNameInput">
+                <button class="btn btn-sm btn-primary"
+                        @click="createGroup(sidebarFilterSection, newGroupName); newGroupName=''; showCreateGroup=false">Создать</button>
+                <button class="btn btn-sm btn-outline" @click="showCreateGroup=false; newGroupName=''">Отмена</button>
+            </div>
+
+            <!-- Группированный вывод проектов -->
+            <div v-for="group in groupedSectionProjects" :key="group.id"
+                 class="project-group" :class="{'project-group--drag-over': dragOverGroupId === group.id, 'project-group--virtual': group.isVirtual && !group.noHeader}"
+                 @dragover.prevent="onGroupDragOver($event, group.id)"
+                 @dragleave="onGroupDragLeave($event, group.id)"
+                 @drop.prevent="onProjectDropOnGroup($event, group.id, sidebarFilterSection)">
+
+                <!-- Заголовок группы -->
+                <div v-if="!group.noHeader" class="project-group__header"
+                     :draggable="!group.isVirtual"
+                     @dragstart="onGroupHeaderDragStart($event, group.id)"
+                     @dragend="onGroupHeaderDragEnd()">
+                    <svg v-if="!group.isVirtual" class="project-group__grip" width="12" height="12" viewBox="0 0 12 12" fill="currentColor" opacity="0.4">
+                        <circle cx="3" cy="2" r="1.2"/><circle cx="9" cy="2" r="1.2"/>
+                        <circle cx="3" cy="6" r="1.2"/><circle cx="9" cy="6" r="1.2"/>
+                        <circle cx="3" cy="10" r="1.2"/><circle cx="9" cy="10" r="1.2"/>
+                    </svg>
+                    <template v-if="editingGroupId === group.id">
+                        <input v-model="editingGroupName" class="input input--sm"
+                               @keyup.enter="renameGroup(sidebarFilterSection, group.id, editingGroupName)"
+                               @keyup.esc="editingGroupId = null"
+                               @blur="renameGroup(sidebarFilterSection, group.id, editingGroupName)">
+                    </template>
+                    <span v-else class="project-group__name" @dblclick="startRenameGroup(group)">{{ group.name }}</span>
+                    <span class="project-group__count">{{ group.projects.length }}</span>
+                    <button v-if="!group.isVirtual" class="btn-icon" @click.stop="startRenameGroup(group)" title="Переименовать">&#9998;</button>
+                    <button v-if="!group.isVirtual" class="btn-icon btn-icon--danger" @click.stop="deleteProjectGroup(sidebarFilterSection, group.id)" title="Удалить группу">&#10005;</button>
+                </div>
+
+                <!-- Проекты -->
+                <div class="projects-grid" :class="{'projects-grid--in-group': !group.noHeader}">
+                    <div v-for="p in group.projects" :key="p.project_id"
+                         class="project-card" draggable="true"
+                         :class="{'project-card--ready': p.has_blocks, 'project-card--running': isProjectRunning(p.project_id), 'project-card--selected': isProjectSelected(p.project_id), 'project-card--dragging': dragProjectId === p.project_id}"
+                         @dragstart.stop="onProjectDragStart($event, p.project_id)"
+                         @dragend="dragProjectId = null"
+                         @click="navigate('/project/' + p.project_id)">
+                        <span v-if="p.expert_review_status === 'complete'" class="project-card__reviewed" title="Все решения заполнены">&#10003;</span>
+                        <label class="project-card__checkbox" @click.stop>
+                            <input type="checkbox" :checked="isProjectSelected(p.project_id)"
+                                   @change="toggleProjectSelection(p.project_id)">
+                        </label>
+                        <div class="project-card__header">
+                            <h3>{{ p.name }} <span class="section-badge" :style="disciplineBadgeStyle(p.section)">{{ p.section }}</span></h3>
                         </div>
-                        <div class="pipeline-line"></div>
-                        <div class="pipeline-step-wrap">
-                            <div class="pipeline-step" :class="stepClass(p.pipeline.blocks_analysis)" title="Анализ блоков">02</div>
+                        <span v-if="p.pipeline_issues && p.pipeline_issues.length > 0"
+                              class="pipeline-issues-dot" :title="p.pipeline_issues.join('\n')">!</span>
+                        <div v-if="isProjectRunning(p.project_id)" class="live-status-bar">
+                            <div class="spinner"></div>
+                            <span class="status-text">{{ batchProgressText(p.project_id) }}</span>
                         </div>
-                        <div class="pipeline-line"></div>
-                        <div class="pipeline-step-wrap">
-                            <div class="pipeline-step" :class="stepClass(p.pipeline.findings)" title="Свод замечаний">03</div>
+                        <div v-if="p.findings_count > 0" class="project-card__badges-row">
+                            <div class="severity-badges">
+                                <span v-for="(count, sev) in p.findings_by_severity" :key="sev"
+                                      class="sev-badge" :class="'sev-' + sevClass(sev)">{{ count }}</span>
+                                <span class="findings-total">= {{ p.findings_count }}</span>
+                            </div>
+                            <button class="btn btn-sm btn-outline" @click.stop="navigate('/project/' + p.project_id + '/findings')">Замечания</button>
                         </div>
-                        <div class="pipeline-line pipeline-line--sm"></div>
-                        <div class="pipeline-step-wrap">
-                            <div class="pipeline-step pipeline-step--sm pipeline-step--cf" :class="stepClass(combinedCriticStatus(p.pipeline.findings_critic, p.pipeline.findings_corrector))" title="Critic + Fix">CF</div>
+                        <div v-if="p.optimization_count > 0" class="project-card__badges-row">
+                            <div class="severity-badges opt-badges">
+                                <span v-for="(count, type) in p.optimization_by_type" :key="type"
+                                      class="sev-badge" :class="optTypeClass(type)">{{ count }}</span>
+                                <span class="findings-total">= {{ p.optimization_count }}</span>
+                            </div>
+                            <button class="btn btn-sm btn-outline" @click.stop="navigate('/project/' + p.project_id + '/optimization')">Оптимизация</button>
                         </div>
-                        <div class="pipeline-line"></div>
-                        <div class="pipeline-step-wrap">
-                            <div class="pipeline-step" :class="stepClass(p.pipeline.norms_verified)" title="Верификация норм">04</div>
-                        </div>
-                        <div class="pipeline-line"></div>
-                        <div class="pipeline-step-wrap">
-                            <div class="pipeline-step pipeline-step--opt" :class="stepClass(p.pipeline.optimization)" title="Оптимизация">OPT</div>
-                        </div>
-                        <div class="pipeline-line pipeline-line--sm"></div>
-                        <div class="pipeline-step-wrap">
-                            <div class="pipeline-step pipeline-step--sm pipeline-step--cf" :class="stepClass(combinedCriticStatus(p.pipeline.optimization_critic, p.pipeline.optimization_corrector))" title="Critic + Fix">CF</div>
-                        </div>
-                    </div>
-                    <span v-if="p.pipeline_issues && p.pipeline_issues.length > 0"
-                          class="pipeline-issues-dot" :title="p.pipeline_issues.join('\n')">!</span>
-                    <div v-if="isProjectRunning(p.project_id)" class="live-status-bar">
-                        <div class="spinner"></div>
-                        <span class="status-text">{{ batchProgressText(p.project_id) }}</span>
-                    </div>
-                    <div v-if="p.findings_count > 0" class="project-card__badges-row">
-                        <div class="severity-badges">
-                            <span v-for="(count, sev) in p.findings_by_severity" :key="sev"
-                                  class="sev-badge" :class="'sev-' + sevClass(sev)">{{ count }}</span>
-                            <span class="findings-total">= {{ p.findings_count }}</span>
-                        </div>
-                        <button class="btn btn-sm btn-outline" @click.stop="navigate('/project/' + p.project_id + '/findings')">Замечания</button>
-                    </div>
-                    <div v-if="p.optimization_count > 0" class="project-card__badges-row">
-                        <div class="severity-badges opt-badges">
-                            <span v-for="(count, type) in p.optimization_by_type" :key="type"
-                                  class="sev-badge" :style="{ background: optTypeColor(type) + '22', color: optTypeColor(type) }">{{ count }}</span>
-                            <span class="findings-total" style="color: var(--emerald, #27ae60)">= {{ p.optimization_count }}</span>
-                        </div>
-                        <button class="btn btn-sm btn-outline" @click.stop="navigate('/project/' + p.project_id + '/optimization')">Оптимизация</button>
                     </div>
                 </div>
             </div>
@@ -770,6 +792,7 @@
                 <button class="modal-close" @click="showModelConfig = false">&times;</button>
                 <h3>Конфигурация моделей</h3>
                 <p class="model-config-desc">Выберите модель для каждого этапа аудита</p>
+                <!-- V4 pipeline is now default — toggle hidden -->
                 <div class="model-preset-buttons">
                     <button class="btn btn-preset"
                             :class="{ active: activePreset === 'openrouter' }"
@@ -955,33 +978,58 @@
                             </div>
                             <div class="stage-model" v-if="stageModel('text_analysis')">{{ stageModel('text_analysis') }}</div>
                         </div>
+                        <!-- V4 pipeline: Факты → Граф → Кандидаты → Свод -->
                         <div class="pipeline-arrow">&rarr;</div>
-                        <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.blocks_analysis), {'pipeline-stage--clickable': canStartFrom('blocks_analysis')}]"
-                             @click="canStartFrom('blocks_analysis') && startFromStage(currentProject.project_id, 'blocks_analysis')"
-                             :title="canStartFrom('blocks_analysis') ? 'Клик: запустить с этого этапа' : 'Анализ блоков'">
-                            <div class="stage-num">02</div>
-                            <div class="stage-label">Блоки</div>
-                            <div class="stage-tokens" v-if="stageTokensFormatted('blocks_analysis')">
-                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('blocks_analysis').inp }}</span>
-                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('blocks_analysis').out }}</span>
+                        <div class="pipeline-stage pipeline-stage--v4"
+                             :class="[stepClass(currentProject.pipeline.v4_extraction), {'pipeline-stage--clickable': canStartFrom('v4_extraction')}]"
+                             @click="canStartFrom('v4_extraction') && startFromStage(currentProject.project_id, 'v4_extraction')"
+                             :title="canStartFrom('v4_extraction') ? 'Клик: запустить с этого этапа' : 'Извлечение фактов (typed_facts_batch_*.json)'"
+                        >
+                            <div class="stage-num">02a</div>
+                            <div class="stage-label">Факты</div>
+                            <div class="stage-tokens" v-if="stageTokensFormatted('v4_extraction')">
+                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('v4_extraction').inp }}</span>
+                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('v4_extraction').out }}</span>
                             </div>
-                            <div class="stage-model" v-if="stageModel('blocks_analysis')">{{ stageModel('blocks_analysis') }}</div>
-                        </div>
-                        <div class="pipeline-arrow">&rarr;</div>
-                        <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.findings), {'pipeline-stage--clickable': canStartFrom('findings')}]"
-                             @click="canStartFrom('findings') && startFromStage(currentProject.project_id, 'findings')"
-                             :title="canStartFrom('findings') ? 'Клик: запустить с этого этапа' : 'Свод замечаний'">
-                            <div class="stage-num">03</div>
-                            <div class="stage-label">Свод</div>
-                            <div class="stage-tokens" v-if="stageTokensFormatted('findings')">
-                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('findings').inp }}</span>
-                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('findings').out }}</span>
-                            </div>
-                            <div class="stage-model" v-if="stageModel('findings')">{{ stageModel('findings') }}</div>
+                            <div class="stage-model" v-if="stageModel('v4_extraction')">{{ stageModel('v4_extraction') }}</div>
                         </div>
                         <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
-                        <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(combinedCriticStatus(currentProject.pipeline.findings_critic, currentProject.pipeline.findings_corrector))"
-                             title="Critic + Fix замечаний">
+                        <div class="pipeline-stage pipeline-stage--v4 pipeline-stage--sm"
+                             :class="[stepClass(currentProject.pipeline.v4_memory), {'pipeline-stage--clickable': canStartFrom('v4_memory')}]"
+                             @click="canStartFrom('v4_memory') && startFromStage(currentProject.project_id, 'v4_memory')"
+                             :title="canStartFrom('v4_memory') ? 'Клик: запустить с этого этапа' : 'Канонический граф (canonical_memory_v2.json)'"
+                        >
+                            <div class="stage-num">02b</div>
+                            <div class="stage-label">Граф</div>
+                        </div>
+                        <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
+                        <div class="pipeline-stage pipeline-stage--v4 pipeline-stage--sm"
+                             :class="[stepClass(currentProject.pipeline.v4_candidates), {'pipeline-stage--clickable': canStartFrom('v4_candidates')}]"
+                             @click="canStartFrom('v4_candidates') && startFromStage(currentProject.project_id, 'v4_candidates')"
+                             :title="canStartFrom('v4_candidates') ? 'Клик: запустить с этого этапа' : 'Генерация кандидатов (candidates_v2.json)'"
+                        >
+                            <div class="stage-num">02c</div>
+                            <div class="stage-label">Канд.</div>
+                        </div>
+                        <div class="pipeline-arrow">&rarr;</div>
+                        <div class="pipeline-stage pipeline-stage--v4"
+                             :class="[stepClass(currentProject.pipeline.v4_formatter), {'pipeline-stage--clickable': canStartFrom('v4_formatter')}]"
+                             @click="canStartFrom('v4_formatter') && startFromStage(currentProject.project_id, 'v4_formatter')"
+                             :title="canStartFrom('v4_formatter') ? 'Клик: запустить с этого этапа' : 'Формирование замечаний (03_findings.json)'"
+                        >
+                            <div class="stage-num">03</div>
+                            <div class="stage-label">Свод</div>
+                            <div class="stage-tokens" v-if="stageTokensFormatted('v4_formatter')">
+                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('v4_formatter').inp }}</span>
+                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('v4_formatter').out }}</span>
+                            </div>
+                        </div>
+                        <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
+                        <div class="pipeline-stage pipeline-stage--sm"
+                             :class="[stepClass(combinedCriticStatus(currentProject.pipeline.findings_critic, currentProject.pipeline.findings_corrector)), {'pipeline-stage--clickable': canStartFrom('findings_critic')}]"
+                             @click="canStartFrom('findings_critic') && startFromStage(currentProject.project_id, 'findings_critic')"
+                             :title="canStartFrom('findings_critic') ? 'Клик: перезапустить Critic замечаний' : 'Critic + Fix замечаний'"
+                        >
                             <div class="stage-num">CF</div>
                             <div class="stage-label">Crit/Fix</div>
                             <div class="stage-tokens" v-if="stageTokensFormatted('findings_critic') || stageTokensFormatted('findings_corrector')">
@@ -1014,8 +1062,11 @@
                             <div class="stage-model" v-if="stageModel('optimization')">{{ stageModel('optimization') }}</div>
                         </div>
                         <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
-                        <div class="pipeline-stage pipeline-stage--sm" :class="stepClass(combinedCriticStatus(currentProject.pipeline.optimization_critic, currentProject.pipeline.optimization_corrector))"
-                             title="Critic + Fix оптимизации">
+                        <div class="pipeline-stage pipeline-stage--sm"
+                             :class="[stepClass(combinedCriticStatus(currentProject.pipeline.optimization_critic, currentProject.pipeline.optimization_corrector)), {'pipeline-stage--clickable': canStartFrom('optimization_critic')}]"
+                             @click="canStartFrom('optimization_critic') && startFromStage(currentProject.project_id, 'optimization_critic')"
+                             :title="canStartFrom('optimization_critic') ? 'Клик: перезапустить Critic оптимизации' : 'Critic + Fix оптимизации'"
+                        >
                             <div class="stage-num">CF</div>
                             <div class="stage-label">Crit/Fix</div>
                             <div class="stage-tokens" v-if="stageTokensFormatted('optimization_critic') || stageTokensFormatted('optimization_corrector')">
@@ -1064,6 +1115,9 @@
                               :title="'Сэкономлено по подписке CLI: $' + currentProjectUsage.notional_cost_usd.toFixed(2)"
                         >(−${{ currentProjectUsage.notional_cost_usd.toFixed(2) }} CLI)</span>
                         · {{ currentProjectUsage.total_calls }} calls
+                        <span v-if="pipelineTotalDuration" style="color:#94a3b8">
+                            · {{ pipelineTotalDuration }}
+                        </span>
                     </div>
 
                     <!-- Live Status Banner -->
@@ -1121,6 +1175,7 @@
                     <div v-if="resumeInfo && resumeInfo.can_resume && !isProjectRunning(currentProject.project_id)"
                          class="resume-box">
                         <button class="btn btn-sm btn-primary" @click="resumePipeline(currentProject.project_id)">Продолжить</button>
+                        <button class="btn btn-sm btn-outline" @click="resumeToQueue(currentProject.project_id)">В очередь</button>
                         <span class="resume-label">{{ resumeInfo.stage_label }}
                             <span v-if="resumeInfo.detail">({{ resumeInfo.detail }})</span>
                         </span>
@@ -1171,7 +1226,7 @@
                                 <span class="ps-duration" v-if="s.duration_sec">{{ formatDurationSec(s.duration_sec) }}</span>
                                 <span class="ps-msg" v-if="s.message">{{ s.message }}</span>
                                 <span class="ps-error" v-if="s.error">{{ s.error }}</span>
-                                <button v-if="s.status === 'error' && !isProjectRunning(currentProject.project_id)"
+                                <button v-if="(s.status === 'error' || s.status === 'interrupted') && !isProjectRunning(currentProject.project_id)"
                                         class="ps-retry-btn" title="Перезапустить этап"
                                         @click="retryStage(currentProject.project_id, s.key)">↻</button>
                             </div>
@@ -1252,18 +1307,21 @@
                                 <th style="width:120px">Норма</th>
                                 <th :style="{ width: expertReviewMode ? '20%' : '30%' }">Рекомендация</th>
                                 <th v-if="expertReviewMode" style="width:90px; text-align:center">Решение</th>
-                                <th v-if="expertReviewMode" style="width:150px">Причина отклонения</th>
+                                <th v-if="expertReviewMode" style="width:150px">Причина</th>
                                 <th style="width:36px"></th>
                             </tr>
                         </thead>
                         <tbody>
                             <template v-for="f in sortedFindings" :key="f.id">
-                                <tr :class="['row-' + sevClass(f.severity), { 'row-expanded': expandedFindingId === f.id, 'row-accepted': getExpertDecision(f.id) === 'accepted', 'row-rejected': getExpertDecision(f.id) === 'rejected' }]">
+                                <tr :class="['row-' + sevClass(f.severity), { 'row-expanded': expandedFindingId === f.id, 'row-accepted': getExpertDecision(f.id) === 'accepted', 'row-rejected': getExpertDecision(f.id) === 'rejected', 'row-group': f.sub_findings }]">
                                     <td class="id-cell"
                                         @click="toggleFindingBlocks(f.id)"
                                         :style="{ cursor: ((findingBlockMap[f.id] && findingBlockMap[f.id].length) || (findingTextEvidence[f.id] && findingTextEvidence[f.id].length)) ? 'pointer' : 'default' }">
                                         <span class="finding-id-link">{{ f.id }}</span>
-                                        <span v-if="findingBlockMap[f.id] && findingBlockMap[f.id].length"
+                                        <span v-if="f.sub_findings" class="finding-group-badge" :title="f.sub_findings.length + ' объединённых замечаний'">
+                                            ×{{ f.sub_findings.length }}
+                                        </span>
+                                        <span v-else-if="findingBlockMap[f.id] && findingBlockMap[f.id].length"
                                               class="finding-blocks-count"
                                               :title="findingBlockMap[f.id].length + ' блоков'">
                                             {{ findingBlockMap[f.id].length }}
@@ -1275,12 +1333,26 @@
                                         </span>
                                     </td>
                                     <td style="text-align:center">
-                                        <div>{{ f.sheet }}</div>
-                                        <div v-if="f.page" style="font-size:11px; opacity:0.55; margin-top:2px">
-                                            стр. PDF {{ Array.isArray(f.page) ? f.page.join(', ') : f.page }}
-                                        </div>
+                                        <template v-if="f.sub_findings">
+                                            <div v-for="(sub, idx) in f.sub_findings" :key="'s'+sub.original_id" class="merged-row-item">
+                                                {{ sub.sheet || '—' }}
+                                            </div>
+                                        </template>
+                                        <template v-else>
+                                            <div>{{ f.sheet }}</div>
+                                            <div v-if="f.page" style="font-size:11px; opacity:0.55; margin-top:2px">
+                                                стр. PDF {{ Array.isArray(f.page) ? f.page.join(', ') : f.page }}
+                                            </div>
+                                        </template>
                                     </td>
-                                    <td class="desc-cell">{{ f.description || f.problem || f.finding || '' }}</td>
+                                    <td class="desc-cell">
+                                        <template v-if="f.sub_findings">
+                                            <div v-for="(sub, idx) in f.sub_findings" :key="'d'+sub.original_id" class="merged-row-item">
+                                                <span class="merged-desc-num">{{ idx + 1 }}.</span> {{ cleanSubProblem(sub.problem) }}
+                                            </div>
+                                        </template>
+                                        <template v-else>{{ f.description || f.problem || f.finding || '' }}</template>
+                                    </td>
                                     <td class="norm-cell">{{ f.norm }}</td>
                                     <td class="rec-cell">{{ f.solution || f.recommendation || '' }}</td>
                                     <td v-if="expertReviewMode" class="decision-cell" style="text-align:center">
@@ -1296,11 +1368,11 @@
                                         </div>
                                     </td>
                                     <td v-if="expertReviewMode" class="reason-cell">
-                                        <textarea v-if="getExpertDecision(f.id) === 'rejected'"
+                                        <textarea v-if="getExpertDecision(f.id)"
                                                   class="rejection-reason-input"
                                                   :value="getExpertReason(f.id)"
                                                   @input="setExpertReason(f.id, $event.target.value)"
-                                                  placeholder="Причина отклонения..."
+                                                  :placeholder="getExpertDecision(f.id) === 'accepted' ? 'Почему подтверждено...' : 'Почему отклонено...'"
                                                   rows="2"></textarea>
                                     </td>
                                     <td class="discuss-cell">
@@ -1418,7 +1490,7 @@
                                 <th class="opt-col-risks">Риски</th>
                                 <th class="opt-col-norm">Норма</th>
                                 <th v-if="expertReviewMode" style="width:90px; text-align:center">Решение</th>
-                                <th v-if="expertReviewMode" style="width:150px">Причина отклонения</th>
+                                <th v-if="expertReviewMode" style="width:150px">Причина</th>
                                 <th class="opt-col-action"></th>
                             </tr>
                         </thead>
@@ -1474,11 +1546,11 @@
                                         </div>
                                     </td>
                                     <td v-if="expertReviewMode" class="reason-cell">
-                                        <textarea v-if="getExpertDecision(item.id) === 'rejected'"
+                                        <textarea v-if="getExpertDecision(item.id)"
                                                   class="rejection-reason-input"
                                                   :value="getExpertReason(item.id)"
                                                   @input="setExpertReason(item.id, $event.target.value)"
-                                                  placeholder="Причина отклонения..."
+                                                  :placeholder="getExpertDecision(item.id) === 'accepted' ? 'Почему подтверждено...' : 'Почему отклонено...'"
                                                   rows="2"></textarea>
                                     </td>
                                     <td class="discuss-cell">
@@ -2047,12 +2119,15 @@
                         </thead>
                         <tbody>
                             <template v-for="item in activeDiscussionItems" :key="item.item_id">
-                                <tr :class="['row-' + sevClass(item.severity), { 'row-expanded': expandedFindingId === item.item_id }]">
+                                <tr :class="['row-' + sevClass(item.severity), { 'row-expanded': expandedFindingId === item.item_id, 'row-group': item.sub_findings }]">
                                     <td class="id-cell"
                                         @click="toggleFindingBlocks(item.item_id)"
                                         :style="{ cursor: (findingBlockMap[item.item_id] && findingBlockMap[item.item_id].length) ? 'pointer' : 'default' }">
                                         <span class="finding-id-link">{{ item.item_id }}</span>
-                                        <span v-if="findingBlockMap[item.item_id] && findingBlockMap[item.item_id].length"
+                                        <span v-if="item.sub_findings" class="finding-group-badge" :title="item.sub_findings.length + ' объединённых замечаний'">
+                                            ×{{ item.sub_findings.length }}
+                                        </span>
+                                        <span v-else-if="findingBlockMap[item.item_id] && findingBlockMap[item.item_id].length"
                                               class="finding-blocks-count"
                                               :title="findingBlockMap[item.item_id].length + ' блоков'">
                                             {{ findingBlockMap[item.item_id].length }}
@@ -2063,12 +2138,26 @@
                                         <span class="sev-badge sev-badge--sm" :class="'sev-' + sevClass(item.severity)">{{ item.severity }}</span>
                                     </td>
                                     <td style="text-align:center">
-                                        <div>{{ item.sheet }}</div>
-                                        <div v-if="item.page" style="font-size:11px; opacity:0.55; margin-top:2px">
-                                            стр. PDF {{ Array.isArray(item.page) ? item.page.join(', ') : item.page }}
-                                        </div>
+                                        <template v-if="item.sub_findings">
+                                            <div v-for="(sub, idx) in item.sub_findings" :key="'s'+sub.original_id" class="merged-row-item">
+                                                {{ sub.sheet || '—' }}
+                                            </div>
+                                        </template>
+                                        <template v-else>
+                                            <div>{{ item.sheet }}</div>
+                                            <div v-if="item.page" style="font-size:11px; opacity:0.55; margin-top:2px">
+                                                стр. PDF {{ Array.isArray(item.page) ? item.page.join(', ') : item.page }}
+                                            </div>
+                                        </template>
                                     </td>
-                                    <td class="desc-cell">{{ item.problem }}</td>
+                                    <td class="desc-cell">
+                                        <template v-if="item.sub_findings">
+                                            <div v-for="(sub, idx) in item.sub_findings" :key="'d'+sub.original_id" class="merged-row-item">
+                                                <span class="merged-desc-num">{{ idx + 1 }}.</span> {{ cleanSubProblem(sub.problem) }}
+                                            </div>
+                                        </template>
+                                        <template v-else>{{ item.problem }}</template>
+                                    </td>
                                     <td class="norm-cell">{{ item.norm }}</td>
                                     <td class="rec-cell">{{ item.recommendation }}</td>
                                     <td class="discuss-cell">

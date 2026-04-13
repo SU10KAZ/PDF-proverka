@@ -968,7 +968,7 @@ def prepare_block_batch_task(
         sheet_info = page_to_sheet.get(pdf_page, "")
         sheet_suffix = f", Лист {sheet_info}" if sheet_info else ""
         block_lines.append(
-            f"- `{block_path}` (стр. PDF {pdf_page}{sheet_suffix}, "
+            f"- `{block_path}` (стр. {pdf_page}{sheet_suffix}, "
             f"block_id: {block['block_id']}, "
             f"OCR: {block.get('ocr_label', 'image')})"
         )

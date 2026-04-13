@@ -62,6 +62,7 @@ class DiscussionListItem(BaseModel):
     norm: str = ""
     recommendation: str = ""
     page: Optional[object] = None
+    sub_findings: Optional[list[dict]] = None
     # Optimization-specific
     opt_type: str = ""
     current: str = ""

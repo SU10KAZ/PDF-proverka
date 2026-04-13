@@ -222,9 +222,24 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
                 if batch_file.exists() and batch_file.stat().st_size > 100:
                     completed_batches += 1
 
-    # Детальное саммари конвейера
-    pipeline_summary = _build_pipeline_summary(output_dir)
-    pipeline_issues = _build_pipeline_issues(output_dir)
+    # Детальное саммари конвейера (зависит от pipeline_version)
+    pipeline_version = info.get("pipeline_version", "legacy") or "legacy"
+    pipeline_summary = _build_pipeline_summary(output_dir, pipeline_version)
+    pipeline_issues = _build_pipeline_issues(output_dir, pipeline_version)
+
+    # Статус экспертной оценки
+    expert_review_status = ""
+    total_items = findings_count + optimization_count
+    if total_items > 0:
+        review_path = output_dir / "expert_review.json"
+        if review_path.exists():
+            rdata = _load_json(review_path)
+            if rdata and "decisions" in rdata:
+                reviewed_count = len([d for d in rdata["decisions"] if d.get("decision") in ("accepted", "rejected")])
+                if reviewed_count >= total_items:
+                    expert_review_status = "complete"
+                elif reviewed_count > 0:
+                    expert_review_status = "partial"
 
     return ProjectStatus(
         project_id=project_id,
@@ -256,6 +271,8 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
         block_expected=block_expected,
         pipeline_summary=pipeline_summary,
         pipeline_issues=pipeline_issues,
+        pipeline_version=pipeline_version,
+        expert_review_status=expert_review_status,
     )
 
 
@@ -305,6 +322,11 @@ def _get_pipeline_status(output_dir: Path) -> PipelineStatus:
             "prepare": "crop_blocks",
             "tile_audit": "blocks_analysis",
             "main_audit": "findings",
+            # V4 pipeline
+            "v4_extraction": "v4_extraction",
+            "v4_memory": "v4_memory",
+            "v4_candidates": "v4_candidates",
+            "v4_formatter": "v4_formatter",
         }
         valid_statuses = ("done", "error", "partial", "running", "skipped", "interrupted")
         # Маппинг: ключ pipeline_log → файл-индикатор завершения
@@ -323,6 +345,10 @@ def _get_pipeline_status(output_dir: Path) -> PipelineStatus:
             "prepare": "blocks/index.json",
             "tile_audit": "02_blocks_analysis.json",
             "main_audit": "03_findings.json",
+            # V4 pipeline — индикаторы завершения
+            "v4_memory": "canonical_memory_v2.json",
+            "v4_candidates": "candidates_v2.json",
+            "v4_formatter": "03_findings.json",
         }
         for log_key, field in mapping.items():
             stage_info = stages.get(log_key, {})
@@ -395,8 +421,30 @@ _PIPELINE_STAGE_ORDER = [
     ("excel", "Excel-отчёт"),
 ]
 
+# Порядок этапов для v4-проектов (заменяет block_analysis/findings_merge)
+_PIPELINE_STAGE_ORDER_V4 = [
+    ("crop_blocks", "Кроп блоков"),
+    ("text_analysis", "Анализ текста"),
+    ("v4_extraction", "Извлечение фактов"),
+    ("v4_memory", "Канонический граф"),
+    ("v4_candidates", "Генерация кандидатов"),
+    ("v4_formatter", "Формирование замечаний"),
+    ("findings_critic", "Critic замечаний"),
+    ("findings_corrector", "Corrector замечаний"),
+    ("norm_verify", "Верификация норм"),
+    ("optimization", "Оптимизация"),
+    ("optimization_critic", "Critic оптимизации"),
+    ("optimization_corrector", "Corrector оптимизации"),
+    ("excel", "Excel-отчёт"),
+]
 
-def _build_pipeline_issues(output_dir: Path) -> list[str]:
+
+def _get_stage_order(pipeline_version: str = "legacy") -> list[tuple[str, str]]:
+    """Вернуть список (key, label) этапов в зависимости от pipeline_version."""
+    return _PIPELINE_STAGE_ORDER_V4 if pipeline_version == "v4" else _PIPELINE_STAGE_ORDER
+
+
+def _build_pipeline_issues(output_dir: Path, pipeline_version: str = "legacy") -> list[str]:
     """Извлечь проблемы конвейера для индикатора на дашборде.
 
     Проверяет:
@@ -410,10 +458,11 @@ def _build_pipeline_issues(output_dir: Path) -> list[str]:
 
     stages = log["stages"]
     issues = []
+    stage_order = _get_stage_order(pipeline_version)
 
     # Этапы с ошибками
-    _labels = dict(_PIPELINE_STAGE_ORDER)
-    for key, label in _PIPELINE_STAGE_ORDER:
+    _labels = dict(stage_order)
+    for key, label in stage_order:
         info = stages.get(key, {})
         s = info.get("status", "")
         if s in ("error", "interrupted"):
@@ -424,8 +473,10 @@ def _build_pipeline_issues(output_dir: Path) -> list[str]:
 
     # Findings есть, но critic/corrector не запускались
     has_findings = (output_dir / "03_findings.json").exists()
+    # Ключ финального этапа, после которого должен идти critic
+    findings_key = "v4_formatter" if pipeline_version == "v4" else "findings_merge"
     if has_findings:
-        if "findings_critic" not in stages and "findings_merge" in stages:
+        if "findings_critic" not in stages and findings_key in stages:
             issues.append("Critic замечаний: не запускался")
         # Corrector пропущен при наличии проблем в review
         review_path = output_dir / "03_findings_review.json"
@@ -442,16 +493,13 @@ def _build_pipeline_issues(output_dir: Path) -> list[str]:
                 pass
 
     # Нормы не запускались
-    if has_findings and "norm_verify" not in stages and "findings_merge" in stages:
+    if has_findings and "norm_verify" not in stages and findings_key in stages:
         issues.append("Верификация норм: не запускалась")
-
-    # Оптимизация не запускалась (не ошибка, но информация)
-    # — не добавляем, чтобы не шуметь
 
     return issues
 
 
-def _build_pipeline_summary(output_dir: Path) -> list[dict]:
+def _build_pipeline_summary(output_dir: Path, pipeline_version: str = "legacy") -> list[dict]:
     """Собрать детальное саммари конвейера из pipeline_log.json.
 
     Возвращает ВСЕ этапы конвейера. Если этап ещё не запускался —
@@ -464,7 +512,7 @@ def _build_pipeline_summary(output_dir: Path) -> list[dict]:
     stages = log.get("stages", {}) if log else {}
 
     result = []
-    for key, label in _PIPELINE_STAGE_ORDER:
+    for key, label in _get_stage_order(pipeline_version):
         info = stages.get(key)
         if not info:
             result.append({"key": key, "label": label, "status": "pending"})

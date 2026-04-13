@@ -1,0 +1,241 @@
+{
+  "schema_version": "1.0",
+  "discipline": "AR",
+  "discipline_label": "Архитектурные решения",
+
+  "extraction": {
+    "scope_label": "Планировки, фасады, разрезы, пути эвакуации, доступность МГН",
+    "scope_included": ["floor_plans", "facades", "sections", "evacuation", "accessibility"],
+    "scope_excluded": ["interior_finishes", "structural_details"],
+    "entity_types": ["room", "opening", "staircase", "corridor", "elevator", "wall", "spec_row", "note", "other"],
+    "exact_key_fields": {
+      "room": "room_no",
+      "opening": "opening_id",
+      "staircase": "staircase_id",
+      "corridor": "corridor_id",
+      "elevator": "elevator_id",
+      "wall": "wall_id",
+      "spec_row": "spec_position"
+    },
+    "attribute_enum": {
+      "room": [
+        "area_m2", "room_name", "purpose",
+        "floor_level", "ceiling_height_m"
+      ],
+      "opening": [
+        "width_mm", "height_mm", "opening_type",
+        "fire_resistance", "direction", "gost_type"
+      ],
+      "staircase": [
+        "staircase_type", "width_mm", "fire_type",
+        "designation"
+      ],
+      "corridor": [
+        "width_mm", "length_m", "purpose"
+      ],
+      "elevator": [
+        "cabin_width_mm", "cabin_depth_mm",
+        "load_capacity_kg", "elevator_type", "designation"
+      ],
+      "wall": [
+        "thickness_mm", "material", "fire_resistance",
+        "designation"
+      ],
+      "note": ["note_text", "requirement_type"],
+      "spec_row": ["designation", "description"],
+      "other": []
+    },
+    "priority_tasks": [
+      {
+        "id": 1,
+        "title": "Площади помещений",
+        "critical": true,
+        "description": "Для каждого помещения — извлечь area_m2, room_name, purpose. Сверить с минимальными нормами: кухня >= 5 м2, жилая комната >= 8 м2, спальня >= 8 м2.",
+        "examples": [
+          {"input": "Кухня 7.2 м²", "output": "room_name=Кухня, area_m2=7.2, purpose=кухня"},
+          {"input": "Жилая комната 18.5 м²", "output": "room_name=Жилая комната, area_m2=18.5, purpose=жилая"}
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Размеры проёмов и дверей",
+        "critical": true,
+        "description": "Все дверные и оконные проёмы — извлечь width_mm, height_mm, fire_resistance (если указан). Проверить минимальные ширины: жилые >= 800 мм, входные >= 900 мм, МГН >= 900 мм.",
+        "key_phrases": ["ДП", "ДГ", "ДН", "проём", "EI 30", "EI 60"]
+      },
+      {
+        "id": 3,
+        "title": "Пути эвакуации",
+        "critical": true,
+        "description": "Проверить ширину коридоров (>= 1.4 м МОП), ширину лестничных маршей (>= 1.05 м), количество эвакуационных выходов, расстояния до лестничных клеток. Тип лестничных клеток по высоте здания.",
+        "key_phrases": ["эвакуация", "Н1", "Н2", "Н3", "незадымляемая", "лестничная клетка"]
+      },
+      {
+        "id": 4,
+        "title": "Примечания и общие данные",
+        "critical": true,
+        "description": "Примечания на чертежах — прочитай дословно. Общие данные: степень огнестойкости, класс конструктивной пожарной опасности, функциональная пожарная опасность (Ф1.3).",
+        "key_phrases": [
+          "степень огнестойкости",
+          "класс конструктивной пожарной опасности",
+          "Ф1.3",
+          "категория ответственности"
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Доступность для МГН",
+        "critical": false,
+        "description": "Пандусы (уклон <= 1:20), лифты для МГН (кабина >= 1.1x1.4 м), входные площадки >= 1.5x1.5 м, пороги <= 14 мм.",
+        "key_phrases": ["МГН", "пандус", "инвалид", "доступность", "СП 59"]
+      }
+    ]
+  },
+
+  "canonical_memory": {
+    "entity_type_aliases": {
+      "door": "opening",
+      "window": "opening"
+    },
+    "attr_aliases": {
+      "площадь": "area_m2",
+      "ширина": "width_mm",
+      "высота": "height_mm",
+      "text_verbatim": "note_text",
+      "text": "note_text",
+      "name": "designation",
+      "назначение": "purpose"
+    },
+    "ocr_normalized_fields": ["designation", "room_name", "gost_type"]
+  },
+
+  "generators": {
+    "class2_identity": {
+      "eligible_types": ["room", "opening", "staircase"],
+      "unique_per_sheet_types": ["room"]
+    },
+    "class3_cross_view": {
+      "watch_fields": {
+        "room": [
+          "area_m2", "room_name", "purpose",
+          "ceiling_height_m"
+        ],
+        "opening": [
+          "width_mm", "height_mm",
+          "fire_resistance", "opening_type"
+        ],
+        "staircase": [
+          "staircase_type", "width_mm", "fire_type"
+        ],
+        "corridor": [
+          "width_mm", "purpose"
+        ],
+        "elevator": [
+          "cabin_width_mm", "cabin_depth_mm",
+          "load_capacity_kg", "elevator_type"
+        ]
+      },
+      "safety_critical_fields": [
+        "area_m2", "fire_resistance",
+        "width_mm", "staircase_type"
+      ],
+      "topology_fields": ["floor_level"]
+    },
+    "class4_requirement_conflict": {
+      "knowledge_base_file": null,
+      "note_requirement_patterns": [
+        {
+          "pattern_id": "fire_door_required",
+          "regex": "противопожарн\\w*\\s*двер\\w*.*EI\\s*\\d+",
+          "applies_to": "fire_compartment_openings",
+          "required_field": "fire_resistance",
+          "required_value": "EI 60"
+        },
+        {
+          "pattern_id": "smoke_free_staircase",
+          "regex": "незадымляем\\w*\\s*лестнич\\w*\\s*клетк",
+          "applies_to": "staircases_above_28m",
+          "required_field": "fire_type",
+          "required_value": "Н1"
+        }
+      ]
+    }
+  },
+
+  "field_labels": {
+    "area_m2": "площадь помещения",
+    "room_name": "наименование помещения",
+    "purpose": "назначение",
+    "floor_level": "отметка этажа",
+    "ceiling_height_m": "высота потолка",
+    "width_mm": "ширина",
+    "height_mm": "высота",
+    "opening_type": "тип проёма",
+    "fire_resistance": "предел огнестойкости",
+    "direction": "направление открывания",
+    "gost_type": "тип по ГОСТ",
+    "staircase_type": "тип лестничной клетки",
+    "fire_type": "тип по пожарной безопасности",
+    "thickness_mm": "толщина стены",
+    "material": "материал",
+    "cabin_width_mm": "ширина кабины лифта",
+    "cabin_depth_mm": "глубина кабины лифта",
+    "load_capacity_kg": "грузоподъёмность лифта",
+    "elevator_type": "тип лифта",
+    "designation": "обозначение",
+    "description": "описание",
+    "length_m": "длина"
+  },
+
+  "field_units": {
+    "area_m2": "м\u00b2",
+    "ceiling_height_m": "м",
+    "width_mm": "мм",
+    "height_mm": "мм",
+    "thickness_mm": "мм",
+    "cabin_width_mm": "мм",
+    "cabin_depth_mm": "мм",
+    "load_capacity_kg": "кг",
+    "length_m": "м",
+    "floor_level": "м"
+  },
+
+  "norms": {
+    "class2": {
+      "default_norm": "ГОСТ 21.501-2018 — обозначения помещений и проёмов должны быть уникальными и соответствовать экспликации",
+      "default_risk": "Путаница при строительстве, несоответствие проёмов и помещений проекту"
+    },
+    "class3": {
+      "area_fields": {
+        "norm": "СП 54.13330.2022, п. 5 — минимальные площади помещений квартир",
+        "risk": "Площадь помещения ниже нормативного минимума → отказ в экспертизе"
+      },
+      "fire_resistance_fields": {
+        "norm": "Федеральный закон №123-ФЗ, ст. 87, 88 — пределы огнестойкости конструкций и заполнения проёмов",
+        "risk": "Несоответствие огнестойкости → распространение пожара, угроза жизни"
+      },
+      "evacuation_fields": {
+        "norm": "СП 1.13130.2020 — эвакуационные пути и выходы",
+        "risk": "Недостаточная ширина путей эвакуации → угроза жизни при пожаре"
+      },
+      "accessibility_fields": {
+        "norm": "СП 59.13330.2020 — доступность зданий для МГН",
+        "risk": "Нарушение доступности → дискриминация МГН, отказ в экспертизе"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие между чертежами → ошибки при строительстве"
+      }
+    },
+    "class4": {
+      "fire_resistance": {
+        "norm": "Федеральный закон №123-ФЗ — требования к пределам огнестойкости",
+        "risk": "Несоответствие проёма требованиям пожарной безопасности → отказ в экспертизе"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие нормативному требованию"
+      }
+    }
+  }
+}

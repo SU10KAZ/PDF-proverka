@@ -4,6 +4,9 @@ REST API для экспорта отчётов.
 import io
 import json
 import os
+import subprocess
+import sys
+import tempfile
 import zipfile
 from datetime import datetime
 from pathlib import Path
@@ -132,6 +135,31 @@ async def download_audit_package(project_id: str):
             for disc_file in sorted(disc_dir.glob("*.json")):
                 zf.write(str(disc_file), f"discussions/{disc_file.name}")
 
+        # --- Excel-таблица замечаний и оптимизаций (со столбцами Решение / Причина отклонения) ---
+        tmp_xlsx = None
+        try:
+            from webapp.config import GENERATE_EXCEL_SCRIPT
+            with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as tmp:
+                tmp_xlsx = tmp.name
+            env = {**os.environ, "AUDIT_NO_OPEN": "1"}
+            result = subprocess.run(
+                [sys.executable, str(GENERATE_EXCEL_SCRIPT),
+                 str(project_dir), "--out", tmp_xlsx, "--no-summary"],
+                capture_output=True, timeout=60, env=env,
+            )
+            if result.returncode == 0 and os.path.exists(tmp_xlsx) and os.path.getsize(tmp_xlsx) > 0:
+                zf.write(tmp_xlsx, "audit_report.xlsx")
+        except Exception as e:
+            print(f"[audit-package] Excel generation failed: {e}")
+        finally:
+            if tmp_xlsx and os.path.exists(tmp_xlsx):
+                os.unlink(tmp_xlsx)
+
+        # --- expert_review.json (решения эксперта, если есть) ---
+        er = output_dir / "expert_review.json"
+        if er.exists():
+            zf.write(str(er), "expert_review.json")
+
         # --- README.md с инструкцией для LLM ---
         readme = _build_audit_readme(project_dir, output_dir)
         zf.writestr("README.md", readme)
@@ -219,6 +247,8 @@ def _build_audit_readme(project_dir: Path, output_dir: Path) -> str:
 | `optimization_review.json` | Вердикты критика по оптимизации |
 | `blocks/index.json` | Индекс блоков (page, ocr_label, size) — PNG не включены |
 | `discussions/*.json` | История обсуждений (если были) |
+| `audit_report.xlsx` | **Excel-таблица замечаний и оптимизаций** — со столбцами РЕШЕНИЕ и ПРИЧИНА ОТКЛОНЕНИЯ |
+| `expert_review.json` | Решения эксперта (если были приняты ранее) |
 """
 
     readme = f"""# Пакет аудита: {project_name}
@@ -242,6 +272,14 @@ def _build_audit_readme(project_dir: Path, output_dir: Path) -> str:
 2. Начните с `03_findings.json` — это основной файл с замечаниями
 3. Для контекста подключите `document_graph.json` или `*_document.md`
 4. Описания чертежей в `02_blocks_analysis.json` (PNG не включены для экономии места)
+
+## Таблица решений (audit_report.xlsx)
+
+Excel-файл содержит полную таблицу замечаний и оптимизаций со столбцами:
+- **Решение эксперта** — заполните: "Принято" или "Отклонено"
+- **Причина отклонения** — обязательно при отклонении
+
+После заполнения загрузите Excel обратно на платформу: **Дашборд → База знаний → Загрузить решения**
 
 ## Примеры вопросов для LLM
 

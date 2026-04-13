@@ -1,0 +1,213 @@
+{
+  "schema_version": "1.0",
+  "discipline": "EOM",
+  "discipline_label": "Электроснабжение и электрооборудование",
+
+  "extraction": {
+    "scope_label": "ГРЩ (ВРУ, ЩСН, ЩУ)",
+    "scope_included": ["GRSh", "VRU", "ShchSN", "ShchU"],
+    "scope_excluded": ["EG", "UZDP", "ApartmentPanels", "LightningProtection"],
+    "entity_types": ["line", "panel", "breaker", "cable", "current_transformer", "note", "spec_row", "room", "other"],
+    "exact_key_fields": {
+      "line": "line_id",
+      "cable": "line_id",
+      "panel": "panel_id",
+      "breaker": "breaker_id",
+      "current_transformer": "ct_id",
+      "room": "room_no",
+      "spec_row": "spec_position"
+    },
+    "attribute_enum": {
+      "line": [
+        "cable_mark", "phase_count", "phase_section_mm2",
+        "pe_or_n_count", "pe_or_n_section_mm2",
+        "neutral_count", "neutral_section_mm2",
+        "pe_count", "pe_section_mm2",
+        "source_panel", "destination_panel",
+        "length_m", "power_kw", "voltage_drop_pct", "ikz_1a"
+      ],
+      "breaker": [
+        "breaker_model", "breaker_nominal_a",
+        "trip_unit_type", "position"
+      ],
+      "panel": ["designation", "description"],
+      "current_transformer": [
+        "ct_ratio_primary_a", "ct_ratio_secondary_a", "ct_accuracy_class"
+      ],
+      "note": ["note_text", "requirement_type"],
+      "spec_row": ["designation", "description"],
+      "room": ["room_no"]
+    },
+    "priority_tasks": [
+      {
+        "id": 1,
+        "title": "Парсинг кабельных марок",
+        "critical": true,
+        "description": "Везде где видишь марку кабеля — разобрать на жилы. cable_mark, phase_count, phase_section_mm2, pe_or_n_count, pe_or_n_section_mm2.",
+        "examples": [
+          {"input": "ППГнг(А)-HF 4×(1×185)+1×(1×185)", "output": "cable_mark=ППГнг(А)-HF, phase_count=4, phase_section_mm2=185, pe_or_n_count=1, pe_or_n_section_mm2=185"},
+          {"input": "ППГнг(А)-HF 2×(4×(1×185))+1×(1×185)", "output": "cable_mark=ППГнг(А)-HF, phase_count=8 (две параллельные по 4), phase_section_mm2=185, pe_or_n_count=1, pe_or_n_section_mm2=185"},
+          {"input": "ППГнг(А)-HF 4×(1×240)+(1×120)", "output": "cable_mark=ППГнг(А)-HF, phase_count=4, phase_section_mm2=240, pe_or_n_count=1, pe_or_n_section_mm2=120"},
+          {"input": "ППГнг(А)-HF 4×(1×70)+(1×50)", "output": "cable_mark=ППГнг(А)-HF, phase_count=4, phase_section_mm2=70, pe_or_n_count=1, pe_or_n_section_mm2=50"}
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Описания щитов учёта",
+        "critical": true,
+        "description": "Если видишь таблицу спецификации оборудования — для каждой строки с ЩУ/ВРУ/ЩСН прочитай полное описание дословно. Не обрезать!",
+        "key_phrases": ["ЩУ", "ВРУ", "ЩСН", "Шкаф учёта", "щит распределительный"]
+      },
+      {
+        "id": 3,
+        "title": "Примечания с требованиями",
+        "critical": true,
+        "description": "Примечания на чертежах — прочитай дословно.",
+        "key_phrases": [
+          "применить с электронными расцепителями",
+          "применить кабели с индексом FR",
+          "не менее N% резервных АВ",
+          "в огнестойком исполнении EI",
+          "ТТ класс точности не хуже 0.5S",
+          "предусмотреть дополнительные контакты SA/SF",
+          "прокладка взаиморезервируемых кабелей в разных лотках"
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Дубли маркеров",
+        "critical": true,
+        "description": "Если на ОДНОЙ схеме один и тот же маркер линии (М-1.5) использован дважды для разных направлений — создай два отдельных entity_mention и relation duplicate_identifier_with."
+      },
+      {
+        "id": 5,
+        "title": "Автоматы QF с марками",
+        "critical": false,
+        "description": "Каждый автомат QF — извлечь designation, breaker_model, breaker_nominal_a, location."
+      }
+    ]
+  },
+
+  "canonical_memory": {
+    "entity_type_aliases": {
+      "cable": "line"
+    },
+    "attr_aliases": {
+      "model": "breaker_model",
+      "nominal_A": "breaker_nominal_a",
+      "nominal_a": "breaker_nominal_a",
+      "text_verbatim": "note_text",
+      "text": "note_text",
+      "name": "designation"
+    },
+    "ocr_normalized_fields": ["cable_mark", "breaker_model", "designation"]
+  },
+
+  "generators": {
+    "class2_identity": {
+      "eligible_types": ["line", "breaker"],
+      "unique_per_sheet_types": ["line"]
+    },
+    "class3_cross_view": {
+      "watch_fields": {
+        "line": [
+          "phase_section_mm2", "phase_count",
+          "neutral_section_mm2", "neutral_count",
+          "pe_count", "pe_section_mm2",
+          "pe_or_n_section_mm2", "pe_or_n_count",
+          "cable_mark", "source_panel", "destination_panel"
+        ],
+        "panel": ["designation", "description"]
+      },
+      "safety_critical_fields": [
+        "phase_section_mm2", "phase_count",
+        "neutral_section_mm2", "neutral_count",
+        "pe_count", "pe_section_mm2",
+        "pe_or_n_count", "pe_or_n_section_mm2"
+      ],
+      "topology_fields": ["source_panel", "destination_panel"]
+    },
+    "class4_requirement_conflict": {
+      "knowledge_base_file": "schemas/breaker_kb.json",
+      "note_requirement_patterns": [
+        {
+          "pattern_id": "electronic_trip_unit",
+          "regex": "(?:электронн|electronic).*расцепител",
+          "applies_to": "outgoing_breakers_grsh",
+          "required_field": "trip_unit_type",
+          "required_value": "электронный"
+        },
+        {
+          "pattern_id": "sa_sf_contacts",
+          "regex": "контакт\\w*\\s*(?:состояни|SA|SF)",
+          "applies_to": "all_breakers",
+          "required_field": "has_aux_contacts",
+          "required_value": true
+        }
+      ]
+    }
+  },
+
+  "field_labels": {
+    "phase_section_mm2": "сечение фазной жилы",
+    "phase_count": "количество фаз",
+    "neutral_section_mm2": "сечение нейтрали",
+    "neutral_count": "количество нейтралей",
+    "pe_count": "количество PE жил",
+    "pe_section_mm2": "сечение PE жилы",
+    "pe_or_n_count": "количество PE/N жил",
+    "pe_or_n_section_mm2": "сечение PE/N жилы",
+    "cable_mark": "марка кабеля",
+    "source_panel": "источник питания",
+    "destination_panel": "потребитель",
+    "breaker_model": "модель автомата",
+    "breaker_nominal_a": "номинал автомата",
+    "designation": "обозначение",
+    "description": "описание",
+    "trip_unit_type": "тип расцепителя",
+    "identifier_uniqueness": "уникальность маркера"
+  },
+
+  "field_units": {
+    "phase_section_mm2": "мм²",
+    "neutral_section_mm2": "мм²",
+    "pe_section_mm2": "мм²",
+    "pe_or_n_section_mm2": "мм²",
+    "breaker_nominal_a": "А"
+  },
+
+  "norms": {
+    "class2": {
+      "default_norm": "ГОСТ 21.613-2014, п. 4.1 — обозначения элементов на схемах должны быть уникальными",
+      "default_risk": "Путаница при монтаже, неоднозначность привязки кабеля к потребителю"
+    },
+    "class3": {
+      "section_fields": {
+        "norm": "СП 256.1325800.2016, п. 15.2 — данные о кабелях должны быть согласованы между схемами и кабельным журналом",
+        "risk": "Неправильный выбор сечения → перегрев, пожар, отказ в экспертизе"
+      },
+      "pe_count_fields": {
+        "norm": "ПУЭ-7, п. 1.7.131 — число и сечение PE/N проводников определяется расчётом",
+        "risk": "Несоответствие PE/N → нарушение заземления, опасность поражения током"
+      },
+      "topology_fields": {
+        "norm": null,
+        "risk": "Ошибка в кабельном журнале при монтаже"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие между чертежами → ошибки при монтаже"
+      }
+    },
+    "class4": {
+      "trip_unit_type": {
+        "norm": "ГОСТ Р 50030.2-2010 — типы расцепителей; примечание проекта",
+        "risk": "Несоответствие проектного решения требованию примечания → отказ в экспертизе"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие нормативному требованию"
+      }
+    }
+  }
+}

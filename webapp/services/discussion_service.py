@@ -1031,6 +1031,7 @@ def list_discussion_items(
                 norm=f.get("norm") or f.get("norm_reference") or "",
                 recommendation=f.get("solution") or f.get("recommendation") or "",
                 page=f.get("page"),
+                sub_findings=f.get("sub_findings"),
             ))
     else:
         data = _load_json(output_dir / "optimization.json")

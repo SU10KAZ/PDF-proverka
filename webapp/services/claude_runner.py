@@ -125,6 +125,8 @@ __all__ = [
     # runners — блоковый пайплайн
     "run_text_analysis", "run_block_batch", "run_findings_merge",
     "run_findings_critic", "run_findings_corrector",
+    # runners — v4 pipeline (fact-first)
+    "run_block_batch_v4", "run_findings_merge_v4",
     # runners — optimization review
     "run_optimization_critic", "run_optimization_corrector",
     # task_builder — блоковый пайплайн
@@ -310,6 +312,118 @@ async def run_findings_merge(
 
     exit_code = 0 if not result.is_error else 1
     return exit_code, result.text, result
+
+
+# ─── V4 pipeline (fact-first) — заменяет block_batch + findings_merge ─
+
+async def run_block_batch_v4(
+    batch_data: dict,
+    project_info: dict,
+    project_id: str,
+    total_batches: int,
+    on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+) -> tuple[int, str, AnyResult]:
+    """V4 extraction для одного batch → typed_facts_batch_NNN.json.
+
+    Совместим по сигнатуре с run_block_batch — можно подставить условно.
+    Возвращает tuple (exit_code, combined_output, result) где result — CLIResult или LLMResult.
+    """
+    from webapp.services.v4.extraction import run_extraction_batch
+
+    batch_id = batch_data.get("batch_id", 0)
+    stage_key = f"v4_extraction_{batch_id:03d}"
+
+    exit_code, combined, extra = await run_extraction_batch(
+        batch_data, project_info, project_id, total_batches,
+        on_output=on_output,
+    )
+
+    # Формируем result объект совместимый с downstream usage tracking
+    duration_ms = int((extra.get("duration_s", 0.0) or 0.0) * 1000)
+    result = LLMResult(
+        text=combined[:5000] if combined else "",
+        json_data=None,
+        input_tokens=extra.get("input_tokens", 0),
+        output_tokens=extra.get("output_tokens", 0),
+        cost_usd=extra.get("cost_usd", 0.0),
+        duration_ms=duration_ms,
+        model=get_stage_model("block_batch"),
+        is_error=(exit_code != 0),
+        error_message=combined[:500] if exit_code != 0 else "",
+    )
+
+    _save_audit_trail(
+        project_id, f"02_{stage_key}", result.model,
+        result.input_tokens, result.output_tokens,
+        result.duration_ms, {"mentions": extra.get("mentions", 0)},
+    )
+
+    return exit_code, combined, result
+
+
+async def run_findings_merge_v4(
+    project_info: dict,
+    project_id: str,
+    on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+    stage_callback=None,
+) -> tuple[int, str, AnyResult]:
+    """V4 post-extraction: memory → candidates → formatter → 03_findings.json.
+
+    Совместим по сигнатуре с run_findings_merge — можно подставить условно.
+    stage_callback(stage_key, status) — опционально, для обновления v4_memory/v4_candidates/v4_formatter
+    логов в real-time.
+    """
+    from webapp.services.v4.pipeline import run_post_extraction_pipeline
+    from webapp.services.project_service import resolve_project_dir
+
+    # Кол-во блоков — для meta.blocks_analyzed в findings
+    blocks_dir = resolve_project_dir(project_id) / "_output" / "blocks"
+    blocks_analyzed = 0
+    if blocks_dir.exists():
+        blocks_analyzed = sum(1 for _ in blocks_dir.glob("*.png"))
+
+    # Код дисциплины для v4_config
+    discipline_code = (project_info or {}).get("section", "EOM")
+
+    try:
+        results = await run_post_extraction_pipeline(
+            project_id,
+            blocks_analyzed=blocks_analyzed,
+            stage_callback=stage_callback,
+            discipline_code=discipline_code,
+        )
+    except Exception as e:
+        err_msg = f"v4 post-extraction pipeline failed: {e}"
+        result = LLMResult(
+            text="", is_error=True, error_message=err_msg,
+            model="v4_pipeline",
+        )
+        return 1, err_msg, result
+
+    total_findings = results.get("formatter", {}).get("total_findings", 0)
+    summary = (
+        f"v4: memory={results['memory']['stats']} "
+        f"candidates={results['candidates']['stats']} "
+        f"findings={total_findings}"
+    )
+
+    result = LLMResult(
+        text=summary,
+        json_data=None,
+        input_tokens=0,
+        output_tokens=0,
+        cost_usd=0.0,
+        duration_ms=0,
+        model="v4_pipeline",
+        is_error=False,
+    )
+
+    _save_audit_trail(
+        project_id, "03_findings_merge_v4", "v4_pipeline",
+        0, 0, 0, results,
+    )
+
+    return 0, summary, result
 
 
 # ─── Верификация нормативных ссылок (Claude CLI, Sonnet) ──────────────
@@ -545,12 +659,12 @@ async def run_findings_critic(
 
     if is_claude_stage("findings_critic"):
         model = get_stage_model("findings_critic")
-        task_text = prepare_findings_critic_task(project_info, project_id)
+        task_text = prepare_findings_critic_task(project_info, project_id, chunk_suffix=chunk_suffix)
         exit_code, combined, cli_result = await _run_cli(
             task_text, FINDINGS_REVIEW_TOOLS, CLAUDE_FINDINGS_CRITIC_TIMEOUT,
             on_output, stage="findings_critic", project_id=project_id, model=model,
         )
-        _save_audit_trail(project_id, "03b_findings_critic", model, 0, 0, cli_result.duration_ms, cli_result.result_text)
+        _save_audit_trail(project_id, f"03b_findings_critic{chunk_suffix}", model, 0, 0, cli_result.duration_ms, cli_result.result_text)
         return exit_code, combined, cli_result
 
     # OpenRouter path

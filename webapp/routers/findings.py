@@ -42,6 +42,7 @@ async def get_findings(
     search: Optional[str] = Query(None, description="Полнотекстовый поиск"),
     limit: Optional[int] = Query(None, ge=1, le=500, description="Макс. замечаний"),
     offset: Optional[int] = Query(None, ge=0, description="Смещение"),
+    group: bool = Query(False, description="Группировать похожие замечания"),
 ):
     """Замечания проекта с фильтрацией и пагинацией."""
     result = findings_service.get_findings(
@@ -52,6 +53,7 @@ async def get_findings(
         search=search,
         limit=limit,
         offset=offset,
+        group=group,
     )
     if result is None:
         raise HTTPException(404, f"Замечания не найдены для '{project_id}'. Возможно, аудит ещё не проводился.")

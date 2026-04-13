@@ -59,14 +59,25 @@ def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewe
     output_dir = project_dir / "_output"
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # 1. Сохранить per-project файл
+    # 1. Сохранить per-project файл (merge с существующими решениями)
+    review_path = output_dir / "expert_review.json"
+    existing = _load_json(review_path)
+    existing_decisions = []
+    if existing and "decisions" in existing:
+        existing_decisions = existing["decisions"]
+
+    # Новые решения перезаписывают старые по item_id
+    new_ids = {d.item_id for d in decisions}
+    merged = [d for d in existing_decisions if d.get("item_id") not in new_ids]
+    merged.extend([d.model_dump() for d in decisions])
+
     review_data = {
         "project_id": project_id,
         "reviewer": reviewer,
         "reviewed_at": _now_iso(),
-        "decisions": [d.model_dump() for d in decisions],
+        "decisions": merged,
     }
-    _save_json(output_dir / "expert_review.json", review_data)
+    _save_json(review_path, review_data)
 
     # 2. Обогатить и добавить в глобальный лог
     enriched = _enrich_decisions(project_id, decisions, reviewer)
@@ -521,7 +532,7 @@ def import_decisions_from_excel(file_path: str) -> dict:
             # Нормализация
             if decision_raw in ("принято", "accepted", "да", "yes", "+"):
                 decision = "accepted"
-            elif decision_raw in ("отклонено", "rejected", "нет", "no", "-"):
+            elif decision_raw in ("отклонено", "отклонить", "rejected", "нет", "no", "-"):
                 decision = "rejected"
             else:
                 continue
