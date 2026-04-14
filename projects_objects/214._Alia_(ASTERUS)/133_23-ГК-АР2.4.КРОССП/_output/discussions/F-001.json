@@ -1,0 +1,12 @@
+{
+  "item_id": "F-001",
+  "item_type": "finding",
+  "model": "",
+  "status": "confirmed",
+  "resolution_summary": "test",
+  "messages": [],
+  "summary_of_old": null,
+  "total_input_tokens": 0,
+  "total_output_tokens": 0,
+  "total_cost_usd": 0.0
+}
