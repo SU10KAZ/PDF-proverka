@@ -1,0 +1,228 @@
+{
+  "schema_version": "1.0",
+  "discipline": "POS",
+  "discipline_label": "Проект организации строительства",
+
+  "extraction": {
+    "scope_label": "ПОС (краны, механизмы, временные дороги, зоны, складские площадки)",
+    "scope_included": ["Crane", "Machinery", "TemporaryRoad", "Zone", "StorageArea", "SiteLayout"],
+    "scope_excluded": ["DetailedPPR", "CostEstimate", "DesignDrawings"],
+    "entity_types": ["crane", "machinery", "temporary_road", "zone_pos", "storage_area", "spec_row", "note", "other"],
+    "exact_key_fields": {
+      "crane": "designation",
+      "machinery": "designation",
+      "temporary_road": "designation",
+      "zone_pos": "zone_type",
+      "storage_area": "designation",
+      "spec_row": "spec_position"
+    },
+    "attribute_enum": {
+      "crane": [
+        "designation", "model", "capacity_t",
+        "reach_m", "hook_height_m",
+        "max_load_at_reach_t", "base_dimensions_m",
+        "power_kw", "rail_gauge_m"
+      ],
+      "machinery": [
+        "designation", "type", "model",
+        "power_kw", "capacity", "quantity",
+        "usage_period"
+      ],
+      "temporary_road": [
+        "designation", "width_m", "type",
+        "length_m", "surface_type",
+        "turning_radius_m", "load_capacity_t"
+      ],
+      "zone_pos": [
+        "zone_type", "designation", "area_m2",
+        "boundary_description", "restriction",
+        "distance_to_building_m"
+      ],
+      "storage_area": [
+        "designation", "area_m2", "type",
+        "surface_type", "stored_materials",
+        "distance_to_crane_m", "aisle_width_m"
+      ],
+      "note": ["note_text", "requirement_type"],
+      "spec_row": ["designation", "description", "quantity"],
+      "other": ["designation", "description"]
+    },
+    "priority_tasks": [
+      {
+        "id": 1,
+        "title": "Грузоподъёмные механизмы — характеристики и зоны",
+        "critical": true,
+        "description": "Для каждого крана извлечь грузоподъёмность, вылет стрелы, высоту подъёма крюка. Проверить: грузоподъёмность на макс. вылете >= массы самого тяжёлого элемента, вылет покрывает всю зону монтажа. Опасные зоны не пересекают жилую застройку без защитных мер.",
+        "examples": [
+          {"input": "КБ-674А, Qmax=25т, вылет 35м, Qвыл=5.5т", "output": "designation=КБ-674А, capacity_t=25, reach_m=35, max_load_at_reach_t=5.5"}
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Временные дороги — ширина и покрытие",
+        "critical": true,
+        "description": "Для каждой временной дороги извлечь ширину, тип покрытия, длину. Проверить: односторонние >= 3.5 м, двусторонние >= 6.0 м. Радиусы поворотов для строительной техники. Наличие мойки колёс на выезде."
+      },
+      {
+        "id": 3,
+        "title": "Складские площадки — размеры и размещение",
+        "critical": true,
+        "description": "Для каждой складской площадки извлечь площадь, тип хранения, покрытие. Проверить: проходы между штабелями >= 1.0 м, расположение в зоне действия крана, подъездные пути."
+      },
+      {
+        "id": 4,
+        "title": "Опасные зоны — границы и ограждение",
+        "critical": true,
+        "description": "Извлечь все опасные зоны: монтажные, зоны работы кранов, зоны перемещения груза. Проверить пересечение с существующей застройкой, дорогами, ЛЭП. Ограждение: сплошное >= 2.0 м, защитный козырёк над тротуарами."
+      },
+      {
+        "id": 5,
+        "title": "Календарный план и потребность в ресурсах",
+        "critical": false,
+        "description": "Проверить последовательность работ, продолжительность строительства. Соответствие объёмов работ проектным решениям. Графики потребности в рабочих кадрах и механизмах."
+      }
+    ]
+  },
+
+  "canonical_memory": {
+    "entity_type_aliases": {
+      "tower_crane": "crane",
+      "mobile_crane": "crane",
+      "zone": "zone_pos",
+      "road": "temporary_road",
+      "warehouse": "storage_area"
+    },
+    "attr_aliases": {
+      "name": "designation",
+      "lifting_capacity": "capacity_t",
+      "boom_reach": "reach_m",
+      "hook_height": "hook_height_m"
+    },
+    "ocr_normalized_fields": ["designation", "model", "type"]
+  },
+
+  "generators": {
+    "class2_identity": {
+      "eligible_types": ["crane", "machinery", "storage_area"],
+      "unique_per_sheet_types": ["crane"]
+    },
+    "class3_cross_view": {
+      "watch_fields": {
+        "crane": ["capacity_t", "reach_m", "hook_height_m", "max_load_at_reach_t", "power_kw"],
+        "machinery": ["designation", "power_kw", "quantity"],
+        "temporary_road": ["width_m", "type", "surface_type"]
+      },
+      "safety_critical_fields": [
+        "capacity_t", "reach_m", "max_load_at_reach_t",
+        "hook_height_m", "width_m"
+      ],
+      "topology_fields": ["designation"]
+    },
+    "class4_requirement_conflict": {
+      "knowledge_base_file": null,
+      "note_requirement_patterns": [
+        {
+          "pattern_id": "fence_height",
+          "regex": "огражден\\w*.*(?:строительн|площадк)",
+          "applies_to": "zone_pos",
+          "required_field": "restriction",
+          "required_value": "fence_2m"
+        },
+        {
+          "pattern_id": "wheel_wash",
+          "regex": "мойк\\w*\\s*колёс|пункт\\s*очистк",
+          "applies_to": "temporary_road",
+          "required_field": "type",
+          "required_value": "has_wheel_wash"
+        }
+      ]
+    }
+  },
+
+  "field_labels": {
+    "capacity_t": "грузоподъёмность",
+    "reach_m": "вылет стрелы",
+    "hook_height_m": "высота подъёма крюка",
+    "max_load_at_reach_t": "грузоподъёмность на макс. вылете",
+    "base_dimensions_m": "размеры базы",
+    "rail_gauge_m": "колея подкрановых путей",
+    "power_kw": "электрическая мощность",
+    "type": "тип",
+    "model": "модель",
+    "capacity": "производительность",
+    "quantity": "количество",
+    "usage_period": "период использования",
+    "width_m": "ширина",
+    "length_m": "длина",
+    "surface_type": "тип покрытия",
+    "turning_radius_m": "радиус поворота",
+    "load_capacity_t": "грузоподъёмность покрытия",
+    "zone_type": "тип зоны",
+    "area_m2": "площадь",
+    "boundary_description": "описание границ",
+    "restriction": "ограничение",
+    "distance_to_building_m": "расстояние до здания",
+    "stored_materials": "складируемые материалы",
+    "distance_to_crane_m": "расстояние до крана",
+    "aisle_width_m": "ширина прохода",
+    "designation": "обозначение",
+    "description": "описание"
+  },
+
+  "field_units": {
+    "capacity_t": "т",
+    "reach_m": "м",
+    "hook_height_m": "м",
+    "max_load_at_reach_t": "т",
+    "base_dimensions_m": "м",
+    "rail_gauge_m": "м",
+    "power_kw": "кВт",
+    "width_m": "м",
+    "length_m": "м",
+    "turning_radius_m": "м",
+    "load_capacity_t": "т",
+    "area_m2": "м\u00b2",
+    "distance_to_building_m": "м",
+    "distance_to_crane_m": "м",
+    "aisle_width_m": "м"
+  },
+
+  "norms": {
+    "class2": {
+      "default_norm": "ГОСТ Р 21.101-2020 — обозначения на стройгенплане должны быть уникальными и однозначными",
+      "default_risk": "Путаница при организации строительной площадки"
+    },
+    "class3": {
+      "crane_fields": {
+        "norm": "РД 11-06-2007 — методические рекомендации о порядке разработки ППР грузоподъёмными машинами",
+        "risk": "Несоответствие характеристик крана → невозможность монтажа элементов, аварийная ситуация"
+      },
+      "road_fields": {
+        "norm": "СНиП 12-03-2001, п. 6.2 — временные автомобильные дороги на строительной площадке",
+        "risk": "Недостаточная ширина или грузоподъёмность дороги → невозможность проезда техники"
+      },
+      "zone_fields": {
+        "norm": "СНиП 12-03-2001, п. 6.1 — опасные зоны, ограждение строительной площадки",
+        "risk": "Пересечение опасных зон с проходами/проездами → угроза жизни"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие между стройгенпланом и расчётами → ошибки при организации строительства"
+      }
+    },
+    "class4": {
+      "crane_capacity": {
+        "norm": "РД 11-06-2007 — грузоподъёмность крана на рабочем вылете должна быть не менее массы монтажного элемента с оснасткой",
+        "risk": "Недостаточная грузоподъёмность → невозможность монтажа, простой строительства"
+      },
+      "fence": {
+        "norm": "СНиП 12-03-2001, п. 6.2.2 — ограждение стройплощадки высотой не менее 2.0 м",
+        "risk": "Недостаточное ограждение → доступ посторонних лиц, угроза безопасности"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие нормативному требованию"
+      }
+    }
+  }
+}

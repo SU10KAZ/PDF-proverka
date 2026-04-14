@@ -2,6 +2,7 @@
 Audit Manager — конфигурация приложения.
 Пути, константы, настройки.
 """
+import json
 import os
 import shutil
 from pathlib import Path
@@ -106,7 +107,7 @@ CLAUDE_OPTIMIZATION_TIMEOUT = 3600  # 60 мин на оптимизацию
 CLAUDE_TEXT_ANALYSIS_TIMEOUT = 1800   # 30 мин на анализ текста MD
 CLAUDE_BLOCK_ANALYSIS_TIMEOUT = 1800  # 30 мин на пакет блоков (Opus CLI Vision медленнее GPT/Gemini)
 CLAUDE_FINDINGS_MERGE_TIMEOUT = 1800  # 30 мин на свод замечаний (02_blocks может быть >800KB)
-CLAUDE_FINDINGS_CRITIC_TIMEOUT = 600   # 10 мин — critic проверяет готовые замечания
+CLAUDE_FINDINGS_CRITIC_TIMEOUT = 1200  # 20 мин — critic чанк (до 50 findings) через CLI может занять 8-15 мин
 CRITIC_CHUNK_SIZE = 50                 # макс. замечаний на 1 запуск Critic
 CLAUDE_FINDINGS_CORRECTOR_TIMEOUT = 1200  # 20 мин — Sonnet CLI может быть медленнее Opus
 CORRECTOR_CHUNK_SIZE = 5                 # макс. замечаний на 1 запуск Corrector
@@ -147,11 +148,12 @@ _stage_models: dict[str, str | None] = {
 # ═══════════════════════════════════════════════════════════════════════════
 # Унифицированная конфигурация моделей по этапам (UI Stage Model Config)
 # Объединяет Claude CLI и OpenRouter модели в единый маппинг.
+# Персистится в webapp/data/stage_models.json — переживает рестарт сервера.
 # ═══════════════════════════════════════════════════════════════════════════
 
-STAGE_MODEL_CONFIG: dict[str, str] = {
+_STAGE_MODEL_DEFAULTS: dict[str, str] = {
     "text_analysis":          "claude-opus-4-6",
-    "block_batch":            "openai/gpt-5.4",
+    "block_batch":            "claude-opus-4-6",
     "findings_merge":         "claude-opus-4-6",
     "findings_critic":        "openai/gpt-5.4",
     "findings_corrector":     "claude-opus-4-6",
@@ -162,11 +164,41 @@ STAGE_MODEL_CONFIG: dict[str, str] = {
     "optimization_corrector": "claude-sonnet-4-6",
 }
 
+_STAGE_MODELS_FILE = Path(__file__).resolve().parent / "data" / "stage_models.json"
+
+
+def _load_stage_model_config() -> dict[str, str]:
+    """Загрузить конфиг моделей из файла, fallback на дефолты."""
+    config = dict(_STAGE_MODEL_DEFAULTS)
+    if _STAGE_MODELS_FILE.exists():
+        try:
+            with open(_STAGE_MODELS_FILE, "r", encoding="utf-8") as f:
+                saved = json.load(f)
+            # Применяем только известные этапы с валидными значениями
+            for stage, model in saved.items():
+                if stage in config and isinstance(model, str) and model:
+                    config[stage] = model
+            print(f"[config] Stage models loaded from {_STAGE_MODELS_FILE.name}")
+        except Exception as e:
+            print(f"[config] Failed to load stage_models.json: {e}")
+    return config
+
+
+def _save_stage_model_config():
+    """Сохранить текущий конфиг моделей в файл."""
+    try:
+        _STAGE_MODELS_FILE.parent.mkdir(parents=True, exist_ok=True)
+        with open(_STAGE_MODELS_FILE, "w", encoding="utf-8") as f:
+            json.dump(STAGE_MODEL_CONFIG, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"[config] Failed to save stage_models.json: {e}")
+
+
+STAGE_MODEL_CONFIG: dict[str, str] = _load_stage_model_config()
+
 AVAILABLE_MODELS = [
     {"id": "claude-opus-4-6", "label": "Opus (CLI)", "provider": "claude_cli"},
     {"id": "claude-sonnet-4-6", "label": "Sonnet (CLI)", "provider": "claude_cli"},
-    {"id": "anthropic/claude-opus-4-6", "label": "Opus", "provider": "openrouter"},
-    {"id": "anthropic/claude-sonnet-4-6", "label": "Sonnet", "provider": "openrouter"},
     {"id": "openai/gpt-5.4", "label": "GPT-5.4", "provider": "openrouter"},
     {"id": "google/gemini-3.1-pro-preview", "label": "Gemini", "provider": "openrouter"},
 ]
@@ -238,7 +270,7 @@ def get_stage_models() -> dict[str, str | None]:
     return dict(_stage_models)
 
 # Параллельная обработка батчей блоков
-MAX_PARALLEL_BATCHES = 1  # ВРЕМЕННО для эксперимента Opus CLI — обычно 3
+MAX_PARALLEL_BATCHES = 5  # параллельных батчей
 
 # ─── Rate Limit: пауза вместо ошибки ───
 RATE_LIMIT_THRESHOLD_PCT = 90   # при 90% лимита — предварительная проверка перед запуском

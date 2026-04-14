@@ -32,12 +32,15 @@ def detect_resume_stage(project_id: str) -> dict:
     has_02_blocks = (output_dir / "02_blocks_analysis.json").exists()
     has_01_text = (output_dir / "01_text_analysis.json").exists()
 
+    # V4 pipeline: typed_facts заменяют 02_blocks_analysis
+    has_typed_facts = any(output_dir.glob("typed_facts_batch_*.json"))
+
     # Legacy (тайлы)
     has_tile_batches = (output_dir / "tile_batches.json").exists()
     has_02_tiles = (output_dir / "02_tiles_analysis.json").exists()
 
-    # Объединённая проверка 02
-    has_02 = has_02_blocks or has_02_tiles
+    # Объединённая проверка 02 (legacy OR v4)
+    has_02 = has_02_blocks or has_02_tiles or has_typed_facts
 
     # Подсчёт завершённых батчей (блоки приоритет → тайлы fallback)
     completed_batches = 0
@@ -120,6 +123,17 @@ def detect_resume_stage(project_id: str) -> dict:
                             "detail": "01_text_analysis.json не создан",
                             "can_resume": True,
                         }
+
+            # Если финальный этап уже завершён, проект нельзя "продолжать",
+            # даже если отсутствует вспомогательный снапшот 03a_norms_verified.json.
+            excel_info = stages_log.get("excel", {})
+            if excel_info.get("status") in ("done", "skipped"):
+                return {
+                    "stage": "completed",
+                    "stage_label": "Завершён",
+                    "detail": "Все этапы выполнены",
+                    "can_resume": False,
+                }
         except Exception:
             pass
 

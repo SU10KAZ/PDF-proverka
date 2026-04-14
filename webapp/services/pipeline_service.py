@@ -27,7 +27,7 @@ from webapp.config import get_claude_model, get_model_for_stage
 from webapp.models.usage import UsageRecord
 from webapp.services.process_runner import run_script, kill_all_processes
 from webapp.services import claude_runner
-from webapp.services.usage_service import usage_tracker, global_scanner
+from webapp.services.usage_service import usage_tracker, global_scanner, paid_cost_tracker
 from webapp.services.resume_detector import detect_resume_stage as _detect_resume_stage
 from webapp.services import audit_logger
 from webapp.services.project_service import resolve_project_dir
@@ -40,6 +40,30 @@ def _project_path(pid: str) -> str:
         return str(resolved.relative_to(BASE_DIR))
     except ValueError:
         return str(resolved)
+
+
+def _is_v4(project_info: dict | None) -> bool:
+    """Проверить, помечен ли проект как v4 pipeline."""
+    if not project_info:
+        return False
+    return (project_info.get("pipeline_version") or "legacy") == "v4"
+
+
+def _stage_log_key(project_info: dict | None, legacy_key: str) -> str:
+    """Вернуть нужный stage log key для проекта.
+
+    Для v4-проектов:
+      block_analysis → v4_extraction
+      findings_merge → v4_formatter (финальный шаг v4 цепочки)
+    Для legacy возвращает legacy_key без изменений.
+    """
+    if not _is_v4(project_info):
+        return legacy_key
+    mapping = {
+        "block_analysis": "v4_extraction",
+        "findings_merge": "v4_formatter",
+    }
+    return mapping.get(legacy_key, legacy_key)
 
 
 def _extract_error_detail(exit_code: int, output: str, max_len: int = 120) -> str:
@@ -190,7 +214,7 @@ class PipelineManager:
         # Отправляем WS-обновление
         await ws_manager.broadcast_to_project(
             job.project_id,
-            WSMessage.status(job.project_id, "paused"),
+            WSMessage.status_change(job.project_id, {"status": "paused"}),
         )
 
         # Ждём unpause
@@ -367,6 +391,8 @@ class PipelineManager:
             output_tokens=output_tokens,
         )
         usage_tracker.record_usage(record)
+        if actual_cost > 0:
+            paid_cost_tracker.add(actual_cost)
         job.cost_usd += actual_cost
         job.cli_calls += 1
 
@@ -553,6 +579,19 @@ class PipelineManager:
         job.batch_started_at = None
 
     @staticmethod
+    def _backfill_highlight_regions(project_id: str):
+        """Восстановить highlight_regions в 03_findings.json из 02_blocks_analysis.json.
+
+        При findings_merge LLM иногда теряет highlight_regions из G-замечаний.
+        Этот метод подтягивает координаты обратно по source_block_ids/related_block_ids.
+        """
+        from backfill_highlights import backfill_project
+        project_dir = resolve_project_dir(project_id)
+        result = backfill_project(project_dir)
+        if result["fixed"] > 0:
+            print(f"[{project_id}] highlight_regions restored: {result['fixed']}")
+
+    @staticmethod
     def _backfill_text_evidence_in_findings(project_id: str):
         """Backfill text-evidence + sheet в 03_findings.json.
 
@@ -681,6 +720,146 @@ class PipelineManager:
             return enrich_findings_file(target_path)
         except Exception:
             return None
+
+    @staticmethod
+    def _merge_similar_findings(project_id: str) -> dict | None:
+        """Объединить похожие замечания в 03_findings.json.
+
+        Группирует по нормализованному паттерну (severity + category + problem).
+        Для каждой группы создаёт одно замечание-лидер с полным перечнем случаев
+        в поле `sub_findings` и сводным описанием.
+        """
+        from webapp.services.findings_service import (
+            _normalize_problem_pattern,
+        )
+        from collections import OrderedDict
+
+        output_dir = resolve_project_dir(project_id) / "_output"
+        findings_path = output_dir / "03_findings.json"
+        if not findings_path.exists():
+            return None
+
+        try:
+            fd = json.loads(findings_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            return None
+
+        items = fd.get("findings", fd.get("items", []))
+        if len(items) < 2:
+            return None
+
+        import re as _re
+
+        # Группировка
+        groups: OrderedDict[str, list[dict]] = OrderedDict()
+        for f in items:
+            problem = f.get("problem") or f.get("description") or f.get("finding") or ""
+            severity = f.get("severity", "")
+            category = f.get("category", "")
+            pattern = _normalize_problem_pattern(problem)
+            key = f"{severity}||{category}||{pattern}"
+            if key not in groups:
+                groups[key] = []
+            groups[key].append(f)
+
+        # Построить новый список
+        merged_items = []
+        merge_count = 0
+        new_id = 1
+        for key, group_items in groups.items():
+            if len(group_items) == 1:
+                item = group_items[0]
+                item["id"] = f"F-{new_id:03d}"
+                merged_items.append(item)
+                new_id += 1
+            else:
+                merge_count += 1
+                leader = dict(group_items[0])  # копия лидера
+                leader["id"] = f"F-{new_id:03d}"
+                new_id += 1
+
+                # Собрать все sheet/page/evidence/block_ids
+                all_sheets = []
+                all_pages = []
+                all_block_ids = []
+                all_evidence = []
+                details_lines = []
+
+                for i, it in enumerate(group_items, 1):
+                    sh = it.get("sheet", "")
+                    pg = it.get("page")
+                    problem = it.get("problem") or it.get("description") or it.get("finding") or ""
+                    details_lines.append(f"{i}) {problem}")
+
+                    if sh and sh not in all_sheets:
+                        all_sheets.append(sh)
+                    if pg:
+                        pgs = pg if isinstance(pg, list) else [pg]
+                        for p in pgs:
+                            if p not in all_pages:
+                                all_pages.append(p)
+                    for bid in (it.get("related_block_ids") or []):
+                        if bid not in all_block_ids:
+                            all_block_ids.append(bid)
+                    for ev in (it.get("evidence") or []):
+                        all_evidence.append(ev)
+
+                # Сводное описание
+                leader_problem = leader.get("problem") or leader.get("description") or ""
+                summary = f"[Объединено {len(group_items)} замечаний] {leader_problem}"
+                leader["problem"] = summary
+                leader["description"] = "\n".join(details_lines)
+                leader["sheet"] = ", ".join(all_sheets) if all_sheets else leader.get("sheet", "")
+                leader["page"] = sorted(set(all_pages)) if all_pages else leader.get("page")
+                leader["related_block_ids"] = all_block_ids
+                leader["evidence"] = all_evidence
+                leader["sub_findings"] = [
+                    {
+                        "original_id": it.get("id", ""),
+                        "problem": it.get("problem") or it.get("description") or "",
+                        "sheet": it.get("sheet", ""),
+                        "page": it.get("page"),
+                    }
+                    for it in group_items
+                ]
+
+                merged_items.append(leader)
+
+        if merge_count == 0:
+            return {"merged_groups": 0}
+
+        # Обновить meta
+        meta = fd.get("meta", {})
+        meta["total_findings"] = len(merged_items)
+        meta["pre_merge_total"] = len(items)
+        meta["merged_groups"] = merge_count
+
+        # Пересчитать by_severity
+        by_severity = {}
+        for it in merged_items:
+            sev = it.get("severity", "НЕИЗВЕСТНО")
+            by_severity[sev] = by_severity.get(sev, 0) + 1
+        meta["by_severity"] = by_severity
+
+        fd["meta"] = meta
+        fd["findings"] = merged_items
+
+        # Бэкап оригинала
+        backup_path = output_dir / "03_findings_pre_merge.json"
+        if not backup_path.exists():
+            import shutil
+            shutil.copy2(findings_path, backup_path)
+
+        findings_path.write_text(
+            json.dumps(fd, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+
+        return {
+            "merged_groups": merge_count,
+            "before": len(items),
+            "after": len(merged_items),
+        }
 
     async def _build_document_graph_v2(self, job: AuditJob):
         """Построить document_graph v2 из *_result.json (Python, без LLM)."""
@@ -1162,6 +1341,7 @@ class PipelineManager:
             "stage_label": stage_labels.get(stage, stage),
             "detail": "Ручной запуск с этапа",
             "can_resume": True,
+            "is_stage_retry": True,
         }
         task = asyncio.create_task(
             self._run_resumed_pipeline(job, stage, resume_info)
@@ -1251,7 +1431,7 @@ class PipelineManager:
                 exit_code, _, stderr = await self._run_script(
                     pid,
                     str(BLOCKS_SCRIPT),
-                    ["crop", _project_path(pid)],
+                    ["crop", _project_path(pid), "--compact"],
                     on_output=lambda msg: self._log(job, msg),
                 )
                 if exit_code == 2:
@@ -1264,7 +1444,7 @@ class PipelineManager:
                     self._update_pipeline_log(pid, "crop_blocks", "error",
                                                error=stderr or f"Exit code: {exit_code}")
                     raise RuntimeError(f"Кроп блоков: {stderr}")
-                self._update_pipeline_log(pid, "crop_blocks", "done", message="OK")
+                self._update_pipeline_log(pid, "crop_blocks", "done", message="OK (compact)")
 
                 # Построить document_graph v2 (Python, без LLM)
                 await self._build_document_graph_v2(job)
@@ -1353,16 +1533,18 @@ class PipelineManager:
                 else:
                     # Параллельный анализ блоков
                     self._reset_job_progress(job)
-                    job.stage = AuditStage.BLOCK_ANALYSIS
+                    job.stage = AuditStage.V4_EXTRACTION if _is_v4(project_info) else AuditStage.BLOCK_ANALYSIS
                     job.status = JobStatus.RUNNING
                     job.progress_total = total_batches
-                    self._update_pipeline_log(pid, "block_analysis", "running")
+                    _stage_key_extraction = _stage_log_key(project_info, "block_analysis")
+                    self._update_pipeline_log(pid, _stage_key_extraction, "running")
 
                     parallel = MAX_PARALLEL_BATCHES
-                    print(f"[{pid}:resume] ═══ ЭТАП 4: Анализ блоков ({total_batches} пакетов x{parallel}) ═══")
+                    _stage_label = "Извлечение фактов" if _is_v4(project_info) else "Анализ блоков"
+                    print(f"[{pid}:resume] ═══ ЭТАП 4: {_stage_label} ({total_batches} пакетов x{parallel}) ═══")
                     await self._log(
                         job,
-                        f"═══ ЭТАП 4: Анализ блоков ({total_batches} пакетов, x{parallel} параллельно) ═══"
+                        f"═══ ЭТАП 4: {_stage_label} ({total_batches} пакетов, x{parallel} параллельно) ═══"
                     )
 
                     semaphore = asyncio.Semaphore(parallel)
@@ -1371,18 +1553,43 @@ class PipelineManager:
 
                     # Время начала этапа — для фильтрации файлов от старых запусков
                     batch_stage_start = datetime.now().timestamp()
+                    # Smart retry: при повторе конкретного этапа сохраняем успешные пакеты
+                    _smart_retry = resume_info.get("is_stage_retry", False) and start_idx == 2
+                    if _smart_retry:
+                        _existing = sum(
+                            1 for b in batches
+                            if (output_dir / (f"typed_facts_batch_{b['batch_id']:03d}.json" if _is_v4(project_info)
+                                              else f"block_batch_{b['batch_id']:03d}.json")).exists()
+                            and (output_dir / (f"typed_facts_batch_{b['batch_id']:03d}.json" if _is_v4(project_info)
+                                               else f"block_batch_{b['batch_id']:03d}.json")).stat().st_size > 100
+                        )
+                        _to_redo = total_batches - _existing
+                        await self._log(
+                            job,
+                            f"Smart retry: {_existing} пакетов готовы, {_to_redo} будут перезапущены"
+                        )
+
+                    use_v4 = _is_v4(project_info)
 
                     async def _process_batch(batch):
                         nonlocal completed_count, error_count
                         batch_id = batch["batch_id"]
 
-                        result_file = output_dir / f"block_batch_{batch_id:03d}.json"
+                        # V4 пишет typed_facts_batch_NNN.json, legacy — block_batch_NNN.json
+                        result_file = output_dir / (
+                            f"typed_facts_batch_{batch_id:03d}.json" if use_v4
+                            else f"block_batch_{batch_id:03d}.json"
+                        )
                         if result_file.exists() and result_file.stat().st_size > 100:
-                            # Проверяем что файл от ТЕКУЩЕГО запуска, а не от старого
-                            if result_file.stat().st_mtime >= batch_stage_start:
+                            # Smart retry: при повторе этапа сохраняем валидные файлы от прошлого запуска
+                            _is_from_current_run = result_file.stat().st_mtime >= batch_stage_start
+                            if _smart_retry or _is_from_current_run:
                                 completed_count += 1
                                 job.progress_current = completed_count
                                 await self._progress(job, completed_count, total_batches)
+                                if _smart_retry and not _is_from_current_run:
+                                    size_kb = round(result_file.stat().st_size / 1024, 1)
+                                    await self._log(job, f"Пакет {batch_id}/{total_batches}: ✓ пропуск ({size_kb} KB из прошлого запуска)")
                                 return
                             else:
                                 # Файл от старого запуска — удаляем и обрабатываем заново
@@ -1407,7 +1614,8 @@ class PipelineManager:
                                 batch_start_time = datetime.now()
                                 job.batch_started_at = batch_start_time.isoformat()
 
-                                exit_code, output_text, cli_result = await claude_runner.run_block_batch(
+                                runner_fn = claude_runner.run_block_batch_v4 if use_v4 else claude_runner.run_block_batch
+                                exit_code, output_text, cli_result = await runner_fn(
                                     batch, project_info, pid, total_batches,
                                     on_output=lambda msg: self._log(job, msg),
                                 )
@@ -1472,7 +1680,8 @@ class PipelineManager:
 
                             if exit_code != 0 and not claude_runner.is_cancelled(exit_code):
                                 error_count += 1
-                                await self._log(job, f"Пакет {batch_id}: ошибка (код {exit_code})", "error")
+                                err_detail = _extract_error_detail(exit_code, output_text or "", max_len=160)
+                                await self._log(job, f"Пакет {batch_id}: ошибка (код {exit_code}) — {err_detail}", "error")
                             else:
                                 completed_count += 1
                                 job.progress_current = completed_count
@@ -1487,25 +1696,26 @@ class PipelineManager:
                         await asyncio.gather(*tasks, return_exceptions=True)
 
                     if error_count > 0:
-                        self._update_pipeline_log(pid, "block_analysis", "error",
+                        self._update_pipeline_log(pid, _stage_key_extraction, "error",
                                                    error=f"{error_count} пакетов с ошибками")
                         if error_count >= total_batches:
                             raise RuntimeError(f"Все пакеты завершились с ошибками")
                     else:
-                        self._update_pipeline_log(pid, "block_analysis", "done",
+                        self._update_pipeline_log(pid, _stage_key_extraction, "done",
                                                    message=f"OK ({total_batches} пакетов)")
 
-                # Слияние результатов
-                print(f"[{pid}:resume] Слияние block_batch_*.json → 02_blocks_analysis.json")
-                await self._log(job, "Слияние результатов блоков...")
-                exit_code, _, stderr = await self._run_script(
-                    pid,
-                    str(BLOCKS_SCRIPT),
-                    ["merge", _project_path(pid)],
-                    on_output=lambda msg: self._log(job, msg),
-                )
-                if exit_code != 0:
-                    await self._log(job, f"Ошибка слияния: {stderr}", "warn")
+                # Слияние результатов block_batch_*.json → 02_blocks_analysis.json (только для legacy)
+                if not _is_v4(project_info):
+                    print(f"[{pid}:resume] Слияние block_batch_*.json → 02_blocks_analysis.json")
+                    await self._log(job, "Слияние результатов блоков...")
+                    exit_code, _, stderr = await self._run_script(
+                        pid,
+                        str(BLOCKS_SCRIPT),
+                        ["merge", _project_path(pid)],
+                        on_output=lambda msg: self._log(job, msg),
+                    )
+                    if exit_code != 0:
+                        await self._log(job, f"Ошибка слияния: {stderr}", "warn")
 
                 if job.status == JobStatus.CANCELLED:
                     return
@@ -1513,9 +1723,28 @@ class PipelineManager:
                 self.active_jobs[pid] = job
                 self._tasks[pid] = asyncio.current_task()
 
-                # ═══ ЭТАП 4b: Block Retry — перекачка нечитаемых блоков ═══
-                from blocks import find_unreadable_blocks, recrop_blocks, MAX_RECROP_ITERATIONS
-                for retry_iter in range(1, MAX_RECROP_ITERATIONS + 1):
+                # ═══ ЭТАП 4b: Block Retry — перекачка нечитаемых блоков (только legacy) ═══
+                if _is_v4(project_info):
+                    self._update_pipeline_log(pid, "block_retry", "skipped",
+                                              message="V4 pipeline — block_retry не применим")
+
+                from blocks import find_unreadable_blocks, recrop_blocks, promote_to_full, MAX_RECROP_ITERATIONS
+
+                # Проверяем, использовался ли compact-режим
+                _index_path = output_dir / "blocks" / "index.json"
+                _is_compact = False
+                if _index_path.exists():
+                    try:
+                        with open(_index_path, "r", encoding="utf-8") as f:
+                            _idx = json.load(f)
+                        _is_compact = _idx.get("compact", False)
+                    except Exception:
+                        pass
+
+                max_retry = 1 if _is_compact else MAX_RECROP_ITERATIONS
+                for retry_iter in range(1, max_retry + 1):
+                    if _is_v4(project_info):
+                        break  # v4 использует свою extraction-логику
                     unreadable = find_unreadable_blocks(_project_path(pid))
                     if not unreadable:
                         if retry_iter == 1:
@@ -1523,15 +1752,25 @@ class PipelineManager:
                         break
 
                     block_ids = [u["block_id"] for u in unreadable]
-                    await self._log(job, f"Block retry (итерация {retry_iter}): {len(block_ids)} нечитаемых блоков → перекачка ×2")
-                    self._update_pipeline_log(pid, "block_retry", "running",
-                                              message=f"Итерация {retry_iter}: {len(block_ids)} блоков")
 
-                    # 1. Перекачка с увеличенным разрешением
-                    recrop_result = recrop_blocks(_project_path(pid), block_ids, scale_multiplier=2.0)
-                    if recrop_result.get("recropped", 0) == 0:
-                        await self._log(job, f"Block retry: все блоки уже на максимальном разрешении, стоп")
-                        break
+                    if _is_compact:
+                        # Compact-режим: подмена compact��full (мгновенно, без скачивания)
+                        await self._log(job, f"Block retry: {len(block_ids)} нечитаемых → promote compact→full")
+                        self._update_pipeline_log(pid, "block_retry", "running",
+                                                  message=f"Promote {len(block_ids)} блоков")
+                        promote_result = promote_to_full(_project_path(pid), block_ids)
+                        if promote_result.get("promoted", 0) == 0:
+                            await self._log(job, "Block retry: нет full-версий для промоута")
+                            break
+                    else:
+                        # Стандартный режим: перекачка ×2
+                        await self._log(job, f"Block retry (итерация {retry_iter}): {len(block_ids)} нечитаемых блоков → перекачка ×2")
+                        self._update_pipeline_log(pid, "block_retry", "running",
+                                                  message=f"Итерация {retry_iter}: {len(block_ids)} блоков")
+                        recrop_result = recrop_blocks(_project_path(pid), block_ids, scale_multiplier=2.0)
+                        if recrop_result.get("recropped", 0) == 0:
+                            await self._log(job, f"Block retry: все блоки уже на максимальном разрешении, стоп")
+                            break
 
                     # 2. Создать мини-батч только для перекачанных блоков
                     exit_code, _, _ = await self._run_script(
@@ -1577,46 +1816,66 @@ class PipelineManager:
                     )
                     await self._log(job, f"Block retry итерация {retry_iter}: merge завершён")
 
-                # Финальный статус block_retry
-                final_unreadable = find_unreadable_blocks(_project_path(pid))
-                if any(u for u in (unreadable if 'unreadable' in dir() else [])):
-                    if final_unreadable:
-                        self._update_pipeline_log(pid, "block_retry", "done",
-                                                  message=f"Осталось {len(final_unreadable)} нечитаемых (макс разрешение)")
+                # Финальный статус block_retry (только legacy)
+                if not _is_v4(project_info):
+                    final_unreadable = find_unreadable_blocks(_project_path(pid))
+                    if any(u for u in (unreadable if 'unreadable' in dir() else [])):
+                        if final_unreadable:
+                            self._update_pipeline_log(pid, "block_retry", "done",
+                                                      message=f"Осталось {len(final_unreadable)} нечитаемых (макс разрешение)")
+                        else:
+                            self._update_pipeline_log(pid, "block_retry", "done", message="OK")
                     else:
-                        self._update_pipeline_log(pid, "block_retry", "done", message="OK")
-                else:
-                    self._update_pipeline_log(pid, "block_retry", "skipped",
-                                              message="Все блоки читаемы")
+                        self._update_pipeline_log(pid, "block_retry", "skipped",
+                                                  message="Все блоки читаемы")
 
-            # ═══ ЭТАП 5: Свод замечаний (Claude) ═══
+            # ═══ ЭТАП 5: Свод замечаний (Claude или V4) ═══
             if start_idx <= 3:
                 self._clean_stage_files(pid, [
                     "03_findings.json", "03_findings_review.json", "03_findings_pre_review.json",
                 ])
                 self._reset_job_progress(job)
-                job.stage = AuditStage.FINDINGS_MERGE
+                _is_v4_proj = _is_v4(project_info)
+                job.stage = AuditStage.V4_FORMATTER if _is_v4_proj else AuditStage.FINDINGS_MERGE
                 job.status = JobStatus.RUNNING
-                self._update_pipeline_log(pid, "findings_merge", "running")
-                print(f"[{pid}:resume] ═══ ЭТАП 5: Свод замечаний ═══")
-                await self._log(job, "═══ ЭТАП 5: Свод замечаний (Claude) ═══")
-                await self._start_heartbeat(job)
 
-                can_go = await self._check_before_launch(job)
-                if not can_go:
-                    raise RuntimeError("Rate limit: ожидание превышено или отменено")
+                if _is_v4_proj:
+                    # Обновляем v4 stage ключи (memory/candidates/formatter) через stage_callback
+                    print(f"[{pid}:resume] ═══ ЭТАП 5: V4 post-extraction ═══")
+                    await self._log(job, "═══ ЭТАП 5: V4 post-extraction (memory → candidates → formatter) ═══")
+                    await self._start_heartbeat(job)
 
-                exit_code, output, cli_result = await claude_runner.run_findings_merge(
-                    project_info, pid,
-                    on_output=lambda msg: self._log(job, msg),
-                )
-                self._record_cli_usage(job, cli_result, "findings_merge")
+                    async def _v4_stage_cb(stage_key: str, status: str):
+                        self._update_pipeline_log(pid, stage_key, status)
+
+                    exit_code, output, cli_result = await claude_runner.run_findings_merge_v4(
+                        project_info, pid,
+                        on_output=lambda msg: self._log(job, msg),
+                        stage_callback=_v4_stage_cb,
+                    )
+                    self._record_cli_usage(job, cli_result, "v4_formatter")
+                else:
+                    self._update_pipeline_log(pid, "findings_merge", "running")
+                    print(f"[{pid}:resume] ═══ ЭТАП 5: Свод замечаний ═══")
+                    await self._log(job, "═══ ЭТАП 5: Свод замечаний (Claude) ═══")
+                    await self._start_heartbeat(job)
+
+                    can_go = await self._check_before_launch(job)
+                    if not can_go:
+                        raise RuntimeError("Rate limit: ожидание превышено или отменено")
+
+                    exit_code, output, cli_result = await claude_runner.run_findings_merge(
+                        project_info, pid,
+                        on_output=lambda msg: self._log(job, msg),
+                    )
+                    self._record_cli_usage(job, cli_result, "findings_merge")
 
                 if claude_runner.is_cancelled(exit_code):
                     job.status = JobStatus.CANCELLED
                     return
                 if exit_code != 0:
-                    self._update_pipeline_log(pid, "findings_merge", "error",
+                    _err_key = "v4_formatter" if _is_v4_proj else "findings_merge"
+                    self._update_pipeline_log(pid, _err_key, "error",
                                                error=_extract_error_detail(exit_code, output))
                     raise RuntimeError(f"Свод замечаний: код {exit_code}")
 
@@ -1631,11 +1890,25 @@ class PipelineManager:
                 if "Repaired" in repair_msg:
                     await self._log(job, f"03_findings.json починен: {repair_msg}", "warn")
 
-                self._update_pipeline_log(pid, "findings_merge", "done", message="OK")
+                if not _is_v4_proj:
+                    self._update_pipeline_log(pid, "findings_merge", "done", message="OK")
 
                 # Post-merge: backfill text-evidence из compact/graph
                 self._backfill_text_evidence_in_findings(pid)
+
+                # Объединение похожих замечаний
+                merge_result = self._merge_similar_findings(pid)
+                if merge_result and merge_result.get("merged_groups", 0) > 0:
+                    await self._log(
+                        job,
+                        f"Объединено похожих замечаний: {merge_result['before']} → {merge_result['after']} "
+                        f"({merge_result['merged_groups']} групп)",
+                    )
+
                 self._refresh_finding_quality(pid)
+
+                # Восстановление highlight_regions из 02_blocks_analysis
+                self._backfill_highlight_regions(pid)
 
                 # «Размышление модели»: стрим найденных замечаний в live-лог
                 await self._stream_findings_events(job, "merge")
@@ -1669,6 +1942,18 @@ class PipelineManager:
                     await self._run_findings_review(job, project_info)
 
                     if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
+                        return
+
+                    # Проверяем: если critic провалился — не маскировать ошибку
+                    _plog_path = resolve_project_dir(pid) / "_output" / "pipeline_log.json"
+                    try:
+                        _plog = json.loads(_plog_path.read_text(encoding="utf-8")) if _plog_path.exists() else {}
+                    except Exception:
+                        _plog = {}
+                    _critic_status = _plog.get("stages", {}).get("findings_critic", {}).get("status")
+                    if _critic_status == "error":
+                        job.status = JobStatus.FAILED
+                        job.error_message = "Findings critic провалился"
                         return
 
                     self.active_jobs[pid] = job
@@ -3770,15 +4055,15 @@ class PipelineManager:
                 exit_code, _, stderr = await self._run_script(
                     pid,
                     str(BLOCKS_SCRIPT),
-                    ["crop", _project_path(pid)],
+                    ["crop", _project_path(pid), "--compact"],
                     on_output=lambda msg: self._log(job, msg),
                 )
                 if exit_code != 0:
                     self._update_pipeline_log(pid, "crop_blocks", "error",
                                                error=stderr or f"Exit code: {exit_code}")
                     raise RuntimeError(f"Кроп блоков: {stderr}")
-                self._update_pipeline_log(pid, "crop_blocks", "done", message="OK")
-                print(f"[{pid}] ЭТАП 1 OK")
+                self._update_pipeline_log(pid, "crop_blocks", "done", message="OK (compact)")
+                print(f"[{pid}] ЭТАП 1 OK (compact)")
 
             # Построить document_graph v2 (Python, без LLM)
             await self._build_document_graph_v2(job)
@@ -3874,19 +4159,25 @@ class PipelineManager:
             if total_batches == 0:
                 await self._log(job, "Нет пакетов для анализа — переход к своду", "warn")
             else:
-                # ═══ ЭТАП 4: Параллельный анализ блоков (Claude) ═══
-                self._clean_stage_files(pid, ["block_batch_*.json"])
+                # ═══ ЭТАП 4: Параллельный анализ блоков (Claude или V4) ═══
+                use_v4_proj = _is_v4(project_info)
+                if use_v4_proj:
+                    self._clean_stage_files(pid, ["typed_facts_batch_*.json"])
+                else:
+                    self._clean_stage_files(pid, ["block_batch_*.json"])
                 self._reset_job_progress(job)
-                job.stage = AuditStage.BLOCK_ANALYSIS
+                job.stage = AuditStage.V4_EXTRACTION if use_v4_proj else AuditStage.BLOCK_ANALYSIS
                 job.status = JobStatus.RUNNING
                 job.progress_total = total_batches
-                self._update_pipeline_log(pid, "block_analysis", "running")
+                _stage_key_bb = _stage_log_key(project_info, "block_analysis")
+                self._update_pipeline_log(pid, _stage_key_bb, "running")
 
                 parallel = MAX_PARALLEL_BATCHES
-                print(f"[{pid}] ═══ ЭТАП 4: Анализ блоков ({total_batches} пакетов x{parallel}) ═══")
+                _lbl = "Извлечение фактов" if use_v4_proj else "Анализ блоков"
+                print(f"[{pid}] ═══ ЭТАП 4: {_lbl} ({total_batches} пакетов x{parallel}) ═══")
                 await self._log(
                     job,
-                    f"═══ ЭТАП 4: Анализ блоков ({total_batches} пакетов, x{parallel} параллельно) ═══"
+                    f"═══ ЭТАП 4: {_lbl} ({total_batches} пакетов, x{parallel} параллельно) ═══"
                 )
 
                 semaphore = asyncio.Semaphore(parallel)
@@ -3899,7 +4190,10 @@ class PipelineManager:
                     nonlocal completed_count, error_count
                     batch_id = batch["batch_id"]
 
-                    result_file = output_dir / f"block_batch_{batch_id:03d}.json"
+                    result_file = output_dir / (
+                        f"typed_facts_batch_{batch_id:03d}.json" if use_v4_proj
+                        else f"block_batch_{batch_id:03d}.json"
+                    )
                     if result_file.exists() and result_file.stat().st_size > 100:
                         # Проверяем что файл от ТЕКУЩЕГО запуска, а не от старого
                         if result_file.stat().st_mtime >= block_stage_start:
@@ -3930,7 +4224,8 @@ class PipelineManager:
                             batch_start_time = datetime.now()
                             job.batch_started_at = batch_start_time.isoformat()
 
-                            exit_code, output_text, cli_result = await claude_runner.run_block_batch(
+                            runner_fn2 = claude_runner.run_block_batch_v4 if use_v4_proj else claude_runner.run_block_batch
+                            exit_code, output_text, cli_result = await runner_fn2(
                                 batch, project_info, pid, total_batches,
                                 on_output=lambda msg: self._log(job, msg),
                             )
@@ -3987,9 +4282,10 @@ class PipelineManager:
                                 continue
                             else:
                                 error_count += 1
+                                err_detail = _extract_error_detail(exit_code, output_text or "", max_len=160)
                                 await self._log(
                                     job,
-                                    f"Пакет {batch_id}/{total_batches}: ОШИБКА (код {exit_code})",
+                                    f"Пакет {batch_id}/{total_batches}: ОШИБКА (код {exit_code}) — {err_detail}",
                                     "error",
                                 )
                                 break
@@ -4004,28 +4300,29 @@ class PipelineManager:
                 if error_count >= total_batches:
                     job.status = JobStatus.FAILED
                     job.error_message = f"Все {total_batches} пакетов с ошибкой"
-                    self._update_pipeline_log(pid, "block_analysis", "error",
+                    self._update_pipeline_log(pid, _stage_key_bb, "error",
                                                error=f"Все {total_batches} пакетов с ошибкой")
                     return
 
-                # Шаг 5: Слияние результатов блоков
-                await self._log(job, "Слияние результатов анализа блоков...")
-                exit_code, _, stderr = await self._run_script(
-                    pid,
-                    str(BLOCKS_SCRIPT),
-                    ["merge", _project_path(pid)],
-                    on_output=lambda msg: self._log(job, msg),
-                )
-                if exit_code == 0:
-                    await self._log(job, "02_blocks_analysis.json создан", "info")
-                else:
-                    await self._log(job, f"Ошибка слияния: {stderr}", "error")
+                # Шаг 5: Слияние block_batch_*.json → 02_blocks_analysis.json (только legacy)
+                if not use_v4_proj:
+                    await self._log(job, "Слияние результатов анализа блоков...")
+                    exit_code, _, stderr = await self._run_script(
+                        pid,
+                        str(BLOCKS_SCRIPT),
+                        ["merge", _project_path(pid)],
+                        on_output=lambda msg: self._log(job, msg),
+                    )
+                    if exit_code == 0:
+                        await self._log(job, "02_blocks_analysis.json создан", "info")
+                    else:
+                        await self._log(job, f"Ошибка слияния: {stderr}", "error")
 
                 if error_count > 0:
-                    self._update_pipeline_log(pid, "block_analysis", "error",
+                    self._update_pipeline_log(pid, _stage_key_bb, "error",
                                                error=f"{error_count} из {total_batches} пакетов с ошибками")
                 else:
-                    self._update_pipeline_log(pid, "block_analysis", "done",
+                    self._update_pipeline_log(pid, _stage_key_bb, "done",
                                                message=f"Все {total_batches} пакетов OK")
 
             if job.status == JobStatus.CANCELLED:
@@ -4035,44 +4332,63 @@ class PipelineManager:
             self.active_jobs[pid] = job
             self._tasks[pid] = asyncio.current_task()
 
-            # ═══ ЭТАП 6: Свод замечаний (Claude) ═══
+            # ═══ ЭТАП 6: Свод замечаний (Claude или V4) ═══
             self._reset_job_progress(job)
-            job.stage = AuditStage.FINDINGS_MERGE
+            _is_v4_proj2 = _is_v4(project_info)
+            job.stage = AuditStage.V4_FORMATTER if _is_v4_proj2 else AuditStage.FINDINGS_MERGE
             job.status = JobStatus.RUNNING
-            self._update_pipeline_log(pid, "findings_merge", "running")
-            print(f"[{pid}] ═══ ЭТАП 6: Свод замечаний ═══")
-            await self._log(job, "═══ ЭТАП 6: Свод замечаний (Claude) ═══")
 
-            can_go = await self._check_before_launch(job)
-            if not can_go:
-                raise RuntimeError("Rate limit: ожидание превышено или отменено")
+            if _is_v4_proj2:
+                print(f"[{pid}] ═══ ЭТАП 6: V4 post-extraction ═══")
+                await self._log(job, "═══ ЭТАП 6: V4 post-extraction (memory → candidates → formatter) ═══")
 
-            exit_code, output, cli_result = await claude_runner.run_findings_merge(
-                project_info, pid,
-                on_output=lambda msg: self._log(job, msg),
-            )
-            self._record_cli_usage(job, cli_result, "findings_merge")
+                async def _v4_stage_cb2(stage_key: str, status: str):
+                    self._update_pipeline_log(pid, stage_key, status)
 
-            if claude_runner.is_cancelled(exit_code):
-                job.status = JobStatus.CANCELLED
-                return
-            if claude_runner.is_rate_limited(exit_code, output or "", ""):
-                await self._log(job, "Rate limit при своде замечаний, ожидание...", "warn")
-                can_continue = await self._wait_for_rate_limit(
-                    job, "rate limit при своде замечаний", cli_output=output or ""
+                exit_code, output, cli_result = await claude_runner.run_findings_merge_v4(
+                    project_info, pid,
+                    on_output=lambda msg: self._log(job, msg),
+                    stage_callback=_v4_stage_cb2,
                 )
-                if can_continue:
-                    exit_code, output, cli_result = await claude_runner.run_findings_merge(
-                        project_info, pid,
-                        on_output=lambda msg: self._log(job, msg),
+                self._record_cli_usage(job, cli_result, "v4_formatter")
+            else:
+                self._update_pipeline_log(pid, "findings_merge", "running")
+                print(f"[{pid}] ═══ ЭТАП 6: Свод замечаний ═══")
+                await self._log(job, "═══ ЭТАП 6: Свод замечаний (Claude) ═══")
+
+                can_go = await self._check_before_launch(job)
+                if not can_go:
+                    raise RuntimeError("Rate limit: ожидание превышено или отменено")
+
+                exit_code, output, cli_result = await claude_runner.run_findings_merge(
+                    project_info, pid,
+                    on_output=lambda msg: self._log(job, msg),
+                )
+                self._record_cli_usage(job, cli_result, "findings_merge")
+
+                if claude_runner.is_cancelled(exit_code):
+                    job.status = JobStatus.CANCELLED
+                    return
+                if claude_runner.is_rate_limited(exit_code, output or "", ""):
+                    await self._log(job, "Rate limit при своде замечаний, ожидание...", "warn")
+                    can_continue = await self._wait_for_rate_limit(
+                        job, "rate limit при своде замечаний", cli_output=output or ""
                     )
-                    self._record_cli_usage(job, cli_result, "findings_merge_retry")
+                    if can_continue:
+                        exit_code, output, cli_result = await claude_runner.run_findings_merge(
+                            project_info, pid,
+                            on_output=lambda msg: self._log(job, msg),
+                        )
+                        self._record_cli_usage(job, cli_result, "findings_merge_retry")
+
             if exit_code != 0:
-                self._update_pipeline_log(pid, "findings_merge", "error",
+                _err_key2 = "v4_formatter" if _is_v4_proj2 else "findings_merge"
+                self._update_pipeline_log(pid, _err_key2, "error",
                                            error=_extract_error_detail(exit_code, output))
                 await self._log(job, f"Свод замечаний: код {exit_code}", "error")
             else:
-                self._update_pipeline_log(pid, "findings_merge", "done", message="OK")
+                if not _is_v4_proj2:
+                    self._update_pipeline_log(pid, "findings_merge", "done", message="OK")
 
                 # Валидация JSON после findings_merge
                 findings_path = resolve_project_dir(pid) / "_output" / "03_findings.json"
@@ -4085,7 +4401,20 @@ class PipelineManager:
 
                 # Post-merge: backfill text-evidence из compact/graph
                 self._backfill_text_evidence_in_findings(pid)
+
+                # Объединение похожих замечаний
+                merge_result = self._merge_similar_findings(pid)
+                if merge_result and merge_result.get("merged_groups", 0) > 0:
+                    await self._log(
+                        job,
+                        f"Объединено похожих замечаний: {merge_result['before']} → {merge_result['after']} "
+                        f"({merge_result['merged_groups']} групп)",
+                    )
+
                 self._refresh_finding_quality(pid)
+
+                # Восстановление highlight_regions из 02_blocks_analysis
+                self._backfill_highlight_regions(pid)
 
                 # «Размышление модели»: стрим найденных замечаний в live-лог
                 await self._stream_findings_events(job, "merge")
@@ -4218,7 +4547,7 @@ class PipelineManager:
             )
             exit_code, _, stderr = await run_script(
                 str(BLOCKS_SCRIPT),
-                ["crop", _project_path(pid)],
+                ["crop", _project_path(pid), "--compact"],
                 project_id=f"__PRECROP_{pid}__",
             )
             if exit_code == 0:
@@ -4351,12 +4680,15 @@ class PipelineManager:
                             await self._log(job, f"▶ Повтор: {stage_label}", "info")
                             await self._start_heartbeat(job)
                             await self._run_optimization_review(job)
+                            if job.status == JobStatus.RUNNING:
+                                job.status = JobStatus.COMPLETED
                         else:
                             resume_info = {
                                 "stage": item.retry_stage,
                                 "stage_label": stage_label,
                                 "detail": "Повтор этапа из очереди",
                                 "can_resume": True,
+                                "is_stage_retry": True,
                             }
                             await self._run_resumed_pipeline(job, item.retry_stage, resume_info)
                     elif action == "resume":
@@ -4515,6 +4847,11 @@ class PipelineManager:
             "optimization": "optimization",
             "optimization_critic": "optimization_review",
             "optimization_corrector": "optimization_review",
+            # V4 pipeline stages
+            "v4_extraction": "block_analysis",
+            "v4_memory": "findings_merge",
+            "v4_candidates": "findings_merge",
+            "v4_formatter": "findings_merge",
             "prepare": "prepare",
             "tile_audit": "block_analysis",
             "main_audit": "findings_merge",
@@ -4550,6 +4887,50 @@ class PipelineManager:
             queue = BatchQueueStatus(
                 queue_id=str(uuid4()),
                 action="retry_stage",
+                items=[item],
+                total=1,
+                status="running",
+            )
+            self._batch_queue = queue
+
+            meta_job = AuditJob(
+                job_id=queue.queue_id,
+                project_id="__BATCH__",
+                stage=AuditStage.PREPARE,
+                status=JobStatus.RUNNING,
+                started_at=datetime.now().isoformat(),
+                progress_total=1,
+            )
+            self.active_jobs["__BATCH__"] = meta_job
+
+            task = asyncio.create_task(self._run_batch_queue(queue, meta_job))
+            self._tasks["__BATCH__"] = task
+            return queue
+
+    async def add_resume_to_batch(self, project_id: str) -> BatchQueueStatus:
+        """Добавить resume проекта в очередь (создаёт новую если нет активной)."""
+        queue = self._batch_queue
+
+        item = BatchQueueItem(
+            project_id=project_id,
+            action="resume",
+        )
+
+        if queue and queue.status == "running":
+            queue.items.append(item)
+            queue.total = len(queue.items)
+            meta_job = self.active_jobs.get("__BATCH__")
+            if meta_job:
+                meta_job.progress_total = queue.total
+            await ws_manager.broadcast_global(
+                WSMessage.log("__BATCH__", f"+ В очередь: {project_id} → Продолжить", "info")
+            )
+            await self._broadcast_batch_progress(queue)
+            return queue
+        else:
+            queue = BatchQueueStatus(
+                queue_id=str(uuid4()),
+                action="resume",
                 items=[item],
                 total=1,
                 status="running",

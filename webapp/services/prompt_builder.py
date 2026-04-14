@@ -126,6 +126,35 @@ def _load_and_clean_template(
     return template
 
 
+def _read_text_analysis_for_blocks(project_id: str) -> str:
+    """Прочитать 01_text_analysis.json, оставив только секции нужные для блочного анализа.
+
+    Отправляет:
+      - project_params  — параметры проекта (марки, мощности, сечения) для cross-check
+      - text_findings   — текстовые замечания для межстраничной сверки
+      - normative_refs_found — статусы нормативных документов
+
+    Отрезает (экономия 15-72K chars на батч):
+      - blocks_for_review   — уже отработал при формировании батчей
+      - blocks_skipped      — служебная информация
+      - image_block_priorities / image_blocks_priority — служебная
+      - arithmetic_checks, arithmetic_verification и прочие промежуточные
+    """
+    file_path = resolve_project_dir(project_id) / "_output" / "01_text_analysis.json"
+    if not file_path.exists():
+        return "(файл 01_text_analysis.json не найден)"
+    try:
+        data = json.loads(file_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as e:
+        return f"(ошибка чтения 01_text_analysis.json: {e})"
+
+    KEEP_KEYS = {"project_params", "text_findings", "normative_refs_found"}
+    filtered = {k: v for k, v in data.items() if k in KEEP_KEYS}
+    if not filtered:
+        return json.dumps(data, ensure_ascii=False, indent=2)
+    return json.dumps(filtered, ensure_ascii=False, indent=2)
+
+
 def _read_json_file(project_id: str, filename: str) -> str:
     """Прочитать JSON файл из _output/ и вернуть как строку.
 
@@ -387,7 +416,7 @@ def build_block_batch_messages(
         sheet_info = page_to_sheet.get(pdf_page, "")
         sheet_suffix = f", Sheet {sheet_info}" if sheet_info else ""
         block_lines.append(
-            f"- block_id: {block['block_id']}, page: {pdf_page}{sheet_suffix}, "
+            f"- block_id: {block['block_id']}, стр. {pdf_page}{sheet_suffix}, "
             f"OCR: {block.get('ocr_label', 'image')}"
         )
 
@@ -401,8 +430,8 @@ def build_block_batch_messages(
         BLOCK_MD_CONTEXT=md_context if md_context else "(no context available)",
     )
 
-    # 01_text_analysis.json для cross-check
-    text_analysis = _read_json_file(project_id, "01_text_analysis.json")
+    # 01_text_analysis.json для cross-check (только нужные секции)
+    text_analysis = _read_text_analysis_for_blocks(project_id)
 
     # Interleaved content (text + PNG)
     project_dir = resolve_project_dir(project_id)

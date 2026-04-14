@@ -1,0 +1,117 @@
+{
+  "schema_version": "1.0",
+  "discipline": "_generic",
+  "discipline_label": "Универсальный профиль",
+
+  "extraction": {
+    "scope_label": "Все разделы",
+    "scope_included": ["all"],
+    "scope_excluded": [],
+    "entity_types": ["item", "equipment", "spec_row", "note", "room", "other"],
+    "exact_key_fields": {
+      "item": "item_id",
+      "equipment": "equipment_id",
+      "spec_row": "spec_position",
+      "room": "room_no"
+    },
+    "attribute_enum": {
+      "item": [
+        "designation", "description", "quantity", "unit",
+        "material", "dimensions", "source", "destination"
+      ],
+      "equipment": [
+        "designation", "description", "model", "manufacturer",
+        "power_kw", "capacity", "dimensions"
+      ],
+      "spec_row": ["designation", "description", "quantity", "unit"],
+      "note": ["note_text", "requirement_type"],
+      "room": ["room_no", "room_name", "area_m2"]
+    },
+    "priority_tasks": [
+      {
+        "id": 1,
+        "title": "Извлечение сущностей",
+        "critical": true,
+        "description": "Для каждого элемента на чертеже извлеки: обозначение, описание, количество, параметры. Для каждой строки спецификации — все колонки. Для примечаний — полный текст дословно."
+      },
+      {
+        "id": 2,
+        "title": "Дубли маркеров",
+        "critical": true,
+        "description": "Если на ОДНОМ чертеже одно обозначение используется для разных элементов — создай два entity_mention и relation duplicate_identifier_with."
+      }
+    ]
+  },
+
+  "canonical_memory": {
+    "entity_type_aliases": {},
+    "attr_aliases": {
+      "model": "designation",
+      "name": "designation",
+      "text": "note_text",
+      "text_verbatim": "note_text"
+    },
+    "ocr_normalized_fields": ["designation", "description"]
+  },
+
+  "generators": {
+    "class2_identity": {
+      "eligible_types": ["item", "equipment"],
+      "unique_per_sheet_types": ["item", "equipment"]
+    },
+    "class3_cross_view": {
+      "watch_fields": {
+        "item": ["designation", "description", "quantity", "dimensions"],
+        "equipment": ["designation", "description", "model", "power_kw"]
+      },
+      "safety_critical_fields": [],
+      "topology_fields": ["source", "destination"]
+    },
+    "class4_requirement_conflict": {
+      "knowledge_base_file": null,
+      "note_requirement_patterns": []
+    }
+  },
+
+  "field_labels": {
+    "designation": "обозначение",
+    "description": "описание",
+    "quantity": "количество",
+    "unit": "единица измерения",
+    "material": "материал",
+    "dimensions": "размеры",
+    "model": "модель",
+    "manufacturer": "производитель",
+    "power_kw": "мощность",
+    "capacity": "производительность",
+    "source": "источник",
+    "destination": "назначение",
+    "area_m2": "площадь",
+    "room_name": "наименование помещения",
+    "note_text": "текст примечания"
+  },
+
+  "field_units": {
+    "power_kw": "кВт",
+    "area_m2": "м²"
+  },
+
+  "norms": {
+    "class2": {
+      "default_norm": "ГОСТ 21.101-2020 — требования к оформлению проектной документации",
+      "default_risk": "Неоднозначность обозначений → ошибки при строительстве"
+    },
+    "class3": {
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие между чертежами → ошибки при строительстве и монтаже"
+      }
+    },
+    "class4": {
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие нормативному требованию"
+      }
+    }
+  }
+}

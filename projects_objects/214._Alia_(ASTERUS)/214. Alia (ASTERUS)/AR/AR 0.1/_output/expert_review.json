@@ -1,0 +1,31 @@
+{
+  "project_id": "214. Alia (ASTERUS)/AR/AR 0.1",
+  "reviewer": "test",
+  "reviewed_at": "2026-04-14T07:23:06",
+  "decisions": [
+    {
+      "item_id": "F-999",
+      "item_type": "finding",
+      "decision": "accepted",
+      "rejection_reason": null,
+      "reviewer": "",
+      "timestamp": ""
+    },
+    {
+      "item_id": "F-001",
+      "item_type": "finding",
+      "decision": "accepted",
+      "rejection_reason": null,
+      "reviewer": "",
+      "timestamp": ""
+    },
+    {
+      "item_id": "F-002",
+      "item_type": "finding",
+      "decision": "rejected",
+      "rejection_reason": "test",
+      "reviewer": "",
+      "timestamp": ""
+    }
+  ]
+}

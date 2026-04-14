@@ -1,0 +1,246 @@
+{
+  "schema_version": "1.0",
+  "discipline": "VK",
+  "discipline_label": "Водоснабжение и канализация",
+
+  "extraction": {
+    "scope_label": "Трубопроводы ХВС/ГВС, канализация, насосные, водомерные узлы, ливнёвка",
+    "scope_included": ["cold_water", "hot_water", "sewerage", "stormwater", "pumping"],
+    "scope_excluded": ["fire_suppression_sprinklers", "process_water"],
+    "entity_types": ["pipe", "valve", "pump", "hydrant", "nozzle", "spec_row", "note", "room", "other"],
+    "exact_key_fields": {
+      "pipe": "pipe_id",
+      "valve": "valve_id",
+      "pump": "pump_id",
+      "hydrant": "hydrant_id",
+      "nozzle": "nozzle_id",
+      "room": "room_no",
+      "spec_row": "spec_position"
+    },
+    "attribute_enum": {
+      "pipe": [
+        "diameter_mm", "material", "pressure_mpa",
+        "system_id", "pipe_type", "length_m",
+        "slope", "insulation_type"
+      ],
+      "valve": [
+        "valve_type", "dn_mm", "pn_mpa",
+        "designation", "system_id"
+      ],
+      "pump": [
+        "flowrate_lps", "pressure_mpa", "power_kw",
+        "pump_type", "designation", "has_backup"
+      ],
+      "hydrant": [
+        "hydrant_type", "diameter_mm", "designation"
+      ],
+      "nozzle": [
+        "nozzle_type", "diameter_mm", "designation"
+      ],
+      "note": ["note_text", "requirement_type"],
+      "spec_row": ["designation", "description"],
+      "room": ["room_no"],
+      "other": []
+    },
+    "priority_tasks": [
+      {
+        "id": 1,
+        "title": "Диаметры трубопроводов",
+        "critical": true,
+        "description": "Для каждого участка трубопровода — извлечь diameter_mm, material, system_id (В1, Т3, К1 и т.д.). Сверить диаметры на планах и на аксонометрии/стояковых схемах.",
+        "examples": [
+          {"input": "В1-Ø32 ПП", "output": "system_id=В1, diameter_mm=32, material=ПП, pipe_type=ХВС"},
+          {"input": "К1-Ø100 ПП", "output": "system_id=К1, diameter_mm=100, material=ПП, pipe_type=канализация"},
+          {"input": "Т3-Ø25 ст.", "output": "system_id=Т3, diameter_mm=25, material=сталь, pipe_type=ГВС"}
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Запорная и регулирующая арматура",
+        "critical": true,
+        "description": "Все задвижки, вентили, обратные клапаны, фильтры — извлечь valve_type, dn_mm, pn_mpa, привязку к системе. Проверить наличие обязательной арматуры (запорная на стояках, обратные клапаны после счётчиков).",
+        "key_phrases": ["задвижка", "вентиль", "обратный клапан", "фильтр", "шаровой кран", "регулятор давления"]
+      },
+      {
+        "id": 3,
+        "title": "Насосное оборудование",
+        "critical": true,
+        "description": "Повысительные, циркуляционные, дренажные насосы — извлечь flowrate_lps, pressure_mpa, power_kw, наличие резерва. Сверить характеристики с расчётом.",
+        "key_phrases": ["насос", "Q=", "H=", "резервный", "циркуляционный", "повысительный"]
+      },
+      {
+        "id": 4,
+        "title": "Примечания с требованиями",
+        "critical": true,
+        "description": "Примечания на чертежах — прочитай дословно.",
+        "key_phrases": [
+          "уклон",
+          "изоляция",
+          "гидроизоляция",
+          "не менее",
+          "компенсатор",
+          "ревизия через",
+          "обогрев воронок"
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Уклоны канализации",
+        "critical": false,
+        "description": "Проверить уклоны самотёчных трубопроводов: Ø50 — 0.03, Ø100 — 0.02, Ø150 — 0.01 (минимум). Наличие ревизий на стояках.",
+        "key_phrases": ["уклон", "i=", "ревизия", "прочистка"]
+      }
+    ]
+  },
+
+  "canonical_memory": {
+    "entity_type_aliases": {
+      "fitting": "valve",
+      "tap": "valve",
+      "filter": "valve"
+    },
+    "attr_aliases": {
+      "Ø": "diameter_mm",
+      "диаметр": "diameter_mm",
+      "DN": "dn_mm",
+      "PN": "pn_mpa",
+      "расход": "flowrate_lps",
+      "напор": "pressure_mpa",
+      "мощность": "power_kw",
+      "text_verbatim": "note_text",
+      "text": "note_text",
+      "name": "designation"
+    },
+    "ocr_normalized_fields": ["designation", "material", "system_id"]
+  },
+
+  "generators": {
+    "class2_identity": {
+      "eligible_types": ["pipe", "valve", "pump"],
+      "unique_per_sheet_types": ["pipe"]
+    },
+    "class3_cross_view": {
+      "watch_fields": {
+        "pipe": [
+          "diameter_mm", "material", "pressure_mpa",
+          "system_id", "slope"
+        ],
+        "valve": [
+          "valve_type", "dn_mm", "pn_mpa",
+          "system_id"
+        ],
+        "pump": [
+          "flowrate_lps", "pressure_mpa", "power_kw",
+          "has_backup"
+        ]
+      },
+      "safety_critical_fields": [
+        "diameter_mm", "pressure_mpa",
+        "dn_mm", "pn_mpa",
+        "slope"
+      ],
+      "topology_fields": ["system_id"]
+    },
+    "class4_requirement_conflict": {
+      "knowledge_base_file": null,
+      "note_requirement_patterns": [
+        {
+          "pattern_id": "min_slope_sewerage",
+          "regex": "уклон\\w*.*(?:канализац|К1|К2).*(?:0[.,]0[123]|не менее)",
+          "applies_to": "gravity_sewerage_pipes",
+          "required_field": "slope",
+          "required_value": ">=0.02 для Ø100"
+        },
+        {
+          "pattern_id": "pipe_insulation_required",
+          "regex": "изоляц\\w*\\s*трубопровод\\w*\\s*(?:ГВС|горяч|Т[34])",
+          "applies_to": "hot_water_pipes",
+          "required_field": "insulation_type",
+          "required_value": "required"
+        },
+        {
+          "pattern_id": "backup_pump_required",
+          "regex": "резервн\\w*\\s*насос",
+          "applies_to": "booster_pumps",
+          "required_field": "has_backup",
+          "required_value": true
+        }
+      ]
+    }
+  },
+
+  "field_labels": {
+    "diameter_mm": "диаметр трубопровода",
+    "material": "материал трубопровода",
+    "pressure_mpa": "рабочее давление",
+    "system_id": "маркировка системы",
+    "pipe_type": "тип трубопровода",
+    "length_m": "длина",
+    "slope": "уклон",
+    "insulation_type": "тип изоляции",
+    "valve_type": "тип арматуры",
+    "dn_mm": "условный проход",
+    "pn_mpa": "условное давление",
+    "flowrate_lps": "расход",
+    "power_kw": "мощность",
+    "pump_type": "тип насоса",
+    "has_backup": "наличие резерва",
+    "hydrant_type": "тип гидранта",
+    "nozzle_type": "тип насадка",
+    "designation": "обозначение",
+    "description": "описание"
+  },
+
+  "field_units": {
+    "diameter_mm": "мм",
+    "pressure_mpa": "МПа",
+    "length_m": "м",
+    "dn_mm": "мм",
+    "pn_mpa": "МПа",
+    "flowrate_lps": "л/с",
+    "power_kw": "кВт"
+  },
+
+  "norms": {
+    "class2": {
+      "default_norm": "ГОСТ 21.601-2011, п. 4 — обозначения трубопроводов и арматуры должны быть уникальными и соответствовать спецификации",
+      "default_risk": "Путаница при монтаже, неоднозначность привязки арматуры к системе"
+    },
+    "class3": {
+      "diameter_fields": {
+        "norm": "СП 30.13330.2020, п. 5 — диаметры трубопроводов определяются расчётом",
+        "risk": "Несоответствие диаметра расчётному → недостаточный напор, шум, износ"
+      },
+      "pressure_fields": {
+        "norm": "СП 30.13330.2020, п. 5.2 — рабочее давление в системе водоснабжения",
+        "risk": "Несоответствие давления → риск разрушения трубопровода или недостаточный напор"
+      },
+      "slope_fields": {
+        "norm": "СП 30.13330.2020, п. 8.3 — уклоны самотёчных канализационных трубопроводов",
+        "risk": "Недостаточный уклон → засоры, заиливание, нарушение самотёчного режима"
+      },
+      "topology_fields": {
+        "norm": null,
+        "risk": "Ошибка в привязке арматуры к системе → проблемы при монтаже"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие между чертежами → ошибки при монтаже"
+      }
+    },
+    "class4": {
+      "slope": {
+        "norm": "СП 30.13330.2020, п. 8.3.1 — минимальные уклоны: Ø50 — 0.03, Ø100 — 0.02, Ø150 — 0.01",
+        "risk": "Уклон ниже нормативного → засоры канализации, нарушение самотёчного режима"
+      },
+      "fire_water": {
+        "norm": "СП 10.13130.2020 — внутренний противопожарный водопровод",
+        "risk": "Несоответствие системы ВПВ нормативным требованиям → угроза безопасности при пожаре"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие нормативному требованию"
+      }
+    }
+  }
+}

@@ -35,7 +35,7 @@
 
 Each block is a cropped drawing fragment (a complete area: schematic, plan, table, or detail). Analyze each block as an independent drawing.
 
-**IMPORTANT: page vs sheet.** `page` = PDF page number (physical numbering). `sheet` = sheet number from the title block (logical numbering from the stamp). They do NOT match: Sheet 1 may be on PDF page 5. Both are listed above. For `sheet`, use the sheet number from the title block or from the page context (`**Лист:**`).
+**IMPORTANT: page vs sheet.** `page` = page number (physical numbering). `sheet` = sheet number from the title block (logical numbering from the stamp). They do NOT match: Sheet 1 may be on page 5. Both are listed above. For `sheet`, use the sheet number from the title block or from the page context (`**Лист:**`).
 
 ## SINGLE-LINE AND CALCULATION DIAGRAMS — FULL TEXT RECOGNITION (MANDATORY)
 
@@ -57,6 +57,27 @@ If text is unreadable — record "нечитаемо: [description of location]"
 **IMPORTANT — unreadable text feedback:**
 If a block contains text you cannot read due to low resolution (small font, tables with numbers, cable marks, breaker ratings), set `unreadable_text: true` and fill `unreadable_details` — describe WHERE exactly and WHAT is unreadable. The system will automatically re-download this block at higher resolution and repeat the analysis.
 If all text is readable — set `unreadable_text: false`.
+
+## MOUNTING DETAILS, NODES, AND SECTIONS — CONSTRUCTION METHOD DESCRIPTION (MANDATORY)
+
+If a block contains a mounting detail, node (узел), section (разрез), or installation drawing:
+
+**You MUST describe in `summary` and `key_values_read` the CONSTRUCTION METHOD, not just what is depicted:**
+
+1. **Mounting method** — how is the element attached? (brackets, anchors, mounting panel, DIN rail, embedded parts, welding, etc.)
+2. **Materials** — what are the structural elements made of? (steel angle, channel, perforated profile, concrete, etc.)
+3. **Connections** — how are elements joined? (bolts, welding, clamps, quick-release connectors, etc.)
+4. **Dimensions and clearances** — key dimensions, distances from walls/ceiling/floor, clearance zones
+5. **Cable/pipe entry method** — how cables or pipes enter: through sleeves, openings, cable glands, fire-rated penetrations
+6. **Fire protection** — fire-rated enclosures, coatings, seals (type, rating EI30/EI60/EI150)
+7. **Quantity and repetition** — how many times this node is repeated in the project (if visible from context)
+
+**Purpose:** This information is used at the optimization stage to evaluate whether the mounting/construction approach can be simplified, standardized, or made more cost-effective.
+
+**Example key_values_read for a detail:**
+- `"Щит ЩУАХП: крепление на кронштейнах к кирпичной стене, 4 анкера М10"`
+- `"Кабельный ввод снизу через стальную гильзу Ø50, заделка огнестойкой пеной"`
+- `"Лоток 200×50 на шпильках М8 к перекрытию, шаг 1000 мм"`
 
 ## Cross-Check with Text Analysis (MANDATORY)
 
@@ -101,7 +122,7 @@ Any discrepancy → finding.
       "unreadable_text": false,
       "unreadable_details": null,
       "summary": "Краткое описание содержимого (2-4 предложения)",
-      "key_values_read": ["АВ E3H 1600А", "Кабель ВВГнг(А)-FRLS 5x10"],
+      "key_values_read": ["АВ E3H 1600А", "Кабель ВВГнг(А)-FRLS 5x10, L=48м"],
       "evidence_text_refs": [
         {
           "text_block_id": "TB_ID_1",
@@ -142,6 +163,24 @@ Any discrepancy → finding.
   ]
 }
 ```
+
+### key_values_read Format — HUMAN-READABLE LANGUAGE
+
+`key_values_read` is shown directly to the auditor engineer on screen. Write in **human-readable Russian**, NOT as technical field dumps.
+
+**BAD** (technical dump):
+- `"opening Р-1: opening_type: решетка, width_mm: 752, height_mm: 550"`
+- `"room_name: Жилая комната, purpose: жилая, area_m2: 15.6"`
+
+**GOOD** (human-readable):
+- `"Решетка Р-1: 752×550 мм"`
+- `"Жилая комната — 15,6 м²"`
+- `"Проём Д-3: ширина 900 мм, EI 60"`
+- `"Помещение 101 «Лобби»: 42,3 м², класс Ф3.1"`
+- `"АВ E3H 1600А, Iку=50кА"`
+- `"Кабель ВВГнг(А)-FRLS 5×10, L=48 м"`
+
+**Rule:** include units of measurement. Start with the label/mark (Р-1, Д-3, поз. 5) if one exists.
 
 ### Locality Fields (MANDATORY for each block_analysis):
 

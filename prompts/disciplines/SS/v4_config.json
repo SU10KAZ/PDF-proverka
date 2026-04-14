@@ -1,0 +1,227 @@
+{
+  "schema_version": "1.0",
+  "discipline": "SS",
+  "discipline_label": "Слаботочные системы",
+
+  "extraction": {
+    "scope_label": "СКС, CCTV, СКУД, ОПС, СОУЭ, домофон, диспетчеризация",
+    "scope_included": ["SCS", "CCTV", "SKUD", "OPS", "SOUE", "Intercom", "Dispatch"],
+    "scope_excluded": ["PowerSupply", "Lighting", "Grounding"],
+    "entity_types": ["cable_ss", "device", "sensor", "controller", "outlet", "rack", "spec_row", "note", "room", "other"],
+    "exact_key_fields": {
+      "cable_ss": "cable_id",
+      "device": "device_id",
+      "sensor": "sensor_id",
+      "controller": "controller_id",
+      "outlet": "outlet_id",
+      "rack": "rack_id",
+      "room": "room_no",
+      "spec_row": "spec_position"
+    },
+    "attribute_enum": {
+      "cable_ss": [
+        "cable_category", "cable_type", "cable_mark",
+        "length_m", "source_device", "destination_device",
+        "system_id", "fire_resistance"
+      ],
+      "device": [
+        "designation", "description", "model",
+        "manufacturer", "system_id", "location"
+      ],
+      "sensor": [
+        "designation", "sensor_type", "model",
+        "detection_zone", "mounting_height_m", "loop_id"
+      ],
+      "controller": [
+        "designation", "model", "capacity",
+        "input_count", "output_count", "power_supply"
+      ],
+      "outlet": [
+        "designation", "outlet_type", "category",
+        "port_count", "location"
+      ],
+      "rack": [
+        "designation", "rack_units", "location",
+        "equipment_list"
+      ],
+      "note": ["note_text", "requirement_type"],
+      "spec_row": ["designation", "description", "quantity"],
+      "room": ["room_no"]
+    },
+    "priority_tasks": [
+      {
+        "id": 1,
+        "title": "Категории кабелей СКС",
+        "critical": true,
+        "description": "Для каждого кабеля СКС определить категорию (Cat.5e / Cat.6 / Cat.6A), тип (UTP/FTP/STP), марку. Длина горизонтальной линии не более 90 м по ГОСТ Р 53246.",
+        "examples": [
+          {"input": "UTP 4×2×0.52 Cat.5e", "output": "cable_category=Cat.5e, cable_type=UTP, cable_mark=UTP 4x2x0.52"},
+          {"input": "F/UTP Cat.6A LSZH", "output": "cable_category=Cat.6A, cable_type=F/UTP, fire_resistance=LSZH"}
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Пожарные извещатели и шлейфы ОПС",
+        "critical": true,
+        "description": "Для каждого пожарного извещателя — тип (дымовой, тепловой, ручной ИПР), модель, адресный/безадресный, размещение. Шлейфы: кабели FRLS/FR, соответствие СП 484.1311500.2020.",
+        "key_phrases": [
+          "извещатель пожарный", "ИПР", "ИП 212", "дымовой", "тепловой",
+          "шлейф сигнализации", "ППКП", "адресный"
+        ]
+      },
+      {
+        "id": 3,
+        "title": "СКУД — точки доступа и контроллеры",
+        "critical": true,
+        "description": "Точки доступа (входные группы, паркинг, тех. помещения), считыватели, контроллеры, замки. Разблокировка при пожаре — интеграция с ОПС. Кнопка Exit на путях эвакуации.",
+        "key_phrases": [
+          "считыватель", "контроллер доступа", "электромагнитный замок",
+          "электромеханический замок", "кнопка выхода", "разблокировка при пожаре"
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Примечания с требованиями",
+        "critical": true,
+        "description": "Примечания на чертежах — прочитай дословно. Особое внимание к требованиям по огнестойкости кабелей, интеграции систем, резервному питанию.",
+        "key_phrases": [
+          "кабель огнестойкий", "FRLS", "FR",
+          "ИБП", "резервное питание", "АКБ не менее 24 ч",
+          "интеграция с", "при пожаре"
+        ]
+      }
+    ]
+  },
+
+  "canonical_memory": {
+    "entity_type_aliases": {
+      "detector": "sensor",
+      "reader": "device",
+      "camera": "device",
+      "patch_panel": "rack"
+    },
+    "attr_aliases": {
+      "cat": "cable_category",
+      "category": "cable_category",
+      "type": "cable_type",
+      "model_name": "model",
+      "text_verbatim": "note_text",
+      "text": "note_text",
+      "name": "designation"
+    },
+    "ocr_normalized_fields": ["cable_mark", "model", "designation"]
+  },
+
+  "generators": {
+    "class2_identity": {
+      "eligible_types": ["device", "sensor", "controller"],
+      "unique_per_sheet_types": ["sensor", "device"]
+    },
+    "class3_cross_view": {
+      "watch_fields": {
+        "cable_ss": [
+          "cable_category", "cable_type", "cable_mark",
+          "length_m", "source_device", "destination_device"
+        ],
+        "device": ["designation", "description", "model"],
+        "sensor": ["designation", "sensor_type", "model", "loop_id"],
+        "controller": ["designation", "model", "capacity"]
+      },
+      "safety_critical_fields": [
+        "cable_category", "fire_resistance",
+        "sensor_type", "loop_id"
+      ],
+      "topology_fields": ["source_device", "destination_device", "system_id"]
+    },
+    "class4_requirement_conflict": {
+      "note_requirement_patterns": [
+        {
+          "pattern_id": "fire_cable_frls",
+          "regex": "(?:огнестойк|FRLS|FR|пожар).*каб",
+          "applies_to": "fire_alarm_cables",
+          "required_field": "fire_resistance",
+          "required_value": "FRLS"
+        },
+        {
+          "pattern_id": "ups_backup_24h",
+          "regex": "(?:ИБП|АКБ|резерв).*(?:24|двадцать четыре)\\s*ч",
+          "applies_to": "fire_alarm_controllers",
+          "required_field": "backup_hours",
+          "required_value": 24
+        }
+      ]
+    }
+  },
+
+  "field_labels": {
+    "cable_category": "категория кабеля",
+    "cable_type": "тип кабеля",
+    "cable_mark": "марка кабеля",
+    "length_m": "длина",
+    "source_device": "источник",
+    "destination_device": "приёмник",
+    "fire_resistance": "огнестойкость",
+    "system_id": "идентификатор системы",
+    "designation": "обозначение",
+    "description": "описание",
+    "model": "модель",
+    "manufacturer": "производитель",
+    "sensor_type": "тип извещателя",
+    "detection_zone": "зона обнаружения",
+    "mounting_height_m": "высота установки",
+    "loop_id": "номер шлейфа",
+    "capacity": "ёмкость",
+    "input_count": "количество входов",
+    "output_count": "количество выходов",
+    "outlet_type": "тип розетки",
+    "port_count": "количество портов",
+    "rack_units": "количество юнитов",
+    "note_text": "текст примечания",
+    "identifier_uniqueness": "уникальность маркера"
+  },
+
+  "field_units": {
+    "length_m": "м",
+    "mounting_height_m": "м",
+    "capacity": "шт.",
+    "input_count": "шт.",
+    "output_count": "шт.",
+    "port_count": "шт.",
+    "rack_units": "U"
+  },
+
+  "norms": {
+    "class2": {
+      "default_norm": "ГОСТ 21.210-2014 — обозначения слаботочных устройств на чертежах должны быть уникальными",
+      "default_risk": "Путаница при монтаже, неоднозначность привязки кабеля к устройству"
+    },
+    "class3": {
+      "cable_fields": {
+        "norm": "ГОСТ Р 53246-2008, п. 7.2 — длина горизонтальной линии СКС не более 90 м; категория кабеля должна быть согласована между планами и спецификацией",
+        "risk": "Несоответствие категории кабеля → снижение пропускной способности канала, отказ в сертификации"
+      },
+      "fire_alarm_fields": {
+        "norm": "СП 484.1311500.2020, п. 6.3 — требования к извещателям, шлейфам и ППКП должны быть согласованы между схемами и спецификацией",
+        "risk": "Ошибки в типах извещателей или шлейфах → неработоспособность пожарной сигнализации"
+      },
+      "topology_fields": {
+        "norm": null,
+        "risk": "Ошибка в кабельном журнале при монтаже"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие между чертежами → ошибки при монтаже"
+      }
+    },
+    "class4": {
+      "fire_resistance": {
+        "norm": "СП 484.1311500.2020, п. 6.3.4 — кабели шлейфов пожарной сигнализации должны быть огнестойкими (FRLS/FR)",
+        "risk": "Потеря связи с извещателями при пожаре → неработоспособность системы оповещения"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие нормативному требованию"
+      }
+    }
+  }
+}

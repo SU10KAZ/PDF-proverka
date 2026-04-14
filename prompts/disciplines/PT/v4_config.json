@@ -1,0 +1,277 @@
+{
+  "schema_version": "1.0",
+  "discipline": "PT",
+  "discipline_label": "Противопожарный водопровод",
+
+  "extraction": {
+    "scope_label": "ВПВ, АУПТ (спринклерная/дренчерная), насосная станция, пожарные краны",
+    "scope_included": ["VPV", "AUPT_Sprinkler", "AUPT_Drench", "PumpStation", "FireHydrant", "Reservoir"],
+    "scope_excluded": ["DomesticWater", "Sewage", "Heating"],
+    "entity_types": ["pipe_pt", "hydrant", "pump_pt", "valve_pt", "nozzle", "sprinkler", "spec_row", "note", "room", "other"],
+    "exact_key_fields": {
+      "pipe_pt": "pipe_id",
+      "hydrant": "hydrant_id",
+      "pump_pt": "pump_id",
+      "valve_pt": "valve_id",
+      "nozzle": "nozzle_id",
+      "sprinkler": "sprinkler_id",
+      "room": "room_no",
+      "spec_row": "spec_position"
+    },
+    "attribute_enum": {
+      "pipe_pt": [
+        "diameter_mm", "material", "system_id",
+        "pipe_type", "length_m", "slope",
+        "connection_type", "pressure_class"
+      ],
+      "hydrant": [
+        "designation", "type", "dn_mm",
+        "hose_length_m", "nozzle_diameter_mm",
+        "location", "mounting_height_m"
+      ],
+      "pump_pt": [
+        "designation", "pump_type", "model",
+        "flowrate_lps", "pressure_mpa", "power_kw",
+        "backup_pump", "auto_start"
+      ],
+      "valve_pt": [
+        "designation", "valve_type", "dn_mm",
+        "pressure_class", "actuation"
+      ],
+      "nozzle": [
+        "designation", "nozzle_type", "dn_mm",
+        "flowrate_lps", "spray_pattern"
+      ],
+      "sprinkler": [
+        "designation", "sprinkler_type", "model",
+        "activation_temp_c", "orientation",
+        "k_factor", "coverage_area_m2",
+        "min_pressure_mpa"
+      ],
+      "note": ["note_text", "requirement_type"],
+      "spec_row": ["designation", "description", "diameter_mm", "quantity", "material"],
+      "room": ["room_no", "area_m2", "fire_hazard_class"],
+      "other": []
+    },
+    "priority_tasks": [
+      {
+        "id": 1,
+        "title": "Диаметры трубопроводов",
+        "critical": true,
+        "description": "Для каждого участка трубопровода — диаметр, материал, тип системы (ВПВ / спринклерная / дренчерная). Сверка диаметров между аксонометрией, планами и спецификацией. Скорость воды: не более 3 м/с для стояков, 5 м/с для магистралей.",
+        "examples": [
+          {"input": "Ст. ВГП Ду50 ГОСТ 3262", "output": "diameter_mm=50, material=Ст. ВГП, pipe_type=ВПВ"},
+          {"input": "Труба стальная Ду100 ГОСТ 10704", "output": "diameter_mm=100, material=Ст. электросварная, pipe_type=магистраль"}
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Пожарные гидранты и краны",
+        "critical": true,
+        "description": "Для каждого ПК — DN (50 или 65), длина рукава (15 или 20 м), диаметр ствола, высота установки (1.35 м ±0.15 м). Каждая точка помещения — не менее 2 струй от разных ПК.",
+        "key_phrases": [
+          "пожарный кран", "ПК", "ШПК", "рукав",
+          "ствол", "DN50", "DN65", "радиус действия"
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Насосы пожаротушения",
+        "critical": true,
+        "description": "Основной и резервный насос (100% резерв), жокей-насос. Подача (м³/ч или л/с), напор (м или МПа), мощность. Автоматика пуска: от ОПС, от падения давления, дистанционно. Электроснабжение I категории.",
+        "key_phrases": [
+          "насос пожаротушения", "основной насос", "резервный насос",
+          "жокей-насос", "автоматический пуск", "I категория"
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Спринклерные оросители",
+        "critical": true,
+        "description": "Тип оросителя, температура срабатывания (57/68/79°C), ориентация (вверх/вниз/универсальный), K-фактор, площадь покрытия. Расстановка по СП 485 (расстояние между оросителями и до стен).",
+        "key_phrases": [
+          "ороситель", "спринклер", "температура срабатывания",
+          "розетка вверх", "розетка вниз", "интенсивность орошения"
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Примечания с требованиями",
+        "critical": false,
+        "description": "Примечания на чертежах — прочитай дословно. Требования к испытаниям, уклонам, запорной арматуре, дренажу.",
+        "key_phrases": [
+          "гидравлическое испытание", "уклон", "дренаж",
+          "обратный клапан", "задвижка", "манометр"
+        ]
+      }
+    ]
+  },
+
+  "canonical_memory": {
+    "entity_type_aliases": {
+      "fire_hydrant": "hydrant",
+      "fire_pump": "pump_pt",
+      "gate_valve": "valve_pt",
+      "check_valve": "valve_pt",
+      "orositel": "sprinkler",
+      "drench": "nozzle"
+    },
+    "attr_aliases": {
+      "dn": "dn_mm",
+      "diameter": "diameter_mm",
+      "flow": "flowrate_lps",
+      "pressure": "pressure_mpa",
+      "power": "power_kw",
+      "temp": "activation_temp_c",
+      "text_verbatim": "note_text",
+      "text": "note_text",
+      "name": "designation"
+    },
+    "ocr_normalized_fields": ["model", "designation", "material"]
+  },
+
+  "generators": {
+    "class2_identity": {
+      "eligible_types": ["hydrant", "pump_pt", "sprinkler", "valve_pt"],
+      "unique_per_sheet_types": ["hydrant", "sprinkler"]
+    },
+    "class3_cross_view": {
+      "watch_fields": {
+        "pipe_pt": [
+          "diameter_mm", "material", "system_id",
+          "pipe_type", "length_m"
+        ],
+        "hydrant": ["designation", "type", "dn_mm", "hose_length_m"],
+        "pump_pt": ["designation", "flowrate_lps", "pressure_mpa", "power_kw"],
+        "sprinkler": ["designation", "sprinkler_type", "activation_temp_c", "coverage_area_m2"]
+      },
+      "safety_critical_fields": [
+        "diameter_mm", "flowrate_lps", "pressure_mpa",
+        "activation_temp_c", "min_pressure_mpa",
+        "dn_mm", "power_kw"
+      ],
+      "topology_fields": ["system_id", "pipe_type"]
+    },
+    "class4_requirement_conflict": {
+      "note_requirement_patterns": [
+        {
+          "pattern_id": "backup_pump_required",
+          "regex": "(?:резервн|100\\s*%\\s*резерв).*нас",
+          "applies_to": "fire_pumps",
+          "required_field": "backup_pump",
+          "required_value": true
+        },
+        {
+          "pattern_id": "ring_network_required",
+          "regex": "(?:кольцев|кольцевая\\s*сеть)",
+          "applies_to": "pipe_network",
+          "required_field": "network_type",
+          "required_value": "ring"
+        },
+        {
+          "pattern_id": "power_category_1",
+          "regex": "(?:I\\s*категори|первой\\s*категори).*(?:электро|питан|надёжн)",
+          "applies_to": "fire_pump_power",
+          "required_field": "power_reliability_category",
+          "required_value": "I"
+        }
+      ]
+    }
+  },
+
+  "field_labels": {
+    "diameter_mm": "диаметр трубопровода",
+    "material": "материал",
+    "system_id": "идентификатор системы",
+    "pipe_type": "тип трубопровода",
+    "length_m": "длина",
+    "slope": "уклон",
+    "connection_type": "тип соединения",
+    "pressure_class": "класс давления",
+    "designation": "обозначение",
+    "type": "тип",
+    "dn_mm": "условный проход",
+    "hose_length_m": "длина рукава",
+    "nozzle_diameter_mm": "диаметр ствола",
+    "mounting_height_m": "высота установки",
+    "pump_type": "тип насоса",
+    "model": "модель",
+    "flowrate_lps": "расход",
+    "pressure_mpa": "напор",
+    "power_kw": "мощность",
+    "backup_pump": "резервный насос",
+    "auto_start": "автоматический пуск",
+    "valve_type": "тип арматуры",
+    "actuation": "привод",
+    "nozzle_type": "тип насадка",
+    "spray_pattern": "тип распыла",
+    "sprinkler_type": "тип оросителя",
+    "activation_temp_c": "температура срабатывания",
+    "orientation": "ориентация",
+    "k_factor": "K-фактор",
+    "coverage_area_m2": "площадь орошения",
+    "min_pressure_mpa": "минимальное давление",
+    "fire_hazard_class": "класс пожарной опасности",
+    "note_text": "текст примечания",
+    "identifier_uniqueness": "уникальность маркера"
+  },
+
+  "field_units": {
+    "diameter_mm": "мм",
+    "length_m": "м",
+    "dn_mm": "мм",
+    "hose_length_m": "м",
+    "nozzle_diameter_mm": "мм",
+    "mounting_height_m": "м",
+    "flowrate_lps": "л/с",
+    "pressure_mpa": "МПа",
+    "power_kw": "кВт",
+    "activation_temp_c": "°C",
+    "coverage_area_m2": "м²",
+    "min_pressure_mpa": "МПа",
+    "area_m2": "м²"
+  },
+
+  "norms": {
+    "class2": {
+      "default_norm": "ГОСТ 21.205-2016 — обозначения трубопроводов и оборудования на чертежах ВПВ/АУПТ должны быть уникальными",
+      "default_risk": "Путаница при монтаже, неоднозначность привязки трубопровода к системе"
+    },
+    "class3": {
+      "pipe_fields": {
+        "norm": "СП 10.13130.2020, разд. 4–6 — диаметры и материалы трубопроводов должны быть согласованы между аксонометрией, планами и спецификацией",
+        "risk": "Несоответствие диаметра → недостаточный расход воды при пожаротушении"
+      },
+      "pump_fields": {
+        "norm": "СП 10.13130.2020, п. 5.1 — параметры насосов (подача, напор) должны соответствовать гидравлическому расчёту",
+        "risk": "Недостаточная подача/напор → неработоспособность системы пожаротушения"
+      },
+      "sprinkler_fields": {
+        "norm": "СП 485.1311500.2020, табл. 5.1–5.3 — параметры оросителей должны быть согласованы между планами, аксонометрией и спецификацией",
+        "risk": "Несоответствие типа/температуры оросителей → неэффективное пожаротушение"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие между чертежами → ошибки при монтаже"
+      }
+    },
+    "class4": {
+      "diameter_check": {
+        "norm": "СП 10.13130.2020, п. 4.1 — диаметры определяются гидравлическим расчётом; скорость воды не более 3 м/с (стояки) и 5 м/с (магистрали)",
+        "risk": "Заниженный диаметр → превышение скорости воды, потери напора, недостаточный расход"
+      },
+      "pump_backup": {
+        "norm": "СП 10.13130.2020, п. 5.1.5 — 100% резерв основного пожарного насоса обязателен",
+        "risk": "Отсутствие резервного насоса → отказ системы пожаротушения при поломке основного"
+      },
+      "power_reliability": {
+        "norm": "СП 10.13130.2020, п. 5.1.8; ФЗ-123, ст. 82 — электроснабжение насосной станции по I категории надёжности",
+        "risk": "Потеря электроснабжения → невозможность автоматического пожаротушения"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие нормативному требованию"
+      }
+    }
+  }
+}

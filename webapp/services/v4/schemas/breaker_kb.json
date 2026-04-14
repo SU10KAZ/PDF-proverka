@@ -1,0 +1,106 @@
+{
+  "_comment": "Knowledge base российских автоматических выключателей для определения типа расцепителя. Используется в gen_note_vs_equipment_conflict для проверки соответствия марки АВ требованию из примечаний.",
+  "_sources": [
+    "Каталоги КЭАЗ (ВА-332А, ВА-333А, ВА-335А)",
+    "Каталог IEK (ВА-302, ВА-305)",
+    "ГОСТ IEC 60947-2"
+  ],
+  "breakers": {
+    "ВА-302": {
+      "type": "модульный",
+      "trip_unit_type": "термомагнитный",
+      "trip_delay_capable": false,
+      "current_range_a": [1, 63],
+      "notes": "Модульный АВ IEK, только термомагнитный расцепитель, без настраиваемых уставок"
+    },
+    "ВА-305": {
+      "type": "модульный",
+      "trip_unit_type": "термомагнитный",
+      "trip_delay_capable": false,
+      "current_range_a": [1, 125]
+    },
+    "ВА-332А": {
+      "type": "стационарный",
+      "trip_unit_type": "термомагнитный",
+      "trip_delay_capable": false,
+      "current_range_a": [16, 125],
+      "notes": "КЭАЗ, литого корпуса, термомагнитный"
+    },
+    "ВА-333А": {
+      "type": "стационарный",
+      "trip_unit_type": "термомагнитный",
+      "trip_delay_capable": false,
+      "current_range_a": [80, 250],
+      "notes": "КЭАЗ, литого корпуса, термомагнитный"
+    },
+    "ВА-335А": {
+      "type": "стационарный",
+      "trip_unit_type": "термомагнитный",
+      "trip_delay_capable": false,
+      "current_range_a": [160, 630],
+      "notes": "КЭАЗ, литого корпуса, термомагнитный. Для селективной защиты требуются АВ с электронным расцепителем (ВА-336А или аналог)"
+    },
+    "ВА-336А": {
+      "type": "стационарный",
+      "trip_unit_type": "электронный",
+      "trip_delay_capable": true,
+      "current_range_a": [160, 800],
+      "notes": "КЭАЗ, электронный расцепитель с настраиваемой селективностью"
+    },
+    "ВА-731": {
+      "type": "воздушный",
+      "trip_unit_type": "электронный",
+      "trip_delay_capable": true,
+      "current_range_a": [800, 6300],
+      "notes": "Воздушный, электронный расцепитель"
+    },
+    "ВА47-29": {
+      "type": "модульный",
+      "trip_unit_type": "термомагнитный",
+      "trip_delay_capable": false,
+      "current_range_a": [1, 63],
+      "notes": "IEK модульный"
+    },
+    "ВА47-100": {
+      "type": "модульный",
+      "trip_unit_type": "термомагнитный",
+      "trip_delay_capable": false,
+      "current_range_a": [10, 100]
+    },
+    "S203": {
+      "type": "модульный",
+      "trip_unit_type": "термомагнитный",
+      "trip_delay_capable": false,
+      "notes": "ABB System Pro"
+    },
+    "E3H": {
+      "type": "воздушный",
+      "trip_unit_type": "электронный",
+      "trip_delay_capable": true,
+      "current_range_a": [1250, 6300],
+      "notes": "ABB Emax, электронный"
+    }
+  },
+  "trip_type_keywords": {
+    "электронный": ["электронный", "электронным", "электр.", "electr", "electronic"],
+    "термомагнитный": ["термомагнитный", "термомагнитным", "терм.маг.", "терм-маг", "thermal_magnetic"]
+  },
+  "selectivity_requirements": {
+    "_comment": "Марки АВ которые НЕ соответствуют требованию 'электронный расцепитель с селективной задержкой'",
+    "insufficient_for_selectivity": [
+      "ВА-302",
+      "ВА-305",
+      "ВА-332А",
+      "ВА-333А",
+      "ВА-335А",
+      "ВА47-29",
+      "ВА47-100",
+      "S203"
+    ],
+    "sufficient_for_selectivity": [
+      "ВА-336А",
+      "ВА-731",
+      "E3H"
+    ]
+  }
+}

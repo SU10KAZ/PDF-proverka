@@ -27,6 +27,7 @@ from webapp.models.discussion import (
 from webapp.models.usage import LLMResult
 from webapp.services.llm_runner import run_llm, make_image_content
 from webapp.services.project_service import resolve_project_dir
+from webapp.services.usage_service import paid_cost_tracker
 
 logger = logging.getLogger(__name__)
 
@@ -359,6 +360,8 @@ async def _maybe_compress_history(discussion: Discussion, model: str):
         discussion.total_input_tokens += result.input_tokens
         discussion.total_output_tokens += result.output_tokens
         discussion.total_cost_usd += result.cost_usd
+        if result.cost_usd > 0:
+            paid_cost_tracker.add(result.cost_usd)
 
 
 # ─── Claude CLI для чата ───────────────────────────────────────
@@ -565,6 +568,8 @@ async def send_chat_message(
     discussion.total_input_tokens += result.input_tokens
     discussion.total_output_tokens += result.output_tokens
     discussion.total_cost_usd += result.cost_usd
+    if result.cost_usd > 0:
+        paid_cost_tracker.add(result.cost_usd)
     discussion.model = model
 
     _save_discussion(project_id, discussion)
@@ -752,6 +757,8 @@ async def send_chat_message_stream(
     discussion.total_input_tokens += total_input
     discussion.total_output_tokens += total_output
     discussion.total_cost_usd += total_cost
+    if total_cost > 0:
+        paid_cost_tracker.add(total_cost)
     discussion.model = model
     _save_discussion(project_id, discussion)
 
@@ -820,10 +827,13 @@ def _update_item_status(
             item["resolution_summary"] = summary
             break
 
-    path.write_text(
-        json.dumps(data, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
+    try:
+        path.write_text(
+            json.dumps(data, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+    except OSError as e:
+        logger.error("Failed to write %s: %s", path, e)
 
 
 # ─── Генерация изменённой версии ──────────────────────────────
@@ -919,6 +929,8 @@ async def generate_revised_version(
     discussion.total_input_tokens += result.input_tokens
     discussion.total_output_tokens += result.output_tokens
     discussion.total_cost_usd += result.cost_usd
+    if result.cost_usd > 0:
+        paid_cost_tracker.add(result.cost_usd)
     _save_discussion(project_id, discussion)
 
     revised_data = result.json_data or {}
@@ -1030,7 +1042,9 @@ def list_discussion_items(
                 sheet=f.get("sheet") or "",
                 norm=f.get("norm") or f.get("norm_reference") or "",
                 recommendation=f.get("solution") or f.get("recommendation") or "",
+                resolution_summary=f.get("resolution_summary") or (disc.resolution_summary if disc and disc.resolution_summary else ""),
                 page=f.get("page"),
+                sub_findings=f.get("sub_findings"),
             ))
     else:
         data = _load_json(output_dir / "optimization.json")
@@ -1054,6 +1068,7 @@ def list_discussion_items(
                 savings_basis=item.get("savings_basis") or "",
                 risks=item.get("risks") or "",
                 norm=item.get("norm") or "",
+                resolution_summary=item.get("resolution_summary") or (disc.resolution_summary if disc and disc.resolution_summary else ""),
                 page=item.get("page"),
                 sheet=item.get("sheet") or "",
                 section=item.get("section") or "",

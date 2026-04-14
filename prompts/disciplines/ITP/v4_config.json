@@ -1,0 +1,224 @@
+{
+  "schema_version": "1.0",
+  "discipline": "ITP",
+  "discipline_label": "Индивидуальный тепловой пункт",
+
+  "extraction": {
+    "scope_label": "ИТП (теплообменники, насосы, трубопроводы, УУТЭ)",
+    "scope_included": ["ITP", "HeatExchanger", "Pump", "Valve", "Meter", "Controller"],
+    "scope_excluded": ["CentralHeatingPlant", "BoilerRoom", "ExternalHeatNetwork"],
+    "entity_types": ["heat_exchanger", "pump_itp", "valve_itp", "pipe_itp", "meter", "controller", "spec_row", "note", "room", "other"],
+    "exact_key_fields": {
+      "heat_exchanger": "designation",
+      "pump_itp": "designation",
+      "valve_itp": "designation",
+      "pipe_itp": "designation",
+      "meter": "designation",
+      "controller": "designation",
+      "spec_row": "spec_position",
+      "room": "room_no"
+    },
+    "attribute_enum": {
+      "heat_exchanger": [
+        "designation", "type", "power_kw", "flowrate_m3h",
+        "temperature_primary_supply_c", "temperature_primary_return_c",
+        "temperature_secondary_supply_c", "temperature_secondary_return_c",
+        "pressure_drop_primary_kpa", "pressure_drop_secondary_kpa",
+        "plate_count", "heat_area_m2", "circuit"
+      ],
+      "pump_itp": [
+        "designation", "type", "flowrate_m3h", "head_m",
+        "power_kw", "speed_control", "circuit",
+        "redundancy", "electric_category"
+      ],
+      "valve_itp": [
+        "designation", "type", "kvs", "dn_mm",
+        "actuator_type", "authority", "circuit"
+      ],
+      "pipe_itp": [
+        "designation", "diameter_mm", "material",
+        "insulation_thickness_mm", "slope_pct", "circuit"
+      ],
+      "meter": [
+        "designation", "type", "accuracy_class",
+        "flowrate_range_m3h", "dn_mm", "straight_section_dn"
+      ],
+      "controller": [
+        "designation", "model", "sensor_count",
+        "control_algorithm", "weather_compensation"
+      ],
+      "note": ["note_text", "requirement_type"],
+      "spec_row": ["designation", "description", "quantity"],
+      "room": ["room_no"]
+    },
+    "priority_tasks": [
+      {
+        "id": 1,
+        "title": "Теплообменники — мощность и параметры",
+        "critical": true,
+        "description": "Для каждого теплообменника извлечь мощность, расходы, температурные графики первичного и вторичного контуров. Проверить запас мощности (10-15% отопление, до 25% ГВС)."
+      },
+      {
+        "id": 2,
+        "title": "Насосы — расход и напор",
+        "critical": true,
+        "description": "Для каждого насоса извлечь расход, напор, электрическую мощность. Проверить 100% резервирование циркуляционных насосов отопления. Наличие обратных клапанов на обвязке."
+      },
+      {
+        "id": 3,
+        "title": "Трубопроводы — диаметры и материалы",
+        "critical": true,
+        "description": "Для каждого трубопровода извлечь диаметр, материал, толщину изоляции. Проверить соответствие скоростей (до 3 м/с), уклоны (не менее 0.002)."
+      },
+      {
+        "id": 4,
+        "title": "Приборы учёта — УУТЭ",
+        "critical": true,
+        "description": "Извлечь характеристики теплосчётчика, расходомеров, термопреобразователей, датчиков давления. Проверить прямые участки до/после расходомеров, соответствие Постановлению №1034."
+      },
+      {
+        "id": 5,
+        "title": "Регулирующие клапаны и автоматика",
+        "critical": false,
+        "description": "Для каждого клапана извлечь Kvs, DN, тип привода. Проверить авторитет клапана (не менее 0.5). Проверить наличие контроллера погодозависимого регулирования."
+      }
+    ]
+  },
+
+  "canonical_memory": {
+    "entity_type_aliases": {
+      "pump": "pump_itp",
+      "valve": "valve_itp",
+      "pipe": "pipe_itp"
+    },
+    "attr_aliases": {
+      "capacity_kw": "power_kw",
+      "flow": "flowrate_m3h",
+      "pressure_head": "head_m",
+      "name": "designation"
+    },
+    "ocr_normalized_fields": ["designation", "type", "model"]
+  },
+
+  "generators": {
+    "class2_identity": {
+      "eligible_types": ["heat_exchanger", "pump_itp", "valve_itp", "meter"],
+      "unique_per_sheet_types": ["heat_exchanger", "pump_itp"]
+    },
+    "class3_cross_view": {
+      "watch_fields": {
+        "heat_exchanger": ["power_kw", "flowrate_m3h", "temperature_primary_supply_c", "temperature_secondary_supply_c", "circuit"],
+        "pump_itp": ["flowrate_m3h", "head_m", "power_kw", "circuit", "redundancy"],
+        "pipe_itp": ["diameter_mm", "material", "circuit"]
+      },
+      "safety_critical_fields": [
+        "power_kw", "flowrate_m3h", "head_m",
+        "temperature_primary_supply_c", "temperature_primary_return_c"
+      ],
+      "topology_fields": ["circuit"]
+    },
+    "class4_requirement_conflict": {
+      "knowledge_base_file": null,
+      "note_requirement_patterns": [
+        {
+          "pattern_id": "pump_redundancy",
+          "regex": "резерв|100\\s*%\\s*резерв",
+          "applies_to": "pump_itp",
+          "required_field": "redundancy",
+          "required_value": true
+        },
+        {
+          "pattern_id": "weather_compensation",
+          "regex": "погодо[зa]ависим|по температурному графику",
+          "applies_to": "controller",
+          "required_field": "weather_compensation",
+          "required_value": true
+        }
+      ]
+    }
+  },
+
+  "field_labels": {
+    "power_kw": "мощность",
+    "flowrate_m3h": "расход",
+    "head_m": "напор",
+    "temperature_primary_supply_c": "температура подачи (1 контур)",
+    "temperature_primary_return_c": "температура обратки (1 контур)",
+    "temperature_secondary_supply_c": "температура подачи (2 контур)",
+    "temperature_secondary_return_c": "температура обратки (2 контур)",
+    "pressure_drop_primary_kpa": "потери давления (1 контур)",
+    "pressure_drop_secondary_kpa": "потери давления (2 контур)",
+    "plate_count": "количество пластин",
+    "heat_area_m2": "площадь теплообмена",
+    "diameter_mm": "диаметр",
+    "material": "материал",
+    "insulation_thickness_mm": "толщина изоляции",
+    "slope_pct": "уклон",
+    "kvs": "пропускная способность Kvs",
+    "dn_mm": "условный диаметр DN",
+    "actuator_type": "тип привода",
+    "authority": "авторитет клапана",
+    "accuracy_class": "класс точности",
+    "flowrate_range_m3h": "диапазон расходов",
+    "straight_section_dn": "прямые участки (DN)",
+    "speed_control": "частотное регулирование",
+    "redundancy": "резервирование",
+    "electric_category": "категория электроприёмника",
+    "circuit": "контур",
+    "designation": "обозначение",
+    "description": "описание",
+    "sensor_count": "количество датчиков",
+    "control_algorithm": "алгоритм регулирования",
+    "weather_compensation": "погодозависимое регулирование"
+  },
+
+  "field_units": {
+    "power_kw": "кВт",
+    "flowrate_m3h": "м\u00b3/ч",
+    "head_m": "м",
+    "temperature_primary_supply_c": "\u00b0C",
+    "temperature_primary_return_c": "\u00b0C",
+    "temperature_secondary_supply_c": "\u00b0C",
+    "temperature_secondary_return_c": "\u00b0C",
+    "pressure_drop_primary_kpa": "кПа",
+    "pressure_drop_secondary_kpa": "кПа",
+    "heat_area_m2": "м\u00b2",
+    "diameter_mm": "мм",
+    "insulation_thickness_mm": "мм",
+    "slope_pct": "%",
+    "dn_mm": "мм",
+    "flowrate_range_m3h": "м\u00b3/ч",
+    "kvs": "м\u00b3/ч"
+  },
+
+  "norms": {
+    "class2": {
+      "default_norm": "ГОСТ 21.609-2014 — обозначения элементов на схемах ИТП должны быть уникальными",
+      "default_risk": "Путаница при монтаже, неоднозначность привязки оборудования"
+    },
+    "class3": {
+      "section_fields": {
+        "norm": "СП 60.13330.2020 — параметры оборудования ИТП должны соответствовать расчётным нагрузкам",
+        "risk": "Несоответствие мощности/расхода → недогрев или перегрев, отказ в экспертизе"
+      },
+      "meter_fields": {
+        "norm": "Постановление Правительства РФ №1034 — правила коммерческого учёта тепловой энергии",
+        "risk": "Несоответствие узла учёта → отказ теплоснабжающей организации в приёмке"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие между схемой и спецификацией → ошибки при монтаже"
+      }
+    },
+    "class4": {
+      "pump_redundancy": {
+        "norm": "СП 60.13330.2020 — циркуляционные насосы отопления должны иметь 100% резерв",
+        "risk": "Отсутствие резерва → прекращение циркуляции при отказе насоса"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие нормативному требованию"
+      }
+    }
+  }
+}

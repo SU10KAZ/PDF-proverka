@@ -43,6 +43,7 @@ async def generate_excel(
     exit_code, stdout, stderr = await run_script(
         str(GENERATE_EXCEL_SCRIPT),
         args,
+        env_overrides={"AUDIT_NO_OPEN": "1"},
     )
 
     if exit_code == 0 and os.path.exists(output_path):

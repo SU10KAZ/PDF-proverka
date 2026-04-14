@@ -1,0 +1,233 @@
+{
+  "schema_version": "1.0",
+  "discipline": "KM",
+  "discipline_label": "Конструкции металлические",
+
+  "extraction": {
+    "scope_label": "Металлические конструкции каркаса, связи, площадки, лестницы",
+    "scope_included": ["Frame", "Beams", "Columns", "Trusses", "Bracing", "Platforms", "Stairs"],
+    "scope_excluded": ["Reinforcement", "ConcreteElements", "Foundations"],
+    "entity_types": ["element", "weld", "bolt_connection", "section", "profile", "spec_row", "note", "other"],
+    "exact_key_fields": {
+      "element": "element_mark",
+      "weld": "weld_id",
+      "bolt_connection": "connection_id",
+      "section": "section_id",
+      "profile": "profile_id",
+      "spec_row": "spec_position"
+    },
+    "attribute_enum": {
+      "element": [
+        "steel_grade", "thickness_mm", "section_type",
+        "profile_name", "length_mm", "weight_kg",
+        "fire_resistance_class", "element_group"
+      ],
+      "weld": [
+        "weld_type", "length_mm", "leg_mm",
+        "electrode_mark", "welding_method",
+        "joint_type", "weld_category"
+      ],
+      "bolt_connection": [
+        "bolt_class", "bolt_diameter_mm", "bolt_count",
+        "connection_type", "washer_type",
+        "torque_nm", "surface_treatment"
+      ],
+      "section": [
+        "profile_name", "dimensions", "steel_grade",
+        "moment_of_inertia", "section_modulus"
+      ],
+      "profile": [
+        "profile_type", "designation",
+        "height_mm", "width_mm", "thickness_mm"
+      ],
+      "note": ["note_text", "requirement_type"],
+      "spec_row": ["designation", "description", "steel_grade", "weight_kg", "quantity"],
+      "other": []
+    },
+    "priority_tasks": [
+      {
+        "id": 1,
+        "title": "Марки стали",
+        "critical": true,
+        "description": "Для каждого элемента определить марку стали (С245, С255, С345, 09Г2С и др.), сверить соответствие условиям эксплуатации, температуре, ответственности конструкции. Категория стали по ударной вязкости по ГОСТ 27772-2015.",
+        "examples": [
+          {"input": "Б1 — двутавр 30Б1, сталь С255", "output": "element_mark=Б1, profile_name=30Б1, steel_grade=С255"},
+          {"input": "К1 — труба 219×8, 09Г2С-12", "output": "element_mark=К1, profile_name=219x8, steel_grade=09Г2С-12"}
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Сварные швы",
+        "critical": true,
+        "description": "Для каждого сварного соединения — тип (стыковое, угловое, тавровое, нахлёсточное), катет углового шва, длина, марка электрода, способ сварки, категория шва по ответственности.",
+        "key_phrases": [
+          "катет шва", "стыковой шов", "угловой шов", "тавровое",
+          "электрод", "полуавтоматическая", "разделка кромок"
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Болтовые соединения",
+        "critical": true,
+        "description": "Класс прочности болтов (4.6, 5.6, 8.8, 10.9), диаметр, количество в узле, шаг и расстояние до края. Фрикционные соединения: обработка поверхностей, усилие натяжения.",
+        "key_phrases": [
+          "высокопрочный болт", "класс прочности", "фрикционное",
+          "сдвигоустойчивое", "усилие натяжения", "шайба"
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Огнезащита металлоконструкций",
+        "critical": true,
+        "description": "Требуемый предел огнестойкости (R15–R120), тип огнезащиты (конструктивная/тонкослойная), приведённая толщина металла. Сертификаты на огнезащитные составы.",
+        "key_phrases": [
+          "огнезащита", "предел огнестойкости", "вспучивающаяся краска",
+          "приведённая толщина", "R30", "R45", "R60", "R90"
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Примечания с требованиями",
+        "critical": false,
+        "description": "Примечания на чертежах и в общих указаниях — прочитай дословно. Особое внимание к требованиям по сварке, антикоррозийной защите, допускам.",
+        "key_phrases": [
+          "антикоррозийная защита", "грунтовка", "покраска",
+          "допуск", "ГОСТ 23118", "монтажный стык"
+        ]
+      }
+    ]
+  },
+
+  "canonical_memory": {
+    "entity_type_aliases": {
+      "beam": "element",
+      "column": "element",
+      "truss": "element",
+      "brace": "element",
+      "joint": "bolt_connection"
+    },
+    "attr_aliases": {
+      "grade": "steel_grade",
+      "mark": "steel_grade",
+      "cathet": "leg_mm",
+      "fillet": "leg_mm",
+      "text_verbatim": "note_text",
+      "text": "note_text",
+      "name": "designation"
+    },
+    "ocr_normalized_fields": ["steel_grade", "profile_name", "designation", "electrode_mark"]
+  },
+
+  "generators": {
+    "class2_identity": {
+      "eligible_types": ["element", "weld", "bolt_connection"],
+      "unique_per_sheet_types": ["element"]
+    },
+    "class3_cross_view": {
+      "watch_fields": {
+        "element": [
+          "steel_grade", "thickness_mm", "section_type",
+          "profile_name", "weight_kg", "fire_resistance_class"
+        ],
+        "weld": ["weld_type", "length_mm", "leg_mm", "weld_category"],
+        "bolt_connection": ["bolt_class", "bolt_diameter_mm", "bolt_count", "connection_type"],
+        "spec_row": ["designation", "steel_grade", "weight_kg"]
+      },
+      "safety_critical_fields": [
+        "steel_grade", "thickness_mm",
+        "leg_mm", "weld_category",
+        "bolt_class", "bolt_diameter_mm", "bolt_count"
+      ],
+      "topology_fields": ["element_group"]
+    },
+    "class4_requirement_conflict": {
+      "note_requirement_patterns": [
+        {
+          "pattern_id": "fire_protection_required",
+          "regex": "(?:огнезащит|предел\\s*огнестойкости|R\\d{2,3})",
+          "applies_to": "all_elements",
+          "required_field": "fire_resistance_class",
+          "required_value": "specified"
+        },
+        {
+          "pattern_id": "anticorrosion_required",
+          "regex": "(?:антикоррози|грунт|покрытие|покраска)",
+          "applies_to": "all_elements",
+          "required_field": "anticorrosion_system",
+          "required_value": "specified"
+        }
+      ]
+    }
+  },
+
+  "field_labels": {
+    "steel_grade": "марка стали",
+    "thickness_mm": "толщина",
+    "section_type": "тип сечения",
+    "profile_name": "профиль",
+    "length_mm": "длина",
+    "weight_kg": "масса",
+    "fire_resistance_class": "предел огнестойкости",
+    "element_group": "группа элементов",
+    "weld_type": "тип сварного соединения",
+    "leg_mm": "катет шва",
+    "electrode_mark": "марка электрода",
+    "welding_method": "способ сварки",
+    "joint_type": "тип стыка",
+    "weld_category": "категория шва",
+    "bolt_class": "класс прочности болта",
+    "bolt_diameter_mm": "диаметр болта",
+    "bolt_count": "количество болтов",
+    "connection_type": "тип соединения",
+    "washer_type": "тип шайбы",
+    "torque_nm": "момент затяжки",
+    "surface_treatment": "обработка поверхности",
+    "designation": "обозначение",
+    "description": "описание",
+    "identifier_uniqueness": "уникальность маркера"
+  },
+
+  "field_units": {
+    "thickness_mm": "мм",
+    "length_mm": "мм",
+    "weight_kg": "кг",
+    "leg_mm": "мм",
+    "bolt_diameter_mm": "мм",
+    "torque_nm": "Н*м"
+  },
+
+  "norms": {
+    "class2": {
+      "default_norm": "ГОСТ 26047-2016 — марки конструкций должны быть уникальными в пределах комплекта чертежей",
+      "default_risk": "Путаница при изготовлении и монтаже, несоответствие элементов проектным позициям"
+    },
+    "class3": {
+      "steel_fields": {
+        "norm": "СП 16.13330.2017, п. 4.2 — марка и категория стали должны быть согласованы между чертежами, расчётом и спецификацией",
+        "risk": "Неправильная марка стали → снижение несущей способности, хрупкое разрушение"
+      },
+      "weld_fields": {
+        "norm": "ГОСТ 14771-76, СП 16.13330.2017, п. 14 — параметры сварных швов должны быть согласованы между узлами и ведомостью",
+        "risk": "Несоответствие катета или типа шва → недостаточная прочность узла"
+      },
+      "bolt_fields": {
+        "norm": "СП 16.13330.2017, п. 14.2 — класс прочности и количество болтов должны соответствовать расчёту",
+        "risk": "Недостаточное количество или класс болтов → разрушение узла"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие между чертежами → ошибки при изготовлении и монтаже"
+      }
+    },
+    "class4": {
+      "fire_protection": {
+        "norm": "Федеральный закон №123-ФЗ, ст. 87; СП 2.13130.2020 — конструкции должны иметь предел огнестойкости не ниже нормативного",
+        "risk": "Отсутствие или недостаточная огнезащита → обрушение при пожаре"
+      },
+      "default": {
+        "norm": null,
+        "risk": "Несоответствие нормативному требованию"
+      }
+    }
+  }
+}

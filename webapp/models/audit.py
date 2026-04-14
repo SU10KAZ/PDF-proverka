@@ -21,6 +21,11 @@ class AuditStage(str, Enum):
     BLOCK_ANALYSIS = "block_analysis"
     FINDINGS_MERGE = "findings_merge"
     FINDINGS_REVIEW = "findings_review"
+    # v4 pipeline (fact-first) — заменяет block_analysis + findings_merge
+    V4_EXTRACTION = "v4_extraction"
+    V4_MEMORY = "v4_memory"
+    V4_CANDIDATES = "v4_candidates"
+    V4_FORMATTER = "v4_formatter"
 
 
 class JobStatus(str, Enum):

@@ -850,6 +850,74 @@ class GlobalUsageScanner:
         }
 
 
+# ══════════════════════════════════════════════════════════════
+# PaidCostTracker — счётчик расходов на платные API (OpenRouter)
+# ══════════════════════════════════════════════════════════════
+
+PAID_COST_FILE = _DATA_DIR / "paid_cost.json"
+
+class PaidCostTracker:
+    """Трекер реальных расходов на платные нейросети (Gemini, GPT и др.).
+
+    Хранит два счётчика:
+    - total_lifetime_usd — никогда не обнуляется
+    - display_usd — обнуляется пользователем через UI
+    """
+
+    def __init__(self):
+        self._data = {"total_lifetime_usd": 0.0, "display_usd": 0.0, "reset_history": []}
+        self._lock = threading.Lock()
+        self._load()
+
+    def _load(self):
+        try:
+            if PAID_COST_FILE.exists():
+                with open(PAID_COST_FILE, "r", encoding="utf-8") as f:
+                    self._data = json.load(f)
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    def _save(self):
+        try:
+            PAID_COST_FILE.parent.mkdir(parents=True, exist_ok=True)
+            with open(PAID_COST_FILE, "w", encoding="utf-8") as f:
+                json.dump(self._data, f, indent=2, ensure_ascii=False)
+        except OSError:
+            pass
+
+    def add(self, cost_usd: float):
+        """Добавить расход (вызывается после каждого платного LLM-вызова)."""
+        if cost_usd <= 0:
+            return
+        with self._lock:
+            self._data["total_lifetime_usd"] = round(self._data.get("total_lifetime_usd", 0.0) + cost_usd, 6)
+            self._data["display_usd"] = round(self._data.get("display_usd", 0.0) + cost_usd, 6)
+            self._save()
+
+    def get(self) -> dict:
+        """Текущие значения счётчиков."""
+        with self._lock:
+            return {
+                "display_usd": round(self._data.get("display_usd", 0.0), 4),
+                "total_lifetime_usd": round(self._data.get("total_lifetime_usd", 0.0), 4),
+            }
+
+    def reset_display(self):
+        """Обнулить отображаемый счётчик, сохранив запись в истории."""
+        with self._lock:
+            amount = self._data.get("display_usd", 0.0)
+            if amount > 0:
+                history = self._data.get("reset_history", [])
+                history.append({
+                    "date": datetime.now().isoformat(),
+                    "amount": round(amount, 4),
+                })
+                self._data["reset_history"] = history
+            self._data["display_usd"] = 0.0
+            self._save()
+
+
 # Глобальные экземпляры
 usage_tracker = UsageTracker()
 global_scanner = GlobalUsageScanner()
+paid_cost_tracker = PaidCostTracker()

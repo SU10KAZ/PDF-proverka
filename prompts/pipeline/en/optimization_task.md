@@ -52,7 +52,7 @@ Solutions more expensive during construction but with savings over 10-25 years: 
 - **estimated_savings_pct** — weighted average across large items, DO NOT invent a round number. If no data — set `0`
 - **spec_items** — specify concrete specification/register items. Format: `"Поз. N — Name"`. If item covers a group — list all
 - **savings_basis** — be honest: `"расчёт"` only if you have concrete numbers (prices, volumes), `"экспертная оценка"` if from experience on similar projects, `"не определено"` if no data
-- **page and sheet** — `page` = PDF page number, `sheet` = sheet number from title block. They do NOT match. Use data from MD file (`**Лист:**` markers and page numbers)
+- **page and sheet** — `page` = page number, `sheet` = sheet number from title block. They do NOT match. Use data from MD file (`**Лист:**` markers and page numbers)
 
 ## Work Sequence
 
