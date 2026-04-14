@@ -17,6 +17,28 @@ const app = createApp({
         const projects = ref([]);
         const loading = ref(false);
 
+        // ─── Data Cache ───
+        const _cache = {
+            project: new Map(),    // id → {data, ts}
+            findings: new Map(),   // id → {data, ts}
+            optimization: new Map(), // id → {data, ts}
+            blocks: new Map(),     // id → {data, ts}
+            TTL: 60000,            // 60 секунд — после этого перезапрос
+        };
+        function _cacheGet(type, id) {
+            const entry = _cache[type].get(id);
+            if (!entry) return null;
+            if (Date.now() - entry.ts > _cache.TTL) { _cache[type].delete(id); return null; }
+            return entry.data;
+        }
+        function _cacheSet(type, id, data) {
+            _cache[type].set(id, { data, ts: Date.now() });
+        }
+        function _cacheInvalidate(type, id) {
+            if (id) _cache[type].delete(id);
+            else _cache[type].clear();
+        }
+
         // Sidebar
         const sidebarSectionsOpen = ref(true);
         const sidebarFilterSection = ref(null);  // null = все разделы
@@ -29,6 +51,12 @@ const app = createApp({
             'КРИТИЧЕСКОЕ', 'ЭКОНОМИЧЕСКОЕ', 'ЭКСПЛУАТАЦИОННОЕ',
             'РЕКОМЕНДАТЕЛЬНОЕ', 'ПРОВЕРИТЬ ПО СМЕЖНЫМ'
         ];
+
+        // ─── Pagination ───
+        const PAGE_SIZE = 50;
+        const findingsPage = ref(1);
+        const optimizationPage = ref(1);
+        const discussionPage = ref(1);
 
         // Tiles
 
@@ -180,6 +208,35 @@ const app = createApp({
         });
         const showUsageDetails = ref(false);
         let usagePollTimer = null;
+
+        // ─── Paid API cost ───
+        const paidCost = ref({ display_usd: 0, total_lifetime_usd: 0 });
+        const showPaidCost = ref(false);
+
+        async function fetchPaidCost() {
+            try {
+                const data = await api('/usage/paid-cost');
+                paidCost.value = data;
+            } catch (e) {
+                console.error('Failed to fetch paid cost:', e);
+            }
+        }
+
+        async function resetPaidCost() {
+            if (!confirm('Обнулить счётчик расходов? Общая сумма за всё время сохранится.')) return;
+            try {
+                const resp = await fetch('/api/usage/paid-cost/reset', { method: 'POST' });
+                if (resp.ok) paidCost.value = await resp.json();
+            } catch (e) {
+                console.error('Failed to reset paid cost:', e);
+            }
+        }
+
+        function formatCostShort(usd) {
+            if (!usd || usd === 0) return '$0';
+            if (usd < 0.01) return '<$0.01';
+            return '$' + usd.toFixed(2);
+        }
 
         // ─── Account info ───
         const accountInfo = ref({ email: '—', org: '—', plan: '—', loggedIn: false });
@@ -429,8 +486,13 @@ const app = createApp({
         function startPolling() {
             stopPolling();
             pollLiveStatus(); // сразу
-            pollTimer = setInterval(pollLiveStatus, 5000);
-            tickTimer = setInterval(() => { elapsedTick.value++; }, 1000);
+            pollTimer = setInterval(pollLiveStatus, 15000);
+            tickTimer = setInterval(() => {
+                // Обновлять tick только когда есть активные задачи
+                if (liveStatus.value.running && Object.keys(liveStatus.value.running).length > 0) {
+                    elapsedTick.value++;
+                }
+            }, 1000);
         }
 
         function stopPolling() {
@@ -2367,6 +2429,11 @@ const app = createApp({
         // ─── Data Loading ───
         async function refreshProjects() {
             loading.value = true;
+            // Инвалидировать кеши — данные могли измениться (аудит завершён и т.д.)
+            _cacheInvalidate('project');
+            _cacheInvalidate('findings');
+            _cacheInvalidate('optimization');
+            _cacheInvalidate('blocks');
             try {
                 const data = await api('/projects');
                 projects.value = data.projects;
@@ -2378,10 +2445,15 @@ const app = createApp({
             loading.value = false;
         }
 
-        async function loadProject(id) {
+        async function loadProject(id, forceRefresh) {
             currentProjectId.value = id;
+            if (!forceRefresh) {
+                const cached = _cacheGet('project', id);
+                if (cached) { currentProject.value = cached; return; }
+            }
             try {
                 currentProject.value = await api(`/projects/${encodeURIComponent(id)}`);
+                _cacheSet('project', id, currentProject.value);
                 loadResumeInfo(id);
                 fetchProjectUsage(id);  // загрузить детальный usage
             } catch (e) {
@@ -2469,15 +2541,27 @@ const app = createApp({
             }
         }
 
-        async function loadFindings(id) {
-            findingsData.value = null;
+        // Полные данные findings (без фильтрации) — для client-side фильтрации
+        const _findingsAll = ref(null);
+
+        async function loadFindings(id, forceRefresh) {
             expandedFindingId.value = null;
+            findingsPage.value = 1;
+            if (!forceRefresh) {
+                const cached = _cacheGet('findings', id);
+                if (cached) {
+                    _findingsAll.value = cached;
+                    _applyFindingsFilter();
+                    return;
+                }
+            }
+            findingsData.value = null;
             try {
-                const params = new URLSearchParams();
-                if (filterSeverity.value) params.set('severity', filterSeverity.value);
-                if (filterSearch.value) params.set('search', filterSearch.value);
-                const qs = params.toString();
-                findingsData.value = await api(`/findings/${id}${qs ? '?' + qs : ''}`);
+                // Загружаем ВСЕ findings без фильтров — фильтруем на клиенте
+                const data = await api(`/findings/${id}`);
+                _findingsAll.value = data;
+                _cacheSet('findings', id, data);
+                _applyFindingsFilter();
                 // Загрузить маппинг блоков параллельно
                 loadFindingBlockMap(id);
             } catch (e) {
@@ -2485,7 +2569,280 @@ const app = createApp({
             }
         }
 
+        function _applyFindingsFilter() {
+            if (!_findingsAll.value) { findingsData.value = null; return; }
+            const sev = filterSeverity.value;
+            const search = filterSearch.value.toLowerCase();
+            let items = _findingsAll.value.findings || [];
+            if (sev) {
+                items = items.filter(f => f.severity === sev);
+            }
+            if (search) {
+                items = items.filter(f =>
+                    (f.description || '').toLowerCase().includes(search) ||
+                    (f.id || '').toLowerCase().includes(search) ||
+                    (f.norm_ref || '').toLowerCase().includes(search) ||
+                    (f.sub_findings || []).some(s => (s.problem || '').toLowerCase().includes(search))
+                );
+            }
+            findingsData.value = { ..._findingsAll.value, findings: items };
+        }
+
         // ─── Blocks (OCR) ───
+
+        const blockFieldLabels = {
+            designation: 'обозначение',
+            description: 'описание',
+            storeys: 'этажность',
+            room_name: 'наименование помещения',
+            room_no: 'номер',
+            purpose: 'назначение',
+            count: 'количество',
+            grid_lines: 'оси',
+            location: 'расположение',
+            requirement_type: 'тип ссылки',
+            requirement: 'требование',
+            page: 'страница',
+            sheet: 'лист',
+            area_m2: 'площадь',
+            length_mm: 'длина',
+            width_mm: 'ширина',
+            height_mm: 'высота',
+            depth_mm: 'глубина',
+            level: 'отметка',
+            section: 'сечение',
+            material: 'материал',
+            mark: 'марка',
+            floor: 'этаж',
+            room: 'помещение',
+            name: 'наименование',
+            type: 'тип',
+        };
+
+        const blockFieldUnits = {
+            area_m2: ' м²',
+            length_mm: ' мм',
+            width_mm: ' мм',
+            height_mm: ' мм',
+            depth_mm: ' мм',
+            storeys: ' эт.',
+        };
+
+        function isBlockPlainObject(value) {
+            return !!value && typeof value === 'object' && !Array.isArray(value);
+        }
+
+        function normalizeBlockText(value) {
+            return String(value ?? '').replace(/\s+/g, ' ').trim();
+        }
+
+        function tryParseBlockJsonLike(value) {
+            if (typeof value !== 'string') return value;
+            const raw = value.trim();
+            if (!raw || !/^[\[{]/.test(raw)) return value;
+            try {
+                return JSON.parse(raw);
+            } catch {
+                return value;
+            }
+        }
+
+        function humanizeBlockFieldKey(key) {
+            const raw = normalizeBlockText(key);
+            if (!raw) return '';
+            const lower = raw.toLowerCase();
+            if (blockFieldLabels[lower]) return blockFieldLabels[lower];
+            const tokens = lower.split(/[_\-.]+/).filter(Boolean);
+            if (!tokens.length) return raw;
+            const translated = tokens.map((token) => blockFieldLabels[token] || token);
+            const label = translated.join(' ');
+            return label ? label.charAt(0).toUpperCase() + label.slice(1) : raw;
+        }
+
+        function replaceEmbeddedBlockFieldLabels(text) {
+            let result = normalizeBlockText(text);
+            if (!result) return '';
+            result = result.replace(/^Прочее\s+/i, '');
+            for (const [key, label] of Object.entries(blockFieldLabels)) {
+                result = result.replace(new RegExp(`\\b${key}\\b(?=\\s*:)`, 'gi'), label);
+            }
+            return result;
+        }
+
+        function formatBlockScalar(key, value) {
+            if (value === null || value === undefined || value === '') return '';
+            if (typeof value === 'boolean') return value ? 'да' : 'нет';
+            if (typeof value === 'number') {
+                const text = Number.isInteger(value) ? value.toLocaleString('ru-RU') : String(value);
+                const unit = blockFieldUnits[String(key || '').toLowerCase()] || '';
+                return unit ? `${text}${unit}` : text;
+            }
+            let text = replaceEmbeddedBlockFieldLabels(value);
+            if (!text) return '';
+            const unit = blockFieldUnits[String(key || '').toLowerCase()] || '';
+            if (unit && !text.endsWith(unit)) text += unit;
+            return text;
+        }
+
+        function flattenBlockValuePairs(value, path = []) {
+            const parsed = tryParseBlockJsonLike(value);
+            if (parsed === null || parsed === undefined) return [];
+
+            if (Array.isArray(parsed)) {
+                if (!parsed.length) return [];
+                const pairs = [];
+                const scalars = [];
+                for (const item of parsed.slice(0, 10)) {
+                    const inner = tryParseBlockJsonLike(item);
+                    if (Array.isArray(inner) || isBlockPlainObject(inner)) {
+                        pairs.push(...flattenBlockValuePairs(inner, path));
+                    } else {
+                        const text = formatBlockScalar(path[path.length - 1], inner);
+                        if (text) scalars.push(text);
+                    }
+                }
+                if (scalars.length) pairs.unshift([path, scalars.join(', ')]);
+                return pairs;
+            }
+
+            if (isBlockPlainObject(parsed)) {
+                const pairs = [];
+                for (const [childKey, childValue] of Object.entries(parsed)) {
+                    pairs.push(...flattenBlockValuePairs(childValue, [...path, String(childKey)]));
+                }
+                return pairs;
+            }
+
+            const text = formatBlockScalar(path[path.length - 1], parsed);
+            return text ? [[path, text]] : [];
+        }
+
+        function labelBlockPath(path = []) {
+            const parts = path
+                .map((part) => normalizeBlockText(part))
+                .filter((part) => part && !/^\d+$/.test(part))
+                .map((part) => humanizeBlockFieldKey(part));
+            if (!parts.length) return '';
+            const [head, ...tail] = parts;
+            const normalizedHead = head ? head.charAt(0).toUpperCase() + head.slice(1) : '';
+            return tail.length ? `${normalizedHead}: ${tail.join(' / ')}` : normalizedHead;
+        }
+
+        function blockPairsToKvItems(pairs = []) {
+            const items = [];
+            for (const [path, text] of pairs) {
+                if (!text) continue;
+                const label = labelBlockPath(path);
+                if (label) items.push({ key: label, value: text });
+                else items.push(text);
+            }
+            return items;
+        }
+
+        function formatBlockInlineValue(value, key = '') {
+            const parsed = tryParseBlockJsonLike(value);
+            if (Array.isArray(parsed) || isBlockPlainObject(parsed)) {
+                return flattenBlockValuePairs(parsed)
+                    .map(([path, text]) => {
+                        const label = labelBlockPath(path);
+                        return label ? `${label}: ${text}` : text;
+                    })
+                    .filter(Boolean)
+                    .join('; ');
+            }
+            if (typeof parsed === 'string') {
+                return parsed
+                    .split(/\r?\n/)
+                    .map((line) => replaceEmbeddedBlockFieldLabels(line))
+                    .filter(Boolean)
+                    .join('; ');
+            }
+            return formatBlockScalar(key, parsed);
+        }
+
+        function formatBlockSummaryValue(value) {
+            const parsed = tryParseBlockJsonLike(value);
+            if (Array.isArray(parsed) || isBlockPlainObject(parsed)) {
+                return flattenBlockValuePairs(parsed)
+                    .map(([path, text]) => {
+                        const label = labelBlockPath(path);
+                        return label ? `${label}: ${text}` : text;
+                    })
+                    .filter(Boolean)
+                    .join('\n');
+            }
+            if (typeof parsed === 'string') {
+                return parsed
+                    .split(/\r?\n/)
+                    .map((line) => replaceEmbeddedBlockFieldLabels(line))
+                    .filter(Boolean)
+                    .join('\n');
+            }
+            return formatBlockScalar('', parsed);
+        }
+
+        function normalizeBlockEntityCaption(text) {
+            const normalized = replaceEmbeddedBlockFieldLabels(text);
+            return normalized.replace(/^Прочее\s+/i, '');
+        }
+
+        function normalizeBlockKvItems(items) {
+            const parsed = tryParseBlockJsonLike(items);
+            if (parsed === null || parsed === undefined) return [];
+            if (isBlockPlainObject(parsed)) return blockPairsToKvItems(flattenBlockValuePairs(parsed));
+
+            if (!Array.isArray(parsed)) {
+                const text = formatBlockInlineValue(parsed);
+                return text ? [text] : [];
+            }
+
+            const normalized = [];
+            for (const item of parsed) {
+                const parsedItem = tryParseBlockJsonLike(item);
+                if (parsedItem === null || parsedItem === undefined) continue;
+
+                if (isBlockPlainObject(parsedItem)) {
+                    const rawKey = parsedItem.key || parsedItem.name || '';
+                    if (Object.prototype.hasOwnProperty.call(parsedItem, 'value') || Object.prototype.hasOwnProperty.call(parsedItem, 'val') || rawKey) {
+                        let key = normalizeBlockEntityCaption(rawKey);
+                        if (key && /^[A-Za-z0-9_.-]+$/.test(key)) {
+                            key = humanizeBlockFieldKey(key);
+                        }
+                        const valueKey = rawKey && /^[A-Za-z0-9_.-]+$/.test(rawKey) ? rawKey : '';
+                        const valueText = formatBlockInlineValue(
+                            Object.prototype.hasOwnProperty.call(parsedItem, 'value') ? parsedItem.value : parsedItem.val,
+                            valueKey
+                        );
+                        if (key && valueText) normalized.push({ key, value: valueText });
+                        else if (key) normalized.push(key);
+                        else if (valueText) normalized.push(valueText);
+                        continue;
+                    }
+
+                    normalized.push(...blockPairsToKvItems(flattenBlockValuePairs(parsedItem)));
+                    continue;
+                }
+
+                if (Array.isArray(parsedItem)) {
+                    normalized.push(...blockPairsToKvItems(flattenBlockValuePairs(parsedItem)));
+                    continue;
+                }
+
+                const text = formatBlockInlineValue(parsedItem);
+                if (text) normalized.push(text);
+            }
+            return normalized;
+        }
+
+        function normalizeBlockAnalysisRecord(entry) {
+            if (!isBlockPlainObject(entry)) return entry;
+            return {
+                ...entry,
+                label: normalizeBlockText(entry.label || ''),
+                summary: formatBlockSummaryValue(entry.summary),
+                key_values_read: normalizeBlockKvItems(entry.key_values_read),
+            };
+        }
 
         async function loadBlocks(id) {
             blocksProjectId.value = id;
@@ -2513,7 +2870,11 @@ const app = createApp({
         async function loadBlockAnalysis(id) {
             try {
                 const data = await api(`/tiles/${id}/blocks/analysis`);
-                blockAnalysis.value = data.blocks || {};
+                const normalized = {};
+                for (const [blockId, entry] of Object.entries(data.blocks || {})) {
+                    normalized[blockId] = normalizeBlockAnalysisRecord(entry);
+                }
+                blockAnalysis.value = normalized;
             } catch (e) {
                 blockAnalysis.value = {};
             }
@@ -2900,16 +3261,27 @@ const app = createApp({
             return blockIds.map(bid => optBlockInfo.value[bid] || { block_id: bid, page: null, ocr_label: '' });
         }
 
-        async function loadOptimization(id) {
+        async function loadOptimization(id, forceRefresh) {
             currentProjectId.value = id;
+            expandedOptId.value = null;
+            optimizationPage.value = 1;
+            if (!forceRefresh) {
+                const cached = _cacheGet('optimization', id);
+                if (cached) {
+                    optimizationData.value = cached;
+                    loadProject(id);
+                    return;
+                }
+            }
             optimizationLoading.value = true;
             optimizationData.value = null;
-            expandedOptId.value = null;
             try {
                 currentProject.value = await api(`/projects/${id}`);
+                _cacheSet('project', id, currentProject.value);
                 const resp = await api(`/optimization/${id}`);
                 if (resp.has_data) {
                     optimizationData.value = resp.data;
+                    _cacheSet('optimization', id, resp.data);
                 }
                 loadOptBlockMap(id);
             } catch (e) {
@@ -2989,6 +3361,7 @@ const app = createApp({
 
         async function loadDiscussionItems(projectId, type) {
             discussionLoading.value = true;
+            discussionPage.value = 1;
             try {
                 const data = await api(`/discussions/${encodeURIComponent(projectId)}/list?type=${type}`);
                 discussionItems.value = data.items || [];
@@ -3583,6 +3956,35 @@ const app = createApp({
             return [...pending, ...accepted, ...rejected];
         });
 
+        // ─── Paginated views ───
+        const paginatedFindings = computed(() => {
+            const all = sortedFindings.value;
+            const start = (findingsPage.value - 1) * PAGE_SIZE;
+            return all.slice(start, start + PAGE_SIZE);
+        });
+        const findingsTotalPages = computed(() => Math.max(1, Math.ceil(sortedFindings.value.length / PAGE_SIZE)));
+
+        const paginatedOptimization = computed(() => {
+            const all = sortedOptimization.value;
+            const start = (optimizationPage.value - 1) * PAGE_SIZE;
+            return all.slice(start, start + PAGE_SIZE);
+        });
+        const optimizationTotalPages = computed(() => Math.max(1, Math.ceil(sortedOptimization.value.length / PAGE_SIZE)));
+
+        const paginatedDiscussion = computed(() => {
+            const all = activeDiscussionItems.value;
+            const start = (discussionPage.value - 1) * PAGE_SIZE;
+            return all.slice(start, start + PAGE_SIZE);
+        });
+        const discussionTotalPages = computed(() => Math.max(1, Math.ceil(activeDiscussionItems.value.length / PAGE_SIZE)));
+
+        // Сброс страницы при изменении фильтров
+        watch(filterSeverity, () => { findingsPage.value = 1; });
+        watch(filterSearch, () => { findingsPage.value = 1; });
+        watch(optimizationFilter, () => { optimizationPage.value = 1; });
+        watch(optimizationSearch, () => { optimizationPage.value = 1; });
+        watch(discussionTab, () => { discussionPage.value = 1; });
+
         // Live-статус текущего проекта (для Project Detail)
         const currentProjectLive = computed(() => {
             if (!currentProject.value) return null;
@@ -3655,12 +4057,8 @@ const app = createApp({
 
         let searchTimeout = null;
         function debounceSearch() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                const hash = window.location.hash.slice(1);
-                const match = hash.match(/^\/project\/([^/]+)\/findings$/);
-                if (match) loadFindings(match[1]);
-            }, 400);
+            // Client-side — watch(filterSearch) уже вызывает _applyFindingsFilter
+            // debounceSearch оставлен для совместимости с HTML-биндингами
         }
 
         // ─── Prompts ───
@@ -3753,7 +4151,7 @@ const app = createApp({
         function copyLog(event) {
             const entries = logEntries.value;
             if (!entries.length) return;
-            const text = entries.map(e => `[${e.time}] ${e.message}`).join('\n');
+            const text = entries.map(serializeLogEntry).filter(Boolean).join('\n');
             const btn = event?.target;
             const done = () => {
                 if (btn) { btn.textContent = 'Скопировано!'; setTimeout(() => btn.textContent = 'Скопировать', 1500); }
@@ -3778,6 +4176,320 @@ const app = createApp({
             document.body.removeChild(ta);
         }
 
+        function stripCliSummaryCodeFence(text) {
+            const raw = String(text || '').trim();
+            const m = raw.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
+            return m ? m[1].trim() : raw;
+        }
+
+        function tryParseCliSummaryJson(text) {
+            const raw = stripCliSummaryCodeFence(text);
+            if (!raw || !/^[\[{]/.test(raw)) return null;
+            try {
+                return JSON.parse(raw);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function basenamePath(path) {
+            const raw = String(path || '').trim();
+            if (!raw) return '';
+            const parts = raw.split(/[\\/]/);
+            return parts[parts.length - 1] || raw;
+        }
+
+        function isPlainObject(value) {
+            return !!value && typeof value === 'object' && !Array.isArray(value);
+        }
+
+        function isPrimitive(value) {
+            return value === null || ['string', 'number', 'boolean'].includes(typeof value);
+        }
+
+        function humanizeCliSummaryKey(key) {
+            const labels = {
+                status: 'Статус',
+                file: 'Файл',
+                project_id: 'Проект',
+                review_date: 'Дата проверки',
+                audit_completed: 'Дата аудита',
+                audit_mode: 'Режим аудита',
+                source: 'Источник',
+                total_reviewed: 'Проверено',
+                total_findings: 'Итоговых замечаний',
+                total_items: 'Предложений',
+                blocks_analyzed: 'Блоков проанализировано',
+                text_analysis_merged: 'Добавлено из текста',
+                pass: 'Подтверждено',
+                passed: 'Подтверждено',
+                fixed: 'Исправлено',
+                removed: 'Удалено',
+                downgraded: 'Понижено',
+                weak_evidence: 'Слабая доказательная база',
+                not_practical: 'Непрактично',
+                no_evidence: 'Нет подтверждения',
+                phantom_block: 'Фантомный блок',
+                page_mismatch: 'Не та страница',
+                contradicts_text: 'Противоречит тексту',
+                vendor_violation: 'Нарушение vendor-листа',
+                conflicts_with_finding: 'Конфликт с замечанием',
+                unrealistic_savings: 'Недостоверная экономия',
+                no_traceability: 'Нет трассируемости',
+                wrong_page: 'Неверная страница',
+                too_vague: 'Слишком расплывчато',
+                technical_issue: 'Техническая проблема',
+                review_applied: 'Review применён',
+                high_relevance: 'Высокая релевантность',
+                medium_relevance: 'Средняя релевантность',
+                low_relevance: 'Низкая релевантность',
+                likely_formal_only: 'Вероятно формальные',
+                high_severity_formal_only: 'Формальные высокой критичности',
+            };
+            if (labels[key]) return labels[key];
+            const text = String(key || '').replace(/_/g, ' ').trim();
+            return text ? text.charAt(0).toUpperCase() + text.slice(1) : '';
+        }
+
+        function formatCliSummaryPrimitive(key, value) {
+            if (value === null || value === undefined || value === '') return '';
+            if (typeof value === 'boolean') return value ? 'да' : 'нет';
+            if (typeof value === 'number') return Number.isInteger(value) ? value.toLocaleString() : String(value);
+            if (key === 'file') return '`' + basenamePath(value) + '`';
+            return String(value);
+        }
+
+        function buildCliSummaryBulletLines(obj, opts = {}) {
+            if (!isPlainObject(obj)) return [];
+            const preferred = opts.preferred || [];
+            const hidden = new Set(opts.hidden || []);
+            const keys = [
+                ...preferred.filter((k) => Object.prototype.hasOwnProperty.call(obj, k)),
+                ...Object.keys(obj).filter((k) => !preferred.includes(k)),
+            ];
+            const lines = [];
+            for (const key of keys) {
+                if (hidden.has(key)) continue;
+                const value = obj[key];
+                if (!isPrimitive(value) || value === '' || value === null || value === undefined) continue;
+                lines.push(`- **${humanizeCliSummaryKey(key)}:** ${formatCliSummaryPrimitive(key, value)}`);
+            }
+            return lines;
+        }
+
+        function summarizeCliSummaryJson(data, stage = '') {
+            if (!isPlainObject(data)) return '';
+
+            const lines = [];
+            const meta = isPlainObject(data.meta) ? data.meta : {};
+            const reviewStats = isPlainObject(data.review_stats) ? data.review_stats : (isPlainObject(meta.review_stats) ? meta.review_stats : null);
+            const verdicts = isPlainObject(data.verdicts) ? data.verdicts : (isPlainObject(meta.verdicts) ? meta.verdicts : null);
+            const qualitySummary = isPlainObject(data.quality_summary) ? data.quality_summary : (isPlainObject(meta.quality_summary) ? meta.quality_summary : null);
+            const bySeverity = isPlainObject(data.by_severity) ? data.by_severity : (isPlainObject(meta.by_severity) ? meta.by_severity : null);
+            const topLevelSummary = isPlainObject(data.summary) ? data.summary : null;
+            const countableSummary = topLevelSummary && Object.values(topLevelSummary).every((v) => typeof v === 'number') ? topLevelSummary : null;
+
+            if (data.file) lines.push(`**Файл:** \`${basenamePath(data.file)}\``);
+            if (data.status) lines.push(`**Статус:** \`${data.status}\``);
+
+            const summaryLines = [];
+            const totalReviewed =
+                data.total_reviewed ??
+                (countableSummary ? countableSummary.total_reviewed : null) ??
+                meta.total_reviewed ??
+                (reviewStats ? reviewStats.total_reviewed : null);
+            if (typeof totalReviewed === 'number') summaryLines.push(`- **Проверено:** ${totalReviewed.toLocaleString()}`);
+
+            const totalFindings = data.total_findings ?? meta.total_findings;
+            if (typeof totalFindings === 'number') summaryLines.push(`- **Итоговых замечаний:** ${totalFindings.toLocaleString()}`);
+
+            const totalItems = data.total_items ?? meta.total_items;
+            if (typeof totalItems === 'number') summaryLines.push(`- **Предложений:** ${totalItems.toLocaleString()}`);
+
+            const blocksAnalyzed = data.blocks_analyzed ?? meta.blocks_analyzed;
+            if (typeof blocksAnalyzed === 'number') summaryLines.push(`- **Блоков проанализировано:** ${blocksAnalyzed.toLocaleString()}`);
+
+            const textMerged = data.text_analysis_merged ?? meta.text_analysis_merged;
+            if (typeof textMerged === 'number') summaryLines.push(`- **Добавлено из текста:** ${textMerged.toLocaleString()}`);
+
+            const verdictSummary = countableSummary || verdicts;
+            if (verdictSummary) {
+                summaryLines.push(...buildCliSummaryBulletLines(verdictSummary, {
+                    preferred: ['pass', 'passed', 'weak_evidence', 'not_practical', 'no_evidence', 'phantom_block', 'page_mismatch', 'contradicts_text', 'vendor_violation', 'conflicts_with_finding', 'unrealistic_savings', 'no_traceability', 'wrong_page', 'too_vague', 'technical_issue'],
+                    hidden: ['total_reviewed'],
+                }));
+            }
+
+            if (summaryLines.length) {
+                lines.push('', '**Краткая сводка:**', '', ...summaryLines);
+            }
+
+            if (reviewStats) {
+                lines.push('', '**Результат корректировки:**', '', ...buildCliSummaryBulletLines(reviewStats, {
+                    preferred: ['total_reviewed', 'passed', 'fixed', 'removed', 'downgraded'],
+                }));
+            }
+
+            if (bySeverity) {
+                lines.push('', '**По критичности:**', '', ...buildCliSummaryBulletLines(bySeverity));
+            }
+
+            if (qualitySummary) {
+                lines.push('', '**Качество выборки:**', '', ...buildCliSummaryBulletLines(qualitySummary, {
+                    preferred: ['total', 'high_relevance', 'medium_relevance', 'low_relevance', 'likely_formal_only', 'high_severity_formal_only'],
+                }));
+            }
+
+            if (typeof data.findings === 'string' && data.findings.trim()) {
+                lines.push('', `**Результат:** ${data.findings.trim()}`);
+            }
+            if (typeof data.removed_findings === 'string' && data.removed_findings.trim()) {
+                lines.push('', `**Удалено:** ${data.removed_findings.trim()}`);
+            }
+
+            if (Array.isArray(data.fixed) && data.fixed.length) {
+                lines.push('', `**Изменено:** ${data.fixed.length}`);
+                for (const item of data.fixed.slice(0, 5)) {
+                    const itemId = item?.id || item?.item_id || 'item';
+                    const details = item?.changes || item?.verdict || 'обновлено';
+                    lines.push(`- **${itemId}:** ${details}`);
+                }
+            }
+
+            if (topLevelSummary && topLevelSummary !== countableSummary) {
+                const entries = Object.entries(topLevelSummary).slice(0, 5);
+                const pointLines = [];
+                for (const [key, value] of entries) {
+                    if (!isPrimitive(value)) continue;
+                    pointLines.push(`- **${key}:** ${formatCliSummaryPrimitive(key, value)}`);
+                }
+                if (pointLines.length) lines.push('', '**Ключевые пункты:**', '', ...pointLines);
+            }
+
+            if (Array.isArray(data.reviews) && data.reviews.length && !verdicts) {
+                const counts = {};
+                for (const review of data.reviews) {
+                    const verdict = review?.verdict || 'other';
+                    counts[verdict] = (counts[verdict] || 0) + 1;
+                }
+                lines.push('', '**Вердикты:**', '', ...buildCliSummaryBulletLines(counts));
+            }
+
+            const fallbackFields = {};
+            const usedTopKeys = new Set(['meta', 'review_stats', 'verdicts', 'quality_summary', 'by_severity', 'summary', 'findings', 'removed_findings', 'fixed', 'reviews']);
+            for (const [key, value] of Object.entries(data)) {
+                if (usedTopKeys.has(key)) continue;
+                if (!isPrimitive(value) || value === '' || value === null || value === undefined) continue;
+                fallbackFields[key] = value;
+            }
+            const fallbackLines = buildCliSummaryBulletLines(fallbackFields, {
+                preferred: ['project_id', 'review_date', 'audit_completed', 'audit_mode', 'source'],
+                hidden: ['status', 'file', 'total_reviewed', 'total_findings', 'total_items', 'blocks_analyzed', 'text_analysis_merged'],
+            });
+            if (fallbackLines.length) {
+                lines.push('', '**Детали:**', '', ...fallbackLines);
+            }
+
+            const markdown = lines.join('\n').trim();
+            if (!markdown) {
+                if (stage) return `**Этап:** \`${stage}\`\n\nПодробная сводка возвращена в JSON, но не распознана автоматически.`;
+                return 'Подробная сводка возвращена в JSON, но не распознана автоматически.';
+            }
+            return markdown;
+        }
+
+        function normalizeCliSummaryContent(text, stage = '') {
+            const raw = String(text || '').trim();
+            if (!raw) {
+                const empty = 'Подробная сводка результата не сохранена в этом запуске.';
+                return { markdown: empty, text: empty };
+            }
+            const parsed = tryParseCliSummaryJson(raw);
+            const markdown = parsed ? summarizeCliSummaryJson(parsed, stage) : raw;
+            const plain = markdown
+                .replace(/\*\*([^*]+)\*\*/g, '$1')
+                .replace(/`([^`]+)`/g, '$1')
+                .replace(/\n{3,}/g, '\n\n')
+                .trim();
+            return { markdown, text: plain };
+        }
+
+        function buildCliSummaryShortMessage(source) {
+            if (source && typeof source.message === 'string' && source.message.trim()) {
+                return source.message;
+            }
+            const isError = !!source?.is_error;
+            const parts = [];
+            const durationSec = Number(source?.duration_sec || 0);
+            const costUsd = Number(source?.cost_usd || 0);
+            const outputTokens = Number(source?.output_tokens || 0);
+            const cacheCreation = Number(source?.cache_creation || 0);
+            const cacheRead = Number(source?.cache_read || 0);
+            if (durationSec > 0) {
+                const minutes = Math.floor(durationSec / 60);
+                const seconds = Math.round(durationSec % 60);
+                parts.push(minutes > 0 ? `${minutes}м ${seconds}с` : `${seconds}с`);
+            }
+            if (costUsd > 0) parts.push(`$${costUsd.toFixed(2)}`);
+            if (outputTokens > 0) parts.push(`${outputTokens.toLocaleString()} out`);
+            if (cacheCreation > 0) parts.push(`${cacheCreation.toLocaleString()} cache_new`);
+            if (cacheRead > 0) parts.push(`${cacheRead.toLocaleString()} cache_hit`);
+            const prefix = isError ? '✗ Claude завершил с ошибкой' : '✓ Claude завершил';
+            return parts.length ? `${prefix}: ${parts.join(', ')}` : prefix;
+        }
+
+        function looksLikeCliSummary(source) {
+            if (!source) return false;
+            if (source.kind === 'cli_summary') return true;
+            if (typeof source.result_md === 'string') return true;
+            return /Claude завершил/.test(String(source.message || ''));
+        }
+
+        function buildCliSummaryEntry(source, time = '') {
+            if (!looksLikeCliSummary(source)) return null;
+            const stage = source.stage || '';
+            const normalized = normalizeCliSummaryContent(source.result_md || '', stage);
+            return {
+                kind: 'cli_summary',
+                time: time,
+                stage: stage,
+                message: buildCliSummaryShortMessage(source),
+                resultHtml: renderSimpleMarkdown(normalized.markdown),
+                resultText: normalized.text,
+                duration_sec: Number(source.duration_sec || 0),
+                cost_usd: Number(source.cost_usd || 0),
+                output_tokens: Number(source.output_tokens || 0),
+                cache_read: Number(source.cache_read || 0),
+                cache_creation: Number(source.cache_creation || 0),
+                model: source.model || '',
+                is_error: !!source.is_error,
+                expanded: true,
+            };
+        }
+
+        function serializeLogEntry(entry) {
+            if (!entry) return '';
+            if (entry.kind === 'cli_summary') {
+                const header = `[${entry.time || 'summary'}] ${entry.message || 'Claude завершил этап'}`;
+                const body = (entry.resultText || '').trim();
+                if (!body) return header;
+                const indented = body.split('\n').map(line => line ? `    ${line}` : '').join('\n').trimEnd();
+                return `${header}\n${indented}`;
+            }
+            if (entry.kind === 'finding') {
+                const statusIcon = entry.status === 'confirmed' ? '✓' : (entry.status === 'rejected' ? '✕' : '…');
+                const parts = [entry.finding_id || 'finding', entry.problem || ''].filter(Boolean);
+                const base = `[${entry.time || 'finding'}] ${statusIcon} ${parts.join(' — ')}`.trim();
+                if (entry.status === 'rejected' && entry.rejectReason) {
+                    return `${base}\n    Отклонено: ${entry.rejectReason}`;
+                }
+                return base;
+            }
+            const message = entry.message === undefined || entry.message === null ? '' : String(entry.message);
+            if (!message) return '';
+            return `[${entry.time || ''}] ${message}`.trimEnd();
+        }
+
         async function loadProjectLog(projectId) {
             /**  Загрузить историю логов из файла проекта + восстановить структурированные карточки. */
             if (!projectId) return;
@@ -3789,22 +4501,8 @@ const app = createApp({
                     const entries = (data.entries || []).map(e => {
                         const time = e.timestamp ? new Date(e.timestamp).toLocaleTimeString() : '';
                         // Структурированная запись cli_summary — восстанавливаем красивую карточку
-                        if (e.kind === 'cli_summary') {
-                            return {
-                                kind: 'cli_summary',
-                                time: time,
-                                stage: e.stage || '',
-                                resultHtml: renderSimpleMarkdown(e.result_md || ''),
-                                duration_sec: e.duration_sec || 0,
-                                cost_usd: e.cost_usd || 0,
-                                output_tokens: e.output_tokens || 0,
-                                cache_read: e.cache_read || 0,
-                                cache_creation: e.cache_creation || 0,
-                                model: e.model || '',
-                                is_error: !!e.is_error,
-                                expanded: true,
-                            };
-                        }
+                        const summaryEntry = buildCliSummaryEntry(e, time);
+                        if (summaryEntry) return summaryEntry;
                         return {
                             kind: 'log',
                             time: time,
@@ -4101,20 +4799,8 @@ const app = createApp({
             } else if (msg.type === 'finding_verdict') {
                 applyFindingVerdict(pid, msg.data);
             } else if (msg.type === 'cli_summary') {
-                pushToProjectLog(pid, {
-                    kind: 'cli_summary',
-                    time: time,
-                    stage: msg.data.stage || '',
-                    resultHtml: renderSimpleMarkdown(msg.data.result_md || ''),
-                    duration_sec: msg.data.duration_sec || 0,
-                    cost_usd: msg.data.cost_usd || 0,
-                    output_tokens: msg.data.output_tokens || 0,
-                    cache_read: msg.data.cache_read || 0,
-                    cache_creation: msg.data.cache_creation || 0,
-                    model: msg.data.model || '',
-                    is_error: !!msg.data.is_error,
-                    expanded: true,
-                });
+                const summaryEntry = buildCliSummaryEntry(msg.data || {}, time);
+                if (summaryEntry) pushToProjectLog(pid, summaryEntry);
             }
         }
 
@@ -4241,7 +4927,8 @@ const app = createApp({
             if (currentProjectId.value && existing.decision) {
                 const discType = itemId.startsWith('OPT') ? 'optimization' : 'finding';
                 const status = existing.decision === 'accepted' ? 'confirmed' : 'rejected';
-                const summary = status === 'confirmed' ? 'Принято экспертом' : 'Отклонено экспертом';
+                const reason = existing.rejection_reason || '';
+                const summary = reason || (status === 'confirmed' ? 'Принято экспертом' : 'Отклонено экспертом');
                 fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(itemId)}/resolve?type=${discType}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -4277,13 +4964,26 @@ const app = createApp({
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ decisions, reviewer: '' }),
                 });
-                const result = await resp.json();
-                if (result.status === 'ok') {
-                    alert(`Сохранено: ${result.accepted} принято, ${result.rejected} отклонено`);
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || `Ошибка сохранения: ${resp.statusText}`);
                 }
+                const result = await resp.json();
+                // Синхронизировать все решения с системой обсуждений (проработка замечаний)
+                for (const d of decisions) {
+                    const discType = d.item_id.startsWith('OPT') ? 'optimization' : 'finding';
+                    const status = d.decision === 'accepted' ? 'confirmed' : 'rejected';
+                    const summary = d.rejection_reason || (status === 'confirmed' ? 'Принято экспертом' : 'Отклонено экспертом');
+                    fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(d.item_id)}/resolve?type=${discType}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status, summary }),
+                    }).catch(() => {});
+                }
+                alert(`Сохранено: ${result.accepted} принято, ${result.rejected} отклонено`);
             } catch (e) {
                 console.error('Submit expert review error:', e);
-                alert('Ошибка сохранения решений');
+                alert('Ошибка сохранения: ' + (e.message || e));
             } finally {
                 expertReviewSaving.value = false;
             }
@@ -4464,11 +5164,9 @@ const app = createApp({
         }
 
         // Watch severity filter
-        watch(filterSeverity, () => {
-            const hash = window.location.hash.slice(1);
-            const match = hash.match(/^\/project\/([^/]+)\/findings$/);
-            if (match) loadFindings(match[1]);
-        });
+        // Client-side фильтрация — без перезапроса с сервера
+        watch(filterSeverity, () => _applyFindingsFilter());
+        watch(filterSearch, () => _applyFindingsFilter());
 
         // ─── Init ───
         onMounted(() => {
@@ -4476,17 +5174,20 @@ const app = createApp({
             handleRoute();
             connectGlobalWS();
             startPolling();
-            loadDisciplines();
-            loadProjectGroups();
-            loadObjects();
-            // Глобальная статистика — первый вызов + polling каждые 60с
-            pollGlobalUsage();
-            usagePollTimer = setInterval(pollGlobalUsage, 60000);
-            // Информация об аккаунте
-            fetchAccountInfo();
+            // Параллельная загрузка всех начальных данных
+            Promise.all([
+                loadDisciplines(),
+                loadProjectGroups(),
+                loadObjects(),
+                pollGlobalUsage(),
+                fetchAccountInfo(),
+                fetchPaidCost(),
+            ]);
+            usagePollTimer = setInterval(() => { pollGlobalUsage(); fetchPaidCost(); }, 60000);
         });
 
         onUnmounted(() => {
+            window.removeEventListener('hashchange', handleRoute);
             stopPolling();
             if (usagePollTimer) { clearInterval(usagePollTimer); usagePollTimer = null; }
         });
@@ -4594,6 +5295,8 @@ const app = createApp({
             onProjectDragStart, onGroupDragOver, onGroupDragLeave, onProjectDropOnGroup,
             onGroupHeaderDragStart, onGroupHeaderDragEnd,
             // Model switcher
+            // Paid cost
+            paidCost, showPaidCost, fetchPaidCost, resetPaidCost, formatCostShort,
             // Usage (global dashboard)
             globalUsage, showUsageDetails, sonnetPercent,
             accountInfo, showAccountInfo, fetchAccountInfo,
@@ -4629,6 +5332,11 @@ const app = createApp({
             discussionStatusIcon, formatCostUSD, renderDiscussionContent, onChatClick, autoResizeChatInput,
             // Computed
             filteredFindings, sortedFindings, sortedOptimization,
+            // Pagination
+            PAGE_SIZE, findingsPage, optimizationPage, discussionPage,
+            paginatedFindings, findingsTotalPages,
+            paginatedOptimization, optimizationTotalPages,
+            paginatedDiscussion, discussionTotalPages,
             // Expert Review
             expertReviewMode, expertDecisions, expertReviewSaving,
             toggleExpertReview, loadExpertDecisions, setExpertDecision, setExpertReason, submitExpertReview,

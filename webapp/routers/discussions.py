@@ -209,14 +209,17 @@ async def resolve(project_id: str, item_id: str, req: ResolutionRequest, type: s
     if type not in ("finding", "optimization"):
         raise HTTPException(400, "type must be 'finding' or 'optimization'")
 
-    result = discussion_service.set_resolution(
-        project_id=project_id,
-        item_id=item_id,
-        item_type=type,
-        status=req.status,
-        summary=req.summary,
-    )
-    return result
+    try:
+        result = discussion_service.set_resolution(
+            project_id=project_id,
+            item_id=item_id,
+            item_type=type,
+            status=req.status,
+            summary=req.summary,
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(500, f"Ошибка сохранения: {e}")
 
 
 @router.post("/{project_id:path}/{item_id}/revise")

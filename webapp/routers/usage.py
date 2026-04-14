@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter
 from webapp.services.usage_service import (
-    usage_tracker, global_scanner,
+    usage_tracker, global_scanner, paid_cost_tracker,
     WINDOW_5H_TOKEN_LIMIT, WEEKLY_TOKEN_LIMIT,
 )
 
@@ -77,6 +77,19 @@ async def get_history(limit: int = 50):
     """Последние N записей потребления."""
     records = usage_tracker.get_recent(limit)
     return {"records": records}
+
+
+@router.get("/paid-cost")
+async def get_paid_cost():
+    """Текущие расходы на платные API (Gemini, GPT и др.)."""
+    return paid_cost_tracker.get()
+
+
+@router.post("/paid-cost/reset")
+async def reset_paid_cost():
+    """Обнулить отображаемый счётчик (total_lifetime сохраняется)."""
+    paid_cost_tracker.reset_display()
+    return paid_cost_tracker.get()
 
 
 @router.get("/config")

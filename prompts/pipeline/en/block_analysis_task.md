@@ -58,6 +58,27 @@ If text is unreadable — record "нечитаемо: [description of location]"
 If a block contains text you cannot read due to low resolution (small font, tables with numbers, cable marks, breaker ratings), set `unreadable_text: true` and fill `unreadable_details` — describe WHERE exactly and WHAT is unreadable. The system will automatically re-download this block at higher resolution and repeat the analysis.
 If all text is readable — set `unreadable_text: false`.
 
+## MOUNTING DETAILS, NODES, AND SECTIONS — CONSTRUCTION METHOD DESCRIPTION (MANDATORY)
+
+If a block contains a mounting detail, node (узел), section (разрез), or installation drawing:
+
+**You MUST describe in `summary` and `key_values_read` the CONSTRUCTION METHOD, not just what is depicted:**
+
+1. **Mounting method** — how is the element attached? (brackets, anchors, mounting panel, DIN rail, embedded parts, welding, etc.)
+2. **Materials** — what are the structural elements made of? (steel angle, channel, perforated profile, concrete, etc.)
+3. **Connections** — how are elements joined? (bolts, welding, clamps, quick-release connectors, etc.)
+4. **Dimensions and clearances** — key dimensions, distances from walls/ceiling/floor, clearance zones
+5. **Cable/pipe entry method** — how cables or pipes enter: through sleeves, openings, cable glands, fire-rated penetrations
+6. **Fire protection** — fire-rated enclosures, coatings, seals (type, rating EI30/EI60/EI150)
+7. **Quantity and repetition** — how many times this node is repeated in the project (if visible from context)
+
+**Purpose:** This information is used at the optimization stage to evaluate whether the mounting/construction approach can be simplified, standardized, or made more cost-effective.
+
+**Example key_values_read for a detail:**
+- `"Щит ЩУАХП: крепление на кронштейнах к кирпичной стене, 4 анкера М10"`
+- `"Кабельный ввод снизу через стальную гильзу Ø50, заделка огнестойкой пеной"`
+- `"Лоток 200×50 на шпильках М8 к перекрытию, шаг 1000 мм"`
+
 ## Cross-Check with Text Analysis (MANDATORY)
 
 From text analysis context → `project_params`, extract numerical data.

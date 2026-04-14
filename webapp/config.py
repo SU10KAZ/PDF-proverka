@@ -270,7 +270,7 @@ def get_stage_models() -> dict[str, str | None]:
     return dict(_stage_models)
 
 # Параллельная обработка батчей блоков
-MAX_PARALLEL_BATCHES = 3  # параллельных батчей (compact: все 3 одновременно)
+MAX_PARALLEL_BATCHES = 5  # параллельных батчей
 
 # ─── Rate Limit: пауза вместо ошибки ───
 RATE_LIMIT_THRESHOLD_PCT = 90   # при 90% лимита — предварительная проверка перед запуском

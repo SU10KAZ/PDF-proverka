@@ -27,7 +27,7 @@ from webapp.config import get_claude_model, get_model_for_stage
 from webapp.models.usage import UsageRecord
 from webapp.services.process_runner import run_script, kill_all_processes
 from webapp.services import claude_runner
-from webapp.services.usage_service import usage_tracker, global_scanner
+from webapp.services.usage_service import usage_tracker, global_scanner, paid_cost_tracker
 from webapp.services.resume_detector import detect_resume_stage as _detect_resume_stage
 from webapp.services import audit_logger
 from webapp.services.project_service import resolve_project_dir
@@ -391,6 +391,8 @@ class PipelineManager:
             output_tokens=output_tokens,
         )
         usage_tracker.record_usage(record)
+        if actual_cost > 0:
+            paid_cost_tracker.add(actual_cost)
         job.cost_usd += actual_cost
         job.cli_calls += 1
 
@@ -575,6 +577,19 @@ class PipelineManager:
         job.progress_total = 0
         job.batch_durations = []
         job.batch_started_at = None
+
+    @staticmethod
+    def _backfill_highlight_regions(project_id: str):
+        """Восстановить highlight_regions в 03_findings.json из 02_blocks_analysis.json.
+
+        При findings_merge LLM иногда теряет highlight_regions из G-замечаний.
+        Этот метод подтягивает координаты обратно по source_block_ids/related_block_ids.
+        """
+        from backfill_highlights import backfill_project
+        project_dir = resolve_project_dir(project_id)
+        result = backfill_project(project_dir)
+        if result["fixed"] > 0:
+            print(f"[{project_id}] highlight_regions restored: {result['fixed']}")
 
     @staticmethod
     def _backfill_text_evidence_in_findings(project_id: str):
@@ -1891,6 +1906,9 @@ class PipelineManager:
                     )
 
                 self._refresh_finding_quality(pid)
+
+                # Восстановление highlight_regions из 02_blocks_analysis
+                self._backfill_highlight_regions(pid)
 
                 # «Размышление модели»: стрим найденных замечаний в live-лог
                 await self._stream_findings_events(job, "merge")
@@ -4394,6 +4412,9 @@ class PipelineManager:
                     )
 
                 self._refresh_finding_quality(pid)
+
+                # Восстановление highlight_regions из 02_blocks_analysis
+                self._backfill_highlight_regions(pid)
 
                 # «Размышление модели»: стрим найденных замечаний в live-лог
                 await self._stream_findings_events(job, "merge")

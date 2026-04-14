@@ -123,6 +123,17 @@ def detect_resume_stage(project_id: str) -> dict:
                             "detail": "01_text_analysis.json не создан",
                             "can_resume": True,
                         }
+
+            # Если финальный этап уже завершён, проект нельзя "продолжать",
+            # даже если отсутствует вспомогательный снапшот 03a_norms_verified.json.
+            excel_info = stages_log.get("excel", {})
+            if excel_info.get("status") in ("done", "skipped"):
+                return {
+                    "stage": "completed",
+                    "stage_label": "Завершён",
+                    "detail": "Все этапы выполнены",
+                    "can_resume": False,
+                }
         except Exception:
             pass
 

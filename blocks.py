@@ -67,38 +67,13 @@ def _normalize_finding_block_ids(finding: dict):
 # CROP — скачивание image-блоков по crop_url из result.json
 # ═══════════════════════════════════════════════════════════════════════════════
 
-TARGET_LONG_SIDE_PX = 1500
-TARGET_LONG_SIDE_PX_COMPACT = 800   # Compact-режим: дешевле по токенам, retry full если нечитаемо
-TARGET_LONG_SIDE_PX_HIRES = 2500    # Для однолинейных схем и детальных чертежей
+TARGET_DPI = 100               # Единое разрешение: 100 DPI для всех блоков
+TARGET_DPI_COMPACT = 50        # Compact-режим: дешевле по токенам
 MIN_BLOCK_AREA_PX2 = 50000
 
-# Паттерны в ocr_label, требующие повышенного разрешения
-_HIRES_PATTERNS = [
-    "однолинейн",
-    "принципиальн",
-    "расчётн",
-    "расчетн",
-    "щит",
-    "грщ",
-    "вру",
-    "уэрм",
-    "панел",
-]
-
-
-def _needs_hires(ocr_label: str) -> bool:
-    """Определить, нужно ли повышенное разрешение по ocr_label."""
-    if not ocr_label:
-        return False
-    label_lower = ocr_label.lower()
-    return any(p in label_lower for p in _HIRES_PATTERNS)
-
-
-def _get_target_px(ocr_label: str) -> int:
-    """Вернуть целевое разрешение для блока."""
-    if _needs_hires(ocr_label):
-        return TARGET_LONG_SIDE_PX_HIRES
-    return TARGET_LONG_SIDE_PX
+# Legacy constants (используются в recrop и _render_full_page)
+TARGET_LONG_SIDE_PX = 1500
+TARGET_LONG_SIDE_PX_COMPACT = 800
 
 
 def detect_result_json(project_dir: str) -> Path | None:
@@ -177,9 +152,15 @@ def extract_ocr_label(block: dict) -> str:
 def _render_pdf_bytes_to_png(
     pdf_bytes: bytes,
     out_png: Path,
-    target_px: int,
+    target_px: int = 0,
+    dpi: int = 0,
 ) -> tuple[int, int]:
-    """Рендерить PDF-байты в PNG с заданным target_px. Возвращает (w, h)."""
+    """Рендерить PDF-байты в PNG. Возвращает (w, h).
+
+    Два режима (dpi приоритетнее):
+      - dpi > 0:  фиксированная плотность (scale = dpi / 72)
+      - target_px > 0: длинная сторона = target_px пикселей (legacy)
+    """
     doc = fitz.open(stream=pdf_bytes, filetype="pdf")
     page = doc[0]
 
@@ -188,7 +169,13 @@ def _render_pdf_bytes_to_png(
         doc.close()
         raise ValueError("Нулевой размер страницы в PDF-кропе")
 
-    render_scale = target_px / long_side_pt
+    if dpi > 0:
+        render_scale = dpi / 72
+    elif target_px > 0:
+        render_scale = target_px / long_side_pt
+    else:
+        render_scale = TARGET_DPI / 72
+
     render_scale = max(1.0, min(8.0, render_scale))
 
     mat = fitz.Matrix(render_scale, render_scale)
@@ -207,23 +194,23 @@ def download_and_convert(
     target_px: int | None = None,
     also_save_full: Path | None = None,
     full_target_px: int | None = None,
+    dpi: int = 0,
 ) -> tuple[int, int]:
     """Скачать PDF-кроп по URL и конвертировать в PNG.
 
     also_save_full: если указан — дополнительно рендерит full-версию в этот путь.
+    dpi: если > 0 — рендерить с фиксированной плотностью (приоритет над target_px).
     """
     _require_pymupdf()
-    target = target_px or TARGET_LONG_SIDE_PX
     req = urllib.request.Request(crop_url, headers={"User-Agent": "crop_blocks/1.0"})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         pdf_bytes = resp.read()
 
-    w, h = _render_pdf_bytes_to_png(pdf_bytes, out_png, target)
+    w, h = _render_pdf_bytes_to_png(pdf_bytes, out_png, target_px=target_px or 0, dpi=dpi)
 
     # Дополнительный рендер full-версии из тех же байт (без повторного скачивания)
     if also_save_full:
-        full_px = full_target_px or TARGET_LONG_SIDE_PX
-        _render_pdf_bytes_to_png(pdf_bytes, also_save_full, full_px)
+        _render_pdf_bytes_to_png(pdf_bytes, also_save_full, target_px=full_target_px or 0, dpi=dpi or TARGET_DPI)
 
     return w, h
 
@@ -238,12 +225,14 @@ def crop_from_pdf(
     target_px: int | None = None,
     also_save_full: Path | None = None,
     full_target_px: int | None = None,
+    dpi: int = 0,
 ) -> tuple[int, int]:
     """Вырезать блок из PDF по координатам (fallback при ошибке скачивания).
 
     coords_px: [x1, y1, x2, y2] в пиксельной системе result.json
     page_width, page_height: размеры страницы в пикселях из result.json
     also_save_full: если указан — дополнительно рендерит full-версию.
+    dpi: если > 0 — рендерить с фиксированной плотностью (приоритет над target_px).
     """
     _require_pymupdf()
     doc = fitz.open(str(pdf_path))
@@ -268,18 +257,21 @@ def crop_from_pdf(
         doc.close()
         raise ValueError("Нулевой размер блока")
 
-    def _render_clip(target: int, output: Path):
-        rs = target / long_side_pt
+    def _render_clip(target: int, output: Path, clip_dpi: int = 0):
+        if clip_dpi > 0:
+            rs = clip_dpi / 72
+        else:
+            rs = target / long_side_pt
         rs = max(0.5, min(8.0, rs))
         mat = fitz.Matrix(rs, rs)
         pix = page.get_pixmap(matrix=mat, clip=clip, alpha=False)
         pix.save(str(output))
         return pix.width, pix.height
 
-    w, h = _render_clip(target_px or TARGET_LONG_SIDE_PX, out_png)
+    w, h = _render_clip(target_px or TARGET_LONG_SIDE_PX, out_png, clip_dpi=dpi)
 
     if also_save_full:
-        _render_clip(full_target_px or TARGET_LONG_SIDE_PX, also_save_full)
+        _render_clip(full_target_px or TARGET_LONG_SIDE_PX, also_save_full, clip_dpi=dpi or TARGET_DPI)
 
     doc.close()
     return w, h
@@ -410,7 +402,7 @@ def crop_blocks(
         return {"total_blocks": 0, "cropped": 0, "skipped": 0, "errors": 0, "blocks": []}
 
     if compact:
-        print(f"  [COMPACT] Режим compact: {TARGET_LONG_SIDE_PX_COMPACT}px + full-версии")
+        print(f"  [COMPACT] Режим compact: {TARGET_DPI_COMPACT} DPI + full-версии ({TARGET_DPI} DPI)")
 
     print(f"  Image-блоков для скачивания: {len(all_image_blocks)}")
     if no_url_count:
@@ -458,25 +450,16 @@ def crop_blocks(
         crop_url = block_info["crop_url"]
         download_error = None
 
-        # Адаптивное разрешение по типу блока
-        full_target_px = _get_target_px(block_info.get("ocr_label", ""))
-        if compact:
-            target_px = TARGET_LONG_SIDE_PX_COMPACT
-        else:
-            target_px = full_target_px
-
-        if full_target_px != TARGET_LONG_SIDE_PX:
-            print(f"  [HIRES] {bid}: full={full_target_px}px (однолинейная/расчётная схема)")
-
+        # DPI-режим: единое разрешение для всех блоков
+        use_dpi = TARGET_DPI_COMPACT if compact else TARGET_DPI
         save_full = full_file if compact else None
 
         if crop_url:
             try:
                 w, h = download_and_convert(
                     crop_url, out_file,
-                    target_px=target_px,
+                    dpi=use_dpi,
                     also_save_full=save_full,
-                    full_target_px=full_target_px,
                 )
             except Exception as e:
                 download_error = e
@@ -496,9 +479,8 @@ def crop_blocks(
                         block_info["coords_px"],
                         dims[0], dims[1],
                         out_file,
-                        target_px=target_px,
+                        dpi=use_dpi,
                         also_save_full=save_full,
-                        full_target_px=full_target_px,
                     )
                     source = "pdf_fallback"
                     print(f"  [FALLBACK] {bid}: облако недоступно ({e}), вырезан из PDF")

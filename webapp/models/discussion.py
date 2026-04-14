@@ -61,6 +61,7 @@ class DiscussionListItem(BaseModel):
     sheet: str = ""
     norm: str = ""
     recommendation: str = ""
+    resolution_summary: str = ""
     page: Optional[object] = None
     sub_findings: Optional[list[dict]] = None
     # Optimization-specific

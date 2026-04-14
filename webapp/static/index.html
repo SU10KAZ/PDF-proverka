@@ -124,6 +124,34 @@
                 </button>
             </div>
             <div class="header-right">
+                <!-- Paid API cost counter -->
+                <button class="paid-cost-btn" @click="showPaidCost = !showPaidCost"
+                        :class="{'paid-cost-btn--active': paidCost.display_usd > 0}"
+                        title="Расходы на платные API">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    </svg>
+                    <span class="paid-cost-btn__amount">{{ formatCostShort(paidCost.display_usd) }}</span>
+                </button>
+                <!-- Paid cost panel -->
+                <div class="paid-cost-panel" v-if="showPaidCost">
+                    <div class="paid-cost-panel__header">Расходы на платные API</div>
+                    <div class="paid-cost-panel__row">
+                        <span class="paid-cost-panel__label">Текущий счётчик:</span>
+                        <span class="paid-cost-panel__value paid-cost-panel__value--main">${{ (paidCost.display_usd || 0).toFixed(2) }}</span>
+                    </div>
+                    <div class="paid-cost-panel__row">
+                        <span class="paid-cost-panel__label">Всего за всё время:</span>
+                        <span class="paid-cost-panel__value">${{ (paidCost.total_lifetime_usd || 0).toFixed(2) }}</span>
+                    </div>
+                    <div class="paid-cost-panel__hint">Gemini, GPT и другие платные модели через OpenRouter</div>
+                    <div class="paid-cost-panel__footer">
+                        <button class="btn btn--small btn--danger" @click.stop="resetPaidCost" :disabled="!paidCost.display_usd">
+                            Обнулить счётчик
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Theme toggle -->
                 <button class="theme-toggle-btn" @click="toggleTheme()" :title="theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'">
                     <svg v-if="theme === 'dark'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -792,7 +820,17 @@
                 <button class="modal-close" @click="showModelConfig = false">&times;</button>
                 <h3>Конфигурация моделей</h3>
                 <p class="model-config-desc">Выберите модель для каждого этапа аудита</p>
-                <!-- V4 pipeline is now default — toggle hidden -->
+                <div class="pipeline-version-toggle">
+                    <span class="pipeline-version-label">Пайплайн:</span>
+                    <div class="pipeline-version-buttons">
+                        <button class="btn btn-pipeline-ver"
+                                :class="{ active: !pendingPipelineV4 }"
+                                @click="pendingPipelineV4 = false; onV4ToggleChange()">Классический</button>
+                        <button class="btn btn-pipeline-ver"
+                                :class="{ active: pendingPipelineV4 }"
+                                @click="pendingPipelineV4 = true; onV4ToggleChange()">V4</button>
+                    </div>
+                </div>
                 <div class="model-preset-buttons">
                     <button class="btn btn-preset"
                             :class="{ active: activePreset === 'openrouter' }"
@@ -1312,7 +1350,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <template v-for="f in sortedFindings" :key="f.id">
+                            <template v-for="f in paginatedFindings" :key="f.id">
                                 <tr :class="['row-' + sevClass(f.severity), { 'row-expanded': expandedFindingId === f.id, 'row-accepted': getExpertDecision(f.id) === 'accepted', 'row-rejected': getExpertDecision(f.id) === 'rejected', 'row-group': f.sub_findings }]">
                                     <td class="id-cell"
                                         @click="toggleFindingBlocks(f.id)"
@@ -1417,6 +1455,12 @@
                             </template>
                         </tbody>
                     </table>
+                    <!-- Пагинация -->
+                    <div v-if="findingsTotalPages > 1" class="pagination-bar">
+                        <button class="btn-page" :disabled="findingsPage <= 1" @click="findingsPage--">&laquo;</button>
+                        <span class="page-info">{{ findingsPage }} / {{ findingsTotalPages }} <span class="page-total">({{ sortedFindings.length }})</span></span>
+                        <button class="btn-page" :disabled="findingsPage >= findingsTotalPages" @click="findingsPage++">&raquo;</button>
+                    </div>
                     <div v-else class="empty-state">
                         Замечания не найдены. Аудит ещё не проводился.
                     </div>
@@ -1495,7 +1539,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <template v-for="item in sortedOptimization" :key="item.id">
+                            <template v-for="item in paginatedOptimization" :key="item.id">
                                 <tr :class="{ 'row-expanded': expandedOptId === item.id, 'row-accepted': getExpertDecision(item.id) === 'accepted', 'row-rejected': getExpertDecision(item.id) === 'rejected' }">
                                     <td class="opt-id"
                                         @click="toggleOptBlocks(item.id)"
@@ -1584,6 +1628,12 @@
                         </tbody>
                     </table>
                     </div><!-- /table-container -->
+                    <!-- Пагинация -->
+                    <div v-if="optimizationTotalPages > 1" class="pagination-bar">
+                        <button class="btn-page" :disabled="optimizationPage <= 1" @click="optimizationPage--">&laquo;</button>
+                        <span class="page-info">{{ optimizationPage }} / {{ optimizationTotalPages }} <span class="page-total">({{ sortedOptimization.length }})</span></span>
+                        <button class="btn-page" :disabled="optimizationPage >= optimizationTotalPages" @click="optimizationPage++">&raquo;</button>
+                    </div>
                     <div v-if="filteredOptimization.length === 0" class="empty-state">
                         Нет предложений для выбранного фильтра.
                     </div>
@@ -2113,12 +2163,13 @@
                                 <th style="width:65px; text-align:center">Лист</th>
                                 <th style="width:35%">Замечание</th>
                                 <th style="width:120px">Норма</th>
-                                <th style="width:30%">Рекомендация</th>
+                                <th style="width:22%">Рекомендация</th>
+                                <th style="width:15%">Решение</th>
                                 <th style="width:36px"></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <template v-for="item in activeDiscussionItems" :key="item.item_id">
+                            <template v-for="item in paginatedDiscussion" :key="item.item_id">
                                 <tr :class="['row-' + sevClass(item.severity), { 'row-expanded': expandedFindingId === item.item_id, 'row-group': item.sub_findings }]">
                                     <td class="id-cell"
                                         @click="toggleFindingBlocks(item.item_id)"
@@ -2160,6 +2211,12 @@
                                     </td>
                                     <td class="norm-cell">{{ item.norm }}</td>
                                     <td class="rec-cell">{{ item.recommendation }}</td>
+                                    <td class="rec-cell">
+                                        <span v-if="item.discussion_status" :class="'resolution-status resolution-' + item.discussion_status">
+                                            {{ item.discussion_status === 'confirmed' ? 'Принято' : item.discussion_status === 'rejected' ? 'Отклонено' : item.discussion_status === 'revised' ? 'Изменено' : '' }}
+                                        </span>
+                                        <div v-if="item.resolution_summary" style="margin-top:4px; font-size:12px; opacity:0.8">{{ item.resolution_summary }}</div>
+                                    </td>
                                     <td class="discuss-cell">
                                         <button class="btn-discuss-icon" @click.stop="openDiscussion(currentProjectId, item.item_id)"
                                                 :title="item.has_discussion ? 'Продолжить (' + item.message_count + ')' : 'Обсудить'">
@@ -2172,7 +2229,7 @@
                                 <!-- Раскрывающиеся блоки + текстовые evidence -->
                                 <tr v-if="expandedFindingId === item.item_id && (getFindingBlocks(item.item_id).length > 0 || getFindingTextEvidence(item.item_id).length > 0)"
                                     class="finding-blocks-row">
-                                    <td colspan="7">
+                                    <td colspan="8">
                                         <div v-if="getFindingBlocks(item.item_id).length > 0" class="finding-blocks-strip">
                                             <div v-for="b in getFindingBlocks(item.item_id)" :key="b.block_id"
                                                  class="finding-block-thumb"
@@ -2228,7 +2285,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <template v-for="item in activeDiscussionItems" :key="item.item_id">
+                            <template v-for="item in paginatedDiscussion" :key="item.item_id">
                                 <tr :class="{ 'row-expanded': expandedOptId === item.item_id }">
                                     <td class="opt-id"
                                         @click="toggleOptBlocks(item.item_id)"
@@ -2298,6 +2355,13 @@
                         </tbody>
                     </table>
                     </div>
+                </div>
+
+                <!-- Пагинация обсуждений -->
+                <div v-if="discussionTotalPages > 1" class="pagination-bar">
+                    <button class="btn-page" :disabled="discussionPage <= 1" @click="discussionPage--">&laquo;</button>
+                    <span class="page-info">{{ discussionPage }} / {{ discussionTotalPages }} <span class="page-total">({{ activeDiscussionItems.length }})</span></span>
+                    <button class="btn-page" :disabled="discussionPage >= discussionTotalPages" @click="discussionPage++">&raquo;</button>
                 </div>
 
                 <!-- Секция "Отменённые" -->
