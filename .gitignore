@@ -27,6 +27,10 @@ webapp/data/usage_data.json
 .env
 .env.*
 
+# === Runtime PID / locks ===
+*.pid
+webapp/server.pid
+
 # === Excel reports (generated) ===
 audit_report_*.xlsx
 ~$*.xlsx
