@@ -1089,84 +1089,126 @@ def prepare_findings_corrector_task(
 
 # ─── Оптимизация проектных решений ───
 
-# Маппинг дисциплин → разделы вендор-листа (по первой колонке таблицы)
+# Маппинг дисциплин → ключевые слова для поиска разделов вендор-листа.
+# Сравнение — по подстроке в названии раздела (lowercase), чтобы один маппинг
+# работал с разными форматами листов у разных заказчиков (например
+# "Электроснабжение и освещение" ≈ "Электротехнические системы" ≈ "Электрика").
+# Дисциплина без записи в этом маппинге трактуется как «ограничений заказчика
+# по вендорам нет» — оптимизация выбирает материал свободно.
 _VENDOR_SECTIONS_BY_DISCIPLINE: dict[str, list[str]] = {
-    "OV": [
-        "Вентиляция и кондиционирование",
-        "Отопление и теплоснабжение",
-        "Холодоснабжение",
-        "Автоматизация и диспетчеризация",
-    ],
-    "EOM": [
-        "Электроснабжение и освещение",
-        "Автоматизация и диспетчеризация",
-    ],
-    "VK": [
-        "Системы водоснабжения",
-        "Система водоотведения",
-    ],
-    "PB": [
-        "Автоматическое пожаротушение",
-        "Газовое пожаротушение",
-        "Автоматика систем ППЗ",
-    ],
-    "SS": [
-        "Системы безопасности",
-        "Автоматика систем ППЗ",
-        "Автоматизация и диспетчеризация",
-    ],
+    "OV":  ["вентиляц", "кондицион", "отопл", "теплоснаб", "холодоснаб"],
+    "EOM": ["электр", "освещ"],
+    "VK":  ["водоснабж", "водоотвед", "канализ", "водопровод"],
+    "PT":  ["пожаротуш", "ппз", "противопожарн"],
+    "PB":  ["пожаротуш", "ппз"],
+    "SS":  ["слаботочн", "безопасн", "сигнализ", "связ", "диспетчер", "автоматизац"],
+    "ITP": ["теплоснаб", "отопл", "теплообмен"],
+    "AR":  ["фасад", "двер", "ворот", "окн"],
+    "AI":  ["фасад", "двер", "ворот", "окн", "интерьер", "отделк"],
+    "GP":  ["благоустройств", "малые архитектурные", "покрыт"],
+    # KM, KJ, TX, POS — без маппинга → «ограничений нет» (корректно
+    # для конструктивных и организационных разделов)
 }
+
+
+_SECTION_NUMBER_RE = re.compile(r"^\s*(\d+(?:\.\d+)*)\.\s+(.+?)\s*$")
+_SEPARATOR_CELL_RE = re.compile(r"^:?-{2,}:?$")
 
 
 def _load_vendor_list_for_discipline(section: str) -> str:
     """Загрузить и отфильтровать вендор-лист по дисциплине.
 
-    Парсит MD-таблицу, оставляет только строки с разделами,
-    относящимися к указанной дисциплине.
+    Вендор-лист ищется в `<projects_dir_объекта>/DOC/вендор лист.md`
+    — у каждого объекта свой файл. projects_dir резолвится через binding
+    pipeline'а или current_id из objects.json. Fallback в глобальный
+    projects/DOC/, если у объекта файла нет.
+
+    Поддерживаются два формата MD:
+      1) Плоская таблица с разделами в **жирном** (213 / King&Sons).
+      2) OCR-MD с `## СТРАНИЦА` / `### BLOCK` обёртками и разделами вида
+         `| N. Название | | | |` (214 / Alia).
+
+    Сравнение разделов с ключевыми словами дисциплины — по подстроке.
+
+    Возвращаемые «пустые» значения — нейтральные: отсутствие вендор-листа
+    или отсутствие позиций не являются ошибкой, это штатно означает
+    «заказчик ограничений по вендорам не задал, выбор материала свободный».
     """
-    vendor_path = PROJECTS_DIR / "DOC" / "вендор лист.md"
+    try:
+        from webapp.services.project_service import _get_projects_dir
+        object_projects_dir = _get_projects_dir()
+    except Exception:
+        object_projects_dir = PROJECTS_DIR
+
+    vendor_path = object_projects_dir / "DOC" / "вендор лист.md"
     if not vendor_path.exists():
-        return "(вендор-лист не найден)"
+        fallback = PROJECTS_DIR / "DOC" / "вендор лист.md"
+        if fallback.exists() and fallback != vendor_path:
+            vendor_path = fallback
+        else:
+            return "(вендор-лист не приложен — ограничений заказчика по вендорам нет, выбор материала свободный)"
 
     try:
         content = vendor_path.read_text(encoding="utf-8")
     except OSError:
         return "(ошибка чтения вендор-листа)"
 
-    allowed = _VENDOR_SECTIONS_BY_DISCIPLINE.get(section, [])
-    if not allowed:
-        return "(нет маппинга вендор-листа для дисциплины " + section + ")"
+    keywords = _VENDOR_SECTIONS_BY_DISCIPLINE.get(section, [])
+    if not keywords:
+        return f"(для дисциплины {section} заказчик не указал ограничений по вендорам — выбор материала свободный)"
 
-    # Парсим MD-таблицу: строки начинаются с |
-    lines = content.split("\n")
-    header_lines: list[str] = []
+    header_line = ""
     data_lines: list[str] = []
     current_section = ""
 
-    for line in lines:
-        stripped = line.strip()
+    for raw in content.split("\n"):
+        stripped = raw.strip()
         if not stripped.startswith("|"):
             continue
-        # Заголовок и разделитель таблицы (первые 2 строки с |)
-        if not header_lines or (len(header_lines) == 1 and ":---" in stripped):
-            header_lines.append(stripped)
+
+        cells = [c.strip() for c in stripped.strip("|").split("|")]
+        if not cells:
             continue
 
-        # Определяем текущий раздел — первая колонка содержит **жирный** текст
-        cols = [c.strip() for c in stripped.split("|")]
-        # cols[0] пустой (до первого |), cols[1] = первая колонка
-        if len(cols) >= 2 and cols[1] and "**" in cols[1]:
-            current_section = cols[1].replace("**", "").strip()
+        non_empty = [c for c in cells if c]
+        is_separator = bool(non_empty) and all(_SEPARATOR_CELL_RE.fullmatch(c) for c in non_empty)
+        if is_separator:
+            continue  # разделители `|---|---|` пропускаем все (включая повторные)
 
-        # Проверяем, подходит ли текущий раздел
-        if any(a.lower() in current_section.lower() for a in allowed):
+        # Запомним самый первый заголовок таблицы (для контекста LLM)
+        if not header_line:
+            header_line = stripped
+
+        first_col = cells[0] if cells else ""
+        rest_empty = all(not c for c in cells[1:]) if len(cells) > 1 else True
+
+        # Обнаружение нового раздела:
+        #   (a) **жирный** текст в первой колонке — формат 213
+        #   (b) "N. Название" в первой колонке, остальные пусты — OCR-формат 214
+        new_section: Optional[str] = None
+        if "**" in first_col:
+            new_section = first_col.replace("**", "").strip()
+        elif rest_empty:
+            m = _SECTION_NUMBER_RE.match(first_col)
+            if m:
+                new_section = m.group(2).strip()
+
+        if new_section:
+            current_section = new_section
+            continue  # саму строку раздела в данных не дублируем
+
+        # Пропускаем повторные шапки таблиц (№ п/п, Наименование и т.п.)
+        low = stripped.lower()
+        if "№ п/п" in low or "наименование материалов" in low or "инженерная система" in low:
+            continue
+
+        if current_section and any(kw in current_section.lower() for kw in keywords):
             data_lines.append(stripped)
 
     if not data_lines:
-        return "(нет позиций вендор-листа для дисциплины " + section + ")"
+        return f"(в вендор-листе нет позиций по дисциплине {section} — ограничений заказчика по вендорам нет, выбор материала свободный)"
 
-    result = "\n".join(header_lines + data_lines)
-    return result
+    return "\n".join([header_line] + data_lines) if header_line else "\n".join(data_lines)
 
 
 def prepare_optimization_task(

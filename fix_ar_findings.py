@@ -1,6 +1,6 @@
 import json
 
-path = r"D:\1.OSA\1. Audit Manager\projects_objects\214._Alia_(ASTERUS)\13АВ-РД-АР1.2-К3 (2).pdf/_output/03_findings.json"
+path = "/home/coder/projects/PDF-proverka/projects_objects/214._Alia_(ASTERUS)/13АВ-РД-АР1.2-К3 (2).pdf/_output/03_findings.json"
 with open(path, encoding='utf-8') as f:
     data = json.load(f)
 

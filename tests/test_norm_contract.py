@@ -226,11 +226,16 @@ class TestShouldReviewNorm:
 # ─── Revision logic ───────────────────────────────────────────────────────
 
 class TestRevisionLogic:
-    def test_not_found_needs_revision(self):
-        """status=not_found → needs_revision=True в deterministic checks."""
+    def test_not_found_goes_to_missing_queue(self):
+        """status=not_found → needs_revision=False, уходит в missing_norms_queue.
+
+        После миграции на Norms-main LLM не пытается угадать норму через
+        WebSearch — пропуски фиксируются и идут в очередь на ручное
+        добавление. needs_revision=True только для replaced/cancelled/
+        outdated_edition (см. ТЗ).
+        """
         from norms import generate_deterministic_checks
 
-        # Минимальный norms_data с нормой, которой нет в DB
         norms_data = {
             "norms": {
                 "ГОСТ 99999-2099": {
@@ -242,5 +247,7 @@ class TestRevisionLogic:
         result = generate_deterministic_checks(norms_data, project_id="test")
         checks = result["checks"]
         assert len(checks) == 1
-        # Unknown norms = needs_revision=True (до WebSearch)
-        assert checks[0]["needs_revision"] is True
+        assert checks[0]["status"] == "not_found"
+        assert checks[0]["needs_revision"] is False
+        assert checks[0]["verified_via"] == "norms_missing"
+        assert len(result["missing_norms"]) == 1

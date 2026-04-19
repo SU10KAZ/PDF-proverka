@@ -1,4 +1,9 @@
-"""Пакет нормативной базы: извлечение, верификация, обновление кеша норм."""
+"""Пакет нормативной базы: извлечение, верификация, очередь пропусков.
+
+Источник истины — внешний проект Norms-main (status_index.json). Локальный
+norms_db.json больше не authoritative — оставлен только ради paragraph cache
+и обратной совместимости старых helper'ов.
+"""
 
 from norms._core import (  # noqa: F401
     # Пути
@@ -14,13 +19,17 @@ from norms._core import (  # noqa: F401
     format_findings_to_fix,
     # Детерминированная проверка
     generate_deterministic_checks,
+    # Очередь пропусков
+    build_missing_norms_queue,
+    render_missing_norms_queue_md,
+    write_missing_norms_queue,
     # Слияние LLM-результатов
     merge_llm_norm_results,
     merge_chunked_llm_results,
     format_llm_work_for_template,
     # Валидация
     validate_norm_checks,
-    # БД норм
+    # БД норм (legacy — только paragraph cache остаётся)
     load_norms_db,
     save_norms_db,
     # Paragraph cache
@@ -47,4 +56,9 @@ from norms._core import (  # noqa: F401
     enrich_findings_from_norm_checks,
     compute_norm_policy_class,
     should_review_norm,
+)
+from norms.external_provider import (  # noqa: F401
+    load_status_index,
+    resolve_norm_status,
+    NORMS_STATUS_INDEX_PATH,
 )

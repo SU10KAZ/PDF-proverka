@@ -18,7 +18,10 @@ def _get_findings_path(project_id: str) -> Path:
     verified = output_dir / "03a_norms_verified.json"
     if verified.exists():
         return verified
-    return output_dir / "03_findings.json"
+    main = output_dir / "03_findings.json"
+    if main.exists():
+        return main
+    return output_dir / "03_findings_pre_merge.json"
 
 
 def _practicality_score(finding: dict) -> int:
@@ -123,6 +126,8 @@ def get_all_summaries() -> list[FindingsSummary]:
         path = entry / "_output" / "03a_norms_verified.json"
         if not path.exists():
             path = entry / "_output" / "03_findings.json"
+        if not path.exists():
+            path = entry / "_output" / "03_findings_pre_merge.json"
         data = _load_json(path)
         if data is None:
             continue

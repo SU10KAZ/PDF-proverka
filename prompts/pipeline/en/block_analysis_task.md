@@ -182,6 +182,22 @@ Any discrepancy → finding.
 
 **Rule:** include units of measurement. Start with the label/mark (Р-1, Д-3, поз. 5) if one exists.
 
+### Dimensions must be attached to elements (MANDATORY)
+
+Dimensions, leader-line values, and numbers on the drawing MUST NOT appear in `key_values_read` as bare numbers. Every value must be bound to the element it describes (layer thickness, gap, pitch, length, cross-section).
+
+**BAD** (bare numbers):
+- `"30, 20, 200, 250"`
+- `"Минвата см.п.п.8"` + separate `"30"`
+
+**GOOD** (dimension tied to element):
+- `"Минвата — толщина 30 мм"`
+- `"Зазор между плитой и блоком — 20 мм"`
+- `"Газобетонные блоки — ширина 200/250 мм"`
+- `"Металлический уголок 75×50×5, L=200 мм, шаг 1,2 м в шахматном порядке"`
+
+If a dimension is visible but its binding is unclear, write `"размер 30 мм — привязка неясна"`, NOT just `"30"`. Bare numbers without a named element are forbidden in `key_values_read`.
+
 ### Locality Fields (MANDATORY for each block_analysis):
 
 - **`evidence_text_refs`** — traceability: for each used text block specify:

@@ -40,6 +40,10 @@ class AuditJob(BaseModel):
     """Текущая задача аудита."""
     job_id: str
     project_id: str
+    # object_id фиксируется на старте job. Pipeline обязан использовать именно
+    # его для резолва путей проекта, иначе переключение current_id в UI
+    # перекинет write-пути в чужой объект (см. resolve_project_dir binding).
+    object_id: Optional[str] = None
     stage: AuditStage = AuditStage.PREPARE
     status: JobStatus = JobStatus.QUEUED
     started_at: Optional[str] = None

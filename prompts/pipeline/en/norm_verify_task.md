@@ -1,65 +1,68 @@
 > **OUTPUT LANGUAGE:** All text values in JSON output MUST be written in Russian.
-> **RESPONSE FORMAT:** Respond with valid JSON only. No explanations, no markdown, no text outside JSON.
+> **PRIMARY OUTPUT:** a JSON file created via the `Write` tool. The chat response is secondary and can be a short confirmation. Do NOT treat "reply JSON in chat" as a substitute for creating the file.
 
-# NORMATIVE REFERENCE VERIFICATION — Deterministic Mode
+# NORMATIVE QUOTE VERIFICATION — MCP Mode (authoritative Norms-main)
 
 ## Operating Mode
+
 Work AUTONOMOUSLY. Do not ask questions.
-Document statuses (active/replaced/cancelled) are already determined by Python from norms_db.json.
-**Your task is only to verify unknown norms and quotes from your knowledge base.**
+
+**Document statuses are already determined by Python deterministically** from
+`status_index.json` of the sibling project Norms-main (`/home/coder/projects/Norms/`).
+Your task is ONLY to verify the text of specific clause quotes.
+
+### Forbidden
+
+- `WebSearch`, `WebFetch`, any internet requests
+- Treating `norms/norms_db.json` or legacy caches as source of truth
+- Modifying `status`, `edition_status`, `replacement_doc` of `checks[]` entries
+  (they are authoritative)
+- Guessing clause text if MCP did not return it
+
+### Required
+
+- Use MCP tools from the `norms` server:
+  - `mcp__norms__get_paragraph_json(code, paragraph)` — exact clause lookup
+  - `mcp__norms__semantic_search_json(query, top, code_filter)` — semantic search
+  - `mcp__norms__get_norm_status(code)` — reference (resolve matched_code)
+- If clause not found — honestly return `paragraph_verified: false` with `actual_quote: null`
 
 ## Project
+
 - **ID:** {PROJECT_ID}
 
 ## Input Data
 
 READ via Read tool:
 
-1. **Preliminary norm_checks.json** — READ: `{PROJECT_PATH}/_output/norm_checks.json`
-   Already contains deterministic statuses from norms_db.json.
-   DO NOT overwrite it entirely — only provide updates for the entries marked below.
+1. **Preliminary `norm_checks.json`** — `{PROJECT_PATH}/_output/norm_checks.json`
+   Already contains authoritative statuses from Norms-main. DO NOT overwrite.
 
-### LLM Work Items
+2. **Paragraph reference cache** — `{BASE_DIR}/norms/norms_paragraphs.json`
+
+### Verification assignment:
 {LLM_WORK}
-
-2. **Normative reference** — READ: `{DISCIPLINE_NORMS_FILE}` (if available)
-
-3. **Paragraph reference (verified quotes cache)** — READ: `{BASE_DIR}/norms_paragraphs.json`
-   If the needed clause is already verified — use it instead of searching.
 
 ## Task
 
-### Part 1: Verify Unknown/Outdated Norms
+For each finding from the list above:
 
-For each norm from the "Part 1" section of the input data:
+1. Read `{PROJECT_PATH}/_output/03_findings.json`, find the finding by ID,
+   extract `norm` and `norm_quote`.
 
-1. Verify norm status from your knowledge:
-   - Check if the document is currently in force
-   - Check if the cited edition is current
+2. Call MCP: `mcp__norms__get_paragraph_json(code=<norm code>, paragraph=<clause number>)`
+   - If `found: true` → compare `text` with `norm_quote`.
+   - If `found: false` with `resolution_reason` = `paragraph_not_found` / `no_document_text` —
+     try `mcp__norms__semantic_search_json(query=<short requirement>, code_filter=<code>)`
+     to locate the clause number, then retry `get_paragraph_json`.
 
-2. Determine status:
-- **active** — in force, cited edition is current
-- **outdated_edition** — document is in force but cited edition is outdated
-- **replaced** — document replaced by another
-- **cancelled** — document cancelled without replacement
-- **not_found** — could not verify
-
-3. For ПУЭ: check which chapters are in force in the 7th edition, which remain from the 6th
-4. For ГОСТ: check if superseded by a newer one
-
-### Part 2: Clause Quote Verification
-
-For each finding from the "Part 2" section of the input data:
-
-1. Find the finding by ID, extract `norm` and `norm_quote`
-2. Verify the quote from your knowledge:
-   - Compare against known norm text
 3. Result:
-   - **Match** → `paragraph_verified: true`
-   - **Mismatch** → `paragraph_verified: false`, record actual text in `actual_quote`
-   - **Clause not found / unsure** → `paragraph_verified: false`, `actual_quote: null`
+   - Semantic match → `paragraph_verified: true`, `actual_quote` = exact MCP text.
+   - Mismatch → `paragraph_verified: false`, `actual_quote` = real text, `mismatch_details` set.
+   - MCP returned nothing → `paragraph_verified: false`, `actual_quote: null`,
+     `mismatch_details` = "clause not found in Norms-main".
 
-Verify ALL quotes listed in Part 2 input. Priority order: КРИТИЧЕСКОЕ → ЭКОНОМИЧЕСКОЕ → others.
+Priority: КРИТИЧЕСКОЕ → ЭКОНОМИЧЕСКОЕ → others.
 
 ## Output JSON Schema
 
@@ -68,45 +71,49 @@ Verify ALL quotes listed in Part 2 input. Priority order: КРИТИЧЕСКОЕ
   "meta": {
     "project_id": "{PROJECT_ID}",
     "check_date": "<ISO datetime>",
-    "total_checked_by_llm": 0,
-    "norms_searched": 0,
-    "paragraphs_verified": 0
+    "paragraphs_verified": 0,
+    "source": "norms_main_mcp"
   },
-  "checks": [
-    {
-      "norm_as_cited": "СП 256.1325800.2016 (ред. изм. 1-5)",
-      "doc_number": "СП 256.1325800.2016",
-      "status": "active|outdated_edition|replaced|cancelled|not_found",
-      "current_version": "СП 256.1325800.2016 (ред. 29.01.2024, изм. 1-7)",
-      "replacement_doc": null,
-      "source_url": null,
-      "details": "Краткое пояснение — что изменилось",
-      "affected_findings": ["F-003"],
-      "needs_revision": true,
-      "verified_via": "llm_knowledge"
-    }
-  ],
+  "checks": [],
   "paragraph_checks": [
     {
       "finding_id": "F-001",
       "norm": "СП 256.1325800.2016, п.14.9",
+      "matched_code": "СП 256.1325800.2016",
       "claimed_quote": "Цитата из norm_quote замечания",
-      "actual_quote": "Реальный текст пункта или null",
+      "actual_quote": "Реальный текст пункта из MCP",
       "paragraph_verified": true,
-      "mismatch_details": "null или описание расхождения",
-      "verified_via": "llm_knowledge|norms_paragraphs"
+      "mismatch_details": null,
+      "verified_via": "norms_mcp_paragraph"
     }
   ]
 }
 ```
 
-## Output
+**The `checks` field MUST be an empty list** — norm statuses are authoritative and
+cannot be overwritten. Any status-change attempts will be discarded by Python during merge.
 
-WRITE: `{PROJECT_PATH}/_output/norm_checks_llm.json`
+## Output — MANDATORY
 
-## Rules
+You MUST create this file via the `Write` tool, exactly at this path:
 
-1. **DO NOT check norms not in the assignment** — Python already checked the rest deterministically
-2. Write JSON via Write tool — DO NOT output to chat
-3. Respond with valid JSON matching the schema above
-4. If unsure about a norm status, set `status: "not_found"` — do not guess
+```
+{PROJECT_PATH}/_output/norm_checks_llm.json
+```
+
+This is the ONLY required artefact of this task. The chat response is optional.
+
+### Non-negotiable invariants
+
+1. The file MUST be created, even if the verification assignment is empty.
+   In that case write a valid JSON with `"paragraph_checks": []`.
+2. The file MUST use the EXACT absolute path above. Do NOT invent a different
+   path. Do NOT use relative paths.
+3. Call the `Write` tool BEFORE emitting any final chat message.
+4. Do not verify norms not in the assignment.
+5. Do not write to `norm_checks.json` — only to `norm_checks_llm.json`.
+6. `checks` MUST be an empty list (`[]`).
+7. If unsure about a clause text, leave `actual_quote: null` — do not guess.
+
+After the `Write` call succeeds, a one-line chat confirmation is enough —
+do NOT dump the JSON contents back into chat.

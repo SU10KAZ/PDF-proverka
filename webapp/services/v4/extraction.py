@@ -23,8 +23,8 @@ from typing import Awaitable, Callable, Optional
 log = logging.getLogger(__name__)
 
 
-TEMPLATE_PATH = Path(__file__).parent / "v4_extraction_template.md"
-LEGACY_PROMPT_PATH = Path(__file__).parent / "v3_extraction_prompt.md"
+_PROMPTS_DIR = Path(__file__).resolve().parents[3] / "prompts" / "v4"
+TEMPLATE_PATH = _PROMPTS_DIR / "v4_extraction_template.md"
 
 
 def _render_v4_config_sections(config: dict) -> dict:
@@ -59,12 +59,21 @@ def _render_v4_config_sections(config: dict) -> dict:
     entity_types_enum = " | ".join(entity_types)
     entity_types_list = "\n".join(f"- `{et}`" for et in entity_types)
 
-    # Exact keys example
+    # Exact keys mapping: per-entity example.
+    # Пишем ТОЛЬКО релевантный ключ для каждого entity_type, чтобы модель не
+    # копировала 6 лишних null-полей в каждый mention.
     key_fields = ext.get("exact_key_fields", {})
-    exact_keys_pairs = []
-    for et, field in key_fields.items():
-        exact_keys_pairs.append(f'    "{field}": null')
-    exact_keys_example = "{\n" + ",\n".join(exact_keys_pairs) + "\n  }" if exact_keys_pairs else '{ "item_id": null }'
+    if key_fields:
+        mapping_lines = [
+            f'- `{et}` → `{{ "{field}": "..." }}`'
+            for et, field in key_fields.items()
+        ]
+        exact_keys_example = (
+            "Мэппинг `entity_type` → релевантное поле в `exact_keys` "
+            "(включай только это поле, без прочих null):\n" + "\n".join(mapping_lines)
+        )
+    else:
+        exact_keys_example = '{ "item_id": "..." }'
 
     # Attributes list
     attr_enum = ext.get("attribute_enum", {})
@@ -96,17 +105,11 @@ def _build_prompt(
     block_lines: list[str],
     md_context: str,
     output_dir: Path,
-    config: dict | None = None,
+    config: dict,
 ) -> str:
-    # Если есть config — используем универсальный template с плейсхолдерами
-    if config and TEMPLATE_PATH.exists():
-        template = TEMPLATE_PATH.read_text(encoding="utf-8")
-        # Подставляем дисциплинарные секции из config
-        for placeholder, value in _render_v4_config_sections(config).items():
-            template = template.replace(placeholder, value)
-    else:
-        # Fallback на legacy EOM prompt
-        template = LEGACY_PROMPT_PATH.read_text(encoding="utf-8")
+    template = TEMPLATE_PATH.read_text(encoding="utf-8")
+    for placeholder, value in _render_v4_config_sections(config).items():
+        template = template.replace(placeholder, value)
 
     return (
         template

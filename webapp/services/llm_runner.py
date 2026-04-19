@@ -45,7 +45,7 @@ def _get_client() -> AsyncOpenAI:
 _MODEL_PRICES = {
     "google/gemini-2.5-pro":          {"input": 1.25,  "output": 10.0},
     "google/gemini-3.1-pro-preview":  {"input": 2.0,   "output": 12.0},
-    "anthropic/claude-opus-4-6":      {"input": 15.0,  "output": 75.0},
+    "anthropic/claude-opus-4-7":      {"input": 15.0,  "output": 75.0},
     "anthropic/claude-sonnet-4-6":    {"input": 3.0,   "output": 15.0},
     "openai/gpt-5.4":                {"input": 2.50,  "output": 15.0},
     "openai/gpt-4.1":               {"input": 2.00,  "output": 8.0},
@@ -241,6 +241,7 @@ async def run_llm_stream(
             max_tokens=max_tokens,
             temperature=temp,
             stream=True,
+            stream_options={"include_usage": True},
             timeout=timeout,
             extra_headers={
                 "HTTP-Referer": OPENROUTER_SITE_URL,

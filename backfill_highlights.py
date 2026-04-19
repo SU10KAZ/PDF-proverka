@@ -19,7 +19,7 @@ import argparse
 from pathlib import Path
 from difflib import SequenceMatcher
 
-BASE_DIR = Path(r"D:\1.OSA\1. Audit Manager")
+BASE_DIR = Path("/home/coder/projects/PDF-proverka")
 
 
 def _text_similarity(a: str, b: str) -> float:

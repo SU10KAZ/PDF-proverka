@@ -1,0 +1,182 @@
+{
+  "generated_at": "2026-04-18T08:21:59.203831+00:00",
+  "source": "~/.claude/projects/-home-coder-projects-PDF-proverka/*.jsonl",
+  "wall_benchmark_source": "/home/coder/projects/PDF-proverka/reports/norms_stage_benchmark.json",
+  "projects_scanned": 3,
+  "projects_with_new_token_data": 3,
+  "projects_with_old_token_data": 1,
+  "projects_with_reliable_comparison": 1,
+  "data_availability_notes": {
+    "jsonl_oldest_available": "2026-04-15",
+    "usage_data_oldest": "2026-03-25",
+    "retention_explanation": "Claude CLI session JSONL files in ~/.claude/projects/ are pruned after a retention period; earliest remaining file is dated 2026-04-15. webapp/data/usage_data.json keeps records ~30 days — earliest is 2026-03-25. Historical runs older than these dates cannot be matched to token usage."
+  },
+  "per_project": [
+    {
+      "project_path": "/home/coder/projects/PDF-proverka/projects/213. Мосфильмовская 31А \"King&Sons\"/AI/133-23-ГК-АИ2",
+      "project_id": "AI/133-23-ГК-АИ2",
+      "old_run_start_local": "2026-03-16T13:10:18",
+      "old_run_end_local": "2026-03-16T13:23:41",
+      "new_run_start_local": "2026-04-18T12:31:10",
+      "new_run_end_local": "2026-04-18T12:46:37",
+      "old_wall_sec": 802.986846,
+      "new_wall_sec": 924.481,
+      "wall_delta_sec": 121.494,
+      "wall_delta_pct": 15.13,
+      "old_token_usage_available": false,
+      "new_token_usage_available": true,
+      "comparison_reliable": false,
+      "old_input_tokens": null,
+      "old_output_tokens": null,
+      "old_total_tokens": null,
+      "old_cache_creation_input_tokens": null,
+      "old_cache_read_input_tokens": null,
+      "old_session_count": null,
+      "old_models": null,
+      "old_assistant_turns": null,
+      "old_tool_breakdown": null,
+      "new_input_tokens": 267,
+      "new_output_tokens": 165350,
+      "new_total_tokens": 165617,
+      "new_cache_creation_input_tokens": 1139557,
+      "new_cache_read_input_tokens": 6464422,
+      "new_session_count": 4,
+      "new_models": [
+        "claude-opus-4-6"
+      ],
+      "new_assistant_turns": 155,
+      "new_tool_breakdown": {
+        "Bash": 4,
+        "Grep": 5,
+        "Read": 18,
+        "ToolSearch": 4,
+        "Write": 4,
+        "mcp__norms__get_paragraph_json": 48,
+        "mcp__norms__semantic_search_json": 28
+      },
+      "delta_total_tokens": null,
+      "delta_total_pct": null,
+      "delta_input_tokens": null,
+      "delta_output_tokens": null,
+      "notes": [
+        "OLD session JSONL not found for 2026-03-16T13:10:18. Claude CLI sessions dir retains only 2026-04-15+; webapp/data/usage_data.json — only 2026-03-25+. Token usage for this historical run is unrecoverable."
+      ]
+    },
+    {
+      "project_path": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/AR/13АВ-РД-АР1.1-К4 (Изм.2)",
+      "project_id": "AR/13АВ-РД-АР1.1-К4 (Изм.2)",
+      "old_run_start_local": "2026-04-16T05:34:11",
+      "old_run_end_local": "2026-04-16T06:00:01",
+      "new_run_start_local": "2026-04-18T12:46:37",
+      "new_run_end_local": "2026-04-18T12:50:31",
+      "old_wall_sec": 1549.399196,
+      "new_wall_sec": 232.063,
+      "wall_delta_sec": -1317.336,
+      "wall_delta_pct": -85.02,
+      "old_token_usage_available": true,
+      "new_token_usage_available": true,
+      "comparison_reliable": true,
+      "old_input_tokens": 76,
+      "old_output_tokens": 86497,
+      "old_total_tokens": 86573,
+      "old_cache_creation_input_tokens": 469757,
+      "old_cache_read_input_tokens": 2514879,
+      "old_session_count": 3,
+      "old_models": [
+        "claude-opus-4-6"
+      ],
+      "old_assistant_turns": 64,
+      "old_tool_breakdown": {
+        "Bash": 8,
+        "Glob": 1,
+        "Grep": 3,
+        "Read": 21,
+        "Write": 6
+      },
+      "new_input_tokens": 44,
+      "new_output_tokens": 36306,
+      "new_total_tokens": 36350,
+      "new_cache_creation_input_tokens": 265275,
+      "new_cache_read_input_tokens": 1485005,
+      "new_session_count": 1,
+      "new_models": [
+        "claude-opus-4-6"
+      ],
+      "new_assistant_turns": 36,
+      "new_tool_breakdown": {
+        "Grep": 1,
+        "Read": 6,
+        "ToolSearch": 1,
+        "Write": 1,
+        "mcp__norms__get_paragraph_json": 10,
+        "mcp__norms__semantic_search_json": 7
+      },
+      "delta_total_tokens": -50223,
+      "delta_total_pct": -58.01,
+      "delta_input_tokens": -32,
+      "delta_output_tokens": -50191,
+      "notes": []
+    },
+    {
+      "project_path": "/home/coder/projects/PDF-proverka/projects/213. Мосфильмовская 31А \"King&Sons\"/OV/133_23-ГК-ОВ1.2",
+      "project_id": "OV/133_23-ГК-ОВ1.2",
+      "old_run_start_local": "2026-03-21T23:17:08",
+      "old_run_end_local": "2026-03-21T23:29:04",
+      "new_run_start_local": "2026-04-18T12:50:31",
+      "new_run_end_local": "2026-04-18T12:59:36",
+      "old_wall_sec": 716.048634,
+      "new_wall_sec": 544.549,
+      "wall_delta_sec": -171.5,
+      "wall_delta_pct": -23.95,
+      "old_token_usage_available": false,
+      "new_token_usage_available": true,
+      "comparison_reliable": false,
+      "old_input_tokens": null,
+      "old_output_tokens": null,
+      "old_total_tokens": null,
+      "old_cache_creation_input_tokens": null,
+      "old_cache_read_input_tokens": null,
+      "old_session_count": null,
+      "old_models": null,
+      "old_assistant_turns": null,
+      "old_tool_breakdown": null,
+      "new_input_tokens": 131,
+      "new_output_tokens": 120540,
+      "new_total_tokens": 120671,
+      "new_cache_creation_input_tokens": 654618,
+      "new_cache_read_input_tokens": 5955202,
+      "new_session_count": 2,
+      "new_models": [
+        "claude-opus-4-6"
+      ],
+      "new_assistant_turns": 93,
+      "new_tool_breakdown": {
+        "Grep": 1,
+        "Read": 23,
+        "ToolSearch": 2,
+        "Write": 2,
+        "mcp__norms__get_paragraph_json": 24,
+        "mcp__norms__semantic_search_json": 15
+      },
+      "delta_total_tokens": null,
+      "delta_total_pct": null,
+      "delta_input_tokens": null,
+      "delta_output_tokens": null,
+      "notes": [
+        "OLD session JSONL not found for 2026-03-21T23:17:08. Claude CLI sessions dir retains only 2026-04-15+; webapp/data/usage_data.json — only 2026-03-25+. Token usage for this historical run is unrecoverable."
+      ]
+    }
+  ],
+  "aggregate": {
+    "comparable_projects_count": 1,
+    "uncomparable_projects_count": 2,
+    "old_mean_total_tokens": 86573,
+    "new_mean_total_tokens": 36350,
+    "old_median_total_tokens": 86573,
+    "new_median_total_tokens": 36350,
+    "mean_delta_tokens": -50223,
+    "mean_delta_pct": -58.01,
+    "median_delta_tokens": -50223,
+    "median_delta_pct": -58.01
+  }
+}

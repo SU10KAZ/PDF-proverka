@@ -4,7 +4,7 @@ Apply norm revisions to 03_findings.json
 import json
 from datetime import datetime
 
-FINDINGS_PATH = r"D:\1.OSA\1. Audit Manager\projects_objects\214._Alia_(ASTERUS)\13АВ-РД-АР1.1-К4 (Изм.2).pdf/_output/03_findings.json"
+FINDINGS_PATH = "/home/coder/projects/PDF-proverka/projects_objects/214._Alia_(ASTERUS)/13АВ-РД-АР1.1-К4 (Изм.2).pdf/_output/03_findings.json"
 
 # Load
 with open(FINDINGS_PATH, encoding="utf-8") as f:

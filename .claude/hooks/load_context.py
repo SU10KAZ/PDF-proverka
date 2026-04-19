@@ -11,7 +11,7 @@ import json
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-BASE        = r"D:\1.OSA\1. Audit Manager"
+BASE        = "/home/coder/projects/PDF-proverka"
 PROJ_ROOT   = os.path.join(BASE, "projects")
 NORM_FILE   = os.path.join(BASE, "norms_reference.md")
 

@@ -1,8 +1,8 @@
 import json
 import shutil
 
-src = r'D:\1.OSA\1. Audit Manager\projects_objects\214._Alia_(ASTERUS)\13АВ-РД-АР1.1-К4 (Изм.2).pdf\_output\03_findings.json'
-dst_backup = r'D:\1.OSA\1. Audit Manager\projects_objects\214._Alia_(ASTERUS)\13АВ-РД-АР1.1-К4 (Изм.2).pdf\_output\03_findings_pre_review.json'
+src = '/home/coder/projects/PDF-proverka/projects_objects/214._Alia_(ASTERUS)/13АВ-РД-АР1.1-К4 (Изм.2).pdf/_output/03_findings.json'
+dst_backup = '/home/coder/projects/PDF-proverka/projects_objects/214._Alia_(ASTERUS)/13АВ-РД-АР1.1-К4 (Изм.2).pdf/_output/03_findings_pre_review.json'
 
 REMOVE_IDS = {"F-007", "F-033", "F-034", "F-035", "F-036"}
 

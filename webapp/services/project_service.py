@@ -2,11 +2,13 @@
 Сервис для работы с проектами.
 Сканирование, чтение project_info.json, определение статуса конвейера.
 """
+import contextvars
 import json
 import os
 import re
 import shutil
 import time
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Optional
 from datetime import datetime
@@ -17,13 +19,97 @@ from webapp.models.project import (
 )
 
 
+# ─── Per-job object binding ────────────────────────────────────────────────
+# ContextVar, который pipeline устанавливает на старте job'а. Если он задан,
+# resolve_project_dir() использует projects_dir привязанного объекта и
+# игнорирует глобальный current_id из objects.json. Это нужно, чтобы job,
+# стартовавший для объекта A, не записал свои артефакты в объект B, если
+# оператор тем временем переключил current_id в UI.
+
+_bound_object_id: contextvars.ContextVar[Optional[str]] = contextvars.ContextVar(
+    "pdf_proverka.bound_object_id", default=None,
+)
+
+
+class AmbiguousProjectError(RuntimeError):
+    """project_id существует в нескольких объектах, и scope не задан."""
+
+
+def bind_object(object_id: Optional[str]):
+    """Назначить активный object_id для текущего async-контекста.
+
+    Возвращает token. Чтобы снять — вызови `unbind_object(token)`. Внутри
+    `asyncio.create_task(...)` контекст копируется, так что binding
+    наследуется дочерними задачами.
+    """
+    return _bound_object_id.set(object_id)
+
+
+def unbind_object(token) -> None:
+    _bound_object_id.reset(token)
+
+
+@contextmanager
+def pinned_object(object_id: Optional[str]):
+    """Sync context-manager для bind_object (удобно в тестах/smoke)."""
+    token = _bound_object_id.set(object_id)
+    try:
+        yield
+    finally:
+        _bound_object_id.reset(token)
+
+
+def _get_bound_object_id() -> Optional[str]:
+    return _bound_object_id.get()
+
+
+def _bound_projects_dir() -> Optional[Path]:
+    """projects_dir связанного через ContextVar объекта (если он есть)."""
+    bound = _get_bound_object_id()
+    if not bound:
+        return None
+    try:
+        from webapp.services.object_service import get_projects_dir_for
+    except Exception:
+        return None
+    return get_projects_dir_for(bound)
+
+
 def _get_projects_dir() -> Path:
-    """Получить папку проектов текущего объекта (или дефолт)."""
+    """Получить папку проектов.
+
+    Приоритет:
+      1) ContextVar-binding (per-job), если установлен → projects_dir этого объекта.
+      2) current_id из objects.json (legacy глобальный state).
+      3) Default PROJECTS_DIR.
+    """
+    bound = _bound_projects_dir()
+    if bound is not None:
+        return bound
     try:
         from webapp.services.object_service import get_current_projects_dir
         return get_current_projects_dir()
     except Exception:
         return _DEFAULT_PROJECTS_DIR
+
+
+def find_object_dirs_for(project_id: str) -> list[Path]:
+    """Все объекты, где такой project_id существует на ФС.
+
+    Используется для ambiguity-детекции. Не кэшируется — вызов редкий.
+    """
+    if not project_id:
+        return []
+    try:
+        from webapp.services.object_service import list_projects_dirs
+    except Exception:
+        return []
+    hits: list[Path] = []
+    for root in list_projects_dirs():
+        candidate = root / project_id
+        if candidate.exists():
+            hits.append(candidate)
+    return hits
 
 
 # TTL-кеш для iter_project_dirs (30 сек)
@@ -54,7 +140,20 @@ def iter_project_dirs(force: bool = False) -> list[tuple[str, Path]]:
     for entry in sorted(projects_dir.iterdir()):
         if not entry.is_dir() or entry.name.startswith("_"):
             continue
-        if (entry / "project_info.json").exists() or list(entry.glob("*.pdf")):
+        # glob("*.pdf") матчит и папки с таким именем (UI/OCR иногда создают
+        # `<name>.pdf/`). Фильтруем по is_file(), иначе группа-папка ошибочно
+        # классифицируется как проект и её подпапки пропадают из списка.
+        has_pdf_file = any(p.is_file() for p in entry.glob("*.pdf"))
+        # Если внутри лежат подпапки с project_info.json — это точно группа
+        # (разделы AR/EOM/...), даже если на её корне есть PDF или info.
+        # Защищает от phantom-родителя, который обобщает все подпапки.
+        has_child_projects = any(
+            sub.is_dir() and not sub.name.startswith("_")
+            and (sub / "project_info.json").exists()
+            for sub in entry.iterdir()
+        )
+        is_project = (entry / "project_info.json").exists() or has_pdf_file
+        if is_project and not has_child_projects:
             results.append((entry.name, entry))
         else:
             # Подпапка-группа — заходим внутрь (1 уровень)
@@ -67,10 +166,55 @@ def iter_project_dirs(force: bool = False) -> list[tuple[str, Path]]:
     return results
 
 
-def resolve_project_dir(project_id: str) -> Path:
-    """Найти папку проекта по ID (имя папки), с поиском в подпапках."""
-    projects_dir = _get_projects_dir()
+def resolve_project_dir(
+    project_id: str,
+    *,
+    object_id: Optional[str] = None,
+    strict: bool = False,
+) -> Path:
+    """Найти папку проекта по ID.
+
+    Порядок:
+      1) Если передан `object_id` — резолвим в рамках projects_dir ЭТОГО объекта.
+      2) Иначе если установлен ContextVar-binding — в рамках привязанного объекта.
+      3) Иначе — старое поведение (через current_id / default).
+
+    strict=True: если project_id существует в НЕСКОЛЬКИХ объектах и scope
+    (object_id / binding) не задан — поднимаем `AmbiguousProjectError`. По
+    умолчанию strict=False, чтобы не ломать существующие read-эндпоинты.
+    """
+    explicit_scope = False
+    if object_id is not None:
+        try:
+            from webapp.services.object_service import get_projects_dir_for
+            pd = get_projects_dir_for(object_id)
+        except Exception:
+            pd = None
+        if pd is not None:
+            projects_dir = pd
+            explicit_scope = True
+        else:
+            projects_dir = _get_projects_dir()
+    else:
+        bound = _bound_projects_dir()
+        if bound is not None:
+            projects_dir = bound
+            explicit_scope = True
+        else:
+            projects_dir = _get_projects_dir()
+
     direct = projects_dir / project_id
+
+    # strict-ambiguity check срабатывает только если scope явно не задан.
+    if strict and not explicit_scope:
+        hits = find_object_dirs_for(project_id)
+        if len(hits) > 1:
+            names = ", ".join(str(h) for h in hits)
+            raise AmbiguousProjectError(
+                f"project_id '{project_id}' существует в {len(hits)} объектах: {names}. "
+                f"Укажите object_id или установите bind_object(...)."
+            )
+
     if direct.exists():
         return direct
     # Если projects_dir не существует — не падаем, возвращаем direct path
@@ -183,6 +327,8 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
     findings_by_severity = {}
     audit_date = None
     findings_path = output_dir / "03_findings.json"
+    if not findings_path.exists():
+        findings_path = output_dir / "03_findings_pre_merge.json"
     if findings_path.exists():
         fdata = _load_json(findings_path)
         if fdata:

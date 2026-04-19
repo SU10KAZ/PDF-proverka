@@ -253,6 +253,60 @@ class CanonicalMemory:
         }
 
 
+_TEXT_REF_PREFIX = "TEXT_REF:"
+
+
+def _load_text_block_map(output_dir: Path) -> dict[str, str]:
+    """id текстового блока → его полный текст из document_graph.json."""
+    graph_path = output_dir / "document_graph.json"
+    if not graph_path.exists():
+        return {}
+    try:
+        graph = json.loads(graph_path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    out: dict[str, str] = {}
+    for page in graph.get("pages", []):
+        for tb in page.get("text_blocks", []):
+            tb_id = tb.get("id")
+            text = tb.get("text")
+            if tb_id and text:
+                out[tb_id] = text
+    return out
+
+
+def _resolve_text_refs(mention: dict, text_blocks: dict[str, str]) -> dict:
+    """Развернуть TEXT_REF:<id> в attributes/raw_text_excerpt в полный текст."""
+    if not text_blocks:
+        return mention
+
+    def _resolve(val):
+        if isinstance(val, str) and val.startswith(_TEXT_REF_PREFIX):
+            ref = val[len(_TEXT_REF_PREFIX):].strip()
+            return text_blocks.get(ref, val)
+        return val
+
+    attrs = mention.get("attributes")
+    if attrs:
+        new_attrs = []
+        for a in attrs:
+            a2 = a
+            if isinstance(a.get("value_raw"), str):
+                resolved = _resolve(a["value_raw"])
+                if resolved is not a["value_raw"]:
+                    a2 = {**a, "value_raw": resolved}
+            new_attrs.append(a2)
+        mention = {**mention, "attributes": new_attrs}
+
+    excerpt = mention.get("raw_text_excerpt")
+    if isinstance(excerpt, str):
+        resolved = _resolve(excerpt)
+        if resolved is not excerpt:
+            mention = {**mention, "raw_text_excerpt": resolved}
+
+    return mention
+
+
 def build_from_typed_facts(output_dir: Path, config: dict | None = None) -> CanonicalMemory:
     """Построить canonical memory из typed_facts_batch_*.json в output_dir."""
     memory = CanonicalMemory(config=config)
@@ -261,6 +315,8 @@ def build_from_typed_facts(output_dir: Path, config: dict | None = None) -> Cano
     if not typed_files:
         log.error(f"Нет typed_facts_batch_*.json в {output_dir}")
         return memory
+
+    text_blocks = _load_text_block_map(output_dir)
 
     for f in typed_files:
         try:
@@ -272,6 +328,7 @@ def build_from_typed_facts(output_dir: Path, config: dict | None = None) -> Cano
         batch_source = f.name
 
         for mention in data.get("entity_mentions", []):
+            mention = _resolve_text_refs(mention, text_blocks)
             memory.add_mention(mention, batch_source)
 
         for relation in data.get("relation_mentions", []):

@@ -1,9 +1,0 @@
-{
-  "stage": "04_norm_verify",
-  "model": "claude-opus-4-6",
-  "timestamp": "2026-04-11T11:04:39.573918",
-  "input_tokens": 0,
-  "output_tokens": 0,
-  "duration_ms": 63395,
-  "result": "```json\n{\"status\":\"completed\",\"file\":\"norm_checks_llm.json\",\"paragraphs_verified\":5}\n```"
-}

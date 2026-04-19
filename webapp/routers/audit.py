@@ -705,6 +705,52 @@ async def start_norm_verification(project_id: str):
         raise HTTPException(409, str(e))
 
 
+@router.post("/{project_id:path}/crop-blocks-only")
+async def crop_blocks_only(project_id: str, force: bool = False):
+    """Запустить только кроп графических блоков (без полного аудита).
+
+    Используется для предпросмотра качества блоков перед запуском аудита.
+    Не пишет в pipeline_log — это утилитарная операция.
+    """
+    _check_project(project_id)
+    project_dir = resolve_project_dir(project_id)
+    from webapp.config import BLOCKS_SCRIPT, BASE_DIR
+    args = ["python", str(BLOCKS_SCRIPT), "crop", str(project_dir)]
+    if force:
+        args.append("--force")
+
+    proc = await asyncio.create_subprocess_exec(
+        *args,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+        cwd=str(BASE_DIR),
+    )
+    try:
+        stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=300)
+    except asyncio.TimeoutError:
+        proc.kill()
+        raise HTTPException(504, "Таймаут кропа блоков (>5 мин)")
+
+    out = stdout.decode("utf-8", errors="replace") if stdout else ""
+    err = stderr.decode("utf-8", errors="replace") if stderr else ""
+
+    if proc.returncode != 0:
+        raise HTTPException(500, f"blocks.py crop вернул код {proc.returncode}: {err[-500:] or out[-500:]}")
+
+    # Парсим итоговую строку JSON-вывода
+    summary = {"total_blocks": 0, "cropped": 0, "skipped": 0, "errors": 0}
+    for line in reversed(out.splitlines()):
+        line = line.strip()
+        if line.startswith("{") and line.endswith("}"):
+            try:
+                summary = json.loads(line)
+                break
+            except json.JSONDecodeError:
+                pass
+
+    return {"status": "ok", "project_id": project_id, "summary": summary}
+
+
 @router.get("/{project_id:path}/status")
 async def get_audit_status(project_id: str):
     """Получить текущий статус аудита."""

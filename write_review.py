@@ -130,7 +130,7 @@ data = {
     "reviews": reviews
 }
 
-outpath = r"D:\1.OSA\1. Audit Manager\projects_objects\214._Alia_(ASTERUS)\13АВ-РД-АР1.1-К4 (Изм.2).pdf\_output\03_findings_review.json"
+outpath = "/home/coder/projects/PDF-proverka/projects_objects/214._Alia_(ASTERUS)/13АВ-РД-АР1.1-К4 (Изм.2).pdf/_output/03_findings_review.json"
 with open(outpath, "w", encoding="utf-8") as f:
     json.dump(data, f, ensure_ascii=False, indent=2)
 print("OK, written", len(reviews), "reviews")

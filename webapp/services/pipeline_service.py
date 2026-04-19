@@ -104,8 +104,17 @@ def _extract_error_detail(exit_code: int, output: str, max_len: int = 120) -> st
             msg = msg[:max_len - 3] + "..."
         return msg
     return f"Exit code {exit_code}"
-from webapp.services.project_service import resolve_project_dir
+from webapp.services.project_service import resolve_project_dir, bind_object, unbind_object
 from webapp.ws.manager import ws_manager
+
+
+def _current_object_id_or_none() -> Optional[str]:
+    """Helper: ID текущего объекта (None, если objects.json недоступен)."""
+    try:
+        from webapp.services.object_service import get_current_id
+        return get_current_id()
+    except Exception:
+        return None
 
 
 class PipelineManager:
@@ -123,6 +132,40 @@ class PipelineManager:
         self._pause_mode: str | None = None  # "finish_current" | "interrupt"
 
     ZOMBIE_TIMEOUT_SEC = 600  # 10 минут без heartbeat = зомби
+
+    # ─── Привязка job к объекту ────────────────────────────────────────
+    # Каждый job, идущий через PipelineManager, обязан быть привязан к
+    # object_id, под которым он создавался. _create_bound_task оборачивает
+    # coroutine в per-task ContextVar set, чтобы все вложенные вызовы
+    # resolve_project_dir() видели именно тот projects_dir, а не текущий
+    # активный объект из objects.json.
+
+    @staticmethod
+    def _resolve_object_id(object_id: Optional[str]) -> Optional[str]:
+        """Вычислить object_id для нового job. None → current_id."""
+        return object_id if object_id is not None else _current_object_id_or_none()
+
+    @staticmethod
+    def _create_bound_task(coro, job: AuditJob) -> asyncio.Task:
+        """Запустить coroutine с биндингом object_id из job.
+
+        Если у job.object_id нет — запускает как обычный task (совместимо со
+        старыми путями). Если object_id есть — внутри task выставляет
+        ContextVar, и все resolve_project_dir() под ним используют именно
+        projects_dir этого объекта.
+        """
+        bound_id = job.object_id
+        if not bound_id:
+            return asyncio.create_task(coro)
+
+        async def _bound():
+            token = bind_object(bound_id)
+            try:
+                return await coro
+            finally:
+                unbind_object(token)
+
+        return asyncio.create_task(_bound())
 
     # ─── Пауза/Возобновление ───
 
@@ -914,6 +957,16 @@ class PipelineManager:
                     path.unlink()
                     print(f"[{project_id}:clean] Удалён {filename}")
 
+    def _backup_findings_before_restart(self, project_id: str):
+        """Сохранить 03_findings.json как _pre_restart бэкап перед полной очисткой."""
+        import shutil
+        output_dir = resolve_project_dir(project_id) / "_output"
+        findings_path = output_dir / "03_findings.json"
+        if findings_path.exists():
+            backup_path = output_dir / "03_findings_pre_restart.json"
+            shutil.copy2(findings_path, backup_path)
+            print(f"[{project_id}:clean] Бэкап findings → 03_findings_pre_restart.json")
+
     # ─── Валидация JSON после записи LLM ───
 
     @staticmethod
@@ -1320,6 +1373,7 @@ class PipelineManager:
 
         job = AuditJob(
             job_id=str(uuid4()),
+            object_id=self._resolve_object_id(None),
             project_id=project_id,
             stage=AuditStage.PREPARE,
             status=JobStatus.RUNNING,
@@ -1362,6 +1416,7 @@ class PipelineManager:
 
         job = AuditJob(
             job_id=str(uuid4()),
+            object_id=self._resolve_object_id(None),
             project_id=project_id,
             stage=AuditStage.PREPARE,
             status=JobStatus.RUNNING,
@@ -1419,7 +1474,9 @@ class PipelineManager:
 
             # ═══ ЭТАП 1: Кроп image-блоков ═══
             if start_idx <= 0:
-                # Полный перезапуск — очистить все промежуточные файлы
+                # Полный перезапуск — бэкап findings перед очисткой
+                self._backup_findings_before_restart(pid)
+                # Очистить все промежуточные файлы
                 self._clean_stage_files(pid, [
                     "01_text_analysis.json", "02_blocks_analysis.json",
                     "03_findings.json", "block_batch_*.json", "block_batches.json",
@@ -1455,7 +1512,9 @@ class PipelineManager:
             # ═══ ЭТАП 2: Текстовый анализ MD (Claude) ═══
             if start_idx <= 1:
                 if start_idx == 1:
-                    # Resume с этого этапа — очистить старые результаты
+                    # Resume с этого этапа — бэкап findings перед очисткой
+                    self._backup_findings_before_restart(pid)
+                    # Очистить старые результаты
                     self._clean_stage_files(pid, [
                         "01_text_analysis.json", "02_blocks_analysis.json",
                         "03_findings.json", "block_batch_*.json", "block_batches.json",
@@ -1723,111 +1782,8 @@ class PipelineManager:
                 self.active_jobs[pid] = job
                 self._tasks[pid] = asyncio.current_task()
 
-                # ═══ ЭТАП 4b: Block Retry — перекачка нечитаемых блоков (только legacy) ═══
-                if _is_v4(project_info):
-                    self._update_pipeline_log(pid, "block_retry", "skipped",
-                                              message="V4 pipeline — block_retry не применим")
-
-                from blocks import find_unreadable_blocks, recrop_blocks, promote_to_full, MAX_RECROP_ITERATIONS
-
-                # Проверяем, использовался ли compact-режим
-                _index_path = output_dir / "blocks" / "index.json"
-                _is_compact = False
-                if _index_path.exists():
-                    try:
-                        with open(_index_path, "r", encoding="utf-8") as f:
-                            _idx = json.load(f)
-                        _is_compact = _idx.get("compact", False)
-                    except Exception:
-                        pass
-
-                max_retry = 1 if _is_compact else MAX_RECROP_ITERATIONS
-                for retry_iter in range(1, max_retry + 1):
-                    if _is_v4(project_info):
-                        break  # v4 использует свою extraction-логику
-                    unreadable = find_unreadable_blocks(_project_path(pid))
-                    if not unreadable:
-                        if retry_iter == 1:
-                            await self._log(job, "Block retry: все блоки читаемы, пропуск")
-                        break
-
-                    block_ids = [u["block_id"] for u in unreadable]
-
-                    if _is_compact:
-                        # Compact-режим: подмена compact��full (мгновенно, без скачивания)
-                        await self._log(job, f"Block retry: {len(block_ids)} нечитаемых → promote compact→full")
-                        self._update_pipeline_log(pid, "block_retry", "running",
-                                                  message=f"Promote {len(block_ids)} блоков")
-                        promote_result = promote_to_full(_project_path(pid), block_ids)
-                        if promote_result.get("promoted", 0) == 0:
-                            await self._log(job, "Block retry: нет full-версий для промоута")
-                            break
-                    else:
-                        # Стандартный режим: перекачка ×2
-                        await self._log(job, f"Block retry (итерация {retry_iter}): {len(block_ids)} нечитаемых блоков → перекачка ×2")
-                        self._update_pipeline_log(pid, "block_retry", "running",
-                                                  message=f"Итерация {retry_iter}: {len(block_ids)} блоков")
-                        recrop_result = recrop_blocks(_project_path(pid), block_ids, scale_multiplier=2.0)
-                        if recrop_result.get("recropped", 0) == 0:
-                            await self._log(job, f"Block retry: все блоки уже на максимальном разрешении, стоп")
-                            break
-
-                    # 2. Создать мини-батч только для перекачанных блоков
-                    exit_code, _, _ = await self._run_script(
-                        pid, str(BLOCKS_SCRIPT),
-                        ["batches", _project_path(pid), "--block-ids", ",".join(block_ids)],
-                        on_output=lambda msg: self._log(job, msg),
-                    )
-                    if exit_code != 0:
-                        await self._log(job, "Block retry: ошибка создания пакетов", "warn")
-                        break
-
-                    # 3. Повторный анализ через Claude
-                    batches_file = output_dir / "block_batches.json"
-                    if batches_file.exists():
-                        with open(batches_file, "r", encoding="utf-8") as f:
-                            retry_batches_data = json.load(f)
-                        retry_batches = retry_batches_data.get("batches", [])
-                        retry_total = len(retry_batches)
-
-                        for rb in retry_batches:
-                            batch_id = rb.get("batch_id", 0)
-                            # Удалить старый файл результата чтобы пересоздался
-                            old_result = output_dir / f"block_batch_{batch_id:03d}.json"
-                            if old_result.exists():
-                                old_result.unlink()
-
-                            can_go = await self._check_before_launch(job)
-                            if not can_go:
-                                break
-
-                            exit_code, output, cli_result = await claude_runner.run_block_batch(
-                                rb, project_info, pid, retry_total,
-                            )
-                            self._record_cli_usage(job, cli_result, f"block_retry_iter{retry_iter}")
-                            if exit_code != 0:
-                                await self._log(job, f"Block retry batch {batch_id}: ошибка (код {exit_code})", "warn")
-
-                    # 4. Повторный merge
-                    exit_code, _, _ = await self._run_script(
-                        pid, str(BLOCKS_SCRIPT),
-                        ["merge", _project_path(pid)],
-                        on_output=lambda msg: self._log(job, msg),
-                    )
-                    await self._log(job, f"Block retry итерация {retry_iter}: merge завершён")
-
-                # Финальный статус block_retry (только legacy)
-                if not _is_v4(project_info):
-                    final_unreadable = find_unreadable_blocks(_project_path(pid))
-                    if any(u for u in (unreadable if 'unreadable' in dir() else [])):
-                        if final_unreadable:
-                            self._update_pipeline_log(pid, "block_retry", "done",
-                                                      message=f"Осталось {len(final_unreadable)} нечитаемых (макс разрешение)")
-                        else:
-                            self._update_pipeline_log(pid, "block_retry", "done", message="OK")
-                    else:
-                        self._update_pipeline_log(pid, "block_retry", "skipped",
-                                                  message="Все блоки читаемы")
+                # ═══ ЭТАП 4b: Block Retry — перекачка нечитаемых блоков ═══
+                await self._run_block_retry(job, pid, project_info, output_dir)
 
             # ═══ ЭТАП 5: Свод замечаний (Claude или V4) ═══
             if start_idx <= 3:
@@ -1965,6 +1921,8 @@ class PipelineManager:
             if start_idx == 5:
                 self._clean_stage_files(pid, [
                     "03a_norms_verified.json", "norm_checks.json", "norm_checks_llm.json",
+                    "missing_norms_queue.json", "missing_norms_report.json",
+                    "missing_norms_queue.md",
                 ])
                 self._reset_job_progress(job)
                 findings_path = resolve_project_dir(pid) / "_output" / "03_findings.json"
@@ -2033,13 +1991,14 @@ class PipelineManager:
 
         job = AuditJob(
             job_id=str(uuid4()),
+            object_id=self._resolve_object_id(None),
             project_id=project_id,
             stage=AuditStage.PREPARE,
             status=JobStatus.RUNNING,
             started_at=datetime.now().isoformat(),
         )
         self.active_jobs[project_id] = job
-        task = asyncio.create_task(self._run_prepare(job))
+        task = self._create_bound_task(self._run_prepare(job), job)
         self._tasks[project_id] = task
         return job
 
@@ -2088,13 +2047,14 @@ class PipelineManager:
 
         job = AuditJob(
             job_id=str(uuid4()),
+            object_id=self._resolve_object_id(None),
             project_id=project_id,
             stage=AuditStage.TILE_AUDIT,
             status=JobStatus.RUNNING,
             started_at=datetime.now().isoformat(),
         )
         self.active_jobs[project_id] = job
-        task = asyncio.create_task(self._run_tile_audit(job, start_from))
+        task = self._create_bound_task(self._run_tile_audit(job, start_from), job)
         self._tasks[project_id] = task
         return job
 
@@ -2390,13 +2350,14 @@ class PipelineManager:
 
         job = AuditJob(
             job_id=str(uuid4()),
+            object_id=self._resolve_object_id(None),
             project_id=project_id,
             stage=AuditStage.MAIN_AUDIT,
             status=JobStatus.RUNNING,
             started_at=datetime.now().isoformat(),
         )
         self.active_jobs[project_id] = job
-        task = asyncio.create_task(self._run_main_audit(job))
+        task = self._create_bound_task(self._run_main_audit(job), job)
         self._tasks[project_id] = task
         return job
 
@@ -2488,17 +2449,20 @@ class PipelineManager:
         # Очистка старых результатов верификации
         self._clean_stage_files(project_id, [
             "03a_norms_verified.json", "norm_checks.json", "norm_checks_llm.json",
+            "missing_norms_queue.json", "missing_norms_report.json",
+            "missing_norms_queue.md",
         ])
 
         job = AuditJob(
             job_id=str(uuid4()),
+            object_id=self._resolve_object_id(None),
             project_id=project_id,
             stage=AuditStage.NORM_VERIFY,
             status=JobStatus.RUNNING,
             started_at=datetime.now().isoformat(),
         )
         self.active_jobs[project_id] = job
-        task = asyncio.create_task(self._run_norm_verification(job))
+        task = self._create_bound_task(self._run_norm_verification(job), job)
         self._tasks[project_id] = task
         return job
 
@@ -3103,12 +3067,14 @@ class PipelineManager:
         async def _task_norm_verify():
             """Задача B: Верификация норм (параллельно с critic).
 
-            Шаги 1-2 + LLM WebSearch работают параллельно с critic/corrector.
+            Шаги 1-2 + MCP paragraph verification работают параллельно с critic/corrector.
             Шаг norm_fix ждёт corrector_done (оба пишут в 03_findings.json).
             """
             try:
                 self._clean_stage_files(pid, [
                     "03a_norms_verified.json", "norm_checks.json", "norm_checks_llm.json",
+                    "missing_norms_queue.json", "missing_norms_report.json",
+                    "missing_norms_queue.md",
                 ])
                 print(f"[{pid}] ═══ Верификация норм (параллельно) ═══")
                 await self._log(job, "═══ Верификация нормативных ссылок (параллельно с Critic) ═══")
@@ -3126,6 +3092,7 @@ class PipelineManager:
                 # Optimization сам по себе НЕ зависит от corrector
                 opt_job = AuditJob(
                     job_id=job.job_id + "_opt",
+                    object_id=self._resolve_object_id(None),
                     project_id=pid,
                     stage=AuditStage.OPTIMIZATION,
                     status=JobStatus.RUNNING,
@@ -3198,11 +3165,11 @@ class PipelineManager:
         wait_before_fix: asyncio.Event | None = None,
     ):
         """
-        Верификация нормативных ссылок (детерминированный режим):
+        Верификация нормативных ссылок (authoritative режим через Norms-main):
         1. Извлечь нормы из 03_findings.json (Python)
-        2. Детерминированная проверка статусов из norms_db.json (Python)
-        3. LLM WebSearch ТОЛЬКО для unknown/stale норм + верификация цитат
-        4. Слияние результатов LLM в norm_checks.json (Python)
+        2. Резолв статусов через Norms-main status_index.json (Python)
+        3. Записать missing_norms_queue для норм, которых нет в индексе
+        4. LLM через MCP ТОЛЬКО для верификации цитат пунктов (WebSearch запрещён)
         5. Если есть устаревшие — пересмотреть замечания через Claude CLI
            (ждёт wait_before_fix, т.к. corrector тоже пишет в 03_findings.json)
         """
@@ -3219,6 +3186,7 @@ class PipelineManager:
                 merge_chunked_llm_results,
                 format_findings_to_fix,
                 validate_norm_checks,
+                write_missing_norms_queue,
             )
 
             project_dir = resolve_project_dir(job.project_id)
@@ -3258,20 +3226,49 @@ class PipelineManager:
 
             await self._log(job, f"Найдено {total_norms} уникальных нормативных ссылок")
 
-            # ── Шаг 2: Детерминированная проверка из norms_db.json (Python) ──
-            await self._log(job, "Шаг 2: Детерминированная проверка статусов из norms_db.json...")
+            # ── Шаг 2: Детерминированный резолв через Norms-main ──
+            await self._log(
+                job,
+                "Шаг 2: Authoritative резолв статусов через Norms-main (status_index.json)...",
+            )
             det_result = generate_deterministic_checks(norms_data, project_id=pid)
 
             det_meta = det_result["meta"]
-            unknown_norms = det_result["unknown_norms"]
             paragraphs_to_verify = det_result["paragraphs_to_verify"]
+            missing_norms = det_result.get("missing_norms", [])
+            unsupported_norms = det_result.get("unsupported_norms", [])
 
             await self._log(
                 job,
-                f"Из базы: {det_meta['from_db']} норм определены детерминированно, "
-                f"{det_meta['unknown_need_websearch']} требуют WebSearch, "
-                f"{len(paragraphs_to_verify)} цитат для проверки",
+                f"Norms-main: {det_meta['authoritative']} authoritative, "
+                f"{det_meta['missing']} missing, {det_meta['unsupported']} unsupported; "
+                f"{len(paragraphs_to_verify)} цитат для проверки через MCP",
             )
+            trusted_skipped = det_meta.get("paragraphs_trusted_skipped", 0)
+            legacy_ignored = det_meta.get("paragraphs_legacy_ignored", 0)
+            if trusted_skipped or legacy_ignored:
+                await self._log(
+                    job,
+                    f"Paragraph cache: {trusted_skipped} trusted (skip LLM), "
+                    f"{legacy_ignored} legacy (не доверяем, пере-проверка через MCP)",
+                    "info",
+                )
+
+            # Записать missing_norms_queue всегда (даже если пусто — трейс).
+            try:
+                report = write_missing_norms_queue(
+                    output_dir, det_result, project_id=pid,
+                )
+                if report.get("queue_size", 0) > 0:
+                    await self._log(
+                        job,
+                        f"Missing norms queue: {report['queue_size']} позиций "
+                        f"(missing={report['missing']}, unsupported={report['unsupported']}). "
+                        f"См. {output_dir}/missing_norms_queue.json",
+                        "warn",
+                    )
+            except Exception as e:
+                await self._log(job, f"Не удалось записать missing_norms_queue: {e}", "warn")
 
             # Записать предварительный norm_checks.json (детерминированный)
             preliminary_data = {
@@ -3282,15 +3279,15 @@ class PipelineManager:
             with open(norm_checks_path, "w", encoding="utf-8") as f:
                 json.dump(preliminary_data, f, ensure_ascii=False, indent=2)
 
-            # ── Шаг 3: LLM WebSearch (только если есть работа) ──
-            llm_needed = bool(unknown_norms) or bool(paragraphs_to_verify)
+            # ── Шаг 3: LLM через MCP — только верификация цитат ──
+            llm_needed = bool(paragraphs_to_verify)
 
             if llm_needed:
-                llm_task_count = len(unknown_norms) + len(paragraphs_to_verify)
+                llm_task_count = len(paragraphs_to_verify)
                 await self._log(
                     job,
-                    f"Шаг 3: LLM WebSearch для {len(unknown_norms)} норм "
-                    f"+ {len(paragraphs_to_verify)} цитат...",
+                    f"Шаг 3: Верификация цитат через MCP norms для "
+                    f"{len(paragraphs_to_verify)} позиций. WebSearch запрещён.",
                 )
                 job.progress_total = llm_task_count
 
@@ -3299,76 +3296,92 @@ class PipelineManager:
                 if not can_go:
                     raise RuntimeError("Rate limit: ожидание превышено или отменено")
 
-                # Chunked mode: чанкуем если общее кол-во задач > PARA_CHUNK_SIZE
-                NORM_CHUNK_SIZE = 5    # макс unknown_norms на чанк
-                PARA_CHUNK_SIZE = 15   # макс paragraph_checks на чанк
-                total_tasks = len(unknown_norms) + len(paragraphs_to_verify)
-                use_chunked = total_tasks > PARA_CHUNK_SIZE
+                # Chunked mode: чанкуем если позиций > PARA_CHUNK_SIZE
+                PARA_CHUNK_SIZE = 15
+                use_chunked = len(paragraphs_to_verify) > PARA_CHUNK_SIZE
 
                 if use_chunked:
-                    # ── Параллельная верификация по чанкам ──
-                    # Чанкуем norms и paragraphs независимо, затем объединяем
-                    norm_chunks = [
-                        unknown_norms[i:i + NORM_CHUNK_SIZE]
-                        for i in range(0, max(1, len(unknown_norms)), NORM_CHUNK_SIZE)
-                    ] if unknown_norms else [[]]
                     para_chunks = [
                         paragraphs_to_verify[i:i + PARA_CHUNK_SIZE]
-                        for i in range(0, max(1, len(paragraphs_to_verify)), PARA_CHUNK_SIZE)
-                    ] if paragraphs_to_verify else [[]]
-
-                    # Объединяем: каждый чанк = порция норм + порция цитат
-                    num_chunks = max(len(norm_chunks), len(para_chunks))
-                    combined_chunks = []
-                    for ci in range(num_chunks):
-                        nc = norm_chunks[ci] if ci < len(norm_chunks) else []
-                        pc = para_chunks[ci] if ci < len(para_chunks) else []
-                        if nc or pc:
-                            combined_chunks.append((nc, pc))
+                        for i in range(0, len(paragraphs_to_verify), PARA_CHUNK_SIZE)
+                    ]
 
                     await self._log(
                         job,
-                        f"Chunked mode: {len(combined_chunks)} чанков "
-                        f"({len(unknown_norms)} норм + {len(paragraphs_to_verify)} цитат)",
+                        f"Chunked mode: {len(para_chunks)} чанков "
+                        f"({len(paragraphs_to_verify)} цитат)",
                     )
 
-                    chunk_paths = []
                     sem = asyncio.Semaphore(3)
 
-                    async def _run_chunk(idx: int, chunk_norms: list, chunk_paragraphs: list):
+                    async def _run_chunk(idx: int, chunk_paragraphs: list):
                         async with sem:
                             fname = f"norm_checks_llm_{idx + 1}.json"
-                            chunk_text = format_llm_work_for_template(chunk_norms, chunk_paragraphs, findings_path)
-                            exit_code, output, cli_result = await claude_runner.run_norm_verify(
-                                chunk_text, job.project_id,
-                                on_output=lambda msg: self._log(job, msg),
-                                project_info=project_info,
-                                llm_out_filename=fname,
+                            chunk_text = format_llm_work_for_template(
+                                chunk_paragraphs, findings_path,
                             )
-                            self._record_cli_usage(job, cli_result, f"norm_verify_chunk_{idx + 1}")
-                            return output_dir / fname
+                            expected = output_dir / fname
+                            # До запуска удалим возможный stale-файл, чтобы
+                            # post-check оценивал именно текущую попытку.
+                            if expected.exists():
+                                expected.unlink()
+                            for attempt in (1, 2):
+                                exit_code, output, cli_result = await claude_runner.run_norm_verify(
+                                    chunk_text, job.project_id,
+                                    on_output=lambda msg: self._log(job, msg),
+                                    project_info=project_info,
+                                    llm_out_filename=fname,
+                                )
+                                self._record_cli_usage(
+                                    job, cli_result,
+                                    f"norm_verify_chunk_{idx + 1}"
+                                    + ("" if attempt == 1 else f"_retry_{attempt}"),
+                                )
+                                if exit_code != 0:
+                                    raise RuntimeError(
+                                        f"Claude CLI norm_verify chunk {idx + 1}: exit {exit_code}"
+                                    )
+                                if expected.exists():
+                                    return expected
+                                await self._log(
+                                    job,
+                                    f"chunk {idx + 1}: exit=0 но {fname} не создан — "
+                                    f"{'retry' if attempt == 1 else 'fail'}",
+                                    "warn",
+                                )
+                            raise RuntimeError(
+                                f"Claude CLI norm_verify chunk {idx + 1}: "
+                                f"exit=0 дважды, но {expected} не создан"
+                            )
 
-                    tasks = []
-                    for ci, (cn, cp) in enumerate(combined_chunks):
-                        tasks.append(_run_chunk(ci, cn, cp))
-
+                    tasks = [
+                        _run_chunk(ci, chunk) for ci, chunk in enumerate(para_chunks)
+                    ]
                     chunk_paths = await asyncio.gather(*tasks, return_exceptions=True)
-                    # Фильтруем ошибки
                     valid_paths = [p for p in chunk_paths if isinstance(p, Path)]
                     errors = [e for e in chunk_paths if isinstance(e, Exception)]
                     if errors:
-                        await self._log(job, f"Chunked mode: {len(errors)} чанков с ошибками", "warn")
-
-                    # Merge чанков → norm_checks_llm.json
-                    if valid_paths:
-                        merge_chunked_llm_results(valid_paths, norm_checks_llm_path)
-                        await self._log(job, f"Chunked merge: {len(valid_paths)} чанков объединены")
+                        await self._log(
+                            job, f"Chunked mode: {len(errors)} чанков с ошибками", "warn",
+                        )
+                    if not valid_paths:
+                        raise RuntimeError(
+                            "Chunked norm_verify: ни один чанк не дал valid файл "
+                            "— paragraph verification не выполнена"
+                        )
+                    merge_chunked_llm_results(valid_paths, norm_checks_llm_path)
+                    await self._log(
+                        job, f"Chunked merge: {len(valid_paths)} чанков объединены",
+                    )
                 else:
-                    # ── Последовательная верификация (как было) ──
                     llm_work_text = format_llm_work_for_template(
-                        unknown_norms, paragraphs_to_verify, findings_path,
+                        paragraphs_to_verify, findings_path,
                     )
                     max_retries = RATE_LIMIT_MAX_RETRIES
+                    # Удалим возможный stale-файл перед запуском, иначе
+                    # post-check зачтёт файл с прошлого прогона как успех.
+                    if norm_checks_llm_path.exists():
+                        norm_checks_llm_path.unlink()
                     for attempt in range(1, max_retries + 1):
                         exit_code, output, cli_result = await claude_runner.run_norm_verify(
                             llm_work_text, job.project_id,
@@ -3400,20 +3413,61 @@ class PipelineManager:
                         await self._log(job, f"Ошибка верификации (код {exit_code})", "error")
                         raise RuntimeError(f"Claude CLI norm_verify: exit code {exit_code}")
 
-                # ── Шаг 3b: Слияние результатов LLM ──
-                if norm_checks_llm_path.exists():
-                    await self._log(job, "Слияние результатов LLM с детерминированными проверками...")
-                    merge_stats = merge_llm_norm_results(norm_checks_path, norm_checks_llm_path)
-                    await self._log(
-                        job,
-                        f"Слияние: {merge_stats['checks_updated_from_llm']} норм обновлено, "
-                        f"{merge_stats['paragraph_checks']} цитат проверено, "
-                        f"norms_db обновлено: {merge_stats['norms_db_updated']}",
+                    # Post-check: exit=0 НЕ считается успехом, если файла нет.
+                    # Один контролируемый retry, потом явная ошибка.
+                    if not norm_checks_llm_path.exists():
+                        await self._log(
+                            job,
+                            f"norm_verify: exit=0, но {norm_checks_llm_path.name} "
+                            f"не создан. Запускаю контролируемый retry...",
+                            "warn",
+                        )
+                        exit_code, output, cli_result = await claude_runner.run_norm_verify(
+                            llm_work_text, job.project_id,
+                            on_output=lambda msg: self._log(job, msg),
+                            project_info=project_info,
+                        )
+                        self._record_cli_usage(job, cli_result, "norm_verify_missing_file_retry")
+                        if claude_runner.is_cancelled(exit_code):
+                            job.status = JobStatus.CANCELLED
+                            return
+                        if exit_code != 0 or not norm_checks_llm_path.exists():
+                            raise RuntimeError(
+                                f"norm_verify: paragraph verification не выполнена — "
+                                f"{norm_checks_llm_path.name} не создан (retry exit={exit_code})"
+                            )
+                        await self._log(
+                            job, "norm_verify retry: файл успешно создан", "info",
+                        )
+
+                # ── Шаг 3b: Слияние paragraph_checks (статусы не меняются) ──
+                # Post-check выше гарантирует, что если мы сюда дошли при
+                # llm_needed=True — файл на месте. Отдельной ветки "silent
+                # success без файла" больше быть не может.
+                if not norm_checks_llm_path.exists():
+                    raise RuntimeError(
+                        f"norm_verify invariant: {norm_checks_llm_path} "
+                        f"должен был существовать на этом шаге"
                     )
-                else:
-                    await self._log(job, "norm_checks_llm.json не создан LLM — используем детерминированные результаты", "warn")
+                await self._log(
+                    job,
+                    "Слияние paragraph_checks (статусы norm_checks остаются authoritative)...",
+                )
+                merge_stats = merge_llm_norm_results(norm_checks_path, norm_checks_llm_path)
+                await self._log(
+                    job,
+                    f"Слияние: {merge_stats['paragraph_checks']} цитат получено, "
+                    f"{merge_stats.get('ignored_llm_status_attempts', 0)} попыток "
+                    f"изменить статус отброшено. Paragraph cache: "
+                    f"+{merge_stats.get('paragraph_cache_added', 0)} новых, "
+                    f"{merge_stats.get('paragraph_cache_updated', 0)} обновлено.",
+                )
             else:
-                await self._log(job, "Все нормы определены детерминированно — LLM WebSearch не требуется", "info")
+                await self._log(
+                    job,
+                    "Нет цитат для верификации через MCP — ограничиваемся authoritative статусами",
+                    "info",
+                )
 
             # Проверяем что файл существует
             if not norm_checks_path.exists():
@@ -3511,7 +3565,8 @@ class PipelineManager:
             else:
                 await self._log(job, "Все нормы актуальны — пересмотр не требуется", "info")
 
-            # ── Шаг 4: Обновление централизованной базы норм ──
+            # ── Шаг 4: Локальный norms_db.json больше не authoritative ──
+            # Source of truth — Norms-main. Оставляем no-op для трассировки.
             await self._update_norms_db(job)
 
             # ── Шаг 5: Обогащение findings.norm_quote из paragraph_checks ──
@@ -3540,37 +3595,17 @@ class PipelineManager:
                 self._cleanup(pid)
 
     async def _update_norms_db(self, job: AuditJob):
-        """Обновить централизованную базу норм из результатов верификации."""
-        try:
-            import sys
-            sys.path.insert(0, str(BASE_DIR))
-            from norms import load_norms_db, save_norms_db, update_from_project
+        """No-op: локальный norms_db.json больше не authoritative.
 
-            project_path = resolve_project_dir(job.project_id)
-            db = load_norms_db()
-            stats = update_from_project(db, project_path)
-
-            if "error" in stats:
-                await self._log(job, f"Обновление базы норм: {stats['error']}", "warn")
-                return
-
-            save_norms_db(db)
-            total_changes = stats.get("added", 0) + stats.get("updated", 0)
-            if total_changes > 0:
-                await self._log(
-                    job,
-                    f"База норм обновлена: +{stats.get('added', 0)} новых, "
-                    f"{stats.get('updated', 0)} обновлено "
-                    f"(всего в базе: {len(db.get('norms', {}))})",
-                    "info",
-                )
-            else:
-                await self._log(job, f"База норм актуальна ({len(db.get('norms', {}))} записей)", "info")
-
-        except Exception as e:
-            # Ошибка обновления базы не должна ронять основной процесс
-            await self._log(job, f"Предупреждение: не удалось обновить базу норм: {e}", "warn")
-            print(f"[{job.project_id}:norms_db] Ошибка: {e}")
+        Источник истины — Norms-main (status_index.json). Мы его не
+        модифицируем и не дублируем. Метод оставлен для обратной совместимости
+        вызова в _run_norm_verification — чтобы не ломать чужие forks.
+        """
+        await self._log(
+            job,
+            "norms_db.json: пропуск обновления — authoritative источник Norms-main",
+            "info",
+        )
 
     @staticmethod
     def _enrich_norm_quotes_from_checks(output_dir: Path) -> int:
@@ -3637,13 +3672,14 @@ class PipelineManager:
 
         job = AuditJob(
             job_id=str(uuid4()),
+            object_id=self._resolve_object_id(None),
             project_id=project_id,
             stage=AuditStage.PREPARE,
             status=JobStatus.RUNNING,
             started_at=datetime.now().isoformat(),
         )
         self.active_jobs[project_id] = job
-        task = asyncio.create_task(self._run_smart_pipeline(job))
+        task = self._create_bound_task(self._run_smart_pipeline(job), job)
         self._tasks[project_id] = task
         return job
 
@@ -3986,19 +4022,143 @@ class PipelineManager:
 
         job = AuditJob(
             job_id=str(uuid4()),
+            object_id=self._resolve_object_id(None),
             project_id=project_id,
             stage=AuditStage.CROP_BLOCKS,
             status=JobStatus.RUNNING,
             started_at=datetime.now().isoformat(),
         )
         self.active_jobs[project_id] = job
-        task = asyncio.create_task(self._run_ocr_pipeline(job, include_optimization=True))
+        task = self._create_bound_task(self._run_ocr_pipeline(job, include_optimization=True), job)
         self._tasks[project_id] = task
         return job
 
     # Legacy aliases
     start_standard_audit = start_audit
     start_pro_audit = start_audit
+
+    async def _run_block_retry(
+        self,
+        job: AuditJob,
+        pid: str,
+        project_info: dict,
+        output_dir: Path,
+    ) -> None:
+        """Перекроп нечитаемых блоков с увеличенным разрешением и повторный анализ.
+
+        Собирает все блоки с unreadable_text=true из 02_blocks_analysis.json,
+        перекропает их (до MAX_RECROP_ITERATIONS раз, ×2 на итерации),
+        создаёт мини-батч только для них и повторно прогоняет через блок-анализ
+        (Gemini через OpenRouter). Результаты merge'атся поверх существующего
+        02_blocks_analysis.json — перезаписываются только затронутые block_id.
+
+        При ошибке скриптов/CLI логируем warn и продолжаем: unreadable=true
+        сохраняется, пайплайн идёт дальше на findings_merge.
+        """
+        from blocks import (
+            find_unreadable_blocks,
+            recrop_blocks,
+            promote_to_full,
+            MAX_RECROP_ITERATIONS,
+        )
+
+        if _is_v4(project_info):
+            self._update_pipeline_log(
+                pid, "block_retry", "skipped",
+                message="V4 pipeline — block_retry не применим",
+            )
+            return
+
+        _index_path = output_dir / "blocks" / "index.json"
+        _is_compact = False
+        if _index_path.exists():
+            try:
+                with open(_index_path, "r", encoding="utf-8") as f:
+                    _idx = json.load(f)
+                _is_compact = _idx.get("compact", False)
+            except Exception:
+                pass
+
+        max_retry = 1 if _is_compact else MAX_RECROP_ITERATIONS
+        had_unreadable = False
+
+        for retry_iter in range(1, max_retry + 1):
+            unreadable = find_unreadable_blocks(_project_path(pid))
+            if not unreadable:
+                if retry_iter == 1:
+                    await self._log(job, "Block retry: все блоки читаемы, пропуск")
+                break
+
+            had_unreadable = True
+            block_ids = [u["block_id"] for u in unreadable]
+
+            if _is_compact:
+                await self._log(job, f"Block retry: {len(block_ids)} нечитаемых → promote compact→full")
+                self._update_pipeline_log(pid, "block_retry", "running",
+                                          message=f"Promote {len(block_ids)} блоков")
+                promote_result = promote_to_full(_project_path(pid), block_ids)
+                if promote_result.get("promoted", 0) == 0:
+                    await self._log(job, "Block retry: нет full-версий для промоута")
+                    break
+            else:
+                await self._log(job, f"Block retry (итерация {retry_iter}): {len(block_ids)} нечитаемых блоков → перекачка ×2")
+                self._update_pipeline_log(pid, "block_retry", "running",
+                                          message=f"Итерация {retry_iter}: {len(block_ids)} блоков")
+                recrop_result = recrop_blocks(_project_path(pid), block_ids, scale_multiplier=2.0)
+                if recrop_result.get("recropped", 0) == 0:
+                    await self._log(job, "Block retry: все блоки уже на максимальном разрешении, стоп")
+                    break
+
+            exit_code, _, _ = await self._run_script(
+                pid, str(BLOCKS_SCRIPT),
+                ["batches", _project_path(pid), "--block-ids", ",".join(block_ids)],
+                on_output=lambda msg: self._log(job, msg),
+            )
+            if exit_code != 0:
+                await self._log(job, "Block retry: ошибка создания пакетов", "warn")
+                break
+
+            batches_file = output_dir / "block_batches.json"
+            if batches_file.exists():
+                with open(batches_file, "r", encoding="utf-8") as f:
+                    retry_batches_data = json.load(f)
+                retry_batches = retry_batches_data.get("batches", [])
+                retry_total = len(retry_batches)
+
+                for rb in retry_batches:
+                    batch_id = rb.get("batch_id", 0)
+                    old_result = output_dir / f"block_batch_{batch_id:03d}.json"
+                    if old_result.exists():
+                        old_result.unlink()
+
+                    can_go = await self._check_before_launch(job)
+                    if not can_go:
+                        break
+
+                    exit_code, output, cli_result = await claude_runner.run_block_batch(
+                        rb, project_info, pid, retry_total,
+                    )
+                    self._record_cli_usage(job, cli_result, f"block_retry_iter{retry_iter}")
+                    if exit_code != 0:
+                        await self._log(job, f"Block retry batch {batch_id}: ошибка (код {exit_code})", "warn")
+
+            exit_code, _, _ = await self._run_script(
+                pid, str(BLOCKS_SCRIPT),
+                ["merge", _project_path(pid)],
+                on_output=lambda msg: self._log(job, msg),
+            )
+            await self._log(job, f"Block retry итерация {retry_iter}: merge завершён")
+
+        final_unreadable = find_unreadable_blocks(_project_path(pid))
+        if had_unreadable:
+            if final_unreadable:
+                self._update_pipeline_log(pid, "block_retry", "done",
+                                          message=f"Осталось {len(final_unreadable)} нечитаемых (макс разрешение)")
+            else:
+                self._update_pipeline_log(pid, "block_retry", "done", message="OK")
+        else:
+            self._update_pipeline_log(pid, "block_retry", "skipped",
+                                      message="Все блоки читаемы")
 
     async def _run_ocr_pipeline(self, job: AuditJob, include_optimization: bool = True):
         """
@@ -4332,6 +4492,12 @@ class PipelineManager:
             self.active_jobs[pid] = job
             self._tasks[pid] = asyncio.current_task()
 
+            # ═══ ЭТАП 5b: Block Retry — перекачка нечитаемых блоков ═══
+            await self._run_block_retry(job, pid, project_info, output_dir)
+
+            if job.status == JobStatus.CANCELLED:
+                return
+
             # ═══ ЭТАП 6: Свод замечаний (Claude или V4) ═══
             self._reset_job_progress(job)
             _is_v4_proj2 = _is_v4(project_info)
@@ -4513,6 +4679,7 @@ class PipelineManager:
 
         meta_job = AuditJob(
             job_id=queue.queue_id,
+            object_id=self._resolve_object_id(None),
             project_id="__BATCH__",
             stage=AuditStage.PREPARE,
             status=JobStatus.RUNNING,
@@ -4521,7 +4688,7 @@ class PipelineManager:
         )
         self.active_jobs["__BATCH__"] = meta_job
 
-        task = asyncio.create_task(self._run_batch_queue(queue, meta_job))
+        task = self._create_bound_task(self._run_batch_queue(queue, meta_job), meta_job)
         self._tasks["__BATCH__"] = task
         return queue
 
@@ -4647,6 +4814,7 @@ class PipelineManager:
                 try:
                     job = AuditJob(
                         job_id=str(uuid4()),
+                        object_id=self._resolve_object_id(None),
                         project_id=pid,
                         stage=AuditStage.PREPARE,
                         status=JobStatus.RUNNING,
@@ -4895,6 +5063,7 @@ class PipelineManager:
 
             meta_job = AuditJob(
                 job_id=queue.queue_id,
+                object_id=self._resolve_object_id(None),
                 project_id="__BATCH__",
                 stage=AuditStage.PREPARE,
                 status=JobStatus.RUNNING,
@@ -4903,7 +5072,7 @@ class PipelineManager:
             )
             self.active_jobs["__BATCH__"] = meta_job
 
-            task = asyncio.create_task(self._run_batch_queue(queue, meta_job))
+            task = self._create_bound_task(self._run_batch_queue(queue, meta_job), meta_job)
             self._tasks["__BATCH__"] = task
             return queue
 
@@ -4939,6 +5108,7 @@ class PipelineManager:
 
             meta_job = AuditJob(
                 job_id=queue.queue_id,
+                object_id=self._resolve_object_id(None),
                 project_id="__BATCH__",
                 stage=AuditStage.PREPARE,
                 status=JobStatus.RUNNING,
@@ -4947,7 +5117,7 @@ class PipelineManager:
             )
             self.active_jobs["__BATCH__"] = meta_job
 
-            task = asyncio.create_task(self._run_batch_queue(queue, meta_job))
+            task = self._create_bound_task(self._run_batch_queue(queue, meta_job), meta_job)
             self._tasks["__BATCH__"] = task
             return queue
 
@@ -5074,6 +5244,7 @@ class PipelineManager:
             # Создаём мета-задачу для отслеживания
             meta_job = AuditJob(
                 job_id=str(uuid4()),
+                object_id=self._resolve_object_id(None),
                 project_id="__ALL__",
                 stage=AuditStage.PREPARE,
                 status=JobStatus.RUNNING,
@@ -5115,6 +5286,7 @@ class PipelineManager:
                     # Запускаем полный конвейер и ЖДЁМ завершения
                     job = AuditJob(
                         job_id=str(uuid4()),
+                        object_id=self._resolve_object_id(None),
                         project_id=project_id,
                         stage=AuditStage.PREPARE,
                         status=JobStatus.RUNNING,
@@ -5204,13 +5376,14 @@ class PipelineManager:
 
         job = AuditJob(
             job_id=str(uuid4()),
+            object_id=self._resolve_object_id(None),
             project_id=project_id,
             stage=AuditStage.OPTIMIZATION,
             status=JobStatus.RUNNING,
             started_at=datetime.now().isoformat(),
         )
         self.active_jobs[project_id] = job
-        task = asyncio.create_task(self._run_optimization_with_review(job))
+        task = self._create_bound_task(self._run_optimization_with_review(job), job)
         self._tasks[project_id] = task
         return job
 
@@ -5232,13 +5405,14 @@ class PipelineManager:
 
         job = AuditJob(
             job_id=str(uuid4()),
+            object_id=self._resolve_object_id(None),
             project_id=project_id,
             stage=AuditStage.OPTIMIZATION,
             status=JobStatus.RUNNING,
             started_at=datetime.now().isoformat(),
         )
         self.active_jobs[project_id] = job
-        task = asyncio.create_task(self._run_optimization_review_standalone(job))
+        task = self._create_bound_task(self._run_optimization_review_standalone(job), job)
         self._tasks[project_id] = task
         return job
 

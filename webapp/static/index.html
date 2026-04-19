@@ -826,35 +826,20 @@
                 <button class="modal-close" @click="showModelConfig = false">&times;</button>
                 <h3>Конфигурация моделей</h3>
                 <p class="model-config-desc">Выберите модель для каждого этапа аудита</p>
-                <div class="pipeline-version-toggle">
-                    <span class="pipeline-version-label">Пайплайн:</span>
-                    <div class="pipeline-version-buttons">
-                        <button class="btn btn-pipeline-ver"
-                                :class="{ active: !pendingPipelineV4 }"
-                                @click="pendingPipelineV4 = false; onV4ToggleChange()">Классический</button>
-                        <button class="btn btn-pipeline-ver"
-                                :class="{ active: pendingPipelineV4 }"
-                                @click="pendingPipelineV4 = true; onV4ToggleChange()">V4</button>
-                    </div>
-                </div>
                 <div class="model-preset-buttons">
                     <button class="btn btn-preset"
                             :class="{ active: activePreset === 'classic' }"
                             @click="applyPreset('classic')"
-                            title="Gemini для блоков — дешёвый массовый аудит">Классический</button>
+                            title="Gemini для блоков, Sonnet для critic — массовый аудит со скидкой">Классический</button>
                     <button class="btn btn-preset"
                             :class="{ active: activePreset === 'subscription' }"
                             @click="applyPreset('subscription')"
-                            title="Opus 4.7 для всего (Claude Max subscription)">Подписка</button>
+                            title="Opus 4.7 на всех этапах (Claude Max)">Подписка</button>
+                    <button class="btn btn-preset"
+                            :class="{ active: activePreset === 'v4' }"
+                            @click="applyPreset('v4')"
+                            title="Пайплайн V4: typed facts → memory → candidates → formatter">V4</button>
                 </div>
-                <p v-if="activePreset" class="model-preset-hint">
-                    <span v-if="activePreset === 'classic'">
-                        Классический: Gemini 3.1 Pro для распознавания блоков, Opus/Sonnet для текстовых этапов. Оптимальный баланс качества и стоимости для массового прогона.
-                    </span>
-                    <span v-else-if="activePreset === 'subscription'">
-                        Подписка: Opus 4.7 на всех этапах, включая распознавание блоков. Используется Claude Max — платите по лимитам тарифа, а не за токены.
-                    </span>
-                </p>
                 <table class="model-config-table">
                     <thead>
                         <tr>

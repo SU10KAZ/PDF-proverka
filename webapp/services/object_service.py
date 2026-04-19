@@ -79,6 +79,33 @@ def get_current_projects_dir() -> Path:
     return PROJECTS_DIR
 
 
+def get_object_by_id(object_id: Optional[str]) -> Optional[dict]:
+    """Вернуть объект по id (не читает current_id).
+
+    Нужен для pipeline, который должен резолвить пути независимо от
+    переключения текущего объекта.
+    """
+    if not object_id:
+        return None
+    data = _ensure_default_object(_load_objects())
+    for obj in data["objects"]:
+        if obj["id"] == object_id:
+            return obj
+    return None
+
+
+def get_projects_dir_for(object_id: Optional[str]) -> Optional[Path]:
+    """projects_dir конкретного объекта; None если объект не найден."""
+    obj = get_object_by_id(object_id)
+    return Path(obj["projects_dir"]) if obj else None
+
+
+def list_projects_dirs() -> list[Path]:
+    """projects_dir всех объектов (для ambiguity-детектора)."""
+    data = _ensure_default_object(_load_objects())
+    return [Path(o["projects_dir"]) for o in data["objects"]]
+
+
 def switch_object(object_id: str) -> dict:
     """Переключиться на другой объект."""
     data = _ensure_default_object(_load_objects())

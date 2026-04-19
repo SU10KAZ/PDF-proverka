@@ -3,6 +3,10 @@
     "playwright": {
       "command": "cmd",
       "args": ["/c", "npx", "@playwright/mcp@latest"]
+    },
+    "norms": {
+      "command": "/home/coder/projects/Norms/tools/venv/bin/python",
+      "args": ["/home/coder/projects/Norms/tools/mcp_server.py"]
     }
   }
 }

@@ -1,124 +1,109 @@
-# ВЕРИФИКАЦИЯ НОРМАТИВНЫХ ССЫЛОК — детерминированный режим
+# ВЕРИФИКАЦИЯ НОРМАТИВНЫХ ЦИТАТ — MCP-режим (authoritative Norms-main)
 
 ## Режим работы
+
 Работай АВТОНОМНО. Не задавай вопросов.
-Статус документов (active/replaced/cancelled) уже определён Python из norms_db.json.
-**Твоя задача — только WebSearch для неизвестных норм и верификация цитат.**
+
+**Статус документов уже определён Python детерминированно** из `status_index.json` соседнего проекта Norms-main (`/home/coder/projects/Norms/`). Твоя задача — ТОЛЬКО верифицировать текст цитат конкретных пунктов.
+
+### Запрещено
+
+- `WebSearch`, `WebFetch`, любые интернет-запросы
+- Обращаться к `norms/norms_db.json` или старым кешам как к источнику истины
+- Менять поле `status`, `edition_status`, `replacement_doc` у записей `checks[]` (они authoritative)
+- Угадывать текст пункта, если MCP его не вернул
+
+### Обязательно
+
+- Использовать MCP-инструменты из сервера `norms`:
+  - `mcp__norms__get_paragraph_json(code, paragraph)` — точный поиск пункта по коду и номеру
+  - `mcp__norms__semantic_search_json(query, top, code_filter)` — семантический поиск по пунктам
+  - `mcp__norms__get_norm_status(code)` — справочно (если нужно уточнить matched_code)
+- Если пункт не найден — честно вернуть `paragraph_verified: false` с `actual_quote: null`
 
 ## Проект
+
 - **ID:** {PROJECT_ID}
 - **Папка:** {PROJECT_PATH}
 
 ## Входные данные
 
-### Предварительный norm_checks.json (уже создан Python)
-ПРОЧИТАТЬ: `{PROJECT_PATH}/_output/norm_checks.json`
-Этот файл уже содержит детерминированные статусы из norms_db.json.
-НЕ ПЕРЕПИСЫВАЙ его целиком — только обновляй записи, отмеченные ниже.
+1. **Предварительный `norm_checks.json`** — ПРОЧИТАТЬ: `{PROJECT_PATH}/_output/norm_checks.json`
+   Уже содержит authoritative статусы из Norms-main. НЕ переписывай.
 
-### Работа для LLM
+2. **Справочник параграфов** — ПРОЧИТАТЬ: `{BASE_DIR}/norms/norms_paragraphs.json`
+   Кеш проверенных цитат. Если пункт уже подтверждён — используй его цитату.
+
+3. **Задание на верификацию:**
 {LLM_WORK}
-
-### Локальный справочник (справочно)
-ПРОЧИТАТЬ: `{DISCIPLINE_NORMS_FILE}`
-
-### Справочник параграфов (кеш проверенных цитат)
-ПРОЧИТАТЬ: `{BASE_DIR}/norms_paragraphs.json`
-Если нужный пункт уже проверен — используй его вместо WebSearch.
 
 ## Задача
 
-### Часть 1: WebSearch для неизвестных/устаревших норм
+Для каждого замечания из списка выше:
 
-Для каждой нормы из раздела "Часть 1" входных данных:
+1. Прочитай `{PROJECT_PATH}/_output/03_findings.json`, найди finding по `finding_id`,
+   извлеки поля `norm` и `norm_quote`.
 
-1. Выполни WebSearch:
-```
-WebSearch: "[номер документа] статус действующий актуальная редакция site:docs.cntd.ru"
-```
-
-Если docs.cntd.ru не дал результатов:
-```
-WebSearch: "[номер документа] действующая редакция 2025 2026"
-```
-
-2. Определи статус:
-- **active** — действует, указанная редакция актуальна
-- **outdated_edition** — документ действует, но указана устаревшая редакция
-- **replaced** — документ заменён другим
-- **cancelled** — документ отменён без замены
-- **not_found** — не удалось проверить
-
-3. Для ПУЭ: проверь какие главы действуют в 7-м издании, какие остались от 6-го
-4. Для ГОСТ: проверь не заменён ли более новым
-
-### Часть 2: Верификация цитат пунктов
-
-Для каждого замечания из раздела "Часть 2" входных данных:
-
-1. Прочитай `{PROJECT_PATH}/_output/03_findings.json`
-2. Найди замечание по ID, извлеки `norm` и `norm_quote`
-3. Выполни WebSearch:
+2. Вызови MCP:
    ```
-   WebSearch: "[номер документа] пункт [X.X.X] текст требования"
+   mcp__norms__get_paragraph_json(code="<код нормы>", paragraph="<номер пункта>")
    ```
-4. Сверь:
-   - **Совпадает** → `paragraph_verified: true`
-   - **Не совпадает** → `paragraph_verified: false`, запиши реальный текст в `actual_quote`
-   - **Пункт не найден** → `paragraph_verified: false`, `actual_quote: null`
+   - Если `found: true` → сравни `text` с `norm_quote` из замечания.
+   - Если `found: false` и `resolution_reason` = `paragraph_not_found` / `no_document_text` —
+     попробуй `mcp__norms__semantic_search_json(query=<короткое описание требования>, code_filter=<код>)`,
+     только чтобы найти номер пункта, и повтори `get_paragraph_json`.
 
-Проверяй ВСЕ цитаты из задания Части 2. Приоритет: КРИТИЧЕСКОЕ → ЭКОНОМИЧЕСКОЕ → остальные.
+3. Результат:
+   - Совпадает по смыслу → `paragraph_verified: true`, `actual_quote` = точный текст из MCP.
+   - Не совпадает → `paragraph_verified: false`, `actual_quote` = реальный текст, `mismatch_details` = описание расхождения.
+   - MCP ничего не вернул → `paragraph_verified: false`, `actual_quote: null`, `mismatch_details` = "пункт не найден в Norms-main".
 
-## Формат выходного файла
+Приоритет: КРИТИЧЕСКОЕ → ЭКОНОМИЧЕСКОЕ → остальные.
 
-ЗАПИСАТЬ: `{PROJECT_PATH}/_output/norm_checks_llm.json`
+## Формат выходного файла — ОБЯЗАТЕЛЕН
 
-**ВАЖНО:** Записывай результаты в отдельный файл `norm_checks_llm.json`, а НЕ в `norm_checks.json`.
-Python автоматически сольёт результаты.
+Единственный обязательный артефакт этой задачи — файл, созданный через инструмент `Write` ровно по абсолютному пути:
+
+```
+{PROJECT_PATH}/_output/norm_checks_llm.json
+```
+
+Правила:
+- Файл должен быть создан всегда — даже если список для верификации пуст. В этом случае пиши валидный JSON с `"paragraph_checks": []`.
+- Путь — строго такой, как выше. Никаких относительных путей и переименований.
+- Сначала вызываешь `Write`, потом только короткое подтверждение в чат. Не дублируй JSON в чат.
+
+Схема содержимого:
 
 ```json
 {{
   "meta": {{
     "project_id": "{PROJECT_ID}",
     "check_date": "<ISO datetime>",
-    "total_checked_by_llm": N,
-    "norms_searched": N,
-    "paragraphs_verified": N
+    "paragraphs_verified": N,
+    "source": "norms_main_mcp"
   }},
-  "checks": [
-    {{
-      "norm_as_cited": "СП 256.1325800.2016 (ред. изм. 1-5)",
-      "doc_number": "СП 256.1325800.2016",
-      "status": "active|outdated_edition|replaced|cancelled|not_found",
-      "current_version": "СП 256.1325800.2016 (ред. 29.01.2024, изм. 1-7)",
-      "replacement_doc": null,
-      "source_url": "https://docs.cntd.ru/document/...",
-      "details": "Краткое пояснение — что изменилось",
-      "affected_findings": ["F-003"],
-      "needs_revision": true,
-      "verified_via": "websearch"
-    }}
-  ],
+  "checks": [],
   "paragraph_checks": [
     {{
       "finding_id": "F-001",
       "norm": "СП 256.1325800.2016, п.14.9",
+      "matched_code": "СП 256.1325800.2016",
       "claimed_quote": "Цитата из norm_quote замечания",
-      "actual_quote": "Реальный текст пункта (из WebSearch) или null",
+      "actual_quote": "Реальный текст пункта из MCP",
       "paragraph_verified": true,
-      "mismatch_details": "null или описание расхождения",
-      "verified_via": "websearch|norms_paragraphs"
+      "mismatch_details": null,
+      "verified_via": "norms_mcp_paragraph"
     }}
   ]
 }}
 ```
 
+**Поле `checks` должно быть пустым списком** — статусы норм authoritative, их нельзя перезаписывать. Любые попытки изменить статус будут отброшены Python при слиянии.
+
 ## Правила
 
-1. **НЕ проверяй нормы, которых нет в задании** — Python уже проверил остальные детерминированно
-2. **НЕ перезаписывай `norm_checks.json`** — пиши только в `norm_checks_llm.json`
-3. Пиши JSON через инструмент Write — НЕ выводи в чат
-4. После записи выведи краткий итог:
-   - Сколько норм проверено через WebSearch
-   - Сколько цитат проверено (paragraph_checks)
-   - Сколько расхождений найдено
+1. Не проверяй нормы, которых нет в задании.
+2. Не пиши в `norm_checks.json` — только в `norm_checks_llm.json`.
+3. Файл создаётся через `Write` всегда, даже при пустом задании. Отсутствие файла = невыполнение задачи.
+4. После успешного `Write` — одно короткое подтверждение в чат. JSON в чат не дублировать.

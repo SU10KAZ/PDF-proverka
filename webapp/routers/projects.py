@@ -99,26 +99,27 @@ groups_router = APIRouter(prefix="/api/project-groups", tags=["groups"])
 
 
 @groups_router.get("")
-async def list_groups():
-    """Все группы всех секций."""
-    return {"groups": group_service.load_groups()}
+async def list_groups(object_id: Optional[str] = None):
+    """Группы секций для объекта (object_id query param)."""
+    return {"groups": group_service.load_groups(object_id)}
 
 
 class SaveSectionGroupsRequest(BaseModel):
     groups: list[dict]
+    object_id: Optional[str] = None
 
 
 @groups_router.put("/{section}")
 async def save_section_groups(section: str, req: SaveSectionGroupsRequest):
     """Сохранить группы секции целиком."""
-    group_service.save_section_groups(section, req.groups)
+    group_service.save_section_groups(section, req.groups, req.object_id)
     return {"status": "ok"}
 
 
 @groups_router.delete("/{section}/{group_id}")
-async def delete_group(section: str, group_id: str):
+async def delete_group(section: str, group_id: str, object_id: Optional[str] = None):
     """Удалить одну группу."""
-    if not group_service.delete_group(section, group_id):
+    if not group_service.delete_group(section, group_id, object_id):
         raise HTTPException(404, "Group not found")
     return {"status": "ok"}
 
@@ -234,9 +235,9 @@ async def set_pipeline_version(project_id: str, req: PipelineVersionRequest):
     if req.pipeline_version not in ("legacy", "v4"):
         raise HTTPException(400, f"Неверный pipeline_version: {req.pipeline_version}. Допустимо: legacy, v4")
 
-    from webapp.services.pipeline_service import pipeline_manager
-    if pipeline_manager.is_running(project_id):
-        raise HTTPException(409, "Аудит проекта сейчас выполняется. Сначала отмените.")
+    # Смена pipeline_version влияет только на следующий запуск аудита: текущий
+    # прогон держит project_info в памяти и файл не перечитывает, поэтому
+    # блокировать запись во время аудита не нужно.
 
     info = project_service.get_project_info(project_id)
     if not info:

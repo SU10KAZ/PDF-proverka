@@ -857,7 +857,6 @@ const app = createApp({
             findings_merge: "03 Свод",
             findings_critic: "C Critic",
             findings_corrector: "F Fix",
-            norm_verify: "04 Нормы",
             norm_fix: "04b Пересмотр",
             optimization: "05 Оптимизация",
             optimization_critic: "C OPT Critic",
@@ -870,14 +869,15 @@ const app = createApp({
         const modelPresets = {
             classic: {
                 label: "Классический",
+                pipelineV4: false,
                 config: {
                     text_analysis:          "claude-opus-4-7",
                     block_batch:            "google/gemini-3.1-pro-preview",
                     findings_merge:         "claude-opus-4-7",
                     findings_critic:        "claude-sonnet-4-6",
-                    findings_corrector:     "claude-sonnet-4-6",
+                    findings_corrector:     "claude-opus-4-7",
                     norm_verify:            "claude-opus-4-7",
-                    norm_fix:               "claude-sonnet-4-6",
+                    norm_fix:               "claude-opus-4-7",
                     optimization:           "claude-opus-4-7",
                     optimization_critic:    "claude-sonnet-4-6",
                     optimization_corrector: "claude-sonnet-4-6",
@@ -885,6 +885,7 @@ const app = createApp({
             },
             subscription: {
                 label: "Подписка",
+                pipelineV4: false,
                 config: {
                     text_analysis:          "claude-opus-4-7",
                     block_batch:            "claude-opus-4-7",
@@ -894,8 +895,24 @@ const app = createApp({
                     norm_verify:            "claude-opus-4-7",
                     norm_fix:               "claude-opus-4-7",
                     optimization:           "claude-opus-4-7",
-                    optimization_critic:    "claude-sonnet-4-6",
-                    optimization_corrector: "claude-sonnet-4-6",
+                    optimization_critic:    "claude-opus-4-7",
+                    optimization_corrector: "claude-opus-4-7",
+                },
+            },
+            v4: {
+                label: "V4",
+                pipelineV4: true,
+                config: {
+                    text_analysis:          "claude-opus-4-7",
+                    block_batch:            "claude-opus-4-7",
+                    findings_merge:         "claude-opus-4-7",
+                    findings_critic:        "claude-opus-4-7",
+                    findings_corrector:     "claude-opus-4-7",
+                    norm_verify:            "claude-opus-4-7",
+                    norm_fix:               "claude-opus-4-7",
+                    optimization:           "claude-opus-4-7",
+                    optimization_critic:    "claude-opus-4-7",
+                    optimization_corrector: "claude-opus-4-7",
                 },
             },
         };
@@ -906,6 +923,9 @@ const app = createApp({
             if (!preset) return;
             stageModelConfig.value = { ...preset.config };
             activePreset.value = presetKey;
+            if (typeof preset.pipelineV4 === "boolean") {
+                pendingPipelineV4.value = preset.pipelineV4;
+            }
         }
 
         function isModelAllowed(stageKey, modelId) {

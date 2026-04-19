@@ -618,7 +618,6 @@ SOLO_BLOCK_THRESHOLD_KB = 3 * 1024  # блок > 3 MB — отдельный п�
 MODEL_BATCH_LIMITS: dict[str, dict[str, int]] = {
     # Claude: 20 images limit, 5MB payload, 200K-1M контекст. Оптимум attention ~10-15 картинок.
     "claude-opus-4-7":                 {"max_blocks": 15, "max_size_kb": 5120,  "solo_kb": 3072, "min_blocks": 3},
-    "claude-opus-4-6":                 {"max_blocks": 15, "max_size_kb": 5120,  "solo_kb": 3072, "min_blocks": 3},
     "claude-sonnet-4-6":               {"max_blocks": 15, "max_size_kb": 5120,  "solo_kb": 3072, "min_blocks": 3},
     # Gemini 3 Pro: технически выдерживает 3072 images, 20MB, 1M контекст.
     # НО: эмпирически (проект 13АВ-РД-КЖ5.17-23.1-К2, 30 blocks/batch → 0 findings + 26/49 unreadable).

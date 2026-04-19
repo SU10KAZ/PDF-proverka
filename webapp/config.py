@@ -143,9 +143,9 @@ FINDINGS_REVIEW_TOOLS = "Read,Write,Grep,Glob"
 OPTIMIZATION_REVIEW_TOOLS = "Read,Write,Grep,Glob"
 
 # Модель Claude CLI (sonnet = экономит лимит All models)
-# Варианты: "claude-sonnet-4-6", "claude-opus-4-6", "claude-opus-4-7", "claude-haiku-4-5-20251001"
+# Варианты: "claude-sonnet-4-6", "claude-opus-4-7", "claude-haiku-4-5-20251001"
 CLAUDE_MODEL_DEFAULT = "claude-sonnet-4-6"
-CLAUDE_MODEL_OPTIONS = ["claude-sonnet-4-6", "claude-opus-4-6", "claude-opus-4-7"]
+CLAUDE_MODEL_OPTIONS = ["claude-sonnet-4-6", "claude-opus-4-7"]
 
 # Текущая модель (изменяемая в рантайме через API)
 _current_model = CLAUDE_MODEL_DEFAULT
@@ -155,12 +155,12 @@ _current_model = CLAUDE_MODEL_DEFAULT
 _stage_models: dict[str, str | None] = {
     "text_analysis":   None,           # Sonnet — структурная задача
     "block_batch":     None,           # Sonnet — чтение чертежей, заполнение JSON
-    "findings_merge":  "claude-opus-4-6",  # Opus — межблочная сверка, дедупликация
+    "findings_merge":  "claude-opus-4-7",  # Opus — межблочная сверка, дедупликация
     "findings_critic": None,           # Sonnet — проверка grounding+evidence
     "findings_corrector": None,        # Sonnet — исправление по вердиктам критика
     "norm_verify":     None,           # Sonnet — поиск и сверка норм
     "norm_fix":        None,           # Sonnet — пересмотр по нормам
-    "optimization":    "claude-opus-4-6",  # Opus — глубокий анализ оптимизаций
+    "optimization":    "claude-opus-4-7",  # Opus — глубокий анализ оптимизаций
     "optimization_critic": None,           # Sonnet — проверка оптимизаций
     "optimization_corrector": None,        # Sonnet — корректировка оптимизаций
 }
@@ -172,15 +172,16 @@ _stage_models: dict[str, str | None] = {
 # ═══════════════════════════════════════════════════════════════════════════
 
 _STAGE_MODEL_DEFAULTS: dict[str, str] = {
-    # Пресет "Классический" по умолчанию: Gemini для блоков, Opus/Sonnet для текста.
-    # Альтернатива — "Подписка" (все этапы на Opus) через UI.
+    # Пресет "Классический": Opus 4.7 для всех этапов кроме opt_critic/corrector.
+    # Sonnet-corrector не применяет вердикты критика (проверено на КЖ 5.1 — 0 правок
+    # против 4 удалённых formal findings у Opus при идентичных вердиктах критика).
     "text_analysis":          "claude-opus-4-7",
-    "block_batch":            "google/gemini-3.1-pro-preview",
+    "block_batch":            "claude-opus-4-7",
     "findings_merge":         "claude-opus-4-7",
-    "findings_critic":        "claude-sonnet-4-6",
-    "findings_corrector":     "claude-sonnet-4-6",
+    "findings_critic":        "claude-opus-4-7",
+    "findings_corrector":     "claude-opus-4-7",
     "norm_verify":            "claude-opus-4-7",
-    "norm_fix":               "claude-sonnet-4-6",
+    "norm_fix":               "claude-opus-4-7",
     "optimization":           "claude-opus-4-7",
     "optimization_critic":    "claude-sonnet-4-6",
     "optimization_corrector": "claude-sonnet-4-6",
@@ -220,7 +221,6 @@ STAGE_MODEL_CONFIG: dict[str, str] = _load_stage_model_config()
 
 AVAILABLE_MODELS = [
     {"id": "claude-opus-4-7", "label": "Opus 4.7 (CLI)", "provider": "claude_cli"},
-    {"id": "claude-opus-4-6", "label": "Opus 4.6 (CLI)", "provider": "claude_cli"},
     {"id": "claude-sonnet-4-6", "label": "Sonnet (CLI)", "provider": "claude_cli"},
     {"id": "openai/gpt-5.4", "label": "GPT-5.4", "provider": "openrouter"},
     {"id": "google/gemini-3.1-pro-preview", "label": "Gemini", "provider": "openrouter"},
@@ -233,8 +233,7 @@ STAGE_MODEL_RESTRICTIONS = {
     "block_batch": [
         "openai/gpt-5.4",
         "google/gemini-3.1-pro-preview",
-        "claude-opus-4-7",        # экспериментально — CLI + Vision (последняя)
-        "claude-opus-4-6",        # экспериментально — CLI + Vision
+        "claude-opus-4-7",        # экспериментально — CLI + Vision
         "claude-sonnet-4-6",      # экспериментально — CLI + Vision
     ],
 }
