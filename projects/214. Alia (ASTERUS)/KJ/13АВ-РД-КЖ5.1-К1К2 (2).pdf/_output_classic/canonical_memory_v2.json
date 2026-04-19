@@ -1,0 +1,4615 @@
+{
+  "mentions_by_key": {
+    "item": {
+      "КОЛОННА КМ-1 КРУГЛАЯ D600, H=7850": [
+        {
+          "mention_id": "M-001",
+          "entity_type": "item",
+          "normalized_label": "Колонна Км-1 круглая D600, H=7850",
+          "source_context": {
+            "page": 7,
+            "sheet": "Лист 2",
+            "block_id": "4UTW-PPGP-VEN",
+            "view_type": "plan"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "Км-1-600-7850",
+              "value_norm": "Км-1-600-7850",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Колонна круглого сечения диаметром 600 мм, высотой 7850 мм",
+              "value_norm": "Колонна круглого сечения D=600, Н=7850",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            },
+            {
+              "name": "dimensions",
+              "value_type": "string",
+              "value_raw": "600x7850",
+              "value_norm": "D=600 мм, H=7850 мм",
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "КОЛОННА КМ-1 КРУГЛАЯ D600, H=7850",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "СТЕНА ПО 1, T=250": [
+        {
+          "mention_id": "M-002",
+          "entity_type": "item",
+          "normalized_label": "Стена по 1, t=250",
+          "source_context": {
+            "page": 7,
+            "sheet": "Лист 2",
+            "block_id": "4UTW-PPGP-VEN",
+            "view_type": "plan"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "по 1",
+              "value_norm": "по 1",
+              "value_source": "vision",
+              "parse_confidence": 0.85
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Стена криволинейная, толщина 250 мм, отм. -0,180",
+              "value_norm": "Стена криволинейная, t=250 мм",
+              "value_source": "vision",
+              "parse_confidence": 0.85
+            },
+            {
+              "name": "dimensions",
+              "value_type": "float",
+              "value_raw": "t=250",
+              "value_norm": 250,
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "СТЕНА ПО 1, T=250",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "РАДИУС КРИВОЛИНЕЙНОЙ СТЕНЫ R17950": [
+        {
+          "mention_id": "M-003",
+          "entity_type": "item",
+          "normalized_label": "Радиус криволинейной стены R17950",
+          "source_context": {
+            "page": 7,
+            "sheet": "Лист 2",
+            "block_id": "4UTW-PPGP-VEN",
+            "view_type": "plan"
+          },
+          "attributes": [
+            {
+              "name": "dimensions",
+              "value_type": "float",
+              "value_raw": "R17950",
+              "value_norm": 17950,
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "R17950 — радиус кривизны оси стены",
+              "value_norm": "Радиус R=17950 мм",
+              "value_source": "vision",
+              "parse_confidence": 0.85
+            }
+          ],
+          "_canonical_key": "РАДИУС КРИВОЛИНЕЙНОЙ СТЕНЫ R17950",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "РАДИУС КРИВОЛИНЕЙНОЙ СТЕНЫ R18450": [
+        {
+          "mention_id": "M-004",
+          "entity_type": "item",
+          "normalized_label": "Радиус криволинейной стены R18450",
+          "source_context": {
+            "page": 7,
+            "sheet": "Лист 2",
+            "block_id": "4UTW-PPGP-VEN",
+            "view_type": "plan"
+          },
+          "attributes": [
+            {
+              "name": "dimensions",
+              "value_type": "float",
+              "value_raw": "R18450",
+              "value_norm": 18450,
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.85
+            }
+          ],
+          "_canonical_key": "РАДИУС КРИВОЛИНЕЙНОЙ СТЕНЫ R18450",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "РАДИУС КРИВОЛИНЕЙНОЙ СТЕНЫ R17980": [
+        {
+          "mention_id": "M-005",
+          "entity_type": "item",
+          "normalized_label": "Радиус криволинейной стены R17980",
+          "source_context": {
+            "page": 7,
+            "sheet": "Лист 2",
+            "block_id": "4UTW-PPGP-VEN",
+            "view_type": "plan"
+          },
+          "attributes": [
+            {
+              "name": "dimensions",
+              "value_type": "float",
+              "value_raw": "R17980",
+              "value_norm": 17980,
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.8
+            }
+          ],
+          "_canonical_key": "РАДИУС КРИВОЛИНЕЙНОЙ СТЕНЫ R17980",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "РАДИУС КРИВОЛИНЕЙНОЙ СТЕНЫ R17770": [
+        {
+          "mention_id": "M-006",
+          "entity_type": "item",
+          "normalized_label": "Радиус криволинейной стены R17770",
+          "source_context": {
+            "page": 7,
+            "sheet": "Лист 2",
+            "block_id": "4UTW-PPGP-VEN",
+            "view_type": "plan"
+          },
+          "attributes": [
+            {
+              "name": "dimensions",
+              "value_type": "float",
+              "value_raw": "R17770",
+              "value_norm": 17770,
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.85
+            }
+          ],
+          "_canonical_key": "РАДИУС КРИВОЛИНЕЙНОЙ СТЕНЫ R17770",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "РАДИУС КРИВОЛИНЕЙНОЙ СТЕНЫ R17450": [
+        {
+          "mention_id": "M-007",
+          "entity_type": "item",
+          "normalized_label": "Радиус криволинейной стены R17450",
+          "source_context": {
+            "page": 7,
+            "sheet": "Лист 2",
+            "block_id": "4UTW-PPGP-VEN",
+            "view_type": "plan"
+          },
+          "attributes": [
+            {
+              "name": "dimensions",
+              "value_type": "float",
+              "value_raw": "R17450",
+              "value_norm": 17450,
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.85
+            }
+          ],
+          "_canonical_key": "РАДИУС КРИВОЛИНЕЙНОЙ СТЕНЫ R17450",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "КОЛОННА КМ-1 — РАЗРЕЗ 1-1": [
+        {
+          "mention_id": "M-008",
+          "entity_type": "item",
+          "normalized_label": "Колонна Км-1 — разрез 1-1",
+          "source_context": {
+            "page": 7,
+            "sheet": "Лист 2",
+            "block_id": "VGGJ-3ULF-TLV",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "1-1",
+              "value_norm": "Разрез 1-1",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Разрез 1-1 колонны прямоугольного представления: ширина 600 мм, высота между отметками -0,180 и +7,670 = 7850 мм",
+              "value_norm": "Разрез колонны. Высота 7850 мм между -0,180 и +7,670",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            },
+            {
+              "name": "dimensions",
+              "value_type": "string",
+              "value_raw": "600 (ширина); 7850 (высота)",
+              "value_norm": "b=600 мм; H=7850 мм",
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "КОЛОННА КМ-1 — РАЗРЕЗ 1-1",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "АРМИРОВАНИЕ КОЛОННЫ — РАЗРЕЗ 1-1": [
+        {
+          "mention_id": "M-010",
+          "entity_type": "item",
+          "normalized_label": "Армирование колонны — разрез 1-1",
+          "source_context": {
+            "page": 8,
+            "sheet": "Лист 3",
+            "block_id": "9GNP-D7CE-RYM",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "1-1",
+              "value_norm": "Разрез 1-1 (армирование)",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Разрез армирования колонны: 25-Г-1 (8 шт.) продольная арматура; выпуски (8 шт.) длиной 1560 мм; хомуты по высоте с шагом 300х20=6000, по концам шаг 150х10=1500; защитные отступы 100 мм сверху/снизу",
+              "value_norm": "Армирование колонны: 8× 25-Г-1 + выпуски 8 шт. L=1560; хомуты 300х20=6000 и 150х10=1500",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            },
+            {
+              "name": "dimensions",
+              "value_type": "string",
+              "value_raw": "7850 (высота); 1560 (выпуски); 300х20=6000; 150х10=1500",
+              "value_norm": "H=7850; выпуск=1560; шаг хомутов 300 (20×) и 150 (10×)",
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "АРМИРОВАНИЕ КОЛОННЫ — РАЗРЕЗ 1-1",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "АРМАТУРНЫЙ СТЕРЖЕНЬ 25-Г-1": [
+        {
+          "mention_id": "M-011",
+          "entity_type": "item",
+          "normalized_label": "Арматурный стержень 25-Г-1",
+          "source_context": {
+            "page": 8,
+            "sheet": "Лист 3",
+            "block_id": "9GNP-D7CE-RYM",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "25-Г-1",
+              "value_norm": "25-Г-1",
+              "value_source": "vision",
+              "parse_confidence": 0.98
+            },
+            {
+              "name": "quantity",
+              "value_type": "int",
+              "value_raw": "8 шт.",
+              "value_norm": 8,
+              "unit": "шт",
+              "value_source": "vision",
+              "parse_confidence": 0.98
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Продольная арматура колонны — 25-Г-1 (8 шт.)",
+              "value_norm": "Продольная арматура колонны 8× 25-Г-1",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "АРМАТУРНЫЙ СТЕРЖЕНЬ 25-Г-1",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "ВЫПУСКИ АРМАТУРЫ ИЗ КОЛОННЫ": [
+        {
+          "mention_id": "M-012",
+          "entity_type": "item",
+          "normalized_label": "Выпуски арматуры из колонны",
+          "source_context": {
+            "page": 8,
+            "sheet": "Лист 3",
+            "block_id": "9GNP-D7CE-RYM",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "Выпуски",
+              "value_norm": "Выпуски арматуры",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "int",
+              "value_raw": "8 шт.",
+              "value_norm": 8,
+              "unit": "шт",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "dimensions",
+              "value_type": "float",
+              "value_raw": "1560",
+              "value_norm": 1560,
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "ВЫПУСКИ АРМАТУРЫ ИЗ КОЛОННЫ",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "СЕЧЕНИЕ 2-2 КРУГЛОЙ КОЛОННЫ D600 (ШАГ ХОМУТОВ 150)": [
+        {
+          "mention_id": "M-013",
+          "entity_type": "item",
+          "normalized_label": "Сечение 2-2 круглой колонны D600 (шаг хомутов 150)",
+          "source_context": {
+            "page": 8,
+            "sheet": "Лист 3",
+            "block_id": "7KCK-7PJC-U3E",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "2-2",
+              "value_norm": "Сечение 2-2",
+              "value_source": "vision",
+              "parse_confidence": 0.98
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Сечение 2-2 круглой колонны D=600 мм: 8 шт. 25-Г-1 по периметру, хомуты 12-Х-1 с шагом 150 мм, выпуски 8 шт.",
+              "value_norm": "Сечение колонны D=600 с шагом хомутов 150 (зона сгущения)",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "dimensions",
+              "value_type": "float",
+              "value_raw": "600",
+              "value_norm": 600,
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.98
+            }
+          ],
+          "_canonical_key": "СЕЧЕНИЕ 2-2 КРУГЛОЙ КОЛОННЫ D600 (ШАГ ХОМУТОВ 150)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "ХОМУТ 12-Х-1 ШАГ 150 (ЗОНА СГУЩЕНИЯ)": [
+        {
+          "mention_id": "M-014",
+          "entity_type": "item",
+          "normalized_label": "Хомут 12-Х-1 шаг 150 (зона сгущения)",
+          "source_context": {
+            "page": 8,
+            "sheet": "Лист 3",
+            "block_id": "7KCK-7PJC-U3E",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "12-Х-1",
+              "value_norm": "12-Х-1",
+              "value_source": "vision",
+              "parse_confidence": 0.98
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Хомут кольцевой 12-Х-1, шаг 150 мм",
+              "value_norm": "Хомут 12-Х-1, шаг 150 мм (сечение 2-2)",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "dimensions",
+              "value_type": "float",
+              "value_raw": "шаг 150",
+              "value_norm": 150,
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "ХОМУТ 12-Х-1 ШАГ 150 (ЗОНА СГУЩЕНИЯ)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "СЕЧЕНИЕ 3-3 КРУГЛОЙ КОЛОННЫ D600 (ШАГ ХОМУТОВ 300)": [
+        {
+          "mention_id": "M-015",
+          "entity_type": "item",
+          "normalized_label": "Сечение 3-3 круглой колонны D600 (шаг хомутов 300)",
+          "source_context": {
+            "page": 8,
+            "sheet": "Лист 3",
+            "block_id": "4MAU-AT9Y-QRP",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "3-3",
+              "value_norm": "Сечение 3-3",
+              "value_source": "vision",
+              "parse_confidence": 0.98
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Сечение 3-3 круглой колонны D=600: 8 шт. 25-Г-1 радиально, хомуты 12-Х-1 шаг 300; углы между стержнями по 195° (фактически 45° — вероятный ОСR)",
+              "value_norm": "Сечение колонны D=600 с шагом хомутов 300 (основная зона)",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            },
+            {
+              "name": "dimensions",
+              "value_type": "float",
+              "value_raw": "600",
+              "value_norm": 600,
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.98
+            }
+          ],
+          "_canonical_key": "СЕЧЕНИЕ 3-3 КРУГЛОЙ КОЛОННЫ D600 (ШАГ ХОМУТОВ 300)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "ХОМУТ 12-Х-1 ШАГ 300 (ОСНОВНАЯ ЗОНА)": [
+        {
+          "mention_id": "M-016",
+          "entity_type": "item",
+          "normalized_label": "Хомут 12-Х-1 шаг 300 (основная зона)",
+          "source_context": {
+            "page": 8,
+            "sheet": "Лист 3",
+            "block_id": "4MAU-AT9Y-QRP",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "12-Х-1",
+              "value_norm": "12-Х-1",
+              "value_source": "vision",
+              "parse_confidence": 0.98
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Хомут кольцевой 12-Х-1, шаг 300 мм",
+              "value_norm": "Хомут 12-Х-1, шаг 300 мм (сечение 3-3)",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "dimensions",
+              "value_type": "float",
+              "value_raw": "шаг 300",
+              "value_norm": 300,
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "ХОМУТ 12-Х-1 ШАГ 300 (ОСНОВНАЯ ЗОНА)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "ОПАЛУБОЧНЫЙ ПЛАН ПРИСТРОЙКИ НА ОТМ. -1,800": [
+        {
+          "mention_id": "M-023",
+          "entity_type": "item",
+          "normalized_label": "Опалубочный план пристройки на отм. -1,800",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "4WTD-JFKA-JLE",
+            "view_type": "plan"
+          },
+          "attributes": [
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Опалубочный план вертикальных конструкций пристройки на отм. -1,800 в осях П.3-П.9/П.Л-П.Т. Стены t=400, типы 'по 2' и 'по 3'.",
+              "value_norm": "Опалубка на отм -1,800, оси П.3–П.9/П.Л–П.Т, t=400",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            },
+            {
+              "name": "dimensions",
+              "value_type": "float",
+              "value_raw": "t=400",
+              "value_norm": 400,
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "ОПАЛУБОЧНЫЙ ПЛАН ПРИСТРОЙКИ НА ОТМ. -1,800",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "СТЕНА ПО 2 ПРИСТРОЙКИ (ОТМ. -1,800)": [
+        {
+          "mention_id": "M-024",
+          "entity_type": "item",
+          "normalized_label": "Стена по 2 пристройки (отм. -1,800)",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "4WTD-JFKA-JLE",
+            "view_type": "plan"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "по 2",
+              "value_norm": "по 2",
+              "value_source": "vision",
+              "parse_confidence": 0.85
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Тип стены 'по 2' на опалубочном плане отм. -1,800",
+              "value_norm": "Стена тип 'по 2'",
+              "value_source": "vision",
+              "parse_confidence": 0.8
+            }
+          ],
+          "_canonical_key": "СТЕНА ПО 2 ПРИСТРОЙКИ (ОТМ. -1,800)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "СТЕНА ПО 3 ПРИСТРОЙКИ (ОТМ. -1,800)": [
+        {
+          "mention_id": "M-025",
+          "entity_type": "item",
+          "normalized_label": "Стена по 3 пристройки (отм. -1,800)",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "4WTD-JFKA-JLE",
+            "view_type": "plan"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "по 3",
+              "value_norm": "по 3",
+              "value_source": "vision",
+              "parse_confidence": 0.85
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Тип стены 'по 3' на опалубочном плане отм. -1,800",
+              "value_norm": "Стена тип 'по 3'",
+              "value_source": "vision",
+              "parse_confidence": 0.8
+            }
+          ],
+          "_canonical_key": "СТЕНА ПО 3 ПРИСТРОЙКИ (ОТМ. -1,800)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "РАДИУС R950 (ВНУТРЕННИЕ ЗАКРУГЛЕНИЯ СТЕН ПРИСТРОЙКИ)": [
+        {
+          "mention_id": "M-026",
+          "entity_type": "item",
+          "normalized_label": "Радиус R950 (внутренние закругления стен пристройки)",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "4WTD-JFKA-JLE",
+            "view_type": "plan"
+          },
+          "attributes": [
+            {
+              "name": "dimensions",
+              "value_type": "float",
+              "value_raw": "R950",
+              "value_norm": 950,
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.85
+            }
+          ],
+          "_canonical_key": "РАДИУС R950 (ВНУТРЕННИЕ ЗАКРУГЛЕНИЯ СТЕН ПРИСТРОЙКИ)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "РАДИУС R1250 (ВНУТРЕННИЕ ЗАКРУГЛЕНИЯ СТЕН ПРИСТРОЙКИ)": [
+        {
+          "mention_id": "M-027",
+          "entity_type": "item",
+          "normalized_label": "Радиус R1250 (внутренние закругления стен пристройки)",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "4WTD-JFKA-JLE",
+            "view_type": "plan"
+          },
+          "attributes": [
+            {
+              "name": "dimensions",
+              "value_type": "float",
+              "value_raw": "R1250",
+              "value_norm": 1250,
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.85
+            }
+          ],
+          "_canonical_key": "РАДИУС R1250 (ВНУТРЕННИЕ ЗАКРУГЛЕНИЯ СТЕН ПРИСТРОЙКИ)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "КОРПУС К1 (39 ЭТАЖЕЙ)": [
+        {
+          "mention_id": "M-029",
+          "entity_type": "item",
+          "normalized_label": "Корпус К1 (39 этажей)",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "43L7-P9UL-VYD",
+            "view_type": "key_plan"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "К1",
+              "value_norm": "К1",
+              "value_source": "vision",
+              "parse_confidence": 0.98
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "К1 39эт.",
+              "value_norm": "Корпус К1, 39 этажей",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "КОРПУС К1 (39 ЭТАЖЕЙ)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "КОРПУС К2 (42 ЭТАЖА)": [
+        {
+          "mention_id": "M-030",
+          "entity_type": "item",
+          "normalized_label": "Корпус К2 (42 этажа)",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "43L7-P9UL-VYD",
+            "view_type": "key_plan"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "К2",
+              "value_norm": "К2",
+              "value_source": "vision",
+              "parse_confidence": 0.98
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "К2 42эт.",
+              "value_norm": "Корпус К2, 42 этажа",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "КОРПУС К2 (42 ЭТАЖА)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "КОРПУС К3 (30 ЭТАЖЕЙ)": [
+        {
+          "mention_id": "M-031",
+          "entity_type": "item",
+          "normalized_label": "Корпус К3 (30 этажей)",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "43L7-P9UL-VYD",
+            "view_type": "key_plan"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "К3",
+              "value_norm": "К3",
+              "value_source": "vision",
+              "parse_confidence": 0.98
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "К3 30эт.",
+              "value_norm": "Корпус К3, 30 этажей",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "КОРПУС К3 (30 ЭТАЖЕЙ)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "КОРПУС К4 (18 ЭТАЖЕЙ)": [
+        {
+          "mention_id": "M-032",
+          "entity_type": "item",
+          "normalized_label": "Корпус К4 (18 этажей)",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "43L7-P9UL-VYD",
+            "view_type": "key_plan"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "К4",
+              "value_norm": "К4",
+              "value_source": "vision",
+              "parse_confidence": 0.98
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "К4 18эт.",
+              "value_norm": "Корпус К4, 18 этажей",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "КОРПУС К4 (18 ЭТАЖЕЙ)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "КОРПУС К5 (15 ЭТАЖЕЙ)": [
+        {
+          "mention_id": "M-033",
+          "entity_type": "item",
+          "normalized_label": "Корпус К5 (15 этажей)",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "43L7-P9UL-VYD",
+            "view_type": "key_plan"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "К5",
+              "value_norm": "К5",
+              "value_source": "vision",
+              "parse_confidence": 0.98
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "К5 15эт.",
+              "value_norm": "Корпус К5, 15 этажей",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "КОРПУС К5 (15 ЭТАЖЕЙ)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "КОРПУС К6 (28 ЭТАЖЕЙ)": [
+        {
+          "mention_id": "M-034",
+          "entity_type": "item",
+          "normalized_label": "Корпус К6 (28 этажей)",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "43L7-P9UL-VYD",
+            "view_type": "key_plan"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "К6",
+              "value_norm": "К6",
+              "value_source": "vision",
+              "parse_confidence": 0.98
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "К6 28эт.",
+              "value_norm": "Корпус К6, 28 этажей",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "КОРПУС К6 (28 ЭТАЖЕЙ)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "КОРПУС К7": [
+        {
+          "mention_id": "M-035",
+          "entity_type": "item",
+          "normalized_label": "Корпус К7",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "43L7-P9UL-VYD",
+            "view_type": "key_plan"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "К7",
+              "value_norm": "К7",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Корпус К7 (этажность на ключ-схеме не указана)",
+              "value_norm": "Корпус К7 без указания этажности",
+              "value_source": "vision",
+              "parse_confidence": 0.85
+            }
+          ],
+          "_canonical_key": "КОРПУС К7",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "РАЗРЕЗ 3-3: УЗЕЛ ЗАСЫПКИ МЕЖДУ КОНСТРУКЦИЯМИ": [
+        {
+          "mention_id": "M-036",
+          "entity_type": "item",
+          "normalized_label": "Разрез 3-3: узел засыпки между конструкциями",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "7RD6-7GYX-MVT",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "3-3",
+              "value_norm": "Разрез 3-3",
+              "value_source": "vision",
+              "parse_confidence": 0.98
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Фрагмент разреза 3-3: стена t=300 мм между отм. -0,430 (верх) и -1,800 (низ), высота засыпки 1370 мм, заглубление 400 мм под стеной; отметка плиты верха 250 мм выше -0,430. Справа засыпка — керамзит фр. 20-40",
+              "value_norm": "Разрез узла. t=300 мм; засыпка керамзит 1370 мм между -0,430 и -1,800",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            },
+            {
+              "name": "dimensions",
+              "value_type": "string",
+              "value_raw": "250; 1370; 400; 300",
+              "value_norm": "перекрытие=250; засыпка=1370; заглубление=400; t_стены=300",
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "РАЗРЕЗ 3-3: УЗЕЛ ЗАСЫПКИ МЕЖДУ КОНСТРУКЦИЯМИ",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "ЗАСЫПКА КЕРАМЗИТ ФР. 20-40 (РАЗРЕЗ 3-3)": [
+        {
+          "mention_id": "M-037",
+          "entity_type": "item",
+          "normalized_label": "Засыпка керамзит фр. 20-40 (разрез 3-3)",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "7RD6-7GYX-MVT",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "material",
+              "value_type": "string",
+              "value_raw": "керамзит фр.20-40",
+              "value_norm": "Керамзит, фракция 20-40",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Засыпка керамзитом фракции 20-40 в пазухе между конструкциями",
+              "value_norm": "Засыпка керамзит фр. 20-40",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "dimensions",
+              "value_type": "float",
+              "value_raw": "1370",
+              "value_norm": 1370,
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "ЗАСЫПКА КЕРАМЗИТ ФР. 20-40 (РАЗРЕЗ 3-3)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "РАЗРЕЗ 1-1: УЗЕЛ ЗАСЫПКИ МЕЖДУ ОСЯМИ П.Т И П.С": [
+        {
+          "mention_id": "M-038",
+          "entity_type": "item",
+          "normalized_label": "Разрез 1-1: узел засыпки между осями П.Т и П.С",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "HJ7G-VWTF-CGV",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "1-1",
+              "value_norm": "Разрез 1-1 (пристройка отм. -1,800)",
+              "value_source": "vision",
+              "parse_confidence": 0.98
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Разрез 1-1: две вертикальные конструкции толщиной 600 мм между осями П.Т и П.С (расстояние 2650 мм); между ними засыпка керамзит фр.20-40 высотой 1370 мм между отм. -0,430 и -1,800; заглубление 400 мм",
+              "value_norm": "Разрез по осям П.Т-П.С, t=600, засыпка керамзит 1370 мм",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            },
+            {
+              "name": "dimensions",
+              "value_type": "string",
+              "value_raw": "2650 (пролёт); 600 (толщина стены); 1370 (засыпка); 400 (заглубление)",
+              "value_norm": "L=2650; t=600; h_зас=1370; h_заг=400",
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "РАЗРЕЗ 1-1: УЗЕЛ ЗАСЫПКИ МЕЖДУ ОСЯМИ П.Т И П.С",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "ЗАСЫПКА КЕРАМЗИТ ФР. 20-40 (РАЗРЕЗ 1-1)": [
+        {
+          "mention_id": "M-039",
+          "entity_type": "item",
+          "normalized_label": "Засыпка керамзит фр. 20-40 (разрез 1-1)",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "HJ7G-VWTF-CGV",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "material",
+              "value_type": "string",
+              "value_raw": "керамзит фр.20-40",
+              "value_norm": "Керамзит, фракция 20-40",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "dimensions",
+              "value_type": "float",
+              "value_raw": "1370",
+              "value_norm": 1370,
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "ЗАСЫПКА КЕРАМЗИТ ФР. 20-40 (РАЗРЕЗ 1-1)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "РАЗРЕЗ 2-2: УЗЕЛ ЗАСЫПКИ МЕЖДУ КОНСТРУКЦИЯМИ": [
+        {
+          "mention_id": "M-040",
+          "entity_type": "item",
+          "normalized_label": "Разрез 2-2: узел засыпки между конструкциями",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "D9MX-LMX7-6QX",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "2-2",
+              "value_norm": "Разрез 2-2",
+              "value_source": "vision",
+              "parse_confidence": 0.98
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Фрагмент разреза 2-2: вертикальная стена t=600 мм, сверху плита 250 мм, отм. верха -0,430, низа -1,800; засыпка керамзит фр.20-40 высотой 1370 мм по обе стороны; заглубление 400 мм",
+              "value_norm": "Разрез узла. t=600; засыпка керамзит 1370 мм",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            },
+            {
+              "name": "dimensions",
+              "value_type": "string",
+              "value_raw": "250; 1370; 400; 600",
+              "value_norm": "плита=250; засыпка=1370; заглубление=400; t_стены=600",
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "РАЗРЕЗ 2-2: УЗЕЛ ЗАСЫПКИ МЕЖДУ КОНСТРУКЦИЯМИ",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "ЗАСЫПКА КЕРАМЗИТ ФР. 20-40 (РАЗРЕЗ 2-2)": [
+        {
+          "mention_id": "M-041",
+          "entity_type": "item",
+          "normalized_label": "Засыпка керамзит фр. 20-40 (разрез 2-2)",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "D9MX-LMX7-6QX",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "material",
+              "value_type": "string",
+              "value_raw": "керамзит фр.20-40",
+              "value_norm": "Керамзит, фракция 20-40",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "dimensions",
+              "value_type": "float",
+              "value_raw": "1370",
+              "value_norm": 1370,
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "ЗАСЫПКА КЕРАМЗИТ ФР. 20-40 (РАЗРЕЗ 2-2)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "РАДИУС R17950 (ПРИСТРОЙКА)": [
+        {
+          "mention_id": "M-043",
+          "entity_type": "item",
+          "normalized_label": "Радиус R17950 (пристройка)",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "4JYF-HEKU-VVV",
+            "view_type": "key_plan"
+          },
+          "attributes": [
+            {
+              "name": "dimensions",
+              "value_type": "float",
+              "value_raw": "R17950",
+              "value_norm": 17950,
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "РАДИУС R17950 (ПРИСТРОЙКА)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "РАДИУС R18250 (ПРИСТРОЙКА)": [
+        {
+          "mention_id": "M-044",
+          "entity_type": "item",
+          "normalized_label": "Радиус R18250 (пристройка)",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "4JYF-HEKU-VVV",
+            "view_type": "key_plan"
+          },
+          "attributes": [
+            {
+              "name": "dimensions",
+              "value_type": "float",
+              "value_raw": "R18250",
+              "value_norm": 18250,
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "РАДИУС R18250 (ПРИСТРОЙКА)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "РАДИУС R17450 (ПРИСТРОЙКА)": [
+        {
+          "mention_id": "M-045",
+          "entity_type": "item",
+          "normalized_label": "Радиус R17450 (пристройка)",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "4JYF-HEKU-VVV",
+            "view_type": "key_plan"
+          },
+          "attributes": [
+            {
+              "name": "dimensions",
+              "value_type": "float",
+              "value_raw": "R17450",
+              "value_norm": 17450,
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "РАДИУС R17450 (ПРИСТРОЙКА)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "РАДИУС R17750 (ПРИСТРОЙКА)": [
+        {
+          "mention_id": "M-046",
+          "entity_type": "item",
+          "normalized_label": "Радиус R17750 (пристройка)",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "4JYF-HEKU-VVV",
+            "view_type": "key_plan"
+          },
+          "attributes": [
+            {
+              "name": "dimensions",
+              "value_type": "float",
+              "value_raw": "R17750",
+              "value_norm": 17750,
+              "unit": "мм",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "РАДИУС R17750 (ПРИСТРОЙКА)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "СЕЧЕНИЕ 1-1 КОЛОННЫ (ОПАЛУБКА) — ОТМЕТКИ +7,670 / -0,180": [
+        {
+          "mention_id": "M-049",
+          "entity_type": "item",
+          "normalized_label": "Сечение 1-1 колонны (опалубка) — отметки +7,670 / -0,180",
+          "source_context": {
+            "page": 7,
+            "sheet": "Лист 2",
+            "block_id": "VGGJ-3ULF-TLV",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Отметки: верх +7,670; низ -0,180",
+              "value_norm": "Отметки колонны +7,670 и -0,180 (ΔН=7850 мм)",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "СЕЧЕНИЕ 1-1 КОЛОННЫ (ОПАЛУБКА) — ОТМЕТКИ +7,670 / -0,180",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "СТЕНА МОНОЛИТНАЯ 1-СТМ600": [
+        {
+          "mention_id": "M-001",
+          "entity_type": "item",
+          "normalized_label": "Стена монолитная 1-Стм600",
+          "source_context": {
+            "page": 11,
+            "sheet": "Лист 6",
+            "block_id": "RELE-MX3A-MEN",
+            "view_type": "plan"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "1-Стм600",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Стена монолитная толщиной 600 мм, порядковый номер 1",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            },
+            {
+              "name": "dimensions",
+              "value_type": "string",
+              "value_raw": "толщина 600 мм",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "СТЕНА МОНОЛИТНАЯ 1-СТМ600",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "СТЕНА МОНОЛИТНАЯ 2-СТМ300": [
+        {
+          "mention_id": "M-002",
+          "entity_type": "item",
+          "normalized_label": "Стена монолитная 2-Стм300",
+          "source_context": {
+            "page": 11,
+            "sheet": "Лист 6",
+            "block_id": "RELE-MX3A-MEN",
+            "view_type": "plan"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "2-Стм300",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "dimensions",
+              "value_type": "string",
+              "value_raw": "толщина 300 мм",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "СТЕНА МОНОЛИТНАЯ 2-СТМ300",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "СТЕНА МОНОЛИТНАЯ 3-СТМ300": [
+        {
+          "mention_id": "M-003",
+          "entity_type": "item",
+          "normalized_label": "Стена монолитная 3-Стм300",
+          "source_context": {
+            "page": 11,
+            "sheet": "Лист 6",
+            "block_id": "RELE-MX3A-MEN",
+            "view_type": "plan"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "3-Стм300",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "dimensions",
+              "value_type": "string",
+              "value_raw": "толщина 300 мм",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "СТЕНА МОНОЛИТНАЯ 3-СТМ300",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "СТЕНА МОНОЛИТНАЯ 4-СТМ600": [
+        {
+          "mention_id": "M-004",
+          "entity_type": "item",
+          "normalized_label": "Стена монолитная 4-Стм600",
+          "source_context": {
+            "page": 11,
+            "sheet": "Лист 6",
+            "block_id": "RELE-MX3A-MEN",
+            "view_type": "plan"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "4-Стм600",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "dimensions",
+              "value_type": "string",
+              "value_raw": "толщина 600 мм",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "СТЕНА МОНОЛИТНАЯ 4-СТМ600",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "СТЕНА МОНОЛИТНАЯ 5-СТМ600": [
+        {
+          "mention_id": "M-005",
+          "entity_type": "item",
+          "normalized_label": "Стена монолитная 5-Стм600",
+          "source_context": {
+            "page": 11,
+            "sheet": "Лист 6",
+            "block_id": "RELE-MX3A-MEN",
+            "view_type": "plan"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "5-Стм600",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "dimensions",
+              "value_type": "string",
+              "value_raw": "толщина 600 мм",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "СТЕНА МОНОЛИТНАЯ 5-СТМ600",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "СЕЧЕНИЕ 1-1 (ЛИСТ 6)": [
+        {
+          "mention_id": "M-011",
+          "entity_type": "item",
+          "normalized_label": "Сечение 1-1 (лист 6)",
+          "source_context": {
+            "page": 12,
+            "sheet": "Лист 7",
+            "block_id": "4MQJ-6NXP-4YH",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "1-1 (6)",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Сечение армирования вертикальной ЖБ конструкции, ось П.Т, защитный слой з.с.30, отметки -1,800 и -0,430, высота 1370 мм. Примыкание к существующим ЖБ конструкциям по КЖ3.1-ПА Книга 3",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "СЕЧЕНИЕ 1-1 (ЛИСТ 6)",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "АРМАТУРА 8-Ш-2 ШАГ 500X400(H) (СЕЧЕНИЕ 1-1)": [
+        {
+          "mention_id": "M-012",
+          "entity_type": "item",
+          "normalized_label": "Арматура 8-Ш-2 шаг 500x400(h) (сечение 1-1)",
+          "source_context": {
+            "page": 12,
+            "sheet": "Лист 7",
+            "block_id": "4MQJ-6NXP-4YH",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "8-Ш-2",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Шпилька φ8 А240, шаг установки 500х400(h)",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "АРМАТУРА 8-Ш-2 ШАГ 500X400(H) (СЕЧЕНИЕ 1-1)",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "АРМАТУРА 16-Г-2 ШАГ 250 (СЕЧЕНИЕ 1-1)": [
+        {
+          "mention_id": "M-013",
+          "entity_type": "item",
+          "normalized_label": "Арматура 16-Г-2 шаг 250 (сечение 1-1)",
+          "source_context": {
+            "page": 12,
+            "sheet": "Лист 7",
+            "block_id": "4MQJ-6NXP-4YH",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-2",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Гнутый стержень φ16 А500С, шаг 250 мм",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "АРМАТУРА 16-Г-2 ШАГ 250 (СЕЧЕНИЕ 1-1)",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "АРМАТУРА 16-ПОГ.М (СЕЧЕНИЕ 1-1)": [
+        {
+          "mention_id": "M-014",
+          "entity_type": "item",
+          "normalized_label": "Арматура 16-пог.м (сечение 1-1)",
+          "source_context": {
+            "page": 12,
+            "sheet": "Лист 7",
+            "block_id": "4MQJ-6NXP-4YH",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-пог.м",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Арматурный стержень φ16 А500С в погонных метрах",
+              "value_source": "vision",
+              "parse_confidence": 0.85
+            }
+          ],
+          "_canonical_key": "АРМАТУРА 16-ПОГ.М (СЕЧЕНИЕ 1-1)",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "СЕЧЕНИЕ 2-2 (ЛИСТ 6)": [
+        {
+          "mention_id": "M-015",
+          "entity_type": "item",
+          "normalized_label": "Сечение 2-2 (лист 6)",
+          "source_context": {
+            "page": 12,
+            "sheet": "Лист 7",
+            "block_id": "7NAU-TNME-3AR",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "2-2 (6)",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Разрез армирования ЖБ конструкции: шпильки 8-Ш-2 шаг 500х400(h), вертикальные 16-Г-2 шаг 250, 16-пог.м шаг 250, отметки -1,800 и -0,430, высота 1370 мм",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "СЕЧЕНИЕ 2-2 (ЛИСТ 6)",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "СЕЧЕНИЕ 3-3 (ЛИСТ 6)": [
+        {
+          "mention_id": "M-016",
+          "entity_type": "item",
+          "normalized_label": "Сечение 3-3 (лист 6)",
+          "source_context": {
+            "page": 12,
+            "sheet": "Лист 7",
+            "block_id": "MANG-C46A-EH7",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "3-3 (6)",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Сечение ЖБ конструкции: 8-Ш-2 шаг 500х400(h), 16-пог.м шаг 250, 16-Г-2 шаг 250, высота 1370 мм, ссылка на КЖ3.1-ПА Книга 4",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "СЕЧЕНИЕ 3-3 (ЛИСТ 6)",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "УЗЕЛ АРМИРОВАНИЯ КРИВОЛИНЕЙНОЙ СТЕНЫ Б/6": [
+        {
+          "mention_id": "M-017",
+          "entity_type": "item",
+          "normalized_label": "Узел армирования криволинейной стены Б/6",
+          "source_context": {
+            "page": 12,
+            "sheet": "Лист 7",
+            "block_id": "DTGF-MYHX-PPD",
+            "view_type": "detail"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "Б (6)",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Фрагмент криволинейной стены с радиусами R1000 и R1200, размеры 505 и 960 относительно П.4",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            },
+            {
+              "name": "dimensions",
+              "value_type": "string",
+              "value_raw": "R1000, R1200, 505, 960",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "УЗЕЛ АРМИРОВАНИЯ КРИВОЛИНЕЙНОЙ СТЕНЫ Б/6",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "АРМАТУРА 8-Ш-1 ШАГ 500X400(H) (УЗЕЛ Б/6)": [
+        {
+          "mention_id": "M-018",
+          "entity_type": "item",
+          "normalized_label": "Арматура 8-Ш-1 шаг 500x400(h) (узел Б/6)",
+          "source_context": {
+            "page": 12,
+            "sheet": "Лист 7",
+            "block_id": "DTGF-MYHX-PPD",
+            "view_type": "detail"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "8-Ш-1",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Шпилька φ8 А240 шаг 500х400(h) по 4(7)",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "АРМАТУРА 8-Ш-1 ШАГ 500X400(H) (УЗЕЛ Б/6)",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "АРМАТУРА 16-Г-30 ШАГ 200 (УЗЕЛ Б/6)": [
+        {
+          "mention_id": "M-019",
+          "entity_type": "item",
+          "normalized_label": "Арматура 16-Г-30 шаг 200 (узел Б/6)",
+          "source_context": {
+            "page": 12,
+            "sheet": "Лист 7",
+            "block_id": "DTGF-MYHX-PPD",
+            "view_type": "detail"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-30",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Гнутый стержень φ16 А500С, шаг 200, 6 шт., гнуть по месту",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "АРМАТУРА 16-Г-30 ШАГ 200 (УЗЕЛ Б/6)",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "АРМАТУРА 12-ПОГ.М (УЗЕЛ Б/6)": [
+        {
+          "mention_id": "M-020",
+          "entity_type": "item",
+          "normalized_label": "Арматура 12-пог.м (узел Б/6)",
+          "source_context": {
+            "page": 12,
+            "sheet": "Лист 7",
+            "block_id": "DTGF-MYHX-PPD",
+            "view_type": "detail"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "12-пог.м.",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Арматура φ12 А500С в пог. метрах, шаг 250",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "АРМАТУРА 12-ПОГ.М (УЗЕЛ Б/6)",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "АРМАТУРА 16-П-2 ШАГ 200 (УЗЕЛ Б/6)": [
+        {
+          "mention_id": "M-021",
+          "entity_type": "item",
+          "normalized_label": "Арматура 16-П-2 шаг 200 (узел Б/6)",
+          "source_context": {
+            "page": 12,
+            "sheet": "Лист 7",
+            "block_id": "DTGF-MYHX-PPD",
+            "view_type": "detail"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-П-2",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "П-образный стержень φ16 А500С, шаг 200, 6 шт.",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "АРМАТУРА 16-П-2 ШАГ 200 (УЗЕЛ Б/6)",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "СЕЧЕНИЕ 5-5": [
+        {
+          "mention_id": "M-022",
+          "entity_type": "item",
+          "normalized_label": "Сечение 5-5",
+          "source_context": {
+            "page": 12,
+            "sheet": "Лист 7",
+            "block_id": "7QUU-QDA4-N7D",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "5-5",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Сечение армирования вертикальной конструкции с выпусками арматуры: хомуты 12-Х-1 шаг 400, отметки -1,800 и -0,430, высота 1370 мм",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "СЕЧЕНИЕ 5-5",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "АРМАТУРА 12-Х-1 ШАГ 400 (СЕЧЕНИЕ 5-5)": [
+        {
+          "mention_id": "M-023",
+          "entity_type": "item",
+          "normalized_label": "Арматура 12-Х-1 шаг 400 (сечение 5-5)",
+          "source_context": {
+            "page": 12,
+            "sheet": "Лист 7",
+            "block_id": "7QUU-QDA4-N7D",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "12-Х-1",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Хомут φ12 А500С, шаг 400 мм",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "АРМАТУРА 12-Х-1 ШАГ 400 (СЕЧЕНИЕ 5-5)",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "УЗЕЛ А/6 СЕЧЕНИЕ КРУГЛОЙ КОЛОННЫ": [
+        {
+          "mention_id": "M-024",
+          "entity_type": "item",
+          "normalized_label": "Узел А/6 сечение круглой колонны",
+          "source_context": {
+            "page": 12,
+            "sheet": "Лист 7",
+            "block_id": "9LPD-VX9H-YHK",
+            "view_type": "detail"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "А (6)",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Узел армирования круглой колонны/вертикального элемента, з.с.25, угловые размеры 45°, линейные 155, 190, 300 мм. Выпуски арматурные см. КЖ3.1-ПА Книга 3",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            },
+            {
+              "name": "dimensions",
+              "value_type": "string",
+              "value_raw": "з.с.25, 300, 155, 190, 45°",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "УЗЕЛ А/6 СЕЧЕНИЕ КРУГЛОЙ КОЛОННЫ",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "АРМАТУРА 12-Х-1 ШАГ 400 (УЗЕЛ А/6)": [
+        {
+          "mention_id": "M-025",
+          "entity_type": "item",
+          "normalized_label": "Арматура 12-Х-1 шаг 400 (узел А/6)",
+          "source_context": {
+            "page": 12,
+            "sheet": "Лист 7",
+            "block_id": "9LPD-VX9H-YHK",
+            "view_type": "detail"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "12-Х-1",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Хомут φ12 А500С, шаг 400, привязка к выпускам по КЖ3.1-ПА Книга 3",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "АРМАТУРА 12-Х-1 ШАГ 400 (УЗЕЛ А/6)",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "СЕЧЕНИЕ 4-4 (ЛИСТ 6)": [
+        {
+          "mention_id": "M-026",
+          "entity_type": "item",
+          "normalized_label": "Сечение 4-4 (лист 6)",
+          "source_context": {
+            "page": 12,
+            "sheet": "Лист 7",
+            "block_id": "6PCX-NFHU-6KW",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "4-4 (6)",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Сечение стены: 8-Ш-1 шаг 500х400(h), 16-пог.м шаг 250, 16-Г-3 шаг 250, з.с.30 с обеих сторон, высота 1370 мм, отметки -1,800 и -0,430",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "СЕЧЕНИЕ 4-4 (ЛИСТ 6)",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "АРМАТУРА 16-Г-3 ШАГ 250 (СЕЧЕНИЕ 4-4)": [
+        {
+          "mention_id": "M-027",
+          "entity_type": "item",
+          "normalized_label": "Арматура 16-Г-3 шаг 250 (сечение 4-4)",
+          "source_context": {
+            "page": 12,
+            "sheet": "Лист 7",
+            "block_id": "6PCX-NFHU-6KW",
+            "view_type": "section"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-3",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Гнутый стержень φ16 А500С, шаг 250 мм",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "АРМАТУРА 16-Г-3 ШАГ 250 (СЕЧЕНИЕ 4-4)",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ]
+    },
+    "note": {
+      "ПРИМЕЧАНИЯ К ЛИСТУ 2": [
+        {
+          "mention_id": "M-009",
+          "entity_type": "note",
+          "normalized_label": "Примечания к листу 2",
+          "source_context": {
+            "page": 7,
+            "sheet": "Лист 2",
+            "block_id": "4UTW-PPGP-VEN",
+            "view_type": "note"
+          },
+          "attributes": [
+            {
+              "name": "note_text",
+              "value_type": "string",
+              "value_raw": "1. Общие указания см лист 1.\n2. Армирование см. лист 3.",
+              "value_norm": "Общие указания — лист 1; Армирование — лист 3",
+              "value_source": "text",
+              "parse_confidence": 1.0
+            },
+            {
+              "name": "requirement_type",
+              "value_type": "string",
+              "value_raw": "перекрёстная ссылка",
+              "value_norm": "cross_reference",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "ПРИМЕЧАНИЯ К ЛИСТУ 2",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "ПРИМЕЧАНИЯ К ЛИСТУ 3 (АРМИРОВАНИЕ)": [
+        {
+          "mention_id": "M-017",
+          "entity_type": "note",
+          "normalized_label": "Примечания к листу 3 (Армирование)",
+          "source_context": {
+            "page": 8,
+            "sheet": "Лист 3",
+            "block_id": "6DRC-7KQL-9TJ",
+            "view_type": "note"
+          },
+          "attributes": [
+            {
+              "name": "note_text",
+              "value_type": "string",
+              "value_raw": "1. Опалубку см. лист 2.\n2. Арматуру, соединять согласно \"Схеме стыковки арматуры внахлест\".\n3. Защитный слой обеспечивать при помощи фиксаторов заводского изготовления\n4. Арматурные стержни рабочие класса А500С.\n5. Гибку арматуры выполнять механическим способом(не допускается гнуть арматуру путем её нагрева)\n6. Спецификацию и ведомость деталей см лист 4.",
+              "value_source": "text",
+              "parse_confidence": 1.0
+            },
+            {
+              "name": "requirement_type",
+              "value_type": "string",
+              "value_raw": "технические указания по армированию",
+              "value_norm": "technical_requirements",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "ПРИМЕЧАНИЯ К ЛИСТУ 3 (АРМИРОВАНИЕ)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "ПРИМЕЧАНИЯ К ЛИСТУ 4 (СПЕЦИФИКАЦИЯ И ВЕДОМОСТЬ)": [
+        {
+          "mention_id": "M-022",
+          "entity_type": "note",
+          "normalized_label": "Примечания к листу 4 (Спецификация и ведомость)",
+          "source_context": {
+            "page": 9,
+            "sheet": "Лист 4",
+            "block_id": "7MAJ-EMC4-KNJ",
+            "view_type": "note"
+          },
+          "attributes": [
+            {
+              "name": "note_text",
+              "value_type": "string",
+              "value_raw": "1. Общие указания см. лист 1.\n2. Гибку арматуры выполнять механическим способом (не допускается гнуть арматуру путём нагрева).\n3. В ведомости деталей для элементов типа \"Х\" размеры указаны по внутренним граням, для элементов типа \"Г\" - по наружным. Длина гнутых стержней вычислена по оси стержня",
+              "value_source": "text",
+              "parse_confidence": 1.0
+            },
+            {
+              "name": "requirement_type",
+              "value_type": "string",
+              "value_raw": "правила измерения и изготовления арматурных деталей",
+              "value_norm": "measurement_rules",
+              "value_source": "text",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "ПРИМЕЧАНИЯ К ЛИСТУ 4 (СПЕЦИФИКАЦИЯ И ВЕДОМОСТЬ)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "ПРИМЕЧАНИЯ К ЛИСТУ 5 (ОПАЛУБКА ПРИСТРОЙКИ)": [
+        {
+          "mention_id": "M-047",
+          "entity_type": "note",
+          "normalized_label": "Примечания к листу 5 (Опалубка пристройки)",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "4WTD-JFKA-JLE",
+            "view_type": "note"
+          },
+          "attributes": [
+            {
+              "name": "note_text",
+              "value_type": "string",
+              "value_raw": "1. Общие указания см лист 1.\n2. Армирование см. листы 6, 7.\n3. Рабочие швы бетонирования следует располагать на расстоянии \\frac{1}{3} пролета между вертикальными несущими конструкциями\n4. Объем захватки бетонирования следует назначать исходя из гарантированной обеспеченности поставки бетонной смеси",
+              "value_source": "text",
+              "parse_confidence": 1.0
+            },
+            {
+              "name": "requirement_type",
+              "value_type": "string",
+              "value_raw": "указания по бетонированию",
+              "value_norm": "concreting_rules",
+              "value_source": "text",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "ПРИМЕЧАНИЯ К ЛИСТУ 5 (ОПАЛУБКА ПРИСТРОЙКИ)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "УСЛОВНЫЕ ОБОЗНАЧЕНИЯ (ЛИСТ 5)": [
+        {
+          "mention_id": "M-048",
+          "entity_type": "note",
+          "normalized_label": "Условные обозначения (лист 5)",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "4WTD-JFKA-JLE",
+            "view_type": "legend"
+          },
+          "attributes": [
+            {
+              "name": "note_text",
+              "value_type": "string",
+              "value_raw": "Условные обозначения: +4,200 — Отметка верха плиты; t=200 — Толщина плиты; ~~~~~ — Рабочий шов бетонирования",
+              "value_norm": "Легенда: отметка верха плиты, толщина плиты, рабочий шов",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "requirement_type",
+              "value_type": "string",
+              "value_raw": "легенда чертежа",
+              "value_norm": "legend",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "УСЛОВНЫЕ ОБОЗНАЧЕНИЯ (ЛИСТ 5)",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "ОБЩИЕ УКАЗАНИЯ ПО АРМИРОВАНИЮ СТЕН": [
+        {
+          "mention_id": "M-006",
+          "entity_type": "note",
+          "normalized_label": "Общие указания по армированию стен",
+          "source_context": {
+            "page": 11,
+            "sheet": "Лист 6",
+            "block_id": "RELE-MX3A-MEN",
+            "view_type": "plan"
+          },
+          "attributes": [
+            {
+              "name": "note_text",
+              "value_type": "string",
+              "value_raw": "1. Опалубку см. лист 5.\n2. Арматуру, указываемую в погонных метрах соединять согласно \"Схеме стыковки арматуры внахлест\".\n3. Защитный слой обеспечивать при помощи фиксаторов заводского изготовления\n4. Арматурные стержни рабочие класса А500С, шпильки класса А240.\n5. Гибку арматуры выполнять механическим способом(не допускается гнуть арматуру путем её нагрева)\n6. П-образные стержи установить в торцах стен и монтировать с фоновой арматурой\n7. Стержни поз. Ш-... устанавливать в шахматном порядке\n8. Спецификацию и ведомость деталей см лист 8.",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "requirement_type",
+              "value_type": "string",
+              "value_raw": "general",
+              "value_source": "text",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "ОБЩИЕ УКАЗАНИЯ ПО АРМИРОВАНИЮ СТЕН",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "ПРИМЕР МАРКИРОВКИ СТЕН": [
+        {
+          "mention_id": "M-007",
+          "entity_type": "note",
+          "normalized_label": "Пример маркировки стен",
+          "source_context": {
+            "page": 11,
+            "sheet": "Лист 6",
+            "block_id": "RELE-MX3A-MEN",
+            "view_type": "plan"
+          },
+          "attributes": [
+            {
+              "name": "note_text",
+              "value_type": "string",
+              "value_raw": "Маркировка типов стен\n\nСтена монолитная\n\nПорядковый номер\n\nТолщина стены, мм\n\nДиаметр вертикальной арматуры у\nвнутренней грани, мм\n\n**1-Стм300**\n\n**16(20)-200/12-100**\n\nДиаметр вертикальной арматуры у\nвнешней грани (при отличии), мм\n\nШаг горизонтальной арматуры, мм\n\nДиаметр горизонтальной арматуры, мм\n\nШаг вертикальной арматуры, мм\n\n**0,000/+3,000**\n\nОтметка низа стены\n\nОтметка верха стены\n\n- Маркировка стен в плане",
+              "value_source": "text",
+              "parse_confidence": 0.9
+            },
+            {
+              "name": "requirement_type",
+              "value_type": "string",
+              "value_raw": "legend",
+              "value_source": "text",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "ПРИМЕР МАРКИРОВКИ СТЕН",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "ТАБЛИЦА 1. ПАРАМЕТРЫ АРМАТУРНЫХ ДЕТАЛЕЙ (АРМАТУРА А500С)": [
+        {
+          "mention_id": "M-008",
+          "entity_type": "note",
+          "normalized_label": "Таблица 1. Параметры арматурных деталей (Арматура А500С)",
+          "source_context": {
+            "page": 11,
+            "sheet": "Лист 6",
+            "block_id": "RELE-MX3A-MEN",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "note_text",
+              "value_type": "string",
+              "value_raw": "Таблица 1. Параметры арматурных деталей (Арматура А500С)\n\nКласс\nбетона\nДиаметр арматуры d, мм\nДлина нахлеста\nрастянутого Lp.n., мм\nДлина нахлеста\nсжатого Lc.j.n., мм\nДлина анкеровки\nрастянутой Lp.a., мм\nДлина анкеровки\nсжатой Lc.j.a., мм\nДлина 1\n1,3xLp.n., мм\nДлина 2\n2xLp.a., мм\n\nВ40\t\n16\t\n600\t\n450\t\n500\t\n380\t\n780\t\n1000\t\n\n20\t\n750\t\n560\t\n630\t\n470\t\n980\t\n1260",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "requirement_type",
+              "value_type": "string",
+              "value_raw": "reference_table",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "ТАБЛИЦА 1. ПАРАМЕТРЫ АРМАТУРНЫХ ДЕТАЛЕЙ (АРМАТУРА А500С)",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "СХЕМА СТЫКОВКИ АРМАТУРЫ ВНАХЛЕСТ": [
+        {
+          "mention_id": "M-009",
+          "entity_type": "note",
+          "normalized_label": "Схема стыковки арматуры внахлест",
+          "source_context": {
+            "page": 11,
+            "sheet": "Лист 6",
+            "block_id": "9XLH-7CNM-MFW",
+            "view_type": "diagram"
+          },
+          "attributes": [
+            {
+              "name": "note_text",
+              "value_type": "string",
+              "value_raw": "Схема стыковки арматуры внахлест. Lр.н. — длина нахлеста растянутой арматуры, d — диаметр стержня, ≥ Длина 1 — минимальная длина нахлеста, ≥2d; ≥30мм — минимальное расстояние между стержнями в свету",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            },
+            {
+              "name": "requirement_type",
+              "value_type": "string",
+              "value_raw": "diagram_scheme",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "СХЕМА СТЫКОВКИ АРМАТУРЫ ВНАХЛЕСТ",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "УСЛОВНЫЕ ОБОЗНАЧЕНИЯ": [
+        {
+          "mention_id": "M-010",
+          "entity_type": "note",
+          "normalized_label": "Условные обозначения",
+          "source_context": {
+            "page": 11,
+            "sheet": "Лист 6",
+            "block_id": "9J9X-DXHT-6GJ",
+            "view_type": "legend"
+          },
+          "attributes": [
+            {
+              "name": "note_text",
+              "value_type": "string",
+              "value_raw": "Условные обозначения: +4,200 - Отметка верха плиты; t=200 - Толщина плиты; з.с. - Защитный слой; 0,000 - отметка; также: конструкции вышележащего уровня, рабочий шов бетонирования, граница типа стены",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "requirement_type",
+              "value_type": "string",
+              "value_raw": "legend",
+              "value_source": "vision",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "УСЛОВНЫЕ ОБОЗНАЧЕНИЯ",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "ОБЩАЯ ВЕДОМОСТЬ РАСХОДА СТАЛИ": [
+        {
+          "mention_id": "M-063",
+          "entity_type": "note",
+          "normalized_label": "Общая ведомость расхода стали",
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "note_text",
+              "value_type": "string",
+              "value_raw": "Общая ведомость расхода стали, кг\n\nМарка конструкции\nИзделия арматурные\n\nАрматура класса\nВсего\n\nA240\nA500C\n\nГОСТ 34028-2016\nГОСТ 34028-2016\n\nΦ8\nИтого\nΦ12\nΦ16\nИтого\n\nСтм\t\n201,82\t\n201,82\t\n218,15\t\n6196,39\t\n6414,54\t\n6616,36",
+              "value_source": "text",
+              "parse_confidence": 0.9
+            },
+            {
+              "name": "requirement_type",
+              "value_type": "string",
+              "value_raw": "summary_table",
+              "value_source": "text",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "ОБЩАЯ ВЕДОМОСТЬ РАСХОДА СТАЛИ",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ]
+    },
+    "spec_row": {
+      "25-Г-1": [
+        {
+          "mention_id": "M-018",
+          "entity_type": "spec_row",
+          "normalized_label": "Ведомость деталей: 25-Г-1",
+          "exact_keys": {
+            "spec_position": "25-Г-1"
+          },
+          "source_context": {
+            "page": 9,
+            "sheet": "Лист 4",
+            "block_id": "7MAJ-EMC4-KNJ",
+            "view_type": "spec_table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "25-Г-1",
+              "value_norm": "25-Г-1",
+              "value_source": "text",
+              "parse_confidence": 0.98
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Эскиз Г-образного стержня: а=8050; b=950; d_оп=200;",
+              "value_norm": "Г-образный стержень; а=8050, b=950, d_оп=200",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "25-Г-1",
+          "_batch_source": "typed_facts_batch_001.json"
+        },
+        {
+          "mention_id": "M-021",
+          "entity_type": "spec_row",
+          "normalized_label": "Спецификация арматуры: 25-Г-1 (φ25 А500С L=8930)",
+          "exact_keys": {
+            "spec_position": "25-Г-1"
+          },
+          "source_context": {
+            "page": 9,
+            "sheet": "Лист 4",
+            "block_id": "7MAJ-EMC4-KNJ",
+            "view_type": "spec_table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "25-Г-1, ГОСТ 34028-2016, φ25 А500С, L=8930",
+              "value_norm": "25-Г-1 / ГОСТ 34028-2016 / φ25 А500С / L=8930",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "φ25 А500С L= 8930",
+              "value_norm": "Арматура кл. А500С диаметром 25 мм, длина 8930 мм",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "int",
+              "value_raw": "120",
+              "value_norm": 120,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "25-Г-1",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "12-Х-1": [
+        {
+          "mention_id": "M-019",
+          "entity_type": "spec_row",
+          "normalized_label": "Ведомость деталей: 12-Х-1",
+          "exact_keys": {
+            "spec_position": "12-Х-1"
+          },
+          "source_context": {
+            "page": 9,
+            "sheet": "Лист 4",
+            "block_id": "7MAJ-EMC4-KNJ",
+            "view_type": "spec_table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "12-Х-1",
+              "value_norm": "12-Х-1",
+              "value_source": "text",
+              "parse_confidence": 0.98
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Эскиз кольцевого стержня (хомут): а=500; d_оп=515;",
+              "value_norm": "Кольцевой хомут; а=500, d_оп=515",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "12-Х-1",
+          "_batch_source": "typed_facts_batch_001.json"
+        },
+        {
+          "mention_id": "M-020",
+          "entity_type": "spec_row",
+          "normalized_label": "Спецификация арматуры: 12-Х-1 (φ12 А500С L=2375)",
+          "exact_keys": {
+            "spec_position": "12-Х-1"
+          },
+          "source_context": {
+            "page": 9,
+            "sheet": "Лист 4",
+            "block_id": "7MAJ-EMC4-KNJ",
+            "view_type": "spec_table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "12-Х-1, ГОСТ 34028-2016, φ12 А500С, L=2375",
+              "value_norm": "12-Х-1 / ГОСТ 34028-2016 / φ12 А500С / L=2375",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "φ12 А500С L= 2375",
+              "value_norm": "Арматура кл. А500С диаметром 12 мм, длина 2375 мм",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "int",
+              "value_raw": "480",
+              "value_norm": 480,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "12-Х-1",
+          "_batch_source": "typed_facts_batch_001.json"
+        },
+        {
+          "mention_id": "M-032",
+          "entity_type": "spec_row",
+          "normalized_label": "12-Х-1",
+          "exact_keys": {
+            "spec_position": "12-Х-1"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "12-Х-1",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ12 А500С L=2375, эскиз: кольцевая деталь, а=500; dоп=515",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "60",
+              "value_norm": 60,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "12-Х-1",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "12-ПОГ.М.": [
+        {
+          "mention_id": "M-028",
+          "entity_type": "spec_row",
+          "normalized_label": "12-пог.м.",
+          "exact_keys": {
+            "spec_position": "12-пог.м."
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "12-пог.м.",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ12 А500С L=пог.м",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "float",
+              "value_raw": "103",
+              "value_norm": 103,
+              "unit": "пог.м",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "unit",
+              "value_type": "string",
+              "value_raw": "пог.м",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "12-ПОГ.М.",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-ПОГ.М.": [
+        {
+          "mention_id": "M-029",
+          "entity_type": "spec_row",
+          "normalized_label": "16-пог.м.",
+          "exact_keys": {
+            "spec_position": "16-пог.м."
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-пог.м.",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=пог.м",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "float",
+              "value_raw": "1328",
+              "value_norm": 1328,
+              "unit": "пог.м",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "unit",
+              "value_type": "string",
+              "value_raw": "пог.м",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-ПОГ.М.",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "8-Ш-1": [
+        {
+          "mention_id": "M-030",
+          "entity_type": "spec_row",
+          "normalized_label": "8-Ш-1",
+          "exact_keys": {
+            "spec_position": "8-Ш-1"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "8-Ш-1",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ8 А240 L=410, эскиз: П-образный, а=240; b=50; dоп=20",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "624",
+              "value_norm": 624,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "8-Ш-1",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "8-Ш-2": [
+        {
+          "mention_id": "M-031",
+          "entity_type": "spec_row",
+          "normalized_label": "8-Ш-2",
+          "exact_keys": {
+            "spec_position": "8-Ш-2"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "8-Ш-2",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ8 А240 L=710, эскиз: П-образный, а=540; b=50; dоп=20",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "360",
+              "value_norm": 360,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "8-Ш-2",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-2": [
+        {
+          "mention_id": "M-033",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-2",
+          "exact_keys": {
+            "spec_position": "16-Г-2"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-2",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=2420, эскиз: а=900; b=1540; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "632",
+              "value_norm": 632,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-2",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-3": [
+        {
+          "mention_id": "M-034",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-3",
+          "exact_keys": {
+            "spec_position": "16-Г-3"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-3",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=2120, эскиз: а=600; b=1540; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "340",
+              "value_norm": 340,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-3",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-4": [
+        {
+          "mention_id": "M-035",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-4",
+          "exact_keys": {
+            "spec_position": "16-Г-4"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-4",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1300, эскиз: а=1045; b=250; α=55°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-4",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-5": [
+        {
+          "mention_id": "M-036",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-5",
+          "exact_keys": {
+            "spec_position": "16-Г-5"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-5",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1330, эскиз: а=230; b=1100; с=120; d=200; α=120°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-5",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-6": [
+        {
+          "mention_id": "M-037",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-6",
+          "exact_keys": {
+            "spec_position": "16-Г-6"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-6",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1315, эскиз: а=1065; b=245; α=70°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "11",
+              "value_norm": 11,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-6",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-7": [
+        {
+          "mention_id": "M-038",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-7",
+          "exact_keys": {
+            "spec_position": "16-Г-7"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-7",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1330, эскиз: а=230; b=1100; с=80; d=220; α=110°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "11",
+              "value_norm": 11,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-7",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-8": [
+        {
+          "mention_id": "M-039",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-8",
+          "exact_keys": {
+            "spec_position": "16-Г-8"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-8",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1340, эскиз: а=240; b=1100; с=30; d=240; α=96°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-8",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-9": [
+        {
+          "mention_id": "M-040",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-9",
+          "exact_keys": {
+            "spec_position": "16-Г-9"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-9",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1320, эскиз: а=1075; b=240; α=82°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-9",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-10": [
+        {
+          "mention_id": "M-041",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-10",
+          "exact_keys": {
+            "spec_position": "16-Г-10"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-10",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1330, эскиз: а=230; b=1100; с=80; d=220; α=110°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-10",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-11": [
+        {
+          "mention_id": "M-042",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-11",
+          "exact_keys": {
+            "spec_position": "16-Г-11"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-11",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1315, эскиз: а=1065; b=245; α=70°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-11",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-12": [
+        {
+          "mention_id": "M-043",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-12",
+          "exact_keys": {
+            "spec_position": "16-Г-12"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-12",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1330, эскиз: а=230; b=1100; с=110; d=210; α=117°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-12",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-13": [
+        {
+          "mention_id": "M-044",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-13",
+          "exact_keys": {
+            "spec_position": "16-Г-13"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-13",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1305, эскиз: а=1055; b=250; α=60°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-13",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-14": [
+        {
+          "mention_id": "M-045",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-14",
+          "exact_keys": {
+            "spec_position": "16-Г-14"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-14",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1340, эскиз: а=240; b=1100; с=70; d=240; α=105°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-14",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-15": [
+        {
+          "mention_id": "M-046",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-15",
+          "exact_keys": {
+            "spec_position": "16-Г-15"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-15",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1320, эскиз: а=1075; b=240; α=81°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-15",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-16": [
+        {
+          "mention_id": "M-047",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-16",
+          "exact_keys": {
+            "spec_position": "16-Г-16"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-16",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1340, эскиз: а=240; b=1100; с=40; d=240; α=98°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-16",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-17": [
+        {
+          "mention_id": "M-048",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-17",
+          "exact_keys": {
+            "spec_position": "16-Г-17"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-17",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1340, эскиз: а=240; b=1100; с=40; d=240; α=99°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-17",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-18": [
+        {
+          "mention_id": "M-049",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-18",
+          "exact_keys": {
+            "spec_position": "16-Г-18"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-18",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1320, эскиз: а=1075; b=240; α=79°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-18",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-19": [
+        {
+          "mention_id": "M-050",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-19",
+          "exact_keys": {
+            "spec_position": "16-Г-19"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-19",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1330, эскиз: а=230; b=1100; с=80; d=220; α=110°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-19",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-20": [
+        {
+          "mention_id": "M-051",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-20",
+          "exact_keys": {
+            "spec_position": "16-Г-20"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "TULW-YCYU-YVQ",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-20",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1315, эскиз: а=1065; b=245; α=70°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-20",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-21": [
+        {
+          "mention_id": "M-052",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-21",
+          "exact_keys": {
+            "spec_position": "16-Г-21"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "TULW-YCYU-YVQ",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-21",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1330, эскиз: а=230; b=1100; с=120; d=200; α=120°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-21",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-22": [
+        {
+          "mention_id": "M-053",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-22",
+          "exact_keys": {
+            "spec_position": "16-Г-22"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "TULW-YCYU-YVQ",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-22",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1305, эскиз: а=1055; b=250; α=60°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-22",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-23": [
+        {
+          "mention_id": "M-054",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-23",
+          "exact_keys": {
+            "spec_position": "16-Г-23"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "TULW-YCYU-YVQ",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-23",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=3260, эскиз: а=1160; b=2100; с=1110; d=360; α=162°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-23",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-24": [
+        {
+          "mention_id": "M-055",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-24",
+          "exact_keys": {
+            "spec_position": "16-Г-24"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "TULW-YCYU-YVQ",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-24",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=4110, эскиз: а=1310; b=2800; с=1250; d=410; α=162°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-24",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-25": [
+        {
+          "mention_id": "M-056",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-25",
+          "exact_keys": {
+            "spec_position": "16-Г-25"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "TULW-YCYU-YVQ",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-25",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1505, эскиз: а=685; b=815; α=46°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-25",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-26": [
+        {
+          "mention_id": "M-057",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-26",
+          "exact_keys": {
+            "spec_position": "16-Г-26"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "TULW-YCYU-YVQ",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-26",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1320, эскиз: а=1080; b=240; α=85°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-26",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-27": [
+        {
+          "mention_id": "M-058",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-27",
+          "exact_keys": {
+            "spec_position": "16-Г-27"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "TULW-YCYU-YVQ",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-27",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1410, эскиз: а=580; b=825; α=26°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "6",
+              "value_norm": 6,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-27",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-Г-30": [
+        {
+          "mention_id": "M-059",
+          "entity_type": "spec_row",
+          "normalized_label": "16-Г-30",
+          "exact_keys": {
+            "spec_position": "16-Г-30"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "TULW-YCYU-YVQ",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-Г-30",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=970, эскиз: а=725; b=240; α=80°; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "48",
+              "value_norm": 48,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-Г-30",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-П-1": [
+        {
+          "mention_id": "M-060",
+          "entity_type": "spec_row",
+          "normalized_label": "16-П-1",
+          "exact_keys": {
+            "spec_position": "16-П-1"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "TULW-YCYU-YVQ",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-П-1",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1810, эскиз: П-образный а=800; b=240; с=800; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "12",
+              "value_norm": 12,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-П-1",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "16-П-2": [
+        {
+          "mention_id": "M-061",
+          "entity_type": "spec_row",
+          "normalized_label": "16-П-2",
+          "exact_keys": {
+            "spec_position": "16-П-2"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "TULW-YCYU-YVQ",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "16-П-2",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "ГОСТ 34028-2016 φ16 А500С L=1890, эскиз: ступенчатый а=830; b=225; с=830; d=245; е=65; dоп=80",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "integer",
+              "value_raw": "24",
+              "value_norm": 24,
+              "unit": "шт",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "16-П-2",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ],
+      "БЕТОН В40 F100 W8": [
+        {
+          "mention_id": "M-062",
+          "entity_type": "spec_row",
+          "normalized_label": "Бетон В40 F100 W8",
+          "exact_keys": {
+            "spec_position": "Бетон В40 F100 W8"
+          },
+          "source_context": {
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table"
+          },
+          "attributes": [
+            {
+              "name": "designation",
+              "value_type": "string",
+              "value_raw": "ГОСТ 26633-2015",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Бетон В40 F100 W8 (материалы)",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            },
+            {
+              "name": "quantity",
+              "value_type": "float",
+              "value_raw": "72.86",
+              "value_norm": 72.86,
+              "unit": "м³",
+              "value_source": "text",
+              "parse_confidence": 0.95
+            }
+          ],
+          "_canonical_key": "БЕТОН В40 F100 W8",
+          "_batch_source": "typed_facts_batch_002.json"
+        }
+      ]
+    },
+    "other": {
+      "СХЕМА РАСПОЛОЖЕНИЯ КОРПУСОВ К1–К7": [
+        {
+          "mention_id": "M-028",
+          "entity_type": "other",
+          "normalized_label": "Схема расположения корпусов К1–К7",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "43L7-P9UL-VYD",
+            "view_type": "key_plan"
+          },
+          "attributes": [
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "К1 39эт., К2 42эт., К3 30эт., К4 18эт., К5 15эт., К6 28эт., К7, Лобби. Подземные автостоянки П.1–П.24 и П.25–П.48. Пристройки К3-К4, К4-К5, К5-К6.",
+              "value_norm": "Ключ-схема корпусов и автостоянок",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "СХЕМА РАСПОЛОЖЕНИЯ КОРПУСОВ К1–К7",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ],
+      "СХЕМА РАСПОЛОЖЕНИЯ ТОЧЕК ЦЕНТРА РАДИУСА": [
+        {
+          "mention_id": "M-042",
+          "entity_type": "other",
+          "normalized_label": "Схема расположения точек центра радиуса",
+          "source_context": {
+            "page": 10,
+            "sheet": "Лист 5",
+            "block_id": "4JYF-HEKU-VVV",
+            "view_type": "key_plan"
+          },
+          "attributes": [
+            {
+              "name": "description",
+              "value_type": "string",
+              "value_raw": "Схема расположения точек центра радиуса для вертикальных конструкций в осях П.3-П.9/П.Л-П.Т. Радиусы: R17950, R18250, R17450, R17750. Линейные размеры: 6815, 1250, 1380, 795.",
+              "value_norm": "Ключ-схема центров радиусов криволинейных стен пристройки",
+              "value_source": "vision",
+              "parse_confidence": 0.9
+            }
+          ],
+          "_canonical_key": "СХЕМА РАСПОЛОЖЕНИЯ ТОЧЕК ЦЕНТРА РАДИУСА",
+          "_batch_source": "typed_facts_batch_001.json"
+        }
+      ]
+    }
+  },
+  "relations": [
+    {
+      "relation_id": "R-001",
+      "relation_type": "described_in",
+      "from_mention_id": "M-011",
+      "to_mention_id": "M-018",
+      "confidence": 0.95,
+      "evidence_refs": [
+        {
+          "page": 9,
+          "sheet": "Лист 4",
+          "view_type": "spec_table"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-002",
+      "relation_type": "described_in",
+      "from_mention_id": "M-014",
+      "to_mention_id": "M-019",
+      "confidence": 0.95,
+      "evidence_refs": [
+        {
+          "page": 9,
+          "sheet": "Лист 4",
+          "view_type": "spec_table"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-003",
+      "relation_type": "described_in",
+      "from_mention_id": "M-016",
+      "to_mention_id": "M-019",
+      "confidence": 0.95,
+      "evidence_refs": [
+        {
+          "page": 9,
+          "sheet": "Лист 4",
+          "view_type": "spec_table"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-004",
+      "relation_type": "described_in",
+      "from_mention_id": "M-011",
+      "to_mention_id": "M-021",
+      "confidence": 0.95,
+      "evidence_refs": [
+        {
+          "page": 9,
+          "sheet": "Лист 4",
+          "view_type": "spec_table"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-005",
+      "relation_type": "described_in",
+      "from_mention_id": "M-014",
+      "to_mention_id": "M-020",
+      "confidence": 0.95,
+      "evidence_refs": [
+        {
+          "page": 9,
+          "sheet": "Лист 4",
+          "view_type": "spec_table"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-006",
+      "relation_type": "described_in",
+      "from_mention_id": "M-016",
+      "to_mention_id": "M-020",
+      "confidence": 0.95,
+      "evidence_refs": [
+        {
+          "page": 9,
+          "sheet": "Лист 4",
+          "view_type": "spec_table"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-007",
+      "relation_type": "applies_to",
+      "from_mention_id": "M-011",
+      "to_mention_id": "M-010",
+      "confidence": 0.95,
+      "evidence_refs": [
+        {
+          "page": 8,
+          "sheet": "Лист 3",
+          "view_type": "section"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-008",
+      "relation_type": "applies_to",
+      "from_mention_id": "M-014",
+      "to_mention_id": "M-013",
+      "confidence": 0.95,
+      "evidence_refs": [
+        {
+          "page": 8,
+          "sheet": "Лист 3",
+          "view_type": "section"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-009",
+      "relation_type": "applies_to",
+      "from_mention_id": "M-016",
+      "to_mention_id": "M-015",
+      "confidence": 0.95,
+      "evidence_refs": [
+        {
+          "page": 8,
+          "sheet": "Лист 3",
+          "view_type": "section"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-010",
+      "relation_type": "described_in",
+      "from_mention_id": "M-001",
+      "to_mention_id": "M-008",
+      "confidence": 0.9,
+      "evidence_refs": [
+        {
+          "page": 7,
+          "sheet": "Лист 2",
+          "view_type": "section"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-011",
+      "relation_type": "described_in",
+      "from_mention_id": "M-008",
+      "to_mention_id": "M-010",
+      "confidence": 0.9,
+      "evidence_refs": [
+        {
+          "page": 8,
+          "sheet": "Лист 3",
+          "view_type": "section"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-012",
+      "relation_type": "located_in",
+      "from_mention_id": "M-037",
+      "to_mention_id": "M-036",
+      "confidence": 0.95,
+      "evidence_refs": [
+        {
+          "page": 10,
+          "sheet": "Лист 5",
+          "view_type": "section"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-013",
+      "relation_type": "located_in",
+      "from_mention_id": "M-039",
+      "to_mention_id": "M-038",
+      "confidence": 0.95,
+      "evidence_refs": [
+        {
+          "page": 10,
+          "sheet": "Лист 5",
+          "view_type": "section"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-014",
+      "relation_type": "located_in",
+      "from_mention_id": "M-041",
+      "to_mention_id": "M-040",
+      "confidence": 0.95,
+      "evidence_refs": [
+        {
+          "page": 10,
+          "sheet": "Лист 5",
+          "view_type": "section"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-015",
+      "relation_type": "duplicate_identifier_with",
+      "from_mention_id": "M-036",
+      "to_mention_id": "M-038",
+      "confidence": 0.7,
+      "evidence_refs": [
+        {
+          "page": 10,
+          "sheet": "Лист 5",
+          "view_type": "section"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-016",
+      "relation_type": "duplicate_identifier_with",
+      "from_mention_id": "M-038",
+      "to_mention_id": "M-040",
+      "confidence": 0.7,
+      "evidence_refs": [
+        {
+          "page": 10,
+          "sheet": "Лист 5",
+          "view_type": "section"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-001",
+      "relation_type": "described_in",
+      "from_mention_id": "M-013",
+      "to_mention_id": "M-033",
+      "confidence": 0.95,
+      "evidence_refs": [
+        {
+          "page": 12,
+          "sheet": "Лист 7",
+          "view_type": "section"
+        },
+        {
+          "page": 13,
+          "sheet": "Лист 8",
+          "view_type": "table"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-002",
+      "relation_type": "described_in",
+      "from_mention_id": "M-012",
+      "to_mention_id": "M-031",
+      "confidence": 0.95,
+      "evidence_refs": [
+        {
+          "page": 12,
+          "sheet": "Лист 7",
+          "view_type": "section"
+        },
+        {
+          "page": 13,
+          "sheet": "Лист 8",
+          "view_type": "table"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-003",
+      "relation_type": "described_in",
+      "from_mention_id": "M-014",
+      "to_mention_id": "M-029",
+      "confidence": 0.9,
+      "evidence_refs": [
+        {
+          "page": 12,
+          "sheet": "Лист 7",
+          "view_type": "section"
+        },
+        {
+          "page": 13,
+          "sheet": "Лист 8",
+          "view_type": "table"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-004",
+      "relation_type": "described_in",
+      "from_mention_id": "M-018",
+      "to_mention_id": "M-030",
+      "confidence": 0.95,
+      "evidence_refs": [
+        {
+          "page": 12,
+          "sheet": "Лист 7",
+          "view_type": "detail"
+        },
+        {
+          "page": 13,
+          "sheet": "Лист 8",
+          "view_type": "table"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-005",
+      "relation_type": "described_in",
+      "from_mention_id": "M-019",
+      "to_mention_id": "M-059",
+      "confidence": 0.95,
+      "evidence_refs": [
+        {
+          "page": 12,
+          "sheet": "Лист 7",
+          "view_type": "detail"
+        },
+        {
+          "page": 13,
+          "sheet": "Лист 8",
+          "view_type": "table"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-006",
+      "relation_type": "described_in",
+      "from_mention_id": "M-020",
+      "to_mention_id": "M-028",
+      "confidence": 0.9,
+      "evidence_refs": [
+        {
+          "page": 12,
+          "sheet": "Лист 7",
+          "view_type": "detail"
+        },
+        {
+          "page": 13,
+          "sheet": "Лист 8",
+          "view_type": "table"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-007",
+      "relation_type": "described_in",
+      "from_mention_id": "M-021",
+      "to_mention_id": "M-061",
+      "confidence": 0.95,
+      "evidence_refs": [
+        {
+          "page": 12,
+          "sheet": "Лист 7",
+          "view_type": "detail"
+        },
+        {
+          "page": 13,
+          "sheet": "Лист 8",
+          "view_type": "table"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-008",
+      "relation_type": "described_in",
+      "from_mention_id": "M-023",
+      "to_mention_id": "M-032",
+      "confidence": 0.95,
+      "evidence_refs": [
+        {
+          "page": 12,
+          "sheet": "Лист 7",
+          "view_type": "section"
+        },
+        {
+          "page": 13,
+          "sheet": "Лист 8",
+          "view_type": "table"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-009",
+      "relation_type": "described_in",
+      "from_mention_id": "M-025",
+      "to_mention_id": "M-032",
+      "confidence": 0.95,
+      "evidence_refs": [
+        {
+          "page": 12,
+          "sheet": "Лист 7",
+          "view_type": "detail"
+        },
+        {
+          "page": 13,
+          "sheet": "Лист 8",
+          "view_type": "table"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-010",
+      "relation_type": "described_in",
+      "from_mention_id": "M-027",
+      "to_mention_id": "M-034",
+      "confidence": 0.95,
+      "evidence_refs": [
+        {
+          "page": 12,
+          "sheet": "Лист 7",
+          "view_type": "section"
+        },
+        {
+          "page": 13,
+          "sheet": "Лист 8",
+          "view_type": "table"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-011",
+      "relation_type": "applies_to",
+      "from_mention_id": "M-006",
+      "to_mention_id": "M-001",
+      "confidence": 0.9,
+      "evidence_refs": [
+        {
+          "page": 11,
+          "sheet": "Лист 6",
+          "view_type": "plan"
+        }
+      ]
+    },
+    {
+      "relation_id": "R-012",
+      "relation_type": "located_in",
+      "from_mention_id": "M-011",
+      "to_mention_id": "M-001",
+      "confidence": 0.7,
+      "evidence_refs": [
+        {
+          "page": 12,
+          "sheet": "Лист 7",
+          "view_type": "section"
+        }
+      ]
+    }
+  ],
+  "uncertainties": [
+    {
+      "uncertainty_id": "U-001",
+      "mention_id": "M-015",
+      "kind": "ambiguous_reading",
+      "reason": "OCR выдаёт углы между радиальными стержнями '195°', что физически невозможно для 8 стержней. Ожидаемо '45°' или '19,5°'; на сечении 3-3 8 стержней, 360/8=45°.",
+      "severity": "medium"
+    },
+    {
+      "uncertainty_id": "U-002",
+      "mention_id": "M-005",
+      "kind": "ambiguous_reading",
+      "reason": "На плане опалубки лист 2 близкие радиусы R17950 и R17980 — возможен OCR-артефакт (7 vs 9). Уточнить по PDF.",
+      "severity": "low"
+    },
+    {
+      "uncertainty_id": "U-003",
+      "mention_id": "M-036",
+      "kind": "ambiguous_reading",
+      "reason": "На разрезе 3-3 листа 5 заглубление 400 мм показано пунктиром ниже отм. -1,800 — неясно, это толщина плиты/подготовки или условное продолжение. Требует пояснения легенды.",
+      "severity": "low"
+    },
+    {
+      "uncertainty_id": "U-004",
+      "mention_id": "M-024",
+      "kind": "missing_attribute",
+      "reason": "Типы стен 'по 2' и 'по 3' на листе 5 не раскрыты в пределах представленных блоков (армирование см. листы 6, 7). Геометрия (толщина, длина) не привязана однозначно.",
+      "severity": "medium"
+    },
+    {
+      "uncertainty_id": "U-005",
+      "mention_id": "M-035",
+      "kind": "missing_attribute",
+      "reason": "Корпус К7 на ключ-схеме изображён, но этажность не подписана.",
+      "severity": "low"
+    },
+    {
+      "uncertainty_id": "U-001",
+      "mention_id": "M-017",
+      "kind": "ambiguous_reading",
+      "reason": "Обозначение узла 'Б 6' (оси) может трактоваться как маркер узла, но точная привязка 'по 4(7)' требует сопоставления с другими листами",
+      "severity": "low"
+    },
+    {
+      "uncertainty_id": "U-002",
+      "mention_id": "M-024",
+      "kind": "ambiguous_reading",
+      "reason": "Размеры '25 25 25 5 5' в OCR-тексте могут содержать артефакты; защитный слой з.с.25 подтверждён, остальные значения требуют визуальной проверки",
+      "severity": "medium"
+    },
+    {
+      "uncertainty_id": "U-003",
+      "mention_id": "M-011",
+      "kind": "missing_attribute",
+      "reason": "Для сечения 1-1 упомянута привязка к существующим конструкциям по КЖ3.1-ПА Книга 3, но конкретные параметры существующих конструкций на данном листе не указаны",
+      "severity": "low"
+    }
+  ]
+}

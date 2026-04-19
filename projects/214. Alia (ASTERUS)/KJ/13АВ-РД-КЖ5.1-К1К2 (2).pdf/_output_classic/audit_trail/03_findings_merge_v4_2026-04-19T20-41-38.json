@@ -1,0 +1,45 @@
+{
+  "stage": "03_findings_merge_v4",
+  "model": "v4_pipeline",
+  "timestamp": "2026-04-19T20:41:38.569835",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "duration_ms": 0,
+  "result": {
+    "memory": {
+      "memory_path": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf/_output/canonical_memory_v2.json",
+      "stats": {
+        "total_lines": 0,
+        "total_panels": 0,
+        "total_breakers": 0,
+        "total_cts": 0,
+        "total_notes": 11,
+        "total_spec_rows": 36,
+        "total_rooms": 0,
+        "total_relations": 28,
+        "total_uncertainties": 8,
+        "duplicate_identifier_relations": 2
+      }
+    },
+    "candidates": {
+      "candidates_path": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf/_output/candidates_v2.json",
+      "stats": {
+        "class2_identity": 2,
+        "class3_cross_view": 0,
+        "class4_requirement_conflict": 0,
+        "total": 2
+      }
+    },
+    "formatter": {
+      "findings_path": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf/_output/03_findings.json",
+      "total_findings": 26,
+      "by_severity": {
+        "ЭКСПЛУАТАЦИОННОЕ": 5,
+        "КРИТИЧЕСКОЕ": 4,
+        "РЕКОМЕНДАТЕЛЬНОЕ": 8,
+        "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 8,
+        "ЭКОНОМИЧЕСКОЕ": 1
+      }
+    }
+  }
+}

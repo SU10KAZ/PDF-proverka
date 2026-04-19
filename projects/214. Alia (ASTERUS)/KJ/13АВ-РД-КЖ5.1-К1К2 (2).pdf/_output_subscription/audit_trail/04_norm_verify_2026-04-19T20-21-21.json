@@ -1,0 +1,9 @@
+{
+  "stage": "04_norm_verify",
+  "model": "claude-opus-4-7",
+  "timestamp": "2026-04-19T20:21:21.175350",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "duration_ms": 372224,
+  "result": "Verified 12 clauses via MCP norms; wrote `norm_checks_llm_3.json` with `paragraph_checks`. Key findings: F-018, F-020, F-023, F-021, F-028, F-013, F-024 — цитаты не совпадают/пункты не найдены; F-008 и F-014 — подтверждены (с уточнениями); F-027, F-031, F-022 — цитаты относятся к смежным документам."
+}

@@ -1,0 +1,194 @@
+{
+  "meta": {
+    "project_id": "13АВ-РД-КЖ5.1-К1К2 (2).pdf",
+    "review_date": "2026-04-19T00:00:00Z",
+    "total_reviewed": 22,
+    "verdicts": {
+      "pass": 19,
+      "no_evidence": 0,
+      "phantom_block": 0,
+      "weak_evidence": 0,
+      "page_mismatch": 0,
+      "contradicts_text": 0,
+      "not_practical": 3
+    }
+  },
+  "reviews": [
+    {
+      "finding_id": "F-001",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-002",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-003",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-004",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-005",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-006",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-007",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-008",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-009",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-010",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-011",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-012",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-013",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-014",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-015",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-016",
+      "verdict": "not_practical",
+      "details": "Опечатка в обозначении класса арматуры «А240С» вместо «А240» является формальной ошибкой в наименовании. Класс А240 (гладкий стержень) однозначно идентифицируется независимо от лишней буквы «С». Если строить строго по чертежу, подрядчик применит именно А240 (Ø8, гладкий профиль) — ошибки в конструктиве не возникнет. Аналог опечатки в обозначении типа материала без влияния на исполнение.",
+      "suggested_action": "remove",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-017",
+      "verdict": "not_practical",
+      "details": "Опечатка «ГОСТ 8105-2018» вместо «ГОСТ 18105-2018» является типичной ошибкой в номере ГОСТ при правильном использовании самого стандарта. Метод контроля прочности бетона по образцам применяется корректно — упомянуты схемы В и Г согласно реальному ГОСТ 18105-2018. Ошибка в реквизите номера ГОСТ не влечёт неправильного строительства.",
+      "suggested_action": "remove",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-018",
+      "verdict": "not_practical",
+      "details": "Опечатка в дате ФЗ-384 («60 декабря» вместо «30 декабря») — очевидная ошибка в реквизитах при однозначной идентификации закона по номеру «384-ФЗ». Закон применяется и цитируется корректно. Аналог опечатки в году в обозначении нормативного документа без влияния на проектные решения.",
+      "suggested_action": "remove",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-019",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-020",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-021",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-022",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    }
+  ]
+}

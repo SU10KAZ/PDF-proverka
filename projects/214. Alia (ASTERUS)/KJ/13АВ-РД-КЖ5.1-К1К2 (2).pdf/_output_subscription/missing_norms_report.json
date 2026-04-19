@@ -1,0 +1,14 @@
+{
+  "meta": {
+    "project_id": "13АВ-РД-КЖ5.1-К1К2 (2).pdf",
+    "generated_at": "2026-04-19T20:15:05.572264",
+    "source": "norms_main_status_index"
+  },
+  "report": {
+    "total_checked": 21,
+    "authoritative": 11,
+    "missing": 8,
+    "unsupported": 2,
+    "queue_size": 10
+  }
+}

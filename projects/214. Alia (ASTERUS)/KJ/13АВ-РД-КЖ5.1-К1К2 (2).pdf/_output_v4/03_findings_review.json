@@ -1,0 +1,218 @@
+{
+  "meta": {
+    "project_id": "13АВ-РД-КЖ5.1-К1К2 (2).pdf",
+    "review_date": "2026-04-19T21:05:00Z",
+    "total_reviewed": 25,
+    "verdicts": {
+      "pass": 18,
+      "no_evidence": 0,
+      "phantom_block": 0,
+      "weak_evidence": 1,
+      "page_mismatch": 0,
+      "contradicts_text": 0,
+      "not_practical": 6
+    }
+  },
+  "reviews": [
+    {
+      "finding_id": "F-001",
+      "verdict": "weak_evidence",
+      "details": "Evidence — блок 46LP-7CN7-GG6 — это ведомость деталей (позиции 16-Г-2 – 16-Г-19), а не план/схема, где был бы реально зафиксирован факт дублирования маркера 16-Г-5/16-Г-7 для разных направлений. Ведомость определяет уникальные позиции, но не доказывает их двойное использование на плане. Для подтверждения требуется ссылка на план армирования листа 8 (блок, отражающий схему установки элементов). Кроме того, массив evidence содержит один и тот же блок 4 раза, что не усиливает доказательство.",
+      "suggested_action": "narrow_evidence",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-002",
+      "verdict": "not_practical",
+      "details": "Фраза «Плита перекрытия запроектирована монолитной железобетонной из бетона класса В0 F100 W8» — очевидная опечатка/копипаст из шаблона другого комплекта. Текст не относится к предмету раздела (вертикальные конструкции), а реальные материалы колонн/стен корректно заданы в ведомостях материалов (В30 для колонн Км-1, В40 F100 W8 для стен). При строительстве по чертежам ошибка не повлияет на результат — подрядчик руководствуется ведомостью, а не посторонним пунктом общих указаний. Категория «КРИТИЧЕСКОЕ» неоправданна для редакционного дефекта.",
+      "suggested_action": "downgrade_severity",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-003",
+      "verdict": "not_practical",
+      "details": "Опечатка в номере ГОСТ (8105 → 18105-2018). Стандарт однозначно идентифицируется по году и названию, а дальнейшее описание контроля («схема В, Г», разрушающие методы по ГОСТ 22690-2015) корректно. Подрядчик по контексту легко восстанавливает верный номер. Не влияет на строительство, классический редакционный дефект. Качественная оценка самого файла findings также помечает этот пункт как likely_formal_only=true.",
+      "suggested_action": "remove",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-004",
+      "verdict": "not_practical",
+      "details": "Опечатка в дате Федерального закона («60 декабря» вместо «30 декабря» 2009 г.). Сам ФЗ-384 однозначно идентифицирован по номеру. На строительные и инженерные решения опечатка не влияет, подрядчик применяет закон независимо от опечатки в дате. Типичный клерикальный дефект общих указаний.",
+      "suggested_action": "remove",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-005",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-006",
+      "verdict": "not_practical",
+      "details": "Сам текст замечания констатирует, что для стен пристройки в ведомости материалов уже указаны марки F100 W8, а для колонн — не указаны. Дефицит F/W для колонн уже предметно разобран в F-007 (КРИТИЧЕСКОЕ, со ссылкой на СП 28.13330.2017). F-006 по сути дублирует F-007 и одновременно имеет обобщённый характер «нет явного перечня в общих указаниях», что является редакционным требованием. Система и сама пометила пункт likely_formal_only=true.",
+      "suggested_action": "remove",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-007",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-008",
+      "verdict": "not_practical",
+      "details": "Замечание само признаёт, что «Расхождение ~2 кг связано с округлением единичных масс». Разница в 2 кг на общем расходе 5141 кг — 0,04 %, что лежит в пределах стандартных допусков округления единичных масс в ведомости расхода стали (ГОСТ 21.110-2013 допускает точность 0,01 кг). Указанный в ведомости итог (1012,11 + 4129,27 = 5141,38) согласуется сам с собой. На закупку и монтаж арматуры такое расхождение не повлияет — не затрагивает ни целое число стержней, ни геометрию.",
+      "suggested_action": "remove",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-009",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-010",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-011",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-012",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-013",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-014",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-015",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-016",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-017",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-018",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-019",
+      "verdict": "not_practical",
+      "details": "Базовые марки бетона стен пристройки (В40 F100 W8) в ведомости материалов указаны корректно. Марка по подвижности (П) и требования к цементу обычно задаются в ППР/БСУ по месту укладки и согласуются на стадии производства работ, а не через общие указания. Сульфатостойкий цемент требуется только при фактическом обосновании агрессивности грунтовых вод, которого нет ни в исходных данных, ни в замечании. Формальное расширение перечня параметров без практических последствий для строительства.",
+      "suggested_action": "downgrade_severity",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-020",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-021",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-022",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-023",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-024",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-025",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    }
+  ]
+}

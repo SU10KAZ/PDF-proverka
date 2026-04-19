@@ -1,0 +1,9 @@
+{
+  "stage": "04_norm_verify",
+  "model": "claude-opus-4-7",
+  "timestamp": "2026-04-19T20:47:04.008975",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "duration_ms": 318375,
+  "result": "Файл `norm_checks_llm_2.json` создан с верификацией 14 цитат через MCP norms. Все цитаты помечены как `paragraph_verified: false` — формулировки в замечаниях являются вольными пересказами или относятся к другим пунктам/документам, нежели заявлено."
+}

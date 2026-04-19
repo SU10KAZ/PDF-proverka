@@ -1,0 +1,519 @@
+{
+  "total_blocks": 25,
+  "total_expected": 25,
+  "errors": 0,
+  "compact": false,
+  "source_result_json": [
+    "13АВ-РД-КЖ5.1-К1К2 (2)_result.json"
+  ],
+  "blocks": [
+    {
+      "block_id": "VGGJ-3ULF-TLV",
+      "page": 7,
+      "file": "block_VGGJ-3ULF-TLV.png",
+      "size_kb": 9.8,
+      "crop_px": [
+        6035,
+        73,
+        6965,
+        2519
+      ],
+      "render_size": [
+        316,
+        821
+      ],
+      "block_type": "image",
+      "ocr_label": "На чертеже представлен разрез 1-1 вертикальной строительной конструкции.",
+      "ocr_text_len": 629,
+      "source": "cloud"
+    },
+    {
+      "block_id": "4UTW-PPGP-VEN",
+      "page": 7,
+      "file": "block_4UTW-PPGP-VEN.png",
+      "size_kb": 1109.0,
+      "crop_px": [
+        197,
+        45,
+        6199,
+        4601
+      ],
+      "render_size": [
+        6000,
+        4558
+      ],
+      "block_type": "image",
+      "ocr_label": "План опалубки вертикальных конструкций 1 этажа пристройки корпуса 1-2 на отм. -0",
+      "ocr_text_len": 1101,
+      "source": "cloud",
+      "recrop_target_px": 6000,
+      "recrop_iteration": 2
+    },
+    {
+      "block_id": "6DRC-7KQL-9TJ",
+      "page": 8,
+      "file": "block_6DRC-7KQL-9TJ.png",
+      "size_kb": 949.5,
+      "crop_px": [
+        177,
+        69,
+        6159,
+        4235
+      ],
+      "render_size": [
+        6000,
+        4183
+      ],
+      "block_type": "image",
+      "ocr_label": "Схема армирования вертикальных конструкций 1 этажа пристройки корпуса 1-2 на отм",
+      "ocr_text_len": 1129,
+      "source": "cloud",
+      "recrop_target_px": 6000,
+      "recrop_iteration": 2
+    },
+    {
+      "block_id": "9GNP-D7CE-RYM",
+      "page": 8,
+      "file": "block_9GNP-D7CE-RYM.png",
+      "size_kb": 27.3,
+      "crop_px": [
+        6007,
+        61,
+        6943,
+        2351
+      ],
+      "render_size": [
+        331,
+        800
+      ],
+      "block_type": "image",
+      "ocr_label": "На чертеже представлен разрез 1-1 армирования колонны с указанием высотных отмет",
+      "ocr_text_len": 964,
+      "source": "cloud"
+    },
+    {
+      "block_id": "7KCK-7PJC-U3E",
+      "page": 8,
+      "file": "block_7KCK-7PJC-U3E.png",
+      "size_kb": 45.2,
+      "crop_px": [
+        6157,
+        2343,
+        6897,
+        2977
+      ],
+      "render_size": [
+        800,
+        688
+      ],
+      "block_type": "image",
+      "ocr_label": "На чертеже представлено сечение 2-2 круглой колонны с указанием армирования.",
+      "ocr_text_len": 769,
+      "source": "cloud"
+    },
+    {
+      "block_id": "4MAU-AT9Y-QRP",
+      "page": 8,
+      "file": "block_4MAU-AT9Y-QRP.png",
+      "size_kb": 57.9,
+      "crop_px": [
+        6177,
+        2965,
+        6943,
+        3619
+      ],
+      "render_size": [
+        800,
+        686
+      ],
+      "block_type": "image",
+      "ocr_label": "На чертеже представлено сечение 3-3, отображающее схему армирования круглой коло",
+      "ocr_text_len": 890,
+      "source": "cloud"
+    },
+    {
+      "block_id": "7MAJ-EMC4-KNJ",
+      "page": 9,
+      "file": "block_7MAJ-EMC4-KNJ.png",
+      "size_kb": 35.3,
+      "crop_px": [
+        2703,
+        173,
+        3747,
+        929
+      ],
+      "render_size": [
+        800,
+        583
+      ],
+      "block_type": "image",
+      "ocr_label": "Таблица ведомости деталей арматурных элементов с эскизами и геометрическими пара",
+      "ocr_text_len": 871,
+      "source": "cloud"
+    },
+    {
+      "block_id": "4WTD-JFKA-JLE",
+      "page": 10,
+      "file": "block_4WTD-JFKA-JLE.png",
+      "size_kb": 1740.7,
+      "crop_px": [
+        161,
+        0,
+        6928,
+        6917
+      ],
+      "render_size": [
+        5877,
+        6000
+      ],
+      "block_type": "image",
+      "ocr_label": "Опалубочный план вертикальных конструкций пристройки на отметке -1,800 в осях П.",
+      "ocr_text_len": 1115,
+      "source": "cloud",
+      "recrop_target_px": 6000,
+      "recrop_iteration": 2
+    },
+    {
+      "block_id": "43L7-P9UL-VYD",
+      "page": 10,
+      "file": "block_43L7-P9UL-VYD.png",
+      "size_kb": 55.4,
+      "crop_px": [
+        7890,
+        4595,
+        9930,
+        5591
+      ],
+      "render_size": [
+        800,
+        396
+      ],
+      "block_type": "image",
+      "ocr_label": "Схема расположения зданий и подземных автостоянок на участке.",
+      "ocr_text_len": 1167,
+      "source": "cloud"
+    },
+    {
+      "block_id": "7RD6-7GYX-MVT",
+      "page": 10,
+      "file": "block_7RD6-7GYX-MVT.png",
+      "size_kb": 32.6,
+      "crop_px": [
+        7206,
+        3593,
+        8270,
+        4495
+      ],
+      "render_size": [
+        800,
+        681
+      ],
+      "block_type": "image",
+      "ocr_label": "Фрагмент разреза 3-3 с указанием высотных отметок и характеристик засыпки.",
+      "ocr_text_len": 702,
+      "source": "cloud"
+    },
+    {
+      "block_id": "HJ7G-VWTF-CGV",
+      "page": 10,
+      "file": "block_HJ7G-VWTF-CGV.png",
+      "size_kb": 54.3,
+      "crop_px": [
+        7214,
+        2173,
+        8574,
+        3481
+      ],
+      "render_size": [
+        800,
+        770
+      ],
+      "block_type": "image",
+      "ocr_label": "Фрагмент разреза 1-1, показывающий конструкцию стены с засыпкой керамзитом между",
+      "ocr_text_len": 912,
+      "source": "cloud"
+    },
+    {
+      "block_id": "D9MX-LMX7-6QX",
+      "page": 10,
+      "file": "block_D9MX-LMX7-6QX.png",
+      "size_kb": 34.9,
+      "crop_px": [
+        8574,
+        2195,
+        9904,
+        3375
+      ],
+      "render_size": [
+        800,
+        711
+      ],
+      "block_type": "image",
+      "ocr_label": "На чертеже представлен разрез 2-2 конструктивного узла с засыпкой керамзитом.",
+      "ocr_text_len": 803,
+      "source": "cloud"
+    },
+    {
+      "block_id": "4JYF-HEKU-VVV",
+      "page": 10,
+      "file": "block_4JYF-HEKU-VVV.png",
+      "size_kb": 90.8,
+      "crop_px": [
+        6774,
+        63,
+        9860,
+        2145
+      ],
+      "render_size": [
+        1035,
+        700
+      ],
+      "block_type": "image",
+      "ocr_label": "Схема расположения точек центра радиуса для вертикальных конструкций в осях П.3-",
+      "ocr_text_len": 1125,
+      "source": "cloud"
+    },
+    {
+      "block_id": "RELE-MX3A-MEN",
+      "page": 11,
+      "file": "block_RELE-MX3A-MEN.png",
+      "size_kb": 2063.8,
+      "crop_px": [
+        161,
+        61,
+        7442,
+        6177
+      ],
+      "render_size": [
+        6000,
+        5042
+      ],
+      "block_type": "image",
+      "ocr_label": "План армирования вертикальных конструкций пристройки на отметке -1,800 в осях П.",
+      "ocr_text_len": 1389,
+      "source": "cloud",
+      "recrop_target_px": 6000,
+      "recrop_iteration": 2
+    },
+    {
+      "block_id": "9XLH-7CNM-MFW",
+      "page": 11,
+      "file": "block_9XLH-7CNM-MFW.png",
+      "size_kb": 14.9,
+      "crop_px": [
+        3333,
+        6343,
+        4505,
+        6887
+      ],
+      "render_size": [
+        800,
+        378
+      ],
+      "block_type": "image",
+      "ocr_label": "На чертеже представлена схема стыковки арматурных стержней внахлест.",
+      "ocr_text_len": 718,
+      "source": "cloud"
+    },
+    {
+      "block_id": "9J9X-DXHT-6GJ",
+      "page": 11,
+      "file": "block_9J9X-DXHT-6GJ.png",
+      "size_kb": 34.4,
+      "crop_px": [
+        6678,
+        6159,
+        7526,
+        6959
+      ],
+      "render_size": [
+        800,
+        756
+      ],
+      "block_type": "image",
+      "ocr_label": "Представлена таблица условных обозначений для строительных чертежей.",
+      "ocr_text_len": 900,
+      "source": "cloud"
+    },
+    {
+      "block_id": "4MQJ-6NXP-4YH",
+      "page": 12,
+      "file": "block_4MQJ-6NXP-4YH.png",
+      "size_kb": 40.6,
+      "crop_px": [
+        351,
+        185,
+        2169,
+        1709
+      ],
+      "render_size": [
+        800,
+        672
+      ],
+      "block_type": "image",
+      "ocr_label": "На чертеже представлено сечение 1-1 (6) армирования железобетонной конструкции.",
+      "ocr_text_len": 986,
+      "source": "cloud"
+    },
+    {
+      "block_id": "7NAU-TNME-3AR",
+      "page": 12,
+      "file": "block_7NAU-TNME-3AR.png",
+      "size_kb": 43.1,
+      "crop_px": [
+        2277,
+        171,
+        3539,
+        1407
+      ],
+      "render_size": [
+        800,
+        784
+      ],
+      "block_type": "image",
+      "ocr_label": "На чертеже представлен разрез 2-2 (6) железобетонной конструкции с указанием арм",
+      "ocr_text_len": 865,
+      "source": "cloud"
+    },
+    {
+      "block_id": "MANG-C46A-EH7",
+      "page": 12,
+      "file": "block_MANG-C46A-EH7.png",
+      "size_kb": 52.0,
+      "crop_px": [
+        3679,
+        139,
+        5049,
+        1589
+      ],
+      "render_size": [
+        757,
+        800
+      ],
+      "block_type": "image",
+      "ocr_label": "На чертеже представлено сечение 3-3 (6) армирования железобетонной конструкции.",
+      "ocr_text_len": 908,
+      "source": "cloud"
+    },
+    {
+      "block_id": "DTGF-MYHX-PPD",
+      "page": 12,
+      "file": "block_DTGF-MYHX-PPD.png",
+      "size_kb": 69.5,
+      "crop_px": [
+        3191,
+        1715,
+        4621,
+        3579
+      ],
+      "render_size": [
+        616,
+        800
+      ],
+      "block_type": "image",
+      "ocr_label": "Схема армирования криволинейного участка стены с указанием радиусов и спецификац",
+      "ocr_text_len": 1074,
+      "source": "cloud"
+    },
+    {
+      "block_id": "7QUU-QDA4-N7D",
+      "page": 12,
+      "file": "block_7QUU-QDA4-N7D.png",
+      "size_kb": 28.4,
+      "crop_px": [
+        1901,
+        1755,
+        2991,
+        3947
+      ],
+      "render_size": [
+        401,
+        800
+      ],
+      "block_type": "image",
+      "ocr_label": "На чертеже представлено сечение 5-5 армирования вертикальной конструкции с выпус",
+      "ocr_text_len": 764,
+      "source": "cloud"
+    },
+    {
+      "block_id": "9LPD-VX9H-YHK",
+      "page": 12,
+      "file": "block_9LPD-VX9H-YHK.png",
+      "size_kb": 55.4,
+      "crop_px": [
+        413,
+        1769,
+        1915,
+        2925
+      ],
+      "render_size": [
+        800,
+        618
+      ],
+      "block_type": "image",
+      "ocr_label": "Фрагмент чертежа узла армирования вертикальной конструкции с указанием параметро",
+      "ocr_text_len": 938,
+      "source": "cloud"
+    },
+    {
+      "block_id": "6PCX-NFHU-6KW",
+      "page": 12,
+      "file": "block_6PCX-NFHU-6KW.png",
+      "size_kb": 38.5,
+      "crop_px": [
+        5159,
+        183,
+        6537,
+        1483
+      ],
+      "render_size": [
+        800,
+        756
+      ],
+      "block_type": "image",
+      "ocr_label": "На чертеже представлено сечение 4-4 (6) армирования вертикальной конструкции (ст",
+      "ocr_text_len": 948,
+      "source": "cloud"
+    },
+    {
+      "block_id": "46LP-7CN7-GG6",
+      "page": 13,
+      "file": "block_46LP-7CN7-GG6.png",
+      "size_kb": 82.8,
+      "crop_px": [
+        4865,
+        65,
+        5807,
+        3809
+      ],
+      "render_size": [
+        320,
+        1254
+      ],
+      "block_type": "image",
+      "ocr_label": "Ведомость деталей с геометрическими параметрами для позиций 16-Г-2 – 16-Г-19.",
+      "ocr_text_len": 1663,
+      "source": "cloud"
+    },
+    {
+      "block_id": "TULW-YCYU-YVQ",
+      "page": 13,
+      "file": "block_TULW-YCYU-YVQ.png",
+      "size_kb": 66.1,
+      "crop_px": [
+        5907,
+        67,
+        6935,
+        3045
+      ],
+      "render_size": [
+        349,
+        999
+      ],
+      "block_type": "image",
+      "ocr_label": "Таблица ведомости деталей арматурных элементов с указанием геометрических параме",
+      "ocr_text_len": 1537,
+      "source": "cloud"
+    }
+  ]
+}

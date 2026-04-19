@@ -1,0 +1,9 @@
+{
+  "stage": "03c_findings_corrector",
+  "model": "claude-opus-4-7",
+  "timestamp": "2026-04-19T17:47:24.878554",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "duration_ms": 60219,
+  "result": "{\"meta\":{\"project_id\":\"13АВ-РД-КЖ5.1-К1К2 (2).pdf\",\"audit_completed\":\"2026-04-19T00:00:00Z\",\"total_findings\":22,\"blocks_analyzed\":14,\"by_severity\":{\"КРИТИЧЕСКОЕ\":3,\"ЭКОНОМИЧЕСКОЕ\":1,\"ЭКСПЛУАТАЦИОННОЕ\":5,\"ПРОВЕРИТЬ ПО СМЕЖНЫМ\":7,\"РЕКОМЕНДАТЕЛЬНОЕ\":6},\"quality_summary\":{\"total\":22,\"high_relevance\":13,\"medium_relevance\":9,\"low_relevance\":0,\"likely_formal_only\":0,\"high_severity_formal_only\":0},\"review_applied\":true,\"review_stats\":{\"total_reviewed\":26,\"passed\":22,\"fixed\":0,\"removed\":4,\"downgraded\":0},\"removed_findings\":[{\"id\":\"F-001\",\"reason\":\"formal finding, no construction impact\"},{\"id\":\"F-002\",\"reason\":\"formal finding, no construction impact\"},{\"id\":\"F-017\",\"reason\":\"formal finding, no construction impact\"},{\"id\":\"F-025\",\"reason\":\"formal finding, no construction impact\"}]},\"findings\":[\"F-003\",\"F-004\",\"F-005\",\"F-006\",\"F-007\",\"F-008\",\"F-009\",\"F-010\",\"F-011\",\"F-012\",\"F-013\",\"F-014\",\"F-015\",\"F-016\",\"F-018\",\"F-019\",\"F-020\",\"F-021\",\"F-022\",\"F-023\",\"F-024\",\"F-026\"]}"
+}

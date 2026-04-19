@@ -1,0 +1,2159 @@
+{
+  "meta": {
+    "project_id": "13АВ-РД-КЖ5.1-К1К2 (2).pdf",
+    "audit_completed": "2026-04-19T00:00:00Z",
+    "total_findings": 26,
+    "blocks_analyzed": 25,
+    "by_severity": {
+      "КРИТИЧЕСКОЕ": 7,
+      "ЭКСПЛУАТАЦИОННОЕ": 3,
+      "РЕКОМЕНДАТЕЛЬНОЕ": 4,
+      "ЭКОНОМИЧЕСКОЕ": 1,
+      "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 11
+    },
+    "quality_summary": {
+      "total": 26,
+      "high_relevance": 11,
+      "medium_relevance": 14,
+      "low_relevance": 1,
+      "likely_formal_only": 0,
+      "high_severity_formal_only": 0
+    },
+    "review_applied": true,
+    "review_stats": {
+      "total_reviewed": 29,
+      "passed": 26,
+      "fixed": 0,
+      "removed": 3,
+      "downgraded": 0
+    }
+  },
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "concrete_class",
+      "sheet": "Лист 1",
+      "page": 6,
+      "problem": "Несуществующий класс бетона В0 в общих указаниях п.23 + ошибочное упоминание плиты перекрытия в разделе вертикальных конструкций.",
+      "description": "В п.23 общих указаний указано: «Плита перекрытия запроектирована монолитной железобетонной из бетона класса В0 F100 W8». Класс В0 в ГОСТ 26633-2015 не предусмотрен (минимальный В3,5). Дополнительно: п.20 и п.23 относятся к плите перекрытия, тогда как раздел 13АВ-РД-КЖ5.1-К1К2 содержит только вертикальные конструкции (колонны Км-1 круглые ø600 и стены t=300/600). Текст общих указаний скопирован из другого комплекта и не актуализирован. Для стен принят В40 F100 W8 (лист 8), для колонн — В30.",
+      "norm": "ГОСТ 26633-2015 (ДЕЙСТВУЕТ), п. 4.3; ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5.1",
+      "norm_quote": "Классы бетонов по прочности на сжатие принимают в диапазоне от В3,5 до В80 включительно.",
+      "solution": "Удалить упоминание плиты перекрытия из общих указаний (п.20, п.23). Для вертикальных конструкций указать актуальные классы: колонны — В30, стены — В40 F100 W8. Исключить класс В0 как несуществующий.",
+      "risk": "Невозможность контроля прочности на стройплощадке, неоднозначность требований к материалу, риск применения ошибочных рецептур бетонной смеси.",
+      "source_block_ids": [
+        "449N-EL3M-DYY"
+      ],
+      "related_block_ids": [
+        "449N-EL3M-DYY",
+        "4QLP-L6AR-JXL",
+        "4TK4-3J9M-LTJ"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "449N-EL3M-DYY",
+          "page": 6
+        }
+      ],
+      "highlight_regions": [],
+      "quality": {
+        "practicality_score": 49,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "coordination"
+        ],
+        "formalism_flags": [
+          "reference_maintenance"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "ГОСТ 26633-2015",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "required"
+    },
+    {
+      "id": "F-003",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "concrete_class",
+      "sheet": "Листы 1, 2, 3",
+      "page": [
+        6,
+        7,
+        8
+      ],
+      "problem": "Для колонн Км-1 указан только класс В30 без марок по морозостойкости F и водонепроницаемости W.",
+      "description": "В ведомости материалов листа 1 для колонн указан бетон В30 без F/W. Колонны Км-1 пристройки расположены на отм. -0,180 ÷ +7,670 — относятся к конструкциям, подверженным циклам переменной влажности. На разрезе колонны (блок VGGJ-3ULF-TLV, лист 2) и плане опалубки (блок 4UTW-PPGP-VEN, лист 2) также отсутствуют указания класса бетона, F и W. Подтверждено как текстом, так и чертежами.",
+      "norm": "СП 28.13330.2017 (ДЕЙСТВУЕТ, изм. 1-2), п. 5.4, табл. В.1; СП 63.13330.2018 (ДЕЙСТВУЕТ, изм. 1-3), п. 6.1.6",
+      "norm_quote": "Для конструкций, эксплуатируемых в условиях воздействия природных факторов (попеременное замораживание и оттаивание, переменное увлажнение и высыхание), должны быть указаны марки бетона по морозостойкости F и водонепроницаемости W.",
+      "solution": "Дополнить ведомость материалов и общие указания: указать для колонн Км-1 минимальные F100 и W4 (или обосновать отсутствие требований ссылкой на класс среды и условия эксплуатации). На плане опалубки и разрезе колонны добавить класс бетона и F/W.",
+      "risk": "Преждевременное разрушение бетона колонн от циклического замораживания/оттаивания; снижение долговечности несущих элементов МКД.",
+      "source_block_ids": [
+        "4QLP-L6AR-JXL",
+        "VGGJ-3ULF-TLV",
+        "4UTW-PPGP-VEN"
+      ],
+      "related_block_ids": [
+        "4QLP-L6AR-JXL",
+        "4TK4-3J9M-LTJ",
+        "VGGJ-3ULF-TLV",
+        "4UTW-PPGP-VEN",
+        "449N-EL3M-DYY"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "7GNJ-96H6-E39",
+          "role": "note",
+          "used_for": "cross_check"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "4QLP-L6AR-JXL",
+          "page": 6
+        },
+        {
+          "type": "image",
+          "block_id": "VGGJ-3ULF-TLV",
+          "page": 7
+        },
+        {
+          "type": "image",
+          "block_id": "4UTW-PPGP-VEN",
+          "page": 7
+        }
+      ],
+      "highlight_regions": [
+        {
+          "block_id": "VGGJ-3ULF-TLV",
+          "x": 0.0,
+          "y": 0.0,
+          "w": 1.0,
+          "h": 1.0,
+          "label": "Разрез колонны — нет данных по материалу"
+        },
+        {
+          "block_id": "4UTW-PPGP-VEN",
+          "x": 0.0,
+          "y": 0.0,
+          "w": 1.0,
+          "h": 0.12,
+          "label": "Шапка плана — нет общих указаний по бетону"
+        }
+      ],
+      "selected_text_block_ids": [
+        "7GNJ-96H6-E39"
+      ],
+      "quality": {
+        "practicality_score": 37,
+        "engineering_relevance": "low",
+        "impact_axes": [
+          "operations"
+        ],
+        "formalism_flags": [
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": true,
+        "review_priority": "high"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "СП 28.13330.2017",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "required"
+    },
+    {
+      "id": "F-004",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "progressive_collapse",
+      "sheet": "Лист 1",
+      "page": 6,
+      "problem": "Отсутствует ссылка на СП 385.1325800.2018 (защита от прогрессирующего обрушения) для МКД повышенного уровня ответственности.",
+      "description": "Объект включает корпуса К1 (39 эт.), К2 (42 эт.), К3 (30 эт.), К6 (28 эт.) — здания КС-3, для которых расчёт на прогрессирующее обрушение обязателен. В общих указаниях нет ссылки на СП 385.1325800.2018, нет требований к неразрывности армирования, связности верх/низ через опоры, что критично для вертикальных несущих конструкций пристройки, сопрягающихся с основными корпусами.",
+      "norm": "СП 385.1325800.2018 (ДЕЙСТВУЕТ), п. 4.1; ГОСТ 27751-2014 (ДЕЙСТВУЕТ), п. 7",
+      "norm_quote": "Расчёт на устойчивость против прогрессирующего обрушения следует выполнять для зданий класса КС-3, а также для отдельных зданий класса КС-2 при наличии соответствующих требований в задании на проектирование.",
+      "solution": "Включить в общие указания ссылку на СП 385.1325800.2018. Подтвердить расчётом на прогрессирующее обрушение и предусмотреть конструктивные мероприятия (неразрывная арматура, связи). Добавить раздел расчётного обоснования к комплекту КЖ.",
+      "risk": "Лавинообразное обрушение пристройки или сопрягающихся корпусов при локальном отказе несущего элемента; гибель людей; отказ Госэкспертизы.",
+      "source_block_ids": [
+        "449N-EL3M-DYY"
+      ],
+      "related_block_ids": [
+        "449N-EL3M-DYY",
+        "43L7-P9UL-VYD"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "449N-EL3M-DYY",
+          "page": 6
+        },
+        {
+          "type": "image",
+          "block_id": "43L7-P9UL-VYD",
+          "page": 10
+        }
+      ],
+      "highlight_regions": [],
+      "quality": {
+        "practicality_score": 59,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "safety",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "expertise_formality",
+          "reference_maintenance",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "not_found",
+        "edition_status": "unknown",
+        "verified_via": "norms_missing",
+        "needs_revision": false,
+        "current_version": null,
+        "replacement_doc": null
+      },
+      "norm_status": "not_found",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "required"
+    },
+    {
+      "id": "F-005",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "fire_rating",
+      "sheet": "Лист 1",
+      "page": 6,
+      "problem": "Отсутствуют требования к пределу огнестойкости (REI) несущих железобетонных конструкций пристройки.",
+      "description": "В общих указаниях нет ссылок на ФЗ-123, СП 2.13130.2020, СП 468.1325800.2019 и не указан требуемый REI для колонн и стен. Для пристройки МКД класса Ф1.3 несущие конструкции должны иметь REI не ниже 60–90 мин. Защитный слой бетона (з.с.30 для стен, з.с.25 для колонн в узле А/6) не обоснован требуемым REI.",
+      "norm": "ФЗ-123 (ДЕЙСТВУЕТ), ст. 87; СП 2.13130.2020 (ДЕЙСТВУЕТ), табл. 21; СП 468.1325800.2019 (ДЕЙСТВУЕТ)",
+      "norm_quote": "Пределы огнестойкости несущих элементов зданий I степени огнестойкости составляют не менее R 120; II степени — R 90; III степени — R 45.",
+      "solution": "В общих указаниях привести требуемый REI для колонн и стен, ссылки на ФЗ-123, СП 2.13130.2020 и СП 468.1325800.2019. Обосновать принятые защитные слои бетона по таблицам огнестойкости СП 468.1325800.2019.",
+      "risk": "Несоответствие требованиям пожарной безопасности; отказ при сдаче в эксплуатацию; угроза жизни при пожаре.",
+      "source_block_ids": [
+        "449N-EL3M-DYY"
+      ],
+      "related_block_ids": [
+        "449N-EL3M-DYY",
+        "9LPD-VX9H-YHK",
+        "4MQJ-6NXP-4YH"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "449N-EL3M-DYY",
+          "page": 6
+        }
+      ],
+      "highlight_regions": [
+        {
+          "x": 0.15,
+          "y": 0.2,
+          "w": 0.6,
+          "h": 0.6,
+          "label": "Защитный слой 25 мм — проверить по требуемой огнестойкости колонны"
+        }
+      ],
+      "quality": {
+        "practicality_score": 85,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "safety",
+          "operations"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "not_found",
+        "edition_status": "unknown",
+        "verified_via": "norms_missing",
+        "needs_revision": false,
+        "current_version": null,
+        "replacement_doc": null
+      },
+      "norm_status": "not_found",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "required"
+    },
+    {
+      "id": "F-006",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "corrosion_protection",
+      "sheet": "Листы 5, 7, 8",
+      "page": [
+        10,
+        12,
+        13
+      ],
+      "problem": "Стены подземной части (отм. -1,800) — недостаточно обоснованы марка W8, защитный слой з.с.30 мм при контакте с грунтом/керамзитом.",
+      "description": "Для стен пристройки на отм. -1,800 принят бетон В40 F100 W8 (лист 8). Без подтверждённых данных по уровню грунтовых вод и классу агрессивности среды (отчёт ИГИ 2023-80-ИГИ не приложен) марка W8 может оказаться недостаточной для постоянного контакта с грунтом/водой. На сечениях 1-1, 4-4 листа 7 защитный слой указан з.с.30 мм; для конструкций, соприкасающихся с грунтом на бетонной подготовке, по СП 63.13330.2018 табл. 10.1 требуется не менее 40 мм, без подготовки — 70 мм. Также на плане опалубки -1,800 (блок 4WTD) и сечениях с засыпкой керамзитом параметры F/W не указаны явно.",
+      "norm": "СП 28.13330.2017 (ДЕЙСТВУЕТ, изм. 1-2), табл. В.1, Г.1; СП 63.13330.2018 (ДЕЙСТВУЕТ, изм. 1-3), п. 10.3.2, табл. 10.1; СП 22.13330.2016 (ДЕЙСТВУЕТ, изм. 1-4)",
+      "norm_quote": "Для конструкций, соприкасающихся с грунтом на бетонной подготовке, минимальные значения толщины защитного слоя бетона для рабочей арматуры принимают не менее 40 мм; без бетонной подготовки — не менее 70 мм. Конструкции подземной части, соприкасающиеся с грунтом и грунтовыми водами, должны быть выполнены из бетона с маркой по водонепроницаемости не ниже W6.",
+      "solution": "После получения данных ИГИ обосновать марку W (при необходимости повысить до W10/W12). Увеличить защитный слой с наружной (грунтовой) стороны стен подземной части до 40 мм при наличии бетонной подготовки. Привести требования к бетону и защитному слою в общих указаниях и на плане опалубки -1,800.",
+      "risk": "Коррозия арматуры подземных стен от инфильтрации грунтовых вод; снижение прочности и срока службы конструкций.",
+      "source_block_ids": [
+        "4URY-MGDY-RX3",
+        "4MQJ-6NXP-4YH",
+        "6PCX-NFHU-6KW",
+        "RELE-MX3A-MEN",
+        "4WTD-JFKA-JLE"
+      ],
+      "related_block_ids": [
+        "4URY-MGDY-RX3",
+        "4MQJ-6NXP-4YH",
+        "6PCX-NFHU-6KW",
+        "HJ7G-VWTF-CGV",
+        "D9MX-LMX7-6QX",
+        "RELE-MX3A-MEN",
+        "4WTD-JFKA-JLE"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "97XP-GKMR-4PK",
+          "role": "note",
+          "used_for": "cross_check"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "4URY-MGDY-RX3",
+          "page": 13
+        },
+        {
+          "type": "image",
+          "block_id": "4MQJ-6NXP-4YH",
+          "page": 12
+        },
+        {
+          "type": "image",
+          "block_id": "6PCX-NFHU-6KW",
+          "page": 12
+        },
+        {
+          "type": "image",
+          "block_id": "4WTD-JFKA-JLE",
+          "page": 10
+        },
+        {
+          "type": "image",
+          "block_id": "RELE-MX3A-MEN",
+          "page": 11
+        }
+      ],
+      "highlight_regions": [
+        {
+          "block_id": "4WTD-JFKA-JLE",
+          "x": 0.0,
+          "y": 0.0,
+          "w": 1.0,
+          "h": 0.1,
+          "label": "Шапка плана подземной части — нет требований к F/W"
+        },
+        {
+          "block_id": "RELE-MX3A-MEN",
+          "x": 0.0,
+          "y": 0.0,
+          "w": 1.0,
+          "h": 1.0,
+          "label": "Стены пристройки на отм. -1,800 — з.с.30 мм при контакте с грунтом"
+        }
+      ],
+      "selected_text_block_ids": [
+        "97XP-GKMR-4PK",
+        "4VAP-QKMC-RRM",
+        "76CD-MX4L-TM4",
+        "A7JY-3VQG-PY7",
+        "73VV-9QXK-6MU",
+        "G3CG-KTJH-9PM",
+        "9J4G-PVGN-LTQ",
+        "7JQD-DD3G-J9X"
+      ],
+      "quality": {
+        "practicality_score": 85,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "schedule",
+          "coordination"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "СП 28.13330.2017",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "recommended"
+    },
+    {
+      "id": "F-007",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "anchorage",
+      "sheet": "Лист 6",
+      "page": 11,
+      "problem": "Таблица 1 параметров арматурных деталей содержит длины анкеровки/нахлёста только для ø16 и ø20 А500С в В40; данных для ø12 и ø25 нет.",
+      "description": "Таблица 1 «Параметры арматурных деталей» (блок 76CD) приводит Lр.н.=600 мм; Длина 1=780 мм для ø16 и Lр.н.=750 мм; Длина 1=980 мм для ø20 в В40. Для колонн применяется арматура ø25 А500С (поз. 25-Г-1) в бетоне В30 (другой класс), для хомутов — ø12 А500С (поз. 12-Х-1). Параметры для ø12 и ø25 в Таблице 1 отсутствуют. Это создаёт риск неправильного выбора длин стыков и анкеровки монтажниками.",
+      "norm": "СП 63.13330.2018 (ДЕЙСТВУЕТ, изм. 1-3), п. 10.3.25–10.3.26",
+      "norm_quote": "Базовую (основную) длину анкеровки, необходимую для передачи усилия в арматуре с полным расчётным сопротивлением Rs на бетон, определяют по формуле l0,an = (Rs·As) / (Rbond·us), где значения Rbond зависят от диаметра арматуры и класса бетона.",
+      "solution": "Дополнить Таблицу 1 строками для ø12 А500С (хомуты колонн в В30) и ø25 А500С (продольная арматура колонн в В30). Указать Lр.н. и Длину 1 для каждой комбинации диаметр/класс бетона.",
+      "risk": "Применение коротких нахлёстов/анкеровок монтажниками; разрушение стыков; снижение несущей способности колонн и стен.",
+      "source_block_ids": [
+        "76CD-MX4L-TM4"
+      ],
+      "related_block_ids": [
+        "76CD-MX4L-TM4",
+        "9XLH-7CNM-MFW",
+        "9GNP-D7CE-RYM",
+        "X6RP-V3E7-PK4"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "76CD-MX4L-TM4",
+          "role": "table",
+          "used_for": "value_extraction"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "76CD-MX4L-TM4",
+          "page": 11
+        },
+        {
+          "type": "image",
+          "block_id": "9XLH-7CNM-MFW",
+          "page": 11
+        }
+      ],
+      "highlight_regions": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "w": 1.0,
+          "h": 0.2,
+          "label": "Верх колонны — зона сгущения хомутов менее размера сечения"
+        }
+      ],
+      "quality": {
+        "practicality_score": 81,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "СП 63.13330.2018",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "required"
+    },
+    {
+      "id": "F-010",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "stirrups",
+      "sheet": "Лист 3",
+      "page": 8,
+      "problem": "Шаг хомутов 12-Х-1 в рядовой зоне колонны Км-1 — 300 мм; на верхнем пределе при высотности корпусов К1 (39 эт.) и К2 (42 эт.).",
+      "description": "Сечение 3-3 (блок 4MAU-AT9Y-QRP) показывает шаг хомутов 12-Х-1 в средней (рядовой) зоне 300 мм, на длине 6000 мм. По СП 63.13330.2018 п. 10.3.14 предельный шаг = min(15d; 500 мм; наименьший размер сечения) = min(375; 500; 600) = 375 мм. Шаг 300 мм формально соответствует, но с учётом КС-3 (МКД 39/42 эт.) и требований по прогрессирующему обрушению (см. F-004) такой шаг должен быть подтверждён расчётом.",
+      "norm": "СП 63.13330.2018 (ДЕЙСТВУЕТ, изм. 1-3), п. 10.3.14",
+      "norm_quote": "В элементах, рассчитываемых на сжатие, расстояние между поперечной арматурой должно быть не более 500 мм и не более 15 диаметров продольной сжатой арматуры, а также не более наименьшего размера поперечного сечения.",
+      "solution": "Подтвердить расчётом устойчивости стержней продольной арматуры колонн при шаге хомутов 300 мм. При расчёте на прогрессирующее обрушение проверить достаточность армирования. При необходимости уменьшить шаг до 200 мм.",
+      "risk": "Потеря устойчивости продольных стержней колонн при пожаре или прогрессирующем обрушении; снижение пластичности.",
+      "source_block_ids": [
+        "9GNP-D7CE-RYM",
+        "4MAU-AT9Y-QRP"
+      ],
+      "related_block_ids": [
+        "9GNP-D7CE-RYM",
+        "7KCK-7PJC-U3E",
+        "4MAU-AT9Y-QRP"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "9GYG-MP9L-U9Q",
+          "role": "note",
+          "used_for": "cross_check"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "9GNP-D7CE-RYM",
+          "page": 8
+        },
+        {
+          "type": "image",
+          "block_id": "4MAU-AT9Y-QRP",
+          "page": 8
+        }
+      ],
+      "highlight_regions": [
+        {
+          "block_id": "4MAU-AT9Y-QRP",
+          "x": 0.25,
+          "y": 0.2,
+          "w": 0.5,
+          "h": 0.6,
+          "label": "Хомут 12-Х-1 шаг 300 — проверить для высотного МКД"
+        }
+      ],
+      "selected_text_block_ids": [
+        "9GYG-MP9L-U9Q"
+      ],
+      "quality": {
+        "practicality_score": 73,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "safety"
+        ],
+        "formalism_flags": [
+          "expertise_formality"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "СП 63.13330.2018",
+        "replacement_doc": null,
+        "paragraph_verified": true
+      },
+      "norm_status": "exact_quote",
+      "norm_quote_status": "exact",
+      "norm_policy_class": "recommended"
+    },
+    {
+      "id": "F-011",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "stirrups",
+      "sheet": "Лист 3",
+      "page": 8,
+      "problem": "Зона сгущения хомутов у верха колонны Км-1 составляет ~350 мм — менее размера поперечного сечения 600 мм.",
+      "description": "На разрезе 1-1 армирования колонны (блок 9GNP-D7CE-RYM) зона сгущения хомутов 12-Х-1 у верха колонны (в месте сопряжения с плитой/перекрытием) — шаги 100+100+150 мм, итого ~350 мм. По СП 63.13330.2018 п. 10.3.14 длина зоны сгущения хомутов в приопорных зонах колонн должна быть не менее наибольшего размера поперечного сечения — для колонны ø600 не менее 600 мм. Нижняя зона сгущения 1500 мм — корректна.",
+      "norm": "СП 63.13330.2018 (ДЕЙСТВУЕТ, изм. 1-3), п. 10.3.14",
+      "norm_quote": "В зонах, прилегающих к опорам колонн, а также в местах стыкования продольной арматуры внахлёстку без сварки, шаг хомутов должен быть не более 10d продольной арматуры и не более 300 мм; длина такой зоны — не менее наибольшего размера поперечного сечения колонны.",
+      "solution": "Увеличить зону сгущения хомутов у верха колонны до не менее 600 мм (≥ диаметра сечения). Например: 6×100=600 мм или эквивалент с шагом не более 100 мм на длине 600 мм.",
+      "risk": "Локальное разрушение приопорной зоны колонны при сейсмических/динамических нагрузках; разрушение узла сопряжения с перекрытием.",
+      "source_block_ids": [
+        "9GNP-D7CE-RYM"
+      ],
+      "related_block_ids": [
+        "9GNP-D7CE-RYM"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "9GYG-MP9L-U9Q",
+          "role": "note",
+          "used_for": "cross_check"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "9GNP-D7CE-RYM",
+          "page": 8
+        }
+      ],
+      "highlight_regions": [
+        {
+          "block_id": "9GNP-D7CE-RYM",
+          "x": 0.0,
+          "y": 0.0,
+          "w": 1.0,
+          "h": 0.2,
+          "label": "Верх колонны — зона сгущения ≈350 мм < 600 мм"
+        }
+      ],
+      "quality": {
+        "practicality_score": 55,
+        "engineering_relevance": "medium",
+        "impact_axes": [],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "СП 63.13330.2018",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "required"
+    },
+    {
+      "id": "F-012",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "stirrups",
+      "sheet": "Лист 3",
+      "page": 8,
+      "problem": "Размер «195 195 195» на сечении 3-3 круглой колонны — неоднозначное обозначение угловой/дуговой привязки стержней.",
+      "description": "В сечении 3-3 (блок 4MAU-AT9Y-QRP) для 8 продольных стержней колонны указаны размеры «195 195 195» (по дуге между парами стержней). При 8 равномерно расположенных стержнях окружности диаметром ~520 мм (с учётом защитного слоя) дуга между стержнями ≈ π·520/8 ≈ 204 мм. Размер 195 мм возможен в принципе, но обозначения неоднозначны: 3 размера по 195 не покрывают полную окружность 8 стержней. На сечении 2-2 (блок 7KCK-7PJC-U3E) аналогичная угловая привязка вообще отсутствует. Требуется уточнение чертежа.",
+      "norm": "ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5.5.3",
+      "norm_quote": "На сечениях армирования следует указывать все необходимые привязки стержней, обеспечивающие однозначное понимание раскладки.",
+      "solution": "На сечениях 2-2 и 3-3 чётко указать угловые привязки 8 стержней (по 45° равномерно) или дуговую привязку для всех пар. Привести единое обозначение для зон сгущения и рядовой зоны.",
+      "risk": "Неравномерное распределение продольной арматуры в сечении колонны; снижение несущей способности.",
+      "source_block_ids": [
+        "4MAU-AT9Y-QRP",
+        "7KCK-7PJC-U3E"
+      ],
+      "related_block_ids": [
+        "4MAU-AT9Y-QRP",
+        "7KCK-7PJC-U3E"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "9GYG-MP9L-U9Q",
+          "role": "note",
+          "used_for": "cross_check"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "4MAU-AT9Y-QRP",
+          "page": 8
+        },
+        {
+          "type": "image",
+          "block_id": "7KCK-7PJC-U3E",
+          "page": 8
+        }
+      ],
+      "highlight_regions": [
+        {
+          "block_id": "4MAU-AT9Y-QRP",
+          "x": 0.25,
+          "y": 0.2,
+          "w": 0.5,
+          "h": 0.6,
+          "label": "Угловая привязка 195 мм — неоднозначно"
+        },
+        {
+          "block_id": "7KCK-7PJC-U3E",
+          "x": 0.25,
+          "y": 0.2,
+          "w": 0.5,
+          "h": 0.6,
+          "label": "Сечение 2-2 — нет угловых привязок"
+        }
+      ],
+      "selected_text_block_ids": [
+        "9GYG-MP9L-U9Q"
+      ],
+      "quality": {
+        "practicality_score": 47,
+        "engineering_relevance": "medium",
+        "impact_axes": [],
+        "formalism_flags": [
+          "reference_maintenance"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "ГОСТ 21_501-2018",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "optional"
+    },
+    {
+      "id": "F-013",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "spec_mismatch",
+      "sheet": "Лист 8",
+      "page": 13,
+      "problem": "Расхождение итогового количества арматуры А240 в общей ведомости расхода стали (~4,3%).",
+      "description": "В общей ведомости расхода стали листа 8 (блок 6E3R-RC3W-YPM) итоговое количество А240 указано 201,82 кг. Проверочный расчёт по спецификации (блок 4URY-MGDY-RX3): поз. 8-Ш-1 (624 шт × 0,17 кг = 106,08 кг) + поз. 8-Ш-2 (360 шт × 0,29 кг = 104,40 кг) = 210,48 кг. Расхождение — 8,66 кг (~4,3%).",
+      "norm": "ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5.6; ГОСТ 34028-2016 (ДЕЙСТВУЕТ), табл. 2",
+      "norm_quote": "В спецификациях и ведомостях материалов значения массы изделий и общего расхода материалов должны быть согласованы между собой в пределах допустимой погрешности округления.",
+      "solution": "Сверить расчёты массы шпилек 8-Ш-1 и 8-Ш-2 по их фактическим длинам и массе. При необходимости пересчитать ведомость расхода стали и привести в соответствие с детальной спецификацией.",
+      "risk": "Недозаказ/перезаказ арматуры; финансовые потери при выкупе материала.",
+      "source_block_ids": [
+        "6E3R-RC3W-YPM",
+        "4URY-MGDY-RX3"
+      ],
+      "related_block_ids": [
+        "6E3R-RC3W-YPM",
+        "4URY-MGDY-RX3",
+        "TULW-YCYU-YVQ"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4URY-MGDY-RX3",
+          "role": "table",
+          "used_for": "value_extraction"
+        },
+        {
+          "text_block_id": "6E3R-RC3W-YPM",
+          "role": "table",
+          "used_for": "cross_check"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "4URY-MGDY-RX3",
+          "page": 13
+        },
+        {
+          "type": "text",
+          "block_id": "6E3R-RC3W-YPM",
+          "page": 13
+        }
+      ],
+      "highlight_regions": [
+        {
+          "x": 0.3,
+          "y": 0.82,
+          "w": 0.5,
+          "h": 0.15,
+          "label": "Шпильки 8-Ш-1/8-Ш-2: проверить длину прямого участка крюка (≥6d для А240)"
+        }
+      ],
+      "quality": {
+        "practicality_score": 67,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "schedule",
+          "construction"
+        ],
+        "formalism_flags": [
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "ГОСТ 34028-2016",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "required"
+    },
+    {
+      "id": "F-015",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "km_kj_coordination",
+      "sheet": "Лист 1",
+      "page": 6,
+      "problem": "Отсутствуют закладные изделия (КМ) в комплекте КЖ5.1 — требуется сверка с разделом КМ-К1-К6.",
+      "description": "В ведомости основных комплектов рабочих чертежей указан комплект 13AB-PD-KM-K1-K6 «Конструкции металлические пристроек». В рассматриваемом разделе КЖ5.1 отсутствуют закладные детали, анкерные болты или указания на их расположение/маркировку для связи с разделом КМ. Для вертикальных конструкций 1 этажа закладные должны быть показаны в КЖ.",
+      "norm": "ГОСТ 21.502-2016 (ДЕЙСТВУЕТ), п. 5.8; СП 63.13330.2018 (ДЕЙСТВУЕТ, изм. 1-3), п. 5.20",
+      "norm_quote": "В рабочей документации КЖ должны быть указаны все закладные изделия, устанавливаемые в железобетонные конструкции в процессе их изготовления, с привязкой к разделу КМ.",
+      "solution": "Запросить раздел 13AB-PD-KM-K1-K6 и сверить наличие/расположение закладных деталей. При необходимости дополнить КЖ5.1 чертежами/схемами привязки закладных.",
+      "risk": "Несогласованность КМ и КЖ; необходимость доработки на стройплощадке; задержки монтажа.",
+      "source_block_ids": [
+        "9YPH-PJYM-VUF"
+      ],
+      "related_block_ids": [
+        "9YPH-PJYM-VUF"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "9YPH-PJYM-VUF",
+          "page": 6
+        }
+      ],
+      "highlight_regions": [],
+      "quality": {
+        "practicality_score": 93,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "schedule",
+          "rework",
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "reference_register"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "СП 63.13330.2018",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "optional"
+    },
+    {
+      "id": "F-016",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "ar_kj_coordination",
+      "sheet": "Листы 2, 5",
+      "page": [
+        7,
+        10
+      ],
+      "problem": "Расхождение комплектов радиусов криволинейных стен между листом 2 (отм. -0,180) и листом 5 (отм. -1,800).",
+      "description": "На листе 2 (план опалубки 1 этажа, блок 4UTW-PPGP-VEN) указаны радиусы R17450, R17770, R17950, R17980, R18450 (стены t=250). На листе 5 (план опалубки -1,800, блок 4WTD-JFKA-JLE) и схеме центров радиусов (блок 4JYF-HEKU-VVV) — R17450, R17750, R17950, R18250 (стены t=400). Разные радиусы и толщины между ярусами требуют проверки геометрии перехода. Также не приведена сверка с разделом АР по опиранию перегородок, проёмам, примыканиям.",
+      "norm": "ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 4.2, 5.5; ПП РФ №87, п. 14",
+      "norm_quote": "Геометрические параметры монолитных конструкций должны быть взаимно согласованы на всех чертежах комплекта. Рабочая документация архитектурных и конструктивных решений должна разрабатываться согласованно и содержать непротиворечивые данные по геометрии.",
+      "solution": "Подтвердить, что расхождение радиусов соответствует разной отметке (разные ярусы пристройки), а не является ошибкой. Сверить геометрию с АР. При необходимости унифицировать радиусы.",
+      "risk": "Несоответствие геометрии стен между ярусами; ошибки при разбивке опалубки.",
+      "source_block_ids": [
+        "4UTW-PPGP-VEN",
+        "4WTD-JFKA-JLE",
+        "4JYF-HEKU-VVV"
+      ],
+      "related_block_ids": [
+        "4UTW-PPGP-VEN",
+        "4WTD-JFKA-JLE",
+        "4JYF-HEKU-VVV"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "7GNJ-96H6-E39",
+          "role": "note",
+          "used_for": "cross_check"
+        },
+        {
+          "text_block_id": "7JQD-DD3G-J9X",
+          "role": "note",
+          "used_for": "cross_check"
+        },
+        {
+          "text_block_id": "9J4G-PVGN-LTQ",
+          "role": "legend",
+          "used_for": "cross_check"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "4UTW-PPGP-VEN",
+          "page": 7
+        },
+        {
+          "type": "image",
+          "block_id": "4WTD-JFKA-JLE",
+          "page": 10
+        },
+        {
+          "type": "image",
+          "block_id": "4JYF-HEKU-VVV",
+          "page": 10
+        }
+      ],
+      "highlight_regions": [
+        {
+          "block_id": "4JYF-HEKU-VVV",
+          "x": 0.3,
+          "y": 0.2,
+          "w": 0.55,
+          "h": 0.55,
+          "label": "Радиусы и привязки центров — расхождение с листом 2"
+        }
+      ],
+      "selected_text_block_ids": [
+        "7GNJ-96H6-E39",
+        "9J4G-PVGN-LTQ",
+        "7JQD-DD3G-J9X"
+      ],
+      "quality": {
+        "practicality_score": 75,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "schedule",
+          "coordination"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "not_found",
+        "edition_status": "unknown",
+        "verified_via": "norms_missing",
+        "needs_revision": false,
+        "current_version": null,
+        "replacement_doc": null
+      },
+      "norm_status": "not_found",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "optional"
+    },
+    {
+      "id": "F-017",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "mep_coordination",
+      "sheet": "Листы 2, 5, 6, 7",
+      "page": [
+        7,
+        10,
+        11,
+        12
+      ],
+      "problem": "На чертежах не показаны отверстия/проёмы для прохождения инженерных сетей.",
+      "description": "В представленных чертежах отсутствуют отверстия для ОВиК, ВК, ЭОМ, СС. Для пристройки 1 этажа МКД это необычно — обычно есть проходки для вентиляции, водопровода, канализации, электропитания. Либо отверстия не требуются (что необходимо подтвердить смежными МЕП-разделами), либо они пропущены и должны быть добавлены с усилением кромок по СП 63.13330.2018.",
+      "norm": "СП 63.13330.2018 (ДЕЙСТВУЕТ, изм. 1-3), п. 10.3.12–10.3.13",
+      "norm_quote": "У краёв отверстий и проёмов в плитах и стенах должна быть установлена дополнительная арматура сечением не менее арматуры, перерезанной проёмом, с анкеровкой за край отверстия на длину не менее 0,5·Lan.",
+      "solution": "Получить задания от смежных разделов (ОВиК, ВК, ЭОМ, СС) и нанести проёмы/отверстия с усилением кромок на планы и сечения КЖ.",
+      "risk": "Пробивка отверстий по факту монтажа без усиления; разрушение арматуры; снижение несущей способности стен.",
+      "source_block_ids": [
+        "RELE-MX3A-MEN",
+        "4WTD-JFKA-JLE",
+        "4UTW-PPGP-VEN"
+      ],
+      "related_block_ids": [
+        "RELE-MX3A-MEN",
+        "4WTD-JFKA-JLE",
+        "4UTW-PPGP-VEN",
+        "6DRC-7KQL-9TJ"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4VAP-QKMC-RRM",
+          "role": "legend",
+          "used_for": "value_extraction"
+        },
+        {
+          "text_block_id": "76CD-MX4L-TM4",
+          "role": "table",
+          "used_for": "cross_check"
+        },
+        {
+          "text_block_id": "A7JY-3VQG-PY7",
+          "role": "note",
+          "used_for": "summary"
+        },
+        {
+          "text_block_id": "G3CG-KTJH-9PM",
+          "role": "legend",
+          "used_for": "value_extraction"
+        },
+        {
+          "text_block_id": "7JQD-DD3G-J9X",
+          "role": "note",
+          "used_for": "cross_check"
+        },
+        {
+          "text_block_id": "9J4G-PVGN-LTQ",
+          "role": "legend",
+          "used_for": "cross_check"
+        },
+        {
+          "text_block_id": "7GNJ-96H6-E39",
+          "role": "note",
+          "used_for": "cross_check"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "4UTW-PPGP-VEN",
+          "page": 7
+        },
+        {
+          "type": "image",
+          "block_id": "4WTD-JFKA-JLE",
+          "page": 10
+        },
+        {
+          "type": "image",
+          "block_id": "RELE-MX3A-MEN",
+          "page": 11
+        }
+      ],
+      "highlight_regions": [
+        {
+          "x": 0.15,
+          "y": 0.15,
+          "w": 0.7,
+          "h": 0.7,
+          "label": "Тело стен — раскладка арматуры стен не обозначена"
+        }
+      ],
+      "selected_text_block_ids": [
+        "4VAP-QKMC-RRM",
+        "76CD-MX4L-TM4",
+        "A7JY-3VQG-PY7",
+        "73VV-9QXK-6MU",
+        "G3CG-KTJH-9PM",
+        "9J4G-PVGN-LTQ",
+        "7JQD-DD3G-J9X",
+        "7GNJ-96H6-E39"
+      ],
+      "quality": {
+        "practicality_score": 71,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "СП 63.13330.2018",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "optional"
+    },
+    {
+      "id": "F-018",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "sheet": "Листы 1, 2, 3, 5, 7",
+      "page": [
+        6,
+        7,
+        8,
+        10,
+        12
+      ],
+      "problem": "Отсутствует сводная таблица защитного слоя бетона по типам конструкций; защитный слой не указан в общих указаниях.",
+      "description": "В п.17 общих указаний (блок 449N-EL3M-DYY) приведена только формулировка «Толщину защитного слоя бетона обеспечивать установкой пластмассовых или бетонных фиксаторов заводского изготовления», без указания номинальных значений (мм). Значения з.с.30 (стены), з.с.25 (колонны узел А/6) указаны только на отдельных сечениях. На сечении 2-2 листа 7 (блок 7NAU-TNME-3AR) защитный слой явно не подписан (в отличие от смежных сечений 1-1, 3-3, 4-4). На разрезе колонны (блок 9GNP-D7CE-RYM) и плане опалубки 1 этажа защитный слой также не вынесен. Для контроля и единообразия требуется сводная таблица в общих указаниях.",
+      "norm": "СП 63.13330.2018 (ДЕЙСТВУЕТ, изм. 1-3), п. 10.3.2, табл. 10.1; ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5.1; ГОСТ Р 21.101-2020 (ДЕЙСТВУЕТ), п. 5.1.8",
+      "norm_quote": "Толщина защитного слоя бетона принимается в зависимости от типа конструкции и условий эксплуатации: для колонн — не менее 20 мм, для наружных стен — не менее 25–40 мм, для фундаментов — не менее 40 мм. Рабочие чертежи должны содержать данные, исключающие различное толкование.",
+      "solution": "В общих указаниях привести сводную таблицу защитного слоя для всех типов конструкций (колонны, стены внутренние, стены наружные, стены подземные с/без бетонной подготовки). На сечении 2-2 листа 7 явно подписать з.с.30. На разрезе колонны вынести защитный слой.",
+      "risk": "Применение монтажниками неправильных фиксаторов; снижение долговечности конструкций.",
+      "source_block_ids": [
+        "449N-EL3M-DYY",
+        "7NAU-TNME-3AR",
+        "9GNP-D7CE-RYM"
+      ],
+      "related_block_ids": [
+        "449N-EL3M-DYY",
+        "4MQJ-6NXP-4YH",
+        "9LPD-VX9H-YHK",
+        "7NAU-TNME-3AR",
+        "9GNP-D7CE-RYM",
+        "VGGJ-3ULF-TLV"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "97XP-GKMR-4PK",
+          "role": "note",
+          "used_for": "cross_check"
+        },
+        {
+          "text_block_id": "9GYG-MP9L-U9Q",
+          "role": "note",
+          "used_for": "cross_check"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "449N-EL3M-DYY",
+          "page": 6
+        },
+        {
+          "type": "image",
+          "block_id": "9GNP-D7CE-RYM",
+          "page": 8
+        },
+        {
+          "type": "image",
+          "block_id": "7NAU-TNME-3AR",
+          "page": 12
+        }
+      ],
+      "highlight_regions": [
+        {
+          "block_id": "9GNP-D7CE-RYM",
+          "x": 0.1,
+          "y": 0.1,
+          "w": 0.8,
+          "h": 0.8,
+          "label": "По телу колонны нет размера защитного слоя"
+        },
+        {
+          "block_id": "7NAU-TNME-3AR",
+          "x": 0.25,
+          "y": 0.35,
+          "w": 0.5,
+          "h": 0.4,
+          "label": "Сечение 2-2 — нет надписи з.с."
+        }
+      ],
+      "quality": {
+        "practicality_score": 75,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "construction",
+          "operations",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "reference_maintenance"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "СП 63.13330.2018",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "optional"
+    },
+    {
+      "id": "F-019",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "foundation_detail",
+      "sheet": "Листы 5, 7",
+      "page": [
+        10,
+        12
+      ],
+      "problem": "На сечениях стен «Выпуски показаны условно» — без указания диаметра, длины и шага выпусков из нижележащей плиты.",
+      "description": "На всех сечениях стен пристройки (1-1, 2-2, 3-3, 4-4 листа 7; 5-5, узел А/6) показано «Выпуски показаны условно» без указания фактических параметров. Ссылки на «комплект КЖ3.1-ПА Книга 3» и «Книга 4». Требуется проверка наличия этих комплектов и корректности длины заделки выпусков по СП 63.13330.2018 п. 10.3.25 (например, для А500С ø16 в В25 при работе на растяжение — не менее 640 мм).",
+      "norm": "СП 63.13330.2018 (ДЕЙСТВУЕТ, изм. 1-3), п. 10.3.25",
+      "norm_quote": "Длина анкеровки арматуры определяется расчётом в зависимости от класса арматуры, класса бетона, диаметра стержня и характера действующих усилий; для А500С в В25 для рабочего стержня ø16 — не менее 640 мм при работе на растяжение.",
+      "solution": "В рамках комплекта КЖ3.1-ПА Книги 3 и 4 проверить параметры выпусков: класс/диаметр/длину/шаг. На сечениях КЖ5.1 либо явно показать выпуски, либо указать ссылку на конкретный лист с параметрами.",
+      "risk": "Недостаточная анкеровка/нахлёст выпусков с арматурой стен; разрушение узлов сопряжения с нижней плитой.",
+      "source_block_ids": [
+        "4MQJ-6NXP-4YH",
+        "7NAU-TNME-3AR",
+        "MANG-C46A-EH7",
+        "6PCX-NFHU-6KW"
+      ],
+      "related_block_ids": [
+        "4MQJ-6NXP-4YH",
+        "7NAU-TNME-3AR",
+        "MANG-C46A-EH7",
+        "6PCX-NFHU-6KW",
+        "9LPD-VX9H-YHK",
+        "7QUU-QDA4-N7D"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "97XP-GKMR-4PK",
+          "role": "note",
+          "used_for": "cross_check"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "4MQJ-6NXP-4YH",
+          "page": 12
+        },
+        {
+          "type": "image",
+          "block_id": "7NAU-TNME-3AR",
+          "page": 12
+        },
+        {
+          "type": "image",
+          "block_id": "MANG-C46A-EH7",
+          "page": 12
+        },
+        {
+          "type": "image",
+          "block_id": "6PCX-NFHU-6KW",
+          "page": 12
+        }
+      ],
+      "highlight_regions": [
+        {
+          "x": 0.15,
+          "y": 0.2,
+          "w": 0.6,
+          "h": 0.6,
+          "label": "Защитный слой 25 мм — проверить по требуемой огнестойкости колонны"
+        }
+      ],
+      "selected_text_block_ids": [
+        "97XP-GKMR-4PK"
+      ],
+      "quality": {
+        "practicality_score": 67,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "coordination"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "СП 63.13330.2018",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "optional"
+    },
+    {
+      "id": "F-021",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "construction_sequence",
+      "sheet": "Листы 1, 2, 5",
+      "page": [
+        6,
+        7,
+        10
+      ],
+      "problem": "Противоречие между требованием показывать рабочие швы бетонирования и их фактическим отсутствием на чертежах опалубки.",
+      "description": "В общих указаниях п.15 (блок 449N-EL3M-DYY): «Размещение рабочих швов бетонирования выполнять строго по данному комплекту чертежей». В указаниях листа 5 (блок 7JQD-DD3G-J9X): «Рабочие швы бетонирования следует располагать на расстоянии 1/3 пролета между вертикальными несущими конструкциями». На чертежах опалубки (листы 2, 5) графические обозначения швов («~~~~~», см. условные обозначения листа 6) отсутствуют.",
+      "norm": "СП 70.13330.2012 (ДЕЙСТВУЕТ, изм. 1-5), п. 5.3.7",
+      "norm_quote": "Места устройства рабочих швов бетонирования должны назначаться проектом и указываться на чертежах с учётом статической работы конструкции и технологии производства работ.",
+      "solution": "Нанести на планы опалубки графические обозначения рабочих швов бетонирования согласно условным обозначениям листа 6.",
+      "risk": "Произвольное размещение швов на стройплощадке; ослабление сечений; протечки в подземной части.",
+      "source_block_ids": [
+        "7JQD-DD3G-J9X",
+        "449N-EL3M-DYY"
+      ],
+      "related_block_ids": [
+        "7JQD-DD3G-J9X",
+        "4WTD-JFKA-JLE",
+        "4UTW-PPGP-VEN",
+        "9J4G-PVGN-LTQ",
+        "449N-EL3M-DYY"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "449N-EL3M-DYY",
+          "page": 6
+        },
+        {
+          "type": "text",
+          "block_id": "7JQD-DD3G-J9X",
+          "page": 10
+        },
+        {
+          "type": "image",
+          "block_id": "4UTW-PPGP-VEN",
+          "page": 7
+        },
+        {
+          "type": "image",
+          "block_id": "4WTD-JFKA-JLE",
+          "page": 10
+        }
+      ],
+      "highlight_regions": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "w": 1.0,
+          "h": 0.12,
+          "label": "Шапка листа — должны быть общие указания или отсылка"
+        }
+      ],
+      "quality": {
+        "practicality_score": 45,
+        "engineering_relevance": "medium",
+        "impact_axes": [],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "СП 70.13330.2012",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "optional"
+    },
+    {
+      "id": "F-024",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "foundation_detail",
+      "sheet": "Лист 1",
+      "page": 6,
+      "problem": "Не приложены данные ИГИ (отчёт 2023-80-ИГИ) — необходимы для обоснования F/W бетона и защитного слоя стен подземной части.",
+      "description": "Общие указания п.2 ссылаются на «Технический отчёт по результатам инженерно-геологических изысканий 2023-80-ИГИ» (ООО «МОСГЕОПРОЕКТ», 2024 г.). Данные о грунтах, УГВ, агрессивности среды в комплекте не приведены. Требуются для обоснования F/W стен на отм. -1,800 (см. F-006) и защитного слоя.",
+      "norm": "СП 22.13330.2016 (ДЕЙСТВУЕТ, изм. 1-4), п. 5.1; СП 28.13330.2017 (ДЕЙСТВУЕТ, изм. 1-2), п. 5.3",
+      "norm_quote": "Проектирование оснований должно выполняться на основе результатов инженерно-геологических и гидрогеологических изысканий с учётом агрессивности среды по отношению к материалам подземных конструкций.",
+      "solution": "Приложить выписку/копию ИГИ с данными по УГВ и классу агрессивности. Использовать данные для назначения W/F бетона стен подземной части.",
+      "risk": "Необоснованное занижение/завышение требований к бетону; коррозия или удорожание.",
+      "source_block_ids": [
+        "449N-EL3M-DYY"
+      ],
+      "related_block_ids": [
+        "449N-EL3M-DYY"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "449N-EL3M-DYY",
+          "page": 6
+        }
+      ],
+      "highlight_regions": [],
+      "quality": {
+        "practicality_score": 63,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "cost"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "СП 28.13330.2017",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "optional"
+    },
+    {
+      "id": "F-025",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "anchorage",
+      "sheet": "Лист 3",
+      "page": 8,
+      "problem": "Длина выпусков колонны 1560 мм при ø25 А500С — требуется проверка соответствия длине нахлёста с учётом коэффициентов.",
+      "description": "На разрезе 1-1 колонны (блок 9GNP-D7CE-RYM) длина выпусков из нижележащей конструкции — 1560 мм при ø25 А500С. Базовая длина анкеровки для А500С в В25 ≈ 40d = 1000 мм. При нахлёстке стержней рабочая длина стыка должна быть не менее 1,2·lan·α (до 1500-1700 мм при α=1,3...1,5). Значение 1560 мм находится на грани достаточности и должно быть сверено со «Схемой стыковки арматуры внахлест» (блок 9XLH) и Таблицей 1 параметров арматурных деталей (блок 76CD).",
+      "norm": "СП 63.13330.2018 (ДЕЙСТВУЕТ, изм. 1-3), п. 10.3.25, 10.3.26",
+      "norm_quote": "Длина нахлёстки растянутых стержней с периодическим профилем без сварки должна быть не менее l_lap = l_an·α, где α зависит от процента стыкуемой в одном сечении арматуры и способа стыкования; при стыковании более 50% арматуры α=1,5.",
+      "solution": "Выполнить расчёт длины нахлёстки для ø25 А500С в В30 с учётом доли стыкуемых стержней в одном сечении и коэффициента α. Подтвердить расчётом или увеличить длину выпусков. Дополнить Таблицу 1 строкой для ø25 (см. F-007).",
+      "risk": "Недостаточная длина стыка; разрушение нахлёсточного соединения арматуры колонн.",
+      "source_block_ids": [
+        "9GNP-D7CE-RYM"
+      ],
+      "related_block_ids": [
+        "9GNP-D7CE-RYM",
+        "9XLH-7CNM-MFW",
+        "76CD-MX4L-TM4"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "9GYG-MP9L-U9Q",
+          "role": "note",
+          "used_for": "cross_check"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "9GNP-D7CE-RYM",
+          "page": 8
+        },
+        {
+          "type": "image",
+          "block_id": "9XLH-7CNM-MFW",
+          "page": 11
+        }
+      ],
+      "highlight_regions": [
+        {
+          "block_id": "9GNP-D7CE-RYM",
+          "x": 0.2,
+          "y": 0.7,
+          "w": 0.6,
+          "h": 0.25,
+          "label": "Зона выпусков 1560 мм — проверить нахлёст"
+        }
+      ],
+      "quality": {
+        "practicality_score": 67,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "coordination"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "СП 63.13330.2018",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "optional"
+    },
+    {
+      "id": "F-026",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "spec_mismatch",
+      "sheet": "Лист 4",
+      "page": 9,
+      "problem": "Спецификация колонн: 120 продольных стержней / 8 на колонну = 15 колонн — требуется сверка с планом опалубки.",
+      "description": "В ведомости деталей листа 4 (блок 7MAJ-EMC4-KNJ) указано 120 шт. поз. 25-Г-1 и 480 шт. поз. 12-Х-1. На разрезе колонны (блок 9GNP-D7CE-RYM) на одну колонну приходится 8 стержней 25-Г-1 → 120/8 = 15 колонн. На хомутах 480/15 = 32 хомута на колонну, что соответствует разрезу (11 в нижней зоне сгущения + 21 в рядовой зоне = 32). Требуется сверить количество колонн с планом опалубки 1 этажа (блок 4UTW-PPGP-VEN).",
+      "norm": "ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5.5.5",
+      "norm_quote": "Количество элементов в спецификации должно точно соответствовать фактическому количеству на чертежах.",
+      "solution": "Выполнить визуальный подсчёт колонн на плане опалубки 1 этажа и убедиться, что их 15 шт. При расхождении — устранить.",
+      "risk": "Недозаказ/перезаказ арматуры колонн.",
+      "source_block_ids": [
+        "7MAJ-EMC4-KNJ"
+      ],
+      "related_block_ids": [
+        "7MAJ-EMC4-KNJ",
+        "4UTW-PPGP-VEN",
+        "9GNP-D7CE-RYM",
+        "X6RP-V3E7-PK4"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "7T7H-KQNH-PFW",
+          "role": "table",
+          "used_for": "value_extraction"
+        },
+        {
+          "text_block_id": "X6RP-V3E7-PK4",
+          "role": "table",
+          "used_for": "cross_check"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "7MAJ-EMC4-KNJ",
+          "page": 9
+        },
+        {
+          "type": "image",
+          "block_id": "4UTW-PPGP-VEN",
+          "page": 7
+        }
+      ],
+      "highlight_regions": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "w": 1.0,
+          "h": 0.2,
+          "label": "Верх колонны — зона сгущения хомутов менее размера сечения"
+        }
+      ],
+      "selected_text_block_ids": [
+        "7T7H-KQNH-PFW",
+        "ETQ6-UHC7-HA4",
+        "X6RP-V3E7-PK4"
+      ],
+      "quality": {
+        "practicality_score": 57,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [
+          "reference_register"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "ГОСТ 21_501-2018",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "optional"
+    },
+    {
+      "id": "F-027",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "rebar_geometry",
+      "sheet": "Лист 4",
+      "page": 9,
+      "problem": "Радиус гиба dоп=200 мм для поз. 25-Г-1 (ø25 А500С) — на минимальной границе нормы.",
+      "description": "В ведомости деталей листа 4 (блок 7MAJ-EMC4-KNJ) для позиции 25-Г-1 указан dоп=200 мм. По СП 63.13330.2018 п. 10.3.24 для арматуры А500 диаметром свыше 20 мм минимальный диаметр оправки — не менее 8d = 200 мм. Значение 200 мм формально соответствует минимуму, но без запаса.",
+      "norm": "СП 63.13330.2018 (ДЕЙСТВУЕТ, изм. 1-3), п. 10.3.24; ГОСТ 34028-2016 (ДЕЙСТВУЕТ)",
+      "norm_quote": "Минимальные диаметры оправки для гиба арматуры классов А500 и выше принимаются не менее 5d для стержней диаметром до 20 мм и не менее 8d для стержней диаметром свыше 20 мм.",
+      "solution": "Рассмотреть возможность увеличения dоп для 25-Г-1 до 250-300 мм (10-12d) для снижения концентрации напряжений.",
+      "risk": "Микротрещины в зоне гиба; снижение усталостной прочности.",
+      "source_block_ids": [
+        "7MAJ-EMC4-KNJ"
+      ],
+      "related_block_ids": [
+        "7MAJ-EMC4-KNJ"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "7T7H-KQNH-PFW",
+          "role": "table",
+          "used_for": "value_extraction"
+        },
+        {
+          "text_block_id": "X6RP-V3E7-PK4",
+          "role": "table",
+          "used_for": "cross_check"
+        },
+        {
+          "text_block_id": "ETQ6-UHC7-HA4",
+          "role": "note",
+          "used_for": "cross_check"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "7MAJ-EMC4-KNJ",
+          "page": 9
+        }
+      ],
+      "highlight_regions": [
+        {
+          "block_id": "7MAJ-EMC4-KNJ",
+          "x": 0.3,
+          "y": 0.25,
+          "w": 0.4,
+          "h": 0.4,
+          "label": "25-Г-1: dоп=200 мм (8d=минимум)"
+        }
+      ],
+      "selected_text_block_ids": [
+        "7T7H-KQNH-PFW",
+        "ETQ6-UHC7-HA4",
+        "X6RP-V3E7-PK4"
+      ],
+      "quality": {
+        "practicality_score": 45,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "coordination"
+        ],
+        "formalism_flags": [
+          "expertise_formality",
+          "reference_register"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "СП 63.13330.2018",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "optional"
+    },
+    {
+      "id": "F-028",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "corrosion_protection",
+      "sheet": "Лист 5",
+      "page": 10,
+      "problem": "На разрезах подземной части (1-1, 3-3) не показана гидроизоляция наружных поверхностей стен в контакте с грунтом/засыпкой керамзитом.",
+      "description": "В разрезах 1-1 (блок HJ7G-VWTF-CGV: две стены 600 мм с пазухой) и 3-3 (блок 7RD6-7GYX-MVT: стена 300 мм + плита 250/400 мм с засыпкой) не показана гидроизоляция по наружной грани стен и верху нижней плиты. Засыпка керамзитом фракции 20-40 — не гидроизоляционный материал. Для конструкций ниже планировочной отметки требуется обязательная гидроизоляция по СП 22.13330.2016 и СП 28.13330.2017.",
+      "norm": "СП 22.13330.2016 (ДЕЙСТВУЕТ, изм. 1-4), п. 6.5; СП 28.13330.2017 (ДЕЙСТВУЕТ, изм. 1-2)",
+      "norm_quote": "Наружные поверхности конструкций подземной части зданий, соприкасающиеся с грунтом, должны быть защищены гидроизоляцией; её тип принимают в зависимости от гидрогеологических условий.",
+      "solution": "На разрезах 1-1 и 3-3 показать тип и расположение гидроизоляции наружных поверхностей. Сделать ссылку на узел гидроизоляции либо на смежный раздел (АР/КЖ-фундаменты).",
+      "risk": "Инфильтрация грунтовых вод; коррозия арматуры; протечки в подземной части.",
+      "source_block_ids": [
+        "HJ7G-VWTF-CGV",
+        "7RD6-7GYX-MVT"
+      ],
+      "related_block_ids": [
+        "HJ7G-VWTF-CGV",
+        "7RD6-7GYX-MVT",
+        "D9MX-LMX7-6QX"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "7JQD-DD3G-J9X",
+          "role": "note",
+          "used_for": "cross_check"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "HJ7G-VWTF-CGV",
+          "page": 10
+        },
+        {
+          "type": "image",
+          "block_id": "7RD6-7GYX-MVT",
+          "page": 10
+        }
+      ],
+      "highlight_regions": [
+        {
+          "block_id": "HJ7G-VWTF-CGV",
+          "x": 0.1,
+          "y": 0.15,
+          "w": 0.15,
+          "h": 0.6,
+          "label": "Наружная грань стены слева — нет гидроизоляции"
+        },
+        {
+          "block_id": "HJ7G-VWTF-CGV",
+          "x": 0.55,
+          "y": 0.15,
+          "w": 0.15,
+          "h": 0.6,
+          "label": "Наружная грань стены справа — нет гидроизоляции"
+        },
+        {
+          "block_id": "7RD6-7GYX-MVT",
+          "x": 0.3,
+          "y": 0.2,
+          "w": 0.35,
+          "h": 0.65,
+          "label": "Наружная грань стены и низ плиты — нет гидроизоляции"
+        }
+      ],
+      "selected_text_block_ids": [
+        "7JQD-DD3G-J9X",
+        "9J4G-PVGN-LTQ"
+      ],
+      "quality": {
+        "practicality_score": 67,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "coordination"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "СП 28.13330.2017",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "recommended"
+    },
+    {
+      "id": "F-029",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "ar_kj_coordination",
+      "sheet": "Лист 5",
+      "page": 10,
+      "problem": "Расхождение толщин стен на разрезе 1-1 (600 мм) и плане опалубки -1,800 (400 мм) листа 5.",
+      "description": "На разрезе 1-1 (блок HJ7G-VWTF-CGV) две стены толщиной 600 мм с межосевым расстоянием 2650 мм между осями П.Т и П.С. На плане опалубки того же листа 5 (блок 4WTD-JFKA-JLE) для пристройки указана толщина стен t=400 мм. На плане армирования стен пристройки (блок RELE-MX3A-MEN, лист 6) присутствуют марки 1-Стм600 и 4-Стм600 — стены толщиной 600 мм. То есть на плане опалубки -1,800 могут присутствовать одновременно стены 400 и 600 мм, но это не однозначно отражено. Требуется уточнение, к какой стене относится разрез 1-1, и единая маркировка типов стен.",
+      "norm": "ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5.5.3",
+      "norm_quote": "На разрезах и сечениях монолитных конструкций следует указывать марку конструкции и ссылку на план, к которому относится разрез.",
+      "solution": "На разрезе 1-1 явно указать марку стены (например, 1-Стм600 или 4-Стм600). На плане опалубки -1,800 разделить толщины 400 и 600 мм с маркировкой и привести легенду марок стен.",
+      "risk": "Ошибки при возведении опалубки; несоответствие толщин стен между ярусами.",
+      "source_block_ids": [
+        "HJ7G-VWTF-CGV",
+        "4WTD-JFKA-JLE"
+      ],
+      "related_block_ids": [
+        "HJ7G-VWTF-CGV",
+        "4WTD-JFKA-JLE",
+        "RELE-MX3A-MEN"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "7JQD-DD3G-J9X",
+          "role": "note",
+          "used_for": "cross_check"
+        },
+        {
+          "text_block_id": "9J4G-PVGN-LTQ",
+          "role": "legend",
+          "used_for": "cross_check"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "HJ7G-VWTF-CGV",
+          "page": 10
+        },
+        {
+          "type": "image",
+          "block_id": "4WTD-JFKA-JLE",
+          "page": 10
+        },
+        {
+          "type": "image",
+          "block_id": "RELE-MX3A-MEN",
+          "page": 11
+        }
+      ],
+      "highlight_regions": [
+        {
+          "block_id": "HJ7G-VWTF-CGV",
+          "x": 0.25,
+          "y": 0.15,
+          "w": 0.5,
+          "h": 0.55,
+          "label": "Толщина стен 600 мм — расхождение с планом (t=400)"
+        }
+      ],
+      "selected_text_block_ids": [
+        "7JQD-DD3G-J9X",
+        "9J4G-PVGN-LTQ"
+      ],
+      "quality": {
+        "practicality_score": 67,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "coordination"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "ГОСТ 21_501-2018",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "optional"
+    },
+    {
+      "id": "F-030",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "wall_reinforcement",
+      "sheet": "Лист 3",
+      "page": 8,
+      "problem": "На листе 3 «Армирование вертикальных конструкций -0,180» отсутствует раскладка арматуры стен t=250 мм.",
+      "description": "На плановой схеме армирования листа 3 (блок 6DRC-7KQL-9TJ) фактически не показана раскладка вертикальной и горизонтальной арматуры монолитных стен t=250 мм 1 этажа: не указаны диаметры, шаг, класс арматуры стен, нет выносок на сечения армирования стен. Содержание листа сведено только к армированию колонн (поз. 25-Г-1, 12-Х-1). Это неполнота решений по вертикальным конструкциям.",
+      "norm": "ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5.5.2; СП 63.13330.2018 (ДЕЙСТВУЕТ, изм. 1-3), п. 10.3.6-10.3.8",
+      "norm_quote": "На чертеже армирования должны быть показаны арматурные изделия с их привязкой, маркировкой и спецификацией, обеспечивающей однозначное понимание конструкции.",
+      "solution": "Дополнить лист 3 плановой раскладкой вертикальной и горизонтальной арматуры стен t=250 мм 1 этажа с указанием марок, диаметров, шагов и сечений армирования. Если данные есть на отдельном листе — привести явные ссылки.",
+      "risk": "Невозможность изготовления арматурных каркасов стен 1 этажа по комплекту; задержки строительства; самопроизвольные решения подрядчика.",
+      "source_block_ids": [
+        "6DRC-7KQL-9TJ"
+      ],
+      "related_block_ids": [
+        "6DRC-7KQL-9TJ"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "9GYG-MP9L-U9Q",
+          "role": "note",
+          "used_for": "cross_check"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "6DRC-7KQL-9TJ",
+          "page": 8
+        }
+      ],
+      "highlight_regions": [
+        {
+          "block_id": "6DRC-7KQL-9TJ",
+          "x": 0.15,
+          "y": 0.15,
+          "w": 0.7,
+          "h": 0.7,
+          "label": "Тело стен — раскладка арматуры стен не обозначена"
+        }
+      ],
+      "selected_text_block_ids": [
+        "9GYG-MP9L-U9Q"
+      ],
+      "quality": {
+        "practicality_score": 91,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "schedule",
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "reference_maintenance"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "СП 63.13330.2018",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "required"
+    },
+    {
+      "id": "F-032",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "sheet": "Лист 5",
+      "page": 10,
+      "problem": "Разрезы 2-2, 3-3 листа 5 не содержат ссылок на сечения армирования стен и не указывают марку стены.",
+      "description": "Разрезы 2-2 (блок D9MX-LMX7-6QX) и 3-3 (блок 7RD6-7GYX-MVT) листа 5 показывают узлы сопряжения стен с плитами и засыпкой керамзитом, но не содержат ссылок на сечение армирования стены (на лист 6/7), не указана марка стены, класс бетона, защитный слой.",
+      "norm": "ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5.5",
+      "norm_quote": "На разрезах и сечениях должны быть показаны все необходимые размеры, отметки, материалы и ссылки на смежные чертежи.",
+      "solution": "На разрезах 2-2, 3-3 листа 5 добавить ссылки на сечения армирования (лист 7), маркировку стены, класс бетона.",
+      "risk": "Затруднения при производстве работ; необходимость возвращения к проекту за уточнениями.",
+      "source_block_ids": [
+        "7RD6-7GYX-MVT",
+        "D9MX-LMX7-6QX"
+      ],
+      "related_block_ids": [
+        "7RD6-7GYX-MVT",
+        "D9MX-LMX7-6QX"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "7JQD-DD3G-J9X",
+          "role": "note",
+          "used_for": "cross_check"
+        },
+        {
+          "text_block_id": "9J4G-PVGN-LTQ",
+          "role": "legend",
+          "used_for": "cross_check"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "7RD6-7GYX-MVT",
+          "page": 10
+        },
+        {
+          "type": "image",
+          "block_id": "D9MX-LMX7-6QX",
+          "page": 10
+        }
+      ],
+      "highlight_regions": [
+        {
+          "block_id": "7RD6-7GYX-MVT",
+          "x": 0.0,
+          "y": 0.0,
+          "w": 0.3,
+          "h": 0.3,
+          "label": "Верхняя плита — нет класса бетона и армирования"
+        },
+        {
+          "block_id": "D9MX-LMX7-6QX",
+          "x": 0.3,
+          "y": 0.2,
+          "w": 0.4,
+          "h": 0.6,
+          "label": "Тело стены — нет данных по армированию"
+        }
+      ],
+      "selected_text_block_ids": [
+        "7JQD-DD3G-J9X",
+        "9J4G-PVGN-LTQ"
+      ],
+      "quality": {
+        "practicality_score": 57,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "coordination"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "ГОСТ 21_501-2018",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "optional"
+    },
+    {
+      "id": "F-033",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "cover_thickness",
+      "sheet": "Лист 7",
+      "page": 12,
+      "problem": "Защитный слой 25 мм до хомутов колонны/пилона в узле А/6 — требует проверки по требуемой огнестойкости.",
+      "description": "В узле А/6 (блок 9LPD-VX9H-YHK) указан защитный слой бетона до хомутов колонны/пилона 25 мм. Для колонн в закрытых помещениях с нормальной влажностью минимальный защитный слой до рабочей арматуры — 20 мм, до хомутов — не менее 15 мм и не менее диаметра хомута. Однако при требуемой огнестойкости REI 60/90/120 защитный слой может требоваться больше (см. СП 468.1325800.2019 и F-005).",
+      "norm": "СП 63.13330.2018 (ДЕЙСТВУЕТ, изм. 1-3), п. 10.3.2, табл. 10.1; СП 468.1325800.2019 (ДЕЙСТВУЕТ)",
+      "norm_quote": "Для защиты арматуры в случаях, отличающихся от указанных в таблице 10.1, а также при пожарном нагружении, толщина защитного слоя бетона для железобетонных конструкций должна определяться по соответствующим требованиям настоящего свода правил и нормативных документов по пожарной безопасности.",
+      "solution": "Сверить требуемый предел огнестойкости колонны по разделу АР/ПЗ. При REI ≥ 90 увеличить защитный слой до 30-40 мм по СП 468.1325800.2019.",
+      "risk": "Недостаточная защита арматуры при пожаре; снижение фактической огнестойкости колонны.",
+      "source_block_ids": [
+        "9LPD-VX9H-YHK"
+      ],
+      "related_block_ids": [
+        "9LPD-VX9H-YHK"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "97XP-GKMR-4PK",
+          "role": "note",
+          "used_for": "cross_check"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "9LPD-VX9H-YHK",
+          "page": 12
+        }
+      ],
+      "highlight_regions": [
+        {
+          "block_id": "9LPD-VX9H-YHK",
+          "x": 0.15,
+          "y": 0.2,
+          "w": 0.6,
+          "h": 0.6,
+          "label": "Защитный слой 25 мм — проверить по огнестойкости"
+        }
+      ],
+      "quality": {
+        "practicality_score": 83,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "safety"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "СП 63.13330.2018",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "optional"
+    },
+    {
+      "id": "F-034",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "stirrups",
+      "sheet": "Лист 8",
+      "page": 13,
+      "problem": "Длина прямого участка крюка шпилек 8-Ш-1, 8-Ш-2 (А240) не подтверждена сечениями.",
+      "description": "Поперечная арматура (шпильки 8-Ш-1, 8-Ш-2) — класс А240 (гладкая). По СП 63.13330.2018 п. 10.3.34 длина прямого участка после крюка для гладкой арматуры — не менее 6d=48 мм. На эскизах ведомости деталей (блок TULW-YCYU-YVQ) для 8-Ш-1: a=240; b=50; dоп=20 (2,5d — корректно); 8-Ш-2: a=540; b=50; dоп=20. Загиб b=50 мм соответствует требованию, но без сечений с фактическим положением крюка после изгиба нельзя подтвердить полную анкеровку.",
+      "norm": "СП 63.13330.2018 (ДЕЙСТВУЕТ, изм. 1-3), п. 10.3.34",
+      "norm_quote": "Длина прямого участка арматуры за крюком (или лапкой) при анкеровке должна быть не менее 6d для гладкой арматуры классов А240 и не менее 5d для арматуры периодического профиля.",
+      "solution": "На эскизе шпилек 8-Ш-1 и 8-Ш-2 явно указать длину прямого участка после крюка (≥48 мм для ø8 А240) или подтвердить, что b=50 мм есть именно длина прямого участка.",
+      "risk": "Срыв анкеровки шпилек при работе на разрыв; отслоение защитного слоя.",
+      "source_block_ids": [
+        "TULW-YCYU-YVQ"
+      ],
+      "related_block_ids": [
+        "TULW-YCYU-YVQ",
+        "4MQJ-6NXP-4YH",
+        "7NAU-TNME-3AR",
+        "MANG-C46A-EH7",
+        "6PCX-NFHU-6KW"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "QUDJ-QRT6-KUU",
+          "role": "table",
+          "used_for": "value_extraction"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "TULW-YCYU-YVQ",
+          "page": 13
+        }
+      ],
+      "highlight_regions": [
+        {
+          "block_id": "TULW-YCYU-YVQ",
+          "x": 0.3,
+          "y": 0.82,
+          "w": 0.5,
+          "h": 0.15,
+          "label": "Шпильки 8-Ш-1/8-Ш-2: длина прямого участка крюка"
+        }
+      ],
+      "selected_text_block_ids": [
+        "QUDJ-QRT6-KUU",
+        "7U9F-NVLC-PPF",
+        "6E3R-RC3W-YPM"
+      ],
+      "quality": {
+        "practicality_score": 73,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "schedule",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "reference_register"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "СП 63.13330.2018",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "optional"
+    }
+  ]
+}

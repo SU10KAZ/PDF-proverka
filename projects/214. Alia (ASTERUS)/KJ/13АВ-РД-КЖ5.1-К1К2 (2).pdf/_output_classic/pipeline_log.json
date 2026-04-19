@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "stages": {
+    "findings_merge": {
+      "status": "done",
+      "started_at": "2026-04-19T21:54:44.353620",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-opus-4-7",
+      "completed_at": "2026-04-19T22:00:44.831503",
+      "message": "OK"
+    },
+    "findings_corrector": {
+      "status": "done",
+      "completed_at": "2026-04-19T22:05:52.938455",
+      "started_at": "2026-04-19T22:04:43.655032",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-opus-4-7",
+      "message": "OK"
+    },
+    "optimization_critic": {
+      "status": "done",
+      "started_at": "2026-04-19T22:06:05.964033",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-sonnet-4-6",
+      "completed_at": "2026-04-19T22:08:57.969391",
+      "message": "OK"
+    },
+    "excel": {
+      "status": "done",
+      "started_at": "2026-04-19T22:08:57.970520",
+      "completed_at": "2026-04-19T22:08:58.150563",
+      "message": "OK"
+    },
+    "findings_critic": {
+      "status": "done",
+      "started_at": "2026-04-19T22:00:48.159599",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-sonnet-4-6",
+      "completed_at": "2026-04-19T22:04:39.248997",
+      "message": "OK"
+    },
+    "norm_verify": {
+      "status": "done",
+      "started_at": "2026-04-19T22:00:48.169596",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-sonnet-4-6",
+      "completed_at": "2026-04-19T22:05:40.543195",
+      "message": "OK"
+    },
+    "optimization": {
+      "status": "done",
+      "started_at": "2026-04-19T22:00:48.184880",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-opus-4-7",
+      "completed_at": "2026-04-19T22:06:05.963304",
+      "message": "OK"
+    },
+    "crop_blocks": {
+      "status": "done",
+      "completed_at": "2026-04-19T21:48:31.646307",
+      "message": "Pre-cropped"
+    },
+    "text_analysis": {
+      "status": "done",
+      "started_at": "2026-04-19T21:48:31.655255",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-opus-4-7",
+      "completed_at": "2026-04-19T21:53:49.521470",
+      "message": "OK"
+    },
+    "block_analysis": {
+      "status": "done",
+      "started_at": "2026-04-19T21:53:49.673778",
+      "input_tokens": 103610,
+      "output_tokens": 12160,
+      "model": "google/gemini-3.1-pro-preview",
+      "completed_at": "2026-04-19T21:54:44.351522",
+      "message": "Все 2 пакетов OK"
+    },
+    "block_retry": {
+      "status": "skipped",
+      "started_at": "2026-04-19T20:06:40.600117",
+      "message": "Все блоки читаемы",
+      "completed_at": "2026-04-19T21:54:44.353247"
+    },
+    "v4_extraction": {
+      "status": "done",
+      "started_at": "2026-04-19T20:37:32.366126",
+      "completed_at": "2026-04-19T20:41:38.557067",
+      "message": "Все 2 пакетов OK"
+    },
+    "v4_memory": {
+      "status": "done",
+      "started_at": "2026-04-19T20:41:38.558485",
+      "completed_at": "2026-04-19T20:41:38.564370"
+    },
+    "v4_candidates": {
+      "status": "done",
+      "started_at": "2026-04-19T20:41:38.564734",
+      "completed_at": "2026-04-19T20:41:38.567867"
+    },
+    "v4_formatter": {
+      "status": "done",
+      "started_at": "2026-04-19T20:41:38.568227",
+      "completed_at": "2026-04-19T20:41:38.569506",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "v4_pipeline"
+    }
+  },
+  "last_updated": "2026-04-19T22:08:58.150563"
+}

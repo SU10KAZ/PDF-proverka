@@ -1,0 +1,236 @@
+{
+  "by_generator": {
+    "class2_identity": [
+      {
+        "candidate_id": "C2_REL-16-Г-5",
+        "issue_class_id": 2,
+        "issue_class": "identity_addressing",
+        "subtype": "non_unique_identifier",
+        "entity_key": "line:16-Г-5",
+        "field": "identifier_uniqueness",
+        "matching_policy": "exact_line_id_only",
+        "generator": {
+          "name": "gen_class2_identity_from_relation",
+          "version": "v2"
+        },
+        "candidate_claim": {
+          "kind": "non_unique_identifier",
+          "summary": "Дублирующийся маркер 16-Г-5: одно обозначение используется для разных направлений на одном чертеже",
+          "proposed_severity": "EXPLOITATION"
+        },
+        "values": [
+          {
+            "label": "mention_A",
+            "mention_id": "M-036"
+          },
+          {
+            "label": "mention_B",
+            "mention_id": "M-038"
+          }
+        ],
+        "evidence": [
+          {
+            "mention_id": "M-036",
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table",
+            "raw_excerpt": null
+          },
+          {
+            "mention_id": "M-038",
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table",
+            "raw_excerpt": null
+          }
+        ],
+        "flags": {
+          "likely_ocr_artifact": false,
+          "needs_adjacent_sections": false,
+          "out_of_scope": false
+        },
+        "source_mention_ids": [
+          "M-036",
+          "M-038"
+        ]
+      },
+      {
+        "candidate_id": "C2_REL-16-Г-7",
+        "issue_class_id": 2,
+        "issue_class": "identity_addressing",
+        "subtype": "non_unique_identifier",
+        "entity_key": "line:16-Г-7",
+        "field": "identifier_uniqueness",
+        "matching_policy": "exact_line_id_only",
+        "generator": {
+          "name": "gen_class2_identity_from_relation",
+          "version": "v2"
+        },
+        "candidate_claim": {
+          "kind": "non_unique_identifier",
+          "summary": "Дублирующийся маркер 16-Г-7: одно обозначение используется для разных направлений на одном чертеже",
+          "proposed_severity": "EXPLOITATION"
+        },
+        "values": [
+          {
+            "label": "mention_A",
+            "mention_id": "M-038"
+          },
+          {
+            "label": "mention_B",
+            "mention_id": "M-040"
+          }
+        ],
+        "evidence": [
+          {
+            "mention_id": "M-038",
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table",
+            "raw_excerpt": null
+          },
+          {
+            "mention_id": "M-040",
+            "page": 13,
+            "sheet": "Лист 8",
+            "block_id": "46LP-7CN7-GG6",
+            "view_type": "table",
+            "raw_excerpt": null
+          }
+        ],
+        "flags": {
+          "likely_ocr_artifact": false,
+          "needs_adjacent_sections": false,
+          "out_of_scope": false
+        },
+        "source_mention_ids": [
+          "M-038",
+          "M-040"
+        ]
+      }
+    ],
+    "class3_cross_view": [],
+    "class4_requirement_conflict": []
+  },
+  "all_candidates": [
+    {
+      "candidate_id": "C2_REL-16-Г-5",
+      "issue_class_id": 2,
+      "issue_class": "identity_addressing",
+      "subtype": "non_unique_identifier",
+      "entity_key": "line:16-Г-5",
+      "field": "identifier_uniqueness",
+      "matching_policy": "exact_line_id_only",
+      "generator": {
+        "name": "gen_class2_identity_from_relation",
+        "version": "v2"
+      },
+      "candidate_claim": {
+        "kind": "non_unique_identifier",
+        "summary": "Дублирующийся маркер 16-Г-5: одно обозначение используется для разных направлений на одном чертеже",
+        "proposed_severity": "EXPLOITATION"
+      },
+      "values": [
+        {
+          "label": "mention_A",
+          "mention_id": "M-036"
+        },
+        {
+          "label": "mention_B",
+          "mention_id": "M-038"
+        }
+      ],
+      "evidence": [
+        {
+          "mention_id": "M-036",
+          "page": 13,
+          "sheet": "Лист 8",
+          "block_id": "46LP-7CN7-GG6",
+          "view_type": "table",
+          "raw_excerpt": null
+        },
+        {
+          "mention_id": "M-038",
+          "page": 13,
+          "sheet": "Лист 8",
+          "block_id": "46LP-7CN7-GG6",
+          "view_type": "table",
+          "raw_excerpt": null
+        }
+      ],
+      "flags": {
+        "likely_ocr_artifact": false,
+        "needs_adjacent_sections": false,
+        "out_of_scope": false
+      },
+      "source_mention_ids": [
+        "M-036",
+        "M-038"
+      ]
+    },
+    {
+      "candidate_id": "C2_REL-16-Г-7",
+      "issue_class_id": 2,
+      "issue_class": "identity_addressing",
+      "subtype": "non_unique_identifier",
+      "entity_key": "line:16-Г-7",
+      "field": "identifier_uniqueness",
+      "matching_policy": "exact_line_id_only",
+      "generator": {
+        "name": "gen_class2_identity_from_relation",
+        "version": "v2"
+      },
+      "candidate_claim": {
+        "kind": "non_unique_identifier",
+        "summary": "Дублирующийся маркер 16-Г-7: одно обозначение используется для разных направлений на одном чертеже",
+        "proposed_severity": "EXPLOITATION"
+      },
+      "values": [
+        {
+          "label": "mention_A",
+          "mention_id": "M-038"
+        },
+        {
+          "label": "mention_B",
+          "mention_id": "M-040"
+        }
+      ],
+      "evidence": [
+        {
+          "mention_id": "M-038",
+          "page": 13,
+          "sheet": "Лист 8",
+          "block_id": "46LP-7CN7-GG6",
+          "view_type": "table",
+          "raw_excerpt": null
+        },
+        {
+          "mention_id": "M-040",
+          "page": 13,
+          "sheet": "Лист 8",
+          "block_id": "46LP-7CN7-GG6",
+          "view_type": "table",
+          "raw_excerpt": null
+        }
+      ],
+      "flags": {
+        "likely_ocr_artifact": false,
+        "needs_adjacent_sections": false,
+        "out_of_scope": false
+      },
+      "source_mention_ids": [
+        "M-038",
+        "M-040"
+      ]
+    }
+  ],
+  "stats": {
+    "class2_identity": 2,
+    "class3_cross_view": 0,
+    "class4_requirement_conflict": 0,
+    "total": 2
+  }
+}

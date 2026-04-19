@@ -1,0 +1,9 @@
+{
+  "stage": "03c_findings_corrector",
+  "model": "claude-opus-4-7",
+  "timestamp": "2026-04-19T21:02:08.980497",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "duration_ms": 523808,
+  "result": "{\"meta\":{\"project_id\":\"13АВ-РД-КЖ5.1-К1К2 (2).pdf\",\"audit_completed\":\"2026-04-19T20:41:38Z\",\"audit_mode\":\"v4\",\"total_findings\":19,\"blocks_analyzed\":25,\"cross_discipline_blocks\":0,\"source\":\"v4_pipeline\",\"by_severity\":{\"ЭКСПЛУАТАЦИОННОЕ\":4,\"КРИТИЧЕСКОЕ\":2,\"РЕКОМЕНДАТЕЛЬНОЕ\":4,\"ПРОВЕРИТЬ ПО СМЕЖНЫМ\":8,\"ЭКОНОМИЧЕСКОЕ\":1},\"text_analysis_merged\":24,\"pre_merge_total\":26,\"merged_groups\":1,\"quality_summary\":{\"total\":25,\"high_relevance\":3,\"medium_relevance\":17,\"low_relevance\":5,\"likely_formal_only\":2,\"high_severity_formal_only\":1},\"review_applied\":true,\"review_stats\":{\"total_reviewed\":25,\"passed\":18,\"fixed\":1,\"removed\":6,\"downgraded\":0},\"removed_findings\":[{\"id\":\"F-008\",\"reason\":\"formal finding, no construction impact — расхождение ~2 кг на 5141 кг (0,04 %) в пределах допусков округления единичных масс по ГОСТ 21.110-2013\"},{\"id\":\"F-019\",\"reason\":\"formal finding, no construction impact — базовые марки бетона В40 F100 W8 указаны корректно; подвижность и сульфатостойкость задаются в ППР/БСУ\"}]}"
+}

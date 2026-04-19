@@ -1,0 +1,126 @@
+{
+  "meta": {
+    "project_id": "13АВ-РД-КЖ5.1-К1К2 (2).pdf",
+    "generated_at": "2026-04-19T22:00:48.182867",
+    "source": "norms_main_status_index"
+  },
+  "queue": [
+    {
+      "norm": "ГОСТ 21.502-2016",
+      "norm_key": "ГОСТ 21.502-2016",
+      "cited_as": "ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5.4; ГОСТ 21.502-2016",
+      "detected_family": "ГОСТ",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-010"
+      ]
+    },
+    {
+      "norm": "СП 2.13130.2020",
+      "norm_key": "СП 2.13130.2020",
+      "cited_as": "ФЗ-123 (ДЕЙСТВУЕТ), таблица 21; СП 2.13130.2020 (ДЕЙСТВУЕТ), таблица 6.8; СП 468.1325800.2019 (ДЕЙСТВУЕТ)",
+      "detected_family": "СП",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-014",
+        "F-021"
+      ]
+    },
+    {
+      "norm": "СП 468.1325800.2019",
+      "norm_key": "СП 468.1325800.2019",
+      "cited_as": "ФЗ-123 (ДЕЙСТВУЕТ), таблица 21; СП 2.13130.2020 (ДЕЙСТВУЕТ), таблица 6.8; СП 468.1325800.2019 (ДЕЙСТВУЕТ)",
+      "detected_family": "СП",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-014"
+      ]
+    },
+    {
+      "norm": "ГОСТ 27751-2014",
+      "norm_key": "ГОСТ 27751-2014",
+      "cited_as": "СП 385.1325800.2018 (ДЕЙСТВУЕТ); СП 14.13330.2018 (ДЕЙСТВУЕТ), п. 4.1; ГОСТ 27751-2014 (ДЕЙСТВУЕТ); ГОСТ 14098-2014 (ДЕЙСТВУЕТ)",
+      "detected_family": "ГОСТ",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-015",
+        "F-021"
+      ]
+    },
+    {
+      "norm": "СП 385.1325800.2018",
+      "norm_key": "СП 385.1325800.2018",
+      "cited_as": "СП 385.1325800.2018 (ДЕЙСТВУЕТ); СП 14.13330.2018 (ДЕЙСТВУЕТ), п. 4.1; ГОСТ 27751-2014 (ДЕЙСТВУЕТ); ГОСТ 14098-2014 (ДЕЙСТВУЕТ)",
+      "detected_family": "СП",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-015"
+      ]
+    },
+    {
+      "norm": "ГОСТ 8105-2018",
+      "norm_key": "ГОСТ 8105-2018",
+      "cited_as": "ГОСТ 18105-2018 (ДЕЙСТВУЕТ), п. 4.5",
+      "detected_family": "ГОСТ",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-017"
+      ]
+    },
+    {
+      "norm": "ПП РФ №87",
+      "norm_key": "ПП РФ №87",
+      "cited_as": "ПП РФ №87, п. 40; ГОСТ Р 21.101-2020 (ДЕЙСТВУЕТ), п. 6.2",
+      "detected_family": "ПП РФ",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-020"
+      ]
+    },
+    {
+      "norm": "ФЗ-123",
+      "norm_key": "ФЗ-123",
+      "cited_as": "ФЗ-123 (ДЕЙСТВУЕТ), таблица 21; СП 2.13130.2020 (ДЕЙСТВУЕТ), таблица 6.8; СП 468.1325800.2019 (ДЕЙСТВУЕТ)",
+      "detected_family": null,
+      "supported_family": false,
+      "resolution_reason": "unsupported_family",
+      "action": "review_family_support",
+      "affected_findings": [
+        "F-014"
+      ]
+    },
+    {
+      "norm": "ФЗ-384",
+      "norm_key": "ФЗ-384",
+      "cited_as": "ФЗ-384 «Технический регламент о безопасности зданий и сооружений» (ДЕЙСТВУЕТ с 30.12.2009)",
+      "detected_family": null,
+      "supported_family": false,
+      "resolution_reason": "unsupported_family",
+      "action": "review_family_support",
+      "affected_findings": [
+        "F-018"
+      ]
+    }
+  ],
+  "report": {
+    "total_checked": 22,
+    "authoritative": 13,
+    "missing": 7,
+    "unsupported": 2,
+    "queue_size": 9
+  }
+}

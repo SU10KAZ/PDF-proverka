@@ -1,0 +1,9 @@
+{
+  "stage": "03c_findings_corrector",
+  "model": "claude-opus-4-7",
+  "timestamp": "2026-04-19T20:53:23.817053",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "duration_ms": 349718,
+  "result": "```json\n{\n  \"meta\": {\n    \"project_id\": \"13АВ-РД-КЖ5.1-К1К2 (2).pdf\",\n    \"total_findings\": 21,\n    \"by_severity\": {\n      \"ЭКСПЛУАТАЦИОННОЕ\": 4,\n      \"КРИТИЧЕСКОЕ\": 2,\n      \"РЕКОМЕНДАТЕЛЬНОЕ\": 6,\n      \"ПРОВЕРИТЬ ПО СМЕЖНЫМ\": 8,\n      \"ЭКОНОМИЧЕСКОЕ\": 1\n    },\n    \"review_applied\": true,\n    \"review_stats\": {\n      \"total_reviewed\": 25,\n      \"passed\": 20,\n      \"fixed\": 1,\n      \"removed\": 4,\n      \"downgraded\": 0\n    }\n  },\n  \"actions\": {\n    \"F-001\": \"narrow_evidence — removed 3 duplicate evidence entries for block 46LP-7CN7-GG6\",\n    \"F-002\": \"removed (not_practical) — editorial typo В0/плита перекрытия, no construction impact\",\n    \"F-003\": \"removed (not_practical) — typo ГОСТ 8105→18105-2018, no construction impact\",\n    \"F-004\": \"removed (not_practical) — typo «60 декабря»→«30 декабря», ФЗ-384 unambiguously identified\",\n    \"F-006\": \"removed (not_practical) — duplicates F-007, formal_only flagged\"\n  }\n}\n```"
+}

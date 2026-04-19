@@ -1,0 +1,9 @@
+{
+  "stage": "04_norm_verify",
+  "model": "claude-opus-4-7",
+  "timestamp": "2026-04-18T15:19:58.339062",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "duration_ms": 208761,
+  "result": "Файл `norm_checks_llm.json` создан. Проверено 13 пунктов: 4 подтверждены (F-002, F-003, F-010, F-015), 9 с расхождениями (неверная привязка к пункту, отсутствие цитаты или пункт не найден в Norms-main)."
+}

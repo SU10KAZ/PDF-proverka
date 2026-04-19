@@ -1,0 +1,165 @@
+{
+  "meta": {
+    "project_id": "13АВ-РД-КЖ5.1-К1К2 (2).pdf",
+    "generated_at": "2026-04-19T20:41:42.360397",
+    "source": "norms_main_status_index"
+  },
+  "queue": [
+    {
+      "norm": "ГОСТ 21.101-2020",
+      "norm_key": "ГОСТ 21.101-2020",
+      "cited_as": "ГОСТ 21.101-2020 — требования к оформлению проектной документации",
+      "detected_family": "ГОСТ",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-001"
+      ]
+    },
+    {
+      "norm": "ГОСТ 8105-2018",
+      "norm_key": "ГОСТ 8105-2018",
+      "cited_as": "ГОСТ 18105-2018",
+      "detected_family": "ГОСТ",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-003"
+      ]
+    },
+    {
+      "norm": "СНиП 12-04-2002",
+      "norm_key": "СНиП 12-04-2002",
+      "cited_as": "Приказ Минтруда РФ от 11.12.2020 № 883н",
+      "detected_family": "СНиП",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-005"
+      ]
+    },
+    {
+      "norm": "СП 2.13130.2020",
+      "norm_key": "СП 2.13130.2020",
+      "cited_as": "СП 2.13130.2020, табл. 21; ФЗ-123, ст. 87; СП 468.1325800.2019",
+      "detected_family": "СП",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-010",
+        "F-025"
+      ]
+    },
+    {
+      "norm": "СП 468.1325800.2019",
+      "norm_key": "СП 468.1325800.2019",
+      "cited_as": "СП 2.13130.2020, табл. 21; ФЗ-123, ст. 87; СП 468.1325800.2019",
+      "detected_family": "СП",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-010",
+        "F-025"
+      ]
+    },
+    {
+      "norm": "СП 385.1325800.2018",
+      "norm_key": "СП 385.1325800.2018",
+      "cited_as": "СП 385.1325800.2018, п. 5.1, 6.2",
+      "detected_family": "СП",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-012",
+        "F-025"
+      ]
+    },
+    {
+      "norm": "ГОСТ 27751-2014",
+      "norm_key": "ГОСТ 27751-2014",
+      "cited_as": "ГОСТ 27751-2014, табл. 2; СП 63.13330.2018, п. 5.1.5",
+      "detected_family": "ГОСТ",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-013",
+        "F-025"
+      ]
+    },
+    {
+      "norm": "ГОСТ 27751-2014.",
+      "norm_key": "ГОСТ 27751-2014",
+      "cited_as": "ГОСТ 27751-2014, табл. 2; СП 63.13330.2018, п. 5.1.5",
+      "detected_family": "ГОСТ",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-013"
+      ]
+    },
+    {
+      "norm": "ПП РФ № 87",
+      "norm_key": "ПП РФ № 87",
+      "cited_as": "ГОСТ Р 21.101-2020, п. 6.2; ПП РФ № 87, п. 14",
+      "detected_family": "ПП РФ",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-018",
+        "F-025"
+      ]
+    },
+    {
+      "norm": "ГОСТ 21.502-2016",
+      "norm_key": "ГОСТ 21.502-2016",
+      "cited_as": "ГОСТ 14098-2014; ГОСТ 32702-2014; ГОСТ 21.502-2016, п. 5.4",
+      "detected_family": "ГОСТ",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-021"
+      ]
+    },
+    {
+      "norm": "ГОСТ 32702-2014",
+      "norm_key": "ГОСТ 32702-2014",
+      "cited_as": "ГОСТ 14098-2014; ГОСТ 32702-2014; ГОСТ 21.502-2016, п. 5.4",
+      "detected_family": "ГОСТ",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-021"
+      ]
+    },
+    {
+      "norm": "ФЗ-123",
+      "norm_key": "ФЗ-123",
+      "cited_as": "СП 2.13130.2020, табл. 21; ФЗ-123, ст. 87; СП 468.1325800.2019",
+      "detected_family": null,
+      "supported_family": false,
+      "resolution_reason": "unsupported_family",
+      "action": "review_family_support",
+      "affected_findings": [
+        "F-010"
+      ]
+    }
+  ],
+  "report": {
+    "total_checked": 28,
+    "authoritative": 16,
+    "missing": 11,
+    "unsupported": 1,
+    "queue_size": 12
+  }
+}

@@ -1,0 +1,290 @@
+{
+  "meta": {
+    "project_id": "13АВ-РД-КЖ5.1-К1К2 (2).pdf",
+    "review_date": "2026-04-19T00:00:00Z",
+    "total_reviewed": 34,
+    "verdicts": {
+      "pass": 26,
+      "no_evidence": 0,
+      "phantom_block": 0,
+      "weak_evidence": 0,
+      "page_mismatch": 0,
+      "contradicts_text": 0,
+      "not_practical": 8
+    }
+  },
+  "reviews": [
+    {
+      "finding_id": "F-001",
+      "verdict": "pass",
+      "details": "Evidence 449N-EL3M-DYY существует (page 6, общие указания). Класс В0 отсутствует в ГОСТ 26633-2015 (минимальный В3,5) — реальное техническое замечание. Дополнительно корректно указан копи-паст про плиту перекрытия в разделе вертикальных конструкций. Страница и лист корректны.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-002",
+      "verdict": "not_practical",
+      "details": "Опечатка «ГОСТ 8105-2018» вместо «ГОСТ 18105-2018» в п.11 общих указаний. Название стандарта корректно и однозначно идентифицирует документ. Это типичная опечатка в обозначении ГОСТ, не влияющая на строительство — подрядчик/поставщик однозначно поймут, о каком документе речь. Сам finding признаёт это как опечатку, severity_mismatch=true.",
+      "suggested_action": "remove",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-003",
+      "verdict": "pass",
+      "details": "Evidence блоки 4QLP-L6AR-JXL (page 6 text), VGGJ-3ULF-TLV (page 7 image — разрез колонны), 4UTW-PPGP-VEN (page 7 image — план опалубки) существуют и поддерживают finding. Отсутствие F/W для колонн — реальное нарушение СП 28.13330.2017. Page 8 в массиве формально избыточна (оба image-блока на page 7), но существенно не искажает привязку.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-004",
+      "verdict": "pass",
+      "details": "Evidence 449N-EL3M-DYY (text page 6) и 43L7-P9UL-VYD (image page 10 — ситуационная схема с корпусами 28-42 эт.) подтверждают класс КС-3 и отсутствие ссылки на СП 385.1325800.2018. Замечание обосновано и существенно.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-005",
+      "verdict": "pass",
+      "details": "Evidence 449N-EL3M-DYY (page 6) существует. Отсутствие REI в общих указаниях для МКД класса Ф1.3 — реальное нарушение ФЗ-123 ст. 87. Защитный слой з.с.25 мм на узле А/6 подтверждает необходимость обоснования огнестойкости. Практически значимое замечание пожарной безопасности.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-006",
+      "verdict": "pass",
+      "details": "Все evidence-блоки (4URY-MGDY-RX3 page 13, 4MQJ-6NXP-4YH page 12, 6PCX-NFHU-6KW page 12, 4WTD-JFKA-JLE page 10, RELE-MX3A-MEN page 11) существуют и поддерживают замечание о недостаточном защитном слое стен подземной части. Реальная техническая проблема, обоснованная СП 63 табл. 10.1 (≥40 мм на бетонной подготовке).",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-007",
+      "verdict": "pass",
+      "details": "Evidence 76CD-MX4L-TM4 (text page 11 — таблица параметров) и 9XLH-7CNM-MFW (image page 11 — схема стыковки) существуют. Отсутствие длин анкеровки для применяемых диаметров ø12 и ø25 — реальная проблема для монтажников. Грамотный и практически значимый finding.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-008",
+      "verdict": "not_practical",
+      "details": "Опечатка «А240С» вместо «А240» в п.19 общих указаний. Класс А240 (гладкая арматура) однозначно идентифицируется по ГОСТ 34028-2016. Поставщик и подрядчик интерпретируют корректно. Это формальная редакторская ошибка, не влияющая на строительство.",
+      "suggested_action": "remove",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-009",
+      "verdict": "not_practical",
+      "details": "Явная опечатка в дате ФЗ-384 («60 декабря» вместо «30 декабря»). Закон однозначно идентифицируется по номеру и названию. Классический пример редакторской опечатки, не влияющей на строительство.",
+      "suggested_action": "remove",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-010",
+      "verdict": "pass",
+      "details": "Evidence 9GNP-D7CE-RYM и 4MAU-AT9Y-QRP (оба page 8) существуют. Шаг хомутов 300 мм формально в пределах нормы (375 мм), но для высотных МКД КС-3 требуется расчётное подтверждение. Это инженерный запрос, не формальный.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-011",
+      "verdict": "pass",
+      "details": "Evidence 9GNP-D7CE-RYM (page 8) существует. Зона сгущения ~350 мм меньше диаметра колонны 600 мм — реальное нарушение СП 63.13330.2018 п. 10.3.14 (длина зоны не менее наибольшего размера сечения). Существенное конструктивное замечание.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-012",
+      "verdict": "pass",
+      "details": "Evidence 4MAU-AT9Y-QRP и 7KCK-7PJC-U3E (оба page 8) существуют. Неоднозначные угловые привязки для 8 стержней по окружности — реальная проблема разбивки арматуры. Замечание обосновано геометрически (8 × 204 мм ≠ 3 × 195 мм).",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-013",
+      "verdict": "pass",
+      "details": "Evidence 4URY-MGDY-RX3 и 6E3R-RC3W-YPM (оба text page 13) существуют. Арифметическое расхождение 201,82 против 210,48 кг (4,3%) — подтверждённое числовое несоответствие. Влияет на закупку арматуры.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-014",
+      "verdict": "not_practical",
+      "details": "Замечание о формулировке «термически обработанная проволочка 1,2...2,0 мм» — редакторское уточнение. Вязка арматуры выполняется подрядчиком стандартной отожжённой проволокой из наличия; поставщик не будет закупать специально 2,0 мм для вязки. Формулировка некорректна, но не влияет на строительство.",
+      "suggested_action": "remove",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-015",
+      "verdict": "pass",
+      "details": "Evidence 9YPH-PJYM-VUF (text page 6 — ведомость комплектов) существует. Отсутствие закладных в КЖ при наличии смежного комплекта КМ — реальная проблема координации между разделами. Практически значимый запрос.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-016",
+      "verdict": "pass",
+      "details": "Все evidence-блоки (4UTW-PPGP-VEN page 7, 4WTD-JFKA-JLE page 10, 4JYF-HEKU-VVV page 10) существуют. Различие радиусов криволинейных стен между ярусами — реальная геометрическая проблема, требующая проверки с АР. Грамотный cross-check.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-017",
+      "verdict": "pass",
+      "details": "Evidence 4UTW-PPGP-VEN, 4WTD-JFKA-JLE, RELE-MX3A-MEN существуют. Отсутствие проёмов под инженерные сети на планах КЖ пристройки — реальная проблема координации с МЕП-разделами. Риск пробивки по факту с ослаблением арматуры.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-018",
+      "verdict": "pass",
+      "details": "Evidence 449N-EL3M-DYY (page 6), 9GNP-D7CE-RYM (page 8), 7NAU-TNME-3AR (page 12) существуют. Отсутствие сводной таблицы защитного слоя и пропуски на отдельных сечениях — реальная документационная проблема, влияющая на контроль на стройплощадке.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-019",
+      "verdict": "pass",
+      "details": "Все evidence-блоки (4MQJ, 7NAU, MANG, 6PCX — page 12) существуют. «Выпуски показаны условно» без параметров — реальное документационное замечание, требующее проверки смежных комплектов. Массив pages [10, 12] соответствует распределению evidence и листам 5, 7.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-020",
+      "verdict": "not_practical",
+      "details": "Разные ГИПы/Главконструкторы на титульных листах — формальный организационный вопрос. Finding сам отмечает «различие ролей допустимо». На строительство не влияет: все лица действующие, подписи присутствуют. Чисто процедурное замечание без практического значения.",
+      "suggested_action": "remove",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-021",
+      "verdict": "pass",
+      "details": "Evidence 449N-EL3M-DYY, 7JQD-DD3G-J9X, 4UTW-PPGP-VEN, 4WTD-JFKA-JLE существуют. Противоречие между требованием показывать рабочие швы и их фактическим отсутствием на опалубке — реальная проблема: подрядчик может устроить швы произвольно, что критично для подземной части.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-022",
+      "verdict": "not_practical",
+      "details": "Finding сам признаёт, что СНиП 12-03-2001 и СНиП 12-04-2002 «формально действуют». Предлагается добавить ссылку на Приказ Минтруда №883н — это редакторское улучшение. На строительство не влияет, поскольку охрана труда на площадке ведётся по актуальным требованиям независимо от редакции общих указаний.",
+      "suggested_action": "remove",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-023",
+      "verdict": "not_practical",
+      "details": "Отсутствие подписи ГИП/ГАП на реестре отклонений — формальное процедурное замечание. Содержание реестра («Отклонений нет») не страдает. Подпись добавляется при сдаче документации без влияния на строительство.",
+      "suggested_action": "remove",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-024",
+      "verdict": "pass",
+      "details": "Evidence 449N-EL3M-DYY (page 6) существует. Отсутствие данных ИГИ (УГВ, класс агрессивности) — реальная проблема для назначения W/F бетона подземной части. Связан с F-006 и обоснован технически.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-025",
+      "verdict": "pass",
+      "details": "Evidence 9GNP-D7CE-RYM (page 8) и 9XLH-7CNM-MFW (page 11) существуют. Проверка длины нахлёста 1560 мм при ø25 А500С с учётом α=1,3...1,5 — обоснованный инженерный запрос. Связан с F-007.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-026",
+      "verdict": "pass",
+      "details": "Evidence 7MAJ-EMC4-KNJ (page 9 — ведомость деталей) и 4UTW-PPGP-VEN (page 7 — план опалубки) существуют. Арифметика «120/8=15 колонн» корректна. Визуальный подсчёт по плану — обоснованный cross-check с спецификацией.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-027",
+      "verdict": "pass",
+      "details": "Evidence 7MAJ-EMC4-KNJ (page 9) существует. dоп=200 мм = 8d для ø25 А500С — на минимальной границе СП 63.13330.2018 п. 10.3.24. Рекомендация к увеличению — корректная инженерная практика.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-028",
+      "verdict": "pass",
+      "details": "Evidence HJ7G-VWTF-CGV и 7RD6-7GYX-MVT (оба page 10) существуют. Отсутствие гидроизоляции на разрезах подземной части — реальное нарушение СП 22.13330.2016 п. 6.5. Существенно для долговечности и отсутствия протечек.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-029",
+      "verdict": "pass",
+      "details": "Evidence HJ7G-VWTF-CGV, 4WTD-JFKA-JLE, RELE-MX3A-MEN существуют. Расхождение t=600 (разрез 1-1) и t=400 (план опалубки -1,800) на одном листе без явной маркировки — реальная проблема с возможностью ошибочной разбивки опалубки.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-030",
+      "verdict": "pass",
+      "details": "Evidence 6DRC-7KQL-9TJ (page 8 — плановая схема армирования) существует. Отсутствие раскладки арматуры стен t=250 мм на листе 3 — реальная и практически значимая неполнота: каркасы стен невозможно изготовить. Практически самое серьёзное замечание.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-031",
+      "verdict": "not_practical",
+      "details": "Отсутствие ссылки на ГОСТ 34028-2016 в общих указаниях листа 3, при том что ГОСТ явно указан в спецификации листа 4. Формальная редакторская правка: А500С однозначно идентифицируется, ГОСТ присутствует в комплекте. На поставку арматуры не влияет.",
+      "suggested_action": "remove",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-032",
+      "verdict": "pass",
+      "details": "Evidence 7RD6-7GYX-MVT и D9MX-LMX7-6QX (page 10) существуют. Отсутствие ссылок на сечения армирования и марки стены на разрезах листа 5 — реальная проблема: подрядчик не сможет сопоставить разрез с чертежом армирования, что задержит работы.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-033",
+      "verdict": "pass",
+      "details": "Evidence 9LPD-VX9H-YHK (page 12 — план колонны в обойме) существует. Защитный слой 25 мм до хомутов требует проверки по огнестойкости СП 468.1325800.2019. Реально значимо для пожарной безопасности колонн МКД.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-034",
+      "verdict": "pass",
+      "details": "Evidence TULW-YCYU-YVQ (page 13 — ведомость гнутых деталей) существует. Требование о длине прямого участка ≥6d=48 мм для А240 — реальное нормативное требование СП 63.13330.2018 п. 10.3.34. Обоснованный инженерный запрос.",
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    }
+  ]
+}

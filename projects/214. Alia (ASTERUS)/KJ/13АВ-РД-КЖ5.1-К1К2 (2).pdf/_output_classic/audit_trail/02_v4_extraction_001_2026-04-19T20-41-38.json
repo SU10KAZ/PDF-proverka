@@ -1,0 +1,11 @@
+{
+  "stage": "02_v4_extraction_001",
+  "model": "claude-opus-4-7",
+  "timestamp": "2026-04-19T20:41:38.543277",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "duration_ms": 246169,
+  "result": {
+    "mentions": 49
+  }
+}

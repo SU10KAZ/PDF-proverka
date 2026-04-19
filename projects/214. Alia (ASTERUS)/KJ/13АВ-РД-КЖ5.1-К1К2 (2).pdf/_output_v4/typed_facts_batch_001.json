@@ -1,0 +1,1687 @@
+{
+  "schema_version": "1.0",
+  "document_id": "13АВ-РД-КЖ5.1-К1К2 (2).pdf",
+  "discipline": "KJ",
+  "scope": {
+    "included": ["all"],
+    "excluded": []
+  },
+  "entity_mentions": [
+    {
+      "mention_id": "M-001",
+      "entity_type": "item",
+      "normalized_label": "Колонна Км-1 круглая D600, H=7850",
+      "source_context": {
+        "page": 7,
+        "sheet": "Лист 2",
+        "block_id": "4UTW-PPGP-VEN",
+        "view_type": "plan"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "Км-1-600-7850",
+          "value_norm": "Км-1-600-7850",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "Колонна круглого сечения диаметром 600 мм, высотой 7850 мм",
+          "value_norm": "Колонна круглого сечения D=600, H=7850",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        },
+        {
+          "name": "dimensions",
+          "value_type": "string",
+          "value_raw": "600x7850",
+          "value_norm": "D=600 мм, H=7850 мм",
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        }
+      ]
+    },
+    {
+      "mention_id": "M-002",
+      "entity_type": "item",
+      "normalized_label": "Стена по 1, t=250",
+      "source_context": {
+        "page": 7,
+        "sheet": "Лист 2",
+        "block_id": "4UTW-PPGP-VEN",
+        "view_type": "plan"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "по 1",
+          "value_norm": "по 1",
+          "value_source": "vision",
+          "parse_confidence": 0.85
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "Стена криволинейная, толщина 250 мм, отм. -0,180",
+          "value_norm": "Стена криволинейная, t=250 мм",
+          "value_source": "vision",
+          "parse_confidence": 0.85
+        },
+        {
+          "name": "dimensions",
+          "value_type": "float",
+          "value_raw": "t=250",
+          "value_norm": 250,
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        }
+      ]
+    },
+    {
+      "mention_id": "M-003",
+      "entity_type": "item",
+      "normalized_label": "Радиус криволинейной стены R17950",
+      "source_context": {
+        "page": 7,
+        "sheet": "Лист 2",
+        "block_id": "4UTW-PPGP-VEN",
+        "view_type": "plan"
+      },
+      "attributes": [
+        {
+          "name": "dimensions",
+          "value_type": "float",
+          "value_raw": "R17950",
+          "value_norm": 17950,
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "R17950 — радиус кривизны оси стены",
+          "value_norm": "Радиус R=17950 мм",
+          "value_source": "vision",
+          "parse_confidence": 0.85
+        }
+      ]
+    },
+    {
+      "mention_id": "M-004",
+      "entity_type": "item",
+      "normalized_label": "Радиус криволинейной стены R18450",
+      "source_context": {
+        "page": 7,
+        "sheet": "Лист 2",
+        "block_id": "4UTW-PPGP-VEN",
+        "view_type": "plan"
+      },
+      "attributes": [
+        {
+          "name": "dimensions",
+          "value_type": "float",
+          "value_raw": "R18450",
+          "value_norm": 18450,
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.85
+        }
+      ]
+    },
+    {
+      "mention_id": "M-005",
+      "entity_type": "item",
+      "normalized_label": "Радиус криволинейной стены R17980",
+      "source_context": {
+        "page": 7,
+        "sheet": "Лист 2",
+        "block_id": "4UTW-PPGP-VEN",
+        "view_type": "plan"
+      },
+      "attributes": [
+        {
+          "name": "dimensions",
+          "value_type": "float",
+          "value_raw": "R17980",
+          "value_norm": 17980,
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.8
+        }
+      ]
+    },
+    {
+      "mention_id": "M-006",
+      "entity_type": "item",
+      "normalized_label": "Радиус криволинейной стены R17770",
+      "source_context": {
+        "page": 7,
+        "sheet": "Лист 2",
+        "block_id": "4UTW-PPGP-VEN",
+        "view_type": "plan"
+      },
+      "attributes": [
+        {
+          "name": "dimensions",
+          "value_type": "float",
+          "value_raw": "R17770",
+          "value_norm": 17770,
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.85
+        }
+      ]
+    },
+    {
+      "mention_id": "M-007",
+      "entity_type": "item",
+      "normalized_label": "Радиус криволинейной стены R17450",
+      "source_context": {
+        "page": 7,
+        "sheet": "Лист 2",
+        "block_id": "4UTW-PPGP-VEN",
+        "view_type": "plan"
+      },
+      "attributes": [
+        {
+          "name": "dimensions",
+          "value_type": "float",
+          "value_raw": "R17450",
+          "value_norm": 17450,
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.85
+        }
+      ]
+    },
+    {
+      "mention_id": "M-008",
+      "entity_type": "item",
+      "normalized_label": "Колонна Км-1 — разрез 1-1",
+      "source_context": {
+        "page": 7,
+        "sheet": "Лист 2",
+        "block_id": "VGGJ-3ULF-TLV",
+        "view_type": "section"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "1-1",
+          "value_norm": "Разрез 1-1",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "Разрез 1-1 колонны прямоугольного представления: ширина 600 мм, высота между отметками -0,180 и +7,670 = 7850 мм",
+          "value_norm": "Разрез колонны. Высота 7850 мм между -0,180 и +7,670",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        },
+        {
+          "name": "dimensions",
+          "value_type": "string",
+          "value_raw": "600 (ширина); 7850 (высота)",
+          "value_norm": "b=600 мм; H=7850 мм",
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        }
+      ]
+    },
+    {
+      "mention_id": "M-009",
+      "entity_type": "note",
+      "normalized_label": "Примечания к листу 2",
+      "source_context": {
+        "page": 7,
+        "sheet": "Лист 2",
+        "block_id": "4UTW-PPGP-VEN",
+        "view_type": "note"
+      },
+      "attributes": [
+        {
+          "name": "note_text",
+          "value_type": "string",
+          "value_raw": "1. Общие указания см лист 1.\n2. Армирование см. лист 3.",
+          "value_norm": "Общие указания — лист 1; Армирование — лист 3",
+          "value_source": "text",
+          "parse_confidence": 1.0
+        },
+        {
+          "name": "requirement_type",
+          "value_type": "string",
+          "value_raw": "перекрёстная ссылка",
+          "value_norm": "cross_reference",
+          "value_source": "text",
+          "parse_confidence": 0.95
+        }
+      ]
+    },
+    {
+      "mention_id": "M-010",
+      "entity_type": "item",
+      "normalized_label": "Армирование колонны — разрез 1-1",
+      "source_context": {
+        "page": 8,
+        "sheet": "Лист 3",
+        "block_id": "9GNP-D7CE-RYM",
+        "view_type": "section"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "1-1",
+          "value_norm": "Разрез 1-1 (армирование)",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "Разрез армирования колонны: 25-Г-1 (8 шт.) продольная арматура; выпуски (8 шт.) длиной 1560 мм; хомуты по высоте с шагом 300х20=6000, по концам шаг 150х10=1500; защитные отступы 100 мм сверху/снизу",
+          "value_norm": "Армирование колонны: 8× 25-Г-1 + выпуски 8 шт. L=1560; хомуты 300х20=6000 и 150х10=1500",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        },
+        {
+          "name": "dimensions",
+          "value_type": "string",
+          "value_raw": "7850 (высота); 1560 (выпуски); 300х20=6000; 150х10=1500",
+          "value_norm": "H=7850; выпуск=1560; шаг хомутов 300 (20×) и 150 (10×)",
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        }
+      ]
+    },
+    {
+      "mention_id": "M-011",
+      "entity_type": "item",
+      "normalized_label": "Арматурный стержень 25-Г-1",
+      "source_context": {
+        "page": 8,
+        "sheet": "Лист 3",
+        "block_id": "9GNP-D7CE-RYM",
+        "view_type": "section"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "25-Г-1",
+          "value_norm": "25-Г-1",
+          "value_source": "vision",
+          "parse_confidence": 0.98
+        },
+        {
+          "name": "quantity",
+          "value_type": "int",
+          "value_raw": "8 шт.",
+          "value_norm": 8,
+          "unit": "шт",
+          "value_source": "vision",
+          "parse_confidence": 0.98
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "Продольная арматура колонны — 25-Г-1 (8 шт.)",
+          "value_norm": "Продольная арматура колонны 8× 25-Г-1",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        }
+      ]
+    },
+    {
+      "mention_id": "M-012",
+      "entity_type": "item",
+      "normalized_label": "Выпуски арматуры из колонны",
+      "source_context": {
+        "page": 8,
+        "sheet": "Лист 3",
+        "block_id": "9GNP-D7CE-RYM",
+        "view_type": "section"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "Выпуски",
+          "value_norm": "Выпуски арматуры",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        },
+        {
+          "name": "quantity",
+          "value_type": "int",
+          "value_raw": "8 шт.",
+          "value_norm": 8,
+          "unit": "шт",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        },
+        {
+          "name": "dimensions",
+          "value_type": "float",
+          "value_raw": "1560",
+          "value_norm": 1560,
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        }
+      ]
+    },
+    {
+      "mention_id": "M-013",
+      "entity_type": "item",
+      "normalized_label": "Сечение 2-2 круглой колонны D600 (шаг хомутов 150)",
+      "source_context": {
+        "page": 8,
+        "sheet": "Лист 3",
+        "block_id": "7KCK-7PJC-U3E",
+        "view_type": "section"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "2-2",
+          "value_norm": "Сечение 2-2",
+          "value_source": "vision",
+          "parse_confidence": 0.98
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "Сечение 2-2 круглой колонны D=600 мм: 8 шт. 25-Г-1 по периметру, хомуты 12-Х-1 с шагом 150 мм, выпуски 8 шт.",
+          "value_norm": "Сечение колонны D=600 с шагом хомутов 150 (зона сгущения)",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        },
+        {
+          "name": "dimensions",
+          "value_type": "float",
+          "value_raw": "600",
+          "value_norm": 600,
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.98
+        }
+      ]
+    },
+    {
+      "mention_id": "M-014",
+      "entity_type": "item",
+      "normalized_label": "Хомут 12-Х-1 шаг 150 (зона сгущения)",
+      "source_context": {
+        "page": 8,
+        "sheet": "Лист 3",
+        "block_id": "7KCK-7PJC-U3E",
+        "view_type": "section"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "12-Х-1",
+          "value_norm": "12-Х-1",
+          "value_source": "vision",
+          "parse_confidence": 0.98
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "Хомут кольцевой 12-Х-1, шаг 150 мм",
+          "value_norm": "Хомут 12-Х-1, шаг 150 мм (сечение 2-2)",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        },
+        {
+          "name": "dimensions",
+          "value_type": "float",
+          "value_raw": "шаг 150",
+          "value_norm": 150,
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        }
+      ]
+    },
+    {
+      "mention_id": "M-015",
+      "entity_type": "item",
+      "normalized_label": "Сечение 3-3 круглой колонны D600 (шаг хомутов 300)",
+      "source_context": {
+        "page": 8,
+        "sheet": "Лист 3",
+        "block_id": "4MAU-AT9Y-QRP",
+        "view_type": "section"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "3-3",
+          "value_norm": "Сечение 3-3",
+          "value_source": "vision",
+          "parse_confidence": 0.98
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "Сечение 3-3 круглой колонны D=600: 8 шт. 25-Г-1 радиально, хомуты 12-Х-1 шаг 300; углы между стержнями по 195° (фактически 45° — вероятный OCR)",
+          "value_norm": "Сечение колонны D=600 с шагом хомутов 300 (основная зона)",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        },
+        {
+          "name": "dimensions",
+          "value_type": "float",
+          "value_raw": "600",
+          "value_norm": 600,
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.98
+        }
+      ]
+    },
+    {
+      "mention_id": "M-016",
+      "entity_type": "item",
+      "normalized_label": "Хомут 12-Х-1 шаг 300 (основная зона)",
+      "source_context": {
+        "page": 8,
+        "sheet": "Лист 3",
+        "block_id": "4MAU-AT9Y-QRP",
+        "view_type": "section"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "12-Х-1",
+          "value_norm": "12-Х-1",
+          "value_source": "vision",
+          "parse_confidence": 0.98
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "Хомут кольцевой 12-Х-1, шаг 300 мм",
+          "value_norm": "Хомут 12-Х-1, шаг 300 мм (сечение 3-3)",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        },
+        {
+          "name": "dimensions",
+          "value_type": "float",
+          "value_raw": "шаг 300",
+          "value_norm": 300,
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        }
+      ]
+    },
+    {
+      "mention_id": "M-017",
+      "entity_type": "note",
+      "normalized_label": "Примечания к листу 3 (Армирование)",
+      "source_context": {
+        "page": 8,
+        "sheet": "Лист 3",
+        "block_id": "6DRC-7KQL-9TJ",
+        "view_type": "note"
+      },
+      "attributes": [
+        {
+          "name": "note_text",
+          "value_type": "string",
+          "value_raw": "TEXT_REF:9GYG-MP9L-U9Q",
+          "value_source": "text",
+          "parse_confidence": 1.0
+        },
+        {
+          "name": "requirement_type",
+          "value_type": "string",
+          "value_raw": "технические указания по армированию",
+          "value_norm": "technical_requirements",
+          "value_source": "text",
+          "parse_confidence": 0.95
+        }
+      ]
+    },
+    {
+      "mention_id": "M-018",
+      "entity_type": "spec_row",
+      "normalized_label": "Ведомость деталей: 25-Г-1",
+      "exact_keys": { "spec_position": "25-Г-1" },
+      "source_context": {
+        "page": 9,
+        "sheet": "Лист 4",
+        "block_id": "7MAJ-EMC4-KNJ",
+        "view_type": "spec_table"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "25-Г-1",
+          "value_norm": "25-Г-1",
+          "value_source": "text",
+          "parse_confidence": 0.98
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "Эскиз Г-образного стержня: a=8050; b=950; d_оп=200;",
+          "value_norm": "Г-образный стержень; a=8050, b=950, d_оп=200",
+          "value_source": "text",
+          "parse_confidence": 0.95
+        }
+      ]
+    },
+    {
+      "mention_id": "M-019",
+      "entity_type": "spec_row",
+      "normalized_label": "Ведомость деталей: 12-Х-1",
+      "exact_keys": { "spec_position": "12-Х-1" },
+      "source_context": {
+        "page": 9,
+        "sheet": "Лист 4",
+        "block_id": "7MAJ-EMC4-KNJ",
+        "view_type": "spec_table"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "12-Х-1",
+          "value_norm": "12-Х-1",
+          "value_source": "text",
+          "parse_confidence": 0.98
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "Эскиз кольцевого стержня (хомут): a=500; d_оп=515;",
+          "value_norm": "Кольцевой хомут; a=500, d_оп=515",
+          "value_source": "text",
+          "parse_confidence": 0.95
+        }
+      ]
+    },
+    {
+      "mention_id": "M-020",
+      "entity_type": "spec_row",
+      "normalized_label": "Спецификация арматуры: 12-Х-1 (φ12 А500С L=2375)",
+      "exact_keys": { "spec_position": "12-Х-1" },
+      "source_context": {
+        "page": 9,
+        "sheet": "Лист 4",
+        "block_id": "7MAJ-EMC4-KNJ",
+        "view_type": "spec_table"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "12-Х-1, ГОСТ 34028-2016, φ12 А500С, L=2375",
+          "value_norm": "12-Х-1 / ГОСТ 34028-2016 / φ12 А500С / L=2375",
+          "value_source": "text",
+          "parse_confidence": 0.95
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "φ12 А500С L= 2375",
+          "value_norm": "Арматура кл. А500С диаметром 12 мм, длина 2375 мм",
+          "value_source": "text",
+          "parse_confidence": 0.95
+        },
+        {
+          "name": "quantity",
+          "value_type": "int",
+          "value_raw": "480",
+          "value_norm": 480,
+          "unit": "шт",
+          "value_source": "text",
+          "parse_confidence": 0.95
+        }
+      ]
+    },
+    {
+      "mention_id": "M-021",
+      "entity_type": "spec_row",
+      "normalized_label": "Спецификация арматуры: 25-Г-1 (φ25 А500С L=8930)",
+      "exact_keys": { "spec_position": "25-Г-1" },
+      "source_context": {
+        "page": 9,
+        "sheet": "Лист 4",
+        "block_id": "7MAJ-EMC4-KNJ",
+        "view_type": "spec_table"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "25-Г-1, ГОСТ 34028-2016, φ25 А500С, L=8930",
+          "value_norm": "25-Г-1 / ГОСТ 34028-2016 / φ25 А500С / L=8930",
+          "value_source": "text",
+          "parse_confidence": 0.95
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "φ25 А500С L= 8930",
+          "value_norm": "Арматура кл. А500С диаметром 25 мм, длина 8930 мм",
+          "value_source": "text",
+          "parse_confidence": 0.95
+        },
+        {
+          "name": "quantity",
+          "value_type": "int",
+          "value_raw": "120",
+          "value_norm": 120,
+          "unit": "шт",
+          "value_source": "text",
+          "parse_confidence": 0.95
+        }
+      ]
+    },
+    {
+      "mention_id": "M-022",
+      "entity_type": "note",
+      "normalized_label": "Примечания к листу 4 (Спецификация и ведомость)",
+      "source_context": {
+        "page": 9,
+        "sheet": "Лист 4",
+        "block_id": "7MAJ-EMC4-KNJ",
+        "view_type": "note"
+      },
+      "attributes": [
+        {
+          "name": "note_text",
+          "value_type": "string",
+          "value_raw": "TEXT_REF:ETQ6-UHC7-HA4",
+          "value_source": "text",
+          "parse_confidence": 1.0
+        },
+        {
+          "name": "requirement_type",
+          "value_type": "string",
+          "value_raw": "правила измерения и изготовления арматурных деталей",
+          "value_norm": "measurement_rules",
+          "value_source": "text",
+          "parse_confidence": 0.9
+        }
+      ]
+    },
+    {
+      "mention_id": "M-023",
+      "entity_type": "item",
+      "normalized_label": "Опалубочный план пристройки на отм. -1,800",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "4WTD-JFKA-JLE",
+        "view_type": "plan"
+      },
+      "attributes": [
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "Опалубочный план вертикальных конструкций пристройки на отм. -1,800 в осях П.3-П.9/П.Л-П.Т. Стены t=400, типы 'по 2' и 'по 3'.",
+          "value_norm": "Опалубка на отм -1,800, оси П.3–П.9/П.Л–П.Т, t=400",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        },
+        {
+          "name": "dimensions",
+          "value_type": "float",
+          "value_raw": "t=400",
+          "value_norm": 400,
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        }
+      ]
+    },
+    {
+      "mention_id": "M-024",
+      "entity_type": "item",
+      "normalized_label": "Стена по 2 пристройки (отм. -1,800)",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "4WTD-JFKA-JLE",
+        "view_type": "plan"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "по 2",
+          "value_norm": "по 2",
+          "value_source": "vision",
+          "parse_confidence": 0.85
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "Тип стены 'по 2' на опалубочном плане отм. -1,800",
+          "value_norm": "Стена тип 'по 2'",
+          "value_source": "vision",
+          "parse_confidence": 0.8
+        }
+      ]
+    },
+    {
+      "mention_id": "M-025",
+      "entity_type": "item",
+      "normalized_label": "Стена по 3 пристройки (отм. -1,800)",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "4WTD-JFKA-JLE",
+        "view_type": "plan"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "по 3",
+          "value_norm": "по 3",
+          "value_source": "vision",
+          "parse_confidence": 0.85
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "Тип стены 'по 3' на опалубочном плане отм. -1,800",
+          "value_norm": "Стена тип 'по 3'",
+          "value_source": "vision",
+          "parse_confidence": 0.8
+        }
+      ]
+    },
+    {
+      "mention_id": "M-026",
+      "entity_type": "item",
+      "normalized_label": "Радиус R950 (внутренние закругления стен пристройки)",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "4WTD-JFKA-JLE",
+        "view_type": "plan"
+      },
+      "attributes": [
+        {
+          "name": "dimensions",
+          "value_type": "float",
+          "value_raw": "R950",
+          "value_norm": 950,
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.85
+        }
+      ]
+    },
+    {
+      "mention_id": "M-027",
+      "entity_type": "item",
+      "normalized_label": "Радиус R1250 (внутренние закругления стен пристройки)",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "4WTD-JFKA-JLE",
+        "view_type": "plan"
+      },
+      "attributes": [
+        {
+          "name": "dimensions",
+          "value_type": "float",
+          "value_raw": "R1250",
+          "value_norm": 1250,
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.85
+        }
+      ]
+    },
+    {
+      "mention_id": "M-028",
+      "entity_type": "other",
+      "normalized_label": "Схема расположения корпусов К1–К7",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "43L7-P9UL-VYD",
+        "view_type": "key_plan"
+      },
+      "attributes": [
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "К1 39эт., К2 42эт., К3 30эт., К4 18эт., К5 15эт., К6 28эт., К7, Лобби. Подземные автостоянки П.1–П.24 и П.25–П.48. Пристройки К3-К4, К4-К5, К5-К6.",
+          "value_norm": "Ключ-схема корпусов и автостоянок",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        }
+      ]
+    },
+    {
+      "mention_id": "M-029",
+      "entity_type": "item",
+      "normalized_label": "Корпус К1 (39 этажей)",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "43L7-P9UL-VYD",
+        "view_type": "key_plan"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "К1",
+          "value_norm": "К1",
+          "value_source": "vision",
+          "parse_confidence": 0.98
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "К1 39эт.",
+          "value_norm": "Корпус К1, 39 этажей",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        }
+      ]
+    },
+    {
+      "mention_id": "M-030",
+      "entity_type": "item",
+      "normalized_label": "Корпус К2 (42 этажа)",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "43L7-P9UL-VYD",
+        "view_type": "key_plan"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "К2",
+          "value_norm": "К2",
+          "value_source": "vision",
+          "parse_confidence": 0.98
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "К2 42эт.",
+          "value_norm": "Корпус К2, 42 этажа",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        }
+      ]
+    },
+    {
+      "mention_id": "M-031",
+      "entity_type": "item",
+      "normalized_label": "Корпус К3 (30 этажей)",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "43L7-P9UL-VYD",
+        "view_type": "key_plan"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "К3",
+          "value_norm": "К3",
+          "value_source": "vision",
+          "parse_confidence": 0.98
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "К3 30эт.",
+          "value_norm": "Корпус К3, 30 этажей",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        }
+      ]
+    },
+    {
+      "mention_id": "M-032",
+      "entity_type": "item",
+      "normalized_label": "Корпус К4 (18 этажей)",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "43L7-P9UL-VYD",
+        "view_type": "key_plan"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "К4",
+          "value_norm": "К4",
+          "value_source": "vision",
+          "parse_confidence": 0.98
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "К4 18эт.",
+          "value_norm": "Корпус К4, 18 этажей",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        }
+      ]
+    },
+    {
+      "mention_id": "M-033",
+      "entity_type": "item",
+      "normalized_label": "Корпус К5 (15 этажей)",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "43L7-P9UL-VYD",
+        "view_type": "key_plan"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "К5",
+          "value_norm": "К5",
+          "value_source": "vision",
+          "parse_confidence": 0.98
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "К5 15эт.",
+          "value_norm": "Корпус К5, 15 этажей",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        }
+      ]
+    },
+    {
+      "mention_id": "M-034",
+      "entity_type": "item",
+      "normalized_label": "Корпус К6 (28 этажей)",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "43L7-P9UL-VYD",
+        "view_type": "key_plan"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "К6",
+          "value_norm": "К6",
+          "value_source": "vision",
+          "parse_confidence": 0.98
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "К6 28эт.",
+          "value_norm": "Корпус К6, 28 этажей",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        }
+      ]
+    },
+    {
+      "mention_id": "M-035",
+      "entity_type": "item",
+      "normalized_label": "Корпус К7",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "43L7-P9UL-VYD",
+        "view_type": "key_plan"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "К7",
+          "value_norm": "К7",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "Корпус К7 (этажность на ключ-схеме не указана)",
+          "value_norm": "Корпус К7 без указания этажности",
+          "value_source": "vision",
+          "parse_confidence": 0.85
+        }
+      ]
+    },
+    {
+      "mention_id": "M-036",
+      "entity_type": "item",
+      "normalized_label": "Разрез 3-3: узел засыпки между конструкциями",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "7RD6-7GYX-MVT",
+        "view_type": "section"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "3-3",
+          "value_norm": "Разрез 3-3",
+          "value_source": "vision",
+          "parse_confidence": 0.98
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "Фрагмент разреза 3-3: стена t=300 мм между отм. -0,430 (верх) и -1,800 (низ), высота засыпки 1370 мм, заглубление 400 мм под стеной; отметка плиты верха 250 мм выше -0,430. Справа засыпка — керамзит фр. 20-40",
+          "value_norm": "Разрез узла. t=300 мм; засыпка керамзит 1370 мм между -0,430 и -1,800",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        },
+        {
+          "name": "dimensions",
+          "value_type": "string",
+          "value_raw": "250; 1370; 400; 300",
+          "value_norm": "перекрытие=250; засыпка=1370; заглубление=400; t_стены=300",
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        }
+      ]
+    },
+    {
+      "mention_id": "M-037",
+      "entity_type": "item",
+      "normalized_label": "Засыпка керамзит фр. 20-40 (разрез 3-3)",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "7RD6-7GYX-MVT",
+        "view_type": "section"
+      },
+      "attributes": [
+        {
+          "name": "material",
+          "value_type": "string",
+          "value_raw": "керамзит фр.20-40",
+          "value_norm": "Керамзит, фракция 20-40",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "Засыпка керамзитом фракции 20-40 в пазухе между конструкциями",
+          "value_norm": "Засыпка керамзит фр. 20-40",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        },
+        {
+          "name": "dimensions",
+          "value_type": "float",
+          "value_raw": "1370",
+          "value_norm": 1370,
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        }
+      ]
+    },
+    {
+      "mention_id": "M-038",
+      "entity_type": "item",
+      "normalized_label": "Разрез 1-1: узел засыпки между осями П.Т и П.С",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "HJ7G-VWTF-CGV",
+        "view_type": "section"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "1-1",
+          "value_norm": "Разрез 1-1 (пристройка отм. -1,800)",
+          "value_source": "vision",
+          "parse_confidence": 0.98
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "Разрез 1-1: две вертикальные конструкции толщиной 600 мм между осями П.Т и П.С (расстояние 2650 мм); между ними засыпка керамзит фр.20-40 высотой 1370 мм между отм. -0,430 и -1,800; заглубление 400 мм",
+          "value_norm": "Разрез по осям П.Т-П.С, t=600, засыпка керамзит 1370 мм",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        },
+        {
+          "name": "dimensions",
+          "value_type": "string",
+          "value_raw": "2650 (пролёт); 600 (толщина стены); 1370 (засыпка); 400 (заглубление)",
+          "value_norm": "L=2650; t=600; h_зас=1370; h_заг=400",
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        }
+      ]
+    },
+    {
+      "mention_id": "M-039",
+      "entity_type": "item",
+      "normalized_label": "Засыпка керамзит фр. 20-40 (разрез 1-1)",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "HJ7G-VWTF-CGV",
+        "view_type": "section"
+      },
+      "attributes": [
+        {
+          "name": "material",
+          "value_type": "string",
+          "value_raw": "керамзит фр.20-40",
+          "value_norm": "Керамзит, фракция 20-40",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        },
+        {
+          "name": "dimensions",
+          "value_type": "float",
+          "value_raw": "1370",
+          "value_norm": 1370,
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        }
+      ]
+    },
+    {
+      "mention_id": "M-040",
+      "entity_type": "item",
+      "normalized_label": "Разрез 2-2: узел засыпки между конструкциями",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "D9MX-LMX7-6QX",
+        "view_type": "section"
+      },
+      "attributes": [
+        {
+          "name": "designation",
+          "value_type": "string",
+          "value_raw": "2-2",
+          "value_norm": "Разрез 2-2",
+          "value_source": "vision",
+          "parse_confidence": 0.98
+        },
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "Фрагмент разреза 2-2: вертикальная стена t=600 мм, сверху плита 250 мм, отм. верха -0,430, низа -1,800; засыпка керамзит фр.20-40 высотой 1370 мм по обе стороны; заглубление 400 мм",
+          "value_norm": "Разрез узла. t=600; засыпка керамзит 1370 мм",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        },
+        {
+          "name": "dimensions",
+          "value_type": "string",
+          "value_raw": "250; 1370; 400; 600",
+          "value_norm": "плита=250; засыпка=1370; заглубление=400; t_стены=600",
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        }
+      ]
+    },
+    {
+      "mention_id": "M-041",
+      "entity_type": "item",
+      "normalized_label": "Засыпка керамзит фр. 20-40 (разрез 2-2)",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "D9MX-LMX7-6QX",
+        "view_type": "section"
+      },
+      "attributes": [
+        {
+          "name": "material",
+          "value_type": "string",
+          "value_raw": "керамзит фр.20-40",
+          "value_norm": "Керамзит, фракция 20-40",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        },
+        {
+          "name": "dimensions",
+          "value_type": "float",
+          "value_raw": "1370",
+          "value_norm": 1370,
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        }
+      ]
+    },
+    {
+      "mention_id": "M-042",
+      "entity_type": "other",
+      "normalized_label": "Схема расположения точек центра радиуса",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "4JYF-HEKU-VVV",
+        "view_type": "key_plan"
+      },
+      "attributes": [
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "Схема расположения точек центра радиуса для вертикальных конструкций в осях П.3-П.9/П.Л-П.Т. Радиусы: R17950, R18250, R17450, R17750. Линейные размеры: 6815, 1250, 1380, 795.",
+          "value_norm": "Ключ-схема центров радиусов криволинейных стен пристройки",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        }
+      ]
+    },
+    {
+      "mention_id": "M-043",
+      "entity_type": "item",
+      "normalized_label": "Радиус R17950 (пристройка)",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "4JYF-HEKU-VVV",
+        "view_type": "key_plan"
+      },
+      "attributes": [
+        {
+          "name": "dimensions",
+          "value_type": "float",
+          "value_raw": "R17950",
+          "value_norm": 17950,
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        }
+      ]
+    },
+    {
+      "mention_id": "M-044",
+      "entity_type": "item",
+      "normalized_label": "Радиус R18250 (пристройка)",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "4JYF-HEKU-VVV",
+        "view_type": "key_plan"
+      },
+      "attributes": [
+        {
+          "name": "dimensions",
+          "value_type": "float",
+          "value_raw": "R18250",
+          "value_norm": 18250,
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        }
+      ]
+    },
+    {
+      "mention_id": "M-045",
+      "entity_type": "item",
+      "normalized_label": "Радиус R17450 (пристройка)",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "4JYF-HEKU-VVV",
+        "view_type": "key_plan"
+      },
+      "attributes": [
+        {
+          "name": "dimensions",
+          "value_type": "float",
+          "value_raw": "R17450",
+          "value_norm": 17450,
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        }
+      ]
+    },
+    {
+      "mention_id": "M-046",
+      "entity_type": "item",
+      "normalized_label": "Радиус R17750 (пристройка)",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "4JYF-HEKU-VVV",
+        "view_type": "key_plan"
+      },
+      "attributes": [
+        {
+          "name": "dimensions",
+          "value_type": "float",
+          "value_raw": "R17750",
+          "value_norm": 17750,
+          "unit": "мм",
+          "value_source": "vision",
+          "parse_confidence": 0.9
+        }
+      ]
+    },
+    {
+      "mention_id": "M-047",
+      "entity_type": "note",
+      "normalized_label": "Примечания к листу 5 (Опалубка пристройки)",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "4WTD-JFKA-JLE",
+        "view_type": "note"
+      },
+      "attributes": [
+        {
+          "name": "note_text",
+          "value_type": "string",
+          "value_raw": "TEXT_REF:7JQD-DD3G-J9X",
+          "value_source": "text",
+          "parse_confidence": 1.0
+        },
+        {
+          "name": "requirement_type",
+          "value_type": "string",
+          "value_raw": "указания по бетонированию",
+          "value_norm": "concreting_rules",
+          "value_source": "text",
+          "parse_confidence": 0.9
+        }
+      ]
+    },
+    {
+      "mention_id": "M-048",
+      "entity_type": "note",
+      "normalized_label": "Условные обозначения (лист 5)",
+      "source_context": {
+        "page": 10,
+        "sheet": "Лист 5",
+        "block_id": "4WTD-JFKA-JLE",
+        "view_type": "legend"
+      },
+      "attributes": [
+        {
+          "name": "note_text",
+          "value_type": "string",
+          "value_raw": "Условные обозначения: +4,200 — Отметка верха плиты; t=200 — Толщина плиты; ~~~~~ — Рабочий шов бетонирования",
+          "value_norm": "Легенда: отметка верха плиты, толщина плиты, рабочий шов",
+          "value_source": "text",
+          "parse_confidence": 0.95
+        },
+        {
+          "name": "requirement_type",
+          "value_type": "string",
+          "value_raw": "легенда чертежа",
+          "value_norm": "legend",
+          "value_source": "text",
+          "parse_confidence": 0.95
+        }
+      ]
+    },
+    {
+      "mention_id": "M-049",
+      "entity_type": "item",
+      "normalized_label": "Сечение 1-1 колонны (опалубка) — отметки +7,670 / -0,180",
+      "source_context": {
+        "page": 7,
+        "sheet": "Лист 2",
+        "block_id": "VGGJ-3ULF-TLV",
+        "view_type": "section"
+      },
+      "attributes": [
+        {
+          "name": "description",
+          "value_type": "string",
+          "value_raw": "Отметки: верх +7,670; низ -0,180",
+          "value_norm": "Отметки колонны +7,670 и -0,180 (ΔH=7850 мм)",
+          "value_source": "vision",
+          "parse_confidence": 0.95
+        }
+      ]
+    }
+  ],
+  "relation_mentions": [
+    {
+      "relation_id": "R-001",
+      "relation_type": "described_in",
+      "from_mention_id": "M-011",
+      "to_mention_id": "M-018",
+      "confidence": 0.95,
+      "evidence_refs": [
+        { "page": 9, "sheet": "Лист 4", "view_type": "spec_table" }
+      ]
+    },
+    {
+      "relation_id": "R-002",
+      "relation_type": "described_in",
+      "from_mention_id": "M-014",
+      "to_mention_id": "M-019",
+      "confidence": 0.95,
+      "evidence_refs": [
+        { "page": 9, "sheet": "Лист 4", "view_type": "spec_table" }
+      ]
+    },
+    {
+      "relation_id": "R-003",
+      "relation_type": "described_in",
+      "from_mention_id": "M-016",
+      "to_mention_id": "M-019",
+      "confidence": 0.95,
+      "evidence_refs": [
+        { "page": 9, "sheet": "Лист 4", "view_type": "spec_table" }
+      ]
+    },
+    {
+      "relation_id": "R-004",
+      "relation_type": "described_in",
+      "from_mention_id": "M-011",
+      "to_mention_id": "M-021",
+      "confidence": 0.95,
+      "evidence_refs": [
+        { "page": 9, "sheet": "Лист 4", "view_type": "spec_table" }
+      ]
+    },
+    {
+      "relation_id": "R-005",
+      "relation_type": "described_in",
+      "from_mention_id": "M-014",
+      "to_mention_id": "M-020",
+      "confidence": 0.95,
+      "evidence_refs": [
+        { "page": 9, "sheet": "Лист 4", "view_type": "spec_table" }
+      ]
+    },
+    {
+      "relation_id": "R-006",
+      "relation_type": "described_in",
+      "from_mention_id": "M-016",
+      "to_mention_id": "M-020",
+      "confidence": 0.95,
+      "evidence_refs": [
+        { "page": 9, "sheet": "Лист 4", "view_type": "spec_table" }
+      ]
+    },
+    {
+      "relation_id": "R-007",
+      "relation_type": "applies_to",
+      "from_mention_id": "M-011",
+      "to_mention_id": "M-010",
+      "confidence": 0.95,
+      "evidence_refs": [
+        { "page": 8, "sheet": "Лист 3", "view_type": "section" }
+      ]
+    },
+    {
+      "relation_id": "R-008",
+      "relation_type": "applies_to",
+      "from_mention_id": "M-014",
+      "to_mention_id": "M-013",
+      "confidence": 0.95,
+      "evidence_refs": [
+        { "page": 8, "sheet": "Лист 3", "view_type": "section" }
+      ]
+    },
+    {
+      "relation_id": "R-009",
+      "relation_type": "applies_to",
+      "from_mention_id": "M-016",
+      "to_mention_id": "M-015",
+      "confidence": 0.95,
+      "evidence_refs": [
+        { "page": 8, "sheet": "Лист 3", "view_type": "section" }
+      ]
+    },
+    {
+      "relation_id": "R-010",
+      "relation_type": "described_in",
+      "from_mention_id": "M-001",
+      "to_mention_id": "M-008",
+      "confidence": 0.9,
+      "evidence_refs": [
+        { "page": 7, "sheet": "Лист 2", "view_type": "section" }
+      ]
+    },
+    {
+      "relation_id": "R-011",
+      "relation_type": "described_in",
+      "from_mention_id": "M-008",
+      "to_mention_id": "M-010",
+      "confidence": 0.9,
+      "evidence_refs": [
+        { "page": 8, "sheet": "Лист 3", "view_type": "section" }
+      ]
+    },
+    {
+      "relation_id": "R-012",
+      "relation_type": "located_in",
+      "from_mention_id": "M-037",
+      "to_mention_id": "M-036",
+      "confidence": 0.95,
+      "evidence_refs": [
+        { "page": 10, "sheet": "Лист 5", "view_type": "section" }
+      ]
+    },
+    {
+      "relation_id": "R-013",
+      "relation_type": "located_in",
+      "from_mention_id": "M-039",
+      "to_mention_id": "M-038",
+      "confidence": 0.95,
+      "evidence_refs": [
+        { "page": 10, "sheet": "Лист 5", "view_type": "section" }
+      ]
+    },
+    {
+      "relation_id": "R-014",
+      "relation_type": "located_in",
+      "from_mention_id": "M-041",
+      "to_mention_id": "M-040",
+      "confidence": 0.95,
+      "evidence_refs": [
+        { "page": 10, "sheet": "Лист 5", "view_type": "section" }
+      ]
+    },
+    {
+      "relation_id": "R-015",
+      "relation_type": "duplicate_identifier_with",
+      "from_mention_id": "M-036",
+      "to_mention_id": "M-038",
+      "confidence": 0.7,
+      "evidence_refs": [
+        { "page": 10, "sheet": "Лист 5", "view_type": "section" }
+      ]
+    },
+    {
+      "relation_id": "R-016",
+      "relation_type": "duplicate_identifier_with",
+      "from_mention_id": "M-038",
+      "to_mention_id": "M-040",
+      "confidence": 0.7,
+      "evidence_refs": [
+        { "page": 10, "sheet": "Лист 5", "view_type": "section" }
+      ]
+    }
+  ],
+  "uncertainty_events": [
+    {
+      "uncertainty_id": "U-001",
+      "mention_id": "M-015",
+      "kind": "ambiguous_reading",
+      "reason": "OCR выдаёт углы между радиальными стержнями '195°', что физически невозможно для 8 стержней. Ожидаемо '45°' или '19,5°'; на сечении 3-3 8 стержней, 360/8=45°.",
+      "severity": "medium"
+    },
+    {
+      "uncertainty_id": "U-002",
+      "mention_id": "M-005",
+      "kind": "ambiguous_reading",
+      "reason": "На плане опалубки лист 2 близкие радиусы R17950 и R17980 — возможен OCR-артефакт (7 vs 9). Уточнить по PDF.",
+      "severity": "low"
+    },
+    {
+      "uncertainty_id": "U-003",
+      "mention_id": "M-036",
+      "kind": "ambiguous_reading",
+      "reason": "На разрезе 3-3 листа 5 заглубление 400 мм показано пунктиром ниже отм. -1,800 — неясно, это толщина плиты/подготовки или условное продолжение. Требует пояснения легенды.",
+      "severity": "low"
+    },
+    {
+      "uncertainty_id": "U-004",
+      "mention_id": "M-024",
+      "kind": "missing_attribute",
+      "reason": "Типы стен 'по 2' и 'по 3' на листе 5 не раскрыты в пределах представленных блоков (армирование см. листы 6, 7). Геометрия (толщина, длина) не привязана однозначно.",
+      "severity": "medium"
+    },
+    {
+      "uncertainty_id": "U-005",
+      "mention_id": "M-035",
+      "kind": "missing_attribute",
+      "reason": "Корпус К7 на ключ-схеме изображён, но этажность не подписана.",
+      "severity": "low"
+    }
+  ]
+}
