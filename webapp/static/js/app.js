@@ -117,6 +117,9 @@ const app = createApp({
         // Скачать пакет аудита
         const auditPackageLoading = ref(false);
         const batchPackageLoading = ref(false);
+        // Batch-кроп блоков (для проектов без аудита)
+        const batchCropLoading = ref(false);
+        const batchCropProgress = ref('');
 
         // Expert Review (экспертная оценка)
         const expertReviewMode = ref(false);
@@ -865,47 +868,32 @@ const app = createApp({
         const stageModelHints = ref({});
 
         const modelPresets = {
-            openrouter: {
-                label: "OpenRouter",
+            classic: {
+                label: "Классический",
                 config: {
-                    text_analysis:          "claude-opus-4-6",
+                    text_analysis:          "claude-opus-4-7",
                     block_batch:            "google/gemini-3.1-pro-preview",
-                    findings_merge:         "claude-opus-4-6",
-                    findings_critic:        "openai/gpt-5.4",
-                    findings_corrector:     "openai/gpt-5.4",
-                    norm_verify:            "claude-opus-4-6",
-                    norm_fix:               "claude-opus-4-6",
-                    optimization:           "google/gemini-3.1-pro-preview",
-                    optimization_critic:    "claude-sonnet-4-6",
-                    optimization_corrector: "claude-sonnet-4-6",
-                },
-            },
-            claude_cli: {
-                label: "Claude CLI",
-                config: {
-                    text_analysis:          "claude-opus-4-6",
-                    block_batch:            "openai/gpt-5.4",
-                    findings_merge:         "claude-opus-4-6",
-                    findings_critic:        "openai/gpt-5.4",
-                    findings_corrector:     "claude-opus-4-6",
-                    norm_verify:            "claude-opus-4-6",
-                    norm_fix:               "claude-opus-4-6",
-                    optimization:           "claude-opus-4-6",
-                    optimization_critic:    "claude-sonnet-4-6",
-                    optimization_corrector: "claude-sonnet-4-6",
-                },
-            },
-            optimal: {
-                label: "Оптимальный",
-                config: {
-                    text_analysis:          "claude-opus-4-6",
-                    block_batch:            "openai/gpt-5.4",
-                    findings_merge:         "claude-opus-4-6",
+                    findings_merge:         "claude-opus-4-7",
                     findings_critic:        "claude-sonnet-4-6",
                     findings_corrector:     "claude-sonnet-4-6",
-                    norm_verify:            "claude-opus-4-6",
+                    norm_verify:            "claude-opus-4-7",
                     norm_fix:               "claude-sonnet-4-6",
-                    optimization:           "claude-opus-4-6",
+                    optimization:           "claude-opus-4-7",
+                    optimization_critic:    "claude-sonnet-4-6",
+                    optimization_corrector: "claude-sonnet-4-6",
+                },
+            },
+            subscription: {
+                label: "Подписка",
+                config: {
+                    text_analysis:          "claude-opus-4-7",
+                    block_batch:            "claude-opus-4-7",
+                    findings_merge:         "claude-opus-4-7",
+                    findings_critic:        "claude-opus-4-7",
+                    findings_corrector:     "claude-opus-4-7",
+                    norm_verify:            "claude-opus-4-7",
+                    norm_fix:               "claude-opus-4-7",
+                    optimization:           "claude-opus-4-7",
                     optimization_critic:    "claude-sonnet-4-6",
                     optimization_corrector: "claude-sonnet-4-6",
                 },
@@ -1697,7 +1685,7 @@ const app = createApp({
                 const obj = objectsList.value.find(o => o.id === id);
                 if (obj) objectName.value = obj.name;
                 showObjectPicker.value = false;
-                await refreshProjects();
+                await Promise.all([refreshProjects(), loadProjectGroups()]);
             } catch (e) {
                 console.error('Failed to switch object:', e);
             }
@@ -2034,7 +2022,9 @@ const app = createApp({
 
         async function loadProjectGroups() {
             try {
-                const data = await api('/project-groups');
+                const oid = currentObjectId.value;
+                const qs = oid ? '?object_id=' + encodeURIComponent(oid) : '';
+                const data = await api('/project-groups' + qs);
                 projectGroups.value = data.groups || {};
             } catch (e) {
                 console.error('Failed to load project groups:', e);
@@ -2044,10 +2034,11 @@ const app = createApp({
 
         async function saveProjectGroups(section) {
             try {
+                const oid = currentObjectId.value;
                 await fetch('/api/project-groups/' + encodeURIComponent(section), {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ groups: projectGroups.value[section] || [] }),
+                    body: JSON.stringify({ groups: projectGroups.value[section] || [], object_id: oid || null }),
                 });
             } catch (e) {
                 console.error('Ошибка сохранения групп:', e);
@@ -2880,10 +2871,96 @@ const app = createApp({
             }
         }
 
+        // Классификация блоков по статусам из /blocks/analysis:
+        //   no_findings — проанализирован сам, замечаний не выявлено
+        //   skipped     — алгоритм не включал в анализ (без значимого содержимого)
+        //   merged_into — свёрнут в родительский page/quadrant PNG
+        // Раздел "Без сущностей" = no_findings + skipped (два подсписка)
+        const noFindingsBlocksList = computed(() => {
+            if (!blockPages.value.length) return [];
+            const result = [];
+            for (const pg of blockPages.value) {
+                for (const b of (pg.blocks || [])) {
+                    const an = blockAnalysis.value[b.block_id];
+                    if (an && an.status === 'no_findings') result.push(b);
+                }
+            }
+            return result;
+        });
+
+        const skippedBlocksList = computed(() => {
+            if (!blockPages.value.length) return [];
+            const result = [];
+            for (const pg of blockPages.value) {
+                for (const b of (pg.blocks || [])) {
+                    const an = blockAnalysis.value[b.block_id];
+                    if (an && an.status === 'skipped') result.push(b);
+                }
+            }
+            return result;
+        });
+
+        // Алиас для обратной совместимости со счётчиком на кнопке "Без сущностей"
+        const emptyBlocksList = computed(() =>
+            [...noFindingsBlocksList.value, ...skippedBlocksList.value]
+        );
+
         const currentPageBlocks = computed(() => {
-            if (!selectedBlockPage.value || !blockPages.value.length) return null;
+            if (!blockPages.value.length) return null;
+            // Виртуальная страница "Без сущностей" — плоский список для совместимости с prev/next навигацией
+            if (selectedBlockPage.value === 'empty') {
+                return { page_num: 'empty', blocks: emptyBlocksList.value };
+            }
+            if (!selectedBlockPage.value) return null;
             return blockPages.value.find(p => p.page_num === selectedBlockPage.value) || null;
         });
+
+        // Статусные хелперы для рендера бейджей/карточек.
+        function blockStatus(blockId) {
+            const an = blockAnalysis.value[blockId];
+            return (an && an.status) || null;
+        }
+        function blockParentId(blockId) {
+            const an = blockAnalysis.value[blockId];
+            return (an && an.parent_block_id) || null;
+        }
+        function blockMergedBadge(blockId) {
+            // Человекочитаемая метка для merged_into: "В составе стр. 11 (четверть TL)"
+            const parent = blockParentId(blockId);
+            if (!parent) return '';
+            // Разбираем parent вида "page_011_TL" или "page_008"
+            const m = parent.match(/^page_(\d+)(?:_(TL|TR|BL|BR))?$/);
+            if (!m) return `В составе ${parent}`;
+            const pageNum = parseInt(m[1], 10);
+            const quad = m[2];
+            return quad ? `В составе стр. ${pageNum} (четверть ${quad})` : `В составе стр. ${pageNum}`;
+        }
+        function blockOriginalLabel(blockId) {
+            const an = blockAnalysis.value[blockId];
+            return (an && an.original_ocr_label) || '';
+        }
+
+        // Плоский список блоков в контексте текущей страницы (для prev/next навигации в overlay)
+        const currentBlocksList = computed(() => {
+            const pg = currentPageBlocks.value;
+            return (pg && pg.blocks) ? pg.blocks : [];
+        });
+
+        const currentBlockIndex = computed(() => {
+            if (!selectedBlock.value) return -1;
+            const bid = selectedBlock.value.block_id;
+            return currentBlocksList.value.findIndex(b => b.block_id === bid);
+        });
+
+        function navigateBlock(delta) {
+            const list = currentBlocksList.value;
+            if (!list.length) return;
+            const idx = currentBlockIndex.value;
+            if (idx < 0) return;
+            const next = idx + delta;
+            if (next < 0 || next >= list.length) return;
+            openBlock(list[next]);
+        }
 
         function openBlock(block) {
             selectedBlock.value = block;
@@ -3545,6 +3622,49 @@ const app = createApp({
             if (errors.length > 0) {
                 alert(`Скачано: ${downloaded}/${ids.length}\nОшибки:\n${errors.join('\n')}`);
             }
+        }
+
+        async function cropBatchBlocks() {
+            const ids = Array.from(selectedProjects.value);
+            if (!ids.length) return;
+            // Фильтр: только проекты без аудита (findings_count == 0)
+            const byId = new Map(projects.value.map(p => [p.project_id, p]));
+            const targets = ids.filter(pid => {
+                const p = byId.get(pid);
+                return p && !(p.findings_count > 0);
+            });
+            const skipped = ids.length - targets.length;
+            if (!targets.length) {
+                alert(`Все ${ids.length} выбранных проектов уже имеют аудит — кроп пропущен.\nЕсли нужно перекропить — пересоздайте блоки вручную (--force).`);
+                return;
+            }
+            if (!confirm(`Скачать графические блоки для ${targets.length} проектов?\n${skipped > 0 ? `(пропущено ${skipped} с уже выполненным аудитом)` : ''}`)) {
+                return;
+            }
+            batchCropLoading.value = true;
+            let done = 0;
+            const errors = [];
+            for (const pid of targets) {
+                batchCropProgress.value = `${done}/${targets.length}`;
+                try {
+                    const resp = await fetch(`/api/audit/${encodeURIComponent(pid)}/crop-blocks-only`, {method: 'POST'});
+                    if (!resp.ok) {
+                        const err = await resp.json().catch(() => ({}));
+                        errors.push(`${pid}: ${err.detail || resp.status}`);
+                    } else {
+                        done++;
+                    }
+                } catch (e) {
+                    errors.push(`${pid}: ${e.message}`);
+                }
+            }
+            batchCropLoading.value = false;
+            batchCropProgress.value = '';
+            const msg = `Кроп блоков: ${done}/${targets.length}` +
+                        (skipped > 0 ? `\nПропущено (есть аудит): ${skipped}` : '') +
+                        (errors.length ? `\n\nОшибки:\n${errors.join('\n')}` : '');
+            alert(msg);
+            await refreshProjects();
         }
 
         // Resolved findings — count and download
@@ -5174,11 +5294,10 @@ const app = createApp({
             handleRoute();
             connectGlobalWS();
             startPolling();
-            // Параллельная загрузка всех начальных данных
+            // Параллельная загрузка — сначала объект (нужен currentObjectId), потом группы
             Promise.all([
                 loadDisciplines(),
-                loadProjectGroups(),
-                loadObjects(),
+                loadObjects().then(() => loadProjectGroups()),
                 pollGlobalUsage(),
                 fetchAccountInfo(),
                 fetchPaidCost(),
@@ -5204,6 +5323,9 @@ const app = createApp({
             blocksProjectId, blockPages, blockCropErrors, blockTotalExpected,
             selectedBlockPage, selectedBlock,
             blockAnalysis, selectedBlockAnalysis, currentPageBlocks,
+            emptyBlocksList, noFindingsBlocksList, skippedBlocksList,
+            blockStatus, blockParentId, blockMergedBadge, blockOriginalLabel,
+            currentBlocksList, currentBlockIndex, navigateBlock,
             blockHasAnalysis, blockFindingsCount, blockMaxSeverity,
             openBlock, loadBlocks, blockToFindings, getBlockFindings,
             blockImageContainer, blockImageStyle, onBlockZoomWheel, onBlockPanStart, resetBlockZoom, onBlockImageLoad,
@@ -5324,6 +5446,7 @@ const app = createApp({
             loadDiscussionModels, loadDiscussionItems, switchDiscussionTab,
             openDiscussion, closeDiscussion, sendDiscussionMessage, downloadAuditPackage, auditPackageLoading,
             downloadBatchAuditPackages, batchPackageLoading,
+            cropBatchBlocks, batchCropLoading, batchCropProgress,
             chatAttachedImage, handleChatFileSelect, handleChatPaste,
             resolvedFindingsCount, allDiscussionsResolved, resolvedFindingsLoading, downloadResolvedFindings,
             editingMessageIdx, editingMessageText,

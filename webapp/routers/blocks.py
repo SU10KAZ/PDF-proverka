@@ -590,23 +590,86 @@ async def get_blocks_analysis(project_id: str):
                 block["summary"] = _v4_block_summary(display_entities)
                 block["key_values_read"] = _v4_key_values(display_entities)
 
-    # Для блоков из index.json без анализа — добавить пустую запись
-    # чтобы UI не показывал "Данные анализа отсутствуют"
+    # ═══════════════════════════════════════════════════════════════════
+    # Классификация всех блоков из index.json для UI
+    # ═══════════════════════════════════════════════════════════════════
+    # Статусы:
+    #   has_findings  — блок проанализирован индивидуально, есть замечания
+    #   no_findings   — проанализирован индивидуально, замечаний не выявлено
+    #   merged_into   — свёрнут в родительский page/quadrant PNG
+    #                    (parent_block_id указывает на родителя)
+    #   skipped       — алгоритм решил не включать в анализ
+    #                    (не попал ни в batch, ни в чей-то merged_block_ids)
+    #
+    # Для merged_into блока:
+    #   - summary наследуется от parent (одинаковый для всех детей одной страницы)
+    #   - original_ocr_label содержит собственный label этого конкретного фрагмента
+    #
+    # Bridge index.json → classification:
+    #   1. Проанализированные (A) уже в blocks_map из block_batch_*.json
+    #   2. Merged (B) — из block_batches.json (поле merged_block_ids у parent-блоков)
+    #   3. Skipped (C) — всё остальное из index.json
+    # ═══════════════════════════════════════════════════════════════════
+
+    # Собираем map: child_block_id → parent_block_id (для статуса merged_into)
+    merged_parent_map: dict[str, str] = {}
+    batches_path = output_dir / "block_batches.json"
+    if batches_path.exists():
+        try:
+            batches_data = json.loads(batches_path.read_text(encoding="utf-8"))
+            for batch in batches_data.get("batches", []):
+                for blk in batch.get("blocks", []):
+                    parent_bid = blk.get("block_id", "")
+                    for child_bid in (blk.get("merged_block_ids") or []):
+                        if child_bid:
+                            merged_parent_map[child_bid] = parent_bid
+        except Exception:
+            pass
+
+    # Классификация A-блоков (проанализированы индивидуально)
+    for bid, block in blocks_map.items():
+        findings = block.get("findings") or []
+        block["status"] = "has_findings" if findings else "no_findings"
+
+    # Добавляем B (merged) и C (skipped) из index.json
     index_path = output_dir / "blocks" / "index.json"
-    if index_path.exists() and blocks_map:
+    if index_path.exists():
         try:
             index_data = json.loads(index_path.read_text(encoding="utf-8"))
             for ib in index_data.get("blocks", []):
                 bid = ib.get("block_id", "")
-                if bid and bid not in blocks_map:
+                if not bid or bid in blocks_map:
+                    continue  # уже классифицирован как A
+
+                parent_bid = merged_parent_map.get(bid)
+                if parent_bid:
+                    # B — свёрнут в родителя
+                    parent = blocks_map.get(parent_bid, {})
+                    blocks_map[bid] = {
+                        "block_id": bid,
+                        "page": ib.get("page"),
+                        "sheet": parent.get("sheet"),
+                        "sheet_type": parent.get("sheet_type", "other"),
+                        "summary": parent.get("summary") or "Разобран в составе родительского листа",
+                        "key_values_read": [],
+                        "findings": [],
+                        "status": "merged_into",
+                        "parent_block_id": parent_bid,
+                        "original_ocr_label": ib.get("ocr_label", ""),
+                    }
+                else:
+                    # C — ни в batch, ни в merged
                     blocks_map[bid] = {
                         "block_id": bid,
                         "page": ib.get("page"),
                         "sheet": None,
                         "sheet_type": "other",
-                        "summary": "Блок не содержит сущностей в scope аудита (v4)",
+                        "summary": "Без значимого содержимого",
                         "key_values_read": [],
                         "findings": [],
+                        "status": "skipped",
+                        "is_empty_scope": True,
+                        "original_ocr_label": ib.get("ocr_label", ""),
                     }
         except Exception:
             pass
@@ -614,9 +677,17 @@ async def get_blocks_analysis(project_id: str):
     for block in blocks_map.values():
         _normalize_block_info(block)
 
+    # Сводные счётчики по статусам
+    counts = {"has_findings": 0, "no_findings": 0, "merged_into": 0, "skipped": 0}
+    for block in blocks_map.values():
+        s = block.get("status")
+        if s in counts:
+            counts[s] += 1
+
     return {
         "project_id": project_id,
         "total_analyzed": len(blocks_map),
+        "counts": counts,
         "blocks": blocks_map,
     }
 

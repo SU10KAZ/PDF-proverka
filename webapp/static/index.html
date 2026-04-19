@@ -422,7 +422,7 @@
                 <div class="projects-grid" :class="{'projects-grid--in-group': !group.noHeader}">
                     <div v-for="p in group.projects" :key="p.project_id"
                          class="project-card" draggable="true"
-                         :class="{'project-card--ready': p.has_blocks, 'project-card--running': isProjectRunning(p.project_id), 'project-card--selected': isProjectSelected(p.project_id), 'project-card--dragging': dragProjectId === p.project_id}"
+                         :class="{'project-card--ready': p.has_blocks, 'project-card--running': isProjectRunning(p.project_id), 'project-card--selected': isProjectSelected(p.project_id), 'project-card--dragging': dragProjectId === p.project_id, 'project-card--reviewed': p.expert_review_status === 'complete'}"
                          @dragstart.stop="onProjectDragStart($event, p.project_id)"
                          @dragend="dragProjectId = null"
                          @click="navigate('/project/' + p.project_id)">
@@ -465,6 +465,12 @@
         <div v-if="selectedCount > 0 && !batchRunning && currentView === 'dashboard'" class="batch-action-bar">
             <span class="batch-action-bar__count">Выбрано: {{ selectedCount }}</span>
             <div class="batch-action-bar__actions">
+                <button class="btn btn-outline" :disabled="batchCropLoading"
+                        @click="cropBatchBlocks"
+                        title="Кропнуть графические блоки в проектах без аудита — для предпросмотра качества">
+                    <span v-if="batchCropLoading">&#129534; Кропаю... ({{ batchCropProgress }})</span>
+                    <span v-else>&#129534; Скачать блоки</span>
+                </button>
                 <button class="btn btn-outline" :disabled="batchPackageLoading"
                         @click="downloadBatchAuditPackages">
                     <span v-if="batchPackageLoading">&#128230; Формируется...</span>
@@ -833,15 +839,22 @@
                 </div>
                 <div class="model-preset-buttons">
                     <button class="btn btn-preset"
-                            :class="{ active: activePreset === 'openrouter' }"
-                            @click="applyPreset('openrouter')">OpenRouter</button>
+                            :class="{ active: activePreset === 'classic' }"
+                            @click="applyPreset('classic')"
+                            title="Gemini для блоков — дешёвый массовый аудит">Классический</button>
                     <button class="btn btn-preset"
-                            :class="{ active: activePreset === 'claude_cli' }"
-                            @click="applyPreset('claude_cli')">Claude CLI</button>
-                    <button class="btn btn-preset"
-                            :class="{ active: activePreset === 'optimal' }"
-                            @click="applyPreset('optimal')">Оптимальный</button>
+                            :class="{ active: activePreset === 'subscription' }"
+                            @click="applyPreset('subscription')"
+                            title="Opus 4.7 для всего (Claude Max subscription)">Подписка</button>
                 </div>
+                <p v-if="activePreset" class="model-preset-hint">
+                    <span v-if="activePreset === 'classic'">
+                        Классический: Gemini 3.1 Pro для распознавания блоков, Opus/Sonnet для текстовых этапов. Оптимальный баланс качества и стоимости для массового прогона.
+                    </span>
+                    <span v-else-if="activePreset === 'subscription'">
+                        Подписка: Opus 4.7 на всех этапах, включая распознавание блоков. Используется Claude Max — платите по лимитам тарифа, а не за токены.
+                    </span>
+                </p>
                 <table class="model-config-table">
                     <thead>
                         <tr>
@@ -1017,6 +1030,7 @@
                             <div class="stage-model" v-if="stageModel('text_analysis')">{{ stageModel('text_analysis') }}</div>
                         </div>
                         <!-- V4 pipeline: Факты → Граф → Кандидаты → Свод -->
+                        <template v-if="(currentProject.pipeline_version || 'legacy') === 'v4'">
                         <div class="pipeline-arrow">&rarr;</div>
                         <div class="pipeline-stage pipeline-stage--v4"
                              :class="[stepClass(currentProject.pipeline.v4_extraction), {'pipeline-stage--clickable': canStartFrom('v4_extraction')}]"
@@ -1062,6 +1076,38 @@
                                 <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('v4_formatter').out }}</span>
                             </div>
                         </div>
+                        </template>
+                        <!-- Classic pipeline: Блоки → Свод -->
+                        <template v-else>
+                        <div class="pipeline-arrow">&rarr;</div>
+                        <div class="pipeline-stage"
+                             :class="[stepClass(currentProject.pipeline.blocks_analysis), {'pipeline-stage--clickable': canStartFrom('blocks_analysis')}]"
+                             @click="canStartFrom('blocks_analysis') && startFromStage(currentProject.project_id, 'blocks_analysis')"
+                             :title="canStartFrom('blocks_analysis') ? 'Клик: запустить с этого этапа' : 'Анализ блоков (02_blocks_analysis.json)'"
+                        >
+                            <div class="stage-num">02</div>
+                            <div class="stage-label">Блоки</div>
+                            <div class="stage-tokens" v-if="stageTokensFormatted('blocks_analysis')">
+                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('blocks_analysis').inp }}</span>
+                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('blocks_analysis').out }}</span>
+                            </div>
+                            <div class="stage-model" v-if="stageModel('blocks_analysis')">{{ stageModel('blocks_analysis') }}</div>
+                        </div>
+                        <div class="pipeline-arrow">&rarr;</div>
+                        <div class="pipeline-stage"
+                             :class="[stepClass(currentProject.pipeline.findings), {'pipeline-stage--clickable': canStartFrom('findings')}]"
+                             @click="canStartFrom('findings') && startFromStage(currentProject.project_id, 'findings')"
+                             :title="canStartFrom('findings') ? 'Клик: запустить с этого этапа' : 'Свод замечаний (03_findings.json)'"
+                        >
+                            <div class="stage-num">03</div>
+                            <div class="stage-label">Свод</div>
+                            <div class="stage-tokens" v-if="stageTokensFormatted('findings')">
+                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('findings').inp }}</span>
+                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('findings').out }}</span>
+                            </div>
+                            <div class="stage-model" v-if="stageModel('findings')">{{ stageModel('findings') }}</div>
+                        </div>
+                        </template>
                         <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
                         <div class="pipeline-stage pipeline-stage--sm"
                              :class="[stepClass(combinedCriticStatus(currentProject.pipeline.findings_critic, currentProject.pipeline.findings_corrector)), {'pipeline-stage--clickable': canStartFrom('findings_critic')}]"
@@ -1814,15 +1860,73 @@
                         <span>Стр. {{ pg.page_num }}</span>
                         <span class="page-btn__count">({{ pg.block_count }})</span>
                     </button>
+                    <button v-if="emptyBlocksList.length > 0"
+                            class="page-btn page-btn--empty-scope"
+                            :class="{'page-btn--active': selectedBlockPage === 'empty'}"
+                            @click="selectedBlockPage = 'empty'"
+                            title="Блоки, не включённые в результаты анализа">
+                        <span>Без сущностей</span>
+                        <span class="page-btn__count">({{ emptyBlocksList.length }})</span>
+                    </button>
                 </div>
 
-                <!-- Blocks grid for selected page -->
-                <div v-if="currentPageBlocks && currentPageBlocks.blocks.length" class="block-grid">
+                <!-- Virtual page "Без сущностей" — два подсписка: no_findings + skipped -->
+                <template v-if="selectedBlockPage === 'empty' && blockPages.length">
+                    <div v-if="noFindingsBlocksList.length" class="block-section">
+                        <h4 class="block-section__title">
+                            Замечаний не выявлено
+                            <span class="block-section__count">({{ noFindingsBlocksList.length }})</span>
+                        </h4>
+                        <p class="block-section__hint">Модель проверила эти блоки, нарушений не обнаружено.</p>
+                        <div class="block-grid">
+                            <div v-for="block in noFindingsBlocksList" :key="block.block_id"
+                                 class="block-item block-item--analyzed"
+                                 :data-block-id="block.block_id"
+                                 @click="openBlock(block)">
+                                <img :src="'/api/tiles/' + blocksProjectId + '/blocks/image/' + block.block_id"
+                                     :alt="block.block_id" loading="lazy">
+                                <div class="block-label">
+                                    <span class="block-label__id">{{ block.block_id }}</span>
+                                    <span class="block-label__desc">{{ block.ocr_label }}</span>
+                                </div>
+                                <span class="tile-analyzed-dot" title="Проверен, замечаний нет"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="skippedBlocksList.length" class="block-section">
+                        <h4 class="block-section__title">
+                            Без значимого содержимого
+                            <span class="block-section__count">({{ skippedBlocksList.length }})</span>
+                        </h4>
+                        <p class="block-section__hint">Алгоритм не включал эти блоки в анализ — фрагменты без чертёжного содержания (штампы, пустые области, служебные вставки).</p>
+                        <div class="block-grid">
+                            <div v-for="block in skippedBlocksList" :key="block.block_id"
+                                 class="block-item block-item--skipped"
+                                 :data-block-id="block.block_id"
+                                 @click="openBlock(block)">
+                                <img :src="'/api/tiles/' + blocksProjectId + '/blocks/image/' + block.block_id"
+                                     :alt="block.block_id" loading="lazy">
+                                <div class="block-label">
+                                    <span class="block-label__id">{{ block.block_id }}</span>
+                                    <span class="block-label__desc">{{ block.ocr_label }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="!noFindingsBlocksList.length && !skippedBlocksList.length"
+                         class="tile-analysis-empty">
+                        <p>Все блоки содержат замечания или разобраны в составе листов.</p>
+                    </div>
+                </template>
+
+                <!-- Обычная страница PDF -->
+                <div v-else-if="currentPageBlocks && currentPageBlocks.blocks.length" class="block-grid">
                     <div v-for="block in currentPageBlocks.blocks" :key="block.block_id"
                          class="block-item"
                          :data-block-id="block.block_id"
                          :class="{'block-item--has-findings': blockFindingsCount(block.block_id) > 0,
-                                  'block-item--analyzed': blockHasAnalysis(block.block_id) && blockFindingsCount(block.block_id) === 0}"
+                                  'block-item--analyzed': blockHasAnalysis(block.block_id) && blockFindingsCount(block.block_id) === 0 && blockStatus(block.block_id) !== 'merged_into',
+                                  'block-item--merged': blockStatus(block.block_id) === 'merged_into'}"
                          @click="openBlock(block)">
                         <img :src="'/api/tiles/' + blocksProjectId + '/blocks/image/' + block.block_id"
                              :alt="block.block_id" loading="lazy">
@@ -1835,7 +1939,12 @@
                               class="tile-badge" :class="'tile-badge--' + sevClass(blockMaxSeverity(block.block_id))">
                             {{ blockFindingsCount(block.block_id) }}
                         </span>
-                        <!-- Зелёная точка: проанализирован, без замечаний -->
+                        <!-- Бейдж: разобран в составе родительского листа -->
+                        <span v-else-if="blockStatus(block.block_id) === 'merged_into'"
+                              class="tile-merged-badge" :title="blockMergedBadge(block.block_id)">
+                            &#8619;
+                        </span>
+                        <!-- Зелёная точка: проанализирован сам, без замечаний -->
                         <span v-else-if="blockHasAnalysis(block.block_id)" class="tile-analyzed-dot"></span>
                     </div>
                 </div>
@@ -1849,6 +1958,20 @@
                     <div class="tile-split-container" @click.stop>
                         <button v-if="blockBackRoute" class="block-back-btn" @click="goBackFromBlock()" title="Назад к замечаниям">&larr; Назад</button>
                         <button class="tile-split-close" @click="selectedBlock = null">&times;</button>
+                        <!-- Prev/Next navigation (в рамках текущей страницы или виртуальной 'Без сущностей') -->
+                        <button v-if="currentBlocksList.length > 1"
+                                class="block-nav-btn block-nav-btn--prev"
+                                :disabled="currentBlockIndex <= 0"
+                                @click.stop="navigateBlock(-1)"
+                                :title="'Предыдущий блок (' + (currentBlockIndex + 1) + '/' + currentBlocksList.length + ')'">&lsaquo;</button>
+                        <button v-if="currentBlocksList.length > 1"
+                                class="block-nav-btn block-nav-btn--next"
+                                :disabled="currentBlockIndex >= currentBlocksList.length - 1"
+                                @click.stop="navigateBlock(1)"
+                                :title="'Следующий блок (' + (currentBlockIndex + 1) + '/' + currentBlocksList.length + ')'">&rsaquo;</button>
+                        <div v-if="currentBlocksList.length > 1" class="block-nav-counter">
+                            {{ currentBlockIndex + 1 }} / {{ currentBlocksList.length }}
+                        </div>
 
                         <!-- Left: block image -->
                         <div class="tile-split-image" ref="blockImageContainer"
@@ -1899,9 +2022,32 @@
                             <template v-if="selectedBlockAnalysis">
                                 <div class="tile-analysis-header">
                                     <h3>{{ selectedBlockAnalysis.label || selectedBlock.ocr_label || 'Блок' }}</h3>
+                                    <!-- Статус-бейджи -->
+                                    <div v-if="selectedBlockAnalysis.status === 'merged_into'"
+                                         class="tile-status-pill tile-status-pill--merged">
+                                        &#8619; {{ blockMergedBadge(selectedBlock.block_id) }}
+                                    </div>
+                                    <div v-else-if="selectedBlockAnalysis.status === 'no_findings'"
+                                         class="tile-status-pill tile-status-pill--ok">
+                                        &#10003; Замечаний не выявлено
+                                    </div>
+                                    <div v-else-if="selectedBlockAnalysis.status === 'skipped'"
+                                         class="tile-status-pill tile-status-pill--skipped">
+                                        Без значимого содержимого
+                                    </div>
+                                </div>
+
+                                <!-- Исходный OCR-label фрагмента для merged-блоков -->
+                                <div v-if="selectedBlockAnalysis.status === 'merged_into' && selectedBlockAnalysis.original_ocr_label"
+                                     class="tile-analysis-subtitle">
+                                    <strong>Этот фрагмент:</strong> {{ selectedBlockAnalysis.original_ocr_label }}
                                 </div>
 
                                 <div v-if="selectedBlockAnalysis.summary" class="tile-analysis-summary">
+                                    <div v-if="selectedBlockAnalysis.status === 'merged_into'"
+                                         class="tile-analysis-summary__hint">
+                                        Описание родительского листа:
+                                    </div>
                                     {{ selectedBlockAnalysis.summary }}
                                 </div>
 

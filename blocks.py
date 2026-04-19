@@ -71,6 +71,11 @@ TARGET_DPI = 100               # Единое разрешение: 100 DPI дл
 TARGET_DPI_COMPACT = 50        # Compact-режим: дешевле по токенам
 MIN_BLOCK_AREA_PX2 = 50000
 
+# Гибридный режим: при DPI<min блок апскейлится так, чтобы long side ≥ MIN_LONG_SIDE_PX.
+# Без этого мелкие узлы (~200pt) на 100 DPI становятся ~280px и плохо читаются LLM.
+MIN_LONG_SIDE_PX = 800
+MIN_LONG_SIDE_PX_COMPACT = 500
+
 # Legacy constants (используются в recrop и _render_full_page)
 TARGET_LONG_SIDE_PX = 1500
 TARGET_LONG_SIDE_PX_COMPACT = 800
@@ -154,12 +159,16 @@ def _render_pdf_bytes_to_png(
     out_png: Path,
     target_px: int = 0,
     dpi: int = 0,
+    min_long_side: int = 0,
 ) -> tuple[int, int]:
     """Рендерить PDF-байты в PNG. Возвращает (w, h).
 
     Два режима (dpi приоритетнее):
       - dpi > 0:  фиксированная плотность (scale = dpi / 72)
       - target_px > 0: длинная сторона = target_px пикселей (legacy)
+
+    min_long_side: при dpi-режиме гарантирует, что длинная сторона PNG ≥ min_long_side.
+    Если на нативном DPI блок получается мельче — scale поднимается до нужного.
     """
     doc = fitz.open(stream=pdf_bytes, filetype="pdf")
     page = doc[0]
@@ -171,6 +180,8 @@ def _render_pdf_bytes_to_png(
 
     if dpi > 0:
         render_scale = dpi / 72
+        if min_long_side > 0:
+            render_scale = max(render_scale, min_long_side / long_side_pt)
     elif target_px > 0:
         render_scale = target_px / long_side_pt
     else:
@@ -195,22 +206,32 @@ def download_and_convert(
     also_save_full: Path | None = None,
     full_target_px: int | None = None,
     dpi: int = 0,
+    min_long_side: int = 0,
 ) -> tuple[int, int]:
     """Скачать PDF-кроп по URL и конвертировать в PNG.
 
     also_save_full: если указан — дополнительно рендерит full-версию в этот путь.
     dpi: если > 0 — рендерить с фиксированной плотностью (приоритет над target_px).
+    min_long_side: гибрид — минимальная длинная сторона PNG в DPI-режиме.
     """
     _require_pymupdf()
     req = urllib.request.Request(crop_url, headers={"User-Agent": "crop_blocks/1.0"})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         pdf_bytes = resp.read()
 
-    w, h = _render_pdf_bytes_to_png(pdf_bytes, out_png, target_px=target_px or 0, dpi=dpi)
+    w, h = _render_pdf_bytes_to_png(
+        pdf_bytes, out_png,
+        target_px=target_px or 0, dpi=dpi, min_long_side=min_long_side,
+    )
 
     # Дополнительный рендер full-версии из тех же байт (без повторного скачивания)
     if also_save_full:
-        _render_pdf_bytes_to_png(pdf_bytes, also_save_full, target_px=full_target_px or 0, dpi=dpi or TARGET_DPI)
+        _render_pdf_bytes_to_png(
+            pdf_bytes, also_save_full,
+            target_px=full_target_px or 0,
+            dpi=dpi or TARGET_DPI,
+            min_long_side=min_long_side,
+        )
 
     return w, h
 
@@ -226,6 +247,7 @@ def crop_from_pdf(
     also_save_full: Path | None = None,
     full_target_px: int | None = None,
     dpi: int = 0,
+    min_long_side: int = 0,
 ) -> tuple[int, int]:
     """Вырезать блок из PDF по координатам (fallback при ошибке скачивания).
 
@@ -233,6 +255,7 @@ def crop_from_pdf(
     page_width, page_height: размеры страницы в пикселях из result.json
     also_save_full: если указан — дополнительно рендерит full-версию.
     dpi: если > 0 — рендерить с фиксированной плотностью (приоритет над target_px).
+    min_long_side: гибрид — минимальная длинная сторона PNG в DPI-режиме.
     """
     _require_pymupdf()
     doc = fitz.open(str(pdf_path))
@@ -260,6 +283,8 @@ def crop_from_pdf(
     def _render_clip(target: int, output: Path, clip_dpi: int = 0):
         if clip_dpi > 0:
             rs = clip_dpi / 72
+            if min_long_side > 0:
+                rs = max(rs, min_long_side / long_side_pt)
         else:
             rs = target / long_side_pt
         rs = max(0.5, min(8.0, rs))
@@ -452,6 +477,7 @@ def crop_blocks(
 
         # DPI-режим: единое разрешение для всех блоков
         use_dpi = TARGET_DPI_COMPACT if compact else TARGET_DPI
+        use_min_side = MIN_LONG_SIDE_PX_COMPACT if compact else MIN_LONG_SIDE_PX
         save_full = full_file if compact else None
 
         if crop_url:
@@ -459,6 +485,7 @@ def crop_blocks(
                 w, h = download_and_convert(
                     crop_url, out_file,
                     dpi=use_dpi,
+                    min_long_side=use_min_side,
                     also_save_full=save_full,
                 )
             except Exception as e:
@@ -480,6 +507,7 @@ def crop_blocks(
                         dims[0], dims[1],
                         out_file,
                         dpi=use_dpi,
+                        min_long_side=use_min_side,
                         also_save_full=save_full,
                     )
                     source = "pdf_fallback"
@@ -572,12 +600,55 @@ DEFAULT_BATCH_SIZE = 10
 # Укрупнение мелких блоков: если на странице > N блоков < M KB — рендерим страницу целиком
 PAGE_MERGE_MIN_BLOCKS = 8     # минимум мелких блоков для укрупнения
 PAGE_MERGE_THRESHOLD_KB = 100  # блоки меньше этого считаются "мелкими"
+# Если мелких блоков очень много — полностраничный PNG становится нечитаемым для vision-модели
+# (каждое сечение получает ~300 px). Рендерим страницу 4-мя четвертями вместо одной картинки.
+PAGE_QUADRANT_MIN_BLOCKS = 15  # от этого числа мелких блоков — режем страницу на 2×2
 
-# Гибридная стратегия: ограничение по объёму И по количеству
+# Гибридная стратегия: ограничение по объёму И по количеству.
+# Дефолтные лимиты — под Claude Messages API (max 20 images, ~5MB payload).
+# Для других моделей (Gemini 3 Pro и т.д.) лимиты переопределяются через MODEL_BATCH_LIMITS ниже.
 MAX_BATCH_SIZE_KB = 5 * 1024   # 5 MB целевой объём пакета
 MAX_BLOCKS_PER_BATCH = 15      # макс блоков (даже если суммарно мало весят)
 MIN_BLOCKS_PER_BATCH = 3       # мин блоков (не дробить на слишком мелкие пакеты)
 SOLO_BLOCK_THRESHOLD_KB = 3 * 1024  # блок > 3 MB — отдельный пакет
+
+# Per-model лимиты для этапа block_batch. Ключи — model id из stage_models.json.
+# Значения подобраны эмпирически: у каждой модели свой лимит на количество изображений
+# и размер payload, а также свой оптимум по attention.
+MODEL_BATCH_LIMITS: dict[str, dict[str, int]] = {
+    # Claude: 20 images limit, 5MB payload, 200K-1M контекст. Оптимум attention ~10-15 картинок.
+    "claude-opus-4-7":                 {"max_blocks": 15, "max_size_kb": 5120,  "solo_kb": 3072, "min_blocks": 3},
+    "claude-opus-4-6":                 {"max_blocks": 15, "max_size_kb": 5120,  "solo_kb": 3072, "min_blocks": 3},
+    "claude-sonnet-4-6":               {"max_blocks": 15, "max_size_kb": 5120,  "solo_kb": 3072, "min_blocks": 3},
+    # Gemini 3 Pro: технически выдерживает 3072 images, 20MB, 1M контекст.
+    # НО: эмпирически (проект 13АВ-РД-КЖ5.17-23.1-К2, 30 blocks/batch → 0 findings + 26/49 unreadable).
+    # Attention dilution: модель описывает блоки в summary, но analysis на замечания не делает.
+    # Сладкая точка 12-15 блоков (проверено на 4 batches × 12-13 → 20 findings).
+    "google/gemini-3.1-pro-preview":   {"max_blocks": 15, "max_size_kb": 12000, "solo_kb": 8000, "min_blocks": 5},
+    # GPT-5: до ~50 images, 400K контекст. Консервативный максимум 20.
+    "openai/gpt-5.4":                  {"max_blocks": 20, "max_size_kb": 10000, "solo_kb": 5120, "min_blocks": 3},
+}
+
+# Дефолтный профиль для неизвестных моделей — как у Claude (самый строгий).
+_DEFAULT_BATCH_LIMITS = {"max_blocks": MAX_BLOCKS_PER_BATCH, "max_size_kb": MAX_BATCH_SIZE_KB,
+                         "solo_kb": SOLO_BLOCK_THRESHOLD_KB, "min_blocks": MIN_BLOCKS_PER_BATCH}
+
+_STAGE_MODELS_PATH = Path(__file__).resolve().parent / "webapp" / "data" / "stage_models.json"
+
+
+def _get_batch_limits_for_current_model(stage: str = "block_batch") -> dict[str, int]:
+    """Вернуть лимиты пакетизации для модели, настроенной на данный этап.
+
+    Читает webapp/data/stage_models.json; если файла нет или модели неизвестна — дефолт.
+    """
+    try:
+        if not _STAGE_MODELS_PATH.exists():
+            return dict(_DEFAULT_BATCH_LIMITS)
+        cfg = json.loads(_STAGE_MODELS_PATH.read_text(encoding="utf-8"))
+        model_id = cfg.get(stage, "")
+        return dict(MODEL_BATCH_LIMITS.get(model_id, _DEFAULT_BATCH_LIMITS))
+    except Exception:
+        return dict(_DEFAULT_BATCH_LIMITS)
 
 
 def _render_full_page(pdf_path: Path, page_num: int, output_path: Path,
@@ -616,12 +687,60 @@ def _render_full_page(pdf_path: Path, page_num: int, output_path: Path,
         return None
 
 
+def _render_page_quadrants(pdf_path: Path, page_num: int, blocks_dir: Path,
+                           target_px: int = TARGET_LONG_SIDE_PX) -> list[dict]:
+    """Рендерить страницу PDF как 4 четверти (2×2). Возвращает список dict-ов блоков."""
+    _require_pymupdf()
+    try:
+        doc = fitz.open(str(pdf_path))
+        page_idx = page_num - 1
+        if page_idx < 0 or page_idx >= len(doc):
+            doc.close()
+            return []
+
+        page = doc[page_idx]
+        rect = page.rect
+        w2, h2 = rect.width / 2, rect.height / 2
+        quads = {
+            "TL": fitz.Rect(0, 0, w2, h2),
+            "TR": fitz.Rect(w2, 0, rect.width, h2),
+            "BL": fitz.Rect(0, h2, w2, rect.height),
+            "BR": fitz.Rect(w2, h2, rect.width, rect.height),
+        }
+
+        results: list[dict] = []
+        for name, clip in quads.items():
+            long_side = max(clip.width, clip.height)
+            scale = target_px / long_side if long_side > 0 else 1.0
+            mat = fitz.Matrix(scale, scale)
+            pix = page.get_pixmap(matrix=mat, alpha=False, clip=clip)
+            out_path = blocks_dir / f"block_page_{page_num:03d}_{name}.png"
+            pix.save(str(out_path))
+            size_kb = out_path.stat().st_size / 1024
+            results.append({
+                "block_id": f"page_{page_num:03d}_{name}",
+                "page": page_num,
+                "file": out_path.name,
+                "size_kb": round(size_kb, 1),
+                "ocr_label": f"Четверть {name} стр. {page_num}",
+                "is_full_page": True,
+                "quadrant": name,
+            })
+
+        doc.close()
+        return results
+    except Exception as e:
+        print(f"  [WARN] Не удалось отрендерить четверти стр. {page_num}: {e}")
+        return []
+
+
 def _consolidate_small_blocks(
     pages_map: dict[int, list[dict]],
     project_dir: Path,
     blocks_dir: Path,
     min_blocks: int = PAGE_MERGE_MIN_BLOCKS,
     threshold_kb: float = PAGE_MERGE_THRESHOLD_KB,
+    quadrant_min_blocks: int = PAGE_QUADRANT_MIN_BLOCKS,
 ) -> dict[int, list[dict]]:
     """Заменить страницы с множеством мелких блоков на полностраничные изображения.
 
@@ -652,6 +771,21 @@ def _consolidate_small_blocks(
         small = [b for b in page_blocks if b.get("size_kb", 0) < threshold_kb]
         big = [b for b in page_blocks if b.get("size_kb", 0) >= threshold_kb]
 
+        if len(small) >= quadrant_min_blocks:
+            # Слишком плотная страница — полностраничный PNG будет нечитаем.
+            # Рендерим 4 четверти (каждое сечение получает ≈600-700 px вместо ≈300 px).
+            merged_ids = [b["block_id"] for b in small]
+            quad_blocks = _render_page_quadrants(pdf_path, page_num, blocks_dir)
+            if quad_blocks:
+                for qb in quad_blocks:
+                    qb["merged_block_ids"] = merged_ids
+                    qb["ocr_label"] = f"Четверть {qb['quadrant']} стр. {page_num} ({len(small)} мелких блоков на странице)"
+                consolidated[page_num] = big + quad_blocks
+                total_kb = sum(qb["size_kb"] for qb in quad_blocks)
+                print(f"  Стр. {page_num}: {len(small)} мелких блоков -> 4 четверти ({total_kb:.0f} KB)"
+                      + (f" + {len(big)} крупных" if big else ""))
+                continue
+
         if len(small) >= min_blocks:
             # Рендерим полную страницу
             out_path = blocks_dir / f"block_page_{page_num:03d}.png"
@@ -671,19 +805,32 @@ def _consolidate_small_blocks(
 
 
 def _make_batch_entry(batch_id: int, blocks_list: list[dict]) -> dict:
-    """Сформировать запись пакета из списка блоков."""
+    """Сформировать запись пакета из списка блоков.
+
+    Для консолидированных блоков (page_NNN / page_NNN_TL/TR/BL/BR)
+    сохраняется merged_block_ids — список исходных OCR-блоков,
+    контент которых попал в данный synthetic-блок. Нужно для UI:
+    показывать «Разобран в составе стр. N / четверти N-TL».
+    """
+    def _block_info(b: dict) -> dict:
+        info = {
+            "block_id": b["block_id"],
+            "page": b["page"],
+            "file": b["file"],
+            "size_kb": b.get("size_kb", 0),
+            "ocr_label": b.get("ocr_label", "image"),
+        }
+        if b.get("merged_block_ids"):
+            info["merged_block_ids"] = list(b["merged_block_ids"])
+        if b.get("quadrant"):
+            info["quadrant"] = b["quadrant"]
+        if b.get("is_full_page"):
+            info["is_full_page"] = True
+        return info
+
     return {
         "batch_id": batch_id,
-        "blocks": [
-            {
-                "block_id": b["block_id"],
-                "page": b["page"],
-                "file": b["file"],
-                "size_kb": b.get("size_kb", 0),
-                "ocr_label": b.get("ocr_label", "image"),
-            }
-            for b in blocks_list
-        ],
+        "blocks": [_block_info(b) for b in blocks_list],
         "pages_included": sorted(set(b["page"] for b in blocks_list)),
         "block_count": len(blocks_list),
         "total_size_kb": sum(b.get("size_kb", 0) for b in blocks_list),
@@ -755,13 +902,18 @@ def generate_block_batches(
     block_ids: list[str] | None = None,
     batch_size: int = DEFAULT_BATCH_SIZE,
     adaptive: bool = True,
-    max_size_kb: int = MAX_BATCH_SIZE_KB,
-    max_blocks: int = MAX_BLOCKS_PER_BATCH,
+    max_size_kb: int | None = None,
+    max_blocks: int | None = None,
+    min_blocks: int | None = None,
+    solo_kb: int | None = None,
 ) -> dict:
     """Сгруппировать image-блоки в пакеты.
 
     adaptive=True (по умолчанию): гибридная стратегия по объёму + количеству.
     adaptive=False: старая стратегия (фиксированный batch_size).
+
+    Если max_size_kb/max_blocks/min_blocks/solo_kb не переданы — берутся per-model лимиты
+    для текущей модели этапа block_batch (из webapp/data/stage_models.json).
     """
     output_dir = Path(project_dir) / "_output"
     index_path = output_dir / "blocks" / "index.json"
@@ -773,11 +925,25 @@ def generate_block_batches(
     with open(index_path, "r", encoding="utf-8") as f:
         index_data = json.load(f)
 
-    # Compact-режим: автоматически увеличиваем max_blocks (блоки легче)
+    # Выбор лимитов: явные аргументы CLI > per-model профиль > глобальный дефолт
+    model_limits = _get_batch_limits_for_current_model("block_batch")
+    if max_size_kb is None: max_size_kb = model_limits["max_size_kb"]
+    if max_blocks is None:  max_blocks  = model_limits["max_blocks"]
+    if min_blocks is None:  min_blocks  = model_limits["min_blocks"]
+    if solo_kb is None:     solo_kb     = model_limits["solo_kb"]
+    try:
+        current_model = json.loads(_STAGE_MODELS_PATH.read_text(encoding="utf-8")).get("block_batch", "?") \
+            if _STAGE_MODELS_PATH.exists() else "?"
+    except Exception:
+        current_model = "?"
+    print(f"  Модель этапа block_batch: {current_model}")
+    print(f"  Лимиты пакета: max_blocks={max_blocks}, max_size_kb={max_size_kb}, solo_kb={solo_kb}, min_blocks={min_blocks}")
+
+    # Compact-режим: если блоки сильно легче обычных, можно класть больше в batch
     is_compact = index_data.get("compact", False)
-    if is_compact and max_blocks == MAX_BLOCKS_PER_BATCH:
-        max_blocks = 30  # compact блоки ~2-3x легче, можно больше в батч
-        print(f"  [COMPACT] Авто-увеличение max_blocks: {MAX_BLOCKS_PER_BATCH} -> {max_blocks}")
+    if is_compact and max_blocks <= 15:
+        max_blocks = max(max_blocks, 30)
+        print(f"  [COMPACT] Авто-увеличение max_blocks -> {max_blocks}")
 
     blocks = index_data.get("blocks", [])
     if block_ids:
@@ -819,7 +985,13 @@ def generate_block_batches(
         for pg in page_groups:
             ordered_blocks.extend(pg)
 
-        packed = _pack_blocks_adaptive(ordered_blocks, max_size_kb=max_size_kb, max_blocks=max_blocks)
+        packed = _pack_blocks_adaptive(
+            ordered_blocks,
+            max_size_kb=max_size_kb,
+            max_blocks=max_blocks,
+            min_blocks=min_blocks,
+            solo_threshold_kb=solo_kb,
+        )
 
         for chunk in packed:
             batch_id += 1
@@ -852,8 +1024,9 @@ def generate_block_batches(
         "adaptive_params": {
             "max_size_kb": max_size_kb,
             "max_blocks": max_blocks,
-            "min_blocks": MIN_BLOCKS_PER_BATCH,
-            "solo_threshold_kb": SOLO_BLOCK_THRESHOLD_KB,
+            "min_blocks": min_blocks,
+            "solo_threshold_kb": solo_kb,
+            "model_profile": current_model,
         } if adaptive else None,
         "batches": batches,
     }
@@ -967,20 +1140,15 @@ def merge_block_results(project_dir: str, cleanup: bool = False) -> dict:
             all_block_analyses.extend(analyses)
             total_blocks_reviewed += len(analyses)
 
-            # Собираем замечания из block_analyses[].findings (основной источник)
+            # Замечания — только из block_analyses[].findings (единственный источник).
             for ba in analyses:
                 for f in ba.get("findings", []):
-                    # Добавляем block_id и page если не указаны
                     if "source" not in f and "block_evidence" not in f:
                         f["block_evidence"] = ba.get("block_id", "")
-                    # Нормализуем block identity → bare id
                     _normalize_finding_block_ids(f)
                     all_findings.append(f)
-            # Также собираем из preliminary_findings (legacy)
-            legacy_findings = batch_data.get("preliminary_findings", [])
-            all_findings.extend(legacy_findings)
 
-            batch_findings_count = sum(len(ba.get("findings", [])) for ba in analyses) + len(legacy_findings)
+            batch_findings_count = sum(len(ba.get("findings", [])) for ba in analyses)
             merged_sources.append(bf.name)
             print(f"    {bf.name}: {len(analyses)} блоков, {batch_findings_count} замечаний")
 
@@ -1013,7 +1181,6 @@ def merge_block_results(project_dir: str, cleanup: bool = False) -> dict:
             "sources": merged_sources,
         },
         "block_analyses": all_block_analyses,
-        "preliminary_findings": all_findings,
     }
 
     out_path = output_dir / "02_blocks_analysis.json"
@@ -1325,10 +1492,10 @@ def main():
                          help=f"Максимум блоков в пакете (по умолчанию {DEFAULT_BATCH_SIZE})")
     p_batch.add_argument("--no-adaptive", action="store_true",
                          help="Использовать старую стратегию (фиксированный batch_size)")
-    p_batch.add_argument("--max-size-mb", type=float, default=5.0,
-                         help="Целевой объём пакета в МБ (по умолчанию 5.0)")
-    p_batch.add_argument("--max-blocks", type=int, default=MAX_BLOCKS_PER_BATCH,
-                         help=f"Макс блоков в пакете (по умолчанию {MAX_BLOCKS_PER_BATCH})")
+    p_batch.add_argument("--max-size-mb", type=float, default=None,
+                         help="Целевой объём пакета в МБ (по умолчанию — per-model из stage_models.json)")
+    p_batch.add_argument("--max-blocks", type=int, default=None,
+                         help="Макс блоков в пакете (по умолчанию — per-model из stage_models.json)")
 
     # merge
     p_merge = subparsers.add_parser("merge", help="Слить block_batch_*.json в 02_blocks_analysis.json")
@@ -1373,13 +1540,14 @@ def main():
     elif args.command == "batches":
         block_ids = [b.strip() for b in args.block_ids.split(",")] if args.block_ids else None
         use_adaptive = not getattr(args, "no_adaptive", False)
+        max_mb = getattr(args, "max_size_mb", None)
         result = generate_block_batches(
             args.project_dir,
             block_ids=block_ids,
             batch_size=args.batch_size,
             adaptive=use_adaptive,
-            max_size_kb=int(getattr(args, "max_size_mb", 5.0) * 1024),
-            max_blocks=getattr(args, "max_blocks", MAX_BLOCKS_PER_BATCH),
+            max_size_kb=int(max_mb * 1024) if max_mb is not None else None,
+            max_blocks=getattr(args, "max_blocks", None),
         )
         if result.get("error"):
             sys.exit(1)

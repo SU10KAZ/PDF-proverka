@@ -82,12 +82,25 @@ APP_PORT = 8080
 # не находит .cmd файлы по PATH (в отличие от subprocess с shell=True)
 def _find_claude_cli() -> str:
     """Найти полный путь к Claude CLI."""
+    import pathlib
     # 1. Через PATH
     found = shutil.which("claude")
     if found:
         return found
-    # 2. Стандартные расположения npm global на Windows
-    import pathlib
+    # 2. Через расширенный PATH (включая ~/.local/bin которого нет у webapp)
+    extended_path = os.environ.get("PATH", "") + os.pathsep + str(pathlib.Path.home() / ".local" / "bin")
+    found = shutil.which("claude", path=extended_path)
+    if found:
+        return found
+    # 3. Стандартные расположения Linux
+    linux_paths = [
+        pathlib.Path.home() / ".local" / "bin" / "claude",
+        pathlib.Path("/usr/local/bin/claude"),
+    ]
+    for p in linux_paths:
+        if p.exists():
+            return str(p)
+    # 4. Стандартные расположения npm global на Windows
     npm_paths = [
         pathlib.Path.home() / "AppData" / "Roaming" / "npm" / "claude.cmd",
         pathlib.Path(r"C:\Program Files\nodejs\claude.cmd"),
@@ -95,7 +108,7 @@ def _find_claude_cli() -> str:
     for p in npm_paths:
         if p.exists():
             return str(p)
-    # 3. Fallback
+    # 5. Fallback
     return "claude"
 
 CLAUDE_CLI = _find_claude_cli()
@@ -115,7 +128,14 @@ CLAUDE_OPTIMIZATION_CRITIC_TIMEOUT = 600   # 10 мин — critic проверя
 CLAUDE_OPTIMIZATION_CORRECTOR_TIMEOUT = 600  # 10 мин — corrector исправляет оптимизацию
 
 # Инструменты для Claude CLI сессий
-NORM_VERIFY_TOOLS = "Read,Write,Grep,Glob,WebSearch,WebFetch"
+# norm_verify / norm_fix работают через MCP norms (единственный источник истины).
+# WebSearch и WebFetch намеренно исключены: внешних источников быть не должно.
+NORM_VERIFY_TOOLS = (
+    "Read,Write,Grep,Glob,"
+    "mcp__norms__get_norm_status,"
+    "mcp__norms__get_paragraph_json,"
+    "mcp__norms__semantic_search_json"
+)
 TEXT_ANALYSIS_TOOLS = "Read,Write,Grep,Glob,WebSearch,WebFetch"
 BLOCK_ANALYSIS_TOOLS = "Read,Write,Grep,Glob,WebSearch,WebFetch"
 FINDINGS_MERGE_TOOLS = "Read,Write,Grep,Glob,WebSearch,WebFetch"
@@ -123,9 +143,9 @@ FINDINGS_REVIEW_TOOLS = "Read,Write,Grep,Glob"
 OPTIMIZATION_REVIEW_TOOLS = "Read,Write,Grep,Glob"
 
 # Модель Claude CLI (sonnet = экономит лимит All models)
-# Варианты: "claude-sonnet-4-6", "claude-opus-4-6", "claude-haiku-4-5-20251001"
+# Варианты: "claude-sonnet-4-6", "claude-opus-4-6", "claude-opus-4-7", "claude-haiku-4-5-20251001"
 CLAUDE_MODEL_DEFAULT = "claude-sonnet-4-6"
-CLAUDE_MODEL_OPTIONS = ["claude-sonnet-4-6", "claude-opus-4-6"]
+CLAUDE_MODEL_OPTIONS = ["claude-sonnet-4-6", "claude-opus-4-6", "claude-opus-4-7"]
 
 # Текущая модель (изменяемая в рантайме через API)
 _current_model = CLAUDE_MODEL_DEFAULT
@@ -152,14 +172,16 @@ _stage_models: dict[str, str | None] = {
 # ═══════════════════════════════════════════════════════════════════════════
 
 _STAGE_MODEL_DEFAULTS: dict[str, str] = {
-    "text_analysis":          "claude-opus-4-6",
-    "block_batch":            "claude-opus-4-6",
-    "findings_merge":         "claude-opus-4-6",
-    "findings_critic":        "openai/gpt-5.4",
-    "findings_corrector":     "claude-opus-4-6",
-    "norm_verify":            "claude-opus-4-6",
-    "norm_fix":               "claude-opus-4-6",
-    "optimization":           "claude-opus-4-6",
+    # Пресет "Классический" по умолчанию: Gemini для блоков, Opus/Sonnet для текста.
+    # Альтернатива — "Подписка" (все этапы на Opus) через UI.
+    "text_analysis":          "claude-opus-4-7",
+    "block_batch":            "google/gemini-3.1-pro-preview",
+    "findings_merge":         "claude-opus-4-7",
+    "findings_critic":        "claude-sonnet-4-6",
+    "findings_corrector":     "claude-sonnet-4-6",
+    "norm_verify":            "claude-opus-4-7",
+    "norm_fix":               "claude-sonnet-4-6",
+    "optimization":           "claude-opus-4-7",
     "optimization_critic":    "claude-sonnet-4-6",
     "optimization_corrector": "claude-sonnet-4-6",
 }
@@ -197,7 +219,8 @@ def _save_stage_model_config():
 STAGE_MODEL_CONFIG: dict[str, str] = _load_stage_model_config()
 
 AVAILABLE_MODELS = [
-    {"id": "claude-opus-4-6", "label": "Opus (CLI)", "provider": "claude_cli"},
+    {"id": "claude-opus-4-7", "label": "Opus 4.7 (CLI)", "provider": "claude_cli"},
+    {"id": "claude-opus-4-6", "label": "Opus 4.6 (CLI)", "provider": "claude_cli"},
     {"id": "claude-sonnet-4-6", "label": "Sonnet (CLI)", "provider": "claude_cli"},
     {"id": "openai/gpt-5.4", "label": "GPT-5.4", "provider": "openrouter"},
     {"id": "google/gemini-3.1-pro-preview", "label": "Gemini", "provider": "openrouter"},
@@ -210,6 +233,7 @@ STAGE_MODEL_RESTRICTIONS = {
     "block_batch": [
         "openai/gpt-5.4",
         "google/gemini-3.1-pro-preview",
+        "claude-opus-4-7",        # экспериментально — CLI + Vision (последняя)
         "claude-opus-4-6",        # экспериментально — CLI + Vision
         "claude-sonnet-4-6",      # экспериментально — CLI + Vision
     ],
@@ -222,8 +246,8 @@ STAGE_MODEL_HINTS: dict[str, str] = {
     "findings_merge": "Минимум Opus CLI — межблочная сверка требует сильной модели.",
     "findings_critic": "GPT-5.4 оптимален: быстро и дёшево.",
     "findings_corrector": "Минимум Opus CLI. Sonnet не успевает (таймаут). GPT-5.4 — альтернатива.",
-    "norm_verify": "Opus CLI рекомендуется (WebSearch + анализ норм).",
-    "norm_fix": "Opus CLI рекомендуется.",
+    "norm_verify": "Opus CLI обязателен: MCP norms — единственный источник. WebSearch запрещён.",
+    "norm_fix": "Opus CLI обязателен: MCP norms для поиска замены. WebSearch запрещён.",
     "optimization": "Opus CLI или GPT-5.4. Gemini находит мало предложений.",
     "optimization_critic": "GPT-5.4 или Sonnet CLI.",
     "optimization_corrector": "GPT-5.4 или Sonnet CLI.",
