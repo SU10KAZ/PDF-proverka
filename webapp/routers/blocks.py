@@ -626,10 +626,34 @@ async def get_blocks_analysis(project_id: str):
         except Exception:
             pass
 
+    # Собираем set блоков, упомянутых в финальных findings (03_findings.json).
+    # Блок считается "с замечаниями" если он упомянут в любом поле finding:
+    # source_block_ids, related_block_ids или evidence[*].block_id.
+    # Это устраняет противоречие: нельзя ставить "Замечаний не выявлено"
+    # когда в сплит-обзоре рядом показываются финальные замечания на этот блок.
+    blocks_in_findings: set[str] = set()
+    findings_path = output_dir / "03_findings.json"
+    if findings_path.exists():
+        try:
+            findings_data = json.loads(findings_path.read_text(encoding="utf-8"))
+            for f in findings_data.get("findings", []):
+                for bid in (f.get("source_block_ids") or []):
+                    if bid: blocks_in_findings.add(bid)
+                for bid in (f.get("related_block_ids") or []):
+                    if bid: blocks_in_findings.add(bid)
+                for ev in (f.get("evidence") or []):
+                    bid = ev.get("block_id")
+                    if bid: blocks_in_findings.add(bid)
+        except Exception:
+            pass
+
     # Классификация A-блоков (проанализированы индивидуально)
     for bid, block in blocks_map.items():
         findings = block.get("findings") or []
-        block["status"] = "has_findings" if findings else "no_findings"
+        if findings or bid in blocks_in_findings:
+            block["status"] = "has_findings"
+        else:
+            block["status"] = "no_findings"
 
     # Добавляем B (merged) и C (skipped) из index.json
     index_path = output_dir / "blocks" / "index.json"
