@@ -240,6 +240,46 @@ blocks.py crop → blocks/ + index.json → blocks.py batches → block_batches.
 
 **Правило:** основная сессия аудита читает готовый `02_blocks_analysis.json`, а НЕ блоки напрямую.
 
+**A/B матрица Claude stage 02 (калибровка):**
+```bash
+# dry-run (батч-планы без вызовов Claude)
+python scripts/run_claude_block_batch_matrix.py \
+    --pdf "13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf" --dry-run
+
+# полный matrix (9 runs: 3 профиля × 3 parallelism)
+python scripts/run_claude_block_batch_matrix.py \
+    --pdf "13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf"
+
+# подмножество
+python scripts/run_claude_block_batch_matrix.py \
+    --pdf "..." --only-profile baseline --parallelism 2
+
+# ФИНАЛЬНОЕ сравнение (baseline_p3 full + aggressive_p3 full + одинаковый fixed subset)
+python scripts/run_claude_block_batch_matrix.py \
+    --pdf "13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf" --final-comparison
+# опции: --subset-size 60 (default), --subset-file PATH (reuse сохранённого)
+# артефакты: _experiments/block_batch_final/<ts>/
+#   fixed_subset_block_ids.json, fixed_subset_manifest.json
+#   subset_side_by_side.md, subset_divergence_report.md
+#   full_vs_subset_overview.md, winner_recommendation.md (rule-based gate), gate_report.json
+```
+Rule-based winner gate: full-run (coverage/missing/failed) → stability
+(unreadable/parse_errors) → quality на subset (findings ≥95%, bwf ≥95%, kv ≥90%) →
+speed. Aggressive побеждает только если прошёл все gates И быстрее baseline.
+Gate 3 автоматически инвалидируется при rate-limit (coverage subset < 50% + fast-fails < 10s)
+и заменяется fallback full-run quality comparison (те же пороги 95%/95%).
+Runner безопасен: `_output` основного проекта не перетирается; каждый run работает
+в `<project>/_experiments/block_batch_ab/<ts>/runs/<run_id>/shadow/` с симлинком
+на `_output/blocks/` (no recrop). Артефакты (`summary.json/csv/md`,
+`winner_recommendation.md`, `side_by_side.md`, `metrics.json` на run) лежат в
+`<project>/_experiments/block_batch_ab/<ts>/`. Победитель отбирается по:
+coverage=100% → unreadable_pct близкий к минимуму → минимум elapsed.
+
+**ENV overrides для experimental batching** (production defaults не трогаются):
+- `CLAUDE_BATCH_{HEAVY,NORMAL,LIGHT}_{TARGET,MAX}` — подменить риск-профиль.
+- `CLAUDE_BLOCK_BATCH_PARALLELISM` — переопределить параллелизм Claude stage 02 (clamp ≤ 3).
+- Hard cap 12 блоков/пакет НЕ может быть пробит никаким override.
+
 **Claude Vision batching (production-safe, stage 02 `block_batch`):**
 - Стратегия `claude_risk_aware` — классификация блоков по metadata (без повторного OCR):
   `is_full_page` / `quadrant` / `merged_block_ids` / `size_kb` / `render_size` / `ocr_text_len` / `crop_px`.
@@ -247,6 +287,38 @@ blocks.py crop → blocks/ + index.json → blocks.py batches → block_batches.
 - **Hard cap = 12 блоков** в пакете независимо от пути (в т.ч. compact). Ранее compact раздувал до 30 — убрано.
 - Параллелизм Claude CLI на этапе `block_batch`: **default 2, hard cap 3** (см. `get_block_batch_parallelism()` в [webapp/config.py](webapp/config.py)). ENV `CLAUDE_BLOCK_BATCH_PARALLELISM` всё равно clamp до cap.
 - OpenRouter (Gemini/GPT) остаётся на общей политике (`MAX_PARALLEL_BATCHES=5`, лимиты см. `MODEL_BATCH_LIMITS`).
+
+**Resolution A/B эксперимент (отдельная ось — `MIN_LONG_SIDE_PX`):**
+```bash
+# Dry-run: crop для всех профилей + planned batches без Claude CLI
+python scripts/run_block_resolution_matrix.py \
+    --pdf "13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf" --dry-run
+
+# Phase A — subset single-block (1 block/request, изолирует effect разрешения)
+python scripts/run_block_resolution_matrix.py \
+    --pdf "..." --single-block-subset
+
+# Phase B — full validation выбранного candidate против r800
+python scripts/run_block_resolution_matrix.py \
+    --pdf "..." --single-block-subset --full-validation
+
+# Reuse subset от прошлого эксперимента
+python scripts/run_block_resolution_matrix.py \
+    --pdf "..." --single-block-subset --reuse-subset path/to/fixed_subset_block_ids.json
+```
+- Ось: `MIN_LONG_SIDE_PX ∈ {800, 1000, 1200}` (profiles r800/r1000/r1200).
+- `TARGET_DPI=100` и batching (`claude_risk_aware`) зафиксированы — не варьируются.
+- Production `_output/blocks/` НЕ затирается: каждый профиль кропается в
+  `<project>/_experiments/block_resolution_ab/<ts>/crop_roots/<profile>/blocks/`.
+- Shadow Claude CLI runs изолированы в `<exp>/runs/<run_id>/shadow/` с симлинком на профильный crop root.
+- Артефакты: `crop_semantics_report.md`, `render_profiles.json`,
+  `fixed_subset_block_ids.json`, `fixed_subset_manifest.json`,
+  `crop_stats_by_profile.{json,csv,md}`, `subset_summary.{json,csv,md}`,
+  `subset_side_by_side.{json,md}`, `subset_divergence_report.md`,
+  `gate_report.json`, `full_validation_summary.{json,csv,md}` (если была),
+  `resolution_recommendation.md`.
+- Gate: candidate побеждает subset gate только при hard requirements (coverage 100%, no missing/dup/extra, no unreadable regression) **И** хотя бы одном quality-улучшении (findings≥105% ИЛИ median_kv≥110% ИЛИ empty_kv≤80% ИЛИ empty_summary≤80%) **И** batch-cost sanity (planned batches +≤20%, median_batch_kb +≤50%). Full-validation gate: coverage 100%, unreadable не хуже, findings≥95%, blocks_with_findings≥95%.
+- ENV overrides (experimental only): `BLOCK_RENDER_MIN_LONG_SIDE=N`, `BLOCK_RENDER_TARGET_DPI=N`. Без них production crop работает как раньше.
 
 ### Document Knowledge Graph (`document_graph.json`)
 

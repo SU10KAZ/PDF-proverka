@@ -35,6 +35,117 @@ class AmbiguousProjectError(RuntimeError):
     """project_id существует в нескольких объектах, и scope не задан."""
 
 
+class ProjectByPdfError(RuntimeError):
+    """Не удалось однозначно разрешить проект по имени PDF."""
+
+    def __init__(self, message: str, *, matches: list[Path] | None = None,
+                 suggestions: list[str] | None = None):
+        super().__init__(message)
+        self.matches = list(matches or [])
+        self.suggestions = list(suggestions or [])
+
+
+def resolve_project_by_pdf(
+    pdf_name: str,
+    *,
+    projects_dir: Path | None = None,
+    max_depth: int = 6,
+    suggestion_limit: int = 5,
+) -> tuple[str, Path]:
+    """Найти папку проекта по точному имени файла PDF.
+
+    Рекурсивно сканирует `projects_dir` (по умолчанию PROJECTS_DIR), ищет
+    файлы с именем == `pdf_name` и пытается определить уникальный проект.
+
+    Правила:
+      - найден ровно один PDF → возвращаем (project_id, project_dir);
+      - найдено несколько → ProjectByPdfError со списком всех проектов;
+      - не найдено → ProjectByPdfError с ближайшими похожими именами;
+      - «проект» — ближайший предок PDF, содержащий project_info.json,
+        либо (fallback) папка, в которой лежит PDF.
+
+    project_id — путь, относительный к projects_dir, используется в
+    `resolve_project_dir`.
+    """
+    base = projects_dir or _DEFAULT_PROJECTS_DIR
+    if not base.exists():
+        raise ProjectByPdfError(f"Папка projects/ не существует: {base}")
+
+    needle = pdf_name.strip()
+    if not needle.lower().endswith(".pdf"):
+        needle = needle + ".pdf"
+
+    matches: list[Path] = []
+    all_pdf_names: list[str] = []
+
+    # BFS с ограничением глубины — избегаем случайно взорваться на symlink-циклах
+    stack: list[tuple[Path, int]] = [(base, 0)]
+    while stack:
+        cur, depth = stack.pop()
+        if depth > max_depth:
+            continue
+        try:
+            entries = list(cur.iterdir())
+        except (OSError, PermissionError):
+            continue
+        for entry in entries:
+            if entry.is_symlink():
+                continue
+            if entry.is_dir():
+                # Пропускаем явно служебные ветки
+                if entry.name.startswith("_output") or entry.name == "_experiments":
+                    continue
+                stack.append((entry, depth + 1))
+            elif entry.is_file() and entry.suffix.lower() == ".pdf":
+                all_pdf_names.append(entry.name)
+                if entry.name == needle:
+                    matches.append(entry)
+
+    if not matches:
+        import difflib
+        suggestions = difflib.get_close_matches(needle, all_pdf_names, n=suggestion_limit, cutoff=0.6)
+        raise ProjectByPdfError(
+            f"PDF '{needle}' не найден в {base}. "
+            + (f"Похожие имена: {suggestions}" if suggestions else "Похожих имён не найдено."),
+            suggestions=suggestions,
+        )
+
+    # Уникальные проектные папки (один PDF может лежать и в <proj>/file.pdf,
+    # и в <proj>/file.pdf/file.pdf из-за Chandra OCR, где созданная папка
+    # названа как PDF). Берём ближайшего предка с project_info.json.
+    projects: dict[str, Path] = {}
+    for pdf_path in matches:
+        proj_dir = _nearest_project_dir(pdf_path, base)
+        rel = proj_dir.relative_to(base)
+        projects[str(rel)] = proj_dir
+
+    if len(projects) > 1:
+        names = [str(p) for p in projects]
+        raise ProjectByPdfError(
+            f"PDF '{needle}' найден в {len(projects)} проектах: {names}. "
+            "Уточните путь или используйте уникальное имя.",
+            matches=list(projects.values()),
+        )
+
+    project_id, project_dir = next(iter(projects.items()))
+    return project_id, project_dir
+
+
+def _nearest_project_dir(pdf_path: Path, base: Path) -> Path:
+    """Ближайший предок PDF c project_info.json или (fallback) его родитель."""
+    parent = pdf_path.parent
+    # OCR-pipeline создаёт папку с таким же именем, как PDF — её нужно игнорировать
+    # как «проект», если она пустая/технологическая. Берём project_info.json.
+    cur: Path | None = parent
+    while cur is not None and cur != base.parent:
+        if (cur / "project_info.json").is_file():
+            return cur
+        if cur == base:
+            break
+        cur = cur.parent
+    return parent
+
+
 def bind_object(object_id: Optional[str]):
     """Назначить активный object_id для текущего async-контекста.
 

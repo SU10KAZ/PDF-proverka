@@ -81,6 +81,300 @@ TARGET_LONG_SIDE_PX = 1500
 TARGET_LONG_SIDE_PX_COMPACT = 800
 
 
+# ─── Экспериментальный render profile (для resolution A/B — non-invasive) ──
+# Production crop_blocks() без явного render_profile работает строго по модульным
+# константам TARGET_DPI и MIN_LONG_SIDE_PX. Override-механика задействуется ТОЛЬКО
+# experimental runner-ами, которые явно передают render_profile в crop_blocks_to_dir().
+
+def make_block_render_profile(
+    *,
+    target_dpi: int | None = None,
+    min_long_side_px: int | None = None,
+    name: str | None = None,
+) -> dict:
+    """Собрать render-профиль для экспериментального crop.
+
+    Поля, не переданные явно, подменяются production-дефолтами
+    (TARGET_DPI и MIN_LONG_SIDE_PX). Возвращает dict с ключами
+    name / target_dpi / min_long_side_px.
+    """
+    dpi = int(target_dpi if target_dpi is not None else TARGET_DPI)
+    mls = int(min_long_side_px if min_long_side_px is not None else MIN_LONG_SIDE_PX)
+    if dpi <= 0:
+        dpi = TARGET_DPI
+    if mls <= 0:
+        mls = MIN_LONG_SIDE_PX
+    return {
+        "name": name or f"dpi{dpi}_min{mls}",
+        "target_dpi": dpi,
+        "min_long_side_px": mls,
+    }
+
+
+def read_block_render_profile_from_env(env: dict | None = None) -> dict | None:
+    """Прочитать experimental render profile из ENV.
+
+    Если ни одна из соответствующих переменных не задана — возвращается None
+    (production default сохраняется).
+
+    ENV:
+      BLOCK_RENDER_MIN_LONG_SIDE — переопределить минимальную длинную сторону (px)
+      BLOCK_RENDER_TARGET_DPI    — переопределить target DPI
+    """
+    env_map = env if env is not None else os.environ
+    mls_raw = env_map.get("BLOCK_RENDER_MIN_LONG_SIDE")
+    dpi_raw = env_map.get("BLOCK_RENDER_TARGET_DPI")
+    if not mls_raw and not dpi_raw:
+        return None
+
+    def _pos(raw):
+        try:
+            val = int(str(raw).strip())
+        except (TypeError, ValueError):
+            return None
+        return val if val > 0 else None
+
+    mls = _pos(mls_raw) if mls_raw else None
+    dpi = _pos(dpi_raw) if dpi_raw else None
+    if mls is None and dpi is None:
+        return None
+    return make_block_render_profile(
+        target_dpi=dpi,
+        min_long_side_px=mls,
+        name="env_override",
+    )
+
+
+def _iter_image_blocks_from_ocr(project_dir: str):
+    """Yield (image_block_info, page_dimensions_map, pdf_path_for_page) из всех result.json.
+
+    image_block_info: dict c block_id, page_num, crop_url, coords_px, ocr_text, ocr_label.
+    Возвращает:
+      (all_image_blocks, page_dimensions, page_pdf_map, result_json_paths).
+    """
+    result_json_paths = detect_all_result_jsons(project_dir)
+    if not result_json_paths:
+        return [], {}, {}, []
+
+    project_path = Path(project_dir)
+    info: dict = {}
+    info_path = project_path / "project_info.json"
+    if info_path.exists():
+        try:
+            info = json.loads(info_path.read_text(encoding="utf-8"))
+        except Exception:
+            info = {}
+    pdf_files = info.get("pdf_files", [])
+    if not pdf_files:
+        pf = info.get("pdf_file", "")
+        pdf_files = [pf] if pf else []
+
+    all_image_blocks: list[dict] = []
+    all_page_dimensions: dict[int, tuple[int, int]] = {}
+    page_pdf_map: dict[int, Path] = {}
+
+    for rj_path in result_json_paths:
+        try:
+            ocr_data = json.loads(rj_path.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        pages = ocr_data.get("pages", [])
+        if not pages:
+            continue
+
+        rj_stem = rj_path.stem.replace("_result", "")
+        pdf_path: Path | None = None
+        for pf in pdf_files:
+            if Path(pf).stem == rj_stem:
+                candidate = project_path / pf
+                if candidate.exists():
+                    pdf_path = candidate
+                    break
+        if not pdf_path:
+            pdfs = list(project_path.glob("*.pdf"))
+            if pdfs:
+                pdf_path = pdfs[0]
+
+        for pg in pages:
+            pn = pg.get("page_number", 0)
+            pw, ph = pg.get("width", 0), pg.get("height", 0)
+            if pw and ph:
+                all_page_dimensions[pn] = (pw, ph)
+            if pdf_path:
+                page_pdf_map[pn] = pdf_path
+
+        for page in pages:
+            page_num = page.get("page_number", 0)
+            for block in page.get("blocks", []):
+                if block.get("block_type") != "image":
+                    continue
+                if block.get("category_code", "") == "stamp":
+                    continue
+                bid = block.get("id", "")
+                coords = block.get("coords_px", [0, 0, 0, 0])
+                x1, y1, x2, y2 = coords
+                area = (x2 - x1) * (y2 - y1)
+                if area < MIN_BLOCK_AREA_PX2:
+                    continue
+                all_image_blocks.append({
+                    "block_id": bid,
+                    "page_num": page_num,
+                    "crop_url": block.get("crop_url", ""),
+                    "coords_px": coords,
+                    "ocr_text": block.get("ocr_text", ""),
+                    "ocr_label": extract_ocr_label(block),
+                })
+
+    return all_image_blocks, all_page_dimensions, page_pdf_map, result_json_paths
+
+
+def crop_blocks_to_dir(
+    project_dir: str,
+    output_blocks_dir: Path,
+    render_profile: dict,
+    block_ids: list[str] | None = None,
+    force: bool = False,
+) -> dict:
+    """Экспериментальный crop с явным render_profile в изолированный output_blocks_dir.
+
+    Не трогает production `_output/blocks/`, не делает compact/full pair,
+    не обогащает document_graph. Записывает свой `index.json` с полем
+    `render_profile` (для cache-проверки).
+
+    Если `output_blocks_dir/index.json` уже существует И его render_profile совпадает
+    с переданным — считается валидным кэшем. В этом случае без `force` повторного
+    скачивания нет; функция просто возвращает существующий индекс.
+    """
+    render_profile = dict(render_profile)  # shallow copy
+    dpi = int(render_profile["target_dpi"])
+    min_long = int(render_profile["min_long_side_px"])
+    profile_name = render_profile.get("name") or f"dpi{dpi}_min{min_long}"
+
+    output_blocks_dir = Path(output_blocks_dir)
+    output_blocks_dir.mkdir(parents=True, exist_ok=True)
+    index_path = output_blocks_dir / "index.json"
+
+    # Cache check
+    if index_path.exists() and not force:
+        try:
+            existing = json.loads(index_path.read_text(encoding="utf-8"))
+            ep = existing.get("render_profile") or {}
+            if (int(ep.get("target_dpi", -1)) == dpi
+                and int(ep.get("min_long_side_px", -1)) == min_long):
+                print(f"  [CACHE] render_profile={profile_name} уже закэширован в {output_blocks_dir}")
+                return {
+                    "total_blocks": existing.get("total_blocks", 0),
+                    "cropped": 0,
+                    "skipped": existing.get("total_blocks", 0),
+                    "errors": existing.get("errors", 0),
+                    "blocks": existing.get("blocks", []),
+                    "render_profile": render_profile,
+                    "cache_hit": True,
+                }
+        except Exception:
+            pass
+
+    all_image_blocks, all_page_dimensions, page_pdf_map, result_json_paths = (
+        _iter_image_blocks_from_ocr(project_dir)
+    )
+    if not result_json_paths:
+        return {"error": "result.json not found"}
+    if not all_image_blocks:
+        return {"total_blocks": 0, "cropped": 0, "skipped": 0, "errors": 0, "blocks": []}
+
+    if block_ids is not None:
+        wanted = set(block_ids)
+        all_image_blocks = [b for b in all_image_blocks if b["block_id"] in wanted]
+
+    print(f"  [CROP/{profile_name}] dpi={dpi}, min_long_side={min_long}, "
+          f"blocks={len(all_image_blocks)}, out={output_blocks_dir}")
+
+    cropped = 0
+    skipped = 0
+    errors = 0
+    index_blocks: list[dict] = []
+
+    for bi in all_image_blocks:
+        bid = bi["block_id"]
+        out_file = output_blocks_dir / f"block_{bid}.png"
+
+        # Если файл уже существует и force=False — пробуем переиспользовать.
+        # Но т.к. без render_profile-кеша мы не знаем, с каким профилем рендерился
+        # предыдущий PNG, при любом рассогласовании cache'а пересчитываем.
+        source = "cloud"
+        download_error: object | None = None
+        w = h = 0
+
+        if bi["crop_url"]:
+            try:
+                w, h = download_and_convert(
+                    bi["crop_url"], out_file,
+                    dpi=dpi, min_long_side=min_long,
+                )
+            except Exception as e:
+                download_error = e
+        else:
+            download_error = "нет crop_url"
+
+        if download_error is not None:
+            pn = bi["page_num"]
+            dims = all_page_dimensions.get(pn)
+            fallback_pdf = page_pdf_map.get(pn)
+            if fallback_pdf and dims:
+                try:
+                    w, h = crop_from_pdf(
+                        fallback_pdf, pn,
+                        bi["coords_px"], dims[0], dims[1],
+                        out_file,
+                        dpi=dpi, min_long_side=min_long,
+                    )
+                    source = "pdf_fallback"
+                except Exception:
+                    errors += 1
+                    continue
+            else:
+                errors += 1
+                continue
+
+        size_kb = out_file.stat().st_size / 1024
+        index_blocks.append({
+            "block_id": bid,
+            "page": bi["page_num"],
+            "file": f"block_{bid}.png",
+            "size_kb": round(size_kb, 1),
+            "crop_px": bi["coords_px"],
+            "render_size": [w, h],
+            "block_type": "image",
+            "ocr_label": bi["ocr_label"],
+            "ocr_text_len": len(bi["ocr_text"]),
+            "source": source,
+        })
+        cropped += 1
+
+    index_data = {
+        "total_blocks": len(index_blocks),
+        "total_expected": len(all_image_blocks),
+        "errors": errors,
+        "compact": False,
+        "render_profile": render_profile,
+        "source_result_json": [rj.name for rj in result_json_paths],
+        "blocks": index_blocks,
+    }
+    index_path.write_text(
+        json.dumps(index_data, ensure_ascii=False, indent=2), encoding="utf-8",
+    )
+
+    return {
+        "total_blocks": len(index_blocks),
+        "cropped": cropped,
+        "skipped": skipped,
+        "errors": errors,
+        "blocks": index_blocks,
+        "render_profile": render_profile,
+        "cache_hit": False,
+    }
+
+
 def detect_result_json(project_dir: str) -> Path | None:
     """Найти *_result.json в папке проекта (один — основной)."""
     results = detect_all_result_jsons(project_dir)
@@ -648,6 +942,67 @@ _CLAUDE_RISK_TARGETS: dict[str, dict[str, int]] = {
     "light":  {"target": 10, "max": 10},
 }
 
+# ENV overrides — только для экспериментов. Если переменные не заданы, используются
+# дефолтные _CLAUDE_RISK_TARGETS. Ни один override не может поднять batch выше
+# CLAUDE_HARD_CAP (clamp при чтении).
+# Имена: CLAUDE_BATCH_{HEAVY,NORMAL,LIGHT}_{TARGET,MAX}
+_RISK_ENV_KEYS: dict[str, dict[str, str]] = {
+    "heavy":  {"target": "CLAUDE_BATCH_HEAVY_TARGET",  "max": "CLAUDE_BATCH_HEAVY_MAX"},
+    "normal": {"target": "CLAUDE_BATCH_NORMAL_TARGET", "max": "CLAUDE_BATCH_NORMAL_MAX"},
+    "light":  {"target": "CLAUDE_BATCH_LIGHT_TARGET",  "max": "CLAUDE_BATCH_LIGHT_MAX"},
+}
+
+
+def _coerce_positive_int(raw: str | None, fallback: int) -> int:
+    if not raw:
+        return fallback
+    try:
+        val = int(str(raw).strip())
+    except (TypeError, ValueError):
+        return fallback
+    return val if val >= 1 else fallback
+
+
+def read_claude_risk_overrides(
+    env: dict | None = None,
+    hard_cap: int = CLAUDE_HARD_CAP,
+) -> dict[str, dict[str, int]]:
+    """Прочитать ENV-overrides для risk-aware batching.
+
+    Возвращает словарь той же структуры, что и `_CLAUDE_RISK_TARGETS`.
+    Клэмп: target и max не могут превышать `hard_cap`; max >= target.
+    Если переменная не задана — берётся дефолт.
+    """
+    env_map = env if env is not None else os.environ
+    result: dict[str, dict[str, int]] = {}
+    for risk, defaults in _CLAUDE_RISK_TARGETS.items():
+        target = _coerce_positive_int(env_map.get(_RISK_ENV_KEYS[risk]["target"]), defaults["target"])
+        mx     = _coerce_positive_int(env_map.get(_RISK_ENV_KEYS[risk]["max"]),    defaults["max"])
+        target = min(target, hard_cap)
+        mx     = min(mx, hard_cap)
+        if mx < target:
+            mx = target
+        result[risk] = {"target": target, "max": mx}
+    return result
+
+
+def make_claude_risk_profile(
+    heavy_target: int, heavy_max: int,
+    normal_target: int, normal_max: int,
+    light_target: int, light_max: int,
+    hard_cap: int = CLAUDE_HARD_CAP,
+) -> dict[str, dict[str, int]]:
+    """Построить риск-профиль из явных чисел (для экспериментов). Clamp по hard_cap."""
+    def _pair(t: int, m: int) -> dict[str, int]:
+        t = max(1, min(int(t), hard_cap))
+        m = max(t, min(int(m), hard_cap))
+        return {"target": t, "max": m}
+    return {
+        "heavy":  _pair(heavy_target, heavy_max),
+        "normal": _pair(normal_target, normal_max),
+        "light":  _pair(light_target, light_max),
+    }
+
 # Дефолтный профиль для неизвестных моделей — как у Claude (самый строгий).
 _DEFAULT_BATCH_LIMITS = {"max_blocks": MAX_BLOCKS_PER_BATCH, "max_size_kb": MAX_BATCH_SIZE_KB,
                          "solo_kb": SOLO_BLOCK_THRESHOLD_KB, "min_blocks": MIN_BLOCKS_PER_BATCH}
@@ -905,9 +1260,11 @@ def _classify_block_risk(block: dict) -> str:
     return "light"
 
 
-def _claude_cap_for_risk(risk: str, hard_cap: int = CLAUDE_HARD_CAP) -> int:
+def _claude_cap_for_risk(risk: str, hard_cap: int = CLAUDE_HARD_CAP,
+                         risk_targets: dict[str, dict[str, int]] | None = None) -> int:
     """Максимальное количество блоков в пакете для данного уровня риска (Claude)."""
-    per_risk = _CLAUDE_RISK_TARGETS.get(risk, _CLAUDE_RISK_TARGETS["normal"])["max"]
+    targets = risk_targets or _CLAUDE_RISK_TARGETS
+    per_risk = targets.get(risk, targets.get("normal", _CLAUDE_RISK_TARGETS["normal"]))["max"]
     return min(per_risk, hard_cap)
 
 
@@ -917,6 +1274,7 @@ def _pack_blocks_claude_risk_aware(
     solo_threshold_kb: int = SOLO_BLOCK_THRESHOLD_KB,
     dense_pages: set | None = None,
     hard_cap: int = CLAUDE_HARD_CAP,
+    risk_targets: dict[str, dict[str, int]] | None = None,
 ) -> list[list[dict]]:
     """Claude-specific packing: heavy → малый пакет, light → крупнее.
 
@@ -929,11 +1287,16 @@ def _pack_blocks_claude_risk_aware(
       4. Жёсткий hard_cap на batch независимо от риска (production-safe).
       5. Порядок по страницам сохраняется (blocks уже упорядочены вызывающим кодом).
       6. Плотные страницы (dense_pages) изолируются как в _pack_blocks_adaptive.
+
+    risk_targets: dict с ключами heavy/normal/light и значениями {target, max}.
+        По умолчанию — _CLAUDE_RISK_TARGETS. Для экспериментов передавать явно.
+        Любой max > hard_cap клэмпится.
     """
     if not blocks:
         return []
 
     hard_cap = min(hard_cap, CLAUDE_HARD_CAP)
+    targets = risk_targets or _CLAUDE_RISK_TARGETS
     _dense = set(dense_pages or [])
 
     solo: list[dict] = []
@@ -949,11 +1312,11 @@ def _pack_blocks_claude_risk_aware(
     current_size = 0.0
     current_cap = hard_cap
     current_heavy = 0
-    heavy_max = _CLAUDE_RISK_TARGETS["heavy"]["max"]
+    heavy_max = min(targets.get("heavy", _CLAUDE_RISK_TARGETS["heavy"])["max"], hard_cap)
 
     for b in normal_list:
         risk = _classify_block_risk(b)
-        b_cap = _claude_cap_for_risk(risk, hard_cap)
+        b_cap = _claude_cap_for_risk(risk, hard_cap, risk_targets=targets)
         b_size = float(b.get("size_kb", 0) or 0)
         b_page = b.get("page", 0)
 
@@ -1198,14 +1561,19 @@ def generate_block_batches(
                 print(f"  Плотные страницы (≥{DENSE_PAGE_THRESHOLD} блоков): {sorted(dense_pages)} — не мешаются с другими")
 
         if is_claude_stage and not solo:
-            # Claude: risk-aware packing (heavy≈5, normal≈8, light≈10, hard cap 12)
+            # Claude: risk-aware packing (heavy≈5, normal≈8, light≈10, hard cap 12).
+            # ENV overrides для экспериментов: CLAUDE_BATCH_{HEAVY,NORMAL,LIGHT}_{TARGET,MAX}.
             claude_cap = min(max_blocks, CLAUDE_HARD_CAP)
+            risk_targets = read_claude_risk_overrides(hard_cap=claude_cap)
+            if risk_targets != _CLAUDE_RISK_TARGETS:
+                print(f"  [OVERRIDE] Claude risk targets из ENV: {risk_targets}")
             packed = _pack_blocks_claude_risk_aware(
                 ordered_blocks,
                 max_size_kb=max_size_kb,
                 solo_threshold_kb=solo_kb,
                 dense_pages=dense_pages,
                 hard_cap=claude_cap,
+                risk_targets=risk_targets,
             )
             strategy = "claude_risk_aware"
         else:
