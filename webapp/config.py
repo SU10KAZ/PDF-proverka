@@ -292,8 +292,40 @@ def get_stage_models() -> dict[str, str | None]:
     """Текущие настройки per-stage моделей."""
     return dict(_stage_models)
 
-# Параллельная обработка батчей блоков
+# Параллельная обработка батчей (общая — findings critic, tile batches и т.д.)
 MAX_PARALLEL_BATCHES = 5  # параллельных батчей
+
+# ─── Stage 02 block_batch: параллелизм по провайдеру ─────────────────────────
+# Claude CLI Vision (Opus 4.7): production-safe значения — 2 по умолчанию, cap 3.
+# Rate-limit окно + attention risk при большем числе параллельных CLI-сессий
+# делают x5 опасным. OpenRouter/Gemini/GPT остаются на общем MAX_PARALLEL_BATCHES.
+# ENV override: CLAUDE_BLOCK_BATCH_PARALLELISM=N — всё равно clamp до CAP.
+CLAUDE_BLOCK_BATCH_PARALLELISM_DEFAULT = 2
+CLAUDE_BLOCK_BATCH_PARALLELISM_CAP = 3
+
+
+def get_block_batch_parallelism(stage: str = "block_batch", model: str | None = None) -> int:
+    """Параллелизм для stage 02 block_batch в зависимости от модели/провайдера.
+
+    - Claude CLI (claude-*): default=2, hard cap=3. ENV override тоже clamp до cap.
+    - OpenRouter / прочие: общий MAX_PARALLEL_BATCHES.
+    """
+    if model is None:
+        model = get_stage_model(stage)
+
+    is_claude = isinstance(model, str) and model.startswith("claude-")
+    if is_claude:
+        value = CLAUDE_BLOCK_BATCH_PARALLELISM_DEFAULT
+        env_val = os.environ.get("CLAUDE_BLOCK_BATCH_PARALLELISM")
+        if env_val:
+            try:
+                parsed = int(env_val)
+                if parsed >= 1:
+                    value = parsed
+            except ValueError:
+                pass
+        return min(max(1, value), CLAUDE_BLOCK_BATCH_PARALLELISM_CAP)
+    return MAX_PARALLEL_BATCHES
 
 # ─── Rate Limit: пауза вместо ошибки ───
 RATE_LIMIT_THRESHOLD_PCT = 90   # при 90% лимита — предварительная проверка перед запуском

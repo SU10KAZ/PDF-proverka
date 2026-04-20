@@ -240,6 +240,14 @@ blocks.py crop → blocks/ + index.json → blocks.py batches → block_batches.
 
 **Правило:** основная сессия аудита читает готовый `02_blocks_analysis.json`, а НЕ блоки напрямую.
 
+**Claude Vision batching (production-safe, stage 02 `block_batch`):**
+- Стратегия `claude_risk_aware` — классификация блоков по metadata (без повторного OCR):
+  `is_full_page` / `quadrant` / `merged_block_ids` / `size_kb` / `render_size` / `ocr_text_len` / `crop_px`.
+- Целевые размеры пакета: heavy ≈ 5 блоков (max 6), normal ≈ 8, light ≈ 10.
+- **Hard cap = 12 блоков** в пакете независимо от пути (в т.ч. compact). Ранее compact раздувал до 30 — убрано.
+- Параллелизм Claude CLI на этапе `block_batch`: **default 2, hard cap 3** (см. `get_block_batch_parallelism()` в [webapp/config.py](webapp/config.py)). ENV `CLAUDE_BLOCK_BATCH_PARALLELISM` всё равно clamp до cap.
+- OpenRouter (Gemini/GPT) остаётся на общей политике (`MAX_PARALLEL_BATCHES=5`, лимиты см. `MODEL_BATCH_LIMITS`).
+
 ### Document Knowledge Graph (`document_graph.json`)
 
 `process_project.py` → `build_document_graph()` парсит MD-файл в структурированный JSON:

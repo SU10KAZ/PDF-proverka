@@ -91,3 +91,43 @@ def test_pack_adaptive_tail_merge_respects_max_blocks():
     # Все блоки на месте
     all_ids = [b["block_id"] for group in packed for b in group]
     assert len(all_ids) == 32
+
+
+def test_pack_adaptive_dense_pages_isolated():
+    """Блоки плотной страницы не мешаются с другими страницами в одном пакете."""
+    blocks = (
+        [_make_block(f"p6_{i}", 30, page=6) for i in range(3)]
+        + [_make_block(f"p7_{i}", 30, page=7) for i in range(20)]
+        + [_make_block(f"p8_{i}", 30, page=8) for i in range(3)]
+    )
+    packed = _pack_blocks_adaptive(
+        blocks, max_size_kb=50000, max_blocks=15, dense_pages={7}
+    )
+    for group in packed:
+        pages = {b["page"] for b in group}
+        # Если в пакете есть блоки страницы 7 — только они и должны быть
+        if 7 in pages:
+            assert pages == {7}, f"Плотная страница 7 смешана: pages={pages}"
+    # Все блоки распределены
+    all_ids = {b["block_id"] for group in packed for b in group}
+    assert len(all_ids) == 26
+
+
+def test_pack_adaptive_without_dense_pages_mixes_freely():
+    """Без dense_pages разные страницы могут смешиваться в одном пакете (регрессия)."""
+    blocks = (
+        [_make_block(f"p1_{i}", 30, page=1) for i in range(3)]
+        + [_make_block(f"p2_{i}", 30, page=2) for i in range(3)]
+    )
+    packed = _pack_blocks_adaptive(blocks, max_size_kb=50000, max_blocks=15)
+    # Должен быть один пакет (6 блоков, обе страницы)
+    assert len(packed) == 1
+    assert len(packed[0]) == 6
+
+
+def test_pack_adaptive_dense_pages_none_backward_compat():
+    """dense_pages=None (дефолт) — поведение идентично старому."""
+    blocks = [_make_block(f"b{i}", 50, page=(i // 5) + 1) for i in range(10)]
+    packed_none = _pack_blocks_adaptive(blocks, max_size_kb=5120, max_blocks=15)
+    packed_empty = _pack_blocks_adaptive(blocks, max_size_kb=5120, max_blocks=15, dense_pages=set())
+    assert [len(g) for g in packed_none] == [len(g) for g in packed_empty]

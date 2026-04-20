@@ -16,6 +16,7 @@ from webapp.config import (
     PROCESS_PROJECT_SCRIPT, GENERATE_EXCEL_SCRIPT,
     BLOCKS_SCRIPT, NORMS_SCRIPT, DEFAULT_TILE_QUALITY,
     MAX_PARALLEL_BATCHES,
+    get_block_batch_parallelism,
     RATE_LIMIT_THRESHOLD_PCT, RATE_LIMIT_CHECK_INTERVAL,
     RATE_LIMIT_MAX_WAIT, RATE_LIMIT_MAX_RETRIES,
     CRITIC_CHUNK_SIZE,
@@ -1598,7 +1599,7 @@ class PipelineManager:
                     _stage_key_extraction = _stage_log_key(project_info, "block_analysis")
                     self._update_pipeline_log(pid, _stage_key_extraction, "running")
 
-                    parallel = MAX_PARALLEL_BATCHES
+                    parallel = get_block_batch_parallelism("block_batch")
                     _stage_label = "Извлечение фактов" if _is_v4(project_info) else "Анализ блоков"
                     print(f"[{pid}:resume] ═══ ЭТАП 4: {_stage_label} ({total_batches} пакетов x{parallel}) ═══")
                     await self._log(
@@ -4111,7 +4112,9 @@ class PipelineManager:
 
             exit_code, _, _ = await self._run_script(
                 pid, str(BLOCKS_SCRIPT),
-                ["batches", _project_path(pid), "--block-ids", ",".join(block_ids)],
+                # --solo: 1 блок = 1 пакет, модель фокусируется на одной картинке
+                # (retry именно по ней и шёл, контекст других блоков уже есть в 02_blocks_analysis.json)
+                ["batches", _project_path(pid), "--block-ids", ",".join(block_ids), "--solo"],
                 on_output=lambda msg: self._log(job, msg),
             )
             if exit_code != 0:
@@ -4332,7 +4335,7 @@ class PipelineManager:
                 _stage_key_bb = _stage_log_key(project_info, "block_analysis")
                 self._update_pipeline_log(pid, _stage_key_bb, "running")
 
-                parallel = MAX_PARALLEL_BATCHES
+                parallel = get_block_batch_parallelism("block_batch")
                 _lbl = "Извлечение фактов" if use_v4_proj else "Анализ блоков"
                 print(f"[{pid}] ═══ ЭТАП 4: {_lbl} ({total_batches} пакетов x{parallel}) ═══")
                 await self._log(
