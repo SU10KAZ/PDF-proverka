@@ -952,6 +952,35 @@ _RISK_ENV_KEYS: dict[str, dict[str, str]] = {
     "light":  {"target": "CLAUDE_BATCH_LIGHT_TARGET",  "max": "CLAUDE_BATCH_LIGHT_MAX"},
 }
 
+# ─── Production profile: stage 02 block_batch ────────────────────────────────
+# Закреплено экспериментами 20.04.2026, КЖ5.17, 215 блоков.
+# Winner по batching: baseline_p3 (subset gate; docs/stage02_production_profile.md).
+# Winner по resolution: r800 (production default MIN_LONG_SIDE_PX = 800).
+STAGE02_PRODUCTION_PROFILE: dict = {
+    "render_profile":                        "r800",
+    "min_long_side_px":                      MIN_LONG_SIDE_PX,   # 800
+    "target_dpi":                            TARGET_DPI,          # 100
+    "claude_batch_profile":                  "baseline",
+    "batch_targets": {
+        "heavy":  {"target": 5, "max": 6},
+        "normal": {"target": 8, "max": 8},
+        "light":  {"target": 10, "max": 10},
+    },
+    "claude_hard_cap":                       CLAUDE_HARD_CAP,     # 12
+    "claude_block_batch_parallelism_default": 3,
+    "claude_block_batch_parallelism_cap":    3,
+    "safe_fallback":                         "r800 + baseline_p2 (parallelism=2)",
+}
+
+
+def get_stage02_production_profile() -> dict:
+    """Вернуть production profile для stage 02 block_batch (r800 + baseline_p3).
+
+    Источник истины для production defaults. Experimental runners используют
+    PROFILES/RESOLUTION_PROFILES из scripts/, не этот dict.
+    """
+    return dict(STAGE02_PRODUCTION_PROFILE)
+
 
 def _coerce_positive_int(raw: str | None, fallback: int) -> int:
     if not raw:
@@ -1593,7 +1622,8 @@ def generate_block_batches(
 
         total_size_kb = sum(b.get("size_kb", 0) for b in blocks)
         if strategy == "claude_risk_aware":
-            print(f"  Стратегия: claude_risk_aware (hard cap {min(max_blocks, CLAUDE_HARD_CAP)}, heavy≈5 / normal≈8 / light≈10)")
+            profile_tag = "baseline (production)" if risk_targets == _CLAUDE_RISK_TARGETS else "OVERRIDE"
+            print(f"  Стратегия: claude_risk_aware | profile={profile_tag} | render=r800 | hard cap {min(max_blocks, CLAUDE_HARD_CAP)}")
         else:
             print(f"  Стратегия: адаптивная (лимит {max_size_kb}KB / {max_blocks} блоков)")
         print(f"  Общий объём блоков: {total_size_kb}KB ({total_size_kb / 1024:.1f}MB)")

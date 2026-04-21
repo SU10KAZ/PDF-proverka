@@ -241,7 +241,7 @@ STAGE_MODEL_RESTRICTIONS = {
 # Подсказки при выборе модели для этапа (отображаются в UI)
 STAGE_MODEL_HINTS: dict[str, str] = {
     "text_analysis": "Opus CLI рекомендуется. Sonnet допустим.",
-    "block_batch": "GPT-5.4 / Gemini (OpenRouter) или Opus / Sonnet (Claude CLI, Vision через Read). Opus CLI — эксперимент, медленнее и жрёт CLI-лимит.",
+    "block_batch": "Opus 4.7 CLI — production (r800 + baseline_p3, parallelism=3). GPT-5.4 / Gemini доступны через OpenRouter. Safe fallback: baseline_p2 (parallelism=2).",
     "findings_merge": "Минимум Opus CLI — межблочная сверка требует сильной модели.",
     "findings_critic": "GPT-5.4 оптимален: быстро и дёшево.",
     "findings_corrector": "Минимум Opus CLI. Sonnet не успевает (таймаут). GPT-5.4 — альтернатива.",
@@ -296,18 +296,22 @@ def get_stage_models() -> dict[str, str | None]:
 MAX_PARALLEL_BATCHES = 5  # параллельных батчей
 
 # ─── Stage 02 block_batch: параллелизм по провайдеру ─────────────────────────
-# Claude CLI Vision (Opus 4.7): production-safe значения — 2 по умолчанию, cap 3.
-# Rate-limit окно + attention risk при большем числе параллельных CLI-сессий
-# делают x5 опасным. OpenRouter/Gemini/GPT остаются на общем MAX_PARALLEL_BATCHES.
+# Claude CLI Vision (Opus 4.7): production winner = baseline_p3 (parallelism=3).
+# Закреплено экспериментами 20.04.2026, КЖ5.17, 215 блоков:
+#   parallelism=3 + baseline batching → 100% coverage, 0 failures на обоих full-runs.
+# Safe fallback: baseline_p2 (parallelism=2) при проблемах с rate-limit.
+# OpenRouter/Gemini/GPT остаются на общем MAX_PARALLEL_BATCHES.
 # ENV override: CLAUDE_BLOCK_BATCH_PARALLELISM=N — всё равно clamp до CAP.
-CLAUDE_BLOCK_BATCH_PARALLELISM_DEFAULT = 2
+CLAUDE_BLOCK_BATCH_PARALLELISM_DEFAULT = 3  # production winner: baseline_p3
 CLAUDE_BLOCK_BATCH_PARALLELISM_CAP = 3
 
 
 def get_block_batch_parallelism(stage: str = "block_batch", model: str | None = None) -> int:
     """Параллелизм для stage 02 block_batch в зависимости от модели/провайдера.
 
-    - Claude CLI (claude-*): default=2, hard cap=3. ENV override тоже clamp до cap.
+    - Claude CLI (claude-*): default=3, hard cap=3 (production winner: baseline_p3).
+      Safe fallback: parallelism=2 при rate-limit проблемах.
+      ENV override CLAUDE_BLOCK_BATCH_PARALLELISM clamp до cap.
     - OpenRouter / прочие: общий MAX_PARALLEL_BATCHES.
     """
     if model is None:

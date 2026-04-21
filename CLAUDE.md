@@ -280,12 +280,20 @@ coverage=100% → unreadable_pct близкий к минимуму → мини
 - `CLAUDE_BLOCK_BATCH_PARALLELISM` — переопределить параллелизм Claude stage 02 (clamp ≤ 3).
 - Hard cap 12 блоков/пакет НЕ может быть пробит никаким override.
 
+**Production profile stage 02 (закреплено 20–21.04.2026, КЖ5.17):**
+- `render_profile = r800` (`MIN_LONG_SIDE_PX = 800`, `TARGET_DPI = 100`)
+- `claude_batch_profile = baseline` (heavy 5/6, normal 8/8, light 10/10)
+- `parallelism = 3` (production winner: baseline_p3)
+- `safe_fallback = r800 + baseline_p2` (parallelism=2 при rate-limit проблемах)
+- Источник истины: `blocks.STAGE02_PRODUCTION_PROFILE`, `blocks.get_stage02_production_profile()`
+- Подробный decision doc: [docs/stage02_production_profile.md](docs/stage02_production_profile.md)
+
 **Claude Vision batching (production-safe, stage 02 `block_batch`):**
 - Стратегия `claude_risk_aware` — классификация блоков по metadata (без повторного OCR):
   `is_full_page` / `quadrant` / `merged_block_ids` / `size_kb` / `render_size` / `ocr_text_len` / `crop_px`.
 - Целевые размеры пакета: heavy ≈ 5 блоков (max 6), normal ≈ 8, light ≈ 10.
 - **Hard cap = 12 блоков** в пакете независимо от пути (в т.ч. compact). Ранее compact раздувал до 30 — убрано.
-- Параллелизм Claude CLI на этапе `block_batch`: **default 2, hard cap 3** (см. `get_block_batch_parallelism()` в [webapp/config.py](webapp/config.py)). ENV `CLAUDE_BLOCK_BATCH_PARALLELISM` всё равно clamp до cap.
+- Параллелизм Claude CLI на этапе `block_batch`: **default 3, hard cap 3** (production winner baseline_p3; см. `get_block_batch_parallelism()` в [webapp/config.py](webapp/config.py)). ENV `CLAUDE_BLOCK_BATCH_PARALLELISM` всё равно clamp до cap.
 - OpenRouter (Gemini/GPT) остаётся на общей политике (`MAX_PARALLEL_BATCHES=5`, лимиты см. `MODEL_BATCH_LIMITS`).
 
 **Resolution A/B эксперимент (отдельная ось — `MIN_LONG_SIDE_PX`):**

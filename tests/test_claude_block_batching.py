@@ -257,16 +257,17 @@ def test_generate_non_claude_compact_still_allowed_to_grow(tmp_path, monkeypatch
 # ───────── parallelism helper ──────────────────────────────────────────────
 
 def test_block_batch_parallelism_claude_default(monkeypatch):
+    # Production winner: baseline_p3 → parallelism=3
     monkeypatch.delenv("CLAUDE_BLOCK_BATCH_PARALLELISM", raising=False)
     from webapp.config import (
         get_block_batch_parallelism,
         CLAUDE_BLOCK_BATCH_PARALLELISM_DEFAULT,
         CLAUDE_BLOCK_BATCH_PARALLELISM_CAP,
     )
-    assert CLAUDE_BLOCK_BATCH_PARALLELISM_DEFAULT == 2
+    assert CLAUDE_BLOCK_BATCH_PARALLELISM_DEFAULT == 3
     assert CLAUDE_BLOCK_BATCH_PARALLELISM_CAP == 3
-    assert get_block_batch_parallelism("block_batch", model="claude-opus-4-7") == 2
-    assert get_block_batch_parallelism("block_batch", model="claude-sonnet-4-6") == 2
+    assert get_block_batch_parallelism("block_batch", model="claude-opus-4-7") == 3
+    assert get_block_batch_parallelism("block_batch", model="claude-sonnet-4-6") == 3
 
 
 def test_block_batch_parallelism_claude_env_clamped(monkeypatch):
@@ -277,10 +278,10 @@ def test_block_batch_parallelism_claude_env_clamped(monkeypatch):
     monkeypatch.setenv("CLAUDE_BLOCK_BATCH_PARALLELISM", "1")
     assert get_block_batch_parallelism("block_batch", model="claude-opus-4-7") == 1
     monkeypatch.setenv("CLAUDE_BLOCK_BATCH_PARALLELISM", "-5")
-    # -5 → invalid, fallback на default, clamp до cap
-    assert get_block_batch_parallelism("block_batch", model="claude-opus-4-7") == 2
+    # -5 → invalid, fallback на default (3), clamp до cap
+    assert get_block_batch_parallelism("block_batch", model="claude-opus-4-7") == 3
     monkeypatch.setenv("CLAUDE_BLOCK_BATCH_PARALLELISM", "not-a-number")
-    assert get_block_batch_parallelism("block_batch", model="claude-opus-4-7") == 2
+    assert get_block_batch_parallelism("block_batch", model="claude-opus-4-7") == 3
 
 
 def test_block_batch_parallelism_non_claude_uses_general(monkeypatch):
