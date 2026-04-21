@@ -896,6 +896,14 @@ def _parse_args():
     ap.add_argument("--subset-file", type=str, default=None,
                     help="Путь к существующему fixed_subset_block_ids.json — если задан, "
                          "subset читается отсюда (без пересборки)")
+    ap.add_argument("--subset-only", action="store_true",
+                    help="Запустить ТОЛЬКО subset-пару (baseline_p3_subset + aggressive_p3_subset). "
+                         "Требует --from-experiment с путём к папке предыдущего final-comparison "
+                         "откуда берутся full-run метрики baseline_p3 / aggressive_p3. "
+                         "Использует ~5%% лимита вместо 100%% при повторе после rate-limit.")
+    ap.add_argument("--from-experiment", type=str, default=None,
+                    help="Путь к папке предыдущего эксперимента — используется с --subset-only "
+                         "для загрузки существующих full-run метрик и fixed_subset_block_ids.json")
     return ap.parse_args()
 
 
@@ -1715,7 +1723,73 @@ def main():
     all_metrics: list[dict] = []
     per_run_payload: list[tuple[str, Path, dict]] = []
 
-    if args.final_comparison:
+    if args.subset_only:
+        # ── Subset-only режим: только два subset-рана, full-run метрики из предыдущего эксперимента
+        if not args.from_experiment:
+            print("[ERROR] --subset-only требует --from-experiment <path>")
+            sys.exit(2)
+        prev_dir = Path(args.from_experiment).expanduser()
+        summary_path = prev_dir / "summary.json"
+        if not summary_path.exists():
+            print(f"[ERROR] summary.json не найден в {prev_dir}")
+            sys.exit(2)
+
+        prev_summary = json.loads(summary_path.read_text(encoding="utf-8"))
+        prev_runs = {r["run_id"]: r for r in prev_summary.get("runs", [])}
+        b_full = prev_runs.get("baseline_p3")
+        a_full = prev_runs.get("aggressive_p3")
+        if not b_full or not a_full:
+            print(f"[ERROR] baseline_p3 / aggressive_p3 не найдены в {summary_path}")
+            sys.exit(2)
+        print(f"[OK] full-run метрики загружены из {prev_dir}")
+        print(f"     baseline_p3: {b_full['quality']['total_findings']} findings, "
+              f"coverage={b_full['quality']['coverage_pct']}%")
+        print(f"     aggressive_p3: {a_full['quality']['total_findings']} findings, "
+              f"coverage={a_full['quality']['coverage_pct']}%")
+
+        # subset_file: приоритет у явного --subset-file, иначе берём из --from-experiment
+        subset_file = args.subset_file or str(prev_dir / "fixed_subset_block_ids.json")
+        subset_ids = _ensure_subset(experiment_dir, blocks_index, subset_file, args.subset_size)
+
+        # Запустить только subset-пару
+        for run_id, profile, par in [
+            ("baseline_p3_subset",   "baseline",   3),
+            ("aggressive_p3_subset", "aggressive", 3),
+        ]:
+            print(f"\n═══ run {run_id} ═══")
+            m, payload = execute_single_run(
+                run_id=run_id, profile_name=profile, parallelism=par,
+                subset_ids=subset_ids, **common_kwargs,
+            )
+            all_metrics.append(m)
+            if payload:
+                per_run_payload.append(payload)
+
+        # Добавить full-run метрики (без перезапуска)
+        all_metrics = [b_full, a_full] + all_metrics
+
+        subset_comparison = None
+        if not args.dry_run:
+            b_sub_payload = next((p for p in per_run_payload if p[0] == "baseline_p3_subset"), None)
+            a_sub_payload = next((p for p in per_run_payload if p[0] == "aggressive_p3_subset"), None)
+            if b_sub_payload and a_sub_payload:
+                subset_comparison = build_subset_comparison(subset_ids, blocks_index,
+                                                            b_sub_payload, a_sub_payload)
+                (experiment_dir / "subset_side_by_side.json").write_text(
+                    json.dumps(subset_comparison, ensure_ascii=False, indent=2), encoding="utf-8",
+                )
+                write_subset_side_by_side_md(experiment_dir / "subset_side_by_side.md", subset_comparison)
+                write_subset_divergence_report(experiment_dir / "subset_divergence_report.md", subset_comparison)
+
+            b_sub_m = next((m for m in all_metrics if m["run_id"] == "baseline_p3_subset"), None)
+            a_sub_m = next((m for m in all_metrics if m["run_id"] == "aggressive_p3_subset"), None)
+            gate = final_winner_gate(b_full, a_full, subset_comparison,
+                                     baseline_subset=b_sub_m, aggressive_subset=a_sub_m)
+            write_final_artifacts(experiment_dir, all_metrics, gate, subset_comparison)
+            print(f"\n[GATE] Winner: {gate['decision']['winner']}")
+            print(f"       Reason: {gate['decision']['reason']}")
+
+    elif args.final_comparison:
         # ── Финальный сценарий: baseline_p3 / aggressive_p3 (full) + subset-пара
         subset_ids = _ensure_subset(experiment_dir, blocks_index, args.subset_file, args.subset_size)
 
