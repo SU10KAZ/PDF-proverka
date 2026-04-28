@@ -24,7 +24,7 @@
 
             <div class="sidebar-group">
                 <div class="sidebar-label">Обзор</div>
-                <div class="nav-item" :class="{active: currentView === 'dashboard' && !sidebarFilterSection}" @click="navigate('/'); sidebarFilterSection = null">
+                <div class="nav-item" :class="{active: currentView === 'dashboard' && !sidebarFilterSection}" @click="navigate('/')">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <path d="M2 9L8 3l6 6"/><path d="M4 7v6h3v-3h2v3h3V7"/>
                     </svg>
@@ -51,7 +51,7 @@
                     </svg>
                 </div>
                 <div class="nav-submenu" :class="{open: sidebarSectionsOpen}">
-                    <div class="nav-sub-item" @click="navigate('/'); sidebarFilterSection = '__all__'"
+                    <div class="nav-sub-item" @click="navigate('/section/__all__')"
                          :class="{active: currentView === 'dashboard' && sidebarFilterSection === '__all__'}">
                         <div class="nav-sub-dot"></div>
                         Все разделы
@@ -59,7 +59,7 @@
                     </div>
                     <div v-for="[code, items] in projectsBySection" :key="'sb-'+code"
                          class="nav-sub-item"
-                         @click="navigate('/'); sidebarFilterSection = code"
+                         @click="navigate('/section/' + encodeURIComponent(code))"
                          :class="{active: currentView === 'dashboard' && sidebarFilterSection === code}">
                         <div class="nav-sub-dot" :style="{background: getDisciplineColor(code), opacity: 1}"></div>
                         {{ code }}
@@ -74,6 +74,10 @@
                     </svg>
                     Очередь
                     <span v-if="batchRunning && batchQueue" class="nav-badge">{{ batchQueue.items.filter(i => i.status === 'pending' || i.status === 'running').length }}</span>
+                    <span v-if="prepareQueue && prepareQueue.items && prepareQueue.items.filter(i => i.status === 'pending' || i.status === 'running').length > 0"
+                          class="nav-badge" style="background: #5d8efc;">
+                        {{ prepareQueue.items.filter(i => i.status === 'pending' || i.status === 'running').length }}
+                    </span>
                 </div>
                 <div class="nav-item" :class="{active: currentView === 'knowledge-base'}" @click="navigate('/knowledge-base')">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -88,6 +92,13 @@
                         <path d="M8 2v2M8 12v2M2 8h2M12 8h2"/>
                     </svg>
                     Настройки моделей
+                </div>
+                <div class="nav-item" :class="{active: currentView === 'model-control'}" @click="navigate('/model-control')">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="2" y="2" width="12" height="12" rx="2"/>
+                        <path d="M5 11V8M8 11V5M11 11V7"/>
+                    </svg>
+                    Контроль моделей
                 </div>
             </div>
         </div>
@@ -123,6 +134,7 @@
                     <span>Продолжить</span>
                 </button>
             </div>
+
             <div class="header-right">
                 <!-- Paid API cost counter -->
                 <button class="paid-cost-btn" @click="showPaidCost = !showPaidCost"
@@ -191,7 +203,9 @@
                                 <div class="usage-row__bar-fill"
                                      :style="{width: Math.min(100, globalUsage.session_5h_percent || 0) + '%'}"></div>
                             </div>
-                            <span class="usage-row__pct">{{ Math.round(globalUsage.session_5h_percent || 0) }}%</span>
+                            <span class="usage-row__pct usage-row__pct--editable"
+                                  title="Кликни, чтобы поправить процент"
+                                  @click.stop="editUsagePercent('session_5h', globalUsage.session_5h_percent)">{{ Math.round(globalUsage.session_5h_percent || 0) }}%</span>
                         </div>
                         <div class="usage-row"
                              :class="{'usage-row--warning': globalUsage.weekly_all_percent > 70,
@@ -201,7 +215,9 @@
                                 <div class="usage-row__bar-fill"
                                      :style="{width: Math.min(100, globalUsage.weekly_all_percent || 0) + '%'}"></div>
                             </div>
-                            <span class="usage-row__pct">{{ Math.round(globalUsage.weekly_all_percent || 0) }}%</span>
+                            <span class="usage-row__pct usage-row__pct--editable"
+                                  title="Кликни, чтобы поправить процент"
+                                  @click.stop="editUsagePercent('weekly_all', globalUsage.weekly_all_percent)">{{ Math.round(globalUsage.weekly_all_percent || 0) }}%</span>
                         </div>
                         <div class="usage-row" v-if="sonnetPercent > 0"
                              :class="{'usage-row--warning': sonnetPercent > 70,
@@ -211,7 +227,9 @@
                                 <div class="usage-row__bar-fill usage-row__bar-fill--sonnet"
                                      :style="{width: Math.min(100, sonnetPercent) + '%'}"></div>
                             </div>
-                            <span class="usage-row__pct">{{ Math.round(sonnetPercent) }}%</span>
+                            <span class="usage-row__pct usage-row__pct--editable"
+                                  title="Кликни, чтобы поправить процент"
+                                  @click.stop="editUsagePercent('weekly_sonnet', sonnetPercent)">{{ Math.round(sonnetPercent) }}%</span>
                         </div>
                     </div>
 
@@ -248,6 +266,7 @@
                     <div class="usage-details__footer">
                         <button class="btn btn--small" @click.stop="refreshGlobalUsage">Обновить</button>
                         <button class="btn btn--small btn--danger" @click.stop="clearUsageCounter">Очистить счётчик</button>
+                        <button class="btn btn--small" @click.stop="resetUsageOffsets" title="Показывать «как есть», убрать ручные правки">Как есть</button>
                         <span class="usage-details__note">Claude Code сессии (legacy)</span>
                     </div>
                 </div>
@@ -467,9 +486,9 @@
             <div class="batch-action-bar__actions">
                 <button class="btn btn-outline" :disabled="batchCropLoading"
                         @click="cropBatchBlocks"
-                        title="Кропнуть графические блоки в проектах без аудита — для предпросмотра качества">
-                    <span v-if="batchCropLoading">&#129534; Кропаю... ({{ batchCropProgress }})</span>
-                    <span v-else>&#129534; Скачать блоки</span>
+                        title="Полная подготовка данных: crop PNG-блоков + Qwen-enrichment MD (готовит проект к аудиту)">
+                    <span v-if="batchCropLoading">&#129534; Готовлю... ({{ batchCropProgress }})</span>
+                    <span v-else>&#129534; Подготовить данные</span>
                 </button>
                 <button class="btn btn-outline" :disabled="batchPackageLoading"
                         @click="downloadBatchAuditPackages">
@@ -832,14 +851,15 @@
                             @click="applyPreset('classic')"
                             title="Gemini для блоков, Sonnet для critic — массовый аудит со скидкой">Классический</button>
                     <button class="btn btn-preset"
-                            :class="{ active: activePreset === 'subscription' }"
-                            @click="applyPreset('subscription')"
-                            title="Opus 4.7 на всех этапах (Claude Max)">Подписка</button>
+                            :class="{ active: activePreset === 'qwen_sonnet' }"
+                            @click="applyPreset('qwen_sonnet')"
+                            title="Stage 02: single-block Sonnet (CLI subscription) + qwen-обогащение + extended categories. Требует «Подготовить данные» с Qwen-enrichment.">Qwen+Sonett CLI</button>
                     <button class="btn btn-preset"
-                            :class="{ active: activePreset === 'v4' }"
-                            @click="applyPreset('v4')"
-                            title="Пайплайн V4: typed facts → memory → candidates → formatter">V4</button>
+                            :class="{ active: activePreset === 'findings_only' }"
+                            @click="applyPreset('findings_only')"
+                            title="Stage 02: single-block GPT-5.4 + qwen-обогащение + extended categories. Требует «Подготовить данные» с Qwen-enrichment.">Qwen+GPT5.4</button>
                 </div>
+                <p v-if="activePresetHint" class="model-preset-hint">{{ activePresetHint }}</p>
                 <table class="model-config-table">
                     <thead>
                         <tr>
@@ -852,10 +872,11 @@
                             <tr>
                                 <td class="model-config-stage-name">{{ label }}</td>
                                 <td v-for="m in availableModels" :key="m.id" class="model-config-radio-cell">
-                                    <input type="radio"
+                                    <input :type="modelInputType(key, m.id)"
                                            :name="'model-' + key"
                                            :value="m.id"
-                                           v-model="stageModelConfig[key]"
+                                           :checked="isStageModelChecked(key, m.id)"
+                                           @change="selectStageModel(key, m.id, $event)"
                                            :disabled="!isModelAllowed(key, m.id)"
                                            class="model-config-radio">
                                 </td>
@@ -882,6 +903,117 @@
                         <button class="btn btn-accent btn-sm" @click="queueAddMode = !queueAddMode">
                             {{ queueAddMode ? 'Скрыть' : '+ Добавить проекты' }}
                         </button>
+                    </div>
+                </div>
+
+                <!-- ═══ Prepare-data queue (Qwen enrichment) ═══ -->
+                <div v-if="prepareQueue && prepareQueue.items && prepareQueue.items.length > 0" class="prepare-queue">
+                    <div class="prepare-queue__header">
+                        <h3 style="margin: 0;">&#129534; Подготовка данных (Qwen enrichment)</h3>
+                        <button class="btn btn-outline btn-sm" @click="clearPrepareQueue">
+                            Очистить завершённые
+                        </button>
+                    </div>
+
+                    <!-- Лаконичная строка статуса (как info-tab-usage) -->
+                    <div v-if="prepareQueue.status === 'running' || prepareQueue.status === 'paused'"
+                         class="prepare-bar"
+                         :class="{'prepare-bar--paused': prepareQueue.paused}">
+                        <span class="lms-status-dot" :class="prepareQueue.paused ? 'lms-status-dot--unloaded' : 'lms-status-dot--busy'"></span>
+                        <span class="prepare-bar__label">{{ prepareQueue.paused ? 'Подготовка на паузе' : 'Подготовка' }}</span>
+                        <span class="prepare-bar__sep">·</span>
+                        <span>Блоки <strong>{{ prepareQueue.blocks_done_all || 0 }}</strong> / {{ prepareQueue.blocks_total_all || '?' }}</span>
+                        <span v-if="prepareQueue.blocks_total_all" class="prepare-bar__dim">
+                            (осталось {{ Math.max(0, prepareQueue.blocks_total_all - prepareQueue.blocks_done_all) }})
+                        </span>
+                        <span class="prepare-bar__sep">·</span>
+                        <span>Проекты <strong>{{ prepareQueue.completed + prepareQueue.failed }}</strong> / {{ prepareQueue.total }}</span>
+                        <span v-if="prepareQueue.blocks_failed_all > 0" style="color:#f88">· {{ prepareQueue.blocks_failed_all }} fail</span>
+                        <span v-if="prepareQueue.blocks_truncated_all > 0" style="color:#f59e0b">· ⚠ {{ prepareQueue.blocks_truncated_all }} обрезано</span>
+                        <span v-if="prepareQueue.current_project" class="prepare-bar__current" :title="prepareQueue.current_project">
+                            {{ prepareQueue.current_project.length > 40 ? '...' + prepareQueue.current_project.slice(-37) : prepareQueue.current_project }}
+                        </span>
+                        <span class="prepare-bar__spacer"></span>
+                        <button v-if="!prepareQueue.paused" class="prepare-bar__btn" @click="preparePause()" title="Пауза">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                            Пауза
+                        </button>
+                        <button v-else class="prepare-bar__btn prepare-bar__btn--accent" @click="prepareResume()" title="Продолжить">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+                            Продолжить
+                        </button>
+                        <button class="prepare-bar__btn prepare-bar__btn--danger" @click="prepareCancel()" title="Стоп">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14"/></svg>
+                            Стоп
+                        </button>
+                    </div>
+
+                    <div class="prepare-queue__progress-row">
+                        <span class="queue-progress__counter">
+                            {{ (prepareQueue.completed || 0) + (prepareQueue.failed || 0) }} / {{ prepareQueue.total }}
+                        </span>
+                        <div class="progress-bar" style="flex:1;">
+                            <div class="progress-fill" :style="{width: (((prepareQueue.completed || 0) + (prepareQueue.failed || 0)) / Math.max(1, prepareQueue.total) * 100) + '%'}"></div>
+                        </div>
+                    </div>
+                    <div class="queue-items">
+                        <div v-for="(item, idx) in prepareQueue.items" :key="item.project_id"
+                             class="queue-item" :class="'queue-item--' + item.status">
+                            <span class="queue-item__handle queue-item__handle--empty"></span>
+                            <span class="queue-item__idx">{{ idx + 1 }}</span>
+                            <span class="queue-item__name" @click="navigate('/project/' + encodeURIComponent(item.project_id))">
+                                {{ item.project_id }}
+                            </span>
+                            <span class="queue-item__action-label">
+                                <template v-if="item.blocks_total !== null && item.blocks_total !== undefined">
+                                    {{ item.blocks_done || 0 }} / {{ item.blocks_total }} блоков
+                                    <span v-if="item.blocks_failed > 0" style="color: #f88;">({{ item.blocks_failed }} fail)</span>
+                                    <span v-if="item.blocks_truncated > 0" style="color: #f59e0b; font-weight: 600;"
+                                          :title="'Output обрезан max_output_tokens — нужно увеличить лимит'">
+                                        ⚠ {{ item.blocks_truncated }} обрезано
+                                    </span>
+                                </template>
+                                <template v-else>—</template>
+                            </span>
+                            <span class="queue-item__status">
+                                <template v-if="item.status === 'pending'">
+                                    <template v-if="item.crop_status === 'running'">
+                                        <span class="queue-item__spinner"></span> Скачивание блоков...
+                                    </template>
+                                    <template v-else-if="item.crop_status === 'done'">
+                                        Готов к запуску ({{ item.crop_blocks_total || 0 }} блоков)
+                                    </template>
+                                    <template v-else-if="item.crop_status === 'failed'">
+                                        Crop error
+                                    </template>
+                                    <template v-else>Ожидает</template>
+                                </template>
+                                <template v-else-if="item.status === 'running'">
+                                    <span class="queue-item__spinner"></span>
+                                    <template v-if="item.eta_sec !== null && item.eta_sec !== undefined && item.eta_sec > 0">
+                                        ETA {{ formatEta(item.eta_sec) }}
+                                    </template>
+                                    <template v-else-if="item.elapsed_sec > 0">
+                                        Выполняется ({{ formatEta(item.elapsed_sec) }})
+                                    </template>
+                                    <template v-else>
+                                        Выполняется
+                                    </template>
+                                </template>
+                                <template v-else-if="item.status === 'completed'">
+                                    Готово ({{ formatEta(item.elapsed_sec || 0) }})
+                                </template>
+                                <template v-else-if="item.status === 'failed'">
+                                    Ошибка<span v-if="item.error" :title="item.error">: {{ item.error.substring(0, 60) }}</span>
+                                </template>
+                                <template v-else-if="item.status === 'skipped'">Пропущен</template>
+                            </span>
+                            <span class="queue-item__remove-placeholder"></span>
+                        </div>
+                    </div>
+                    <div v-if="prepareQueue.total_elapsed_sec > 0" class="prepare-queue__total">
+                        <span>Суммарно по проектам:</span>
+                        <strong>{{ formatEta(prepareQueue.total_elapsed_sec) }}</strong>
                     </div>
                 </div>
 
@@ -1014,56 +1146,6 @@
                             </div>
                             <div class="stage-model" v-if="stageModel('text_analysis')">{{ stageModel('text_analysis') }}</div>
                         </div>
-                        <!-- V4 pipeline: Факты → Граф → Кандидаты → Свод -->
-                        <template v-if="(currentProject.pipeline_version || 'legacy') === 'v4'">
-                        <div class="pipeline-arrow">&rarr;</div>
-                        <div class="pipeline-stage pipeline-stage--v4"
-                             :class="[stepClass(currentProject.pipeline.v4_extraction), {'pipeline-stage--clickable': canStartFrom('v4_extraction')}]"
-                             @click="canStartFrom('v4_extraction') && startFromStage(currentProject.project_id, 'v4_extraction')"
-                             :title="canStartFrom('v4_extraction') ? 'Клик: запустить с этого этапа' : 'Извлечение фактов (typed_facts_batch_*.json)'"
-                        >
-                            <div class="stage-num">02a</div>
-                            <div class="stage-label">Факты</div>
-                            <div class="stage-tokens" v-if="stageTokensFormatted('v4_extraction')">
-                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('v4_extraction').inp }}</span>
-                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('v4_extraction').out }}</span>
-                            </div>
-                            <div class="stage-model" v-if="stageModel('v4_extraction')">{{ stageModel('v4_extraction') }}</div>
-                        </div>
-                        <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
-                        <div class="pipeline-stage pipeline-stage--v4 pipeline-stage--sm"
-                             :class="[stepClass(currentProject.pipeline.v4_memory), {'pipeline-stage--clickable': canStartFrom('v4_memory')}]"
-                             @click="canStartFrom('v4_memory') && startFromStage(currentProject.project_id, 'v4_memory')"
-                             :title="canStartFrom('v4_memory') ? 'Клик: запустить с этого этапа' : 'Канонический граф (canonical_memory_v2.json)'"
-                        >
-                            <div class="stage-num">02b</div>
-                            <div class="stage-label">Граф</div>
-                        </div>
-                        <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
-                        <div class="pipeline-stage pipeline-stage--v4 pipeline-stage--sm"
-                             :class="[stepClass(currentProject.pipeline.v4_candidates), {'pipeline-stage--clickable': canStartFrom('v4_candidates')}]"
-                             @click="canStartFrom('v4_candidates') && startFromStage(currentProject.project_id, 'v4_candidates')"
-                             :title="canStartFrom('v4_candidates') ? 'Клик: запустить с этого этапа' : 'Генерация кандидатов (candidates_v2.json)'"
-                        >
-                            <div class="stage-num">02c</div>
-                            <div class="stage-label">Канд.</div>
-                        </div>
-                        <div class="pipeline-arrow">&rarr;</div>
-                        <div class="pipeline-stage pipeline-stage--v4"
-                             :class="[stepClass(currentProject.pipeline.v4_formatter), {'pipeline-stage--clickable': canStartFrom('v4_formatter')}]"
-                             @click="canStartFrom('v4_formatter') && startFromStage(currentProject.project_id, 'v4_formatter')"
-                             :title="canStartFrom('v4_formatter') ? 'Клик: запустить с этого этапа' : 'Формирование замечаний (03_findings.json)'"
-                        >
-                            <div class="stage-num">03</div>
-                            <div class="stage-label">Свод</div>
-                            <div class="stage-tokens" v-if="stageTokensFormatted('v4_formatter')">
-                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('v4_formatter').inp }}</span>
-                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('v4_formatter').out }}</span>
-                            </div>
-                        </div>
-                        </template>
-                        <!-- Classic pipeline: Блоки → Свод -->
-                        <template v-else>
                         <div class="pipeline-arrow">&rarr;</div>
                         <div class="pipeline-stage"
                              :class="[stepClass(currentProject.pipeline.blocks_analysis), {'pipeline-stage--clickable': canStartFrom('blocks_analysis')}]"
@@ -1092,7 +1174,6 @@
                             </div>
                             <div class="stage-model" v-if="stageModel('findings')">{{ stageModel('findings') }}</div>
                         </div>
-                        </template>
                         <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
                         <div class="pipeline-stage pipeline-stage--sm"
                              :class="[stepClass(combinedCriticStatus(currentProject.pipeline.findings_critic, currentProject.pipeline.findings_corrector)), {'pipeline-stage--clickable': canStartFrom('findings_critic')}]"
@@ -1178,11 +1259,13 @@
                         <span class="usage-icon">⚡</span>
                         <span style="color:#22c55e">&#8595;{{ formatTokens(currentProjectUsage.total_input_tokens) }}</span>
                         <span style="color:#ef4444">&#8593;{{ formatTokens(currentProjectUsage.total_output_tokens) }}</span>
-                        · {{ formatCost(currentProjectUsage.total_cost_usd) }}
-                        <span v-if="currentProjectUsage.notional_cost_usd > 0"
-                              style="color:#a78bfa; font-size:0.8em"
-                              :title="'Сэкономлено по подписке CLI: $' + currentProjectUsage.notional_cost_usd.toFixed(2)"
-                        >(−${{ currentProjectUsage.notional_cost_usd.toFixed(2) }} CLI)</span>
+                        · <span style="color:#f59e0b"
+                                :title="'Все платные API-процессы: $' + usagePaidCost(currentProjectUsage).toFixed(2)"
+                          >Платно {{ formatCost(usagePaidCost(currentProjectUsage)) }}</span>
+                        <span v-if="usageFreeCost(currentProjectUsage) > 0"
+                              style="color:#a78bfa"
+                              :title="'Бесплатные процессы по подписке/CLI, условная API-стоимость: $' + usageFreeCost(currentProjectUsage).toFixed(2)"
+                        >· Бесплатно ${{ usageFreeCost(currentProjectUsage).toFixed(2) }}</span>
                         · {{ currentProjectUsage.total_calls }} calls
                         <span v-if="pipelineTotalDuration" style="color:#94a3b8">
                             · {{ pipelineTotalDuration }}
@@ -1302,15 +1385,13 @@
                         </div>
                     </div>
 
-                    <!-- Retry dialog: запустить сейчас или в очередь -->
+                    <!-- Retry dialog: всегда добавляем в очередь, на исходных моделях -->
                     <div v-if="retryDialog.show" class="retry-dialog-overlay" @click.self="retryDialog.show = false">
                         <div class="retry-dialog">
                             <div class="retry-dialog__title">Перезапуск этапа</div>
                             <div class="retry-dialog__stage">{{ retryDialog.stageLabel }}</div>
                             <div class="retry-dialog__buttons">
-                                <button class="btn btn-accent btn-sm" @click="retryStageNow"
-                                        :disabled="isProjectRunning(retryDialog.projectId)">Запустить сейчас</button>
-                                <button class="btn btn-outline btn-sm" @click="retryStageToQueue">В очередь</button>
+                                <button class="btn btn-accent btn-sm" @click="retryStageToQueue">Запустить</button>
                                 <button class="btn btn-ghost btn-sm" @click="retryDialog.show = false">Отмена</button>
                             </div>
                         </div>
@@ -1826,6 +1907,173 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- ═══ LM Studio Management View ═══ -->
+        <div v-if="currentView === 'lms'" class="container">
+            <div class="kb-page">
+                <div class="kb-header">
+                    <h2 class="kb-title">&#129534; LM Studio (удалённое управление)</h2>
+                    <div class="kb-header-actions">
+                        <button class="btn btn-sm btn-outline" @click="lmsRefresh" :disabled="lmsLoading">
+                            {{ lmsLoading ? '...' : 'Обновить' }}
+                        </button>
+                    </div>
+                </div>
+
+                <p style="color: var(--text-muted); font-size: 13px; margin: 0 0 12px;">
+                    Управление LM Studio через ngrok+Basic Auth (WSS).
+                    Используется для Qwen enrichment (этап «Подготовить данные»).
+                </p>
+
+                <!-- Health status banner -->
+                <div class="lms-health-banner" :class="'lms-health-banner--' + lmsHealthStatus">
+                    <div class="lms-health-banner__row">
+                        <span class="lms-status-dot lms-status-dot--lg" :class="'lms-status-dot--' + lmsHealthStatus"></span>
+                        <strong style="font-size: 14px;">
+                            <template v-if="lmsHealthStatus === 'ok'">Модель работает</template>
+                            <template v-else-if="lmsHealthStatus === 'busy'">Модель занята</template>
+                            <template v-else-if="lmsHealthStatus === 'unloaded'">Нет загруженной модели</template>
+                            <template v-else-if="lmsHealthStatus === 'error'">Модель не отвечает</template>
+                            <template v-else>Проверка...</template>
+                        </strong>
+                        <span v-if="lmsHealth && lmsHealth.health && lmsHealth.health.latency_ms != null" style="margin-left: 10px; font-size: 12px;">
+                            ping {{ lmsHealth.health.latency_ms }} ms
+                        </span>
+                        <span v-if="lmsHealth && lmsHealth.health && lmsHealth.health.model" style="margin-left: 10px; font-size: 12px; opacity: 0.7;">
+                            <code style="font-size: 11px;">{{ lmsHealth.health.model }}</code>
+                        </span>
+                        <span style="margin-left: auto; font-size: 12px; opacity: 0.6;" v-if="lmsHealthCheckedAt">
+                            Проверено {{ formatEta(Math.floor((Date.now() - lmsHealthCheckedAt) / 1000)) }} назад
+                        </span>
+                        <button class="btn btn-sm btn-outline" style="margin-left: 8px;" @click="lmsCheckHealth" :disabled="lmsLoading">
+                            Проверить сейчас
+                        </button>
+                    </div>
+                    <div v-if="lmsHealth && lmsHealth.inflight && lmsHealth.inflight.total_active > 0" class="lms-health-banner__row" style="margin-top: 8px; font-size: 12px;">
+                        <span style="opacity: 0.8;">
+                            Активных запросов:
+                            <strong>{{ lmsHealth.inflight.prepare_running }}</strong> идёт,
+                            <strong>{{ lmsHealth.inflight.prepare_pending }}</strong> ожидают
+                        </span>
+                    </div>
+                    <div v-if="lmsHealth && lmsHealth.health && lmsHealth.health.error" class="lms-health-banner__row" style="margin-top: 6px; font-size: 12px; opacity: 0.85;">
+                        Ошибка: {{ lmsHealth.health.error }}
+                    </div>
+                </div>
+
+                <!-- Loaded models -->
+                <div class="lms-section">
+                    <h3 class="lms-section-title">Загружено сейчас</h3>
+                    <div v-if="!lmsLoaded || lmsLoaded.length === 0" class="empty-state" style="padding:14px;font-size:13px">
+                        Нет загруженных моделей.
+                    </div>
+                    <table v-else class="lms-table">
+                        <thead>
+                            <tr>
+                                <th>Identifier</th>
+                                <th>Тип</th>
+                                <th>Context length</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="m in lmsLoaded" :key="m.identifier">
+                                <td><code style="font-size:12px">{{ m.identifier }}</code></td>
+                                <td>{{ m.type }}</td>
+                                <td>
+                                    <strong v-if="m.context_length">{{ m.context_length.toLocaleString() }}</strong>
+                                    <span v-else class="text-muted">—</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger-outline" @click="lmsUnload(m.identifier)" :disabled="lmsLoading">
+                                        Выгрузить
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Available downloaded models -->
+                <div class="lms-section" style="margin-top: 24px;">
+                    <h3 class="lms-section-title">Скачанные модели ({{ lmsAll ? lmsAll.length : 0 }})</h3>
+                    <div v-if="!lmsAll || lmsAll.length === 0" class="empty-state" style="padding:14px;font-size:13px">
+                        Список пуст.
+                    </div>
+                    <table v-else class="lms-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Тип</th>
+                                <th>Quant</th>
+                                <th>Max ctx</th>
+                                <th>Загр. ctx</th>
+                                <th>State</th>
+                                <th>Загрузка с context</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="m in lmsAll" :key="m.id" :class="{ 'lms-row-loaded': m.state === 'loaded' }">
+                                <td><code style="font-size:12px">{{ m.id }}</code></td>
+                                <td>{{ m.type }}</td>
+                                <td><span class="text-muted" style="font-size:12px">{{ m.quantization }}</span></td>
+                                <td>{{ m.max_context_length ? m.max_context_length.toLocaleString() : '—' }}</td>
+                                <td>
+                                    <span v-if="m.loaded_context_length"><strong>{{ m.loaded_context_length.toLocaleString() }}</strong></span>
+                                    <span v-else class="text-muted">—</span>
+                                </td>
+                                <td>
+                                    <span v-if="m.state === 'loaded'" class="badge-success">loaded</span>
+                                    <span v-else class="text-muted">{{ m.state }}</span>
+                                </td>
+                                <td>
+                                    <div style="display:flex;gap:6px;align-items:center">
+                                        <input type="number" v-model.number="lmsLoadCtx[m.id]"
+                                               :placeholder="m.max_context_length || '16384'"
+                                               style="width:90px; padding: 3px 6px; font-size: 12px;">
+                                        <button class="btn btn-sm btn-accent" @click="lmsLoad(m.id)" :disabled="lmsLoading">
+                                            Загрузить
+                                        </button>
+                                        <button v-if="m.state === 'loaded'" class="btn btn-sm btn-outline" @click="lmsReload(m.id)" :disabled="lmsLoading"
+                                                title="Выгрузить все instance + загрузить с новым context">
+                                            Reload
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Quick presets -->
+                <div class="lms-section" style="margin-top: 24px;">
+                    <h3 class="lms-section-title">Пресеты context</h3>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                        <button v-for="ctx in [4096, 8192, 16384, 32768, 65536]" :key="ctx"
+                                class="btn btn-sm btn-outline"
+                                @click="lmsApplyPresetCtx(ctx)">
+                            {{ ctx.toLocaleString() }}
+                        </button>
+                        <span class="text-muted" style="font-size:12px;align-self:center;margin-left:8px">
+                            Применит к выбранным моделям в форме выше
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Last error/result -->
+                <div v-if="lmsMessage" class="lms-message" :class="'lms-message--' + lmsMessage.kind"
+                     style="margin-top:16px;padding:10px 12px;border-radius:6px;font-size:13px">
+                    <strong>{{ lmsMessage.kind === 'error' ? '✗' : '✓' }}</strong>
+                    {{ lmsMessage.text }}
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ Model Control (iframe — отдельное приложение) ═══ -->
+        <div v-if="currentView === 'model-control'" class="container model-control-host">
+            <iframe src="/model-control?embed=1" class="model-control-iframe"
+                    title="Контроль моделей"></iframe>
         </div>
 
         <!-- ═══ Blocks Viewer (OCR) ═══ -->

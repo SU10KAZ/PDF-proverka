@@ -115,6 +115,7 @@ def parse_cli_json_output(stdout: str) -> CLIResult:
 
     try:
         data = json.loads(stdout)
+        usage = data.get("usage") or {}
         return CLIResult(
             result_text=data.get("result", stdout),
             is_error=data.get("is_error", False),
@@ -123,6 +124,10 @@ def parse_cli_json_output(stdout: str) -> CLIResult:
             duration_api_ms=data.get("duration_api_ms", 0) or 0,
             num_turns=data.get("num_turns", 0) or 0,
             session_id=data.get("session_id"),
+            input_tokens=int(usage.get("input_tokens", 0) or 0),
+            output_tokens=int(usage.get("output_tokens", 0) or 0),
+            cache_creation_tokens=int(usage.get("cache_creation_input_tokens", 0) or 0),
+            cache_read_tokens=int(usage.get("cache_read_input_tokens", 0) or 0),
         )
     except (json.JSONDecodeError, KeyError, TypeError):
         # Fallback: stdout не является валидным JSON — вернуть как текст

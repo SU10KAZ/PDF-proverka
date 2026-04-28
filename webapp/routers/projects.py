@@ -224,16 +224,14 @@ async def get_project_config(project_id: str):
 
 
 class PipelineVersionRequest(BaseModel):
-    pipeline_version: str  # "legacy" | "v4"
+    pipeline_version: str  # "legacy"
 
 
 @router.put("/{project_id:path}/pipeline-version")
 async def set_pipeline_version(project_id: str, req: PipelineVersionRequest):
-    """Переключить pipeline_version проекта (legacy / v4).
-    Сохраняется в project_info.json.
-    """
-    if req.pipeline_version not in ("legacy", "v4"):
-        raise HTTPException(400, f"Неверный pipeline_version: {req.pipeline_version}. Допустимо: legacy, v4")
+    """Переключить pipeline_version проекта. Сохраняется в project_info.json."""
+    if req.pipeline_version not in ("legacy",):
+        raise HTTPException(400, f"Неверный pipeline_version: {req.pipeline_version}. Допустимо: legacy")
 
     # Смена pipeline_version влияет только на следующий запуск аудита: текущий
     # прогон держит project_info в памяти и файл не перечитывает, поэтому

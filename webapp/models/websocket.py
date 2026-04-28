@@ -146,6 +146,18 @@ class WSMessage(BaseModel):
         )
 
     @classmethod
+    def prepare_queue_progress(cls, queue_status: dict):
+        """Состояние глобальной очереди prepare-data (Qwen enrichment).
+        Broadcast'ится глобально (все клиенты видят, не только подписчики проекта).
+        """
+        return cls(
+            type="prepare_queue_progress",
+            project="__prepare__",
+            timestamp=datetime.now().isoformat(),
+            data=queue_status,
+        )
+
+    @classmethod
     def finding_verdict(cls, project: str, finding_id: str, verdict: str,
                         details: str = "", suggested_action: Optional[str] = None):
         """Вердикт критика по замечанию."""

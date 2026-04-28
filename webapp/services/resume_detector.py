@@ -32,15 +32,11 @@ def detect_resume_stage(project_id: str) -> dict:
     has_02_blocks = (output_dir / "02_blocks_analysis.json").exists()
     has_01_text = (output_dir / "01_text_analysis.json").exists()
 
-    # V4 pipeline: typed_facts заменяют 02_blocks_analysis
-    has_typed_facts = any(output_dir.glob("typed_facts_batch_*.json"))
-
     # Legacy (тайлы)
     has_tile_batches = (output_dir / "tile_batches.json").exists()
     has_02_tiles = (output_dir / "02_tiles_analysis.json").exists()
 
-    # Объединённая проверка 02 (legacy OR v4)
-    has_02 = has_02_blocks or has_02_tiles or has_typed_facts
+    has_02 = has_02_blocks or has_02_tiles
 
     # Подсчёт завершённых батчей (блоки приоритет → тайлы fallback)
     completed_batches = 0

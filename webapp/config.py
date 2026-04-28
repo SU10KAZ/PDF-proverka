@@ -80,44 +80,113 @@ APP_PORT = 8080
 
 # Claude CLI — на Windows нужен полный путь, т.к. asyncio.create_subprocess_exec
 # не находит .cmd файлы по PATH (в отличие от subprocess с shell=True)
+def _is_usable_cli(path) -> bool:
+    """Путь существует, разрешается (не битый симлинк), является исполняемым файлом."""
+    if not path:
+        return False
+    try:
+        resolved = Path(path).resolve(strict=True)
+    except (FileNotFoundError, OSError):
+        return False
+    if not resolved.is_file():
+        return False
+    if resolved.suffix.lower() in (".cmd", ".bat", ".exe"):
+        return True
+    return os.access(str(resolved), os.X_OK)
+
+
+def _scan_vscode_claude() -> str | None:
+    """Найти свежайший claude-бинарь среди установленных расширений VSCode.
+
+    Расширение Claude Code автообновляется, и симлинк ~/.local/bin/claude может
+    указывать на удалённую старую версию. Этот скан подхватывает актуальную папку.
+    """
+    home = Path.home()
+    ext_dirs = [
+        home / ".vscode-server" / "extensions",
+        home / ".vscode" / "extensions",
+    ]
+    candidates: list[tuple[float, str]] = []
+    for ext_dir in ext_dirs:
+        if not ext_dir.exists():
+            continue
+        for d in ext_dir.glob("anthropic.claude-code-*"):
+            binary = d / "resources" / "native-binary" / "claude"
+            if _is_usable_cli(binary):
+                try:
+                    mtime = d.stat().st_mtime
+                except OSError:
+                    mtime = 0.0
+                candidates.append((mtime, str(binary)))
+    if not candidates:
+        return None
+    candidates.sort(reverse=True)
+    return candidates[0][1]
+
+
 def _find_claude_cli() -> str:
-    """Найти полный путь к Claude CLI."""
-    import pathlib
+    """Найти полный путь к Claude CLI (только usable-кандидаты)."""
     # 1. Через PATH
     found = shutil.which("claude")
-    if found:
+    if _is_usable_cli(found):
         return found
     # 2. Через расширенный PATH (включая ~/.local/bin которого нет у webapp)
-    extended_path = os.environ.get("PATH", "") + os.pathsep + str(pathlib.Path.home() / ".local" / "bin")
+    extended_path = os.environ.get("PATH", "") + os.pathsep + str(Path.home() / ".local" / "bin")
     found = shutil.which("claude", path=extended_path)
+    if _is_usable_cli(found):
+        return found
+    # 3. Расширение VSCode (актуальная версия после автообновления)
+    found = _scan_vscode_claude()
     if found:
         return found
-    # 3. Стандартные расположения Linux
+    # 4. Стандартные расположения Linux
     linux_paths = [
-        pathlib.Path.home() / ".local" / "bin" / "claude",
-        pathlib.Path("/usr/local/bin/claude"),
+        Path.home() / ".local" / "bin" / "claude",
+        Path("/usr/local/bin/claude"),
     ]
     for p in linux_paths:
-        if p.exists():
+        if _is_usable_cli(p):
             return str(p)
-    # 4. Стандартные расположения npm global на Windows
+    # 5. Стандартные расположения npm global на Windows
     npm_paths = [
-        pathlib.Path.home() / "AppData" / "Roaming" / "npm" / "claude.cmd",
-        pathlib.Path(r"C:\Program Files\nodejs\claude.cmd"),
+        Path.home() / "AppData" / "Roaming" / "npm" / "claude.cmd",
+        Path(r"C:\Program Files\nodejs\claude.cmd"),
     ]
     for p in npm_paths:
-        if p.exists():
+        if _is_usable_cli(p):
             return str(p)
-    # 5. Fallback
+    # 6. Fallback
     return "claude"
 
+
 CLAUDE_CLI = _find_claude_cli()
+
+
+def get_claude_cli() -> str:
+    """Вернуть рабочий путь к Claude CLI; перерешить, если кешированный битый.
+
+    CLAUDE_CLI вычисляется один раз при import'е. Если расширение VSCode обновилось
+    за время жизни webapp-процесса, симлинк может стать битым — здесь мы ловим это
+    и находим новый путь без рестарта.
+    """
+    global CLAUDE_CLI
+    if _is_usable_cli(CLAUDE_CLI):
+        return CLAUDE_CLI
+    CLAUDE_CLI = _find_claude_cli()
+    return CLAUDE_CLI
 
 # Timeout для Claude-сессий (секунды)
 CLAUDE_NORM_VERIFY_TIMEOUT = 600  # 10 мин на верификацию норм
 CLAUDE_NORM_FIX_TIMEOUT = 600     # 10 мин на пересмотр замечаний
 CLAUDE_OPTIMIZATION_TIMEOUT = 3600  # 60 мин на оптимизацию
 CLAUDE_TEXT_ANALYSIS_TIMEOUT = 1800   # 30 мин на анализ текста MD
+# Stage 02 (block_batch) запускает `claude -p` из чистой папки /tmp/sonnet_clean/ + stripped env,
+# чтобы не подгружать project CLAUDE.md, hooks, memory, skills (~47K input/блок harness'а).
+# Эмпирически (КЖ5.1, 25 блоков): −42% input/блок, −36% cli_cost, +35% findings.
+# Подробности — ideas.md (Идея 6) и memory/feedback_subscription_only.md.
+# Если на других дисциплинах (EOM/OV/AR) увидишь регрессии — выставь False.
+CLAUDE_BLOCK_BATCH_CLEAN_CWD = True
+
 CLAUDE_BLOCK_ANALYSIS_TIMEOUT = 1800  # 30 мин на пакет блоков (Opus CLI Vision медленнее GPT/Gemini)
 CLAUDE_FINDINGS_MERGE_TIMEOUT = 1800  # 30 мин на свод замечаний (02_blocks может быть >800KB)
 CLAUDE_FINDINGS_CRITIC_TIMEOUT = 1200  # 20 мин — critic чанк (до 50 findings) через CLI может занять 8-15 мин
@@ -219,11 +288,81 @@ def _save_stage_model_config():
 
 STAGE_MODEL_CONFIG: dict[str, str] = _load_stage_model_config()
 
+# ═══════════════════════════════════════════════════════════════════════════
+# Stage batch modes — расширенные режимы конкретных этапов.
+# Сейчас используется только для block_batch:
+#   "classic"                  — стандартный batched stage 02 (5-12 блоков на запрос)
+#   "findings_only_qwen_pair"  — single-block через GPT-5.4 + qwen-enrichment + extended categories
+# Персистится в webapp/data/stage_batch_modes.json.
+# ═══════════════════════════════════════════════════════════════════════════
+
+_STAGE_BATCH_MODE_DEFAULTS: dict[str, str] = {
+    "block_batch": "classic",
+}
+
+STAGE_BATCH_MODE_CHOICES: dict[str, list[str]] = {
+    "block_batch": ["classic", "findings_only_qwen_pair"],
+}
+
+_STAGE_BATCH_MODES_FILE = Path(__file__).resolve().parent / "data" / "stage_batch_modes.json"
+
+
+def _load_stage_batch_modes() -> dict[str, str]:
+    config = dict(_STAGE_BATCH_MODE_DEFAULTS)
+    if _STAGE_BATCH_MODES_FILE.exists():
+        try:
+            with open(_STAGE_BATCH_MODES_FILE, "r", encoding="utf-8") as f:
+                saved = json.load(f)
+            for stage, mode in saved.items():
+                if stage in config and mode in STAGE_BATCH_MODE_CHOICES.get(stage, []):
+                    config[stage] = mode
+            print(f"[config] Stage batch modes loaded from {_STAGE_BATCH_MODES_FILE.name}")
+        except Exception as e:
+            print(f"[config] Failed to load stage_batch_modes.json: {e}")
+    return config
+
+
+def _save_stage_batch_modes() -> None:
+    try:
+        _STAGE_BATCH_MODES_FILE.parent.mkdir(parents=True, exist_ok=True)
+        with open(_STAGE_BATCH_MODES_FILE, "w", encoding="utf-8") as f:
+            json.dump(STAGE_BATCH_MODES, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"[config] Failed to save stage_batch_modes.json: {e}")
+
+
+STAGE_BATCH_MODES: dict[str, str] = _load_stage_batch_modes()
+
+
+def get_stage_batch_mode(stage: str) -> str:
+    return STAGE_BATCH_MODES.get(stage, _STAGE_BATCH_MODE_DEFAULTS.get(stage, "classic"))
+
+
+def set_stage_batch_mode(stage: str, mode: str) -> bool:
+    """Возвращает True если режим установлен (валиден), иначе False."""
+    if stage not in STAGE_BATCH_MODE_CHOICES:
+        return False
+    if mode not in STAGE_BATCH_MODE_CHOICES[stage]:
+        return False
+    STAGE_BATCH_MODES[stage] = mode
+    _save_stage_batch_modes()
+    return True
+
+
+FLASH_PRO_TRIAGE_MODEL = "pair/gemini-2.5-flash+gemini-3.1-pro"
+FLASH_PRO_TRIAGE_MODELS = (
+    "google/gemini-2.5-flash",
+    "google/gemini-3.1-pro-preview",
+)
+
+CHANDRA_QWEN_MODEL = "qwen/qwen3.6-35b-a3b"
+LOCAL_LLM_MODELS = {CHANDRA_QWEN_MODEL}
+
 AVAILABLE_MODELS = [
-    {"id": "claude-opus-4-7", "label": "Opus 4.7 (CLI)", "provider": "claude_cli"},
-    {"id": "claude-sonnet-4-6", "label": "Sonnet (CLI)", "provider": "claude_cli"},
-    {"id": "openai/gpt-5.4", "label": "GPT-5.4", "provider": "openrouter"},
-    {"id": "google/gemini-3.1-pro-preview", "label": "Gemini", "provider": "openrouter"},
+    {"id": "claude-opus-4-7",            "label": "Opus 4.7 (CLI)",        "provider": "claude_cli"},
+    {"id": "claude-sonnet-4-6",          "label": "Sonnet (CLI)",           "provider": "claude_cli"},
+    {"id": "openai/gpt-5.4",             "label": "GPT-5.4",                "provider": "openrouter"},
+    {"id": "google/gemini-3.1-pro-preview", "label": "Gemini 3.1 Pro",      "provider": "openrouter"},
 ]
 
 # Этапы с ограничениями на выбор модели
@@ -233,15 +372,15 @@ STAGE_MODEL_RESTRICTIONS = {
     "block_batch": [
         "openai/gpt-5.4",
         "google/gemini-3.1-pro-preview",
-        "claude-opus-4-7",        # экспериментально — CLI + Vision
-        "claude-sonnet-4-6",      # экспериментально — CLI + Vision
+        "claude-opus-4-7",           # production — CLI + Vision
+        "claude-sonnet-4-6",         # экспериментально — CLI + Vision
     ],
 }
 
 # Подсказки при выборе модели для этапа (отображаются в UI)
 STAGE_MODEL_HINTS: dict[str, str] = {
     "text_analysis": "Opus CLI рекомендуется. Sonnet допустим.",
-    "block_batch": "Opus 4.7 CLI — production (r800 + baseline_p3, parallelism=3). GPT-5.4 / Gemini доступны через OpenRouter. Safe fallback: baseline_p2 (parallelism=2).",
+    "block_batch": "Opus 4.7 CLI — production (r800 + baseline_p3, parallelism=3). Альтернативы: GPT-5.4 (OpenRouter) или Gemini 3.1 Pro. Direct Gemini API скрыт из UI из-за гео-ограничений.",
     "findings_merge": "Минимум Opus CLI — межблочная сверка требует сильной модели.",
     "findings_critic": "GPT-5.4 оптимален: быстро и дёшево.",
     "findings_corrector": "Минимум Opus CLI. Sonnet не успевает (таймаут). GPT-5.4 — альтернатива.",
@@ -263,6 +402,11 @@ def is_claude_stage(stage: str) -> bool:
     """Проверить, должен ли этап выполняться через Claude CLI."""
     model = get_stage_model(stage)
     return model.startswith("claude-")
+
+
+def is_local_llm_model(model: str) -> bool:
+    """True для локальных моделей через Chandra/LM Studio."""
+    return model in LOCAL_LLM_MODELS
 
 def get_claude_model() -> str:
     """Модель по умолчанию (для обратной совместимости)."""
@@ -293,7 +437,7 @@ def get_stage_models() -> dict[str, str | None]:
     return dict(_stage_models)
 
 # Параллельная обработка батчей (общая — findings critic, tile batches и т.д.)
-MAX_PARALLEL_BATCHES = 5  # параллельных батчей
+MAX_PARALLEL_BATCHES = 2  # параллельных батчей
 
 # ─── Stage 02 block_batch: параллелизм по провайдеру ─────────────────────────
 # Claude CLI Vision (Opus 4.7): production winner = baseline_p3 (parallelism=3).
@@ -304,6 +448,7 @@ MAX_PARALLEL_BATCHES = 5  # параллельных батчей
 # ENV override: CLAUDE_BLOCK_BATCH_PARALLELISM=N — всё равно clamp до CAP.
 CLAUDE_BLOCK_BATCH_PARALLELISM_DEFAULT = 3  # production winner: baseline_p3
 CLAUDE_BLOCK_BATCH_PARALLELISM_CAP = 3
+LOCAL_BLOCK_BATCH_PARALLELISM_DEFAULT = 1
 
 
 def get_block_batch_parallelism(stage: str = "block_batch", model: str | None = None) -> int:
@@ -329,6 +474,17 @@ def get_block_batch_parallelism(stage: str = "block_batch", model: str | None = 
             except ValueError:
                 pass
         return min(max(1, value), CLAUDE_BLOCK_BATCH_PARALLELISM_CAP)
+    if is_local_llm_model(model):
+        value = LOCAL_BLOCK_BATCH_PARALLELISM_DEFAULT
+        env_val = os.environ.get("LOCAL_BLOCK_BATCH_PARALLELISM")
+        if env_val:
+            try:
+                parsed = int(env_val)
+                if parsed >= 1:
+                    value = parsed
+            except ValueError:
+                pass
+        return max(1, value)
     return MAX_PARALLEL_BATCHES
 
 # ─── Rate Limit: пауза вместо ошибки ───
@@ -371,9 +527,50 @@ OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 OPENROUTER_SITE_URL = "http://localhost:8080"
 OPENROUTER_SITE_NAME = "BIM Audit Pipeline"
 
+# === Chandra / LM Studio (локальные модели через OpenAI-compatible API) ===
+CHANDRA_BASE_URL = os.environ.get("CHANDRA_BASE_URL", "").rstrip("/")
+CHANDRA_API_BASE_URL = f"{CHANDRA_BASE_URL}/v1" if CHANDRA_BASE_URL else ""
+CHANDRA_BASIC_USER = os.environ.get("NGROK_AUTH_USER", "")
+CHANDRA_BASIC_PASS = os.environ.get("NGROK_AUTH_PASS", "")
+
 # === Модели OpenRouter ===
 GEMINI_MODEL = "google/gemini-3.1-pro-preview"
 GPT_MODEL = "openai/gpt-5.4"
+# Эмпирически безопасный потолок для текущей Chandra-машины:
+# 98_304 загружается стабильно, 100_352+ уже режется guardrails LM Studio.
+LOCAL_QWEN_CONTEXT_LENGTH = int(os.environ.get("LOCAL_QWEN_CONTEXT_LENGTH", "98304"))
+LOCAL_QWEN_MAX_OUTPUT_TOKENS = int(os.environ.get("LOCAL_QWEN_MAX_OUTPUT_TOKENS", "8192"))
+LOCAL_QWEN_FINDINGS_MAX_OUTPUT_TOKENS = int(
+    os.environ.get("LOCAL_QWEN_FINDINGS_MAX_OUTPUT_TOKENS", "16384")
+)
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Direct Gemini Developer API (параллельный путь, только для block_batch)
+# Активируется через env GEMINI_DIRECT_API_KEY.
+# НЕ подменяет OpenRouter/Claude CLI автоматически.
+# ═══════════════════════════════════════════════════════════════════════════
+
+GEMINI_DIRECT_API_KEY: str = (
+    os.environ.get("GEMINI_DIRECT_API_KEY", "")
+    or os.environ.get("GOOGLE_API_KEY", "")
+)
+
+# Маппинг внутренних/OpenRouter model IDs → Gemini Developer API native IDs
+GEMINI_DIRECT_MODEL_MAP: dict[str, str] = {
+    "google/gemini-2.5-flash":       "gemini-2.5-flash",
+    "google/gemini-2.5-flash-lite":  "gemini-2.5-flash-lite",
+    "google/gemini-3.1-pro-preview": "gemini-3.1-pro-preview",
+    "gemini-2.5-flash":              "gemini-2.5-flash",
+    "gemini-2.5-flash-lite":         "gemini-2.5-flash-lite",
+    "gemini-3.1-pro-preview":        "gemini-3.1-pro-preview",
+}
+
+# Mainline candidate for direct Gemini (set after Phase A quality gate).
+# Default: unset — production path remains unchanged until experiment completes.
+GEMINI_DIRECT_DEFAULT_MODEL: str = os.environ.get("GEMINI_DIRECT_MODEL", "gemini-2.5-flash")
+
+# Max output tokens for direct Gemini calls
+GEMINI_DIRECT_MAX_OUTPUT_TOKENS: int = 65536
 
 # === Per-stage модели (OpenRouter) ===
 STAGE_MODELS_OPENROUTER: dict[str, str] = {
@@ -416,3 +613,23 @@ DISCUSSION_MAX_OUTPUT_TOKENS = 16384
 DISCUSSION_TEMPERATURE = 0.3
 DISCUSSION_TIMEOUT = 120  # секунд на один запрос чата
 DISCUSSION_SUMMARY_THRESHOLD = 10  # после скольких сообщений сжимать историю
+
+# ═══════════════════════════════════════════════════════════════════════════
+# OpenRouter stage 02 (block_batch) experimental knobs.
+# Используются ТОЛЬКО экспериментальным runner'ом (scripts/run_gemini_openrouter_stage02_experiment.py).
+# Production OpenRouter path (llm_runner.run_llm) не переключается автоматически.
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Hard cap блоков в одном OpenRouter batch (stage 02). Абсолютный предел
+# независимо от профиля.
+OPENROUTER_STAGE02_HARD_CAP_BLOCKS = 12
+
+# Raw PNG payload cap per batch (KB). Если суммарный размер PNG превышает
+# лимит — deterministic split. 9000 KB — consensus safe для Gemini vision.
+OPENROUTER_STAGE02_RAW_BYTE_CAP_KB = 9000
+
+# Таймаут одного OpenRouter stage 02 запроса (секунды)
+OPENROUTER_STAGE02_TIMEOUT_SEC = 600
+
+# Максимум output токенов для stage 02 OpenRouter запросов
+OPENROUTER_STAGE02_MAX_OUTPUT_TOKENS = 32768

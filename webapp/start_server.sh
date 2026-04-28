@@ -18,9 +18,21 @@ fi
 rm -f "$SCRIPT_DIR/server.log" "$SCRIPT_DIR/server.err.log"
 
 cd "$ROOT_DIR"
-nohup python3 -m uvicorn webapp.main:app --host 0.0.0.0 --port $PORT --reload \
-    >"$SCRIPT_DIR/server.log" \
-    2>"$SCRIPT_DIR/server.err.log" &
+# В фоне запускаем БЕЗ --reload: reloader порождает дочерний процесс и
+# нестабилен для nohup/daemon-style запуска.
+# setsid + stdin from /dev/null уменьшают шанс, что процесс погибнет вместе
+# с родительской shell/PTY-сессией.
+if command -v setsid >/dev/null 2>&1; then
+    nohup setsid python3 -m uvicorn webapp.main:app --host 127.0.0.1 --port $PORT \
+        >"$SCRIPT_DIR/server.log" \
+        2>"$SCRIPT_DIR/server.err.log" \
+        </dev/null &
+else
+    nohup python3 -m uvicorn webapp.main:app --host 127.0.0.1 --port $PORT \
+        >"$SCRIPT_DIR/server.log" \
+        2>"$SCRIPT_DIR/server.err.log" \
+        </dev/null &
+fi
 SERVER_PID=$!
 echo $SERVER_PID > "$SCRIPT_DIR/server.pid"
 

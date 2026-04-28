@@ -25,11 +25,6 @@ class PipelineStatus(BaseModel):
     optimization_critic: str = "pending"    # pending / running / done / error / skipped
     optimization_corrector: str = "pending" # pending / running / done / error / skipped
     excel: str = "pending"                  # pending / running / done / error / skipped
-    # v4 pipeline — заменяет blocks_analysis + findings для v4-проектов
-    v4_extraction: str = "pending"          # pending / running / done / error / partial / skipped
-    v4_memory: str = "pending"              # pending / running / done / error / skipped
-    v4_candidates: str = "pending"          # pending / running / done / error / skipped
-    v4_formatter: str = "pending"           # pending / running / done / error / skipped
 
 
 class ProjectInfo(BaseModel):
@@ -43,8 +38,7 @@ class ProjectInfo(BaseModel):
     tile_config: dict = {}
     tile_quality: str = "standard"
     text_extraction_quality: Optional[TextExtractionQuality] = None
-    # Версия пайплайна: "v4" (fact-first, default) или "legacy" (block_analysis + findings_merge)
-    pipeline_version: str = "v4"
+    pipeline_version: str = "legacy"
 
 
 class ProjectStatus(BaseModel):
@@ -69,7 +63,7 @@ class ProjectStatus(BaseModel):
     findings_by_severity: dict[str, int] = {}
     optimization_count: int = 0
     optimization_by_type: dict[str, int] = {}
-    optimization_savings_pct: int = 0
+    optimization_savings_pct: float = 0
     last_audit_date: Optional[str] = None
     # Пакетный анализ тайлов
     total_batches: int = 0
@@ -83,7 +77,6 @@ class ProjectStatus(BaseModel):
     pipeline_summary: list[dict] = []
     # Проблемы конвейера (для индикатора на дашборде)
     pipeline_issues: list[str] = []
-    # Версия пайплайна ("legacy" или "v4")
     pipeline_version: str = "legacy"
     # Экспертная оценка: "complete" (все решения), "partial" (частично), "" (нет)
     expert_review_status: str = ""

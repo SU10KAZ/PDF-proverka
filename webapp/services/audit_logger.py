@@ -12,6 +12,24 @@ from webapp.models.audit import AuditJob
 from webapp.models.websocket import WSMessage
 from webapp.ws.manager import ws_manager
 
+# Канонический порядок этапов конвейера — дубликат _PIPELINE_STAGE_ORDER,
+# чтобы не создавать цикл импорта project_service ↔ audit_logger.
+_PIPELINE_STAGE_ORDER_KEYS = [
+    "crop_blocks",
+    "text_analysis",
+    "block_analysis",
+    "block_retry",
+    "findings_merge",
+    "findings_critic",
+    "findings_corrector",
+    "norm_verify",
+    "optimization",
+    "optimization_critic",
+    "optimization_corrector",
+    "excel",
+]
+_TERMINAL_STATUSES = {"done", "skipped", "error", "interrupted"}
+
 
 def update_pipeline_log(
     project_id: str,
@@ -43,9 +61,26 @@ def update_pipeline_log(
 
     if status == "running":
         stage_info["started_at"] = now
+        # completed_at от прошлого прогона нельзя оставлять: с ним UI считает, что
+        # этап «свежесделан», пока фактически только что запустился.
+        stage_info.pop("completed_at", None)
         stage_info.pop("error", None)
         stage_info.pop("detail", None)
         stage_info.pop("interrupted_at", None)
+        # Новый запуск этапа не должен наследовать usage от прошлого прогона.
+        stage_info.pop("input_tokens", None)
+        stage_info.pop("output_tokens", None)
+        stage_info.pop("model", None)
+        # Cascade: этапы ниже по конвейеру, завершённые в прошлом прогоне,
+        # больше не валидны. Удаляем только терминальные (done/error/skipped/
+        # interrupted) — running/pending не трогаем, чтобы не мешать параллельным
+        # этапам, которые стартуют одновременно.
+        if stage_key in _PIPELINE_STAGE_ORDER_KEYS:
+            idx = _PIPELINE_STAGE_ORDER_KEYS.index(stage_key)
+            for downstream in _PIPELINE_STAGE_ORDER_KEYS[idx + 1:]:
+                ds_info = log_data["stages"].get(downstream)
+                if ds_info and ds_info.get("status") in _TERMINAL_STATUSES:
+                    log_data["stages"].pop(downstream, None)
     elif status in ("done", "skipped"):
         stage_info["completed_at"] = now
         # Очистить ложные ошибки от recovery (если этап успешно завершился)
@@ -79,6 +114,57 @@ def update_pipeline_log(
         )
     except Exception:
         pass  # WS broadcast не должен ломать основной процесс
+
+
+def reset_audit_log(project_id: str) -> None:
+    """Архивировать audit_log.jsonl при старте свежего прогона.
+
+    Старый файл переименовывается в audit_log_<timestamp>.jsonl (timestamp =
+    время первой записи прошлого прогона, чтобы имя отражало когда он начат).
+    Вызывается из start_audit / start_smart_audit / start_flash_pro_triage
+    и из batch-loop для fresh-start экшнов (full/audit/standard/pro).
+    Resume / retry / optimization / prepare-data не архивируют — продолжают
+    писать в тот же файл (это «дозапуски» текущего прогона).
+    """
+    try:
+        log_path = resolve_project_dir(project_id) / "_output" / "audit_log.jsonl"
+        if not log_path.exists():
+            return
+        ts = _read_first_timestamp(log_path) or datetime.fromtimestamp(
+            log_path.stat().st_mtime
+        ).isoformat()
+        # Безопасно для FS: убрать двоеточия и точки
+        slug = ts.replace(":", "-").replace(".", "-")
+        archive = log_path.with_name(f"audit_log_{slug}.jsonl")
+        # На случай коллизии (двойной reset в одну секунду) добавим суффикс
+        n = 1
+        while archive.exists():
+            archive = log_path.with_name(f"audit_log_{slug}_{n}.jsonl")
+            n += 1
+        log_path.rename(archive)
+    except OSError:
+        pass
+
+
+def _read_first_timestamp(path: Path) -> str | None:
+    """Достать timestamp первой валидной записи jsonl. None если файл пустой/битый."""
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    obj = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                ts = obj.get("timestamp")
+                if isinstance(ts, str) and ts:
+                    return ts
+                return None
+    except OSError:
+        return None
+    return None
 
 
 def persist_log(project_id: str, message: str, level: str, stage: str,

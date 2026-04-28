@@ -338,11 +338,6 @@ const app = createApp({
             'optimization_critic': 'optimization_critic',
             'optimization_corrector': 'optimization_corrector',
             'excel': 'excel',
-            // V4 pipeline stages
-            'v4_extraction': 'v4_extraction',
-            'v4_memory': 'v4_memory',
-            'v4_candidates': 'v4_candidates',
-            'v4_formatter': 'v4_formatter',
         };
 
         function stageTokens(pipelineKey) {
@@ -397,11 +392,192 @@ const app = createApp({
             return hr + 'ч' + (remMin > 0 ? remMin + 'м' : '');
         }
 
+        // ETA в секундах → "15м 22с" или "1ч 5м"
+        function formatEta(seconds) {
+            if (seconds === null || seconds === undefined) return '';
+            const sec = Math.max(0, Math.round(seconds));
+            if (sec < 60) return sec + 'с';
+            const min = Math.floor(sec / 60);
+            const remSec = sec % 60;
+            if (min < 60) return min + 'м' + (remSec > 0 ? ' ' + remSec + 'с' : '');
+            const hr = Math.floor(min / 60);
+            const remMin = min % 60;
+            return hr + 'ч' + (remMin > 0 ? ' ' + remMin + 'м' : '');
+        }
+
+        // ─── Prepare-data queue (Qwen enrichment) ───────────────────────
+        async function fetchPrepareQueue() {
+            try {
+                const r = await fetch('/api/audit/prepare-data/queue');
+                if (!r.ok) return;
+                prepareQueue.value = await r.json();
+            } catch (e) { /* ignore */ }
+        }
+
+        async function clearPrepareQueue() {
+            try {
+                const r = await fetch('/api/audit/prepare-data/queue/clear', {method: 'POST'});
+                if (r.ok) {
+                    await fetchPrepareQueue();
+                }
+            } catch (e) {
+                console.error('clearPrepareQueue:', e);
+            }
+        }
+
+        async function preparePause() {
+            try {
+                await fetch('/api/audit/prepare-data/queue/pause', {method: 'POST'});
+                await fetchPrepareQueue();
+            } catch (e) { console.error('preparePause:', e); }
+        }
+
+        async function prepareResume() {
+            try {
+                await fetch('/api/audit/prepare-data/queue/resume', {method: 'POST'});
+                await fetchPrepareQueue();
+            } catch (e) { console.error('prepareResume:', e); }
+        }
+
+        async function prepareCancel() {
+            if (!confirm('Остановить подготовку данных?\n\n• Pending проекты пометятся как пропущенные.\n• Текущий блок дойдёт до конца, потом остановка.\n• Что уже обогащено — сохранится.')) return;
+            try {
+                await fetch('/api/audit/prepare-data/queue/cancel', {method: 'POST'});
+                await fetchPrepareQueue();
+            } catch (e) { console.error('prepareCancel:', e); }
+        }
+
+        // ─── LM Studio remote management ───────────────────────────────
+        function _lmsSetMsg(kind, text) {
+            lmsMessage.value = { kind, text };
+            setTimeout(() => { if (lmsMessage.value && lmsMessage.value.text === text) lmsMessage.value = null; }, 6000);
+        }
+
+        async function lmsRefresh() {
+            lmsLoading.value = true;
+            try {
+                const [r1, r2] = await Promise.all([
+                    fetch('/api/lms/models/loaded'),
+                    fetch('/api/lms/models/all'),
+                ]);
+                if (!r1.ok || !r2.ok) {
+                    const err = await r1.json().catch(() => ({}));
+                    _lmsSetMsg('error', err.detail || 'Ошибка получения списка моделей');
+                    return;
+                }
+                const d1 = await r1.json();
+                const d2 = await r2.json();
+                lmsLoaded.value = d1.loaded || [];
+                lmsAll.value = d2.models || [];
+                // Заполнить дефолты context_length для каждой модели
+                for (const m of lmsAll.value) {
+                    if (lmsLoadCtx.value[m.id] === undefined) {
+                        lmsLoadCtx.value[m.id] = m.loaded_context_length || 16384;
+                    }
+                }
+            } catch (e) {
+                _lmsSetMsg('error', `Сеть: ${e.message}`);
+            } finally {
+                lmsLoading.value = false;
+            }
+        }
+
+        async function lmsLoad(modelId) {
+            const ctx = parseInt(lmsLoadCtx.value[modelId] || 16384, 10);
+            if (!ctx || ctx < 256) { _lmsSetMsg('error', 'Некорректный context_length'); return; }
+            lmsLoading.value = true;
+            try {
+                const r = await fetch('/api/lms/models/load', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({model_key: modelId, context_length: ctx}),
+                });
+                const data = await r.json();
+                if (!r.ok) { _lmsSetMsg('error', data.detail || `HTTP ${r.status}`); return; }
+                _lmsSetMsg('ok', `Загружено: ${data.identifier} (ctx=${data.context_length})`);
+                await lmsRefresh();
+            } catch (e) {
+                _lmsSetMsg('error', `Сеть: ${e.message}`);
+            } finally { lmsLoading.value = false; }
+        }
+
+        async function lmsUnload(identifier) {
+            if (!confirm(`Выгрузить ${identifier}?`)) return;
+            lmsLoading.value = true;
+            try {
+                const r = await fetch('/api/lms/models/unload', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({identifier}),
+                });
+                const data = await r.json();
+                if (!r.ok) { _lmsSetMsg('error', data.detail || `HTTP ${r.status}`); return; }
+                _lmsSetMsg('ok', `Выгружено: ${identifier}`);
+                await lmsRefresh();
+            } catch (e) {
+                _lmsSetMsg('error', `Сеть: ${e.message}`);
+            } finally { lmsLoading.value = false; }
+        }
+
+        async function lmsReload(modelId) {
+            const ctx = parseInt(lmsLoadCtx.value[modelId] || 16384, 10);
+            if (!ctx || ctx < 256) { _lmsSetMsg('error', 'Некорректный context_length'); return; }
+            if (!confirm(`Выгрузить ВСЕ instance'ы ${modelId} и загрузить заново с context=${ctx}?`)) return;
+            lmsLoading.value = true;
+            try {
+                const r = await fetch(`/api/lms/models/${encodeURIComponent(modelId)}/reload?context_length=${ctx}`, {method: 'POST'});
+                const data = await r.json();
+                if (!r.ok) { _lmsSetMsg('error', data.detail || `HTTP ${r.status}`); return; }
+                _lmsSetMsg('ok', `Reload: выгружено ${data.unloaded}, загружено ${data.identifier} (ctx=${data.context_length})`);
+                await lmsRefresh();
+            } catch (e) {
+                _lmsSetMsg('error', `Сеть: ${e.message}`);
+            } finally { lmsLoading.value = false; }
+        }
+
+        function lmsApplyPresetCtx(ctx) {
+            // Применить пресет ко всем моделям в форме (заполнит inputs)
+            for (const m of lmsAll.value) {
+                lmsLoadCtx.value[m.id] = ctx;
+            }
+            _lmsSetMsg('ok', `Применён context=${ctx} ко всем формам. Нажмите «Загрузить» у нужной модели.`);
+        }
+
+        async function lmsCheckHealth() {
+            try {
+                const r = await fetch('/api/lms/health');
+                if (!r.ok) {
+                    lmsHealth.value = null;
+                    return;
+                }
+                lmsHealth.value = await r.json();
+                lmsHealthCheckedAt.value = Date.now();
+            } catch (e) {
+                lmsHealth.value = null;
+            }
+        }
+
+        function startLmsHealthPolling() {
+            if (lmsHealthTimer) return;
+            lmsCheckHealth();  // immediate
+            lmsHealthTimer = setInterval(lmsCheckHealth, 30000);  // every 30s
+        }
+
+        function stopLmsHealthPolling() {
+            if (lmsHealthTimer) { clearInterval(lmsHealthTimer); lmsHealthTimer = null; }
+        }
+
         const currentProjectUsage = computed(() => {
             if (!currentProject.value) return null;
             const u = projectUsage.value[currentProject.value.project_id];
             return (u && u.total_tokens > 0) ? u : null;
         });
+
+        function usagePaidCost(usage) {
+            return Number(usage?.paid_cost_usd ?? usage?.total_cost_usd ?? 0);
+        }
+
+        function usageFreeCost(usage) {
+            return Number(usage?.free_cost_usd ?? usage?.notional_cost_usd ?? 0);
+        }
 
         const pipelineTotalDuration = computed(() => {
             if (!currentProject.value) return null;
@@ -531,8 +707,10 @@ const app = createApp({
         function stageLabel(stage) {
             const labels = {
                 'crop_blocks': 'Кроп блоков',
+                'qwen_enrichment': 'Подготовка (Qwen-обогащение MD)',
                 'text_analysis': 'Анализ текста',
                 'block_analysis': 'Анализ блоков',
+                'flash_pro_triage': 'Flash+Pro Triage',
                 'findings_merge': 'Свод замечаний',
                 'norm_verify': 'Верификация норм',
                 'norm_fix': 'Пересмотр замечаний',
@@ -688,7 +866,7 @@ const app = createApp({
         }
 
         async function clearUsageCounter() {
-            if (!confirm('Очистить все записи usage? Счётчики на карточках проектов обнулятся.')) return;
+            if (!confirm('Обнулить отображаемые счётчики (Сессия / Все / Sonnet) и записи проектов?')) return;
             try {
                 const resp = await fetch('/api/usage/clear-all', { method: 'POST' });
                 if (resp.ok) {
@@ -696,6 +874,64 @@ const app = createApp({
                 }
             } catch (e) {
                 console.error('Failed to clear usage:', e);
+            }
+        }
+
+        async function editUsagePercent(scope, currentPct) {
+            const labels = {
+                session_5h: 'Сессия (5ч)',
+                weekly_all: 'Все модели (неделя)',
+                weekly_sonnet: 'Sonnet (неделя)',
+            };
+            const label = labels[scope] || scope;
+            const cur = Math.round(Number(currentPct) || 0);
+            const raw = window.prompt(
+                `${label}: введите процент (0–100).\n` +
+                `Сейчас: ${cur}%. Поправит счётчик под значение из аккаунта Anthropic.`,
+                String(cur)
+            );
+            if (raw === null) return;
+            const trimmed = String(raw).trim();
+            if (!trimmed) return;
+            const pct = Number(trimmed.replace(',', '.').replace('%', ''));
+            if (!Number.isFinite(pct) || pct < 0 || pct > 100) {
+                alert('Нужно число от 0 до 100');
+                return;
+            }
+            try {
+                const resp = await fetch('/api/usage/global/set-percent', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ scope, percent: pct }),
+                });
+                if (resp.ok) {
+                    const data = await resp.json();
+                    if (data && data.counters) {
+                        globalUsage.value = data.counters;
+                    } else {
+                        await refreshGlobalUsage();
+                    }
+                } else {
+                    const txt = await resp.text();
+                    alert('Не удалось сохранить: ' + txt);
+                }
+            } catch (e) {
+                console.error('Failed to set percent:', e);
+                alert('Ошибка: ' + e.message);
+            }
+        }
+
+        async function resetUsageOffsets() {
+            if (!confirm('Показывать «как есть» (сбросить ручные правки процентов)?')) return;
+            try {
+                const resp = await fetch('/api/usage/global/reset-offsets', { method: 'POST' });
+                if (resp.ok) {
+                    const data = await resp.json();
+                    if (data && data.counters) globalUsage.value = data.counters;
+                    else await refreshGlobalUsage();
+                }
+            } catch (e) {
+                console.error('Failed to reset offsets:', e);
             }
         }
 
@@ -740,36 +976,52 @@ const app = createApp({
                 currentView.value = 'queue';
                 connectGlobalWS();
                 refreshBatchQueue();
+                fetchPrepareQueue();   // подгрузить prepare-data queue
                 refreshProjects();  // для списка добавления
+            } else if (hash === '/lms') {
+                currentView.value = 'lms';
+                connectGlobalWS();
+                lmsRefresh();
+            } else if (hash === '/model-control') {
+                currentView.value = 'model-control';
+                connectGlobalWS();
             } else if (hash === '/') {
                 currentView.value = 'dashboard';
+                sidebarFilterSection.value = null;
                 connectGlobalWS();  // Вернуться на global WS
                 refreshProjects();
-            } else if (hash.match(/^\/project\/([^/]+)\/findings$/)) {
-                const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/findings$/)[1]);
+            } else if (hash.match(/^\/section\/(.+)$/)) {
+                const code = decodeURIComponent(hash.match(/^\/section\/(.+)$/)[1]);
+                currentView.value = 'dashboard';
+                sidebarFilterSection.value = code;
+                sidebarSectionsOpen.value = true;
+                connectGlobalWS();
+                refreshProjects();
+            } else if (hash.match(/^\/project\/(.+)\/findings$/)) {
+                const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/findings$/)[1]);
                 currentView.value = 'findings';
                 currentProjectId.value = id;
                 connectGlobalWS();
                 loadProject(id);
                 loadFindings(id);
                 loadExpertDecisions();
-            } else if (hash.match(/^\/project\/([^/]+)\/blocks$/)) {
-                const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/blocks$/)[1]);
+            } else if (hash.match(/^\/project\/(.+)\/blocks$/)) {
+                const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/blocks$/)[1]);
                 currentView.value = 'blocks';
                 currentProjectId.value = id;
                 connectGlobalWS();
                 loadProject(id);
                 loadBlocks(id);
-            } else if (hash.match(/^\/project\/([^/]+)\/optimization$/)) {
-                const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/optimization$/)[1]);
+            } else if (hash.match(/^\/project\/(.+)\/optimization$/)) {
+                const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/optimization$/)[1]);
                 currentView.value = 'optimization';
                 currentProjectId.value = id;
                 connectGlobalWS();
                 loadProject(id);
                 loadOptimization(id);
                 loadExpertDecisions();
-            } else if (hash.match(/^\/project\/([^/]+)\/discussions\/([^/]+)$/)) {
-                const m = hash.match(/^\/project\/([^/]+)\/discussions\/([^/]+)$/);
+            } else if (hash.match(/^\/project\/(.+)\/discussions\/([^/]+)$/)) {
+                const m = hash.match(/^\/project\/(.+)\/discussions\/([^/]+)$/);
                 const id = decodeURIComponent(m[1]);
                 const itemId = decodeURIComponent(m[2]);
                 currentView.value = 'discussions';
@@ -780,8 +1032,8 @@ const app = createApp({
                 loadProject(id);
                 loadDiscussionModels();
                 loadDiscussionItems(id, discussionTab.value).then(() => openDiscussion(id, itemId));
-            } else if (hash.match(/^\/project\/([^/]+)\/discussions$/)) {
-                const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/discussions$/)[1]);
+            } else if (hash.match(/^\/project\/(.+)\/discussions$/)) {
+                const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/discussions$/)[1]);
                 currentView.value = 'discussions';
                 currentProjectId.value = id;
                 activeDiscussion.value = null;
@@ -790,15 +1042,15 @@ const app = createApp({
                 loadProject(id);
                 loadDiscussionModels();
                 loadDiscussionItems(id, discussionTab.value);
-            } else if (hash.match(/^\/project\/([^/]+)\/document$/)) {
-                const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/document$/)[1]);
+            } else if (hash.match(/^\/project\/(.+)\/document$/)) {
+                const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/document$/)[1]);
                 currentView.value = 'document';
                 currentProjectId.value = id;
                 connectGlobalWS();
                 loadProject(id);
                 loadDocument(id);
-            } else if (hash.match(/^\/project\/([^/]+)\/prompts$/)) {
-                const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/prompts$/)[1]);
+            } else if (hash.match(/^\/project\/(.+)\/prompts$/)) {
+                const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/prompts$/)[1]);
                 currentView.value = 'prompts';
                 currentProjectId.value = id;
                 promptsProjectId.value = id;
@@ -811,8 +1063,8 @@ const app = createApp({
                     promptsDiscipline.value = section;
                     loadTemplates(section);
                 });
-            } else if (hash.match(/^\/project\/([^/]+)\/log$/)) {
-                const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)\/log$/)[1]);
+            } else if (hash.match(/^\/project\/(.+)\/log$/)) {
+                const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/log$/)[1]);
                 currentView.value = 'log';
                 currentProjectId.value = id;
                 logProjectId.value = id;
@@ -822,9 +1074,10 @@ const app = createApp({
                     loadProjectLog(id);
                 }
                 connectProjectWS(id);  // Project WS только для лога
-            } else if (hash.match(/^\/project\/([^/]+)$/)) {
-                const id = decodeURIComponent(hash.match(/^\/project\/([^/]+)$/)[1]);
+            } else if (hash.match(/^\/project\/(.+)$/)) {
+                const id = decodeURIComponent(hash.match(/^\/project\/(.+)$/)[1]);
                 currentView.value = 'project';
+                currentProjectId.value = id;
                 connectGlobalWS();  // Не нужен project WS
                 loadProject(id);
             }
@@ -835,6 +1088,42 @@ const app = createApp({
         const selectAllChecked = ref(false);
         const batchRunning = ref(false);
         const batchQueue = ref(null);
+        const prepareQueue = ref(null);  // Qwen enrichment queue (см. prepare_service.py)
+        // ─── LM Studio remote management ───
+        const lmsLoaded = ref([]);       // загруженные сейчас instance'ы
+        const lmsAll = ref([]);          // все скачанные модели
+        const lmsLoadCtx = ref({});      // {model_id: ctx_value} — для inputs в таблице
+        const lmsLoading = ref(false);
+        const lmsMessage = ref(null);    // {kind: 'error'|'ok', text}
+        const lmsHealth = ref(null);     // {health: {alive, latency_ms, ...}, inflight: {...}, loaded_count}
+        const lmsHealthCheckedAt = ref(null);  // timestamp ms последней проверки
+        let lmsHealthTimer = null;       // setInterval handle для periodic poll
+
+        const lmsHealthStatus = computed(() => {
+            const h = lmsHealth.value;
+            if (!h) return 'unknown';
+            if (!h.loaded_count || h.loaded_count === 0) return 'unloaded';
+            if (h.health && h.health.alive === false) return 'error';
+            if (h.inflight && h.inflight.total_active > 0) return 'busy';
+            if (h.health && h.health.alive === true) return 'ok';
+            return 'unknown';
+        });
+
+        const lmsHealthTitle = computed(() => {
+            const h = lmsHealth.value;
+            if (!h) return 'LM Studio: проверка...';
+            const status = lmsHealthStatus.value;
+            if (status === 'ok') {
+                return `LM Studio: работает (${h.health.latency_ms} ms)`;
+            } else if (status === 'busy') {
+                return `LM Studio: занята (${h.inflight.total_active} активных запросов)`;
+            } else if (status === 'unloaded') {
+                return 'LM Studio: нет загруженной модели';
+            } else if (status === 'error') {
+                return `LM Studio: ${h.health.error || 'не отвечает'}`;
+            }
+            return 'LM Studio: статус неизвестен';
+        });
         const showBatchModal = ref(false);
         const batchMode = ref('audit');   // audit
         const batchScope = ref('audit');     // audit | optimization | both
@@ -857,6 +1146,7 @@ const app = createApp({
             findings_merge: "03 Свод",
             findings_critic: "C Critic",
             findings_corrector: "F Fix",
+            norm_verify: "04 Нормы",
             norm_fix: "04b Пересмотр",
             optimization: "05 Оптимизация",
             optimization_critic: "C OPT Critic",
@@ -865,73 +1155,154 @@ const app = createApp({
 
         const stageModelRestrictions = ref({});
         const stageModelHints = ref({});
+        const blockFlashProPairValue = 'pair/gemini-2.5-flash+gemini-3.1-pro';
+        const blockFlashProPairModels = [
+            'google/gemini-2.5-flash',
+            'google/gemini-3.1-pro-preview',
+        ];
 
         const modelPresets = {
             classic: {
                 label: "Классический",
-                pipelineV4: false,
+                hint: "Смешанный production-профиль: Claude на сложных этапах, отдельные стадии можно удешевлять.",
                 config: {
                     text_analysis:          "claude-opus-4-7",
                     block_batch:            "google/gemini-3.1-pro-preview",
                     findings_merge:         "claude-opus-4-7",
                     findings_critic:        "claude-sonnet-4-6",
-                    findings_corrector:     "claude-opus-4-7",
-                    norm_verify:            "claude-opus-4-7",
-                    norm_fix:               "claude-opus-4-7",
+                    findings_corrector:     "claude-sonnet-4-6",
+                    norm_verify:            "claude-sonnet-4-6",
+                    norm_fix:               "claude-sonnet-4-6",
                     optimization:           "claude-opus-4-7",
                     optimization_critic:    "claude-sonnet-4-6",
                     optimization_corrector: "claude-sonnet-4-6",
                 },
+                batchModes: { block_batch: "classic" },
             },
-            subscription: {
-                label: "Подписка",
-                pipelineV4: false,
+            findings_only: {
+                label: "Qwen+GPT5.4",
+                hint: "Stage 02: single-block GPT-5.4 + qwen-обогащение + extended categories. Требует «Подготовить данные» с Qwen-enrichment.",
                 config: {
                     text_analysis:          "claude-opus-4-7",
-                    block_batch:            "claude-opus-4-7",
+                    block_batch:            "openai/gpt-5.4",
                     findings_merge:         "claude-opus-4-7",
-                    findings_critic:        "claude-opus-4-7",
-                    findings_corrector:     "claude-opus-4-7",
-                    norm_verify:            "claude-opus-4-7",
-                    norm_fix:               "claude-opus-4-7",
+                    findings_critic:        "claude-sonnet-4-6",
+                    findings_corrector:     "claude-sonnet-4-6",
+                    norm_verify:            "claude-sonnet-4-6",
+                    norm_fix:               "claude-sonnet-4-6",
                     optimization:           "claude-opus-4-7",
-                    optimization_critic:    "claude-opus-4-7",
-                    optimization_corrector: "claude-opus-4-7",
+                    optimization_critic:    "claude-sonnet-4-6",
+                    optimization_corrector: "claude-sonnet-4-6",
                 },
+                batchModes: { block_batch: "findings_only_qwen_pair" },
             },
-            v4: {
-                label: "V4",
-                pipelineV4: true,
+            qwen_sonnet: {
+                label: "Qwen+Sonett CLI",
+                hint: "Stage 02: single-block Sonnet (CLI subscription) + qwen-обогащение + extended categories. Требует «Подготовить данные» с Qwen-enrichment.",
                 config: {
                     text_analysis:          "claude-opus-4-7",
-                    block_batch:            "claude-opus-4-7",
+                    block_batch:            "claude-sonnet-4-6",
                     findings_merge:         "claude-opus-4-7",
-                    findings_critic:        "claude-opus-4-7",
-                    findings_corrector:     "claude-opus-4-7",
-                    norm_verify:            "claude-opus-4-7",
-                    norm_fix:               "claude-opus-4-7",
+                    findings_critic:        "claude-sonnet-4-6",
+                    findings_corrector:     "claude-sonnet-4-6",
+                    norm_verify:            "claude-sonnet-4-6",
+                    norm_fix:               "claude-sonnet-4-6",
                     optimization:           "claude-opus-4-7",
-                    optimization_critic:    "claude-opus-4-7",
-                    optimization_corrector: "claude-opus-4-7",
+                    optimization_critic:    "claude-sonnet-4-6",
+                    optimization_corrector: "claude-sonnet-4-6",
                 },
+                batchModes: { block_batch: "findings_only_qwen_pair" },
             },
         };
         const activePreset = ref(null);
+        const activePresetHint = computed(() => {
+            const key = activePreset.value;
+            return key ? (modelPresets[key]?.hint || '') : '';
+        });
+        const stageBatchModes = ref({});  // { block_batch: "classic" | "findings_only_qwen_pair" }
+        const stageBatchModeChoices = ref({});
+
+        // Модели, совместимые с findings_only_qwen_pair режимом (OpenRouter + Claude CLI subscription).
+        const findingsOnlyCompatibleBlockModels = [
+            'openai/gpt-5.4',
+            'google/gemini-3.1-pro-preview',
+            'claude-sonnet-4-6',
+            'claude-opus-4-7',
+        ];
+
+        function isFindingsOnlyMode() {
+            return stageBatchModes.value?.block_batch === 'findings_only_qwen_pair';
+        }
+
+        function getMatchingPresetKey(config, batchModes) {
+            return Object.entries(modelPresets).find(([, preset]) => {
+                const cfgMatch = Object.entries(preset.config).every(([stageKey, modelId]) => config?.[stageKey] === modelId);
+                if (!cfgMatch) return false;
+                const presetModes = preset.batchModes || {};
+                return Object.entries(presetModes).every(([stage, mode]) => (batchModes?.[stage] || 'classic') === mode);
+            })?.[0] || null;
+        }
 
         function applyPreset(presetKey) {
             const preset = modelPresets[presetKey];
             if (!preset) return;
             stageModelConfig.value = { ...preset.config };
+            stageBatchModes.value = { ...(preset.batchModes || { block_batch: 'classic' }) };
             activePreset.value = presetKey;
-            if (typeof preset.pipelineV4 === "boolean") {
-                pendingPipelineV4.value = preset.pipelineV4;
-            }
         }
 
         function isModelAllowed(stageKey, modelId) {
             const r = stageModelRestrictions.value[stageKey];
-            if (!r) return true;
-            return r.includes(modelId);
+            if (r && !r.includes(modelId)) return false;
+            // findings_only_qwen_pair: для block_batch разрешены только OpenRouter-модели
+            if (stageKey === 'block_batch' && isFindingsOnlyMode()) {
+                return findingsOnlyCompatibleBlockModels.includes(modelId);
+            }
+            return true;
+        }
+
+        function isBlockFlashProPairCandidate(stageKey, modelId) {
+            return stageKey === 'block_batch' && blockFlashProPairModels.includes(modelId);
+        }
+
+        function modelInputType(stageKey, modelId) {
+            return isBlockFlashProPairCandidate(stageKey, modelId) ? 'checkbox' : 'radio';
+        }
+
+        function isStageModelChecked(stageKey, modelId) {
+            const selected = stageModelConfig.value[stageKey];
+            if (stageKey === 'block_batch' && selected === blockFlashProPairValue) {
+                return blockFlashProPairModels.includes(modelId);
+            }
+            return selected === modelId;
+        }
+
+        function selectStageModel(stageKey, modelId, event) {
+            if (!isBlockFlashProPairCandidate(stageKey, modelId)) {
+                stageModelConfig.value[stageKey] = modelId;
+                return;
+            }
+
+            const checked = !!event?.target?.checked;
+            const current = stageModelConfig.value[stageKey];
+            const otherModel = blockFlashProPairModels.find(id => id !== modelId);
+
+            if (current === blockFlashProPairValue) {
+                stageModelConfig.value[stageKey] = checked ? blockFlashProPairValue : otherModel;
+                return;
+            }
+
+            if (current === otherModel && checked) {
+                stageModelConfig.value[stageKey] = blockFlashProPairValue;
+                return;
+            }
+
+            if (current === modelId && !checked) {
+                stageModelConfig.value[stageKey] = modelId;
+                return;
+            }
+
+            stageModelConfig.value[stageKey] = modelId;
         }
 
         async function loadStageModels() {
@@ -941,6 +1312,16 @@ const app = createApp({
                 availableModels.value = data.available_models || [];
                 stageModelRestrictions.value = data.restrictions || {};
                 stageModelHints.value = data.hints || {};
+                // Параллельно подгружаем batch-modes (классический / findings_only_qwen_pair)
+                try {
+                    const bm = await api('/audit/model/batch-modes');
+                    stageBatchModes.value = bm.modes || { block_batch: 'classic' };
+                    stageBatchModeChoices.value = bm.choices || {};
+                } catch (_) {
+                    stageBatchModes.value = { block_batch: 'classic' };
+                    stageBatchModeChoices.value = {};
+                }
+                activePreset.value = getMatchingPresetKey(stageModelConfig.value, stageBatchModes.value);
             } catch (e) {
                 console.error('Failed to load stage models:', e);
             }
@@ -949,6 +1330,7 @@ const app = createApp({
         async function saveStageModels() {
             try {
                 await apiPost('/audit/model/stages', stageModelConfig.value);
+                await apiPost('/audit/model/batch-modes', stageBatchModes.value);
             } catch (e) {
                 console.error('Failed to save stage models:', e);
             }
@@ -958,75 +1340,22 @@ const app = createApp({
         const pendingRetryStage = ref(null);
         // pendingActionFn: произвольный callback, выполняется после сохранения моделей (приоритет над retryStage/pid)
         const pendingActionFn = ref(null);
-        // v4 pipeline toggle — выбирается пользователем в модалке "Конфигурация моделей"
-        const pendingPipelineV4 = ref(false);
-        // Чтобы знать изначальный state и только сохранять на изменение
-        const _initialPipelineV4 = ref(false);
-
-        function openModelConfig(projectId, retryStage = null, afterSaveFn = null) {
+        function openModelConfig(projectId, retryStage = null, afterSaveFn = null, presetKey = null) {
             modelConfigPendingProjectId.value = projectId;
             pendingRetryStage.value = retryStage;
             pendingActionFn.value = afterSaveFn;
 
-            // Узнать текущий pipeline_version проекта
-            pendingPipelineV4.value = false;
-            _initialPipelineV4.value = false;
-            if (projectId) {
-                const proj = projects.value.find(p => p.project_id === projectId);
-                if (proj && proj.pipeline_version === "v4") {
-                    pendingPipelineV4.value = true;
-                    _initialPipelineV4.value = true;
-                }
-            }
-
             loadStageModels().then(() => {
+                if (presetKey) {
+                    applyPreset(presetKey);
+                }
                 showModelConfig.value = true;
             });
         }
 
-        function onV4ToggleChange() {
-            // Ничего не делаем — просто обновляем state, сохранение при старте аудита
-        }
-
-        async function _persistPipelineVersion(projectId) {
-            // Сохранить только если изменилось
-            if (pendingPipelineV4.value === _initialPipelineV4.value) return;
-            const version = pendingPipelineV4.value ? "v4" : "legacy";
-            try {
-                const resp = await fetch(`/api/projects/${encodeURIComponent(projectId)}/pipeline-version`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ pipeline_version: version }),
-                });
-                if (!resp.ok) {
-                    const err = await resp.json().catch(() => ({}));
-                    throw new Error(err.detail || `HTTP ${resp.status}`);
-                }
-                _initialPipelineV4.value = pendingPipelineV4.value;
-                // Обновить локальное состояние проекта
-                const proj = projects.value.find(p => p.project_id === projectId);
-                if (proj) proj.pipeline_version = version;
-            } catch (e) {
-                console.error('Failed to set pipeline_version:', e);
-                alert(`Ошибка сохранения pipeline_version: ${e.message || e}`);
-                throw e;
-            }
-        }
-
         async function saveAndStartAudit() {
             await saveStageModels();
-
-            // Сохранить pipeline_version: если есть конкретный проект — для него,
-            // если batch — для всех выбранных
             const pid = modelConfigPendingProjectId.value;
-            if (pid) {
-                try {
-                    await _persistPipelineVersion(pid);
-                } catch (e) {
-                    return; // Не закрываем модалку, даём пользователю исправить
-                }
-            }
-
             showModelConfig.value = false;
             if (pendingActionFn.value) {
                 const fn = pendingActionFn.value;
@@ -1420,6 +1749,23 @@ const app = createApp({
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
 
+        async function startFlashProTriage(projectId) {
+            const ok = confirm(
+                'Запустить экспериментальный 02 Flash+Pro?\n\n' +
+                'Flash проверит все блоки single-block, Pro перепроверит только выбранные рискованные блоки.\n' +
+                'Итог перезапишет _output/02_blocks_analysis.json, старый файл будет сохранён backup-копией.'
+            );
+            if (!ok) return;
+            try {
+                auditRunning.value = true;
+                await apiPost(`/audit/${encodeURIComponent(projectId)}/flash-pro-triage`, {
+                    max_pro_cost_usd: 8.0,
+                    include_simple_findings: false,
+                });
+                _afterAuditStart(projectId);
+            } catch (e) { alert(e.message); auditRunning.value = false; }
+        }
+
         // Legacy aliases
         const startStandardAudit = startAudit;
         const startProAudit = startAudit;
@@ -1500,17 +1846,14 @@ const app = createApp({
             'optimization': 'optimization',
             'optimization_critic': 'optimization_critic',
             'optimization_corrector': 'optimization_corrector',
-            // V4 pipeline stages
-            'v4_extraction': 'v4_extraction',
-            'v4_memory': 'v4_memory',
-            'v4_candidates': 'v4_candidates',
-            'v4_formatter': 'v4_formatter',
         };
 
         const stageLabelMap = {
             'prepare': 'Кроп блоков',
+            'qwen_enrichment': 'Подготовка (Qwen-обогащение MD)',
             'text_analysis': 'Анализ текста',
             'block_analysis': 'Анализ блоков',
+            'flash_pro_triage': 'Flash+Pro Triage',
             'findings_merge': 'Свод замечаний',
             'findings_critic': 'Critic замечаний',
             'findings_review': 'Critic замечаний',
@@ -1519,10 +1862,6 @@ const app = createApp({
             'optimization': 'Оптимизация',
             'optimization_critic': 'Critic оптимизации',
             'optimization_corrector': 'Corrector оптимизации',
-            'v4_extraction': 'Извлечение фактов',
-            'v4_memory': 'Канонический граф',
-            'v4_candidates': 'Генерация кандидатов',
-            'v4_formatter': 'Формирование замечаний',
         };
 
         function canStartFrom(pipelineKey) {
@@ -1587,14 +1926,13 @@ const app = createApp({
 
         function retryStage(projectId, stage) {
             const labels = {
-                'crop_blocks': 'Кроп блоков', 'text_analysis': 'Анализ текста',
+                'crop_blocks': 'Кроп блоков', 'qwen_enrichment': 'Подготовка (Qwen-обогащение MD)',
+                'text_analysis': 'Анализ текста',
                 'block_analysis': 'Анализ блоков', 'findings_merge': 'Свод замечаний',
                 'findings_critic': 'Critic замечаний', 'findings_review': 'Critic замечаний',
                 'findings_corrector': 'Corrector замечаний',
                 'norm_verify': 'Верификация норм', 'optimization': 'Оптимизация',
                 'optimization_critic': 'Critic оптимизации', 'optimization_corrector': 'Corrector оптимизации',
-                'v4_extraction': 'Извлечение фактов', 'v4_memory': 'Канонический граф',
-                'v4_candidates': 'Генерация кандидатов', 'v4_formatter': 'Формирование замечаний',
             };
             retryDialog.value = {
                 show: true,
@@ -1602,13 +1940,6 @@ const app = createApp({
                 stage,
                 stageLabel: labels[stage] || stage,
             };
-        }
-
-        async function retryStageNow() {
-            const { projectId, stage } = retryDialog.value;
-            retryDialog.value.show = false;
-            // Открываем диалог выбора моделей, после сохранения запустится retry
-            openModelConfig(projectId, stage);
         }
 
         async function _executeRetryStage(projectId, stage) {
@@ -1626,23 +1957,20 @@ const app = createApp({
         async function retryStageToQueue() {
             const { projectId, stage } = retryDialog.value;
             retryDialog.value.show = false;
-            // Показываем выбор моделей перед добавлением в очередь
-            openModelConfig(projectId, null, async () => {
-                try {
-                    const resp = await fetch('/api/audit/batch/add-retry', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ project_id: projectId, stage: stage }),
-                    });
-                    if (!resp.ok) {
-                        const err = await resp.json().catch(() => ({}));
-                        throw new Error(err.detail || `API error: ${resp.status}`);
-                    }
-                    const data = await resp.json();
-                    batchQueue.value = data.queue;
-                    batchRunning.value = true;
-                } catch (e) { alert(e.message); }
-            });
+            try {
+                const resp = await fetch('/api/audit/batch/add-retry', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ project_id: projectId, stage: stage }),
+                });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || `API error: ${resp.status}`);
+                }
+                const data = await resp.json();
+                batchQueue.value = data.queue;
+                batchRunning.value = true;
+            } catch (e) { alert(e.message); }
         }
 
         async function skipStage(projectId, stage) {
@@ -3645,6 +3973,7 @@ const app = createApp({
         }
 
         async function cropBatchBlocks() {
+            // ↓ Кнопка «Подготовить данные»: crop PNG + Qwen enrichment в MD
             const ids = Array.from(selectedProjects.value);
             if (!ids.length) return;
             // Фильтр: только проекты без аудита (findings_count == 0)
@@ -3655,19 +3984,29 @@ const app = createApp({
             });
             const skipped = ids.length - targets.length;
             if (!targets.length) {
-                alert(`Все ${ids.length} выбранных проектов уже имеют аудит — кроп пропущен.\nЕсли нужно перекропить — пересоздайте блоки вручную (--force).`);
+                alert(`Все ${ids.length} выбранных проектов уже имеют аудит — подготовка пропущена.\nИспользуйте Force re-enrich на странице проекта если хотите переобогатить.`);
                 return;
             }
-            if (!confirm(`Скачать графические блоки для ${targets.length} проектов?\n${skipped > 0 ? `(пропущено ${skipped} с уже выполненным аудитом)` : ''}`)) {
-                return;
-            }
+            const confirmMsg = `Подготовить данные для ${targets.length} проектов?\n` +
+                               `Будут выполнены: crop PNG + Qwen enrichment MD.\n` +
+                               `Время: ~30-60 сек на блок (зависит от размера проекта).` +
+                               (skipped > 0 ? `\n(пропущено ${skipped} с уже выполненным аудитом)` : '');
+            if (!confirm(confirmMsg)) return;
+
+            const force = confirm(
+                `Force re-enrich?\n\n` +
+                `OK = переобогатить даже уже подготовленные проекты (с backup _output/).\n` +
+                `Cancel = пропустить уже подготовленные.`
+            );
+
             batchCropLoading.value = true;
             let done = 0;
             const errors = [];
             for (const pid of targets) {
                 batchCropProgress.value = `${done}/${targets.length}`;
                 try {
-                    const resp = await fetch(`/api/audit/${encodeURIComponent(pid)}/crop-blocks-only`, {method: 'POST'});
+                    const url = `/api/audit/${encodeURIComponent(pid)}/prepare-data?force=${force ? 'true' : 'false'}`;
+                    const resp = await fetch(url, {method: 'POST'});
                     if (!resp.ok) {
                         const err = await resp.json().catch(() => ({}));
                         errors.push(`${pid}: ${err.detail || resp.status}`);
@@ -3680,7 +4019,8 @@ const app = createApp({
             }
             batchCropLoading.value = false;
             batchCropProgress.value = '';
-            const msg = `Кроп блоков: ${done}/${targets.length}` +
+            const msg = `Подготовка запущена: ${done}/${targets.length} проектов.\n` +
+                        `Прогресс — в WebSocket-логе (откройте проект для деталей).` +
                         (skipped > 0 ? `\nПропущено (есть аудит): ${skipped}` : '') +
                         (errors.length ? `\n\nОшибки:\n${errors.join('\n')}` : '');
             alert(msg);
@@ -4134,6 +4474,7 @@ const app = createApp({
         // Этапы которые не запускались (для pipeline summary)
         const _allPipelineStages = [
             {key: 'crop_blocks', label: 'Кроп блоков'},
+            {key: 'qwen_enrichment', label: 'Подготовка (Qwen-обогащение MD)'},
             {key: 'text_analysis', label: 'Анализ текста'},
             {key: 'block_analysis', label: 'Анализ блоков'},
             {key: 'block_retry', label: 'Retry нечитаемых блоков'},
@@ -4775,7 +5116,11 @@ const app = createApp({
             closeGlobalWS();
             const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
             wsGlobal = new WebSocket(`${proto}//${location.host}/ws/global`);
-            wsGlobal.onopen = () => { wsConnected.value = true; };
+            wsGlobal.onopen = () => {
+                wsConnected.value = true;
+                // При подключении подгружаем актуальное состояние prepare-queue (badge в навигации)
+                fetchPrepareQueue();
+            };
             wsGlobal.onclose = () => {
                 wsConnected.value = false;
                 // Переподключение только если мы в global-режиме
@@ -4911,6 +5256,12 @@ const app = createApp({
                     refreshProjects();
                     selectedProjects.value = new Set();
                     selectAllChecked.value = false;
+                }
+            } else if (msg.type === 'prepare_queue_progress') {
+                prepareQueue.value = msg.data;
+                // Когда любой prepare-job завершается — обновим карточки проектов
+                if (msg.data.status === 'idle' || (msg.data.completed + msg.data.failed === msg.data.total)) {
+                    refreshProjects();
                 }
             } else if (msg.type === 'finding_stage') {
                 // Смена фазы «размышления модели»
@@ -5323,12 +5674,14 @@ const app = createApp({
                 fetchPaidCost(),
             ]);
             usagePollTimer = setInterval(() => { pollGlobalUsage(); fetchPaidCost(); }, 60000);
+            startLmsHealthPolling();
         });
 
         onUnmounted(() => {
             window.removeEventListener('hashchange', handleRoute);
             stopPolling();
             if (usagePollTimer) { clearInterval(usagePollTimer); usagePollTimer = null; }
+            stopLmsHealthPolling();
         });
 
         return {
@@ -5376,10 +5729,11 @@ const app = createApp({
             auditRunning, allRunning,
             startPrepare, startMainAudit,
             startSmartAudit, startAudit, startStandardAudit, startProAudit,
+            startFlashProTriage,
             startNormVerify, startOptimization, cancelAudit, generateExcel,
             startAllProjects, resumePipeline, resumeToQueue, resumeInfo,
             startFromStage, canStartFrom, pipelineToStage,
-            retryStage, retryDialog, retryStageNow, retryStageToQueue,
+            retryStage, retryDialog, retryStageToQueue,
             skipStage, cleanProject,
             // Batch selection
             selectedProjects, selectAllChecked, selectedCount,
@@ -5391,11 +5745,12 @@ const app = createApp({
             // Model config
             showModelConfig, stageModelConfig, availableModels, stageLabels,
             stageModelRestrictions, stageModelHints, isModelAllowed,
-            modelPresets, activePreset, applyPreset,
+            blockFlashProPairValue, modelInputType, isStageModelChecked, selectStageModel,
+            modelPresets, activePreset, activePresetHint, applyPreset,
+            stageBatchModes, isFindingsOnlyMode,
             loadStageModels, saveStageModels, openModelConfig, saveAndStartAudit,
             startAuditDirect,
-            // V4 pipeline toggle в модалке
-            pendingPipelineV4, onV4ToggleChange, modelConfigPendingProjectId,
+            modelConfigPendingProjectId,
             toggleProjectSelection, toggleSelectAll, isProjectSelected,
             isSectionSelected, toggleSectionSelection,
             sectionExcelLoading, exportSectionExcel,
@@ -5444,9 +5799,10 @@ const app = createApp({
             accountInfo, showAccountInfo, fetchAccountInfo,
             accountSwitching, accountAuthUrl, switchAccount,
             formatTokens, formatCost, formatDurationSec, refreshGlobalUsage, resetSessionCounter, clearUsageCounter,
+            editUsagePercent, resetUsageOffsets,
             usageCounters,
             // Usage (per-project)
-            projectUsage, currentProjectUsage, pipelineTotalDuration, stageTokens, stageTokensFormatted, stageModel, stageDurationForProject, formatDuration,
+            projectUsage, currentProjectUsage, usagePaidCost, usageFreeCost, pipelineTotalDuration, stageTokens, stageTokensFormatted, stageModel, stageDurationForProject, formatDuration,
             // Pipeline summary
             // Optimization
             optimizationData, optimizationLoading, optimizationFilter, optimizationSearch,
@@ -5467,6 +5823,11 @@ const app = createApp({
             openDiscussion, closeDiscussion, sendDiscussionMessage, downloadAuditPackage, auditPackageLoading,
             downloadBatchAuditPackages, batchPackageLoading,
             cropBatchBlocks, batchCropLoading, batchCropProgress,
+            prepareQueue, clearPrepareQueue, formatEta, fetchPrepareQueue,
+            preparePause, prepareResume, prepareCancel,
+            lmsLoaded, lmsAll, lmsLoadCtx, lmsLoading, lmsMessage,
+            lmsRefresh, lmsLoad, lmsUnload, lmsReload, lmsApplyPresetCtx,
+            lmsHealth, lmsHealthCheckedAt, lmsHealthStatus, lmsHealthTitle, lmsCheckHealth,
             chatAttachedImage, handleChatFileSelect, handleChatPaste,
             resolvedFindingsCount, allDiscussionsResolved, resolvedFindingsLoading, downloadResolvedFindings,
             editingMessageIdx, editingMessageText,

@@ -22,6 +22,7 @@ from webapp.services.project_service import resolve_project_dir
 # Путь к файлу данных
 _DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 USAGE_DATA_FILE = _DATA_DIR / "usage_data.json"
+USAGE_OFFSETS_FILE = _DATA_DIR / "usage_offsets.json"
 
 # Путь к JSONL-файлам сессий Claude Code
 CLAUDE_SESSIONS_DIR = Path.home() / ".claude" / "projects"
@@ -201,12 +202,141 @@ class UsageTracker:
         total_input = sum(r.get("input_tokens", 0) for r in records)
         total_output = sum(r.get("output_tokens", 0) for r in records)
         total_cost = sum(r.get("cost_usd", 0.0) for r in records)
-        return total_input, total_output, total_cost, len(records)
+        total_calls = sum(max(1, int(r.get("api_calls", 1) or 1)) for r in records)
+        return total_input, total_output, total_cost, total_calls
 
     @staticmethod
     def _sum_notional(records: list[dict]) -> float:
         """Суммирование 'теоретической' стоимости CLI (сэкономлено по подписке)."""
         return sum(r.get("cost_usd_notional", 0.0) for r in records)
+
+    @staticmethod
+    def _normalize_stage_key(stage: str) -> str:
+        """Привести raw usage stage к ключу stages_summary."""
+        import re
+
+        _batch_re = re.compile(r"(block_batch|tile_batch)_\d+")
+        _norm_re = re.compile(r"norm_verify(_chunk_\d+|_retry_\d+)")
+        _findings_critic_re = re.compile(r"findings_critic(_chunk\d+)?")
+        _findings_corrector_re = re.compile(r"findings_corrector(_chunk\d+)?")
+        _opt_critic_re = re.compile(r"optimization_critic(_retry_\d+)?")
+        _opt_corrector_re = re.compile(r"optimization_corrector(_retry_\d+)?")
+        _legacy_map = {
+            "main_audit": "findings_merge",
+            "main_audit_retry": "findings_merge",
+            "tile_audit": "block_analysis",
+            "triage": "text_analysis",
+            "triage_retry": "text_analysis",
+            "smart_merge": "findings_merge",
+            "smart_merge_retry": "findings_merge",
+        }
+        _retry_re = re.compile(r"^(.+?)_retry(_\d+)?$")
+
+        if _batch_re.match(stage):
+            return "block_analysis"
+        if _norm_re.match(stage):
+            return "norm_verify"
+        if _findings_critic_re.match(stage):
+            return "findings_critic"
+        if _findings_corrector_re.match(stage):
+            return "findings_corrector"
+        if _opt_critic_re.match(stage):
+            return "optimization_critic"
+        if _opt_corrector_re.match(stage):
+            return "optimization_corrector"
+        if stage in _legacy_map:
+            return _legacy_map[stage]
+        m = _retry_re.match(stage)
+        if m:
+            return _legacy_map.get(m.group(1), m.group(1))
+        return stage
+
+    @staticmethod
+    def _load_flash_pro_triage_artifact_records(project_id: str, records: list[dict]) -> list[dict]:
+        """Вернуть synthetic usage records для Flash+Pro triage, если они ещё не записаны.
+
+        Старые прогоны triage сохраняли реальные OpenRouter costs в артефактах,
+        но не добавляли их в usage_data.json. Этот fallback делает UI честным
+        для уже выполненных аудитов и не дублирует новые записи.
+        """
+        if any(UsageTracker._normalize_stage_key(r.get("stage", "")) == "block_analysis" for r in records):
+            return []
+
+        project_dir = resolve_project_dir(project_id)
+        stage_output = project_dir / "_output" / "02_blocks_analysis.json"
+        if not stage_output.exists():
+            return []
+
+        try:
+            with open(stage_output, encoding="utf-8") as f:
+                output_data = json.load(f)
+        except Exception:
+            return []
+
+        meta = output_data.get("meta", {}) if isinstance(output_data, dict) else {}
+        if meta.get("source") != "flash_pro_triage":
+            return []
+
+        artifacts_dir_raw = meta.get("artifacts_dir")
+        artifacts_dir = Path(artifacts_dir_raw) if artifacts_dir_raw else None
+        if artifacts_dir and not artifacts_dir.is_absolute():
+            artifacts_dir = project_dir / artifacts_dir
+        if not artifacts_dir or not artifacts_dir.exists():
+            candidates = sorted((project_dir / "_experiments" / "stage02_flash_pro_triage").glob("*"))
+            artifacts_dir = candidates[-1] if candidates else None
+        if not artifacts_dir or not artifacts_dir.exists():
+            return []
+
+        timestamp = datetime.now().isoformat()
+        log_path = project_dir / "_output" / "pipeline_log.json"
+        try:
+            with open(log_path, encoding="utf-8") as f:
+                stages = (json.load(f).get("stages") or {})
+            timestamp = (
+                (stages.get("block_analysis") or {}).get("completed_at")
+                or (stages.get("flash_pro_triage") or {}).get("completed_at")
+                or timestamp
+            )
+        except Exception:
+            pass
+
+        synthetic: list[dict] = []
+        for summary_name in ("flash_full_summary.json", "pro_selected_summary.json"):
+            summary_path = artifacts_dir / summary_name
+            if not summary_path.exists():
+                continue
+            try:
+                with open(summary_path, encoding="utf-8") as f:
+                    summary = json.load(f)
+            except Exception:
+                continue
+            input_tokens = int(summary.get("total_prompt_tokens", 0) or 0)
+            output_tokens = int(summary.get("total_output_tokens", 0) or 0)
+            cost = float(summary.get("total_cost_usd", 0.0) or 0.0)
+            api_calls = int(summary.get("completed_batches", 0) or summary.get("total_batches", 0) or 1)
+            if input_tokens <= 0 and output_tokens <= 0 and cost <= 0:
+                continue
+            duration_ms = int(float(summary.get("elapsed_s", 0.0) or 0.0) * 1000)
+            synthetic.append({
+                "timestamp": timestamp,
+                "session_id": None,
+                "project_id": project_id,
+                "stage": "block_analysis",
+                "model": summary.get("model_id", ""),
+                "cost_usd": cost,
+                "cost_usd_notional": 0.0,
+                "duration_ms": duration_ms,
+                "duration_api_ms": duration_ms,
+                "num_turns": api_calls,
+                "api_calls": api_calls,
+                "is_retry": False,
+                "input_tokens": input_tokens,
+                "output_tokens": output_tokens,
+                "cache_creation_tokens": 0,
+                "cache_read_tokens": int(summary.get("total_cached_tokens", 0) or 0),
+                "_synthetic_source": "flash_pro_triage_artifacts",
+            })
+        return synthetic
 
     @staticmethod
     def _dedup_for_duration(records: list[dict]) -> list[dict]:
@@ -317,13 +447,13 @@ class UsageTracker:
     def get_project_usage(self, project_id: str) -> dict:
         """Агрегация usage по проекту: total + по этапам (stages_summary).
         Учитывает только записи текущего прогона (по started_at из pipeline_log)."""
-        import re
         audit_started = self._get_audit_started_at(project_id)
         with _lock:
             project_recs = [r for r in self._records if r.get("project_id") == project_id]
         # Фильтр: только записи текущего прогона аудита
         if audit_started and project_recs:
             project_recs = [r for r in project_recs if r.get("timestamp", "") >= audit_started]
+        project_recs = project_recs + self._load_flash_pro_triage_artifact_records(project_id, project_recs)
 
         if not project_recs:
             return {
@@ -332,50 +462,17 @@ class UsageTracker:
                 "total_output_tokens": 0,
                 "total_tokens": 0,
                 "total_cost_usd": 0.0,
+                "paid_cost_usd": 0.0,
+                "free_cost_usd": 0.0,
                 "total_calls": 0,
                 "stages_summary": {},
             }
 
         t_in, t_out, t_cost, t_calls = self._sum_records(project_recs)
 
-        # Группировка по этапам: block_batch_*/tile_batch_* → block_analysis
         stages: dict[str, list[dict]] = defaultdict(list)
-        _batch_re = re.compile(r"(block_batch|tile_batch)_\d+")
-        _norm_re = re.compile(r"norm_verify(_chunk_\d+|_retry_\d+)")
-        _findings_critic_re = re.compile(r"findings_critic(_chunk\d+)?")
-        _opt_critic_re = re.compile(r"optimization_critic(_retry_\d+)?")
-        _opt_corrector_re = re.compile(r"optimization_corrector(_retry_\d+)?")
-        _legacy_map = {
-            "main_audit": "findings_merge",
-            "main_audit_retry": "findings_merge",
-            "tile_audit": "block_analysis",
-            "triage": "text_analysis",
-            "triage_retry": "text_analysis",
-            "smart_merge": "findings_merge",
-            "smart_merge_retry": "findings_merge",
-        }
-        # Generic retry suffix: *_retry, *_retry_N → base stage
-        _retry_re = re.compile(r"^(.+?)_retry(_\d+)?$")
         for r in project_recs:
-            stage = r.get("stage", "unknown")
-            if _batch_re.match(stage):
-                stage = "block_analysis"
-            elif _norm_re.match(stage):
-                stage = "norm_verify"
-            elif _findings_critic_re.match(stage):
-                stage = "findings_critic"
-            elif _opt_critic_re.match(stage):
-                stage = "optimization_critic"
-            elif _opt_corrector_re.match(stage):
-                stage = "optimization_corrector"
-            elif stage in _legacy_map:
-                stage = _legacy_map[stage]
-            else:
-                # Fallback: strip _retry/_retry_N suffix
-                m = _retry_re.match(stage)
-                if m:
-                    stage = _legacy_map.get(m.group(1), m.group(1))
-            stages[stage].append(r)
+            stages[self._normalize_stage_key(r.get("stage", "unknown"))].append(r)
 
         # Чистое время из pipeline_log (wall-clock: completed_at - started_at)
         pipeline_durations = self._get_pipeline_durations(project_id)
@@ -383,6 +480,7 @@ class UsageTracker:
         stages_summary = {}
         for stage, recs in stages.items():
             s_in, s_out, s_cost, s_calls = self._sum_records(recs)
+            s_notional = self._sum_notional(recs)
             # Приоритет: pipeline_log (wall-clock) > дедуплицированный duration_ms
             if stage in pipeline_durations:
                 s_duration = pipeline_durations[stage]
@@ -402,6 +500,9 @@ class UsageTracker:
                 "output_tokens": s_out,
                 "total_tokens": s_in + s_out,
                 "cost_usd": round(s_cost, 4),
+                "paid_cost_usd": round(s_cost, 4),
+                "free_cost_usd": round(s_notional, 4),
+                "notional_cost_usd": round(s_notional, 4),
                 "calls": s_calls,
                 "duration_ms": s_duration,
                 "model": stage_model,
@@ -416,6 +517,8 @@ class UsageTracker:
             "total_output_tokens": t_out,
             "total_tokens": t_in + t_out,
             "total_cost_usd": round(t_cost, 4),
+            "paid_cost_usd": round(t_cost, 4),
+            "free_cost_usd": round(notional, 4),
             "notional_cost_usd": round(notional, 4),
             "total_calls": t_calls,
             "stages_summary": stages_summary,
@@ -423,25 +526,8 @@ class UsageTracker:
 
     def get_all_projects_usage(self) -> dict:
         """Краткая сводка usage по всем проектам (с duration по этапам)."""
-        import re
         with _lock:
             records = list(self._records)
-
-        _batch_re = re.compile(r"(block_batch|tile_batch)_\d+")
-        _norm_re = re.compile(r"norm_verify(_chunk_\d+|_retry_\d+)")
-        _findings_critic_re = re.compile(r"findings_critic(_chunk\d+)?")
-        _opt_critic_re = re.compile(r"optimization_critic(_retry_\d+)?")
-        _opt_corrector_re = re.compile(r"optimization_corrector(_retry_\d+)?")
-        _legacy_map = {
-            "main_audit": "findings_merge",
-            "main_audit_retry": "findings_merge",
-            "tile_audit": "block_analysis",
-            "triage": "text_analysis",
-            "triage_retry": "text_analysis",
-            "smart_merge": "findings_merge",
-            "smart_merge_retry": "findings_merge",
-        }
-        _retry_re = re.compile(r"^(.+?)_retry(_\d+)?$")
 
         projects: dict[str, list[dict]] = defaultdict(list)
         for r in records:
@@ -455,31 +541,16 @@ class UsageTracker:
             audit_started = self._get_audit_started_at(pid)
             if audit_started:
                 recs = [r for r in recs if r.get("timestamp", "") >= audit_started]
+            recs = recs + self._load_flash_pro_triage_artifact_records(pid, recs)
             if not recs:
                 continue
             t_in, t_out, t_cost, t_calls = self._sum_records(recs)
+            notional = self._sum_notional(recs)
 
             # stages_summary с duration
             stages: dict[str, list[dict]] = defaultdict(list)
             for r in recs:
-                stage = r.get("stage", "unknown")
-                if _batch_re.match(stage):
-                    stage = "block_analysis"
-                elif _norm_re.match(stage):
-                    stage = "norm_verify"
-                elif _findings_critic_re.match(stage):
-                    stage = "findings_critic"
-                elif _opt_critic_re.match(stage):
-                    stage = "optimization_critic"
-                elif _opt_corrector_re.match(stage):
-                    stage = "optimization_corrector"
-                elif stage in _legacy_map:
-                    stage = _legacy_map[stage]
-                else:
-                    m = _retry_re.match(stage)
-                    if m:
-                        stage = _legacy_map.get(m.group(1), m.group(1))
-                stages[stage].append(r)
+                stages[self._normalize_stage_key(r.get("stage", "unknown"))].append(r)
 
             # Чистое время из pipeline_log
             pipeline_durations = self._get_pipeline_durations(pid)
@@ -494,14 +565,23 @@ class UsageTracker:
                     dur_recs = non_retry if non_retry else deduped
                     s_dur = sum(r.get("duration_ms", 0) for r in dur_recs)
                 s_in, s_out, s_cost, s_calls = self._sum_records(srecs)
+                s_notional = self._sum_notional(srecs)
                 stages_summary[stage] = {
                     "total_tokens": s_in + s_out,
+                    "cost_usd": round(s_cost, 4),
+                    "paid_cost_usd": round(s_cost, 4),
+                    "free_cost_usd": round(s_notional, 4),
+                    "notional_cost_usd": round(s_notional, 4),
+                    "calls": s_calls,
                     "duration_ms": s_dur,
                 }
 
             result[pid] = {
                 "total_tokens": t_in + t_out,
                 "total_cost_usd": round(t_cost, 4),
+                "paid_cost_usd": round(t_cost, 4),
+                "free_cost_usd": round(notional, 4),
+                "notional_cost_usd": round(notional, 4),
                 "total_calls": t_calls,
                 "stages_summary": stages_summary,
             }
@@ -578,9 +658,99 @@ class GlobalUsageScanner:
         # Лимиты (output_tokens как основная метрика)
         self.session_5h_limit = WINDOW_5H_TOKEN_LIMIT
         self.weekly_all_limit = WEEKLY_TOKEN_LIMIT
+        # Пользовательские смещения для отображаемых счётчиков
+        # (вычитаются из значений, полученных из JSONL)
+        self._offsets: dict[str, int] = {
+            "session_5h": 0,
+            "weekly_all": 0,
+            "weekly_sonnet": 0,
+        }
+        self._load_offsets()
+
+    # ── Offsets persistence ─────────────────────────────────
+
+    def _load_offsets(self):
+        if not USAGE_OFFSETS_FILE.exists():
+            return
+        try:
+            with open(USAGE_OFFSETS_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            for k in self._offsets.keys():
+                v = data.get(k, 0)
+                if isinstance(v, (int, float)):
+                    self._offsets[k] = max(0, int(v))
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    def _save_offsets(self):
+        _DATA_DIR.mkdir(parents=True, exist_ok=True)
+        tmp = USAGE_OFFSETS_FILE.with_suffix(".tmp")
+        try:
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(self._offsets, f, ensure_ascii=False, indent=2)
+            tmp.replace(USAGE_OFFSETS_FILE)
+        except OSError:
+            if tmp.exists():
+                tmp.unlink(missing_ok=True)
+
+    def clear_offsets(self):
+        """Сбросить пользовательские смещения (показать «как есть»)."""
+        with self._lock:
+            for k in self._offsets.keys():
+                self._offsets[k] = 0
+            self._save_offsets()
+        self.invalidate_cache()
+
+    def clear_displayed_counters(self):
+        """Установить смещения = текущим измеренным значениям, чтобы дисплей показал 0."""
+        # Считаем «сырые» значения (без offsets), чтобы зафиксировать их в смещении
+        raw = self._scan_raw()
+        sonnet_raw = (raw.weekly_by_model.get("sonnet") or {}).get("total_tokens", 0)
+        with self._lock:
+            self._offsets["session_5h"] = int(raw.session_5h_total_tokens)
+            self._offsets["weekly_all"] = int(raw.weekly_all_total_tokens)
+            self._offsets["weekly_sonnet"] = int(sonnet_raw)
+            self._save_offsets()
+        self.invalidate_cache()
+
+    def set_displayed_percent(self, scope: str, percent: float):
+        """Подкрутить смещение так, чтобы для scope отображался указанный процент.
+
+        scope: 'session_5h' | 'weekly_all' | 'weekly_sonnet'
+        percent: 0..100
+        """
+        if scope not in self._offsets:
+            raise ValueError(f"Unknown scope: {scope}")
+        try:
+            pct = float(percent)
+        except (TypeError, ValueError):
+            raise ValueError("percent must be a number")
+        pct = max(0.0, min(100.0, pct))
+
+        if scope in ("session_5h", "weekly_all", "weekly_sonnet"):
+            limit = (self.session_5h_limit if scope == "session_5h"
+                     else self.weekly_all_limit)
+        else:
+            limit = self.weekly_all_limit
+
+        raw = self._scan_raw()
+        if scope == "session_5h":
+            measured = int(raw.session_5h_total_tokens)
+        elif scope == "weekly_all":
+            measured = int(raw.weekly_all_total_tokens)
+        else:
+            measured = int((raw.weekly_by_model.get("sonnet") or {}).get("total_tokens", 0))
+
+        target_total = int(limit * pct / 100.0)
+        new_offset = max(0, measured - target_total)
+        with self._lock:
+            self._offsets[scope] = new_offset
+            self._save_offsets()
+        self.invalidate_cache()
+        return {"scope": scope, "offset_tokens": new_offset, "applied_percent": pct}
 
     def get_counters(self) -> GlobalUsageCounters:
-        """Получить глобальные счётчики (с кэшированием)."""
+        """Получить глобальные счётчики (с кэшированием) с применением offsets."""
         now = time.time()
         if self._cache and (now - self._cache_at) < self.CACHE_TTL:
             return self._cache
@@ -589,10 +759,59 @@ class GlobalUsageScanner:
             # Double-check после получения блокировки
             if self._cache and (time.time() - self._cache_at) < self.CACHE_TTL:
                 return self._cache
-            result = self._scan()
+            raw = self._scan()
+            result = self._apply_offsets(raw)
             self._cache = result
             self._cache_at = time.time()
             return result
+
+    def _scan_raw(self) -> GlobalUsageCounters:
+        """Сырое сканирование без offsets — для расчёта новых смещений."""
+        return self._scan()
+
+    def _apply_offsets(self, raw: GlobalUsageCounters) -> GlobalUsageCounters:
+        """Применить пользовательские offsets к сырым значениям из JSONL."""
+        off_s = max(0, int(self._offsets.get("session_5h", 0) or 0))
+        off_w = max(0, int(self._offsets.get("weekly_all", 0) or 0))
+        off_sonnet = max(0, int(self._offsets.get("weekly_sonnet", 0) or 0))
+
+        # Если все offsets нулевые — отдаём как есть
+        if off_s == 0 and off_w == 0 and off_sonnet == 0:
+            return raw
+
+        data = raw.model_dump()
+
+        # session_5h: уменьшаем total на offset, percent пересчитываем; остальные поля не трогаем
+        if off_s > 0:
+            adj_total = max(0, data["session_5h_total_tokens"] - off_s)
+            data["session_5h_total_tokens"] = adj_total
+            limit = data.get("session_5h_limit") or 0
+            data["session_5h_percent"] = (
+                min(100.0, round(adj_total / limit * 100, 1)) if limit > 0 else 0
+            )
+
+        if off_w > 0:
+            adj_total = max(0, data["weekly_all_total_tokens"] - off_w)
+            data["weekly_all_total_tokens"] = adj_total
+            limit = data.get("weekly_all_limit") or 0
+            data["weekly_all_percent"] = (
+                min(100.0, round(adj_total / limit * 100, 1)) if limit > 0 else 0
+            )
+
+        # Sonnet — отдельный offset на семейство sonnet внутри weekly_by_model
+        wbm = dict(data.get("weekly_by_model") or {})
+        if off_sonnet > 0 and "sonnet" in wbm:
+            entry = dict(wbm["sonnet"])
+            adj_total = max(0, int(entry.get("total_tokens", 0)) - off_sonnet)
+            entry["total_tokens"] = adj_total
+            limit = data.get("weekly_all_limit") or 0
+            entry["percent"] = (
+                min(100.0, round(adj_total / limit * 100, 1)) if limit > 0 else 0
+            )
+            wbm["sonnet"] = entry
+            data["weekly_by_model"] = wbm
+
+        return GlobalUsageCounters(**data)
 
     def invalidate_cache(self):
         """Сбросить кэш (для принудительного пересканирования)."""

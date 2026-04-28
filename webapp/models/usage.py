@@ -21,6 +21,7 @@ class UsageRecord(BaseModel):
     duration_ms: int = 0          # полное время сессии (включая паузы)
     duration_api_ms: int = 0      # чистое время API-вызовов (без пауз)
     num_turns: int = 0
+    api_calls: int = 1            # сколько реальных API-запросов агрегирует запись
     is_retry: bool = False        # True = неудачная попытка (rate limit/ошибка), повторялась
     # Из JSONL post-parse (точные, заполняются позже):
     input_tokens: int = 0
@@ -127,6 +128,10 @@ class CLIResult(BaseModel):
     duration_api_ms: int = 0
     num_turns: int = 0
     session_id: Optional[str] = None
+    input_tokens: int = 0
+    output_tokens: int = 0
+    cache_creation_tokens: int = 0
+    cache_read_tokens: int = 0
 
 
 @dataclass
@@ -141,6 +146,13 @@ class LLMResult:
     model: str = ""
     is_error: bool = False
     error_message: str = ""
+    # Extended usage (OpenRouter / OpenAI-compatible)
+    cached_tokens: int = 0
+    cache_write_tokens: int = 0
+    reasoning_tokens: int = 0
+    cost_source: str = "estimated"  # "actual" если usage.cost пришёл; иначе "estimated"
+    response_id: str = ""
+    finish_reason: str = ""
 
     @property
     def result_text(self) -> str:

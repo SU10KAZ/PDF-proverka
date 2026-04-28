@@ -1,437 +1,107 @@
-# CLAUDE.md
-
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
-# Система аудита проектной документации жилых зданий
+# CLAUDE.md — Аудит проектной документации МКД
 
 ## Роль
 
-Ты — эксперт по проверке проектной документации жилых многоквартирных домов. Анализируешь все разделы проекта, находишь ошибки, даёшь рекомендации — строго с привязкой к нормативной базе РФ.
+Эксперт по проверке проектной документации жилых многоквартирных домов и инфраструктуры. Анализируешь все разделы (ЭОМ, ОВиК, КР, АР, ВК, СС, БУ и др.), находишь ошибки, даёшь рекомендации **строго со ссылкой на нормативную базу РФ**.
 
-**Тип объектов:** Жилые многоквартирные дома (МКД) и их инфраструктура
-**Разделы:** Все разделы проектной документации (ЭОМ, ОВиК, КР, АР, ВК, СС, БУ и др.)
-**Структура:** Мультипроектная — проекты сгруппированы по дисциплинам: `projects/<КОД>/<имя>/`
+Структура: мультипроектная — `projects/<КОД_ДИСЦИПЛИНЫ>/<имя>/`.
 
-## Быстрый справочник команд
+## Структура проекта
+
+```
+projects/<КОД>/<имя>/
+  document.pdf            ← источник истины
+  *_document.md           ← MD от Chandra OCR (опционально)
+  project_info.json       ← конфигурация, метаданные
+  _output/
+    blocks/               ← кропнутые image-блоки (PNG) + index.json
+    document_graph.json   ← структура страниц (knowledge graph)
+    01_text_analysis.json
+    02_blocks_analysis.json
+    03_findings.json              ← МАСТЕР замечаний
+    03_findings_review.json       ← вердикты critic
+    norm_checks.json              ← верификация норм
+    optimization.json
+    optimization_review.json
+    pipeline_log.json
+
+disciplines/
+  _registry.json          ← реестр: код, название, цвет, order, folder_patterns
+  EOM/, OV/               ← полные профили (role.md, checklist.md, norms_reference.md)
+
+webapp/                   ← FastAPI + Vue 3 (порт 8081)
+norms_db.json             ← статус норм (176+ записей)
+norms_paragraphs.json     ← проверенные цитаты пунктов
+.claude/
+  *_task.md               ← шаблоны задач для каждого этапа
+  settings.json           ← разрешения инструментов
+  hooks/load_context.py   ← SessionStart хук
+```
+
+## Скрипты конвейера
+
+| Файл | Назначение |
+|------|-----------|
+| `process_project.py` | Подготовка: проверка MD, метаданные, document_graph.json |
+| `blocks.py` | `crop` (по crop_url) / `batches` / `merge` |
+| `norms.py` | `verify` (извлечь нормы) / `update` (обновить кеш) |
+| `query_project.py` | Быстрый поиск по JSON-конвейеру |
+| `generate_excel_report.py` | Excel-сводка всех проектов |
+
+## Команды
 
 ```bash
 # Подготовка проекта (MD обязателен)
 python process_project.py projects/<name>
 
-# Блоки: скачивание по crop_url, пакеты, слияние
+# Блоки
 python blocks.py crop projects/<name>
 python blocks.py batches projects/<name>
-python blocks.py merge projects/<name>
-python blocks.py merge projects/<name> --cleanup
+python blocks.py merge projects/<name> [--cleanup]
 
-# Запрос замечаний
-python query_project.py projects/<name>              # все
-python query_project.py projects/<name> --critical    # критичные
-python query_project.py projects/<name> --cat cable   # по категории
-python query_project.py projects/<name> --sheet 7     # по листу
-python query_project.py projects/<name> --id F-001    # конкретное
-python query_project.py projects/<name> --status      # статус конвейера
-python query_project.py                               # обзор всех проектов
+# Запросы
+python query_project.py projects/<name>           # все замечания
+python query_project.py projects/<name> --critical
+python query_project.py projects/<name> --cat cable
+python query_project.py projects/<name> --sheet 7
+python query_project.py projects/<name> --id F-001
+python query_project.py projects/<name> --status
+python query_project.py                           # обзор всех
 
-# Веб-приложение
-cd webapp && python main.py    # http://localhost:8080
+# Нормы
+python norms.py verify projects/<name> --extract-only
+python norms.py update --all
+python norms.py update --stats
 
-# Нормативная база
-python norms.py verify projects/<name> --extract-only  # извлечь нормы
-python norms.py update --all                           # обновить кеш из всех проектов
-python norms.py update --stats                         # статистика базы норм
-
-# Excel-отчёт по всем проектам
+# Excel-отчёт
 python generate_excel_report.py
 
-# Обработка всех проектов
-powershell .\run_all_projects.ps1
+# Веб
+cd webapp && python main.py    # http://localhost:8081
+
+# Тесты
+python -m pytest tests/                      # все
+python -m pytest tests/test_norms.py -v
+python -m pytest tests/ -k "grounding"
 ```
 
-## Установка и зависимости
-
-```bash
-# Основные зависимости (корневые скрипты)
-pip install PyMuPDF pytesseract openpyxl Pillow
-
-# Зависимости веб-приложения
-pip install -r webapp/requirements.txt
-# (fastapi, uvicorn, pydantic, websockets, aiofiles, python-multipart)
-
-# Опционально: Tesseract OCR (для PDF с CAD-шрифтами)
-# Скачать: https://github.com/UB-Mannheim/tesseract/wiki
-# При установке отметить Russian, добавить C:\Program Files\Tesseract-OCR в PATH
-```
-
-**Системные требования:** Python 3.9+, Claude CLI (установлен глобально)
-
-**Тесты:**
-```bash
-python -m pytest tests/                      # все тесты
-python -m pytest tests/test_norms.py -v      # конкретный тест
-python -m pytest tests/ -k "grounding"       # по шаблону
-```
-
-## Архитектура проекта
-
-### Структура папок
-
-```
-1. Audit Manager/
-├── projects/                         ← ВСЕ ПРОЕКТЫ PDF ЗДЕСЬ
-│   ├── <КОД_ДИСЦИПЛИНЫ>/            ← подпапка по дисциплине (АР, OV, ТХ...)
-│   │   └── <ИмяПроекта>/
-│   │       ├── document.pdf          ← входной PDF (источник истины)
-│   │       ├── *_document.md         ← MD от Chandra OCR (опционально)
-│   │       ├── project_info.json     ← конфигурация, метаданные
-│   │       └── _output/              ← генерируемые файлы
-│   │           ├── blocks/           ← кропнутые image-блоки (PNG)
-│   │           ├── document_graph.json    ← структура документа (Knowledge Graph)
-│   │           ├── 01_text_analysis.json  ← этап 1
-│   │           ├── 02_blocks_analysis.json← этап 2
-│   │           ├── 03_findings.json       ← этап 3: МАСТЕР замечаний
-│   │           ├── 03_findings_review.json← вердикты критика (этап 3b)
-│   │           ├── 03_findings_pre_review.json ← бэкап до корректировки
-│   │           ├── norm_checks.json       ← результат верификации норм
-│   │           ├── norm_checks_llm.json   ← LLM-часть верификации (временный)
-│   │           ├── optimization.json      ← сценарии оптимизации
-│   │           ├── optimization_review.json  ← вердикты critic оптимизации
-│   │           ├── optimization_pre_review.json ← бэкап до корректировки
-│   │           └── pipeline_log.json      ← wall-clock время этапов
-│   └── DOC/                          ← общие документы (вендор лист и др.)
-├── disciplines/                      ← профили дисциплин
-│   ├── _registry.json                ← реестр (ID, цвета, порядок, folder_patterns)
-│   ├── EOM/                          ← полный профиль (role.md, checklist.md и др.)
-│   └── OV/
-├── webapp/                           ← веб-приложение (FastAPI + Vue 3)
-├── norms_db.json                     ← кеш проверок норм (176+ документов)
-├── norms_paragraphs.json             ← проверенные цитаты конкретных пунктов норм
-└── .claude/
-    ├── *_task.md                     ← шаблоны задач для каждого этапа конвейера
-    ├── settings.json                 ← разрешения инструментов
-    └── hooks/load_context.py         ← SessionStart хук (автоскан проектов)
-```
-
-### Скрипты конвейера
-
-| Файл | Назначение |
-|------|-----------|
-| `process_project.py` | Подготовка: проверка MD-файла, извлечение метаданных, построение Document Knowledge Graph |
-| `blocks.py` | Блоки: `crop` (скачивание по crop_url), `batches` (группировка), `merge` (слияние) |
-| `norms.py` | Нормы: `verify` (извлечение ссылок), `update` (обновление norms_db.json) |
-| `query_project.py` | Быстрый поиск по JSON-конвейеру |
-| `generate_excel_report.py` | Excel-сводка всех проектов |
-
-### Веб-приложение (webapp/)
-
-FastAPI на порту 8080. Запуск: `cd webapp && python main.py`
-
-Структура: `main.py` (uvicorn) → `routers/` (REST API по `/api/*`) → `services/` (бизнес-логика) → `models/` (Pydantic).
-
-Ключевые сервисы:
-- `pipeline_service.py` — оркестрация аудита (PipelineManager, AuditJob)
-- `claude_runner.py` → `task_builder.py` → `cli_utils.py` — запуск Claude CLI, формирование промптов, парсинг вывода
-- `usage_service.py` — два трекера токенов (см. ниже)
-- `ws/manager.py` — WebSocket live-лог (`/ws/audit/{project_id}`)
-
-**Ключевые параметры:** таймаут пакета 600с, аудита 3600с, до 3 параллельных Claude-сессий. `OBJECT_NAME` в config.py — название объекта на дашборде.
-
-**Гибридные модели per-stage:** `config.py` → `_stage_models` задаёт модель для каждого этапа. Sonnet (по умолчанию) для структурных задач, Opus для findings_merge и optimization. Все critic/corrector (findings и optimization) используют Sonnet. API: `GET/POST /api/audit/model/stages`.
-
-**Batch queue:** `pipeline_service.py` поддерживает групповые действия — последовательный аудит выбранных проектов. Очередь динамическая: можно добавлять проекты в работающую очередь через `POST /api/audit/batch/add`. Цикл обработки — `while`, не `for`, чтобы подхватывать добавленные элементы.
-
-**Пауза конвейера:** `PipelineManager` поддерживает `pause(mode)` / `unpause()` через `asyncio.Event`. Два режима: `finish_current` (дождаться текущего CLI) и `interrupt` (убить процесс). Проверка паузы встроена в `_check_before_launch()` — покрывает ВСЕ вызовы Claude CLI. API: `POST /api/audit/pause`, `POST /api/audit/resume`, `GET /api/audit/pause/status`. Статус паузы также приходит в `GET /api/audit/live-status` (piggyback).
-
-**Обработка ошибок LLM:**
-- `_validate_and_repair_json()` — автовалидация JSON после LLM-записи (findings_merge, correctors). Чинит unescaped кавычки внутри строк, делает бэкап `.json.broken`.
-- Critic: результат определяется по наличию файла review, а НЕ по exit code Claude CLI (CLI может вернуть -1 при успешной записи).
-- Retry: `POST /api/audit/{id}/retry/{stage}` — повтор конкретного этапа. На дашборде отображаются `pipeline_issues` (красные теги) для проектов с ошибками или пропущенными этапами.
-
-### Два трекера токенов (usage_service.py)
-
-Система имеет ДВА независимых источника данных о токенах:
-
-1. **UsageTracker** — записи только от webapp (файл `webapp/data/usage_data.json`)
-   - Создаётся запись при каждом вызове Claude CLI через PipelineManager
-   - Обогащается точными данными из JSONL сессии (enrich_from_jsonl)
-   - Используется для per-project usage (карточки на дашборде)
-   - Хранит записи до 30 дней
-
-2. **GlobalUsageScanner** — парсинг ВСЕХ JSONL из `~/.claude/projects/`
-   - Сканирует все сессии Claude Code (включая ручные, не через webapp)
-   - Используется для шапки дашборда: 5ч окно, недельный лимит, Sonnet %
-   - Кэш 30 секунд, фильтрация файлов по mtime
-
-**Важно:** per-project = all-time (до 30 дней), global Sonnet = только текущая неделя. Они НЕ сравнимы напрямую.
-
-### Модульная система дисциплин (disciplines/)
-
-`_registry.json` — реестр всех дисциплин (код, название, цвет, `order`, `folder_patterns`). Порядок на дашборде управляется через drag-and-drop → `POST /api/projects/disciplines/reorder`.
-
-Полные профили (role.md, checklist.md, norms_reference.md и др.) есть у EOM и OV. Остальные дисциплины зарегистрированы в реестре, но профили создаются по мере необходимости.
-
-`discipline_service.py` загружает профиль по `section` из `project_info.json` и подставляет в промпты.
-
-### Фронтенд (webapp/static/)
-
-Vue 3 SPA (Composition API) без сборки — CDN-загрузка. Один HTML + один JS + один CSS.
-
-- `index.html` — шаблоны Vue (v-if/v-for), Google Fonts, CSS через `?v=N` для cache bust
-- `js/app.js` — вся логика: маршрутизация (dashboard/project/findings/tiles/blocks), API-вызовы, WebSocket, polling
-- `css/styles.css` — тема "Industrial Blueprint" (тёмная, cyan/indigo акценты)
-
-**При изменении CSS:** bump версию `?v=N` в `<link>` тег в index.html.
-**При изменении JS:** bump версию `?v=N` в `<script>` тег в index.html.
-
-### Startup Hook
-
-При каждом запуске Claude Code автоматически выполняется `.claude/hooks/load_context.py`:
-- Сканирует `projects/` и показывает статус каждого проекта (PDF, текст, тайлы, аудит)
-- Настроен в `.claude/settings.json` → `hooks.SessionStart`
-
-## JSON Pipeline — конвейерный анализ
+## JSON Pipeline
 
 Каждый этап пишет JSON, следующий читает его (не сканирует контекст заново).
-При ответах на вопросы **сначала проверяй `03_findings.json`**.
-
-### Конвейер аудита (блочный метод)
+**При ответах на вопросы — сначала проверяй `03_findings.json`.**
 
 ```
-[00] Подготовка → document_graph.json
-  ↓  process_project.py: парсинг MD → структурированный граф страниц
-  ↓  blocks.py crop → обогащение графа данными из blocks/index.json
-  ↓
-[01] Анализ текста (MD-файл) → 01_text_analysis.json
-  ↓  Арифметика таблиц, перекрёстная сверка, нормативные ссылки
-  ↓  Приоритизация image-блоков (HIGH/MEDIUM/LOW/SKIP)
-  ↓
-[02] Кропинг + анализ блоков → 02_blocks_analysis.json
-  ↓  blocks.py crop → blocks.py batches → N Claude-сессий → blocks.py merge
-  ↓  Каждый блок — законченный фрагмент чертежа (не тайл-сетка)
-  ↓  Per-block контекст из document_graph (не сырой MD)
-  ↓
-[03] Свод замечаний → 03_findings.json
-  ↓  Межблочная и межстраничная сверка, дедупликация T + G → F
-  ↓  Каждое F-замечание содержит evidence[] с трассировкой к блокам/тексту
-  ↓
-[03b] Critic → Corrector (условно) → 03_findings_review.json
-  ↓  Critic: 5 проверок grounding (evidence, page, sheet, текст)
-  ↓  Corrector: запускается только если critic нашёл проблемы
-  ↓  Результат: исправленный 03_findings.json
-  ↓
-[04] Верификация норм → norm_checks.json
-     Python: детерминированная проверка из norms_db.json
-     LLM: только для unknown/stale норм (WebSearch) + цитаты
-
-[05] Оптимизация → optimization.json (Opus, 60 мин)
-  ↓  Анализ спецификаций, замена аналогов, упрощение монтажа
-  ↓  Учёт вендор-листа и замечаний аудита
-  ↓
-[05b] Optimization Critic → Corrector (условно)
-     Critic: vendor, savings, traceability, конфликты с findings
-     Corrector: исправление или удаление необоснованных предложений
+[00] Подготовка                  → document_graph.json
+[01] Анализ текста (MD)          → 01_text_analysis.json
+[02] Кропинг + анализ блоков     → 02_blocks_analysis.json
+[03] Свод замечаний (T+G→F)      → 03_findings.json
+[03b] Critic → Corrector (cond.) → 03_findings_review.json
+[04] Верификация норм            → norm_checks.json
+[05] Оптимизация (Opus)          → optimization.json
+[05b] Optimization Critic → Corr → optimization_review.json
 ```
 
-### Пакетный анализ блоков
-
-```
-blocks.py crop → blocks/ + index.json → blocks.py batches → block_batches.json → N Claude-сессий → blocks.py merge → 02_blocks_analysis.json
-```
-
-**Правило:** основная сессия аудита читает готовый `02_blocks_analysis.json`, а НЕ блоки напрямую.
-
-**A/B матрица Claude stage 02 (калибровка):**
-```bash
-# dry-run (батч-планы без вызовов Claude)
-python scripts/run_claude_block_batch_matrix.py \
-    --pdf "13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf" --dry-run
-
-# полный matrix (9 runs: 3 профиля × 3 parallelism)
-python scripts/run_claude_block_batch_matrix.py \
-    --pdf "13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf"
-
-# подмножество
-python scripts/run_claude_block_batch_matrix.py \
-    --pdf "..." --only-profile baseline --parallelism 2
-
-# ФИНАЛЬНОЕ сравнение (baseline_p3 full + aggressive_p3 full + одинаковый fixed subset)
-python scripts/run_claude_block_batch_matrix.py \
-    --pdf "13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf" --final-comparison
-# опции: --subset-size 60 (default), --subset-file PATH (reuse сохранённого)
-# артефакты: _experiments/block_batch_final/<ts>/
-#   fixed_subset_block_ids.json, fixed_subset_manifest.json
-#   subset_side_by_side.md, subset_divergence_report.md
-#   full_vs_subset_overview.md, winner_recommendation.md (rule-based gate), gate_report.json
-```
-Rule-based winner gate: full-run (coverage/missing/failed) → stability
-(unreadable/parse_errors) → quality на subset (findings ≥95%, bwf ≥95%, kv ≥90%) →
-speed. Aggressive побеждает только если прошёл все gates И быстрее baseline.
-Gate 3 автоматически инвалидируется при rate-limit (coverage subset < 50% + fast-fails < 10s)
-и заменяется fallback full-run quality comparison (те же пороги 95%/95%).
-Runner безопасен: `_output` основного проекта не перетирается; каждый run работает
-в `<project>/_experiments/block_batch_ab/<ts>/runs/<run_id>/shadow/` с симлинком
-на `_output/blocks/` (no recrop). Артефакты (`summary.json/csv/md`,
-`winner_recommendation.md`, `side_by_side.md`, `metrics.json` на run) лежат в
-`<project>/_experiments/block_batch_ab/<ts>/`. Победитель отбирается по:
-coverage=100% → unreadable_pct близкий к минимуму → минимум elapsed.
-
-**ENV overrides для experimental batching** (production defaults не трогаются):
-- `CLAUDE_BATCH_{HEAVY,NORMAL,LIGHT}_{TARGET,MAX}` — подменить риск-профиль.
-- `CLAUDE_BLOCK_BATCH_PARALLELISM` — переопределить параллелизм Claude stage 02 (clamp ≤ 3).
-- Hard cap 12 блоков/пакет НЕ может быть пробит никаким override.
-
-**Production profile stage 02 (закреплено 20–21.04.2026, КЖ5.17):**
-- `render_profile = r800` (`MIN_LONG_SIDE_PX = 800`, `TARGET_DPI = 100`)
-- `claude_batch_profile = baseline` (heavy 5/6, normal 8/8, light 10/10)
-- `parallelism = 3` (production winner: baseline_p3)
-- `safe_fallback = r800 + baseline_p2` (parallelism=2 при rate-limit проблемах)
-- Источник истины: `blocks.STAGE02_PRODUCTION_PROFILE`, `blocks.get_stage02_production_profile()`
-- Подробный decision doc: [docs/stage02_production_profile.md](docs/stage02_production_profile.md)
-
-**Claude Vision batching (production-safe, stage 02 `block_batch`):**
-- Стратегия `claude_risk_aware` — классификация блоков по metadata (без повторного OCR):
-  `is_full_page` / `quadrant` / `merged_block_ids` / `size_kb` / `render_size` / `ocr_text_len` / `crop_px`.
-- Целевые размеры пакета: heavy ≈ 5 блоков (max 6), normal ≈ 8, light ≈ 10.
-- **Hard cap = 12 блоков** в пакете независимо от пути (в т.ч. compact). Ранее compact раздувал до 30 — убрано.
-- Параллелизм Claude CLI на этапе `block_batch`: **default 3, hard cap 3** (production winner baseline_p3; см. `get_block_batch_parallelism()` в [webapp/config.py](webapp/config.py)). ENV `CLAUDE_BLOCK_BATCH_PARALLELISM` всё равно clamp до cap.
-- OpenRouter (Gemini/GPT) остаётся на общей политике (`MAX_PARALLEL_BATCHES=5`, лимиты см. `MODEL_BATCH_LIMITS`).
-
-**Resolution A/B эксперимент (отдельная ось — `MIN_LONG_SIDE_PX`):**
-```bash
-# Dry-run: crop для всех профилей + planned batches без Claude CLI
-python scripts/run_block_resolution_matrix.py \
-    --pdf "13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf" --dry-run
-
-# Phase A — subset single-block (1 block/request, изолирует effect разрешения)
-python scripts/run_block_resolution_matrix.py \
-    --pdf "..." --single-block-subset
-
-# Phase B — full validation выбранного candidate против r800
-python scripts/run_block_resolution_matrix.py \
-    --pdf "..." --single-block-subset --full-validation
-
-# Reuse subset от прошлого эксперимента
-python scripts/run_block_resolution_matrix.py \
-    --pdf "..." --single-block-subset --reuse-subset path/to/fixed_subset_block_ids.json
-```
-- Ось: `MIN_LONG_SIDE_PX ∈ {800, 1000, 1200}` (profiles r800/r1000/r1200).
-- `TARGET_DPI=100` и batching (`claude_risk_aware`) зафиксированы — не варьируются.
-- Production `_output/blocks/` НЕ затирается: каждый профиль кропается в
-  `<project>/_experiments/block_resolution_ab/<ts>/crop_roots/<profile>/blocks/`.
-- Shadow Claude CLI runs изолированы в `<exp>/runs/<run_id>/shadow/` с симлинком на профильный crop root.
-- Артефакты: `crop_semantics_report.md`, `render_profiles.json`,
-  `fixed_subset_block_ids.json`, `fixed_subset_manifest.json`,
-  `crop_stats_by_profile.{json,csv,md}`, `subset_summary.{json,csv,md}`,
-  `subset_side_by_side.{json,md}`, `subset_divergence_report.md`,
-  `gate_report.json`, `full_validation_summary.{json,csv,md}` (если была),
-  `resolution_recommendation.md`.
-- Gate: candidate побеждает subset gate только при hard requirements (coverage 100%, no missing/dup/extra, no unreadable regression) **И** хотя бы одном quality-улучшении (findings≥105% ИЛИ median_kv≥110% ИЛИ empty_kv≤80% ИЛИ empty_summary≤80%) **И** batch-cost sanity (planned batches +≤20%, median_batch_kb +≤50%). Full-validation gate: coverage 100%, unreadable не хуже, findings≥95%, blocks_with_findings≥95%.
-- ENV overrides (experimental only): `BLOCK_RENDER_MIN_LONG_SIDE=N`, `BLOCK_RENDER_TARGET_DPI=N`. Без них production crop работает как раньше.
-
-### Document Knowledge Graph (`document_graph.json`)
-
-`process_project.py` → `build_document_graph()` парсит MD-файл в структурированный JSON:
-- Для каждой страницы: `sheet_no`, `sheet_name`, `text_blocks[]`, `image_blocks[]`
-- `blocks.py crop` обогащает image_blocks данными из `blocks/index.json` (file, size_kb)
-- Используется в `task_builder.py` для per-block контекста вместо сырого MD
-- Fallback: если `document_graph.json` нет → парсится MD напрямую (старый путь)
-
-### Система проверки замечаний (Critic → Corrector)
-
-Схема «генератор → критик → корректор» для валидации grounding замечаний:
-
-**Critic** (`findings_critic_task.md`) — 5 проверок каждого F-замечания:
-1. Наличие `evidence[]` или `related_block_ids[]`
-2. Существование evidence-блоков в `02_blocks_analysis.json`
-3. Семантическое соответствие evidence смыслу замечания
-4. Корректность page/sheet
-5. Непротиворечивость тексту из `document_graph.json`
-
-Вердикты: `pass`, `no_evidence`, `phantom_block`, `weak_evidence`, `page_mismatch`, `contradicts_text`
-
-**Corrector** (`findings_corrector_task.md`) — запускается **условно** (только если critic нашёл issues):
-- `no_evidence` → найти evidence или понизить в ПРОВЕРИТЬ_ПО_СМЕЖНЫМ
-- `phantom_block` → удалить несуществующие block_id
-- `page_mismatch` → исправить page/sheet
-- `contradicts_text` → удалить или переформулировать
-
-### Система проверки оптимизации (Optimization Critic → Corrector)
-
-Аналогично findings, оптимизационные предложения проходят валидацию:
-
-**Optimization Critic** (`optimization_critic_task.md`) — 5 проверок каждого OPT-предложения:
-1. Вендор-лист: предложенный производитель есть в допустимом списке?
-2. Конфликт с замечаниями аудита: нет ли КРИТИЧЕСКОГО/ЭКОНОМИЧЕСКОГО замечания на эту позицию?
-3. Реалистичность savings_pct: соответствует ли savings_basis?
-4. Привязка к документу: spec_items + page заполнены и корректны?
-5. Техническая обоснованность: конкретное предложение, не нарушает нормы
-
-Вердикты: `pass`, `vendor_violation`, `conflicts_with_finding`, `unrealistic_savings`, `no_traceability`, `wrong_page`, `too_vague`, `technical_issue`
-
-**Optimization Corrector** (`optimization_corrector_task.md`) — запускается условно:
-- `vendor_violation` → заменить на аналог из вендор-листа или удалить
-- `conflicts_with_finding` → удалить (КРИТИЧЕСКОЕ) или пометить как обязательное исправление
-- `unrealistic_savings` → снизить savings_pct до реалистичного
-- `no_traceability` / `too_vague` → конкретизировать или удалить
-
-Результат: `optimization_review.json` (вердикты) + исправленный `optimization.json`
-
-**Ключевые поля оптимизации** (добавлены в `optimization_task.md`):
-- `spec_items[]` — конкретные позиции спецификации: `["Поз. 5 — Кабель ВВГнг(А)-FRLS 5x10"]`
-- `savings_basis` — `"расчёт"` / `"экспертная оценка"` / `"не определено"`
-- `page` — номер страницы PDF (число или массив)
-- `sheet` — номер листа из штампа (НЕ путать с page!)
-
-**Cross-project агрегация:** `GET /api/optimization/summary/all` — сводка оптимизаций по всем проектам (количество, типы, средняя экономия, статус review)
-
-### Разделение sheet и page в замечаниях
-
-`sheet` (лист из штампа) и `page` (страница PDF) — разные поля. Лист 7 из штампа может быть на стр. PDF 12.
-
-- `findings_service.py` → `_enrich_sheet_page()` обогащает findings из `document_graph.json`
-- Маппинг `page → sheet_no` строится из `document_graph.json` → `pages[].sheet_no`
-- Старый формат "Лист X (стр. PDF N)" парсится автоматически (fallback)
-- На фронтенде: лист сверху, страница PDF мелким шрифтом снизу
-
-### Evidence-трассировка в замечаниях
-
-Каждое F-замечание в `03_findings.json` содержит трассировку к исходным данным:
-
-```json
-{
-  "evidence": [
-    {"type": "image", "block_id": "block_007_1", "page": 4},
-    {"type": "text", "block_id": "RUXD-WP4R-6C3", "page": 4}
-  ],
-  "related_block_ids": ["block_007_1"]
-}
-```
-
-Приоритет при маппинге finding → block (в `findings_service.py`):
-1. `evidence[]` (type=image) — наивысший
-2. `related_block_ids[]` — fallback
-3. Regex block_id в description — fallback
-4. Page-based — последний fallback
-
-### Детерминированная верификация норм
-
-Статус документа (active/replaced/cancelled) — **не решение LLM**, а вычисление из `norms_db.json` + TTL-контроль:
-
-```
-[Python] extract_norms_from_findings() → список норм
-    ↓
-[Python] generate_deterministic_checks() → norm_checks.json (предварительный)
-    ↓  Свежий кеш → verified_via="deterministic"
-    ↓  Stale/unknown → помечает для LLM WebSearch
-    ↓
-[Условно] LLM WebSearch → norm_checks_llm.json (только unknown/stale)
-    ↓
-[Python] merge_llm_norm_results() → финальный norm_checks.json
-```
-
-Если все нормы в базе и кеш свежий — LLM не вызывается (экономия токенов).
-
-### Правила работы с JSON
+## Правила работы с JSON
 
 | Вопрос | Источник |
 |--------|----------|
@@ -445,195 +115,92 @@ python scripts/run_block_resolution_matrix.py \
 | Вердикты проверки оптимизации | `optimization_review.json` |
 | `03_findings.json` не найден | Сообщить что аудит не завершён |
 
-## Приоритет источников данных
+## Приоритет источников
 
 ```
-Для текста:    MD-файл (Chandra)  >  extracted_text.txt (из PDF)
-Для графики:   PDF (блоки)        >  MD-описания [IMAGE]
-При конфликте: PDF                >  MD
+Текст:    MD-файл (Chandra) > extracted_text.txt (из PDF)
+Графика:  PDF (блоки)       > MD-описания [IMAGE]
+Конфликт: PDF                > MD
 ```
 
-**MD-файл** (`*_document.md`) — первичный источник текста. Содержит `[TEXT]` и `[IMAGE]` блоки.
-`blocks.py crop` скачивает image-блоки по crop_url из `*_result.json` (OCR).
+При расхождении MD и блока: `"В MD: XXX / В PDF: YYY / Принято: YYY (по PDF)"`
 
-При расхождении MD и блока → фиксируй: `"В MD: XXX / В PDF: YYY / Принято: YYY (по PDF)"`
+**Поле `text_source` в `project_info.json`:** `md` / `extracted_text` / отсутствует (запусти `process_project.py`).
 
-### Поля text_source в project_info.json
+## Sheet vs Page
 
-- `"text_source": "md"` → текст из MD-файла
-- `"text_source": "extracted_text"` → текст извлечён из PDF
-- Поле отсутствует → запусти `process_project.py`
+`sheet` (лист из штампа) и `page` (страница PDF) — **разные поля**. Лист 7 из штампа может быть на стр. PDF 12.
 
-## Система блоков (обязательный этап)
+- `findings_service.py → _enrich_sheet_page()` обогащает findings из `document_graph.json`
+- Маппинг `page → sheet_no` строится из `document_graph.json → pages[].sheet_no`
+- Старый формат "Лист X (стр. PDF N)" парсится автоматически
+- На фронтенде: лист сверху, страница PDF мелким шрифтом снизу
 
-**Блоки — ОБЯЗАТЕЛЬНЫ для аудита.** Текст ловит ~40% замечаний, визуальный анализ — остальные 60%.
+## Блоки (обязательный этап)
 
-### Почему блоки, а не тайлы
+**Текст ловит ~40% замечаний, визуальный анализ — остальные 60%.**
 
-Тайлы (grid-нарезка) дают фрагменты без контекста, дублируют перекрытия и тратят ~5× больше токенов на изображения.
-Блоки — целые законченные чертежи (схемы, планы, узлы), кропнутые по координатам из OCR-результатов.
-
-| Параметр | Тайлы (старый) | Блоки (новый) |
-|----------|----------------|---------------|
-| Токенов на изображения | ~300K | ~58K (5× меньше) |
-| Информационная плотность | Низкая | Высокая |
-| Контекст | Фрагмент сетки | Целый чертёж |
-
-### Параметры кропинга (`blocks.py crop`)
-
-- `TARGET_LONG_SIDE_PX = 1500` — оптимальный размер для Claude
-- `MIN_BLOCK_AREA_PX2 = 50000` — фильтр мелких блоков и штампов
-- Масштабирование 1.0–8.0× для оптимального размера
-
-### Инициализация блоков
-
-1. Проверь `projects/<name>/_output/blocks/*.png` и `index.json`
+Инициализация:
+1. Проверь `_output/blocks/*.png` и `index.json`
 2. Если блоков нет → `python blocks.py crop projects/<name>`
-3. Скрипт скачивает image-блоки по crop_url из `*_result.json`
 
-### Структура блоков
+Метаданные блока: `block_id`, `page`, `ocr_label`, `ocr_text_len`, `size_kb`.
 
-```
-# Файлы: projects/<name>/_output/blocks/block_<ID>.png
-# Индекс: projects/<name>/_output/blocks/index.json
-# Метаданные: block_id, page, ocr_label, ocr_text_len, size_kb
-```
+CAD-шрифты (ISOCPEUR/GOST из AutoCAD/BIM) → текст из MD-файла, fallback на PDF не поддерживается.
 
-### Обработка CAD-шрифтов
-
-PDF из AutoCAD/BIM могут содержать ISOCPEUR/GOST с нестандартным Unicode. Текст берётся из MD-файла (Chandra OCR), fallback на PDF-текст не поддерживается.
-
-## Как добавить новый проект
-
-1. Создать `projects/<КОД>/<НомерПроекта>/` (например `projects/АР/133-23-ГК-АР5/`)
-2. Положить PDF в папку
-3. Создать минимальный `project_info.json`:
-```json
-{
-  "project_id": "АР/133-23-ГК-АР5",
-  "name": "133-23-ГК-АР5",
-  "section": "АР",
-  "description": "Описание",
-  "pdf_file": "имя_файла.pdf"
-}
-```
-4. Запустить `python process_project.py projects/АР/133-23-ГК-АР5`
-5. Запустить `python blocks.py crop projects/АР/133-23-ГК-АР5`
-6. Скрипт скачает image-блоки по crop_url из result.json
-
-**project_id** = путь относительно `projects/` (включая подпапку дисциплины). Python `pathlib` корректно обрабатывает `/` в путях: `PROJECTS_DIR / "АР/133-23-ГК-АР5"` работает.
-
-## Нормативная база — критические правила
-
-### Приоритет документов
-
-1. Федеральные законы (ФЗ-384, ФЗ-123)
-2. Технические регламенты
-3. СП из перечня обязательных (ПП РФ №815)
-4. СП из перечня добровольных
-5. ГОСТ (национальные и межгосударственные)
-6. ПУЭ (в части, не противоречащей СП)
-
-### Проверка актуальности
-
-Перед каждой ссылкой на норму:
-1. Сверься с `norms_reference.md`
-2. Если нет в справочнике → WebSearch
-3. Укажи номер, название, статус, редакцию
-
-**Типичные ошибки:**
-- СП 31-110-2003 → заменён на СП 256.1325800.2016
-- СП 5.13130.2009 → заменён на СП 484/485/486.1311500.2020
-- ВСН 59-88 → заменён через цепочку на СП 256.1325800.2016
-
-### Верификация нормативных цитат (3-уровневая + детерминированный слой)
-
-Система защиты от ошибочных ссылок на нормы:
-
-```
-Уровень 0 (НОВЫЙ): Детерминированная проверка (Python)
-  ↓ generate_deterministic_checks() → статус из norms_db.json
-  ↓ TTL-контроль: свежий кеш = железобетонный статус, stale = на WebSearch
-  ↓ LLM НЕ решает active/replaced/cancelled — только Python
-
-Уровень 1: norm_quote + norm_confidence
-  ↓ Каждое замечание содержит цитату нормы и уверенность (0.0–1.0)
-  ↓ Заполняется на этапах 01/02/03
-
-Уровень 2: paragraph_checks (при confidence < 0.8)
-  ↓ LLM проверяет конкретный пункт нормы через WebSearch
-  ↓ Результат: paragraph_verified true/false + actual_quote
-  ↓ LLM пишет в norm_checks_llm.json → Python сливает в norm_checks.json
-
-Уровень 3: norms_paragraphs.json (накопительный кеш)
-  ↓ Подтверждённые цитаты сохраняются для будущих аудитов
-  ↓ norms.py update автоматически пополняет из paragraph_checks
-```
-
-**Ключевые файлы:**
-- `norms_db.json` — статус документов (действует/заменён/отменён), 176+ записей
-- `norms_paragraphs.json` — проверенные цитаты конкретных пунктов
-- `norm_checks.json` (в _output/) — финальный результат (Python + LLM)
-- `norm_checks_llm.json` (в _output/) — промежуточный результат от LLM (сливается автоматически)
-
-**Поля замечания:** `norm_quote` (цитата или null), `norm_confidence` (0.0–1.0)
-
-### Формат ссылки
-
-```
-[СП 256.1325800.2016 (ред. 29.01.2024, изм. 1-6), п. X.X.X]
-```
-
-### Работа с ПУЭ
-
-ПУЭ-7 **не зарегистрирован Минюстом** → применяется добровольно. При ссылке на ПУЭ давай параллельную ссылку на соответствующий СП.
-
-## Формат замечания аудита
+## Формат замечания
 
 ```markdown
 ### Замечание №N
 
-Категории:
-  - Критическое — нельзя строить (нарушения ПУЭ/ГОСТ/СП)
-  - Экономическое — деньги/объёмы/пересортица
-  - Эксплуатационное — будущие проблемы при эксплуатации
-  - Рекомендательное — опечатки, мелкие несоответствия
-  - Проверить по смежным — требует информации из других разделов
-
+**Категория:** Критическое / Экономическое / Эксплуатационное / Рекомендательное / Проверить по смежным
 **Источник данных:** PDF (стр. X) / MD (строка Y) / Чертёж (page_XX.png)
 **Расхождение MD/PDF:** [есть / нет]
 **Суть замечания:** ...
-**Требование нормы:** [СП XXX, п. X.X.X]
+**Требование нормы:** [СП XXX (ред. ...), п. X.X.X]
 **Рекомендация:** ...
 ```
 
-## Зарегистрированные дисциплины
+**Категории:**
+- **Критическое** — нельзя строить (нарушения ПУЭ/ГОСТ/СП)
+- **Экономическое** — деньги/объёмы/пересортица
+- **Эксплуатационное** — будущие проблемы при эксплуатации
+- **Рекомендательное** — опечатки, мелкие несоответствия
+- **Проверить по смежным** — требует информации из других разделов
 
-Актуальный список — в `disciplines/_registry.json`. Дисциплины с полным профилем (role.md, checklist.md) отмечены как «Профиль». Остальные зарегистрированы для группировки на дашборде.
+## Нормативная база — критические правила
 
-| Код | Раздел | Профиль |
-|-----|--------|---------|
-| EOM | Электроснабжение и электрооборудование | Да |
-| OV | Отопление, вентиляция, кондиционирование | Да |
-| AR | Архитектурные решения | — |
-| AI | Архитектурные решения (интерьер) | — |
-| TX | Технологические решения | — |
-| KM | Конструкции металлические | — |
-| SS | Слаботочные системы | — |
-| VK | Водоснабжение и канализация | — |
-| PT | Противопожарный водопровод | — |
-| ITP | Индивидуальный тепловой пункт | — |
-| GP | Генеральный план | — |
-| PS | Пояснительная записка | — |
-| POS | Проект организации строительства | — |
+1. Перед каждой ссылкой сверься с `norms_reference.md` дисциплины (или WebSearch)
+2. Указывай номер, название, статус, редакцию
+3. Формат: `[СП 256.1325800.2016 (ред. 29.01.2024, изм. 1-6), п. X.X.X]`
+4. **ПУЭ-7 не зарегистрирован Минюстом** → применяется добровольно. При ссылке на ПУЭ давай параллельную ссылку на СП.
 
-Дисциплина проекта определяется по полю `section` в `project_info.json` или по `folder_patterns` из `_registry.json`.
+Подробности (4-уровневая верификация, типичные замены, формат `norm_quote/norm_confidence`) — см. `@docs/norms_verification.md`.
 
-## Автономный режим работы
+## Как добавить новый проект
 
-### Принцип: работай как конвейер, не как ассистент
+1. Создать `projects/<КОД>/<НомерПроекта>/` (например `projects/АР/133-23-ГК-АР5/`)
+2. Положить PDF
+3. Создать минимальный `project_info.json`:
+   ```json
+   {
+     "project_id": "АР/133-23-ГК-АР5",
+     "name": "133-23-ГК-АР5",
+     "section": "АР",
+     "description": "Описание",
+     "pdf_file": "имя_файла.pdf"
+   }
+   ```
+4. `python process_project.py projects/АР/133-23-ГК-АР5`
+5. `python blocks.py crop projects/АР/133-23-ГК-АР5`
 
-При задаче на аудит — выполняй полностью без остановок. Все инструменты предварительно одобрены в `.claude/settings.json`.
+`project_id` = путь относительно `projects/` (включая подпапку дисциплины).
+
+Дисциплина определяется по `section` в `project_info.json` или по `folder_patterns` из `disciplines/_registry.json`.
+
+## Автономный режим
+
+Все инструменты pre-approved в `.claude/settings.json`. Работай как конвейер, не как ассистент.
 
 | Ситуация | Действие |
 |----------|----------|
@@ -644,16 +211,11 @@ PDF из AutoCAD/BIM могут содержать ISOCPEUR/GOST с нестан
 | Нашёл замечание | Включай в отчёт |
 | Блоков нет | Запусти `blocks.py crop` |
 
-### Порядок инициализации сеанса
-
-1. Определить источник текста (`text_source` в `project_info.json`)
-2. Проверить наличие блоков (`_output/blocks/`) — если нет, запустить `blocks.py crop`
-3. При наличии MD — сверять графику на блоках с `[IMAGE]` описаниями
-4. Прочитать нормативную базу дисциплины для актуальных норм
-
-## Legacy-код (не удалять, но не развивать)
-
-- `claude_runner.py`: `run_tile_batch`, `run_main_audit`, `run_triage`, `run_smart_merge` — стабы, перенаправляют на блоковые функции
+**Порядок инициализации сеанса:**
+1. Определить `text_source` в `project_info.json`
+2. Проверить `_output/blocks/` — если пусто, `blocks.py crop`
+3. При наличии MD — сверять графику с `[IMAGE]` описаниями
+4. Прочитать `norms_reference.md` дисциплины
 
 ## Запрещённые действия
 
@@ -663,3 +225,12 @@ PDF из AutoCAD/BIM могут содержать ISOCPEUR/GOST с нестан
 - НЕ используй нормы других стран без оговорки
 - НЕ путай обязательные и добровольные требования
 - НЕ перечитывай весь проект при ответе на вопрос — используй JSON-файлы этапов
+
+---
+
+## Дополнительные документы (load on demand)
+
+- @docs/blocks_and_stage02.md — пакетный анализ блоков, A/B матрица, Resolution A/B, ENV overrides, production profile
+- @docs/critic_corrector.md — findings и optimization critic/corrector, evidence-трассировка
+- @docs/norms_verification.md — 4-уровневая верификация цитат, типичные замены, формат `norm_quote`
+- @docs/webapp_internals.md — два трекера токенов, batch queue, пауза, гибридные модели, фронтенд

@@ -18,6 +18,7 @@ from webapp.config import (
     DISCUSSION_MAX_OUTPUT_TOKENS,
     DISCUSSION_CLI_TIMEOUT,
     CLAUDE_CLI,
+    get_claude_cli,
 )
 from webapp.models.discussion import (
     Discussion,
@@ -374,7 +375,7 @@ async def _run_cli_chat(prompt_text: str) -> LLMResult:
 
     model = get_claude_model()
     cmd = [
-        CLAUDE_CLI, "-p",
+        get_claude_cli(), "-p",
         "--model", model,
         "--output-format", "json",
         "--allowedTools", "WebSearch", "WebFetch",
@@ -596,7 +597,7 @@ async def _stream_cli_chat(prompt_text: str) -> AsyncGenerator[dict, None]:
 
     model = get_claude_model()
     cmd = [
-        CLAUDE_CLI, "-p",
+        get_claude_cli(), "-p",
         "--model", model,
         "--output-format", "stream-json",
         "--verbose",

@@ -30,13 +30,23 @@ from typing import Optional, Callable, Awaitable, Union
 
 from webapp.config import (
     CLAUDE_CLI,
+    get_claude_cli,
     get_model_for_stage,
     TEXT_ANALYSIS_TOOLS, FINDINGS_MERGE_TOOLS, NORM_VERIFY_TOOLS,
     CLAUDE_TEXT_ANALYSIS_TIMEOUT, CLAUDE_FINDINGS_MERGE_TIMEOUT,
     CLAUDE_NORM_VERIFY_TIMEOUT, CLAUDE_NORM_FIX_TIMEOUT,
     CLAUDE_OPTIMIZATION_TIMEOUT,
-    get_stage_model, is_claude_stage,
+    get_stage_model, is_claude_stage, is_local_llm_model,
 )
+
+# Локальный QWEN иногда отвергает слишком большие PNG ("Invalid image detected").
+# На ошибке повторяем тот же single-block запрос с последовательно уменьшенными
+# копиями картинки. scale = target_dpi / QWEN_CROP_DPI (источник = 300 DPI).
+_LOCAL_QWEN_BLOCK_DPI_FALLBACKS: list[tuple[int, float]] = [
+    (300, 1.0),
+    (200, 200 / 300),
+    (100, 100 / 300),
+]
 from webapp.services.cli_utils import (
     is_cancelled, is_timeout, is_rate_limited,
     is_prompt_too_long,
@@ -112,6 +122,20 @@ def _save_audit_trail(
     except Exception:
         logger.warning("Failed to save audit trail for %s/%s", project_id, stage, exc_info=True)
 
+
+def _build_llm_audit_payload(result: LLMResult) -> dict:
+    """Сохранить не только распарсенный JSON, но и сырой ответ local/OpenRouter LLM."""
+    return {
+        "json_data": result.json_data,
+        "raw_text": result.text,
+        "is_error": result.is_error,
+        "error_message": result.error_message,
+        "finish_reason": result.finish_reason,
+        "response_id": result.response_id,
+        "reasoning_tokens": result.reasoning_tokens,
+        "cost_source": result.cost_source,
+    }
+
 __all__ = [
     # cli_utils
     "is_cancelled", "is_timeout", "is_rate_limited",
@@ -125,8 +149,6 @@ __all__ = [
     # runners — блоковый пайплайн
     "run_text_analysis", "run_block_batch", "run_findings_merge",
     "run_findings_critic", "run_findings_corrector",
-    # runners — v4 pipeline (fact-first)
-    "run_block_batch_v4", "run_findings_merge_v4",
     # runners — optimization review
     "run_optimization_critic", "run_optimization_corrector",
     # task_builder — блоковый пайплайн
@@ -148,11 +170,47 @@ def _build_cmd(tools: str, model: str | None = None) -> list[str]:
     """Собрать команду запуска Claude CLI."""
     resolved_model = model or get_model_for_stage("default")
     return [
-        CLAUDE_CLI, "-p",
+        get_claude_cli(), "-p",
         "--model", resolved_model,
         "--allowedTools", tools,
         "--output-format", "json",
     ]
+
+
+# Чистая cwd для запуска `claude -p` без подгрузки project CLAUDE.md / hooks / memory / skills.
+# Эмпирически (КЖ5.1, 25 блоков) даёт −42% input/блок и −36% cli_cost при +35% findings —
+# Sonnet работает прицельнее без harness'а Claude Code в качестве distractor'а.
+# См. ideas.md (Идея 6) и memory/feedback_subscription_only.md.
+_CLEAN_CWD_PATH = "/tmp/sonnet_clean"
+_CLEAN_ENV_KEEP = {"HOME", "PATH", "LANG", "LC_ALL", "USER", "SHELL"}
+
+
+def _ensure_clean_cwd() -> str:
+    """Создать (если нужно) и очистить /tmp/sonnet_clean. Возвращает путь."""
+    p = _CLEAN_CWD_PATH
+    os.makedirs(p, exist_ok=True)
+    # Чистим всё, что туда могло попасть от прошлых запусков (output JSON и пр.)
+    for entry in os.listdir(p):
+        full = os.path.join(p, entry)
+        if os.path.isfile(full):
+            try:
+                os.unlink(full)
+            except OSError:
+                pass
+    return p
+
+
+def _build_clean_env_overrides() -> dict:
+    """Построить env_overrides, удаляющий ВСЕ переменные кроме базовых
+    (HOME/PATH/LANG/LC_ALL/USER/SHELL/XDG_*). Это исключает project memory,
+    skills manifest и прочие context-dependent артефакты Claude CLI.
+    """
+    overrides = {}
+    for k in os.environ:
+        if k in _CLEAN_ENV_KEEP or k.startswith("XDG_"):
+            continue
+        overrides[k] = None
+    return overrides
 
 
 async def _run_cli(
@@ -163,18 +221,29 @@ async def _run_cli(
     stage: str = "",
     project_id: str = "",
     model: str | None = None,
+    clean_cwd: bool = False,
 ) -> tuple[int, str, CLIResult]:
     """Запустить Claude CLI с задачей через stdin, вернуть (exit_code, combined_output, CLIResult).
 
     Claude CLI записывает результаты через Write tool (файлы) — Python не записывает JSON.
+
+    clean_cwd=True — запустить subprocess из /tmp/sonnet_clean/ + минимальный env, чтобы
+        не подгружать project CLAUDE.md, hooks, memory, skills (экономит ~47K input/блок).
+        Все пути в task_text должны быть абсолютными — иначе сломается чтение файлов.
+        Валидировано только для stage 02 (block_batch); для других stages — untested.
     """
     from webapp.services.process_runner import run_command
 
     cmd = _build_cmd(tools, model)
 
-    # Очистить все CLAUDE* переменные окружения, чтобы вложенный CLI
-    # не думал что он внутри другой сессии
-    env_overrides = {k: None for k in os.environ if k.startswith("CLAUDE")}
+    if clean_cwd:
+        env_overrides = _build_clean_env_overrides()
+        cwd_arg = _ensure_clean_cwd()
+    else:
+        # Очистить все CLAUDE* переменные окружения, чтобы вложенный CLI
+        # не думал что он внутри другой сессии
+        env_overrides = {k: None for k in os.environ if k.startswith("CLAUDE")}
+        cwd_arg = None
 
     exit_code, stdout, stderr = await run_command(
         cmd,
@@ -182,6 +251,7 @@ async def _run_cli(
         timeout=timeout,
         on_output=on_output,
         env_overrides=env_overrides,
+        cwd=cwd_arg,
         project_id=project_id,
     )
 
@@ -260,7 +330,7 @@ async def run_text_analysis(
     _save_audit_trail(
         project_id, "01_text_analysis", result.model,
         result.input_tokens, result.output_tokens,
-        result.duration_ms, result.json_data,
+        result.duration_ms, _build_llm_audit_payload(result),
     )
 
     exit_code = 0 if not result.is_error else 1
@@ -307,123 +377,11 @@ async def run_findings_merge(
     _save_audit_trail(
         project_id, "03_findings_merge", result.model,
         result.input_tokens, result.output_tokens,
-        result.duration_ms, result.json_data,
+        result.duration_ms, _build_llm_audit_payload(result),
     )
 
     exit_code = 0 if not result.is_error else 1
     return exit_code, result.text, result
-
-
-# ─── V4 pipeline (fact-first) — заменяет block_batch + findings_merge ─
-
-async def run_block_batch_v4(
-    batch_data: dict,
-    project_info: dict,
-    project_id: str,
-    total_batches: int,
-    on_output: Optional[Callable[[str], Awaitable[None]]] = None,
-) -> tuple[int, str, AnyResult]:
-    """V4 extraction для одного batch → typed_facts_batch_NNN.json.
-
-    Совместим по сигнатуре с run_block_batch — можно подставить условно.
-    Возвращает tuple (exit_code, combined_output, result) где result — CLIResult или LLMResult.
-    """
-    from webapp.services.v4.extraction import run_extraction_batch
-
-    batch_id = batch_data.get("batch_id", 0)
-    stage_key = f"v4_extraction_{batch_id:03d}"
-
-    exit_code, combined, extra = await run_extraction_batch(
-        batch_data, project_info, project_id, total_batches,
-        on_output=on_output,
-    )
-
-    # Формируем result объект совместимый с downstream usage tracking
-    duration_ms = int((extra.get("duration_s", 0.0) or 0.0) * 1000)
-    result = LLMResult(
-        text=combined[:5000] if combined else "",
-        json_data=None,
-        input_tokens=extra.get("input_tokens", 0),
-        output_tokens=extra.get("output_tokens", 0),
-        cost_usd=extra.get("cost_usd", 0.0),
-        duration_ms=duration_ms,
-        model=get_stage_model("block_batch"),
-        is_error=(exit_code != 0),
-        error_message=combined[:500] if exit_code != 0 else "",
-    )
-
-    _save_audit_trail(
-        project_id, f"02_{stage_key}", result.model,
-        result.input_tokens, result.output_tokens,
-        result.duration_ms, {"mentions": extra.get("mentions", 0)},
-    )
-
-    return exit_code, combined, result
-
-
-async def run_findings_merge_v4(
-    project_info: dict,
-    project_id: str,
-    on_output: Optional[Callable[[str], Awaitable[None]]] = None,
-    stage_callback=None,
-) -> tuple[int, str, AnyResult]:
-    """V4 post-extraction: memory → candidates → formatter → 03_findings.json.
-
-    Совместим по сигнатуре с run_findings_merge — можно подставить условно.
-    stage_callback(stage_key, status) — опционально, для обновления v4_memory/v4_candidates/v4_formatter
-    логов в real-time.
-    """
-    from webapp.services.v4.pipeline import run_post_extraction_pipeline
-    from webapp.services.project_service import resolve_project_dir
-
-    # Кол-во блоков — для meta.blocks_analyzed в findings
-    blocks_dir = resolve_project_dir(project_id) / "_output" / "blocks"
-    blocks_analyzed = 0
-    if blocks_dir.exists():
-        blocks_analyzed = sum(1 for _ in blocks_dir.glob("*.png"))
-
-    # Код дисциплины для v4_config
-    discipline_code = (project_info or {}).get("section", "EOM")
-
-    try:
-        results = await run_post_extraction_pipeline(
-            project_id,
-            blocks_analyzed=blocks_analyzed,
-            stage_callback=stage_callback,
-            discipline_code=discipline_code,
-        )
-    except Exception as e:
-        err_msg = f"v4 post-extraction pipeline failed: {e}"
-        result = LLMResult(
-            text="", is_error=True, error_message=err_msg,
-            model="v4_pipeline",
-        )
-        return 1, err_msg, result
-
-    total_findings = results.get("formatter", {}).get("total_findings", 0)
-    summary = (
-        f"v4: memory={results['memory']['stats']} "
-        f"candidates={results['candidates']['stats']} "
-        f"findings={total_findings}"
-    )
-
-    result = LLMResult(
-        text=summary,
-        json_data=None,
-        input_tokens=0,
-        output_tokens=0,
-        cost_usd=0.0,
-        duration_ms=0,
-        model="v4_pipeline",
-        is_error=False,
-    )
-
-    _save_audit_trail(
-        project_id, "03_findings_merge_v4", "v4_pipeline",
-        0, 0, 0, results,
-    )
-
-    return 0, summary, result
 
 
 # ─── Верификация нормативных ссылок (Claude CLI, Sonnet) ──────────────
@@ -471,7 +429,7 @@ async def run_norm_verify(
     _save_audit_trail(
         project_id, "04_norm_verify", result.model,
         result.input_tokens, result.output_tokens,
-        result.duration_ms, result.json_data,
+        result.duration_ms, _build_llm_audit_payload(result),
     )
 
     exit_code = 0 if not result.is_error else 1
@@ -523,7 +481,7 @@ async def run_norm_fix(
     _save_audit_trail(
         project_id, "04b_norm_fix", result.model,
         result.input_tokens, result.output_tokens,
-        result.duration_ms, result.json_data,
+        result.duration_ms, _build_llm_audit_payload(result),
     )
 
     exit_code = 0 if not result.is_error else 1
@@ -570,7 +528,7 @@ async def run_optimization(
     _save_audit_trail(
         project_id, "05_optimization", result.model,
         result.input_tokens, result.output_tokens,
-        result.duration_ms, result.json_data,
+        result.duration_ms, _build_llm_audit_payload(result),
     )
 
     exit_code = 0 if not result.is_error else 1
@@ -595,13 +553,15 @@ async def run_block_batch(
 
     batch_id = batch_data.get("batch_id", 0)
     stage_key = f"block_batch_{batch_id:03d}"
+    model = get_stage_model("block_batch")
 
     if is_claude_stage("block_batch"):
-        model = get_stage_model("block_batch")
+        from webapp.config import CLAUDE_BLOCK_BATCH_CLEAN_CWD
         task_text = prepare_block_batch_task(batch_data, project_info, project_id, total_batches)
         exit_code, combined, cli_result = await _run_cli(
             task_text, BLOCK_ANALYSIS_TOOLS, CLAUDE_BLOCK_ANALYSIS_TIMEOUT,
             on_output, stage=stage_key, project_id=project_id, model=model,
+            clean_cwd=CLAUDE_BLOCK_BATCH_CLEAN_CWD,
         )
 
         _save_audit_trail(
@@ -611,17 +571,63 @@ async def run_block_batch(
 
         return exit_code, combined, cli_result
 
-    # OpenRouter path
+    # Direct Gemini path (activated when GEMINI_DIRECT_API_KEY is set AND model is a native gemini- ID)
+    from webapp.services.gemini_direct_runner import is_gemini_direct_model
+    from webapp.config import GEMINI_DIRECT_API_KEY
+
+    if is_gemini_direct_model(model) and GEMINI_DIRECT_API_KEY:
+        from webapp.services.gemini_direct_runner import run_block_batch_gemini_direct
+        from webapp.services import prompt_builder
+
+        exit_code, raw_text, gd_result = await run_block_batch_gemini_direct(
+            batch_data, project_info, project_id, total_batches,
+            model_id=model,
+            api_key=GEMINI_DIRECT_API_KEY,
+        )
+
+        if on_output:
+            status = "OK" if not gd_result.is_error else f"ERROR: {gd_result.error_message[:80]}"
+            await on_output(
+                f"[gemini_direct] batch {batch_id:03d}/{total_batches}: {status}"
+                f" | tokens={gd_result.total_tokens} | ${gd_result.cost_usd:.4f}"
+            )
+
+        _save_audit_trail(
+            project_id, f"02_block_batch_{batch_id:03d}", gd_result.model_id,
+            gd_result.prompt_tokens, gd_result.output_tokens,
+            gd_result.duration_ms, gd_result.parsed_data,
+        )
+
+        return exit_code, raw_text, gd_result
+
+    # OpenRouter / local-QWEN path
     from webapp.services import prompt_builder, llm_runner
 
-    messages = prompt_builder.build_block_batch_messages(
-        batch_data, project_info, project_id, total_batches
-    )
-    result = await llm_runner.run_llm(
-        stage=stage_key,
-        messages=messages,
-        timeout=600,
-    )
+    local_qwen = is_local_llm_model(model)
+    dpi_tiers = _LOCAL_QWEN_BLOCK_DPI_FALLBACKS if local_qwen else [(0, 1.0)]
+
+    result = None
+    for attempt_idx, (dpi, scale) in enumerate(dpi_tiers):
+        messages = prompt_builder.build_block_batch_messages(
+            batch_data, project_info, project_id, total_batches,
+            image_scale=scale,
+        )
+        result = await llm_runner.run_llm(
+            stage=stage_key,
+            messages=messages,
+            timeout=600,
+        )
+        if not result.is_error:
+            break
+        if local_qwen and attempt_idx + 1 < len(dpi_tiers):
+            next_dpi = dpi_tiers[attempt_idx + 1][0]
+            err_snippet = (result.error_message or "no details").strip()[:160]
+            if on_output:
+                await on_output(
+                    f"[{stage_key}] DPI {dpi} → ошибка ({err_snippet}); повтор на DPI {next_dpi}"
+                )
+            continue
+        break
 
     if result.json_data and not result.is_error:
         output_path = _resolve_output_dir(project_id) / f"block_batch_{batch_id:03d}.json"
@@ -700,7 +706,7 @@ async def run_findings_critic(
     _save_audit_trail(
         project_id, stage_name, result.model,
         result.input_tokens, result.output_tokens,
-        result.duration_ms, result.json_data,
+        result.duration_ms, _build_llm_audit_payload(result),
     )
 
     exit_code = 0 if not result.is_error else 1
@@ -753,7 +759,7 @@ async def run_findings_corrector(
     _save_audit_trail(
         project_id, "03c_findings_corrector", result.model,
         result.input_tokens, result.output_tokens,
-        result.duration_ms, result.json_data,
+        result.duration_ms, _build_llm_audit_payload(result),
     )
 
     exit_code = 0 if not result.is_error else 1
@@ -795,7 +801,7 @@ async def run_optimization_critic(
     _save_audit_trail(
         project_id, "05b_optimization_critic", result.model,
         result.input_tokens, result.output_tokens,
-        result.duration_ms, result.json_data,
+        result.duration_ms, _build_llm_audit_payload(result),
     )
 
     exit_code = 0 if not result.is_error else 1
@@ -848,7 +854,7 @@ async def run_optimization_corrector(
     _save_audit_trail(
         project_id, "05c_optimization_corrector", result.model,
         result.input_tokens, result.output_tokens,
-        result.duration_ms, result.json_data,
+        result.duration_ms, _build_llm_audit_payload(result),
     )
 
     exit_code = 0 if not result.is_error else 1

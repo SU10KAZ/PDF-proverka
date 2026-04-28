@@ -7,20 +7,58 @@ import re
 import subprocess
 import traceback
 from pathlib import Path
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Body, HTTPException, Query
 from webapp.services.pipeline_service import pipeline_manager
 from webapp.services import project_service
 from webapp.services.project_service import resolve_project_dir
 from webapp.config import (
     CLAUDE_CLI,
+    get_claude_cli,
     get_claude_model, set_claude_model, CLAUDE_MODEL_OPTIONS,
     get_stage_models, set_stage_model, get_model_for_stage,
     STAGE_MODELS_OPENROUTER, GEMINI_MODEL, GPT_MODEL,
     STAGE_MODEL_CONFIG, AVAILABLE_MODELS, get_stage_model, is_claude_stage,
-    _save_stage_model_config,
+    FLASH_PRO_TRIAGE_MODEL, _save_stage_model_config,
 )
 
 router = APIRouter(prefix="/api/audit", tags=["audit"])
+
+
+# ─── prepare-data queue control ──────────────────────────────────
+# Регистрируются ПЕРВЫМИ, потому что ниже есть `/{project_id:path}/resume`
+# (для audit job pause/resume), который перехватывает любой `/audit/.../resume`.
+# Префикс /prepare-data/queue/ — фиксированный, не path-параметр.
+
+@router.post("/prepare-data/queue/pause")
+async def prepare_data_pause():
+    """Поставить очередь prepare-data на паузу. Текущий блок дойдёт, потом ожидание."""
+    from webapp.services.prepare_service import pause_queue
+    return await pause_queue()
+
+
+@router.post("/prepare-data/queue/resume")
+async def prepare_data_resume():
+    """Снять паузу с очереди prepare-data."""
+    from webapp.services.prepare_service import resume_queue
+    return await resume_queue()
+
+
+@router.post("/prepare-data/queue/cancel")
+async def prepare_data_cancel():
+    """Отменить очередь prepare-data: pending → skipped, текущий блок дойдёт до конца."""
+    from webapp.services.prepare_service import cancel_queue
+    return await cancel_queue()
+
+
+@router.post("/prepare-data/{project_id:path}/retry-failed")
+async def prepare_data_retry_failed(project_id: str):
+    """Перепрогнать только упавшие блоки прошлого enrichment'а данного проекта.
+
+    Использует тот же Qwen-лок что и обычный prepare. Не делает full re-enrich,
+    обрабатывает только block_id'ы из summary.failed.
+    """
+    from webapp.services.prepare_service import start_retry_failed
+    return await start_retry_failed(project_id)
 
 
 async def _safe_task(coro, name: str = "task"):
@@ -84,7 +122,7 @@ async def set_stage_model_config(request: dict):
     Body: {"text_analysis": "openai/gpt-5.4", "block_batch": "google/gemini-3.1-pro-preview", ...}
     """
     from webapp.config import STAGE_MODEL_RESTRICTIONS
-    valid_model_ids = {m["id"] for m in AVAILABLE_MODELS}
+    valid_model_ids = {m["id"] for m in AVAILABLE_MODELS} | {FLASH_PRO_TRIAGE_MODEL}
     updated = {}
     for stage, model in request.items():
         if stage not in STAGE_MODEL_CONFIG:
@@ -109,15 +147,55 @@ async def set_stage_model_config(request: dict):
     return {"status": "ok", "updated": updated, "stages": dict(STAGE_MODEL_CONFIG)}
 
 
+@router.get("/model/batch-modes")
+async def get_stage_batch_modes_config():
+    """Текущие batch-режимы этапов (расширенные режимы поверх per-stage модели).
+
+    Сейчас используется только block_batch:
+      - "classic"                   — стандартный batched stage 02
+      - "findings_only_qwen_pair"   — single-block GPT-5.4 + qwen-enrichment + extended categories
+    """
+    from webapp.config import STAGE_BATCH_MODES, STAGE_BATCH_MODE_CHOICES
+    return {
+        "modes": dict(STAGE_BATCH_MODES),
+        "choices": STAGE_BATCH_MODE_CHOICES,
+    }
+
+
+@router.post("/model/batch-modes")
+async def set_stage_batch_modes_config(request: dict):
+    """Установить batch-режимы этапов.
+
+    Body: {"block_batch": "findings_only_qwen_pair"} или {"block_batch": "classic"}.
+    """
+    from webapp.config import set_stage_batch_mode, STAGE_BATCH_MODES, STAGE_BATCH_MODE_CHOICES
+    updated = {}
+    rejected = {}
+    for stage, mode in request.items():
+        if stage not in STAGE_BATCH_MODE_CHOICES:
+            rejected[stage] = f"unknown stage (choices: {list(STAGE_BATCH_MODE_CHOICES)})"
+            continue
+        if mode not in STAGE_BATCH_MODE_CHOICES[stage]:
+            rejected[stage] = f"invalid mode (choices: {STAGE_BATCH_MODE_CHOICES[stage]})"
+            continue
+        if set_stage_batch_mode(stage, mode):
+            updated[stage] = mode
+    if rejected:
+        return {"status": "partial", "updated": updated, "rejected": rejected,
+                "modes": dict(STAGE_BATCH_MODES)}
+    return {"status": "ok", "updated": updated, "modes": dict(STAGE_BATCH_MODES)}
+
+
 @router.get("/account")
 async def get_claude_account():
     """Получить информацию о текущем аккаунте Claude CLI."""
     try:
+        cli = get_claude_cli()
         result = subprocess.run(
-            [CLAUDE_CLI, "auth", "status", "--json"],
+            [cli, "auth", "status", "--json"],
             capture_output=True, text=True, timeout=10,
             encoding="utf-8", errors="replace",
-            shell=CLAUDE_CLI.endswith(".cmd"),
+            shell=cli.endswith(".cmd"),
         )
         if result.returncode == 0 and result.stdout.strip():
             data = json.loads(result.stdout.strip())
@@ -141,11 +219,12 @@ _login_state: dict = {"proc": None, "url": None, "done": False}
 async def switch_claude_account():
     """Выйти из текущего аккаунта и начать логин в новый. Возвращает auth URL."""
     global _login_state
-    shell = CLAUDE_CLI.endswith(".cmd")
+    cli = get_claude_cli()
+    shell = cli.endswith(".cmd")
 
     # 1. Logout
     subprocess.run(
-        [CLAUDE_CLI, "auth", "logout"],
+        [cli, "auth", "logout"],
         capture_output=True, text=True, timeout=10,
         encoding="utf-8", errors="replace", shell=shell,
     )
@@ -157,7 +236,7 @@ async def switch_claude_account():
         kwargs["creationflags"] = 0x08000000  # CREATE_NO_WINDOW
 
     proc = subprocess.Popen(
-        [CLAUDE_CLI, "auth", "login"],
+        [cli, "auth", "login"],
         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
         text=True, encoding="utf-8", errors="replace",
         shell=shell, **kwargs,
@@ -191,11 +270,12 @@ async def switch_account_status():
     if _login_state.get("done"):
         # Получить данные нового аккаунта
         try:
+            cli = get_claude_cli()
             result = subprocess.run(
-                [CLAUDE_CLI, "auth", "status", "--json"],
+                [cli, "auth", "status", "--json"],
                 capture_output=True, text=True, timeout=10,
                 encoding="utf-8", errors="replace",
-                shell=CLAUDE_CLI.endswith(".cmd"),
+                shell=cli.endswith(".cmd"),
             )
             if result.returncode == 0 and result.stdout.strip():
                 data = json.loads(result.stdout.strip())
@@ -654,6 +734,22 @@ async def start_audit(project_id: str):
         raise HTTPException(409, str(e))
 
 
+@router.post("/{project_id:path}/flash-pro-triage")
+async def start_flash_pro_triage(project_id: str, request: dict | None = Body(default=None)):
+    """Явный stage-02 режим: Flash full single-block + Pro selected single-block."""
+    _check_project(project_id)
+    request = request or {}
+    try:
+        job = await pipeline_manager.start_flash_pro_triage(
+            project_id,
+            max_pro_cost_usd=float(request.get("max_pro_cost_usd", 8.0)),
+            include_simple_findings=bool(request.get("include_simple_findings", False)),
+        )
+        return {"status": "started", "job": job.model_dump()}
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
+
+
 # Legacy aliases
 @router.post("/{project_id:path}/standard-audit")
 async def start_standard_audit(project_id: str):
@@ -703,6 +799,59 @@ async def start_norm_verification(project_id: str):
         return {"status": "started", "job": job.model_dump()}
     except RuntimeError as e:
         raise HTTPException(409, str(e))
+
+
+@router.post("/{project_id:path}/prepare-data")
+async def prepare_data_endpoint(
+    project_id: str,
+    force: bool = False,
+    parallelism: int | None = None,
+    model: str | None = None,
+    timeout: int | None = None,
+):
+    """Запустить «Подготовить данные» = crop PNG + Qwen enrichment.
+
+    Прогресс публикуется в WebSocket (ws/audit/{project_id}) с stage="prepare_data".
+    Возвращает immediately с status=started — клиент следит по WS.
+    """
+    _check_project(project_id)
+    from webapp.services.prepare_service import start_prepare_data
+    result = await start_prepare_data(
+        project_id,
+        force=force,
+        parallelism=parallelism,
+        model=model,
+        timeout=timeout,
+    )
+    if result.get("status") == "already_running":
+        raise HTTPException(409, "prepare_data уже запущен для этого проекта")
+    return result
+
+
+@router.get("/{project_id:path}/prepare-data/status")
+async def prepare_data_status(project_id: str):
+    """Текущий статус prepare_data (running + позиция в очереди + последний результат)."""
+    from webapp.services.prepare_service import get_prepare_status
+    return get_prepare_status(project_id)
+
+
+@router.get("/prepare-data/queue")
+async def prepare_data_queue():
+    """Глобальная очередь prepare-задач (с per-project прогрессом)."""
+    from webapp.services.prepare_service import get_global_queue
+    return get_global_queue()
+
+
+@router.post("/prepare-data/queue/clear")
+async def prepare_data_queue_clear():
+    """Очистить из очереди завершённые/упавшие/пропущенные задачи."""
+    from webapp.services.prepare_service import clear_completed_from_queue
+    removed = clear_completed_from_queue()
+    return {"removed": removed}
+
+
+# prepare-data/queue/{pause,resume,cancel} зарегистрированы вверху файла,
+# чтобы /{project_id:path}/resume не перехватывал их
 
 
 @router.post("/{project_id:path}/crop-blocks-only")
@@ -781,11 +930,6 @@ async def retry_stage(project_id: str, stage: str):
         "optimization": lambda: pipeline_manager.start_optimization(project_id),
         "optimization_critic": lambda: pipeline_manager.start_optimization_review(project_id),
         "optimization_corrector": lambda: pipeline_manager.start_optimization_review(project_id),
-        # V4 pipeline stages
-        "v4_extraction": lambda: pipeline_manager.start_from_stage(project_id, "block_analysis"),
-        "v4_memory": lambda: pipeline_manager.start_from_stage(project_id, "findings_merge"),
-        "v4_candidates": lambda: pipeline_manager.start_from_stage(project_id, "findings_merge"),
-        "v4_formatter": lambda: pipeline_manager.start_from_stage(project_id, "findings_merge"),
         # Legacy aliases
         "prepare": lambda: pipeline_manager.start_from_stage(project_id, "prepare"),
         "tile_audit": lambda: pipeline_manager.start_from_stage(project_id, "block_analysis"),

@@ -139,7 +139,6 @@ lines += [
     "── HOW TO WORK ──────────────────────────────────────────────────",
     "  Single project:  python process_project.py projects/<name>",
     "  All projects:    python process_project.py",
-    "  Batch audit:     .\\run_all_projects.ps1",
     "",
     "── AUTONOMOUS MODE RULES ────────────────────────────────────────",
     "  1. Work autonomously — do NOT ask questions during analysis",

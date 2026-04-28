@@ -601,6 +601,8 @@ def crop_blocks(
     block_ids: list[str] | None = None,
     force: bool = False,
     compact: bool = False,
+    dpi: int | None = None,
+    skip_small: bool = True,
 ) -> dict:
     """Скачать image-блоки по crop_url из result.json и сохранить как PNG.
 
@@ -701,7 +703,7 @@ def crop_blocks(
                 w = x2 - x1
                 h = y2 - y1
                 area = w * h
-                if area < MIN_BLOCK_AREA_PX2:
+                if skip_small and area < MIN_BLOCK_AREA_PX2:
                     print(f"  [SKIP] {bid}: слишком мелкий ({w}x{h} = {area} px²)")
                     continue
 
@@ -769,10 +771,15 @@ def crop_blocks(
         crop_url = block_info["crop_url"]
         download_error = None
 
-        # DPI-режим: единое разрешение для всех блоков
-        use_dpi = TARGET_DPI_COMPACT if compact else TARGET_DPI
-        use_min_side = MIN_LONG_SIDE_PX_COMPACT if compact else MIN_LONG_SIDE_PX
-        save_full = full_file if compact else None
+        # DPI-режим: кастомный dpi перекрывает compact/production
+        if dpi is not None:
+            use_dpi = dpi
+            use_min_side = MIN_LONG_SIDE_PX
+            save_full = None
+        else:
+            use_dpi = TARGET_DPI_COMPACT if compact else TARGET_DPI
+            use_min_side = MIN_LONG_SIDE_PX_COMPACT if compact else MIN_LONG_SIDE_PX
+            save_full = full_file if compact else None
 
         if crop_url:
             try:
@@ -856,6 +863,8 @@ def crop_blocks(
         "total_expected": len(all_image_blocks),
         "errors": errors,
         "compact": compact,
+        "dpi": dpi,
+        "skip_small": skip_small,
         "source_result_json": [rj.name for rj in result_json_paths],
         "blocks": index_blocks,
     }
@@ -2096,6 +2105,136 @@ def recrop_blocks(
 # CLI — точка входа с подкомандами
 # ═══════════════════════════════════════════════════════════════════════════════
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# PREPARE-DATA — crop + Qwen enrichment в одной команде
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def _backup_output_for_reenrichment(out_dir: Path) -> Path:
+    """Перенести pipeline-артефакты в _output/_pre_enrichment_<ts>/.
+
+    Сохраняет: blocks/ (PNG), audit_log.jsonl, audit_trail/, _pre_enrichment_*/
+    Двигает: все остальные .json файлы и поддиректории.
+
+    Возвращает путь к созданному backup.
+    """
+    import shutil
+    from datetime import datetime, timezone
+
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%S")
+    backup_dir = out_dir / f"_pre_enrichment_{ts}"
+    backup_dir.mkdir(parents=True, exist_ok=True)
+
+    KEEP_FILES = {"audit_log.jsonl"}
+    KEEP_DIRS = {"blocks", "audit_trail"}
+
+    moved: list[str] = []
+    for entry in out_dir.iterdir():
+        if entry == backup_dir:
+            continue
+        if entry.name.startswith("_pre_enrichment_"):
+            continue
+        if entry.is_file() and entry.name in KEEP_FILES:
+            continue
+        if entry.is_dir() and entry.name in KEEP_DIRS:
+            continue
+        target = backup_dir / entry.name
+        shutil.move(str(entry), str(target))
+        moved.append(entry.name)
+
+    if not moved:
+        # Ничего не перенесли — удалим пустой backup
+        backup_dir.rmdir()
+        return out_dir  # signal: nothing was backed up
+    print(f"  [BACKUP] Перенесено {len(moved)} элементов в {backup_dir.name}/")
+    return backup_dir
+
+
+def prepare_data(project_dir: str, *, force: bool = False, parallelism: int = None,
+                 model: str = None, timeout: int = None) -> dict:
+    """Подготовка данных проекта: crop PNG + Qwen enrichment в MD.
+
+    Шаги:
+      1. crop_blocks() — скачать PNG с Chandra по crop_url.
+      2. Если уже enriched и force=False — skip Qwen.
+      3. Если force=True — backup _output/ в _pre_enrichment_<ts>/.
+      4. qwen_enrich.enrich_project() — Qwen обогащает MD + дописывает meta в граф.
+    """
+    import asyncio
+    from qwen_enrich import (
+        enrich_project, get_enrichment_meta, DEFAULT_MODEL,
+        DEFAULT_PARALLELISM, DEFAULT_TIMEOUT_S,
+    )
+
+    project_dir_p = Path(project_dir).resolve()
+    out_dir = project_dir_p / "_output"
+
+    # ── Step 1: crop ──
+    print(f"\n[1/2] CROP — скачивание блоков по crop_url ...")
+    crop_result = crop_blocks(str(project_dir_p), force=False, skip_small=True)
+    if crop_result.get("error"):
+        return {"error": crop_result["error"]}
+    print(f"  OK: {crop_result.get('cropped',0)} cropped, "
+          f"{crop_result.get('skipped',0)} skipped, {crop_result.get('errors',0)} errors")
+
+    # ── Step 2: enrichment ──
+    md_files = sorted(project_dir_p.glob("*_document.md"))
+    if not md_files:
+        return {"error": "MD-файл не найден"}
+    md_path = md_files[0]
+
+    existing_meta = get_enrichment_meta(md_path)
+    if existing_meta and not force:
+        print(f"\n[2/2] ENRICH — пропущено (уже обогащено: {existing_meta['model']} @ {existing_meta['timestamp']}, "
+              f"{existing_meta['blocks_ok']}/{existing_meta['blocks_total']} blocks). "
+              f"Используйте --force чтобы перезапустить.")
+        return {"crop": crop_result, "enrich": {"status": "skipped", "existing": existing_meta}}
+
+    if force and existing_meta:
+        print(f"\n[2/2] FORCE re-enrich — backup _output/ ...")
+        backup = _backup_output_for_reenrichment(out_dir)
+        print(f"  Backup: {backup.name if backup != out_dir else '(nothing to backup)'}")
+    else:
+        print(f"\n[2/2] ENRICH — Qwen multimodal на image-блоках ...")
+
+    # Параметры через project_info.json overrides → CLI args → defaults
+    info_path = project_dir_p / "project_info.json"
+    enrichment_cfg: dict = {}
+    if info_path.exists():
+        try:
+            info = json.loads(info_path.read_text(encoding="utf-8"))
+            enrichment_cfg = info.get("enrichment") or {}
+        except Exception:
+            pass
+
+    final_model = model or enrichment_cfg.get("model") or DEFAULT_MODEL
+    final_parallelism = parallelism or enrichment_cfg.get("parallelism") or DEFAULT_PARALLELISM
+    final_timeout = timeout or enrichment_cfg.get("timeout") or DEFAULT_TIMEOUT_S
+
+    def _print_progress(event: dict) -> None:
+        t = event.get("type")
+        if t == "started":
+            print(f"  [start] {event['total']} blocks, model={event['model']}, parallelism={event['parallelism']}")
+        elif t == "block_done":
+            mark = "OK " if event["ok"] else "FAIL"
+            err = f" — {event['error'][:80]}" if event.get("error") else ""
+            print(f"    [{event['completed']:>3}/{event['total']}] {mark} {event['block_id']} "
+                  f"p={event['page']} t={event['elapsed_ms']/1000:.1f}s{err}")
+        elif t == "completed":
+            s = event["summary"]
+            print(f"  [done] {s['blocks_ok']}/{s['blocks_total']} OK in {s['wall_clock_s']}s")
+
+    enrich_result = asyncio.run(enrich_project(
+        project_dir_p,
+        force=force,
+        model=final_model,
+        parallelism=final_parallelism,
+        timeout=final_timeout,
+        progress_cb=_print_progress,
+    ))
+
+    return {"crop": crop_result, "enrich": enrich_result}
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Блоковый конвейер: скачивание, группировка, слияние"
@@ -2109,6 +2248,10 @@ def main():
     p_crop.add_argument("--force", action="store_true", help="Перезаписать существующие PNG")
     p_crop.add_argument("--compact", action="store_true",
                          help="Compact-режим: 800px для батчей + full-версия для retry нечитаемых")
+    p_crop.add_argument("--dpi", type=int, default=None,
+                         help="Переопределить DPI рендера (например --dpi 300 для QWEN)")
+    p_crop.add_argument("--no-skip-small", action="store_true",
+                         help="Не пропускать мелкие блоки (по умолчанию блоки <50000 px² пропускаются)")
 
     # batches
     p_batch = subparsers.add_parser("batches", help="Сгенерировать пакеты блоков")
@@ -2144,6 +2287,19 @@ def main():
     p_promote.add_argument("project_dir", help="Путь к папке проекта")
     p_promote.add_argument("--block-ids", help="Список block_id через запятую (иначе — авто из unreadable_text)")
 
+    # prepare-data: crop + Qwen enrichment
+    p_prep = subparsers.add_parser("prepare-data",
+        help="Полная подготовка: crop PNG + Qwen enrichment в MD")
+    p_prep.add_argument("project_dir", help="Путь к папке проекта")
+    p_prep.add_argument("--force", action="store_true",
+                        help="Force re-enrich: перезапустить Qwen + backup _output/")
+    p_prep.add_argument("--parallelism", type=int, default=None,
+                        help="Кол-во параллельных Qwen-запросов (default из project_info или 2)")
+    p_prep.add_argument("--model", default=None,
+                        help="Qwen модель (default qwen/qwen3.6-35b-a3b)")
+    p_prep.add_argument("--timeout", type=int, default=None,
+                        help="Таймаут per-request, сек (default 300)")
+
     args = parser.parse_args()
 
     if not os.path.isdir(args.project_dir):
@@ -2153,7 +2309,9 @@ def main():
     if args.command == "crop":
         block_ids = [b.strip() for b in args.block_ids.split(",")] if args.block_ids else None
         result = crop_blocks(args.project_dir, block_ids=block_ids, force=args.force,
-                             compact=getattr(args, "compact", False))
+                             compact=getattr(args, "compact", False),
+                             dpi=getattr(args, "dpi", None),
+                             skip_small=not getattr(args, "no_skip_small", False))
         if result.get("error"):
             sys.exit(1)
         print(json.dumps({
@@ -2222,6 +2380,21 @@ def main():
         if result.get("error"):
             sys.exit(1)
         print(json.dumps(result, ensure_ascii=False))
+
+    elif args.command == "prepare-data":
+        result = prepare_data(
+            args.project_dir,
+            force=getattr(args, "force", False),
+            parallelism=getattr(args, "parallelism", None),
+            model=getattr(args, "model", None),
+            timeout=getattr(args, "timeout", None),
+        )
+        if result.get("error"):
+            print(f"[ERROR] {result['error']}")
+            sys.exit(1)
+        enrich = result.get("enrich") or {}
+        if enrich.get("status") == "partial":
+            sys.exit(2)
 
 
 if __name__ == "__main__":

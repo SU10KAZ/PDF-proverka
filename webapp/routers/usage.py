@@ -1,6 +1,6 @@
 """REST API для трекинга потребления токенов."""
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Body, HTTPException
 from webapp.services.usage_service import (
     usage_tracker, global_scanner, paid_cost_tracker,
     WINDOW_5H_TOKEN_LIMIT, WEEKLY_TOKEN_LIMIT,
@@ -55,9 +55,44 @@ async def reset_session():
 
 @router.post("/clear-all")
 async def clear_all_usage():
-    """Полная очистка всех записей usage (счётчик на карточках проектов)."""
+    """Полная очистка всех записей usage (счётчик на карточках проектов)
+    и сброс отображаемых счётчиков (5ч / Все / Sonnet) в 0%."""
     usage_tracker.clear_all()
+    global_scanner.clear_displayed_counters()
     return {"status": "ok", "message": "Все записи usage очищены"}
+
+
+@router.post("/global/clear-display")
+async def clear_displayed_counters():
+    """Обнулить только отображаемые счётчики на дашборде (offsets),
+    не трогая записи проектов."""
+    global_scanner.clear_displayed_counters()
+    return {"status": "ok", "counters": global_scanner.get_counters().model_dump()}
+
+
+@router.post("/global/reset-offsets")
+async def reset_offsets():
+    """Сбросить пользовательские смещения (показывать «как есть»)."""
+    global_scanner.clear_offsets()
+    return {"status": "ok", "counters": global_scanner.get_counters().model_dump()}
+
+
+@router.post("/global/set-percent")
+async def set_percent(payload: dict = Body(...)):
+    """Подкрутить смещение, чтобы отображаемый процент совпал с указанным.
+
+    payload: {"scope": "session_5h"|"weekly_all"|"weekly_sonnet", "percent": 0..100}
+    """
+    scope = (payload or {}).get("scope")
+    percent = (payload or {}).get("percent")
+    if scope not in ("session_5h", "weekly_all", "weekly_sonnet"):
+        raise HTTPException(status_code=400, detail="invalid scope")
+    try:
+        result = global_scanner.set_displayed_percent(scope, percent)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return {"status": "ok", "result": result,
+            "counters": global_scanner.get_counters().model_dump()}
 
 
 @router.get("/project/{project_id:path}")

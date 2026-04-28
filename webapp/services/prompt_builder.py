@@ -22,6 +22,7 @@ from webapp.config import (
     NORM_VERIFY_TASK_TEMPLATE, NORM_FIX_TASK_TEMPLATE,
     OPTIMIZATION_TASK_TEMPLATE,
     OPTIMIZATION_CRITIC_TASK_TEMPLATE, OPTIMIZATION_CORRECTOR_TASK_TEMPLATE,
+    get_stage_model, is_local_llm_model,
 )
 from webapp.services.task_builder import (
     load_template_for_llm,
@@ -170,6 +171,66 @@ def _read_json_file(project_id: str, filename: str) -> str:
         return f"(ошибка чтения {filename}: {e})"
 
 
+def _read_findings_merge_blocks(project_id: str, *, compact_for_local: bool) -> str:
+    """Прочитать 02_blocks_analysis.json для merge.
+
+    Для локального QWEN резко уменьшаем payload: оставляем только поля,
+    которые реально нужны, чтобы не терять свод замечаний из-за переполнения
+    контекста и невалидного ответа.
+    """
+    file_path = resolve_project_dir(project_id) / "_output" / "02_blocks_analysis.json"
+    if not file_path.exists():
+        return "(файл 02_blocks_analysis.json не найден)"
+
+    try:
+        raw_text = file_path.read_text(encoding="utf-8")
+    except OSError as e:
+        return f"(ошибка чтения 02_blocks_analysis.json: {e})"
+
+    if not compact_for_local:
+        return raw_text
+
+    try:
+        data = json.loads(raw_text)
+    except json.JSONDecodeError:
+        return raw_text
+
+    compact: dict[str, object] = {
+        "stage": data.get("stage"),
+        "meta": data.get("meta"),
+        "items_verified_from_stage_01": data.get("items_verified_from_stage_01"),
+        "block_analyses": [],
+    }
+    compact_blocks: list[dict[str, object]] = []
+
+    for block in data.get("block_analyses", []) or []:
+        findings = block.get("findings") or []
+        if not findings:
+            continue
+        compact_blocks.append({
+            "block_id": block.get("block_id"),
+            "page": block.get("page"),
+            "sheet": block.get("sheet"),
+            "label": block.get("label"),
+            "sheet_type": block.get("sheet_type"),
+            "findings": [
+                {
+                    "id": finding.get("id"),
+                    "severity": finding.get("severity"),
+                    "category": finding.get("category"),
+                    "finding": finding.get("finding"),
+                    "norm": finding.get("norm"),
+                    "value_found": finding.get("value_found"),
+                    "highlight_regions": finding.get("highlight_regions"),
+                }
+                for finding in findings
+            ],
+        })
+
+    compact["block_analyses"] = compact_blocks
+    return json.dumps(compact, ensure_ascii=False, indent=2)
+
+
 def _read_norms_reference(project_info: dict) -> str:
     """Прочитать нормативную базу дисциплины (norms_reference.md) inline."""
     try:
@@ -208,6 +269,73 @@ def _read_md_file(project_info: dict, project_id: str) -> str:
         return md_path.read_text(encoding="utf-8")
     except OSError as e:
         return f"(ошибка чтения MD: {e})"
+
+
+def _read_extracted_text_from_document_graph(project_id: str) -> str:
+    """Собрать текстовый fallback из document_graph.json, если MD-файл отсутствует."""
+    graph = _load_document_graph(project_id)
+    if not graph:
+        return ""
+
+    page_chunks: list[str] = []
+    for page in graph.get("pages", []):
+        lines: list[str] = [f"[PAGE {page.get('page', '?')}]"]
+        sheet_no = (
+            page.get("sheet_no_raw")
+            or page.get("sheet_no_normalized")
+            or page.get("sheet_no")
+        )
+        sheet_name = page.get("sheet_name")
+        if sheet_no:
+            lines.append(f"Sheet: {sheet_no}")
+        if sheet_name:
+            lines.append(f"Title: {sheet_name}")
+
+        text_blocks: list[str] = []
+        for tb in page.get("text_blocks", []):
+            text = (tb.get("text_norm") or tb.get("text") or "").strip()
+            if text:
+                text_blocks.append(text)
+        if text_blocks:
+            lines.append("\n\n".join(text_blocks))
+
+        if len(lines) > 1:
+            page_chunks.append("\n".join(lines))
+
+    return "\n\n---\n\n".join(page_chunks).strip()
+
+
+def _resolve_text_analysis_source(project_info: dict, project_id: str) -> tuple[str, str, str]:
+    """Выбрать источник текста для stage 01: MD или extracted_text из document_graph."""
+    md_file = project_info.get("md_file")
+    if md_file:
+        md_path = resolve_project_dir(project_id) / md_file
+        if md_path.exists():
+            return (
+                "md",
+                _read_md_file(project_info, project_id),
+                "Below is the full text of the project MD file. Analyze it according to the instructions.\n\n",
+            )
+
+    extracted_text = _read_extracted_text_from_document_graph(project_id)
+    if extracted_text:
+        return (
+            "extracted_text",
+            extracted_text,
+            (
+                "The project MD file is unavailable. Below is text extracted from document_graph.json. "
+                'Use `"text_source": "extracted_text"` in the output JSON and analyze only the provided text.\n\n'
+            ),
+        )
+
+    return (
+        "extracted_text",
+        "(text source unavailable: MD file missing and document_graph.json has no text blocks)",
+        (
+            "The project MD file is unavailable and no extracted text is available. "
+            'Return valid JSON with `"text_source": "extracted_text"`, empty arrays, and only fields that can be safely inferred.\n\n'
+        ),
+    )
 
 
 def _get_plan_images(project_id: str) -> list[Path]:
@@ -365,16 +493,31 @@ def build_text_analysis_messages(
         TEXT_ANALYSIS_TASK_TEMPLATE, project_info, project_id,
     )
 
-    # Подгрузить нормативную базу дисциплины inline (для OpenRouter — Claude CLI читает сам)
-    norms_text = _read_norms_reference(project_info)
-    if norms_text:
-        system_prompt += f"\n\n## Normative Reference (discipline norms database)\n\n{norms_text}"
+    text_source, source_text, user_prefix = _resolve_text_analysis_source(project_info, project_id)
+    model = get_stage_model("text_analysis")
 
-    md_text = _read_md_file(project_info, project_id)
+    # Подгрузить нормативную базу дисциплины inline там, где контекст позволяет.
+    # Для local QWEN держим prompt компактнее: актуальность норм всё равно финально
+    # проверяется отдельным stage 04 через MCP norms.
+    norms_text = _read_norms_reference(project_info)
+    if norms_text and not is_local_llm_model(model):
+        system_prompt += f"\n\n## Normative Reference (discipline norms database)\n\n{norms_text}"
+    else:
+        system_prompt += (
+            "\n\n## Normative Reference\n\n"
+            "Stage 04 will verify normative references separately. "
+            "At this stage, extract only norms explicitly present in the provided source text."
+        )
 
     return [
         {"role": "system", "content": system_prompt},
-        {"role": "user", "content": f"Below is the full text of the project MD file. Analyze it according to the instructions.\n\n{md_text}"},
+        {
+            "role": "user",
+            "content": (
+                f'{user_prefix}Required output field: `"text_source": "{text_source}"`.\n\n'
+                f"{source_text}"
+            ),
+        },
     ]
 
 
@@ -387,11 +530,13 @@ def build_block_batch_messages(
     project_info: dict,
     project_id: str,
     total_batches: int,
+    *,
+    image_scale: float = 1.0,
 ) -> list[dict]:
     """Сформировать messages для block_batch.
 
-    system: шаблон block_analysis с инъекцией дисциплины
-    user: interleaved content (text context + PNG блоков)
+    image_scale<1.0 — ресайз PNG блоков перед base64 (fallback для локального
+    QWEN: на ошибке retry с меньшим разрешением).
     """
     batch_id = batch_data["batch_id"]
     blocks = batch_data.get("blocks", [])
@@ -437,7 +582,9 @@ def build_block_batch_messages(
     project_dir = resolve_project_dir(project_id)
     page_contexts = _build_page_contexts_from_graph(project_id, block_ids, block_pages)
 
-    interleaved = build_interleaved_content(blocks, page_contexts, project_dir)
+    interleaved = build_interleaved_content(
+        blocks, page_contexts, project_dir, image_scale=image_scale,
+    )
 
     # User message: text_analysis context + interleaved blocks
     user_content: list[dict] = [
@@ -477,12 +624,23 @@ def build_findings_merge_messages(
     )
 
     text_analysis = _read_json_file(project_id, "01_text_analysis.json")
-    blocks_analysis = _read_json_file(project_id, "02_blocks_analysis.json")
+    local_qwen_mode = is_local_llm_model(get_stage_model("findings_merge"))
+    blocks_analysis = _read_findings_merge_blocks(
+        project_id,
+        compact_for_local=local_qwen_mode,
+    )
 
     user_text = (
         f"## 01_text_analysis.json:\n\n{text_analysis}\n\n"
         f"## 02_blocks_analysis.json:\n\n{blocks_analysis}"
     )
+
+    if local_qwen_mode:
+        user_text += (
+            "\n\n## Local merge note:\n\n"
+            "This payload is a compact projection of 02_blocks_analysis.json for local QWEN. "
+            "Use block_id/page/sheet/findings as source of truth; do not assume omitted fields are absent in the project."
+        )
 
     return [
         {"role": "system", "content": system_prompt},

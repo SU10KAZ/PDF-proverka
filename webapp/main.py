@@ -33,7 +33,21 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, HTMLResponse
 
 from webapp.config import APP_HOST, APP_PORT
-from webapp.routers import projects, findings, blocks, audit, export, usage, optimization, document, discussions, knowledge_base, objects
+from webapp.routers import (
+    projects,
+    findings,
+    blocks,
+    audit,
+    export,
+    usage,
+    optimization,
+    document,
+    discussions,
+    knowledge_base,
+    objects,
+    model_control,
+    lms,
+)
 from webapp.ws.manager import ws_manager
 
 
@@ -72,6 +86,8 @@ app.include_router(document.router)
 app.include_router(discussions.router)
 app.include_router(knowledge_base.router)
 app.include_router(objects.router)
+app.include_router(model_control.router)
+app.include_router(lms.router)
 
 # ─── WebSocket Endpoints ────────────────────────────────────
 @app.websocket("/ws/audit/{project_id}")
@@ -101,13 +117,13 @@ async def ws_global(websocket: WebSocket):
 @app.get("/api/info")
 async def api_info():
     """Информация о сервере."""
-    from webapp.config import BASE_DIR, PROJECTS_DIR, CLAUDE_CLI
+    from webapp.config import BASE_DIR, PROJECTS_DIR, get_claude_cli
     return {
         "app": "Audit Manager",
         "version": "1.0.0",
         "base_dir": str(BASE_DIR),
         "projects_dir": str(PROJECTS_DIR),
-        "claude_cli": CLAUDE_CLI,
+        "claude_cli": get_claude_cli(),
         "ws_connections": ws_manager.total_connections,
     }
 
@@ -129,6 +145,21 @@ async def serve_spa():
     css_ver = int(css_path.stat().st_mtime) if css_path.exists() else 0
     js_ver = int(js_path.stat().st_mtime) if js_path.exists() else 0
     html = index_path.read_text(encoding="utf-8")
+    html = html.replace("{{css_version}}", str(css_ver)).replace("{{js_version}}", str(js_ver))
+    return HTMLResponse(html)
+
+
+@app.get("/model-control")
+async def serve_model_control():
+    """Отдать отдельное окно управления моделями и памятью."""
+    page_path = static_dir / "model-control.html"
+    if not page_path.exists():
+        return {"message": "Model control page not found"}
+    css_path = static_dir / "css" / "model-control.css"
+    js_path = static_dir / "js" / "model-control.js"
+    css_ver = int(css_path.stat().st_mtime) if css_path.exists() else 0
+    js_ver = int(js_path.stat().st_mtime) if js_path.exists() else 0
+    html = page_path.read_text(encoding="utf-8")
     html = html.replace("{{css_version}}", str(css_ver)).replace("{{js_version}}", str(js_ver))
     return HTMLResponse(html)
 

@@ -17,15 +17,12 @@ class AuditStage(str, Enum):
     OPTIMIZATION = "optimization"
     # OCR-пайплайн
     CROP_BLOCKS = "crop_blocks"
+    QWEN_ENRICHMENT = "qwen_enrichment"  # Stage 00: Qwen-обогащение MD (после crop, до text_analysis)
     TEXT_ANALYSIS = "text_analysis"
     BLOCK_ANALYSIS = "block_analysis"
+    FLASH_PRO_TRIAGE = "flash_pro_triage"
     FINDINGS_MERGE = "findings_merge"
     FINDINGS_REVIEW = "findings_review"
-    # v4 pipeline (fact-first) — заменяет block_analysis + findings_merge
-    V4_EXTRACTION = "v4_extraction"
-    V4_MEMORY = "v4_memory"
-    V4_CANDIDATES = "v4_candidates"
-    V4_FORMATTER = "v4_formatter"
 
 
 class JobStatus(str, Enum):
@@ -123,3 +120,45 @@ class BatchQueueStatus(BaseModel):
     completed: int = 0
     failed: int = 0
     status: str = "running"  # running / completed / cancelled
+
+
+class PrepareQueueItem(BaseModel):
+    """Элемент очереди подготовки данных (crop + Qwen enrichment)."""
+    project_id: str
+    status: str = "pending"  # pending / running / completed / failed / skipped
+    blocks_total: Optional[int] = None
+    blocks_done: int = 0
+    blocks_failed: int = 0
+    blocks_truncated: int = 0  # обрыв из-за max_output_tokens (нужно увеличить лимит)
+    max_output_tokens_seen: int = 0  # макс. реальный output_tokens у успешных блоков
+    started_at: Optional[float] = None  # epoch seconds
+    elapsed_sec: float = 0.0
+    eta_sec: Optional[float] = None
+    error: Optional[str] = None
+    force: bool = False
+    # Pre-crop: блоки скачиваются параллельно с Qwen enrichment предыдущих проектов.
+    # crop_status: pending → running → done / failed
+    crop_status: str = "pending"
+    crop_blocks_total: int = 0   # сколько блоков обработал crop (новые + пропущенные)
+
+
+class PrepareQueueStatus(BaseModel):
+    """Состояние очереди подготовки данных (Qwen enrichment)."""
+    items: list[PrepareQueueItem] = []
+    current_index: int = 0
+    total: int = 0
+    completed: int = 0
+    failed: int = 0
+    status: str = "idle"  # idle / running / paused
+    paused: bool = False
+    # Суммарные счётчики по всей очереди (для индикации в шапке)
+    blocks_total_all: int = 0   # сумма items.blocks_total
+    blocks_done_all: int = 0    # сумма items.blocks_done
+    blocks_failed_all: int = 0
+    blocks_truncated_all: int = 0
+    current_project: Optional[str] = None  # identifier текущего running проекта
+    # Сумма wall-clock времени по проектам (running + completed). На завершении
+    # очереди = общее время от старта первого до конца последнего, минус параллельные
+    # пересечения с pre-crop (т.к. crop складывается с enrich). Считаем как сумму
+    # item.elapsed_sec, чтоб дать честную оценку time-on-project.
+    total_elapsed_sec: float = 0.0
