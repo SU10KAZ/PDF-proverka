@@ -332,11 +332,28 @@ async def start_batch_action(request: dict):
 
 @router.get("/batch/status")
 async def get_batch_status():
-    """Статус текущей batch-очереди."""
+    """Статус текущей batch-очереди.
+
+    active=True  — очередь работает прямо сейчас.
+    active=False — очередь есть, но не запущена (история/прервана/завершена).
+    queue=None   — очереди нет вовсе.
+    """
     queue = pipeline_manager.get_batch_queue()
-    if not queue:
-        return {"active": False}
-    return {"active": True, "queue": queue.model_dump()}
+    active = bool(queue and queue.status == "running")
+    return {"active": active, "queue": queue.model_dump() if queue else None}
+
+
+@router.delete("/batch/history")
+async def clear_batch_history():
+    """Удалить историю очереди (прерванные/завершённые).
+
+    Нельзя очистить работающую очередь — вернёт 409.
+    """
+    try:
+        pipeline_manager.clear_queue_history()
+        return {"status": "cleared"}
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
 
 
 @router.post("/batch/add")
@@ -558,6 +575,27 @@ async def get_all_live_status():
             "batch_started_at": job.batch_started_at,
             "eta_sec": pipeline_manager._calculate_eta(job),
         }
+
+    # Очередённые проекты (pending в _batch_queue) — фронту тоже надо их видеть,
+    # иначе после клика "Запустить аудит" дашборд молчит до того, как worker
+    # дойдёт до проекта. stage="queued" — отдельный sentinel, фронт рендерит
+    # как "В очереди" и не показывает спиннер активного этапа.
+    queue = pipeline_manager.get_batch_queue()
+    if queue and queue.status == "running":
+        for it in queue.items:
+            if it.status == "pending" and it.project_id not in running:
+                running[it.project_id] = {
+                    "stage": "queued",
+                    "status": "queued",
+                    "progress_current": 0,
+                    "progress_total": 0,
+                    "started_at": None,
+                    "last_heartbeat": None,
+                    "batch_started_at": None,
+                    "eta_sec": None,
+                    "action": it.action,
+                    "retry_stage": it.retry_stage,
+                }
 
     # Также отдаём актуальные completed_batches для всех проектов
     batches_info = {}
@@ -927,6 +965,7 @@ async def retry_stage(project_id: str, stage: str):
         "findings_review": lambda: pipeline_manager.start_from_stage(project_id, "findings_review"),
         "findings_corrector": lambda: pipeline_manager.start_from_stage(project_id, "findings_review"),
         "norm_verify": lambda: pipeline_manager.start_norm_verify(project_id),
+        "norm_requote": lambda: pipeline_manager.start_norm_verify(project_id),
         "optimization": lambda: pipeline_manager.start_optimization(project_id),
         "optimization_critic": lambda: pipeline_manager.start_optimization_review(project_id),
         "optimization_corrector": lambda: pipeline_manager.start_optimization_review(project_id),

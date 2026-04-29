@@ -36,6 +36,7 @@ DISCIPLINES_DIR = BASE_DIR / "prompts" / "disciplines"
 _PIPELINE_RU = BASE_DIR / "prompts" / "pipeline" / "ru"
 NORM_VERIFY_TASK_TEMPLATE = _PIPELINE_RU / "norm_verify_task.md"
 NORM_FIX_TASK_TEMPLATE = _PIPELINE_RU / "norm_fix_task.md"
+NORM_REQUOTE_TASK_TEMPLATE = _PIPELINE_RU / "norm_requote_task.md"
 OPTIMIZATION_TASK_TEMPLATE = _PIPELINE_RU / "optimization_task.md"
 TEXT_ANALYSIS_TASK_TEMPLATE = _PIPELINE_RU / "text_analysis_task.md"
 BLOCK_ANALYSIS_TASK_TEMPLATE = _PIPELINE_RU / "block_analysis_task.md"
@@ -178,6 +179,7 @@ def get_claude_cli() -> str:
 # Timeout для Claude-сессий (секунды)
 CLAUDE_NORM_VERIFY_TIMEOUT = 600  # 10 мин на верификацию норм
 CLAUDE_NORM_FIX_TIMEOUT = 600     # 10 мин на пересмотр замечаний
+CLAUDE_NORM_REQUOTE_TIMEOUT = 600  # 10 мин на уточнение цитат (MCP поиск)
 CLAUDE_OPTIMIZATION_TIMEOUT = 3600  # 60 мин на оптимизацию
 CLAUDE_TEXT_ANALYSIS_TIMEOUT = 1800   # 30 мин на анализ текста MD
 # Stage 02 (block_batch) запускает `claude -p` из чистой папки /tmp/sonnet_clean/ + stripped env,
@@ -229,6 +231,7 @@ _stage_models: dict[str, str | None] = {
     "findings_corrector": None,        # Sonnet — исправление по вердиктам критика
     "norm_verify":     None,           # Sonnet — поиск и сверка норм
     "norm_fix":        None,           # Sonnet — пересмотр по нормам
+    "norm_requote":    None,           # Sonnet — уточнение цитат через MCP
     "optimization":    "claude-opus-4-7",  # Opus — глубокий анализ оптимизаций
     "optimization_critic": None,           # Sonnet — проверка оптимизаций
     "optimization_corrector": None,        # Sonnet — корректировка оптимизаций
@@ -251,6 +254,7 @@ _STAGE_MODEL_DEFAULTS: dict[str, str] = {
     "findings_corrector":     "claude-opus-4-7",
     "norm_verify":            "claude-opus-4-7",
     "norm_fix":               "claude-opus-4-7",
+    "norm_requote":           "claude-sonnet-4-6",
     "optimization":           "claude-opus-4-7",
     "optimization_critic":    "claude-sonnet-4-6",
     "optimization_corrector": "claude-sonnet-4-6",

@@ -71,6 +71,9 @@ PROJECT_RETRY_PASSES = 2
 # режем картинку пополам по высоте и обрабатываем половины отдельно.
 SPLIT_ASPECT_THRESHOLD = 2.5  # height/width >= 2.5 → split-eligible
 SPLIT_PARTS = 2  # на сколько кусков делим (тестирование показало что 2 хватает)
+# Максимальная длинная сторона при отправке в Qwen. Блоки крупнее обрезаются до этого размера
+# независимо от scale-тира. Исключает ситуацию «5400px блок на scale=1.0» → битый JSON.
+MAX_INPUT_LONG_SIDE_PX = 1500
 
 _IMAGE_SCALE_TIERS = [1.0, 0.6, 0.35, 0.2]
 _NGROK_HTML_RETRIES = 2
@@ -131,11 +134,16 @@ def _auth_header() -> dict[str, str]:
 
 
 def _png_to_data_url(path: Path, scale: float = 1.0) -> str:
-    if scale >= 0.999:
+    img = Image.open(path)
+    long_side = max(img.width, img.height)
+    # Ограничиваем длинную сторону: кап применяется ДО scale-множителя.
+    # Без этого блоки >5000px отправляются в Qwen целиком и ломают JSON на ~450 символе.
+    cap_scale = MAX_INPUT_LONG_SIDE_PX / long_side if long_side > MAX_INPUT_LONG_SIDE_PX else 1.0
+    effective_scale = scale * cap_scale
+    if abs(effective_scale - 1.0) < 0.01:
         data = path.read_bytes()
     else:
-        img = Image.open(path)
-        new_size = (max(1, int(img.width * scale)), max(1, int(img.height * scale)))
+        new_size = (max(1, int(img.width * effective_scale)), max(1, int(img.height * effective_scale)))
         img = img.resize(new_size, Image.LANCZOS)
         buf = BytesIO()
         img.save(buf, format="PNG", optimize=True)
@@ -252,6 +260,58 @@ async def _qwen_call_attempt(
     return resp.status_code, data, raw, elapsed
 
 
+def _repair_json(text: str) -> dict | None:
+    """Попытка починить частично валидный JSON.
+
+    Стратегия: ищем позицию ошибки, берём текст до неё и закрываем
+    все открытые фигурные скобки. Помогает при Unterminated string и
+    неожиданном конце объекта.
+    """
+    # Найти самый длинный валидный JSON-объект, последовательно укорачивая
+    bracket_depth = 0
+    in_string = False
+    escape_next = False
+    last_close = -1
+    for i, ch in enumerate(text):
+        if escape_next:
+            escape_next = False
+            continue
+        if ch == "\\" and in_string:
+            escape_next = True
+            continue
+        if ch == '"':
+            in_string = not in_string
+        if in_string:
+            continue
+        if ch == "{":
+            bracket_depth += 1
+        elif ch == "}":
+            bracket_depth -= 1
+            if bracket_depth == 0:
+                last_close = i
+    # Если есть полное закрытое {...} — попробуем его
+    if last_close > 0:
+        try:
+            return json.loads(text[:last_close + 1])
+        except json.JSONDecodeError:
+            pass
+    # Иначе — закрыть недостающие скобки
+    if bracket_depth > 0 and "{" in text:
+        # Обрезаем до последней запятой или полного значения, потом закрываем
+        close_text = text.rstrip().rstrip(",").rstrip()
+        # Удалить незакрытую строку (всё после последней нечётной кавычки)
+        quote_count = close_text.count('"') - close_text.count('\\"')
+        if quote_count % 2 == 1:
+            last_q = close_text.rfind('"')
+            close_text = close_text[:last_q].rstrip().rstrip(",").rstrip()
+        close_text += "}" * bracket_depth
+        try:
+            return json.loads(close_text)
+        except json.JSONDecodeError:
+            pass
+    return None
+
+
 def _parse_qwen_json(data: dict) -> tuple[dict | None, str | None]:
     """Извлечь и распарсить JSON из output Qwen."""
     msg_parts: list[str] = []
@@ -272,7 +332,15 @@ def _parse_qwen_json(data: dict) -> tuple[dict | None, str | None]:
         try:
             return json.loads(m.group(0)), None
         except json.JSONDecodeError as e:
+            # Попробовать ремонт перед тем как сдаться
+            repaired = _repair_json(m.group(0))
+            if repaired is not None:
+                return repaired, None
             return None, f"{first_err}; extracted: {e}"
+    # Попробовать ремонт всего текста (на случай если {} не нашёлся из-за обрыва)
+    repaired = _repair_json(text)
+    if repaired is not None:
+        return repaired, None
     return None, first_err
 
 
@@ -335,6 +403,15 @@ async def _enrich_block_single_pass(
         if status >= 400 and _is_context_exceeded_error(data, raw):
             scale_idx += 1
             continue
+
+        # JSON parse error после успешного HTTP — пробуем уменьшить изображение.
+        # Это лечит блоки где модель «ломает» JSON при большом input, даже если
+        # MAX_INPUT_LONG_SIDE_PX уже применён (разные контексты страниц могут мешать).
+        if status == 200 and data is not None:
+            parsed_check, parse_err_check = _parse_qwen_json(data)
+            if parse_err_check is not None and scale_idx < len(_IMAGE_SCALE_TIERS) - 1:
+                scale_idx += 1
+                continue
 
         break
 

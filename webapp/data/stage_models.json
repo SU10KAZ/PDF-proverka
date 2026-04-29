@@ -6,6 +6,7 @@
   "findings_corrector": "claude-sonnet-4-6",
   "norm_verify": "claude-sonnet-4-6",
   "norm_fix": "claude-sonnet-4-6",
+  "norm_requote": "claude-sonnet-4-6",
   "optimization": "claude-opus-4-7",
   "optimization_critic": "claude-sonnet-4-6",
   "optimization_corrector": "claude-sonnet-4-6"

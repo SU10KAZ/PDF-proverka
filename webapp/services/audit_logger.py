@@ -30,6 +30,12 @@ _PIPELINE_STAGE_ORDER_KEYS = [
 ]
 _TERMINAL_STATUSES = {"done", "skipped", "error", "interrupted"}
 
+# Этапы, которые выполняются параллельно с findings_critic/findings_corrector
+# и не должны сбрасываться при их перезапуске.
+_PARALLEL_TO_FINDINGS_REVIEW = {
+    "norm_verify", "optimization", "optimization_critic", "optimization_corrector",
+}
+
 
 def update_pipeline_log(
     project_id: str,
@@ -78,6 +84,12 @@ def update_pipeline_log(
         if stage_key in _PIPELINE_STAGE_ORDER_KEYS:
             idx = _PIPELINE_STAGE_ORDER_KEYS.index(stage_key)
             for downstream in _PIPELINE_STAGE_ORDER_KEYS[idx + 1:]:
+                # Параллельные этапы (norm_verify, optimization и их critic/corrector)
+                # выполняются одновременно с findings_critic/corrector, поэтому их
+                # статус не сбрасывается при перезапуске findings-review.
+                if (downstream in _PARALLEL_TO_FINDINGS_REVIEW
+                        and stage_key in ("findings_critic", "findings_corrector")):
+                    continue
                 ds_info = log_data["stages"].get(downstream)
                 if ds_info and ds_info.get("status") in _TERMINAL_STATUSES:
                     log_data["stages"].pop(downstream, None)

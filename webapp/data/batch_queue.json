@@ -1,0 +1,20 @@
+{
+  "queue_id": "db94650f-d9f2-4530-83f2-860870acc25a",
+  "action": "full",
+  "items": [
+    {
+      "project_id": "13АВ-РД-МЗ (Изм.1) от 13.02.2026.pdf",
+      "action": "full",
+      "retry_stage": null,
+      "status": "running",
+      "error": null,
+      "extra_params": {},
+      "job_id": "00f3ec32-6e94-448f-9d99-b6196f07ebff"
+    }
+  ],
+  "current_index": 0,
+  "total": 1,
+  "completed": 0,
+  "failed": 0,
+  "status": "running"
+}

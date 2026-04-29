@@ -127,12 +127,15 @@ const app = createApp({
         const expertReviewSaving = ref(false);
 
         // Knowledge Base (база знаний)
-        const kbTab = ref('rejected');  // 'rejected' | 'accepted' | 'customer_confirmed'
+        const kbTab = ref('rejected');  // 'rejected' | 'accepted' | 'customer_confirmed' | 'missing_norms'
         const kbEntries = ref([]);
         const kbStats = ref({ rejected: 0, accepted: 0, customer_confirmed: 0, total: 0 });
         const kbLoading = ref(false);
         const kbSearch = ref('');
         const kbSectionFilter = ref('');
+        const missingNorms = ref([]);
+        const missingNormsStats = ref({ pending: 0, added: 0, dismissed: 0, total: 0 });
+        const missingNormsFilter = ref('pending'); // 'pending' | 'added' | 'dismissed' | ''
         const kbPatterns = ref([]);
         const kbPatternsLoading = ref(false);
         const kbUploadLoading = ref(false);
@@ -706,6 +709,7 @@ const app = createApp({
 
         function stageLabel(stage) {
             const labels = {
+                'queued': 'В очереди',
                 'crop_blocks': 'Кроп блоков',
                 'qwen_enrichment': 'Подготовка (Qwen-обогащение MD)',
                 'text_analysis': 'Анализ текста',
@@ -753,6 +757,10 @@ const app = createApp({
             const b = liveStatus.value.batches ? liveStatus.value.batches[projectId] : null;
 
             if (r) {
+                // Queued — без многоточия и без спиннер-эффекта
+                if (r.status === 'queued') {
+                    return 'В очереди';
+                }
                 const pct = r.progress_total > 0
                     ? Math.round(r.progress_current / r.progress_total * 100)
                     : 0;
@@ -966,6 +974,13 @@ const app = createApp({
 
         function handleRoute() {
             const hash = window.location.hash.slice(1) || '/';
+
+            // При прямом открытии страницы проекта (refresh/bookmark) projects может быть пустым —
+            // загружаем все проекты чтобы работала навигация по разделу и sidebar.
+            if (projects.value.length === 0 && hash.startsWith('/project')) {
+                refreshProjects();
+                loadProjectGroups();
+            }
 
             if (hash === '/knowledge-base') {
                 currentView.value = 'knowledge-base';
@@ -1474,6 +1489,7 @@ const app = createApp({
                 'audit': 'Аудит',
                 'optimization': 'Оптимизация',
                 'audit+optimization': 'Аудит + оптимизация',
+                'norm_verify': 'Верификация норм',
                 // Legacy
                 'standard': 'Аудит',
                 'pro': 'Аудит',
@@ -1526,8 +1542,22 @@ const app = createApp({
                 const resp = await fetch('/api/audit/batch/status');
                 const data = await resp.json();
                 batchRunning.value = data.active;
-                batchQueue.value = data.active ? data.queue : null;
+                // Показываем очередь даже когда не running (история, прерванная)
+                batchQueue.value = data.queue || null;
             } catch (e) { /* ignore */ }
+        }
+
+        async function clearQueueHistory() {
+            if (!confirm('Очистить историю очереди?')) return;
+            try {
+                const resp = await fetch('/api/audit/batch/history', { method: 'DELETE' });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || `Ошибка: ${resp.status}`);
+                }
+                batchQueue.value = null;
+                batchRunning.value = false;
+            } catch (e) { alert(e.message); }
         }
 
         async function removeFromQueue(projectId) {
@@ -1682,7 +1712,7 @@ const app = createApp({
         // ─── Audit Actions ───
         const auditRunning = ref(false);
         // Диалог retry: запустить сейчас или добавить в очередь
-        const retryDialog = ref({ show: false, projectId: '', stage: '', stageLabel: '' });
+        const retryDialog = ref({ show: false, projectId: '', stage: '', stageLabel: '', mode: 'retry' });
 
         async function apiGet(path) {
             const resp = await fetch(`/api${path}`);
@@ -1868,19 +1898,19 @@ const app = createApp({
             if (!currentProject.value) return false;
             if (isProjectRunning(currentProject.value.project_id)) return false;
             const status = currentProject.value.pipeline?.[pipelineKey];
-            return status === 'done' || status === 'error' || status === 'skipped';
+            return status === 'done' || status === 'error' || status === 'skipped' || status === 'pending' || status === 'interrupted';
         }
 
         async function startFromStage(projectId, pipelineKey) {
             const stage = pipelineToStage[pipelineKey];
             if (!stage) return;
             const label = stageLabelMap[stage] || stage;
-            // Используем retry-диалог для выбора "сейчас" / "в очередь"
             retryDialog.value = {
                 show: true,
                 projectId,
                 stage,
                 stageLabel: label,
+                mode: 'resume', // запустить этап + все последующие
             };
         }
 
@@ -1939,6 +1969,7 @@ const app = createApp({
                 projectId,
                 stage,
                 stageLabel: labels[stage] || stage,
+                mode: 'retry', // только этот один этап
             };
         }
 
@@ -1955,21 +1986,33 @@ const app = createApp({
         }
 
         async function retryStageToQueue() {
-            const { projectId, stage } = retryDialog.value;
+            const { projectId, stage, mode } = retryDialog.value;
             retryDialog.value.show = false;
             try {
-                const resp = await fetch('/api/audit/batch/add-retry', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ project_id: projectId, stage: stage }),
-                });
+                let resp;
+                if (mode === 'resume') {
+                    // Запустить с этапа + все последующие
+                    resp = await fetch('/api/audit/batch/add-retry', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ project_id: projectId, stage: stage }),
+                    });
+                } else {
+                    // Только один этап — прямой retry
+                    resp = await fetch(`/api/audit/${encodeURIComponent(projectId)}/retry/${stage}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                    });
+                }
                 if (!resp.ok) {
                     const err = await resp.json().catch(() => ({}));
                     throw new Error(err.detail || `API error: ${resp.status}`);
                 }
                 const data = await resp.json();
-                batchQueue.value = data.queue;
-                batchRunning.value = true;
+                if (data.queue) {
+                    batchQueue.value = data.queue;
+                    batchRunning.value = true;
+                }
             } catch (e) { alert(e.message); }
         }
 
@@ -2446,6 +2489,39 @@ const app = createApp({
             }
 
             return result;
+        });
+
+        // Навигация по проектам внутри раздела (Пред. / След.)
+        const currentSectionProjectsList = computed(() => {
+            if (!currentProject.value) return [];
+            const section = currentProject.value.section;
+            const allInSection = projects.value.filter(p => p.section === section);
+            const groups = (projectGroups.value[section] || [])
+                .slice().sort((a, b) => (a.order || 0) - (b.order || 0));
+            const assigned = new Set(groups.flatMap(g => g.project_ids || []));
+            const ordered = [];
+            for (const group of groups) {
+                for (const pid of (group.project_ids || [])) {
+                    const p = allInSection.find(x => x.project_id === pid);
+                    if (p) ordered.push(p);
+                }
+            }
+            for (const p of allInSection) {
+                if (!assigned.has(p.project_id)) ordered.push(p);
+            }
+            return ordered;
+        });
+
+        const prevProject = computed(() => {
+            const list = currentSectionProjectsList.value;
+            const idx = list.findIndex(p => p.project_id === currentProjectId.value);
+            return idx > 0 ? list[idx - 1] : null;
+        });
+
+        const nextProject = computed(() => {
+            const list = currentSectionProjectsList.value;
+            const idx = list.findIndex(p => p.project_id === currentProjectId.value);
+            return idx >= 0 && idx < list.length - 1 ? list[idx + 1] : null;
         });
 
         // Drag: проект → группа
@@ -5521,7 +5597,48 @@ const app = createApp({
 
         function switchKBTab(tab) {
             kbTab.value = tab;
-            loadKnowledgeBase();
+            if (tab === 'missing_norms') {
+                loadMissingNorms();
+            } else {
+                loadKnowledgeBase();
+            }
+        }
+
+        async function loadMissingNorms() {
+            kbLoading.value = true;
+            try {
+                const params = new URLSearchParams();
+                if (missingNormsFilter.value) params.set('status', missingNormsFilter.value);
+                const resp = await fetch(`/api/knowledge-base/missing-norms?${params}`);
+                const data = await resp.json();
+                missingNorms.value = data.norms || [];
+                missingNormsStats.value = data.stats || {};
+            } catch (e) {
+                console.error('Missing norms load error:', e);
+            } finally {
+                kbLoading.value = false;
+            }
+        }
+
+        async function markNormAdded(docNumber) {
+            try {
+                await fetch(`/api/knowledge-base/missing-norms/${encodeURIComponent(docNumber)}/mark-added`, { method: 'POST' });
+                loadMissingNorms();
+            } catch (e) { console.error('Mark added error:', e); }
+        }
+
+        async function dismissNorm(docNumber) {
+            try {
+                await fetch(`/api/knowledge-base/missing-norms/${encodeURIComponent(docNumber)}/dismiss`, { method: 'POST' });
+                loadMissingNorms();
+            } catch (e) { console.error('Dismiss norm error:', e); }
+        }
+
+        async function restoreNorm(docNumber) {
+            try {
+                await fetch(`/api/knowledge-base/missing-norms/${encodeURIComponent(docNumber)}/restore`, { method: 'POST' });
+                loadMissingNorms();
+            } catch (e) { console.error('Restore norm error:', e); }
         }
 
         async function confirmCustomer(entryIds) {
@@ -5760,6 +5877,7 @@ const app = createApp({
             // Queue management
             queueAddMode, queueAddAction, queueAddSelected, queueDragIdx, queueDragOverIdx,
             refreshBatchQueue, removeFromQueue, updateQueueItemAction, reorderQueue,
+            clearQueueHistory,
             onQueueDragStart, onQueueDragOver, onQueueDragEnd,
             toggleQueueAddProject, confirmQueueAdd, startQueueFromView,
             queueAvailableProjects,
@@ -5786,6 +5904,7 @@ const app = createApp({
             onSectionDragStart, onSectionDragOver, onSectionDragEnd,
             // Project groups
             projectGroups, groupedSectionProjects,
+            currentSectionProjectsList, prevProject, nextProject,
             showCreateGroup, newGroupName, editingGroupId, editingGroupName,
             createGroup, renameGroup, startRenameGroup, deleteProjectGroup,
             dragProjectId, dragGroupId, dragOverGroupId,
@@ -5849,6 +5968,8 @@ const app = createApp({
             kbTab, kbEntries, kbStats, kbLoading, kbSearch, kbSectionFilter,
             kbPatterns, kbPatternsLoading, kbUploadLoading,
             loadKnowledgeBase, loadKBStats, switchKBTab,
+            missingNorms, missingNormsStats, missingNormsFilter,
+            loadMissingNorms, markNormAdded, dismissNorm, restoreNorm,
             confirmCustomer, unconfirmCustomer, revokeKBDecision,
             loadKBPatterns, detectPatterns, approvePattern, dismissPattern,
             uploadDecisionsExcel, uploadAndApplyDecisions,

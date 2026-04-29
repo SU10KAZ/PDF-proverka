@@ -34,7 +34,7 @@ from webapp.config import (
     get_model_for_stage,
     TEXT_ANALYSIS_TOOLS, FINDINGS_MERGE_TOOLS, NORM_VERIFY_TOOLS,
     CLAUDE_TEXT_ANALYSIS_TIMEOUT, CLAUDE_FINDINGS_MERGE_TIMEOUT,
-    CLAUDE_NORM_VERIFY_TIMEOUT, CLAUDE_NORM_FIX_TIMEOUT,
+    CLAUDE_NORM_VERIFY_TIMEOUT, CLAUDE_NORM_FIX_TIMEOUT, CLAUDE_NORM_REQUOTE_TIMEOUT,
     CLAUDE_OPTIMIZATION_TIMEOUT,
     get_stage_model, is_claude_stage, is_local_llm_model,
 )
@@ -55,6 +55,7 @@ from webapp.services.cli_utils import (
 from webapp.services.task_builder import (
     prepare_norm_verify_task,
     prepare_norm_fix_task,
+    prepare_norm_requote_task,
     prepare_optimization_task,
     prepare_text_analysis_task,
     prepare_block_batch_task,
@@ -144,7 +145,7 @@ __all__ = [
     "prepare_norm_verify_task", "prepare_norm_fix_task",
     "prepare_optimization_task",
     # runners
-    "run_norm_verify", "run_norm_fix",
+    "run_norm_verify", "run_norm_fix", "run_norm_requote",
     "run_optimization",
     # runners — блоковый пайплайн
     "run_text_analysis", "run_block_batch", "run_findings_merge",
@@ -486,6 +487,28 @@ async def run_norm_fix(
 
     exit_code = 0 if not result.is_error else 1
     return exit_code, result.text, result
+
+
+# ─── Уточнение цитат норм через MCP (Claude CLI, Sonnet) ─────────────
+
+async def run_norm_requote(
+    project_id: str,
+    on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+    project_info: Optional[dict] = None,
+) -> tuple[int, str, "AnyResult"]:
+    """Уточнить цитаты норм для замечаний с [ручная сверка] через MCP semantic search."""
+    model = get_stage_model("norm_requote")
+    task_text = prepare_norm_requote_task(project_id, project_info=project_info)
+    exit_code, combined, cli_result = await _run_cli(
+        task_text, NORM_VERIFY_TOOLS, CLAUDE_NORM_REQUOTE_TIMEOUT,
+        on_output, stage="norm_requote", project_id=project_id,
+        model=model,
+    )
+    _save_audit_trail(
+        project_id, "04c_norm_requote", model,
+        0, 0, cli_result.duration_ms, cli_result.result_text,
+    )
+    return exit_code, combined, cli_result
 
 
 # ─── Оптимизация проектных решений (Claude CLI, Opus) ─────────────────

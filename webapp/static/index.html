@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Audit Manager</title>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="/static/js/vue.global.prod.js"></script>
+    <script src="/static/js/marked.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -73,7 +73,7 @@
                         <rect x="1" y="12" width="8" height="3" rx="1"/>
                     </svg>
                     Очередь
-                    <span v-if="batchRunning && batchQueue" class="nav-badge">{{ batchQueue.items.filter(i => i.status === 'pending' || i.status === 'running').length }}</span>
+                    <span v-if="batchQueue && batchQueue.items" class="nav-badge" :style="batchQueue.status === 'interrupted' ? 'background:#b45309' : ''">{{ batchQueue.items.filter(i => i.status === 'pending' || i.status === 'running' || i.status === 'interrupted').length }}</span>
                     <span v-if="prepareQueue && prepareQueue.items && prepareQueue.items.filter(i => i.status === 'pending' || i.status === 'running').length > 0"
                           class="nav-badge" style="background: #5d8efc;">
                         {{ prepareQueue.items.filter(i => i.status === 'pending' || i.status === 'running').length }}
@@ -1017,7 +1017,15 @@
                     </div>
                 </div>
 
-                <!-- Прогресс -->
+                <!-- Баннер: очередь прервана при перезагрузке -->
+                <div v-if="batchQueue && batchQueue.status === 'interrupted'" class="queue-interrupted-banner">
+                    <span>⚠ Сервер был перезапущен — очередь прервана.
+                        Прерванные и ожидавшие проекты показаны ниже.
+                    </span>
+                    <button class="btn btn-sm btn-outline" style="margin-left:auto; flex-shrink:0;" @click="clearQueueHistory">Очистить</button>
+                </div>
+
+                <!-- Прогресс (только для активной очереди) -->
                 <div v-if="batchRunning && batchQueue" class="queue-progress">
                     <div class="queue-progress__info">
                         <span class="queue-progress__label">{{ batchActionLabel(batchQueue.action) }}</span>
@@ -1025,6 +1033,20 @@
                     </div>
                     <div class="progress-bar" style="margin: 6px 0;">
                         <div class="progress-fill" :style="{width: (((batchQueue.completed || 0) + (batchQueue.failed || 0)) / Math.max(1, batchQueue.total) * 100) + '%'}"></div>
+                    </div>
+                </div>
+
+                <!-- Итог завершённой очереди (не interrupted, не running) -->
+                <div v-if="batchQueue && !batchRunning && batchQueue.status !== 'interrupted' && batchQueue.status !== 'running'" class="queue-progress" style="opacity:0.75;">
+                    <div class="queue-progress__info">
+                        <span class="queue-progress__label">{{ batchActionLabel(batchQueue.action) }} — завершено</span>
+                        <span class="queue-progress__counter">{{ batchQueue.completed || 0 }} ✓ &nbsp; {{ batchQueue.failed || 0 }} ✗ &nbsp; / {{ batchQueue.total }}</span>
+                    </div>
+                    <div class="progress-bar" style="margin: 6px 0;">
+                        <div class="progress-fill" :style="{width: '100%'}"></div>
+                    </div>
+                    <div style="display:flex; justify-content:flex-end; margin-top:4px;">
+                        <button class="btn btn-sm btn-outline" @click="clearQueueHistory">Очистить историю</button>
                     </div>
                 </div>
 
@@ -1056,8 +1078,9 @@
                             {{ item.project_id }}
                         </span>
 
-                        <!-- Действие (изменяемое для pending) -->
-                        <select v-if="item.status === 'pending'" class="queue-item__action-select"
+                        <!-- Действие (изменяемое для pending стандартных действий) -->
+                        <select v-if="item.status === 'pending' && ['audit','optimization','audit+optimization'].includes(item.action)"
+                                class="queue-item__action-select"
                                 :value="item.action"
                                 @change="updateQueueItemAction(item.project_id, $event.target.value)">
                             <option value="audit">Аудит</option>
@@ -1073,9 +1096,10 @@
                                 <span class="queue-item__spinner"></span> Выполняется
                             </template>
                             <template v-else-if="item.status === 'completed'">Готово</template>
-                            <template v-else-if="item.status === 'failed'">Ошибка</template>
+                            <template v-else-if="item.status === 'failed'">Ошибка<span v-if="item.error" :title="item.error">: {{ item.error.substring(0, 60) }}</span></template>
                             <template v-else-if="item.status === 'skipped'">Пропущен</template>
                             <template v-else-if="item.status === 'cancelled'">Отменён</template>
+                            <template v-else-if="item.status === 'interrupted'">⚡ Прервано</template>
                         </span>
 
                         <!-- Удалить (только pending) -->
@@ -1252,6 +1276,27 @@
                                 {{ projectExcelLoading ? 'Генерация...' : 'Отчёт' }}
                             </button>
                         </div>
+
+                    </div>
+
+                    <!-- Навигация по проектам раздела (под карточкой, выровнена вправо) -->
+                    <div v-if="currentSectionProjectsList.length > 1" class="project-section-nav">
+                        <button class="btn btn-outline btn-sm"
+                                :disabled="!prevProject"
+                                @click="prevProject && navigate('/project/' + encodeURIComponent(prevProject.project_id))"
+                                :title="prevProject ? (prevProject.name || prevProject.project_id) : ''">
+                            &#8592; Предыдущий
+                        </button>
+                        <span class="project-nav-pos">
+                            {{ currentSectionProjectsList.findIndex(p => p.project_id === currentProjectId) + 1 }}
+                            / {{ currentSectionProjectsList.length }}
+                        </span>
+                        <button class="btn btn-outline btn-sm"
+                                :disabled="!nextProject"
+                                @click="nextProject && navigate('/project/' + encodeURIComponent(nextProject.project_id))"
+                                :title="nextProject ? (nextProject.name || nextProject.project_id) : ''">
+                            Следующий &#8594;
+                        </button>
                     </div>
 
                     <!-- Usage (сразу под пайплайном) -->
@@ -1388,8 +1433,13 @@
                     <!-- Retry dialog: всегда добавляем в очередь, на исходных моделях -->
                     <div v-if="retryDialog.show" class="retry-dialog-overlay" @click.self="retryDialog.show = false">
                         <div class="retry-dialog">
-                            <div class="retry-dialog__title">Перезапуск этапа</div>
+                            <div class="retry-dialog__title">
+                                {{ retryDialog.mode === 'resume' ? 'Запустить с этапа' : 'Перезапуск этапа' }}
+                            </div>
                             <div class="retry-dialog__stage">{{ retryDialog.stageLabel }}</div>
+                            <div class="retry-dialog__hint" v-if="retryDialog.mode === 'resume'" style="font-size:12px;color:#94a3b8;margin-bottom:8px;">
+                                Этот и все последующие этапы будут выполнены
+                            </div>
                             <div class="retry-dialog__buttons">
                                 <button class="btn btn-accent btn-sm" @click="retryStageToQueue">Запустить</button>
                                 <button class="btn btn-ghost btn-sm" @click="retryDialog.show = false">Отмена</button>
@@ -1788,10 +1838,15 @@
                         Согласованные заказчиком
                         <span class="kb-tab-count">{{ kbStats.customer_confirmed }}</span>
                     </button>
+                    <button class="kb-tab" :class="{ active: kbTab === 'missing_norms' }" @click="switchKBTab('missing_norms')">
+                        <span class="kb-tab-icon" style="color:#f97316">&#8681;</span>
+                        Нормы для добавления
+                        <span class="kb-tab-count" :class="{ 'kb-tab-count--alert': missingNormsStats.pending > 0 }">{{ missingNormsStats.pending }}</span>
+                    </button>
                 </div>
 
-                <!-- Filters -->
-                <div class="kb-filters">
+                <!-- Filters (скрыть для missing_norms) -->
+                <div class="kb-filters" v-if="kbTab !== 'missing_norms'">
                     <input v-model="kbSearch" class="filter-input" placeholder="Поиск..."
                            @input="loadKnowledgeBase()" style="max-width:300px">
                     <select v-model="kbSectionFilter" class="filter-select" @change="loadKnowledgeBase()" style="max-width:180px">
@@ -1800,9 +1855,83 @@
                     </select>
                 </div>
 
-                <!-- Table -->
-                <div v-if="kbLoading" class="loading">Загрузка...</div>
-                <div v-else-if="kbEntries.length > 0" class="table-container">
+                <!-- ═══ Нормы для добавления ═══ -->
+                <div v-if="kbTab === 'missing_norms'">
+                    <div class="kb-filters" style="align-items:center; gap:12px">
+                        <select v-model="missingNormsFilter" class="filter-select" @change="loadMissingNorms()" style="max-width:200px">
+                            <option value="pending">Ожидают добавления</option>
+                            <option value="added">Добавлены в vault</option>
+                            <option value="dismissed">Не требуются</option>
+                            <option value="">Все</option>
+                        </select>
+                        <span style="color:#94a3b8; font-size:13px">
+                            Ожидают: <b style="color:#f97316">{{ missingNormsStats.pending }}</b> &nbsp;|&nbsp;
+                            Добавлены: <b style="color:#22c55e">{{ missingNormsStats.added }}</b> &nbsp;|&nbsp;
+                            Не нужны: <b style="color:#64748b">{{ missingNormsStats.dismissed }}</b>
+                        </span>
+                    </div>
+
+                    <div v-if="kbLoading" class="loading">Загрузка...</div>
+                    <div v-else-if="missingNorms.length === 0" class="empty-state" style="padding:40px; text-align:center; color:#64748b">
+                        {{ missingNormsFilter === 'pending' ? 'Все нормы есть в vault — отлично!' : 'Нет записей' }}
+                    </div>
+                    <div v-else class="table-container">
+                        <table class="kb-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:220px">Норма</th>
+                                    <th style="width:60px">Тип</th>
+                                    <th style="width:70px; text-align:center">Проектов</th>
+                                    <th style="width:70px; text-align:center">Замечаний</th>
+                                    <th>Проекты</th>
+                                    <th style="width:100px">Впервые</th>
+                                    <th style="width:120px; text-align:center">Действие</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="norm in missingNorms" :key="norm.doc_number"
+                                    :class="{ 'mn-row--added': norm.status === 'added', 'mn-row--dismissed': norm.status === 'dismissed' }">
+                                    <td>
+                                        <span class="mn-doc-number">{{ norm.doc_number }}</span>
+                                        <div v-if="norm.status === 'added'" style="font-size:11px; color:#22c55e; margin-top:2px">
+                                            ✓ добавлена {{ (norm.added_to_vault_at || '').slice(0,10) }}
+                                        </div>
+                                    </td>
+                                    <td><span class="kb-section-badge">{{ norm.family || '—' }}</span></td>
+                                    <td style="text-align:center">{{ norm.project_count }}</td>
+                                    <td style="text-align:center">{{ norm.finding_count }}</td>
+                                    <td style="font-size:11px; color:#94a3b8">
+                                        <span v-for="(occ, i) in norm.occurrences" :key="i">
+                                            {{ occ.project_id }}<span v-if="i < norm.occurrences.length-1">, </span>
+                                        </span>
+                                    </td>
+                                    <td style="font-size:11px; color:#64748b">{{ (norm.first_seen_at || '').slice(0,10) }}</td>
+                                    <td style="text-align:center">
+                                        <button v-if="norm.status === 'pending'"
+                                                class="btn btn-sm" style="background:#22c55e; color:#fff; margin-right:4px"
+                                                @click="markNormAdded(norm.doc_number)" title="Добавлена в vault">
+                                            ✓ Добавлена
+                                        </button>
+                                        <button v-if="norm.status === 'pending'"
+                                                class="btn btn-sm" style="background:#475569; color:#fff"
+                                                @click="dismissNorm(norm.doc_number)" title="Не требуется">
+                                            ✕
+                                        </button>
+                                        <button v-if="norm.status !== 'pending'"
+                                                class="btn btn-sm" style="background:#334155; color:#94a3b8"
+                                                @click="restoreNorm(norm.doc_number)">
+                                            Вернуть
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Table (обычные KB вкладки) -->
+                <div v-if="kbLoading && kbTab !== 'missing_norms'" class="loading">Загрузка...</div>
+                <div v-else-if="kbEntries.length > 0 && kbTab !== 'missing_norms'" class="table-container">
                     <table class="kb-table">
                         <thead>
                             <tr>

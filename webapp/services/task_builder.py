@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 from webapp.config import (
     BASE_DIR, PROJECTS_DIR,
-    NORM_VERIFY_TASK_TEMPLATE, NORM_FIX_TASK_TEMPLATE,
+    NORM_VERIFY_TASK_TEMPLATE, NORM_FIX_TASK_TEMPLATE, NORM_REQUOTE_TASK_TEMPLATE,
     OPTIMIZATION_TASK_TEMPLATE,
     TEXT_ANALYSIS_TASK_TEMPLATE, BLOCK_ANALYSIS_TASK_TEMPLATE,
     FINDINGS_MERGE_TASK_TEMPLATE,
@@ -395,6 +395,24 @@ def prepare_norm_fix_task(
         .replace("{PROJECT_PATH}", project_path)
         .replace("{BASE_DIR}", str(BASE_DIR))
         .replace("{FINDINGS_TO_FIX}", findings_to_fix_text)
+    )
+    return task
+
+
+def prepare_norm_requote_task(
+    project_id: str,
+    project_info: Optional[dict] = None,
+) -> str:
+    """Подготовить задачу для уточнения цитат норм через MCP semantic search."""
+    template = load_template_for_llm(NORM_REQUOTE_TASK_TEMPLATE)
+    template = _inject_discipline(template, project_info or {})
+
+    _, output_path = _get_project_paths(project_id)
+
+    task = (
+        template
+        .replace("{PROJECT_ID}", project_id)
+        .replace("{OUTPUT_PATH}", output_path)
     )
     return task
 

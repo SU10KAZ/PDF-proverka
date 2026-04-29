@@ -108,6 +108,10 @@ class BatchQueueItem(BaseModel):
     retry_stage: Optional[str] = None  # конкретный этап для retry (например "block_analysis")
     status: str = "pending"  # pending / running / completed / failed / skipped / cancelled
     error: Optional[str] = None
+    # Доп. параметры для actions с аргументами (start_from, max_pro_cost_usd, ...)
+    extra_params: dict = {}
+    # job_id, который вернётся клиенту при enqueue — используется для трассировки
+    job_id: Optional[str] = None
 
 
 class BatchQueueStatus(BaseModel):

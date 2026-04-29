@@ -90,6 +90,8 @@ def _extract_error_detail(exit_code: int, output: str, max_len: int = 120) -> st
 QWEN_CROP_DPI = 300
 CLAUDE_CLI_CROP_DPI = 100
 
+BATCH_QUEUE_FILE = BASE_DIR / "webapp" / "data" / "batch_queue.json"
+
 
 def _block_batch_crop_mode() -> str:
     """Определить режим crop по текущей модели block_batch.
@@ -200,6 +202,12 @@ class PipelineManager:
         self._paused = False
         self._pause_mode: str | None = None  # "finish_current" | "interrupt"
 
+        # Лок-handshake между _enqueue_single и завершением batch worker:
+        # без него возможна гонка, когда worker уже вышел из while-цикла, но
+        # ещё не успел перевести queue.status в "completed" — _enqueue_single
+        # увидит running-очередь и допишет item, который никто не подберёт.
+        self._enqueue_lock = asyncio.Lock()
+
     ZOMBIE_TIMEOUT_SEC = 600  # 10 минут без heartbeat = зомби
 
     # ─── Привязка job к объекту ────────────────────────────────────────
@@ -307,6 +315,82 @@ class PipelineManager:
             "paused": self._paused,
             "mode": self._pause_mode,
         }
+
+    # ─── Персистентность очереди ───────────────────────────────────────
+
+    def _persist_queue(self) -> None:
+        """Сохранить текущую очередь на диск (batch_queue.json).
+
+        Вызывается после каждого изменения состояния очереди. Если очереди
+        нет — файл не трогаем (старая история остаётся видимой).
+        """
+        if self._batch_queue is None:
+            return
+        try:
+            BATCH_QUEUE_FILE.parent.mkdir(parents=True, exist_ok=True)
+            BATCH_QUEUE_FILE.write_text(
+                self._batch_queue.model_dump_json(indent=2),
+                encoding="utf-8",
+            )
+        except Exception as e:
+            print(f"[PipelineManager] Ошибка сохранения очереди: {e}")
+
+    def load_persisted_queue(self) -> None:
+        """Загрузить очередь после перезапуска сервера.
+
+        running-элементы → interrupted (процесс был прерван рестартом).
+        pending-элементы → остаются pending (не были запущены).
+        Статус очереди → "interrupted" (не "running") чтобы worker не запустился.
+        """
+        if not BATCH_QUEUE_FILE.exists():
+            return
+        try:
+            data = json.loads(BATCH_QUEUE_FILE.read_text(encoding="utf-8"))
+            queue = BatchQueueStatus(**data)
+        except Exception as e:
+            print(f"[Recovery] Ошибка загрузки batch_queue.json: {e}")
+            return
+
+        # Не восстанавливать уже завершённые (completed/cancelled) без прерванных
+        has_interrupted_or_pending = any(
+            it.status in ("running", "pending") for it in queue.items
+        )
+        if not has_interrupted_or_pending and queue.status != "interrupted":
+            # Очередь уже была полностью завершена — тем не менее показываем историю
+            pass
+
+        changed = False
+        for item in queue.items:
+            if item.status == "running":
+                item.status = "interrupted"
+                changed = True
+
+        if queue.status == "running":
+            queue.status = "interrupted"
+            changed = True
+
+        if changed:
+            interrupted_count = sum(1 for it in queue.items if it.status == "interrupted")
+            pending_count = sum(1 for it in queue.items if it.status == "pending")
+            print(
+                f"[Recovery] Восстановлена очередь: {interrupted_count} прервано, "
+                f"{pending_count} ожидало, всего {len(queue.items)} элементов"
+            )
+
+        self._batch_queue = queue
+        # Сохранить обновлённые статусы
+        self._persist_queue()
+
+    def clear_queue_history(self) -> None:
+        """Удалить историю очереди (файл + in-memory, только если не running)."""
+        if self._batch_queue and self._batch_queue.status == "running":
+            raise RuntimeError("Нельзя очистить работающую очередь")
+        self._batch_queue = None
+        try:
+            if BATCH_QUEUE_FILE.exists():
+                BATCH_QUEUE_FILE.unlink()
+        except Exception as e:
+            print(f"[PipelineManager] Ошибка удаления batch_queue.json: {e}")
 
     async def _check_pause(self, job: AuditJob) -> bool:
         """
@@ -655,8 +739,37 @@ class PipelineManager:
     def is_running(self, project_id: str) -> bool:
         return project_id in self.active_jobs
 
+    def is_queued(self, project_id: str) -> bool:
+        """Проверить, стоит ли проект в очереди со статусом pending."""
+        if not self._batch_queue or self._batch_queue.status != "running":
+            return False
+        return any(
+            it.project_id == project_id and it.status == "pending"
+            for it in self._batch_queue.items
+        )
+
     def get_job(self, project_id: str) -> Optional[AuditJob]:
-        return self.active_jobs.get(project_id)
+        """Текущий job проекта.
+
+        Если проект бежит — возвращает реальный job из active_jobs.
+        Если стоит в очереди — возвращает placeholder со status=QUEUED, чтобы
+        фронт между моментом enqueue и реальным стартом не видел "ничего".
+        """
+        job = self.active_jobs.get(project_id)
+        if job is not None:
+            return job
+        # Проект в очереди?
+        if self._batch_queue and self._batch_queue.status == "running":
+            for it in self._batch_queue.items:
+                if it.project_id == project_id and it.status == "pending":
+                    return AuditJob(
+                        job_id=it.job_id or "",
+                        object_id=self._resolve_object_id(None),
+                        project_id=project_id,
+                        stage=AuditStage.PREPARE,
+                        status=JobStatus.QUEUED,
+                    )
+        return None
 
     def cleanup_zombies(self):
         """Очистить зомби-задачи (нет heartbeat более ZOMBIE_TIMEOUT_SEC)."""
@@ -728,24 +841,43 @@ class PipelineManager:
             print(f"[Recovery] Восстановлено {recovered} проектов с зависшими этапами")
 
     async def cancel(self, project_id: str) -> bool:
-        """Отменить запущенный аудит и убить все дочерние процессы."""
+        """Отменить запущенный или очередённый аудит.
+
+        Для running — убивает дочерние процессы и снимает задачу.
+        Для pending — удаляет item из очереди (без убийства, т.к. ничего не
+        запущено).
+        """
         job = self.active_jobs.get(project_id)
-        if not job:
-            return False
-        job.status = JobStatus.CANCELLED
-        # Убить все дочерние Claude CLI / скрипты проекта
-        killed = await kill_all_processes(project_id)
-        if killed:
-            print(f"[{project_id}] Убито {killed} дочерних процессов")
-        task = self._tasks.get(project_id)
-        if task:
-            task.cancel()
-        self._cleanup(project_id)
-        await ws_manager.broadcast_to_project(
-            project_id,
-            WSMessage.log(project_id, f"Аудит отменён пользователем (убито {killed} процессов)", "warn"),
-        )
-        return True
+        if job:
+            job.status = JobStatus.CANCELLED
+            killed = await kill_all_processes(project_id)
+            if killed:
+                print(f"[{project_id}] Убито {killed} дочерних процессов")
+            task = self._tasks.get(project_id)
+            if task:
+                task.cancel()
+            self._cleanup(project_id)
+            await ws_manager.broadcast_to_project(
+                project_id,
+                WSMessage.log(project_id, f"Аудит отменён пользователем (убито {killed} процессов)", "warn"),
+            )
+            return True
+
+        # Не бежит сейчас — может быть в очереди?
+        if self._batch_queue and self._batch_queue.status == "running":
+            for it in self._batch_queue.items:
+                if it.project_id == project_id and it.status == "pending":
+                    it.status = "cancelled"
+                    await ws_manager.broadcast_global(
+                        WSMessage.log(
+                            "__BATCH__",
+                            f"⊘ {project_id}: убран из очереди",
+                            "warn",
+                        )
+                    )
+                    await self._broadcast_batch_progress(self._batch_queue)
+                    return True
+        return False
 
     def _cleanup(self, project_id: str):
         self._stop_heartbeat(project_id)
@@ -1342,7 +1474,8 @@ class PipelineManager:
                 asyncio.run_coroutine_threadsafe(
                     self._log(
                         job,
-                        f"  SKIP {event.get('block_id')}: {event.get('reason')}",
+                        f"  SKIP {event.get('block_id')} p={event.get('page')}: "
+                        f"{event.get('reason')} findings=0",
                         "warn",
                     ),
                     loop,
@@ -1860,84 +1993,33 @@ class PipelineManager:
         return _detect_resume_stage(project_id)
 
     async def start_from_stage(self, project_id: str, stage: str) -> AuditJob:
-        """Запустить конвейер с указанного этапа (ручной перезапуск цепочки)."""
-        if project_id in self.active_jobs:
-            raise RuntimeError(f"Аудит уже запущен для {project_id}")
+        """Запустить конвейер с указанного этапа (ручной перезапуск цепочки).
 
-        # Убить возможные зомби-процессы от предыдущего запуска
-        killed = await kill_all_processes(project_id)
-        if killed:
-            print(f"[{project_id}] Убито {killed} зомби-процессов от предыдущего запуска")
-
-        valid_stages = ["prepare", "qwen_enrichment", "text_analysis", "block_analysis", "findings_merge", "findings_review", "norm_verify", "excel"]
+        Кладёт single-task в общую очередь — фактический запуск произойдёт,
+        когда worker дойдёт до элемента (см. `_enqueue_single`/`_dispatch_action`).
+        """
+        valid_stages = [
+            "prepare", "qwen_enrichment", "text_analysis", "block_analysis",
+            "findings_merge", "findings_review", "norm_verify", "excel",
+        ]
         if stage not in valid_stages:
             raise RuntimeError(f"Неизвестный этап: {stage}")
-
-        job = AuditJob(
-            job_id=str(uuid4()),
-            object_id=self._resolve_object_id(None),
-            project_id=project_id,
-            stage=AuditStage.PREPARE,
-            status=JobStatus.RUNNING,
-            started_at=datetime.now().isoformat(),
+        return await self._enqueue_single(
+            project_id, action="retry_stage", retry_stage=stage,
         )
-        self.active_jobs[project_id] = job
-
-        stage_labels = {
-            "prepare": "Кроп блоков",
-            "qwen_enrichment": "Qwen-обогащение MD",
-            "text_analysis": "Анализ текста",
-            "block_analysis": "Анализ блоков",
-            "findings_merge": "Свод замечаний",
-            "findings_review": "Проверка замечаний (Critic+Corrector)",
-            "norm_verify": "Верификация норм",
-            "excel": "Excel-отчёт",
-        }
-        resume_info = {
-            "stage": stage,
-            "stage_label": stage_labels.get(stage, stage),
-            "detail": "Ручной запуск с этапа",
-            "can_resume": True,
-            "is_stage_retry": True,
-        }
-        await self._register_single_launch(project_id, action="retry_stage", retry_stage=stage)
-        task = asyncio.create_task(
-            self._wrapped_with_queue(
-                project_id, self._run_resumed_pipeline(job, stage, resume_info)
-            )
-        )
-        self._tasks[project_id] = task
-        return job
 
     async def resume_pipeline(self, project_id: str) -> AuditJob:
-        """Продолжить пайплайн с места ошибки."""
-        if project_id in self.active_jobs:
-            raise RuntimeError(f"Аудит уже запущен для {project_id}")
+        """Продолжить пайплайн с места ошибки.
 
+        resume-проверка детектит этап на момент непосредственного запуска
+        (внутри `_dispatch_action`) — на момент enqueue достаточно знать
+        проект.
+        """
+        # Быстрая проверка чтобы не пускать в очередь заведомо нечего возобновлять
         resume_info = self.detect_resume_stage(project_id)
         if not resume_info.get("can_resume"):
             raise RuntimeError("Все этапы уже завершены — нечего возобновлять")
-
-        stage = resume_info["stage"]
-
-        job = AuditJob(
-            job_id=str(uuid4()),
-            object_id=self._resolve_object_id(None),
-            project_id=project_id,
-            stage=AuditStage.PREPARE,
-            status=JobStatus.RUNNING,
-            started_at=datetime.now().isoformat(),
-        )
-        self.active_jobs[project_id] = job
-        await self._register_single_launch(project_id, action="resume", retry_stage=stage)
-
-        task = asyncio.create_task(
-            self._wrapped_with_queue(
-                project_id, self._run_resumed_pipeline(job, stage, resume_info)
-            )
-        )
-        self._tasks[project_id] = task
-        return job
+        return await self._enqueue_single(project_id, action="resume")
 
     async def _run_resumed_pipeline(self, job: AuditJob, start_stage: str, resume_info: dict):
         """Запуск OCR-пайплайна с указанного этапа."""
@@ -2504,24 +2586,7 @@ class PipelineManager:
 
     # ─── Запуск подготовки ───
     async def start_prepare(self, project_id: str) -> AuditJob:
-        if project_id in self.active_jobs:
-            raise RuntimeError(f"Аудит уже запущен для {project_id}")
-
-        job = AuditJob(
-            job_id=str(uuid4()),
-            object_id=self._resolve_object_id(None),
-            project_id=project_id,
-            stage=AuditStage.PREPARE,
-            status=JobStatus.RUNNING,
-            started_at=datetime.now().isoformat(),
-        )
-        self.active_jobs[project_id] = job
-        await self._register_single_launch(project_id, action="prepare")
-        task = self._create_bound_task(
-            self._wrapped_with_queue(project_id, self._run_prepare(job)), job
-        )
-        self._tasks[project_id] = task
-        return job
+        return await self._enqueue_single(project_id, action="prepare")
 
     async def _run_prepare(self, job: AuditJob):
         pid = job.project_id
@@ -2563,24 +2628,10 @@ class PipelineManager:
 
     # ─── Запуск пакетного анализа тайлов ───
     async def start_tile_audit(self, project_id: str, start_from: int = 1) -> AuditJob:
-        if project_id in self.active_jobs:
-            raise RuntimeError(f"Аудит уже запущен для {project_id}")
-
-        job = AuditJob(
-            job_id=str(uuid4()),
-            object_id=self._resolve_object_id(None),
-            project_id=project_id,
-            stage=AuditStage.TILE_AUDIT,
-            status=JobStatus.RUNNING,
-            started_at=datetime.now().isoformat(),
+        return await self._enqueue_single(
+            project_id, action="tile_audit",
+            extra_params={"start_from": start_from},
         )
-        self.active_jobs[project_id] = job
-        await self._register_single_launch(project_id, action="tile_audit")
-        task = self._create_bound_task(
-            self._wrapped_with_queue(project_id, self._run_tile_audit(job, start_from)), job
-        )
-        self._tasks[project_id] = task
-        return job
 
     async def _run_tile_audit(self, job: AuditJob, start_from: int = 1, pages_filter: list[int] | None = None, standalone: bool = True):
         pid = job.project_id
@@ -2864,29 +2915,8 @@ class PipelineManager:
 
     # ─── Запуск основного аудита ───
     async def start_main_audit(self, project_id: str) -> AuditJob:
-        if project_id in self.active_jobs:
-            raise RuntimeError(f"Аудит уже запущен для {project_id}")
-
-        # Очистка старых результатов — каждый запуск даёт свежие замечания
-        self._clean_stage_files(project_id, [
-            "00_init.json", "01_text_analysis.json", "03_findings.json",
-        ])
-
-        job = AuditJob(
-            job_id=str(uuid4()),
-            object_id=self._resolve_object_id(None),
-            project_id=project_id,
-            stage=AuditStage.MAIN_AUDIT,
-            status=JobStatus.RUNNING,
-            started_at=datetime.now().isoformat(),
-        )
-        self.active_jobs[project_id] = job
-        await self._register_single_launch(project_id, action="main_audit")
-        task = self._create_bound_task(
-            self._wrapped_with_queue(project_id, self._run_main_audit(job)), job
-        )
-        self._tasks[project_id] = task
-        return job
+        # cleanup stage-файлов и установка stage перенесены в `_dispatch_action`
+        return await self._enqueue_single(project_id, action="main_audit")
 
     async def _run_main_audit(self, job: AuditJob, standalone: bool = True):
         pid = job.project_id
@@ -2970,31 +3000,8 @@ class PipelineManager:
 
     # ─── Верификация нормативных ссылок ───
     async def start_norm_verify(self, project_id: str) -> AuditJob:
-        if project_id in self.active_jobs:
-            raise RuntimeError(f"Аудит уже запущен для {project_id}")
-
-        # Очистка старых результатов верификации
-        self._clean_stage_files(project_id, [
-            "03a_norms_verified.json", "norm_checks.json", "norm_checks_llm.json",
-            "missing_norms_queue.json", "missing_norms_report.json",
-            "missing_norms_queue.md",
-        ])
-
-        job = AuditJob(
-            job_id=str(uuid4()),
-            object_id=self._resolve_object_id(None),
-            project_id=project_id,
-            stage=AuditStage.NORM_VERIFY,
-            status=JobStatus.RUNNING,
-            started_at=datetime.now().isoformat(),
-        )
-        self.active_jobs[project_id] = job
-        await self._register_single_launch(project_id, action="norm_verify")
-        task = self._create_bound_task(
-            self._wrapped_with_queue(project_id, self._run_norm_verification(job)), job
-        )
-        self._tasks[project_id] = task
-        return job
+        # cleanup перенесён в `_dispatch_action`
+        return await self._enqueue_single(project_id, action="norm_verify")
 
     async def _retry_batch_split(
         self,
@@ -3721,6 +3728,8 @@ class PipelineManager:
                 format_findings_to_fix,
                 validate_norm_checks,
                 write_missing_norms_queue,
+                verify_paragraphs_native,
+                requote_norms_native,
             )
 
             project_dir = resolve_project_dir(job.project_id)
@@ -3804,6 +3813,16 @@ class PipelineManager:
             except Exception as e:
                 await self._log(job, f"Не удалось записать missing_norms_queue: {e}", "warn")
 
+            # Накопить missing norms в глобальный vault-список
+            try:
+                from webapp.services.missing_norms_service import accumulate_from_queue
+                queue_path = output_dir / "missing_norms_queue.json"
+                new_norms = accumulate_from_queue(pid, queue_path)
+                if new_norms > 0:
+                    await self._log(job, f"Добавлено {new_norms} новых норм в список 'Нормы для добавления'")
+            except Exception as e:
+                await self._log(job, f"Не удалось обновить missing_norms_vault: {e}", "warn")
+
             # Записать предварительный norm_checks.json (детерминированный)
             preliminary_data = {
                 "meta": det_meta,
@@ -3813,7 +3832,7 @@ class PipelineManager:
             with open(norm_checks_path, "w", encoding="utf-8") as f:
                 json.dump(preliminary_data, f, ensure_ascii=False, indent=2)
 
-            # ── Шаг 3: LLM через MCP — только верификация цитат ──
+            # ── Шаг 3: Верификация цитат — сначала Python, fallback на Claude ──
             llm_needed = bool(paragraphs_to_verify)
 
             if llm_needed:
@@ -3825,14 +3844,38 @@ class PipelineManager:
                 )
                 job.progress_total = llm_task_count
 
-                # ── Проверка rate limit ──
-                can_go = await self._check_before_launch(job)
-                if not can_go:
-                    raise RuntimeError("Rate limit: ожидание превышено или отменено")
+                # ── Native Python (fast path) ──
+                _native_ok = False
+                try:
+                    loop = asyncio.get_event_loop()
+                    await loop.run_in_executor(
+                        None,
+                        verify_paragraphs_native,
+                        paragraphs_to_verify,
+                        findings_path,
+                        output_dir,
+                    )
+                    n_verified = len(paragraphs_to_verify)
+                    await self._log(job, f"Native verification: {n_verified} цитат проверено (Python)")
+                    _native_ok = True
+                except Exception as _native_exc:
+                    await self._log(
+                        job,
+                        f"Native verification failed ({_native_exc}), fallback → Claude chunks",
+                        "warn",
+                    )
 
-                # Chunked mode: чанкуем если позиций > PARA_CHUNK_SIZE
-                PARA_CHUNK_SIZE = 15
-                use_chunked = len(paragraphs_to_verify) > PARA_CHUNK_SIZE
+                if not _native_ok:
+                    # ── Проверка rate limit ──
+                    can_go = await self._check_before_launch(job)
+                    if not can_go:
+                        raise RuntimeError("Rate limit: ожидание превышено или отменено")
+
+                    # Chunked mode: чанкуем если позиций > PARA_CHUNK_SIZE
+                    PARA_CHUNK_SIZE = 15
+                    use_chunked = len(paragraphs_to_verify) > PARA_CHUNK_SIZE
+                else:
+                    use_chunked = False
 
                 if use_chunked:
                     para_chunks = [
@@ -3846,7 +3889,7 @@ class PipelineManager:
                         f"({len(paragraphs_to_verify)} цитат)",
                     )
 
-                    sem = asyncio.Semaphore(3)
+                    sem = asyncio.Semaphore(1)  # low-RAM server: sequential chunks prevent OOM
 
                     async def _run_chunk(idx: int, chunk_paragraphs: list):
                         async with sem:
@@ -3907,7 +3950,7 @@ class PipelineManager:
                     await self._log(
                         job, f"Chunked merge: {len(valid_paths)} чанков объединены",
                     )
-                else:
+                elif not _native_ok:
                     llm_work_text = format_llm_work_for_template(
                         paragraphs_to_verify, findings_path,
                     )
@@ -3973,6 +4016,7 @@ class PipelineManager:
                         await self._log(
                             job, "norm_verify retry: файл успешно создан", "info",
                         )
+                # конец if not _native_ok
 
                 # ── Шаг 3b: Слияние paragraph_checks (статусы не меняются) ──
                 # Post-check выше гарантирует, что если мы сюда дошли при
@@ -4108,6 +4152,44 @@ class PipelineManager:
             if enriched > 0:
                 await self._log(job, f"norm_quote обогащён из paragraph_checks: {enriched} замечаний")
 
+            # ── Шаг 6: Авто-исправление неверных номеров пунктов норм ──
+            # paragraph_checks с paragraph_verified=False означает: цитата правильная,
+            # но номер пункта в ссылке ошибочен. Исправляем по mismatch_details.
+            fixed_paras = self._fix_paragraph_refs(output_dir)
+            if fixed_paras > 0:
+                await self._log(job, f"Номера пунктов норм исправлены: {fixed_paras} замечаний")
+
+            # ── Шаг 7: уточнение оставшихся цитат через semantic_search (Python) ──
+            remaining_flags = self._count_manual_check_flags(output_dir)
+            if remaining_flags > 0:
+                await self._log(job,
+                    f"Шаг 7: уточнение {remaining_flags} цитат норм (Python semantic search)")
+                try:
+                    loop = asyncio.get_event_loop()
+                    rq_result = await loop.run_in_executor(
+                        None, requote_norms_native, output_dir,
+                    )
+                    resolved = rq_result.get("resolved", 0)
+                    remaining_after = rq_result.get("remaining", remaining_flags)
+                    await self._log(job,
+                        f"norm_requote завершён: исправлено {resolved}/{remaining_flags}, "
+                        f"осталось {remaining_after} [ручная сверка]")
+                except Exception as _rq_exc:
+                    await self._log(job,
+                        f"Native requote failed ({_rq_exc}), fallback → Claude CLI", "warn")
+                    exit_code, _, cli_result = await claude_runner.run_norm_requote(
+                        pid, on_output=lambda msg: self._log(job, msg),
+                        project_info=project_info,
+                    )
+                    self._record_cli_usage(job, cli_result, "norm_requote")
+                    if exit_code != 0:
+                        await self._log(job, f"norm_requote: код {exit_code} (не критично)", "warn")
+                    remaining_after = self._count_manual_check_flags(output_dir)
+                    resolved = remaining_flags - remaining_after
+                    await self._log(job,
+                        f"norm_requote завершён: исправлено {resolved}/{remaining_flags}, "
+                        f"осталось {remaining_after} [ручная сверка]")
+
             job.status = JobStatus.COMPLETED
             await self._log(job, "Верификация нормативных ссылок завершена", "info")
             self._refresh_finding_quality(pid)
@@ -4196,30 +4278,118 @@ class PipelineManager:
 
         return enriched
 
+    @staticmethod
+    def _fix_paragraph_refs(output_dir: Path) -> int:
+        """Исправить неверные номера пунктов норм по данным paragraph_checks.
+
+        Для каждого finding с paragraph_verified=False: извлекаем правильный
+        пункт из mismatch_details (regex) и обновляем поле norm. Если правильный
+        пункт не определить однозначно — добавляем пометку [ручная сверка].
+
+        Returns: количество исправленных findings.
+        """
+        import re as _re
+        import shutil as _shutil
+
+        findings_path = output_dir / "03_findings.json"
+        norm_checks_path = output_dir / "norm_checks.json"
+        if not findings_path.exists() or not norm_checks_path.exists():
+            return 0
+
+        try:
+            fd = json.loads(findings_path.read_text(encoding="utf-8"))
+            nc = json.loads(norm_checks_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            return 0
+
+        para_checks = nc.get("paragraph_checks", [])
+        if not para_checks:
+            return 0
+
+        _p_re = _re.compile(r"п\.\s*([\d]+(?:\.[\d]+)+)")
+
+        # Группируем по finding_id — только unverified
+        by_fid: dict[str, list[dict]] = {}
+        for pc in para_checks:
+            if not pc.get("paragraph_verified", True):
+                by_fid.setdefault(pc.get("finding_id", ""), []).append(pc)
+        if not by_fid:
+            return 0
+
+        findings = fd.get("findings", [])
+        fmap = {f.get("id", ""): f for f in findings}
+        fixed = 0
+
+        for fid, checks in by_fid.items():
+            finding = fmap.get(fid)
+            if not finding:
+                continue
+
+            norm_field = finding.get("norm", "") or ""
+            desc = finding.get("description", "") or ""
+            made_change = False
+
+            for pc in checks:
+                norm_str = pc.get("norm") or ""
+                mismatch = pc.get("mismatch_details") or ""
+                old_paras = _p_re.findall(norm_str)
+                if not old_paras:
+                    continue
+                old_p = old_paras[0]
+
+                # Ищем правильный пункт в mismatch_details (исключая старый)
+                all_in_mismatch = _p_re.findall(mismatch)
+                new_candidates = [p for p in all_in_mismatch if p != old_p]
+
+                if new_candidates:
+                    new_p = new_candidates[0]
+                    new_norm = _re.sub(r"п\.\s*" + _re.escape(old_p), f"п. {new_p}", norm_field)
+                    new_desc = _re.sub(r"п\.\s*" + _re.escape(old_p), f"п. {new_p}", desc)
+                    if new_norm != norm_field or new_desc != desc:
+                        norm_field = new_norm
+                        desc = new_desc
+                        made_change = True
+                else:
+                    # Не определить пункт → ставим пометку если её нет
+                    flag = f"[Пункт нормы {norm_str} требует ручной сверки] "
+                    if flag not in desc:
+                        desc = flag + desc
+                        made_change = True
+
+            if made_change:
+                finding["norm"] = norm_field
+                finding["description"] = desc
+                fixed += 1
+
+        if fixed > 0:
+            if "meta" in fd and isinstance(fd["meta"], dict):
+                fd["meta"]["paragraph_fix_applied"] = True
+                fd["meta"]["paragraph_fix_stats"] = {"fixed_paragraph": fixed}
+            findings_path.write_text(
+                json.dumps(fd, ensure_ascii=False, indent=2), encoding="utf-8"
+            )
+
+        return fixed
+
+    @staticmethod
+    def _count_manual_check_flags(output_dir: Path) -> int:
+        """Подсчитать количество findings с флагом [Пункт нормы ... ручной сверки]."""
+        findings_path = output_dir / "03_findings.json"
+        if not findings_path.exists():
+            return 0
+        try:
+            fd = json.loads(findings_path.read_text(encoding="utf-8"))
+            return sum(
+                1 for f in fd.get("findings", [])
+                if "[Пункт нормы" in (f.get("description") or "")
+            )
+        except (json.JSONDecodeError, OSError):
+            return 0
+
     # ─── Запуск интеллектуального аудита (smart) ───
     async def start_smart_audit(self, project_id: str) -> AuditJob:
         """Интеллектуальный аудит: текст → триаж → выборочная нарезка → анализ."""
-        if project_id in self.active_jobs:
-            raise RuntimeError(f"Аудит уже запущен для {project_id}")
-
-        usage_tracker.clear_project_usage(project_id)
-        audit_logger.reset_audit_log(project_id)
-
-        job = AuditJob(
-            job_id=str(uuid4()),
-            object_id=self._resolve_object_id(None),
-            project_id=project_id,
-            stage=AuditStage.PREPARE,
-            status=JobStatus.RUNNING,
-            started_at=datetime.now().isoformat(),
-        )
-        self.active_jobs[project_id] = job
-        await self._register_single_launch(project_id, action="smart_audit")
-        task = self._create_bound_task(
-            self._wrapped_with_queue(project_id, self._run_smart_pipeline(job)), job
-        )
-        self._tasks[project_id] = task
-        return job
+        return await self._enqueue_single(project_id, action="smart")
 
     async def _run_smart_pipeline(self, job: AuditJob):
         """
@@ -4546,37 +4716,14 @@ class PipelineManager:
 
     # ─── Запуск аудита (OCR-пайплайн) ───
     async def start_audit(self, project_id: str) -> AuditJob:
-        """Аудит: кроп блоков → текстовый анализ → ВСЕ блоки → свод."""
-        if project_id in self.active_jobs:
-            raise RuntimeError(f"Аудит уже запущен для {project_id}")
+        """Аудит: кроп блоков → текстовый анализ → ВСЕ блоки → свод.
 
-        # Убить возможные зомби-процессы от предыдущего запуска
-        killed = await kill_all_processes(project_id)
-        if killed:
-            print(f"[{project_id}] Убито {killed} зомби-процессов от предыдущего запуска")
-
-        # Сброс счётчика токенов — показываем только текущий прогон
-        usage_tracker.clear_project_usage(project_id)
-        audit_logger.reset_audit_log(project_id)
-
-        job = AuditJob(
-            job_id=str(uuid4()),
-            object_id=self._resolve_object_id(None),
-            project_id=project_id,
-            stage=AuditStage.CROP_BLOCKS,
-            status=JobStatus.RUNNING,
-            started_at=datetime.now().isoformat(),
-        )
-        self.active_jobs[project_id] = job
-        await self._register_single_launch(project_id, action="full")
-        task = self._create_bound_task(
-            self._wrapped_with_queue(
-                project_id, self._run_ocr_pipeline(job, include_optimization=True)
-            ),
-            job,
-        )
-        self._tasks[project_id] = task
-        return job
+        Single-start — кладёт задачу в общую очередь. Реальный запуск
+        случится, когда worker возьмёт её. kill зомби, сброс audit_log/usage
+        живут в `_dispatch_action`, чтобы не сбрасывать данные на ещё не
+        стартовавший проект.
+        """
+        return await self._enqueue_single(project_id, action="full")
 
     async def start_flash_pro_triage(
         self,
@@ -4586,41 +4733,14 @@ class PipelineManager:
         include_simple_findings: bool = False,
     ) -> AuditJob:
         """Run explicit stage-02 Flash full + Pro selected single-block triage."""
-        if project_id in self.active_jobs:
-            raise RuntimeError(f"Аудит уже запущен для {project_id}")
-
-        killed = await kill_all_processes(project_id)
-        if killed:
-            print(f"[{project_id}] Убито {killed} зомби-процессов от предыдущего запуска")
-
-        usage_tracker.clear_project_usage(project_id)
-        audit_logger.reset_audit_log(project_id)
-
-        job = AuditJob(
-            job_id=str(uuid4()),
-            object_id=self._resolve_object_id(None),
-            project_id=project_id,
-            stage=AuditStage.FLASH_PRO_TRIAGE,
-            status=JobStatus.RUNNING,
-            started_at=datetime.now().isoformat(),
-            progress_current=0,
-            progress_total=2,
+        return await self._enqueue_single(
+            project_id,
+            action="flash_pro_triage",
+            extra_params={
+                "max_pro_cost_usd": max_pro_cost_usd,
+                "include_simple_findings": include_simple_findings,
+            },
         )
-        self.active_jobs[project_id] = job
-        await self._register_single_launch(project_id, action="flash_pro_triage")
-        task = self._create_bound_task(
-            self._wrapped_with_queue(
-                project_id,
-                self._run_flash_pro_triage(
-                    job,
-                    max_pro_cost_usd=max_pro_cost_usd,
-                    include_simple_findings=include_simple_findings,
-                ),
-            ),
-            job,
-        )
-        self._tasks[project_id] = task
-        return job
 
     async def _run_flash_pro_triage(
         self,
@@ -5399,44 +5519,49 @@ class PipelineManager:
     _batch_queue: Optional[BatchQueueStatus] = None
 
     async def start_batch(self, project_ids: list[str], action: str) -> BatchQueueStatus:
-        """Запустить групповое действие для списка проектов последовательно."""
-        # Если уже есть batch worker (__BATCH__ job в active_jobs) — не разрешаем второй.
-        # Pseudo-queue (без __BATCH__ job) — переиспользуем: добавим items как pending и поднимем worker.
-        existing = self._batch_queue
-        if existing and existing.status == "running" and "__BATCH__" in self.active_jobs:
-            raise RuntimeError("Групповое действие уже выполняется")
+        """Запустить групповое действие для списка проектов.
+
+        Дописывает items в общую очередь (создавая её если нужно). Если в
+        очереди уже есть single-task'и от `start_audit`, новые items
+        добавляются после них — всё бежит последовательно.
+        """
         if self.is_running("__ALL__"):
             raise RuntimeError("Запуск всех проектов уже выполняется")
+        if not project_ids:
+            raise RuntimeError("Список проектов пуст")
 
-        new_items = [BatchQueueItem(project_id=pid, action=action) for pid in project_ids]
-        if existing and existing.status == "running":
-            # Pseudo-queue от одиночных запусков — наращиваем
-            existing.items.extend(new_items)
-            existing.total = len(existing.items)
-            queue = existing
-        else:
-            queue = BatchQueueStatus(
-                queue_id=str(uuid4()),
-                action=action,
-                items=new_items,
-                total=len(new_items),
-                status="running",
-            )
-            self._batch_queue = queue
+        async with self._enqueue_lock:
+            existing_pending = set()
+            if self._batch_queue and self._batch_queue.status == "running":
+                existing_pending = {
+                    it.project_id for it in self._batch_queue.items
+                    if it.status in ("pending", "running")
+                }
 
-        meta_job = AuditJob(
-            job_id=queue.queue_id,
-            object_id=self._resolve_object_id(None),
-            project_id="__BATCH__",
-            stage=AuditStage.PREPARE,
-            status=JobStatus.RUNNING,
-            started_at=datetime.now().isoformat(),
-            progress_total=queue.total,
-        )
-        self.active_jobs["__BATCH__"] = meta_job
+            # Не дублируем те, что уже стоят в очереди или активно работают
+            filtered = [
+                pid for pid in project_ids
+                if pid not in existing_pending and pid not in self.active_jobs
+            ]
+            new_items = [
+                BatchQueueItem(
+                    project_id=pid,
+                    action=action,
+                    status="pending",
+                    job_id=str(uuid4()),
+                )
+                for pid in filtered
+            ]
 
-        task = self._create_bound_task(self._run_batch_queue(queue, meta_job), meta_job)
-        self._tasks["__BATCH__"] = task
+            queue = self._ensure_batch_worker(action_for_label=action)
+            queue.items.extend(new_items)
+            queue.total = len(queue.items)
+
+            meta_job = self.active_jobs.get("__BATCH__")
+            if meta_job:
+                meta_job.progress_total = queue.total
+
+        await self._broadcast_batch_progress(queue)
         return queue
 
     # ─── Pre-crop: фоновая загрузка блоков для следующих проектов в очереди ───
@@ -5520,7 +5645,16 @@ class PipelineManager:
                 precrop_task = asyncio.create_task(self._run_precrop_loop(queue))
 
             idx = 0
-            while idx < len(queue.items):
+            while True:
+                # Проверяем условие выхода под локом, чтобы _enqueue_single
+                # не успел дописать item в момент перехода в "completed".
+                if idx >= len(queue.items):
+                    async with self._enqueue_lock:
+                        if idx >= len(queue.items):
+                            queue.status = "completed"
+                            break
+                    # под локом увидели свежие items — продолжаем цикл
+
                 item = queue.items[idx]
                 if queue.status == "cancelled":
                     item.status = "cancelled"
@@ -5560,7 +5694,7 @@ class PipelineManager:
 
                 try:
                     job = AuditJob(
-                        job_id=str(uuid4()),
+                        job_id=item.job_id or str(uuid4()),
                         object_id=self._resolve_object_id(None),
                         project_id=pid,
                         stage=AuditStage.PREPARE,
@@ -5570,94 +5704,19 @@ class PipelineManager:
                     self.active_jobs[pid] = job
                     self._tasks[pid] = asyncio.current_task()
 
-                    action = item.action or queue.action
-                    # Свежий прогон из batch — обнуляем audit_log.jsonl, чтобы
-                    # фронт показывал записи только текущего прогона.
-                    # Resume / retry / optimization-only не сбрасывают.
-                    _is_fresh_start = (
-                        not item.retry_stage
-                        and action in (
-                            "full", "audit", "standard", "pro",
-                            "audit+optimization", "standard+optimization", "pro+optimization",
-                        )
-                    )
-                    if _is_fresh_start:
-                        audit_logger.reset_audit_log(pid)
-                    # Retry конкретного этапа (из кнопки ↻)
-                    if item.retry_stage:
-                        stage_label = {
-                            "prepare": "Кроп блоков",
-                            "text_analysis": "Анализ текста",
-                            "block_analysis": "Анализ блоков",
-                            "findings_merge": "Свод замечаний",
-                            "findings_review": "Проверка замечаний",
-                            "norm_verify": "Верификация норм",
-                            "optimization": "Оптимизация",
-                            "optimization_review": "Проверка оптимизации",
-                            "excel": "Excel-отчёт",
-                        }.get(item.retry_stage, item.retry_stage)
-
-                        # Optimization этапы обрабатываются отдельно (не через _run_resumed_pipeline)
-                        if item.retry_stage == "optimization":
-                            await self._log(job, f"▶ Повтор: {stage_label}", "info")
-                            await self._run_optimization(job, standalone=False)
-                            if job.status == JobStatus.COMPLETED:
-                                await self._run_optimization_review(job)
-                        elif item.retry_stage == "optimization_review":
-                            await self._log(job, f"▶ Повтор: {stage_label}", "info")
-                            await self._start_heartbeat(job)
-                            await self._run_optimization_review(job)
-                            if job.status == JobStatus.RUNNING:
-                                job.status = JobStatus.COMPLETED
-                        else:
-                            resume_info = {
-                                "stage": item.retry_stage,
-                                "stage_label": stage_label,
-                                "detail": "Повтор этапа из очереди",
-                                "can_resume": True,
-                                "is_stage_retry": True,
-                            }
-                            await self._run_resumed_pipeline(job, item.retry_stage, resume_info)
-                    elif action == "resume":
-                        resume_info = self.detect_resume_stage(pid)
-                        if not resume_info.get("can_resume"):
-                            item.status = "skipped"
-                            item.error = "Нечего возобновлять"
-                            await ws_manager.broadcast_global(
-                                WSMessage.log("__BATCH__", f"  ⏭ {pid}: нечего возобновлять", "warn")
-                            )
-                            continue
-                        await self._run_resumed_pipeline(job, resume_info["stage"], resume_info)
-                    elif action == "optimization":
-                        await self._run_optimization(job)
-                        if job.status == JobStatus.COMPLETED:
-                            await self._run_optimization_review(job)
-                    elif action in ("audit", "standard", "pro"):
-                        proj_dir = resolve_project_dir(pid)
-                        if list(proj_dir.glob("*_result.json")):
-                            await self._run_ocr_pipeline(job)
-                        else:
-                            await self._run_smart_pipeline(job)
-                    elif action in ("audit+optimization", "standard+optimization", "pro+optimization"):
-                        proj_dir = resolve_project_dir(pid)
-                        if list(proj_dir.glob("*_result.json")):
-                            # Optimization запускается параллельно внутри pipeline
-                            await self._run_ocr_pipeline(job, include_optimization=True)
-                        else:
-                            await self._run_smart_pipeline(job)
-                    else:
-                        # fallback: auto-detect
-                        proj_dir = resolve_project_dir(pid)
-                        if list(proj_dir.glob("*_result.json")):
-                            await self._run_ocr_pipeline(job)
-                        else:
-                            await self._run_smart_pipeline(job)
+                    await self._dispatch_action(item, job, default_action=queue.action)
 
                     if job.status == JobStatus.COMPLETED:
                         item.status = "completed"
                         queue.completed += 1
                         await ws_manager.broadcast_global(
                             WSMessage.log("__BATCH__", f"  ✓ {pid}: завершён", "info")
+                        )
+                    elif job.status == JobStatus.CANCELLED:
+                        item.status = "cancelled"
+                        item.error = job.error_message or "cancelled"
+                        await ws_manager.broadcast_global(
+                            WSMessage.log("__BATCH__", f"  ⊘ {pid}: отменён", "warn")
                         )
                     else:
                         item.status = "failed"
@@ -5684,8 +5743,7 @@ class PipelineManager:
 
                 idx += 1
 
-            # Итог
-            queue.status = "completed"
+            # Итог (queue.status уже выставлен в "completed" под локом выше)
             meta_job.progress_current = queue.total
             meta_job.status = JobStatus.COMPLETED
 
@@ -5715,6 +5773,290 @@ class PipelineManager:
                     pass
             self._cleanup("__BATCH__")
 
+    # ─── Единый dispatcher action'ов ───────────────────────────────────
+    async def _dispatch_action(
+        self,
+        item: BatchQueueItem,
+        job: AuditJob,
+        default_action: str = "full",
+    ) -> None:
+        """Выполнить action из item, мутируя job на месте.
+
+        Caller (`_run_batch_queue`) уже зарегистрировал job в active_jobs и
+        обработает cleanup. Этот метод — единая точка диспетчеризации:
+        kill зомби-процессов + сброс usage/audit_log + cleanup stage-файлов
+        + вызов соответствующего `_run_*` пайплайна.
+
+        Любой single-start (start_audit, start_smart_audit, ...) проходит
+        через очередь и попадает сюда же — `start_*` не запускают coroutine
+        самостоятельно.
+        """
+        pid = job.project_id
+        action = item.action or default_action or "full"
+        extra = item.extra_params or {}
+
+        # Pre-action cleanup — убить зомби от прошлых запусков того же проекта
+        try:
+            killed = await kill_all_processes(pid)
+            if killed:
+                print(f"[{pid}] Убито {killed} зомби-процессов от предыдущего запуска")
+        except Exception as e:
+            print(f"[{pid}] kill_all_processes исключение: {e}")
+
+        # Сброс audit-log/usage только для свежих прогонов (не retry/resume/optimization-only)
+        fresh_actions = {
+            "full", "audit", "standard", "pro", "smart",
+            "audit+optimization", "standard+optimization", "pro+optimization",
+            "main_audit", "tile_audit", "flash_pro_triage", "prepare",
+        }
+        if action in fresh_actions and not item.retry_stage:
+            try:
+                usage_tracker.clear_project_usage(pid)
+            except Exception:
+                pass
+            try:
+                audit_logger.reset_audit_log(pid)
+            except Exception:
+                pass
+
+        # Per-action cleanup stage-файлов (миррор старых start_* helpers)
+        if not item.retry_stage:
+            if action == "main_audit":
+                self._clean_stage_files(pid, [
+                    "00_init.json", "01_text_analysis.json", "03_findings.json",
+                ])
+                job.stage = AuditStage.MAIN_AUDIT
+            elif action == "norm_verify":
+                self._clean_stage_files(pid, [
+                    "03a_norms_verified.json", "norm_checks.json", "norm_checks_llm.json",
+                    "missing_norms_queue.json", "missing_norms_report.json",
+                    "missing_norms_queue.md",
+                ])
+                job.stage = AuditStage.NORM_VERIFY
+            elif action == "optimization":
+                self._clean_stage_files(pid, ["optimization.json"])
+                job.stage = AuditStage.OPTIMIZATION
+            elif action == "optimization_review":
+                opt_path = resolve_project_dir(pid) / "_output" / "optimization.json"
+                if not opt_path.exists():
+                    job.status = JobStatus.FAILED
+                    job.error_message = "optimization.json не найден — сначала запустите оптимизацию"
+                    job.completed_at = datetime.now().isoformat()
+                    return
+                self._clean_stage_files(pid, [
+                    "optimization_review.json", "optimization_pre_review.json",
+                ])
+                job.stage = AuditStage.OPTIMIZATION
+            elif action == "flash_pro_triage":
+                job.stage = AuditStage.FLASH_PRO_TRIAGE
+                job.progress_total = 2
+            elif action == "tile_audit":
+                job.stage = AuditStage.TILE_AUDIT
+
+        # ── Dispatch ───
+        if item.retry_stage:
+            stage_label = {
+                "prepare": "Кроп блоков",
+                "text_analysis": "Анализ текста",
+                "block_analysis": "Анализ блоков",
+                "findings_merge": "Свод замечаний",
+                "findings_review": "Проверка замечаний",
+                "norm_verify": "Верификация норм",
+                "optimization": "Оптимизация",
+                "optimization_review": "Проверка оптимизации",
+                "excel": "Excel-отчёт",
+            }.get(item.retry_stage, item.retry_stage)
+
+            if item.retry_stage == "optimization":
+                await self._log(job, f"▶ Повтор: {stage_label}", "info")
+                await self._run_optimization(job, standalone=False)
+                if job.status == JobStatus.COMPLETED:
+                    await self._run_optimization_review(job)
+            elif item.retry_stage == "optimization_review":
+                await self._log(job, f"▶ Повтор: {stage_label}", "info")
+                await self._start_heartbeat(job)
+                await self._run_optimization_review(job)
+                if job.status == JobStatus.RUNNING:
+                    job.status = JobStatus.COMPLETED
+            else:
+                resume_info = {
+                    "stage": item.retry_stage,
+                    "stage_label": stage_label,
+                    "detail": "Повтор этапа из очереди",
+                    "can_resume": True,
+                    "is_stage_retry": True,
+                }
+                await self._run_resumed_pipeline(job, item.retry_stage, resume_info)
+            return
+
+        if action == "resume":
+            resume_info = self.detect_resume_stage(pid)
+            if not resume_info.get("can_resume"):
+                job.status = JobStatus.FAILED
+                job.error_message = "Нечего возобновлять"
+                job.completed_at = datetime.now().isoformat()
+                return
+            await self._run_resumed_pipeline(job, resume_info["stage"], resume_info)
+            return
+
+        if action == "smart":
+            await self._run_smart_pipeline(job)
+            return
+        if action == "main_audit":
+            await self._run_main_audit(job)
+            return
+        if action == "norm_verify":
+            await self._run_norm_verification(job)
+            return
+        if action == "prepare":
+            await self._run_prepare(job)
+            return
+        if action == "tile_audit":
+            await self._run_tile_audit(job, start_from=int(extra.get("start_from", 1)))
+            return
+        if action == "flash_pro_triage":
+            await self._run_flash_pro_triage(
+                job,
+                max_pro_cost_usd=float(extra.get("max_pro_cost_usd", 8.0)),
+                include_simple_findings=bool(extra.get("include_simple_findings", False)),
+            )
+            return
+        if action == "optimization":
+            await self._run_optimization(job)
+            if job.status == JobStatus.COMPLETED:
+                await self._run_optimization_review(job)
+            return
+        if action == "optimization_review":
+            await self._start_heartbeat(job)
+            await self._run_optimization_review(job)
+            if job.status == JobStatus.RUNNING:
+                job.status = JobStatus.COMPLETED
+            return
+
+        # Полный аудит / batch-actions
+        proj_dir = resolve_project_dir(pid)
+        is_ocr = bool(list(proj_dir.glob("*_result.json")))
+
+        if action == "full":
+            # single-start "запустить аудит" — full audit + optimization для OCR, smart иначе
+            if is_ocr:
+                await self._run_ocr_pipeline(job, include_optimization=True)
+            else:
+                await self._run_smart_pipeline(job)
+            return
+        if action in ("audit", "standard", "pro"):
+            if is_ocr:
+                await self._run_ocr_pipeline(job)
+            else:
+                await self._run_smart_pipeline(job)
+            return
+        if action in ("audit+optimization", "standard+optimization", "pro+optimization"):
+            if is_ocr:
+                await self._run_ocr_pipeline(job, include_optimization=True)
+            else:
+                await self._run_smart_pipeline(job)
+            return
+
+        # fallback
+        if is_ocr:
+            await self._run_ocr_pipeline(job)
+        else:
+            await self._run_smart_pipeline(job)
+
+    # ─── Единая очередь: enqueue single-project ───────────────────────
+    def _ensure_batch_worker(self, action_for_label: str = "full") -> BatchQueueStatus:
+        """Гарантировать, что _batch_queue существует и worker запущен.
+
+        Не добавляет items. Возвращает текущую очередь либо создаёт пустую и
+        поднимает worker.
+        """
+        queue = self._batch_queue
+        if queue is not None and queue.status == "running" and "__BATCH__" in self.active_jobs:
+            return queue
+
+        queue = BatchQueueStatus(
+            queue_id=str(uuid4()),
+            action=action_for_label,
+            items=[],
+            total=0,
+            status="running",
+        )
+        self._batch_queue = queue
+
+        meta_job = AuditJob(
+            job_id=queue.queue_id,
+            object_id=self._resolve_object_id(None),
+            project_id="__BATCH__",
+            stage=AuditStage.PREPARE,
+            status=JobStatus.RUNNING,
+            started_at=datetime.now().isoformat(),
+            progress_total=0,
+        )
+        self.active_jobs["__BATCH__"] = meta_job
+
+        task = self._create_bound_task(
+            self._run_batch_queue(queue, meta_job),
+            meta_job,
+        )
+        self._tasks["__BATCH__"] = task
+        return queue
+
+    async def _enqueue_single(
+        self,
+        project_id: str,
+        action: str,
+        *,
+        retry_stage: Optional[str] = None,
+        extra_params: Optional[dict] = None,
+    ) -> AuditJob:
+        """Поставить single-project задачу в общую очередь.
+
+        Возвращает placeholder AuditJob со status=QUEUED. Реальный pipeline
+        запустится, когда worker дойдёт до этого item. Это единственный путь
+        запуска одиночного проекта — start_audit/start_smart_audit/... все
+        теперь делегируют сюда.
+        """
+        async with self._enqueue_lock:
+            # Уже бежит прямо сейчас?
+            if project_id in self.active_jobs:
+                raise RuntimeError(f"Аудит уже запущен для {project_id}")
+
+            # Уже стоит в очереди (pending/running)?
+            if self._batch_queue and self._batch_queue.status == "running":
+                for it in self._batch_queue.items:
+                    if it.project_id == project_id and it.status in ("pending", "running"):
+                        raise RuntimeError(f"Проект {project_id} уже в очереди")
+
+            job_id = str(uuid4())
+            item = BatchQueueItem(
+                project_id=project_id,
+                action=action,
+                retry_stage=retry_stage,
+                extra_params=extra_params or {},
+                status="pending",
+                job_id=job_id,
+            )
+
+            queue = self._ensure_batch_worker(action_for_label=action)
+            queue.items.append(item)
+            queue.total = len(queue.items)
+
+            meta_job = self.active_jobs.get("__BATCH__")
+            if meta_job:
+                meta_job.progress_total = queue.total
+
+            placeholder = AuditJob(
+                job_id=job_id,
+                object_id=self._resolve_object_id(None),
+                project_id=project_id,
+                stage=AuditStage.PREPARE,
+                status=JobStatus.QUEUED,
+            )
+
+        # Broadcast делаем вне лока (там тоже awaits) — на корректность не влияет.
+        await self._broadcast_batch_progress(queue)
+        return placeholder
+
     async def cancel_batch(self) -> bool:
         """Отменить текущую batch-очередь."""
         if not self._batch_queue or self._batch_queue.status != "running":
@@ -5724,43 +6066,28 @@ class PipelineManager:
         current_item = self._batch_queue.items[self._batch_queue.current_index]
         if current_item.status == "running":
             await self.cancel(current_item.project_id)
+        self._persist_queue()
         return True
 
     async def add_to_batch(self, project_ids: list[str], action: str | None = None) -> BatchQueueStatus:
-        """Добавить проекты в работающую batch-очередь."""
-        queue = self._batch_queue
-        if not queue or queue.status != "running":
+        """Добавить проекты в общую очередь.
+
+        Сохраняет совместимость с прежним API роутера. Под капотом — то же,
+        что `start_batch`: проекты дописываются в running-очередь либо
+        поднимается новая.
+        """
+        if not project_ids:
+            queue = self._batch_queue
+            if queue:
+                return queue
             raise RuntimeError("Нет активной групповой очереди")
-
-        effective_action = action or queue.action
-        existing_ids = {item.project_id for item in queue.items}
-        added = []
-        for pid in project_ids:
-            if pid in existing_ids:
-                continue
-            item = BatchQueueItem(project_id=pid, action=effective_action)
-            queue.items.append(item)
-            existing_ids.add(pid)
-            added.append(pid)
-
-        if added:
-            queue.total = len(queue.items)
-            # Обновить meta-job
-            meta_job = self.active_jobs.get("__BATCH__")
-            if meta_job:
-                meta_job.progress_total = queue.total
-
-            await ws_manager.broadcast_global(
-                WSMessage.log("__BATCH__", f"+ Добавлено в очередь: {len(added)} проектов", "info")
-            )
-            await self._broadcast_batch_progress(queue)
-
-        return queue
+        effective_action = action or (
+            self._batch_queue.action if self._batch_queue else "full"
+        )
+        return await self.start_batch(project_ids, effective_action)
 
     async def add_retry_to_batch(self, project_id: str, stage: str) -> BatchQueueStatus:
-        """Добавить retry конкретного этапа в очередь (создаёт новую если нет активной)."""
-        queue = self._batch_queue
-
+        """Добавить retry конкретного этапа в очередь."""
         # Маппинг ключей pipeline_summary → внутренних ключей этапов
         stage_map = {
             "crop_blocks": "prepare",
@@ -5780,100 +6107,27 @@ class PipelineManager:
         }
         internal_stage = stage_map.get(stage, stage)
 
-        item = BatchQueueItem(
-            project_id=project_id,
-            action="retry_stage",
-            retry_stage=internal_stage,
+        await self._enqueue_single(
+            project_id, action="retry_stage", retry_stage=internal_stage,
         )
-
-        if queue and queue.status == "running":
-            # Добавляем в существующую очередь
-            queue.items.append(item)
-            queue.total = len(queue.items)
-            meta_job = self.active_jobs.get("__BATCH__")
-            if meta_job:
-                meta_job.progress_total = queue.total
-            stage_label = {
-                "prepare": "Кроп блоков", "text_analysis": "Анализ текста",
-                "block_analysis": "Анализ блоков", "findings_merge": "Свод замечаний",
-                "findings_review": "Critic замечаний", "norm_verify": "Верификация норм",
-                "optimization": "Оптимизация", "optimization_review": "Проверка оптимизации",
-            }.get(internal_stage, internal_stage)
-            await ws_manager.broadcast_global(
-                WSMessage.log("__BATCH__", f"+ В очередь: {project_id} → {stage_label}", "info")
-            )
-            await self._broadcast_batch_progress(queue)
-            return queue
-        else:
-            # Создаём новую очередь
-            queue = BatchQueueStatus(
-                queue_id=str(uuid4()),
-                action="retry_stage",
-                items=[item],
-                total=1,
-                status="running",
-            )
-            self._batch_queue = queue
-
-            meta_job = AuditJob(
-                job_id=queue.queue_id,
-                object_id=self._resolve_object_id(None),
-                project_id="__BATCH__",
-                stage=AuditStage.PREPARE,
-                status=JobStatus.RUNNING,
-                started_at=datetime.now().isoformat(),
-                progress_total=1,
-            )
-            self.active_jobs["__BATCH__"] = meta_job
-
-            task = self._create_bound_task(self._run_batch_queue(queue, meta_job), meta_job)
-            self._tasks["__BATCH__"] = task
-            return queue
+        stage_label = {
+            "prepare": "Кроп блоков", "text_analysis": "Анализ текста",
+            "block_analysis": "Анализ блоков", "findings_merge": "Свод замечаний",
+            "findings_review": "Critic замечаний", "norm_verify": "Верификация норм",
+            "optimization": "Оптимизация", "optimization_review": "Проверка оптимизации",
+        }.get(internal_stage, internal_stage)
+        await ws_manager.broadcast_global(
+            WSMessage.log("__BATCH__", f"+ В очередь: {project_id} → {stage_label}", "info")
+        )
+        return self._batch_queue
 
     async def add_resume_to_batch(self, project_id: str) -> BatchQueueStatus:
-        """Добавить resume проекта в очередь (создаёт новую если нет активной)."""
-        queue = self._batch_queue
-
-        item = BatchQueueItem(
-            project_id=project_id,
-            action="resume",
+        """Добавить resume проекта в очередь."""
+        await self._enqueue_single(project_id, action="resume")
+        await ws_manager.broadcast_global(
+            WSMessage.log("__BATCH__", f"+ В очередь: {project_id} → Продолжить", "info")
         )
-
-        if queue and queue.status == "running":
-            queue.items.append(item)
-            queue.total = len(queue.items)
-            meta_job = self.active_jobs.get("__BATCH__")
-            if meta_job:
-                meta_job.progress_total = queue.total
-            await ws_manager.broadcast_global(
-                WSMessage.log("__BATCH__", f"+ В очередь: {project_id} → Продолжить", "info")
-            )
-            await self._broadcast_batch_progress(queue)
-            return queue
-        else:
-            queue = BatchQueueStatus(
-                queue_id=str(uuid4()),
-                action="resume",
-                items=[item],
-                total=1,
-                status="running",
-            )
-            self._batch_queue = queue
-
-            meta_job = AuditJob(
-                job_id=queue.queue_id,
-                object_id=self._resolve_object_id(None),
-                project_id="__BATCH__",
-                stage=AuditStage.PREPARE,
-                status=JobStatus.RUNNING,
-                started_at=datetime.now().isoformat(),
-                progress_total=1,
-            )
-            self.active_jobs["__BATCH__"] = meta_job
-
-            task = self._create_bound_task(self._run_batch_queue(queue, meta_job), meta_job)
-            self._tasks["__BATCH__"] = task
-            return queue
+        return self._batch_queue
 
     def get_batch_queue(self) -> Optional[BatchQueueStatus]:
         """Получить текущую batch-очередь."""
@@ -5968,307 +6222,55 @@ class PipelineManager:
                 "complete": complete,
             },
         ))
-
-    async def _register_single_launch(
-        self,
-        project_id: str,
-        action: str,
-        retry_stage: Optional[str] = None,
-    ) -> None:
-        """Зарегистрировать одиночный запуск проекта в общей очереди для отображения.
-
-        Любой start_* метод вызывает это, чтобы запуск был виден в UI-очереди.
-        Если активной очереди нет — создаём pseudo-queue (без worker-task, items
-        регистрируются сразу со status='running' и не подбираются _run_batch_queue).
-        """
-        queue = self._batch_queue
-        if queue is None or queue.status not in ("running",):
-            queue = BatchQueueStatus(
-                queue_id=str(uuid4()),
-                action=action,
-                items=[],
-                total=0,
-                status="running",
-            )
-            self._batch_queue = queue
-
-        for item in queue.items:
-            if item.project_id == project_id and item.status == "running":
-                return
-
-        item = BatchQueueItem(
-            project_id=project_id,
-            action=action,
-            retry_stage=retry_stage,
-            status="running",
-        )
-        queue.items.append(item)
-        queue.total = len(queue.items)
-        await self._broadcast_batch_progress(queue)
-
-    async def _wrapped_with_queue(self, project_id: str, coro):
-        """Обёртка: после await coro помечает running-item в pseudo-queue completed/failed.
-
-        Используется в start_* методах, чтобы любой одиночный запуск отображался в очереди и
-        корректно закрывался по завершении/ошибке/отмене (без вмешательства в основную логику).
-        """
-        success = True
-        error: Optional[str] = None
-        try:
-            return await coro
-        except Exception as e:
-            success = False
-            error = str(e)
-            raise
-        finally:
-            job = self.active_jobs.get(project_id)
-            if job is not None:
-                if job.status == JobStatus.FAILED:
-                    success = False
-                    error = job.error_message or error
-                elif job.status == JobStatus.CANCELLED:
-                    success = False
-                    error = error or "cancelled"
-            try:
-                await self._complete_single_launch(
-                    project_id, success=success, error=error
-                )
-            except Exception:
-                pass
-
-    async def _complete_single_launch(
-        self,
-        project_id: str,
-        *,
-        success: bool,
-        error: Optional[str] = None,
-    ) -> None:
-        """Пометить running-item для project_id как completed/failed и broadcast."""
-        queue = self._batch_queue
-        if queue is None:
-            return
-        changed = False
-        for item in queue.items:
-            if item.project_id == project_id and item.status == "running":
-                item.status = "completed" if success else "failed"
-                if error:
-                    item.error = error[:200]
-                if success:
-                    queue.completed += 1
-                else:
-                    queue.failed += 1
-                changed = True
-                break
-        if changed:
-            await self._broadcast_batch_progress(queue)
+        self._persist_queue()
 
     async def start_all_projects(self, project_ids: list[str] | None = None) -> dict:
-        """Запуск полного конвейера для всех проектов последовательно.
+        """Поставить полный аудит для всех проектов в общую очередь.
 
-        Если project_ids не указан — берёт все проекты из PROJECTS_DIR.
-        Возвращает dict с результатами: {project_id: "completed"|"failed"|"skipped"}.
+        После рефакторинга на единую очередь это просто обёртка над
+        `start_batch(all_ids, action="full")`. __ALL__ meta-job больше не
+        используется — UI видит обычный batch-индикатор.
         """
         from webapp.services.project_service import list_projects
 
-        print("[ALL] ═══ start_all_projects() ВЫЗВАН ═══")
+        if project_ids:
+            all_ids = list(project_ids)
+        else:
+            projects = list_projects()
+            all_ids = [p.project_id for p in projects if p.has_pdf]
 
-        try:
-            # Определяем список проектов
-            if project_ids:
-                all_ids = project_ids
-            else:
-                projects = list_projects()
-                all_ids = [p.project_id for p in projects if p.has_pdf]
+        if not all_ids:
+            return {"error": "Нет проектов для обработки"}
 
-            if not all_ids:
-                print("[ALL] Нет проектов для обработки")
-                return {"error": "Нет проектов для обработки"}
-
-            total = len(all_ids)
-            results = {}
-            print(f"[ALL] Найдено {total} проектов: {all_ids}")
-
-            # Создаём мета-задачу для отслеживания
-            meta_job = AuditJob(
-                job_id=str(uuid4()),
-                object_id=self._resolve_object_id(None),
-                project_id="__ALL__",
-                stage=AuditStage.PREPARE,
-                status=JobStatus.RUNNING,
-                started_at=datetime.now().isoformat(),
-                progress_total=total,
+        queue = await self.start_batch(all_ids, action="full")
+        await ws_manager.broadcast_global(
+            WSMessage.log(
+                "__BATCH__",
+                f"═══ В очередь поставлен аудит {len(all_ids)} проектов ═══",
+                "info",
             )
-            self.active_jobs["__ALL__"] = meta_job
-            await self._start_heartbeat(meta_job)
-
-            await ws_manager.broadcast_global(
-                WSMessage.log("__ALL__", f"═══ Запуск конвейера для {total} проектов ═══", "info")
-            )
-
-            start_time = datetime.now()
-
-            for idx, project_id in enumerate(all_ids, 1):
-                if meta_job.status == JobStatus.CANCELLED:
-                    results[project_id] = "cancelled"
-                    continue
-
-                meta_job.progress_current = idx - 1
-                meta_job.stage = AuditStage.PREPARE
-
-                print(f"[ALL] ▶ Проект {idx}/{total}: {project_id}")
-                await ws_manager.broadcast_global(
-                    WSMessage.log("__ALL__", f"▶ Проект {idx}/{total}: {project_id}", "info")
-                )
-
-                # Проверяем что проект не занят
-                if self.is_running(project_id):
-                    print(f"[ALL]   ⏭ Пропуск {project_id}: уже выполняется")
-                    await ws_manager.broadcast_global(
-                        WSMessage.log("__ALL__", f"  ⏭ Пропуск: уже выполняется", "warn")
-                    )
-                    results[project_id] = "skipped"
-                    continue
-
-                try:
-                    # Запускаем полный конвейер и ЖДЁМ завершения
-                    job = AuditJob(
-                        job_id=str(uuid4()),
-                        object_id=self._resolve_object_id(None),
-                        project_id=project_id,
-                        stage=AuditStage.PREPARE,
-                        status=JobStatus.RUNNING,
-                        started_at=datetime.now().isoformat(),
-                    )
-                    self.active_jobs[project_id] = job
-                    self._tasks[project_id] = asyncio.current_task()
-
-                    # OCR → ocr pipeline, иначе smart
-                    proj_dir = resolve_project_dir(project_id)
-                    if list(proj_dir.glob("*_result.json")):
-                        await self._run_ocr_pipeline(job)
-                    else:
-                        await self._run_smart_pipeline(job)
-
-                    if job.status == JobStatus.COMPLETED:
-                        results[project_id] = "completed"
-                        print(f"[ALL]   ✓ {project_id}: завершён")
-                        await ws_manager.broadcast_global(
-                            WSMessage.log("__ALL__", f"  ✓ {project_id}: завершён", "info")
-                        )
-                    else:
-                        results[project_id] = f"failed: {job.error_message or job.status.value}"
-                        print(f"[ALL]   ✗ {project_id}: {job.status.value} — {job.error_message}")
-                        await ws_manager.broadcast_global(
-                            WSMessage.log("__ALL__", f"  ✗ {project_id}: {job.status.value}", "error")
-                        )
-
-                except Exception as e:
-                    results[project_id] = f"error: {e}"
-                    print(f"[ALL]   ✗ {project_id}: ИСКЛЮЧЕНИЕ: {e}")
-                    import traceback
-                    traceback.print_exc()
-                    await ws_manager.broadcast_global(
-                        WSMessage.log("__ALL__", f"  ✗ {project_id}: исключение: {e}", "error")
-                    )
-                finally:
-                    # cleanup одного проекта (без удаления __ALL__)
-                    self._stop_heartbeat(project_id)
-                    self.active_jobs.pop(project_id, None)
-                    self._tasks.pop(project_id, None)
-
-            # Итог
-            meta_job.progress_current = total
-            duration = round((datetime.now() - start_time).total_seconds() / 60, 1)
-
-            completed = sum(1 for v in results.values() if v == "completed")
-            failed = sum(1 for v in results.values() if v.startswith(("failed", "error")))
-
-            print(f"[ALL] ═══ Конвейер завершён: {completed}/{total} OK, {failed} ошибок, {duration} мин ═══")
-            await ws_manager.broadcast_global(
-                WSMessage.log(
-                    "__ALL__",
-                    f"═══ Конвейер завершён: {completed}/{total} OK, {failed} ошибок, {duration} мин ═══",
-                    "info",
-                )
-            )
-
-            meta_job.status = JobStatus.COMPLETED
-            meta_job.completed_at = datetime.now().isoformat()
-            self._cleanup("__ALL__")
-
-            return {
-                "total": total,
-                "completed": completed,
-                "failed": failed,
-                "duration_minutes": duration,
-                "details": results,
-            }
-
-        except Exception as e:
-            print(f"[ALL] КРИТИЧЕСКАЯ ОШИБКА в start_all_projects: {e}")
-            import traceback
-            traceback.print_exc()
-            # Очистка мета-задачи при краше
-            self._cleanup("__ALL__")
-            raise
+        )
+        return {
+            "total": len(all_ids),
+            "queue_id": queue.queue_id,
+            "queue_total": queue.total,
+            "status": "queued",
+        }
 
     # ─── Запуск оптимизации проектных решений ───
     async def start_optimization(self, project_id: str) -> AuditJob:
         """Запустить анализ оптимизации проектной документации."""
-        if project_id in self.active_jobs:
-            raise RuntimeError(f"Аудит уже запущен для {project_id}")
-
-        # Очистка старых результатов оптимизации
-        self._clean_stage_files(project_id, ["optimization.json"])
-
-        job = AuditJob(
-            job_id=str(uuid4()),
-            object_id=self._resolve_object_id(None),
-            project_id=project_id,
-            stage=AuditStage.OPTIMIZATION,
-            status=JobStatus.RUNNING,
-            started_at=datetime.now().isoformat(),
-        )
-        self.active_jobs[project_id] = job
-        await self._register_single_launch(project_id, action="optimization")
-        task = self._create_bound_task(
-            self._wrapped_with_queue(project_id, self._run_optimization_with_review(job)), job
-        )
-        self._tasks[project_id] = task
-        return job
+        return await self._enqueue_single(project_id, action="optimization")
 
     async def start_optimization_review(self, project_id: str) -> AuditJob:
         """Запустить только critic + corrector оптимизации (без перезапуска самой оптимизации)."""
-        if project_id in self.active_jobs:
-            raise RuntimeError(f"Аудит уже запущен для {project_id}")
-
-        # Проверяем наличие optimization.json
-        output_dir = resolve_project_dir(project_id) / "_output"
-        opt_path = output_dir / "optimization.json"
+        # Sanity-check на момент enqueue, чтобы не плодить заведомо ломанные
+        # items в очереди. Повторная проверка существования файла происходит
+        # внутри `_dispatch_action` на момент реального запуска.
+        opt_path = resolve_project_dir(project_id) / "_output" / "optimization.json"
         if not opt_path.exists():
             raise RuntimeError("optimization.json не найден — сначала запустите оптимизацию")
-
-        # Очистка старых review-результатов
-        self._clean_stage_files(project_id, [
-            "optimization_review.json", "optimization_pre_review.json",
-        ])
-
-        job = AuditJob(
-            job_id=str(uuid4()),
-            object_id=self._resolve_object_id(None),
-            project_id=project_id,
-            stage=AuditStage.OPTIMIZATION,
-            status=JobStatus.RUNNING,
-            started_at=datetime.now().isoformat(),
-        )
-        self.active_jobs[project_id] = job
-        await self._register_single_launch(project_id, action="optimization_review")
-        task = self._create_bound_task(
-            self._wrapped_with_queue(project_id, self._run_optimization_review_standalone(job)),
-            job,
-        )
-        self._tasks[project_id] = task
-        return job
+        return await self._enqueue_single(project_id, action="optimization_review")
 
     async def _run_optimization_review_standalone(self, job: AuditJob):
         """Critic + Corrector оптимизации (standalone запуск)."""
@@ -6494,6 +6496,8 @@ class PipelineManager:
 
         if total_issues == 0:
             await self._log(job, "Все предложения обоснованы — Corrector не требуется")
+            self._update_pipeline_log(pid, "optimization_corrector", "skipped",
+                                       message="Все предложения прошли Critic")
             return
 
         # ── Corrector ──
