@@ -3178,6 +3178,1904 @@
       "customer_confirmed": false,
       "customer_date": null,
       "customer_note": null
+    },
+    {
+      "id": "DEC-0143",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "F-001",
+      "item_type": "finding",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "fire_safety",
+      "summary": "Некорректная классификация помещений по ФЗ-123: кладовые и мусорокамеры отнесены к классу Ф5.2",
+      "norm_refs": [
+        "ФЗ-123 от 22.07.2008 (действует), ст. 32, табл. 1"
+      ],
+      "sheet": "Лист 1",
+      "page": 5,
+      "expert_decision": "rejected",
+      "expert_reason": "Классификация Ф5.2 для кладовых и мусорокамер. Экспертиза пройдена (77-1-1-3-071275-2024), ГЭ противопожарные решения проверила и приняла.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0144",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "F-002",
+      "item_type": "finding",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "fire_safety",
+      "summary": "Газобетонные стены СВ-1.1 — СВ-1.4 могут не обеспечивать требуемый предел огнестойкости",
+      "norm_refs": [
+        "СП 2.13130.2020 (действует), табл. 6.9; СП 113.13330.2023 (действует)"
+      ],
+      "sheet": "Листы 2, 3, 4",
+      "page": [
+        6,
+        7,
+        8
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Предел огнестойкости газобетона СВ-1.4 (100мм). Экспертиза пройдена; сертифицированный D600 100мм обеспечивает EI 90 по данным производителей. ГЭ конструктивные решения проверила.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0145",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "F-003",
+      "item_type": "finding",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "documentation",
+      "summary": "Тип стены СВ-1.5 отсутствует в условных обозначениях на всех листах",
+      "norm_refs": [
+        "ГОСТ 21.501-2018 (действует), п. 5.1"
+      ],
+      "sheet": "Листы 2, 3, 4, 5",
+      "page": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "expert_decision": "accepted",
+      "expert_reason": "",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0146",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "F-004",
+      "item_type": "finding",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "documentation",
+      "summary": "Расхождение толщины утепления между условными обозначениями и ведомостью материалов",
+      "norm_refs": [
+        "ГОСТ 21.501-2018 (действует)"
+      ],
+      "sheet": "Листы 2, 7",
+      "page": [
+        6,
+        11
+      ],
+      "expert_decision": "accepted",
+      "expert_reason": "",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0147",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "F-005",
+      "item_type": "finding",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "documentation",
+      "summary": "Масса анкер-шпильки М10х100 указана как 0 кг в спецификации перемычек",
+      "norm_refs": [
+        "ГОСТ 21.501-2018 (действует)"
+      ],
+      "sheet": "Лист 8",
+      "page": 12,
+      "expert_decision": "rejected",
+      "expert_reason": "Масса анкер-шпильки М10×100 = 0 кг. Суммарная погрешность 1,3 кг при 22 шт — не влияет на закупку (заказ поштучно) и сметную стоимость.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0148",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "F-006",
+      "item_type": "finding",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "dimensions",
+      "summary": "Высота технического пространства К1 и К2 составляет 1790 мм — проверить доступ для обслуживания",
+      "norm_refs": [
+        "СП 54.13330.2022 (действует), п. 5.8"
+      ],
+      "sheet": "Лист 5",
+      "page": 9,
+      "expert_decision": "rejected",
+      "expert_reason": "Высота тех. пространства 1790мм (норма 1800мм). Экспертиза пройдена; отклонение 10мм в пределах строительных допусков.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0149",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "F-008",
+      "item_type": "finding",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "summary": "Дублирование номера листа 2 в ведомости рабочих чертежей",
+      "norm_refs": [
+        "ГОСТ 21.101-2020 (действует), п. 5.4"
+      ],
+      "sheet": "Лист 1",
+      "page": 5,
+      "expert_decision": "rejected",
+      "expert_reason": "Дублирование номера листа 2 в ведомости. Формальный редакционный недочёт, не влияет на содержание чертежей.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0150",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "F-009",
+      "item_type": "finding",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "normative_refs",
+      "summary": "Несоответствие версий СП 15.13330 в ведомости и общих указаниях",
+      "norm_refs": [
+        "ГОСТ 21.101-2020 (действует)"
+      ],
+      "sheet": "Лист 1",
+      "page": 5,
+      "expert_decision": "rejected",
+      "expert_reason": "Устаревшие версии СП/ГОСТ в ведомости ссылочных документов. Экспертиза принята; не влияет на строительство.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0151",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "F-010",
+      "item_type": "finding",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "normative_refs",
+      "summary": "Ссылка на СП 70.13330.2012 в ведомости не содержит указания на актуальную редакцию (ред. 04.03.2025, изм. 1, 3–7)",
+      "norm_refs": [
+        "ГОСТ 21.101-2020 (действует)"
+      ],
+      "sheet": "Лист 1",
+      "page": 5,
+      "expert_decision": "rejected",
+      "expert_reason": "Устаревшие версии СП/ГОСТ в ведомости ссылочных документов. Экспертиза принята; не влияет на строительство.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0152",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "F-011",
+      "item_type": "finding",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "normative_refs",
+      "summary": "Ссылка на устаревший ГОСТ 8510-86 в узле Б1",
+      "norm_refs": [
+        "ГОСТ 21.101-2020 (действует)"
+      ],
+      "sheet": "Лист 7",
+      "page": 11,
+      "expert_decision": "rejected",
+      "expert_reason": "ГОСТ 8510-86 заменён на ГОСТ 8510-93. Сортамент уголков содержательно идентичен; строитель закажет правильный профиль 75×50×5 по любому из этих ГОСТ.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0153",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "F-012",
+      "item_type": "finding",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "normative_refs",
+      "summary": "Ссылка на устаревший СП 48.13330.2011",
+      "norm_refs": [
+        "ГОСТ 21.101-2020 (действует)"
+      ],
+      "sheet": "Лист 1",
+      "page": 5,
+      "expert_decision": "rejected",
+      "expert_reason": "Устаревшие версии СП/ГОСТ в ведомости ссылочных документов. Экспертиза принята; не влияет на строительство.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0154",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "F-013",
+      "item_type": "finding",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "normative_refs",
+      "summary": "ГОСТ 31358-2007 заменён на ГОСТ 31358-2019",
+      "norm_refs": [
+        "ГОСТ 21.101-2020 (действует)"
+      ],
+      "sheet": "Лист 1",
+      "page": 5,
+      "expert_decision": "rejected",
+      "expert_reason": "Устаревшие версии СП/ГОСТ в ведомости ссылочных документов. Экспертиза принята; не влияет на строительство.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0155",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "F-014",
+      "item_type": "finding",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "normative_refs",
+      "summary": "Противоречие версий ГОСТ в спецификации фахверка: ГОСТ 19903-74 и ГОСТ 27772-2015/2021",
+      "norm_refs": [
+        "ГОСТ 21.101-2020 (действует)"
+      ],
+      "sheet": "Лист 9",
+      "page": 13,
+      "expert_decision": "rejected",
+      "expert_reason": "Противоречивые версии ГОСТ в спецификации фахверка (19903-74, 27772-2015/2021). Версии ГОСТ, геометрия и марка стали профилей не изменились.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0156",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "F-016",
+      "item_type": "finding",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "summary": "Несоответствие наименования заказчика на разных страницах",
+      "norm_refs": [
+        "ГОСТ 21.101-2020 (действует), п. 4.1"
+      ],
+      "sheet": "None",
+      "page": [
+        1,
+        3
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Разные наименования заказчика (АСТЕРУС ДЕВЕЛОПМЕНТ / СУ-10). Экспертиза пройдена; отражает реальную структуру проекта (застройщик / технический заказчик).",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0157",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "F-017",
+      "item_type": "finding",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "summary": "Дублирование и пропуск нумерации пунктов общих указаний",
+      "norm_refs": [
+        "ГОСТ 21.101-2020 (действует)"
+      ],
+      "sheet": "Лист 1",
+      "page": 5,
+      "expert_decision": "rejected",
+      "expert_reason": "Дублирование п.2 и пропуск п.17 в общих указаниях. Строитель работает по содержанию, а не по номеру пункта.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0158",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "F-018",
+      "item_type": "finding",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "summary": "Систематическая опечатка «Марака» вместо «Марка» в условных обозначениях на всех листах",
+      "norm_refs": [
+        "ГОСТ 21.101-2020 (действует)"
+      ],
+      "sheet": "Листы 2, 3, 4, 5",
+      "page": [
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "«Марака» вместо «Марка» на всех листах, опечатки в общих указаниях. OCR-артефакты; смысл однозначно понятен по контексту.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0159",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "F-019",
+      "item_type": "finding",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "summary": "Повреждённый/нечитаемый текст п.18 общих указаний",
+      "norm_refs": [
+        "ГОСТ 21.101-2020 (действует)"
+      ],
+      "sheet": "Лист 1",
+      "page": 5,
+      "expert_decision": "rejected",
+      "expert_reason": "«испytание» в п.18. OCR-артефакт; требование (испытание на вырыв) однозначно восстанавливается.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0160",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "OPT-001",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "СП 15.13330.2020, п. 9.2 — требования к перемычкам каменных конструкций"
+      ],
+      "sheet": "Лист 8",
+      "page": 12,
+      "expert_decision": "rejected",
+      "expert_reason": "Унификация длин уголков перемычек. Перемычки — несущие конструкции; изменение длин опирания требует пересчёта КЖ/КМ. На стадии РД с пройденной экспертизой нецелесообразно.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0161",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "OPT-002",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "ГОСТ 103-2006 — прокат полосовой"
+      ],
+      "sheet": "Лист 8",
+      "page": 12,
+      "expert_decision": "rejected",
+      "expert_reason": "Унификация 5 типоразмеров пластин 50×4 до 3 типоразмеров. Слишком мелкая деталь (158 шт., разница 50мм); рабочий нарезает пластины на месте без влияния на стоимость.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0162",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "OPT-003",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "ГОСТ 21.501-2018 — правила выполнения рабочей документации"
+      ],
+      "sheet": "Лист 8",
+      "page": 12,
+      "expert_decision": "rejected",
+      "expert_reason": "Сокращение 20 марок перемычек до 8-10. Трудоёмкость перемаркировки на всех листах РД превышает пользу; конструктив не меняется, экономии нет.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0163",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "OPT-004",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "СП 15.13330.2020, СП 50.13330.2024 — требования к толщине стен и теплозащите"
+      ],
+      "sheet": "Листы 2, 3, 4, 5",
+      "page": 6,
+      "expert_decision": "rejected",
+      "expert_reason": "Унификация типов газобетонных стен (СВ-1.3 → СВ-1.2, СВ-1.5 → монолит). Изменение толщины стен затрагивает габариты помещений и требует согласования КЖ. На стадии РД с пройденной экспертизой нецелесообразно.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0164",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "OPT-005",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "СП 15.13330.2020 — крепление перегородок к несущим конструкциям"
+      ],
+      "sheet": "Лист 7",
+      "page": 11,
+      "expert_decision": "rejected",
+      "expert_reason": "Унификация узлов крепления газобетона к монолиту (А, Б, К → один тип). Разные узлы рассчитаны под разные нагрузки; унификация требует расчёта КЖ.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0165",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "OPT-006",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "СП 15.13330.2020, п. 9.80 — крепление верха перегородок"
+      ],
+      "sheet": "Лист 7",
+      "page": 11,
+      "expert_decision": "rejected",
+      "expert_reason": "Оригинальный горячекатаный уголок 75×50×5 — жёсткий профиль с полкой 5 мм, рассчитанный на нагрузку от кладки и деформации плиты. Прямого эквивалента в классе «монтажных перфоуголков» не существует.\nТрудозатраты на нарезку + сверление + окраску 500-800 уголков — ~30-40 чел.-часов. Экономия ~30 000-40 000 руб. не перекрывает стоимость перепроектирования узла и повторного прохождения экспертизы.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0166",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "OPT-007",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "СП 15.13330.2020 — защита каменных конструкций от увлажнения"
+      ],
+      "sheet": "Лист 7",
+      "page": 11,
+      "expert_decision": "rejected",
+      "expert_reason": "Аналоги гидрофобизатора CERESIT CT 9. Замена уже разрешена проектной оговоркой «или другим гидрофобизирующим составом» — это закупочное решение, не требует совещания.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0167",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "OPT-008",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "СП 20.13330.2016 — деформационные швы зданий"
+      ],
+      "sheet": "Лист 7",
+      "page": 11,
+      "expert_decision": "rejected",
+      "expert_reason": "Аналоги профилей DEFLEX для деформационных швов. Аналогично OPT-007 — замена разрешена оговоркой «или аналог» в проекте.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0168",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "OPT-009",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "ГОСТ 23279-2012 — сетки арматурные сварные"
+      ],
+      "sheet": "Лист 10",
+      "page": 14,
+      "expert_decision": "rejected",
+      "expert_reason": "Замена рулонной сетки (106 м²) над кладовыми на секционные панели. Объём слишком мал для выноса на совещание; экономия незначительна.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0169",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "OPT-010",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "СП 50.13330.2024 — тепловая защита зданий"
+      ],
+      "sheet": "Лист 7",
+      "page": 11,
+      "expert_decision": "rejected",
+      "expert_reason": "Замена минваты на плиты с кашировкой. До устранения расхождения толщин F-004 оптимизация неприменима; после устранения — замена утеплителя требует пересмотра теплотехнического расчёта.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0170",
+      "source_project": "13АВ-РД-АР0.1-ПА",
+      "section": "AR",
+      "item_id": "OPT-011",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "СП 16.13330.2017 — стальные конструкции; СП 28.13330.2017 — защита строительных конструкций от коррозии"
+      ],
+      "sheet": "Лист 9",
+      "page": 13,
+      "expert_decision": "accepted",
+      "expert_reason": "",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:29:57",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0171",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "F-006",
+      "item_type": "finding",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "documentation",
+      "summary": "Номера помещений в ведомостях и легендах указаны с неверным префиксом корпуса (3.МОП, 4.МОП, 5.МОП) вместо 6.МОП.",
+      "norm_refs": [
+        "ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5.4"
+      ],
+      "sheet": "Листы 8, 9, 29, 31, 53 (сводные ведомости и легенды)",
+      "page": [
+        13,
+        14,
+        48,
+        49,
+        50,
+        76
+      ],
+      "expert_decision": "accepted",
+      "expert_reason": "",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0172",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "F-008",
+      "item_type": "finding",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "summary": "Марка бра СВ-3 указана вариативно: 'Mirax' и 'RUN'.",
+      "norm_refs": [
+        "ГОСТ Р 21.101-2020 (ДЕЙСТВУЕТ), п. 7.4"
+      ],
+      "sheet": "Листы 6, 8",
+      "page": [
+        10,
+        11,
+        12,
+        13
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как ,обозначение одно",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0173",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "F-009",
+      "item_type": "finding",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "summary": "Декоративный элемент ДЭ-3 определён по-разному: 'Навигация' и 'Номер этажа'.",
+      "norm_refs": [
+        "ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5.5.7"
+      ],
+      "sheet": "Листы 7, 8, 23",
+      "page": [
+        11,
+        12,
+        34
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как,это мелкий оформительский деффект",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0174",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "F-010",
+      "item_type": "finding",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "fire_safety",
+      "summary": "В ведомостях заполнения проёмов отсутствуют противопожарные двери Д-3л, Д-4, Д-4Л, Д-9, Д-9Л, показанные на маркировочных планах и развёртках.",
+      "norm_refs": [
+        "СП 1.13130.2020 (ДЕЙСТВУЕТ), п. 4.2.7 + ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5.6.10"
+      ],
+      "sheet": "Листы 2, 26, 34, 45, 65 (ведомости заполнения проёмов)",
+      "page": [
+        6,
+        12,
+        21,
+        27,
+        35,
+        45,
+        53,
+        65,
+        73,
+        81
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как двери есть в В ведомостях заполнения проёмов",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0175",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "F-011",
+      "item_type": "finding",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "fire_safety",
+      "summary": "Для дверей Д-1/Д-1Л на выходе в лифтовой холл ПБЗ указан предел EI 30 — требует сверки с типом ЛК и классификацией ПБЗ.",
+      "norm_refs": [
+        "СП 4.13130.2013 (ДЕЙСТВУЕТ), п. 5.4.16 + СП 59.13330.2020 (ДЕЙСТВУЕТ), п. 5.2.27"
+      ],
+      "sheet": "Листы 2, 8, 44 (ведомости и развёртки)",
+      "page": [
+        6,
+        12,
+        59
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как, Двери Д-1/Д-1Л являются входными дверями квартир, выходящими в коридор , а не непосредственно в пожаробезопасную зону (ПБЗ). ПБЗ в проекте организована в помещении лифтового холла  границами которой служат двери Д-2/Д-2Л, уже имеющие предел EIWS 60.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0176",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "F-013",
+      "item_type": "finding",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "documentation",
+      "summary": "Цвет покраски дверей указан как 'RAL 060-70-10', что не соответствует системе RAL Classic.",
+      "norm_refs": [
+        "ГОСТ Р 21.101-2020 (ДЕЙСТВУЕТ), п. 7.4"
+      ],
+      "sheet": "Листы 2, 26, 34, 43, 58, 64 (ведомости дверей)",
+      "page": [
+        6,
+        21,
+        45,
+        53,
+        65,
+        73,
+        81
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как по 3 значному коду ,итак понятно что это RAL Design,вносить уточнение не требуеться,та как этот код забиваеться в базу дизайнером перед закупкой.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0177",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "F-014",
+      "item_type": "finding",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "summary": "Площади поверхностей покраски требуют верификации по геометрии с учётом проёмов.",
+      "norm_refs": [
+        "ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5.6.13"
+      ],
+      "sheet": "Листы 8-9 (сводные ведомости отделки)",
+      "page": [
+        13,
+        14
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как ,Методологически требовать тотальной верификации площадей без указания на конкретную ошибку некорректно. На практике указанные величины (26,0 м², 35,7 м², 36,6 м²) при высоте помещений ≈2,5 м и вычете дверных, люковых проёмов и металлических панелей вполне вписываются в ожидаемые значения. Поскольку замечание не содержит измеримых дефектов, оно снимается с рассмотрения как необоснованное.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0178",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "F-015",
+      "item_type": "finding",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "documentation",
+      "summary": "В узлах примыкания ревизионного люка указан керамогранит 'KERAMA MARAZZI VERONA (GREY/BEIGE)', противоречащий спецификации 'Dacota Grey LAPARET 80x80' в легендах и общих указаниях.",
+      "norm_refs": [
+        "ГОСТ Р 21.101-2020 (ДЕЙСТВУЕТ), п. 4.5.6"
+      ],
+      "sheet": "Листы 8, 24, 32, 42, 50, 58 (узлы пола)",
+      "page": [
+        12,
+        27,
+        35,
+        51,
+        59,
+        71,
+        79,
+        87
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как неверно описана проблема надо вот так:\n1.Местоположение проблемы: Рабочая документация, раздел АР, листы 8, 24, 32, 42, 50, 58 (Навигационные схемы разверток, Узел 1, Узел Б), а также листы 3, 11, 19 и др. (Планы раскладки напольных покрытий).\n2.Критическое противоречие спецификации материалов и высотных отметок в конструкциях узлов пола.В узлах примыкания ревизионного люка указан керамогранит 'KERAMA MARAZZI VERONA (GREY/BEIGE)', противоречащий спецификации 'Dacota Grey LAPARET 80x80' в легендах и общих указаниях.\n3.Описание проблемы: В ведомостях отделки и на планах раскладки напольных покрытий (Тип пола 2.1) заложен керамогранит Dacota Grey LAPARET 80x80 (код товара 09475-0004). Однако в деталировочных чертежах (Узел 1, Узел Б), отображающих примыкание пола к стенам и ревизионным люкам, ошибочно прописан иной материал — KERAMA MARAZZI VERONA (GREY/BEIGE).\n4.Описанное решение в столбце F \n5.Чем грозит: 1. Финансовые и логистические риски: служба снабжения произведет закупку двух разных типов керамогранита для одних и тех же МОП, что приведет к перерасходу бюджета и пересортице на строительной площадке.\n2. Строительные дефекты: керамогранит разных производителей имеет разные допуски по толщине и калибру. Применение нерасчетной плитки приведет к изменению проектной толщины клеевого слоя, невозможности вывести уровень чистого пола в абсолютный «ноль» (0.000) и образованию недопустимых перепадов (порогов) в зоне люков, что нарушает требования п. 5.16 СП 29.13330.2011 «Полы» по ровности покрытий.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0179",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "F-016",
+      "item_type": "finding",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "fire_safety",
+      "summary": "Металлические панели ПЛ (RAL7004) имеют класс пожарной опасности КМ1 — требуется подтверждение допустимости для путей эвакуации в МКД высотой более 28 м.",
+      "norm_refs": [
+        "СП 1.13130.2020 (ДЕЙСТВУЕТ), табл. 28 + №123-ФЗ (ДЕЙСТВУЕТ), табл. 28-29"
+      ],
+      "sheet": "Листы 7, 8, 39, 55, 63 (легенды отделки)",
+      "page": [
+        11,
+        12,
+        58
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как ,согласно №123-ФЗ Общие коридоры,холлы, фойе,где как раз установлены Металлические панели ПЛ должны быть  не выше Г1, В1, Д2,Т2 что равно калассу КМ1.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0180",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "F-017",
+      "item_type": "finding",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "accessibility",
+      "summary": "Лифтовой холл 6.МОП.2 обозначен как ПБЗ, но в проекте нет ссылки на СП 59.13330.2020 и расчёта количества МГН.",
+      "norm_refs": [
+        "СП 59.13330.2020 (ДЕЙСТВУЕТ), п. 6.2.27-6.2.29"
+      ],
+      "sheet": "Листы 2, 6 (экспликация, легенда электрики)",
+      "page": [
+        6,
+        10
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как ,такие расчеты не должны быть предоставлены в отделочных плнах.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0181",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "F-019",
+      "item_type": "finding",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "documentation",
+      "summary": "В описании арматурной сетки стяжки указано '5Врl' вместо '5Вр1'.",
+      "norm_refs": [
+        "ГОСТ 23279-2012 (ДЕЙСТВУЕТ), п. 4.2 + ГОСТ Р 52544-2006 (ДЕЙСТВУЕТ)"
+      ],
+      "sheet": "Листы 2, 11, 35, 43, 51 (Тип пола 2.1)",
+      "page": [
+        6,
+        22,
+        54,
+        66,
+        74
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как ,это мелкий оформительский деффект не несуший рисков и последствий и не стоит на него обращать внимание.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0182",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "F-022",
+      "item_type": "finding",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "fire_safety",
+      "summary": "На плане раскладки напольных покрытий 27 этажа ширина коридора 6.МОП.4 указана 1250 мм — меньше нормативных 1400 мм для путей эвакуации.",
+      "norm_refs": [
+        "СП 1.13130.2020 (ДЕЙСТВУЕТ), п. 4.3.4 + СП 54.13330.2022 (ДЕЙСТВУЕТ), п. 7.1.10"
+      ],
+      "sheet": "Лист 51 (план раскладки полов 27 этажа)",
+      "page": 74,
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как это артефакт распознования ширина коридора обозначена как 1800мм ,а это ссответсвует норме СП 1.13130.2020 п. 4.3.3 где сказанно 1,2 м - для коридоров и иных путей эвакуации, по которым могут эвакуироваться более 50 человек;",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0183",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "F-023",
+      "item_type": "finding",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "accessibility",
+      "summary": "Двери Д-4/Д-4Л шириной 900 мм — на границе требований для МГН (не менее 900 мм в свету).",
+      "norm_refs": [
+        "СП 59.13330.2020 (ДЕЙСТВУЕТ), п. 6.5.2 + СП 1.13130.2020 (ДЕЙСТВУЕТ), п. 4.2.5"
+      ],
+      "sheet": "Листы 2, 8 (ведомости, развёртки)",
+      "page": [
+        6,
+        12
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как,это не путь эвакуации МГН это Помещение ревизии инженерных коммуникаций,а значит такая дверь допустима.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0184",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "F-025",
+      "item_type": "finding",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "documentation",
+      "summary": "На плане раскладки полов 20 этажа указана марка 'П-1', тогда как в легенде описан 'Тип пола-7' и плинтус 'П-3'.",
+      "norm_refs": [
+        "ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5.5.7"
+      ],
+      "sheet": "Лист 27 (план раскладки полов 20 этажа)",
+      "page": 46,
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как ,описание отдельное свое для \n1.П1=Керамогранит Dacota Grey Серый Лаппатированный 80x80  серый цвет КОД ТОВАРА\n09475-0004 Минимальный шов 2мм.\nЗатирка эпоксидня Кerapoxy design №134 шелк; №135 золотой песок;  №144 шоколад + Лак 10%. Предоставить образцы на согласование.\nКласс ПО: КМ0 (Тип пола-7) \n2.П3=Плинтус обрезной  t=60 мм из керамогранита. КЕРАМОГРАНИТ DACOTA GREY СЕРЫЙ\nЛАППАТИРОВАННЫЙ 80X80 ОТ\nLAPARET. Минимальный шов 2мм.\nЗатирка эпоксидня Кerapoxy design №134 шелк; №135 золотой песок;  №144 шоколад + Лак 10%. Предоставить образцы на согласование. Класс ПО: КМ0. (П-3)",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0185",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "F-026",
+      "item_type": "finding",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "documentation",
+      "summary": "В легендах 27 этажа указана отметка потолка +2.500, а на плане и сечении потолка — +2.800.",
+      "norm_refs": [
+        "ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5.5.7"
+      ],
+      "sheet": "Листы 52, 53 (легенды 27 этажа)",
+      "page": [
+        75,
+        76
+      ],
+      "expert_decision": "accepted",
+      "expert_reason": "",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0186",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "F-027",
+      "item_type": "finding",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "documentation",
+      "summary": "На типовом фрагменте отделки 28 этажа указана высота дверного проёма 2100 мм, тогда как на развёртках дверей Д-6/Д-6Л/Д-7 — 2300 мм.",
+      "norm_refs": [
+        "ГОСТ Р 21.101-2020 (ДЕЙСТВУЕТ), п. 4.5.6"
+      ],
+      "sheet": "Лист 65 (развёртки 28 этажа)",
+      "page": 87,
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как такой проблемы нет ,это артефакт распознования",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0187",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "F-028",
+      "item_type": "finding",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "fire_safety",
+      "summary": "Металлические панели ПЛ (толщина 1-3 мм, 2200x1250) на путях эвакуации закреплены только на клей.",
+      "norm_refs": [
+        "Федеральный закон №123-ФЗ (ДЕЙСТВУЕТ), ст. 53 + СП 1.13130.2020 (ДЕЙСТВУЕТ), п. 4.1.2"
+      ],
+      "sheet": "Листы 8, 65 (узлы отделки)",
+      "page": [
+        12,
+        87
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как ,Поиск в базах ГОСТ и СП не выявил норм, запрещающих клеевое крепление металлических листов на путях эвакуации при условии соблюдения требований к материалам",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0188",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "OPT-001",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "ГОСТ Р 21.101-2020, п. 7.4 (Спецификации); СП 29.13330.2011 (Полы) — для увязки с уровнем чистого пола"
+      ],
+      "sheet": "Лист 9 (Сводная ведомость 2-8/10 этаж)",
+      "page": 13,
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как Строительные допуски монолита и кладки (особенно вокруг лифтовых шахт) никогда не дадут идеальной геометрии. Заказывать доборы на заводе под конкретный этаж — значит останавливать стройку ради постоянных замеров.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0189",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "OPT-002",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "ГОСТ 13996-2019 (Плитки керамические); ГОСТ Р 57941-2017 (Керамический гранит)"
+      ],
+      "sheet": "Лист 2 (Общие данные. Типы полов)",
+      "page": 6,
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как это,незначительная экономия",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0190",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "OPT-003",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "ГОСТ 6787-2001 (Плитки керамические для полов); ТР ТС 014/2011"
+      ],
+      "sheet": "Лист 2 (Общие данные. Типы полов)",
+      "page": 6,
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как это необходимо,потому что сложно угодать размеры это поэтому и делаеться ппо месту",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0191",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "OPT-004",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "ГОСТ Р 21.101-2020, п. 7.4 (Спецификации материалов); ТР ТС 014/2011"
+      ],
+      "sheet": "Лист 1 (Общие указания. Цветовая палитра)",
+      "page": 5,
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как .эти цвета штукатурки и пола установлены того чтобы ,если потолок S 1002-Y50R то и штукатурка в дверях такого же цвета",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0192",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "OPT-006",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "ГОСТ Р 21.101-2020, п. 7.4 (Единое обозначение материалов и изделий)"
+      ],
+      "sheet": "Лист 8 (Развёртки стен с электрооборудованием)",
+      "page": 12,
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как такой проблемы нет, в F-008(Отклонено так как ,обозначение одно)",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0193",
+      "source_project": "13АВ-РД-АР4.1-К6",
+      "section": "AR",
+      "item_id": "OPT-007",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "ГОСТ 31173-2016 (Блоки дверные стальные); ТР ТС 014/2011"
+      ],
+      "sheet": "Лист 2 (Ведомость заполнения проёмов)",
+      "page": 6,
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как заменить легкий алюминиевый люк, предназначенный для шпатлевки и покраски, на тяжелый усиленный стальной люк под облицовку плиткой весом до 22 кг/м². Это не удешевит проект на 15-25%, а наоборот — приведет к необоснованному удорожанию узла за счет применения усиленных рам и сложных пространственных петель, которые для покраски абсолютно не нужны.Хаммер являеться рооссийской компанией",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:37:41",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0194",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "F-002",
+      "item_type": "finding",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "normative_refs",
+      "summary": "В ведомости ссылочных документов отсутствует основной профильный СП для МКД (СП 54.13330.2022) и обязательные противопожарные СП",
+      "norm_refs": [
+        "ПП РФ от 16.02.2008 № 87 (ДЕЙСТВУЕТ), п. 11; СП 54.13330.2022 (ДЕЙСТВУЕТ); СП 1.13130.2020 (ДЕЙСТВУЕТ)"
+      ],
+      "sheet": "Лист 1",
+      "page": 5,
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как это мелкий оформительский деффект не несуший рисков и последствий,и нестоит на него обрашать внимание",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0195",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "F-003",
+      "item_type": "finding",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "documentation",
+      "summary": "В экспликациях помещений Корпуса 3 «Помещение ревизии инженерных коммуникаций» обозначено как «5.МОП.5» вместо «3.МОП.5»; на планах при этом указано «3.МОП.5» — прямое противоречие план-экспликация",
+      "norm_refs": [
+        "ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5.7, п. 7"
+      ],
+      "sheet": "['Лист 7', 'Лист 11', 'Лист 12', 'Лист 13', 'Лист 14', 'Лист 19']",
+      "page": [
+        11,
+        14,
+        15,
+        16,
+        17,
+        18,
+        28
+      ],
+      "expert_decision": "accepted",
+      "expert_reason": "",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0196",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "F-006",
+      "item_type": "finding",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "accessibility",
+      "summary": "Противопожарные двери Д-1/Д-1Л (EI30) и Д-8/Д-8Л (EI30) выполнены «с порогом», высота порога не указана — на путях эвакуации МГН не должна превышать 14 мм",
+      "norm_refs": [
+        "СП 59.13330.2020 (ДЕЙСТВУЕТ), п. 6.1.1, п. 6.2.4"
+      ],
+      "sheet": "['Лист 7', 'Лист 8', 'Лист 19', 'Лист 35', 'Лист 52']",
+      "page": [
+        14,
+        27,
+        39,
+        51,
+        76
+      ],
+      "expert_decision": "accepted",
+      "expert_reason": "",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0197",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "F-007",
+      "item_type": "finding",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "fire_safety",
+      "summary": "Для кассетных подвесных потолков типов 1-21 в спецификациях и легендах не указан класс пожарной опасности (КМ0/КМ1/КМ2) — обязателен для путей эвакуации и ПБЗ",
+      "norm_refs": [
+        "ФЗ-123 (ДЕЙСТВУЕТ), таблица 29; СП 1.13130.2020 (ДЕЙСТВУЕТ), п. 4.3.2"
+      ],
+      "sheet": "['Лист 12', 'Лист 20', 'Лист 28', 'Лист 44', 'Лист 52']",
+      "page": [
+        12,
+        16,
+        29,
+        41,
+        70,
+        78
+      ],
+      "expert_decision": "accepted",
+      "expert_reason": "",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0198",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "F-008",
+      "item_type": "finding",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "documentation",
+      "summary": "В спецификациях позиция «Кассетный подвесной потолок, ?x? мм» содержит незаполненный шаблон вместо размеров",
+      "norm_refs": [
+        "ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5.5"
+      ],
+      "sheet": "['Лист 24', 'Лист 56']",
+      "page": [
+        12,
+        33,
+        45,
+        74,
+        82
+      ],
+      "expert_decision": "accepted",
+      "expert_reason": "",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0199",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "F-009",
+      "item_type": "finding",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "summary": "Ведомость спецификаций на листе 1 относится к кровле (АР3), а не к чистовой отделке МОП (АР4.1) — ошибочно скопирована из другого комплекта",
+      "norm_refs": [
+        "ГОСТ 21.101-2020 (ДЕЙСТВУЕТ), п. 5.5; ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5"
+      ],
+      "sheet": "Лист 1",
+      "page": 5,
+      "expert_decision": "accepted",
+      "expert_reason": "",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0200",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "F-011",
+      "item_type": "finding",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "documentation",
+      "summary": "Площадь стен лифтового холла 3.МОП.2 при одинаковой площади пола (15,5 м²) расходится между этажами: 26,0 / 29,7 / 31,2 м²",
+      "norm_refs": [
+        "ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5.3"
+      ],
+      "sheet": "['Лист 8', 'Лист 50', 'Лист 56']",
+      "page": [
+        12,
+        75,
+        82
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как Разброс эффективного периметра ±3% — в пределах нормальной погрешности раскладки металлических панелей ПЛ и дверных проёмов на разных этажах. Разные площади покраски объясняются разной высотой потолка (2,5 / 2,95 м) и незначительной разницей раскладки ПЛ — не ошибкой.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0201",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "F-012",
+      "item_type": "finding",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "evacuation",
+      "summary": "Лестничная клетка ЛК-3.1 (3.МОП.1) на маркировочных планах 30-этажного дома без указания типа незадымляемости (Н1/Н2/Н3) — обязательно для зданий выше 28 м",
+      "norm_refs": [
+        "СП 1.13130.2020 (ДЕЙСТВУЕТ), п. 4.4.12; СП 7.13130.2013 (ДЕЙСТВУЕТ), п. 7"
+      ],
+      "sheet": "['Лист 7', 'Лист 57']",
+      "page": [
+        11,
+        39
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как в СП и ГОСТ нет информации о том что (Н1/Н2/Н3) должна маркироваться",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0202",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "F-013",
+      "item_type": "finding",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "summary": "На ряде листов в распознанном тексте экспликаций встречается «3.МОН» вместо «3.МОП» — нечёткая печать или ошибка в исходном PDF",
+      "norm_refs": [
+        "ГОСТ 21.101-2020 (ДЕЙСТВУЕТ), п. 4.5"
+      ],
+      "sheet": "['Лист 36']",
+      "page": [
+        6,
+        7,
+        14,
+        53,
+        74,
+        75,
+        78,
+        80
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как такой проблемы нет это артефакт распознования",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0203",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "F-014",
+      "item_type": "finding",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "accessibility",
+      "summary": "Дверь Д-2/Д-2Л с матовым остеклением: не указаны нижняя непрозрачная часть ≥ 0,3 м, контрастная маркировка стекла и высота прохода в свету",
+      "norm_refs": [
+        "СП 59.13330.2020 (ДЕЙСТВУЕТ), п. 6.2.4, п. 6.2.10, п. 6.2.11"
+      ],
+      "sheet": "['Лист 7', 'Лист 57']",
+      "page": [
+        14,
+        39
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено неверно описанна проблема:\n1.Местоположение проблемы:\nРаздел «Чистовая отделка МОП, типовые этажи» (13АВ-РД-АР4.1-К3). Ведомости заполнения дверных проемов (листы: 6 – 2 этаж, 14 – 3-8 этажи, 27 – 9-12/18 этажи, 39 – 13-17 этажи, 51 – 19-28 этажи, 76 – 29-30 этажи). Эскизы дверей Д-2, Д-2Л в указанных ведомостях.\n2.Наименование проблемы:\nНеполнота требований к остекленным дверям Д-2/Д-2Л. и расхождение высоты двери Д-2Л с СП 59.13330.2020.\n3.Описание проблемы:\nДвери Д-2 и Д-2Л (противопожарные, с матовым остеклением, EIWS60, без порога, с системой автоматического открывания) установлены на путях эвакуации/движения МГН (лифтовые холлы, коридоры). В проектной документации для них не указаны обязательные параметры:\nтип и размещение устройств активации автоматического открывания (датчик движения/кнопка) с учётом доступности для МГН (п. 6.2.11).\nКроме того, фактическая высота дверного проема в свету, указанная в ведомостях (не менее 2050 мм), не соответствует минимально допустимому значению 2,1 м, установленному СП 59.13330.2020, п. 6.2.1.\nЧем грозит:\nНевозможность согласования дверей с органами, контролирующими соблюдение требований доступности для МГН.\nРиск несчастных случаев (травмирование слабовидящих людей об остекление без маркировки).\nНесоответствие высоты проема требованиям СП 59.13330.2020 является прямым нарушением и может привести к отказу в приемке объекта.\nРешение проблемы:\n\nДополнить ведомости заполнения дверных проемов и эскизы для дверей Д-2/Д-2Л следующими сведениями и графическими указаниями:\n\nнижняя непрозрачная часть высотой ≥ 300 мм;\n\nконтрастная маркировка на стекле (горизонтальная полоса шириной не менее 50 мм на высоте 1,2–1,5 м);\n\nспособ активации автоматического открывания (например, датчик движения с зоной обнаружения от уровня пола, кнопка вызова).\n\nПотребовать у изготовителя дверей скорректировать конструкцию, обеспечив высоту дверного проема в свету не менее 2100 мм (при общей высоте полотна 2100 мм это может быть достигнуто за счёт утопленного доводчика/привода и скрытого уплотнения).\n\nВключить соответствующие пункты в опросные листы при заказе изделий.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0204",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "F-015",
+      "item_type": "finding",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "documentation",
+      "summary": "В легендах условных обозначений приведены примеры марок и номеров помещений, не используемые в данном комплекте: «5.МОП.1», «4.МОП.2», «ДП-1», «П2/П-1», «С-1»",
+      "norm_refs": [
+        "ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 7.2"
+      ],
+      "sheet": "['Лист 5', 'Лист 6', 'Лист 7', 'Лист 11', 'Лист 13', 'Лист 14', 'Лист 15', 'Лист 19', 'Лист 21', 'Лист 29', 'Лист 30', 'Лист 31', 'Лист 35', 'Лист 37', 'Лист 38', 'Лист 45', 'Лист 46', 'Лист 47', 'Лист 54', 'Лист 55', 'Лист 56']",
+      "page": [
+        9,
+        10,
+        11,
+        14,
+        15,
+        17,
+        18,
+        19,
+        28,
+        30,
+        42,
+        43,
+        44,
+        52,
+        54,
+        55,
+        71,
+        72,
+        73,
+        80,
+        81,
+        82
+      ],
+      "expert_decision": "accepted",
+      "expert_reason": "",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0205",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "F-016",
+      "item_type": "finding",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "fire_safety",
+      "summary": "В общих указаниях нет явного требования об обязательной сертификации противопожарных дверей по ФЗ-123 и наличии протоколов огневых испытаний",
+      "norm_refs": [
+        "ФЗ-123 (ДЕЙСТВУЕТ), ст. 144-147; ГОСТ Р 57327-2016 (ДЕЙСТВУЕТ); ГОСТ Р 53307-2009 (ДЕЙСТВУЕТ)"
+      ],
+      "sheet": "Лист 1",
+      "page": 5,
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как в  п. 7 установлено общее требование об обязательной сертификации продукции на территории РФ и соответствии техническим регламентам ЕАЭС.этого достаточно",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0206",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "F-017",
+      "item_type": "finding",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "summary": "Площадь помещения ревизии (3.МОП.5) на 2-м этаже 10,1 м² vs 11,1 м² на 3-8 этажах — без пояснения",
+      "norm_refs": [
+        "ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5.7"
+      ],
+      "sheet": "['Лист 2', 'Лист 3']",
+      "page": [
+        6,
+        7
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как Изменение площадей одноименных помещений по высоте 30-этажного здания — это объективная физическая необходимость, а не ошибка.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0207",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "F-018",
+      "item_type": "finding",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "documentation",
+      "summary": "На планах разных этажей видны две различные отметки чистого пола в пределах одной лестничной клетки: +6,900/+8,400 (3-8 эт.) и +57,300/+58,800 (типовой) — требуется проверка по разрезам",
+      "norm_refs": [
+        "ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5.4; СП 54.13330.2022 (ДЕЙСТВУЕТ), п. 5.8"
+      ],
+      "sheet": "['Лист 15', 'Лист 35']",
+      "page": [
+        19,
+        52
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как две отметки в пределах одного помещения лестничной клетки (ЛК-3.1, она же 3.МОП.1)это , стандартное   отображение двухмаршевой лестницы на плане Никаких «скрытых ступеней» или перепадов высот при переходе из лифтового холла (ПБЗ) в лестничную клетку нет — они выведены в единый ноль этажа.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0208",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "F-019",
+      "item_type": "finding",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "documentation",
+      "summary": "Количество кассетных потолков и трековых светильников в сводных ведомостях отделки одинаково для всех этажей, тогда как площадь стен и длина профиля меняются — несогласованность объёмов",
+      "norm_refs": [
+        "ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5.3"
+      ],
+      "sheet": "['Лист 8', 'Лист 50', 'Лист 56']",
+      "page": [
+        13,
+        75,
+        83
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как Количество потолочных кассет и трековых светильников определяется площадью горизонтальной проекции помещения, которая для всех этажей (включая 29–30) одинакова. Неизменность этих позиций в сводных ведомостях корректна и не содержит противоречия. Изменение высоты потолка (с +2,500 до +2,800/2,950 м) закономерно увеличивает только площадь стен и длину теневых профилей, что отражено в сводках (площадь стен 26,0 → 29,7 → 31,2 м², длина профилей 15,6 → 17,4 → 18,3 п.м.). Никакой несогласованности объёмов нет;",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0209",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "F-021",
+      "item_type": "finding",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "dimensions",
+      "summary": "На типовых сечениях подвесного потолка отметки 2,850/2,500 (или 3,150/2,800) дают разницу 350 мм, но размер межпотолочного пространства указан 120 мм — геометрическое противоречие",
+      "norm_refs": [
+        "ГОСТ 21.101-2020 (ДЕЙСТВУЕТ), п. 5.4"
+      ],
+      "sheet": "['Лист 20', 'Лист 21', 'Лист 44', 'Лист 45']",
+      "page": [
+        29,
+        30,
+        70,
+        71
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как 120 мм это толшина устройства потолка ,а не размерна линия между 2,850 и 2,500",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0210",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "F-022",
+      "item_type": "finding",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "documentation",
+      "summary": "Различие средней высоты этажа: маркировочные планы дают +5,250/+93,750 на 88,5 м/28 перекрытий = 3,16 м; разрезы — 2,850 м (2 эт.) vs 3,300 м (30 эт.) — требует согласования с КР",
+      "norm_refs": [
+        "СП 54.13330.2022 (ДЕЙСТВУЕТ), п. 5.8; ГОСТ 21.501-2018 (ДЕЙСТВУЕТ), п. 5.4"
+      ],
+      "sheet": "Лист 57",
+      "page": [
+        13,
+        30,
+        78
+      ],
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как В высотных МКД переменная высота этажей — это не ошибка, а абсолютная норма! Первые этажи (коммерция, лобби, технические переходы) и самые верхние этажи (пентхаусы, премиум-квартиры) всегда проектируются с большей высотой потолков. Разница высот перекрытий лишь подтверждает грамотное зонирование здания.Инсоляция считается и утверждается экспертизой на стадии «П» (Проектная документация). Фасады идут совершенно другим томом (АР2). Отделочник, красящий стены в коридоре, никак не влияет на инсоляцию.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0211",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "F-024",
+      "item_type": "finding",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "evacuation",
+      "summary": "Узкие коридоры МОП (1300 мм) — необходимо сверить с шириной эвакуационных путей в жилом здании Ф1.3",
+      "norm_refs": [
+        "СП 1.13130.2020 (ДЕЙСТВУЕТ), п. 4.3.4; СП 54.13330.2022 (ДЕЙСТВУЕТ), п. 7.2.5"
+      ],
+      "sheet": "Лист 11",
+      "page": 15,
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как по СП 1.13130.2020 требуеться 1200мм, а в осях ширина 1800 ,вычитаем при этом пол стены учитывая что толшина стены максимальная 300мм как правило больше не делают ,а оси у нас проходят по середине ,поэтому вычитаем из 1800-(150+150)=1500мм",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0212",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "OPT-001",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "ГОСТ 21.501-2018, п. 5.5; ФЗ-123, таблица 29; СП 1.13130.2020, п. 4.3.2"
+      ],
+      "sheet": "Лист 7",
+      "page": 12,
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как Экономия 12% завышена. Реальный диапазон: 3–5% на материале (за счёт сокращения малотиражных позиций), плюс 5–10% на сокращении трудозатрат комплектовщика. Но полная переработка раскладки потолков МОП на 30-этажный корпус — это проектная работа стоимостью, сопоставимой с экономией. Чистый выигрыш на уровне объекта — низкий.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0213",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "OPT-002",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "СП 59.13330.2020, п. 6.1.1, п. 6.2.4; ГОСТ Р 57327-2016; ФЗ-123, ст. 88"
+      ],
+      "sheet": "Лист 7",
+      "page": 14,
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как ,\n1.это не оптимизация а замечание.\n2.Опускающийся порог-уплотнитель (Planet, Athmer, Norsound): нижняя кромка двери опускается на уплотняющую планку при закрытии. Удорожание +15–25% к стоимости двери, требует сертификата EIS 60 для системы «полотно + падающий порог» — дорого, сложно, не нужно в большинстве случаев.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0214",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "OPT-003",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "ГОСТ 13015-2012; ГОСТ 6787-2001; ФЗ-123, ст. 134 (класс КМ0 сохраняется)"
+      ],
+      "sheet": "Лист 7",
+      "page": 12,
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как , типовое сечение не соответсвует плану, неверно указанны названия,в реальности там два типа,вместо Риальто.там должен быть Керамогранит Dacota Grey Серый",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0215",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "OPT-004",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "ГОСТ Р 57327-2016; ФЗ-123, ст. 88; СП 1.13130.2020, п. 4.2.5"
+      ],
+      "sheet": "['Лист 7', 'Лист 52']",
+      "page": 14,
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как ,Функционально распределенно все верно\nДверь EI 30 применяется там, где нужен только локальный барьер (квартира — коридор) — стоимость базовая.\nДверь EIWS 60 применяется на путях эвакуации через стекло (остеклённые двери ПБЗ, лифтовые холлы со световым остеклением) — стоимость +40–80%.\nЗамена EI 30 на EIWS 60 ради «унификации» = удорожание каждой замененной двери на 40–80%, не экономия.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0216",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "OPT-005",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "ФЗ-123, таблица 29 (класс КМ1 сохраняется); ГОСТ 30698-2014"
+      ],
+      "sheet": "Лист 7",
+      "page": 12,
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как,Кликовые замки обычно содержат пластиковые элементы-фиксаторы.что =КМ2 .но тогда они не проходят под требование по СП.\nИзменение формата панелей повлечет за собой изменение рисунка швов (рустов). Требуется согласование обновленной раскладки с автором архитектурной концепции.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0217",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "OPT-006",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "ГОСТ Р 57327-2016; ФЗ-94-ФЗ/ФЗ-44 (формулировка «или аналог» обязательна для гос. и крупных заказчиков)"
+      ],
+      "sheet": "Лист 7",
+      "page": 12,
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как,Хаме-Техно ,это компания из РФ и ее люки есть на рынке в полном объеме.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0218",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "OPT-007",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "СП 256.1325800.2016, п. 7.1; ГОСТ Р 54350-2015"
+      ],
+      "sheet": "Лист 7",
+      "page": 12,
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как,Использование нескольких типов светильников (треки, закарнизная лента, декоративные бра) — это классический многоуровневый световой сценарий. Для ЖК премиум-класса это обязательный атрибут, формирующий атмосферу и статусность пространства. Предложение «перейти на единую LED-систему» (по сути, повесить везде одинаковые плоские панели или линейные светильники) напрочь убьет всю архитектурную концепцию лобби и типовых этажей.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0219",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "OPT-008",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "СП 59.13330.2020, п. 6.2.4; ГОСТ Р 51261-2017; ФЗ-123, ст. 89"
+      ],
+      "sheet": "Лист 7",
+      "page": 14,
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как,автоматическое открывание двери МГН в ПБЗ не является избыточным решением для ЖК премиум-класса; отказ от автоматики противоречит концепции доступности.\nВ то же время СП 59.13330.2020 жестко ограничивает усилие открывания дверей на путях МГН значением не более 50 Н. Достичь такого легкого открывания механическим путем на тяжелой противопожарной створке физически невозможно.",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
+    },
+    {
+      "id": "DEC-0220",
+      "source_project": "13АВ-РД-АР4.1-К3",
+      "section": "AR",
+      "item_id": "OPT-009",
+      "item_type": "optimization",
+      "severity": "",
+      "category": "",
+      "summary": "",
+      "norm_refs": [
+        "ГОСТ 22233-2018; СП 256.1325800.2016"
+      ],
+      "sheet": "Лист 7",
+      "page": 13,
+      "expert_decision": "rejected",
+      "expert_reason": "Отклонено так как,В сводных ведомостях отделки четко прописан «теневой профиль разделительный узкий для стен и потолка тип5 -3мм анодированный чёрный». Его задача — создать едва заметный, элегантный 3-миллиметровый темный зазор (теневой шов) между стеновыми панелями или на примыкании к потолку. Профиль для LED-ленты (позиция СВ-2) физически имеет ширину минимум 15–20 мм (чтобы вместить саму ленту и светорассеивающий экран). Впихнуть светодиоды в 3-миллиметровый паз невозможно.идея нереализуема физически и эстетически",
+      "expert_reviewer": "",
+      "expert_date": "2026-05-06T07:39:54",
+      "customer_confirmed": false,
+      "customer_date": null,
+      "customer_note": null
     }
   ]
 }
