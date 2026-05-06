@@ -71,6 +71,7 @@ norms/tools/venv/
 norms/tools/embeddings_lab/
 norms/tools/*.json
 norms/tools/*.pkl
+norms/tools/*.npz
 norms/missing_norms_to_download.txt
 
 # === Benchmark / experiment results ===
