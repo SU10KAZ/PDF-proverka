@@ -14,6 +14,9 @@
 
 2. **Block analysis** — READ via Read tool: `{OUTPUT_PATH}/02_blocks_analysis.json`
    - `block_analyses` (findings G-001... within each block), `items_verified_from_stage_01`
+   - If `stage02_meta.uncovered_blocks`, `stage02_meta.failed_blocks`, or block-level
+     `coverage_status: "missing_gemma_enrichment" | "single_block_analysis_failed"` is present,
+     DO NOT treat those blocks as “no findings”. They were not fully analyzed.
 
 3. **MD file** (for context) — READ via Read tool: `{MD_FILE_PATH}`
 
@@ -41,6 +44,17 @@ Any discrepancy found → add as a new finding (F-NNN).
 ### Step 2: Merge Findings
 
 Merge findings from both stages (01 text + 02 blocks).
+
+### Coverage Warning Sections (MANDATORY)
+
+If `02_blocks_analysis.json` contains uncovered/failed blocks, add three sections under
+`meta.analysis_coverage.sections`:
+- `Непокрытые блоки Gemma enrichment`
+- `Ошибки single-block анализа`
+- `Блоки, исключённые из полноценного анализа`
+
+These blocks are not clean “no findings” blocks; they were not fully analyzed. Do not invent
+findings for them, but preserve their block ids and reasons in meta.
 
 ### Processing items_verified_from_stage_01 (MANDATORY)
 

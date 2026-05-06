@@ -1,117 +1,80 @@
-# Stage 02 block_batch — Production Profile
+# Stage 02 — Production Profile
 
-**Зафиксировано:** 20–21.04.2026  
-**Документ:** КЖ5.17 (13АВ-РД-КЖ5.17-23.1-К2), 215 блоков  
-**Источник в коде:** `blocks.STAGE02_PRODUCTION_PROFILE`, `blocks.get_stage02_production_profile()`
+**Дата обновления:** 2026-05-01
+**Production architecture:** `findings_only_gemma_pair + openai/gpt-5.4`
 
----
+## Pipeline
 
-## Production defaults
-
-| Параметр | Значение | Источник в коде |
-|----------|----------|-----------------|
-| render_profile | `r800` | `MIN_LONG_SIDE_PX = 800` в `blocks.py` |
-| min_long_side_px | 800 | `blocks.MIN_LONG_SIDE_PX` |
-| target_dpi | 100 | `blocks.TARGET_DPI` |
-| claude_batch_profile | `baseline` | `blocks._CLAUDE_RISK_TARGETS` |
-| heavy target/max | 5 / 6 | `_CLAUDE_RISK_TARGETS["heavy"]` |
-| normal target/max | 8 / 8 | `_CLAUDE_RISK_TARGETS["normal"]` |
-| light target/max | 10 / 10 | `_CLAUDE_RISK_TARGETS["light"]` |
-| claude_hard_cap | 12 | `blocks.CLAUDE_HARD_CAP` |
-| parallelism default | 3 | `webapp/config.CLAUDE_BLOCK_BATCH_PARALLELISM_DEFAULT` |
-| parallelism cap | 3 | `webapp/config.CLAUDE_BLOCK_BATCH_PARALLELISM_CAP` |
-| model | claude-opus-4-7 | `webapp/config.STAGE_MODEL_CONFIG["block_batch"]` |
-| safe_fallback | r800 + baseline_p2 | parallelism=2 при rate-limit проблемах |
-
----
-
-## Как запустить production stage 02
-
-```bash
-# 1. Crop блоков (использует production r800 по умолчанию)
-python blocks.py crop projects/<path>
-
-# 2. Генерация батчей (production baseline profile автоматически)
-python blocks.py batches projects/<path>
-
-# 3. Запуск через webapp (parallelism=3 + Opus 4.7 по умолчанию)
-cd webapp && python main.py
-# → дашборд → проект → запустить этап 02 Блоки
+```text
+Markdown PDF representation
+→ Gemma base OCR enrichment, 100 DPI, fast stable pass
+→ optional Gemma high-detail retry, 300 DPI only for safe small/medium text-heavy blocks
+→ Stage 01 text analysis
+→ Stage 02 findings-only single-block analysis using GPT-5.4
+→ merge/review/norms/final report
 ```
 
-**Модель:** `claude-opus-4-7` — установлена в `STAGE_MODEL_CONFIG["block_batch"]` через `webapp/data/stage_models.json`.  
-Проверить/изменить: `GET /api/audit/model/stages` или UI → Settings → Stage Models.
+## Production Defaults
 
----
+| Параметр | Значение |
+|----------|----------|
+| Stage 02 model | `openai/gpt-5.4` |
+| Stage 02 batch mode | `findings_only_gemma_pair` |
+| Runtime mode | `single_block` |
+| Runtime plan | `_output/block_batches.runtime.json` |
+| Gemma base crops | `_output/blocks_gemma_100/`, 100 DPI, `min_long_side=800` |
+| Gemma high-detail crops | `_output/blocks_gemma_300/`, 300 DPI, only for selected safe candidates |
+| Stage 02 crops | `_output/blocks_stage02_100/`, 100 DPI, `min_long_side=800` |
+| Required before Stage 02 | Markdown, valid `gemma_enrichment_summary.json`, `01_text_analysis.json` |
 
-## Решения экспериментов
+## Validation Rules
 
-### Batching: baseline_p3 (winner), aggressive_p3 (не принят)
+- Gemma enrichment is a mandatory stage, not a selectable Stage 02 model.
+- Stage 02 reads the best final Gemma enrichment per block:
+  `gemma_300_high_detail` if successful, otherwise `gemma_100_base`.
+- Missing Gemma enrichment must become
+  `coverage_status = "missing_gemma_enrichment"`, never “замечаний нет”.
+- Partial Gemma coverage is allowed only when it is explicitly reflected in
+  `gemma_enrichment_summary.json`, `02_blocks_analysis.json` and final coverage
+  sections.
+- Stage 02 image input comes from `_output/blocks_stage02_100/`; it must not
+  read, overwrite or validate against generic `_output/blocks/`.
 
-**Метод:** `--final-comparison` (4 рана: 2 full + 2 subset на 60 фиксированных блоках, seed=42)
+## LM Studio Recommendations
 
-| Профиль | Findings (full) | Coverage | bwf subset | elapsed |
-|---------|-----------------|----------|------------|---------|
-| baseline_p3 | 168 | 100% | **45**/60 | 33.0 мин |
-| aggressive_p3 | 186 (+10.7%) | 100% | **41**/60 | 29.8 мин |
+- `context_length: 16000` or the largest stable value available
+- `parallel: 4` for the base 100 DPI Gemma pass
+- `parallel: 1` preferred for targeted 300 DPI retry, but this is an operator
+  recommendation for a separate load profile, not something the runtime backend
+  should flip automatically between passes
+- if backend cannot switch parallelism per stage, keep 300 DPI safety thresholds strict
 
-**Gate 3 (quality subset):** aggressive не прошёл `blocks_with_findings ≥ 95% baseline`  
-(41/45 = 91.1% < 95%). Разрыв мал (4 блока из 45), но gate консервативный.
+Runtime pipeline must not reconfigure LM Studio during stage/job execution:
 
-**Артефакты:**
-```
-projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/
-  _experiments/block_batch_final/20260420_155609/   ← full-runs
-  _experiments/block_batch_ab/20260420_221123/      ← валидный subset, финальный gate
-    winner_recommendation.md
-    gate_report.json
-    subset_side_by_side.md
-```
+- no runtime `load` / `reload` / `unload`
+- no runtime `context_length` changes
+- no runtime `parallel` changes
+- no runtime reasoning toggles
 
-**Почему aggressive НЕ принят:**  
-Aggressive нашёл больше замечаний на полном прогоне (+10.7%), но на контрольном subset  
-пропустил больше блоков (bwf 91.1% < порога 95%). При небольшой выборке это может быть  
-дисперсия, но gate требует доказательства — aggressive его не дал.
+Treat operator-side LM Studio configuration as the real control surface.
 
-### Resolution: r800 (winner), r1000/r1200 (не приняты)
+## Post-Queue Cleanup
 
-**Метод:** `run_block_resolution_matrix.py` — Phase A (subset single-block)
+After the whole queue finishes, AuditManager may do best-effort cleanup:
 
-r1000/r1200 не прошли gate по надёжности/coverage или росту batch-cost.  
-r800 остаётся production default: стабильный, предсказуемый размер блоков.
+- unload only allowlisted Gemma models
+- never unload denylist models such as `chandra-ocr-2`
+- do not unload after every project; unload only after the full queue is idle
+- unload failure is a warning and must not fail the audit
 
----
+## Coverage Fields
 
-## Safe fallback
+Stage 02 runtime summary and `03_findings.json` coverage sections must include:
 
-**r800 + baseline_p2 (parallelism=2)**  
-Использовать если:
-- Наблюдаются систематические rate-limit ошибки при parallelism=3
-- 5-часовой лимит Claude близок к исчерпанию перед запуском
-
-Как переключить: `CLAUDE_BLOCK_BATCH_PARALLELISM=2 python blocks.py batches ...`  
-или через ENV в webapp systemd/docker конфиге.
-
----
-
-## Experimental profiles (не для production)
-
-| Профиль | Где определён | Назначение |
-|---------|---------------|------------|
-| aggressive_p3 | `scripts/run_claude_block_batch_matrix.PROFILES["aggressive"]` | Повторный тест на другом документе |
-| r1000, r1200 | `scripts/run_block_resolution_matrix.RESOLUTION_PROFILES` | Resolution A/B эксперименты |
-| conservative | `scripts/run_claude_block_batch_matrix.PROFILES["conservative"]` | Крайне осторожный fallback |
-
-ENV overrides для экспериментов: `CLAUDE_BATCH_{HEAVY,NORMAL,LIGHT}_{TARGET,MAX}`,  
-`CLAUDE_BLOCK_BATCH_PARALLELISM`, `BLOCK_RENDER_MIN_LONG_SIDE`.
-
----
-
-## Изменение production defaults
-
-Если будущий эксперимент покажет другого победителя:
-1. Обновить `_CLAUDE_RISK_TARGETS` в `blocks.py` (batching)
-2. Обновить `STAGE02_PRODUCTION_PROFILE` в `blocks.py`
-3. Обновить `CLAUDE_BLOCK_BATCH_PARALLELISM_DEFAULT` в `webapp/config.py`
-4. Обновить этот документ
-5. Обновить `CLAUDE.md` → раздел "Пакетный анализ блоков"
+- base Gemma coverage
+- high-detail candidates
+- high-detail successful
+- high-detail skipped large
+- uncovered blocks
+- blocks analyzed only with 100 DPI base
+- blocks upgraded to 300 DPI

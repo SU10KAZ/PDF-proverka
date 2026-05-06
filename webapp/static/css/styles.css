@@ -1553,6 +1553,7 @@ tr.row-group td:first-child { border-left: 3px solid #d97706; }
 .model-preset-buttons { display: flex; gap: 6px; margin-bottom: 6px; }
 .model-preset-buttons .btn-preset { padding: 4px 10px; font-size: 11px; }
 .model-preset-hint { margin: 0 0 8px 0; font-size: 11px; color: var(--text3); line-height: 1.4; padding: 5px 8px; background: var(--card2-bg); border-radius: 6px; border-left: 3px solid var(--teal); }
+.model-config-error { margin: 0 0 8px 0; font-size: 11px; line-height: 1.4; padding: 6px 8px; color: #991b1b; background: #fee2e2; border: 1px solid #fecaca; border-radius: 6px; }
 .model-config-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
 .model-config-table th { padding: 4px 6px; font-size: 9px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); text-align: center; }
 .model-config-stage-col { text-align: left !important; width: 110px; }

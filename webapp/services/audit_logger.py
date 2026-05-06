@@ -133,7 +133,7 @@ def reset_audit_log(project_id: str) -> None:
 
     Старый файл переименовывается в audit_log_<timestamp>.jsonl (timestamp =
     время первой записи прошлого прогона, чтобы имя отражало когда он начат).
-    Вызывается из start_audit / start_smart_audit / start_flash_pro_triage
+    Вызывается из start_audit / start_smart_audit
     и из batch-loop для fresh-start экшнов (full/audit/standard/pro).
     Resume / retry / optimization / prepare-data не архивируют — продолжают
     писать в тот же файл (это «дозапуски» текущего прогона).

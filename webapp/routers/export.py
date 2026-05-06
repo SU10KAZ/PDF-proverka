@@ -213,6 +213,7 @@ def _build_audit_readme(project_dir: Path, output_dir: Path) -> str:
         try:
             data = json.loads(findings_path.read_text(encoding="utf-8"))
             findings = data if isinstance(data, list) else data.get("findings", [])
+            coverage = {} if isinstance(data, list) else data.get("analysis_coverage") or data.get("meta", {}).get("analysis_coverage") or {}
             total = len(findings)
             by_severity = {}
             by_category = {}
@@ -224,6 +225,16 @@ def _build_audit_readme(project_dir: Path, output_dir: Path) -> str:
             sev_str = ", ".join(f"{k}: {v}" for k, v in sorted(by_severity.items()))
             cat_str = ", ".join(f"{k}: {v}" for k, v in sorted(by_category.items()))
             findings_summary = f"- Всего замечаний: **{total}**\n- По критичности: {sev_str}\n- По категориям: {cat_str}"
+            cov_summary = coverage.get("summary") or {}
+            if cov_summary:
+                findings_summary += (
+                    "\n- Непокрытые блоки Gemma enrichment: "
+                    f"**{cov_summary.get('gemma_uncovered_count', 0)}**"
+                    "\n- Ошибки single-block анализа: "
+                    f"**{cov_summary.get('single_block_failed_count', 0)}**"
+                    "\n- Блоки, исключённые из полноценного анализа: "
+                    f"**{cov_summary.get('excluded_from_full_analysis_count', 0)}**"
+                )
         except Exception:
             findings_summary = "- (не удалось прочитать)"
 
@@ -261,6 +272,13 @@ def _build_audit_readme(project_dir: Path, output_dir: Path) -> str:
 
 {findings_summary}
 {"- Оптимизация: есть" if has_optimization else "- Оптимизация: не проводилась"}
+
+## Непокрытые блоки Gemma enrichment / ошибки single-block
+
+Если в сводке выше есть ненулевые значения, см. `03_findings.json` → `analysis_coverage.sections`:
+- `Непокрытые блоки Gemma enrichment`
+- `Ошибки single-block анализа`
+- `Блоки, исключённые из полноценного анализа`
 
 ## Файлы в архиве
 

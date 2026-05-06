@@ -14,6 +14,8 @@ import re
 from pathlib import Path
 from typing import Optional
 
+from block_markdown import parse_block_header
+
 logger = logging.getLogger(__name__)
 
 from webapp.config import (
@@ -431,6 +433,10 @@ def prepare_text_analysis_task(
 
     _, output_path = _get_project_paths(project_id)
     md_file_path = _get_md_file_path(project_info, project_id)
+    if md_file_path == "(нет)" or not Path(md_file_path).exists():
+        raise FileNotFoundError(
+            "Markdown PDF representation is required for text_analysis"
+        )
 
     template = _inject_discipline(template, project_info)
 
@@ -601,18 +607,17 @@ def _extract_page_context_for_blocks(
                 _lazy_buffer.append(line)
             continue
 
-        # Начало TEXT-блока
-        if line.startswith("### BLOCK [TEXT]:"):
+        block_header = parse_block_header(line)
+        if block_header is not None and block_header.type == "TEXT":
             _flush_block()
             current_block_type = "text"
-            current_block_id = line.split(":", 1)[-1].strip()
+            current_block_id = block_header.id
             current_block_lines = [line]
             continue
 
-        # Начало IMAGE-блока
-        if line.startswith("### BLOCK [IMAGE]:"):
+        if block_header is not None and block_header.type == "IMAGE":
             _flush_block()
-            bid = line.split(":", 1)[-1].strip()
+            bid = block_header.id
             current_block_type = "image"
             current_block_id = bid
             current_block_relevant = bid in block_ids_set

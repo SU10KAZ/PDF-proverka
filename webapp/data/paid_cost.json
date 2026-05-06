@@ -1,10 +1,14 @@
 {
-  "total_lifetime_usd": 96.662305,
-  "display_usd": 34.143709,
+  "total_lifetime_usd": 144.777343,
+  "display_usd": 11.3066,
   "reset_history": [
     {
       "date": "2026-04-27T16:26:13.771908",
       "amount": 62.5186
+    },
+    {
+      "date": "2026-05-05T00:45:35.029520",
+      "amount": 70.9521
     }
   ]
 }

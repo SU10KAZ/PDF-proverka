@@ -15,7 +15,7 @@
     },
     "text_source": {
       "type": "string",
-      "enum": ["md", "extracted_text"]
+      "enum": ["md"]
     },
     "timestamp": {
       "type": "string",

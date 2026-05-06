@@ -14,6 +14,7 @@ class TextExtractionQuality(BaseModel):
 
 class PipelineStatus(BaseModel):
     crop_blocks: str = "pending"            # pending / running / done / error / skipped
+    gemma_enrichment: str = "pending"        # pending / running / done / error / partial / skipped / migration_required
     text_analysis: str = "pending"          # pending / running / done / error / skipped
     blocks_analysis: str = "pending"        # pending / running / done / error / partial / skipped
     block_retry: str = "pending"               # pending / running / done / error / skipped
@@ -57,7 +58,7 @@ class ProjectStatus(BaseModel):
     has_md_file: bool = False
     md_file_name: Optional[str] = None
     md_file_size_kb: float = 0.0
-    text_source: str = "extracted_text"  # "md" | "extracted_text" | "none"
+    text_source: str = "none"  # "md" | "none"; extracted_text is not a valid audit fallback
     pipeline: PipelineStatus = PipelineStatus()
     findings_count: int = 0
     findings_by_severity: dict[str, int] = {}

@@ -174,7 +174,7 @@ def _read_json_file(project_id: str, filename: str) -> str:
 def _read_findings_merge_blocks(project_id: str, *, compact_for_local: bool) -> str:
     """Прочитать 02_blocks_analysis.json для merge.
 
-    Для локального QWEN резко уменьшаем payload: оставляем только поля,
+    Для локального GEMMA резко уменьшаем payload: оставляем только поля,
     которые реально нужны, чтобы не терять свод замечаний из-за переполнения
     контекста и невалидного ответа.
     """
@@ -254,87 +254,33 @@ def _read_norms_reference(project_info: dict) -> str:
 
 
 def _read_md_file(project_info: dict, project_id: str) -> str:
-    """Прочитать MD-файл проекта и вернуть как строку.
-
-    Returns:
-        Содержимое MD файла или сообщение об отсутствии.
-    """
+    """Прочитать обязательный MD-файл проекта и вернуть как строку."""
     md_file = project_info.get("md_file")
     if not md_file:
-        return "(MD-файл не указан в project_info.json)"
+        raise FileNotFoundError(
+            "Markdown PDF representation is required: md_file is not set in project_info.json"
+        )
     md_path = resolve_project_dir(project_id) / md_file
     if not md_path.exists():
-        return f"(MD-файл {md_file} не найден)"
+        raise FileNotFoundError(
+            f"Markdown PDF representation is required: {md_file} not found"
+        )
     try:
         return md_path.read_text(encoding="utf-8")
     except OSError as e:
-        return f"(ошибка чтения MD: {e})"
-
-
-def _read_extracted_text_from_document_graph(project_id: str) -> str:
-    """Собрать текстовый fallback из document_graph.json, если MD-файл отсутствует."""
-    graph = _load_document_graph(project_id)
-    if not graph:
-        return ""
-
-    page_chunks: list[str] = []
-    for page in graph.get("pages", []):
-        lines: list[str] = [f"[PAGE {page.get('page', '?')}]"]
-        sheet_no = (
-            page.get("sheet_no_raw")
-            or page.get("sheet_no_normalized")
-            or page.get("sheet_no")
-        )
-        sheet_name = page.get("sheet_name")
-        if sheet_no:
-            lines.append(f"Sheet: {sheet_no}")
-        if sheet_name:
-            lines.append(f"Title: {sheet_name}")
-
-        text_blocks: list[str] = []
-        for tb in page.get("text_blocks", []):
-            text = (tb.get("text_norm") or tb.get("text") or "").strip()
-            if text:
-                text_blocks.append(text)
-        if text_blocks:
-            lines.append("\n\n".join(text_blocks))
-
-        if len(lines) > 1:
-            page_chunks.append("\n".join(lines))
-
-    return "\n\n---\n\n".join(page_chunks).strip()
+        raise RuntimeError(f"Failed to read Markdown PDF representation: {e}") from e
 
 
 def _resolve_text_analysis_source(project_info: dict, project_id: str) -> tuple[str, str, str]:
-    """Выбрать источник текста для stage 01: MD или extracted_text из document_graph."""
-    md_file = project_info.get("md_file")
-    if md_file:
-        md_path = resolve_project_dir(project_id) / md_file
-        if md_path.exists():
-            return (
-                "md",
-                _read_md_file(project_info, project_id),
-                "Below is the full text of the project MD file. Analyze it according to the instructions.\n\n",
-            )
+    """Выбрать источник текста для stage 01.
 
-    extracted_text = _read_extracted_text_from_document_graph(project_id)
-    if extracted_text:
-        return (
-            "extracted_text",
-            extracted_text,
-            (
-                "The project MD file is unavailable. Below is text extracted from document_graph.json. "
-                'Use `"text_source": "extracted_text"` in the output JSON and analyze only the provided text.\n\n'
-            ),
-        )
-
+    Новая архитектура требует Markdown PDF representation. `document_graph`
+    больше не является fallback-источником для текстового аудита.
+    """
     return (
-        "extracted_text",
-        "(text source unavailable: MD file missing and document_graph.json has no text blocks)",
-        (
-            "The project MD file is unavailable and no extracted text is available. "
-            'Return valid JSON with `"text_source": "extracted_text"`, empty arrays, and only fields that can be safely inferred.\n\n'
-        ),
+        "md",
+        _read_md_file(project_info, project_id),
+        "Below is the full text of the project MD file. Analyze it according to the instructions.\n\n",
     )
 
 
@@ -497,7 +443,7 @@ def build_text_analysis_messages(
     model = get_stage_model("text_analysis")
 
     # Подгрузить нормативную базу дисциплины inline там, где контекст позволяет.
-    # Для local QWEN держим prompt компактнее: актуальность норм всё равно финально
+    # Для local GEMMA держим prompt компактнее: актуальность норм всё равно финально
     # проверяется отдельным stage 04 через MCP norms.
     norms_text = _read_norms_reference(project_info)
     if norms_text and not is_local_llm_model(model):
@@ -536,7 +482,7 @@ def build_block_batch_messages(
     """Сформировать messages для block_batch.
 
     image_scale<1.0 — ресайз PNG блоков перед base64 (fallback для локального
-    QWEN: на ошибке retry с меньшим разрешением).
+    GEMMA: на ошибке retry с меньшим разрешением).
     """
     batch_id = batch_data["batch_id"]
     blocks = batch_data.get("blocks", [])
@@ -624,10 +570,10 @@ def build_findings_merge_messages(
     )
 
     text_analysis = _read_json_file(project_id, "01_text_analysis.json")
-    local_qwen_mode = is_local_llm_model(get_stage_model("findings_merge"))
+    local_gemma_mode = is_local_llm_model(get_stage_model("findings_merge"))
     blocks_analysis = _read_findings_merge_blocks(
         project_id,
-        compact_for_local=local_qwen_mode,
+        compact_for_local=local_gemma_mode,
     )
 
     user_text = (
@@ -635,10 +581,10 @@ def build_findings_merge_messages(
         f"## 02_blocks_analysis.json:\n\n{blocks_analysis}"
     )
 
-    if local_qwen_mode:
+    if local_gemma_mode:
         user_text += (
             "\n\n## Local merge note:\n\n"
-            "This payload is a compact projection of 02_blocks_analysis.json for local QWEN. "
+            "This payload is a compact projection of 02_blocks_analysis.json for local GEMMA. "
             "Use block_id/page/sheet/findings as source of truth; do not assume omitted fields are absent in the project."
         )
 

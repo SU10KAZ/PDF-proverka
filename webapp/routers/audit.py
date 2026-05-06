@@ -18,7 +18,8 @@ from webapp.config import (
     get_stage_models, set_stage_model, get_model_for_stage,
     STAGE_MODELS_OPENROUTER, GEMINI_MODEL, GPT_MODEL,
     STAGE_MODEL_CONFIG, AVAILABLE_MODELS, get_stage_model, is_claude_stage,
-    FLASH_PRO_TRIAGE_MODEL, _save_stage_model_config,
+    _save_stage_model_config,
+    validate_current_stage_model_config, validate_stage_model_choice,
 )
 
 router = APIRouter(prefix="/api/audit", tags=["audit"])
@@ -54,7 +55,7 @@ async def prepare_data_cancel():
 async def prepare_data_retry_failed(project_id: str):
     """Перепрогнать только упавшие блоки прошлого enrichment'а данного проекта.
 
-    Использует тот же Qwen-лок что и обычный prepare. Не делает full re-enrich,
+    Использует тот же Gemma-лок что и обычный prepare. Не делает full re-enrich,
     обрабатывает только block_id'ы из summary.failed.
     """
     from webapp.services.prepare_service import start_retry_failed
@@ -112,6 +113,7 @@ async def get_stage_model_config():
         "available_models": AVAILABLE_MODELS,
         "restrictions": STAGE_MODEL_RESTRICTIONS,
         "hints": STAGE_MODEL_HINTS,
+        "config_errors": validate_current_stage_model_config(),
     }
 
 
@@ -119,19 +121,14 @@ async def get_stage_model_config():
 async def set_stage_model_config(request: dict):
     """Установить модели для всех этапов (bulk update).
 
-    Body: {"text_analysis": "openai/gpt-5.4", "block_batch": "google/gemini-3.1-pro-preview", ...}
+    Body: {"text_analysis": "claude-opus-4-7", "block_batch": "openai/gpt-5.4", ...}
     """
-    from webapp.config import STAGE_MODEL_RESTRICTIONS
-    valid_model_ids = {m["id"] for m in AVAILABLE_MODELS} | {FLASH_PRO_TRIAGE_MODEL}
     updated = {}
+    rejected = {}
     for stage, model in request.items():
-        if stage not in STAGE_MODEL_CONFIG:
-            continue
-        if model not in valid_model_ids:
-            continue
-        # Проверка restrictions (например block_batch только OpenRouter)
-        allowed = STAGE_MODEL_RESTRICTIONS.get(stage)
-        if allowed and model not in allowed:
+        reason = validate_stage_model_choice(stage, model)
+        if reason:
+            rejected[stage] = reason
             continue
         STAGE_MODEL_CONFIG[stage] = model
         # Синхронизация с legacy конфигами
@@ -144,7 +141,13 @@ async def set_stage_model_config(request: dict):
     # Персистим на диск — переживёт рестарт сервера
     if updated:
         _save_stage_model_config()
-    return {"status": "ok", "updated": updated, "stages": dict(STAGE_MODEL_CONFIG)}
+    return {
+        "status": "partial" if rejected else "ok",
+        "updated": updated,
+        "rejected": rejected,
+        "stages": dict(STAGE_MODEL_CONFIG),
+        "config_errors": validate_current_stage_model_config(),
+    }
 
 
 @router.get("/model/batch-modes")
@@ -152,8 +155,7 @@ async def get_stage_batch_modes_config():
     """Текущие batch-режимы этапов (расширенные режимы поверх per-stage модели).
 
     Сейчас используется только block_batch:
-      - "classic"                   — стандартный batched stage 02
-      - "findings_only_qwen_pair"   — single-block GPT-5.4 + qwen-enrichment + extended categories
+      - "findings_only_gemma_pair"   — production single-block GPT-5.4 + Gemma enrichment
     """
     from webapp.config import STAGE_BATCH_MODES, STAGE_BATCH_MODE_CHOICES
     return {
@@ -166,7 +168,7 @@ async def get_stage_batch_modes_config():
 async def set_stage_batch_modes_config(request: dict):
     """Установить batch-режимы этапов.
 
-    Body: {"block_batch": "findings_only_qwen_pair"} или {"block_batch": "classic"}.
+    Body: {"block_batch": "findings_only_gemma_pair"}.
     """
     from webapp.config import set_stage_batch_mode, STAGE_BATCH_MODES, STAGE_BATCH_MODE_CHOICES
     updated = {}
@@ -352,6 +354,16 @@ async def clear_batch_history():
     try:
         pipeline_manager.clear_queue_history()
         return {"status": "cleared"}
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
+
+
+@router.post("/batch/resume")
+async def resume_batch():
+    """Продолжить прерванную batch-очередь."""
+    try:
+        queue = await pipeline_manager.resume_interrupted_batch()
+        return {"status": "resumed", "queue": queue.model_dump()}
     except RuntimeError as e:
         raise HTTPException(409, str(e))
 
@@ -772,22 +784,6 @@ async def start_audit(project_id: str):
         raise HTTPException(409, str(e))
 
 
-@router.post("/{project_id:path}/flash-pro-triage")
-async def start_flash_pro_triage(project_id: str, request: dict | None = Body(default=None)):
-    """Явный stage-02 режим: Flash full single-block + Pro selected single-block."""
-    _check_project(project_id)
-    request = request or {}
-    try:
-        job = await pipeline_manager.start_flash_pro_triage(
-            project_id,
-            max_pro_cost_usd=float(request.get("max_pro_cost_usd", 8.0)),
-            include_simple_findings=bool(request.get("include_simple_findings", False)),
-        )
-        return {"status": "started", "job": job.model_dump()}
-    except RuntimeError as e:
-        raise HTTPException(409, str(e))
-
-
 # Legacy aliases
 @router.post("/{project_id:path}/standard-audit")
 async def start_standard_audit(project_id: str):
@@ -818,7 +814,7 @@ async def resume_pipeline(project_id: str):
 
 
 @router.post("/{project_id:path}/start-from")
-async def start_from_stage(project_id: str, stage: str = Query(..., description="Этап: prepare, text_analysis, block_analysis, findings_merge, norm_verify, excel")):
+async def start_from_stage(project_id: str, stage: str = Query(..., description="Этап: prepare, gemma_enrichment, text_analysis, block_analysis, findings_merge, norm_verify, excel")):
     """Запустить конвейер с указанного этапа (все последующие пересчитываются)."""
     _check_project(project_id)
     try:
@@ -847,7 +843,7 @@ async def prepare_data_endpoint(
     model: str | None = None,
     timeout: int | None = None,
 ):
-    """Запустить «Подготовить данные» = crop PNG + Qwen enrichment.
+    """Запустить «Подготовить данные» = crop PNG + Gemma enrichment.
 
     Прогресс публикуется в WebSocket (ws/audit/{project_id}) с stage="prepare_data".
     Возвращает immediately с status=started — клиент следит по WS.
@@ -958,6 +954,7 @@ async def retry_stage(project_id: str, stage: str):
 
     stage_methods = {
         "crop_blocks": lambda: pipeline_manager.start_from_stage(project_id, "prepare"),
+        "gemma_enrichment": lambda: pipeline_manager.start_from_stage(project_id, "gemma_enrichment"),
         "text_analysis": lambda: pipeline_manager.start_from_stage(project_id, "text_analysis"),
         "block_analysis": lambda: pipeline_manager.start_from_stage(project_id, "block_analysis"),
         "findings_merge": lambda: pipeline_manager.start_from_stage(project_id, "findings_merge"),

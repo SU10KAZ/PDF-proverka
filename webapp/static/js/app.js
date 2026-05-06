@@ -303,6 +303,7 @@ const app = createApp({
 
         // Старые usageCounters оставляем для совместимости с webapp-трекингом
         const usageCounters = ref({});
+        const GEMMA_STAGE_UI_LABEL = 'Gemma OCR enrichment / предварительное распознавание чертежей';
 
         // ─── Per-project usage (токены по проектам/этапам) ───
         const projectUsage = ref({});  // {project_id: {total_tokens, total_cost_usd, total_calls, stages_summary}}
@@ -330,6 +331,7 @@ const app = createApp({
         // Маппинг pipeline key → stage key в usage
         const _pipelineToStage = {
             'crop_blocks': 'crop_blocks',
+            'gemma_enrichment': 'gemma_enrichment',
             'text_analysis': 'text_analysis',
             'blocks_analysis': 'block_analysis',
             'block_retry': 'block_retry',
@@ -408,7 +410,7 @@ const app = createApp({
             return hr + 'ч' + (remMin > 0 ? ' ' + remMin + 'м' : '');
         }
 
-        // ─── Prepare-data queue (Qwen enrichment) ───────────────────────
+        // ─── Prepare-data queue (Gemma enrichment) ───────────────────────
         async function fetchPrepareQueue() {
             try {
                 const r = await fetch('/api/audit/prepare-data/queue');
@@ -711,10 +713,9 @@ const app = createApp({
             const labels = {
                 'queued': 'В очереди',
                 'crop_blocks': 'Кроп блоков',
-                'qwen_enrichment': 'Подготовка (Qwen-обогащение MD)',
+                'gemma_enrichment': GEMMA_STAGE_UI_LABEL,
                 'text_analysis': 'Анализ текста',
                 'block_analysis': 'Анализ блоков',
-                'flash_pro_triage': 'Flash+Pro Triage',
                 'findings_merge': 'Свод замечаний',
                 'norm_verify': 'Верификация норм',
                 'norm_fix': 'Пересмотр замечаний',
@@ -1103,7 +1104,7 @@ const app = createApp({
         const selectAllChecked = ref(false);
         const batchRunning = ref(false);
         const batchQueue = ref(null);
-        const prepareQueue = ref(null);  // Qwen enrichment queue (см. prepare_service.py)
+        const prepareQueue = ref(null);  // Gemma enrichment queue (см. prepare_service.py)
         // ─── LM Studio remote management ───
         const lmsLoaded = ref([]);       // загруженные сейчас instance'ы
         const lmsAll = ref([]);          // все скачанные модели
@@ -1155,6 +1156,7 @@ const app = createApp({
         const stageModelConfig = ref({});
         const availableModels = ref([]);
         const modelConfigPendingProjectId = ref(null);
+        const stageModelSaveError = ref('');
         const stageLabels = {
             text_analysis: "01 Текст",
             block_batch: "02 Блоки",
@@ -1170,33 +1172,10 @@ const app = createApp({
 
         const stageModelRestrictions = ref({});
         const stageModelHints = ref({});
-        const blockFlashProPairValue = 'pair/gemini-2.5-flash+gemini-3.1-pro';
-        const blockFlashProPairModels = [
-            'google/gemini-2.5-flash',
-            'google/gemini-3.1-pro-preview',
-        ];
-
         const modelPresets = {
-            classic: {
-                label: "Классический",
-                hint: "Смешанный production-профиль: Claude на сложных этапах, отдельные стадии можно удешевлять.",
-                config: {
-                    text_analysis:          "claude-opus-4-7",
-                    block_batch:            "google/gemini-3.1-pro-preview",
-                    findings_merge:         "claude-opus-4-7",
-                    findings_critic:        "claude-sonnet-4-6",
-                    findings_corrector:     "claude-sonnet-4-6",
-                    norm_verify:            "claude-sonnet-4-6",
-                    norm_fix:               "claude-sonnet-4-6",
-                    optimization:           "claude-opus-4-7",
-                    optimization_critic:    "claude-sonnet-4-6",
-                    optimization_corrector: "claude-sonnet-4-6",
-                },
-                batchModes: { block_batch: "classic" },
-            },
             findings_only: {
-                label: "Qwen+GPT5.4",
-                hint: "Stage 02: single-block GPT-5.4 + qwen-обогащение + extended categories. Требует «Подготовить данные» с Qwen-enrichment.",
+                label: "Production Gemma+GPT5.4",
+                hint: "Production: Markdown → Gemma OCR enrichment → Stage 01 → Stage 02 findings-only single-block на GPT-5.4.",
                 config: {
                     text_analysis:          "claude-opus-4-7",
                     block_batch:            "openai/gpt-5.4",
@@ -1209,24 +1188,7 @@ const app = createApp({
                     optimization_critic:    "claude-sonnet-4-6",
                     optimization_corrector: "claude-sonnet-4-6",
                 },
-                batchModes: { block_batch: "findings_only_qwen_pair" },
-            },
-            qwen_sonnet: {
-                label: "Qwen+Sonett CLI",
-                hint: "Stage 02: single-block Sonnet (CLI subscription) + qwen-обогащение + extended categories. Требует «Подготовить данные» с Qwen-enrichment.",
-                config: {
-                    text_analysis:          "claude-opus-4-7",
-                    block_batch:            "claude-sonnet-4-6",
-                    findings_merge:         "claude-opus-4-7",
-                    findings_critic:        "claude-sonnet-4-6",
-                    findings_corrector:     "claude-sonnet-4-6",
-                    norm_verify:            "claude-sonnet-4-6",
-                    norm_fix:               "claude-sonnet-4-6",
-                    optimization:           "claude-opus-4-7",
-                    optimization_critic:    "claude-sonnet-4-6",
-                    optimization_corrector: "claude-sonnet-4-6",
-                },
-                batchModes: { block_batch: "findings_only_qwen_pair" },
+                batchModes: { block_batch: "findings_only_gemma_pair" },
             },
         };
         const activePreset = ref(null);
@@ -1234,19 +1196,16 @@ const app = createApp({
             const key = activePreset.value;
             return key ? (modelPresets[key]?.hint || '') : '';
         });
-        const stageBatchModes = ref({});  // { block_batch: "classic" | "findings_only_qwen_pair" }
+        const stageBatchModes = ref({});  // { block_batch: "findings_only_gemma_pair" }
         const stageBatchModeChoices = ref({});
 
-        // Модели, совместимые с findings_only_qwen_pair режимом (OpenRouter + Claude CLI subscription).
+        // Production Stage 02: Gemma enrichment is separate; block analysis uses GPT-5.4.
         const findingsOnlyCompatibleBlockModels = [
             'openai/gpt-5.4',
-            'google/gemini-3.1-pro-preview',
-            'claude-sonnet-4-6',
-            'claude-opus-4-7',
         ];
 
         function isFindingsOnlyMode() {
-            return stageBatchModes.value?.block_batch === 'findings_only_qwen_pair';
+            return stageBatchModes.value?.block_batch === 'findings_only_gemma_pair';
         }
 
         function getMatchingPresetKey(config, batchModes) {
@@ -1254,7 +1213,7 @@ const app = createApp({
                 const cfgMatch = Object.entries(preset.config).every(([stageKey, modelId]) => config?.[stageKey] === modelId);
                 if (!cfgMatch) return false;
                 const presetModes = preset.batchModes || {};
-                return Object.entries(presetModes).every(([stage, mode]) => (batchModes?.[stage] || 'classic') === mode);
+                return Object.entries(presetModes).every(([stage, mode]) => (batchModes?.[stage] || 'findings_only_gemma_pair') === mode);
             })?.[0] || null;
         }
 
@@ -1262,78 +1221,50 @@ const app = createApp({
             const preset = modelPresets[presetKey];
             if (!preset) return;
             stageModelConfig.value = { ...preset.config };
-            stageBatchModes.value = { ...(preset.batchModes || { block_batch: 'classic' }) };
+            stageBatchModes.value = { ...(preset.batchModes || { block_batch: 'findings_only_gemma_pair' }) };
             activePreset.value = presetKey;
         }
 
         function isModelAllowed(stageKey, modelId) {
             const r = stageModelRestrictions.value[stageKey];
             if (r && !r.includes(modelId)) return false;
-            // findings_only_qwen_pair: для block_batch разрешены только OpenRouter-модели
+            // findings_only_gemma_pair: production block_batch is GPT-5.4 only.
             if (stageKey === 'block_batch' && isFindingsOnlyMode()) {
                 return findingsOnlyCompatibleBlockModels.includes(modelId);
             }
             return true;
         }
 
-        function isBlockFlashProPairCandidate(stageKey, modelId) {
-            return stageKey === 'block_batch' && blockFlashProPairModels.includes(modelId);
-        }
-
         function modelInputType(stageKey, modelId) {
-            return isBlockFlashProPairCandidate(stageKey, modelId) ? 'checkbox' : 'radio';
+            return 'radio';
         }
 
         function isStageModelChecked(stageKey, modelId) {
-            const selected = stageModelConfig.value[stageKey];
-            if (stageKey === 'block_batch' && selected === blockFlashProPairValue) {
-                return blockFlashProPairModels.includes(modelId);
-            }
-            return selected === modelId;
+            return stageModelConfig.value[stageKey] === modelId;
         }
 
         function selectStageModel(stageKey, modelId, event) {
-            if (!isBlockFlashProPairCandidate(stageKey, modelId)) {
-                stageModelConfig.value[stageKey] = modelId;
-                return;
-            }
-
-            const checked = !!event?.target?.checked;
-            const current = stageModelConfig.value[stageKey];
-            const otherModel = blockFlashProPairModels.find(id => id !== modelId);
-
-            if (current === blockFlashProPairValue) {
-                stageModelConfig.value[stageKey] = checked ? blockFlashProPairValue : otherModel;
-                return;
-            }
-
-            if (current === otherModel && checked) {
-                stageModelConfig.value[stageKey] = blockFlashProPairValue;
-                return;
-            }
-
-            if (current === modelId && !checked) {
-                stageModelConfig.value[stageKey] = modelId;
-                return;
-            }
-
             stageModelConfig.value[stageKey] = modelId;
         }
 
         async function loadStageModels() {
             try {
+                stageModelSaveError.value = '';
                 const data = await api('/audit/model/stages');
                 stageModelConfig.value = data.stages || {};
                 availableModels.value = data.available_models || [];
                 stageModelRestrictions.value = data.restrictions || {};
                 stageModelHints.value = data.hints || {};
-                // Параллельно подгружаем batch-modes (классический / findings_only_qwen_pair)
+                if (data.config_errors && Object.keys(data.config_errors).length > 0) {
+                    stageModelSaveError.value = `Текущая конфигурация моделей невалидна: ${formatRejected(data.config_errors)}`;
+                }
+                // Параллельно подгружаем batch-modes (production: findings_only_gemma_pair)
                 try {
                     const bm = await api('/audit/model/batch-modes');
-                    stageBatchModes.value = bm.modes || { block_batch: 'classic' };
+                    stageBatchModes.value = bm.modes || { block_batch: 'findings_only_gemma_pair' };
                     stageBatchModeChoices.value = bm.choices || {};
                 } catch (_) {
-                    stageBatchModes.value = { block_batch: 'classic' };
+                    stageBatchModes.value = { block_batch: 'findings_only_gemma_pair' };
                     stageBatchModeChoices.value = {};
                 }
                 activePreset.value = getMatchingPresetKey(stageModelConfig.value, stageBatchModes.value);
@@ -1342,12 +1273,33 @@ const app = createApp({
             }
         }
 
+        function formatRejected(rejected) {
+            return Object.entries(rejected || {})
+                .map(([stage, reason]) => `${stage}: ${reason}`)
+                .join('; ');
+        }
+
         async function saveStageModels() {
+            stageModelSaveError.value = '';
             try {
-                await apiPost('/audit/model/stages', stageModelConfig.value);
-                await apiPost('/audit/model/batch-modes', stageBatchModes.value);
+                const modelResult = await apiPost('/audit/model/stages', stageModelConfig.value);
+                const batchResult = await apiPost('/audit/model/batch-modes', stageBatchModes.value);
+                const problems = [];
+                if (modelResult?.rejected && Object.keys(modelResult.rejected).length > 0) {
+                    problems.push(`Модели: ${formatRejected(modelResult.rejected)}`);
+                }
+                if (batchResult?.rejected && Object.keys(batchResult.rejected).length > 0) {
+                    problems.push(`Режимы: ${formatRejected(batchResult.rejected)}`);
+                }
+                if (problems.length > 0) {
+                    throw new Error(problems.join('\n'));
+                }
+                return { modelResult, batchResult };
             } catch (e) {
                 console.error('Failed to save stage models:', e);
+                stageModelSaveError.value = e?.message || 'Не удалось сохранить конфигурацию моделей';
+                alert(stageModelSaveError.value);
+                throw e;
             }
         }
 
@@ -1369,7 +1321,11 @@ const app = createApp({
         }
 
         async function saveAndStartAudit() {
-            await saveStageModels();
+            try {
+                await saveStageModels();
+            } catch (_) {
+                return;
+            }
             const pid = modelConfigPendingProjectId.value;
             showModelConfig.value = false;
             if (pendingActionFn.value) {
@@ -1557,6 +1513,19 @@ const app = createApp({
                 }
                 batchQueue.value = null;
                 batchRunning.value = false;
+            } catch (e) { alert(e.message); }
+        }
+
+        async function resumeBatchQueue() {
+            try {
+                const resp = await fetch('/api/audit/batch/resume', { method: 'POST' });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || `Ошибка: ${resp.status}`);
+                }
+                const data = await resp.json();
+                batchQueue.value = data.queue;
+                batchRunning.value = true;
             } catch (e) { alert(e.message); }
         }
 
@@ -1779,23 +1748,6 @@ const app = createApp({
             } catch (e) { alert(e.message); auditRunning.value = false; }
         }
 
-        async function startFlashProTriage(projectId) {
-            const ok = confirm(
-                'Запустить экспериментальный 02 Flash+Pro?\n\n' +
-                'Flash проверит все блоки single-block, Pro перепроверит только выбранные рискованные блоки.\n' +
-                'Итог перезапишет _output/02_blocks_analysis.json, старый файл будет сохранён backup-копией.'
-            );
-            if (!ok) return;
-            try {
-                auditRunning.value = true;
-                await apiPost(`/audit/${encodeURIComponent(projectId)}/flash-pro-triage`, {
-                    max_pro_cost_usd: 8.0,
-                    include_simple_findings: false,
-                });
-                _afterAuditStart(projectId);
-            } catch (e) { alert(e.message); auditRunning.value = false; }
-        }
-
         // Legacy aliases
         const startStandardAudit = startAudit;
         const startProAudit = startAudit;
@@ -1867,6 +1819,7 @@ const app = createApp({
         // Маппинг pipeline key → API stage name
         const pipelineToStage = {
             'crop_blocks': 'prepare',
+            'gemma_enrichment': 'gemma_enrichment',
             'text_analysis': 'text_analysis',
             'blocks_analysis': 'block_analysis',
             'findings': 'findings_merge',
@@ -1880,10 +1833,9 @@ const app = createApp({
 
         const stageLabelMap = {
             'prepare': 'Кроп блоков',
-            'qwen_enrichment': 'Подготовка (Qwen-обогащение MD)',
+            'gemma_enrichment': GEMMA_STAGE_UI_LABEL,
             'text_analysis': 'Анализ текста',
             'block_analysis': 'Анализ блоков',
-            'flash_pro_triage': 'Flash+Pro Triage',
             'findings_merge': 'Свод замечаний',
             'findings_critic': 'Critic замечаний',
             'findings_review': 'Critic замечаний',
@@ -1898,7 +1850,50 @@ const app = createApp({
             if (!currentProject.value) return false;
             if (isProjectRunning(currentProject.value.project_id)) return false;
             const status = currentProject.value.pipeline?.[pipelineKey];
-            return status === 'done' || status === 'error' || status === 'skipped' || status === 'pending' || status === 'interrupted';
+            const baseAllowed = status === 'done' || status === 'error' || status === 'skipped' || status === 'pending' || status === 'partial' || status === 'interrupted';
+            if (!baseAllowed) return false;
+
+            const pipeline = currentProject.value.pipeline || {};
+            const ready = (key) => pipeline[key] === 'done' || pipeline[key] === 'partial';
+            // Для downstream-этапов Gemma считается ОК если: done/partial, migration_required,
+            // или blocks_analysis уже done (старые проекты без Gemma-прогона)
+            const gemmaOk = () => ready('gemma_enrichment') || pipeline['gemma_enrichment'] === 'migration_required' || ready('blocks_analysis');
+            if (pipelineKey === 'gemma_enrichment') {
+                return ready('crop_blocks');
+            }
+            if (pipelineKey === 'blocks_analysis') {
+                return ready('gemma_enrichment') && ready('text_analysis');
+            }
+            if ([
+                'findings', 'findings_critic', 'findings_corrector',
+                'norms_verified', 'optimization', 'optimization_critic',
+                'optimization_corrector', 'excel',
+            ].includes(pipelineKey)) {
+                return gemmaOk() && ready('text_analysis') && ready('blocks_analysis');
+            }
+            return true;
+        }
+
+        function canRetryStage(stage) {
+            if (!currentProject.value) return false;
+            if (isProjectRunning(currentProject.value.project_id)) return false;
+            const pipeline = currentProject.value.pipeline || {};
+            const ready = (key) => pipeline[key] === 'done' || pipeline[key] === 'partial';
+            const gemmaOk = () => ready('gemma_enrichment') || pipeline['gemma_enrichment'] === 'migration_required' || ready('blocks_analysis');
+            if (stage === 'gemma_enrichment') {
+                return ready('crop_blocks');
+            }
+            if (stage === 'block_analysis') {
+                return ready('gemma_enrichment') && ready('text_analysis');
+            }
+            if ([
+                'findings_merge', 'findings_critic', 'findings_review',
+                'findings_corrector', 'norm_verify', 'optimization',
+                'optimization_critic', 'optimization_corrector', 'excel',
+            ].includes(stage)) {
+                return gemmaOk() && ready('text_analysis') && ready('blocks_analysis');
+            }
+            return true;
         }
 
         async function startFromStage(projectId, pipelineKey) {
@@ -1956,7 +1951,7 @@ const app = createApp({
 
         function retryStage(projectId, stage) {
             const labels = {
-                'crop_blocks': 'Кроп блоков', 'qwen_enrichment': 'Подготовка (Qwen-обогащение MD)',
+                'crop_blocks': 'Кроп блоков', 'gemma_enrichment': GEMMA_STAGE_UI_LABEL,
                 'text_analysis': 'Анализ текста',
                 'block_analysis': 'Анализ блоков', 'findings_merge': 'Свод замечаний',
                 'findings_critic': 'Critic замечаний', 'findings_review': 'Critic замечаний',
@@ -4049,7 +4044,7 @@ const app = createApp({
         }
 
         async function cropBatchBlocks() {
-            // ↓ Кнопка «Подготовить данные»: crop PNG + Qwen enrichment в MD
+            // ↓ Кнопка «Подготовить данные»: crop PNG + Gemma enrichment в MD
             const ids = Array.from(selectedProjects.value);
             if (!ids.length) return;
             // Фильтр: только проекты без аудита (findings_count == 0)
@@ -4064,7 +4059,7 @@ const app = createApp({
                 return;
             }
             const confirmMsg = `Подготовить данные для ${targets.length} проектов?\n` +
-                               `Будут выполнены: crop PNG + Qwen enrichment MD.\n` +
+                               `Будут выполнены: crop PNG + Gemma enrichment MD.\n` +
                                `Время: ~30-60 сек на блок (зависит от размера проекта).` +
                                (skipped > 0 ? `\n(пропущено ${skipped} с уже выполненным аудитом)` : '');
             if (!confirm(confirmMsg)) return;
@@ -4546,23 +4541,6 @@ const app = createApp({
             if (!currentProject.value) return null;
             return getProjectLiveInfo(currentProject.value.project_id);
         });
-
-        // Этапы которые не запускались (для pipeline summary)
-        const _allPipelineStages = [
-            {key: 'crop_blocks', label: 'Кроп блоков'},
-            {key: 'qwen_enrichment', label: 'Подготовка (Qwen-обогащение MD)'},
-            {key: 'text_analysis', label: 'Анализ текста'},
-            {key: 'block_analysis', label: 'Анализ блоков'},
-            {key: 'block_retry', label: 'Retry нечитаемых блоков'},
-            {key: 'findings_merge', label: 'Свод замечаний'},
-            {key: 'findings_critic', label: 'Critic замечаний'},
-            {key: 'findings_corrector', label: 'Corrector замечаний'},
-            {key: 'norm_verify', label: 'Верификация норм'},
-            {key: 'optimization', label: 'Оптимизация'},
-            {key: 'optimization_critic', label: 'Critic оптимизации'},
-            {key: 'optimization_corrector', label: 'Corrector оптимизации'},
-            {key: 'excel', label: 'Excel-отчёт'},
-        ];
 
         // ─── Helpers ───
         function stepClass(status) {
@@ -5327,7 +5305,7 @@ const app = createApp({
                 });
             } else if (msg.type === 'batch_progress') {
                 batchQueue.value = msg.data;
-                batchRunning.value = !msg.data.complete;
+                batchRunning.value = (msg.data.status || 'running') === 'running' && !msg.data.complete;
                 if (msg.data.complete) {
                     refreshProjects();
                     selectedProjects.value = new Set();
@@ -5846,11 +5824,11 @@ const app = createApp({
             auditRunning, allRunning,
             startPrepare, startMainAudit,
             startSmartAudit, startAudit, startStandardAudit, startProAudit,
-            startFlashProTriage,
             startNormVerify, startOptimization, cancelAudit, generateExcel,
             startAllProjects, resumePipeline, resumeToQueue, resumeInfo,
             startFromStage, canStartFrom, pipelineToStage,
             retryStage, retryDialog, retryStageToQueue,
+            canRetryStage,
             skipStage, cleanProject,
             // Batch selection
             selectedProjects, selectAllChecked, selectedCount,
@@ -5861,8 +5839,9 @@ const app = createApp({
             pausePipeline, resumePipelineGlobal,
             // Model config
             showModelConfig, stageModelConfig, availableModels, stageLabels,
+            stageModelSaveError,
             stageModelRestrictions, stageModelHints, isModelAllowed,
-            blockFlashProPairValue, modelInputType, isStageModelChecked, selectStageModel,
+            modelInputType, isStageModelChecked, selectStageModel,
             modelPresets, activePreset, activePresetHint, applyPreset,
             stageBatchModes, isFindingsOnlyMode,
             loadStageModels, saveStageModels, openModelConfig, saveAndStartAudit,
@@ -5877,7 +5856,7 @@ const app = createApp({
             // Queue management
             queueAddMode, queueAddAction, queueAddSelected, queueDragIdx, queueDragOverIdx,
             refreshBatchQueue, removeFromQueue, updateQueueItemAction, reorderQueue,
-            clearQueueHistory,
+            clearQueueHistory, resumeBatchQueue,
             onQueueDragStart, onQueueDragOver, onQueueDragEnd,
             toggleQueueAddProject, confirmQueueAdd, startQueueFromView,
             queueAvailableProjects,

@@ -252,93 +252,6 @@ class UsageTracker:
         return stage
 
     @staticmethod
-    def _load_flash_pro_triage_artifact_records(project_id: str, records: list[dict]) -> list[dict]:
-        """Вернуть synthetic usage records для Flash+Pro triage, если они ещё не записаны.
-
-        Старые прогоны triage сохраняли реальные OpenRouter costs в артефактах,
-        но не добавляли их в usage_data.json. Этот fallback делает UI честным
-        для уже выполненных аудитов и не дублирует новые записи.
-        """
-        if any(UsageTracker._normalize_stage_key(r.get("stage", "")) == "block_analysis" for r in records):
-            return []
-
-        project_dir = resolve_project_dir(project_id)
-        stage_output = project_dir / "_output" / "02_blocks_analysis.json"
-        if not stage_output.exists():
-            return []
-
-        try:
-            with open(stage_output, encoding="utf-8") as f:
-                output_data = json.load(f)
-        except Exception:
-            return []
-
-        meta = output_data.get("meta", {}) if isinstance(output_data, dict) else {}
-        if meta.get("source") != "flash_pro_triage":
-            return []
-
-        artifacts_dir_raw = meta.get("artifacts_dir")
-        artifacts_dir = Path(artifacts_dir_raw) if artifacts_dir_raw else None
-        if artifacts_dir and not artifacts_dir.is_absolute():
-            artifacts_dir = project_dir / artifacts_dir
-        if not artifacts_dir or not artifacts_dir.exists():
-            candidates = sorted((project_dir / "_experiments" / "stage02_flash_pro_triage").glob("*"))
-            artifacts_dir = candidates[-1] if candidates else None
-        if not artifacts_dir or not artifacts_dir.exists():
-            return []
-
-        timestamp = datetime.now().isoformat()
-        log_path = project_dir / "_output" / "pipeline_log.json"
-        try:
-            with open(log_path, encoding="utf-8") as f:
-                stages = (json.load(f).get("stages") or {})
-            timestamp = (
-                (stages.get("block_analysis") or {}).get("completed_at")
-                or (stages.get("flash_pro_triage") or {}).get("completed_at")
-                or timestamp
-            )
-        except Exception:
-            pass
-
-        synthetic: list[dict] = []
-        for summary_name in ("flash_full_summary.json", "pro_selected_summary.json"):
-            summary_path = artifacts_dir / summary_name
-            if not summary_path.exists():
-                continue
-            try:
-                with open(summary_path, encoding="utf-8") as f:
-                    summary = json.load(f)
-            except Exception:
-                continue
-            input_tokens = int(summary.get("total_prompt_tokens", 0) or 0)
-            output_tokens = int(summary.get("total_output_tokens", 0) or 0)
-            cost = float(summary.get("total_cost_usd", 0.0) or 0.0)
-            api_calls = int(summary.get("completed_batches", 0) or summary.get("total_batches", 0) or 1)
-            if input_tokens <= 0 and output_tokens <= 0 and cost <= 0:
-                continue
-            duration_ms = int(float(summary.get("elapsed_s", 0.0) or 0.0) * 1000)
-            synthetic.append({
-                "timestamp": timestamp,
-                "session_id": None,
-                "project_id": project_id,
-                "stage": "block_analysis",
-                "model": summary.get("model_id", ""),
-                "cost_usd": cost,
-                "cost_usd_notional": 0.0,
-                "duration_ms": duration_ms,
-                "duration_api_ms": duration_ms,
-                "num_turns": api_calls,
-                "api_calls": api_calls,
-                "is_retry": False,
-                "input_tokens": input_tokens,
-                "output_tokens": output_tokens,
-                "cache_creation_tokens": 0,
-                "cache_read_tokens": int(summary.get("total_cached_tokens", 0) or 0),
-                "_synthetic_source": "flash_pro_triage_artifacts",
-            })
-        return synthetic
-
-    @staticmethod
     def _dedup_for_duration(records: list[dict]) -> list[dict]:
         """
         Дедупликация записей по original stage для подсчёта duration.
@@ -453,8 +366,6 @@ class UsageTracker:
         # Фильтр: только записи текущего прогона аудита
         if audit_started and project_recs:
             project_recs = [r for r in project_recs if r.get("timestamp", "") >= audit_started]
-        project_recs = project_recs + self._load_flash_pro_triage_artifact_records(project_id, project_recs)
-
         if not project_recs:
             return {
                 "project_id": project_id,
@@ -541,7 +452,6 @@ class UsageTracker:
             audit_started = self._get_audit_started_at(pid)
             if audit_started:
                 recs = [r for r in recs if r.get("timestamp", "") >= audit_started]
-            recs = recs + self._load_flash_pro_triage_artifact_records(pid, recs)
             if not recs:
                 continue
             t_in, t_out, t_cost, t_calls = self._sum_records(recs)

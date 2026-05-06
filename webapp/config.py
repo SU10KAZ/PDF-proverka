@@ -10,6 +10,20 @@ from pathlib import Path
 from dotenv import load_dotenv
 load_dotenv()
 
+
+def _env_bool(name: str, default: bool) -> bool:
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _env_csv(name: str, default: list[str]) -> list[str]:
+    raw = os.environ.get(name)
+    if raw is None:
+        return list(default)
+    return [part.strip() for part in raw.split(",") if part.strip()]
+
 # Корневая папка проекта (где лежат process_project.py и т.д.)
 # Приоритет: env AUDIT_BASE_DIR → автодетекция (webapp/../)
 BASE_DIR = Path(os.environ["AUDIT_BASE_DIR"]) if os.environ.get("AUDIT_BASE_DIR") else Path(__file__).resolve().parent.parent
@@ -49,6 +63,7 @@ OPTIMIZATION_CORRECTOR_TASK_TEMPLATE = _PIPELINE_RU / "optimization_corrector_ta
 # Скрипты
 PROCESS_PROJECT_SCRIPT = BASE_DIR / "process_project.py"
 BLOCKS_SCRIPT = BASE_DIR / "blocks.py"          # субкоманды: crop, batches, merge
+GEMMA_ENRICH_SCRIPT = BASE_DIR / "gemma_enrich.py"
 NORMS_SCRIPT = BASE_DIR / "norms" / "_core.py"    # субкоманды: verify, update
 GENERATE_EXCEL_SCRIPT = BASE_DIR / "generate_excel_report.py"
 # Legacy aliases (для обратной совместимости)
@@ -244,11 +259,11 @@ _stage_models: dict[str, str | None] = {
 # ═══════════════════════════════════════════════════════════════════════════
 
 _STAGE_MODEL_DEFAULTS: dict[str, str] = {
-    # Пресет "Классический": Opus 4.7 для всех этапов кроме opt_critic/corrector.
-    # Sonnet-corrector не применяет вердикты критика (проверено на КЖ 5.1 — 0 правок
-    # против 4 удалённых formal findings у Opus при идентичных вердиктах критика).
+    # Production OCR profile:
+    # Markdown → crops/document graph → mandatory Gemma enrichment →
+    # Stage 01 text analysis → Stage 02 findings-only single-block GPT-5.4.
     "text_analysis":          "claude-opus-4-7",
-    "block_batch":            "claude-opus-4-7",
+    "block_batch":            "openai/gpt-5.4",
     "findings_merge":         "claude-opus-4-7",
     "findings_critic":        "claude-opus-4-7",
     "findings_corrector":     "claude-opus-4-7",
@@ -295,17 +310,16 @@ STAGE_MODEL_CONFIG: dict[str, str] = _load_stage_model_config()
 # ═══════════════════════════════════════════════════════════════════════════
 # Stage batch modes — расширенные режимы конкретных этапов.
 # Сейчас используется только для block_batch:
-#   "classic"                  — стандартный batched stage 02 (5-12 блоков на запрос)
-#   "findings_only_qwen_pair"  — single-block через GPT-5.4 + qwen-enrichment + extended categories
+#   "findings_only_gemma_pair"  — production single-block через GPT-5.4 + Gemma enrichment
 # Персистится в webapp/data/stage_batch_modes.json.
 # ═══════════════════════════════════════════════════════════════════════════
 
 _STAGE_BATCH_MODE_DEFAULTS: dict[str, str] = {
-    "block_batch": "classic",
+    "block_batch": "findings_only_gemma_pair",
 }
 
 STAGE_BATCH_MODE_CHOICES: dict[str, list[str]] = {
-    "block_batch": ["classic", "findings_only_qwen_pair"],
+    "block_batch": ["findings_only_gemma_pair"],
 }
 
 _STAGE_BATCH_MODES_FILE = Path(__file__).resolve().parent / "data" / "stage_batch_modes.json"
@@ -339,7 +353,7 @@ STAGE_BATCH_MODES: dict[str, str] = _load_stage_batch_modes()
 
 
 def get_stage_batch_mode(stage: str) -> str:
-    return STAGE_BATCH_MODES.get(stage, _STAGE_BATCH_MODE_DEFAULTS.get(stage, "classic"))
+    return STAGE_BATCH_MODES.get(stage, _STAGE_BATCH_MODE_DEFAULTS.get(stage, "findings_only_gemma_pair"))
 
 
 def set_stage_batch_mode(stage: str, mode: str) -> bool:
@@ -353,38 +367,75 @@ def set_stage_batch_mode(stage: str, mode: str) -> bool:
     return True
 
 
-FLASH_PRO_TRIAGE_MODEL = "pair/gemini-2.5-flash+gemini-3.1-pro"
-FLASH_PRO_TRIAGE_MODELS = (
-    "google/gemini-2.5-flash",
-    "google/gemini-3.1-pro-preview",
-)
-
-CHANDRA_QWEN_MODEL = "qwen/qwen3.6-35b-a3b"
-LOCAL_LLM_MODELS = {CHANDRA_QWEN_MODEL}
+CHANDRA_GEMMA_MODEL = "google/gemma-4-26b-a4b"
+LOCAL_LLM_MODELS = {CHANDRA_GEMMA_MODEL}
 
 AVAILABLE_MODELS = [
     {"id": "claude-opus-4-7",            "label": "Opus 4.7 (CLI)",        "provider": "claude_cli"},
     {"id": "claude-sonnet-4-6",          "label": "Sonnet (CLI)",           "provider": "claude_cli"},
     {"id": "openai/gpt-5.4",             "label": "GPT-5.4",                "provider": "openrouter"},
     {"id": "google/gemini-3.1-pro-preview", "label": "Gemini 3.1 Pro",      "provider": "openrouter"},
+    {"id": CHANDRA_GEMMA_MODEL,           "label": "Gemma 3.6 35B (local)",   "provider": "chandra_local"},
 ]
 
-# Этапы с ограничениями на выбор модели
-# block_batch: OpenRouter (GPT/Gemini) + экспериментально Claude CLI (Opus/Sonnet)
-# Claude CLI читает PNG через Read tool (Vision поддержка).
+# Этапы с ограничениями на выбор модели.
+# Production Stage 02 закреплён как findings-only single-block на GPT-5.4.
+# Gemma больше не является selectable Stage 02 model: он обязательный отдельный
+# этап enrichment перед Stage 01/02.
 STAGE_MODEL_RESTRICTIONS = {
     "block_batch": [
         "openai/gpt-5.4",
-        "google/gemini-3.1-pro-preview",
-        "claude-opus-4-7",           # production — CLI + Vision
-        "claude-sonnet-4-6",         # экспериментально — CLI + Vision
     ],
 }
+
+CRITICAL_STAGE_MODEL_STAGES: set[str] = {
+    "text_analysis",
+    "block_batch",
+    "findings_merge",
+    "findings_critic",
+    "findings_corrector",
+    "norm_verify",
+    "norm_fix",
+    "norm_requote",
+    "optimization",
+    "optimization_critic",
+    "optimization_corrector",
+}
+
+
+def validate_stage_model_choice(stage: str, model: str) -> str | None:
+    """Return rejection reason for a stage model choice, or None when valid."""
+    if stage not in STAGE_MODEL_CONFIG:
+        return "unknown stage"
+    if not isinstance(model, str) or not model:
+        return "model must be a non-empty string"
+    valid_model_ids = {m["id"] for m in AVAILABLE_MODELS}
+    if model not in valid_model_ids:
+        return "unknown model"
+    allowed = STAGE_MODEL_RESTRICTIONS.get(stage)
+    if allowed and model not in allowed:
+        return "model is not allowed for this stage"
+    return None
+
+
+def validate_current_stage_model_config(
+    stages: set[str] | None = None,
+) -> dict[str, str]:
+    """Validate persisted runtime stage model config."""
+    target_stages = stages or CRITICAL_STAGE_MODEL_STAGES
+    rejected: dict[str, str] = {}
+    for stage in sorted(target_stages):
+        if stage not in STAGE_MODEL_CONFIG:
+            continue
+        reason = validate_stage_model_choice(stage, STAGE_MODEL_CONFIG.get(stage, ""))
+        if reason:
+            rejected[stage] = reason
+    return rejected
 
 # Подсказки при выборе модели для этапа (отображаются в UI)
 STAGE_MODEL_HINTS: dict[str, str] = {
     "text_analysis": "Opus CLI рекомендуется. Sonnet допустим.",
-    "block_batch": "Opus 4.7 CLI — production (r800 + baseline_p3, parallelism=3). Альтернативы: GPT-5.4 (OpenRouter) или Gemini 3.1 Pro. Direct Gemini API скрыт из UI из-за гео-ограничений.",
+    "block_batch": "Production: GPT-5.4 (OpenRouter), findings_only_gemma_pair, single-block. Gemma выполняется отдельным обязательным этапом enrichment.",
     "findings_merge": "Минимум Opus CLI — межблочная сверка требует сильной модели.",
     "findings_critic": "GPT-5.4 оптимален: быстро и дёшево.",
     "findings_corrector": "Минимум Opus CLI. Sonnet не успевает (таймаут). GPT-5.4 — альтернатива.",
@@ -537,15 +588,39 @@ CHANDRA_API_BASE_URL = f"{CHANDRA_BASE_URL}/v1" if CHANDRA_BASE_URL else ""
 CHANDRA_BASIC_USER = os.environ.get("NGROK_AUTH_USER", "")
 CHANDRA_BASIC_PASS = os.environ.get("NGROK_AUTH_PASS", "")
 
+LMSTUDIO_AUTO_RELOAD_ENABLED = _env_bool("LMSTUDIO_AUTO_RELOAD_ENABLED", False)
+# Адаптивная перезагрузка модели между base (4K ctx) и high-detail (16K ctx) Gemma passes.
+# Включать только если оператор разрешает runtime load/unload для Gemma.
+GEMMA_ADAPTIVE_RELOAD_ENABLED = _env_bool("GEMMA_ADAPTIVE_RELOAD_ENABLED", False)
+GEMMA_BASE_CONTEXT_LENGTH = int(os.environ.get("GEMMA_BASE_CONTEXT_LENGTH", "4000"))
+GEMMA_HIGH_DETAIL_CONTEXT_LENGTH = int(os.environ.get("GEMMA_HIGH_DETAIL_CONTEXT_LENGTH", "16000"))
+LMSTUDIO_UNLOAD_AFTER_QUEUE = _env_bool("LMSTUDIO_UNLOAD_AFTER_QUEUE", True)
+LMSTUDIO_UNLOAD_GRACE_SECONDS = int(os.environ.get("LMSTUDIO_UNLOAD_GRACE_SECONDS", "60"))
+LMSTUDIO_UNLOAD_MODEL_ALLOWLIST = _env_csv(
+    "LMSTUDIO_UNLOAD_MODEL_ALLOWLIST",
+    [
+        "gemma/gemma3.5-35b-a3b",
+        "gemma/gemma3.6-35b-a3b",
+        "google/gemma-4-26b-a4b",
+    ],
+)
+LMSTUDIO_UNLOAD_MODEL_DENYLIST = _env_csv(
+    "LMSTUDIO_UNLOAD_MODEL_DENYLIST",
+    [
+        "chandra-ocr-2",
+    ],
+)
+
 # === Модели OpenRouter ===
 GEMINI_MODEL = "google/gemini-3.1-pro-preview"
 GPT_MODEL = "openai/gpt-5.4"
-# Эмпирически безопасный потолок для текущей Chandra-машины:
-# 98_304 загружается стабильно, 100_352+ уже режется guardrails LM Studio.
-LOCAL_QWEN_CONTEXT_LENGTH = int(os.environ.get("LOCAL_QWEN_CONTEXT_LENGTH", "98304"))
-LOCAL_QWEN_MAX_OUTPUT_TOKENS = int(os.environ.get("LOCAL_QWEN_MAX_OUTPUT_TOKENS", "8192"))
-LOCAL_QWEN_FINDINGS_MAX_OUTPUT_TOKENS = int(
-    os.environ.get("LOCAL_QWEN_FINDINGS_MAX_OUTPUT_TOKENS", "16384")
+# Значение ниже нужно только для opt-in dev/debug auto-reload в llm_runner.
+# Production runtime должен загружать Gemma вручную/инфраструктурой с нужным
+# context_length заранее и не менять model config во время stage/job.
+LOCAL_GEMMA_CONTEXT_LENGTH = int(os.environ.get("LOCAL_GEMMA_CONTEXT_LENGTH", "98304"))
+LOCAL_GEMMA_MAX_OUTPUT_TOKENS = int(os.environ.get("LOCAL_GEMMA_MAX_OUTPUT_TOKENS", "8192"))
+LOCAL_GEMMA_FINDINGS_MAX_OUTPUT_TOKENS = int(
+    os.environ.get("LOCAL_GEMMA_FINDINGS_MAX_OUTPUT_TOKENS", "16384")
 )
 
 # ═══════════════════════════════════════════════════════════════════════════

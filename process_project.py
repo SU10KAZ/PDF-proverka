@@ -255,10 +255,10 @@ def process(project_dir, force=False):
     save_project_info(project_dir, info)
     print(f"  [OK] MD — первичный источник текста")
 
-    # ── Detect Qwen enrichment marker (informational only) ──
+    # ── Detect Gemma enrichment marker (informational only) ──
     md_path_full = os.path.join(project_dir, info["md_file"])
     try:
-        from qwen_enrich import get_enrichment_meta
+        from gemma_enrich import get_enrichment_meta
         from pathlib import Path as _Path
         enr_meta = get_enrichment_meta(_Path(md_path_full))
         if enr_meta:
@@ -277,7 +277,7 @@ def process(project_dir, force=False):
         # Восстановить meta.enrichment в свежепостроенном графе (если MD enriched)
         if enr_meta:
             try:
-                from qwen_enrich import inject_enrichment_meta_into_graph
+                from gemma_enrich import inject_enrichment_meta_into_graph
                 from pathlib import Path as _Path
                 inject_enrichment_meta_into_graph(
                     _Path(out_dir) / "document_graph.json",

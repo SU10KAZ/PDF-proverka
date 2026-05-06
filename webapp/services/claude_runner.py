@@ -39,10 +39,10 @@ from webapp.config import (
     get_stage_model, is_claude_stage, is_local_llm_model,
 )
 
-# Локальный QWEN иногда отвергает слишком большие PNG ("Invalid image detected").
+# Локальный GEMMA иногда отвергает слишком большие PNG ("Invalid image detected").
 # На ошибке повторяем тот же single-block запрос с последовательно уменьшенными
-# копиями картинки. scale = target_dpi / QWEN_CROP_DPI (источник = 300 DPI).
-_LOCAL_QWEN_BLOCK_DPI_FALLBACKS: list[tuple[int, float]] = [
+# копиями картинки. scale = target_dpi / GEMMA_CROP_DPI (источник = 300 DPI).
+_LOCAL_GEMMA_BLOCK_DPI_FALLBACKS: list[tuple[int, float]] = [
     (300, 1.0),
     (200, 200 / 300),
     (100, 100 / 300),
@@ -623,11 +623,11 @@ async def run_block_batch(
 
         return exit_code, raw_text, gd_result
 
-    # OpenRouter / local-QWEN path
+    # OpenRouter / local-GEMMA path
     from webapp.services import prompt_builder, llm_runner
 
-    local_qwen = is_local_llm_model(model)
-    dpi_tiers = _LOCAL_QWEN_BLOCK_DPI_FALLBACKS if local_qwen else [(0, 1.0)]
+    local_gemma = is_local_llm_model(model)
+    dpi_tiers = _LOCAL_GEMMA_BLOCK_DPI_FALLBACKS if local_gemma else [(0, 1.0)]
 
     result = None
     for attempt_idx, (dpi, scale) in enumerate(dpi_tiers):
@@ -642,7 +642,7 @@ async def run_block_batch(
         )
         if not result.is_error:
             break
-        if local_qwen and attempt_idx + 1 < len(dpi_tiers):
+        if local_gemma and attempt_idx + 1 < len(dpi_tiers):
             next_dpi = dpi_tiers[attempt_idx + 1][0]
             err_snippet = (result.error_message or "no details").strip()[:160]
             if on_output:

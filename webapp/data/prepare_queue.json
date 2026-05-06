@@ -1,0 +1,15 @@
+{
+  "items": [],
+  "current_index": 0,
+  "total": 0,
+  "completed": 0,
+  "failed": 0,
+  "status": "idle",
+  "paused": false,
+  "blocks_total_all": 0,
+  "blocks_done_all": 0,
+  "blocks_failed_all": 0,
+  "blocks_truncated_all": 0,
+  "current_project": null,
+  "total_elapsed_sec": 0.0
+}

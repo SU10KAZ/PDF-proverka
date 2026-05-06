@@ -1,20 +1,155 @@
 {
-  "queue_id": "db94650f-d9f2-4530-83f2-860870acc25a",
-  "action": "full",
+  "queue_id": "b9a39c2d-3bc2-4d07-b965-150adec61111",
+  "action": "audit+optimization",
   "items": [
     {
-      "project_id": "13АВ-РД-МЗ (Изм.1) от 13.02.2026.pdf",
-      "action": "full",
+      "project_id": "13АВ-РД-АК-К3 Книга 1 (05.03.2026).pdf",
+      "action": "audit+optimization",
       "retry_stage": null,
-      "status": "running",
+      "status": "completed",
       "error": null,
       "extra_params": {},
-      "job_id": "00f3ec32-6e94-448f-9d99-b6196f07ebff"
+      "job_id": "f83b0ecb-2cf6-42ff-a708-2d768a07e48f"
+    },
+    {
+      "project_id": "13АВ-РД-АК-К3 Книга 2 (от 05.03.2026).pdf",
+      "action": "audit+optimization",
+      "retry_stage": null,
+      "status": "completed",
+      "error": null,
+      "extra_params": {},
+      "job_id": "b7685892-eca1-42a0-a535-2546fbc5a30a"
+    },
+    {
+      "project_id": "13АВ-РД-АК-К4 (Книга 1) (согл от 30.03.2026).pdf",
+      "action": "audit+optimization",
+      "retry_stage": null,
+      "status": "completed",
+      "error": null,
+      "extra_params": {},
+      "job_id": "aecd1a7f-3349-45db-a15d-c79ec211ab15"
+    },
+    {
+      "project_id": "13АВ-РД-АК-К4 (Книга 2) (согл от 30.03.2026).pdf",
+      "action": "audit+optimization",
+      "retry_stage": null,
+      "status": "completed",
+      "error": null,
+      "extra_params": {},
+      "job_id": "827acbec-d861-4fc0-a8be-4f7f1fcf8760"
+    },
+    {
+      "project_id": "13АВ-РД-АК-К5 (Книга 1) (согл от 30.03.2026).pdf",
+      "action": "audit+optimization",
+      "retry_stage": null,
+      "status": "completed",
+      "error": null,
+      "extra_params": {},
+      "job_id": "75955b02-75d5-4b35-86e0-137321af80da"
+    },
+    {
+      "project_id": "13АВ-РД-АК-К5 (Книга 2) (согл от 30.03.2026).pdf",
+      "action": "audit+optimization",
+      "retry_stage": null,
+      "status": "completed",
+      "error": null,
+      "extra_params": {},
+      "job_id": "11d4086c-c92a-4317-9a94-f56fdfbe59a8"
+    },
+    {
+      "project_id": "13АВ-РД-АК-К6 (Книга 2) от 05.02.2026.pdf",
+      "action": "audit+optimization",
+      "retry_stage": null,
+      "status": "failed",
+      "error": "Stage 02 (findings_only_gemma_pair): все блоки упали",
+      "extra_params": {},
+      "job_id": "b4ed4474-6924-492e-8b60-2d18a180f364"
+    },
+    {
+      "project_id": "13АВ-РД-АПЗ.АПС-К4 (согл от 09.04.2026).pdf",
+      "action": "audit+optimization",
+      "retry_stage": null,
+      "status": "failed",
+      "error": "Stage 02 (findings_only_gemma_pair): все блоки упали",
+      "extra_params": {},
+      "job_id": "f868fa09-bf5b-4931-8045-28ff83ab521a"
+    },
+    {
+      "project_id": "13АВ-РД-АПЗ.АПС-К5 (согл от 02.04.2026).pdf",
+      "action": "audit+optimization",
+      "retry_stage": null,
+      "status": "failed",
+      "error": "Stage 02 (findings_only_gemma_pair): все блоки упали",
+      "extra_params": {},
+      "job_id": "275ac00c-337e-4a31-a8b0-578183aeb75b"
+    },
+    {
+      "project_id": "13АВ-РД-КК-К2 (от 15.12.2025)_в1.pdf",
+      "action": "audit+optimization",
+      "retry_stage": null,
+      "status": "failed",
+      "error": "Stage 02 (findings_only_gemma_pair): все блоки упали",
+      "extra_params": {},
+      "job_id": "4249b006-2c53-4198-a1c3-7c9cc6880823"
+    },
+    {
+      "project_id": "13АВ-РД-КК-К3-6 (от 27.02.26).pdf",
+      "action": "audit+optimization",
+      "retry_stage": null,
+      "status": "failed",
+      "error": "Stage 02 (findings_only_gemma_pair): все блоки упали",
+      "extra_params": {},
+      "job_id": "0f891fdc-79c0-442e-8b09-8c0ed0c77776"
+    },
+    {
+      "project_id": "13АВ-РД-КК-К4-5 (от 03.03.2026).pdf",
+      "action": "audit+optimization",
+      "retry_stage": null,
+      "status": "failed",
+      "error": "Stage 02 (findings_only_gemma_pair): все блоки упали",
+      "extra_params": {},
+      "job_id": "deed0069-eab1-40bd-904b-965816736798"
+    },
+    {
+      "project_id": "13АВ-РД-КК-ПА (согл от 09.04.2026).pdf",
+      "action": "audit+optimization",
+      "retry_stage": null,
+      "status": "failed",
+      "error": "Stage 02 (findings_only_gemma_pair): все блоки упали",
+      "extra_params": {},
+      "job_id": "32859b03-fcfe-4280-9e37-5bee9c9556a5"
+    },
+    {
+      "project_id": "13АВ-РД-СОВ-К3-6 (согл от 14.04.2026) (1).pdf",
+      "action": "audit+optimization",
+      "retry_stage": null,
+      "status": "failed",
+      "error": "Stage 02 (findings_only_gemma_pair): все блоки упали",
+      "extra_params": {},
+      "job_id": "ca7999a3-ecc8-47f8-baa4-48e4f451cf00"
+    },
+    {
+      "project_id": "13АВ-РД-СОТ-К3-6 (от 17.02.2026).pdf",
+      "action": "audit+optimization",
+      "retry_stage": null,
+      "status": "failed",
+      "error": "Stage 02 (findings_only_gemma_pair): все блоки упали",
+      "extra_params": {},
+      "job_id": "3f760f3f-b8c5-470e-8984-91ac22041797"
+    },
+    {
+      "project_id": "13АВ-РД-СОУЭ-К3-К6 (от 12.02.2026).pdf",
+      "action": "audit+optimization",
+      "retry_stage": null,
+      "status": "failed",
+      "error": "Stage 02 (findings_only_gemma_pair): все блоки упали",
+      "extra_params": {},
+      "job_id": "ffb1701a-85bd-452c-8e24-b3820dedbed0"
     }
   ],
-  "current_index": 0,
-  "total": 1,
-  "completed": 0,
-  "failed": 0,
-  "status": "running"
+  "current_index": 15,
+  "total": 16,
+  "completed": 6,
+  "failed": 10,
+  "status": "completed"
 }

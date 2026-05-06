@@ -21,6 +21,20 @@ import urllib.request
 import urllib.error
 from pathlib import Path
 
+from gemma_enrichment_contract import (
+    GEMMA_BASE_BLOCKS_DIRNAME,
+    GEMMA_BLOCKS_DIRNAME,
+    GEMMA_HIGH_DETAIL_BLOCKS_DIRNAME,
+    STAGE02_BLOCKS_DIRNAME,
+    crop_index_matches_policy,
+    gemma_enrichment_crop_policy,
+    gemma_blocks_dir,
+    gemma_blocks_index_path,
+    gemma_high_detail_crop_policy,
+    stage02_crop_policy,
+    validate_gemma_summary,
+)
+
 try:
     import fitz  # PyMuPDF — для конвертации PDF→PNG
 except ImportError:
@@ -221,7 +235,7 @@ def _iter_image_blocks_from_ocr(project_dir: str):
                     "page_num": page_num,
                     "crop_url": block.get("crop_url", ""),
                     "coords_px": coords,
-                    "ocr_text": block.get("ocr_text", ""),
+                    "ocr_text": _coerce_ocr_text(block.get("ocr_text", "")),
                     "ocr_label": extract_ocr_label(block),
                 })
 
@@ -346,7 +360,7 @@ def crop_blocks_to_dir(
             "render_size": [w, h],
             "block_type": "image",
             "ocr_label": bi["ocr_label"],
-            "ocr_text_len": len(bi["ocr_text"]),
+            "ocr_text_len": len(bi["ocr_text"] or ""),
             "source": source,
         })
         cropped += 1
@@ -428,7 +442,7 @@ def detect_all_result_jsons(project_dir: str) -> list[Path]:
 
 def extract_ocr_label(block: dict) -> str:
     """Извлечь краткую метку из ocr_text блока."""
-    ocr_text = block.get("ocr_text", "")
+    ocr_text = _coerce_ocr_text(block.get("ocr_text", ""))
     if not ocr_text:
         return "image"
     try:
@@ -446,6 +460,15 @@ def extract_ocr_label(block: dict) -> str:
         pass
     clean = ocr_text.strip()[:80]
     return clean if clean else "image"
+
+
+def _coerce_ocr_text(value: object) -> str:
+    """Normalize OCR payloads where image-block OCR text may be null."""
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value
+    return str(value)
 
 
 def _render_pdf_bytes_to_png(
@@ -603,6 +626,7 @@ def crop_blocks(
     compact: bool = False,
     dpi: int | None = None,
     skip_small: bool = True,
+    output_dir_name: str = "blocks",
 ) -> dict:
     """Скачать image-блоки по crop_url из result.json и сохранить как PNG.
 
@@ -712,7 +736,7 @@ def crop_blocks(
                     "page_num": page_num,
                     "crop_url": crop_url,
                     "coords_px": coords,
-                    "ocr_text": block.get("ocr_text", ""),
+                    "ocr_text": _coerce_ocr_text(block.get("ocr_text", "")),
                     "ocr_label": extract_ocr_label(block),
                 })
 
@@ -729,13 +753,29 @@ def crop_blocks(
     if no_url_count:
         print(f"  ({no_url_count} блоков пропущено — нет crop_url)")
 
-    output_dir = Path(project_dir) / "_output" / "blocks"
+    output_dir_arg = Path(output_dir_name)
+    output_dir = output_dir_arg if output_dir_arg.is_absolute() else Path(project_dir) / "_output" / output_dir_name
     output_dir.mkdir(parents=True, exist_ok=True)
 
     cropped = 0
     skipped = 0
     errors = 0
     index_blocks = []
+
+    index_profile = ""
+    index_min_long_side = MIN_LONG_SIDE_PX_COMPACT if compact else MIN_LONG_SIDE_PX
+    if output_dir.name == GEMMA_BASE_BLOCKS_DIRNAME:
+        policy = gemma_enrichment_crop_policy()
+        index_profile = policy["profile"]
+        index_min_long_side = policy["min_long_side"]
+    elif output_dir.name == GEMMA_HIGH_DETAIL_BLOCKS_DIRNAME:
+        policy = gemma_high_detail_crop_policy()
+        index_profile = policy["profile"]
+        index_min_long_side = policy["min_long_side"]
+    elif output_dir.name == STAGE02_BLOCKS_DIRNAME:
+        policy = stage02_crop_policy()
+        index_profile = policy["profile"]
+        index_min_long_side = policy["min_long_side"]
 
     for block_info in all_image_blocks:
         bid = block_info["block_id"]
@@ -757,7 +797,7 @@ def crop_blocks(
                     "crop_px": block_info["coords_px"],
                     "block_type": "image",
                     "ocr_label": block_info["ocr_label"],
-                    "ocr_text_len": len(block_info["ocr_text"]),
+                    "ocr_text_len": len(block_info["ocr_text"] or ""),
                 }
                 if has_full:
                     entry["file_full"] = f"block_{bid}_full.png"
@@ -838,7 +878,7 @@ def crop_blocks(
             "render_size": [w, h],
             "block_type": "image",
             "ocr_label": block_info["ocr_label"],
-            "ocr_text_len": len(block_info["ocr_text"]),
+            "ocr_text_len": len(block_info["ocr_text"] or ""),
             "source": source,
         }
         if compact and full_kb is not None:
@@ -862,9 +902,12 @@ def crop_blocks(
         "total_blocks": len(index_blocks),
         "total_expected": len(all_image_blocks),
         "errors": errors,
+        "profile": index_profile,
         "compact": compact,
         "dpi": dpi,
+        "min_long_side": index_min_long_side,
         "skip_small": skip_small,
+        "output_dir_name": output_dir.name,
         "source_result_json": [rj.name for rj in result_json_paths],
         "blocks": index_blocks,
     }
@@ -884,12 +927,14 @@ def crop_blocks(
           f"{skipped} пропущено, {errors} ошибок)")
     print(f"  Index: {index_path}")
 
-    # Обогатить document_graph.json данными из index.json
-    try:
-        from process_project import enrich_document_graph
-        enrich_document_graph(str(output_dir.parent))  # output_dir = _output/blocks, parent = _output
-    except Exception as e:
-        print(f"  [WARN] Не удалось обогатить document_graph: {e}")
+    # Обогатить document_graph.json данными из legacy index.json. Split crop dirs
+    # (Gemma 300 / Stage02 100) intentionally do not masquerade as _output/blocks.
+    if output_dir.name == "blocks":
+        try:
+            from process_project import enrich_document_graph
+            enrich_document_graph(str(output_dir.parent))  # output_dir = _output/blocks, parent = _output
+        except Exception as e:
+            print(f"  [WARN] Не удалось обогатить document_graph: {e}")
 
     return result
 
@@ -1790,12 +1835,49 @@ def merge_block_results(project_dir: str, cleanup: bool = False) -> dict:
         except (json.JSONDecodeError, UnicodeDecodeError) as e:
             print(f"  [WARN] Ошибка чтения {bf.name}: {e}")
 
-    batches_path = output_dir / "block_batches.json"
+    runtime_batches_path = output_dir / "block_batches.runtime.json"
+    batches_path = runtime_batches_path if runtime_batches_path.exists() else output_dir / "block_batches.json"
     expected_blocks = 0
     if batches_path.exists():
         with open(batches_path, "r", encoding="utf-8") as f:
             batches_meta = json.load(f)
-        expected_blocks = batches_meta.get("total_blocks", 0)
+        expected_blocks = batches_meta.get("total_blocks") or sum(
+            int(b.get("block_count") or len(b.get("blocks", [])))
+            for b in batches_meta.get("batches", [])
+        )
+
+    failed_blocks: list[dict] = []
+    summary_path = output_dir / "block_analysis_summary.json"
+    if summary_path.exists():
+        try:
+            summary_data = json.loads(summary_path.read_text(encoding="utf-8"))
+            failed_blocks = list(summary_data.get("failed_batches") or [])
+        except (json.JSONDecodeError, OSError):
+            failed_blocks = []
+
+    existing_ids = {str(ba.get("block_id")) for ba in all_block_analyses if ba.get("block_id")}
+    for fb in failed_blocks:
+        bid = fb.get("block_id")
+        if not bid or str(bid) in existing_ids:
+            continue
+        all_block_analyses.append({
+            "block_id": bid,
+            "page": fb.get("page"),
+            "sheet": None,
+            "label": "",
+            "sheet_type": None,
+            "unreadable_text": True,
+            "unreadable_details": f"Single-block analysis failed: {fb.get('error') or fb.get('reason')}",
+            "not_enriched": False,
+            "coverage_status": "single_block_analysis_failed",
+            "analysis_status": "failed",
+            "summary": "",
+            "key_values_read": [],
+            "evidence_text_refs": [],
+            "findings": [],
+            "_error": fb.get("error") or fb.get("reason"),
+        })
+        existing_ids.add(str(bid))
 
     coverage = (
         round(total_blocks_reviewed / expected_blocks * 100, 1)
@@ -1814,6 +1896,17 @@ def merge_block_results(project_dir: str, cleanup: bool = False) -> dict:
             "coverage_pct": coverage,
             "batches_merged": len(batch_files),
             "sources": merged_sources,
+            "runtime_plan": str(runtime_batches_path) if runtime_batches_path.exists() else None,
+            "failed_blocks": failed_blocks,
+            "excluded_blocks_from_full_analysis": [
+                {
+                    "block_id": fb.get("block_id"),
+                    "page": fb.get("page"),
+                    "reason": fb.get("reason") or "single_block_analysis_failed",
+                    "error": fb.get("error"),
+                }
+                for fb in failed_blocks
+            ],
         },
         "block_analyses": all_block_analyses,
     }
@@ -2106,7 +2199,7 @@ def recrop_blocks(
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# PREPARE-DATA — crop + Qwen enrichment в одной команде
+# PREPARE-DATA — crop + Gemma enrichment в одной команде
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def _backup_output_for_reenrichment(out_dir: Path) -> Path:
@@ -2125,7 +2218,7 @@ def _backup_output_for_reenrichment(out_dir: Path) -> Path:
     backup_dir.mkdir(parents=True, exist_ok=True)
 
     KEEP_FILES = {"audit_log.jsonl"}
-    KEEP_DIRS = {"blocks", "audit_trail"}
+    KEEP_DIRS = {"blocks", "audit_trail", "blocks_gemma_100", "blocks_gemma_300", "blocks_stage02_100"}
 
     moved: list[str] = []
     for entry in out_dir.iterdir():
@@ -2151,26 +2244,38 @@ def _backup_output_for_reenrichment(out_dir: Path) -> Path:
 
 def prepare_data(project_dir: str, *, force: bool = False, parallelism: int = None,
                  model: str = None, timeout: int = None) -> dict:
-    """Подготовка данных проекта: crop PNG + Qwen enrichment в MD.
+    """Подготовка данных проекта: crop PNG + Gemma enrichment в MD.
 
     Шаги:
       1. crop_blocks() — скачать PNG с Chandra по crop_url.
-      2. Если уже enriched и force=False — skip Qwen.
+      2. Если уже enriched и force=False — skip Gemma.
       3. Если force=True — backup _output/ в _pre_enrichment_<ts>/.
-      4. qwen_enrich.enrich_project() — Qwen обогащает MD + дописывает meta в граф.
+      4. gemma_enrich.enrich_project() — Gemma обогащает MD + дописывает meta в граф.
     """
     import asyncio
-    from qwen_enrich import (
-        enrich_project, get_enrichment_meta, DEFAULT_MODEL,
-        DEFAULT_PARALLELISM, DEFAULT_TIMEOUT_S,
-    )
+    from gemma_enrich import enrich_project, DEFAULT_MODEL, DEFAULT_PARALLELISM, DEFAULT_TIMEOUT_S
+    from gemma_enrichment_contract import ENRICHMENT_MARKER_RE
 
     project_dir_p = Path(project_dir).resolve()
     out_dir = project_dir_p / "_output"
 
     # ── Step 1: crop ──
     print(f"\n[1/2] CROP — скачивание блоков по crop_url ...")
-    crop_result = crop_blocks(str(project_dir_p), force=False, skip_small=True)
+    gemma_policy = gemma_enrichment_crop_policy()
+    index_path = gemma_blocks_index_path(project_dir_p)
+    blocks_dir = gemma_blocks_dir(project_dir_p)
+    force_crop = (
+        (index_path.exists() and not crop_index_matches_policy(index_path, gemma_policy))
+        or (not index_path.exists() and blocks_dir.exists() and any(blocks_dir.glob("block_*.png")))
+    )
+    crop_result = crop_blocks(
+        str(project_dir_p),
+        force=force_crop,
+        compact=gemma_policy["compact"],
+        dpi=gemma_policy["dpi"],
+        skip_small=gemma_policy["skip_small"],
+        output_dir_name=GEMMA_BLOCKS_DIRNAME,
+    )
     if crop_result.get("error"):
         return {"error": crop_result["error"]}
     print(f"  OK: {crop_result.get('cropped',0)} cropped, "
@@ -2182,19 +2287,26 @@ def prepare_data(project_dir: str, *, force: bool = False, parallelism: int = No
         return {"error": "MD-файл не найден"}
     md_path = md_files[0]
 
-    existing_meta = get_enrichment_meta(md_path)
-    if existing_meta and not force:
-        print(f"\n[2/2] ENRICH — пропущено (уже обогащено: {existing_meta['model']} @ {existing_meta['timestamp']}, "
-              f"{existing_meta['blocks_ok']}/{existing_meta['blocks_total']} blocks). "
+    existing_marker = ENRICHMENT_MARKER_RE.search(md_path.read_text(encoding="utf-8", errors="ignore")[:4096])
+    summary_validation = validate_gemma_summary(project_dir_p, md_path=md_path)
+    if summary_validation.get("valid") and not force:
+        existing_summary = summary_validation.get("summary") or {}
+        print(f"\n[2/2] ENRICH — пропущено (summary валиден: {existing_summary.get('model')} @ "
+              f"{existing_summary.get('created_at')}, "
+              f"{existing_summary.get('blocks_ok')}/{existing_summary.get('blocks_total')} blocks). "
               f"Используйте --force чтобы перезапустить.")
-        return {"crop": crop_result, "enrich": {"status": "skipped", "existing": existing_meta}}
+        return {"crop": crop_result, "enrich": {"status": "skipped", "existing": existing_summary}}
 
-    if force and existing_meta:
+    if existing_marker and not force:
+        print(f"\n[2/2] ENRICH — старый marker найден, но summary/hash/policy невалидны "
+              f"({summary_validation.get('reason')}); запускаем заново.")
+
+    if force and existing_marker:
         print(f"\n[2/2] FORCE re-enrich — backup _output/ ...")
         backup = _backup_output_for_reenrichment(out_dir)
         print(f"  Backup: {backup.name if backup != out_dir else '(nothing to backup)'}")
     else:
-        print(f"\n[2/2] ENRICH — Qwen multimodal на image-блоках ...")
+        print(f"\n[2/2] ENRICH — Gemma multimodal на image-блоках ...")
 
     # Параметры через project_info.json overrides → CLI args → defaults
     info_path = project_dir_p / "project_info.json"
@@ -2249,9 +2361,11 @@ def main():
     p_crop.add_argument("--compact", action="store_true",
                          help="Compact-режим: 800px для батчей + full-версия для retry нечитаемых")
     p_crop.add_argument("--dpi", type=int, default=None,
-                         help="Переопределить DPI рендера (например --dpi 300 для QWEN)")
+                         help="Переопределить DPI рендера (например --dpi 300 для GEMMA)")
     p_crop.add_argument("--no-skip-small", action="store_true",
                          help="Не пропускать мелкие блоки (по умолчанию блоки <50000 px² пропускаются)")
+    p_crop.add_argument("--output-dir", default="blocks",
+                         help="Подкаталог внутри _output для index/png (default: blocks)")
 
     # batches
     p_batch = subparsers.add_parser("batches", help="Сгенерировать пакеты блоков")
@@ -2287,16 +2401,16 @@ def main():
     p_promote.add_argument("project_dir", help="Путь к папке проекта")
     p_promote.add_argument("--block-ids", help="Список block_id через запятую (иначе — авто из unreadable_text)")
 
-    # prepare-data: crop + Qwen enrichment
+    # prepare-data: crop + Gemma enrichment
     p_prep = subparsers.add_parser("prepare-data",
-        help="Полная подготовка: crop PNG + Qwen enrichment в MD")
+        help="Полная подготовка: crop PNG + Gemma enrichment в MD")
     p_prep.add_argument("project_dir", help="Путь к папке проекта")
     p_prep.add_argument("--force", action="store_true",
-                        help="Force re-enrich: перезапустить Qwen + backup _output/")
+                        help="Force re-enrich: перезапустить Gemma + backup _output/")
     p_prep.add_argument("--parallelism", type=int, default=None,
-                        help="Кол-во параллельных Qwen-запросов (default из project_info или 2)")
+                        help="Кол-во параллельных Gemma-запросов (default из project_info или 2)")
     p_prep.add_argument("--model", default=None,
-                        help="Qwen модель (default qwen/qwen3.6-35b-a3b)")
+                        help="Gemma модель (default google/gemma-4-26b-a4b)")
     p_prep.add_argument("--timeout", type=int, default=None,
                         help="Таймаут per-request, сек (default 300)")
 
@@ -2311,7 +2425,8 @@ def main():
         result = crop_blocks(args.project_dir, block_ids=block_ids, force=args.force,
                              compact=getattr(args, "compact", False),
                              dpi=getattr(args, "dpi", None),
-                             skip_small=not getattr(args, "no_skip_small", False))
+                             skip_small=not getattr(args, "no_skip_small", False),
+                             output_dir_name=getattr(args, "output_dir", "blocks"))
         if result.get("error"):
             sys.exit(1)
         print(json.dumps({

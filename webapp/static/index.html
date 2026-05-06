@@ -486,7 +486,7 @@
             <div class="batch-action-bar__actions">
                 <button class="btn btn-outline" :disabled="batchCropLoading"
                         @click="cropBatchBlocks"
-                        title="Полная подготовка данных: crop PNG-блоков + Qwen-enrichment MD (готовит проект к аудиту)">
+                        title="Полная подготовка данных: crop PNG-блоков + Gemma-enrichment MD (готовит проект к аудиту)">
                     <span v-if="batchCropLoading">&#129534; Готовлю... ({{ batchCropProgress }})</span>
                     <span v-else>&#129534; Подготовить данные</span>
                 </button>
@@ -847,19 +847,12 @@
                 <p class="model-config-desc">Выберите модель для каждого этапа аудита</p>
                 <div class="model-preset-buttons">
                     <button class="btn btn-preset"
-                            :class="{ active: activePreset === 'classic' }"
-                            @click="applyPreset('classic')"
-                            title="Gemini для блоков, Sonnet для critic — массовый аудит со скидкой">Классический</button>
-                    <button class="btn btn-preset"
-                            :class="{ active: activePreset === 'qwen_sonnet' }"
-                            @click="applyPreset('qwen_sonnet')"
-                            title="Stage 02: single-block Sonnet (CLI subscription) + qwen-обогащение + extended categories. Требует «Подготовить данные» с Qwen-enrichment.">Qwen+Sonett CLI</button>
-                    <button class="btn btn-preset"
                             :class="{ active: activePreset === 'findings_only' }"
                             @click="applyPreset('findings_only')"
-                            title="Stage 02: single-block GPT-5.4 + qwen-обогащение + extended categories. Требует «Подготовить данные» с Qwen-enrichment.">Qwen+GPT5.4</button>
+                            title="Production: Markdown → Gemma OCR enrichment → Stage 02 findings-only single-block GPT-5.4.">Production Gemma+GPT5.4</button>
                 </div>
                 <p v-if="activePresetHint" class="model-preset-hint">{{ activePresetHint }}</p>
+                <p v-if="stageModelSaveError" class="model-config-error">{{ stageModelSaveError }}</p>
                 <table class="model-config-table">
                     <thead>
                         <tr>
@@ -906,13 +899,21 @@
                     </div>
                 </div>
 
-                <!-- ═══ Prepare-data queue (Qwen enrichment) ═══ -->
+                <!-- ═══ Prepare-data queue (Gemma enrichment) ═══ -->
                 <div v-if="prepareQueue && prepareQueue.items && prepareQueue.items.length > 0" class="prepare-queue">
                     <div class="prepare-queue__header">
-                        <h3 style="margin: 0;">&#129534; Подготовка данных (Qwen enrichment)</h3>
+                        <h3 style="margin: 0;">&#129534; Подготовка данных (Gemma enrichment)</h3>
                         <button class="btn btn-outline btn-sm" @click="clearPrepareQueue">
                             Очистить завершённые
                         </button>
+                    </div>
+
+                    <div v-if="prepareQueue.status === 'interrupted'" class="queue-interrupted-banner">
+                        <span>⚠ Сервер был перезапущен — подготовка данных прервана.
+                            Незавершённые проекты можно снова поставить в очередь.
+                        </span>
+                        <button class="btn btn-sm btn-primary" style="margin-left:auto; flex-shrink:0;" @click="prepareResume">Продолжить подготовку</button>
+                        <button class="btn btn-sm btn-outline" style="flex-shrink:0;" @click="clearPrepareQueue">Очистить</button>
                     </div>
 
                     <!-- Лаконичная строка статуса (как info-tab-usage) -->
@@ -1006,6 +1007,9 @@
                                 <template v-else-if="item.status === 'failed'">
                                     Ошибка<span v-if="item.error" :title="item.error">: {{ item.error.substring(0, 60) }}</span>
                                 </template>
+                                <template v-else-if="item.status === 'interrupted'">
+                                    Прервано<span v-if="item.error" :title="item.error">: {{ item.error.substring(0, 60) }}</span>
+                                </template>
                                 <template v-else-if="item.status === 'skipped'">Пропущен</template>
                             </span>
                             <span class="queue-item__remove-placeholder"></span>
@@ -1022,7 +1026,8 @@
                     <span>⚠ Сервер был перезапущен — очередь прервана.
                         Прерванные и ожидавшие проекты показаны ниже.
                     </span>
-                    <button class="btn btn-sm btn-outline" style="margin-left:auto; flex-shrink:0;" @click="clearQueueHistory">Очистить</button>
+                    <button class="btn btn-sm btn-primary" style="margin-left:auto; flex-shrink:0;" @click="resumeBatchQueue">Продолжить очередь</button>
+                    <button class="btn btn-sm btn-outline" style="flex-shrink:0;" @click="clearQueueHistory">Очистить</button>
                 </div>
 
                 <!-- Прогресс (только для активной очереди) -->
@@ -1159,6 +1164,13 @@
 
                     <!-- Pipeline -->
                     <div class="pipeline-detail">
+                        <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.gemma_enrichment), {'pipeline-stage--clickable': canStartFrom('gemma_enrichment')}]"
+                             @click="canStartFrom('gemma_enrichment') && startFromStage(currentProject.project_id, 'gemma_enrichment')"
+                             :title="canStartFrom('gemma_enrichment') ? 'Клик: запустить с Gemma enrichment' : 'Gemma OCR enrichment / предварительное распознавание чертежей'">
+                            <div class="stage-num">GEMMA</div>
+                            <div class="stage-label">Gemma OCR</div>
+                        </div>
+                        <div class="pipeline-arrow">&rarr;</div>
                         <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.text_analysis), {'pipeline-stage--clickable': canStartFrom('text_analysis')}]"
                              @click="canStartFrom('text_analysis') && startFromStage(currentProject.project_id, 'text_analysis')"
                              :title="canStartFrom('text_analysis') ? 'Клик: запустить с этого этапа' : 'Анализ текста'">
@@ -1423,7 +1435,7 @@
                                 <span class="ps-duration" v-if="s.duration_sec">{{ formatDurationSec(s.duration_sec) }}</span>
                                 <span class="ps-msg" v-if="s.message">{{ s.message }}</span>
                                 <span class="ps-error" v-if="s.error">{{ s.error }}</span>
-                                <button v-if="(s.status === 'error' || s.status === 'interrupted') && !isProjectRunning(currentProject.project_id)"
+                                <button v-if="(s.status === 'error' || s.status === 'interrupted') && canRetryStage(s.key)"
                                         class="ps-retry-btn" title="Перезапустить этап"
                                         @click="retryStage(currentProject.project_id, s.key)">↻</button>
                             </div>
@@ -2052,7 +2064,7 @@
 
                 <p style="color: var(--text-muted); font-size: 13px; margin: 0 0 12px;">
                     Управление LM Studio через ngrok+Basic Auth (WSS).
-                    Используется для Qwen enrichment (этап «Подготовить данные»).
+                    Используется для Gemma enrichment (этап «Подготовить данные»).
                 </p>
 
                 <!-- Health status banner -->

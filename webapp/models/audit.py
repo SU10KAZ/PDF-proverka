@@ -17,10 +17,9 @@ class AuditStage(str, Enum):
     OPTIMIZATION = "optimization"
     # OCR-пайплайн
     CROP_BLOCKS = "crop_blocks"
-    QWEN_ENRICHMENT = "qwen_enrichment"  # Stage 00: Qwen-обогащение MD (после crop, до text_analysis)
+    GEMMA_ENRICHMENT = "gemma_enrichment"  # Stage 00: Gemma-обогащение MD (после crop, до text_analysis)
     TEXT_ANALYSIS = "text_analysis"
     BLOCK_ANALYSIS = "block_analysis"
-    FLASH_PRO_TRIAGE = "flash_pro_triage"
     FINDINGS_MERGE = "findings_merge"
     FINDINGS_REVIEW = "findings_review"
 
@@ -127,7 +126,7 @@ class BatchQueueStatus(BaseModel):
 
 
 class PrepareQueueItem(BaseModel):
-    """Элемент очереди подготовки данных (crop + Qwen enrichment)."""
+    """Элемент очереди подготовки данных (crop + Gemma enrichment)."""
     project_id: str
     status: str = "pending"  # pending / running / completed / failed / skipped
     blocks_total: Optional[int] = None
@@ -140,14 +139,14 @@ class PrepareQueueItem(BaseModel):
     eta_sec: Optional[float] = None
     error: Optional[str] = None
     force: bool = False
-    # Pre-crop: блоки скачиваются параллельно с Qwen enrichment предыдущих проектов.
+    # Pre-crop: блоки скачиваются параллельно с Gemma enrichment предыдущих проектов.
     # crop_status: pending → running → done / failed
     crop_status: str = "pending"
     crop_blocks_total: int = 0   # сколько блоков обработал crop (новые + пропущенные)
 
 
 class PrepareQueueStatus(BaseModel):
-    """Состояние очереди подготовки данных (Qwen enrichment)."""
+    """Состояние очереди подготовки данных (Gemma enrichment)."""
     items: list[PrepareQueueItem] = []
     current_index: int = 0
     total: int = 0

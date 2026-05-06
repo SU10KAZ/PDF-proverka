@@ -25,8 +25,9 @@ from webapp.config import (
     STAGE_MODELS_OPENROUTER, GEMINI_MAX_OUTPUT_TOKENS, GPT_MAX_OUTPUT_TOKENS,
     DEFAULT_TEMPERATURE, SCHEMAS_DIR,
     CHANDRA_BASE_URL, CHANDRA_API_BASE_URL, CHANDRA_BASIC_USER, CHANDRA_BASIC_PASS,
-    LOCAL_QWEN_CONTEXT_LENGTH, LOCAL_QWEN_MAX_OUTPUT_TOKENS,
-    LOCAL_QWEN_FINDINGS_MAX_OUTPUT_TOKENS,
+    LMSTUDIO_AUTO_RELOAD_ENABLED,
+    LOCAL_GEMMA_CONTEXT_LENGTH, LOCAL_GEMMA_MAX_OUTPUT_TOKENS,
+    LOCAL_GEMMA_FINDINGS_MAX_OUTPUT_TOKENS,
     is_local_llm_model,
     get_stage_model,
 )
@@ -212,7 +213,6 @@ def _build_local_chat_payload(
         "input": input_payload,
         "temperature": temperature,
         "max_output_tokens": max_tokens,
-        "reasoning": "off",
         "store": False,
     }
 
@@ -319,7 +319,7 @@ def _extract_local_context_error(error_text: str) -> tuple[int, int] | None:
 def _recommended_local_context_length(prompt_tokens: int, max_tokens: int) -> int:
     """Подобрать следующий разумный context_length для локального QWEN."""
     required = max(
-        LOCAL_QWEN_CONTEXT_LENGTH,
+        LOCAL_GEMMA_CONTEXT_LENGTH,
         prompt_tokens + max(1024, max_tokens),
     )
     for tier in _LOCAL_CONTEXT_LENGTH_TIERS:
@@ -331,8 +331,8 @@ def _recommended_local_context_length(prompt_tokens: int, max_tokens: int) -> in
 def _get_local_max_output_tokens(stage_key: str) -> int:
     """Stage-aware max_output_tokens для локального QWEN."""
     if stage_key == "findings_merge":
-        return max(LOCAL_QWEN_MAX_OUTPUT_TOKENS, LOCAL_QWEN_FINDINGS_MAX_OUTPUT_TOKENS)
-    return LOCAL_QWEN_MAX_OUTPUT_TOKENS
+        return max(LOCAL_GEMMA_MAX_OUTPUT_TOKENS, LOCAL_GEMMA_FINDINGS_MAX_OUTPUT_TOKENS)
+    return LOCAL_GEMMA_MAX_OUTPUT_TOKENS
 
 
 def _get_local_model_reload_lock(model: str) -> asyncio.Lock:
@@ -423,6 +423,29 @@ async def _reload_local_model_with_context(model: str, target_context_length: in
         return False, _format_model_control_error(load_result)
 
 
+def _context_mismatch_disabled_message(
+    *,
+    model: str,
+    prompt_tokens: int,
+    loaded_context: int,
+    target_context: int,
+) -> str:
+    logger.warning(
+        "LM Studio context mismatch detected, auto-reload disabled: "
+        "model=%s n_keep=%s n_ctx=%s suggested_context_length=%s",
+        model,
+        prompt_tokens,
+        loaded_context,
+        target_context,
+    )
+    return (
+        "LM Studio context mismatch detected, auto-reload disabled "
+        f"(model={model}, n_keep={prompt_tokens}, n_ctx={loaded_context}, "
+        f"suggested_context_length={target_context}); "
+        "reload the model manually in LM Studio with a larger context window"
+    )
+
+
 async def _run_local_chandra_chat(
     *,
     model: str,
@@ -497,28 +520,34 @@ async def _run_local_chandra_chat(
         if context_error and _allow_context_reload:
             prompt_tokens, loaded_context = context_error
             target_context = _recommended_local_context_length(prompt_tokens, max_tokens)
-            logger.warning(
-                "Local model context overflow for %s: n_keep=%s n_ctx=%s; reloading with %s",
-                model,
-                prompt_tokens,
-                loaded_context,
-                target_context,
-            )
-            reloaded, reload_message = await _reload_local_model_with_context(model, target_context)
-            if reloaded:
-                return await _run_local_chandra_chat(
-                    model=model,
-                    messages=messages,
-                    max_tokens=max_tokens,
-                    temperature=temperature,
-                    timeout=timeout,
-                    response_format=response_format,
-                    _allow_context_reload=False,
+            if LMSTUDIO_AUTO_RELOAD_ENABLED:
+                logger.warning(
+                    "Local model context overflow for %s: n_keep=%s n_ctx=%s; reloading with %s",
+                    model,
+                    prompt_tokens,
+                    loaded_context,
+                    target_context,
                 )
-            error = (
-                f"{error} | auto-reload failed for context_length={target_context}: "
-                f"{reload_message}"
-            )
+                reloaded, reload_message = await _reload_local_model_with_context(model, target_context)
+                if reloaded:
+                    return await _run_local_chandra_chat(
+                        model=model,
+                        messages=messages,
+                        max_tokens=max_tokens,
+                        temperature=temperature,
+                        timeout=timeout,
+                        response_format=response_format,
+                        _allow_context_reload=False,
+                    )
+                error = (
+                    f"{error} | auto-reload failed for context_length={target_context}: "
+                    f"{reload_message}"
+                )
+            else:
+                error = (
+                    f"{error} | "
+                    f"{_context_mismatch_disabled_message(model=model, prompt_tokens=prompt_tokens, loaded_context=loaded_context, target_context=target_context)}"
+                )
 
         return LLMResult(
             text="",
@@ -634,28 +663,34 @@ async def _run_local_chat_completions(
         if context_error and _allow_context_reload:
             prompt_tokens, loaded_context = context_error
             target_context = _recommended_local_context_length(prompt_tokens, max_tokens)
-            logger.warning(
-                "Local chat.completions context overflow for %s: n_keep=%s n_ctx=%s; reloading with %s",
-                model,
-                prompt_tokens,
-                loaded_context,
-                target_context,
-            )
-            reloaded, reload_message = await _reload_local_model_with_context(model, target_context)
-            if reloaded:
-                return await _run_local_chat_completions(
-                    model=model,
-                    messages=messages,
-                    max_tokens=max_tokens,
-                    temperature=temperature,
-                    timeout=timeout,
-                    response_format=response_format,
-                    _allow_context_reload=False,
+            if LMSTUDIO_AUTO_RELOAD_ENABLED:
+                logger.warning(
+                    "Local chat.completions context overflow for %s: n_keep=%s n_ctx=%s; reloading with %s",
+                    model,
+                    prompt_tokens,
+                    loaded_context,
+                    target_context,
                 )
-            error = (
-                f"{error} | auto-reload failed for context_length={target_context}: "
-                f"{reload_message}"
-            )
+                reloaded, reload_message = await _reload_local_model_with_context(model, target_context)
+                if reloaded:
+                    return await _run_local_chat_completions(
+                        model=model,
+                        messages=messages,
+                        max_tokens=max_tokens,
+                        temperature=temperature,
+                        timeout=timeout,
+                        response_format=response_format,
+                        _allow_context_reload=False,
+                    )
+                error = (
+                    f"{error} | auto-reload failed for context_length={target_context}: "
+                    f"{reload_message}"
+                )
+            else:
+                error = (
+                    f"{error} | "
+                    f"{_context_mismatch_disabled_message(model=model, prompt_tokens=prompt_tokens, loaded_context=loaded_context, target_context=target_context)}"
+                )
 
         return LLMResult(
             text="",

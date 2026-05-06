@@ -1,94 +1,85 @@
-# Webapp internals
+# Webapp Internals
 
-FastAPI + Vue 3 SPA (без сборки, CDN). Слушает **127.0.0.1:8081** (на 8080 — Apache2).
-
-## Запуск
-
-```bash
-cd webapp && python main.py    # http://localhost:8081
-```
+FastAPI + Vue 3 SPA (без сборки, CDN). Слушает **127.0.0.1:8081**.
 
 ## Структура
 
-`main.py` (uvicorn) → `routers/` (REST API по `/api/*`) → `services/` (бизнес-логика) → `models/` (Pydantic).
+`main.py` → `routers/` → `services/` → `models/`.
 
-**Ключевые сервисы:**
-- `pipeline_service.py` — оркестрация аудита (PipelineManager, AuditJob)
-- `claude_runner.py` → `task_builder.py` → `cli_utils.py` — запуск Claude CLI, формирование промптов, парсинг
-- `usage_service.py` — два трекера токенов (см. ниже)
-- `ws/manager.py` — WebSocket live-лог (`/ws/audit/{project_id}`)
-- `discipline_service.py` — загружает профиль по `section` из `project_info.json`
+Ключевые сервисы:
 
-**Ключевые параметры:** таймаут пакета 600с, аудита 3600с, до 3 параллельных Claude-сессий. `OBJECT_NAME` в config.py — название объекта на дашборде.
+- `pipeline_service.py` — orchestration и progress/resume/retry
+- `gemma_gate.py` — readiness validation для обязательного Gemma enrichment
+- `prepare_service.py` — queue для crop + Gemma enrichment
+- `lmstudio_lifecycle_service.py` — post-queue cleanup policy for local Gemma
+- `usage_service.py` — usage/cost tracking
+- `ws/manager.py` — WebSocket live-лог
 
-## Гибридные модели per-stage
+## Production Pipeline
 
-`config.py` → `_stage_models` задаёт модель для каждого этапа:
-- **Sonnet** (по умолчанию) — структурные задачи
-- **Opus** — `findings_merge` и `optimization`
-- **Sonnet** — все critic/corrector (findings и optimization)
+```text
+Markdown PDF representation
+→ Gemma base OCR enrichment, 100 DPI, fast stable pass
+→ optional Gemma high-detail retry, 300 DPI only for safe small/medium text-heavy blocks
+→ Stage 01 text analysis
+→ Stage 02 findings-only single-block analysis using GPT-5.4
+→ merge/review/norms/final report
+```
 
-API: `GET/POST /api/audit/model/stages`.
+Markdown is required. `document_graph.extracted_text` is not a Stage 01 fallback.
 
-## Batch queue
+## Crop Validation Split
 
-`pipeline_service.py` — последовательный аудит выбранных проектов. Очередь **динамическая**: можно добавлять проекты в работающую очередь через `POST /api/audit/batch/add`.
+- Gemma base validation uses `_output/blocks_gemma_100/index.json`
+- optional high-detail validation uses `_output/blocks_gemma_300/index.json`
+- Stage 02 image input uses `_output/blocks_stage02_100/index.json`
+- single-block Stage 02 runtime plan uses `_output/block_batches.runtime.json`
 
-Цикл — `while`, не `for`, чтобы подхватывать добавленные элементы.
+The webapp must not treat `_output/blocks/` as the production truth for any of
+these stages.
 
-## Пауза конвейера
+## Gemma Gate Semantics
 
-`PipelineManager` поддерживает `pause(mode)` / `unpause()` через `asyncio.Event`.
+`gemma_gate.py` treats the stage as ready when:
 
-**Два режима:**
-- `finish_current` — дождаться текущего CLI
-- `interrupt` — убить процесс
+- Markdown exists
+- base crop/source hash is valid
+- Markdown hash is valid
+- per-block final decisions are present
 
-Проверка паузы встроена в `_check_before_launch()` — покрывает ВСЕ вызовы Claude CLI.
+Ready status may still be `partial` if some blocks are uncovered or if
+high-detail was skipped for oversized candidates. Those warnings are surfaced in
+Stage 02 summaries and final coverage sections.
 
-**API:** `POST /api/audit/pause`, `POST /api/audit/resume`, `GET /api/audit/pause/status`.
-Статус паузы также в `GET /api/audit/live-status` (piggyback).
+## Coverage Propagation
 
-## Два трекера токенов (usage_service.py)
+`pipeline_service.py` attaches deterministic coverage metadata from Stage 02 to
+`03_findings.json`, including:
 
-ДВА независимых источника данных. **НЕ сравнимы напрямую.**
+- uncovered Gemma blocks
+- single-block failures
+- Stage 02 crop mismatches
+- base 100 DPI only blocks
+- blocks upgraded to 300 DPI
 
-### 1. UsageTracker — записи только от webapp
+This keeps final reports honest even when optional high-detail retry is skipped
+or some blocks remain partially covered.
 
-- Файл: `webapp/data/usage_data.json`
-- Создаётся при каждом вызове Claude CLI через PipelineManager
-- Обогащается точными данными из JSONL сессии (`enrich_from_jsonl`)
-- Используется для per-project usage (карточки на дашборде)
-- Хранит до 30 дней
-- **Покрытие:** all-time (до 30 дней)
+## LM Studio Lifecycle
 
-### 2. GlobalUsageScanner — парсинг всех JSONL
+Runtime policy:
 
-- Источник: `~/.claude/projects/`
-- Сканирует ВСЕ сессии Claude Code (включая ручные, не через webapp)
-- Используется для шапки дашборда: 5ч окно, недельный лимит, Sonnet %
-- Кэш 30 секунд, фильтрация по mtime
-- **Покрытие:** только текущая неделя
+- pipeline does not change LM Studio `context_length`, `parallel`, or reasoning
+  config during stage/job execution
+- `llm_runner.py` may detect context mismatch, but auto-reload is disabled by
+  default and only returns a diagnostic warning/error
+- Gemma base 100 DPI and high-detail 300 DPI reuse the same preloaded model
+  instance
 
-## Обработка ошибок LLM
+Cleanup policy:
 
-- `_validate_and_repair_json()` — автовалидация JSON после LLM-записи. Чинит unescaped кавычки, делает бэкап `.json.broken`
-- **Critic результат** определяется по наличию файла review, а НЕ по exit code Claude CLI (CLI может вернуть −1 при успешной записи)
-- **Retry:** `POST /api/audit/{id}/retry/{stage}` — повтор конкретного этапа
-- На дашборде красные теги `pipeline_issues` для проектов с ошибками или пропущенными этапами
-
-## Фронтенд (webapp/static/)
-
-Vue 3 Composition API без сборки — CDN-загрузка. Один HTML + один JS + один CSS.
-
-- `index.html` — шаблоны Vue, `?v=N` для cache bust
-- `js/app.js` — маршрутизация (dashboard/project/findings/tiles/blocks), API, WebSocket, polling
-- `css/styles.css` — тема "Industrial Blueprint" (тёмная, cyan/indigo)
-
-**При изменении CSS/JS:** bump версию `?v=N` в соответствующем теге `index.html`.
-
-## Стартовый хук
-
-При каждом запуске Claude Code выполняется `.claude/hooks/load_context.py`:
-сканирует `projects/` и показывает статус каждого (PDF, текст, тайлы, аудит).
-Настроен в `.claude/settings.json` → `hooks.SessionStart`.
+- after prepare/audit/retry/resume queues are all idle, webapp schedules
+  best-effort unload after a grace period
+- only allowlisted Gemma models are unloaded
+- denylist models, especially `chandra-ocr-2`, are never touched
+- unload failures are warnings and must not mutate job/project status

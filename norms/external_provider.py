@@ -1,8 +1,8 @@
-"""Adapter к внешней нормативной базе Norms-main.
+"""Adapter к нормативной базе.
 
-Единственный источник истины по статусам норм — status_index.json соседнего
-проекта `/home/coder/projects/Norms`. Этот модуль только ЧИТАЕТ его,
-ничего не пишет и ничего не копирует внутрь PDF-proverka.
+Единственный источник истины по статусам норм — status_index.json в
+`norms/tools/status_index.json` внутри этого же проекта. Этот модуль
+только ЧИТАЕТ его, ничего не пишет.
 
 WebSearch / WebFetch / интернет здесь запрещены концептуально: если нормы
 нет в индексе, мы возвращаем found=False и направляем её в очередь на
@@ -28,7 +28,7 @@ from typing import Any
 NORMS_STATUS_INDEX_PATH = Path(
     os.environ.get(
         "NORMS_STATUS_INDEX_PATH",
-        "/home/coder/projects/Norms/tools/status_index.json",
+        str(Path(__file__).parent / "tools" / "status_index.json"),
     )
 )
 

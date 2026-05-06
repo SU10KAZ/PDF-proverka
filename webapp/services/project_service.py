@@ -13,10 +13,14 @@ from pathlib import Path
 from typing import Optional
 from datetime import datetime
 
+from block_markdown import BLOCK_HEADER_RE
+from gemma_enrichment_contract import GEMMA_BLOCKS_DIRNAME, gemma_blocks_index_path
 from webapp.config import PROJECTS_DIR as _DEFAULT_PROJECTS_DIR, SEVERITY_CONFIG
 from webapp.models.project import (
     ProjectInfo, ProjectStatus, PipelineStatus, TextExtractionQuality,
 )
+from webapp.services.gemma_gate import GEMMA_STAGE_LABEL, evaluate_gemma_enrichment
+from webapp.services.gemma_gate import detect_gemma_migration_state
 
 
 # ─── Per-job object binding ────────────────────────────────────────────────
@@ -407,13 +411,10 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
         if md_path.exists() and md_path.stat().st_size > 0:
             has_md = True
             md_size_kb = round(md_path.stat().st_size / 1024, 1)
-    # Определяем основной текстовый источник
-    if has_md:
-        text_source = "md"
-    elif has_text:
-        text_source = "extracted_text"
-    else:
-        text_source = "none"
+    # Основной текстовый источник аудита: только Markdown PDF representation.
+    # extracted_text.txt может отображаться как артефакт, но не используется
+    # как fallback для Stage 01.
+    text_source = "md" if has_md else "none"
 
     # OCR result.json (от OCR-сервера)
     has_ocr = bool(list(proj_dir.glob("*_result.json")))
@@ -422,7 +423,7 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
     block_count = 0
     block_errors = 0
     block_expected = 0
-    blocks_index = output_dir / "blocks" / "index.json"
+    blocks_index = gemma_blocks_index_path(proj_dir)
     if blocks_index.exists():
         bi = _load_json(blocks_index)
         if bi:
@@ -556,6 +557,8 @@ def _get_pipeline_status(output_dir: Path) -> PipelineStatus:
     Приоритет: pipeline_log.json > файловая проверка (fallback).
     """
     status = PipelineStatus()
+    gemma_state = evaluate_gemma_enrichment(output_dir.parent)
+    gemma_migration = detect_gemma_migration_state(output_dir.parent, gemma_state=gemma_state)
 
     # 1. Попытка прочитать pipeline_log.json (персистентный лог этапов)
     log = _load_pipeline_log(output_dir)
@@ -564,6 +567,7 @@ def _get_pipeline_status(output_dir: Path) -> PipelineStatus:
         # Маппинг: ключ в pipeline_log → поле PipelineStatus
         mapping = {
             "crop_blocks": "crop_blocks",
+            "gemma_enrichment": "gemma_enrichment",
             "text_analysis": "text_analysis",
             "block_analysis": "blocks_analysis",
             "block_retry": "block_retry",
@@ -583,7 +587,8 @@ def _get_pipeline_status(output_dir: Path) -> PipelineStatus:
         valid_statuses = ("done", "error", "partial", "running", "skipped", "interrupted")
         # Маппинг: ключ pipeline_log → файл-индикатор завершения
         output_files = {
-            "crop_blocks": "blocks/index.json",
+            "crop_blocks": f"{GEMMA_BLOCKS_DIRNAME}/index.json",
+            "gemma_enrichment": "gemma_enrichment_summary.json",
             "text_analysis": "01_text_analysis.json",
             "block_analysis": "02_blocks_analysis.json",
             "findings_merge": "03_findings.json",
@@ -594,7 +599,7 @@ def _get_pipeline_status(output_dir: Path) -> PipelineStatus:
             "optimization_critic": "optimization_review.json",
             "optimization_corrector": "optimization.json",
             # Legacy aliases
-            "prepare": "blocks/index.json",
+            "prepare": f"{GEMMA_BLOCKS_DIRNAME}/index.json",
             "tile_audit": "02_blocks_analysis.json",
             "main_audit": "03_findings.json",
         }
@@ -611,6 +616,15 @@ def _get_pipeline_status(output_dir: Path) -> PipelineStatus:
                     proj_id = output_dir.parent.name
                     if not pipeline_manager.is_running(proj_id):
                         s = "error"
+                if log_key == "gemma_enrichment":
+                    if gemma_migration.get("migration_required"):
+                        s = "migration_required"
+                    elif gemma_state.get("ready"):
+                        s = "partial" if gemma_state.get("status") in {"partial_allowed", "partial"} else "done"
+                    elif s in ("done", "partial", "skipped"):
+                        s = "error"
+                    setattr(status, field, s)
+                    continue
                 # Кросс-валидация: если "error" но выходной файл существует → "done"
                 if s == "error":
                     out_file = output_files.get(log_key)
@@ -622,9 +636,16 @@ def _get_pipeline_status(output_dir: Path) -> PipelineStatus:
         return status
 
     # 2. Fallback: логика по файлам (для проектов без pipeline_log.json)
-    blocks_index = output_dir / "blocks" / "index.json"
+    blocks_index = gemma_blocks_index_path(output_dir.parent)
     if blocks_index.exists():
         status.crop_blocks = "done"
+
+    if gemma_migration.get("migration_required"):
+        status.gemma_enrichment = "migration_required"
+    elif gemma_state.get("ready"):
+        status.gemma_enrichment = "partial" if gemma_state.get("status") in {"partial_allowed", "partial"} else "done"
+    elif gemma_state.get("status") not in {"missing_blocks", "missing_md", "missing"}:
+        status.gemma_enrichment = "error"
 
     if (output_dir / "01_text_analysis.json").exists():
         status.text_analysis = "done"
@@ -656,7 +677,7 @@ def _load_pipeline_log(output_dir: Path) -> Optional[dict]:
 # Порядок и человеко-понятные названия этапов конвейера
 _PIPELINE_STAGE_ORDER = [
     ("crop_blocks", "Кроп блоков"),
-    ("qwen_enrichment", "Подготовка (Qwen-обогащение MD)"),
+    ("gemma_enrichment", GEMMA_STAGE_LABEL),
     ("text_analysis", "Анализ текста"),
     ("block_analysis", "Анализ блоков"),
     ("block_retry", "Retry нечитаемых блоков"),
@@ -683,12 +704,16 @@ def _build_pipeline_issues(output_dir: Path, pipeline_version: str = "legacy") -
     - Critic/Corrector пропущены при наличии findings
     - Нормы/оптимизация не запускались
     """
+    issues = []
+    gemma_migration = detect_gemma_migration_state(output_dir.parent)
+    if gemma_migration.get("migration_required"):
+        issues.append(gemma_migration.get("detail") or "Требуется миграция Gemma schema v2")
+
     log = _load_pipeline_log(output_dir)
     if not log or "stages" not in log:
-        return []
+        return issues
 
     stages = log["stages"]
-    issues = []
     stage_order = _get_stage_order(pipeline_version)
 
     # Этапы с ошибками
@@ -1068,7 +1093,6 @@ _document_cache: dict[str, dict] = {}  # {project_id: {ts, data}}
 _DOCUMENT_CACHE_TTL = 60  # секунд
 
 _PAGE_RE = re.compile(r'^## СТРАНИЦА (\d+)', re.MULTILINE)
-_BLOCK_RE = re.compile(r'^### BLOCK \[(TEXT|IMAGE)\]: (.+)$', re.MULTILINE)
 _SHEET_INFO_RE = re.compile(r'^\*\*Лист:\*\*\s*(.+)$', re.MULTILINE)
 _SHEET_NAME_RE = re.compile(r'^\*\*Наименование листа:\*\*\s*(.+)$', re.MULTILINE)
 
@@ -1146,11 +1170,11 @@ def parse_md_document(project_id: str) -> Optional[dict]:
             sheet_label = m.group(1).strip()
 
         # Разбиваем на блоки
-        block_matches = list(_BLOCK_RE.finditer(page_text))
+        block_matches = list(BLOCK_HEADER_RE.finditer(page_text))
         blocks = []
         for j, bm in enumerate(block_matches):
-            block_type = bm.group(1)  # TEXT или IMAGE
-            block_id = bm.group(2).strip()
+            block_type = bm.group("type")  # TEXT или IMAGE
+            block_id = bm.group("id").strip()
             b_start = bm.end()
             b_end = block_matches[j + 1].start() if j + 1 < len(block_matches) else len(page_text)
             block_content = page_text[b_start:b_end].strip()

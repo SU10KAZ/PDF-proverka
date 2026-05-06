@@ -11,6 +11,9 @@
 
 2. **Анализ блоков**: `{OUTPUT_PATH}/02_blocks_analysis.json`
    - `block_analyses` (замечания G-001... внутри каждого блока), `items_verified_from_stage_01`
+   - Если есть `stage02_meta.uncovered_blocks`, `stage02_meta.failed_blocks` или у блока
+     `coverage_status: "missing_gemma_enrichment" | "single_block_analysis_failed"` —
+     НЕ трактуй такой блок как “замечаний нет”. Это блоки вне полноценного анализа.
 
 3. **MD-файл** (для контекста): `{MD_FILE_PATH}`
 
@@ -38,6 +41,17 @@
 ### Шаг 2: Объединение замечаний
 
 Объединить замечания из обоих этапов (01 текст + 02 блоки).
+
+### Coverage warning sections (ОБЯЗАТЕЛЬНО)
+
+Если в `02_blocks_analysis.json` есть непокрытые/упавшие блоки, добавь в `meta.analysis_coverage.sections`
+три раздела:
+- `Непокрытые блоки Gemma enrichment`
+- `Ошибки single-block анализа`
+- `Блоки, исключённые из полноценного анализа`
+
+Эти блоки не являются чистыми блоками без замечаний: они не были полноценно проанализированы.
+Не создавай фиктивные замечания, но явно сохрани список block_id и причину в meta.
 
 ### Обработка items_verified_from_stage_01 (ОБЯЗАТЕЛЬНО)
 

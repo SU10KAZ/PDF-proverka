@@ -20,11 +20,11 @@ from webapp.config import (
     get_stage_model,
     get_stage_batch_mode,
     is_local_llm_model,
-    FLASH_PRO_TRIAGE_MODEL,
     RATE_LIMIT_THRESHOLD_PCT, RATE_LIMIT_CHECK_INTERVAL,
     RATE_LIMIT_MAX_WAIT, RATE_LIMIT_MAX_RETRIES,
     CRITIC_CHUNK_SIZE,
     CORRECTOR_CHUNK_SIZE,
+    validate_current_stage_model_config,
 )
 from webapp.models.audit import AuditJob, AuditStage, JobStatus, BatchQueueStatus, BatchQueueItem, BatchAction
 from webapp.models.websocket import WSMessage
@@ -33,9 +33,32 @@ from webapp.models.usage import UsageRecord
 from webapp.services.process_runner import run_script, kill_all_processes
 from webapp.services import claude_runner
 from webapp.services.usage_service import usage_tracker, global_scanner, paid_cost_tracker
+from webapp.services.lmstudio_lifecycle_service import (
+    note_activity as _lmstudio_note_activity,
+    register_idle_probe as _register_lmstudio_idle_probe,
+    schedule_post_queue_cleanup as _schedule_lmstudio_post_queue_cleanup,
+)
 from webapp.services.resume_detector import detect_resume_stage as _detect_resume_stage
 from webapp.services import audit_logger
 from webapp.services.project_service import resolve_project_dir
+from webapp.services.gemma_gate import (
+    GEMMA_STAGE_LABEL,
+    evaluate_gemma_enrichment,
+    find_project_markdown,
+    load_project_info,
+    gemma_gate_error,
+)
+from gemma_enrichment_contract import (
+    GEMMA_BLOCKS_DIRNAME,
+    STAGE02_BLOCKS_DIRNAME,
+    crop_index_matches_policy,
+    gemma_blocks_dir,
+    gemma_blocks_index_path,
+    gemma_enrichment_crop_policy,
+    stage02_blocks_dir,
+    stage02_blocks_index_path,
+    stage02_crop_policy,
+)
 
 
 def _project_path(pid: str) -> str:
@@ -87,66 +110,54 @@ def _extract_error_detail(exit_code: int, output: str, max_len: int = 120) -> st
     return f"Exit code {exit_code}"
 
 
-QWEN_CROP_DPI = 300
-CLAUDE_CLI_CROP_DPI = 100
-
 BATCH_QUEUE_FILE = BASE_DIR / "webapp" / "data" / "batch_queue.json"
+RUNTIME_BATCHES_FILE = "block_batches.runtime.json"
 
 
-def _block_batch_crop_mode() -> str:
-    """Определить режим crop по текущей модели block_batch.
+def _build_crop_args(
+    project_path: str,
+    force: bool = False,
+    *,
+    policy: dict | None = None,
+    output_dir_name: str | None = GEMMA_BLOCKS_DIRNAME,
+) -> list[str]:
+    """Build blocks.py crop args from an explicit crop policy.
 
-    qwen    — локальная QWEN (Chandra/LM Studio)
-    claude  — Claude CLI (opus/sonnet)
-    compact — OpenRouter (Gemini/GPT) и всё остальное
+    Gemma enrichment intentionally uses its own production crop policy and is
+    not tied to the Stage 02 model choice.
     """
-    model = get_stage_model("block_batch")
-    if is_local_llm_model(model):
-        return "qwen"
-    if model.startswith("claude-"):
-        return "claude"
-    return "compact"
-
-
-def _build_crop_args(project_path: str, force: bool = False) -> list[str]:
-    """Собрать аргументы для blocks.py crop с учётом модели block_batch.
-
-    qwen   — DPI 300 + мелкие блоки включены
-    claude — DPI 100, без compact-пары (один файл на блок)
-    compact — 50 DPI compact + 100 DPI full (production default для OpenRouter)
-    """
-    mode = _block_batch_crop_mode()
-    if mode == "qwen":
-        args = ["crop", project_path, "--dpi", str(QWEN_CROP_DPI), "--no-skip-small"]
-    elif mode == "claude":
-        args = ["crop", project_path, "--dpi", str(CLAUDE_CLI_CROP_DPI)]
-    else:
-        args = ["crop", project_path, "--compact"]
+    policy = policy or gemma_enrichment_crop_policy()
+    args = ["crop", project_path]
+    if output_dir_name:
+        args.extend(["--output-dir", output_dir_name])
+    if policy.get("compact"):
+        args.append("--compact")
+    elif policy.get("dpi"):
+        args.extend(["--dpi", str(int(policy["dpi"]))])
+    if policy.get("skip_small") is False:
+        args.append("--no-skip-small")
     if force:
         args.append("--force")
     return args
 
 
-def _existing_crop_matches_mode(blocks_index_path: Path) -> bool:
-    """Проверить что существующий crop подходит текущему режиму block_batch."""
-    try:
-        idx = json.loads(blocks_index_path.read_text(encoding="utf-8"))
-    except Exception:
-        return False
-    mode = _block_batch_crop_mode()
-    if mode == "qwen":
-        return idx.get("dpi") == QWEN_CROP_DPI and idx.get("skip_small") is False
-    if mode == "claude":
-        return idx.get("dpi") == CLAUDE_CLI_CROP_DPI and not idx.get("compact")
-    return bool(idx.get("compact"))
+def _existing_crop_matches_policy(blocks_index_path: Path, policy: dict | None = None) -> bool:
+    """Check an existing crop index against an explicit crop policy."""
+    return crop_index_matches_policy(blocks_index_path, policy or gemma_enrichment_crop_policy())
+
+
+def _crop_policy_label(policy: dict) -> str:
+    compact = "compact" if policy.get("compact") else "non-compact"
+    small = "skip-small" if policy.get("skip_small", True) else "no-skip-small"
+    return f"{policy.get('dpi')} DPI, {compact}, {small}"
 
 
 def _expand_block_batches_for_local_model(batches: list[dict]) -> tuple[list[dict], bool]:
     """Перевести stage 02 в single-block режим (для всех моделей и пресетов).
 
     После архитектурного решения (Идея 7 в ideas.md): один image-блок = один
-    LLM-запрос для ВСЕХ моделей. Раньше единственно для локальных Qwen, теперь
-    унифицировано — Qwen-enrichment перенесён в stage 1 prep, stage 02 работает
+    LLM-запрос для ВСЕХ моделей. Раньше единственно для локальных Gemma, теперь
+    унифицировано — Gemma-enrichment перенесён в stage 1 prep, stage 02 работает
     только с одиночными блоками. Это даёт:
       - меньше blast radius при битом PNG;
       - стабильнее качество (нет деградации обдумывания при батчах графики);
@@ -175,6 +186,95 @@ def _expand_block_batches_for_local_model(batches: list[dict]) -> tuple[list[dic
             next_batch_id += 1
 
     return single_block_batches, True
+
+
+def _build_single_block_runtime_plan(
+    source_batches: list[dict],
+    *,
+    source: str = "expanded_from_blocks_py_batches",
+) -> dict:
+    """Build the persisted Stage 02 runtime plan used by progress/resume/retry."""
+    batches, _ = _expand_block_batches_for_local_model(source_batches)
+    return {
+        "schema_version": 1,
+        "mode": "single_block",
+        "source": source,
+        "total_batches": len(batches),
+        "total_blocks": sum(int(b.get("block_count") or len(b.get("blocks", []))) for b in batches),
+        "batches": batches,
+    }
+
+
+def _write_single_block_runtime_plan(
+    output_dir: Path,
+    source_batches: list[dict],
+    *,
+    source: str = "expanded_from_blocks_py_batches",
+) -> dict:
+    plan = _build_single_block_runtime_plan(source_batches, source=source)
+    (output_dir / RUNTIME_BATCHES_FILE).write_text(
+        json.dumps(plan, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    return plan
+
+
+def _load_or_create_single_block_runtime_plan(
+    output_dir: Path,
+    source_batches: list[dict],
+    *,
+    force_rebuild: bool = False,
+) -> dict:
+    runtime_path = output_dir / RUNTIME_BATCHES_FILE
+    if runtime_path.exists() and not force_rebuild:
+        try:
+            plan = json.loads(runtime_path.read_text(encoding="utf-8"))
+            if (
+                plan.get("schema_version") == 1
+                and plan.get("mode") == "single_block"
+                and isinstance(plan.get("batches"), list)
+            ):
+                return plan
+        except (json.JSONDecodeError, OSError):
+            pass
+    return _write_single_block_runtime_plan(output_dir, source_batches)
+
+
+def _runtime_batch_failure_entry(batch: dict, error: str, *, reason: str) -> dict:
+    block = (batch.get("blocks") or [{}])[0]
+    return {
+        "batch_id": batch.get("batch_id"),
+        "block_id": block.get("block_id"),
+        "page": block.get("page"),
+        "reason": reason,
+        "error": error,
+    }
+
+
+def _write_block_analysis_runtime_summary(
+    output_dir: Path,
+    runtime_plan: dict,
+    *,
+    failed_batches: list[dict],
+    completed_batches: int,
+) -> dict:
+    total = int(runtime_plan.get("total_batches") or len(runtime_plan.get("batches", [])))
+    summary = {
+        "schema_version": 1,
+        "stage": "block_analysis",
+        "mode": runtime_plan.get("mode", "single_block"),
+        "runtime_plan_path": str(output_dir / RUNTIME_BATCHES_FILE),
+        "total_batches": total,
+        "completed_batches": int(completed_batches),
+        "failed_batches_count": len(failed_batches),
+        "failed_batches": failed_batches,
+        "created_at": datetime.now().isoformat(),
+    }
+    (output_dir / "block_analysis_summary.json").write_text(
+        json.dumps(summary, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    return summary
 from webapp.services.project_service import resolve_project_dir, bind_object, unbind_object
 from webapp.ws.manager import ws_manager
 
@@ -392,6 +492,55 @@ class PipelineManager:
         except Exception as e:
             print(f"[PipelineManager] Ошибка удаления batch_queue.json: {e}")
 
+    async def resume_interrupted_batch(self) -> BatchQueueStatus:
+        """Restart a persisted interrupted queue from unfinished items."""
+        async with self._enqueue_lock:
+            queue = self._batch_queue
+            if not queue:
+                raise RuntimeError("Нет прерванной очереди")
+            if queue.status == "running":
+                return queue
+            if queue.status != "interrupted":
+                raise RuntimeError("Очередь не находится в состоянии interrupted")
+
+            resumable = False
+            for item in queue.items:
+                if item.status in ("interrupted", "running"):
+                    item.status = "pending"
+                    item.error = None
+                    resumable = True
+                elif item.status == "pending":
+                    resumable = True
+
+            if not resumable:
+                raise RuntimeError("В очереди нет задач для продолжения")
+
+            first_pending = next(
+                (idx for idx, item in enumerate(queue.items) if item.status == "pending"),
+                0,
+            )
+            queue.current_index = first_pending
+            queue.status = "running"
+
+            meta_job = AuditJob(
+                job_id=queue.queue_id,
+                object_id=self._resolve_object_id(None),
+                project_id="__BATCH__",
+                stage=AuditStage.PREPARE,
+                status=JobStatus.RUNNING,
+                started_at=datetime.now().isoformat(),
+                progress_total=queue.total,
+                progress_current=queue.completed + queue.failed,
+            )
+            self.active_jobs["__BATCH__"] = meta_job
+            self._tasks["__BATCH__"] = self._create_bound_task(
+                self._run_batch_queue(queue, meta_job),
+                meta_job,
+            )
+
+        await self._broadcast_batch_progress(queue)
+        return queue
+
     async def _check_pause(self, job: AuditJob) -> bool:
         """
         Проверить паузу между этапами pipeline.
@@ -600,71 +749,6 @@ class PipelineManager:
         # Обогатить pipeline_log.json полями model/tokens для текущего этапа
         self._enrich_pipeline_log(job.project_id, stage, model, input_tokens, output_tokens)
 
-    def _record_flash_pro_triage_usage(self, job: AuditJob, project_dir: Path):
-        """Добавить агрегированную стоимость Stage 02 Flash+Pro triage в usage tracker."""
-        output_path = project_dir / "_output" / "02_blocks_analysis.json"
-        artifacts_dir: Path | None = None
-        try:
-            with open(output_path, encoding="utf-8") as f:
-                output_data = json.load(f)
-            meta = output_data.get("meta", {}) if isinstance(output_data, dict) else {}
-            raw = meta.get("artifacts_dir")
-            if raw:
-                artifacts_dir = Path(raw)
-                if not artifacts_dir.is_absolute():
-                    artifacts_dir = project_dir / artifacts_dir
-        except Exception:
-            artifacts_dir = None
-
-        if not artifacts_dir or not artifacts_dir.exists():
-            candidates = sorted((project_dir / "_experiments" / "stage02_flash_pro_triage").glob("*"))
-            artifacts_dir = candidates[-1] if candidates else None
-        if not artifacts_dir or not artifacts_dir.exists():
-            return
-
-        for summary_name in ("flash_full_summary.json", "pro_selected_summary.json"):
-            summary_path = artifacts_dir / summary_name
-            if not summary_path.exists():
-                continue
-            try:
-                with open(summary_path, encoding="utf-8") as f:
-                    summary = json.load(f)
-            except Exception:
-                continue
-
-            input_tokens = int(summary.get("total_prompt_tokens", 0) or 0)
-            output_tokens = int(summary.get("total_output_tokens", 0) or 0)
-            cost = float(summary.get("total_cost_usd", 0.0) or 0.0)
-            if input_tokens <= 0 and output_tokens <= 0 and cost <= 0:
-                continue
-
-            api_calls = int(summary.get("completed_batches", 0) or summary.get("total_batches", 0) or 1)
-            duration_ms = int(float(summary.get("elapsed_s", 0.0) or 0.0) * 1000)
-            model = summary.get("model_id", "")
-            record = UsageRecord(
-                timestamp=datetime.now().isoformat(),
-                session_id=None,
-                project_id=job.project_id,
-                stage="block_analysis",
-                model=model,
-                cost_usd=cost,
-                cost_usd_notional=0.0,
-                duration_ms=duration_ms,
-                duration_api_ms=duration_ms,
-                num_turns=api_calls,
-                api_calls=api_calls,
-                is_retry=False,
-                input_tokens=input_tokens,
-                output_tokens=output_tokens,
-                cache_read_tokens=int(summary.get("total_cached_tokens", 0) or 0),
-            )
-            usage_tracker.record_usage(record)
-            if cost > 0:
-                paid_cost_tracker.add(cost)
-            job.cost_usd += cost
-            job.cli_calls += api_calls
-            self._enrich_pipeline_log(job.project_id, "block_analysis", model, input_tokens, output_tokens)
-
     def _enrich_pipeline_log(self, project_id: str, stage: str, model: str,
                               input_tokens: int, output_tokens: int):
         """Добавить model и tokens в запись pipeline_log.json для этапа.
@@ -747,6 +831,19 @@ class PipelineManager:
             it.project_id == project_id and it.status == "pending"
             for it in self._batch_queue.items
         )
+
+    def has_active_or_queued_work(self) -> bool:
+        if any(task is not None and not task.done() for task in self._tasks.values()):
+            return True
+        if any(job.status in {JobStatus.RUNNING, JobStatus.QUEUED} for job in self.active_jobs.values()):
+            return True
+        if self._batch_queue and self._batch_queue.status == "running":
+            if any(item.status in ("pending", "running") for item in self._batch_queue.items):
+                return True
+        return False
+
+    def is_idle(self) -> bool:
+        return not self.has_active_or_queued_work()
 
     def get_job(self, project_id: str) -> Optional[AuditJob]:
         """Текущий job проекта.
@@ -883,6 +980,7 @@ class PipelineManager:
         self._stop_heartbeat(project_id)
         self.active_jobs.pop(project_id, None)
         self._tasks.pop(project_id, None)
+        _schedule_lmstudio_post_queue_cleanup("pipeline queue drained")
 
     async def _run_script(self, project_id: str, *args, **kwargs):
         """Обёртка run_script с автоматическим project_id для трекинга процессов."""
@@ -907,6 +1005,169 @@ class PipelineManager:
         result = backfill_project(project_dir)
         if result["fixed"] > 0:
             print(f"[{project_id}] highlight_regions restored: {result['fixed']}")
+
+    @staticmethod
+    def _attach_stage02_coverage_to_findings(project_id: str) -> dict:
+        """Attach deterministic Stage 02 coverage warnings to final findings."""
+        output_dir = resolve_project_dir(project_id) / "_output"
+        findings_path = output_dir / "03_findings.json"
+        blocks_path = output_dir / "02_blocks_analysis.json"
+        gemma_summary_path = output_dir / "gemma_enrichment_summary.json"
+        block_summary_path = output_dir / "block_analysis_summary.json"
+
+        if not findings_path.exists():
+            return {}
+
+        def _load(path: Path) -> dict:
+            try:
+                data = json.loads(path.read_text(encoding="utf-8"))
+                return data if isinstance(data, dict) else {}
+            except (json.JSONDecodeError, OSError):
+                return {}
+
+        def _dedupe(items: list[dict], *, by_block_only: bool = False) -> list[dict]:
+            seen: set[tuple[str, str]] = set()
+            out: list[dict] = []
+            for item in items:
+                bid = str(item.get("block_id") or "")
+                reason = str(item.get("reason") or item.get("coverage_status") or "")
+                key = (bid, "" if by_block_only else reason)
+                if not bid or key in seen:
+                    continue
+                seen.add(key)
+                out.append(item)
+            return out
+
+        findings_data = _load(findings_path)
+        if not findings_data:
+            return {}
+
+        data02 = _load(blocks_path)
+        meta02 = data02.get("stage02_meta") or data02.get("meta") or {}
+        block_analyses = data02.get("block_analyses") or []
+
+        gemma_summary = _load(gemma_summary_path)
+        gemma_uncovered = list(gemma_summary.get("uncovered_blocks") or [])
+        if not gemma_uncovered:
+            gemma_uncovered = [
+                {"block_id": bid, "page": None, "reason": "gemma_enrichment_failed"}
+                for bid in gemma_summary.get("uncovered_block_ids") or []
+            ]
+        gemma_uncovered.extend(meta02.get("uncovered_blocks") or [])
+        stage02_crop_missing = list(meta02.get("stage02_crop_missing_blocks") or [])
+        base_gemma_coverage = meta02.get("base_gemma_coverage") or {}
+        high_detail_candidates = int(meta02.get("high_detail_candidates") or 0)
+        high_detail_successful = int(meta02.get("high_detail_successful") or 0)
+        high_detail_skipped_large = int(meta02.get("high_detail_skipped_large") or 0)
+        base_only_blocks = [
+            item if isinstance(item, dict) else {"block_id": str(item)}
+            for item in (meta02.get("blocks_analyzed_only_with_100_dpi_base") or [])
+        ]
+        upgraded_blocks = [
+            item if isinstance(item, dict) else {"block_id": str(item)}
+            for item in (meta02.get("blocks_upgraded_to_300") or [])
+        ]
+
+        single_block_failed = list(meta02.get("failed_blocks") or [])
+        block_summary = _load(block_summary_path)
+        single_block_failed.extend(block_summary.get("failed_batches") or [])
+
+        excluded = []
+        for ba in block_analyses:
+            status = ba.get("coverage_status")
+            if status in {"missing_gemma_enrichment", "single_block_analysis_failed", "cancelled"}:
+                excluded.append({
+                    "block_id": ba.get("block_id"),
+                    "page": ba.get("page"),
+                    "sheet": ba.get("sheet"),
+                    "reason": status,
+                    "details": ba.get("unreadable_details") or ba.get("_error"),
+                })
+        excluded.extend([
+            {
+                "block_id": b.get("block_id"),
+                "page": b.get("page"),
+                "reason": b.get("reason") or "missing_stage02_crop",
+                "details": b.get("error") or "Gemma base index contains this block, but Stage 02 100 DPI crop is missing",
+            }
+            for b in stage02_crop_missing
+        ])
+        excluded.extend([
+            {
+                "block_id": b.get("block_id"),
+                "page": b.get("page"),
+                "reason": b.get("reason") or "gemma_enrichment_failed",
+                "details": b.get("error"),
+            }
+            for b in gemma_uncovered
+        ])
+        excluded.extend([
+            {
+                "block_id": b.get("block_id"),
+                "page": b.get("page"),
+                "reason": b.get("reason") or "single_block_analysis_failed",
+                "details": b.get("error"),
+            }
+            for b in single_block_failed
+        ])
+
+        gemma_uncovered = _dedupe(gemma_uncovered)
+        single_block_failed = _dedupe(single_block_failed)
+        excluded = _dedupe(excluded, by_block_only=True)
+
+        coverage = {
+            "schema_version": 1,
+            "summary": {
+                "gemma_uncovered_count": len(gemma_uncovered),
+                "single_block_failed_count": len(single_block_failed),
+                "stage02_crop_missing_count": len(stage02_crop_missing),
+                "excluded_from_full_analysis_count": len(excluded),
+                "base_gemma_covered_count": int(base_gemma_coverage.get("blocks_ok") or 0),
+                "base_gemma_total_count": int(base_gemma_coverage.get("blocks_total") or 0),
+                "high_detail_candidates": high_detail_candidates,
+                "high_detail_successful": high_detail_successful,
+                "high_detail_skipped_large": high_detail_skipped_large,
+                "base_only_blocks_count": len(base_only_blocks),
+                "upgraded_to_300_count": len(upgraded_blocks),
+            },
+            "gemma_uncovered_blocks": gemma_uncovered,
+            "single_block_failed_blocks": single_block_failed,
+            "stage02_crop_missing_blocks": stage02_crop_missing,
+            "blocks_analyzed_only_with_100_dpi_base": base_only_blocks,
+            "blocks_upgraded_to_300": upgraded_blocks,
+            "excluded_blocks_from_full_analysis": excluded,
+            "sections": [
+                {
+                    "title": "Непокрытые блоки Gemma enrichment",
+                    "blocks": gemma_uncovered,
+                },
+                {
+                    "title": "Ошибки single-block анализа",
+                    "blocks": single_block_failed,
+                },
+                {
+                    "title": "Блоки, исключённые из полноценного анализа",
+                    "blocks": excluded,
+                },
+                {
+                    "title": "Блоки, оставшиеся на base 100 DPI",
+                    "blocks": base_only_blocks,
+                },
+                {
+                    "title": "Блоки, upgraded до 300 DPI",
+                    "blocks": upgraded_blocks,
+                },
+            ],
+        }
+
+        meta = findings_data.setdefault("meta", {})
+        meta["analysis_coverage"] = coverage
+        findings_data["analysis_coverage"] = coverage
+        findings_path.write_text(
+            json.dumps(findings_data, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        return coverage
 
     @staticmethod
     def _backfill_text_evidence_in_findings(project_id: str):
@@ -1216,62 +1477,96 @@ class PipelineManager:
                 job, f"document_graph v2 ошибка: {e}", "warn"
             )
 
-    async def _run_qwen_enrichment_stage(self, job: AuditJob) -> None:
-        """ЭТАП 00: Qwen-обогащение MD-файла (после crop, до text_analysis).
+    async def _run_gemma_enrichment_stage(self, job: AuditJob, *, force: bool = False) -> None:
+        """ЭТАП 00: Gemma-обогащение MD-файла (после crop, до text_analysis).
 
-        Идемпотентен: если MD уже содержит маркер `<!-- ENRICHMENT: ... -->` — пропускает.
-        Использует существующий `qwen_enrich.enrich_project()`. Все downstream-этапы
-        (text_analysis, block_batch, findings_merge) автоматически читают обогащённый MD.
-
-        Если все блоки упали (Qwen endpoint недоступен) — кидает RuntimeError
-        и аудит останавливается. Если часть блоков ok — продолжаем (partial enrichment).
+        Это обязательный gate: без MD или без валидного enrichment downstream
+        этапы не должны стартовать.
         """
         pid = job.project_id
         project_dir = resolve_project_dir(pid)
-        job.stage = AuditStage.QWEN_ENRICHMENT
-        self._update_pipeline_log(pid, "qwen_enrichment", "running")
+        project_info = load_project_info(project_dir)
+        job.stage = AuditStage.GEMMA_ENRICHMENT
+        self._update_pipeline_log(pid, "gemma_enrichment", "running")
 
-        print(f"[{pid}] ═══ ЭТАП 00: Подготовка (Qwen-обогащение MD) ═══")
-        await self._log(job, "═══ ЭТАП 00: Подготовка (Qwen-обогащение MD-файла) ═══")
+        print(f"[{pid}] ═══ ЭТАП 2: {GEMMA_STAGE_LABEL} ═══")
+        await self._log(job, f"═══ ЭТАП 2: {GEMMA_STAGE_LABEL} ═══")
 
         # Найти MD-файл проекта
-        md_files = sorted([
-            f for f in project_dir.iterdir()
-            if f.suffix == ".md" and f.name.endswith("_document.md")
-        ])
-        if not md_files:
-            await self._log(
-                job, "MD-файл не найден — пропускаем enrichment", "warn"
+        md_path = find_project_markdown(project_dir, project_info)
+        if md_path is None:
+            err = (
+                f"{GEMMA_STAGE_LABEL}: MD-файл не найден. "
+                "Анализ без *_document.md не поддерживается."
             )
+            await self._log(
+                job, err, "error"
+            )
+            self._update_pipeline_log(pid, "gemma_enrichment", "error", error=err)
+            raise RuntimeError(err)
+
+        blocks_index = gemma_blocks_index_path(project_dir)
+        gemma_crop_policy = gemma_enrichment_crop_policy()
+        if blocks_index.exists() and not _existing_crop_matches_policy(blocks_index, gemma_crop_policy):
+            await self._log(
+                job,
+                "Crop не совпадает с Gemma enrichment policy "
+                f"({_crop_policy_label(gemma_crop_policy)}) — перекропаю перед Gemma",
+                "warn",
+            )
+            self._update_pipeline_log(pid, "crop_blocks", "running")
+            exit_code, _, stderr = await self._run_script(
+                pid,
+                str(BLOCKS_SCRIPT),
+                _build_crop_args(
+                    _project_path(pid),
+                    force=True,
+                    policy=gemma_crop_policy,
+                    output_dir_name=GEMMA_BLOCKS_DIRNAME,
+                ),
+                on_output=lambda msg: self._log(job, msg),
+            )
+            if exit_code != 0:
+                self._update_pipeline_log(
+                    pid, "crop_blocks", "error",
+                    error=stderr or f"Exit code: {exit_code}",
+                )
+                raise RuntimeError(f"Gemma crop policy recrop failed: {stderr}")
             self._update_pipeline_log(
-                pid, "qwen_enrichment", "skipped", message="MD не найден"
+                pid, "crop_blocks", "done",
+                message=f"OK (Gemma policy: {_crop_policy_label(gemma_crop_policy)})",
+            )
+
+        state_before = evaluate_gemma_enrichment(project_dir, project_info)
+        if state_before.get("ready") and not force:
+            status = "partial" if state_before.get("status") in {"partial_allowed", "partial"} else "done"
+            msg = state_before.get("detail", "Gemma enrichment уже готов")
+            await self._log(job, msg, "warn" if status == "partial" else "info")
+            self._update_pipeline_log(
+                pid,
+                "gemma_enrichment",
+                status,
+                message=msg,
+                detail={
+                    "partial_allowed": state_before.get("status") in {"partial_allowed", "partial"},
+                    "blocks_ok": state_before.get("blocks_ok", 0),
+                    "blocks_total": state_before.get("blocks_total", 0),
+                },
             )
             return
-        md_path = md_files[0]
 
         # Идемпотентность: если MD уже enriched, пропускаем
         try:
             import sys
             sys.path.insert(0, str(BASE_DIR))
-            from qwen_enrich import is_enriched, get_enrichment_meta, enrich_project
+            from gemma_enrich import enrich_project
         except ImportError as exc:
+            err = f"gemma_enrich модуль не найден: {exc}"
             await self._log(
-                job, f"qwen_enrich модуль не найден: {exc}", "warn"
+                job, err, "error"
             )
-            self._update_pipeline_log(
-                pid, "qwen_enrichment", "skipped",
-                message=f"qwen_enrich import error: {exc}"
-            )
-            return
-
-        if is_enriched(md_path):
-            meta = get_enrichment_meta(md_path) or {}
-            msg = (f"MD уже обогащён "
-                   f"({meta.get('blocks_ok', '?')}/{meta.get('blocks_total', '?')}, "
-                   f"{meta.get('model', '?')}) — пропускаем")
-            await self._log(job, msg)
-            self._update_pipeline_log(pid, "qwen_enrichment", "done", message=msg)
-            return
+            self._update_pipeline_log(pid, "gemma_enrichment", "error", error=err)
+            raise RuntimeError(err) from exc
 
         # Прогрессбар через live-log
         async def progress_cb(event: dict) -> None:
@@ -1279,7 +1574,7 @@ class PipelineManager:
             if t == "started":
                 await self._log(
                     job,
-                    f"  Qwen enrichment: {event['total']} блоков, "
+                    f"  Gemma enrichment: {event['total']} блоков, "
                     f"model={event.get('model')}",
                 )
             elif t == "block_done":
@@ -1301,45 +1596,89 @@ class PipelineManager:
                         f"  [{completed:>3}/{total}] FAIL {bid} p={pg}: {err}",
                         "warn"
                     )
+            elif t == "high_detail_candidates":
+                await self._log(
+                    job,
+                    f"  High-detail кандидаты: {event.get('candidates', 0)} из {event.get('total', 0)} блоков",
+                )
+            elif t == "high_detail_prefilter":
+                skipped_large = len(event.get("skipped_large_ids") or [])
+                await self._log(
+                    job,
+                    f"  High-detail prefilter: safe={event.get('safe_candidates', 0)}, skipped_large={skipped_large}",
+                    "warn" if skipped_large else "info",
+                )
+            elif t == "high_detail_block_done":
+                completed = event.get("completed", 0)
+                total = event.get("total", 0)
+                bid = event.get("block_id", "?")
+                pg = event.get("page", "?")
+                err = (event.get("error") or "")[:80]
+                level = "info" if event.get("ok") else "warn"
+                prefix = "OK" if event.get("ok") else "FAIL"
+                tail = f": {err}" if err else ""
+                await self._log(
+                    job,
+                    f"  [HD {completed:>3}/{total}] {prefix} {bid} p={pg} t={event.get('elapsed_ms', 0)/1000:.1f}s{tail}",
+                    level,
+                )
             elif t == "no_blocks":
                 await self._log(
                     job, "  Image-блоков для enrichment не найдено", "warn"
                 )
 
-        # Поддержка cancel через job.status
-        cancel_event = asyncio.Event()
-        pause_event = asyncio.Event()
-        pause_event.set()  # не на паузе по умолчанию
+        main_loop = asyncio.get_running_loop()
+
+        def _run_enrichment_in_thread() -> dict:
+            thread_cancel_event = asyncio.Event()
+            thread_pause_event = asyncio.Event()
+            thread_pause_event.set()  # не на паузе по умолчанию
+
+            async def _thread_progress_cb(event: dict) -> None:
+                if job.status == JobStatus.CANCELLED:
+                    thread_cancel_event.set()
+                future = asyncio.run_coroutine_threadsafe(progress_cb(event), main_loop)
+                await asyncio.wrap_future(future)
+
+            async def _runner() -> dict:
+                return await enrich_project(
+                    project_dir,
+                    force=force or state_before.get("status") in {"partial", "failed"},
+                    parallelism=1,  # gemma3.6-35b не тянет параллель
+                    progress_cb=_thread_progress_cb,
+                    pause_event=thread_pause_event,
+                    cancel_event=thread_cancel_event,
+                )
+
+            return asyncio.run(_runner())
 
         try:
-            summary = await enrich_project(
-                project_dir,
-                force=False,
-                parallelism=1,  # qwen3.6-35b не тянет параллель
-                progress_cb=progress_cb,
-                pause_event=pause_event,
-                cancel_event=cancel_event,
-            )
+            summary = await asyncio.to_thread(_run_enrichment_in_thread)
         except Exception as e:
             self._update_pipeline_log(
-                pid, "qwen_enrichment", "error", error=f"qwen_enrich exception: {e}"
+                pid, "gemma_enrichment", "error", error=f"gemma_enrich exception: {e}"
             )
-            raise RuntimeError(f"Qwen enrichment упал: {e}") from e
+            raise RuntimeError(f"Gemma enrichment упал: {e}") from e
 
         status = summary.get("status", "unknown")
         if status == "no_blocks":
-            await self._log(job, "Image-блоков нет — этап пропущен")
+            summary_path = project_dir / "_output" / "gemma_enrichment_summary.json"
+            summary_path.write_text(
+                json.dumps(summary, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+            await self._log(job, "Image-блоков нет — Gemma stage подтверждён")
             self._update_pipeline_log(
-                pid, "qwen_enrichment", "skipped", message="image-блоков 0"
+                pid, "gemma_enrichment", "done", message="image-блоков 0"
             )
             return
         if status == "failed":
             self._update_pipeline_log(
-                pid, "qwen_enrichment", "error",
-                error="Все блоки упали — Qwen endpoint недоступен?"
+                pid, "gemma_enrichment", "error",
+                error="Все блоки упали — Gemma endpoint недоступен?"
             )
             raise RuntimeError(
-                "Qwen enrichment: все блоки упали. "
+                "Gemma enrichment: все блоки упали. "
                 "Проверьте CHANDRA_BASE_URL / NGROK_AUTH_USER / NGROK_AUTH_PASS."
             )
 
@@ -1348,27 +1687,108 @@ class PipelineManager:
         wall = summary.get("wall_clock_s", 0)
         msg = f"OK ({ok}/{total} блоков, {wall:.0f}s)"
         if status == "partial":
-            msg = f"partial: {msg} — {summary.get('blocks_failed', 0)} блоков упали"
-            self._update_pipeline_log(pid, "qwen_enrichment", "done", message=msg)
-            await self._log(job, f"  ⚠ {msg}", "warn")
-        else:
-            self._update_pipeline_log(pid, "qwen_enrichment", "done", message=msg)
-            await self._log(job, f"  ✓ {msg}")
+            state_after = evaluate_gemma_enrichment(project_dir, project_info)
+            msg = (
+                f"partial: {msg} — {summary.get('blocks_failed', 0)} блоков упали"
+            )
+            if state_after.get("ready") and state_after.get("status") in {"partial_allowed", "partial"}:
+                msg = f"{msg}; partial mode допущен, непокрытые блоки будут отражены в отчёте"
+                self._update_pipeline_log(
+                    pid,
+                    "gemma_enrichment",
+                    "partial",
+                    message=msg,
+                    detail={
+                        "partial_allowed": True,
+                        "blocks_ok": ok,
+                        "blocks_total": total,
+                        "blocks_failed": summary.get("blocks_failed", 0),
+                    },
+                )
+                await self._log(job, f"  ⚠ {msg}", "warn")
+                return
+            self._update_pipeline_log(pid, "gemma_enrichment", "error", error=msg)
+            raise RuntimeError(
+                f"{GEMMA_STAGE_LABEL}: enrichment неполный ({ok}/{total}). "
+                "Повторите gemma_enrichment или явно включите allow_partial_gemma_enrichment."
+            )
+
+        self._update_pipeline_log(pid, "gemma_enrichment", "done", message=msg)
+        await self._log(job, f"  ✓ {msg}")
+
+    async def _ensure_stage02_crops(self, job: AuditJob) -> None:
+        """Ensure findings_only Stage 02 has its own 100 DPI crop index."""
+        pid = job.project_id
+        project_dir = resolve_project_dir(pid)
+        policy = stage02_crop_policy()
+        index_path = stage02_blocks_index_path(project_dir)
+        blocks_dir = stage02_blocks_dir(project_dir)
+        stale_existing_dir = (
+            not index_path.exists()
+            and blocks_dir.exists()
+            and any(blocks_dir.glob("block_*.png"))
+        )
+        needs_crop = (
+            force := (
+                (index_path.exists() and not _existing_crop_matches_policy(index_path, policy))
+                or stale_existing_dir
+            )
+        ) or not index_path.exists()
+        if not needs_crop:
+            await self._log(
+                job,
+                f"Stage 02 crops готовы: _output/{STAGE02_BLOCKS_DIRNAME} "
+                f"({_crop_policy_label(policy)})",
+            )
+            return
+
+        await self._log(
+            job,
+            f"Stage 02 crop: создаю _output/{STAGE02_BLOCKS_DIRNAME} "
+            f"({_crop_policy_label(policy)}); Gemma base/high-detail indexes не трогаю",
+            "warn" if force else "info",
+        )
+        exit_code, _, stderr = await self._run_script(
+            pid,
+            str(BLOCKS_SCRIPT),
+            _build_crop_args(
+                _project_path(pid),
+                force=force,
+                policy=policy,
+                output_dir_name=STAGE02_BLOCKS_DIRNAME,
+            ),
+            on_output=lambda msg: self._log(job, msg),
+        )
+        if exit_code == 2 and index_path.exists():
+            await self._log(
+                job,
+                "Stage 02 crop частично завершился с ошибками; продолжу с доступными "
+                "100 DPI blocks, пропуски попадут в coverage",
+                "warn",
+            )
+            return
+        if exit_code != 0:
+            raise RuntimeError(f"Stage 02 crop failed: {stderr or f'Exit code {exit_code}'}")
+        if not index_path.exists():
+            raise RuntimeError(f"Stage 02 crop не создал _output/{STAGE02_BLOCKS_DIRNAME}/index.json")
 
     async def _run_block_analysis_findings_only(self, job: AuditJob) -> None:
-        """ЭТАП 02 в режиме findings_only_qwen_pair.
+        """ЭТАП 02 в режиме findings_only_gemma_pair.
 
-        Single-block: GPT-5.4 (low) + qwen-enrichment + extended categories на каждый блок.
+        Single-block: GPT-5.4 (low) + gemma-enrichment + extended categories на каждый блок.
         Пишет финальный _output/02_blocks_analysis.json напрямую (без block_batches.json и
         без blocks.py merge). Поддерживает cancel через job.status и progress через WS.
         """
         pid = job.project_id
         project_dir = resolve_project_dir(pid)
+        project_info = load_project_info(project_dir)
+        await self._assert_gemma_ready_for_stage(job, project_info, "block_analysis")
+        await self._ensure_stage02_crops(job)
 
         try:
             import sys
             sys.path.insert(0, str(BASE_DIR))
-            from qwen_findings_only import (
+            from gemma_findings_only import (
                 run_findings_only_for_project,
                 check_prerequisites,
                 FindingsOnlyError,
@@ -1377,9 +1797,9 @@ class PipelineManager:
         except ImportError as exc:
             self._update_pipeline_log(
                 pid, "block_analysis", "error",
-                error=f"qwen_findings_only import error: {exc}"
+                error=f"gemma_findings_only import error: {exc}"
             )
-            raise RuntimeError(f"qwen_findings_only модуль не найден: {exc}") from exc
+            raise RuntimeError(f"gemma_findings_only модуль не найден: {exc}") from exc
 
         check = check_prerequisites(project_dir)
         for r in check.get("reasons", []):
@@ -1387,21 +1807,18 @@ class PipelineManager:
         if not check["ok"]:
             self._update_pipeline_log(
                 pid, "block_analysis", "error",
-                error="findings_only_qwen_pair: prerequisites failed (нужен Qwen-enrichment)"
+                error="findings_only_gemma_pair: prerequisites failed (нужен Gemma-enrichment)"
             )
             raise RuntimeError(
-                "Stage 02 (findings_only_qwen_pair): нет Qwen-обогащения. "
-                "Запустите 'Подготовить данные' с Qwen-enrichment."
+                "Stage 02 (findings_only_gemma_pair): нет Gemma-обогащения. "
+                "Запустите 'Подготовить данные' с Gemma-enrichment."
             )
 
-        # Модель берём из UI-конфига Stage 02. В findings_only_qwen_pair поддерживаются:
-        # OpenRouter (GPT-5.4, Gemini Flash/Pro) и Claude CLI subscription (Sonnet/Opus).
+        # Production Stage 02 is fixed to GPT-5.4. Gemma is the previous mandatory
+        # enrichment stage, not a selectable block-analysis model.
         ui_model = get_stage_model("block_batch")
         findings_only_compatible = {
             "openai/gpt-5.4",
-            "google/gemini-3.1-pro-preview",
-            "claude-sonnet-4-6",
-            "claude-opus-4-7",
         }
         if ui_model in findings_only_compatible:
             model = ui_model
@@ -1424,7 +1841,7 @@ class PipelineManager:
 
         await self._log(
             job,
-            f"═══ ЭТАП 02 (findings_only_qwen_pair): {check['with_enrichment']}/{check['blocks_total']} "
+            f"═══ ЭТАП 02 (findings_only_gemma_pair): {check['with_enrichment']}/{check['blocks_total']} "
             f"блоков, model={model}, effort={effort}, parallelism={DEFAULT_PARALLELISM} ═══"
         )
 
@@ -1471,11 +1888,19 @@ class PipelineManager:
                 if job.status == JobStatus.CANCELLED:
                     cancel_event.set()
             elif t == "block_skip":
+                completed = event.get("completed")
+                total = event.get("total")
+                if completed and total:
+                    job.progress_current = completed
+                    asyncio.run_coroutine_threadsafe(
+                        self._progress(job, completed, total),
+                        loop,
+                    )
                 asyncio.run_coroutine_threadsafe(
                     self._log(
                         job,
                         f"  SKIP {event.get('block_id')} p={event.get('page')}: "
-                        f"{event.get('reason')} findings=0",
+                        f"{event.get('reason')} — блок не анализировался полноценно",
                         "warn",
                     ),
                     loop,
@@ -1494,9 +1919,9 @@ class PipelineManager:
         except FindingsOnlyError as e:
             self._update_pipeline_log(
                 pid, "block_analysis", "error",
-                error=f"findings_only_qwen_pair: {e}"
+                error=f"findings_only_gemma_pair: {e}"
             )
-            raise RuntimeError(f"Stage 02 (findings_only_qwen_pair): {e}") from e
+            raise RuntimeError(f"Stage 02 (findings_only_gemma_pair): {e}") from e
 
         summary = result["summary"]
         totals = summary["totals"]
@@ -1504,7 +1929,7 @@ class PipelineManager:
         if summary.get("cancelled"):
             self._update_pipeline_log(
                 pid, "block_analysis", "error",
-                error="findings_only_qwen_pair: отменено пользователем"
+                error="findings_only_gemma_pair: отменено пользователем"
             )
             return
 
@@ -1513,7 +1938,7 @@ class PipelineManager:
                 pid, "block_analysis", "error",
                 error=f"Все {summary['blocks_failed']} блоков упали"
             )
-            raise RuntimeError(f"Stage 02 (findings_only_qwen_pair): все блоки упали")
+            raise RuntimeError(f"Stage 02 (findings_only_gemma_pair): все блоки упали")
 
         msg = (
             f"OK ({summary['blocks_ok']}/{summary['blocks_total']} блоков, "
@@ -1521,18 +1946,46 @@ class PipelineManager:
             f"{totals['findings']} findings, "
             f"~${totals['estimated_cost_usd_total']:.3f})"
         )
+        if summary.get("blocks_skipped_no_enrichment", 0) > 0:
+            msg += f" — {summary['blocks_skipped_no_enrichment']} блоков без Gemma enrichment"
+            await self._log(
+                job,
+                "  ⚠ Непокрытые Gemma enrichment блоки: "
+                + ", ".join(b.get("block_id", "?") for b in summary.get("uncovered_blocks", [])[:20]),
+                "warn",
+            )
         if summary["blocks_failed"] > 0:
             msg += f" — {summary['blocks_failed']} блоков упали"
-            self._update_pipeline_log(pid, "block_analysis", "done", message=msg)
+            self._update_pipeline_log(
+                pid,
+                "block_analysis",
+                "done",
+                message=msg,
+                detail={
+                    "uncovered_blocks": summary.get("uncovered_blocks", []),
+                    "failed_blocks": summary.get("failed_blocks", []),
+                    "task_exceptions": summary.get("task_exceptions", []),
+                },
+            )
             await self._log(job, f"  ⚠ {msg}", "warn")
         else:
-            self._update_pipeline_log(pid, "block_analysis", "done", message=msg)
+            self._update_pipeline_log(
+                pid,
+                "block_analysis",
+                "done",
+                message=msg,
+                detail={
+                    "uncovered_blocks": summary.get("uncovered_blocks", []),
+                    "failed_blocks": summary.get("failed_blocks", []),
+                    "task_exceptions": summary.get("task_exceptions", []),
+                },
+            )
             await self._log(job, f"  ✓ {msg}")
 
         self._record_findings_only_usage(job, summary)
 
     def _record_findings_only_usage(self, job: AuditJob, summary: dict) -> None:
-        """Учесть стоимость stage 02 в режиме findings_only_qwen_pair в usage tracker.
+        """Учесть стоимость stage 02 в режиме findings_only_gemma_pair в usage tracker.
 
         Для OpenRouter-моделей (GPT/Gemini) — реальная плата → cost_usd.
         Для Claude CLI (sonnet/opus, без слэша) — подписка → cost_usd=0, notional=cost.
@@ -1992,18 +2445,171 @@ class PipelineManager:
         """Делегирует в resume_detector.detect_resume_stage()."""
         return _detect_resume_stage(project_id)
 
+    @staticmethod
+    def _normalize_ocr_stage(stage: str) -> str:
+        aliases = {
+            "crop_blocks": "prepare",
+            "blocks_analysis": "block_analysis",
+            "tile_audit": "block_analysis",
+            "findings": "findings_merge",
+            "main_audit": "findings_merge",
+            "norms_verified": "norm_verify",
+        }
+        normalized = aliases.get(stage, stage)
+        valid_stages = {
+            "prepare", "gemma_enrichment", "text_analysis", "block_analysis",
+            "findings_merge", "findings_review", "norm_verify",
+            "optimization", "optimization_review", "excel",
+        }
+        if normalized not in valid_stages:
+            raise RuntimeError(f"Неизвестный этап: {stage}")
+        return normalized
+
+    def _validate_start_from_stage_now(self, project_id: str, stage: str) -> str:
+        """Fail fast when a manual start/retry would bypass mandatory stages."""
+        normalized = self._normalize_ocr_stage(stage)
+        self._assert_stage_model_config_ready()
+        project_dir = resolve_project_dir(project_id)
+        output_dir = project_dir / "_output"
+        project_info = load_project_info(project_dir)
+        gemma_state = evaluate_gemma_enrichment(project_dir, project_info)
+
+        if normalized == "gemma_enrichment":
+            if gemma_state.get("status") in {"missing_md", "missing_blocks"}:
+                raise RuntimeError(gemma_gate_error(gemma_state, "gemma_enrichment"))
+            return normalized
+
+        if normalized in {
+            "text_analysis", "block_analysis", "findings_merge",
+            "findings_review", "norm_verify", "excel",
+        }:
+            if gemma_state.get("status") == "missing_md":
+                raise RuntimeError(gemma_gate_error(gemma_state, normalized))
+            if gemma_state.get("status") == "missing_blocks":
+                raise RuntimeError(gemma_gate_error(gemma_state, normalized))
+
+        # text_analysis may enqueue when Gemma is incomplete: _run_resumed_pipeline()
+        # will run gemma_enrichment first. block_analysis and later stages cannot.
+        if normalized in {
+            "block_analysis", "findings_merge", "findings_review",
+            "norm_verify", "excel",
+        } and not gemma_state.get("ready"):
+            raise RuntimeError(gemma_gate_error(gemma_state, normalized))
+
+        if normalized in {
+            "block_analysis", "findings_merge", "findings_review",
+            "norm_verify", "excel",
+        } and not (output_dir / "01_text_analysis.json").exists():
+            raise RuntimeError(
+                "Нельзя запускать block_analysis: 01_text_analysis.json отсутствует. "
+                "Сначала выполните text_analysis."
+            )
+
+        if normalized in {"findings_merge", "findings_review", "norm_verify", "excel"}:
+            if not (output_dir / "02_blocks_analysis.json").exists():
+                raise RuntimeError(
+                    "Нельзя запускать findings_merge: 02_blocks_analysis.json отсутствует. "
+                    "Сначала выполните block_analysis."
+                )
+
+        if normalized in {"findings_review", "norm_verify", "optimization", "optimization_review", "excel"}:
+            if not (output_dir / "03_findings.json").exists():
+                raise RuntimeError(
+                    "Нельзя запускать этот этап: 03_findings.json отсутствует. "
+                    "Сначала выполните findings_merge."
+                )
+
+        return normalized
+
+    @staticmethod
+    def _assert_stage_model_config_ready() -> None:
+        rejected = validate_current_stage_model_config()
+        if not rejected:
+            return
+        details = "; ".join(f"{stage}: {reason}" for stage, reason in rejected.items())
+        raise RuntimeError(
+            "Некорректная конфигурация моделей этапов. "
+            f"Исправьте Stage Models перед запуском аудита: {details}"
+        )
+
+    async def _ensure_gemma_ready_or_run(
+        self,
+        job: AuditJob,
+        project_info: dict,
+        target_stage: str,
+    ) -> dict:
+        project_dir = resolve_project_dir(job.project_id)
+        state = evaluate_gemma_enrichment(project_dir, project_info)
+        if state.get("ready"):
+            if state.get("status") in {"partial_allowed", "partial"}:
+                self._update_pipeline_log(
+                    job.project_id,
+                    "gemma_enrichment",
+                    "partial",
+                    message=state.get("detail", "Partial Gemma enrichment разрешён"),
+                    detail={
+                        "partial_allowed": True,
+                        "blocks_ok": state.get("blocks_ok", 0),
+                        "blocks_total": state.get("blocks_total", 0),
+                    },
+                )
+                await self._log(job, state.get("detail", "Partial Gemma enrichment разрешён"), "warn")
+            return state
+
+        if state.get("status") in {"missing_md", "missing_blocks"}:
+            raise RuntimeError(gemma_gate_error(state, target_stage))
+
+        await self._log(
+            job,
+            f"{target_stage}: {GEMMA_STAGE_LABEL} не готов — сначала запускаю gemma_enrichment",
+            "warn",
+        )
+        await self._run_gemma_enrichment_stage(job, force=True)
+        state = evaluate_gemma_enrichment(project_dir, project_info)
+        if not state.get("ready"):
+            raise RuntimeError(gemma_gate_error(state, target_stage))
+        return state
+
+    async def _assert_gemma_ready_for_stage(
+        self,
+        job: AuditJob,
+        project_info: dict,
+        target_stage: str,
+    ) -> dict:
+        project_dir = resolve_project_dir(job.project_id)
+        state = evaluate_gemma_enrichment(project_dir, project_info)
+        if not state.get("ready"):
+            raise RuntimeError(gemma_gate_error(state, target_stage))
+        if state.get("status") in {"partial_allowed", "partial"}:
+            self._update_pipeline_log(
+                job.project_id,
+                "gemma_enrichment",
+                "partial",
+                message=state.get("detail", "Partial Gemma enrichment разрешён"),
+                detail={
+                    "partial_allowed": True,
+                    "blocks_ok": state.get("blocks_ok", 0),
+                    "blocks_total": state.get("blocks_total", 0),
+                },
+            )
+            await self._log(job, state.get("detail", "Partial Gemma enrichment разрешён"), "warn")
+        return state
+
+    @staticmethod
+    def _assert_text_analysis_exists(output_dir: Path, target_stage: str) -> None:
+        if not (output_dir / "01_text_analysis.json").exists():
+            raise RuntimeError(
+                f"Нельзя запускать {target_stage}: 01_text_analysis.json отсутствует. "
+                "Сначала выполните text_analysis."
+            )
+
     async def start_from_stage(self, project_id: str, stage: str) -> AuditJob:
         """Запустить конвейер с указанного этапа (ручной перезапуск цепочки).
 
         Кладёт single-task в общую очередь — фактический запуск произойдёт,
         когда worker дойдёт до элемента (см. `_enqueue_single`/`_dispatch_action`).
         """
-        valid_stages = [
-            "prepare", "qwen_enrichment", "text_analysis", "block_analysis",
-            "findings_merge", "findings_review", "norm_verify", "excel",
-        ]
-        if stage not in valid_stages:
-            raise RuntimeError(f"Неизвестный этап: {stage}")
+        stage = self._validate_start_from_stage_now(project_id, stage)
         return await self._enqueue_single(
             project_id, action="retry_stage", retry_stage=stage,
         )
@@ -2016,6 +2622,7 @@ class PipelineManager:
         проект.
         """
         # Быстрая проверка чтобы не пускать в очередь заведомо нечего возобновлять
+        self._assert_stage_model_config_ready()
         resume_info = self.detect_resume_stage(project_id)
         if not resume_info.get("can_resume"):
             raise RuntimeError("Все этапы уже завершены — нечего возобновлять")
@@ -2026,32 +2633,20 @@ class PipelineManager:
         start_time = datetime.now()
         pid = job.project_id
         try:
-            # OCR-пайплайн: этапы в правильном порядке
-            stages = [
-                "prepare",          # 1: blocks.py crop
-                "crop_blocks",      # 1: кроп блоков (alias prepare)
-                "text_analysis",    # 2: Claude анализ текста MD
-                "block_analysis",   # 3-4: генерация пакетов + анализ блоков
-                "tile_audit",       # alias для block_analysis (legacy)
-                "findings_merge",   # 5: свод замечаний
-                "main_audit",       # alias для findings_merge (legacy)
-                "norm_verify",      # 6: верификация норм
-            ]
-
             # Нормализация stage: legacy aliases → OCR stages
-            normalized = start_stage
-            if start_stage == "crop_blocks":
-                normalized = "prepare"
-            elif start_stage in ("tile_audit",):
-                normalized = "block_analysis"
-            elif start_stage == "main_audit":
-                normalized = "findings_merge"
+            normalized = self._normalize_ocr_stage(start_stage)
 
             # Порядок этапов OCR-пайплайна (без дублей)
-            # ВАЖНО: qwen_enrichment встроено внутрь блока start_idx<=0 после crop_blocks
-            # (не отдельный индекс — оно идёт каждый раз когда мы заходим в crop_blocks step).
-            # При resume с text_analysis enrichment пропускается (уже сделан до crop_blocks ошибки).
-            ocr_stages = ["prepare", "text_analysis", "block_analysis", "findings_merge", "findings_review", "norm_verify", "excel"]
+            ocr_stages = [
+                "prepare",
+                "gemma_enrichment",
+                "text_analysis",
+                "block_analysis",
+                "findings_merge",
+                "findings_review",
+                "norm_verify",
+                "excel",
+            ]
             start_idx = ocr_stages.index(normalized) if normalized in ocr_stages else 0
 
             await self._log(
@@ -2066,6 +2661,20 @@ class PipelineManager:
             with open(info_path, "r", encoding="utf-8") as f:
                 project_info = json.load(f)
 
+            if start_idx >= 4:
+                await self._assert_gemma_ready_for_stage(job, project_info, normalized)
+                self._assert_text_analysis_exists(output_dir, normalized)
+                if not (output_dir / "02_blocks_analysis.json").exists():
+                    raise RuntimeError(
+                        f"Нельзя запускать {normalized}: 02_blocks_analysis.json отсутствует. "
+                        "Сначала выполните block_analysis."
+                    )
+            if start_idx >= 5 and not (output_dir / "03_findings.json").exists():
+                raise RuntimeError(
+                    f"Нельзя запускать {normalized}: 03_findings.json отсутствует. "
+                    "Сначала выполните findings_merge."
+                )
+
             # ═══ ЭТАП 1: Кроп image-блоков ═══
             if start_idx <= 0:
                 # Полный перезапуск — бэкап findings перед очисткой
@@ -2074,12 +2683,26 @@ class PipelineManager:
                 self._clean_stage_files(pid, [
                     "01_text_analysis.json", "02_blocks_analysis.json",
                     "03_findings.json", "block_batch_*.json", "block_batches.json",
+                    RUNTIME_BATCHES_FILE, "block_analysis_summary.json",
                 ])
                 job.stage = AuditStage.CROP_BLOCKS
                 self._update_pipeline_log(pid, "crop_blocks", "running")
                 print(f"[{pid}:resume] ═══ ЭТАП 1: Кроп image-блоков ═══")
                 await self._log(job, "═══ ЭТАП 1: Кроп image-блоков из PDF ═══")
-                crop_args = _build_crop_args(_project_path(pid))
+                gemma_crop_policy = gemma_enrichment_crop_policy()
+                project_dir = resolve_project_dir(pid)
+                blocks_index = gemma_blocks_index_path(project_dir)
+                blocks_dir = gemma_blocks_dir(project_dir)
+                force_gemma_crop = (
+                    (blocks_index.exists() and not _existing_crop_matches_policy(blocks_index, gemma_crop_policy))
+                    or (not blocks_index.exists() and blocks_dir.exists() and any(blocks_dir.glob("block_*.png")))
+                )
+                crop_args = _build_crop_args(
+                    _project_path(pid),
+                    force=force_gemma_crop,
+                    policy=gemma_crop_policy,
+                    output_dir_name=GEMMA_BLOCKS_DIRNAME,
+                )
                 exit_code, _, stderr = await self._run_script(
                     pid,
                     str(BLOCKS_SCRIPT),
@@ -2096,8 +2719,10 @@ class PipelineManager:
                     self._update_pipeline_log(pid, "crop_blocks", "error",
                                                error=stderr or f"Exit code: {exit_code}")
                     raise RuntimeError(f"Кроп блоков: {stderr}")
-                crop_mode = {"qwen": "QWEN 300 DPI", "claude": "Claude 100 DPI", "compact": "compact"}[_block_batch_crop_mode()]
-                self._update_pipeline_log(pid, "crop_blocks", "done", message=f"OK ({crop_mode})")
+                self._update_pipeline_log(
+                    pid, "crop_blocks", "done",
+                    message=f"OK (Gemma policy: {_crop_policy_label(gemma_crop_policy)})",
+                )
 
                 # Построить document_graph v2 (Python, без LLM)
                 await self._build_document_graph_v2(job)
@@ -2105,28 +2730,39 @@ class PipelineManager:
                 if job.status == JobStatus.CANCELLED:
                     return
 
-                # ЭТАП 00: Qwen-обогащение MD (всегда выполняется, идемпотентно)
-                await self._run_qwen_enrichment_stage(job)
+            # ═══ ЭТАП 2: Gemma OCR enrichment ═══
+            if start_idx <= 1:
+                if start_idx == 1:
+                    # Перезапуск Gemma меняет входной MD для всех downstream-этапов.
+                    self._backup_findings_before_restart(pid)
+                    self._clean_stage_files(pid, [
+                        "01_text_analysis.json", "02_blocks_analysis.json",
+                        "03_findings.json", "block_batch_*.json", "block_batches.json",
+                        RUNTIME_BATCHES_FILE, "block_analysis_summary.json",
+                    ])
+                await self._run_gemma_enrichment_stage(job, force=start_idx == 1)
 
                 if job.status == JobStatus.CANCELLED:
                     return
 
-            # ═══ ЭТАП 2: Текстовый анализ MD (Claude) ═══
-            if start_idx <= 1:
-                if start_idx == 1:
+            # ═══ ЭТАП 3: Текстовый анализ MD (Claude) ═══
+            if start_idx <= 2:
+                if start_idx == 2:
+                    await self._ensure_gemma_ready_or_run(job, project_info, "text_analysis")
                     # Resume с этого этапа — бэкап findings перед очисткой
                     self._backup_findings_before_restart(pid)
                     # Очистить старые результаты
                     self._clean_stage_files(pid, [
                         "01_text_analysis.json", "02_blocks_analysis.json",
                         "03_findings.json", "block_batch_*.json", "block_batches.json",
+                        RUNTIME_BATCHES_FILE, "block_analysis_summary.json",
                     ])
                 self._reset_job_progress(job)
                 job.stage = AuditStage.TEXT_ANALYSIS
                 job.status = JobStatus.RUNNING
                 self._update_pipeline_log(pid, "text_analysis", "running")
-                print(f"[{pid}:resume] ═══ ЭТАП 2: Текстовый анализ MD ═══")
-                await self._log(job, "═══ ЭТАП 2: Текстовый анализ MD (Claude) ═══")
+                print(f"[{pid}:resume] ═══ ЭТАП 3: Текстовый анализ MD ═══")
+                await self._log(job, "═══ ЭТАП 3: Текстовый анализ MD (Claude) ═══")
                 await self._start_heartbeat(job)
 
                 can_go = await self._check_before_launch(job)
@@ -2156,9 +2792,13 @@ class PipelineManager:
                 if job.status == JobStatus.CANCELLED:
                     return
 
-            # ═══ ЭТАП 3-4: Генерация пакетов + анализ блоков (Claude) ═══
-            if start_idx <= 2 and get_stage_batch_mode("block_batch") == "findings_only_qwen_pair":
-                # Ветвь findings_only_qwen_pair — single-block через GPT-5.4 + qwen-enrichment.
+            # ═══ ЭТАП 4-5: Генерация пакетов + анализ блоков (Claude) ═══
+            if start_idx <= 3:
+                await self._assert_gemma_ready_for_stage(job, project_info, "block_analysis")
+                self._assert_text_analysis_exists(output_dir, "block_analysis")
+
+            if start_idx <= 3 and get_stage_batch_mode("block_batch") == "findings_only_gemma_pair":
+                # Ветвь findings_only_gemma_pair — single-block через GPT-5.4 + gemma-enrichment.
                 # Не использует blocks.py batches/merge — пишет 02_blocks_analysis.json напрямую.
                 await self._run_block_analysis_findings_only(job)
                 if job.status == JobStatus.CANCELLED:
@@ -2166,19 +2806,19 @@ class PipelineManager:
                 self.active_jobs[pid] = job
                 self._tasks[pid] = asyncio.current_task()
                 # Block retry пропускаем: findings-only не помечает unreadable_text=true.
-            elif start_idx <= 2:
-                batch_start_from = resume_info.get("start_from", 1) if start_idx == 2 else 1
+            elif start_idx <= 3:
+                batch_start_from = resume_info.get("start_from", 1) if start_idx == 3 else 1
                 batches_file = output_dir / "block_batches.json"
 
                 # Генерация пакетов (если нет или свежий старт)
-                need_generate = not batches_file.exists() or start_idx < 2
+                need_generate = not batches_file.exists() or start_idx < 3
                 if need_generate:
                     self._reset_job_progress(job)
                     job.stage = AuditStage.CROP_BLOCKS  # reuse для генерации батчей
 
                     gen_args = [_project_path(pid)]
-                    print(f"[{pid}:resume] ═══ ЭТАП 3: Генерация пакетов блоков ═══")
-                    await self._log(job, "═══ ЭТАП 3: Генерация пакетов блоков ═══")
+                    print(f"[{pid}:resume] ═══ ЭТАП 4: Генерация пакетов блоков ═══")
+                    await self._log(job, "═══ ЭТАП 4: Генерация пакетов блоков ═══")
 
                     exit_code, _, stderr = await self._run_script(
                         pid,
@@ -2195,8 +2835,13 @@ class PipelineManager:
                 with open(batches_file, "r", encoding="utf-8") as f:
                     batches_data = json.load(f)
 
-                batches = batches_data.get("batches", [])
-                batches, single_block_mode = _expand_block_batches_for_local_model(batches)
+                runtime_plan = _load_or_create_single_block_runtime_plan(
+                    output_dir,
+                    batches_data.get("batches", []),
+                    force_rebuild=need_generate,
+                )
+                batches = runtime_plan.get("batches", [])
+                single_block_mode = runtime_plan.get("mode") == "single_block"
                 total_batches = len(batches)
 
                 if total_batches == 0:
@@ -2220,16 +2865,21 @@ class PipelineManager:
                         f"═══ ЭТАП 4: Анализ блоков ({mode_label}, x{parallel} параллельно) ═══"
                     )
                     if single_block_mode:
-                        await self._log(job, "Локальный QWEN: stage 02 переведён в single-block режим")
+                        await self._log(
+                            job,
+                            f"Stage 02 runtime plan: {RUNTIME_BATCHES_FILE} "
+                            f"({total_batches} single-block задач)",
+                        )
 
                     semaphore = asyncio.Semaphore(parallel)
                     completed_count = 0
                     error_count = 0
+                    failed_runtime_batches: list[dict] = []
 
                     # Время начала этапа — для фильтрации файлов от старых запусков
                     batch_stage_start = datetime.now().timestamp()
                     # Smart retry: при повторе конкретного этапа сохраняем успешные пакеты
-                    _smart_retry = resume_info.get("is_stage_retry", False) and start_idx == 2
+                    _smart_retry = resume_info.get("is_stage_retry", False) and start_idx == 3
                     if _smart_retry:
                         _existing = sum(
                             1 for b in batches
@@ -2354,6 +3004,11 @@ class PipelineManager:
                             if exit_code != 0 and not claude_runner.is_cancelled(exit_code):
                                 error_count += 1
                                 err_detail = _extract_error_detail(exit_code, output_text or "", max_len=160)
+                                failed_runtime_batches.append(
+                                    _runtime_batch_failure_entry(
+                                        batch, err_detail, reason="single_block_analysis_failed",
+                                    )
+                                )
                                 error_prefix = (
                                     f"Блок {batch_id}/{total_batches}: {single_block_id}"
                                     if single_block_id else
@@ -2371,13 +3026,40 @@ class PipelineManager:
                         tasks.append(asyncio.create_task(_process_batch(batch)))
 
                     if tasks:
-                        await asyncio.gather(*tasks, return_exceptions=True)
+                        gathered = await asyncio.gather(*tasks, return_exceptions=True)
+                        for batch, result in zip(batches, gathered):
+                            if isinstance(result, Exception):
+                                error_count += 1
+                                err_detail = f"{type(result).__name__}: {result}"
+                                failed_runtime_batches.append(
+                                    _runtime_batch_failure_entry(
+                                        batch, err_detail, reason="single_block_task_exception",
+                                    )
+                                )
+                                await self._log(
+                                    job,
+                                    f"Single-block task exception "
+                                    f"{_runtime_batch_failure_entry(batch, err_detail, reason='single_block_task_exception').get('block_id')}: "
+                                    f"{err_detail}",
+                                    "error",
+                                )
+
+                    _write_block_analysis_runtime_summary(
+                        output_dir,
+                        runtime_plan,
+                        failed_batches=failed_runtime_batches,
+                        completed_batches=completed_count,
+                    )
 
                     if error_count > 0:
-                        self._update_pipeline_log(pid, "block_analysis", "error",
-                                                   error=f"{error_count} пакетов с ошибками")
                         if error_count >= total_batches:
+                            self._update_pipeline_log(pid, "block_analysis", "error",
+                                                       error=f"{error_count} single-block задач с ошибками",
+                                                       detail={"failed_blocks": failed_runtime_batches})
                             raise RuntimeError(f"Все пакеты завершились с ошибками")
+                        self._update_pipeline_log(pid, "block_analysis", "partial",
+                                                   message=f"{error_count} single-block задач с ошибками",
+                                                   detail={"failed_blocks": failed_runtime_batches})
                     else:
                         self._update_pipeline_log(pid, "block_analysis", "done",
                                                    message=f"OK ({total_batches} пакетов)")
@@ -2404,7 +3086,15 @@ class PipelineManager:
                 await self._run_block_retry(job, pid, project_info, output_dir)
 
             # ═══ ЭТАП 5: Свод замечаний ═══
-            if start_idx <= 3:
+            if start_idx <= 4:
+                if start_idx == 4:
+                    await self._assert_gemma_ready_for_stage(job, project_info, "findings_merge")
+                    self._assert_text_analysis_exists(output_dir, "findings_merge")
+                    if not (output_dir / "02_blocks_analysis.json").exists():
+                        raise RuntimeError(
+                            "Нельзя запускать findings_merge: 02_blocks_analysis.json отсутствует. "
+                            "Сначала выполните block_analysis."
+                        )
                 self._clean_stage_files(pid, [
                     "03_findings.json", "03_findings_review.json", "03_findings_pre_review.json",
                 ])
@@ -2465,6 +3155,14 @@ class PipelineManager:
 
                 # Восстановление highlight_regions из 02_blocks_analysis
                 self._backfill_highlight_regions(pid)
+                coverage = self._attach_stage02_coverage_to_findings(pid)
+                excluded_count = (coverage.get("summary") or {}).get("excluded_from_full_analysis_count", 0)
+                if excluded_count:
+                    await self._log(
+                        job,
+                        f"В финальный отчёт добавлены блоки вне полноценного анализа: {excluded_count}",
+                        "warn",
+                    )
 
                 # «Размышление модели»: стрим найденных замечаний в live-лог
                 await self._stream_findings_events(job, "merge")
@@ -2476,7 +3174,7 @@ class PipelineManager:
                 self._tasks[pid] = asyncio.current_task()
 
             # ═══ ЭТАПЫ 5.5-6: Параллельный запуск critic + norms (+ optimization) ═══
-            if start_idx < 4:
+            if start_idx < 5:
                 # Полный post-findings: critic + norms + optimization (параллельно)
                 findings_path = resolve_project_dir(pid) / "_output" / "03_findings.json"
                 if findings_path.exists():
@@ -2491,7 +3189,7 @@ class PipelineManager:
                     await self._log(job, "03_findings.json не найден — пропуск верификации", "warn")
 
             # Resume только findings_review (critic+corrector) — без повтора norms/optimization
-            if start_idx == 4:
+            if start_idx == 5:
                 findings_path = resolve_project_dir(pid) / "_output" / "03_findings.json"
                 if findings_path.exists():
                     await self._start_heartbeat(job)
@@ -2517,8 +3215,8 @@ class PipelineManager:
                 else:
                     await self._log(job, "03_findings.json не найден — пропуск review", "warn")
 
-            # Если resume начался с norm_verify (start_idx=5) — запускать только norms
-            if start_idx == 5:
+            # Если resume начался с norm_verify (start_idx=6) — запускать только norms
+            if start_idx == 6:
                 self._clean_stage_files(pid, [
                     "03a_norms_verified.json", "norm_checks.json", "norm_checks_llm.json",
                     "missing_norms_queue.json", "missing_norms_report.json",
@@ -2858,7 +3556,17 @@ class PipelineManager:
 
             # Запуск всех батчей параллельно (семафор ограничивает одновременность)
             tasks = [_process_batch(batch) for batch in batches]
-            await asyncio.gather(*tasks, return_exceptions=True)
+            gathered = await asyncio.gather(*tasks, return_exceptions=True)
+            for batch, result in zip(batches, gathered):
+                if isinstance(result, Exception):
+                    error_count += 1
+                    batch_id = batch.get("batch_id", "?")
+                    await self._log(
+                        job,
+                        f"Пакет {batch_id}/{total}: необработанное исключение task — "
+                        f"{type(result).__name__}: {result}",
+                        "error",
+                    )
 
             # Проверка: если ВСЕ батчи провалились — это FAILED, не COMPLETED
             if error_count >= total:
@@ -3234,7 +3942,15 @@ class PipelineManager:
                 asyncio.create_task(_run_critic_chunk(cidx))
                 for cidx in range(1, num_chunks + 1)
             ]
-            await asyncio.gather(*tasks, return_exceptions=True)
+            gathered = await asyncio.gather(*tasks, return_exceptions=True)
+            for cidx, result in enumerate(gathered, start=1):
+                if isinstance(result, Exception):
+                    await self._log(
+                        job,
+                        f"Critic чанк {cidx}: необработанное исключение task — "
+                        f"{type(result).__name__}: {result}",
+                        "error",
+                    )
 
             if job.status == JobStatus.CANCELLED:
                 return
@@ -3698,6 +4414,15 @@ class PipelineManager:
                 task_name = ["findings_review", "norm_verify", "optimization"][i] if i < 3 else f"task_{i}"
                 await self._log(job, f"Параллельная задача {task_name} упала: {result}", "error")
                 print(f"[{pid}] Parallel task {task_name} exception: {result}")
+
+        coverage = self._attach_stage02_coverage_to_findings(pid)
+        excluded_count = (coverage.get("summary") or {}).get("excluded_from_full_analysis_count", 0)
+        if excluded_count:
+            await self._log(
+                job,
+                f"Финальная coverage-сводка обновлена: {excluded_count} блоков вне полноценного анализа",
+                "warn",
+            )
 
     async def _run_norm_verification(
         self,
@@ -4723,135 +5448,8 @@ class PipelineManager:
         живут в `_dispatch_action`, чтобы не сбрасывать данные на ещё не
         стартовавший проект.
         """
+        self._assert_stage_model_config_ready()
         return await self._enqueue_single(project_id, action="full")
-
-    async def start_flash_pro_triage(
-        self,
-        project_id: str,
-        *,
-        max_pro_cost_usd: float = 8.0,
-        include_simple_findings: bool = False,
-    ) -> AuditJob:
-        """Run explicit stage-02 Flash full + Pro selected single-block triage."""
-        return await self._enqueue_single(
-            project_id,
-            action="flash_pro_triage",
-            extra_params={
-                "max_pro_cost_usd": max_pro_cost_usd,
-                "include_simple_findings": include_simple_findings,
-            },
-        )
-
-    async def _run_flash_pro_triage(
-        self,
-        job: AuditJob,
-        *,
-        max_pro_cost_usd: float,
-        include_simple_findings: bool,
-    ) -> None:
-        pid = job.project_id
-        await self._start_heartbeat(job)
-        try:
-            ok = await self._execute_flash_pro_triage_stage(
-                job,
-                max_pro_cost_usd=max_pro_cost_usd,
-                include_simple_findings=include_simple_findings,
-            )
-            job.status = JobStatus.COMPLETED if ok else JobStatus.FAILED
-        except asyncio.CancelledError:
-            job.status = JobStatus.CANCELLED
-            self._update_pipeline_log(pid, "flash_pro_triage", "error", error="Отменено")
-            self._update_pipeline_log(pid, "block_analysis", "error", error="Отменено")
-            raise
-        except Exception as e:
-            job.status = JobStatus.FAILED
-            job.error_message = str(e)
-            self._update_pipeline_log(pid, "flash_pro_triage", "error", error=str(e))
-            self._update_pipeline_log(pid, "block_analysis", "error", error=str(e))
-            await self._log(job, f"Исключение Flash + Pro Triage: {e}", "error")
-        finally:
-            job.completed_at = datetime.now().isoformat()
-            self._cleanup(pid)
-
-    async def _execute_flash_pro_triage_stage(
-        self,
-        job: AuditJob,
-        *,
-        max_pro_cost_usd: float,
-        include_simple_findings: bool,
-    ) -> bool:
-        """Execute only the stage-02 Flash+Pro triage script and write 02 output."""
-        pid = job.project_id
-        project_dir = resolve_project_dir(pid)
-        script = BASE_DIR / "scripts" / "run_stage02_flash_pro_triage.py"
-
-        args = [
-            "--pdf", project_dir.name,
-            "--project-dir", str(project_dir),
-            "--parallelism-flash", "3",
-            "--parallelism-pro", "2",
-            "--max-pro-cost-usd", str(max_pro_cost_usd),
-            "--write-stage-output",
-        ]
-        if include_simple_findings:
-            args.append("--include-simple-findings")
-
-        self._reset_job_progress(job)
-        job.stage = AuditStage.FLASH_PRO_TRIAGE
-        job.status = JobStatus.RUNNING
-        job.progress_total = 2
-        self._update_pipeline_log(
-            pid,
-            "flash_pro_triage",
-            "running",
-            message="Flash full single-block + Pro selected single-block",
-        )
-        self._update_pipeline_log(
-            pid,
-            "block_analysis",
-            "running",
-            message="Flash + Pro Triage",
-        )
-        await self._log(
-            job,
-            "═══ Stage 02: Flash + Pro Triage ═══\n"
-            "Flash анализирует все блоки single-block; Pro проверяет только выбранные risky/findings блоки.",
-        )
-        await self._progress(job, 0, 2)
-
-        exit_code, stdout, stderr = await self._run_script(
-            pid,
-            str(script),
-            args,
-            on_output=lambda msg: self._log(job, msg),
-            timeout=None,
-        )
-
-        if exit_code != 0:
-            detail = _extract_error_detail(exit_code, "\n".join([stdout, stderr]))
-            self._update_pipeline_log(pid, "flash_pro_triage", "error", error=detail)
-            self._update_pipeline_log(pid, "block_analysis", "error", error=detail)
-            job.error_message = detail
-            await self._log(job, f"Flash + Pro Triage завершился с ошибкой: {detail}", "error")
-            return False
-
-        job.progress_current = 2
-        await self._progress(job, 2, 2)
-        self._record_flash_pro_triage_usage(job, project_dir)
-        self._update_pipeline_log(
-            pid,
-            "flash_pro_triage",
-            "done",
-            message="Flash + Pro Triage complete",
-        )
-        self._update_pipeline_log(
-            pid,
-            "block_analysis",
-            "done",
-            message="02_blocks_analysis.json создан через Flash + Pro Triage",
-        )
-        await self._log(job, "✓ Flash + Pro Triage завершён. 02_blocks_analysis.json обновлён.")
-        return True
 
     # Legacy aliases
     start_standard_audit = start_audit
@@ -4937,8 +5535,16 @@ class PipelineManager:
             if batches_file.exists():
                 with open(batches_file, "r", encoding="utf-8") as f:
                     retry_batches_data = json.load(f)
-                retry_batches = retry_batches_data.get("batches", [])
+                runtime_path = output_dir / RUNTIME_BATCHES_FILE
+                previous_runtime_text = runtime_path.read_text(encoding="utf-8") if runtime_path.exists() else None
+                retry_runtime_plan = _write_single_block_runtime_plan(
+                    output_dir,
+                    retry_batches_data.get("batches", []),
+                    source="expanded_from_block_retry_batches",
+                )
+                retry_batches = retry_runtime_plan.get("batches", [])
                 retry_total = len(retry_batches)
+                retry_failed: list[dict] = []
 
                 for rb in retry_batches:
                     batch_id = rb.get("batch_id", 0)
@@ -4955,7 +5561,24 @@ class PipelineManager:
                     )
                     self._record_cli_usage(job, cli_result, f"block_retry_iter{retry_iter}")
                     if exit_code != 0:
+                        err_detail = _extract_error_detail(exit_code, output or "", max_len=160)
+                        retry_failed.append(
+                            _runtime_batch_failure_entry(
+                                rb, err_detail, reason="block_retry_failed",
+                            )
+                        )
                         await self._log(job, f"Block retry batch {batch_id}: ошибка (код {exit_code})", "warn")
+
+                _write_block_analysis_runtime_summary(
+                    output_dir,
+                    retry_runtime_plan,
+                    failed_batches=retry_failed,
+                    completed_batches=max(0, retry_total - len(retry_failed)),
+                )
+                if previous_runtime_text is not None:
+                    runtime_path.write_text(previous_runtime_text, encoding="utf-8")
+                elif runtime_path.exists():
+                    runtime_path.unlink()
 
             exit_code, _, _ = await self._run_script(
                 pid, str(BLOCKS_SCRIPT),
@@ -4980,11 +5603,11 @@ class PipelineManager:
         OCR-пайплайн: полный аудит всех блоков.
 
         Этапы:
-        1. blocks.py crop → _output/blocks/
-        2. Claude: text_analysis → 01_text_analysis.json
-        3. blocks.py batches → block_batches.json
-        4. Claude: block_batch (параллельно) → block_batch_NNN.json
-        5. blocks.py merge → 02_blocks_analysis.json
+        1. blocks.py crop → _output/blocks_gemma_100/
+        2. Gemma base 100 DPI + optional targeted high-detail 300 DPI
+        3. Claude: text_analysis → 01_text_analysis.json
+        4. Stage 02 crop → _output/blocks_stage02_100/
+        5. findings_only_gemma_pair → 02_blocks_analysis.json
         6. Claude: findings_merge → 03_findings.json
         7. norm_verify
         8. Excel
@@ -4999,25 +5622,23 @@ class PipelineManager:
                 project_info = json.load(f)
 
             # ═══ Проверка MD-файла (обязательный источник текста) ═══
-            md_file = project_info.get("md_file")
-            if not md_file:
-                # Проверим наличие *_document.md в папке проекта
-                project_dir = resolve_project_dir(pid)
-                md_candidates = [
-                    f for f in project_dir.iterdir()
-                    if f.suffix == ".md" and f.name.endswith("_document.md")
-                ]
-                if not md_candidates:
-                    raise RuntimeError(
-                        f"MD-файл не найден для проекта {pid}. "
-                        f"Анализ без MD-файла не поддерживается. "
-                        f"Создайте MD через Chandra OCR и положите в папку проекта."
-                    )
+            project_dir = resolve_project_dir(pid)
+            if find_project_markdown(project_dir, project_info) is None:
+                raise RuntimeError(
+                    f"MD-файл не найден для проекта {pid}. "
+                    f"{GEMMA_STAGE_LABEL} и анализ без MD-файла не поддерживаются. "
+                    f"Создайте MD через Chandra OCR и положите в папку проекта."
+                )
 
             # ═══ ЭТАП 1: Кроп image-блоков ═══
             job.stage = AuditStage.CROP_BLOCKS
-            blocks_index = output_dir / "blocks" / "index.json"
-            needs_recrop = blocks_index.exists() and not _existing_crop_matches_mode(blocks_index)
+            blocks_index = gemma_blocks_index_path(project_dir)
+            gemma_crop_policy = gemma_enrichment_crop_policy()
+            blocks_dir = gemma_blocks_dir(project_dir)
+            needs_recrop = (
+                (blocks_index.exists() and not _existing_crop_matches_policy(blocks_index, gemma_crop_policy))
+                or (not blocks_index.exists() and blocks_dir.exists() and any(blocks_dir.glob("block_*.png")))
+            )
             if blocks_index.exists() and not needs_recrop:
                 # Блоки уже скачаны (pre-crop из очереди) и совместимы с текущим режимом
                 self._update_pipeline_log(pid, "crop_blocks", "done", message="Pre-cropped")
@@ -5028,9 +5649,18 @@ class PipelineManager:
                 print(f"[{pid}] ═══ ЭТАП 1: Кроп image-блоков ═══")
                 await self._log(job, "═══ ЭТАП 1: Кроп image-блоков из PDF ═══")
                 if needs_recrop:
-                    await self._log(job, "Существующий crop не совпадает с режимом block_batch — перекропаем с --force")
+                    await self._log(
+                        job,
+                        "Существующий crop не совпадает с Gemma enrichment policy "
+                        f"({_crop_policy_label(gemma_crop_policy)}) — перекропаем с --force",
+                    )
 
-                crop_args = _build_crop_args(_project_path(pid), force=needs_recrop)
+                crop_args = _build_crop_args(
+                    _project_path(pid),
+                    force=needs_recrop,
+                    policy=gemma_crop_policy,
+                    output_dir_name=GEMMA_BLOCKS_DIRNAME,
+                )
                 exit_code, _, stderr = await self._run_script(
                     pid,
                     str(BLOCKS_SCRIPT),
@@ -5041,9 +5671,11 @@ class PipelineManager:
                     self._update_pipeline_log(pid, "crop_blocks", "error",
                                                error=stderr or f"Exit code: {exit_code}")
                     raise RuntimeError(f"Кроп блоков: {stderr}")
-                crop_mode = {"qwen": "QWEN 300 DPI", "claude": "Claude 100 DPI", "compact": "compact"}[_block_batch_crop_mode()]
-                self._update_pipeline_log(pid, "crop_blocks", "done", message=f"OK ({crop_mode})")
-                print(f"[{pid}] ЭТАП 1 OK (compact)")
+                self._update_pipeline_log(
+                    pid, "crop_blocks", "done",
+                    message=f"OK (Gemma policy: {_crop_policy_label(gemma_crop_policy)})",
+                )
+                print(f"[{pid}] ЭТАП 1 OK (Gemma crop policy)")
 
             # Построить document_graph v2 (Python, без LLM)
             await self._build_document_graph_v2(job)
@@ -5051,22 +5683,20 @@ class PipelineManager:
             if job.status == JobStatus.CANCELLED:
                 return
 
-            # ЭТАП 00: Qwen-обогащение MD (всегда выполняется, идемпотентно)
-            await self._run_qwen_enrichment_stage(job)
+            # ЭТАП 00: Gemma-обогащение MD (всегда выполняется, идемпотентно)
+            await self._run_gemma_enrichment_stage(job)
 
             if job.status == JobStatus.CANCELLED:
                 return
-
-            using_flash_pro_pair = get_stage_model("block_batch") == FLASH_PRO_TRIAGE_MODEL
 
             # ═══ ЭТАП 2: Текстовый анализ MD (Claude) ═══
             files_to_clean = [
                 "01_text_analysis.json",
                 "03_findings.json", "03_findings_review.json", "03_findings_pre_review.json",
-                "block_batch_*.json", "block_batches.json",
+                "block_batch_*.json", "block_batches.json", RUNTIME_BATCHES_FILE,
+                "block_analysis_summary.json",
+                "02_blocks_analysis.json",
             ]
-            if not using_flash_pro_pair:
-                files_to_clean.append("02_blocks_analysis.json")
             self._clean_stage_files(pid, files_to_clean)
             self._reset_job_progress(job)
             job.stage = AuditStage.TEXT_ANALYSIS
@@ -5116,17 +5746,8 @@ class PipelineManager:
             if job.status == JobStatus.CANCELLED:
                 return
 
-            if using_flash_pro_pair:
-                ok = await self._execute_flash_pro_triage_stage(
-                    job,
-                    max_pro_cost_usd=8.0,
-                    include_simple_findings=False,
-                )
-                if not ok:
-                    job.status = JobStatus.FAILED
-                    return
-            elif get_stage_batch_mode("block_batch") == "findings_only_qwen_pair":
-                # findings_only_qwen_pair: single-block GPT-5.4 + qwen-enrichment.
+            if get_stage_batch_mode("block_batch") == "findings_only_gemma_pair":
+                # findings_only_gemma_pair: single-block GPT-5.4 + gemma-enrichment.
                 # Пишет 02_blocks_analysis.json напрямую, без block_batches.json.
                 await self._run_block_analysis_findings_only(job)
                 if job.status == JobStatus.CANCELLED:
@@ -5162,8 +5783,13 @@ class PipelineManager:
                 with open(batches_file, "r", encoding="utf-8") as f:
                     batches_data = json.load(f)
 
-                batches = batches_data.get("batches", [])
-                batches, single_block_mode = _expand_block_batches_for_local_model(batches)
+                runtime_plan = _load_or_create_single_block_runtime_plan(
+                    output_dir,
+                    batches_data.get("batches", []),
+                    force_rebuild=True,
+                )
+                batches = runtime_plan.get("batches", [])
+                single_block_mode = runtime_plan.get("mode") == "single_block"
                 total_batches = len(batches)
 
                 if total_batches == 0:
@@ -5188,11 +5814,16 @@ class PipelineManager:
                         f"═══ ЭТАП 4: Анализ блоков ({mode_label}, x{parallel} параллельно) ═══"
                     )
                     if single_block_mode:
-                        await self._log(job, "Локальный QWEN: stage 02 переведён в single-block режим")
+                        await self._log(
+                            job,
+                            f"Stage 02 runtime plan: {RUNTIME_BATCHES_FILE} "
+                            f"({total_batches} single-block задач)",
+                        )
 
                     semaphore = asyncio.Semaphore(parallel)
                     completed_count = 0
                     error_count = 0
+                    failed_runtime_batches: list[dict] = []
                     # Время начала этапа — для фильтрации файлов от старых запусков
                     block_stage_start = datetime.now().timestamp()
 
@@ -5296,6 +5927,11 @@ class PipelineManager:
                                 else:
                                     error_count += 1
                                     err_detail = _extract_error_detail(exit_code, output_text or "", max_len=160)
+                                    failed_runtime_batches.append(
+                                        _runtime_batch_failure_entry(
+                                            batch, err_detail, reason="single_block_analysis_failed",
+                                        )
+                                    )
                                     await self._log(
                                         job,
                                         (
@@ -5312,7 +5948,30 @@ class PipelineManager:
                             await self._progress(job, completed_count, total_batches)
 
                     tasks = [_process_block_batch(batch) for batch in batches]
-                    await asyncio.gather(*tasks, return_exceptions=True)
+                    gathered = await asyncio.gather(*tasks, return_exceptions=True)
+                    for batch, result in zip(batches, gathered):
+                        if isinstance(result, Exception):
+                            error_count += 1
+                            err_detail = f"{type(result).__name__}: {result}"
+                            failed_runtime_batches.append(
+                                _runtime_batch_failure_entry(
+                                    batch, err_detail, reason="single_block_task_exception",
+                                )
+                            )
+                            await self._log(
+                                job,
+                                f"Single-block task exception "
+                                f"{_runtime_batch_failure_entry(batch, err_detail, reason='single_block_task_exception').get('block_id')}: "
+                                f"{err_detail}",
+                                "error",
+                            )
+
+                    _write_block_analysis_runtime_summary(
+                        output_dir,
+                        runtime_plan,
+                        failed_batches=failed_runtime_batches,
+                        completed_batches=completed_count,
+                    )
 
                     if error_count >= total_batches:
                         job.status = JobStatus.FAILED
@@ -5335,8 +5994,9 @@ class PipelineManager:
                         await self._log(job, f"Ошибка слияния: {stderr}", "error")
 
                     if error_count > 0:
-                        self._update_pipeline_log(pid, "block_analysis", "error",
-                                                   error=f"{error_count} из {total_batches} пакетов с ошибками")
+                        self._update_pipeline_log(pid, "block_analysis", "partial",
+                                                   message=f"{error_count} из {total_batches} single-block задач с ошибками",
+                                                   detail={"failed_blocks": failed_runtime_batches})
                     else:
                         self._update_pipeline_log(pid, "block_analysis", "done",
                                                    message=f"Все {total_batches} пакетов OK")
@@ -5349,16 +6009,7 @@ class PipelineManager:
             self._tasks[pid] = asyncio.current_task()
 
             # ═══ ЭТАП 5b: Block Retry — перекачка нечитаемых блоков ═══
-            if using_flash_pro_pair:
-                self._update_pipeline_log(
-                    pid,
-                    "block_retry",
-                    "skipped",
-                    message="Flash+Pro triage: без recrop/rebuild",
-                )
-                await self._log(job, "Block retry пропущен для Flash+Pro triage (без recrop/rebuild).")
-            else:
-                await self._run_block_retry(job, pid, project_info, output_dir)
+            await self._run_block_retry(job, pid, project_info, output_dir)
 
             if job.status == JobStatus.CANCELLED:
                 return
@@ -5438,6 +6089,14 @@ class PipelineManager:
 
                 # Восстановление highlight_regions из 02_blocks_analysis
                 self._backfill_highlight_regions(pid)
+                coverage = self._attach_stage02_coverage_to_findings(pid)
+                excluded_count = (coverage.get("summary") or {}).get("excluded_from_full_analysis_count", 0)
+                if excluded_count:
+                    await self._log(
+                        job,
+                        f"В финальный отчёт добавлены блоки вне полноценного анализа: {excluded_count}",
+                        "warn",
+                    )
 
                 # «Размышление модели»: стрим найденных замечаний в live-лог
                 await self._stream_findings_events(job, "merge")
@@ -5529,6 +6188,7 @@ class PipelineManager:
             raise RuntimeError("Запуск всех проектов уже выполняется")
         if not project_ids:
             raise RuntimeError("Список проектов пуст")
+        _lmstudio_note_activity(f"pipeline batch queued: {action}")
 
         async with self._enqueue_lock:
             existing_pending = set()
@@ -5571,9 +6231,11 @@ class PipelineManager:
         try:
             proj_dir = resolve_project_dir(pid)
             # Пропустить если блоки уже есть
-            blocks_dir = proj_dir / "_output" / "blocks"
-            index_file = blocks_dir / "index.json"
-            if index_file.exists():
+            blocks_dir = gemma_blocks_dir(proj_dir)
+            index_file = gemma_blocks_index_path(proj_dir)
+            if index_file.exists() and _existing_crop_matches_policy(
+                index_file, gemma_enrichment_crop_policy()
+            ):
                 print(f"[PRE-CROP] {pid}: блоки уже есть, пропуск")
                 return True
             # Пропустить если нет result.json (не OCR-проект)
@@ -5586,7 +6248,11 @@ class PipelineManager:
             )
             exit_code, _, stderr = await run_script(
                 str(BLOCKS_SCRIPT),
-                ["crop", _project_path(pid), "--compact"],
+                _build_crop_args(
+                    _project_path(pid),
+                    policy=gemma_enrichment_crop_policy(),
+                    output_dir_name=GEMMA_BLOCKS_DIRNAME,
+                ),
                 project_id=f"__PRECROP_{pid}__",
             )
             if exit_code == 0:
@@ -5656,6 +6322,12 @@ class PipelineManager:
                     # под локом увидели свежие items — продолжаем цикл
 
                 item = queue.items[idx]
+                if item.status in ("completed", "failed", "skipped", "cancelled"):
+                    idx += 1
+                    continue
+                if item.status == "interrupted":
+                    item.status = "pending"
+
                 if queue.status == "cancelled":
                     item.status = "cancelled"
                     idx += 1
@@ -5807,7 +6479,7 @@ class PipelineManager:
         fresh_actions = {
             "full", "audit", "standard", "pro", "smart",
             "audit+optimization", "standard+optimization", "pro+optimization",
-            "main_audit", "tile_audit", "flash_pro_triage", "prepare",
+            "main_audit", "tile_audit", "prepare",
         }
         if action in fresh_actions and not item.retry_stage:
             try:
@@ -5847,9 +6519,6 @@ class PipelineManager:
                     "optimization_review.json", "optimization_pre_review.json",
                 ])
                 job.stage = AuditStage.OPTIMIZATION
-            elif action == "flash_pro_triage":
-                job.stage = AuditStage.FLASH_PRO_TRIAGE
-                job.progress_total = 2
             elif action == "tile_audit":
                 job.stage = AuditStage.TILE_AUDIT
 
@@ -5857,6 +6526,7 @@ class PipelineManager:
         if item.retry_stage:
             stage_label = {
                 "prepare": "Кроп блоков",
+                "gemma_enrichment": GEMMA_STAGE_LABEL,
                 "text_analysis": "Анализ текста",
                 "block_analysis": "Анализ блоков",
                 "findings_merge": "Свод замечаний",
@@ -5913,13 +6583,6 @@ class PipelineManager:
             return
         if action == "tile_audit":
             await self._run_tile_audit(job, start_from=int(extra.get("start_from", 1)))
-            return
-        if action == "flash_pro_triage":
-            await self._run_flash_pro_triage(
-                job,
-                max_pro_cost_usd=float(extra.get("max_pro_cost_usd", 8.0)),
-                include_simple_findings=bool(extra.get("include_simple_findings", False)),
-            )
             return
         if action == "optimization":
             await self._run_optimization(job)
@@ -6016,7 +6679,17 @@ class PipelineManager:
         запуска одиночного проекта — start_audit/start_smart_audit/... все
         теперь делегируют сюда.
         """
+        _lmstudio_note_activity(f"pipeline job queued: {project_id}/{action}")
         async with self._enqueue_lock:
+            try:
+                from webapp.services.prepare_service import is_prepare_active_or_queued
+                if is_prepare_active_or_queued(project_id):
+                    raise RuntimeError(
+                        f"Проект {project_id} уже выполняется или ожидает в prepare-очереди"
+                    )
+            except ImportError:
+                pass
+
             # Уже бежит прямо сейчас?
             if project_id in self.active_jobs:
                 raise RuntimeError(f"Аудит уже запущен для {project_id}")
@@ -6091,6 +6764,7 @@ class PipelineManager:
         # Маппинг ключей pipeline_summary → внутренних ключей этапов
         stage_map = {
             "crop_blocks": "prepare",
+            "gemma_enrichment": "gemma_enrichment",
             "text_analysis": "text_analysis",
             "block_analysis": "block_analysis",
             "findings_merge": "findings_merge",
@@ -6106,12 +6780,14 @@ class PipelineManager:
             "main_audit": "findings_merge",
         }
         internal_stage = stage_map.get(stage, stage)
+        internal_stage = self._validate_start_from_stage_now(project_id, internal_stage)
 
         await self._enqueue_single(
             project_id, action="retry_stage", retry_stage=internal_stage,
         )
         stage_label = {
-            "prepare": "Кроп блоков", "text_analysis": "Анализ текста",
+            "prepare": "Кроп блоков", "gemma_enrichment": GEMMA_STAGE_LABEL,
+            "text_analysis": "Анализ текста",
             "block_analysis": "Анализ блоков", "findings_merge": "Свод замечаний",
             "findings_review": "Critic замечаний", "norm_verify": "Верификация норм",
             "optimization": "Оптимизация", "optimization_review": "Проверка оптимизации",
@@ -6213,6 +6889,7 @@ class PipelineManager:
             data={
                 "queue_id": queue.queue_id,
                 "action": queue.action,
+                "status": queue.status,
                 "current_index": queue.current_index,
                 "total": queue.total,
                 "completed": queue.completed,
@@ -6596,3 +7273,4 @@ class PipelineManager:
 
 # Глобальный экземпляр
 pipeline_manager = PipelineManager()
+_register_lmstudio_idle_probe("pipeline_queue", pipeline_manager.is_idle)

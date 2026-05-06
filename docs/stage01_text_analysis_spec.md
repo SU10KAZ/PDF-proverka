@@ -1,14 +1,15 @@
 # Spec: Stage 01 — Анализ текста MD-файла
 
-**Тип документа:** reverse-spec (фиксирует текущее поведение, не желаемое).
-**Дата фиксации:** 2026-04-26.
+**Тип документа:** architecture spec.
+**Дата обновления:** 2026-04-30.
 **Источник истины:** код в `webapp/services/` + промпт-шаблон.
 
 ---
 
 ## 1. Назначение
 
-Извлечь из текстовой части проекта (MD после Chandra OCR, либо `extracted_text` из `document_graph.json`):
+Извлечь из текстовой части проекта. Источник один: Markdown PDF representation
+из `project_info.md_file`.
 
 1. Параметры проекта (`project_params`) — нагрузки, оборудование, площади.
 2. Перечень нормативных ссылок (`normative_refs_found`) с предварительным статусом.
@@ -22,16 +23,16 @@
 
 | Источник | Путь | Обязательность |
 |----------|------|----------------|
-| MD-файл (Chandra OCR) | `projects/<id>/<md_file>` (имя из `project_info.md_file`) | Первичный |
-| `document_graph.json` | `projects/<id>/_output/document_graph.json` | Fallback (`extracted_text`) |
+| MD-файл (Chandra OCR) | `projects/<id>/<md_file>` (имя из `project_info.md_file`) | Обязательный |
+| `document_graph.json` | `projects/<id>/_output/document_graph.json` | Контекст страниц/блоков, не текстовый fallback |
 | Профиль дисциплины | `disciplines/<CODE>/role.md`, `checklist.md`, `norms_reference.md` | Подставляется в шаблон |
 | `project_info.json` | `projects/<id>/project_info.json` | Метаданные (`project_id`, `section`, `md_file`) |
 | Override промпта | `projects/<id>/_output/prompts/text_analysis.md` | Опциональный (если есть — заменяет шаблон) |
 
-**Резолвер источника** ([prompt_builder.py:308-338](webapp/services/prompt_builder.py#L308-L338)):
+**Резолвер источника** (`webapp/services/prompt_builder.py`):
 1. Если `project_info.md_file` указан и файл существует → `text_source = "md"`.
-2. Иначе если в `document_graph.json` есть текст → `text_source = "extracted_text"`.
-3. Иначе → пустой источник, JSON с пустыми массивами.
+2. Если Markdown отсутствует или не читается → hard error.
+3. `document_graph.extracted_text` и `extracted_text.txt` не используются как fallback.
 
 ---
 
@@ -46,7 +47,7 @@
 {
   "stage": "01_text_analysis",
   "project_id": "<id>",
-  "text_source": "md" | "extracted_text",
+  "text_source": "md",
   "timestamp": "<ISO 8601>",
   "project_params": { /* свободная схема, дисциплино-зависимая */ },
   "normative_refs_found": [
@@ -99,7 +100,7 @@
 - Логируется в audit_trail с моделью и `duration_ms` (токены = 0, не считаются для CLI-ветки).
 
 **Ветка Б — OpenRouter / локальный LLM** (`build_text_analysis_messages` в [prompt_builder.py:483](webapp/services/prompt_builder.py#L483)):
-- `system` = шаблон + норматив-база inline (для не-локальных моделей; для локального QWEN база не вкладывается, чтобы не раздувать промпт — verify будет на stage 04).
+- `system` = шаблон + норматив-база inline (для не-локальных моделей; для локального GEMMA база не вкладывается, чтобы не раздувать промпт — verify будет на stage 04).
 - `user` = `text_source` маркер + полный текст MD.
 - Таймаут: `1800 сек` (хардкод в `run_llm`).
 - Парсинг JSON из ответа → запись файла Python-кодом.
@@ -138,13 +139,13 @@
 
 | Ситуация | Поведение |
 |----------|-----------|
-| MD-файл отсутствует | Fallback на `extracted_text` из `document_graph.json` (text_source меняется на `"extracted_text"`). |
-| Нет ни MD, ни текста в графе | Возвращается JSON с пустыми массивами и текстовым маркером в `user_prefix`. |
+| MD-файл отсутствует | Hard error: Stage 01 не стартует без Markdown. |
+| `document_graph.json` содержит текст | Игнорируется как источник Stage 01; используется только как граф документа/страниц. |
 | Override промпта в `_output/prompts/text_analysis.md` | Используется как есть, дисциплинарные подстановки **не применяются**. |
 | Claude CLI вернул не-0 exit_code | Файл может быть записан или нет — статус определяется по наличию `01_text_analysis.json` (не по exit_code). |
 | LLM вернул не-JSON / битый JSON | Файл не записывается, `result.is_error = True`, статус остаётся `pending`/`failed`. Авто-репейр (как для `findings_merge`) **не применяется**. |
 | Норма-база дисциплины (`norms_reference.md`) отсутствует | Шаблон содержит плейсхолдер «Stage 04 will verify normative references separately» вместо инлайна. |
-| Локальный LLM (QWEN) | Норматив-база НЕ вкладывается в system prompt (экономия контекста); проверка норм откладывается на stage 04. |
+| Локальный LLM (GEMMA) | Норматив-база НЕ вкладывается в system prompt (экономия контекста); проверка норм откладывается на stage 04. |
 
 ---
 

@@ -62,6 +62,8 @@ async def lifespan(app: FastAPI):
     pipeline_manager.cleanup_zombies()
     pipeline_manager._recover_stale_pipelines()
     pipeline_manager.load_persisted_queue()
+    from webapp.services.prepare_service import load_persisted_queue as load_prepare_queue
+    load_prepare_queue()
     yield
     # Shutdown: ничего особого
 
