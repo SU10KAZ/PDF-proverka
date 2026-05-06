@@ -1,0 +1,1024 @@
+overrides:
+  СП 7.13130.2013:
+    doc_status: unknown
+    edition_status: unknown
+    details: Код присутствует в реальных findings и встречается как цитата в vault,
+      но MD-файла нет. Статус (active/replaced/cancelled) требует ручной проверки
+      по доверенному offline-источнику перед тем, как его менять.
+    last_verified: '2026-04-17'
+  СНиП 3.05.01-85:
+    doc_status: unknown
+    edition_status: unknown
+    details: Код присутствует в реальных findings и встречается как цитата в vault,
+      но MD-файла нет. Замена на современный СП вероятна, но конкретный replacement_doc
+      без доверенного offline-источника выставлять нельзя. Human должен обновить.
+    last_verified: '2026-04-17'
+  ВСН 353-75:
+    doc_status: replaced
+    replacement_doc: ВСН 353-86
+    details: Извлечено из преамбулы ВСН 353-86_ Проектирование и применение воздуховодов
+      из уни_document.md (строка 46, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ВСН 59-88:
+    doc_status: replaced
+    replacement_doc: СП 31-110-2003
+    details: Извлечено из преамбулы СП 31-110-2003_ Свод правил по проектированию
+      и строительст_document.md (строка 71, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 10434-76:
+    doc_status: replaced
+    replacement_doc: ГОСТ 10434-82
+    details: Извлечено из преамбулы ГОСТ 10434-82_ Государственный стандарт Союза
+      ССР_ Соединен_document.md (строка 92, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 10704-76:
+    doc_status: replaced
+    replacement_doc: ГОСТ 10704-91
+    details: Извлечено из преамбулы ГОСТ 10704-91_ Межгосударственный стандарт_ Трубы
+      стальные_document.md (строка 78, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 10884-94:
+    doc_status: replaced
+    replacement_doc: ГОСТ 34028-2016
+    details: Извлечено из преамбулы ГОСТ 34028-2016_ Межгосударственный стандарт_
+      Прокат армату_document.md (строка 79, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 12248-2010:
+    doc_status: replaced
+    replacement_doc: ГОСТ 12248_1-2020
+    details: Извлечено из преамбулы ГОСТ 12248_1-2020_ Межгосударственный стандарт_
+      Грунты_ Опр_document.md (строка 125, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 12815-80:
+    doc_status: replaced
+    replacement_doc: ГОСТ 33259-2015
+    details: Извлечено из преамбулы ГОСТ 33259-2015_ Межгосударственный стандарт_
+      Фланцы армату_document.md (строка 96, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 12816-80:
+    doc_status: replaced
+    replacement_doc: ГОСТ 33259-2015
+    details: Извлечено из преамбулы ГОСТ 33259-2015_ Межгосударственный стандарт_
+      Фланцы армату_document.md (строка 96, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 12817-80:
+    doc_status: replaced
+    replacement_doc: ГОСТ 33259-2015
+    details: Извлечено из преамбулы ГОСТ 33259-2015_ Межгосударственный стандарт_
+      Фланцы армату_document.md (строка 96, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 12818-80:
+    doc_status: replaced
+    replacement_doc: ГОСТ 33259-2015
+    details: Извлечено из преамбулы ГОСТ 33259-2015_ Межгосударственный стандарт_
+      Фланцы армату_document.md (строка 96, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 12819-80:
+    doc_status: replaced
+    replacement_doc: ГОСТ 33259-2015
+    details: Извлечено из преамбулы ГОСТ 33259-2015_ Межгосударственный стандарт_
+      Фланцы армату_document.md (строка 96, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 12820-80:
+    doc_status: replaced
+    replacement_doc: ГОСТ 33259-2015
+    details: Извлечено из преамбулы ГОСТ 33259-2015_ Межгосударственный стандарт_
+      Фланцы армату_document.md (строка 96, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 12821-80:
+    doc_status: replaced
+    replacement_doc: ГОСТ 33259-2015
+    details: Извлечено из преамбулы ГОСТ 33259-2015_ Межгосударственный стандарт_
+      Фланцы армату_document.md (строка 96, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 12822-80:
+    doc_status: replaced
+    replacement_doc: ГОСТ 33259-2015
+    details: Извлечено из преамбулы ГОСТ 33259-2015_ Межгосударственный стандарт_
+      Фланцы армату_document.md (строка 96, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 13385-67:
+    doc_status: replaced
+    replacement_doc: ГОСТ 13385-78
+    details: Извлечено из преамбулы ГОСТ 13385-78_ Государственный стандарт Союза
+      ССР_ Обувь сп_document.md (строка 96, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 14918-80:
+    doc_status: replaced
+    replacement_doc: ГОСТ 14918-2020
+    details: Извлечено из преамбулы ГОСТ 14918-2020_ Межгосударственный стандарт_
+      Прокат листов_document.md (строка 161, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 15836-70:
+    doc_status: replaced
+    replacement_doc: ГОСТ 15836-79
+    details: Извлечено из преамбулы ГОСТ 15836-79_ Мастика битумно-резиновая изоляционная_
+      Техн_document.md (строка 66, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 19917-93:
+    doc_status: replaced
+    replacement_doc: ГОСТ 19917-2014
+    details: Извлечено из преамбулы ГОСТ 19917-2014_ Межгосударственный стандарт_
+      Мебель для си_document.md (строка 111, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 2.701-84:
+    doc_status: replaced
+    replacement_doc: ГОСТ 2_701-2008
+    details: Извлечено из преамбулы ГОСТ 2_701-2008_ Межгосударственный стандарт_
+      Единая систем_document.md (строка 77, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 20522-96:
+    doc_status: replaced
+    replacement_doc: ГОСТ 20522-2012
+    details: Извлечено из преамбулы ГОСТ 20522-2012_ Межгосударственный стандарт_
+      Грунты_ Метод_document.md (строка 77, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 21.110-95:
+    doc_status: replaced
+    replacement_doc: ГОСТ 21_110-2013
+    details: Извлечено из преамбулы ГОСТ 21_110-2013_ Межгосударственный стандарт_
+      Система прое_document.md (строка 74, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 21.205-93:
+    doc_status: replaced
+    replacement_doc: ГОСТ 21_205-2016
+    details: Извлечено из преамбулы ГОСТ 21_205-2016_ Межгосударственный стандарт_
+      Система прое_document.md (строка 76, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 21.404-85:
+    doc_status: replaced
+    replacement_doc: ГОСТ 21_208-2013
+    details: Извлечено из преамбулы ГОСТ 21_208-2013_ Межгосударственный стандарт_
+      Система прое_document.md (строка 90, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 21.501-93:
+    doc_status: replaced
+    replacement_doc: ГОСТ 21_201-2011
+    details: Извлечено из преамбулы ГОСТ 21_201-2011_ Межгосударственный стандарт_
+      Система прое_document.md (строка 128, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 21.605-82:
+    doc_status: replaced
+    replacement_doc: ГОСТ 21_705-2016
+    details: Извлечено из преамбулы ГОСТ 21_705-2016_ Межгосударственный стандарт_
+      Система прое_document.md (строка 114, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 21345-78:
+    doc_status: replaced
+    replacement_doc: ГОСТ 21345-2005
+    details: Извлечено из преамбулы ГОСТ 21345-2005_ Межгосударственный стандарт_
+      Краны шаровые_document.md (строка 110, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 21519-2003:
+    doc_status: replaced
+    replacement_doc: ГОСТ 21519-2022
+    details: Извлечено из преамбулы ГОСТ 21519-2022_ Межгосударственный стандарт_
+      Блоки оконные_document.md (строка 99, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 22483-2012:
+    doc_status: replaced
+    replacement_doc: ГОСТ 22483-2021
+    details: Извлечено из преамбулы ГОСТ 22483-2021 (IEC 60228 2004)_ Межгосударственный
+      станда_document.md (строка 83, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 22690-88:
+    doc_status: replaced
+    replacement_doc: ГОСТ 22690-2015
+    details: Извлечено из преамбулы ГОСТ 22690-2015_ Межгосударственный стандарт_
+      Бетоны_ Опред_document.md (строка 91, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 22845-85:
+    doc_status: replaced
+    replacement_doc: ГОСТ 22845-2018
+    details: Извлечено из преамбулы ГОСТ 22845-2018_ Межгосударственный стандарт_
+      Лифты_ Лифты_document.md (строка 76, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 23166-2021:
+    doc_status: replaced
+    replacement_doc: ГОСТ 23166-2024
+    details: Извлечено из преамбулы ГОСТ 23166-2024_ Межгосударственный стандарт_
+      Блоки оконные_document.md (строка 79, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 23279-85:
+    doc_status: replaced
+    replacement_doc: ГОСТ 23279-2012
+    details: Извлечено из преамбулы ГОСТ 23279-2012_ Межгосударственный стандарт_
+      Сетки арматур_document.md (строка 73, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 23668-79:
+    doc_status: replaced
+    replacement_doc: ГОСТ 32018-2012
+    details: Извлечено из преамбулы ГОСТ 32018-2012_ Межгосударственный стандарт_
+      Изделия строи_document.md (строка 125, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 24045-94:
+    doc_status: replaced
+    replacement_doc: ГОСТ 24045-2010
+    details: Извлечено из преамбулы ГОСТ 24045-2010_ Межгосударственный стандарт_
+      Профили сталь_document.md (строка 72, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 24210-80:
+    doc_status: replaced
+    replacement_doc: ГОСТ 27296-2012
+    details: Извлечено из преамбулы ГОСТ 27296-2012_ Межгосударственный стандарт_
+      Здания и соор_document.md (строка 103, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 24767-81:
+    doc_status: replaced
+    replacement_doc: ГОСТ 24767-2018
+    details: Извлечено из преамбулы ГОСТ 24767-2018_ Межгосударственный стандарт_
+      Профили холод_document.md (строка 102, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 24839-81:
+    doc_status: replaced
+    replacement_doc: ГОСТ 24839-2012
+    details: Извлечено из преамбулы ГОСТ 24839-2012_ Межгосударственный стандарт_
+      Конструкции с_document.md (строка 99, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 24866-99:
+    doc_status: replaced
+    replacement_doc: ГОСТ 24866-2014
+    details: Извлечено из преамбулы ГОСТ 24866-2014_ Межгосударственный стандарт_
+      Стеклопакеты_document.md (строка 117, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 25100-2011:
+    doc_status: replaced
+    replacement_doc: ГОСТ 25100-2020
+    details: Извлечено из преамбулы ГОСТ 25100-2020_ Межгосударственный стандарт_
+      Грунты_ Класс_document.md (строка 95, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 25129-82:
+    doc_status: replaced
+    replacement_doc: ГОСТ 25129-2020
+    details: Извлечено из преамбулы ГОСТ 25129-2020_ Межгосударственный стандарт_
+      Грунтовка ГФ-_document.md (строка 93, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 25607-94:
+    doc_status: replaced
+    replacement_doc: ГОСТ 25607-2009
+    details: Извлечено из преамбулы ГОСТ 25607-2009_ Межгосударственный стандарт_
+      Смеси щебеноч_document.md (строка 102, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 25621-83:
+    doc_status: replaced
+    replacement_doc: ГОСТ 25621-2023
+    details: Извлечено из преамбулы ГОСТ 25621-2023_ Межгосударственный стандарт_
+      Материалы и и_document.md (строка 71, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 25772-2021:
+    doc_status: replaced
+    replacement_doc: ГОСТ 25772-2025
+    details: Извлечено из преамбулы ГОСТ 25772-2025_ Межгосударственный стандарт_
+      Ограждения ме_document.md (строка 92, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 26633-2012:
+    doc_status: replaced
+    replacement_doc: ГОСТ 26633-2015
+    details: Извлечено из преамбулы ГОСТ 26633-2015_ Межгосударственный стандарт_
+      Бетоны тяжелы_document.md (строка 77, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 27296-87:
+    doc_status: replaced
+    replacement_doc: ГОСТ 27296-2012
+    details: Извлечено из преамбулы ГОСТ 27296-2012_ Межгосударственный стандарт_
+      Здания и соор_document.md (строка 103, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 27772-88:
+    doc_status: replaced
+    replacement_doc: ГОСТ 27772-2015
+    details: Извлечено из преамбулы ГОСТ 27772-2015_ Межгосударственный стандарт_
+      Прокат для ст_document.md (строка 114, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 30403-96:
+    doc_status: replaced
+    replacement_doc: ГОСТ 30403-2012
+    details: Извлечено из преамбулы ГОСТ 30403-2012_ Межгосударственный стандарт_
+      Конструкции с_document.md (строка 77, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 30494-96:
+    doc_status: replaced
+    replacement_doc: ГОСТ 30494-2011
+    details: Извлечено из преамбулы ГОСТ 30494-2011_ Межгосударственный стандарт_
+      Здания жилые_document.md (строка 84, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 30674-99:
+    doc_status: replaced
+    replacement_doc: ГОСТ 30674-2023
+    details: Извлечено из преамбулы ГОСТ 30674-2023_ Межгосударственный стандарт_
+      Блоки оконные_document.md (строка 72, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 30698-2000:
+    doc_status: replaced
+    replacement_doc: ГОСТ 30698-2014
+    details: Извлечено из преамбулы ГОСТ 30698-2014_ Межгосударственный стандарт_
+      Стекло закале_document.md (строка 126, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 30732-2006:
+    doc_status: replaced
+    replacement_doc: ГОСТ 30732-2020
+    details: Извлечено из преамбулы ГОСТ 30732-2020_ Межгосударственный стандарт_
+      Трубы и фасон_document.md (строка 84, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 30826-2001:
+    doc_status: replaced
+    replacement_doc: ГОСТ 30826-2014
+    details: Извлечено из преамбулы ГОСТ 30826-2014_ Межгосударственный стандарт_
+      Стекло многос_document.md (строка 100, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 30970-2014:
+    doc_status: replaced
+    replacement_doc: ГОСТ 30970-2023
+    details: Извлечено из преамбулы ГОСТ 30970-2023_ Межгосударственный стандарт_
+      Блоки дверные_document.md (строка 74, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 30971-2002:
+    doc_status: replaced
+    replacement_doc: ГОСТ 30971-2012
+    details: Извлечено из преамбулы ГОСТ 30971-2012_ Межгосударственный стандарт_
+      Швы монтажные_document.md (строка 72, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 31168-2003:
+    doc_status: replaced
+    replacement_doc: ГОСТ 31168-2014
+    details: Извлечено из преамбулы ГОСТ 31168-2014_ Межгосударственный стандарт_
+      Здания жилые__document.md (строка 77, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 31173-2003:
+    doc_status: replaced
+    replacement_doc: ГОСТ 31173-2016
+    details: Извлечено из преамбулы ГОСТ 31173-2016_ Межгосударственный стандарт_
+      Блоки дверные_document.md (строка 95, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 31251-2003:
+    doc_status: replaced
+    replacement_doc: ГОСТ 31251-2008
+    details: Извлечено из преамбулы ГОСТ 31251-2008_ Межгосударственный стандарт_
+      Стены наружны_document.md (строка 103, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 31937-2011:
+    doc_status: replaced
+    replacement_doc: ГОСТ 31937-2024
+    details: Извлечено из преамбулы ГОСТ 31937-2024_ Межгосударственный стандарт_
+      Здания и соор_document.md (строка 78, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 32310-2012:
+    doc_status: replaced
+    replacement_doc: ГОСТ 32310-2020
+    details: Извлечено из преамбулы ГОСТ 32310-2020 (EN 13164+A_1 2015)_ Межгосударственный
+      ста_document.md (строка 114, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 32395-2013:
+    doc_status: replaced
+    replacement_doc: ГОСТ 32395-2020
+    details: Извлечено из преамбулы ГОСТ 32395-2020_ Межгосударственный стандарт_
+      Щитки распред_document.md (строка 73, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 32396-2013:
+    doc_status: replaced
+    replacement_doc: ГОСТ 32396-2021
+    details: Извлечено из преамбулы ГОСТ 32396-2021_ Межгосударственный стандарт_
+      Устройства вв_document.md (строка 98, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 3262-62:
+    doc_status: replaced
+    replacement_doc: ГОСТ 3262-75
+    details: Извлечено из преамбулы ГОСТ 3262-75_ Государственный стандарт Союза ССР_
+      Трубы ста_document.md (строка 100, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 3282-46:
+    doc_status: replaced
+    replacement_doc: ГОСТ 3282-74
+    details: Извлечено из преамбулы ГОСТ 3282-74_ Государственный стандарт Союза ССР_
+      Проволока_document.md (строка 94, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 33652-2015:
+    doc_status: replaced
+    replacement_doc: ГОСТ 33652-2019
+    details: Извлечено из преамбулы ГОСТ 33652-2019 (EN 81-70 2018)_ Межгосударственный
+      стандар_document.md (строка 130, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 33984.1-2016:
+    doc_status: replaced
+    replacement_doc: ГОСТ 33984_1-2023
+    details: Извлечено из преамбулы ГОСТ 33984_1-2023_ Межгосударственный стандарт_
+      Лифты_ Лифт_document.md (строка 85, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 3886-47:
+    doc_status: replaced
+    replacement_doc: ГОСТ 4028-63
+    details: Извлечено из преамбулы ГОСТ 4028-63_ Государственный стандарт Союза ССР_
+      Гвозди ст_document.md (строка 86, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 3887-47:
+    doc_status: replaced
+    replacement_doc: ГОСТ 4028-63
+    details: Извлечено из преамбулы ГОСТ 4028-63_ Государственный стандарт Союза ССР_
+      Гвозди ст_document.md (строка 86, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 481-71:
+    doc_status: replaced
+    replacement_doc: ГОСТ 481-80
+    details: Извлечено из преамбулы ГОСТ 481-80_ Государственный стандарт Союза ССР_
+      Паронит и_document.md (строка 97, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 5.1459-72:
+    doc_status: replaced
+    replacement_doc: ГОСТ 5781-82
+    details: Извлечено из преамбулы ГОСТ 5781-82_ Межгосударственный стандарт_ Сталь
+      горячеката_document.md (строка 90, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 5336-67:
+    doc_status: replaced
+    replacement_doc: ГОСТ 5336-80
+    details: Извлечено из преамбулы ГОСТ 5336-80_ Сетки стальные одинарные_ Технические
+      условия_document.md (строка 91, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 6666-81:
+    doc_status: replaced
+    replacement_doc: ГОСТ 32018-2012
+    details: Извлечено из преамбулы ГОСТ 32018-2012_ Межгосударственный стандарт_
+      Изделия строи_document.md (строка 125, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 6942.0-80:
+    doc_status: replaced
+    replacement_doc: ГОСТ 6942-98
+    details: Извлечено из преамбулы ГОСТ 6942-98_ Трубы чугунные канализационные и
+      фасонные час_document.md (строка 85, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 6942.24-80:
+    doc_status: replaced
+    replacement_doc: ГОСТ 6942-98
+    details: Извлечено из преамбулы ГОСТ 6942-98_ Трубы чугунные канализационные и
+      фасонные час_document.md (строка 85, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 8734-58:
+    doc_status: replaced
+    replacement_doc: ГОСТ 8734-75
+    details: Извлечено из преамбулы ГОСТ 8734-75 _ Государственный стандарт Союза
+      ССР_ Трубы ст_document.md (строка 57, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 9.402-80:
+    doc_status: replaced
+    replacement_doc: ГОСТ 9_402-2004
+    details: Извлечено из преамбулы ГОСТ 9_402-2004_ Межгосударственный стандарт_
+      Единая систем_document.md (строка 75, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 9389-60:
+    doc_status: replaced
+    replacement_doc: ГОСТ 9389-75
+    details: Извлечено из преамбулы ГОСТ 9389-75_ Проволока стальная углеродистая
+      пружинная_ Те_document.md (строка 104, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 9467-60:
+    doc_status: replaced
+    replacement_doc: ГОСТ 9467-75
+    details: Извлечено из преамбулы ГОСТ 9467-75 _ Государственный стандарт Союза
+      ССР_ Электрод_document.md (строка 54, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ Р 21.1101-2013:
+    doc_status: replaced
+    replacement_doc: ГОСТ Р 21_101-2020
+    details: Извлечено из преамбулы ГОСТ Р 21_101-2020_ Национальный стандарт Российской
+      Федера_document.md (строка 55, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ Р 50462-92:
+    doc_status: replaced
+    replacement_doc: ГОСТ Р 50462-2009
+    details: Извлечено из преамбулы ГОСТ Р 50462-2009 (МЭК 60446 2007)_ Национальный
+      стандарт Р_document.md (строка 79, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ Р 50571.5.54-2013:
+    doc_status: replaced
+    replacement_doc: ГОСТ Р 50571.5.54-2024
+    details: Извлечено из преамбулы ГОСТ Р 50571_5_54-2024 (МЭК 60364-5-54 2021)_
+      Национальный_document.md (строка 56, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ Р 51163-98:
+    doc_status: replaced
+    replacement_doc: ГОСТ Р 9_316-2006
+    details: Извлечено из преамбулы ГОСТ Р 9_316-2006_ Национальный стандарт Российской
+      Федерац_document.md (строка 49, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ Р 51241-98:
+    doc_status: replaced
+    replacement_doc: ГОСТ Р 51241-2008
+    details: Извлечено из преамбулы ГОСТ Р 51241-2008_ Национальный стандарт Российской
+      Федерац_document.md (строка 65, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ Р 51256-2011:
+    doc_status: replaced
+    replacement_doc: ГОСТ Р 51256-2018
+    details: Извлечено из преамбулы ГОСТ Р 51256-2018_ Национальный стандарт Российской
+      Федерац_document.md (строка 59, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ Р 51558-2008:
+    doc_status: replaced
+    replacement_doc: ГОСТ Р 51558-2014
+    details: Извлечено из преамбулы ГОСТ Р 51558-2014_ Национальный стандарт Российской
+      Федерац_document.md (строка 67, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ Р 51829-2001:
+    doc_status: replaced
+    replacement_doc: ГОСТ Р 51829-2022
+    details: Извлечено из преамбулы ГОСТ Р 51829-2022_ Национальный стандарт Российской
+      Федерац_document.md (строка 56, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ Р 52131-2003:
+    doc_status: replaced
+    replacement_doc: ГОСТ Р 52131-2019
+    details: Извлечено из преамбулы ГОСТ Р 52131-2019_ Национальный стандарт Российской
+      Федерац_document.md (строка 54, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ Р 52289-2004:
+    doc_status: replaced
+    replacement_doc: ГОСТ Р 52289-2019
+    details: Извлечено из преамбулы ГОСТ Р 52289-2019_ Национальный стандарт Российской
+      Федерац_document.md (строка 62, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ Р 53325-2009:
+    doc_status: replaced
+    replacement_doc: ГОСТ Р 53325-2012
+    details: Извлечено из преамбулы ГОСТ Р 53325-2012_ Национальный стандарт Российской
+      Федерац_document.md (строка 84, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ Р 53780-2010:
+    doc_status: replaced
+    replacement_doc: ГОСТ Р 56943-2016
+    details: Извлечено из преамбулы ГОСТ Р 56943-2016_ Национальный стандарт Российской
+      Федерац_document.md (строка 57, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ Р 55964-2014:
+    doc_status: replaced
+    replacement_doc: ГОСТ Р 55964-2022
+    details: Извлечено из преамбулы ГОСТ Р 55964-2022_ Национальный стандарт Российской
+      Федерац_document.md (строка 53, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ Р 56731-2015:
+    doc_status: replaced
+    replacement_doc: ГОСТ Р 56731-2023
+    details: Извлечено из преамбулы ГОСТ Р 56731-2023_ Национальный стандарт Российской
+      Федерац_document.md (строка 51, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ Р 57310-2016:
+    doc_status: replaced
+    replacement_doc: ГОСТ Р 10.0.03-2019
+    details: Извлечено из преамбулы ГОСТ Р 10_0_03-2019 ИСО 29481-1 2016_ Национальный
+      стандарт_document.md (строка 47, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ Р 58387-2019:
+    doc_status: replaced
+    replacement_doc: ГОСТ Р 58387-2024
+    details: Извлечено из преамбулы ГОСТ Р 58387-2024_ Национальный стандарт Российской
+      Федерац_document.md (строка 52, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  СНиП II-15-74:
+    doc_status: replaced
+    replacement_doc: СНиП 2_02_01-83
+    details: Извлечено из преамбулы СНиП 2_02_01-83 _ Строительные нормы и правила_
+      Основания з_document.md (строка 44, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  СНиП II-6-74:
+    doc_status: replaced
+    replacement_doc: СНиП 2_01_07-85
+    details: Извлечено из преамбулы СНиП 2_01_07-85 _ Строительные нормы и правила_
+      Нагрузки и_document.md (строка 49, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  СП 40-106-2002:
+    doc_status: replaced
+    replacement_doc: СП 66.13330.2011
+    details: Извлечено из преамбулы СП 66_13330_2011_ Свод правил_ Проектирование
+      и строительст_document.md (строка 61, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  СП 40-109-2006:
+    doc_status: replaced
+    replacement_doc: СП 66.13330.2011
+    details: Извлечено из преамбулы СП 66_13330_2011_ Свод правил_ Проектирование
+      и строительст_document.md (строка 61, auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 10180-90:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 10180-2012
+    details: Извлечено из преамбулы ГОСТ 10180-2012_ Межгосударственный стандарт_
+      Бетоны_ Метод_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 10277-76:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 10277-90
+    details: Извлечено из преамбулы ГОСТ 10277-90_ Межгосударственный стандарт_ Шпатлевки_
+      Техн_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 103-76:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 103-2006
+    details: Извлечено из преамбулы ГОСТ 103-2006_ Межгосударственный стандарт_ Прокат
+      сортовой_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 11371-68:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 11371-78
+    details: Извлечено из преамбулы ГОСТ 11371-78_ Межгосударственный стандарт_ Шайбы_
+      Техничес_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 13015-2003:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 13015-2012
+    details: Извлечено из преамбулы ГОСТ 13015-2012_ Межгосударственный стандарт_
+      Изделия бетон_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 14098-91:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 14098-2014
+    details: Извлечено из преамбулы ГОСТ 14098-2014_ Межгосударственный стандарт_
+      Соединения св_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 15588-86:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 15588-2014
+    details: Извлечено из преамбулы ГОСТ 15588-2014_ Межгосударственный стандарт_
+      Плиты пенопол_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 16037-70:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 16037-80
+    details: Извлечено из преамбулы ГОСТ 16037-80 _ Межгосударственный стандарт_ Соединения
+      сва_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 17375-83:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 17375-2001
+    details: Извлечено из преамбулы ГОСТ 17375-2001 (ИСО 3419-81)_ Межгосударственный
+      стандарт__document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 17378-83:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 17378-2001
+    details: Извлечено из преамбулы ГОСТ 17378-2001 (ИСО 3419-81)_ Межгосударственный
+      стандарт__document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 17624-2012:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 17624-2021
+    details: Извлечено из преамбулы ГОСТ 17624-2021_ Межгосударственный стандарт_
+      Бетоны_ Ультр_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 18105-2010:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 18105-2018
+    details: Извлечено из преамбулы ГОСТ 18105-2018_ Межгосударственный стандарт_
+      Бетоны_ Прави_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 19903-74:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 19903-2015
+    details: Извлечено из преамбулы ГОСТ 19903-2015_ Межгосударственный стандарт_
+      Прокат листов_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 2.753-79:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 21_406-88
+    details: Извлечено из преамбулы ГОСТ 21_406-88_ Межгосударственный стандарт_ Система
+      проект_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 20295-74:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 20295-85
+    details: Извлечено из преамбулы ГОСТ 20295-85_ Государственный стандарт Союза
+      ССР_ Трубы ст_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 21.408-93:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 21_408-2013
+    details: Извлечено из преамбулы ГОСТ 21_408-2013_ Межгосударственный стандарт_
+      Система прое_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 21.501-2011:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 21_501-2018
+    details: Извлечено из преамбулы ГОСТ 21_501-2018_ Межгосударственный стандарт_
+      Система прое_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 21.508-93:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 21_508-2020
+    details: Извлечено из преамбулы ГОСТ 21_508-2020_ Межгосударственный стандарт_
+      Система прое_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 21.601-79:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 21_601-2011
+    details: Извлечено из преамбулы ГОСТ 21_601-2011_ Межгосударственный стандарт_
+      Система прое_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 21.602-2003:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 21_602-2016
+    details: Извлечено из преамбулы ГОСТ 21_602-2016_ Межгосударственный стандарт_
+      Система прое_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 21.604-82:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 21_704-2011
+    details: Извлечено из преамбулы ГОСТ 21_704-2011_ Межгосударственный стандарт_
+      Система прое_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 21.607-82:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 21_607-2014
+    details: Извлечено из преамбулы ГОСТ 21_607-2014_ Межгосударственный стандарт_
+      Система прое_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 21.608-2014:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 21_608-2021
+    details: Извлечено из преамбулы ГОСТ 21_608-2021_ Межгосударственный стандарт_
+      Система прое_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 21.610-85:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 21_710-2021
+    details: Извлечено из преамбулы ГОСТ 21_710-2021_ Межгосударственный стандарт_
+      Система прое_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 21.613-88:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 21_613-2014
+    details: Извлечено из преамбулы ГОСТ 21_613-2014_ Межгосударственный стандарт_
+      Система прое_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 21.614-88:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 21_210-2014
+    details: Извлечено из преамбулы ГОСТ 21_210-2014_ Межгосударственный стандарт_
+      Система прое_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 27772-2015:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 27772-2021
+    details: Извлечено из преамбулы ГОСТ 27772-2021_ Межгосударственный стандарт_
+      Прокат для ст_document.md (auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 3634-99:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 3634-2019
+    details: Извлечено из преамбулы ГОСТ 3634-2019_ Межгосударственный стандарт_ Люки
+      смотровых_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 380-94:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 380-2005
+    details: Извлечено из преамбулы ГОСТ 380-2005_ Межгосударственный стандарт_ Сталь
+      углеродис_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 4.227-83:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 6942-98
+    details: Извлечено из преамбулы ГОСТ 6942-98_ Трубы чугунные канализационные и
+      фасонные час_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 4028-48:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 4028-63
+    details: Извлечено из преамбулы ГОСТ 4028-63_ Государственный стандарт Союза ССР_
+      Гвозди ст_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 4031-48:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 4028-63
+    details: Извлечено из преамбулы ГОСТ 4028-63_ Государственный стандарт Союза ССР_
+      Гвозди ст_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 4248-92:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 4248-2018
+    details: Извлечено из преамбулы ГОСТ 4248-2018_ Межгосударственный стандарт_ Доски
+      хризотил_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 464-68:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 464-79
+    details: Извлечено из преамбулы ГОСТ 464-79_ Межгосударственный стандарт_ Заземления
+      для ст_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 475-78:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 475-2016
+    details: Извлечено из преамбулы ГОСТ 475-2016_ Межгосударственный стандарт_ Блоки
+      дверные д_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 5264-69:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 5264-80
+    details: Извлечено из преамбулы ГОСТ 5264-80 _ Ручная дуговая сварка_ Соединения
+      сварные_ О_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 530-2007:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 530-2012
+    details: Извлечено из преамбулы ГОСТ 530-2012_ Межгосударственный стандарт_ Кирпич
+      и камень_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 5781-75:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 5781-82
+    details: Извлечено из преамбулы ГОСТ 5781-82_ Межгосударственный стандарт_ Сталь
+      горячеката_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 5781-82:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 34028-2016
+    details: Извлечено из преамбулы ГОСТ 34028-2016_ Межгосударственный стандарт_
+      Прокат армату_document.md (auto-merge high-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 5927-62:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 5927-70
+    details: Извлечено из преамбулы ГОСТ 5927-70_ Межгосударственный стандарт_ Гайки
+      шестигранн_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 6133-99:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 6133-2019
+    details: Извлечено из преамбулы ГОСТ 6133-2019_ Межгосударственный стандарт_ Камни
+      бетонные_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 617-90:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 617-2006
+    details: Извлечено из преамбулы ГОСТ 617-2006_ Межгосударственный стандарт_ Трубы
+      медные и_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 6465-76:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 6465-2023
+    details: Извлечено из преамбулы ГОСТ 6465-2023_ Межгосударственный стандарт_ Эмали
+      ПФ-115__document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 6482-88:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 6482-2011
+    details: Извлечено из преамбулы ГОСТ 6482-2011_ Межгосударственный стандарт_ Трубы
+      железобе_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 6727-53:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 6727-80
+    details: Извлечено из преамбулы ГОСТ 6727-80_ Государственный стандарт Союза ССР_
+      Проволока_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 7473-94:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 7473-2010
+    details: Извлечено из преамбулы ГОСТ 7473-2010_ Межгосударственный стандарт_ Смеси
+      бетонные_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 8240-89:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 8240-97
+    details: Извлечено из преамбулы ГОСТ 8240-97_ Швеллеры стальные горячекатаные_
+      Сортамент  (_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 8509-86:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 8509-93
+    details: Извлечено из преамбулы ГОСТ 8509-93_ Уголки стальные горячекатаные равнополочные__document.md
+      (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 8510-72:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 8510-86
+    details: Извлечено из преамбулы ГОСТ 8510-86 (СТ СЭВ 255-76)_ Государственный
+      стандарт Союз_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 8639-68:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 8639-82
+    details: Извлечено из преамбулы ГОСТ 8639-82_ Государственный стандарт Союза ССР_
+      Трубы ста_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 8946-59:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 8946-75
+    details: Извлечено из преамбулы ГОСТ 8946-75  (СТ СЭВ 3298-81)_ Государственный
+      стандарт Со_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 9480-2012:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 9480-2024
+    details: Извлечено из преамбулы ГОСТ 9480-2024_ Межгосударственный стандарт_ Плиты
+      облицово_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 9573-96:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 9573-2012
+    details: Извлечено из преамбулы ГОСТ 9573-2012_ Межгосударственный стандарт_ Плиты
+      из минер_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 9923-80:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 9923-2021
+    details: Извлечено из преамбулы ГОСТ 9923-2021_ Межгосударственный стандарт_ Техника
+      пожарн_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ 9941-81:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 9941-2022
+    details: Извлечено из преамбулы ГОСТ 9941-2022_ Межгосударственный стандарт_ Трубы
+      бесшовны_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ Р 1.0-2012:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ Р 51558-2014
+    details: Извлечено из преамбулы ГОСТ Р 51558-2014_ Национальный стандарт Российской
+      Федерац_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ Р 51844-2001:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ Р 51844-2009
+    details: Извлечено из преамбулы ГОСТ Р 51844-2009_ Национальный стандарт Российской
+      Федерац_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  ГОСТ Р 52246-2016:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: ГОСТ 14918-2020
+    details: Извлечено из преамбулы ГОСТ 14918-2020_ Межгосударственный стандарт_
+      Прокат листов_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  СНиП 2.04.01-85:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: СП 40-102-2000
+    details: Извлечено из преамбулы СП 40-102-2000_ Проектирование и монтаж трубопроводов
+      систе_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  СНиП 2.04.02-84:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: СП 40-102-2000
+    details: Извлечено из преамбулы СП 40-102-2000_ Проектирование и монтаж трубопроводов
+      систе_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'
+  СНиП 2.04.03-85:
+    doc_status: replaced
+    edition_status: null
+    replacement_doc: СП 40-102-2000
+    details: Извлечено из преамбулы СП 40-102-2000_ Проектирование и монтаж трубопроводов
+      систе_document.md (auto-merge medium-confidence)
+    last_verified: '2026-04-20'

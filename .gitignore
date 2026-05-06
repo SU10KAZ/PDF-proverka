@@ -64,3 +64,25 @@ autonomous_audit/
 
 # === Keep project_info.json and project structure ===
 # (PDF and _output are ignored, but config files are tracked)
+
+# === Heavy norms data (PDFs, embeddings, vector index, venv) ===
+norms/vault/
+norms/tools/venv/
+norms/tools/embeddings_lab/
+norms/tools/*.json
+norms/tools/*.pkl
+norms/missing_norms_to_download.txt
+
+# === Benchmark / experiment results ===
+scripts/benchmark_all_fresh_results/
+scripts/benchmark_gpt55_results/
+scripts/benchmark_medium_results/
+scripts/*.json
+Experiments_Kuldyaev/
+
+# === Webapp backup files ===
+webapp/config.py.bak*
+
+# === Frontend node modules and build ===
+frontend/node_modules/
+frontend/dist/
