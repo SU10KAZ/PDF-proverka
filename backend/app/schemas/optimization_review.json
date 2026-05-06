@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OptimizationReview",
+  "description": "Stage 05b: Critic review of optimization proposals",
+  "type": "object",
+  "required": ["meta", "reviews"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["project_id", "review_date", "total_reviewed", "verdicts"],
+      "properties": {
+        "project_id": { "type": "string" },
+        "review_date": { "type": "string", "format": "date-time" },
+        "total_reviewed": { "type": "integer", "minimum": 0 },
+        "verdicts": {
+          "type": "object",
+          "required": ["pass", "vendor_violation", "conflicts_with_finding", "unrealistic_savings", "no_traceability", "wrong_page", "too_vague", "technical_issue"],
+          "properties": {
+            "pass": { "type": "integer", "minimum": 0 },
+            "vendor_violation": { "type": "integer", "minimum": 0 },
+            "conflicts_with_finding": { "type": "integer", "minimum": 0 },
+            "unrealistic_savings": { "type": "integer", "minimum": 0 },
+            "no_traceability": { "type": "integer", "minimum": 0 },
+            "wrong_page": { "type": "integer", "minimum": 0 },
+            "too_vague": { "type": "integer", "minimum": 0 },
+            "technical_issue": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "reviews": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["item_id", "verdict"],
+        "properties": {
+          "item_id": { "type": "string" },
+          "verdict": {
+            "type": "string",
+            "enum": ["pass", "vendor_violation", "conflicts_with_finding", "unrealistic_savings", "no_traceability", "wrong_page", "too_vague", "technical_issue"]
+          },
+          "details": { "type": ["string", "null"], "default": null },
+          "conflicting_finding_id": { "type": ["string", "null"], "default": null },
+          "suggested_action": { "type": ["string", "null"], "default": null }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

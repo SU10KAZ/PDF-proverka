@@ -1,0 +1,116 @@
+{
+  "type": "object",
+  "description": "Stage 02 block batch analysis — Gemini Direct API schema (simplified for structured output compatibility)",
+  "required": ["block_analyses"],
+  "properties": {
+    "batch_id": {
+      "type": "integer",
+      "description": "Numeric batch identifier"
+    },
+    "project_id": {
+      "type": "string",
+      "description": "Project identifier"
+    },
+    "block_analyses": {
+      "type": "array",
+      "description": "Analysis results for each block in the batch",
+      "items": {
+        "type": "object",
+        "required": ["block_id", "page", "label", "summary", "key_values_read", "findings"],
+        "properties": {
+          "block_id": {
+            "type": "string",
+            "description": "Exact block identifier from the input list"
+          },
+          "page": {
+            "type": "integer",
+            "description": "PDF page number (physical page)"
+          },
+          "sheet": {
+            "type": "string",
+            "nullable": true,
+            "description": "Sheet number from drawing stamp (logical sheet), null if not available"
+          },
+          "label": {
+            "type": "string",
+            "description": "Short label for this block (drawing title or type)"
+          },
+          "sheet_type": {
+            "type": "string",
+            "description": "Type of drawing sheet: schema, plan, section, detail, table, other"
+          },
+          "unreadable_text": {
+            "type": "boolean",
+            "description": "True if any text is unreadable due to resolution or font issues"
+          },
+          "unreadable_details": {
+            "type": "string",
+            "nullable": true,
+            "description": "Description of what is unreadable and where, if unreadable_text is true"
+          },
+          "summary": {
+            "type": "string",
+            "description": "Concise summary of what this block shows and key observations"
+          },
+          "key_values_read": {
+            "type": "array",
+            "description": "All key values extracted: cable specs, breaker ratings, currents, dimensions, etc.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "findings": {
+            "type": "array",
+            "description": "Audit findings identified in this block",
+            "items": {
+              "type": "object",
+              "required": ["id", "severity", "category", "finding"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Finding identifier in format G-NNN (e.g. G-001)"
+                },
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "КРИТИЧЕСКОЕ",
+                    "ЭКОНОМИЧЕСКОЕ",
+                    "ЭКСПЛУАТАЦИОННОЕ",
+                    "РЕКОМЕНДАТЕЛЬНОЕ",
+                    "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+                  ],
+                  "description": "Severity level of the finding"
+                },
+                "category": {
+                  "type": "string",
+                  "description": "Category of finding: grounding, cable, protection, labeling, etc."
+                },
+                "finding": {
+                  "type": "string",
+                  "description": "Detailed description of the finding"
+                },
+                "norm": {
+                  "type": "string",
+                  "description": "Normative reference (e.g. SP 256.1325800.2016 p.X.X)"
+                },
+                "norm_quote": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Exact quote from the normative document"
+                },
+                "block_evidence": {
+                  "type": "string",
+                  "description": "What in this block supports the finding"
+                },
+                "value_found": {
+                  "type": "string",
+                  "description": "Specific value or text found that is problematic"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

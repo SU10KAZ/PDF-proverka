@@ -2,7 +2,25 @@
 
 FastAPI + Vue 3 SPA (без сборки, CDN). Слушает **127.0.0.1:8081**.
 
-## Структура
+## Структура (после рефакторинга 2026-05-06)
+
+Новый entrypoint: `uvicorn backend.app.main:app --port 8081`
+
+```
+backend/app/main.py
+  → backend/app/api/routers/
+  → backend/app/services/ (common/, llm/, findings/, knowledge_base/, discussions/, export/)
+  → backend/app/models/
+  → backend/app/pipeline/ (manager.py + stages/)
+```
+
+Legacy `webapp/` не удалён: `cd webapp && python main.py` продолжает работать.
+
+Frontend: `frontend/` (Vite) → proxy → `:8081`
+
+Подробная структура: `@docs/project_structure.md`
+
+---
 
 `main.py` → `routers/` → `services/` → `models/`.
 

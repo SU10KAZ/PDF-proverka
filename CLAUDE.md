@@ -29,7 +29,14 @@ disciplines/
   _registry.json          ← реестр: код, название, цвет, order, folder_patterns
   EOM/, OV/               ← полные профили (role.md, checklist.md, norms_reference.md)
 
-webapp/                   ← FastAPI + Vue 3 (порт 8081)
+webapp/                   ← FastAPI + Vue 3 (legacy, порт 8081)
+backend/                  ← НОВЫЙ backend (FastAPI, порт 8081)
+  app/main.py             ← entrypoint: uvicorn backend.app.main:app --port 8081
+  app/core/config.py      ← все пути (ROOT_DIR, PROJECTS_DIR и др.)
+  app/api/routers/        ← REST API /api/...
+  app/services/           ← common/, llm/, findings/, knowledge_base/, discussions/, export/
+  app/pipeline/           ← manager.py + stages/ (prepare, crop_blocks, gemma_enrichment и др.)
+frontend/                 ← Vue 3 SPA (Vite, порт 5173 → proxy :8081)
 norms_db.json             ← статус норм (176+ записей)
 norms_paragraphs.json     ← проверенные цитаты пунктов
 .claude/
@@ -37,6 +44,8 @@ norms_paragraphs.json     ← проверенные цитаты пунктов
   settings.json           ← разрешения инструментов
   hooks/load_context.py   ← SessionStart хук
 ```
+
+> Полная структура: `@docs/project_structure.md`
 
 ## Скрипты конвейера
 
@@ -76,8 +85,14 @@ python norms.py update --stats
 # Excel-отчёт
 python generate_excel_report.py
 
-# Веб
+# Веб (старый способ — webapp)
 cd webapp && python main.py    # http://localhost:8081
+
+# Веб (новый backend — из корня)
+uvicorn backend.app.main:app --host 0.0.0.0 --port 8081 --reload
+
+# Frontend (Vite dev-сервер с proxy → :8081)
+cd frontend && npm run dev   # http://localhost:5173
 
 # Тесты
 python -m pytest tests/                      # все

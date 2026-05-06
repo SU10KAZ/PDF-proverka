@@ -1,0 +1,70 @@
+{
+  "type": "object",
+  "properties": {
+    "batch_id": {
+      "type": "integer"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "block_analyses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "block_id": { "type": "string" },
+          "page": { "type": "integer" },
+          "sheet": { "type": ["string", "null"] },
+          "label": { "type": "string" },
+          "sheet_type": { "type": "string" },
+          "unreadable_text": { "type": "boolean" },
+          "unreadable_details": { "type": ["string", "null"] },
+          "summary": { "type": "string" },
+          "key_values_read": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "findings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "severity": {
+                  "type": "string",
+                  "enum": ["КРИТИЧЕСКОЕ", "ЭКОНОМИЧЕСКОЕ", "ЭКСПЛУАТАЦИОННОЕ", "РЕКОМЕНДАТЕЛЬНОЕ", "ПРОВЕРИТЬ ПО СМЕЖНЫМ"]
+                },
+                "category": { "type": "string" },
+                "finding": { "type": "string" },
+                "norm": { "type": "string" },
+                "norm_quote": { "type": ["string", "null"] },
+                "block_evidence": { "type": "string" },
+                "value_found": { "type": "string" }
+              },
+              "required": ["id", "severity", "category", "finding", "norm", "norm_quote", "block_evidence", "value_found"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "block_id",
+          "page",
+          "sheet",
+          "label",
+          "sheet_type",
+          "unreadable_text",
+          "unreadable_details",
+          "summary",
+          "key_values_read",
+          "findings"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["batch_id", "project_id", "timestamp", "block_analyses"],
+  "additionalProperties": false
+}

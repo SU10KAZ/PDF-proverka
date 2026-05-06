@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Findings",
+  "description": "Stage 03: Consolidated audit findings",
+  "type": "object",
+  "required": ["meta", "findings"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["project_id", "audit_completed", "total_findings", "blocks_analyzed", "by_severity"],
+      "properties": {
+        "project_id": { "type": "string" },
+        "audit_completed": { "type": "string", "format": "date-time" },
+        "total_findings": { "type": "integer", "minimum": 0 },
+        "blocks_analyzed": { "type": "integer", "minimum": 0 },
+        "by_severity": {
+          "type": "object",
+          "required": ["КРИТИЧЕСКОЕ", "ЭКОНОМИЧЕСКОЕ", "ЭКСПЛУАТАЦИОННОЕ", "РЕКОМЕНДАТЕЛЬНОЕ", "ПРОВЕРИТЬ ПО СМЕЖНЫМ"],
+          "properties": {
+            "КРИТИЧЕСКОЕ": { "type": "integer", "minimum": 0 },
+            "ЭКОНОМИЧЕСКОЕ": { "type": "integer", "minimum": 0 },
+            "ЭКСПЛУАТАЦИОННОЕ": { "type": "integer", "minimum": 0 },
+            "РЕКОМЕНДАТЕЛЬНОЕ": { "type": "integer", "minimum": 0 },
+            "ПРОВЕРИТЬ ПО СМЕЖНЫМ": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "severity", "category", "problem", "description", "solution", "risk"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^F-\\d{3}$"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["КРИТИЧЕСКОЕ", "ЭКОНОМИЧЕСКОЕ", "ЭКСПЛУАТАЦИОННОЕ", "РЕКОМЕНДАТЕЛЬНОЕ", "ПРОВЕРИТЬ ПО СМЕЖНЫМ"]
+          },
+          "category": { "type": "string" },
+          "sheet": { "type": ["string", "null"], "default": null },
+          "page": {
+            "oneOf": [
+              { "type": "integer" },
+              { "type": "array", "items": { "type": "integer" } },
+              { "type": "null" }
+            ],
+            "default": null
+          },
+          "problem": { "type": "string" },
+          "description": { "type": "string" },
+          "norm": { "type": "string", "default": "" },
+          "norm_quote": { "type": ["string", "null"], "default": null },
+          "solution": { "type": "string" },
+          "risk": { "type": "string" },
+          "source_block_ids": {
+            "type": "array",
+            "items": { "type": "string" },
+            "default": []
+          },
+          "related_block_ids": {
+            "type": "array",
+            "items": { "type": "string" },
+            "default": []
+          },
+          "evidence_text_refs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["text_block_id", "role", "used_for"],
+              "properties": {
+                "text_block_id": { "type": "string" },
+                "role": { "type": "string" },
+                "used_for": { "type": "string" }
+              },
+              "additionalProperties": false
+            },
+            "default": []
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["type", "block_id", "page"],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["image", "text"]
+                },
+                "block_id": { "type": "string" },
+                "page": { "type": "integer" }
+              },
+              "additionalProperties": false
+            },
+            "default": []
+          },
+          "highlight_regions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["block_id", "x", "y", "w", "h", "label"],
+              "properties": {
+                "block_id": { "type": "string" },
+                "x": { "type": "number", "minimum": 0, "maximum": 1 },
+                "y": { "type": "number", "minimum": 0, "maximum": 1 },
+                "w": { "type": "number", "minimum": 0, "maximum": 1 },
+                "h": { "type": "number", "minimum": 0, "maximum": 1 },
+                "label": { "type": "string" }
+              },
+              "additionalProperties": false
+            },
+            "default": []
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}
