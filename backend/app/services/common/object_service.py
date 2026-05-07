@@ -8,9 +8,9 @@ from pathlib import Path
 from datetime import datetime
 from typing import Optional
 
-from backend.app.core.config import BASE_DIR
+from backend.app.core.config import OBJECTS_FILE_PATH
 
-OBJECTS_FILE = Path(__file__).resolve().parent.parent / "data" / "objects.json"
+OBJECTS_FILE = OBJECTS_FILE_PATH
 
 
 def _load_objects() -> dict:

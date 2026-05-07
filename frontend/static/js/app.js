@@ -5426,7 +5426,6 @@ const app = createApp({
         async function loadExpertDecisions() {
             if (!currentProjectId.value) return;
             const map = {};
-            // 1. Загрузить из expert_review.json
             try {
                 const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}`);
                 const data = await resp.json();
@@ -5436,24 +5435,6 @@ const app = createApp({
                     }
                 }
             } catch (e) { console.warn('Failed to load expert review:', e); }
-
-            // 2. Дополнить из статусов обсуждений (если есть confirmed/rejected)
-            try {
-                for (const tab of ['finding', 'optimization']) {
-                    const resp = await fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/items?type=${tab}`);
-                    const data = await resp.json();
-                    for (const item of (data.items || [])) {
-                        if (item.discussion_status && !map[item.item_id]) {
-                            if (item.discussion_status === 'confirmed') {
-                                map[item.item_id] = { decision: 'accepted', rejection_reason: '', item_type: tab };
-                            } else if (item.discussion_status === 'rejected') {
-                                map[item.item_id] = { decision: 'rejected', rejection_reason: item.resolution_summary || '', item_type: tab };
-                            }
-                        }
-                    }
-                }
-            } catch (e) { /* discussions API may not have items */ }
-
             expertDecisions.value = map;
         }
 
@@ -5468,17 +5449,25 @@ const app = createApp({
             existing.item_type = itemType;
             expertDecisions.value = { ...expertDecisions.value, [itemId]: existing };
 
-            // Синхронизация с системой обсуждений (confirmed/rejected)
-            if (currentProjectId.value && existing.decision) {
+            // Синхронизация с системой обсуждений (confirmed/rejected/open)
+            if (currentProjectId.value) {
                 const discType = itemId.startsWith('OPT') ? 'optimization' : 'finding';
-                const status = existing.decision === 'accepted' ? 'confirmed' : 'rejected';
-                const reason = existing.rejection_reason || '';
-                const summary = reason || (status === 'confirmed' ? 'Принято экспертом' : 'Отклонено экспертом');
-                fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(itemId)}/resolve?type=${discType}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status, summary }),
-                }).catch(() => {}); // fire-and-forget
+                if (existing.decision) {
+                    const status = existing.decision === 'accepted' ? 'confirmed' : 'rejected';
+                    const reason = existing.rejection_reason || '';
+                    const summary = reason || (status === 'confirmed' ? 'Принято экспертом' : 'Отклонено экспертом');
+                    fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(itemId)}/resolve?type=${discType}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status, summary }),
+                    }).catch(() => {});
+                } else {
+                    fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(itemId)}/resolve?type=${discType}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: 'open', summary: '' }),
+                    }).catch(() => {});
+                }
             }
         }
 
@@ -5493,6 +5482,7 @@ const app = createApp({
             expertReviewSaving.value = true;
             try {
                 const decisions = [];
+                const removedIds = [];
                 for (const [itemId, d] of Object.entries(expertDecisions.value)) {
                     if (d.decision) {
                         decisions.push({
@@ -5502,19 +5492,21 @@ const app = createApp({
                             rejection_reason: d.rejection_reason || null,
                             timestamp: new Date().toISOString(),
                         });
+                    } else {
+                        removedIds.push(itemId);
                     }
                 }
                 const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ decisions, reviewer: '' }),
+                    body: JSON.stringify({ decisions, removed_ids: removedIds, reviewer: '' }),
                 });
                 if (!resp.ok) {
                     const err = await resp.json().catch(() => ({}));
                     throw new Error(err.detail || `Ошибка сохранения: ${resp.statusText}`);
                 }
                 const result = await resp.json();
-                // Синхронизировать все решения с системой обсуждений (проработка замечаний)
+                // Синхронизировать принятые/отклонённые решения с системой обсуждений
                 for (const d of decisions) {
                     const discType = d.item_id.startsWith('OPT') ? 'optimization' : 'finding';
                     const status = d.decision === 'accepted' ? 'confirmed' : 'rejected';
@@ -5523,6 +5515,15 @@ const app = createApp({
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ status, summary }),
+                    }).catch(() => {});
+                }
+                // Сбросить статус для отменённых решений
+                for (const itemId of removedIds) {
+                    const discType = itemId.startsWith('OPT') ? 'optimization' : 'finding';
+                    fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(itemId)}/resolve?type=${discType}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: 'open', summary: '' }),
                     }).catch(() => {});
                 }
                 alert(`Сохранено: ${result.accepted} принято, ${result.rejected} отклонено`);

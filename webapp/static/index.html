@@ -86,13 +86,6 @@
                     База знаний
                     <span v-if="kbStats.total" class="nav-badge">{{ kbStats.total }}</span>
                 </div>
-                <div class="nav-item" @click="showModelConfig = true">
-                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <circle cx="8" cy="8" r="2"/>
-                        <path d="M8 2v2M8 12v2M2 8h2M12 8h2"/>
-                    </svg>
-                    Настройки моделей
-                </div>
                 <div class="nav-item" :class="{active: currentView === 'model-control'}" @click="navigate('/model-control')">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <rect x="2" y="2" width="12" height="12" rx="2"/>
@@ -324,7 +317,7 @@
         <!-- Navigation breadcrumb + Project Tabs (merged into one bar) -->
         <nav class="breadcrumb" v-if="currentView !== 'dashboard' && currentView !== 'queue' && currentView !== 'knowledge-base'">
             <div class="breadcrumb__left">
-                <a href="#" @click.prevent="navigate('/')">Проекты</a>
+                <a href="#" @click.prevent="navigate(lastSectionBeforeProject ? '/section/' + encodeURIComponent(lastSectionBeforeProject) : '/')">Проекты</a>
                 <span v-if="currentProject"> / <a href="#" @click.prevent="navigate('/project/' + currentProject.project_id)">{{ currentProject.name }}</a></span>
             </div>
             <div v-if="currentProject" class="project-tabs">
@@ -445,16 +438,19 @@
                          @dragstart.stop="onProjectDragStart($event, p.project_id)"
                          @dragend="dragProjectId = null"
                          @click="navigate('/project/' + p.project_id)">
-                        <span v-if="p.expert_review_status === 'complete'" class="project-card__reviewed" title="Все решения заполнены">&#10003;</span>
-                        <label class="project-card__checkbox" @click.stop>
-                            <input type="checkbox" :checked="isProjectSelected(p.project_id)"
-                                   @change="toggleProjectSelection(p.project_id)">
-                        </label>
                         <div class="project-card__header">
-                            <h3>{{ p.name }} <span class="section-badge" :style="disciplineBadgeStyle(p.section)">{{ p.section }}</span></h3>
+                            <h3 class="project-card__name" :title="p.name">
+                                <span class="project-card__name-text">{{ p.name }}</span>
+                            </h3>
+                            <div class="project-card__icons">
+                                <span v-if="p.pipeline_issues && p.pipeline_issues.length > 0"
+                                      class="pipeline-issues-dot pipeline-issues-dot--inline" :title="p.pipeline_issues.join('\n')">!</span>
+                                <label class="project-card__checkbox" @click.stop>
+                                    <input type="checkbox" :checked="isProjectSelected(p.project_id)"
+                                           @change="toggleProjectSelection(p.project_id)">
+                                </label>
+                            </div>
                         </div>
-                        <span v-if="p.pipeline_issues && p.pipeline_issues.length > 0"
-                              class="pipeline-issues-dot" :title="p.pipeline_issues.join('\n')">!</span>
                         <div v-if="isProjectRunning(p.project_id)" class="live-status-bar">
                             <div class="spinner"></div>
                             <span class="status-text">{{ batchProgressText(p.project_id) }}</span>
@@ -465,7 +461,10 @@
                                       class="sev-badge" :class="'sev-' + sevClass(sev)">{{ count }}</span>
                                 <span class="findings-total">= {{ p.findings_count }}</span>
                             </div>
-                            <button class="btn btn-sm btn-outline" @click.stop="navigate('/project/' + p.project_id + '/findings')">Замечания</button>
+                            <div class="project-card__badges-right">
+                                <button class="btn btn-sm btn-outline" @click.stop="navigate('/project/' + p.project_id + '/findings')">Замечания</button>
+                                <span v-if="p.findings_reviewed" class="review-check" title="Все замечания отработаны">&#10003;</span>
+                            </div>
                         </div>
                         <div v-if="p.optimization_count > 0" class="project-card__badges-row">
                             <div class="severity-badges opt-badges">
@@ -473,7 +472,10 @@
                                       class="sev-badge" :class="optTypeClass(type)">{{ count }}</span>
                                 <span class="findings-total">= {{ p.optimization_count }}</span>
                             </div>
-                            <button class="btn btn-sm btn-outline" @click.stop="navigate('/project/' + p.project_id + '/optimization')">Оптимизация</button>
+                            <div class="project-card__badges-right">
+                                <button class="btn btn-sm btn-outline" @click.stop="navigate('/project/' + p.project_id + '/optimization')">Оптимизация</button>
+                                <span v-if="p.optimization_reviewed" class="review-check" title="Все оптимизации отработаны">&#10003;</span>
+                            </div>
                         </div>
                     </div>
                 </div>

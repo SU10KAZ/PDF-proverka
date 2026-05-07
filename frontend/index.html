@@ -86,13 +86,6 @@
                     База знаний
                     <span v-if="kbStats.total" class="nav-badge">{{ kbStats.total }}</span>
                 </div>
-                <div class="nav-item" @click="showModelConfig = true">
-                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <circle cx="8" cy="8" r="2"/>
-                        <path d="M8 2v2M8 12v2M2 8h2M12 8h2"/>
-                    </svg>
-                    Настройки моделей
-                </div>
                 <div class="nav-item" :class="{active: currentView === 'model-control'}" @click="navigate('/model-control')">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <rect x="2" y="2" width="12" height="12" rx="2"/>
@@ -445,16 +438,20 @@
                          @dragstart.stop="onProjectDragStart($event, p.project_id)"
                          @dragend="dragProjectId = null"
                          @click="navigate('/project/' + p.project_id)">
-                        <span v-if="p.expert_review_status === 'complete'" class="project-card__reviewed" title="Все решения заполнены">&#10003;</span>
-                        <label class="project-card__checkbox" @click.stop>
-                            <input type="checkbox" :checked="isProjectSelected(p.project_id)"
-                                   @change="toggleProjectSelection(p.project_id)">
-                        </label>
                         <div class="project-card__header">
-                            <h3>{{ p.name }} <span class="section-badge" :style="disciplineBadgeStyle(p.section)">{{ p.section }}</span></h3>
+                            <h3 class="project-card__name" :title="p.name">
+                                <span class="project-card__name-text">{{ p.name }}</span>
+                            </h3>
+                            <div class="project-card__icons">
+                                <span v-if="p.pipeline_issues && p.pipeline_issues.length > 0"
+                                      class="pipeline-issues-dot pipeline-issues-dot--inline" :title="p.pipeline_issues.join('\n')">!</span>
+                                <span v-if="p.expert_review_status === 'complete'" class="project-card__reviewed project-card__reviewed--inline" title="Все решения заполнены">&#10003;</span>
+                                <label class="project-card__checkbox" @click.stop>
+                                    <input type="checkbox" :checked="isProjectSelected(p.project_id)"
+                                           @change="toggleProjectSelection(p.project_id)">
+                                </label>
+                            </div>
                         </div>
-                        <span v-if="p.pipeline_issues && p.pipeline_issues.length > 0"
-                              class="pipeline-issues-dot" :title="p.pipeline_issues.join('\n')">!</span>
                         <div v-if="isProjectRunning(p.project_id)" class="live-status-bar">
                             <div class="spinner"></div>
                             <span class="status-text">{{ batchProgressText(p.project_id) }}</span>

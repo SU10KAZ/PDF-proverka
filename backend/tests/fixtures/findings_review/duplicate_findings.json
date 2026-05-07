@@ -1,0 +1,197 @@
+[
+  {
+    "id": "DUP-SET-001",
+    "description": "Два замечания об одном дефекте — марка кабеля. Второе не добавляет новой информации.",
+    "findings": [
+      {
+        "id": "F-010",
+        "severity": "КРИТИЧЕСКОЕ",
+        "category": "cable",
+        "sheet": "Лист 6",
+        "page": 11,
+        "problem": "Кабель питания пожарных насосов ВВГнг-LS вместо огнестойкого FRLS",
+        "description": "В таблице кабелей (лист 6) для питания пожарных насосов (поз. 3.1, 3.2) принят кабель ВВГнг(А)-LS 4x6. Требуется ВВГнг(А)-FRLS. Нарушение СП 6.13130.2021 п. 4.2.",
+        "norm": "СП 6.13130.2021, п. 4.2",
+        "norm_quote": "Кабельные линии систем противопожарной защиты должны сохранять работоспособность в условиях пожара.",
+        "solution": "Заменить на ВВГнг(А)-FRLS 4x6.",
+        "risk": "Кабель отключится при пожаре. Насосы остановятся.",
+        "evidence": [
+          {"type": "image", "block_id": "FIRE-PUMP-TABLE-006", "page": 11}
+        ],
+        "related_block_ids": ["FIRE-PUMP-TABLE-006"],
+        "source_block_ids": ["FIRE-PUMP-TABLE-006"]
+      },
+      {
+        "id": "F-014",
+        "severity": "КРИТИЧЕСКОЕ",
+        "category": "cable",
+        "sheet": "Лист 6",
+        "page": 11,
+        "problem": "Применение кабеля без огнестойкости для пожарных насосов",
+        "description": "Пожарные насосы запитаны кабелем без огнестойкого исполнения. В комплекте не применяется маркировка FR. СП 6.13130 требует FR-исполнение для всех цепей противопожарной защиты.",
+        "norm": "СП 6.13130.2021, п. 4.2",
+        "norm_quote": null,
+        "solution": "Применить кабели FR-исполнения.",
+        "risk": "Аналогичный риск: потеря работоспособности при пожаре.",
+        "evidence": [
+          {"type": "image", "block_id": "FIRE-PUMP-TABLE-006", "page": 11}
+        ],
+        "related_block_ids": ["FIRE-PUMP-TABLE-006"],
+        "source_block_ids": ["FIRE-PUMP-TABLE-006"]
+      }
+    ],
+    "duplicate_analysis": {
+      "primary_finding_id": "F-010",
+      "duplicate_finding_id": "F-014",
+      "same_object": true,
+      "same_defect_cause": true,
+      "same_required_fix": true,
+      "unique_evidence_in_duplicate": false,
+      "unique_location_in_duplicate": false
+    },
+    "expected_decisions": {
+      "F-010": "accept",
+      "F-014": "merge_into_F-010"
+    },
+    "expected_reasons": {
+      "F-010": "primary_finding_with_strong_evidence",
+      "F-014": "pure_duplicate_no_new_information"
+    },
+    "comment": "F-014 — чистый дубль F-010: тот же объект, та же причина, то же исправление, тот же evidence-блок. Нет новых данных. Вердикт F-014: not_practical + merge_into: F-010 + remove."
+  },
+  {
+    "id": "DUP-SET-002",
+    "description": "Два замечания об одном нарушении, но второе добавляет новый лист — merge с сохранением информации.",
+    "findings": [
+      {
+        "id": "F-020",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "normative_refs",
+        "sheet": "Лист 2",
+        "page": 4,
+        "problem": "В однолинейной схеме ЩО-1 ссылка на устаревший ГОСТ 32395-2013",
+        "description": "В примечаниях к схеме ЩО-1 (лист 2) указано ГОСТ 32395-2013. Документ заменён на ГОСТ 32395-2020.",
+        "norm": "ГОСТ 32395-2020",
+        "norm_quote": null,
+        "solution": "Исправить ссылку на ГОСТ 32395-2020.",
+        "risk": "Формальное замечание экспертизы.",
+        "evidence": [
+          {"type": "text", "block_id": "SCHEME-NOTE-002", "page": 4}
+        ],
+        "related_block_ids": ["SCHEME-NOTE-002"],
+        "source_block_ids": []
+      },
+      {
+        "id": "F-025",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "normative_refs",
+        "sheet": "Лист 3",
+        "page": 5,
+        "problem": "В однолинейной схеме ЩО-2 ссылка на устаревший ГОСТ 32395-2013",
+        "description": "В примечаниях к схеме ЩО-2 (лист 3) также указано ГОСТ 32395-2013. Дубль замечания F-020, но на другом листе.",
+        "norm": "ГОСТ 32395-2020",
+        "norm_quote": null,
+        "solution": "Исправить ссылку на ГОСТ 32395-2020 также на листе 3.",
+        "risk": "Аналогично F-020.",
+        "evidence": [
+          {"type": "text", "block_id": "SCHEME-NOTE-003", "page": 5}
+        ],
+        "related_block_ids": ["SCHEME-NOTE-003"],
+        "source_block_ids": []
+      }
+    ],
+    "duplicate_analysis": {
+      "primary_finding_id": "F-020",
+      "duplicate_finding_id": "F-025",
+      "same_object": false,
+      "same_defect_cause": true,
+      "same_required_fix": true,
+      "unique_evidence_in_duplicate": true,
+      "unique_location_in_duplicate": true
+    },
+    "expected_decisions": {
+      "F-020": "accept",
+      "F-025": "merge_into_F-020_preserve_leaf"
+    },
+    "expected_reasons": {
+      "F-020": "primary_finding",
+      "F-025": "duplicate_but_adds_new_location_merge_with_narrow_evidence"
+    },
+    "comment": "F-025 дублирует причину и исправление F-020, но добавляет другой лист (3 vs 2) и другой evidence. Нельзя просто удалить — информация о листе 3 важна для полного исправления. Вердикт F-025: not_practical + merge_into: F-020 + narrow_evidence (перенести лист 3 в F-020)."
+  },
+  {
+    "id": "DUP-SET-003",
+    "description": "Три замечания об одном дефекте, перефразированные по-разному.",
+    "findings": [
+      {
+        "id": "F-030",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "specification",
+        "sheet": "Лист 12",
+        "page": 20,
+        "problem": "Разногласие количества светильников LED-PANEL-600 в спецификации (48 шт.) и планах (52 шт.)",
+        "description": "Подсчёт по 4 этажным планам даёт 52 шт., спецификация — 48 шт. Разница 4 шт.",
+        "norm": null,
+        "norm_quote": null,
+        "solution": "Скорректировать спецификацию до 52 шт.",
+        "risk": "Нехватка 4 светильников в поставке.",
+        "evidence": [
+          {"type": "text", "block_id": "SPEC-LED-048", "page": 20}
+        ],
+        "related_block_ids": ["SPEC-LED-048"],
+        "source_block_ids": []
+      },
+      {
+        "id": "F-033",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "specification",
+        "sheet": "Лист 12",
+        "page": 20,
+        "problem": "Количество в спецификации не соответствует планам по светильнику LED-PANEL-600",
+        "description": "Перефразировка F-030. По чертежам 52 шт., в спецификации 48 шт. Тот же дефект, тот же объект.",
+        "norm": null,
+        "norm_quote": null,
+        "solution": "Исправить количество в спецификации.",
+        "risk": "Экономический ущерб при закупке.",
+        "evidence": [
+          {"type": "text", "block_id": "SPEC-LED-048", "page": 20}
+        ],
+        "related_block_ids": ["SPEC-LED-048"],
+        "source_block_ids": []
+      },
+      {
+        "id": "F-035",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "specification",
+        "sheet": "Лист 12",
+        "page": 20,
+        "problem": "Ошибка подсчёта светильников в спецификации",
+        "description": "В спецификации ошибка в количестве — вероятно, не все этажи учтены.",
+        "norm": null,
+        "norm_quote": null,
+        "solution": "Пересчитать светильники.",
+        "risk": "Неверный заказ.",
+        "evidence": [],
+        "related_block_ids": [],
+        "source_block_ids": []
+      }
+    ],
+    "duplicate_analysis": {
+      "primary_finding_id": "F-030",
+      "duplicates": ["F-033", "F-035"],
+      "F-033": {"same_object": true, "same_cause": true, "same_fix": true, "adds_new_info": false},
+      "F-035": {"same_object": true, "same_cause": true, "same_fix": true, "adds_new_info": false, "no_evidence": true}
+    },
+    "expected_decisions": {
+      "F-030": "accept",
+      "F-033": "merge_into_F-030",
+      "F-035": "reject"
+    },
+    "expected_reasons": {
+      "F-030": "primary_with_evidence_and_concrete_numbers",
+      "F-033": "duplicate_no_new_info",
+      "F-035": "duplicate_no_evidence_speculation"
+    },
+    "comment": "F-030 — первичное с конкретными числами. F-033 — чистый дубль. F-035 — дубль без evidence и со словом 'вероятно'. Оба удаляются (merge в F-030 / no_evidence+remove)."
+  }
+]

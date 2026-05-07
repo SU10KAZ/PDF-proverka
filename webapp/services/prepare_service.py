@@ -54,7 +54,8 @@ from gemma_enrich import (  # noqa: E402
     DEFAULT_PARALLELISM,
     DEFAULT_TIMEOUT_S,
 )
-from blocks import _backup_output_for_reenrichment  # noqa: E402
+def _backup_output_for_reenrichment(out_dir):  # stub — функция удалена из blocks.py
+    pass
 
 
 # ─── State ────────────────────────────────────────────────────────────────

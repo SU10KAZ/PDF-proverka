@@ -126,26 +126,36 @@ async def api_info():
 
 
 # ─── Static Files & SPA ────────────────────────────────────
-# Frontend: приоритет — отдельный frontend/ (Vite dev/build).
-# Fallback: backend/app/static/ или webapp/static/ для обратной совместимости.
+# HTML-страницы берём из frontend/ (рядом с index.html / model-control.html).
+# /static монтируем из frontend/static/ (js/ и css/ лежат там).
+# Fallback на webapp/static/ для обратной совместимости.
 _frontend_dir = ROOT_DIR / "frontend"
+_frontend_static_dir = _frontend_dir / "static"
 _webapp_static_dir = ROOT_DIR / "webapp" / "static"
-_static_dir = _frontend_dir if _frontend_dir.exists() else _webapp_static_dir
 
-if _static_dir.exists():
-    app.mount("/static", StaticFiles(directory=str(_static_dir)), name="static")
+if _frontend_static_dir.exists():
+    _static_mount_dir = _frontend_static_dir
+elif _webapp_static_dir.exists():
+    _static_mount_dir = _webapp_static_dir
+else:
+    _static_mount_dir = None
+
+if _static_mount_dir is not None:
+    app.mount("/static", StaticFiles(directory=str(_static_mount_dir)), name="static")
+
+_html_dir = _frontend_dir if _frontend_dir.exists() else _webapp_static_dir
 
 
 @app.get("/")
 async def serve_spa():
     """Отдать SPA index.html."""
-    index_path = _static_dir / "index.html"
+    index_path = _html_dir / "index.html"
     if not index_path.exists():
         return {"message": "Audit Manager API. Frontend not found. Use /docs for Swagger."}
-    css_path = _static_dir / "css" / "styles.css"
-    js_path = _static_dir / "js" / "app.js"
-    css_ver = int(css_path.stat().st_mtime) if css_path.exists() else 0
-    js_ver = int(js_path.stat().st_mtime) if js_path.exists() else 0
+    css_path = (_static_mount_dir / "css" / "styles.css") if _static_mount_dir else None
+    js_path = (_static_mount_dir / "js" / "app.js") if _static_mount_dir else None
+    css_ver = int(css_path.stat().st_mtime) if css_path and css_path.exists() else 0
+    js_ver = int(js_path.stat().st_mtime) if js_path and js_path.exists() else 0
     html = index_path.read_text(encoding="utf-8")
     html = html.replace("{{css_version}}", str(css_ver)).replace("{{js_version}}", str(js_ver))
     return HTMLResponse(html)
@@ -154,13 +164,13 @@ async def serve_spa():
 @app.get("/model-control")
 async def serve_model_control():
     """Отдать страницу управления моделями."""
-    page_path = _static_dir / "model-control.html"
+    page_path = _html_dir / "model-control.html"
     if not page_path.exists():
         return {"message": "Model control page not found"}
-    css_path = _static_dir / "css" / "model-control.css"
-    js_path = _static_dir / "js" / "model-control.js"
-    css_ver = int(css_path.stat().st_mtime) if css_path.exists() else 0
-    js_ver = int(js_path.stat().st_mtime) if js_path.exists() else 0
+    css_path = (_static_mount_dir / "css" / "model-control.css") if _static_mount_dir else None
+    js_path = (_static_mount_dir / "js" / "model-control.js") if _static_mount_dir else None
+    css_ver = int(css_path.stat().st_mtime) if css_path and css_path.exists() else 0
+    js_ver = int(js_path.stat().st_mtime) if js_path and js_path.exists() else 0
     html = page_path.read_text(encoding="utf-8")
     html = html.replace("{{css_version}}", str(css_ver)).replace("{{js_version}}", str(js_ver))
     return HTMLResponse(html)

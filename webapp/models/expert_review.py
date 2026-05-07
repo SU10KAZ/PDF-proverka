@@ -19,6 +19,7 @@ class ExpertDecision(BaseModel):
 class ExpertReviewSubmission(BaseModel):
     """Пакет решений эксперта по проекту."""
     decisions: list[ExpertDecision]
+    removed_ids: list[str] = []
     reviewer: str = ""
 
 

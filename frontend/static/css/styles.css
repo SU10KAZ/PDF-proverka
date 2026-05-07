@@ -678,10 +678,13 @@ body {
 .project-card--selected { border-color: var(--teal); box-shadow: 0 0 0 2px var(--teal-mid); }
 .project-card--reviewed { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.25); }
 .project-card__reviewed { position: absolute; top: 11px; right: 34px; color: #22c55e; font-size: 20px; font-weight: 900; line-height: 1; text-shadow: 0 0 1px #22c55e; }
-.project-card__checkbox { position: absolute; top: 12px; right: 12px; }
+.project-card__reviewed--inline { position: static; font-size: 16px; line-height: 1; flex-shrink: 0; }
+.project-card__checkbox { position: static; }
 .project-card__checkbox input { accent-color: var(--teal); width: 15px; height: 15px; cursor: pointer; }
-.project-card__header { margin-bottom: 6px; }
-.project-card__header h3 { font-size: 13px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; padding-right: 24px; }
+.project-card__header { margin-bottom: 6px; display: flex; align-items: flex-start; gap: 6px; min-width: 0; }
+.project-card__header h3 { font-size: 13px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; margin: 0; }
+.project-card__name-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1; }
+.project-card__icons { display: flex; align-items: center; gap: 4px; flex-shrink: 0; padding-top: 1px; }
 
 /* Pipeline Steps */
 .pipeline { display: flex; align-items: center; gap: 0; margin-bottom: 10px; }
@@ -704,6 +707,7 @@ body {
 .pipeline-line { flex: 1; height: 1px; background: var(--border2); min-width: 8px; margin: 0 2px; }
 .pipeline-line--sm { min-width: 4px; }
 .pipeline-issues-dot { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: var(--amber-light); border: 1px solid rgba(196,115,0,0.3); color: var(--amber); font-size: 10px; font-weight: 700; position: absolute; top: 12px; right: 58px; }
+.pipeline-issues-dot--inline { position: static; flex-shrink: 0; }
 
 /* Live status */
 .live-status-bar { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; background: var(--blue-light); border: 1px solid rgba(20,96,212,0.2); margin-top: 8px; font-size: 11px; }

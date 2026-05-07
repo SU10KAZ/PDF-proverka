@@ -42,6 +42,7 @@ const app = createApp({
         // Sidebar
         const sidebarSectionsOpen = ref(true);
         const sidebarFilterSection = ref(null);  // null = все разделы
+        const lastSectionBeforeProject = ref(null);  // запоминаем раздел при входе в проект
 
         // Findings
         const findingsData = ref(null);
@@ -1015,6 +1016,7 @@ const app = createApp({
                 refreshProjects();
             } else if (hash.match(/^\/project\/(.+)\/findings$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/findings$/)[1]);
+                if (currentView.value === 'dashboard') lastSectionBeforeProject.value = sidebarFilterSection.value;
                 currentView.value = 'findings';
                 currentProjectId.value = id;
                 connectGlobalWS();
@@ -1023,6 +1025,7 @@ const app = createApp({
                 loadExpertDecisions();
             } else if (hash.match(/^\/project\/(.+)\/blocks$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/blocks$/)[1]);
+                if (currentView.value === 'dashboard') lastSectionBeforeProject.value = sidebarFilterSection.value;
                 currentView.value = 'blocks';
                 currentProjectId.value = id;
                 connectGlobalWS();
@@ -1030,6 +1033,7 @@ const app = createApp({
                 loadBlocks(id);
             } else if (hash.match(/^\/project\/(.+)\/optimization$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/optimization$/)[1]);
+                if (currentView.value === 'dashboard') lastSectionBeforeProject.value = sidebarFilterSection.value;
                 currentView.value = 'optimization';
                 currentProjectId.value = id;
                 connectGlobalWS();
@@ -1092,6 +1096,7 @@ const app = createApp({
                 connectProjectWS(id);  // Project WS только для лога
             } else if (hash.match(/^\/project\/(.+)$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/(.+)$/)[1]);
+                if (currentView.value === 'dashboard') lastSectionBeforeProject.value = sidebarFilterSection.value;
                 currentView.value = 'project';
                 currentProjectId.value = id;
                 connectGlobalWS();  // Не нужен project WS
@@ -2864,6 +2869,10 @@ const app = createApp({
             try {
                 currentProject.value = await api(`/projects/${encodeURIComponent(id)}`);
                 _cacheSet('project', id, currentProject.value);
+                // Если зашли напрямую по URL — определить раздел из проекта
+                if (!lastSectionBeforeProject.value && currentProject.value?.section) {
+                    lastSectionBeforeProject.value = currentProject.value.section;
+                }
                 loadResumeInfo(id);
                 fetchProjectUsage(id);  // загрузить детальный usage
             } catch (e) {
@@ -5426,7 +5435,6 @@ const app = createApp({
         async function loadExpertDecisions() {
             if (!currentProjectId.value) return;
             const map = {};
-            // 1. Загрузить из expert_review.json
             try {
                 const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}`);
                 const data = await resp.json();
@@ -5436,24 +5444,6 @@ const app = createApp({
                     }
                 }
             } catch (e) { console.warn('Failed to load expert review:', e); }
-
-            // 2. Дополнить из статусов обсуждений (если есть confirmed/rejected)
-            try {
-                for (const tab of ['finding', 'optimization']) {
-                    const resp = await fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/items?type=${tab}`);
-                    const data = await resp.json();
-                    for (const item of (data.items || [])) {
-                        if (item.discussion_status && !map[item.item_id]) {
-                            if (item.discussion_status === 'confirmed') {
-                                map[item.item_id] = { decision: 'accepted', rejection_reason: '', item_type: tab };
-                            } else if (item.discussion_status === 'rejected') {
-                                map[item.item_id] = { decision: 'rejected', rejection_reason: item.resolution_summary || '', item_type: tab };
-                            }
-                        }
-                    }
-                }
-            } catch (e) { /* discussions API may not have items */ }
-
             expertDecisions.value = map;
         }
 
@@ -5468,17 +5458,25 @@ const app = createApp({
             existing.item_type = itemType;
             expertDecisions.value = { ...expertDecisions.value, [itemId]: existing };
 
-            // Синхронизация с системой обсуждений (confirmed/rejected)
-            if (currentProjectId.value && existing.decision) {
+            // Синхронизация с системой обсуждений (confirmed/rejected/open)
+            if (currentProjectId.value) {
                 const discType = itemId.startsWith('OPT') ? 'optimization' : 'finding';
-                const status = existing.decision === 'accepted' ? 'confirmed' : 'rejected';
-                const reason = existing.rejection_reason || '';
-                const summary = reason || (status === 'confirmed' ? 'Принято экспертом' : 'Отклонено экспертом');
-                fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(itemId)}/resolve?type=${discType}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status, summary }),
-                }).catch(() => {}); // fire-and-forget
+                if (existing.decision) {
+                    const status = existing.decision === 'accepted' ? 'confirmed' : 'rejected';
+                    const reason = existing.rejection_reason || '';
+                    const summary = reason || (status === 'confirmed' ? 'Принято экспертом' : 'Отклонено экспертом');
+                    fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(itemId)}/resolve?type=${discType}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status, summary }),
+                    }).catch(() => {});
+                } else {
+                    fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(itemId)}/resolve?type=${discType}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: 'open', summary: '' }),
+                    }).catch(() => {});
+                }
             }
         }
 
@@ -5492,22 +5490,28 @@ const app = createApp({
             if (!currentProjectId.value) return;
             expertReviewSaving.value = true;
             try {
+                const activeType = currentView.value === 'optimization' ? 'optimization' : 'finding';
                 const decisions = [];
+                const removedIds = [];
                 for (const [itemId, d] of Object.entries(expertDecisions.value)) {
+                    const itemType = d.item_type || (itemId.startsWith('OPT') ? 'optimization' : 'finding');
+                    if (itemType !== activeType) continue;
                     if (d.decision) {
                         decisions.push({
                             item_id: itemId,
-                            item_type: d.item_type || (itemId.startsWith('OPT') ? 'optimization' : 'finding'),
+                            item_type: itemType,
                             decision: d.decision,
                             rejection_reason: d.rejection_reason || null,
                             timestamp: new Date().toISOString(),
                         });
+                    } else {
+                        removedIds.push(itemId);
                     }
                 }
                 const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ decisions, reviewer: '' }),
+                    body: JSON.stringify({ decisions, removed_ids: removedIds, reviewer: '' }),
                 });
                 if (!resp.ok) {
                     const err = await resp.json().catch(() => ({}));
@@ -5525,7 +5529,16 @@ const app = createApp({
                         body: JSON.stringify({ status, summary }),
                     }).catch(() => {});
                 }
+                for (const itemId of removedIds) {
+                    const discType = itemId.startsWith('OPT') ? 'optimization' : 'finding';
+                    fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(itemId)}/resolve?type=${discType}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: 'open', summary: '' }),
+                    }).catch(() => {});
+                }
                 alert(`Сохранено: ${result.accepted} принято, ${result.rejected} отклонено`);
+                expertReviewMode.value = false;
             } catch (e) {
                 console.error('Submit expert review error:', e);
                 alert('Ошибка сохранения: ' + (e.message || e));
@@ -5541,7 +5554,8 @@ const app = createApp({
             return (expertDecisions.value[itemId] || {}).rejection_reason || '';
         }
         function expertReviewSummary() {
-            const vals = Object.values(expertDecisions.value);
+            const itemType = currentView.value === 'optimization' ? 'optimization' : 'finding';
+            const vals = Object.values(expertDecisions.value).filter(d => d.item_type === itemType);
             return {
                 total: vals.filter(d => d.decision).length,
                 accepted: vals.filter(d => d.decision === 'accepted').length,
@@ -5875,7 +5889,7 @@ const app = createApp({
             // Disciplines
             supportedDisciplines, getDisciplineColor, disciplineLabel, disciplineBadgeStyle,
             objectName, projectsBySection, collapsedSections, toggleSection,
-            sidebarSectionsOpen, sidebarFilterSection,
+            sidebarSectionsOpen, sidebarFilterSection, lastSectionBeforeProject,
             allSectionsCollapsed, toggleAllSections,
             showEditSection, editSectionCode, editSectionName, editSectionColor,
             openEditSection, saveEditSection, deleteSection,

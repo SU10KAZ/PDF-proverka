@@ -487,17 +487,50 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
 
     # Статус экспертной оценки
     expert_review_status = ""
+    findings_reviewed = False
+    optimization_reviewed = False
     total_items = findings_count + optimization_count
     if total_items > 0:
         review_path = output_dir / "expert_review.json"
         if review_path.exists():
             rdata = _load_json(review_path)
             if rdata and "decisions" in rdata:
-                reviewed_count = len([d for d in rdata["decisions"] if d.get("decision") in ("accepted", "rejected")])
+                decisions = rdata["decisions"]
+                # Загрузить актуальные ID из JSON-файлов конвейера
+                actual_finding_ids: set = set()
+                actual_opt_ids: set = set()
+                fdata = _load_json(output_dir / "03_findings.json")
+                if fdata:
+                    for f in fdata.get("findings", fdata.get("items", [])):
+                        if f.get("id"):
+                            actual_finding_ids.add(f["id"])
+                odata = _load_json(output_dir / "optimization.json")
+                if odata:
+                    for o in odata.get("items", []):
+                        if o.get("id"):
+                            actual_opt_ids.add(o["id"])
+                # Считать только решения по актуальным ID
+                finding_decisions = [
+                    d for d in decisions
+                    if d.get("item_type") == "finding"
+                    and d.get("decision") in ("accepted", "rejected")
+                    and (not actual_finding_ids or d.get("item_id") in actual_finding_ids)
+                ]
+                opt_decisions = [
+                    d for d in decisions
+                    if d.get("item_type") == "optimization"
+                    and d.get("decision") in ("accepted", "rejected")
+                    and (not actual_opt_ids or d.get("item_id") in actual_opt_ids)
+                ]
+                reviewed_count = len(finding_decisions) + len(opt_decisions)
                 if reviewed_count >= total_items:
                     expert_review_status = "complete"
                 elif reviewed_count > 0:
                     expert_review_status = "partial"
+                if findings_count > 0 and len(finding_decisions) >= findings_count:
+                    findings_reviewed = True
+                if optimization_count > 0 and len(opt_decisions) >= optimization_count:
+                    optimization_reviewed = True
 
     return ProjectStatus(
         project_id=project_id,
@@ -531,6 +564,8 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
         pipeline_issues=pipeline_issues,
         pipeline_version=pipeline_version,
         expert_review_status=expert_review_status,
+        findings_reviewed=findings_reviewed,
+        optimization_reviewed=optimization_reviewed,
     )
 
 
@@ -705,9 +740,8 @@ def _build_pipeline_issues(output_dir: Path, pipeline_version: str = "legacy") -
     - Нормы/оптимизация не запускались
     """
     issues = []
-    gemma_migration = detect_gemma_migration_state(output_dir.parent)
-    if gemma_migration.get("migration_required"):
-        issues.append(gemma_migration.get("detail") or "Требуется миграция Gemma schema v2")
+    # Миграция Gemma schema v2 не показывается как pipeline_issue на дашборде:
+    # старые проекты (Qwen/legacy) считаются рабочими, новые проверяются через Gemma.
 
     log = _load_pipeline_log(output_dir)
     if not log or "stages" not in log:

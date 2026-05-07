@@ -48,7 +48,7 @@ def _save_json(path: Path, data):
 # Экспертная оценка (per-project)
 # ═══════════════════════════════════════════════════════════════════════════
 
-def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewer: str = "") -> dict:
+def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewer: str = "", removed_ids: list[str] | None = None) -> dict:
     """Сохранить решения эксперта по проекту.
 
     1. Записывает expert_review.json в _output/ проекта
@@ -66,9 +66,10 @@ def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewe
     if existing and "decisions" in existing:
         existing_decisions = existing["decisions"]
 
-    # Новые решения перезаписывают старые по item_id
+    # Новые решения перезаписывают старые по item_id; removed_ids удаляются
     new_ids = {d.item_id for d in decisions}
-    merged = [d for d in existing_decisions if d.get("item_id") not in new_ids]
+    excluded_ids = new_ids | set(removed_ids or [])
+    merged = [d for d in existing_decisions if d.get("item_id") not in excluded_ids]
     merged.extend([d.model_dump() for d in decisions])
 
     review_data = {

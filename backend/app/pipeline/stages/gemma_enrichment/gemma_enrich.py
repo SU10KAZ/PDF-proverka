@@ -77,8 +77,8 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
     validate_gemma_summary,
 )
 
-_ROOT = Path(__file__).resolve().parent
-load_dotenv(_ROOT / ".env")
+from backend.app.core.config import ROOT_DIR as _ROOT_DIR
+load_dotenv(_ROOT_DIR / ".env")
 
 
 # ─── Constants ─────────────────────────────────────────────────────────────
@@ -1281,7 +1281,7 @@ def _ensure_crop_index(
     block_ids: list[str] | None = None,
     force: bool = False,
 ) -> dict[str, Any]:
-    from blocks import crop_blocks
+    from backend.app.pipeline.stages.crop_blocks.blocks import crop_blocks
 
     project_dir = Path(project_dir)
     output_dir = project_dir / "_output" / output_dir_name

@@ -13,9 +13,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Literal
 
-from backend.app.core.config import BASE_DIR
+from backend.app.core.config import MISSING_NORMS_VAULT_FILE
 
-_STORE_PATH = BASE_DIR / "webapp" / "data" / "missing_norms_vault.json"
+_STORE_PATH = MISSING_NORMS_VAULT_FILE
 _lock = threading.Lock()
 
 NormStatus = Literal["pending", "added", "dismissed"]

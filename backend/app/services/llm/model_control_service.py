@@ -18,7 +18,7 @@ import requests
 from dotenv import load_dotenv
 
 
-ROOT_DIR = Path(__file__).resolve().parents[2]
+from backend.app.core.config import ROOT_DIR
 
 
 def _load_env() -> None:

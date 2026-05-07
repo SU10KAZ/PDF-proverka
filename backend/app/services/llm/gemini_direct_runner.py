@@ -207,9 +207,8 @@ def is_gemini_direct_model(model_id: str) -> bool:
 # ─── Schema loading ───────────────────────────────────────────────────────────
 
 def _load_gemini_schema() -> dict:
-    schema_path = (
-        Path(__file__).resolve().parent.parent / "schemas" / "block_batch.gemini_direct.json"
-    )
+    from backend.app.core.config import SCHEMAS_DIR
+    schema_path = SCHEMAS_DIR / "block_batch.gemini_direct.json"
     if schema_path.exists():
         return json.loads(schema_path.read_text(encoding="utf-8"))
     # Minimal inline fallback

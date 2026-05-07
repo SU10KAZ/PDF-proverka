@@ -13,7 +13,6 @@ from __future__ import annotations
 import asyncio
 import json
 import re
-import sys
 import time
 import traceback
 from pathlib import Path
@@ -21,7 +20,7 @@ from typing import Optional
 
 from backend.app.models.audit import PrepareQueueItem, PrepareQueueStatus
 from backend.app.models.websocket import WSMessage
-from backend.app.core.config import BLOCKS_SCRIPT, GEMMA_ENRICH_SCRIPT
+from backend.app.core.config import BLOCKS_SCRIPT, GEMMA_ENRICH_SCRIPT, PREPARE_QUEUE_FILE
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.services.common.audit_logger import persist_log, update_pipeline_log
 from backend.app.services.llm.lmstudio_lifecycle_service import (
@@ -42,19 +41,15 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
 )
 from backend.app.ws.manager import ws_manager
 
-_ROOT = Path(__file__).resolve().parents[2]
-if str(_ROOT) not in sys.path:
-    sys.path.insert(0, str(_ROOT))
-
-PREPARE_QUEUE_FILE = _ROOT / "webapp" / "data" / "prepare_queue.json"
-
-from backend.app.pipeline.stages.gemma_enrichment.gemma_enrich import (  # noqa: E402
+from backend.app.pipeline.stages.gemma_enrichment.gemma_enrich import (
     retry_failed_blocks,
     DEFAULT_MODEL,
     DEFAULT_PARALLELISM,
     DEFAULT_TIMEOUT_S,
 )
-from blocks import _backup_output_for_reenrichment  # noqa: E402
+from backend.app.pipeline.stages.crop_blocks.blocks import _backup_output_for_reenrichment
+
+# PREPARE_QUEUE_FILE imported from backend.app.core.config
 
 
 # ─── State ────────────────────────────────────────────────────────────────

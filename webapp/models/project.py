@@ -81,6 +81,8 @@ class ProjectStatus(BaseModel):
     pipeline_version: str = "legacy"
     # Экспертная оценка: "complete" (все решения), "partial" (частично), "" (нет)
     expert_review_status: str = ""
+    findings_reviewed: bool = False      # все замечания отработаны
+    optimization_reviewed: bool = False  # все оптимизации отработаны
 
 
 class ProjectCreate(BaseModel):

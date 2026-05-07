@@ -931,7 +931,7 @@ def crop_blocks(
     # (Gemma 300 / Stage02 100) intentionally do not masquerade as _output/blocks.
     if output_dir.name == "blocks":
         try:
-            from process_project import enrich_document_graph
+            from backend.app.pipeline.stages.prepare.process_project import enrich_document_graph
             enrich_document_graph(str(output_dir.parent))  # output_dir = _output/blocks, parent = _output
         except Exception as e:
             print(f"  [WARN] Не удалось обогатить document_graph: {e}")
@@ -1090,13 +1090,13 @@ def make_claude_risk_profile(
 _DEFAULT_BATCH_LIMITS = {"max_blocks": MAX_BLOCKS_PER_BATCH, "max_size_kb": MAX_BATCH_SIZE_KB,
                          "solo_kb": SOLO_BLOCK_THRESHOLD_KB, "min_blocks": MIN_BLOCKS_PER_BATCH}
 
-_STAGE_MODELS_PATH = Path(__file__).resolve().parent / "webapp" / "data" / "stage_models.json"
+from backend.app.core.config import STAGE_MODELS_FILE as _STAGE_MODELS_PATH
 
 
 def _get_batch_limits_for_current_model(stage: str = "block_batch") -> dict[str, int]:
     """Вернуть лимиты пакетизации для модели, настроенной на данный этап.
 
-    Читает webapp/data/stage_models.json; если файла нет или модели неизвестна — дефолт.
+    Читает backend/app/data/stage_models.json; если файла нет или модели неизвестна — дефолт.
     """
     try:
         if not _STAGE_MODELS_PATH.exists():
@@ -1544,7 +1544,7 @@ def generate_block_batches(
     модель фокусируется на одной картинке).
 
     Если max_size_kb/max_blocks/min_blocks/solo_kb не переданы — берутся per-model лимиты
-    для текущей модели этапа block_batch (из webapp/data/stage_models.json).
+    для текущей модели этапа block_batch (из backend/app/data/stage_models.json).
     """
     output_dir = Path(project_dir) / "_output"
     index_path = output_dir / "blocks" / "index.json"

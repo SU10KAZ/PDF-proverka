@@ -223,8 +223,6 @@ def detect_resume_stage(project_id: str) -> dict:
             # даже если отсутствует вспомогательный снапшот 03a_norms_verified.json.
             excel_info = stages_log.get("excel", {})
             if excel_info.get("status") in ("done", "skipped"):
-                if migration_state.get("migration_required"):
-                    return _migration_resume()
                 return {
                     "stage": "completed",
                     "stage_label": "Завершён",
@@ -235,6 +233,14 @@ def detect_resume_stage(project_id: str) -> dict:
             pass
 
     if migration_state.get("migration_required"):
+        # Старый завершённый проект (есть findings/norms) — не показываем баннер миграции.
+        if has_03 or has_norm_checks or has_03a:
+            return {
+                "stage": "completed",
+                "stage_label": "Завершён",
+                "detail": "Все этапы выполнены",
+                "can_resume": False,
+            }
         return _migration_resume()
 
     # ─── Приоритет 2: стандартная проверка по файлам ───

@@ -1,0 +1,133 @@
+[
+  {
+    "id": "NOEV-001",
+    "category": "completely_empty_evidence",
+    "input_finding": {
+      "id": "F-201",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "grounding",
+      "sheet": "Лист 5",
+      "page": 9,
+      "problem": "Отсутствует заземление металлического лотка трассы кабелей",
+      "description": "В проекте не предусмотрено заземление металлических кабельных лотков на трассе от ВРУ до ГРЩ. Заземление лотков обязательно по ПУЭ.",
+      "norm": "ПУЭ-7, гл. 1.7",
+      "norm_quote": null,
+      "solution": "Предусмотреть заземление металлических лотков.",
+      "risk": "Опасность поражения электрическим током.",
+      "evidence": [],
+      "related_block_ids": [],
+      "source_block_ids": []
+    },
+    "expected_decision": "reject",
+    "expected_reason": "no_evidence_no_block_refs",
+    "expected_verdict": "no_evidence",
+    "comment": "Нет ни одного evidence и ни одного block_id. Утверждение об отсутствии без проверки. Вердикт: no_evidence."
+  },
+  {
+    "id": "NOEV-002",
+    "category": "phantom_block_all_invalid",
+    "input_finding": {
+      "id": "F-202",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "specification",
+      "sheet": "Лист 11",
+      "page": 19,
+      "problem": "Марка автоматического выключателя в спецификации не соответствует схеме",
+      "description": "В спецификации (поз. 12) указан АВ IEK ВА47-60 25А, на схеме обозначен Schneider Easy9 25А. Несоответствие марки производителя.",
+      "norm": null,
+      "norm_quote": null,
+      "solution": "Привести к единой марке.",
+      "risk": "Закупка не того оборудования.",
+      "evidence": [
+        {"type": "text", "block_id": "NONEXIST-BLOCK-AAAA", "page": 19},
+        {"type": "image", "block_id": "NONEXIST-BLOCK-BBBB", "page": 7}
+      ],
+      "related_block_ids": ["NONEXIST-BLOCK-AAAA", "NONEXIST-BLOCK-BBBB"],
+      "source_block_ids": ["NONEXIST-BLOCK-AAAA"]
+    },
+    "expected_decision": "reject",
+    "expected_reason": "all_block_ids_phantom",
+    "expected_verdict": "phantom_block",
+    "comment": "Все block_id не существуют в 02_blocks_analysis.json. Замечание нельзя проверить. Вердикт: phantom_block + remove (все существенные привязки битые)."
+  },
+  {
+    "id": "NOEV-003",
+    "category": "phantom_block_partial",
+    "input_finding": {
+      "id": "F-203",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "cable",
+      "sheet": "Лист 7",
+      "page": 13,
+      "problem": "Сечение кабеля в таблице не соответствует схеме",
+      "description": "В таблице кабелей (лист 7) цепь ЩО-3 имеет сечение 2.5 мм², на схеме та же цепь подписана 4 мм².",
+      "norm": null,
+      "norm_quote": null,
+      "solution": "Унифицировать сечение кабеля во всём комплекте.",
+      "risk": "Закупка неверного сечения.",
+      "evidence": [
+        {"type": "text", "block_id": "VALID-BLOCK-1234", "page": 13},
+        {"type": "image", "block_id": "NONEXIST-BLOCK-CCCC", "page": 13}
+      ],
+      "related_block_ids": ["VALID-BLOCK-1234", "NONEXIST-BLOCK-CCCC"],
+      "source_block_ids": ["VALID-BLOCK-1234"]
+    },
+    "expected_decision": "borderline",
+    "expected_reason": "partial_phantom_valid_evidence_remains",
+    "expected_verdict": "phantom_block",
+    "expected_action": "narrow_evidence",
+    "comment": "Один block_id валидный (VALID-BLOCK-1234), один битый (NONEXIST-BLOCK-CCCC). Нельзя удалять: есть валидный evidence. Вердикт: phantom_block + narrow_evidence (удалить битый block_id, оставить валидный)."
+  },
+  {
+    "id": "NOEV-004",
+    "category": "weak_evidence_semantic_mismatch",
+    "input_finding": {
+      "id": "F-204",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "grounding",
+      "sheet": "Лист 3",
+      "page": 6,
+      "problem": "Отсутствует главная шина заземления (ГШЗ) в ВРУ",
+      "description": "В схеме ВРУ (лист 3) не показана главная шина заземления. Наличие ГШЗ обязательно по СП 256.",
+      "norm": "СП 256.1325800.2016, п. 17.18",
+      "norm_quote": null,
+      "solution": "Добавить ГШЗ в схему ВРУ.",
+      "risk": "Нарушение системы заземления.",
+      "evidence": [
+        {"type": "image", "block_id": "LIGHTING-TABLE-003", "page": 6}
+      ],
+      "related_block_ids": ["LIGHTING-TABLE-003"],
+      "source_block_ids": ["LIGHTING-TABLE-003"]
+    },
+    "expected_decision": "reject",
+    "expected_reason": "evidence_block_topic_mismatch",
+    "expected_verdict": "weak_evidence",
+    "comment": "evidence-блок LIGHTING-TABLE-003 по названию относится к таблице освещения, а не к схеме ВРУ с заземлением. Семантическое несоответствие evidence и сути замечания. Вердикт: weak_evidence."
+  },
+  {
+    "id": "NOEV-005",
+    "category": "no_evidence_absence_single_block",
+    "input_finding": {
+      "id": "F-205",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "fire_alarm",
+      "sheet": "Лист 8",
+      "page": 14,
+      "problem": "Отсутствует разводка пожарной сигнализации в помещении насосной",
+      "description": "На плане технического этажа (лист 8) в помещении насосной не показаны пожарные извещатели. Согласно СП 484, насосные подлежат оборудованию пожарной сигнализацией.",
+      "norm": "СП 484.1311500.2020, п. 6.2",
+      "norm_quote": null,
+      "solution": "Предусмотреть пожарные извещатели в помещении насосной.",
+      "risk": "Нарушение требований пожарной безопасности.",
+      "evidence": [
+        {"type": "image", "block_id": "TECH-FLOOR-PLAN-008", "page": 14}
+      ],
+      "related_block_ids": ["TECH-FLOOR-PLAN-008"],
+      "source_block_ids": ["TECH-FLOOR-PLAN-008"]
+    },
+    "expected_decision": "borderline",
+    "expected_reason": "absence_claim_single_block_scope_not_fully_verified",
+    "expected_verdict": "weak_evidence",
+    "comment": "Есть один evidence-блок с планом. Но вывод 'отсутствует' сделан только по одному блоку. Critic должен проверить связанные блоки той же страницы и другие листы. Если область не проверена — weak_evidence или downgrade. Не phantom (блок существует), но и не pass без дополнительной проверки."
+  }
+]

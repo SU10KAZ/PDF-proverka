@@ -263,9 +263,32 @@ _STAGE_MODEL_DEFAULTS: dict[str, str] = {
     "optimization_corrector": "claude-sonnet-4-6",
 }
 
-# data/ папка backend (для персистентных JSON-конфигов)
-_BACKEND_DATA_DIR = Path(__file__).resolve().parent.parent / "data"
-_STAGE_MODELS_FILE = _BACKEND_DATA_DIR / "stage_models.json"
+# ─── Runtime data directory ─────────────────────────────────────────────────
+# Все персистентные JSON-файлы (очереди, объекты, usage) хранятся здесь.
+# Env AUDIT_APP_DATA_DIR переопределяет расположение.
+def _app_data_dir() -> Path:
+    if os.environ.get("AUDIT_APP_DATA_DIR"):
+        return Path(os.environ["AUDIT_APP_DATA_DIR"]).resolve()
+    return Path(__file__).resolve().parent.parent / "data"
+
+
+APP_DATA_DIR = _app_data_dir()
+
+# Обратная совместимость: _BACKEND_DATA_DIR → APP_DATA_DIR
+_BACKEND_DATA_DIR = APP_DATA_DIR
+
+# Runtime data file paths
+BATCH_QUEUE_FILE             = APP_DATA_DIR / "batch_queue.json"
+PREPARE_QUEUE_FILE           = APP_DATA_DIR / "prepare_queue.json"
+MISSING_NORMS_VAULT_FILE     = APP_DATA_DIR / "missing_norms_vault.json"
+OBJECTS_FILE_PATH            = APP_DATA_DIR / "objects.json"
+PROJECT_GROUPS_FILE          = APP_DATA_DIR / "project_groups.json"
+USAGE_DATA_FILE              = APP_DATA_DIR / "usage_data.json"
+USAGE_OFFSETS_FILE           = APP_DATA_DIR / "usage_offsets.json"
+STAGE_MODELS_FILE            = APP_DATA_DIR / "stage_models.json"
+STAGE_BATCH_MODES_FILE_PATH  = APP_DATA_DIR / "stage_batch_modes.json"
+
+_STAGE_MODELS_FILE = STAGE_MODELS_FILE
 
 
 def _load_stage_model_config() -> dict[str, str]:
@@ -304,7 +327,7 @@ STAGE_BATCH_MODE_CHOICES: dict[str, list[str]] = {
     "block_batch": ["findings_only_gemma_pair"],
 }
 
-_STAGE_BATCH_MODES_FILE = _BACKEND_DATA_DIR / "stage_batch_modes.json"
+_STAGE_BATCH_MODES_FILE = STAGE_BATCH_MODES_FILE_PATH
 
 
 def _load_stage_batch_modes() -> dict[str, str]:

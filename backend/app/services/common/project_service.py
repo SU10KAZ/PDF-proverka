@@ -705,9 +705,8 @@ def _build_pipeline_issues(output_dir: Path, pipeline_version: str = "legacy") -
     - Нормы/оптимизация не запускались
     """
     issues = []
-    gemma_migration = detect_gemma_migration_state(output_dir.parent)
-    if gemma_migration.get("migration_required"):
-        issues.append(gemma_migration.get("detail") or "Требуется миграция Gemma schema v2")
+    # Миграция Gemma schema v2 не показывается как pipeline_issue на дашборде:
+    # старые проекты (Qwen/legacy) считаются рабочими, новые проверяются через Gemma.
 
     log = _load_pipeline_log(output_dir)
     if not log or "stages" not in log:

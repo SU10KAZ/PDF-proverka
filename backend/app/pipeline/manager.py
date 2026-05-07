@@ -25,6 +25,7 @@ from backend.app.core.config import (
     CRITIC_CHUNK_SIZE,
     CORRECTOR_CHUNK_SIZE,
     validate_current_stage_model_config,
+    BATCH_QUEUE_FILE,
 )
 from backend.app.models.audit import AuditJob, AuditStage, JobStatus, BatchQueueStatus, BatchQueueItem, BatchAction
 from backend.app.models.websocket import WSMessage
@@ -59,6 +60,43 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
     stage02_blocks_index_path,
     stage02_crop_policy,
 )
+
+# ── Stage runner imports (extracted pure helpers) ──────────────────────────
+from backend.app.pipeline.stages.crop_blocks.runner import (
+    build_crop_args as _build_crop_args,
+    existing_crop_matches_policy as _existing_crop_matches_policy,
+    crop_policy_label as _crop_policy_label,
+    run_crop_blocks as _run_crop_blocks,
+    run_policy_recrop as _run_policy_recrop,
+)
+from backend.app.pipeline.stages.block_analysis.runner import (
+    RUNTIME_BATCHES_FILE,
+    expand_block_batches_for_single_block_mode as _expand_block_batches_for_local_model,
+    build_single_block_runtime_plan as _build_single_block_runtime_plan,
+    write_single_block_runtime_plan as _write_single_block_runtime_plan,
+    load_or_create_single_block_runtime_plan as _load_or_create_single_block_runtime_plan,
+    runtime_batch_failure_entry as _runtime_batch_failure_entry,
+    write_block_analysis_runtime_summary as _write_block_analysis_runtime_summary,
+)
+from backend.app.pipeline.stages.findings_merge.runner import (
+    run_findings_merge as _run_findings_merge_stage,
+)
+from backend.app.pipeline.stages.norms.runner import (
+    run_norm_verification as _run_norm_verification_stage,
+)
+from backend.app.pipeline.stages.findings_review.runner import (
+    run_findings_review as _run_findings_review_stage,
+)
+from backend.app.pipeline.stages.block_analysis.runner import (
+    run_block_analysis_findings_only as _run_block_analysis_findings_only_stage,
+)
+from backend.app.pipeline.stages.text_analysis.runner import (
+    run_text_analysis as _run_text_analysis_stage,
+)
+from backend.app.pipeline.stages.gemma_enrichment.runner import (
+    run_gemma_enrichment_stage as _run_gemma_enrichment_stage_fn,
+)
+# ──────────────────────────────────────────────────────────────────────────
 
 
 def _project_path(pid: str) -> str:
@@ -110,171 +148,15 @@ def _extract_error_detail(exit_code: int, output: str, max_len: int = 120) -> st
     return f"Exit code {exit_code}"
 
 
-BATCH_QUEUE_FILE = BASE_DIR / "webapp" / "data" / "batch_queue.json"
-RUNTIME_BATCHES_FILE = "block_batches.runtime.json"
+# BATCH_QUEUE_FILE imported from backend.app.core.config
+# RUNTIME_BATCHES_FILE imported from backend.app.pipeline.stages.block_analysis.runner
+# _build_crop_args, _existing_crop_matches_policy, _crop_policy_label
+#   imported from backend.app.pipeline.stages.crop_blocks.runner
+# _expand_block_batches_for_local_model, _build_single_block_runtime_plan,
+# _write_single_block_runtime_plan, _load_or_create_single_block_runtime_plan,
+# _runtime_batch_failure_entry, _write_block_analysis_runtime_summary
+#   imported from backend.app.pipeline.stages.block_analysis.runner
 
-
-def _build_crop_args(
-    project_path: str,
-    force: bool = False,
-    *,
-    policy: dict | None = None,
-    output_dir_name: str | None = GEMMA_BLOCKS_DIRNAME,
-) -> list[str]:
-    """Build blocks.py crop args from an explicit crop policy.
-
-    Gemma enrichment intentionally uses its own production crop policy and is
-    not tied to the Stage 02 model choice.
-    """
-    policy = policy or gemma_enrichment_crop_policy()
-    args = ["crop", project_path]
-    if output_dir_name:
-        args.extend(["--output-dir", output_dir_name])
-    if policy.get("compact"):
-        args.append("--compact")
-    elif policy.get("dpi"):
-        args.extend(["--dpi", str(int(policy["dpi"]))])
-    if policy.get("skip_small") is False:
-        args.append("--no-skip-small")
-    if force:
-        args.append("--force")
-    return args
-
-
-def _existing_crop_matches_policy(blocks_index_path: Path, policy: dict | None = None) -> bool:
-    """Check an existing crop index against an explicit crop policy."""
-    return crop_index_matches_policy(blocks_index_path, policy or gemma_enrichment_crop_policy())
-
-
-def _crop_policy_label(policy: dict) -> str:
-    compact = "compact" if policy.get("compact") else "non-compact"
-    small = "skip-small" if policy.get("skip_small", True) else "no-skip-small"
-    return f"{policy.get('dpi')} DPI, {compact}, {small}"
-
-
-def _expand_block_batches_for_local_model(batches: list[dict]) -> tuple[list[dict], bool]:
-    """Перевести stage 02 в single-block режим (для всех моделей и пресетов).
-
-    После архитектурного решения (Идея 7 в ideas.md): один image-блок = один
-    LLM-запрос для ВСЕХ моделей. Раньше единственно для локальных Gemma, теперь
-    унифицировано — Gemma-enrichment перенесён в stage 1 prep, stage 02 работает
-    только с одиночными блоками. Это даёт:
-      - меньше blast radius при битом PNG;
-      - стабильнее качество (нет деградации обдумывания при батчах графики);
-      - симметрию между провайдерами (Sonnet/Opus/GPT/Gemini получают один блок).
-
-    Генератор `blocks.py batches` остаётся общим для аллокации блоков, здесь мы
-    адаптируем runtime-план перед запуском CLI.
-    """
-    single_block_batches: list[dict] = []
-    next_batch_id = 1
-
-    for batch in batches:
-        source_batch_id = batch.get("batch_id")
-        for block in batch.get("blocks", []):
-            block_copy = dict(block)
-            page = block_copy.get("page")
-            single_block_batches.append({
-                "batch_id": next_batch_id,
-                "blocks": [block_copy],
-                "pages_included": [page] if page is not None else [],
-                "block_count": 1,
-                "total_size_kb": block_copy.get("size_kb", 0),
-                "single_block_mode": True,
-                "source_batch_id": source_batch_id,
-            })
-            next_batch_id += 1
-
-    return single_block_batches, True
-
-
-def _build_single_block_runtime_plan(
-    source_batches: list[dict],
-    *,
-    source: str = "expanded_from_blocks_py_batches",
-) -> dict:
-    """Build the persisted Stage 02 runtime plan used by progress/resume/retry."""
-    batches, _ = _expand_block_batches_for_local_model(source_batches)
-    return {
-        "schema_version": 1,
-        "mode": "single_block",
-        "source": source,
-        "total_batches": len(batches),
-        "total_blocks": sum(int(b.get("block_count") or len(b.get("blocks", []))) for b in batches),
-        "batches": batches,
-    }
-
-
-def _write_single_block_runtime_plan(
-    output_dir: Path,
-    source_batches: list[dict],
-    *,
-    source: str = "expanded_from_blocks_py_batches",
-) -> dict:
-    plan = _build_single_block_runtime_plan(source_batches, source=source)
-    (output_dir / RUNTIME_BATCHES_FILE).write_text(
-        json.dumps(plan, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
-    return plan
-
-
-def _load_or_create_single_block_runtime_plan(
-    output_dir: Path,
-    source_batches: list[dict],
-    *,
-    force_rebuild: bool = False,
-) -> dict:
-    runtime_path = output_dir / RUNTIME_BATCHES_FILE
-    if runtime_path.exists() and not force_rebuild:
-        try:
-            plan = json.loads(runtime_path.read_text(encoding="utf-8"))
-            if (
-                plan.get("schema_version") == 1
-                and plan.get("mode") == "single_block"
-                and isinstance(plan.get("batches"), list)
-            ):
-                return plan
-        except (json.JSONDecodeError, OSError):
-            pass
-    return _write_single_block_runtime_plan(output_dir, source_batches)
-
-
-def _runtime_batch_failure_entry(batch: dict, error: str, *, reason: str) -> dict:
-    block = (batch.get("blocks") or [{}])[0]
-    return {
-        "batch_id": batch.get("batch_id"),
-        "block_id": block.get("block_id"),
-        "page": block.get("page"),
-        "reason": reason,
-        "error": error,
-    }
-
-
-def _write_block_analysis_runtime_summary(
-    output_dir: Path,
-    runtime_plan: dict,
-    *,
-    failed_batches: list[dict],
-    completed_batches: int,
-) -> dict:
-    total = int(runtime_plan.get("total_batches") or len(runtime_plan.get("batches", [])))
-    summary = {
-        "schema_version": 1,
-        "stage": "block_analysis",
-        "mode": runtime_plan.get("mode", "single_block"),
-        "runtime_plan_path": str(output_dir / RUNTIME_BATCHES_FILE),
-        "total_batches": total,
-        "completed_batches": int(completed_batches),
-        "failed_batches_count": len(failed_batches),
-        "failed_batches": failed_batches,
-        "created_at": datetime.now().isoformat(),
-    }
-    (output_dir / "block_analysis_summary.json").write_text(
-        json.dumps(summary, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
-    return summary
 from backend.app.services.common.project_service import resolve_project_dir, bind_object, unbind_object
 from backend.app.ws.manager import ws_manager
 
@@ -986,6 +868,80 @@ class PipelineManager:
         """Обёртка run_script с автоматическим project_id для трекинга процессов."""
         return await run_script(*args, project_id=project_id, **kwargs)
 
+    def _make_stage_context(self, job: "AuditJob") -> "PipelineStageContext":
+        """Построить PipelineStageContext из текущего job для передачи в stage runner-ы."""
+        from backend.app.pipeline.context import PipelineStageContext
+        pid = job.project_id
+        project_dir = resolve_project_dir(pid)
+        output_dir = project_dir / "_output"
+
+        async def _log(msg: str, level: str = "info") -> None:
+            await self._log(job, msg, level)
+
+        async def _check_before_launch() -> bool:
+            return await self._check_before_launch(job)
+
+        async def _check_pause() -> bool:
+            return await self._check_pause(job)
+
+        async def _wait_for_rate_limit(reason: str, cli_output: str) -> bool:
+            return await self._wait_for_rate_limit(job, reason, cli_output)
+
+        def _record_cli_usage(cli_result, stage: str, is_retry: bool = False) -> None:
+            self._record_cli_usage(job, cli_result, stage, is_retry)
+
+        def _update_pipeline_log(stage_key: str, status: str, **kwargs) -> None:
+            self._update_pipeline_log(pid, stage_key, status, **kwargs)
+
+        async def _run_subprocess(*args, **kwargs):
+            return await self._run_script(pid, *args, **kwargs)
+
+        try:
+            project_info = json.loads((project_dir / "project_info.json").read_text(encoding="utf-8"))
+        except Exception:
+            project_info = {}
+
+        async def _stream_findings_events(stage: str) -> None:
+            await self._stream_findings_events(job, stage)
+
+        def _reset_job_progress() -> None:
+            self._reset_job_progress(job)
+
+        def _refresh_finding_quality() -> None:
+            self._refresh_finding_quality(pid)
+
+        def _progress_sync(current: int, total: int) -> None:
+            """Синхронный progress callback для block_analysis executor thread."""
+            loop = asyncio.get_event_loop()
+            asyncio.run_coroutine_threadsafe(self._progress(job, current, total), loop)
+
+        def _record_block_analysis_usage(summary: dict) -> None:
+            self._record_findings_only_usage(job, summary)
+
+        def _is_cancelled() -> bool:
+            return job.status == JobStatus.CANCELLED
+
+        return PipelineStageContext(
+            project_dir=project_dir,
+            project_id=pid,
+            output_dir=output_dir,
+            log=_log,
+            check_before_launch=_check_before_launch,
+            check_pause=_check_pause,
+            wait_for_rate_limit=_wait_for_rate_limit,
+            record_cli_usage=_record_cli_usage,
+            update_pipeline_log=_update_pipeline_log,
+            run_subprocess=_run_subprocess,
+            project_info=project_info,
+            object_id=getattr(job, "object_id", None),
+            stream_findings_events=_stream_findings_events,
+            reset_job_progress=_reset_job_progress,
+            refresh_finding_quality=_refresh_finding_quality,
+            progress_sync=_progress_sync,
+            record_block_analysis_usage=_record_block_analysis_usage,
+            is_cancelled=_is_cancelled,
+        )
+
     def _reset_job_progress(self, job: AuditJob):
         """Сбросить прогресс и ETA-данные при переходе между этапами пайплайна."""
         job.progress_current = 0
@@ -1000,7 +956,7 @@ class PipelineManager:
         При findings_merge LLM иногда теряет highlight_regions из G-замечаний.
         Этот метод подтягивает координаты обратно по source_block_ids/related_block_ids.
         """
-        from backfill_highlights import backfill_project
+        from backend.app.pipeline.stages.findings_merge.backfill_highlights import backfill_project
         project_dir = resolve_project_dir(project_id)
         result = backfill_project(project_dir)
         if result["fixed"] > 0:
@@ -1009,279 +965,18 @@ class PipelineManager:
     @staticmethod
     def _attach_stage02_coverage_to_findings(project_id: str) -> dict:
         """Attach deterministic Stage 02 coverage warnings to final findings."""
-        output_dir = resolve_project_dir(project_id) / "_output"
-        findings_path = output_dir / "03_findings.json"
-        blocks_path = output_dir / "02_blocks_analysis.json"
-        gemma_summary_path = output_dir / "gemma_enrichment_summary.json"
-        block_summary_path = output_dir / "block_analysis_summary.json"
-
-        if not findings_path.exists():
-            return {}
-
-        def _load(path: Path) -> dict:
-            try:
-                data = json.loads(path.read_text(encoding="utf-8"))
-                return data if isinstance(data, dict) else {}
-            except (json.JSONDecodeError, OSError):
-                return {}
-
-        def _dedupe(items: list[dict], *, by_block_only: bool = False) -> list[dict]:
-            seen: set[tuple[str, str]] = set()
-            out: list[dict] = []
-            for item in items:
-                bid = str(item.get("block_id") or "")
-                reason = str(item.get("reason") or item.get("coverage_status") or "")
-                key = (bid, "" if by_block_only else reason)
-                if not bid or key in seen:
-                    continue
-                seen.add(key)
-                out.append(item)
-            return out
-
-        findings_data = _load(findings_path)
-        if not findings_data:
-            return {}
-
-        data02 = _load(blocks_path)
-        meta02 = data02.get("stage02_meta") or data02.get("meta") or {}
-        block_analyses = data02.get("block_analyses") or []
-
-        gemma_summary = _load(gemma_summary_path)
-        gemma_uncovered = list(gemma_summary.get("uncovered_blocks") or [])
-        if not gemma_uncovered:
-            gemma_uncovered = [
-                {"block_id": bid, "page": None, "reason": "gemma_enrichment_failed"}
-                for bid in gemma_summary.get("uncovered_block_ids") or []
-            ]
-        gemma_uncovered.extend(meta02.get("uncovered_blocks") or [])
-        stage02_crop_missing = list(meta02.get("stage02_crop_missing_blocks") or [])
-        base_gemma_coverage = meta02.get("base_gemma_coverage") or {}
-        high_detail_candidates = int(meta02.get("high_detail_candidates") or 0)
-        high_detail_successful = int(meta02.get("high_detail_successful") or 0)
-        high_detail_skipped_large = int(meta02.get("high_detail_skipped_large") or 0)
-        base_only_blocks = [
-            item if isinstance(item, dict) else {"block_id": str(item)}
-            for item in (meta02.get("blocks_analyzed_only_with_100_dpi_base") or [])
-        ]
-        upgraded_blocks = [
-            item if isinstance(item, dict) else {"block_id": str(item)}
-            for item in (meta02.get("blocks_upgraded_to_300") or [])
-        ]
-
-        single_block_failed = list(meta02.get("failed_blocks") or [])
-        block_summary = _load(block_summary_path)
-        single_block_failed.extend(block_summary.get("failed_batches") or [])
-
-        excluded = []
-        for ba in block_analyses:
-            status = ba.get("coverage_status")
-            if status in {"missing_gemma_enrichment", "single_block_analysis_failed", "cancelled"}:
-                excluded.append({
-                    "block_id": ba.get("block_id"),
-                    "page": ba.get("page"),
-                    "sheet": ba.get("sheet"),
-                    "reason": status,
-                    "details": ba.get("unreadable_details") or ba.get("_error"),
-                })
-        excluded.extend([
-            {
-                "block_id": b.get("block_id"),
-                "page": b.get("page"),
-                "reason": b.get("reason") or "missing_stage02_crop",
-                "details": b.get("error") or "Gemma base index contains this block, but Stage 02 100 DPI crop is missing",
-            }
-            for b in stage02_crop_missing
-        ])
-        excluded.extend([
-            {
-                "block_id": b.get("block_id"),
-                "page": b.get("page"),
-                "reason": b.get("reason") or "gemma_enrichment_failed",
-                "details": b.get("error"),
-            }
-            for b in gemma_uncovered
-        ])
-        excluded.extend([
-            {
-                "block_id": b.get("block_id"),
-                "page": b.get("page"),
-                "reason": b.get("reason") or "single_block_analysis_failed",
-                "details": b.get("error"),
-            }
-            for b in single_block_failed
-        ])
-
-        gemma_uncovered = _dedupe(gemma_uncovered)
-        single_block_failed = _dedupe(single_block_failed)
-        excluded = _dedupe(excluded, by_block_only=True)
-
-        coverage = {
-            "schema_version": 1,
-            "summary": {
-                "gemma_uncovered_count": len(gemma_uncovered),
-                "single_block_failed_count": len(single_block_failed),
-                "stage02_crop_missing_count": len(stage02_crop_missing),
-                "excluded_from_full_analysis_count": len(excluded),
-                "base_gemma_covered_count": int(base_gemma_coverage.get("blocks_ok") or 0),
-                "base_gemma_total_count": int(base_gemma_coverage.get("blocks_total") or 0),
-                "high_detail_candidates": high_detail_candidates,
-                "high_detail_successful": high_detail_successful,
-                "high_detail_skipped_large": high_detail_skipped_large,
-                "base_only_blocks_count": len(base_only_blocks),
-                "upgraded_to_300_count": len(upgraded_blocks),
-            },
-            "gemma_uncovered_blocks": gemma_uncovered,
-            "single_block_failed_blocks": single_block_failed,
-            "stage02_crop_missing_blocks": stage02_crop_missing,
-            "blocks_analyzed_only_with_100_dpi_base": base_only_blocks,
-            "blocks_upgraded_to_300": upgraded_blocks,
-            "excluded_blocks_from_full_analysis": excluded,
-            "sections": [
-                {
-                    "title": "Непокрытые блоки Gemma enrichment",
-                    "blocks": gemma_uncovered,
-                },
-                {
-                    "title": "Ошибки single-block анализа",
-                    "blocks": single_block_failed,
-                },
-                {
-                    "title": "Блоки, исключённые из полноценного анализа",
-                    "blocks": excluded,
-                },
-                {
-                    "title": "Блоки, оставшиеся на base 100 DPI",
-                    "blocks": base_only_blocks,
-                },
-                {
-                    "title": "Блоки, upgraded до 300 DPI",
-                    "blocks": upgraded_blocks,
-                },
-            ],
-        }
-
-        meta = findings_data.setdefault("meta", {})
-        meta["analysis_coverage"] = coverage
-        findings_data["analysis_coverage"] = coverage
-        findings_path.write_text(
-            json.dumps(findings_data, ensure_ascii=False, indent=2),
-            encoding="utf-8",
+        from backend.app.pipeline.stages.block_analysis.runner import (
+            attach_stage02_coverage_to_findings,
         )
-        return coverage
+        return attach_stage02_coverage_to_findings(project_id)
 
     @staticmethod
     def _backfill_text_evidence_in_findings(project_id: str):
-        """Backfill text-evidence + sheet в 03_findings.json.
-
-        1. selected_text_block_ids/evidence_text_refs — из 02_blocks_analysis.json
-        2. sheet — детерминированно из document_graph.json page_sheet_map
-        """
-        output_dir = resolve_project_dir(project_id) / "_output"
-        findings_path = output_dir / "03_findings.json"
-        blocks_path = output_dir / "02_blocks_analysis.json"
-        graph_path = output_dir / "document_graph.json"
-
-        if not findings_path.exists():
-            return
-
-        try:
-            fd = json.loads(findings_path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
-            return
-
-        # Индекс block_id → block_analysis data из 02
-        bc_index = {}
-        if blocks_path.exists():
-            try:
-                data02 = json.loads(blocks_path.read_text(encoding="utf-8"))
-                for ba in data02.get("block_analyses", []):
-                    bid = ba.get("block_id", "")
-                    if bid:
-                        bc_index[bid] = ba
-            except (json.JSONDecodeError, OSError):
-                pass
-
-        # page_sheet_map из document_graph.json
-        psm = {}
-        if graph_path.exists():
-            try:
-                graph = json.loads(graph_path.read_text(encoding="utf-8"))
-                for pg in graph.get("pages", []):
-                    page_num = pg.get("page")
-                    sheet_no = (
-                        pg.get("sheet_no_raw")
-                        or pg.get("sheet_no_normalized")
-                        or pg.get("sheet_no")
-                    )
-                    if page_num is not None and sheet_no:
-                        psm[str(page_num)] = sheet_no
-            except (json.JSONDecodeError, OSError):
-                pass
-
-        modified = 0
-        for finding in fd.get("findings", []):
-            # ── Text-evidence backfill ──
-            if not finding.get("selected_text_block_ids"):
-                source_blocks = finding.get("source_block_ids", [])
-                related_blocks = finding.get("related_block_ids", [])
-                lookup_blocks = source_blocks or related_blocks
-
-                all_stbi = []
-                all_etr = []
-                for bid in lookup_blocks:
-                    bc = bc_index.get(bid)
-                    if not bc:
-                        continue
-                    for stbi in bc.get("selected_text_block_ids", []):
-                        if stbi not in all_stbi:
-                            all_stbi.append(stbi)
-                    for etr in bc.get("evidence_text_refs", []):
-                        if etr not in all_etr:
-                            all_etr.append(etr)
-
-                if all_stbi:
-                    finding["selected_text_block_ids"] = all_stbi
-                    modified += 1
-                if all_etr and not finding.get("evidence_text_refs"):
-                    finding["evidence_text_refs"] = all_etr
-
-            # ── Sheet backfill (deterministic) ──
-            sheet = finding.get("sheet")
-            page = finding.get("page")
-            sheet_empty = sheet is None or (isinstance(sheet, str) and not sheet.strip())
-
-            if sheet_empty and page is not None and psm:
-                # Resolve sheet from page_sheet_map
-                pages_to_check = [page] if isinstance(page, int) else (
-                    page if isinstance(page, list) else []
-                )
-                resolved_sheets = []
-                for p in pages_to_check:
-                    s = psm.get(str(p))
-                    if s and s not in resolved_sheets:
-                        resolved_sheets.append(s)
-
-                if resolved_sheets:
-                    if len(resolved_sheets) == 1:
-                        finding["sheet"] = f"Лист {resolved_sheets[0]}"
-                    else:
-                        finding["sheet"] = "Листы " + ", ".join(resolved_sheets)
-                    modified += 1
-                else:
-                    # Page exists but not in map — mark explicitly
-                    finding["sheet_unavailable"] = True
-                    finding["sheet_unavailable_reason"] = "page_not_in_map"
-                    modified += 1
-
-            elif sheet_empty and page is None:
-                finding["sheet_unavailable"] = True
-                finding["sheet_unavailable_reason"] = "no_page"
-                modified += 1
-
-        if modified > 0:
-            findings_path.write_text(
-                json.dumps(fd, ensure_ascii=False, indent=2), encoding="utf-8"
-            )
+        """Backfill text-evidence + sheet в 03_findings.json."""
+        from backend.app.pipeline.stages.findings_merge.runner import (
+            backfill_text_evidence_in_findings,
+        )
+        return backfill_text_evidence_in_findings(project_id)
 
     @staticmethod
     def _refresh_finding_quality(
@@ -1289,162 +984,23 @@ class PipelineManager:
         filename: str = "03_findings.json",
     ) -> dict | None:
         """Refresh deterministic practicality metadata for findings."""
-        target_path = resolve_project_dir(project_id) / "_output" / filename
-        if not target_path.exists():
-            return None
-
-        try:
-            from backend.app.services.findings.finding_quality import enrich_findings_file
-            return enrich_findings_file(target_path)
-        except Exception:
-            return None
+        from backend.app.pipeline.stages.findings_merge.runner import (
+            refresh_finding_quality,
+        )
+        return refresh_finding_quality(project_id, filename)
 
     @staticmethod
     def _merge_similar_findings(project_id: str) -> dict | None:
-        """Объединить похожие замечания в 03_findings.json.
-
-        Группирует по нормализованному паттерну (severity + category + problem).
-        Для каждой группы создаёт одно замечание-лидер с полным перечнем случаев
-        в поле `sub_findings` и сводным описанием.
-        """
-        from backend.app.services.findings.findings_service import (
-            _normalize_problem_pattern,
+        """Объединить похожие замечания в 03_findings.json."""
+        from backend.app.pipeline.stages.findings_merge.runner import (
+            merge_similar_findings,
         )
-        from collections import OrderedDict
-
-        output_dir = resolve_project_dir(project_id) / "_output"
-        findings_path = output_dir / "03_findings.json"
-        if not findings_path.exists():
-            return None
-
-        try:
-            fd = json.loads(findings_path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
-            return None
-
-        items = fd.get("findings", fd.get("items", []))
-        if len(items) < 2:
-            return None
-
-        import re as _re
-
-        # Группировка
-        groups: OrderedDict[str, list[dict]] = OrderedDict()
-        for f in items:
-            problem = f.get("problem") or f.get("description") or f.get("finding") or ""
-            severity = f.get("severity", "")
-            category = f.get("category", "")
-            pattern = _normalize_problem_pattern(problem)
-            key = f"{severity}||{category}||{pattern}"
-            if key not in groups:
-                groups[key] = []
-            groups[key].append(f)
-
-        # Построить новый список
-        merged_items = []
-        merge_count = 0
-        new_id = 1
-        for key, group_items in groups.items():
-            if len(group_items) == 1:
-                item = group_items[0]
-                item["id"] = f"F-{new_id:03d}"
-                merged_items.append(item)
-                new_id += 1
-            else:
-                merge_count += 1
-                leader = dict(group_items[0])  # копия лидера
-                leader["id"] = f"F-{new_id:03d}"
-                new_id += 1
-
-                # Собрать все sheet/page/evidence/block_ids
-                all_sheets = []
-                all_pages = []
-                all_block_ids = []
-                all_evidence = []
-                details_lines = []
-
-                for i, it in enumerate(group_items, 1):
-                    sh = it.get("sheet", "")
-                    pg = it.get("page")
-                    problem = it.get("problem") or it.get("description") or it.get("finding") or ""
-                    details_lines.append(f"{i}) {problem}")
-
-                    if sh and sh not in all_sheets:
-                        all_sheets.append(sh)
-                    if pg:
-                        pgs = pg if isinstance(pg, list) else [pg]
-                        for p in pgs:
-                            if p not in all_pages:
-                                all_pages.append(p)
-                    for bid in (it.get("related_block_ids") or []):
-                        if bid not in all_block_ids:
-                            all_block_ids.append(bid)
-                    for ev in (it.get("evidence") or []):
-                        all_evidence.append(ev)
-
-                # Сводное описание
-                leader_problem = leader.get("problem") or leader.get("description") or ""
-                summary = f"[Объединено {len(group_items)} замечаний] {leader_problem}"
-                leader["problem"] = summary
-                leader["description"] = "\n".join(details_lines)
-                leader["sheet"] = ", ".join(all_sheets) if all_sheets else leader.get("sheet", "")
-                leader["page"] = sorted(set(all_pages)) if all_pages else leader.get("page")
-                leader["related_block_ids"] = all_block_ids
-                leader["evidence"] = all_evidence
-                leader["sub_findings"] = [
-                    {
-                        "original_id": it.get("id", ""),
-                        "problem": it.get("problem") or it.get("description") or "",
-                        "sheet": it.get("sheet", ""),
-                        "page": it.get("page"),
-                    }
-                    for it in group_items
-                ]
-
-                merged_items.append(leader)
-
-        if merge_count == 0:
-            return {"merged_groups": 0}
-
-        # Обновить meta
-        meta = fd.get("meta", {})
-        meta["total_findings"] = len(merged_items)
-        meta["pre_merge_total"] = len(items)
-        meta["merged_groups"] = merge_count
-
-        # Пересчитать by_severity
-        by_severity = {}
-        for it in merged_items:
-            sev = it.get("severity", "НЕИЗВЕСТНО")
-            by_severity[sev] = by_severity.get(sev, 0) + 1
-        meta["by_severity"] = by_severity
-
-        fd["meta"] = meta
-        fd["findings"] = merged_items
-
-        # Бэкап оригинала
-        backup_path = output_dir / "03_findings_pre_merge.json"
-        if not backup_path.exists():
-            import shutil
-            shutil.copy2(findings_path, backup_path)
-
-        findings_path.write_text(
-            json.dumps(fd, ensure_ascii=False, indent=2),
-            encoding="utf-8",
-        )
-
-        return {
-            "merged_groups": merge_count,
-            "before": len(items),
-            "after": len(merged_items),
-        }
+        return merge_similar_findings(project_id)
 
     async def _build_document_graph_v2(self, job: AuditJob):
         """Построить document_graph v2 из *_result.json (Python, без LLM)."""
         pid = job.project_id
         try:
-            import sys
-            sys.path.insert(0, str(BASE_DIR))
             from backend.app.pipeline.stages.prepare.graph_builder import build_document_graph_v2, generate_locality_debug
 
             project_dir = resolve_project_dir(pid)
@@ -1478,243 +1034,27 @@ class PipelineManager:
             )
 
     async def _run_gemma_enrichment_stage(self, job: AuditJob, *, force: bool = False) -> None:
-        """ЭТАП 00: Gemma-обогащение MD-файла (после crop, до text_analysis).
+        """Тонкий оркестратор: делегирует в gemma_enrichment/runner.py.
 
-        Это обязательный gate: без MD или без валидного enrichment downstream
-        этапы не должны стартовать.
+        Оркестраторная логика (job.stage, job.status, heartbeat, cleanup)
+        остаётся здесь. Бизнес-логика Gemma enrichment — в runner.
         """
         pid = job.project_id
-        project_dir = resolve_project_dir(pid)
-        project_info = load_project_info(project_dir)
         job.stage = AuditStage.GEMMA_ENRICHMENT
-        self._update_pipeline_log(pid, "gemma_enrichment", "running")
 
-        print(f"[{pid}] ═══ ЭТАП 2: {GEMMA_STAGE_LABEL} ═══")
-        await self._log(job, f"═══ ЭТАП 2: {GEMMA_STAGE_LABEL} ═══")
+        ctx = self._make_stage_context(job)
+        result = await _run_gemma_enrichment_stage_fn(ctx, force=force)
 
-        # Найти MD-файл проекта
-        md_path = find_project_markdown(project_dir, project_info)
-        if md_path is None:
-            err = (
-                f"{GEMMA_STAGE_LABEL}: MD-файл не найден. "
-                "Анализ без *_document.md не поддерживается."
-            )
-            await self._log(
-                job, err, "error"
-            )
-            self._update_pipeline_log(pid, "gemma_enrichment", "error", error=err)
-            raise RuntimeError(err)
-
-        blocks_index = gemma_blocks_index_path(project_dir)
-        gemma_crop_policy = gemma_enrichment_crop_policy()
-        if blocks_index.exists() and not _existing_crop_matches_policy(blocks_index, gemma_crop_policy):
-            await self._log(
-                job,
-                "Crop не совпадает с Gemma enrichment policy "
-                f"({_crop_policy_label(gemma_crop_policy)}) — перекропаю перед Gemma",
-                "warn",
-            )
-            self._update_pipeline_log(pid, "crop_blocks", "running")
-            exit_code, _, stderr = await self._run_script(
-                pid,
-                str(BLOCKS_SCRIPT),
-                _build_crop_args(
-                    _project_path(pid),
-                    force=True,
-                    policy=gemma_crop_policy,
-                    output_dir_name=GEMMA_BLOCKS_DIRNAME,
-                ),
-                on_output=lambda msg: self._log(job, msg),
-            )
-            if exit_code != 0:
-                self._update_pipeline_log(
-                    pid, "crop_blocks", "error",
-                    error=stderr or f"Exit code: {exit_code}",
-                )
-                raise RuntimeError(f"Gemma crop policy recrop failed: {stderr}")
-            self._update_pipeline_log(
-                pid, "crop_blocks", "done",
-                message=f"OK (Gemma policy: {_crop_policy_label(gemma_crop_policy)})",
-            )
-
-        state_before = evaluate_gemma_enrichment(project_dir, project_info)
-        if state_before.get("ready") and not force:
-            status = "partial" if state_before.get("status") in {"partial_allowed", "partial"} else "done"
-            msg = state_before.get("detail", "Gemma enrichment уже готов")
-            await self._log(job, msg, "warn" if status == "partial" else "info")
-            self._update_pipeline_log(
-                pid,
-                "gemma_enrichment",
-                status,
-                message=msg,
-                detail={
-                    "partial_allowed": state_before.get("status") in {"partial_allowed", "partial"},
-                    "blocks_ok": state_before.get("blocks_ok", 0),
-                    "blocks_total": state_before.get("blocks_total", 0),
-                },
-            )
+        if result.cancelled:
+            job.status = JobStatus.CANCELLED
             return
 
-        # Идемпотентность: если MD уже enriched, пропускаем
-        try:
-            import sys
-            sys.path.insert(0, str(BASE_DIR))
-            from backend.app.pipeline.stages.gemma_enrichment.gemma_enrich import enrich_project
-        except ImportError as exc:
-            err = f"gemma_enrich модуль не найден: {exc}"
-            await self._log(
-                job, err, "error"
-            )
-            self._update_pipeline_log(pid, "gemma_enrichment", "error", error=err)
-            raise RuntimeError(err) from exc
+        if not result.success:
+            job.status = JobStatus.FAILED
+            job.error_message = result.error
+            raise RuntimeError(result.error or "Gemma enrichment: ошибка")
 
-        # Прогрессбар через live-log
-        async def progress_cb(event: dict) -> None:
-            t = event.get("type")
-            if t == "started":
-                await self._log(
-                    job,
-                    f"  Gemma enrichment: {event['total']} блоков, "
-                    f"model={event.get('model')}",
-                )
-            elif t == "block_done":
-                completed = event.get("completed", 0)
-                total = event.get("total", 0)
-                bid = event.get("block_id", "?")
-                pg = event.get("page", "?")
-                ok = event.get("ok")
-                ms = event.get("elapsed_ms", 0)
-                if ok:
-                    await self._log(
-                        job,
-                        f"  [{completed:>3}/{total}] OK {bid} p={pg} t={ms/1000:.1f}s"
-                    )
-                else:
-                    err = (event.get("error") or "")[:80]
-                    await self._log(
-                        job,
-                        f"  [{completed:>3}/{total}] FAIL {bid} p={pg}: {err}",
-                        "warn"
-                    )
-            elif t == "high_detail_candidates":
-                await self._log(
-                    job,
-                    f"  High-detail кандидаты: {event.get('candidates', 0)} из {event.get('total', 0)} блоков",
-                )
-            elif t == "high_detail_prefilter":
-                skipped_large = len(event.get("skipped_large_ids") or [])
-                await self._log(
-                    job,
-                    f"  High-detail prefilter: safe={event.get('safe_candidates', 0)}, skipped_large={skipped_large}",
-                    "warn" if skipped_large else "info",
-                )
-            elif t == "high_detail_block_done":
-                completed = event.get("completed", 0)
-                total = event.get("total", 0)
-                bid = event.get("block_id", "?")
-                pg = event.get("page", "?")
-                err = (event.get("error") or "")[:80]
-                level = "info" if event.get("ok") else "warn"
-                prefix = "OK" if event.get("ok") else "FAIL"
-                tail = f": {err}" if err else ""
-                await self._log(
-                    job,
-                    f"  [HD {completed:>3}/{total}] {prefix} {bid} p={pg} t={event.get('elapsed_ms', 0)/1000:.1f}s{tail}",
-                    level,
-                )
-            elif t == "no_blocks":
-                await self._log(
-                    job, "  Image-блоков для enrichment не найдено", "warn"
-                )
-
-        main_loop = asyncio.get_running_loop()
-
-        def _run_enrichment_in_thread() -> dict:
-            thread_cancel_event = asyncio.Event()
-            thread_pause_event = asyncio.Event()
-            thread_pause_event.set()  # не на паузе по умолчанию
-
-            async def _thread_progress_cb(event: dict) -> None:
-                if job.status == JobStatus.CANCELLED:
-                    thread_cancel_event.set()
-                future = asyncio.run_coroutine_threadsafe(progress_cb(event), main_loop)
-                await asyncio.wrap_future(future)
-
-            async def _runner() -> dict:
-                return await enrich_project(
-                    project_dir,
-                    force=force or state_before.get("status") in {"partial", "failed"},
-                    parallelism=1,  # gemma3.6-35b не тянет параллель
-                    progress_cb=_thread_progress_cb,
-                    pause_event=thread_pause_event,
-                    cancel_event=thread_cancel_event,
-                )
-
-            return asyncio.run(_runner())
-
-        try:
-            summary = await asyncio.to_thread(_run_enrichment_in_thread)
-        except Exception as e:
-            self._update_pipeline_log(
-                pid, "gemma_enrichment", "error", error=f"gemma_enrich exception: {e}"
-            )
-            raise RuntimeError(f"Gemma enrichment упал: {e}") from e
-
-        status = summary.get("status", "unknown")
-        if status == "no_blocks":
-            summary_path = project_dir / "_output" / "gemma_enrichment_summary.json"
-            summary_path.write_text(
-                json.dumps(summary, ensure_ascii=False, indent=2),
-                encoding="utf-8",
-            )
-            await self._log(job, "Image-блоков нет — Gemma stage подтверждён")
-            self._update_pipeline_log(
-                pid, "gemma_enrichment", "done", message="image-блоков 0"
-            )
-            return
-        if status == "failed":
-            self._update_pipeline_log(
-                pid, "gemma_enrichment", "error",
-                error="Все блоки упали — Gemma endpoint недоступен?"
-            )
-            raise RuntimeError(
-                "Gemma enrichment: все блоки упали. "
-                "Проверьте CHANDRA_BASE_URL / NGROK_AUTH_USER / NGROK_AUTH_PASS."
-            )
-
-        ok = summary.get("blocks_ok", 0)
-        total = summary.get("blocks_total", 0)
-        wall = summary.get("wall_clock_s", 0)
-        msg = f"OK ({ok}/{total} блоков, {wall:.0f}s)"
-        if status == "partial":
-            state_after = evaluate_gemma_enrichment(project_dir, project_info)
-            msg = (
-                f"partial: {msg} — {summary.get('blocks_failed', 0)} блоков упали"
-            )
-            if state_after.get("ready") and state_after.get("status") in {"partial_allowed", "partial"}:
-                msg = f"{msg}; partial mode допущен, непокрытые блоки будут отражены в отчёте"
-                self._update_pipeline_log(
-                    pid,
-                    "gemma_enrichment",
-                    "partial",
-                    message=msg,
-                    detail={
-                        "partial_allowed": True,
-                        "blocks_ok": ok,
-                        "blocks_total": total,
-                        "blocks_failed": summary.get("blocks_failed", 0),
-                    },
-                )
-                await self._log(job, f"  ⚠ {msg}", "warn")
-                return
-            self._update_pipeline_log(pid, "gemma_enrichment", "error", error=msg)
-            raise RuntimeError(
-                f"{GEMMA_STAGE_LABEL}: enrichment неполный ({ok}/{total}). "
-                "Повторите gemma_enrichment или явно включите allow_partial_gemma_enrichment."
-            )
-
-        self._update_pipeline_log(pid, "gemma_enrichment", "done", message=msg)
-        await self._log(job, f"  ✓ {msg}")
+        # Успех или partial (допускается продолжение)
 
     async def _ensure_stage02_crops(self, job: AuditJob) -> None:
         """Ensure findings_only Stage 02 has its own 100 DPI crop index."""
@@ -1773,11 +1113,10 @@ class PipelineManager:
             raise RuntimeError(f"Stage 02 crop не создал _output/{STAGE02_BLOCKS_DIRNAME}/index.json")
 
     async def _run_block_analysis_findings_only(self, job: AuditJob) -> None:
-        """ЭТАП 02 в режиме findings_only_gemma_pair.
+        """Тонкий оркестратор: делегирует в block_analysis/runner.py.
 
-        Single-block: GPT-5.4 (low) + gemma-enrichment + extended categories на каждый блок.
-        Пишет финальный _output/02_blocks_analysis.json напрямую (без block_batches.json и
-        без blocks.py merge). Поддерживает cancel через job.status и progress через WS.
+        Оркестраторная логика (prerequisites, job.stage, heartbeat, cleanup)
+        остаётся здесь. Бизнес-логика анализа блоков — в runner.
         """
         pid = job.project_id
         project_dir = resolve_project_dir(pid)
@@ -1785,204 +1124,25 @@ class PipelineManager:
         await self._assert_gemma_ready_for_stage(job, project_info, "block_analysis")
         await self._ensure_stage02_crops(job)
 
-        try:
-            import sys
-            sys.path.insert(0, str(BASE_DIR))
-            from backend.app.pipeline.stages.block_analysis.gemma_findings_only import (
-                run_findings_only_for_project,
-                check_prerequisites,
-                FindingsOnlyError,
-                DEFAULT_MODEL, DEFAULT_EFFORT, DEFAULT_PARALLELISM,
-            )
-        except ImportError as exc:
-            self._update_pipeline_log(
-                pid, "block_analysis", "error",
-                error=f"gemma_findings_only import error: {exc}"
-            )
-            raise RuntimeError(f"gemma_findings_only модуль не найден: {exc}") from exc
-
-        check = check_prerequisites(project_dir)
-        for r in check.get("reasons", []):
-            await self._log(job, f"  · {r}", "warn" if not check["ok"] else "info")
-        if not check["ok"]:
-            self._update_pipeline_log(
-                pid, "block_analysis", "error",
-                error="findings_only_gemma_pair: prerequisites failed (нужен Gemma-enrichment)"
-            )
-            raise RuntimeError(
-                "Stage 02 (findings_only_gemma_pair): нет Gemma-обогащения. "
-                "Запустите 'Подготовить данные' с Gemma-enrichment."
-            )
-
-        # Production Stage 02 is fixed to GPT-5.4. Gemma is the previous mandatory
-        # enrichment stage, not a selectable block-analysis model.
-        ui_model = get_stage_model("block_batch")
-        findings_only_compatible = {
-            "openai/gpt-5.4",
-        }
-        if ui_model in findings_only_compatible:
-            model = ui_model
-        else:
-            model = DEFAULT_MODEL
-            await self._log(
-                job,
-                f"  · UI модель block_batch={ui_model} несовместима с findings_only режимом — "
-                f"используем {DEFAULT_MODEL}",
-                "warn",
-            )
-        effort = DEFAULT_EFFORT  # пока эффект reasoning оставляем по умолчанию
-
         self._reset_job_progress(job)
         job.stage = AuditStage.BLOCK_ANALYSIS
         job.status = JobStatus.RUNNING
-        job.progress_total = check["blocks_total"]
-        self._update_pipeline_log(pid, "block_analysis", "running")
+        job.progress_total = 0  # будет обновлён check_prerequisites внутри runner
         await self._start_heartbeat(job)
 
-        await self._log(
-            job,
-            f"═══ ЭТАП 02 (findings_only_gemma_pair): {check['with_enrichment']}/{check['blocks_total']} "
-            f"блоков, model={model}, effort={effort}, parallelism={DEFAULT_PARALLELISM} ═══"
-        )
+        ctx = self._make_stage_context(job)
+        result = await _run_block_analysis_findings_only_stage(ctx)
 
-        cancel_event = asyncio.Event()
-        loop = asyncio.get_running_loop()
-
-        def _on_progress(event: dict) -> None:
-            t = event.get("type")
-            if t == "started":
-                asyncio.run_coroutine_threadsafe(
-                    self._log(
-                        job,
-                        f"  Источники enrichment: {event.get('enrichment_sources')}, "
-                        f"extended={event.get('extended_prompt')}, section={event.get('section')}"
-                    ),
-                    loop,
-                )
-            elif t == "block_done":
-                completed = event.get("completed", 0)
-                total = event.get("total", 0)
-                bid = event.get("block_id", "?")
-                pg = event.get("page", "?")
-                ms = event.get("elapsed_ms") or 0
-                ok = event.get("ok")
-                n = event.get("findings", 0)
-                job.progress_current = completed
-                if ok:
-                    msg = (
-                        f"  [{completed:>3}/{total}] OK {bid} p={pg} t={ms/1000:.1f}s "
-                        f"findings={n} in={event.get('input_tokens')} out={event.get('output_tokens')} "
-                        f"reason={event.get('reasoning_tokens')}"
-                    )
-                    asyncio.run_coroutine_threadsafe(self._log(job, msg), loop)
-                else:
-                    err = (event.get("error") or "")[:80]
-                    asyncio.run_coroutine_threadsafe(
-                        self._log(job, f"  [{completed:>3}/{total}] FAIL {bid}: {err}", "warn"),
-                        loop,
-                    )
-                asyncio.run_coroutine_threadsafe(
-                    self._progress(job, completed, total),
-                    loop,
-                )
-                if job.status == JobStatus.CANCELLED:
-                    cancel_event.set()
-            elif t == "block_skip":
-                completed = event.get("completed")
-                total = event.get("total")
-                if completed and total:
-                    job.progress_current = completed
-                    asyncio.run_coroutine_threadsafe(
-                        self._progress(job, completed, total),
-                        loop,
-                    )
-                asyncio.run_coroutine_threadsafe(
-                    self._log(
-                        job,
-                        f"  SKIP {event.get('block_id')} p={event.get('page')}: "
-                        f"{event.get('reason')} — блок не анализировался полноценно",
-                        "warn",
-                    ),
-                    loop,
-                )
-
-        try:
-            from backend.app.core.config import CLAUDE_BLOCK_BATCH_CLEAN_CWD
-            result = await run_findings_only_for_project(
-                project_dir,
-                model=model,
-                reasoning_effort=effort,
-                claude_clean_cwd=CLAUDE_BLOCK_BATCH_CLEAN_CWD,
-                on_progress=_on_progress,
-                cancel_event=cancel_event,
-            )
-        except FindingsOnlyError as e:
-            self._update_pipeline_log(
-                pid, "block_analysis", "error",
-                error=f"findings_only_gemma_pair: {e}"
-            )
-            raise RuntimeError(f"Stage 02 (findings_only_gemma_pair): {e}") from e
-
-        summary = result["summary"]
-        totals = summary["totals"]
-
-        if summary.get("cancelled"):
-            self._update_pipeline_log(
-                pid, "block_analysis", "error",
-                error="findings_only_gemma_pair: отменено пользователем"
-            )
+        if result.cancelled:
+            job.status = JobStatus.CANCELLED
             return
 
-        if summary["blocks_failed"] > 0 and summary["blocks_ok"] == 0:
-            self._update_pipeline_log(
-                pid, "block_analysis", "error",
-                error=f"Все {summary['blocks_failed']} блоков упали"
-            )
-            raise RuntimeError(f"Stage 02 (findings_only_gemma_pair): все блоки упали")
+        if not result.success:
+            job.status = JobStatus.FAILED
+            job.error_message = result.error
+            return
 
-        msg = (
-            f"OK ({summary['blocks_ok']}/{summary['blocks_total']} блоков, "
-            f"{summary['wall_clock_s']:.0f}s, "
-            f"{totals['findings']} findings, "
-            f"~${totals['estimated_cost_usd_total']:.3f})"
-        )
-        if summary.get("blocks_skipped_no_enrichment", 0) > 0:
-            msg += f" — {summary['blocks_skipped_no_enrichment']} блоков без Gemma enrichment"
-            await self._log(
-                job,
-                "  ⚠ Непокрытые Gemma enrichment блоки: "
-                + ", ".join(b.get("block_id", "?") for b in summary.get("uncovered_blocks", [])[:20]),
-                "warn",
-            )
-        if summary["blocks_failed"] > 0:
-            msg += f" — {summary['blocks_failed']} блоков упали"
-            self._update_pipeline_log(
-                pid,
-                "block_analysis",
-                "done",
-                message=msg,
-                detail={
-                    "uncovered_blocks": summary.get("uncovered_blocks", []),
-                    "failed_blocks": summary.get("failed_blocks", []),
-                    "task_exceptions": summary.get("task_exceptions", []),
-                },
-            )
-            await self._log(job, f"  ⚠ {msg}", "warn")
-        else:
-            self._update_pipeline_log(
-                pid,
-                "block_analysis",
-                "done",
-                message=msg,
-                detail={
-                    "uncovered_blocks": summary.get("uncovered_blocks", []),
-                    "failed_blocks": summary.get("failed_blocks", []),
-                    "task_exceptions": summary.get("task_exceptions", []),
-                },
-            )
-            await self._log(job, f"  ✓ {msg}")
-
-        self._record_findings_only_usage(job, summary)
+        job.status = JobStatus.COMPLETED
 
     def _record_findings_only_usage(self, job: AuditJob, summary: dict) -> None:
         """Учесть стоимость stage 02 в режиме findings_only_gemma_pair в usage tracker.
@@ -2059,106 +1219,11 @@ class PipelineManager:
 
     @staticmethod
     def _validate_and_repair_json(file_path: Path) -> tuple[bool, str]:
-        """
-        Проверить JSON-файл и попытаться починить, если невалиден.
-
-        Типичная проблема: LLM пишет неэкранированные кавычки внутри строк,
-        например: "раздел ТХ.А "Технологические решения"" вместо
-                  "раздел ТХ.А \"Технологические решения\""
-
-        Returns:
-            (is_valid, message) — True если файл валиден (или починен).
-        """
-        import re
-
-        if not file_path.exists():
-            return False, "Файл не существует"
-
-        raw = file_path.read_text(encoding="utf-8")
-
-        # 1. Пробуем валидный JSON
-        try:
-            json.loads(raw)
-            return True, "OK"
-        except json.JSONDecodeError as original_err:
-            pass
-
-        # 2. Бэкап перед ремонтом
-        backup_path = file_path.with_suffix(".json.broken")
-        backup_path.write_text(raw, encoding="utf-8")
-
-        # 3. Ремонт: заменяем неэкранированные " внутри строковых значений
-        # Стратегия: ищем паттерны ": "...внутренние "кавычки"..." и экранируем
-        def _fix_inner_quotes(text: str) -> str:
-            """Экранировать неэкранированные кавычки внутри JSON-строк."""
-            result = []
-            i = 0
-            in_string = False
-            escape_next = False
-
-            while i < len(text):
-                ch = text[i]
-
-                if escape_next:
-                    result.append(ch)
-                    escape_next = False
-                    i += 1
-                    continue
-
-                if ch == '\\' and in_string:
-                    result.append(ch)
-                    escape_next = True
-                    i += 1
-                    continue
-
-                if ch == '"':
-                    if not in_string:
-                        in_string = True
-                        result.append(ch)
-                    else:
-                        # Это " внутри строки — конец строки или внутренняя кавычка?
-                        # Смотрим что после: если , ] } : или пробел+один из них — конец строки
-                        rest = text[i + 1:].lstrip()
-                        if not rest or rest[0] in (',', ']', '}', ':'):
-                            in_string = False
-                            result.append(ch)
-                        else:
-                            # Внутренняя кавычка — экранируем
-                            result.append('\\"')
-                    i += 1
-                    continue
-
-                result.append(ch)
-                i += 1
-
-            return ''.join(result)
-
-        fixed = _fix_inner_quotes(raw)
-
-        try:
-            json.loads(fixed)
-            file_path.write_text(fixed, encoding="utf-8")
-            return True, f"Repaired (бэкап: {backup_path.name})"
-        except json.JSONDecodeError:
-            pass
-
-        # 4. Fallback: замена типографских кавычек на экранированные
-        fixed2 = raw.replace('\u201c', '\\"').replace('\u201d', '\\"')
-        fixed2 = re.sub(
-            r'(?<=": ")(.+?)(?="[,\s\n\r]*[}\]])',
-            lambda m: m.group(0).replace('"', '\\"') if '"' in m.group(0) else m.group(0),
-            fixed2,
+        """Проверить JSON-файл и попытаться починить, если невалиден."""
+        from backend.app.pipeline.stages.block_analysis.runner import (
+            validate_and_repair_json,
         )
-
-        try:
-            json.loads(fixed2)
-            file_path.write_text(fixed2, encoding="utf-8")
-            return True, f"Repaired via fallback (бэкап: {backup_path.name})"
-        except json.JSONDecodeError as e:
-            # Не удалось починить — возвращаем оригинал
-            file_path.write_text(raw, encoding="utf-8")
-            return False, f"Ремонт не удался: {e}"
-
+        return validate_and_repair_json(file_path)
     # ─── Логирование (делегирование в audit_logger) ───
 
     def _update_pipeline_log(self, project_id: str, stage_key: str, status: str,
@@ -2686,9 +1751,7 @@ class PipelineManager:
                     RUNTIME_BATCHES_FILE, "block_analysis_summary.json",
                 ])
                 job.stage = AuditStage.CROP_BLOCKS
-                self._update_pipeline_log(pid, "crop_blocks", "running")
                 print(f"[{pid}:resume] ═══ ЭТАП 1: Кроп image-блоков ═══")
-                await self._log(job, "═══ ЭТАП 1: Кроп image-блоков из PDF ═══")
                 gemma_crop_policy = gemma_enrichment_crop_policy()
                 project_dir = resolve_project_dir(pid)
                 blocks_index = gemma_blocks_index_path(project_dir)
@@ -2697,32 +1760,15 @@ class PipelineManager:
                     (blocks_index.exists() and not _existing_crop_matches_policy(blocks_index, gemma_crop_policy))
                     or (not blocks_index.exists() and blocks_dir.exists() and any(blocks_dir.glob("block_*.png")))
                 )
-                crop_args = _build_crop_args(
-                    _project_path(pid),
+                _crop_result = await _run_crop_blocks(
+                    self._make_stage_context(job),
+                    project_rel_path=_project_path(pid),
                     force=force_gemma_crop,
                     policy=gemma_crop_policy,
                     output_dir_name=GEMMA_BLOCKS_DIRNAME,
                 )
-                exit_code, _, stderr = await self._run_script(
-                    pid,
-                    str(BLOCKS_SCRIPT),
-                    crop_args,
-                    on_output=lambda msg: self._log(job, msg),
-                )
-                if exit_code == 2:
-                    # Частичная ошибка: не все блоки скачались (404 и т.п.)
-                    self._update_pipeline_log(pid, "crop_blocks", "error",
-                                               error="Не все блоки скачались. Проверьте актуальность crop_url в result.json")
-                    raise RuntimeError("Кроп блоков: не все image-блоки скачались (HTTP 404). "
-                                       "Обновите OCR-результат и повторите.")
-                elif exit_code != 0:
-                    self._update_pipeline_log(pid, "crop_blocks", "error",
-                                               error=stderr or f"Exit code: {exit_code}")
-                    raise RuntimeError(f"Кроп блоков: {stderr}")
-                self._update_pipeline_log(
-                    pid, "crop_blocks", "done",
-                    message=f"OK (Gemma policy: {_crop_policy_label(gemma_crop_policy)})",
-                )
+                if not _crop_result.success:
+                    raise RuntimeError(_crop_result.error or "Crop blocks failed")
 
                 # Построить document_graph v2 (Python, без LLM)
                 await self._build_document_graph_v2(job)
@@ -2760,34 +1806,19 @@ class PipelineManager:
                 self._reset_job_progress(job)
                 job.stage = AuditStage.TEXT_ANALYSIS
                 job.status = JobStatus.RUNNING
-                self._update_pipeline_log(pid, "text_analysis", "running")
                 print(f"[{pid}:resume] ═══ ЭТАП 3: Текстовый анализ MD ═══")
                 await self._log(job, "═══ ЭТАП 3: Текстовый анализ MD (Claude) ═══")
                 await self._start_heartbeat(job)
 
-                can_go = await self._check_before_launch(job)
-                if not can_go:
-                    raise RuntimeError("Rate limit: ожидание превышено или отменено")
-
-                exit_code, output, cli_result = await claude_runner.run_text_analysis(
-                    project_info, pid,
-                    on_output=lambda msg: self._log(job, msg),
+                _ta_result = await _run_text_analysis_stage(
+                    self._make_stage_context(job),
+                    with_rate_limit_retry=False,
                 )
-                self._record_cli_usage(job, cli_result, "text_analysis")
-
-                if claude_runner.is_cancelled(exit_code):
+                if _ta_result.cancelled:
                     job.status = JobStatus.CANCELLED
                     return
-                if exit_code != 0:
-                    self._update_pipeline_log(pid, "text_analysis", "error",
-                                               error=_extract_error_detail(exit_code, output))
-                    raise RuntimeError(f"Текстовый анализ: код {exit_code}")
-
-                text_analysis_path = output_dir / "01_text_analysis.json"
-                if not text_analysis_path.exists():
-                    raise RuntimeError("01_text_analysis.json не создан")
-
-                self._update_pipeline_log(pid, "text_analysis", "done", message="OK")
+                if not _ta_result.success:
+                    raise RuntimeError(_ta_result.error or "Текстовый анализ: ошибка")
 
                 if job.status == JobStatus.CANCELLED:
                     return
@@ -3102,69 +2133,16 @@ class PipelineManager:
                 job.stage = AuditStage.FINDINGS_MERGE
                 job.status = JobStatus.RUNNING
 
-                findings_model = get_stage_model("findings_merge")
-                self._update_pipeline_log(pid, "findings_merge", "running")
                 print(f"[{pid}:resume] ═══ ЭТАП 5: Свод замечаний ═══")
-                await self._log(job, f"═══ ЭТАП 5: Свод замечаний ({findings_model}) ═══")
                 await self._start_heartbeat(job)
-
-                can_go = await self._check_before_launch(job)
-                if not can_go:
-                    raise RuntimeError("Rate limit: ожидание превышено или отменено")
-
-                exit_code, output, cli_result = await claude_runner.run_findings_merge(
-                    project_info, pid,
-                    on_output=lambda msg: self._log(job, msg),
-                )
-                self._record_cli_usage(job, cli_result, "findings_merge")
-
-                if claude_runner.is_cancelled(exit_code):
+                _fm_result = await _run_findings_merge_stage(self._make_stage_context(job))
+                if _fm_result.cancelled:
                     job.status = JobStatus.CANCELLED
                     return
-                if exit_code != 0:
-                    self._update_pipeline_log(pid, "findings_merge", "error",
-                                               error=_extract_error_detail(exit_code, output))
-                    raise RuntimeError(f"Свод замечаний: код {exit_code}")
+                if not _fm_result.success:
+                    raise RuntimeError(_fm_result.error or "Свод замечаний: ошибка")
 
-                findings_path = output_dir / "03_findings.json"
-                if not findings_path.exists():
-                    raise RuntimeError("03_findings.json не создан")
-
-                # Валидация JSON после findings_merge
-                is_valid, repair_msg = self._validate_and_repair_json(findings_path)
-                if not is_valid:
-                    raise RuntimeError(f"03_findings.json невалиден: {repair_msg}")
-                if "Repaired" in repair_msg:
-                    await self._log(job, f"03_findings.json починен: {repair_msg}", "warn")
-
-                self._update_pipeline_log(pid, "findings_merge", "done", message="OK")
-
-                # Post-merge: backfill text-evidence из compact/graph
-                self._backfill_text_evidence_in_findings(pid)
-
-                # Объединение похожих замечаний
-                merge_result = self._merge_similar_findings(pid)
-                if merge_result and merge_result.get("merged_groups", 0) > 0:
-                    await self._log(
-                        job,
-                        f"Объединено похожих замечаний: {merge_result['before']} → {merge_result['after']} "
-                        f"({merge_result['merged_groups']} групп)",
-                    )
-
-                self._refresh_finding_quality(pid)
-
-                # Восстановление highlight_regions из 02_blocks_analysis
-                self._backfill_highlight_regions(pid)
-                coverage = self._attach_stage02_coverage_to_findings(pid)
-                excluded_count = (coverage.get("summary") or {}).get("excluded_from_full_analysis_count", 0)
-                if excluded_count:
-                    await self._log(
-                        job,
-                        f"В финальный отчёт добавлены блоки вне полноценного анализа: {excluded_count}",
-                        "warn",
-                    )
-
-                # «Размышление модели»: стрим найденных замечаний в live-лог
+                # «Размышление модели»: стрим найденных замечаний в live-лог (WS)
                 await self._stream_findings_events(job, "merge")
 
                 if job.status == JobStatus.CANCELLED:
@@ -3241,22 +2219,13 @@ class PipelineManager:
             self._reset_job_progress(job)
             job.stage = AuditStage.EXCEL
             job.status = JobStatus.RUNNING
-            self._update_pipeline_log(pid, "excel", "running")
             print(f"[{pid}:resume] ═══ ЭТАП 7: Excel ═══")
-            await self._log(job, "═══ ЭТАП 7: Генерация Excel ═══")
-            project_path = str(resolve_project_dir(pid))
-            exit_code, _xls_out, _xls_err = await self._run_script(
-                pid,
-                str(GENERATE_EXCEL_SCRIPT),
-                args=[project_path],
-                env_overrides={"AUDIT_NO_OPEN": "1"},
-                on_output=lambda msg: self._log(job, msg),
-            )
-            if exit_code == 0:
-                self._update_pipeline_log(pid, "excel", "done", message="OK")
-            else:
-                self._update_pipeline_log(pid, "excel", "error",
-                                           error=_extract_error_detail(exit_code, (_xls_err or "") + "\n" + (_xls_out or "")))
+            from backend.app.pipeline.stages.report.runner import run_excel_report as _run_excel
+            _xls_result = await _run_excel(self._make_stage_context(job))
+            if not _xls_result.success:
+                # Excel-ошибка не прерывает pipeline: аудит считается завершённым,
+                # но pipeline_log уже содержит excel:error для диагностики.
+                await self._log(job, f"Excel-отчёт не создан: {_xls_result.error}", "warn")
 
             wall_sec = (datetime.now() - start_time).total_seconds()
             net_sec = max(0, wall_sec - job.pause_total_sec)
@@ -3287,31 +2256,23 @@ class PipelineManager:
         return await self._enqueue_single(project_id, action="prepare")
 
     async def _run_prepare(self, job: AuditJob):
+        """Подготовка проекта — оркестратор делегирует в prepare/runner.py."""
+        from backend.app.pipeline.stages.prepare.runner import run_prepare as _prepare_runner
+        from backend.app.pipeline.stage_result import StageResult
         pid = job.project_id
         try:
-            self._update_pipeline_log(pid, "prepare", "running")
-            await self._log(job, "Запуск подготовки проекта (текст + тайлы)...")
             await self._start_heartbeat(job)
+            ctx = self._make_stage_context(job)
+            result: StageResult = await _prepare_runner(ctx)
 
-            exit_code, stdout, stderr = await self._run_script(
-                pid,
-                str(PROCESS_PROJECT_SCRIPT),
-                [_project_path(pid), "--quality", DEFAULT_TILE_QUALITY],
-                on_output=lambda msg: self._log(job, msg),
-            )
-
-            if exit_code == 0:
-                await self._log(job, "Подготовка завершена успешно", "info")
+            if result.cancelled:
+                job.status = JobStatus.CANCELLED
+            elif result.success:
                 job.status = JobStatus.COMPLETED
-                self._update_pipeline_log(pid, "prepare", "done", message="OK")
             else:
-                await self._log(job, f"Ошибка подготовки (код {exit_code})", "error")
-                if stderr:
-                    await self._log(job, stderr, "error")
                 job.status = JobStatus.FAILED
-                job.error_message = stderr or f"Exit code: {exit_code}"
-                self._update_pipeline_log(pid, "prepare", "error",
-                                           error=stderr or f"Exit code: {exit_code}")
+                job.error_message = result.error or "prepare failed"
+
         except asyncio.CancelledError:
             job.status = JobStatus.CANCELLED
             self._update_pipeline_log(pid, "prepare", "error", error="Отменено")
@@ -3780,509 +2741,20 @@ class PipelineManager:
         return success
 
     async def _run_findings_review(self, job: AuditJob, project_info: dict):
+        """Тонкий оркестратор: делегирует в findings_review/runner.py.
+
+        Оркестраторная логика (job.stage, job.status) остаётся здесь.
+        Бизнес-логика critic + corrector — в runner.
         """
-        Critic + Corrector: проверка и корректировка замечаний.
-
-        1. Critic проверяет каждое F-замечание (evidence, grounding, page/sheet)
-           Если findings > CRITIC_CHUNK_SIZE — разбивает на чанки.
-        2. Если есть отрицательные вердикты — Corrector исправляет
-        """
-        pid = job.project_id
-        output_dir = resolve_project_dir(pid) / "_output"
-
-        # ── Pre-Critic: Python-level grounding ──
-        try:
-            from backend.app.services.findings.grounding_service import run_grounding
-            findings_path = output_dir / "03_findings.json"
-            blocks_path = output_dir / "02_blocks_analysis.json"
-            if findings_path.exists() and blocks_path.exists():
-                grounding_stats = run_grounding(findings_path, blocks_path)
-                await self._log(
-                    job,
-                    f"Grounding: {grounding_stats.get('grounding_candidates_added', 0)} "
-                    f"findings обогащены кандидатами "
-                    f"(уже привязано: {grounding_stats.get('already_grounded', 0)})",
-                )
-        except Exception as e:
-            await self._log(job, f"Grounding пропущен: {e}", "warn")
-
-        # Все замечания проверяются Critic'ом без фильтрации
-
-        # ── Critic (с chunking при большом кол-ве findings) ──
-        self._reset_job_progress(job)
         job.stage = AuditStage.FINDINGS_REVIEW
         job.status = JobStatus.RUNNING
-        self._update_pipeline_log(pid, "findings_critic", "running")
-        print(f"[{pid}] ═══ ЭТАП 6.5a: Critic (проверка замечаний) ═══")
-        await self._log(job, "═══ ЭТАП 6.5a: Critic — проверка обоснованности замечаний ═══")
-
-        # Определяем нужен ли chunking — все findings из 03_findings.json
-        findings_path = output_dir / "03_findings.json"
-        need_chunks = False
-        all_findings = []
-
-        if findings_path.exists():
-            try:
-                findings_data = json.loads(findings_path.read_text(encoding="utf-8"))
-                all_findings = findings_data.get("findings", findings_data.get("items", []))
-                need_chunks = len(all_findings) > CRITIC_CHUNK_SIZE
-            except (json.JSONDecodeError, OSError):
-                pass
-
-        if need_chunks:
-            # ── Chunked Critic (ПАРАЛЛЕЛЬНЫЙ) ──
-            total_findings = len(all_findings)
-            chunks = [
-                all_findings[i:i + CRITIC_CHUNK_SIZE]
-                for i in range(0, total_findings, CRITIC_CHUNK_SIZE)
-            ]
-            num_chunks = len(chunks)
-            await self._log(
-                job,
-                f"Chunked Critic (parallel): {total_findings} findings -> "
-                f"{num_chunks} чанков по ~{CRITIC_CHUNK_SIZE}",
-            )
-
-            # 1. Записываем chunk-specific input файлы (без конфликтов)
-            for chunk_idx, chunk_findings in enumerate(chunks, 1):
-                suffix = f"_{chunk_idx:03d}"
-                chunk_input = {
-                    "meta": {
-                        "source": "full_review",
-                        "total_findings": total_findings,
-                        "chunk_count": len(chunk_findings),
-                        "chunk": chunk_idx,
-                        "total_chunks": num_chunks,
-                    },
-                    "findings": chunk_findings,
-                }
-                chunk_input_path = output_dir / f"03_findings_review_input{suffix}.json"
-                chunk_input_path.write_text(
-                    json.dumps(chunk_input, ensure_ascii=False, indent=2),
-                    encoding="utf-8",
-                )
-
-            # 2. Запускаем все чанки параллельно через семафор
-            critic_parallel = (
-                1 if is_local_llm_model(get_stage_model("findings_critic"))
-                else MAX_PARALLEL_BATCHES
-            )
-            critic_semaphore = asyncio.Semaphore(critic_parallel)
-            chunk_results: list[dict | None] = [None] * num_chunks  # slot per chunk
-
-            async def _run_critic_chunk(cidx: int) -> None:
-                """Запустить один чанк critic-а."""
-                suffix = f"_{cidx:03d}"
-                async with critic_semaphore:
-                    if job.status == JobStatus.CANCELLED:
-                        return
-
-                    await self._log(
-                        job,
-                        f"Critic чанк {cidx}/{num_chunks}: "
-                        f"{len(chunks[cidx - 1])} findings...",
-                    )
-
-                    can_go = await self._check_before_launch(job)
-                    if not can_go:
-                        await self._log(job, f"Critic чанк {cidx}: rate limit, пропуск", "warn")
-                        return
-
-                    exit_code, output, cli_result = await claude_runner.run_findings_critic(
-                        project_info, pid,
-                        on_output=lambda msg: self._log(job, msg),
-                        chunk_suffix=suffix,
-                    )
-                    self._record_cli_usage(job, cli_result, f"findings_critic_chunk{cidx}")
-
-                    if claude_runner.is_cancelled(exit_code):
-                        job.status = JobStatus.CANCELLED
-                        return
-
-                    # Читаем chunk-specific результат (проверяем файл НЕЗАВИСИМО от exit code)
-                    chunk_review_path = output_dir / f"03_findings_review{suffix}.json"
-                    if exit_code != 0 and not chunk_review_path.exists():
-                        await self._log(
-                            job,
-                            f"Critic чанк {cidx}/{num_chunks}: код {exit_code}, файл не создан",
-                            "warn",
-                        )
-                        return
-
-                    if exit_code != 0:
-                        await self._log(
-                            job,
-                            f"Critic чанк {cidx}/{num_chunks}: CLI код {exit_code}, "
-                            f"но файл создан — пробуем использовать",
-                            "warn",
-                        )
-
-                    if chunk_review_path.exists():
-                        try:
-                            chunk_review = json.loads(
-                                chunk_review_path.read_text(encoding="utf-8")
-                            )
-                            chunk_results[cidx - 1] = chunk_review
-                            chunk_meta = chunk_review.get("meta", {})
-                            await self._log(
-                                job,
-                                f"Critic чанк {cidx}: "
-                                f"{chunk_meta.get('total_reviewed', '?')} проверено, "
-                                f"{chunk_meta.get('verdicts', {}).get('pass', 0)} pass",
-                            )
-                        except (json.JSONDecodeError, OSError) as e:
-                            await self._log(
-                                job,
-                                f"Ошибка чтения результата чанка {cidx}: {e}",
-                                "warn",
-                            )
-
-            # Запуск всех чанков параллельно
-            tasks = [
-                asyncio.create_task(_run_critic_chunk(cidx))
-                for cidx in range(1, num_chunks + 1)
-            ]
-            gathered = await asyncio.gather(*tasks, return_exceptions=True)
-            for cidx, result in enumerate(gathered, start=1):
-                if isinstance(result, Exception):
-                    await self._log(
-                        job,
-                        f"Critic чанк {cidx}: необработанное исключение task — "
-                        f"{type(result).__name__}: {result}",
-                        "error",
-                    )
-
-            if job.status == JobStatus.CANCELLED:
-                return
-
-            # 3. Слияние результатов
-            all_reviews = []
-            merged_verdicts = {}
-            total_reviewed_all = 0
-            chunks_ok = 0
-
-            for cr in chunk_results:
-                if cr is None:
-                    continue
-                chunks_ok += 1
-                chunk_reviews = cr.get("reviews", [])
-                all_reviews.extend(chunk_reviews)
-                chunk_meta = cr.get("meta", {})
-                total_reviewed_all += chunk_meta.get("total_reviewed", len(chunk_reviews))
-                for k, v in chunk_meta.get("verdicts", {}).items():
-                    merged_verdicts[k] = merged_verdicts.get(k, 0) + v
-
-            if not all_reviews and chunks_ok == 0:
-                self._update_pipeline_log(pid, "findings_critic", "error",
-                                           error="Все чанки провалились")
-                await self._log(job, "Critic: все чанки провалились, пропуск корректировки", "warn")
-                return
-
-            # Сливаем в единый 03_findings_review.json
-            merged_review = {
-                "meta": {
-                    "project_id": pid,
-                    "review_date": datetime.now().isoformat(),
-                    "total_reviewed": total_reviewed_all,
-                    "verdicts": merged_verdicts,
-                    "chunks_total": num_chunks,
-                    "chunks_ok": chunks_ok,
-                },
-                "reviews": all_reviews,
-            }
-            review_path = output_dir / "03_findings_review.json"
-            review_path.write_text(
-                json.dumps(merged_review, ensure_ascii=False, indent=2),
-                encoding="utf-8",
-            )
-
-            # Corrector теперь читает 03_findings.json напрямую через prompt_builder,
-            # поэтому отдельный review_input файл не нужен.
-
-            # Cleanup: удаляем chunk-specific файлы
-            for cidx in range(1, num_chunks + 1):
-                suffix = f"_{cidx:03d}"
-                for pattern in [f"03_findings_review_input{suffix}.json",
-                                f"03_findings_review{suffix}.json"]:
-                    p = output_dir / pattern
-                    if p.exists():
-                        p.unlink()
-
-            self._update_pipeline_log(pid, "findings_critic", "done",
-                                       message=f"Parallel: {num_chunks} chunks, {total_reviewed_all} reviewed")
-            review_data = merged_review
-
-        else:
-            # ── Single-shot Critic (как раньше) ──
-            can_go = await self._check_before_launch(job)
-            if not can_go:
-                await self._log(job, "Rate limit: ожидание превышено или отменено", "warn")
-                return
-
-            exit_code, output, cli_result = await claude_runner.run_findings_critic(
-                project_info, pid,
-                on_output=lambda msg: self._log(job, msg),
-            )
-            self._record_cli_usage(job, cli_result, "findings_critic")
-
-            if claude_runner.is_cancelled(exit_code):
-                job.status = JobStatus.CANCELLED
-                return
-
-            if claude_runner.is_cancelled(exit_code):
-                # Уже обработано выше, но на всякий случай
-                job.status = JobStatus.CANCELLED
-                return
-
-            # Читаем результат — проверяем файл НЕЗАВИСИМО от exit code
-            review_path = output_dir / "03_findings_review.json"
-            if exit_code != 0:
-                # CLI вернул ошибку, но файл мог быть записан до сбоя
-                if review_path.exists():
-                    try:
-                        review_data = json.loads(review_path.read_text(encoding="utf-8"))
-                        reviewed = review_data.get("meta", {}).get("total_reviewed", 0)
-                        if reviewed > 0:
-                            await self._log(
-                                job,
-                                f"Critic: CLI код {exit_code}, но review файл валиден "
-                                f"({reviewed} reviewed) — продолжаем",
-                                "warn",
-                            )
-                            self._update_pipeline_log(
-                                pid, "findings_critic", "done",
-                                message=f"OK (CLI код {exit_code}, файл валиден)",
-                            )
-                        else:
-                            raise ValueError("total_reviewed == 0")
-                    except (json.JSONDecodeError, OSError, ValueError):
-                        self._update_pipeline_log(pid, "findings_critic", "error",
-                                                   error=_extract_error_detail(exit_code, output))
-                        await self._log(job, f"Critic: код {exit_code}, файл невалиден — пропуск", "warn")
-                        return
-                else:
-                    self._update_pipeline_log(pid, "findings_critic", "error",
-                                               error=_extract_error_detail(exit_code, output))
-                    await self._log(job, f"Critic: код {exit_code}, файл не создан — пропуск", "warn")
-                    return
-            else:
-                self._update_pipeline_log(pid, "findings_critic", "done", message="OK")
-
-                if not review_path.exists():
-                    await self._log(job, "03_findings_review.json не создан — пропуск Corrector", "warn")
-                    return
-
-                try:
-                    review_data = json.loads(review_path.read_text(encoding="utf-8"))
-                except (json.JSONDecodeError, OSError):
-                    await self._log(job, "Ошибка чтения 03_findings_review.json", "warn")
-                    return
-
-        # «Размышление модели»: стрим вердиктов критика (единая точка для parallel и single)
-        await self._stream_findings_events(job, "critic")
-
-        # ── Анализ результатов Critic ──
-        verdicts = review_data.get("meta", {}).get("verdicts", {})
-        total_pass = verdicts.get("pass", 0)
-        total_reviewed = review_data.get("meta", {}).get("total_reviewed", 0)
-        total_issues = total_reviewed - total_pass
-
-        await self._log(
-            job,
-            f"Critic: {total_reviewed} проверено, {total_pass} pass, {total_issues} проблем",
-        )
-
-        if total_issues == 0:
-            await self._log(job, "Все замечания обоснованы — Corrector не требуется")
-            await self._stream_findings_events(job, "done")
-            return
-
-        # ── Corrector (с поддержкой чанков) ──
-        self._update_pipeline_log(pid, "findings_corrector", "running")
-        print(f"[{pid}] ═══ ЭТАП 6.5b: Corrector (корректировка замечаний) ═══")
-
-        # «Размышление модели»: сигнал смены фазы на corrector
-        await self._stream_findings_events(job, "corrector")
-
-        # Извлекаем ID замечаний с проблемами из review
-        issue_ids: list[str] = []
-        for rev in review_data.get("reviews", []):
-            if rev.get("verdict", "pass") != "pass":
-                fid = rev.get("finding_id") or rev.get("id", "")
-                if fid:
-                    issue_ids.append(fid)
-        if not issue_ids:
-            issue_ids = [f"F-{i:03d}" for i in range(1, total_issues + 1)]
-
-        need_chunks = total_issues > CORRECTOR_CHUNK_SIZE
-        if need_chunks:
-            chunks = [
-                issue_ids[i:i + CORRECTOR_CHUNK_SIZE]
-                for i in range(0, len(issue_ids), CORRECTOR_CHUNK_SIZE)
-            ]
-            await self._log(
-                job,
-                f"═══ ЭТАП 6.5b: Corrector — {total_issues} замечаний → "
-                f"{len(chunks)} чанков по ~{CORRECTOR_CHUNK_SIZE} ═══",
-            )
-        else:
-            chunks = [issue_ids]
-            await self._log(
-                job,
-                f"═══ ЭТАП 6.5b: Corrector — корректировка {total_issues} замечаний ═══",
-            )
-
-        corrector_ok = False
-        for cidx, chunk_ids in enumerate(chunks):
-            chunk_label = f" (чанк {cidx + 1}/{len(chunks)})" if need_chunks else ""
-
-            # Для чанков: перезаписываем 03_findings_review.json, оставляя только нужные findings
-            # (corrector читает именно этот файл — и CLI и OpenRouter)
-            review_path = output_dir / "03_findings_review.json"
-            if need_chunks:
-                chunk_review = dict(review_data)
-                chunk_review["reviews"] = [
-                    r for r in review_data.get("reviews", [])
-                    if (r.get("finding_id") or r.get("id", "")) in chunk_ids
-                ]
-                chunk_meta = dict(chunk_review.get("meta", {}))
-                chunk_meta["total_reviewed"] = len(chunk_review["reviews"])
-                chunk_meta["chunk"] = f"{cidx + 1}/{len(chunks)}"
-                chunk_review["meta"] = chunk_meta
-                review_path.write_text(
-                    json.dumps(chunk_review, ensure_ascii=False, indent=2), encoding="utf-8",
-                )
-                await self._log(job, f"Corrector{chunk_label}: {', '.join(chunk_ids)}")
-
-            can_go = await self._check_before_launch(job)
-            if not can_go:
-                await self._log(job, "Rate limit: ожидание превышено или отменено", "warn")
-                return
-
-            exit_code, output, cli_result = await claude_runner.run_findings_corrector(
-                project_info, pid,
-                on_output=lambda msg: self._log(job, msg),
-            )
-            self._record_cli_usage(job, cli_result, f"findings_corrector{f'_chunk{cidx}' if need_chunks else ''}")
-
-            if claude_runner.is_cancelled(exit_code):
-                job.status = JobStatus.CANCELLED
-                return
-
-            if exit_code != 0:
-                # CLI может вернуть -1/1, но файл уже записан — проверяем
-                findings_path = output_dir / "03_findings.json"
-                pre_review = output_dir / "03_findings_pre_review.json"
-                if findings_path.exists() and pre_review.exists():
-                    try:
-                        new_data = json.loads(findings_path.read_text(encoding="utf-8"))
-                        old_data = json.loads(pre_review.read_text(encoding="utf-8"))
-                        new_count = len(new_data.get("findings", []))
-                        old_count = len(old_data.get("findings", []))
-                        if new_count > 0 and new_data != old_data:
-                            await self._log(
-                                job,
-                                f"Corrector{chunk_label}: CLI код {exit_code}, но файл обновлён "
-                                f"({old_count} → {new_count}) — считаем успехом",
-                                "warn",
-                            )
-                            corrector_ok = True
-                        else:
-                            await self._log(job, f"Corrector{chunk_label}: код {exit_code}, файл не изменился", "warn")
-                            if not need_chunks:
-                                self._update_pipeline_log(pid, "findings_corrector", "error",
-                                                           error=_extract_error_detail(exit_code, output))
-                                return
-                    except (json.JSONDecodeError, OSError):
-                        await self._log(job, f"Corrector{chunk_label}: код {exit_code}, JSON невалиден", "warn")
-                        if not need_chunks:
-                            self._update_pipeline_log(pid, "findings_corrector", "error",
-                                                       error=_extract_error_detail(exit_code, output))
-                            return
-                else:
-                    await self._log(job, f"Corrector{chunk_label}: код {exit_code}", "warn")
-                    if not need_chunks:
-                        self._update_pipeline_log(pid, "findings_corrector", "error",
-                                                   error=_extract_error_detail(exit_code, output))
-                        return
-            else:
-                corrector_ok = True
-                await self._log(job, f"Corrector{chunk_label} завершён — 03_findings.json обновлён")
-
-        # Восстановить полный review после всех чанков
-        if need_chunks:
-            review_path = output_dir / "03_findings_review.json"
-            review_path.write_text(
-                json.dumps(review_data, ensure_ascii=False, indent=2), encoding="utf-8",
-            )
-
-        if corrector_ok:
-            self._update_pipeline_log(pid, "findings_corrector", "done",
-                                       message=f"OK ({len(chunks)} чанков)" if need_chunks else "OK")
-        else:
-            self._update_pipeline_log(pid, "findings_corrector", "error", error="Все чанки провалились")
-
-        # Валидация JSON после corrector (LLM может записать невалидный JSON)
-        findings_path = output_dir / "03_findings.json"
-        if findings_path.exists():
-            is_valid, repair_msg = self._validate_and_repair_json(findings_path)
-            if not is_valid:
-                await self._log(
-                    job,
-                    f"ВНИМАНИЕ: 03_findings.json невалиден после Corrector: {repair_msg}. "
-                    f"Восстанавливаю pre_review версию.",
-                    "error",
-                )
-                # Fallback: восстанавливаем бэкап до corrector
-                pre_review = output_dir / "03_findings_pre_review.json"
-                if pre_review.exists():
-                    import shutil
-                    shutil.copy2(pre_review, findings_path)
-                    await self._log(job, "Восстановлен 03_findings_pre_review.json", "warn")
-            elif "Repaired" in repair_msg:
-                await self._log(job, f"JSON починен автоматически: {repair_msg}", "warn")
-
-        # Восстановление norm_quote из pre_review (corrector может потерять)
-        await self._restore_norm_quotes(output_dir, job)
-        self._refresh_finding_quality(pid)
-
-        # «Размышление модели»: финальный сигнал — поток завершён
-        await self._stream_findings_events(job, "done")
-
-    @staticmethod
-    async def _restore_norm_quotes(output_dir: Path, job: "AuditJob"):
-        """Восстановить norm_quote из pre_review бэкапа.
-
-        Corrector может перезаписать findings без этого поля.
-        Берём его из бэкапа (до corrector) и подставляем обратно.
-        """
-        findings_path = output_dir / "03_findings.json"
-        pre_review_path = output_dir / "03_findings_pre_review.json"
-        if not findings_path.exists() or not pre_review_path.exists():
-            return
-
-        try:
-            current = json.loads(findings_path.read_text(encoding="utf-8"))
-            backup = json.loads(pre_review_path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
-            return
-
-        backup_map = {f.get("id"): f for f in backup.get("findings", [])}
-        restored = 0
-        for finding in current.get("findings", []):
-            fid = finding.get("id")
-            if not fid or fid not in backup_map:
-                continue
-            orig = backup_map[fid]
-            # Восстановить norm_quote если потерян
-            if not finding.get("norm_quote") and orig.get("norm_quote"):
-                finding["norm_quote"] = orig["norm_quote"]
-                restored += 1
-        if restored > 0:
-            findings_path.write_text(
-                json.dumps(current, ensure_ascii=False, indent=2),
-                encoding="utf-8",
-            )
+        ctx = self._make_stage_context(job)
+        result = await _run_findings_review_stage(ctx)
+        if result.cancelled:
+            job.status = JobStatus.CANCELLED
+        elif result.error and not result.critic_ok:
+            job.status = JobStatus.FAILED
+            job.error_message = result.error
 
     # ─── Параллельный запуск post-findings этапов ───
 
@@ -4430,497 +2902,33 @@ class PipelineManager:
         standalone: bool = True,
         wait_before_fix: asyncio.Event | None = None,
     ):
-        """
-        Верификация нормативных ссылок (authoritative режим через Norms-main):
-        1. Извлечь нормы из 03_findings.json (Python)
-        2. Резолв статусов через Norms-main status_index.json (Python)
-        3. Записать missing_norms_queue для норм, которых нет в индексе
-        4. LLM через MCP ТОЛЬКО для верификации цитат пунктов (WebSearch запрещён)
-        5. Если есть устаревшие — пересмотреть замечания через Claude CLI
-           (ждёт wait_before_fix, т.к. corrector тоже пишет в 03_findings.json)
+        """Тонкий оркестратор: делегирует в norms/runner.py run_norm_verification.
+
+        Оркестраторная логика (job.stage, job.status, heartbeat, cleanup)
+        остаётся здесь. Бизнес-логика верификации норм — в runner.
         """
         pid = job.project_id
         try:
-            self._update_pipeline_log(pid, "norm_verify", "running")
-            import sys
-            sys.path.insert(0, str(BASE_DIR))
-            from norms import (
-                extract_norms_from_findings,
-                generate_deterministic_checks,
-                format_llm_work_for_template,
-                merge_llm_norm_results,
-                merge_chunked_llm_results,
-                format_findings_to_fix,
-                validate_norm_checks,
-                write_missing_norms_queue,
-                verify_paragraphs_native,
-                requote_norms_native,
-            )
-
-            project_dir = resolve_project_dir(job.project_id)
-            output_dir = project_dir / "_output"
-            findings_path = output_dir / "03_findings.json"
-            norm_checks_path = output_dir / "norm_checks.json"
-            norm_checks_llm_path = output_dir / "norm_checks_llm.json"
-            verified_path = output_dir / "03a_norms_verified.json"
-
-            # Загрузить project_info для инъекции дисциплины в промпт
-            project_info = None
-            info_path = project_dir / "project_info.json"
-            if info_path.exists():
-                try:
-                    project_info = json.loads(info_path.read_text(encoding="utf-8"))
-                except (json.JSONDecodeError, OSError):
-                    pass
-
-            # Проверка: нужен 03_findings.json
-            if not findings_path.exists():
-                raise RuntimeError(
-                    "Файл 03_findings.json не найден. Сначала выполните основной аудит."
-                )
-
-            # ── Шаг 1: Извлечение норм ──
             job.stage = AuditStage.NORM_VERIFY
-            await self._log(job, "Шаг 1: Извлечение нормативных ссылок из замечаний...")
             await self._start_heartbeat(job)
 
-            norms_data = extract_norms_from_findings(findings_path)
-            total_norms = norms_data["total_unique_norms"]
+            ctx = self._make_stage_context(job)
+            result = await _run_norm_verification_stage(
+                ctx,
+                wait_before_fix=wait_before_fix,
+            )
 
-            if total_norms == 0:
-                await self._log(job, "Нормативных ссылок не найдено. Верификация не требуется.", "warn")
-                job.status = JobStatus.COMPLETED
+            if result.cancelled:
+                job.status = JobStatus.CANCELLED
                 return
 
-            await self._log(job, f"Найдено {total_norms} уникальных нормативных ссылок")
-
-            # ── Шаг 2: Детерминированный резолв через Norms-main ──
-            await self._log(
-                job,
-                "Шаг 2: Authoritative резолв статусов через Norms-main (status_index.json)...",
-            )
-            det_result = generate_deterministic_checks(norms_data, project_id=pid)
-
-            det_meta = det_result["meta"]
-            paragraphs_to_verify = det_result["paragraphs_to_verify"]
-            missing_norms = det_result.get("missing_norms", [])
-            unsupported_norms = det_result.get("unsupported_norms", [])
-
-            await self._log(
-                job,
-                f"Norms-main: {det_meta['authoritative']} authoritative, "
-                f"{det_meta['missing']} missing, {det_meta['unsupported']} unsupported; "
-                f"{len(paragraphs_to_verify)} цитат для проверки через MCP",
-            )
-            trusted_skipped = det_meta.get("paragraphs_trusted_skipped", 0)
-            legacy_ignored = det_meta.get("paragraphs_legacy_ignored", 0)
-            if trusted_skipped or legacy_ignored:
-                await self._log(
-                    job,
-                    f"Paragraph cache: {trusted_skipped} trusted (skip LLM), "
-                    f"{legacy_ignored} legacy (не доверяем, пере-проверка через MCP)",
-                    "info",
-                )
-
-            # Записать missing_norms_queue всегда (даже если пусто — трейс).
-            try:
-                report = write_missing_norms_queue(
-                    output_dir, det_result, project_id=pid,
-                )
-                if report.get("queue_size", 0) > 0:
-                    await self._log(
-                        job,
-                        f"Missing norms queue: {report['queue_size']} позиций "
-                        f"(missing={report['missing']}, unsupported={report['unsupported']}). "
-                        f"См. {output_dir}/missing_norms_queue.json",
-                        "warn",
-                    )
-            except Exception as e:
-                await self._log(job, f"Не удалось записать missing_norms_queue: {e}", "warn")
-
-            # Накопить missing norms в глобальный vault-список
-            try:
-                from backend.app.services.knowledge_base.missing_norms_service import accumulate_from_queue
-                queue_path = output_dir / "missing_norms_queue.json"
-                new_norms = accumulate_from_queue(pid, queue_path)
-                if new_norms > 0:
-                    await self._log(job, f"Добавлено {new_norms} новых норм в список 'Нормы для добавления'")
-            except Exception as e:
-                await self._log(job, f"Не удалось обновить missing_norms_vault: {e}", "warn")
-
-            # Записать предварительный norm_checks.json (детерминированный)
-            preliminary_data = {
-                "meta": det_meta,
-                "checks": det_result["checks"],
-                "paragraph_checks": [],
-            }
-            with open(norm_checks_path, "w", encoding="utf-8") as f:
-                json.dump(preliminary_data, f, ensure_ascii=False, indent=2)
-
-            # ── Шаг 3: Верификация цитат — сначала Python, fallback на Claude ──
-            llm_needed = bool(paragraphs_to_verify)
-
-            if llm_needed:
-                llm_task_count = len(paragraphs_to_verify)
-                await self._log(
-                    job,
-                    f"Шаг 3: Верификация цитат через MCP norms для "
-                    f"{len(paragraphs_to_verify)} позиций. WebSearch запрещён.",
-                )
-                job.progress_total = llm_task_count
-
-                # ── Native Python (fast path) ──
-                _native_ok = False
-                try:
-                    loop = asyncio.get_event_loop()
-                    await loop.run_in_executor(
-                        None,
-                        verify_paragraphs_native,
-                        paragraphs_to_verify,
-                        findings_path,
-                        output_dir,
-                    )
-                    n_verified = len(paragraphs_to_verify)
-                    await self._log(job, f"Native verification: {n_verified} цитат проверено (Python)")
-                    _native_ok = True
-                except Exception as _native_exc:
-                    await self._log(
-                        job,
-                        f"Native verification failed ({_native_exc}), fallback → Claude chunks",
-                        "warn",
-                    )
-
-                if not _native_ok:
-                    # ── Проверка rate limit ──
-                    can_go = await self._check_before_launch(job)
-                    if not can_go:
-                        raise RuntimeError("Rate limit: ожидание превышено или отменено")
-
-                    # Chunked mode: чанкуем если позиций > PARA_CHUNK_SIZE
-                    PARA_CHUNK_SIZE = 15
-                    use_chunked = len(paragraphs_to_verify) > PARA_CHUNK_SIZE
-                else:
-                    use_chunked = False
-
-                if use_chunked:
-                    para_chunks = [
-                        paragraphs_to_verify[i:i + PARA_CHUNK_SIZE]
-                        for i in range(0, len(paragraphs_to_verify), PARA_CHUNK_SIZE)
-                    ]
-
-                    await self._log(
-                        job,
-                        f"Chunked mode: {len(para_chunks)} чанков "
-                        f"({len(paragraphs_to_verify)} цитат)",
-                    )
-
-                    sem = asyncio.Semaphore(1)  # low-RAM server: sequential chunks prevent OOM
-
-                    async def _run_chunk(idx: int, chunk_paragraphs: list):
-                        async with sem:
-                            fname = f"norm_checks_llm_{idx + 1}.json"
-                            chunk_text = format_llm_work_for_template(
-                                chunk_paragraphs, findings_path,
-                            )
-                            expected = output_dir / fname
-                            # До запуска удалим возможный stale-файл, чтобы
-                            # post-check оценивал именно текущую попытку.
-                            if expected.exists():
-                                expected.unlink()
-                            for attempt in (1, 2):
-                                exit_code, output, cli_result = await claude_runner.run_norm_verify(
-                                    chunk_text, job.project_id,
-                                    on_output=lambda msg: self._log(job, msg),
-                                    project_info=project_info,
-                                    llm_out_filename=fname,
-                                )
-                                self._record_cli_usage(
-                                    job, cli_result,
-                                    f"norm_verify_chunk_{idx + 1}"
-                                    + ("" if attempt == 1 else f"_retry_{attempt}"),
-                                )
-                                if exit_code != 0:
-                                    raise RuntimeError(
-                                        f"Claude CLI norm_verify chunk {idx + 1}: exit {exit_code}"
-                                    )
-                                if expected.exists():
-                                    return expected
-                                await self._log(
-                                    job,
-                                    f"chunk {idx + 1}: exit=0 но {fname} не создан — "
-                                    f"{'retry' if attempt == 1 else 'fail'}",
-                                    "warn",
-                                )
-                            raise RuntimeError(
-                                f"Claude CLI norm_verify chunk {idx + 1}: "
-                                f"exit=0 дважды, но {expected} не создан"
-                            )
-
-                    tasks = [
-                        _run_chunk(ci, chunk) for ci, chunk in enumerate(para_chunks)
-                    ]
-                    chunk_paths = await asyncio.gather(*tasks, return_exceptions=True)
-                    valid_paths = [p for p in chunk_paths if isinstance(p, Path)]
-                    errors = [e for e in chunk_paths if isinstance(e, Exception)]
-                    if errors:
-                        await self._log(
-                            job, f"Chunked mode: {len(errors)} чанков с ошибками", "warn",
-                        )
-                    if not valid_paths:
-                        raise RuntimeError(
-                            "Chunked norm_verify: ни один чанк не дал valid файл "
-                            "— paragraph verification не выполнена"
-                        )
-                    merge_chunked_llm_results(valid_paths, norm_checks_llm_path)
-                    await self._log(
-                        job, f"Chunked merge: {len(valid_paths)} чанков объединены",
-                    )
-                elif not _native_ok:
-                    llm_work_text = format_llm_work_for_template(
-                        paragraphs_to_verify, findings_path,
-                    )
-                    max_retries = RATE_LIMIT_MAX_RETRIES
-                    # Удалим возможный stale-файл перед запуском, иначе
-                    # post-check зачтёт файл с прошлого прогона как успех.
-                    if norm_checks_llm_path.exists():
-                        norm_checks_llm_path.unlink()
-                    for attempt in range(1, max_retries + 1):
-                        exit_code, output, cli_result = await claude_runner.run_norm_verify(
-                            llm_work_text, job.project_id,
-                            on_output=lambda msg: self._log(job, msg),
-                            project_info=project_info,
-                        )
-                        stage_label = "norm_verify" if attempt == 1 else f"norm_verify_retry_{attempt}"
-                        self._record_cli_usage(job, cli_result, stage_label)
-
-                        if claude_runner.is_cancelled(exit_code):
-                            job.status = JobStatus.CANCELLED
-                            await self._log(job, "Верификация норм отменена", "warn")
-                            return
-
-                        if exit_code == 0:
-                            break
-
-                        if claude_runner.is_rate_limited(exit_code, output or "", "") or claude_runner.is_timeout(exit_code):
-                            reason = "таймаут" if claude_runner.is_timeout(exit_code) else "rate limit"
-                            await self._log(job, f"{reason} при верификации норм (попытка {attempt}/{max_retries}), ожидание...", "warn")
-                            if attempt < max_retries:
-                                can_continue = await self._wait_for_rate_limit(job, f"{reason} при верификации норм", cli_output=output or "")
-                                if not can_continue:
-                                    raise RuntimeError(f"Верификация норм: ожидание {reason} превышено или отменено")
-                                continue
-                            else:
-                                raise RuntimeError(f"Верификация норм: {max_retries} попыток исчерпано ({reason})")
-
-                        await self._log(job, f"Ошибка верификации (код {exit_code})", "error")
-                        raise RuntimeError(f"Claude CLI norm_verify: exit code {exit_code}")
-
-                    # Post-check: exit=0 НЕ считается успехом, если файла нет.
-                    # Один контролируемый retry, потом явная ошибка.
-                    if not norm_checks_llm_path.exists():
-                        await self._log(
-                            job,
-                            f"norm_verify: exit=0, но {norm_checks_llm_path.name} "
-                            f"не создан. Запускаю контролируемый retry...",
-                            "warn",
-                        )
-                        exit_code, output, cli_result = await claude_runner.run_norm_verify(
-                            llm_work_text, job.project_id,
-                            on_output=lambda msg: self._log(job, msg),
-                            project_info=project_info,
-                        )
-                        self._record_cli_usage(job, cli_result, "norm_verify_missing_file_retry")
-                        if claude_runner.is_cancelled(exit_code):
-                            job.status = JobStatus.CANCELLED
-                            return
-                        if exit_code != 0 or not norm_checks_llm_path.exists():
-                            raise RuntimeError(
-                                f"norm_verify: paragraph verification не выполнена — "
-                                f"{norm_checks_llm_path.name} не создан (retry exit={exit_code})"
-                            )
-                        await self._log(
-                            job, "norm_verify retry: файл успешно создан", "info",
-                        )
-                # конец if not _native_ok
-
-                # ── Шаг 3b: Слияние paragraph_checks (статусы не меняются) ──
-                # Post-check выше гарантирует, что если мы сюда дошли при
-                # llm_needed=True — файл на месте. Отдельной ветки "silent
-                # success без файла" больше быть не может.
-                if not norm_checks_llm_path.exists():
-                    raise RuntimeError(
-                        f"norm_verify invariant: {norm_checks_llm_path} "
-                        f"должен был существовать на этом шаге"
-                    )
-                await self._log(
-                    job,
-                    "Слияние paragraph_checks (статусы norm_checks остаются authoritative)...",
-                )
-                merge_stats = merge_llm_norm_results(norm_checks_path, norm_checks_llm_path)
-                await self._log(
-                    job,
-                    f"Слияние: {merge_stats['paragraph_checks']} цитат получено, "
-                    f"{merge_stats.get('ignored_llm_status_attempts', 0)} попыток "
-                    f"изменить статус отброшено. Paragraph cache: "
-                    f"+{merge_stats.get('paragraph_cache_added', 0)} новых, "
-                    f"{merge_stats.get('paragraph_cache_updated', 0)} обновлено.",
-                )
-            else:
-                await self._log(
-                    job,
-                    "Нет цитат для верификации через MCP — ограничиваемся authoritative статусами",
-                    "info",
-                )
-
-            # Проверяем что файл существует
-            if not norm_checks_path.exists():
-                await self._log(job, "norm_checks.json не создан", "warn")
-                job.status = JobStatus.COMPLETED
+            if not result.success:
+                job.status = JobStatus.FAILED
+                job.error_message = result.error
+                await self._log(job, f"Верификация норм: {result.error}", "error")
                 return
-
-            # Читаем результаты
-            with open(norm_checks_path, "r", encoding="utf-8") as f:
-                checks_data = json.load(f)
-
-            # ── Пост-валидация (программный контроль) ──
-            validation = validate_norm_checks(norm_checks_path)
-            if validation.get("fixes_applied"):
-                await self._log(
-                    job,
-                    f"Пост-валидация: {len(validation['fixes_applied'])} исправлений: "
-                    + "; ".join(validation["fixes_applied"][:3]),
-                    "warn",
-                )
-                with open(norm_checks_path, "r", encoding="utf-8") as f:
-                    checks_data = json.load(f)
-            if validation.get("violations"):
-                await self._log(
-                    job,
-                    f"Пост-валидация: {len(validation['violations'])} нарушений: "
-                    + "; ".join(validation["violations"][:3]),
-                    "warn",
-                )
-
-            checks = checks_data.get("checks", [])
-            needs_fix = [c for c in checks if c.get("needs_revision", False)]
-
-            results = checks_data.get("meta", {}).get("results", {})
-            await self._log(
-                job,
-                f"Результат: {results.get('active', 0)} актуальных, "
-                f"{results.get('outdated_edition', 0)} устаревших, "
-                f"{results.get('replaced', 0)} заменённых, "
-                f"{results.get('cancelled', 0)} отменённых",
-                "info",
-            )
-
-            # ── Шаг 3: Пересмотр замечаний (если нужен) ──
-            if needs_fix:
-                # Ждём завершения Corrector — оба пишут в 03_findings.json
-                if wait_before_fix is not None and not wait_before_fix.is_set():
-                    await self._log(job, "Ожидание завершения Corrector перед пересмотром норм...")
-                    await wait_before_fix.wait()
-                    if job.status == JobStatus.CANCELLED:
-                        return
-
-                job.stage = AuditStage.NORM_FIX
-                await self._log(
-                    job,
-                    f"Шаг 3: Пересмотр {len(needs_fix)} замечаний с устаревшими нормами..."
-                )
-
-                findings_to_fix_text = format_findings_to_fix(norm_checks_path, findings_path)
-
-                # Бэкап findings ДО norm_fix (Python, надёжно)
-                import shutil
-                pre_norm_path = output_dir / "03_findings_pre_norm.json"
-                if findings_path.exists():
-                    shutil.copy2(findings_path, pre_norm_path)
-
-                # ── Проверка rate limit перед пересмотром замечаний ──
-                can_go = await self._check_before_launch(job)
-                if not can_go:
-                    raise RuntimeError("Rate limit: ожидание превышено или отменено")
-
-                exit_code, output, cli_result = await claude_runner.run_norm_fix(
-                    findings_to_fix_text, job.project_id,
-                    on_output=lambda msg: self._log(job, msg),
-                    project_info=project_info,
-                )
-                self._record_cli_usage(job, cli_result, "norm_fix")
-
-                if claude_runner.is_cancelled(exit_code):
-                    job.status = JobStatus.CANCELLED
-                    await self._log(job, "Пересмотр замечаний отменён", "warn")
-                    return
-
-                # LLM пишет прямо в 03_findings.json — Python создаёт 03a как снэпшот
-                if exit_code == 0 and findings_path.exists():
-                    shutil.copy2(findings_path, verified_path)
-                    size_kb = round(verified_path.stat().st_size / 1024, 1)
-                    await self._log(job, f"03a_norms_verified.json создан ({size_kb} KB)")
-                elif exit_code != 0:
-                    await self._log(job, f"Norm fix: код {exit_code}", "warn")
-                    # Восстановить бэкап при ошибке
-                    if pre_norm_path.exists():
-                        shutil.copy2(pre_norm_path, findings_path)
-                        await self._log(job, "Восстановлен 03_findings.json из бэкапа", "warn")
-            else:
-                await self._log(job, "Все нормы актуальны — пересмотр не требуется", "info")
-
-            # ── Шаг 4: Локальный norms_db.json больше не authoritative ──
-            # Source of truth — Norms-main. Оставляем no-op для трассировки.
-            await self._update_norms_db(job)
-
-            # ── Шаг 5: Обогащение findings.norm_quote из paragraph_checks ──
-            enriched = self._enrich_norm_quotes_from_checks(output_dir)
-            if enriched > 0:
-                await self._log(job, f"norm_quote обогащён из paragraph_checks: {enriched} замечаний")
-
-            # ── Шаг 6: Авто-исправление неверных номеров пунктов норм ──
-            # paragraph_checks с paragraph_verified=False означает: цитата правильная,
-            # но номер пункта в ссылке ошибочен. Исправляем по mismatch_details.
-            fixed_paras = self._fix_paragraph_refs(output_dir)
-            if fixed_paras > 0:
-                await self._log(job, f"Номера пунктов норм исправлены: {fixed_paras} замечаний")
-
-            # ── Шаг 7: уточнение оставшихся цитат через semantic_search (Python) ──
-            remaining_flags = self._count_manual_check_flags(output_dir)
-            if remaining_flags > 0:
-                await self._log(job,
-                    f"Шаг 7: уточнение {remaining_flags} цитат норм (Python semantic search)")
-                try:
-                    loop = asyncio.get_event_loop()
-                    rq_result = await loop.run_in_executor(
-                        None, requote_norms_native, output_dir,
-                    )
-                    resolved = rq_result.get("resolved", 0)
-                    remaining_after = rq_result.get("remaining", remaining_flags)
-                    await self._log(job,
-                        f"norm_requote завершён: исправлено {resolved}/{remaining_flags}, "
-                        f"осталось {remaining_after} [ручная сверка]")
-                except Exception as _rq_exc:
-                    await self._log(job,
-                        f"Native requote failed ({_rq_exc}), fallback → Claude CLI", "warn")
-                    exit_code, _, cli_result = await claude_runner.run_norm_requote(
-                        pid, on_output=lambda msg: self._log(job, msg),
-                        project_info=project_info,
-                    )
-                    self._record_cli_usage(job, cli_result, "norm_requote")
-                    if exit_code != 0:
-                        await self._log(job, f"norm_requote: код {exit_code} (не критично)", "warn")
-                    remaining_after = self._count_manual_check_flags(output_dir)
-                    resolved = remaining_flags - remaining_after
-                    await self._log(job,
-                        f"norm_requote завершён: исправлено {resolved}/{remaining_flags}, "
-                        f"осталось {remaining_after} [ручная сверка]")
 
             job.status = JobStatus.COMPLETED
-            await self._log(job, "Верификация нормативных ссылок завершена", "info")
-            self._refresh_finding_quality(pid)
-            if verified_path.exists():
-                self._refresh_finding_quality(pid, "03a_norms_verified.json")
-            self._update_pipeline_log(pid, "norm_verify", "done", message="OK")
 
         except asyncio.CancelledError:
             job.status = JobStatus.CANCELLED
@@ -4950,166 +2958,21 @@ class PipelineManager:
 
     @staticmethod
     def _enrich_norm_quotes_from_checks(output_dir: Path) -> int:
-        """Обогатить findings из norm_checks.json (полный norm contract).
-
-        Обогащает:
-        - norm_verification: {status, edition_status, verified_via, ...}
-        - norm_status / norm_quote_status: classification
-        - norm_quote: actual_quote если найдена и лучше текущей
-
-        Returns: количество обогащённых findings.
-        """
-        findings_path = output_dir / "03_findings.json"
-        norm_checks_path = output_dir / "norm_checks.json"
-        if not findings_path.exists() or not norm_checks_path.exists():
-            return 0
-
-        try:
-            fd = json.loads(findings_path.read_text(encoding="utf-8"))
-            nc = json.loads(norm_checks_path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
-            return 0
-
-        findings = fd.get("findings", [])
-        if not findings:
-            return 0
-
-        try:
-            from norms import enrich_findings_from_norm_checks
-            stats = enrich_findings_from_norm_checks(findings, nc)
-            enriched = stats.get("enriched_verification", 0) + stats.get("enriched_quote", 0)
-        except ImportError:
-            # Fallback: старая логика для backward compat
-            paragraph_checks = nc.get("paragraph_checks", [])
-            verified_quotes = {}
-            for pc in paragraph_checks:
-                if pc.get("paragraph_verified") and pc.get("actual_quote"):
-                    fid = pc.get("finding_id", "")
-                    if fid:
-                        verified_quotes[fid] = pc["actual_quote"]
-
-            enriched = 0
-            for finding in findings:
-                fid = finding.get("id", "")
-                if fid in verified_quotes and not finding.get("norm_quote"):
-                    finding["norm_quote"] = verified_quotes[fid]
-                    enriched += 1
-
-        if enriched > 0:
-            findings_path.write_text(
-                json.dumps(fd, ensure_ascii=False, indent=2),
-                encoding="utf-8",
-            )
-
-        return enriched
+        """Обогатить findings из norm_checks.json."""
+        from backend.app.pipeline.stages.norms.runner import enrich_norm_quotes_from_checks
+        return enrich_norm_quotes_from_checks(output_dir)
 
     @staticmethod
     def _fix_paragraph_refs(output_dir: Path) -> int:
-        """Исправить неверные номера пунктов норм по данным paragraph_checks.
-
-        Для каждого finding с paragraph_verified=False: извлекаем правильный
-        пункт из mismatch_details (regex) и обновляем поле norm. Если правильный
-        пункт не определить однозначно — добавляем пометку [ручная сверка].
-
-        Returns: количество исправленных findings.
-        """
-        import re as _re
-        import shutil as _shutil
-
-        findings_path = output_dir / "03_findings.json"
-        norm_checks_path = output_dir / "norm_checks.json"
-        if not findings_path.exists() or not norm_checks_path.exists():
-            return 0
-
-        try:
-            fd = json.loads(findings_path.read_text(encoding="utf-8"))
-            nc = json.loads(norm_checks_path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
-            return 0
-
-        para_checks = nc.get("paragraph_checks", [])
-        if not para_checks:
-            return 0
-
-        _p_re = _re.compile(r"п\.\s*([\d]+(?:\.[\d]+)+)")
-
-        # Группируем по finding_id — только unverified
-        by_fid: dict[str, list[dict]] = {}
-        for pc in para_checks:
-            if not pc.get("paragraph_verified", True):
-                by_fid.setdefault(pc.get("finding_id", ""), []).append(pc)
-        if not by_fid:
-            return 0
-
-        findings = fd.get("findings", [])
-        fmap = {f.get("id", ""): f for f in findings}
-        fixed = 0
-
-        for fid, checks in by_fid.items():
-            finding = fmap.get(fid)
-            if not finding:
-                continue
-
-            norm_field = finding.get("norm", "") or ""
-            desc = finding.get("description", "") or ""
-            made_change = False
-
-            for pc in checks:
-                norm_str = pc.get("norm") or ""
-                mismatch = pc.get("mismatch_details") or ""
-                old_paras = _p_re.findall(norm_str)
-                if not old_paras:
-                    continue
-                old_p = old_paras[0]
-
-                # Ищем правильный пункт в mismatch_details (исключая старый)
-                all_in_mismatch = _p_re.findall(mismatch)
-                new_candidates = [p for p in all_in_mismatch if p != old_p]
-
-                if new_candidates:
-                    new_p = new_candidates[0]
-                    new_norm = _re.sub(r"п\.\s*" + _re.escape(old_p), f"п. {new_p}", norm_field)
-                    new_desc = _re.sub(r"п\.\s*" + _re.escape(old_p), f"п. {new_p}", desc)
-                    if new_norm != norm_field or new_desc != desc:
-                        norm_field = new_norm
-                        desc = new_desc
-                        made_change = True
-                else:
-                    # Не определить пункт → ставим пометку если её нет
-                    flag = f"[Пункт нормы {norm_str} требует ручной сверки] "
-                    if flag not in desc:
-                        desc = flag + desc
-                        made_change = True
-
-            if made_change:
-                finding["norm"] = norm_field
-                finding["description"] = desc
-                fixed += 1
-
-        if fixed > 0:
-            if "meta" in fd and isinstance(fd["meta"], dict):
-                fd["meta"]["paragraph_fix_applied"] = True
-                fd["meta"]["paragraph_fix_stats"] = {"fixed_paragraph": fixed}
-            findings_path.write_text(
-                json.dumps(fd, ensure_ascii=False, indent=2), encoding="utf-8"
-            )
-
-        return fixed
+        """Исправить неверные номера пунктов норм по данным paragraph_checks."""
+        from backend.app.pipeline.stages.norms.runner import fix_paragraph_refs
+        return fix_paragraph_refs(output_dir)
 
     @staticmethod
     def _count_manual_check_flags(output_dir: Path) -> int:
         """Подсчитать количество findings с флагом [Пункт нормы ... ручной сверки]."""
-        findings_path = output_dir / "03_findings.json"
-        if not findings_path.exists():
-            return 0
-        try:
-            fd = json.loads(findings_path.read_text(encoding="utf-8"))
-            return sum(
-                1 for f in fd.get("findings", [])
-                if "[Пункт нормы" in (f.get("description") or "")
-            )
-        except (json.JSONDecodeError, OSError):
-            return 0
+        from backend.app.pipeline.stages.norms.runner import count_manual_check_flags
+        return count_manual_check_flags(output_dir)
 
     # ─── Запуск интеллектуального аудита (smart) ───
     async def start_smart_audit(self, project_id: str) -> AuditJob:
@@ -5180,48 +3043,27 @@ class PipelineManager:
             self._reset_job_progress(job)
             job.stage = AuditStage.MAIN_AUDIT
             job.status = JobStatus.RUNNING
-            self._update_pipeline_log(pid, "text_analysis", "running")
             print(f"[{pid}:smart] ═══ ЭТАП 2: Триаж страниц ═══")
             await self._log(job, "═══ ЭТАП 2: Триаж страниц (Claude определяет приоритеты) ═══")
 
             with open(info_path, "r", encoding="utf-8") as f:
                 project_info = json.load(f)
 
-            # ── Проверка rate limit перед триажом ──
-            can_go = await self._check_before_launch(job)
-            if not can_go:
-                raise RuntimeError("Rate limit: ожидание превышено или отменено")
-
-            exit_code, output, cli_result = await claude_runner.run_triage(
-                project_info, pid,
-                on_output=lambda msg: self._log(job, msg),
+            _triage_result = await _run_text_analysis_stage(
+                self._make_stage_context(job),
+                use_triage=True,
+                with_rate_limit_retry=True,
+                stage_label="text_analysis",
             )
-            self._record_cli_usage(job, cli_result, "triage")
-            if claude_runner.is_cancelled(exit_code):
+            if _triage_result.cancelled:
                 job.status = JobStatus.CANCELLED
                 await self._log(job, "Триаж отменён", "warn")
                 return
-            if claude_runner.is_rate_limited(exit_code, output or "", ""):
-                # Rate limit на триаже — ждём и retry
-                await self._log(job, "Rate limit при триаже, ожидание...", "warn")
-                can_continue = await self._wait_for_rate_limit(job, "rate limit при триаже", cli_output=output or "")
-                if not can_continue:
-                    raise RuntimeError("Rate limit: ожидание превышено или отменено")
-                exit_code, output, cli_result = await claude_runner.run_triage(
-                    project_info, pid,
-                    on_output=lambda msg: self._log(job, msg),
-                )
-                self._record_cli_usage(job, cli_result, "triage_retry")
-            if exit_code != 0:
-                self._update_pipeline_log(pid, "text_analysis", "error",
-                                           error=f"Триаж: код {exit_code}")
-                raise RuntimeError(f"Триаж: код {exit_code}, {output[:500] if output else 'N/A'}")
+            if not _triage_result.success:
+                raise RuntimeError(_triage_result.error or "Триаж: ошибка")
 
-            # Прочитать результат триажа
+            # Прочитать результат триажа — оркестратор читает priority_pages сам
             triage_file = output_dir / "01_text_analysis.json"
-            if not triage_file.exists():
-                raise RuntimeError("01_text_analysis.json не создан после триажа")
-
             with open(triage_file, "r", encoding="utf-8") as f:
                 triage_data = json.load(f)
 
@@ -5230,6 +3072,7 @@ class PipelineManager:
                 pt["page"] for pt in page_triage
                 if pt.get("priority") in ("HIGH", "MEDIUM")
             ]
+            # Обновить log message с количеством приоритетных страниц
             self._update_pipeline_log(pid, "text_analysis", "done",
                                        message=f"{len(priority_pages)} приоритетных из {len(page_triage)}")
             print(f"[{pid}:smart] Триаж: {len(priority_pages)} приоритетных страниц из {len(page_triage)}")
@@ -5397,22 +3240,11 @@ class PipelineManager:
             self._reset_job_progress(job)
             job.stage = AuditStage.EXCEL
             job.status = JobStatus.RUNNING
-            self._update_pipeline_log(pid, "excel", "running")
             print(f"[{pid}:smart] ═══ ЭТАП 7: Excel ═══")
-            await self._log(job, "═══ ЭТАП 7: Генерация Excel ═══")
-            project_path = str(resolve_project_dir(pid))
-            exit_code, _xls_out, _xls_err = await self._run_script(
-                pid,
-                str(GENERATE_EXCEL_SCRIPT),
-                args=[project_path],
-                env_overrides={"AUDIT_NO_OPEN": "1"},
-                on_output=lambda msg: self._log(job, msg),
-            )
-            if exit_code == 0:
-                self._update_pipeline_log(pid, "excel", "done", message="OK")
-            else:
-                self._update_pipeline_log(pid, "excel", "error",
-                                           error=_extract_error_detail(exit_code, (_xls_err or "") + "\n" + (_xls_out or "")))
+            from backend.app.pipeline.stages.report.runner import run_excel_report as _run_excel
+            _xls_result = await _run_excel(self._make_stage_context(job))
+            if not _xls_result.success:
+                await self._log(job, f"Excel-отчёт не создан: {_xls_result.error}", "warn")
 
             wall_sec = (datetime.now() - start_time).total_seconds()
             net_sec = max(0, wall_sec - job.pause_total_sec)
@@ -5473,7 +3305,7 @@ class PipelineManager:
         При ошибке скриптов/CLI логируем warn и продолжаем: unreadable=true
         сохраняется, пайплайн идёт дальше на findings_merge.
         """
-        from blocks import (
+        from backend.app.pipeline.stages.crop_blocks.blocks import (
             find_unreadable_blocks,
             recrop_blocks,
             promote_to_full,
@@ -5701,46 +3533,20 @@ class PipelineManager:
             self._reset_job_progress(job)
             job.stage = AuditStage.TEXT_ANALYSIS
             job.status = JobStatus.RUNNING
-            self._update_pipeline_log(pid, "text_analysis", "running")
             print(f"[{pid}] ═══ ЭТАП 2: Текстовый анализ MD ═══")
             await self._log(job, "═══ ЭТАП 2: Текстовый анализ MD (Claude) ═══")
             await self._start_heartbeat(job)
 
-            can_go = await self._check_before_launch(job)
-            if not can_go:
-                raise RuntimeError("Rate limit: ожидание превышено или отменено")
-
-            exit_code, output, cli_result = await claude_runner.run_text_analysis(
-                project_info, pid,
-                on_output=lambda msg: self._log(job, msg),
+            _ta_result = await _run_text_analysis_stage(
+                self._make_stage_context(job),
+                with_rate_limit_retry=True,
             )
-            self._record_cli_usage(job, cli_result, "text_analysis")
-
-            if claude_runner.is_cancelled(exit_code):
+            if _ta_result.cancelled:
                 job.status = JobStatus.CANCELLED
                 return
-            if claude_runner.is_rate_limited(exit_code, output or "", ""):
-                await self._log(job, "Rate limit при текстовом анализе, ожидание...", "warn")
-                can_continue = await self._wait_for_rate_limit(
-                    job, "rate limit при текстовом анализе", cli_output=output or ""
-                )
-                if not can_continue:
-                    raise RuntimeError("Rate limit: ожидание превышено или отменено")
-                exit_code, output, cli_result = await claude_runner.run_text_analysis(
-                    project_info, pid,
-                    on_output=lambda msg: self._log(job, msg),
-                )
-                self._record_cli_usage(job, cli_result, "text_analysis_retry")
-            if exit_code != 0:
-                self._update_pipeline_log(pid, "text_analysis", "error",
-                                           error=_extract_error_detail(exit_code, output))
-                raise RuntimeError(f"Текстовый анализ: код {exit_code}")
+            if not _ta_result.success:
+                raise RuntimeError(_ta_result.error or "Текстовый анализ: ошибка")
 
-            text_analysis_path = output_dir / "01_text_analysis.json"
-            if not text_analysis_path.exists():
-                raise RuntimeError("01_text_analysis.json не создан")
-
-            self._update_pipeline_log(pid, "text_analysis", "done", message="OK")
             print(f"[{pid}] ЭТАП 2 OK")
 
             if job.status == JobStatus.CANCELLED:
@@ -6018,88 +3824,16 @@ class PipelineManager:
             self._reset_job_progress(job)
             job.stage = AuditStage.FINDINGS_MERGE
             job.status = JobStatus.RUNNING
-
-            findings_model = get_stage_model("findings_merge")
-            self._update_pipeline_log(pid, "findings_merge", "running")
             print(f"[{pid}] ═══ ЭТАП 6: Свод замечаний ═══")
-            await self._log(job, f"═══ ЭТАП 6: Свод замечаний ({findings_model}) ═══")
-
-            can_go = await self._check_before_launch(job)
-            if not can_go:
-                raise RuntimeError("Rate limit: ожидание превышено или отменено")
-
-            exit_code, output, cli_result = await claude_runner.run_findings_merge(
-                project_info, pid,
-                on_output=lambda msg: self._log(job, msg),
-            )
-            self._record_cli_usage(job, cli_result, "findings_merge")
-
-            if claude_runner.is_cancelled(exit_code):
+            _fm_result = await _run_findings_merge_stage(self._make_stage_context(job))
+            if _fm_result.cancelled:
                 job.status = JobStatus.CANCELLED
                 return
-            if claude_runner.is_rate_limited(exit_code, output or "", ""):
-                await self._log(job, "Rate limit при своде замечаний, ожидание...", "warn")
-                can_continue = await self._wait_for_rate_limit(
-                    job, "rate limit при своде замечаний", cli_output=output or ""
-                )
-                if can_continue:
-                    exit_code, output, cli_result = await claude_runner.run_findings_merge(
-                        project_info, pid,
-                        on_output=lambda msg: self._log(job, msg),
-                    )
-                    self._record_cli_usage(job, cli_result, "findings_merge_retry")
+            if not _fm_result.success:
+                raise RuntimeError(_fm_result.error or "Свод замечаний: ошибка")
 
-            if exit_code != 0:
-                self._update_pipeline_log(pid, "findings_merge", "error",
-                                           error=_extract_error_detail(exit_code, output))
-                await self._log(job, f"Свод замечаний: код {exit_code}", "error")
-            else:
-                findings_path = resolve_project_dir(pid) / "_output" / "03_findings.json"
-                if not findings_path.exists():
-                    self._update_pipeline_log(pid, "findings_merge", "error", error="03_findings.json не создан")
-                    await self._log(job, "03_findings.json не создан — свод замечаний считается ошибкой", "error")
-                    raise RuntimeError("03_findings.json не создан")
-
-                # Валидация JSON после findings_merge
-                is_valid, repair_msg = self._validate_and_repair_json(findings_path)
-                if not is_valid:
-                    self._update_pipeline_log(
-                        pid, "findings_merge", "error",
-                        error=f"03_findings.json невалиден: {repair_msg}",
-                    )
-                    raise RuntimeError(f"03_findings.json невалиден: {repair_msg}")
-                if "Repaired" in repair_msg:
-                    await self._log(job, f"03_findings.json починен: {repair_msg}", "warn")
-
-                self._update_pipeline_log(pid, "findings_merge", "done", message="OK")
-
-                # Post-merge: backfill text-evidence из compact/graph
-                self._backfill_text_evidence_in_findings(pid)
-
-                # Объединение похожих замечаний
-                merge_result = self._merge_similar_findings(pid)
-                if merge_result and merge_result.get("merged_groups", 0) > 0:
-                    await self._log(
-                        job,
-                        f"Объединено похожих замечаний: {merge_result['before']} → {merge_result['after']} "
-                        f"({merge_result['merged_groups']} групп)",
-                    )
-
-                self._refresh_finding_quality(pid)
-
-                # Восстановление highlight_regions из 02_blocks_analysis
-                self._backfill_highlight_regions(pid)
-                coverage = self._attach_stage02_coverage_to_findings(pid)
-                excluded_count = (coverage.get("summary") or {}).get("excluded_from_full_analysis_count", 0)
-                if excluded_count:
-                    await self._log(
-                        job,
-                        f"В финальный отчёт добавлены блоки вне полноценного анализа: {excluded_count}",
-                        "warn",
-                    )
-
-                # «Размышление модели»: стрим найденных замечаний в live-лог
-                await self._stream_findings_events(job, "merge")
+            # «Размышление модели»: стрим найденных замечаний в live-лог (WS)
+            await self._stream_findings_events(job, "merge")
 
             if job.status == JobStatus.CANCELLED:
                 return
@@ -6130,22 +3864,11 @@ class PipelineManager:
             self._reset_job_progress(job)
             job.stage = AuditStage.EXCEL
             job.status = JobStatus.RUNNING
-            self._update_pipeline_log(pid, "excel", "running")
             print(f"[{pid}] ═══ ЭТАП 8: Excel ═══")
-            await self._log(job, "═══ ЭТАП 8: Генерация Excel ═══")
-            project_path = str(resolve_project_dir(pid))
-            exit_code, _xls_out, _xls_err = await self._run_script(
-                pid,
-                str(GENERATE_EXCEL_SCRIPT),
-                args=[project_path],
-                env_overrides={"AUDIT_NO_OPEN": "1"},
-                on_output=lambda msg: self._log(job, msg),
-            )
-            if exit_code == 0:
-                self._update_pipeline_log(pid, "excel", "done", message="OK")
-            else:
-                self._update_pipeline_log(pid, "excel", "error",
-                                           error=_extract_error_detail(exit_code, (_xls_err or "") + "\n" + (_xls_out or "")))
+            from backend.app.pipeline.stages.report.runner import run_excel_report as _run_excel
+            _xls_result = await _run_excel(self._make_stage_context(job))
+            if not _xls_result.success:
+                await self._log(job, f"Excel-отчёт не создан: {_xls_result.error}", "warn")
 
             wall_sec = (datetime.now() - start_time).total_seconds()
             net_sec = max(0, wall_sec - job.pause_total_sec)
@@ -6973,97 +4696,29 @@ class PipelineManager:
             await self._run_optimization_review(job)
 
     async def _run_optimization(self, job: AuditJob, standalone: bool = True):
-        """Запуск Claude CLI для анализа оптимизации.
+        """Запуск оптимизации — оркестратор делегирует в optimization/runner.py.
 
         standalone=False: не делать cleanup в finally (для параллельного запуска).
         """
+        from backend.app.pipeline.stages.optimization.runner import (
+            run_optimization as _opt_runner,
+            OptimizationResult,
+        )
         pid = job.project_id
         try:
-            self._update_pipeline_log(pid, "optimization", "running")
-            info_path = resolve_project_dir(pid) / "project_info.json"
-            with open(info_path, "r", encoding="utf-8") as f:
-                project_info = json.load(f)
-
-            await self._log(job, "Запуск анализа оптимизации проектных решений...")
             if standalone:
                 await self._start_heartbeat(job)
 
-            # Проверка rate limit перед запуском
-            can_go = await self._check_before_launch(job)
-            if not can_go:
-                job.status = JobStatus.FAILED
-                job.error_message = "Rate limit: ожидание превышено или отменено"
-                self._update_pipeline_log(pid, "optimization", "error",
-                                           error="Rate limit: ожидание превышено")
-                return
+            ctx = self._make_stage_context(job)
+            result: OptimizationResult = await _opt_runner(ctx)
 
-            exit_code, output, cli_result = await claude_runner.run_optimization(
-                project_info, pid,
-                on_output=lambda msg: self._log(job, msg),
-            )
-            self._record_cli_usage(job, cli_result, "optimization")
-
-            if exit_code == 0:
-                # Проверяем что optimization.json создан
-                opt_file = resolve_project_dir(pid) / "_output" / "optimization.json"
-                if opt_file.exists():
-                    size_kb = round(opt_file.stat().st_size / 1024, 1)
-                    # Читаем meta для лога
-                    try:
-                        with open(opt_file, "r", encoding="utf-8") as f:
-                            opt_data = json.load(f)
-                        meta = opt_data.get("meta", {})
-                        total_items = meta.get("total_items", 0)
-                        savings = meta.get("estimated_savings_pct", 0)
-                        await self._log(
-                            job,
-                            f"Оптимизация завершена: {total_items} предложений, "
-                            f"~{savings}% средняя экономия ({size_kb} KB)",
-                            "info",
-                        )
-                    except Exception:
-                        await self._log(job, f"optimization.json создан ({size_kb} KB)", "info")
-                else:
-                    await self._log(job, "optimization.json не создан — Claude не записал результат", "warn")
-                job.status = JobStatus.COMPLETED
-                self._update_pipeline_log(pid, "optimization", "done", message="OK")
-            elif claude_runner.is_cancelled(exit_code):
-                await self._log(job, "Оптимизация отменена", "warn")
+            if result.cancelled:
                 job.status = JobStatus.CANCELLED
-                self._update_pipeline_log(pid, "optimization", "error", error="Отменено")
-            elif claude_runner.is_rate_limited(exit_code, output or "", ""):
-                await self._log(job, "Rate limit при оптимизации, ожидание...", "warn")
-                can_continue = await self._wait_for_rate_limit(
-                    job, "rate limit при оптимизации", cli_output=output or ""
-                )
-                if can_continue:
-                    exit_code, output, cli_result = await claude_runner.run_optimization(
-                        project_info, pid,
-                        on_output=lambda msg: self._log(job, msg),
-                    )
-                    self._record_cli_usage(job, cli_result, "optimization_retry")
-                    if exit_code == 0:
-                        await self._log(job, "Оптимизация завершена (после паузы)", "info")
-                        job.status = JobStatus.COMPLETED
-                        self._update_pipeline_log(pid, "optimization", "done",
-                                                   message="OK (после rate limit паузы)")
-                    else:
-                        await self._log(job, f"Ошибка оптимизации после retry (код {exit_code})", "error")
-                        job.status = JobStatus.FAILED
-                        job.error_message = f"Exit code: {exit_code}"
-                        self._update_pipeline_log(pid, "optimization", "error",
-                                                   error=_extract_error_detail(exit_code, output))
-                else:
-                    job.status = JobStatus.FAILED
-                    job.error_message = "Rate limit: ожидание превышено или отменено"
-                    self._update_pipeline_log(pid, "optimization", "error",
-                                               error="Rate limit: ожидание превышено")
+            elif result.success:
+                job.status = JobStatus.COMPLETED
             else:
-                await self._log(job, f"Ошибка оптимизации (код {exit_code})", "error")
                 job.status = JobStatus.FAILED
-                job.error_message = f"Exit code: {exit_code}"
-                self._update_pipeline_log(pid, "optimization", "error",
-                                           error=_extract_error_detail(exit_code, output))
+                job.error_message = result.error or "optimization failed"
 
         except asyncio.CancelledError:
             job.status = JobStatus.CANCELLED
@@ -7079,196 +4734,12 @@ class PipelineManager:
                 self._cleanup(pid)
 
     async def _run_optimization_review(self, job: AuditJob):
-        """
-        Critic + Corrector для оптимизации: проверка и корректировка предложений.
-
-        1. Critic проверяет каждое OPT-предложение (vendor, savings, traceability)
-        2. Если есть отрицательные вердикты — Corrector исправляет
-        """
-        pid = job.project_id
-        output_dir = resolve_project_dir(pid) / "_output"
-
-        # Загружаем project_info
-        info_path = resolve_project_dir(pid) / "project_info.json"
-        try:
-            with open(info_path, "r", encoding="utf-8") as f:
-                project_info = json.load(f)
-        except Exception:
-            await self._log(job, "Не удалось загрузить project_info.json для optimization review", "warn")
-            return
-
-        # ── Critic ──
-        self._update_pipeline_log(pid, "optimization_critic", "running")
-        print(f"[{pid}] ═══ Optimization Critic (проверка оптимизации) ═══")
-        await self._log(job, "═══ Optimization Critic — проверка обоснованности предложений ═══")
-
-        can_go = await self._check_before_launch(job)
-        if not can_go:
-            await self._log(job, "Rate limit: ожидание превышено или отменено", "warn")
-            return
-
-        exit_code, output, cli_result = await claude_runner.run_optimization_critic(
-            project_info, pid,
-            on_output=lambda msg: self._log(job, msg),
+        """Critic + Corrector оптимизации — оркестратор делегирует в optimization/runner.py."""
+        from backend.app.pipeline.stages.optimization.runner import (
+            run_optimization_review as _opt_review_runner,
         )
-        self._record_cli_usage(job, cli_result, "optimization_critic")
-
-        if claude_runner.is_cancelled(exit_code):
-            return
-
-        if exit_code != 0:
-            # CLI может вернуть -1/1, но файл уже записан — проверяем
-            review_path_check = output_dir / "optimization_review.json"
-            if review_path_check.exists():
-                try:
-                    review_data_check = json.loads(review_path_check.read_text(encoding="utf-8"))
-                    reviewed = review_data_check.get("meta", {}).get("total_reviewed", 0)
-                    if reviewed > 0:
-                        await self._log(
-                            job,
-                            f"Optimization Critic: CLI код {exit_code}, но review файл валиден "
-                            f"({reviewed} reviewed) — продолжаем",
-                            "warn",
-                        )
-                        self._update_pipeline_log(
-                            pid, "optimization_critic", "done",
-                            message=f"OK (CLI код {exit_code}, файл валиден)",
-                        )
-                    else:
-                        raise ValueError("total_reviewed == 0")
-                except (json.JSONDecodeError, OSError, ValueError):
-                    self._update_pipeline_log(pid, "optimization_critic", "error",
-                                               error=_extract_error_detail(exit_code, output))
-                    await self._log(job, f"Optimization Critic: код {exit_code}, файл невалиден", "warn")
-                    return
-            else:
-                self._update_pipeline_log(pid, "optimization_critic", "error",
-                                           error=_extract_error_detail(exit_code, output))
-                await self._log(job, f"Optimization Critic: код {exit_code}, файл не создан", "warn")
-                return
-        else:
-            self._update_pipeline_log(pid, "optimization_critic", "done", message="OK")
-
-        # Проверяем: нужен ли Corrector?
-        review_path = output_dir / "optimization_review.json"
-        if not review_path.exists():
-            await self._log(job, "optimization_review.json не создан — пропуск Corrector", "warn")
-            return
-
-        try:
-            review_data = json.loads(review_path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
-            await self._log(job, "Ошибка чтения optimization_review.json", "warn")
-            return
-
-        verdicts = review_data.get("meta", {}).get("verdicts", {})
-        total_pass = verdicts.get("pass", 0)
-        total_reviewed = review_data.get("meta", {}).get("total_reviewed", 0)
-        total_issues = total_reviewed - total_pass
-
-        await self._log(
-            job,
-            f"Optimization Critic: {total_reviewed} проверено, {total_pass} pass, {total_issues} проблем",
-        )
-
-        if total_issues == 0:
-            await self._log(job, "Все предложения обоснованы — Corrector не требуется")
-            self._update_pipeline_log(pid, "optimization_corrector", "skipped",
-                                       message="Все предложения прошли Critic")
-            return
-
-        # ── Corrector ──
-        # Pre-check: optimization.json должен быть валидным JSON
-        opt_check_path = output_dir / "optimization.json"
-        if opt_check_path.exists():
-            try:
-                json.loads(opt_check_path.read_text(encoding="utf-8"))
-            except (json.JSONDecodeError, OSError) as e:
-                await self._log(job, f"optimization.json невалиден перед Corrector: {e}", "warn")
-                self._update_pipeline_log(pid, "optimization_corrector", "error",
-                                           error="optimization.json невалиден")
-                return
-
-        self._update_pipeline_log(pid, "optimization_corrector", "running")
-        print(f"[{pid}] ═══ Optimization Corrector (корректировка оптимизации) ═══")
-        await self._log(
-            job,
-            f"═══ Optimization Corrector — корректировка {total_issues} предложений ═══",
-        )
-
-        can_go = await self._check_before_launch(job)
-        if not can_go:
-            await self._log(job, "Rate limit: ожидание превышено или отменено", "warn")
-            return
-
-        exit_code, output, cli_result = await claude_runner.run_optimization_corrector(
-            project_info, pid,
-            on_output=lambda msg: self._log(job, msg),
-        )
-        self._record_cli_usage(job, cli_result, "optimization_corrector")
-
-        if claude_runner.is_cancelled(exit_code):
-            return
-
-        opt_path = output_dir / "optimization.json"
-        pre_review = output_dir / "optimization_pre_review.json"
-
-        if exit_code != 0:
-            # CLI может вернуть -1/1, но файл уже записан — проверяем
-            if opt_path.exists() and pre_review.exists():
-                try:
-                    new_data = json.loads(opt_path.read_text(encoding="utf-8"))
-                    old_data = json.loads(pre_review.read_text(encoding="utf-8"))
-                    new_count = len(new_data.get("scenarios", new_data.get("optimizations", [])))
-                    old_count = len(old_data.get("scenarios", old_data.get("optimizations", [])))
-                    if new_count > 0 and new_data != old_data:
-                        await self._log(
-                            job,
-                            f"Optimization Corrector: CLI код {exit_code}, но optimization.json обновлён "
-                            f"({old_count} → {new_count}) — считаем успехом",
-                            "warn",
-                        )
-                        self._update_pipeline_log(
-                            pid, "optimization_corrector", "done",
-                            message=f"OK (CLI код {exit_code}, файл обновлён)",
-                        )
-                    else:
-                        raise ValueError("Файл не изменился")
-                except (json.JSONDecodeError, OSError, ValueError):
-                    self._update_pipeline_log(pid, "optimization_corrector", "error",
-                                               error=_extract_error_detail(exit_code, output))
-                    await self._log(job, f"Optimization Corrector: код {exit_code}", "warn")
-                    # Fallback: восстановить pre_review при реальной ошибке
-                    if pre_review.exists() and opt_path.exists():
-                        import shutil
-                        shutil.copy2(pre_review, opt_path)
-                        await self._log(job, "Восстановлен optimization_pre_review.json после ошибки Corrector", "warn")
-                    return
-            else:
-                self._update_pipeline_log(pid, "optimization_corrector", "error",
-                                           error=_extract_error_detail(exit_code, output))
-                await self._log(job, f"Optimization Corrector: код {exit_code}", "warn")
-                return
-        else:
-            self._update_pipeline_log(pid, "optimization_corrector", "done", message="OK")
-            await self._log(job, "Optimization Corrector завершён — optimization.json обновлён")
-
-        # Валидация JSON после opt corrector
-        if opt_path.exists():
-            is_valid, repair_msg = self._validate_and_repair_json(opt_path)
-            if not is_valid:
-                await self._log(
-                    job,
-                    f"ВНИМАНИЕ: optimization.json невалиден после Corrector: {repair_msg}. "
-                    f"Восстанавливаю pre_review версию.",
-                    "error",
-                )
-                if pre_review.exists():
-                    import shutil
-                    shutil.copy2(pre_review, opt_path)
-                    await self._log(job, "Восстановлен optimization_pre_review.json", "warn")
-            elif "Repaired" in repair_msg:
-                await self._log(job, f"optimization.json починен автоматически: {repair_msg}", "warn")
+        ctx = self._make_stage_context(job)
+        await _opt_review_runner(ctx)
 
 
 # Глобальный экземпляр

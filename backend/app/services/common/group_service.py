@@ -1,13 +1,15 @@
 """
 Сервис управления пользовательскими группами проектов.
 
-Группы хранятся per-object per-section в webapp/data/project_groups.json.
+Группы хранятся per-object per-section в backend/app/data/project_groups.json.
 Структура: { "object_id": { "section": [group, ...] } }
 """
 import json
 from pathlib import Path
 
-DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "project_groups.json"
+from backend.app.core.config import PROJECT_GROUPS_FILE
+
+DATA_FILE = PROJECT_GROUPS_FILE
 
 _SENTINEL = "__global__"  # legacy-ключ до введения объектов
 

@@ -1,0 +1,198 @@
+[
+  {
+    "id": "BAD-001",
+    "category": "generic_wording",
+    "input_finding": {
+      "id": "F-099",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "sheet": "Общие данные",
+      "page": 1,
+      "problem": "Необходимо проверить соответствие проектной документации требованиям",
+      "description": "Документация в целом требует дополнительной проверки на соответствие нормативной базе. Рекомендуется уточнить актуальность применяемых норм и стандартов.",
+      "norm": null,
+      "norm_quote": null,
+      "solution": "Уточнить соответствие.",
+      "risk": "Возможны замечания при экспертизе.",
+      "evidence": [],
+      "related_block_ids": [],
+      "source_block_ids": []
+    },
+    "expected_decision": "reject",
+    "expected_reason": "generic_no_object_no_fact_no_evidence",
+    "comment": "Полностью общее замечание. Нет конкретного объекта, факта, нормы, evidence. Формулировки 'требует проверки', 'рекомендуется уточнить' — антипаттерн. Вердикт: no_evidence + not_practical."
+  },
+  {
+    "id": "BAD-002",
+    "category": "speculation",
+    "input_finding": {
+      "id": "F-100",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "cable",
+      "sheet": "Лист 5",
+      "page": 9,
+      "problem": "Возможно, сечение кабеля недостаточно",
+      "description": "Вероятно, сечение кабеля ВВГнг 3x2.5 мм² может не соответствовать расчётным токам при пиковой нагрузке. Следует уточнить расчёт токовых нагрузок.",
+      "norm": "ПУЭ-7, п. 1.3.10",
+      "norm_quote": null,
+      "solution": "Проверить расчёт токовых нагрузок.",
+      "risk": "Потенциально возможен перегрев кабеля.",
+      "evidence": [
+        {"type": "image", "block_id": "ABCD-1234-XYZ", "page": 9}
+      ],
+      "related_block_ids": ["ABCD-1234-XYZ"],
+      "source_block_ids": ["ABCD-1234-XYZ"]
+    },
+    "expected_decision": "reject",
+    "expected_reason": "speculation_no_calculation",
+    "comment": "Формулировки 'возможно', 'вероятно', 'следует уточнить' без расчёта. Нет фактического значения тока, нормативного предела и сравнения. Параметрическое замечание без доказательства. Вердикт: weak_evidence + report_value: downgrade."
+  },
+  {
+    "id": "BAD-003",
+    "category": "no_impact",
+    "input_finding": {
+      "id": "F-101",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "sheet": "Лист 1",
+      "page": 2,
+      "problem": "В штампе указан год '2023' вместо '2024'",
+      "description": "В угловом штампе листа 1 указан год разработки '2023'. Фактически документ разработан в 2024 году согласно сопроводительным документам.",
+      "norm": null,
+      "norm_quote": null,
+      "solution": "Исправить год в штампе на '2024'.",
+      "risk": "Несоответствие может вызвать вопросы при формальной проверке.",
+      "evidence": [
+        {"type": "image", "block_id": "STMP-0001-AAA", "page": 2}
+      ],
+      "related_block_ids": ["STMP-0001-AAA"],
+      "source_block_ids": ["STMP-0001-AAA"]
+    },
+    "expected_decision": "reject",
+    "expected_reason": "cosmetic_no_practical_impact",
+    "comment": "Опечатка в году штампа. Документ идентифицируется однозначно, проектное решение не меняется. Риск приемки не реален: проект не заблокируется из-за года в штампе. Вердикт: not_practical + report_value: remove."
+  },
+  {
+    "id": "BAD-004",
+    "category": "no_evidence",
+    "input_finding": {
+      "id": "F-102",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "grounding",
+      "sheet": "Лист 7",
+      "page": 13,
+      "problem": "Отсутствует схема заземления ГРЩ",
+      "description": "В комплекте документации отсутствует принципиальная схема системы заземления главного распределительного щита. Наличие данной схемы обязательно по нормам.",
+      "norm": "СП 256.1325800.2016, п. 14.2",
+      "norm_quote": null,
+      "solution": "Разработать и включить в комплект схему заземления ГРЩ.",
+      "risk": "Отсутствие схемы может стать основанием для замечания экспертизы.",
+      "evidence": [],
+      "related_block_ids": [],
+      "source_block_ids": []
+    },
+    "expected_decision": "reject",
+    "expected_reason": "no_evidence_absence_claim_without_search",
+    "comment": "Утверждение об отсутствии схемы без единого evidence. Вывод сделан без проверки релевантной области — других листов, текстовых блоков. Нельзя утверждать отсутствие по нулю evidence. Вердикт: no_evidence."
+  },
+  {
+    "id": "BAD-005",
+    "category": "no_action_no_impact",
+    "input_finding": {
+      "id": "F-103",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "normative_refs",
+      "sheet": "Общие данные",
+      "page": 1,
+      "problem": "Перечень нормативных документов устарел",
+      "description": "В разделе 'Нормативные документы' раздела ОД перечислены документы 2015-2018 годов. Часть из них могла получить изменения или быть заменена.",
+      "norm": null,
+      "norm_quote": null,
+      "solution": "Обновить перечень нормативных документов.",
+      "risk": "Возможно применение устаревших требований.",
+      "evidence": [
+        {"type": "text", "block_id": "NORM-LIST-001", "page": 1}
+      ],
+      "related_block_ids": ["NORM-LIST-001"],
+      "source_block_ids": []
+    },
+    "expected_decision": "reject",
+    "expected_reason": "normative_refs_no_real_impact",
+    "comment": "Категория normative_refs без конкретного указания, какая норма заменена, чем и как это влияет на монтаж/закупку/расчёт. Общее 'возможно применение устаревших' без факта. Вердикт: not_practical (строгий режим normative_refs)."
+  },
+  {
+    "id": "BAD-006",
+    "category": "ocr_artifact",
+    "input_finding": {
+      "id": "F-104",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "sheet": "Лист 3",
+      "page": 6,
+      "problem": "В наименовании кабеля нечитаемый символ 'ВВГнг(А)-??-3x2.5'",
+      "description": "На листе 3 в таблице кабелей присутствует нечитаемый символ в марке кабеля. По контексту, вероятно, это 'LS' (FRLS), но символ не распознаётся.",
+      "norm": null,
+      "norm_quote": null,
+      "solution": "Уточнить OCR-распознавание или исходный чертёж.",
+      "risk": "Неверное распознавание марки кабеля.",
+      "evidence": [
+        {"type": "image", "block_id": "CABL-TABLE-007", "page": 6}
+      ],
+      "related_block_ids": ["CABL-TABLE-007"],
+      "source_block_ids": ["CABL-TABLE-007"]
+    },
+    "expected_decision": "reject",
+    "expected_reason": "ocr_artifact_not_project_defect",
+    "comment": "OCR-артефакт — дефект распознавания, а не проектный дефект. Это не замечание к проекту. Вердикт: not_practical + report_value: remove."
+  },
+  {
+    "id": "BAD-007",
+    "category": "no_consequence",
+    "input_finding": {
+      "id": "F-105",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "sheet": "Лист 2",
+      "page": 4,
+      "problem": "Наименование листа в штампе не соответствует содержанию",
+      "description": "Лист 2 назван 'Схема ЩО-1' в штампе, хотя содержит схему ЩО-1 и ЩО-2. Расхождение названия.",
+      "norm": null,
+      "norm_quote": null,
+      "solution": "Уточнить наименование листа.",
+      "risk": null,
+      "evidence": [
+        {"type": "image", "block_id": "LEAF-STAMP-002", "page": 4}
+      ],
+      "related_block_ids": ["LEAF-STAMP-002"],
+      "source_block_ids": []
+    },
+    "expected_decision": "reject",
+    "expected_reason": "cosmetic_sheet_name_mismatch",
+    "comment": "Расхождение названия листа без потери смысла. Содержание листа понятно, проектное решение не затронуто. Вердикт: not_practical + report_value: remove."
+  },
+  {
+    "id": "BAD-008",
+    "category": "weak_parametric",
+    "input_finding": {
+      "id": "F-106",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "cable",
+      "sheet": "Лист 4",
+      "page": 8,
+      "problem": "Сечение кабелей питания насосов может не соответствовать требованиям",
+      "description": "Кабели питания пожарных насосов приняты сечением 6 мм². По предварительной оценке, при длине трассы и характеристиках насосов данное сечение может не обеспечить требуемые токовые нагрузки.",
+      "norm": "СП 5.13130.2020, п. 6.5",
+      "norm_quote": null,
+      "solution": "Выполнить расчёт токовых нагрузок и проверить сечение.",
+      "risk": "Перегрев кабелей при нагрузке.",
+      "evidence": [
+        {"type": "image", "block_id": "PUMP-CABL-004", "page": 8}
+      ],
+      "related_block_ids": ["PUMP-CABL-004"],
+      "source_block_ids": ["PUMP-CABL-004"]
+    },
+    "expected_decision": "reject",
+    "expected_reason": "parametric_no_calculation_no_comparison",
+    "comment": "Параметрическое замечание 'может не соответствовать' без расчёта, без нормативного предела и без пары декларация-факт. КРИТИЧЕСКОЕ без доказательства недопустимо. Вердикт: weak_evidence + downgrade_severity."
+  }
+]

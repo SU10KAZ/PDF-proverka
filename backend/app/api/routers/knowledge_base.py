@@ -20,7 +20,7 @@ router = APIRouter(prefix="/api/knowledge-base", tags=["knowledge-base"])
 async def submit_expert_review(project_id: str, body: ExpertReviewSubmission):
     """Сохранить решения эксперта по проекту."""
     try:
-        result = kb_svc.save_expert_review(project_id, body.decisions, body.reviewer)
+        result = kb_svc.save_expert_review(project_id, body.decisions, body.reviewer, removed_ids=body.removed_ids)
         return {"status": "ok", **result}
     except Exception as e:
         raise HTTPException(500, f"Ошибка сохранения: {e}")

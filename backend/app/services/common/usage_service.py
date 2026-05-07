@@ -18,11 +18,9 @@ from collections import defaultdict
 
 from backend.app.models.usage import UsageRecord, UsageCounters, GlobalUsageCounters
 from backend.app.services.common.project_service import resolve_project_dir
+from backend.app.core.config import APP_DATA_DIR, USAGE_DATA_FILE, USAGE_OFFSETS_FILE
 
-# Путь к файлу данных
-_DATA_DIR = Path(__file__).resolve().parent.parent / "data"
-USAGE_DATA_FILE = _DATA_DIR / "usage_data.json"
-USAGE_OFFSETS_FILE = _DATA_DIR / "usage_offsets.json"
+_DATA_DIR = APP_DATA_DIR
 
 # Путь к JSONL-файлам сессий Claude Code
 CLAUDE_SESSIONS_DIR = Path.home() / ".claude" / "projects"

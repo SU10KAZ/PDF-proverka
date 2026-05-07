@@ -51,7 +51,7 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
     validate_gemma_summary,
 )
 
-_ROOT = Path(__file__).resolve().parent
+from backend.app.core.config import PROMPTS_DIR as _PROMPTS_DIR
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 DEFAULT_MODEL = "openai/gpt-5.4"
@@ -138,7 +138,7 @@ _EXTENDED_HEADER = """
 
 def load_categories_for_section(section: str) -> str:
     """Подгрузить prompts/disciplines/<SECTION>/finding_categories.md (или пусто, если нет)."""
-    path = _ROOT / "prompts" / "disciplines" / section / "finding_categories.md"
+    path = _PROMPTS_DIR / "disciplines" / section / "finding_categories.md"
     if path.exists():
         return path.read_text(encoding="utf-8").strip()
     return ""
