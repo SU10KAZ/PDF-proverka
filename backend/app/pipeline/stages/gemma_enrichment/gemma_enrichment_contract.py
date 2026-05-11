@@ -737,13 +737,18 @@ def gemma_outputs_are_valid(
     можно ли пропустить Gemma OCR этап для этого проекта.
 
     Возвращает (ok, reason_code). reason_code — короткий тег для логирования.
+
+    Параметры — те же что у validate_gemma_summary; если md_path не задан,
+    пробуется найти его автоматически через find_project_markdown.
     """
     project_dir = Path(project_dir)
 
+    # 1. Базовый crop индекс должен существовать
     base_index = gemma_base_blocks_index_path(project_dir)
     if not base_index.exists():
         return (False, "index_missing")
 
+    # 2. Найти md_path если не передан (импорт локально, чтобы избежать circular)
     if md_path is None:
         try:
             from backend.app.pipeline.stages.gemma_enrichment.gemma_gate import (
