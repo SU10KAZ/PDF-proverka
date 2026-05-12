@@ -2,7 +2,7 @@
  * Audit Manager — SPA на Vue 3.
  * Маршрутизация, состояние, API-вызовы, live-статус.
  */
-const { createApp, ref, computed, watch, onMounted, onUnmounted, nextTick } = Vue;
+const { createApp, ref, computed, watch, onMounted, onUnmounted, nextTick, reactive } = Vue;
 
 const app = createApp({
     setup() {
@@ -58,6 +58,592 @@ const app = createApp({
         const findingsPage = ref(1);
         const optimizationPage = ref(1);
         const discussionPage = ref(1);
+
+        // ─── Critic v2 UI Triage View (experimental, offline-only) ─────────
+        // NOTE: Reads offline artifact critic_v2_triage_ui.json produced by
+        // backend/scripts/replay_critic_v2_triage_policy.py --ui-export.
+        // Does NOT touch production pipeline, legacy critic, or 03_findings_review.json.
+
+        // Russian labels for engineer-facing display.
+        // Backend tokens stay in english (used by replay/tuning/feedback JSON).
+        // This dict only translates for the screen.
+        const CV2_LABELS = {
+            queue: {
+                strong_keep: 'однозначно оставить',
+                main_review: 'на проверку',
+                borderline: 'спорное',
+                needs_context: 'требует смежников',
+                suggested_reject: 'к отклонению',
+                hidden_by_critic: 'скрыть как мусор',
+            },
+            reason: {
+                deterministic_accept_high_score: 'высокий score, evidence валидна',
+                accepted_good_score_evidence: 'хороший score + evidence',
+                borderline: 'на границе порогов',
+                needs_context: 'нужен контекст из смежных разделов',
+                suggested_reject_not_safe_to_hide: 'к отклонению (но не скрывать молча)',
+                guard_blocked_llm_reject: 'LLM хотел отклонить — блокировано guard’ом',
+                'det_reject:no_evidence': 'отклонено: нет evidence',
+                'det_reject:ocr_artifact': 'отклонено: OCR-артефакт',
+                'det_reject:low_business_value': 'отклонено: низкая практическая ценность',
+                'llm_reject:already_resolved_by_project_note':
+                    'отклонено LLM: уже решено в примечаниях проекта',
+            },
+            evidence: {
+                valid: 'валидна',
+                partial: 'частичная',
+                weak: 'слабая',
+                none: 'нет',
+            },
+            source: {
+                enough_source: 'источника достаточно',
+                needs_more_context: 'нужно больше контекста',
+                cross_section_required: 'нужны смежные разделы',
+            },
+            taxonomy: {
+                other: 'другое',
+                acceptable_design_solution: 'допустимое проектное решение',
+                already_resolved_by_project_note: 'уже учтено в примечаниях',
+                duplicate_or_already_covered: 'дубликат / уже покрыто',
+                false_positive_due_to_missing_context:
+                    'ложное срабатывание из-за нехватки контекста',
+                insufficient_source_context: 'недостаточно исходного контекста',
+                not_functionally_significant: 'не критично функционально',
+                requirement_not_mandatory: 'требование добровольное',
+            },
+            risk: {
+                low: 'низкий',
+                medium: 'средний',
+                high: 'высокий',
+            },
+            human: {
+                accepted: 'принято',
+                rejected: 'отклонено',
+            },
+            tab: {
+                primary: 'Основная проверка',
+                needs_context: 'Требует смежников',
+                suggested_reject: 'К отклонению',
+                hidden_by_critic: 'Скрыто критиком',
+            },
+            alignment: {
+                aligned_visible:
+                    'эксперт принял, critic оставил в основной',
+                aligned_hidden:
+                    'эксперт отклонил, critic свернул',
+                accepted_collapsed:
+                    'эксперт принял, critic свернул — проверить',
+                accepted_needs_context:
+                    'эксперт принял, critic отправил в контекст — проверить',
+                rejected_visible:
+                    'эксперт отклонил, critic оставил в основной',
+                rejected_needs_context:
+                    'эксперт отклонил, critic отправил в контекст',
+                unknown:
+                    'нет решения эксперта',
+            },
+            triage_correct: {
+                yes: 'да, верно',
+                no: 'нет, неверно',
+                unsure: 'не уверен',
+            },
+            priority: {
+                normal: 'обычный',
+                important: 'важно',
+                critical: 'критично',
+            },
+        };
+
+        function cv2HumanizeExplanation(text) {
+            // Translates short diagnostic strings like "score=10, ev=valid" or
+            // "score=8, ev=partial; needs_context" into a Russian-friendly form.
+            // Conservative: only known tokens are replaced; unknown text stays.
+            if (!text) return '';
+            let out = String(text);
+            out = out.replace(/\bscore\s*=\s*(\d+)\b/gi, 'балл=$1');
+            out = out.replace(/\bev\s*=\s*(valid|partial|weak|none)\b/gi,
+                (_, v) => 'evidence=' + (CV2_LABELS.evidence[v.toLowerCase()] || v));
+            return out;
+        }
+
+        // Classification of an item against expert_review (human_decision/tab).
+        // The artifact already carries human_decision; we just compute the
+        // alignment status here. UI-only — backend tokens are unchanged.
+        // accepted_needs_context is kept separate from accepted_collapsed:
+        // sending an accepted finding to "needs_context" is a softer mismatch
+        // than burying it under suggested_reject/hidden_by_critic, and the
+        // engineer review queue treats them differently.
+        function cv2AlignmentOf(item) {
+            if (!item) return 'unknown';
+            const hd = item.human_decision;
+            const tab = item.tab;
+            if (!hd || hd === 'unknown') return 'unknown';
+            if (hd === 'accepted') {
+                if (tab === 'primary') return 'aligned_visible';
+                if (tab === 'needs_context') return 'accepted_needs_context';
+                if (tab === 'suggested_reject' || tab === 'hidden_by_critic') {
+                    return 'accepted_collapsed';
+                }
+                return 'unknown';
+            }
+            if (hd === 'rejected') {
+                if (tab === 'hidden_by_critic' || tab === 'suggested_reject') {
+                    return 'aligned_hidden';
+                }
+                if (tab === 'needs_context') return 'rejected_needs_context';
+                if (tab === 'primary') return 'rejected_visible';
+            }
+            return 'unknown';
+        }
+
+        // Disagreement = decision known and not aligned.
+        // accepted_needs_context is treated as a disagreement: the spec wants
+        // the reviewer to be able to surface it on the "Расхождения" view.
+        function cv2IsDisagreement(alignment) {
+            return alignment === 'accepted_collapsed'
+                || alignment === 'accepted_needs_context'
+                || alignment === 'rejected_visible'
+                || alignment === 'rejected_needs_context';
+        }
+
+        function cv2Label(group, token) {
+            // Returns Russian label for an english token. Falls back to the token
+            // itself if no mapping is defined (so new vocabulary is still readable).
+            if (token === null || token === undefined || token === '') return '';
+            const dict = CV2_LABELS[group];
+            if (!dict) return String(token);
+            return dict[token] || String(token);
+        }
+
+        const cv2Export = ref(null);
+        const cv2LoadError = ref('');
+        const cv2ActiveTab = ref('primary');
+        const cv2Filter = ref({
+            section: '',
+            queue: '',
+            reason: '',
+            evidence: '',
+            scoreBucket: '',
+            human: '',
+            alignment: '',
+        });
+
+        function cv2ResetFilters() {
+            cv2Filter.value = {
+                section: '', queue: '', reason: '',
+                evidence: '', scoreBucket: '', human: '',
+                alignment: '',
+            };
+        }
+
+        function cv2ParseExport(raw) {
+            // Accepts a parsed JSON object. Validates shape: must have summary,
+            // tabs (array of 4), items (array). Returns the same object on success
+            // or throws an Error.
+            if (!raw || typeof raw !== 'object') {
+                throw new Error('JSON: ожидается объект.');
+            }
+            if (!raw.summary || typeof raw.summary !== 'object') {
+                throw new Error('JSON: отсутствует "summary".');
+            }
+            if (!Array.isArray(raw.tabs) || raw.tabs.length !== 4) {
+                throw new Error('JSON: ожидается ровно 4 вкладки в "tabs".');
+            }
+            if (!Array.isArray(raw.items)) {
+                throw new Error('JSON: отсутствует массив "items".');
+            }
+            const expectedKeys = ['primary', 'needs_context',
+                                  'suggested_reject', 'hidden_by_critic'];
+            const actualKeys = raw.tabs.map(t => t.key);
+            for (const k of expectedKeys) {
+                if (!actualKeys.includes(k)) {
+                    throw new Error(`JSON: вкладка "${k}" отсутствует.`);
+                }
+            }
+            return raw;
+        }
+
+        // Project-scoped view state. Loader fetches read-only export from backend.
+        const cv2ProjLoading = ref(false);
+        const cv2ProjLoadError = ref('');
+        const cv2ProjHint = ref('');
+        // Disagreements mode is set when the user opens
+        // #/project/<id>/critic-v2-disagreements. It pre-selects the
+        // alignment=__disagreement__ filter and marks the feedback export
+        // scope as "project_disagreements" so downstream tooling can tell
+        // the two flows apart.
+        const cv2ProjDisagreementsMode = ref(false);
+
+        async function cv2LoadProject(projectId, opts) {
+            // Read-only fetch. No LLM. No writes. No production pipeline mutation.
+            const o = opts || {};
+            const disagreementsMode = Boolean(o.disagreementsMode);
+            cv2ProjLoading.value = true;
+            cv2ProjLoadError.value = '';
+            cv2ProjHint.value = '';
+            cv2Export.value = null;
+            cv2ProjDisagreementsMode.value = disagreementsMode;
+            // Reset filters so two views don't bleed into each other, then
+            // pre-apply the disagreement filter if we're in that mode.
+            cv2ResetFilters();
+            if (disagreementsMode) {
+                cv2Filter.value.alignment = '__disagreement__';
+            }
+            try {
+                const resp = await fetch(
+                    '/api/critic-v2/projects/' + encodeURIComponent(projectId) + '/triage-ui'
+                );
+                if (!resp.ok) {
+                    let detail = null;
+                    try { detail = await resp.json(); } catch (_) {}
+                    if (resp.status === 404 && detail && detail.detail) {
+                        cv2ProjLoadError.value = detail.detail.message || 'Critic v2 artifact не найден.';
+                        cv2ProjHint.value = detail.detail.hint_command || '';
+                    } else {
+                        cv2ProjLoadError.value = 'Ошибка загрузки: HTTP ' + resp.status;
+                    }
+                    return;
+                }
+                const raw = await resp.json();
+                cv2Export.value = cv2ParseExport(raw);
+                const def = cv2Export.value.tabs.find(t => t.default_open);
+                cv2ActiveTab.value = def ? def.key : cv2Export.value.tabs[0].key;
+                if (raw.warning) {
+                    // показываем warning через сам export, но logger в консоль для трассировки
+                    console.warn('[cv2] project warning:', raw.warning);
+                }
+            } catch (err) {
+                cv2ProjLoadError.value = 'Ошибка сети: ' + (err && err.message || err);
+            } finally {
+                cv2ProjLoading.value = false;
+            }
+        }
+
+        function cv2OnFileSelected(event) {
+            cv2LoadError.value = '';
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const raw = JSON.parse(e.target.result);
+                    cv2Export.value = cv2ParseExport(raw);
+                    // Open default tab (primary).
+                    const def = cv2Export.value.tabs.find(t => t.default_open);
+                    cv2ActiveTab.value = def ? def.key : cv2Export.value.tabs[0].key;
+                } catch (err) {
+                    cv2LoadError.value = 'Ошибка парсинга: ' + (err.message || err);
+                    cv2Export.value = null;
+                }
+            };
+            reader.onerror = () => {
+                cv2LoadError.value = 'Не удалось прочитать файл.';
+            };
+            reader.readAsText(file);
+        }
+
+        function cv2ScoreBucket(score) {
+            if (score === null || score === undefined) return 'none';
+            if (score >= 10) return '10-11';
+            if (score >= 8) return '8-9';
+            if (score >= 6) return '6-7';
+            if (score >= 4) return '4-5';
+            return '0-3';
+        }
+
+        function cv2ItemMatchesFilter(it) {
+            const f = cv2Filter.value;
+            if (f.section && it.section !== f.section) return false;
+            if (f.queue && it.queue !== f.queue) return false;
+            if (f.reason && it.reason !== f.reason) return false;
+            if (f.evidence && it.evidence_quality !== f.evidence) return false;
+            if (f.scoreBucket && cv2ScoreBucket(it.score) !== f.scoreBucket) return false;
+            if (f.human) {
+                if (f.human === '__none__') {
+                    if (it.human_decision) return false;
+                } else if (it.human_decision !== f.human) {
+                    return false;
+                }
+            }
+            if (f.alignment) {
+                const al = cv2AlignmentOf(it);
+                if (f.alignment === '__disagreement__') {
+                    if (!cv2IsDisagreement(al)) return false;
+                } else if (f.alignment === '__none__alignment') {
+                    if (al !== 'unknown') return false;
+                } else if (al !== f.alignment) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        const cv2HasHumanDecisions = computed(() => {
+            if (!cv2Export.value) return false;
+            return cv2Export.value.items.some(i => i.human_decision);
+        });
+
+        // Aggregated counts for the "Сверка с экспертом" panel.
+        // Counts are computed from raw items (not filtered) so the summary stays
+        // stable while the user changes the filter dropdown.
+        const cv2AlignmentSummary = computed(() => {
+            const out = {
+                with_decision: 0,
+                aligned: 0,
+                disagreements: 0,
+                aligned_visible: 0,
+                aligned_hidden: 0,
+                accepted_collapsed: 0,
+                accepted_needs_context: 0,
+                rejected_visible: 0,
+                rejected_needs_context: 0,
+                hidden_human_accepted: 0,
+                suggested_reject_human_accepted: 0,
+                without_decision: 0,
+            };
+            if (!cv2Export.value) return out;
+            for (const it of cv2Export.value.items) {
+                const hd = it.human_decision;
+                const tab = it.tab;
+                const al = cv2AlignmentOf(it);
+                if (al === 'unknown') {
+                    out.without_decision += 1;
+                    continue;
+                }
+                out.with_decision += 1;
+                if (al === 'aligned_visible') {
+                    out.aligned += 1;
+                    out.aligned_visible += 1;
+                } else if (al === 'aligned_hidden') {
+                    out.aligned += 1;
+                    out.aligned_hidden += 1;
+                } else if (al === 'accepted_collapsed') {
+                    out.disagreements += 1;
+                    out.accepted_collapsed += 1;
+                } else if (al === 'accepted_needs_context') {
+                    out.disagreements += 1;
+                    out.accepted_needs_context += 1;
+                } else if (al === 'rejected_visible') {
+                    out.disagreements += 1;
+                    out.rejected_visible += 1;
+                } else if (al === 'rejected_needs_context') {
+                    out.disagreements += 1;
+                    out.rejected_needs_context += 1;
+                }
+                // High-impact specific buckets used in dashboards.
+                if (hd === 'accepted' && tab === 'hidden_by_critic') {
+                    out.hidden_human_accepted += 1;
+                }
+                if (hd === 'accepted' && tab === 'suggested_reject') {
+                    out.suggested_reject_human_accepted += 1;
+                }
+            }
+            return out;
+        });
+
+        const cv2FilterOptions = computed(() => {
+            const empty = { sections: [], queues: [], reasons: [], evidences: [] };
+            if (!cv2Export.value) return empty;
+            const sec = new Set(), q = new Set(), r = new Set(), e = new Set();
+            for (const it of cv2Export.value.items) {
+                if (it.section) sec.add(it.section);
+                if (it.queue) q.add(it.queue);
+                if (it.reason) r.add(it.reason);
+                if (it.evidence_quality) e.add(it.evidence_quality);
+            }
+            return {
+                sections: [...sec].sort(),
+                queues: [...q].sort(),
+                reasons: [...r].sort(),
+                evidences: [...e].sort(),
+            };
+        });
+
+        const cv2ItemsByTab = computed(() => {
+            const out = { primary: [], needs_context: [], suggested_reject: [], hidden_by_critic: [] };
+            if (!cv2Export.value) return out;
+            for (const it of cv2Export.value.items) {
+                if (!cv2ItemMatchesFilter(it)) continue;
+                const t = it.tab;
+                if (out[t]) out[t].push(it);
+            }
+            return out;
+        });
+
+        const cv2VisibleCountByTab = computed(() => {
+            const m = cv2ItemsByTab.value;
+            return {
+                primary: m.primary.length,
+                needs_context: m.needs_context.length,
+                suggested_reject: m.suggested_reject.length,
+                hidden_by_critic: m.hidden_by_critic.length,
+            };
+        });
+
+        // ─── Critic v2 UI: Feedback (frontend-only, never hits backend) ────
+        // Reviewer marks per-finding triage quality. Stored in browser state
+        // and exported as a JSON file. No DB write, no API call.
+        const CV2_TABS = ['primary', 'needs_context',
+                          'suggested_reject', 'hidden_by_critic'];
+        const CV2_PRIORITIES = ['normal', 'important', 'critical'];
+        const CV2_TRIAGE_VALUES = ['yes', 'no', 'unsure'];
+
+        // Map: finding_id -> {triage_correct, preferred_tab, reviewer_note, priority}
+        const cv2Feedback = reactive({});
+
+        function cv2EnsureFeedback(findingId) {
+            if (!cv2Feedback[findingId]) {
+                cv2Feedback[findingId] = {
+                    triage_correct: '',
+                    preferred_tab: '',
+                    reviewer_note: '',
+                    priority: 'normal',
+                };
+            }
+            return cv2Feedback[findingId];
+        }
+
+        function cv2SetTriageCorrect(findingId, value) {
+            if (!CV2_TRIAGE_VALUES.includes(value)) return;
+            cv2EnsureFeedback(findingId).triage_correct = value;
+        }
+
+        function cv2SetPreferredTab(findingId, tab) {
+            if (!CV2_TABS.includes(tab)) return;
+            const fb = cv2EnsureFeedback(findingId);
+            fb.preferred_tab = tab;
+            // If reviewer chose a different tab, mark triage as wrong by default.
+            // Reviewer can still flip back to yes/unsure manually.
+            const item = cv2Export.value
+                ? cv2Export.value.items.find(i => i.finding_id === findingId)
+                : null;
+            if (item && item.tab !== tab && !fb.triage_correct) {
+                fb.triage_correct = 'no';
+            }
+        }
+
+        function cv2SetPriority(findingId, value) {
+            if (!CV2_PRIORITIES.includes(value)) return;
+            cv2EnsureFeedback(findingId).priority = value;
+        }
+
+        function cv2SetReviewerNote(findingId, text) {
+            cv2EnsureFeedback(findingId).reviewer_note = text || '';
+        }
+
+        function cv2QuickRoute(findingId, tab) {
+            // Quick-button shortcut: jump straight to a preferred_tab.
+            cv2SetPreferredTab(findingId, tab);
+        }
+
+        function cv2QuickUnsure(findingId) {
+            const fb = cv2EnsureFeedback(findingId);
+            fb.triage_correct = 'unsure';
+        }
+
+        function cv2HasFeedback(findingId) {
+            const fb = cv2Feedback[findingId];
+            if (!fb) return false;
+            return Boolean(
+                fb.triage_correct || fb.preferred_tab
+                || (fb.reviewer_note && fb.reviewer_note.trim())
+                || (fb.priority && fb.priority !== 'normal')
+            );
+        }
+
+        const cv2FeedbackSummary = computed(() => {
+            const ids = Object.keys(cv2Feedback);
+            let evaluated = 0, yes = 0, no = 0, unsure = 0;
+            for (const id of ids) {
+                const fb = cv2Feedback[id];
+                if (!fb) continue;
+                if (cv2HasFeedback(id)) evaluated += 1;
+                if (fb.triage_correct === 'yes') yes += 1;
+                else if (fb.triage_correct === 'no') no += 1;
+                else if (fb.triage_correct === 'unsure') unsure += 1;
+            }
+            return { evaluated, yes, no, unsure };
+        });
+
+        function cv2BuildFeedbackExport() {
+            // Pure function: builds the export payload from current state.
+            // Does NOT touch any network / backend / disk.
+            if (!cv2Export.value) return null;
+            const itemsById = {};
+            for (const it of cv2Export.value.items) {
+                itemsById[it.finding_id] = it;
+            }
+            const sourceSummary = cv2Export.value.summary || {};
+            const feedback = [];
+            for (const fid of Object.keys(cv2Feedback)) {
+                if (!cv2HasFeedback(fid)) continue;
+                const fb = cv2Feedback[fid];
+                const item = itemsById[fid] || {};
+                feedback.push({
+                    finding_id: fid,
+                    project_name: item.project_name || '',
+                    section: item.section || '',
+                    original_tab: item.tab || '',
+                    original_queue: item.queue || '',
+                    triage_correct: fb.triage_correct || '',
+                    preferred_tab: fb.preferred_tab || '',
+                    priority: fb.priority || 'normal',
+                    reviewer_note: (fb.reviewer_note || '').trim(),
+                });
+            }
+            const scope = cv2Export.value.scope || null;
+            // When the project view was opened via the "Расхождения" route, we
+            // mark the export with mode=project_disagreements and capture the
+            // active alignment filter so downstream tooling can tell that the
+            // reviewer was looking specifically at disagreements.
+            let scopeOut;
+            if (scope) {
+                const inDisagree = cv2ProjDisagreementsMode.value === true;
+                scopeOut = {
+                    mode: inDisagree ? 'project_disagreements' : (scope.mode || 'project'),
+                    project_id: scope.project_id || null,
+                    project_name: scope.project_name || null,
+                    matched_by: scope.matched_by || null,
+                };
+                if (inDisagree) {
+                    scopeOut.alignment_filter = '__disagreement__';
+                }
+            } else {
+                scopeOut = { mode: 'global' };
+            }
+            return {
+                export_type: 'critic_v2_triage_feedback',
+                created_at: new Date().toISOString(),
+                scope: scopeOut,
+                source_file_summary: {
+                    total: sourceSummary.total ?? null,
+                    profile: sourceSummary.profile ?? null,
+                    primary_queue_reduction_percent:
+                        sourceSummary.primary_queue_reduction_percent ?? null,
+                },
+                feedback,
+            };
+        }
+
+        function cv2ExportFeedback() {
+            // User-triggered. Builds payload and triggers a browser download.
+            // No backend call. Frontend-only.
+            const payload = cv2BuildFeedbackExport();
+            if (!payload) return;
+            const blob = new Blob(
+                [JSON.stringify(payload, null, 2)],
+                { type: 'application/json' }
+            );
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+            a.download = `critic_v2_triage_feedback_${stamp}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
 
         // Tiles
 
@@ -1062,6 +1648,26 @@ const app = createApp({
                 loadProject(id);
                 loadDiscussionModels();
                 loadDiscussionItems(id, discussionTab.value);
+            } else if (hash.match(/^\/project\/(.+)\/critic-v2-disagreements$/)) {
+                // Project-scoped Critic v2 — opens straight on the disagreements filter.
+                // Read-only: backend endpoint fetches the offline artifact, no LLM,
+                // no production pipeline mutation.
+                const id = decodeURIComponent(
+                    hash.match(/^\/project\/(.+)\/critic-v2-disagreements$/)[1]
+                );
+                currentView.value = 'critic-v2-project';
+                currentProjectId.value = id;
+                connectGlobalWS();
+                loadProject(id);
+                cv2LoadProject(id, { disagreementsMode: true });
+            } else if (hash.match(/^\/project\/(.+)\/critic-v2$/)) {
+                // Project-scoped Critic v2 (experimental, offline read-only).
+                const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/critic-v2$/)[1]);
+                currentView.value = 'critic-v2-project';
+                currentProjectId.value = id;
+                connectGlobalWS();
+                loadProject(id);
+                cv2LoadProject(id);
             } else if (hash.match(/^\/project\/(.+)\/document$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/document$/)[1]);
                 currentView.value = 'document';
@@ -5966,6 +6572,22 @@ const app = createApp({
             confirmCustomer, unconfirmCustomer, revokeKBDecision,
             loadKBPatterns, detectPatterns, approvePattern, dismissPattern,
             uploadDecisionsExcel, uploadAndApplyDecisions,
+            // ─── Critic v2 (experimental, offline) ─────────────────────────
+            cv2Export, cv2LoadError, cv2ActiveTab, cv2Filter,
+            cv2OnFileSelected, cv2ResetFilters, cv2ParseExport, cv2ScoreBucket,
+            cv2ItemMatchesFilter, cv2HasHumanDecisions,
+            cv2FilterOptions, cv2ItemsByTab, cv2VisibleCountByTab,
+            cv2Feedback, cv2FeedbackSummary,
+            cv2EnsureFeedback, cv2HasFeedback,
+            cv2SetTriageCorrect, cv2SetPreferredTab,
+            cv2SetPriority, cv2SetReviewerNote,
+            cv2QuickRoute, cv2QuickUnsure,
+            cv2BuildFeedbackExport, cv2ExportFeedback,
+            cv2ProjLoading, cv2ProjLoadError, cv2ProjHint,
+            cv2ProjDisagreementsMode,
+            cv2LoadProject,
+            cv2Label, cv2HumanizeExplanation,
+            cv2AlignmentOf, cv2IsDisagreement, cv2AlignmentSummary,
         };
     }
 });

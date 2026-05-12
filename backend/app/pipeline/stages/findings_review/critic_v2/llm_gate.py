@@ -229,6 +229,12 @@ VALID_SOURCE_DEPENDENCIES = {"enough_source", "needs_more_context", "cross_secti
 
 _HIGH_SEVERITY = {"КРИТИЧЕСКОЕ", "ЭКОНОМИЧЕСКОЕ"}
 
+# ─── HIGH_SCORE_VALID_ACCEPT_GUARD threshold ─────────────────────────────────
+# Deterministic accepts with score >= this AND evidence_quality=valid are
+# protected from single-pass LLM hard-reject. LLM reject → downgraded to
+# borderline (or needs_human when source context is insufficient).
+HIGH_SCORE_VALID_ACCEPT_GUARD_THRESHOLD = 8
+
 
 # ─── Data structures ─────────────────────────────────────────────────────────
 
@@ -299,6 +305,17 @@ def load_prompt(prompt_path: Optional[Path] = None) -> tuple[str, str]:
 
 # ─── Candidate selection ─────────────────────────────────────────────────────
 
+# ── Candidate strategy names ──────────────────────────────────────────────────
+CANDIDATE_STRATEGY_CONSERVATIVE = "conservative"
+CANDIDATE_STRATEGY_EXPANDED = "expanded"
+CANDIDATE_STRATEGY_BROAD = "broad"
+
+VALID_CANDIDATE_STRATEGIES = {
+    CANDIDATE_STRATEGY_CONSERVATIVE,
+    CANDIDATE_STRATEGY_EXPANDED,
+    CANDIDATE_STRATEGY_BROAD,
+}
+
 # Categories with higher false_accept risk based on human benchmark analysis
 _HIGH_FALSE_ACCEPT_RISK_CATEGORIES = {
     "spec_mismatch", "normative_refs", "normative", "documentation",
@@ -306,6 +323,37 @@ _HIGH_FALSE_ACCEPT_RISK_CATEGORIES = {
     "lap_length", "anchorage", "stirrups", "fire_rating",
     "ar_kj_coordination", "km_kj_coordination",
 }
+
+# ── Expanded strategy: risk categories that signal human-rejection probability ─
+# These categories often correspond to human rejection reasons in the benchmark.
+_EXPANDED_RISK_CATEGORIES = {
+    # Original high-FA-risk categories
+    "spec_mismatch", "normative_refs", "normative", "documentation",
+    "cover_thickness", "rebar_class", "rebar_geometry", "concrete_class",
+    "lap_length", "anchorage", "stirrups", "fire_rating",
+    "ar_kj_coordination", "km_kj_coordination",
+    # Additional high-rejection-probability categories
+    "visual_or_ocr_misread", "duplicate_or_already_covered",
+    "wrong_norm_context", "value_already_correct",
+    "false_positive_due_to_missing_context", "requirement_not_mandatory",
+    "already_resolved_by_project_note", "not_functionally_significant",
+    "acceptable_design_solution", "low_business_value", "no_impact",
+}
+
+# ── Taxonomy marker words in text (title/description/recommendation) ──────────
+# Presence of these indicates higher human-rejection probability.
+_EXPANDED_TAXONOMY_MARKERS = {
+    "гост", "сп ", "норма", "не указано", "отсутствует", "расхождение",
+    "дублирует", "уже указано", "общие указания", "спецификация",
+    "ведомость", "нулевое", "ocr", "опечатка", "не требуется",
+    "не применим", "не обязательн", "уже учтен",
+}
+
+# ── Protected-from-hidden score/evidence floor ────────────────────────────────
+# Candidates at or above this score+evidence level are sent to LLM with
+# `protected=True`, meaning LLM can advise but cannot trigger hidden_by_critic.
+_EXPANDED_PROTECTED_SCORE = 8
+_EXPANDED_PROTECTED_EVIDENCE = EVIDENCE_VALID
 
 
 def _false_accept_risk_score(d: QualityDecision) -> int:
@@ -327,51 +375,236 @@ def _false_accept_risk_score(d: QualityDecision) -> int:
     return score
 
 
+def _false_accept_risk_score_expanded(d: QualityDecision, raw_finding: Optional[dict] = None) -> int:
+    """
+    Extended risk score for expanded/broad strategies.
+    Higher = more likely to be a false accept (LLM should review this first).
+    """
+    score = _false_accept_risk_score(d)
+
+    # Additional signals for expanded strategy
+    cat = (d.impact_area or "").lower()
+    if cat in _EXPANDED_RISK_CATEGORIES:
+        score += 2
+
+    # Taxonomy marker words in the finding text
+    if raw_finding is not None:
+        text = " ".join([
+            (raw_finding.get("title") or raw_finding.get("problem") or ""),
+            (raw_finding.get("description") or ""),
+            (raw_finding.get("solution") or raw_finding.get("recommendation") or ""),
+        ]).lower()
+        if any(marker in text for marker in _EXPANDED_TAXONOMY_MARKERS):
+            score += 2
+
+    # Borderline is highest priority regardless
+    if d.decision == "borderline":
+        score += 4
+
+    # Weak evidence accepted findings are risky
+    if d.decision == "accept" and d.evidence_quality == EVIDENCE_WEAK:
+        score += 3
+
+    return score
+
+
+def _is_expanded_candidate(d: QualityDecision, raw_finding: Optional[dict] = None) -> tuple[bool, str]:
+    """
+    Determine whether a decision should be included under the expanded strategy.
+
+    Returns (include, reason_label).
+    """
+    # Always include borderline
+    if d.decision == "borderline":
+        return True, "borderline"
+
+    # Exclude none-evidence accepts (already filtered by conservative)
+    if d.evidence_quality == EVIDENCE_NONE:
+        return False, "evidence_none"
+
+    cat = (d.impact_area or "").lower()
+
+    # Weak/partial evidence with score >= 5 in risk category
+    if (
+        d.evidence_quality in (EVIDENCE_WEAK, EVIDENCE_PARTIAL)
+        and d.usefulness_score >= 5
+        and cat in _EXPANDED_RISK_CATEGORIES
+    ):
+        return True, "weak_partial_risk_category"
+
+    # Accepted findings in high-risk categories
+    if d.decision == "accept" and cat in _EXPANDED_RISK_CATEGORIES:
+        return True, "accepted_risk_category"
+
+    # Taxonomy marker words in finding text
+    if raw_finding is not None:
+        text = " ".join([
+            (raw_finding.get("title") or raw_finding.get("problem") or ""),
+            (raw_finding.get("description") or ""),
+            (raw_finding.get("solution") or raw_finding.get("recommendation") or ""),
+        ]).lower()
+        if any(marker in text for marker in _EXPANDED_TAXONOMY_MARKERS):
+            return True, "taxonomy_marker_text"
+
+    # Weak evidence accepted (any category)
+    if d.decision == "accept" and d.evidence_quality == EVIDENCE_WEAK:
+        return True, "accepted_weak_evidence"
+
+    # Partial evidence accepted with score <= 6 (potentially inflated)
+    if d.decision == "accept" and d.evidence_quality == EVIDENCE_PARTIAL and d.usefulness_score <= 6:
+        return True, "accepted_partial_low_score"
+
+    return False, "not_eligible"
+
+
 def select_candidates(
     decisions: list[QualityDecision],
     max_candidates: int = 50,
+    strategy: str = CANDIDATE_STRATEGY_CONSERVATIVE,
+    raw_findings: Optional[dict[str, dict]] = None,
 ) -> tuple[list[QualityDecision], list[str]]:
     """
     Select findings eligible for LLM review.
 
-    Rules:
-    - Only accept or borderline decisions
-    - Not merged
-    - evidence_quality != none
+    Strategies
+    ----------
+    conservative (default):
+        Original behaviour — accept/borderline, evidence != none.
 
-    Ordering: prioritise candidates with higher false_accept risk so that
-    if max_candidates is exceeded, the most useful reviews happen first.
+    expanded:
+        Adds higher-risk accepted findings based on category, evidence,
+        taxonomy markers in text, and human-rejection-like patterns.
+        Prioritises candidates most likely to be human-rejected.
+        Suitable for production benchmarking.
 
-    Returns:
-        (candidates, skipped_ids)
+    broad (non-production):
+        Sends all accept/borderline regardless of evidence/category.
+        Useful for measuring max coverage. Always mark as experimental.
+
+    Returns
+    -------
+    (candidates, skipped_ids)
     """
-    candidates = []
-    skipped = []
+    if strategy not in VALID_CANDIDATE_STRATEGIES:
+        strategy = CANDIDATE_STRATEGY_CONSERVATIVE
+
+    candidates: list[tuple[QualityDecision, str]] = []   # (decision, reason)
+    skipped: list[str] = []
 
     for d in decisions:
+        # Always skip deterministic rejects and merges
         if d.decision == "reject":
             skipped.append(d.finding_id)
             continue
         if d.decision == "merge":
             skipped.append(d.finding_id)
             continue
-        if d.evidence_quality == EVIDENCE_NONE:
-            skipped.append(d.finding_id)
-            continue
-        candidates.append(d)
 
-    # Sort by false_accept risk: borderline first (0), accept second (1); then by risk score desc
-    candidates.sort(
-        key=lambda d: (0 if d.decision == "borderline" else 1, -_false_accept_risk_score(d)),
-    )
+        raw = (raw_findings or {}).get(d.finding_id)
 
-    # Respect max_candidates limit
+        if strategy == CANDIDATE_STRATEGY_CONSERVATIVE:
+            # Original: only accept/borderline with evidence != none
+            if d.evidence_quality == EVIDENCE_NONE:
+                skipped.append(d.finding_id)
+                continue
+            candidates.append((d, "conservative_eligible"))
+
+        elif strategy == CANDIDATE_STRATEGY_EXPANDED:
+            # Always skip none-evidence
+            if d.evidence_quality == EVIDENCE_NONE:
+                skipped.append(d.finding_id)
+                continue
+            include, reason = _is_expanded_candidate(d, raw)
+            if include:
+                candidates.append((d, reason))
+            else:
+                skipped.append(d.finding_id)
+
+        elif strategy == CANDIDATE_STRATEGY_BROAD:
+            # All accept/borderline (even none-evidence, for coverage analysis)
+            # Still skip deterministic rejects
+            candidates.append((d, "broad_all"))
+
+    # Sort by risk: highest risk first (best use of max_candidates budget)
+    if strategy == CANDIDATE_STRATEGY_CONSERVATIVE:
+        candidates.sort(
+            key=lambda t: (0 if t[0].decision == "borderline" else 1, -_false_accept_risk_score(t[0])),
+        )
+    else:
+        candidates.sort(
+            key=lambda t: (
+                0 if t[0].decision == "borderline" else 1,
+                -_false_accept_risk_score_expanded(t[0], (raw_findings or {}).get(t[0].finding_id)),
+            ),
+        )
+
+    # Apply max_candidates cap
     if len(candidates) > max_candidates:
         excess = candidates[max_candidates:]
-        skipped.extend(d.finding_id for d in excess)
+        skipped.extend(t[0].finding_id for t in excess)
         candidates = candidates[:max_candidates]
 
-    return candidates, skipped
+    return [t[0] for t in candidates], skipped
+
+
+def build_candidate_selection_stats(
+    decisions: list[QualityDecision],
+    candidates: list[QualityDecision],
+    skipped_ids: list[str],
+    strategy: str = CANDIDATE_STRATEGY_CONSERVATIVE,
+    raw_findings: Optional[dict[str, dict]] = None,
+) -> dict:
+    """
+    Build candidate selection statistics artifact.
+
+    Returns a dict suitable for writing to critic_v2_llm_candidate_stats.json.
+    """
+    from collections import Counter, defaultdict
+
+    total = len(decisions)
+    candidate_count = len(candidates)
+    candidate_rate = round(candidate_count / total, 4) if total else 0.0
+
+    by_decision: Counter = Counter()
+    by_evidence: Counter = Counter()
+    by_category: Counter = Counter()
+    by_score_bucket: Counter = Counter()
+    protected_count = 0
+
+    for d in candidates:
+        by_decision[d.decision] += 1
+        by_evidence[d.evidence_quality] += 1
+        cat = (d.impact_area or "unknown").lower()
+        by_category[cat] += 1
+        bucket = f"{(d.usefulness_score // 2) * 2}-{(d.usefulness_score // 2) * 2 + 1}"
+        by_score_bucket[bucket] += 1
+        if (
+            d.usefulness_score >= _EXPANDED_PROTECTED_SCORE
+            and d.evidence_quality == _EXPANDED_PROTECTED_EVIDENCE
+        ):
+            protected_count += 1
+
+    # Candidate reasons (only populated for expanded/broad)
+    by_reason: Counter = Counter()
+    if strategy != CANDIDATE_STRATEGY_CONSERVATIVE and raw_findings is not None:
+        for d in candidates:
+            raw = raw_findings.get(d.finding_id)
+            _, reason = _is_expanded_candidate(d, raw)
+            by_reason[reason] += 1
+
+    return {
+        "strategy": strategy,
+        "total_findings": total,
+        "candidate_count": candidate_count,
+        "candidate_rate": candidate_rate,
+        "skipped_count": len(skipped_ids),
+        "by_decision": dict(by_decision.most_common()),
+        "by_evidence_quality": dict(by_evidence.most_common()),
+        "by_category": dict(by_category.most_common(20)),
+        "by_score_bucket": dict(sorted(by_score_bucket.items())),
+        "by_candidate_reason": dict(by_reason.most_common()) if by_reason else {},
+        "protected_candidates_count": protected_count,
+    }
 
 
 # ─── Response parser ──────────────────────────────────────────────────────────
@@ -746,6 +979,64 @@ def _apply_evidence_cap(
     return llm_decision
 
 
+# ─── HIGH_SCORE_VALID_ACCEPT_GUARD ───────────────────────────────────────────
+
+def _apply_high_score_valid_accept_guard(
+    llm: LLMCriticDecision,
+    det: QualityDecision,
+    effective_llm_decision: str,
+) -> tuple[str, bool]:
+    """
+    Safety guardrail: prevent a single LLM pass from hard-rejecting a finding
+    that the deterministic engine accepted with high score and valid evidence.
+
+    Conditions for guard activation:
+      - deterministic decision = accept
+      - deterministic usefulness_score >= HIGH_SCORE_VALID_ACCEPT_GUARD_THRESHOLD (8)
+      - evidence_quality = valid
+      - effective LLM decision after confidence/taxonomy gate = reject
+
+    When activated:
+      - Downgrade reject to borderline (source_dep=enough_source)
+        or to needs_human (source_dep=needs_more_context or cross_section_required)
+      - Return (downgraded_decision, was_blocked=True)
+
+    When NOT activated:
+      - Return (effective_llm_decision, was_blocked=False)
+
+    This guard applies to ALL taxonomy reasons including visual_or_ocr_misread,
+    false_positive_due_to_missing_context, etc. Even if the LLM is correct, a
+    second-opinion pass or human review is safer than an automatic hard-reject
+    for high-score valid evidence findings.
+    """
+    if (
+        effective_llm_decision == "reject"
+        and det.decision == "accept"
+        and det.usefulness_score >= HIGH_SCORE_VALID_ACCEPT_GUARD_THRESHOLD
+        and det.evidence_quality == EVIDENCE_VALID
+    ):
+        source_dep = llm.source_dependency or "enough_source"
+        if source_dep in _SOURCE_DEP_CROSS_SECTION or source_dep in _SOURCE_DEP_NEEDS_MORE:
+            downgraded = "needs_human"
+        else:
+            downgraded = "borderline"
+        return downgraded, True
+
+    return effective_llm_decision, False
+
+
+# ─── Guard case collector (module-level, thread-unsafe but script-safe) ──────
+# Stores the blocked_guard_cases from the most recent merge_llm_decisions call.
+# Scripts can call get_last_blocked_guard_cases() after merge to retrieve stats
+# without breaking the existing 4-tuple API of merge_llm_decisions.
+_last_blocked_guard_cases: list[dict] = []
+
+
+def get_last_blocked_guard_cases() -> list[dict]:
+    """Return blocked high-score valid accept guard cases from the last merge call."""
+    return list(_last_blocked_guard_cases)
+
+
 # ─── Merge LLM + deterministic decisions ─────────────────────────────────────
 
 def merge_llm_decisions(
@@ -760,15 +1051,19 @@ def merge_llm_decisions(
     - deterministic reject stays reject (LLM cannot restore)
     - deterministic merge stays merge (LLM cannot restore)
     - LLM reject can downgrade deterministic accept/borderline to reject
+      (EXCEPT when HIGH_SCORE_VALID_ACCEPT_GUARD blocks it)
     - LLM accept can upgrade deterministic borderline → accept only if evidence valid
     - LLM rewrite treated as borderline (content in artifacts only)
     - evidence caps re-enforced after merge
+    - HIGH_SCORE_VALID_ACCEPT_GUARD: det=accept + score>=8 + evidence=valid
+      → LLM reject downgraded to borderline/needs_human, never hard-reject
 
     Returns:
         (final_decisions, accepted, rejected, borderline_list)
     """
     llm_by_id = {d.finding_id: d for d in llm_results}
     final: list[QualityDecision] = []
+    blocked_guard_cases: list[dict] = []
 
     for det in det_decisions:
         llm = llm_by_id.get(det.finding_id)
@@ -801,12 +1096,59 @@ def merge_llm_decisions(
         needs_human_flag = (effective_llm == "needs_human")
         was_downgraded_reject = (
             effective_llm == "borderline"
-            and ("[low-confidence" in llm.explanation or "[taxonomy-safe" in llm.explanation)
+            and (
+                "[low-confidence" in llm.explanation
+                or "[taxonomy-safe" in llm.explanation
+                or "[needs-more-context]" in llm.explanation
+                or "[cross-section-required]" in llm.explanation
+                or "[evidence-not-checked]" in llm.explanation
+            )
         )
         if effective_llm == "rewrite":
             effective_llm = "borderline"
         if effective_llm == "needs_human":
             effective_llm = "borderline"
+
+        # ── HIGH_SCORE_VALID_ACCEPT_GUARD ──
+        # After all taxonomy/confidence gates, if LLM still says reject but deterministic
+        # engine accepted with score>=8 and valid evidence, block the hard-reject.
+        was_blocked_by_guard = False
+        effective_llm, was_blocked_by_guard = _apply_high_score_valid_accept_guard(
+            llm, det, effective_llm
+        )
+        if was_blocked_by_guard:
+            blocked_guard_cases.append({
+                "finding_id": det.finding_id,
+                "det_score": det.usefulness_score,
+                "det_decision": det.decision,
+                "evidence_quality": det.evidence_quality,
+                "original_llm_decision": "reject",
+                "original_taxonomy_reason": llm.human_taxonomy_reason,
+                "original_reject_reason": llm.reject_reason,
+                "original_explanation": llm.explanation,
+                "downgraded_to": effective_llm,
+                "source_dependency": llm.source_dependency,
+            })
+            # Patch explanation to surface the guard activation
+            llm = LLMCriticDecision(
+                **{**llm.__dict__,  # type: ignore[arg-type]
+                   "llm_decision": effective_llm,
+                   "explanation": (
+                       f"[high-score-valid-accept-guard: reject→{effective_llm}, "
+                       f"det_score={det.usefulness_score}, ev=valid, "
+                       f"orig_taxonomy={llm.human_taxonomy_reason}] "
+                       f"{llm.explanation}"
+                   ),
+                   "reject_reason": None,
+                   }
+            )
+            # needs_human → borderline in effective_llm for the branch below
+            if effective_llm == "needs_human":
+                needs_human_flag = True
+                effective_llm = "borderline"
+            # Guard blocked a reject → treat as downgraded reject so the borderline
+            # branch keeps it at borderline and does NOT re-promote to accept.
+            was_downgraded_reject = True
 
         if effective_llm == "reject":
             # LLM downgrades accept/borderline to reject
@@ -867,6 +1209,10 @@ def merge_llm_decisions(
         raw_by_id[d.finding_id] for d in final
         if d.decision in ("borderline", "low_priority") and d.finding_id in raw_by_id
     ]
+    # blocked_guard_cases is exposed via the _last_blocked_guard_cases module-level cache
+    # for callers that want the guard stats without breaking the 4-tuple API.
+    _last_blocked_guard_cases.clear()
+    _last_blocked_guard_cases.extend(blocked_guard_cases)
     return final, accepted, rejected, borderline
 
 
@@ -1278,6 +1624,7 @@ def run_llm_gate(
     timeout: int = 180,
     temperature: float = 0.0,
     context_packages: Optional[dict] = None,
+    candidate_strategy: str = CANDIDATE_STRATEGY_CONSERVATIVE,
 ) -> LLMGateResult:
     """
     Run LLM gate on deterministic decisions.
@@ -1295,6 +1642,8 @@ def run_llm_gate(
                          (from ContextCollector.collect_all). When provided, each
                          finding's LLM payload is enriched with neighbor blocks,
                          general notes, cross-references, and table context.
+        candidate_strategy: "conservative" | "expanded" | "broad"
+                           Controls which findings are sent to LLM.
 
     Returns:
         LLMGateResult with decisions and metadata
@@ -1304,11 +1653,16 @@ def run_llm_gate(
     print(f"[llm_gate] Prompt: {prompt_label}")
     print(
         f"[llm_gate] Provider: {provider}" + (f" / model: {model}" if model else "") +
+        (f" [strategy={candidate_strategy}]") +
         (" [+context]" if ctx_enriched else "")
     )
 
-    candidates, skipped = select_candidates(det_decisions, max_candidates)
-    print(f"[llm_gate] Candidates: {len(candidates)}, Skipped: {len(skipped)}")
+    candidates, skipped = select_candidates(
+        det_decisions, max_candidates,
+        strategy=candidate_strategy,
+        raw_findings=findings_by_id,
+    )
+    print(f"[llm_gate] Candidates: {len(candidates)} ({candidate_strategy}), Skipped: {len(skipped)}")
 
     if not candidates:
         return LLMGateResult(

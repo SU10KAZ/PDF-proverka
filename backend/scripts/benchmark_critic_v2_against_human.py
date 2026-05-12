@@ -81,6 +81,19 @@ from backend.app.pipeline.stages.findings_review.critic_v2.llm_gate import (
     merge_llm_decisions,
     run_llm_gate,
 )
+from backend.app.pipeline.stages.findings_review.critic_v2.triage import (
+    build_triage_artifacts,
+    compute_triage_metrics,
+    get_ar_f001_diagnostic,
+    triage_metrics_to_dict,
+)
+from backend.scripts.replay_critic_v2_triage_policy import (
+    _LLMDecProxy,
+    _record_to_quality_decision,
+    compute_section_breakdown,
+    replay_triage_on_records,
+    render_triage_markdown,
+)
 
 # ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -370,6 +383,7 @@ def benchmark_one_project(
     llm_temperature: float = 0.0,
     context_enrichment: bool = False,
     context_output_dir: Optional[Path] = None,
+    candidate_strategy: str = "conservative",
 ) -> dict:
     """
     Run critic v2 on one project and compare against human decisions.
@@ -396,6 +410,7 @@ def benchmark_one_project(
     llm_gate_result = None
     llm_gate_errors: list[str] = []
     llm_decisions_raw: list[dict] = []      # raw LLMCriticDecision dicts for artifacts
+    blocked_guard_cases: list[dict] = []    # HIGH_SCORE_VALID_ACCEPT_GUARD cases
 
     # Context enrichment (optional)
     context_pkgs: Optional[dict] = None
@@ -429,7 +444,25 @@ def benchmark_one_project(
             context_stats_dict = None
 
     # Optional LLM gate
+    candidate_stats: Optional[dict] = None
     if llm_gate:
+        from backend.app.pipeline.stages.findings_review.critic_v2.llm_gate import (
+            build_candidate_selection_stats,
+            select_candidates,
+        )
+        # Pre-compute candidate stats for diagnostics
+        _cands_preview, _skipped_preview = select_candidates(
+            det_result.decisions,
+            max_candidates=max_candidates,
+            strategy=candidate_strategy,
+            raw_findings=findings_by_id,
+        )
+        candidate_stats = build_candidate_selection_stats(
+            det_result.decisions, _cands_preview, _skipped_preview,
+            strategy=candidate_strategy,
+            raw_findings=findings_by_id,
+        )
+
         gate = run_llm_gate(
             det_result.decisions,
             findings_by_id,
@@ -440,15 +473,20 @@ def benchmark_one_project(
             timeout=llm_timeout,
             temperature=llm_temperature,
             context_packages=context_pkgs,
+            candidate_strategy=candidate_strategy,
         )
         llm_gate_errors = gate.errors
 
         if gate.errors:
             print(f"\n  [llm_gate] provider errors: {gate.errors}", flush=True)
 
+        from backend.app.pipeline.stages.findings_review.critic_v2.llm_gate import (
+            get_last_blocked_guard_cases,
+        )
         final_decisions, _, _, _ = merge_llm_decisions(
             det_result.decisions, gate.decisions, findings_by_id,
         )
+        blocked_guard_cases = get_last_blocked_guard_cases()
         llm_gate_result = gate
 
         # Serialize LLM decisions for artifact output
@@ -583,6 +621,12 @@ def benchmark_one_project(
                 downgraded_reject_count += 1
         taxonomy_breakdown = dict(taxonomy_counter)
 
+    # HIGH_SCORE_VALID_ACCEPT_GUARD stats
+    guard_cases = blocked_guard_cases if llm_gate else []
+    blocked_high_score_reject_count = len(guard_cases)
+    blocked_to_borderline = sum(1 for c in guard_cases if c.get("downgraded_to") == "borderline")
+    blocked_to_needs_human = sum(1 for c in guard_cases if c.get("downgraded_to") == "needs_human")
+
     return {
         "project": project_dir.name,
         "project_path": str(project_dir),
@@ -604,8 +648,14 @@ def benchmark_one_project(
         "needs_human_count": needs_human_count,
         "reject_by_llm_count": reject_by_llm_count,
         "downgraded_reject_count": downgraded_reject_count,
+        "blocked_high_score_valid_accept_reject_count": blocked_high_score_reject_count,
+        "llm_reject_downgraded_to_borderline_count": blocked_to_borderline,
+        "llm_reject_downgraded_to_needs_human_count": blocked_to_needs_human,
+        "blocked_high_score_valid_accept_cases": guard_cases,
         "context_enrichment_used": context_enrichment and context_pkgs is not None,
         "context_stats": context_stats_dict,
+        "candidate_strategy": candidate_strategy if llm_gate else None,
+        "candidate_stats": candidate_stats,
     }
 
 
@@ -772,6 +822,16 @@ def build_benchmark_summary(results: list[dict]) -> dict:
     total_reject_by_llm = sum(r.get("reject_by_llm_count", 0) for r in ok)
     total_downgraded_reject = sum(r.get("downgraded_reject_count", 0) for r in ok)
 
+    # HIGH_SCORE_VALID_ACCEPT_GUARD aggregates
+    total_blocked_guard = sum(r.get("blocked_high_score_valid_accept_reject_count", 0) for r in ok)
+    total_blocked_to_borderline = sum(r.get("llm_reject_downgraded_to_borderline_count", 0) for r in ok)
+    total_blocked_to_needs_human = sum(r.get("llm_reject_downgraded_to_needs_human_count", 0) for r in ok)
+    all_blocked_guard_cases = [
+        case
+        for r in ok
+        for case in r.get("blocked_high_score_valid_accept_cases", [])
+    ]
+
     # Aggregate taxonomy reasons
     from collections import Counter, defaultdict
     taxonomy_counter: Counter = Counter()
@@ -875,6 +935,18 @@ def build_benchmark_summary(results: list[dict]) -> dict:
             "reject_by_llm_count": total_reject_by_llm if has_llm else None,
             "downgraded_reject_due_to_confidence_count": total_downgraded_reject if has_llm else None,
             "taxonomy_reason_breakdown": dict(taxonomy_counter) if has_llm else None,
+            "blocked_high_score_valid_accept_reject_count": total_blocked_guard if has_llm else None,
+            "llm_reject_downgraded_to_borderline_count": total_blocked_to_borderline if has_llm else None,
+            "llm_reject_downgraded_to_needs_human_count": total_blocked_to_needs_human if has_llm else None,
+        },
+        "high_score_valid_accept_guard": {
+            "enabled": True,
+            "threshold_score": 8,
+            "threshold_evidence": "valid",
+            "blocked_count": total_blocked_guard if has_llm else 0,
+            "downgraded_to_borderline": total_blocked_to_borderline if has_llm else 0,
+            "downgraded_to_needs_human": total_blocked_to_needs_human if has_llm else 0,
+            "cases": all_blocked_guard_cases if has_llm else [],
         },
         "context_enrichment": _aggregate_context_stats(ok),
         "by_section": {k: dict(v) for k, v in by_section.items()},
@@ -972,6 +1044,42 @@ def render_markdown(
             for reason, cnt in sorted(taxonomy.items(), key=lambda x: -x[1]):
                 lines.append(f"| {reason} | {cnt} |")
             lines.append("")
+
+        # HIGH_SCORE_VALID_ACCEPT_GUARD section
+        guard = summary.get("high_score_valid_accept_guard") or {}
+        blocked = guard.get("blocked_count", 0)
+        if cfg.get("llm_gate_used"):
+            lines += [
+                "### HIGH_SCORE_VALID_ACCEPT_GUARD",
+                "",
+                f"_Protects deterministic accepts with score≥8 and valid evidence from single-pass LLM hard-reject._",
+                "",
+                f"| Metric | Value |",
+                f"|--------|-------|",
+                f"| LLM rejects blocked | **{blocked}** |",
+                f"| Downgraded to borderline | {guard.get('downgraded_to_borderline', 0)} |",
+                f"| Downgraded to needs_human | {guard.get('downgraded_to_needs_human', 0)} |",
+                f"| Guard threshold | score≥{guard.get('threshold_score', 8)}, evidence={guard.get('threshold_evidence', 'valid')} |",
+                "",
+            ]
+            cases = guard.get("cases") or []
+            if cases:
+                lines += [
+                    "#### Blocked Cases",
+                    "",
+                    "| Finding | Det.Score | EV | Taxonomy | Downgraded to |",
+                    "|---------|-----------|-----|----------|---------------|",
+                ]
+                for c in cases[:20]:
+                    lines.append(
+                        f"| {c.get('finding_id')} | {c.get('det_score')} "
+                        f"| {c.get('evidence_quality')} "
+                        f"| {c.get('original_taxonomy_reason')} "
+                        f"| {c.get('downgraded_to')} |"
+                    )
+                if len(cases) > 20:
+                    lines.append(f"_...and {len(cases) - 20} more_")
+                lines.append("")
 
     # Provider errors
     provider_errors = summary.get("provider_errors", [])
@@ -1185,6 +1293,33 @@ def write_outputs(
         if provider_errors:
             _w("provider_errors.json", provider_errors)
 
+        # Candidate selection artifacts
+        all_candidate_stats = [
+            r.get("candidate_stats") for r in results
+            if not r.get("skipped") and r.get("candidate_stats")
+        ]
+        if all_candidate_stats:
+            _w("critic_v2_llm_candidate_stats.json", all_candidate_stats)
+            # Aggregate selection
+            from collections import Counter
+            agg_total = sum(s.get("total_findings", 0) for s in all_candidate_stats)
+            agg_cands = sum(s.get("candidate_count", 0) for s in all_candidate_stats)
+            agg_strategy = all_candidate_stats[0].get("strategy", "conservative")
+            agg_rate = round(agg_cands / agg_total, 4) if agg_total else 0.0
+            agg_by_reason: Counter = Counter()
+            for s in all_candidate_stats:
+                for reason, cnt in s.get("by_candidate_reason", {}).items():
+                    agg_by_reason[reason] += cnt
+            selection_summary = {
+                "strategy": agg_strategy,
+                "total_findings": agg_total,
+                "candidate_count": agg_cands,
+                "candidate_rate": agg_rate,
+                "by_candidate_reason": dict(agg_by_reason.most_common()),
+                "projects": len(all_candidate_stats),
+            }
+            _w("critic_v2_llm_candidate_selection.json", selection_summary)
+
     # Markdown
     md = render_markdown(summary, false_rejects, false_accepts, borderline_cases)
     (output_dir / "human_benchmark_summary.md").write_text(md, encoding="utf-8")
@@ -1317,6 +1452,83 @@ def print_benchmark_summary(summary: dict) -> None:
     print("=" * 72)
 
 
+# ─── Triage integration ───────────────────────────────────────────────────────
+
+
+def _run_triage_pass(
+    output_dir: Path,
+    all_records: list[dict],
+    results: list[dict],
+    quiet: bool = False,
+) -> None:
+    """Run triage policy on benchmark records and write artifacts. Does not call LLM."""
+    if not all_records:
+        return
+
+    # Build LLM decisions lookup from all project results
+    llm_by_id: dict[str, dict] = {}
+    for r in results:
+        if r.get("skipped"):
+            continue
+        for d in r.get("llm_decisions", []):
+            fid = d.get("finding_id", "")
+            if fid:
+                llm_by_id[fid] = d
+
+    if not quiet:
+        print(f"\n  Triage policy replay (no LLM): {len(all_records)} records, {len(llm_by_id)} LLM decisions")
+
+    triage_decisions, metrics = replay_triage_on_records(
+        records=all_records,
+        llm_decisions_by_id=llm_by_id,
+        include_human_labels=True,
+    )
+    section_breakdown = compute_section_breakdown(all_records, triage_decisions)
+    artifacts = build_triage_artifacts(triage_decisions, metrics)
+
+    def _w(fname: str, data) -> None:
+        (output_dir / fname).write_text(
+            json.dumps(data, ensure_ascii=False, indent=2, default=str),
+            encoding="utf-8",
+        )
+
+    _w("critic_v2_triage.json", artifacts["critic_v2_triage"])
+    _w("critic_v2_triage_metrics.json", artifacts["critic_v2_triage_metrics"])
+    _w("critic_v2_hidden_by_critic.json", artifacts["critic_v2_hidden_by_critic"])
+    _w("critic_v2_suggested_reject.json", artifacts["critic_v2_suggested_reject"])
+    _w("critic_v2_visible_by_default.json", artifacts["critic_v2_visible_by_default"])
+    _w("critic_v2_risky_hidden_cases.json", artifacts["critic_v2_risky_hidden_cases"])
+    _w("ar_f001_diagnostic.json", get_ar_f001_diagnostic())
+
+    triage_summary = {
+        "metrics": triage_metrics_to_dict(metrics),
+        "section_breakdown": section_breakdown,
+        "llm_decisions_used": len(llm_by_id),
+    }
+    _w("triage_summary.json", triage_summary)
+
+    md = render_triage_markdown(
+        experiment="benchmark",
+        records_count=len(all_records),
+        metrics=metrics,
+        section_breakdown=section_breakdown,
+        risky_cases=metrics.risky_hidden_cases,
+        llm_decisions_count=len(llm_by_id),
+    )
+    (output_dir / "triage_summary.md").write_text(md, encoding="utf-8")
+
+    if not quiet:
+        m = metrics
+        recall = f"{m.accepted_visible_recall*100:.1f}%" if m.accepted_visible_recall is not None else "n/a"
+        print(
+            f"  Triage: SK={m.strong_keep_count} MR={m.main_review_count} "
+            f"BD={m.borderline_count} NC={m.needs_context_count} "
+            f"SR={m.suggested_reject_count} HC={m.hidden_by_critic_count} "
+            f"| workload_reduction={m.workload_reduction_percent:.1f}% "
+            f"recall={recall} hidden_acc={m.hidden_human_accepted_count}"
+        )
+
+
 # ─── Main ─────────────────────────────────────────────────────────────────────
 
 def main() -> int:
@@ -1415,6 +1627,26 @@ Examples:
         "--quiet", action="store_true",
         help="Suppress per-project progress output.",
     )
+    parser.add_argument(
+        "--triage", action="store_true",
+        help=(
+            "Compute offline triage queues after benchmarking and write triage artifacts. "
+            "Does NOT call any LLM. Uses benchmark records + LLM decisions (if available)."
+        ),
+    )
+    parser.add_argument(
+        "--candidate-strategy",
+        choices=["conservative", "expanded", "broad"],
+        default="conservative",
+        help=(
+            "Candidate selection strategy for LLM gate. "
+            "'conservative' = original behaviour (accept/borderline, evidence!=none). "
+            "'expanded' = adds high-rejection-risk findings (risk categories, weak/partial evidence, "
+            "taxonomy markers in text). "
+            "'broad' = all accept/borderline (non-production, for coverage analysis). "
+            "Default: conservative."
+        ),
+    )
     args = parser.parse_args()
 
     # Update projects root if overridden
@@ -1470,6 +1702,7 @@ Examples:
             llm_temperature=args.llm_temperature,
             context_enrichment=args.context_enrichment,
             context_output_dir=args.output_dir if args.context_enrichment else None,
+            candidate_strategy=args.candidate_strategy,
         )
         results.append(result)
 
@@ -1507,6 +1740,15 @@ Examples:
         borderline_cases,
         results=results,
     )
+
+    # Triage pass (optional, no LLM)
+    if args.triage:
+        _run_triage_pass(
+            output_dir=args.output_dir,
+            all_records=all_records,
+            results=results,
+            quiet=args.quiet,
+        )
 
     print_benchmark_summary(summary)
     print(f"  Total time: {batch_ms}ms ({batch_ms//1000}s)")

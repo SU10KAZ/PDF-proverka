@@ -1092,3 +1092,65 @@ class TestProviderUnavailableSafeguard:
         assert result.returncode == 0, f"CLI failed: {result.stderr}"
         summary = json.loads((tmp_path / "human_benchmark_summary.json").read_text())
         assert "llm_impact" in summary
+
+
+class TestTriageIntegration:
+    """Test --triage flag integration in benchmark script."""
+
+    def test_triage_flag_produces_artifacts(self, tmp_path):
+        """--triage flag creates triage artifacts without calling LLM."""
+        result = subprocess.run(
+            [sys.executable, str(SCRIPT),
+             "--section", "AR", "--limit", "1",
+             "--triage",
+             "--output-dir", str(tmp_path), "--quiet"],
+            capture_output=True, text=True, timeout=60,
+        )
+        assert result.returncode == 0, f"CLI failed: {result.stderr}"
+        assert (tmp_path / "critic_v2_triage.json").exists(), "Missing critic_v2_triage.json"
+        assert (tmp_path / "critic_v2_triage_metrics.json").exists(), "Missing critic_v2_triage_metrics.json"
+        assert (tmp_path / "critic_v2_hidden_by_critic.json").exists()
+        assert (tmp_path / "critic_v2_suggested_reject.json").exists()
+        assert (tmp_path / "triage_summary.md").exists()
+
+    def test_triage_artifacts_have_correct_structure(self, tmp_path):
+        result = subprocess.run(
+            [sys.executable, str(SCRIPT),
+             "--section", "AR", "--limit", "1",
+             "--triage",
+             "--output-dir", str(tmp_path), "--quiet"],
+            capture_output=True, text=True, timeout=60,
+        )
+        assert result.returncode == 0, f"CLI failed: {result.stderr}"
+        metrics = json.loads((tmp_path / "critic_v2_triage_metrics.json").read_text())
+        assert "total_findings" in metrics
+        assert "workload_reduction_percent" in metrics
+        assert "visible_by_default_count" in metrics
+        assert "hidden_by_critic_count" in metrics
+
+    def test_triage_does_not_modify_production_files(self, tmp_path):
+        """--triage must not modify any project production files."""
+        # Run benchmark with triage
+        result = subprocess.run(
+            [sys.executable, str(SCRIPT),
+             "--section", "AR", "--limit", "1",
+             "--triage",
+             "--output-dir", str(tmp_path), "--quiet"],
+            capture_output=True, text=True, timeout=60,
+        )
+        assert result.returncode == 0, f"CLI failed: {result.stderr}"
+        # No 03_findings.json in output dir (that belongs to project dirs)
+        assert not (tmp_path / "03_findings.json").exists()
+
+    def test_triage_summary_contains_section_breakdown(self, tmp_path):
+        result = subprocess.run(
+            [sys.executable, str(SCRIPT),
+             "--section", "AR", "--limit", "1",
+             "--triage",
+             "--output-dir", str(tmp_path), "--quiet"],
+            capture_output=True, text=True, timeout=60,
+        )
+        assert result.returncode == 0, f"CLI failed: {result.stderr}"
+        summary = json.loads((tmp_path / "triage_summary.json").read_text())
+        assert "metrics" in summary
+        assert "section_breakdown" in summary

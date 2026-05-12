@@ -53,6 +53,29 @@ if str(_PROJECT_ROOT) not in sys.path:
 
 _BENCHMARK_SCRIPT = _SCRIPT_DIR / "benchmark_critic_v2_against_human.py"
 
+# ─── Triage imports (lazy, only when --triage is used) ───────────────────────
+
+def _load_triage_module():
+    from backend.app.pipeline.stages.findings_review.critic_v2.triage import (
+        triage_metrics_to_dict,
+    )
+    from backend.scripts.replay_critic_v2_triage_policy import (
+        _load_benchmark_records,
+        _load_llm_decisions,
+        replay_triage_on_records,
+        compute_section_breakdown,
+        build_triage_artifacts,
+        triage_metrics_to_dict as _tmt,
+    )
+    return {
+        "load_records": _load_benchmark_records,
+        "load_llm": _load_llm_decisions,
+        "replay": replay_triage_on_records,
+        "section_breakdown": compute_section_breakdown,
+        "build_artifacts": build_triage_artifacts,
+        "metrics_to_dict": _tmt,
+    }
+
 # ─── Experiment definitions ───────────────────────────────────────────────────
 
 EXPERIMENTS = {
@@ -125,6 +148,8 @@ def run_one_experiment(
     llm_timeout: int = 180,
     max_candidates: int = 50,
     quiet: bool = False,
+    triage: bool = False,
+    candidate_strategy: str = "conservative",
 ) -> dict:
     """
     Run one experiment mode on the given project paths.
@@ -159,6 +184,12 @@ def run_one_experiment(
     if quiet:
         cmd.append("--quiet")
 
+    if triage:
+        cmd.append("--triage")
+
+    if candidate_strategy != "conservative":
+        cmd += ["--candidate-strategy", candidate_strategy]
+
     t0 = time.monotonic()
     proc = subprocess.run(cmd, capture_output=True, text=True)
     elapsed_ms = int((time.monotonic() - t0) * 1000)
@@ -182,6 +213,33 @@ def run_one_experiment(
 
     summary["experiment"] = experiment_name
     summary["elapsed_ms"] = elapsed_ms
+
+    # Load triage metrics from artifact if --triage was requested
+    if triage:
+        triage_metrics_path = exp_output_dir / "critic_v2_triage_metrics.json"
+        if triage_metrics_path.exists():
+            try:
+                summary["triage_metrics"] = json.loads(
+                    triage_metrics_path.read_text(encoding="utf-8")
+                )
+            except (json.JSONDecodeError, OSError):
+                pass
+
+    # Load candidate selection aggregate
+    cand_path = exp_output_dir / "critic_v2_llm_candidate_selection.json"
+    if cand_path.exists():
+        try:
+            summary["candidate_selection_aggregate"] = json.loads(
+                cand_path.read_text(encoding="utf-8")
+            )
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    # Store candidate strategy in run_config for downstream readers
+    if "run_config" not in summary:
+        summary["run_config"] = {}
+    summary["run_config"]["candidate_strategy"] = candidate_strategy
+
     return summary
 
 
@@ -233,6 +291,12 @@ def _experiment_metrics(summary: dict) -> dict:
         "provider_errors_count": len(summary.get("provider_errors") or []),
         # Elapsed
         "elapsed_ms": summary.get("elapsed_ms", 0),
+        # Triage metrics (populated if --triage was used)
+        "triage": summary.get("triage_metrics"),
+        # Candidate selection stats
+        "candidate_strategy": summary.get("run_config", {}).get("candidate_strategy"),
+        "candidate_count": summary.get("candidate_selection_aggregate", {}).get("candidate_count"),
+        "candidate_rate": summary.get("candidate_selection_aggregate", {}).get("candidate_rate"),
     }
 
 
@@ -508,6 +572,50 @@ def render_matrix_markdown(matrix_summary: dict) -> str:
         )
     lines.append("")
 
+    # Triage section (only when any experiment has triage data)
+    any_triage = any(
+        metrics.get(exp, {}).get("triage") is not None
+        for exp in exps
+    )
+    if any_triage:
+        lines += [
+            "## Triage Policy Metrics",
+            "",
+            "| Experiment | Total | SK | MR | BD | NC | SR | HC | VD | Collapse% | Recall% | Hidden.Acc |",
+            "|------------|-------|----|----|----|----|----|----|-----|-----------|---------|------------|",
+        ]
+        for exp in exps:
+            m = metrics.get(exp, {})
+            triage = m.get("triage")
+            if triage is None:
+                lines.append(f"| {exp} | — | — | — | — | — | — | — | — | — | — | — |")
+                continue
+            tot = triage.get("total_findings") or 1
+            wr = triage.get("workload_reduction_percent", 0)
+            recall = triage.get("accepted_visible_recall")
+            recall_str = f"{recall*100:.1f}%" if recall is not None else "—"
+            lines.append(
+                f"| {exp} "
+                f"| {triage.get('total_findings', 0)} "
+                f"| {triage.get('strong_keep_count', 0)} "
+                f"| {triage.get('main_review_count', 0)} "
+                f"| {triage.get('borderline_count', 0)} "
+                f"| {triage.get('needs_context_count', 0)} "
+                f"| {triage.get('suggested_reject_count', 0)} "
+                f"| {triage.get('hidden_by_critic_count', 0)} "
+                f"| {triage.get('visible_by_default_count', 0)} "
+                f"| {wr:.1f}% "
+                f"| {recall_str} "
+                f"| {triage.get('hidden_human_accepted_count', 0)} |"
+            )
+        lines.append("")
+        lines += [
+            "_SK=strong_keep, MR=main_review, BD=borderline, NC=needs_context, "
+            "SR=suggested_reject, HC=hidden_by_critic, VD=visible_by_default_",
+            "_Recall = human_accepted NOT in hidden / total_human_accepted_",
+            "",
+        ]
+
     lines += [
         "---",
         "_Generated by run_critic_v2_experiment_matrix.py. Production pipeline NOT modified._",
@@ -670,6 +778,25 @@ Examples:
         "--quiet", action="store_true",
         help="Suppress per-project progress output.",
     )
+    parser.add_argument(
+        "--triage", action="store_true",
+        help=(
+            "Run offline triage policy after each experiment and include triage metrics "
+            "in matrix summary. Does NOT call any LLM. Writes triage artifacts per experiment."
+        ),
+    )
+    parser.add_argument(
+        "--candidate-strategy",
+        choices=["conservative", "expanded", "broad"],
+        default="conservative",
+        help=(
+            "LLM candidate selection strategy. "
+            "'conservative' = original (accept/borderline, evidence!=none). "
+            "'expanded' = adds high-rejection-risk findings. "
+            "'broad' = all accept/borderline (non-production). "
+            "Default: conservative."
+        ),
+    )
     args = parser.parse_args()
 
     # Safety check for real LLM
@@ -747,6 +874,8 @@ Examples:
             llm_timeout=args.llm_timeout,
             max_candidates=args.max_candidates,
             quiet=args.quiet,
+            triage=args.triage,
+            candidate_strategy=args.candidate_strategy,
         )
         elapsed = int((time.monotonic() - t0) * 1000)
         summary["_output_dir"] = str(args.output_dir / exp_name)

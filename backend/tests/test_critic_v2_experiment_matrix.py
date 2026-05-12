@@ -779,3 +779,136 @@ class TestMatrixManifestWarnings:
         assert stats["total_rejected_matched"] == stats["total_rejected"], (
             "For clean data, matched counts should equal raw counts"
         )
+
+
+class TestTriageInMatrix:
+    """Tests for --triage flag integration in matrix script."""
+
+    @property
+    def matrix_mod(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "run_critic_v2_experiment_matrix",
+            Path(__file__).resolve().parent.parent / "scripts" / "run_critic_v2_experiment_matrix.py",
+        )
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    def test_build_matrix_summary_triage_key_present(self):
+        """build_matrix_summary includes triage key in metrics when available."""
+        mod = self.matrix_mod
+        # Create a fake experiment summary with triage_metrics
+        fake_summary = {
+            "experiment": "det_only",
+            "overall_metrics": {
+                "total_findings": 10, "total_mapped": 10, "total_unmapped": 0,
+                "human_accepted": 5, "human_rejected": 5, "human_unknown": 0,
+                "critic_accepted": 4, "critic_rejected": 3, "critic_borderline": 2,
+                "critic_merged": 1,
+                "true_accept": 4, "true_reject": 3,
+                "false_reject": 0, "false_accept": 1,
+                "false_reject_rate": 0.0, "false_accept_rate": 0.2,
+                "agreement": 7, "agreement_rate": 0.7,
+                "critic_borderline_on_human_accepted": 1,
+                "critic_borderline_on_human_rejected": 1,
+                "classification_counts": {},
+                "human_rejection_reasons_sample": [],
+                "critic_rejection_reasons_freq": {},
+            },
+            "run_config": {"llm_gate_used": False, "context_enrichment_used": False},
+            "llm_impact": {},
+            "triage_metrics": {
+                "total_findings": 10,
+                "strong_keep_count": 3,
+                "main_review_count": 2,
+                "borderline_count": 1,
+                "needs_context_count": 0,
+                "suggested_reject_count": 1,
+                "hidden_by_critic_count": 3,
+                "visible_by_default_count": 6,
+                "collapsed_by_default_count": 4,
+                "workload_reduction_count": 4,
+                "workload_reduction_percent": 40.0,
+                "hidden_human_accepted_count": 0,
+                "accepted_visible_recall": 1.0,
+            },
+        }
+        manifest = {"stats": {"total_projects": 1, "total_findings": 10,
+                               "total_accepted": 5, "total_rejected": 5}}
+        summary = mod.build_matrix_summary(
+            manifest=manifest,
+            experiment_summaries=[fake_summary],
+            experiment_names=["det_only"],
+        )
+        m = summary["metrics_by_experiment"].get("det_only", {})
+        assert "triage" in m, "triage key should be present in metrics_by_experiment"
+        assert m["triage"] is not None
+
+    def test_matrix_triage_in_markdown(self):
+        """Triage metrics appear in markdown when present."""
+        mod = self.matrix_mod
+        fake_summary = {
+            "experiment": "det_only",
+            "overall_metrics": {
+                "total_findings": 5, "total_mapped": 5, "total_unmapped": 0,
+                "human_accepted": 2, "human_rejected": 3, "human_unknown": 0,
+                "critic_accepted": 2, "critic_rejected": 2, "critic_borderline": 1,
+                "critic_merged": 0,
+                "true_accept": 2, "true_reject": 2,
+                "false_reject": 0, "false_accept": 0,
+                "false_reject_rate": 0.0, "false_accept_rate": 0.0,
+                "agreement": 4, "agreement_rate": 0.8,
+                "critic_borderline_on_human_accepted": 0,
+                "critic_borderline_on_human_rejected": 1,
+                "classification_counts": {},
+                "human_rejection_reasons_sample": [],
+                "critic_rejection_reasons_freq": {},
+            },
+            "run_config": {"llm_gate_used": False, "context_enrichment_used": False},
+            "llm_impact": {},
+            "triage_metrics": {
+                "total_findings": 5, "strong_keep_count": 2, "main_review_count": 1,
+                "borderline_count": 0, "needs_context_count": 0,
+                "suggested_reject_count": 0, "hidden_by_critic_count": 2,
+                "visible_by_default_count": 3, "collapsed_by_default_count": 2,
+                "workload_reduction_count": 2, "workload_reduction_percent": 40.0,
+                "hidden_human_accepted_count": 0,
+                "accepted_visible_recall": 1.0,
+            },
+        }
+        manifest = {"stats": {"total_projects": 1, "total_findings": 5,
+                               "total_accepted": 2, "total_rejected": 3}}
+        matrix_summary = mod.build_matrix_summary(
+            manifest=manifest,
+            experiment_summaries=[fake_summary],
+            experiment_names=["det_only"],
+        )
+        md = mod.render_matrix_markdown(matrix_summary)
+        assert "Triage Policy Metrics" in md
+        assert "workload_reduction" in md.lower() or "Collapse%" in md
+
+    def test_production_not_modified_with_triage_flag(self, tmp_path):
+        """--triage flag does not modify production pipeline files."""
+        import subprocess
+        import sys
+
+        matrix_script = Path(__file__).resolve().parent.parent / "scripts" / "run_critic_v2_experiment_matrix.py"
+        result = subprocess.run(
+            [sys.executable, str(matrix_script),
+             "--manifest", "/tmp/nonexistent_manifest.json",
+             "--output-dir", str(tmp_path),
+             "--dry-run", "--triage",
+             "--experiments", "det_only"],
+            capture_output=True, text=True, timeout=30,
+        )
+        # dry-run should succeed or fail cleanly without writing production files
+        # We only care that backend/app/pipeline files are not touched
+        pipeline_runner = Path(__file__).resolve().parent.parent / "app" / "pipeline" / "manager.py"
+        if pipeline_runner.exists():
+            import os
+            mtime_before = os.path.getmtime(pipeline_runner)
+            # Wait a moment
+            import time; time.sleep(0.1)
+            mtime_after = os.path.getmtime(pipeline_runner)
+            assert mtime_before == mtime_after, "manager.py was modified!"

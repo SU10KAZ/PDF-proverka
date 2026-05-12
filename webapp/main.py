@@ -47,6 +47,7 @@ from webapp.routers import (
     objects,
     model_control,
     lms,
+    critic_v2_ui,
 )
 from webapp.ws.manager import ws_manager
 
@@ -91,6 +92,7 @@ app.include_router(knowledge_base.router)
 app.include_router(objects.router)
 app.include_router(model_control.router)
 app.include_router(lms.router)
+app.include_router(critic_v2_ui.router)
 
 # ─── WebSocket Endpoints ────────────────────────────────────
 @app.websocket("/ws/audit/{project_id}")

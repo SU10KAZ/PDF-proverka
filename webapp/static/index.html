@@ -343,6 +343,13 @@
                         @click="navigate('/project/' + currentProject.project_id + '/discussions')">
                     Проработка замечаний
                 </button>
+                <button class="project-tab project-tab--experimental"
+                        :class="{'project-tab--active': currentView === 'critic-v2-project'}"
+                        @click="navigate('/project/' + currentProject.project_id + '/critic-v2-disagreements')"
+                        title="Critic v2: только расхождения с экспертом. Experimental. LLM не запускается. Legacy critic остаётся основным.">
+                    Critic v2: Расхождения
+                    <span class="project-tab__count project-tab__count--exp">эксп.</span>
+                </button>
             </div>
         </nav>
 
@@ -3293,6 +3300,322 @@
                 </div>
             </div>
         </div>
+        <!-- ═══ Critic v2 Project-Scoped View (experimental, read-only) ═══ -->
+        <div v-if="currentView === 'critic-v2-project'" class="container">
+            <div class="cv2-experimental-banner" v-if="!cv2ProjDisagreementsMode">
+                <strong>EXPERIMENTAL — Critic v2 для проекта.</strong>
+                Замечания не удалены, это только раскладка по очередям.
+                Production pipeline и legacy critic не заменены.
+                03_findings_review.json не изменён.
+            </div>
+            <div class="cv2-experimental-banner cv2-experimental-banner--disagree"
+                 v-if="cv2ProjDisagreementsMode">
+                <strong>Critic v2 — Расхождения с экспертом.</strong>
+                Экспериментальный режим. Ничего не удаляется. Legacy critic остаётся основным.
+                LLM не запускается, production pipeline не изменён.
+            </div>
+
+            <!-- Глобальный переключатель режима показа (Расхождения / Все) -->
+            <div v-if="cv2Export && !cv2ProjLoading && !cv2ProjLoadError" class="cv2-project-mode-toggle">
+                <button class="btn btn-sm"
+                        :class="cv2Filter.alignment === '__disagreement__' ? 'btn-primary' : 'btn-outline'"
+                        @click="cv2Filter.alignment = '__disagreement__'">
+                    Только расхождения
+                </button>
+                <button class="btn btn-sm"
+                        :class="cv2Filter.alignment === '' ? 'btn-primary' : 'btn-outline'"
+                        @click="cv2Filter.alignment = ''">
+                    Показать все замечания проекта
+                </button>
+                <span v-if="cv2ProjDisagreementsMode && cv2AlignmentSummary.disagreements === 0
+                            && cv2Export.items && cv2Export.items.length > 0"
+                      class="cv2-empty-disagreements">
+                    Расхождений с экспертом не найдено. Можно открыть все замечания проекта.
+                </span>
+            </div>
+
+            <div v-if="cv2ProjLoading" class="cv2-loader">
+                <p>Загрузка project-scoped Critic v2 export…</p>
+            </div>
+
+            <div v-if="cv2ProjLoadError" class="cv2-loader">
+                <h2>Critic v2 — данных нет</h2>
+                <p class="cv2-error">{{ cv2ProjLoadError }}</p>
+                <p v-if="cv2ProjHint">
+                    Сформировать UI export можно командой:
+                    <code style="display:block;margin-top:8px;padding:8px;background:var(--bg-2);border-radius:4px;white-space:pre-wrap;font-size:12px">{{ cv2ProjHint }}</code>
+                </p>
+            </div>
+
+            <div v-if="cv2Export && !cv2ProjLoading && !cv2ProjLoadError" class="cv2-summary">
+                <h3>Сводка по проекту</h3>
+                <div v-if="cv2Export.scope" class="cv2-scope-info" style="margin-bottom:12px;font-size:13px;color:var(--text-2)">
+                    <span><b>Проект:</b> {{ cv2Export.scope.project_name || cv2Export.scope.project_id }}</span>
+                    <span style="margin-left:12px"><b>matched_by:</b> {{ cv2Export.scope.matched_by || '—' }}</span>
+                </div>
+                <div v-if="cv2Export.warning" class="cv2-error" style="margin-bottom:12px">
+                    {{ cv2Export.warning }}
+                </div>
+                <div class="cv2-summary-grid">
+                    <div><span>Всего</span><b>{{ cv2Export.summary.total }}</b></div>
+                    <div><span>Основная</span><b>{{ cv2Export.summary.primary_count }}</b></div>
+                    <div><span>Смежники</span><b>{{ cv2Export.summary.needs_context_count }}</b></div>
+                    <div><span>К отклонению</span><b>{{ cv2Export.summary.suggested_reject_count }}</b></div>
+                    <div><span>Скрыто</span><b>{{ cv2Export.summary.hidden_by_critic_count }}</b></div>
+                    <div><span>Сокращение очереди</span><b>{{ cv2Export.summary.primary_queue_reduction_percent }}%</b></div>
+                    <div v-if="cv2Export.summary.profile" title="профиль строгости critic_v2 (conservative = осторожный)">
+                        <span>Профиль</span><b>{{ cv2Export.summary.profile }}</b>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ Сверка с экспертом (alignment vs expert_review) — project-scoped ═══ -->
+            <div v-if="cv2Export && cv2HasHumanDecisions && cv2Export.items.length > 0"
+                 class="cv2-alignment-summary">
+                <h3 title="alignment vs expert_review">Сверка с экспертом</h3>
+                <div class="cv2-alignment-grid">
+                    <div title="есть human_decision из expert_review">
+                        <span>Всего с решением эксперта</span>
+                        <b>{{ cv2AlignmentSummary.with_decision }}</b>
+                    </div>
+                    <div class="ok"><span>Совпало</span><b>{{ cv2AlignmentSummary.aligned }}</b></div>
+                    <div class="bad"><span>Расхождения</span><b>{{ cv2AlignmentSummary.disagreements }}</b></div>
+                    <div class="bad" title="accepted_collapsed">
+                        <span>Принято, но свёрнуто</span><b>{{ cv2AlignmentSummary.accepted_collapsed }}</b>
+                    </div>
+                    <div class="bad" title="accepted_needs_context">
+                        <span>Принято, но в контекст</span><b>{{ cv2AlignmentSummary.accepted_needs_context }}</b>
+                    </div>
+                    <div class="bad" title="rejected_visible">
+                        <span>Отклонено, но в основной</span><b>{{ cv2AlignmentSummary.rejected_visible }}</b>
+                    </div>
+                    <div class="warn" title="rejected_needs_context">
+                        <span>Отклонено, но в контекст</span><b>{{ cv2AlignmentSummary.rejected_needs_context }}</b>
+                    </div>
+                    <div class="ok" title="aligned_hidden">
+                        <span>Отклонено и свёрнуто</span><b>{{ cv2AlignmentSummary.aligned_hidden }}</b>
+                    </div>
+                    <div class="bad" title="hidden_human_accepted">
+                        <span>Принято, но скрыто</span><b>{{ cv2AlignmentSummary.hidden_human_accepted }}</b>
+                    </div>
+                    <div class="warn" v-if="cv2AlignmentSummary.without_decision > 0">
+                        <span>Без решения эксперта</span><b>{{ cv2AlignmentSummary.without_decision }}</b>
+                    </div>
+                </div>
+                <div class="cv2-alignment-toggles">
+                    <button class="btn btn-sm btn-outline cv2-disagreements-toggle"
+                            :class="{active: cv2Filter.alignment === '__disagreement__'}"
+                            title="Расхождения с экспертом: accepted_collapsed + accepted_needs_context + rejected_visible + rejected_needs_context"
+                            @click="cv2Filter.alignment = cv2Filter.alignment === '__disagreement__' ? '' : '__disagreement__'">
+                        Расхождения
+                    </button>
+                    <button class="btn btn-sm btn-outline"
+                            :class="{active: cv2Filter.alignment === 'accepted_collapsed'}"
+                            @click="cv2Filter.alignment = cv2Filter.alignment === 'accepted_collapsed' ? '' : 'accepted_collapsed'">
+                        Только: принято, но свёрнуто
+                    </button>
+                    <button class="btn btn-sm btn-outline"
+                            :class="{active: cv2Filter.alignment === 'accepted_needs_context'}"
+                            @click="cv2Filter.alignment = cv2Filter.alignment === 'accepted_needs_context' ? '' : 'accepted_needs_context'">
+                        Только: принято, но в контекст
+                    </button>
+                    <button class="btn btn-sm btn-outline"
+                            :class="{active: cv2Filter.alignment === 'rejected_visible'}"
+                            @click="cv2Filter.alignment = cv2Filter.alignment === 'rejected_visible' ? '' : 'rejected_visible'">
+                        Только: отклонено, но в основной
+                    </button>
+                    <button class="btn btn-sm btn-outline"
+                            v-if="cv2Filter.alignment"
+                            @click="cv2Filter.alignment = ''">
+                        Сбросить сверку
+                    </button>
+                </div>
+            </div>
+
+            <div v-if="cv2Export && cv2Export.items.length > 0" class="cv2-feedback-bar">
+                <h3 title="Feedback">Дополнительная ручная корректировка</h3>
+                <div style="font-size:12px;color:var(--text2);margin-bottom:8px;font-style:italic">
+                    Используйте только если хотите исправить раскладку critic v2.
+                    Основная сверка уже выполнена по expert_review.
+                </div>
+                <div class="cv2-feedback-summary">
+                    <div><span>Оценено</span><b>{{ cv2FeedbackSummary.evaluated }}</b></div>
+                    <div title="ревьюер согласен с раскладкой"><span>раскладка верна</span><b class="cv2-fb-yes">{{ cv2FeedbackSummary.yes }}</b></div>
+                    <div title="ревьюер не согласен с раскладкой"><span>раскладка неверна</span><b class="cv2-fb-no">{{ cv2FeedbackSummary.no }}</b></div>
+                    <div title="ревьюер не уверен"><span>не уверен</span><b class="cv2-fb-unsure">{{ cv2FeedbackSummary.unsure }}</b></div>
+                </div>
+                <div class="cv2-feedback-actions">
+                    <button class="btn btn-primary"
+                            :disabled="cv2FeedbackSummary.evaluated === 0"
+                            @click="cv2ExportFeedback">
+                        Экспортировать feedback JSON
+                    </button>
+                    <span class="cv2-feedback-hint">
+                        Feedback хранится только в браузере. Backend не вызывается.
+                    </span>
+                </div>
+            </div>
+
+            <div v-if="cv2Export && cv2Export.items.length > 0" class="cv2-tabs">
+                <div class="cv2-tab-headers">
+                    <button v-for="tab in cv2Export.tabs"
+                            :key="tab.key"
+                            class="cv2-tab-header"
+                            :class="{active: cv2ActiveTab === tab.key}"
+                            @click="cv2ActiveTab = tab.key">
+                        {{ tab.title }}
+                        <span class="cv2-tab-count">{{ cv2VisibleCountByTab[tab.key] }} / {{ tab.count }}</span>
+                    </button>
+                </div>
+
+                <div v-for="tab in cv2Export.tabs"
+                     :key="'pbody-' + tab.key"
+                     v-show="cv2ActiveTab === tab.key"
+                     class="cv2-tab-body">
+                    <div class="cv2-tab-meta">
+                        <span><b>{{ tab.title }}</b></span>
+                        <span>замечаний: {{ tab.count }}</span>
+                        <span title="default_open">по умолчанию открыта: {{ tab.default_open ? 'да' : 'нет' }}</span>
+                        <span title="queues">очереди: {{ tab.queues.map(q => cv2Label('queue', q)).join(', ') }}</span>
+                    </div>
+                    <div v-if="!tab.default_open" class="cv2-collapsed-note">
+                        Замечание не удалено. Оно только вынесено из основной очереди.
+                    </div>
+                    <div v-if="cv2ItemsByTab[tab.key].length === 0" class="cv2-empty">
+                        Нет замечаний в этой очереди.
+                    </div>
+                    <div v-for="item in cv2ItemsByTab[tab.key]"
+                         :key="item.finding_id"
+                         class="cv2-item">
+                        <div class="cv2-item-head">
+                            <span class="cv2-item-id">{{ item.finding_id }}</span>
+                            <span v-if="item.section" class="cv2-badge">{{ item.section }}</span>
+                            <span class="cv2-badge cv2-badge-queue" :title="item.queue">{{ cv2Label('queue', item.queue) }}</span>
+                            <span v-if="item.evidence_quality" class="cv2-badge cv2-badge-ev" :title="'evidence_quality = ' + item.evidence_quality">evidence: {{ cv2Label('evidence', item.evidence_quality) }}</span>
+                            <span v-if="item.score !== null && item.score !== undefined" class="cv2-badge" title="оценка алгоритма (0–11)">балл: {{ item.score }}</span>
+                            <span v-if="item.human_decision" class="cv2-badge"
+                                  :class="item.human_decision === 'accepted' ? 'cv2-badge-acc' : 'cv2-badge-rej'"
+                                  :title="'human_decision = ' + item.human_decision">
+                                эксперт: {{ cv2Label('human', item.human_decision) }}
+                            </span>
+                            <span v-if="item.can_restore" class="cv2-badge cv2-badge-restore" title="можно вернуть в основную очередь">можно вернуть</span>
+                            <span v-if="item.human_decision"
+                                  class="cv2-badge"
+                                  :class="{
+                                      'cv2-badge-align-aligned': cv2AlignmentOf(item) === 'aligned_visible' || cv2AlignmentOf(item) === 'aligned_hidden',
+                                      'cv2-badge-align-disagree': cv2IsDisagreement(cv2AlignmentOf(item)),
+                                      'cv2-badge-align-needs': cv2AlignmentOf(item) === 'rejected_needs_context',
+                                  }"
+                                  :title="'alignment = ' + cv2AlignmentOf(item)">
+                                {{ cv2Label('alignment', cv2AlignmentOf(item)) }}
+                            </span>
+                        </div>
+                        <div v-if="item.title" class="cv2-item-title">{{ item.title }}</div>
+                        <div v-if="item.description" class="cv2-item-desc">{{ item.description }}</div>
+                        <div v-if="item.recommendation" class="cv2-item-rec">
+                            <b>Рекомендация:</b> {{ item.recommendation }}
+                        </div>
+                        <div class="cv2-item-meta">
+                            <span v-if="item.reason" :title="'reason = ' + item.reason"><b>почему:</b> {{ cv2Label('reason', item.reason) }}</span>
+                            <span v-if="item.confidence !== null && item.confidence !== undefined" title="уверенность критика, 0–1"><b>уверенность:</b> {{ item.confidence }}</span>
+                            <span v-if="item.source_dependency" :title="'source_dependency = ' + item.source_dependency"><b>источник:</b> {{ cv2Label('source', item.source_dependency) }}</span>
+                            <span v-if="item.taxonomy_reason" :title="'taxonomy_reason = ' + item.taxonomy_reason"><b>таксономия:</b> {{ cv2Label('taxonomy', item.taxonomy_reason) }}</span>
+                            <span v-if="item.risk_level" :title="'risk_level = ' + item.risk_level"><b>риск:</b> {{ cv2Label('risk', item.risk_level) }}</span>
+                        </div>
+                        <div v-if="item.explanation" class="cv2-item-explain" :title="'explanation = ' + item.explanation">
+                            <i>{{ cv2HumanizeExplanation(item.explanation) }}</i>
+                        </div>
+                        <div v-if="item.human_decision"
+                             class="cv2-item-alignment"
+                             :class="{
+                                 'cv2-item-alignment--aligned': cv2AlignmentOf(item) === 'aligned_visible' || cv2AlignmentOf(item) === 'aligned_hidden',
+                                 'cv2-item-alignment--disagree': cv2IsDisagreement(cv2AlignmentOf(item)),
+                                 'cv2-item-alignment--needs': cv2AlignmentOf(item) === 'rejected_needs_context',
+                             }">
+                            <div class="cv2-ali-row">
+                                <b>Решение эксперта:</b>
+                                <span :class="item.human_decision === 'accepted' ? 'cv2-fb-yes' : 'cv2-fb-no'">
+                                    {{ cv2Label('human', item.human_decision) }}
+                                </span>
+                            </div>
+                            <div v-if="item.human_reason" class="cv2-ali-row">
+                                <b title="human_reason">Комментарий эксперта:</b> {{ item.human_reason }}
+                            </div>
+                            <div class="cv2-ali-row" :title="'tab = ' + item.tab">
+                                <b>Оценка critic v2:</b>
+                                {{ cv2Label('tab', item.tab) }} ({{ cv2Label('queue', item.queue) }})
+                            </div>
+                            <div class="cv2-ali-row" :title="'alignment = ' + cv2AlignmentOf(item)">
+                                <b>Статус сверки:</b>
+                                <span class="cv2-ali-status">{{ cv2Label('alignment', cv2AlignmentOf(item)) }}</span>
+                            </div>
+                        </div>
+
+                        <div class="cv2-feedback" :class="{'cv2-feedback-active': cv2HasFeedback(item.finding_id)}">
+                            <div class="cv2-feedback-title">Оценка раскладки</div>
+                            <div class="cv2-feedback-secondary-hint">
+                                Опционально. Используйте, если автоматическая сверка не отражает ситуацию.
+                            </div>
+                            <div class="cv2-feedback-quick">
+                                <button class="btn btn-sm btn-outline cv2-fb-quick"
+                                        :class="{active: cv2EnsureFeedback(item.finding_id).preferred_tab === 'primary'}"
+                                        @click="cv2QuickRoute(item.finding_id, 'primary')">В основную</button>
+                                <button class="btn btn-sm btn-outline cv2-fb-quick"
+                                        :class="{active: cv2EnsureFeedback(item.finding_id).preferred_tab === 'needs_context'}"
+                                        @click="cv2QuickRoute(item.finding_id, 'needs_context')">Смежники</button>
+                                <button class="btn btn-sm btn-outline cv2-fb-quick"
+                                        :class="{active: cv2EnsureFeedback(item.finding_id).preferred_tab === 'suggested_reject'}"
+                                        @click="cv2QuickRoute(item.finding_id, 'suggested_reject')">К отклонению</button>
+                                <button class="btn btn-sm btn-outline cv2-fb-quick"
+                                        :class="{active: cv2EnsureFeedback(item.finding_id).preferred_tab === 'hidden_by_critic'}"
+                                        @click="cv2QuickRoute(item.finding_id, 'hidden_by_critic')">Скрыть</button>
+                                <button class="btn btn-sm btn-outline cv2-fb-quick"
+                                        :class="{active: cv2EnsureFeedback(item.finding_id).triage_correct === 'unsure'}"
+                                        @click="cv2QuickUnsure(item.finding_id)">Не уверен</button>
+                            </div>
+                            <div class="cv2-feedback-row">
+                                <label title="triage_correct">раскладка верна?
+                                    <select :value="cv2EnsureFeedback(item.finding_id).triage_correct"
+                                            @change="cv2SetTriageCorrect(item.finding_id, $event.target.value)">
+                                        <option value="">—</option>
+                                        <option value="yes">да, верно</option>
+                                        <option value="no">нет, неверно</option>
+                                        <option value="unsure">не уверен</option>
+                                    </select>
+                                </label>
+                                <label title="preferred_tab">куда правильно?
+                                    <select :value="cv2EnsureFeedback(item.finding_id).preferred_tab"
+                                            @change="cv2SetPreferredTab(item.finding_id, $event.target.value)">
+                                        <option value="">—</option>
+                                        <option value="primary">в основную проверку</option>
+                                        <option value="needs_context">требует смежников</option>
+                                        <option value="suggested_reject">к отклонению</option>
+                                        <option value="hidden_by_critic">скрыть как мусор</option>
+                                    </select>
+                                </label>
+                                <label title="priority">приоритет:
+                                    <select :value="cv2EnsureFeedback(item.finding_id).priority"
+                                            @change="cv2SetPriority(item.finding_id, $event.target.value)">
+                                        <option value="normal">обычный</option>
+                                        <option value="important">важно</option>
+                                        <option value="critical">критично</option>
+                                    </select>
+                                </label>
+                            </div>
+                            <div class="cv2-feedback-row">
+                                <label class="cv2-feedback-note" title="reviewer_note">комментарий ревьюера:
+                                    <textarea rows="2"
+                                              :value="cv2EnsureFeedback(item.finding_id).reviewer_note"
+                                              @input="cv2SetReviewerNote(item.finding_id, $event.target.value)"
+                                              placeholder="Комментарий ревьюера (необязательно)"></textarea>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         </div><!-- /main-area -->
     </div>
 

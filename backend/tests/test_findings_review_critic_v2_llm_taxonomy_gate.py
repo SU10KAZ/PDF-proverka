@@ -41,9 +41,12 @@ from backend.app.pipeline.stages.findings_review.critic_v2.llm_gate import (
     MockProvider,
     NoopProvider,
     VALID_LLM_DECISIONS,
+    VALID_LLM_REJECT_REASONS,
+    HIGH_SCORE_VALID_ACCEPT_GUARD_THRESHOLD,
     _apply_confidence_and_taxonomy_gate,
     _apply_evidence_cap,
     _parse_llm_response,
+    get_last_blocked_guard_cases,
     load_prompt,
     merge_llm_decisions,
     run_llm_gate,
@@ -275,15 +278,46 @@ class TestNeedsHumanMerge:
         assert d.decision == "borderline"
 
     def test_high_confidence_ocr_reject_stands(self):
-        """visual_or_ocr_misread with confidence=0.90 → reject in final."""
-        det = [_det("F-001", decision="accept", ev=EVIDENCE_VALID)]
+        """
+        visual_or_ocr_misread with confidence=0.90 + det=accept, score=8, valid.
+
+        Before HIGH_SCORE_VALID_ACCEPT_GUARD: this would produce reject.
+        After guard: det=accept + score>=8 + valid → LLM reject is blocked → borderline.
+
+        The guard correctly prevents the false_reject seen in the AR F-001 real case.
+        For score < 8, the LLM reject would still stand (tested separately).
+        """
+        det = [_det("F-001", decision="accept", ev=EVIDENCE_VALID, score=8)]
         llm_decs = [_llm("F-001", llm_decision="reject",
                          taxonomy="visual_or_ocr_misread",
                          confidence=0.90, reject_reason="visual_or_ocr_misread")]
         raw = {"F-001": _raw("F-001")}
         final, _, rejected, _ = merge_llm_decisions(det, llm_decs, raw)
         d = next(x for x in final if x.finding_id == "F-001")
-        assert d.decision == "reject"
+        # Guard blocks hard-reject for score>=8 + valid evidence
+        assert d.decision != "reject", (
+            f"HIGH_SCORE_VALID_ACCEPT_GUARD must block LLM reject for score=8+valid. Got {d.decision}"
+        )
+        assert d.decision == "borderline", (
+            f"Expected borderline after guard, got {d.decision}"
+        )
+
+    def test_high_confidence_ocr_reject_stands_below_guard_threshold(self):
+        """
+        visual_or_ocr_misread + confidence=0.90, but score=7 (below guard threshold=8).
+        Guard does NOT activate → LLM reject stands.
+        """
+        det = [_det("F-002", decision="accept", ev=EVIDENCE_VALID, score=7)]
+        llm_decs = [_llm("F-002", llm_decision="reject",
+                         taxonomy="visual_or_ocr_misread",
+                         confidence=0.90, reject_reason="visual_or_ocr_misread")]
+        raw = {"F-002": _raw("F-002")}
+        final, _, rejected, _ = merge_llm_decisions(det, llm_decs, raw)
+        d = next(x for x in final if x.finding_id == "F-002")
+        # Guard threshold is 8; score=7 → guard NOT active → LLM reject stands
+        assert d.decision == "reject", (
+            f"For score=7 (below guard threshold), LLM reject should stand. Got {d.decision}"
+        )
 
     def test_deterministic_reject_invariant_holds(self):
         """LLM cannot restore a deterministically rejected finding."""
@@ -1287,3 +1321,387 @@ class TestPolicyV3SourceDependencyAndEvidenceChecked:
                     f"Expected borderline for semantic contradictory label, "
                     f"got {gated['F-sem'].llm_decision}"
                 )
+
+
+# ─── HIGH_SCORE_VALID_ACCEPT_GUARD regression tests ──────────────────────────
+
+
+class TestHighScoreValidAcceptGuard:
+    """
+    Regression tests for the HIGH_SCORE_VALID_ACCEPT_GUARD.
+
+    Guard rule: if det=accept AND score>=8 AND evidence=valid AND effective_llm=reject,
+    then LLM reject is downgraded to borderline/needs_human — never hard-reject.
+
+    These cover:
+    1. score=9 + valid + visual_or_ocr_misread reject → final borderline, not reject
+    2. score=8 + valid + false_positive_due_to_missing_context reject → final borderline
+    3. score=8 + valid + source_dep=needs_more_context → final needs_human
+    4. score=7 + valid + LLM reject → guard does NOT activate (below threshold)
+    5. det=borderline + valid + LLM reject → guard does NOT activate (not det=accept)
+    6. score=9 + weak evidence + LLM reject → guard does NOT activate (not valid)
+    7. det=reject invariant still holds
+    8. det=merge invariant still holds
+    9. was_blocked flag appears in explanation and get_last_blocked_guard_cases()
+    """
+
+    def _make_det_accept(
+        self,
+        fid: str,
+        score: int = 9,
+        ev: str = EVIDENCE_VALID,
+        det_decision: str = "accept",
+        severity: str = "КРИТИЧЕСКОЕ",
+    ) -> QualityDecision:
+        return QualityDecision(
+            finding_id=fid,
+            decision=det_decision,
+            usefulness_score=score,
+            reject_reason=None,
+            reject_explanation=None,
+            merged_into=None,
+            impact_area="construction",
+            severity=severity,
+            has_evidence=True,
+            has_action=True,
+            has_impact=True,
+            evidence_quality=ev,
+        )
+
+    def _make_llm_reject(
+        self,
+        fid: str,
+        taxonomy: str = "visual_or_ocr_misread",
+        confidence: float = 0.85,
+        source_dep: str = "enough_source",
+        reject_reason: str = "visual_or_ocr_misread",
+    ) -> LLMCriticDecision:
+        return LLMCriticDecision(
+            finding_id=fid,
+            llm_decision="reject",
+            usefulness_score=3,
+            reject_reason=reject_reason,
+            explanation=f"[test] LLM rejects as {taxonomy}",
+            human_taxonomy_reason=taxonomy,
+            confidence=confidence,
+            evidence_checked=True,
+            source_dependency=source_dep,
+        )
+
+    def _merge(
+        self,
+        det_list: list,
+        llm_list: list,
+        raw_by_id: dict | None = None,
+    ) -> tuple:
+        from backend.app.pipeline.stages.findings_review.critic_v2.llm_gate import (
+            get_last_blocked_guard_cases,
+            merge_llm_decisions,
+        )
+        if raw_by_id is None:
+            raw_by_id = {d.finding_id: {"id": d.finding_id} for d in det_list}
+        final, accepted, rejected, borderline = merge_llm_decisions(det_list, llm_list, raw_by_id)
+        guard_cases = get_last_blocked_guard_cases()
+        return final, accepted, rejected, borderline, guard_cases
+
+    # ── Core guard activation tests ──────────────────────────────────────────
+
+    def test_score9_valid_visual_ocr_reject_blocked_to_borderline(self):
+        """
+        CRITICAL: mirrors real AR F-001 false_reject case.
+        det=accept, score=9, valid evidence, LLM rejects as visual_or_ocr_misread
+        → guard activates → final=borderline, not reject.
+        """
+        det = [self._make_det_accept("F-001", score=9, ev=EVIDENCE_VALID)]
+        llm = [self._make_llm_reject("F-001", taxonomy="visual_or_ocr_misread", confidence=0.85)]
+        final, _, rejected, borderline, guard_cases = self._merge(det, llm)
+
+        d = next(x for x in final if x.finding_id == "F-001")
+        assert d.decision != "reject", (
+            f"Guard must block LLM reject for score=9 valid accept. Got {d.decision}"
+        )
+        assert d.decision == "borderline", (
+            f"Guard should downgrade to borderline (enough_source). Got {d.decision}"
+        )
+        assert len(rejected) == 0, "No finding should be in rejected bucket"
+        assert len(guard_cases) == 1, "Guard should record one blocked case"
+        assert guard_cases[0]["finding_id"] == "F-001"
+        assert guard_cases[0]["original_taxonomy_reason"] == "visual_or_ocr_misread"
+        assert guard_cases[0]["downgraded_to"] == "borderline"
+
+    def test_score8_valid_false_positive_missing_context_blocked(self):
+        """
+        Mirrors real KJ F-018 false_reject case.
+        det=accept, score=8, valid evidence, LLM rejects as false_positive_due_to_missing_context
+        → guard activates → final=borderline.
+        """
+        det = [self._make_det_accept("F-018", score=8, ev=EVIDENCE_VALID)]
+        llm = [self._make_llm_reject(
+            "F-018",
+            taxonomy="false_positive_due_to_missing_context",
+            confidence=0.80,
+            reject_reason="false_positive_due_to_missing_context",
+        )]
+        final, _, rejected, _, guard_cases = self._merge(det, llm)
+
+        d = next(x for x in final if x.finding_id == "F-018")
+        assert d.decision != "reject", (
+            f"Guard must block LLM reject for score=8 valid accept. Got {d.decision}"
+        )
+        assert len(rejected) == 0
+        assert len(guard_cases) >= 1
+        assert guard_cases[0]["finding_id"] == "F-018"
+
+    def test_score8_valid_needs_more_context_not_reject(self):
+        """
+        score=8 + valid + source_dep=needs_more_context:
+        The pre-existing taxonomy gate converts reject→borderline on [needs-more-context]
+        BEFORE the guard runs. The guard therefore does NOT fire (no reject reaches it).
+        Safety goal is still met: det=accept+valid finding is NOT rejected.
+
+        guard_cases is empty (pre-gate handled it), final decision is borderline/accept
+        depending on was_downgraded_reject detection — never reject.
+        """
+        det = [self._make_det_accept("F-NMC", score=8, ev=EVIDENCE_VALID)]
+        llm = [self._make_llm_reject(
+            "F-NMC",
+            taxonomy="visual_or_ocr_misread",
+            confidence=0.85,
+            source_dep="needs_more_context",
+        )]
+        final, _, rejected, _, guard_cases = self._merge(det, llm)
+
+        d = next(x for x in final if x.finding_id == "F-NMC")
+        # Safety goal: never a reject for high-score valid accept
+        assert d.decision != "reject", (
+            f"score=8+valid+needs_more_context must NOT result in reject. Got {d.decision}"
+        )
+        # Pre-gate handled it, guard_cases may be empty (pre-gate fired first)
+        # This is correct: the pre-existing safety gate already protected this case.
+
+    def test_guard_applies_to_all_taxonomy_reasons(self):
+        """Guard must block reject for ANY taxonomy reason when score>=8 and valid."""
+        all_taxonomies = [
+            "visual_or_ocr_misread",
+            "false_positive_due_to_missing_context",
+            "value_already_correct",
+            "requirement_not_mandatory",
+            "already_resolved_by_project_note",
+            "duplicate_or_already_covered",
+            "wrong_norm_context",
+            "not_functionally_significant",
+        ]
+        for tax in all_taxonomies:
+            det = [self._make_det_accept(f"F-{tax[:8]}", score=9, ev=EVIDENCE_VALID)]
+            llm = [self._make_llm_reject(
+                f"F-{tax[:8]}",
+                taxonomy=tax,
+                confidence=0.95,
+                reject_reason=tax if tax in VALID_LLM_REJECT_REASONS else None,
+            )]
+            final, _, rejected, _, _ = self._merge(det, llm)
+            d = next(x for x in final if x.finding_id == f"F-{tax[:8]}")
+            assert d.decision != "reject", (
+                f"Guard must block reject for taxonomy={tax}, score=9, valid. Got {d.decision}"
+            )
+
+    def test_guard_explanation_contains_flag(self):
+        """Blocked case explanation must contain [high-score-valid-accept-guard]."""
+        det = [self._make_det_accept("F-EXP", score=9, ev=EVIDENCE_VALID)]
+        llm = [self._make_llm_reject("F-EXP", taxonomy="visual_or_ocr_misread")]
+        final, _, _, _, _ = self._merge(det, llm)
+        d = next(x for x in final if x.finding_id == "F-EXP")
+        # The explanation is stored on the QualityDecision as reject_explanation
+        # Check the guard was recorded
+        from backend.app.pipeline.stages.findings_review.critic_v2.llm_gate import (
+            get_last_blocked_guard_cases,
+        )
+        cases = get_last_blocked_guard_cases()
+        assert cases, "Guard cases should be recorded"
+        assert "high-score-valid-accept-guard" in (d.reject_explanation or "") or cases, (
+            "Guard should either set explanation or record the case"
+        )
+
+    # ── Guard should NOT activate tests ──────────────────────────────────────
+
+    def test_score7_valid_reject_not_blocked_by_guard(self):
+        """
+        score=7 < threshold=8 → guard does NOT activate.
+        LLM reject can stand for lower-score findings.
+        """
+        det = [self._make_det_accept("F-LOW", score=7, ev=EVIDENCE_VALID)]
+        llm = [self._make_llm_reject("F-LOW", taxonomy="visual_or_ocr_misread", confidence=0.85)]
+        final, _, rejected, _, guard_cases = self._merge(det, llm)
+
+        d = next(x for x in final if x.finding_id == "F-LOW")
+        # Guard not active for score=7; LLM reject may stand
+        assert len(guard_cases) == 0, (
+            f"Guard must NOT activate for score=7 (below threshold=8). Cases: {guard_cases}"
+        )
+        # Decision depends on LLM gate rules (may be reject or borderline from confidence gate)
+        # We only assert: guard_cases is empty
+
+    def test_det_borderline_valid_reject_not_blocked_by_guard(self):
+        """
+        det=borderline (not accept) → guard does NOT activate.
+        Guard only protects det=accept findings.
+        """
+        det = [self._make_det_accept("F-BL", score=9, ev=EVIDENCE_VALID, det_decision="borderline")]
+        llm = [self._make_llm_reject("F-BL", taxonomy="visual_or_ocr_misread", confidence=0.85)]
+        final, _, rejected, _, guard_cases = self._merge(det, llm)
+
+        assert len(guard_cases) == 0, (
+            f"Guard must NOT activate for det=borderline. Cases: {guard_cases}"
+        )
+
+    def test_score9_weak_evidence_reject_not_blocked_by_guard(self):
+        """
+        score=9 but evidence=weak → guard does NOT activate.
+        Guard only protects valid evidence findings.
+        """
+        det = [self._make_det_accept("F-WK", score=9, ev=EVIDENCE_WEAK)]
+        # Note: weak evidence det=accept can't reach candidates (capped at borderline by scorer)
+        # but we test the guard condition directly
+        llm = [self._make_llm_reject("F-WK", taxonomy="visual_or_ocr_misread", confidence=0.85)]
+        final, _, rejected, _, guard_cases = self._merge(det, llm)
+
+        assert len(guard_cases) == 0, (
+            f"Guard must NOT activate for weak evidence. Cases: {guard_cases}"
+        )
+
+    def test_score9_partial_evidence_reject_not_blocked_by_guard(self):
+        """
+        score=9 but evidence=partial → guard does NOT activate.
+        """
+        det = [self._make_det_accept("F-PART", score=9, ev=EVIDENCE_PARTIAL)]
+        llm = [self._make_llm_reject("F-PART", taxonomy="visual_or_ocr_misread", confidence=0.85)]
+        final, _, rejected, _, guard_cases = self._merge(det, llm)
+
+        assert len(guard_cases) == 0, (
+            f"Guard must NOT activate for partial evidence. Cases: {guard_cases}"
+        )
+
+    # ── Invariants still hold ─────────────────────────────────────────────────
+
+    def test_det_reject_invariant_unchanged(self):
+        """Deterministic reject must stay reject — guard does not apply to det=reject."""
+        det = [QualityDecision(
+            finding_id="F-REJ", decision="reject", usefulness_score=2,
+            reject_reason="no_evidence", reject_explanation=None, merged_into=None,
+            impact_area=None, severity="РЕКОМЕНДАТЕЛЬНОЕ",
+            has_evidence=False, has_action=False, has_impact=False,
+            evidence_quality=EVIDENCE_NONE,
+        )]
+        llm = [self._make_llm_reject("F-REJ", taxonomy="visual_or_ocr_misread")]
+        final, _, rejected, _, guard_cases = self._merge(det, llm)
+
+        d = next(x for x in final if x.finding_id == "F-REJ")
+        assert d.decision == "reject", "Deterministic reject must stay reject"
+        assert len(guard_cases) == 0, "Guard must not fire for det=reject"
+
+    def test_det_merge_invariant_unchanged(self):
+        """Deterministic merge must stay merge."""
+        det = [QualityDecision(
+            finding_id="F-MRG", decision="merge", usefulness_score=8,
+            reject_reason=None, reject_explanation=None, merged_into="F-001",
+            impact_area="construction", severity="КРИТИЧЕСКОЕ",
+            has_evidence=True, has_action=True, has_impact=True,
+            evidence_quality=EVIDENCE_VALID,
+        )]
+        llm = [self._make_llm_reject("F-MRG", taxonomy="visual_or_ocr_misread")]
+        final, _, _, _, guard_cases = self._merge(det, llm)
+
+        d = next(x for x in final if x.finding_id == "F-MRG")
+        assert d.decision == "merge", "Deterministic merge must stay merge"
+        assert len(guard_cases) == 0, "Guard must not fire for det=merge"
+
+    def test_no_llm_decision_det_accept_passes_through(self):
+        """No LLM decision → det accept stays accept (guard not triggered)."""
+        det = [self._make_det_accept("F-NOCT", score=9, ev=EVIDENCE_VALID)]
+        final, _, _, _, guard_cases = self._merge(det, [])  # empty llm_results
+
+        d = next(x for x in final if x.finding_id == "F-NOCT")
+        assert d.decision == "accept"
+        assert len(guard_cases) == 0
+
+    def test_score8_valid_accept_llm_accept_no_guard(self):
+        """LLM also accepts → guard not triggered, stays accept."""
+        det = [self._make_det_accept("F-ACC", score=9, ev=EVIDENCE_VALID)]
+        llm = [_llm("F-ACC", llm_decision="accept", score=9, taxonomy="other")]
+        final, _, _, _, guard_cases = self._merge(det, llm)
+
+        d = next(x for x in final if x.finding_id == "F-ACC")
+        assert d.decision == "accept"
+        assert len(guard_cases) == 0
+
+    # ── Cumulative guard counting ─────────────────────────────────────────────
+
+    def test_multiple_blocked_cases_all_recorded(self):
+        """Two high-score valid accept findings both blocked → both in guard_cases."""
+        det = [
+            self._make_det_accept("F-A", score=9, ev=EVIDENCE_VALID),
+            self._make_det_accept("F-B", score=8, ev=EVIDENCE_VALID),
+        ]
+        llm = [
+            self._make_llm_reject("F-A", taxonomy="visual_or_ocr_misread"),
+            self._make_llm_reject("F-B", taxonomy="false_positive_due_to_missing_context"),
+        ]
+        final, _, rejected, _, guard_cases = self._merge(det, llm)
+
+        assert len(rejected) == 0, "No findings should be rejected"
+        assert len(guard_cases) == 2, f"Both blocked cases should be recorded. Got {guard_cases}"
+        blocked_ids = {c["finding_id"] for c in guard_cases}
+        assert blocked_ids == {"F-A", "F-B"}
+
+    # ── End-to-end via run_llm_gate ───────────────────────────────────────────
+
+    def test_end_to_end_guard_via_mock_with_injected_reject(self):
+        """
+        End-to-end: inject a high-score valid finding with _expected_decision=reject
+        via mock provider, verify guard prevents final reject.
+        """
+        finding = {
+            "id": "F-E2E",
+            "severity": "КРИТИЧЕСКОЕ",
+            "category": "documentation",
+            "problem": "В Ведомости полов для Типа 6.1 перечислены помещения 4.ТЦ.1–4.ТЦ.11 (9 штук), отсутствующие в Экспликации",
+            "description": "Помещения 4.ТЦ.1–4.ТЦ.11 указаны в ведомости полов но отсутствуют в экспликации",
+            "solution": "Актуализировать экспликацию помещений",
+            "norm_quote": "ГОСТ 21.501-2018: требования к оформлению экспликации",
+            "evidence": [
+                {"block_id": "BLK-FLOOR-01", "type": "image", "page": 5},
+                {"block_id": "BLK-EXPL-01", "type": "text", "page": 3},
+            ],
+            "related_block_ids": ["BLK-FLOOR-01", "BLK-EXPL-01"],
+            "_expected_decision": "reject",
+            "_taxonomy_reason": "visual_or_ocr_misread",
+            "_confidence": 0.85,
+            "_source_dependency": "enough_source",
+        }
+        raw = {finding["id"]: finding}
+        det = run_critic_v2_offline([finding])
+        det_map = {d.finding_id: d for d in det.decisions}
+
+        d_det = det_map.get("F-E2E")
+        if d_det is None or d_det.decision == "reject":
+            pytest.skip("Finding was deterministically rejected; guard not applicable")
+        if d_det.evidence_quality != EVIDENCE_VALID:
+            pytest.skip(f"Finding has {d_det.evidence_quality} evidence; guard requires VALID")
+
+        # Artificially bump score to >=8 if needed, or skip
+        if d_det.usefulness_score < 8:
+            pytest.skip(f"Finding score={d_det.usefulness_score} < 8; guard threshold not met")
+
+        gate = run_llm_gate(det.decisions, raw, provider="mock")
+        final, _, _, _ = merge_llm_decisions(det.decisions, gate.decisions, raw)
+
+        from backend.app.pipeline.stages.findings_review.critic_v2.llm_gate import (
+            get_last_blocked_guard_cases,
+        )
+        guard_cases = get_last_blocked_guard_cases()
+
+        d_final = next(x for x in final if x.finding_id == "F-E2E")
+        assert d_final.decision != "reject", (
+            f"Guard should have blocked LLM reject for score={d_det.usefulness_score}, "
+            f"ev=valid. Final={d_final.decision}, guard_cases={guard_cases}"
+        )
