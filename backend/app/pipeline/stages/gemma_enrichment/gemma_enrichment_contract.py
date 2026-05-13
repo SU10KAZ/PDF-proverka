@@ -723,3 +723,43 @@ def validate_gemma_summary(
         "large_block_skipped_ids": large_block_ids,
     }
     return result
+
+
+def gemma_outputs_are_valid(
+    project_dir: Path,
+    *,
+    md_path: Path | None = None,
+    min_coverage: float = 0.0,
+) -> tuple[bool, str]:
+    """High-level production-валидация Gemma artifacts.
+
+    Используется pre-Gemma loop и главным pipeline для одной и той же проверки:
+    можно ли пропустить Gemma OCR этап для этого проекта.
+
+    Возвращает (ok, reason_code). reason_code — короткий тег для логирования.
+    """
+    project_dir = Path(project_dir)
+
+    base_index = gemma_base_blocks_index_path(project_dir)
+    if not base_index.exists():
+        return (False, "index_missing")
+
+    if md_path is None:
+        try:
+            from backend.app.pipeline.stages.gemma_enrichment.gemma_gate import (
+                find_project_markdown,
+            )
+            md_path = find_project_markdown(project_dir)
+        except Exception:
+            md_path = None
+    if md_path is None:
+        return (False, "md_missing")
+
+    result = validate_gemma_summary(
+        project_dir,
+        md_path=md_path,
+        min_coverage=min_coverage,
+    )
+    if result.get("valid"):
+        return (True, str(result.get("reason_code") or "ok"))
+    return (False, str(result.get("reason_code") or "invalid"))

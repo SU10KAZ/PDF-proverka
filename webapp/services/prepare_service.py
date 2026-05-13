@@ -127,6 +127,26 @@ def _find_item(project_id: str) -> Optional[PrepareQueueItem]:
     return None
 
 
+def _check_not_in_active_batch(project_id: str) -> None:
+    """Защита: не запускать ручной prepare/retry для проекта который уже сидит
+    в активной audit batch-очереди. Иначе ручной запуск занимает Gemma-лок и
+    тормозит batch (плюс может вступить в конфликт с pre-Gemma loop'ом).
+
+    Импорт pipeline_manager локальный, чтобы избежать circular import
+    (pipeline_service → prepare_service → pipeline_service).
+    """
+    try:
+        from webapp.services.pipeline_service import pipeline_manager
+    except Exception:
+        return
+    if hasattr(pipeline_manager, "is_project_in_active_batch") and pipeline_manager.is_project_in_active_batch(project_id):
+        raise RuntimeError(
+            f"Проект {project_id} находится в активной batch-очереди. "
+            f"Ручной prepare/retry заблокирован чтобы не занять Gemma "
+            f"и не замедлить batch."
+        )
+
+
 def _refresh_aggregates() -> None:
     qs = prepare_state.queue_status
     qs.total = len(qs.items)
@@ -880,6 +900,9 @@ async def start_retry_failed(project_id: str) -> dict:
     Использует тот же Gemma-лок, чтобы не конфликтовать с обычным prepare.
     Не создаёт элемент в очереди (легковесная операция, обычно <минуту на блок).
     """
+    # Защита: не лезем в Gemma если проект в активной batch-очереди
+    _check_not_in_active_batch(project_id)
+
     existing_task = prepare_state.tasks.get(project_id)
     if existing_task is not None and not existing_task.done():
         return {"status": "already_running"}
@@ -975,6 +998,9 @@ async def start_prepare_data(
     timeout: Optional[int] = None,
 ) -> dict:
     """Поставить project_id в очередь prepare-data. Не блокирует HTTP."""
+    # Защита: не лезем в Gemma если проект в активной batch-очереди
+    _check_not_in_active_batch(project_id)
+
     try:
         from webapp.services.pipeline_service import pipeline_manager
         if pipeline_manager.is_running(project_id) or pipeline_manager.is_queued(project_id):

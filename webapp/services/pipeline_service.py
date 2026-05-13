@@ -308,6 +308,11 @@ class PipelineManager:
         # увидит running-очередь и допишет item, который никто не подберёт.
         self._enqueue_lock = asyncio.Lock()
 
+        # Pre-Gemma OCR prefetch: per-project маркер прохождения Gemma этапа
+        # текущим воркером. Pre-Gemma loop проверяет _is_current_running_past_gemma()
+        # перед попыткой захвата общего Gemma-лока.
+        self._current_gemma_stage_done: dict[str, bool] = {}
+
     ZOMBIE_TIMEOUT_SEC = 600  # 10 минут без heartbeat = зомби
 
     # ─── Привязка job к объекту ────────────────────────────────────────
@@ -423,17 +428,65 @@ class PipelineManager:
 
         Вызывается после каждого изменения состояния очереди. Если очереди
         нет — файл не трогаем (старая история остаётся видимой).
+
+        Запись атомарная (tmp + os.replace), чтобы pre-Gemma фоновый таск и
+        главный воркер могли мутировать items конкурентно без риска получить
+        повреждённый JSON.
         """
         if self._batch_queue is None:
             return
         try:
             BATCH_QUEUE_FILE.parent.mkdir(parents=True, exist_ok=True)
-            BATCH_QUEUE_FILE.write_text(
-                self._batch_queue.model_dump_json(indent=2),
-                encoding="utf-8",
-            )
+            payload = self._batch_queue.model_dump_json(indent=2)
+            tmp = BATCH_QUEUE_FILE.with_suffix(BATCH_QUEUE_FILE.suffix + ".tmp")
+            tmp.write_text(payload, encoding="utf-8")
+            os.replace(tmp, BATCH_QUEUE_FILE)
         except Exception as e:
             print(f"[PipelineManager] Ошибка сохранения очереди: {e}")
+
+    # ─── Helpers для pre-Gemma OCR prefetch ────────────────────────────
+
+    def _find_batch_item(self, pid: str) -> Optional[BatchQueueItem]:
+        """Возвращает item из активной batch-очереди или None."""
+        q = self._batch_queue
+        if q is None:
+            return None
+        for it in q.items:
+            if it.project_id == pid:
+                return it
+        return None
+
+    def _mark_gemma_stage_done(self, pid: str) -> None:
+        """Пометить что main pipeline закончил Gemma этап для этого проекта.
+        Pre-Gemma loop использует этот маркер чтобы не претендовать на lock
+        пока текущий running-проект ещё держит Gemma.
+        """
+        self._current_gemma_stage_done[pid] = True
+
+    def _is_current_running_past_gemma(self) -> bool:
+        """True если все running batch items уже прошли свой Gemma этап.
+        Pre-Gemma loop вызывает это перед попыткой захвата Gemma-лока.
+        """
+        q = self._batch_queue
+        if q is None:
+            return True
+        for it in q.items:
+            if it.status == "running":
+                if not self._current_gemma_stage_done.get(it.project_id, False):
+                    return False
+        return True
+
+    def is_project_in_active_batch(self, pid: str) -> bool:
+        """True если проект участвует в активной batch-очереди (pending или running).
+        Используется prepare_service для блокировки ручного prepare/retry.
+        """
+        q = self._batch_queue
+        if q is None or q.status != "running":
+            return False
+        return any(
+            it.project_id == pid and it.status in ("pending", "running")
+            for it in q.items
+        )
 
     def load_persisted_queue(self) -> None:
         """Загрузить очередь после перезапуска сервера.
@@ -1482,6 +1535,77 @@ class PipelineManager:
 
         Это обязательный gate: без MD или без валидного enrichment downstream
         этапы не должны стартовать.
+
+        Pre-Gemma integration:
+        - Захватывает общий Gemma-лок prepare_state._global_lock (тот же что
+          использует prepare-data queue), чтобы main pipeline, pre-Gemma loop
+          и операторский prepare не пересекались за единственным Gemma instance.
+        - Double-check #1 ДО ожидания lock: если prefetch уже завершён и
+          outputs валидны — пропускаем Gemma и маркируем stage_done.
+        - Double-check #2 ПОСЛЕ захвата lock: pre-Gemma мог завершить работу
+          пока main ждал lock. Применяется только в prefetch-сценарии чтобы
+          не задеть resume-поведение non-batch запусков.
+        """
+        from webapp.services.prepare_service import prepare_state
+        from gemma_enrichment_contract import gemma_outputs_are_valid
+
+        pid = job.project_id
+
+        # === Double-check #1: до ожидания lock ===
+        item = self._find_batch_item(pid)
+        if not force and item is not None and item.gemma_prefetched:
+            proj_dir_dc = resolve_project_dir(pid)
+            ok_dc, reason_dc = gemma_outputs_are_valid(proj_dir_dc)
+            if ok_dc:
+                await self._log(
+                    job, f"⚡ Gemma OCR пропущен — prefetch готов ({reason_dc})", "info"
+                )
+                self._update_pipeline_log(
+                    pid, "gemma_enrichment", "done",
+                    message=f"prefetched ({reason_dc})",
+                )
+                self._mark_gemma_stage_done(pid)
+                return
+            await self._log(
+                job,
+                f"⚠ Prefetch marker есть, но outputs невалидны ({reason_dc}), запускаю Gemma штатно",
+                "warn",
+            )
+
+        async with prepare_state.get_lock():
+            # === Double-check #2: после захвата lock ===
+            item = self._find_batch_item(pid)
+            if not force and item is not None and item.gemma_prefetched:
+                proj_dir_dc = resolve_project_dir(pid)
+                ok_dc, reason_dc = gemma_outputs_are_valid(proj_dir_dc)
+                if ok_dc:
+                    await self._log(
+                        job,
+                        f"⚡ Gemma OCR пропущен — outputs готовы после ожидания lock ({reason_dc})",
+                        "info",
+                    )
+                    self._update_pipeline_log(
+                        pid, "gemma_enrichment", "done",
+                        message=f"prefetched-after-wait ({reason_dc})",
+                    )
+                    self._mark_gemma_stage_done(pid)
+                    return
+            try:
+                await self._run_gemma_enrichment_stage_inner(job, force=force)
+            finally:
+                # Помечаем stage_done независимо от исхода inner: для running
+                # batch-проекта main pipeline всё равно покинет Gemma этап —
+                # дальнейшая судьба job решается выше по стеку (raise/return).
+                self._mark_gemma_stage_done(pid)
+
+    async def _run_gemma_enrichment_stage_inner(
+        self, job: AuditJob, *, force: bool = False
+    ) -> None:
+        """Внутренняя реализация Gemma-обогащения (без lock-обвязки).
+
+        Lock уже захвачен внешним _run_gemma_enrichment_stage. Не вызывать
+        напрямую из других мест — только обёртка контролирует pre-Gemma
+        интеграцию и сериализацию через prepare_state.get_lock().
         """
         pid = job.project_id
         project_dir = resolve_project_dir(pid)
@@ -6294,9 +6418,257 @@ class PipelineManager:
             # Небольшая пауза между кропами
             await asyncio.sleep(1)
 
+    # ─── Pre-Gemma OCR prefetch: фоновый Gemma enrichment для N+1 ───────
+
+    def _select_pregemma_candidate(
+        self, queue: BatchQueueStatus
+    ) -> Optional[tuple[Optional[BatchQueueItem], bool]]:
+        """Window=1: возвращает (target, mutated) для следующего pending проекта.
+
+        target=None означает что валидного кандидата нет (но возможно были
+        мутации — например item был помечен skipped если outputs уже готовы).
+        mutated=True означает caller должен _persist_queue() и broadcast.
+
+        НЕ переходит к N+2, даже если N+1 уже валиден — соблюдается window=1.
+        """
+        from gemma_enrichment_contract import (
+            gemma_outputs_are_valid,
+            gemma_blocks_index_path as _gemma_blocks_index_path,
+        )
+
+        running_idx = queue.current_index
+        if running_idx + 1 >= len(queue.items):
+            return (None, False)
+        item = queue.items[running_idx + 1]
+        if item.status != "pending":
+            return (None, False)
+        action = item.action or queue.action
+        if action == "optimization":
+            return (None, False)
+        if item.gemma_prefetch_status in ("running", "done", "skipped", "failed"):
+            return (None, False)
+
+        proj_dir = resolve_project_dir(item.project_id)
+        index_file = _gemma_blocks_index_path(proj_dir)
+        if not index_file.exists():
+            # PNG crop ещё не готов — _run_precrop_loop его сделает позже.
+            return (None, False)
+
+        ok, reason = gemma_outputs_are_valid(proj_dir)
+        if ok:
+            item.gemma_prefetched = True
+            item.gemma_prefetch_status = "skipped"
+            item.gemma_prefetch_finished_at = datetime.now().isoformat()
+            return (None, True)  # mutated — caller обязан persist
+
+        return (item, False)
+
+    async def _run_gemma_prefetch_loop(
+        self, queue: BatchQueueStatus, pause_event: asyncio.Event
+    ) -> None:
+        """Фоновый цикл: pre-Gemma OCR enrichment для следующего pending проекта.
+
+        Использует общий Gemma-лок prepare_state._global_lock — тот же, что
+        захватывает _run_gemma_enrichment_stage и prepare_service. Это гарантирует
+        что в один момент времени не больше одного Gemma run на единственном
+        удалённом instance.
+
+        Ключевые гарантии:
+        - НЕ претендует на lock пока текущий running-проект не прошёл свой
+          Gemma этап (gate _is_current_running_past_gemma).
+        - Использует короткий timeout-acquire (1 сек), чтобы не блокировать
+          main pipeline когда тот хочет lock.
+        - Window=1: только следующий pending после текущего running.
+        - Failed prefetch не ретраит — main pipeline выполнит Gemma штатно.
+        - Pause-aware: ставится на паузу вместе с батчем через pause_event.
+        - Cancel-aware: при отмене task'а во время активного run сбрасывает
+          gemma_prefetch_status в None чтобы main pipeline увидел проект как
+          непрепарированный.
+        """
+        from webapp.services.prepare_service import prepare_state
+        from gemma_enrichment_contract import gemma_outputs_are_valid
+
+        PREGEMMA_LOCK_ACQUIRE_TIMEOUT_S = 1.0
+
+        await ws_manager.broadcast_global(
+            WSMessage.log("__BATCH__", "▶ Pre-Gemma loop запущен (window=1)", "info")
+        )
+
+        try:
+            while queue.status == "running":
+                # Pause-aware
+                if not pause_event.is_set():
+                    await ws_manager.broadcast_global(
+                        WSMessage.log(
+                            "__BATCH__", "⏸ Pre-Gemma на паузе вместе с батчем", "info"
+                        )
+                    )
+                    await pause_event.wait()
+                    if queue.status != "running":
+                        break
+
+                # Gate: текущий running должен пройти Gemma этап
+                if not self._is_current_running_past_gemma():
+                    await asyncio.sleep(5)
+                    continue
+
+                candidate_result = self._select_pregemma_candidate(queue)
+                if candidate_result is None:
+                    await asyncio.sleep(5)
+                    continue
+                target, mutated = candidate_result
+                if mutated:
+                    self._persist_queue()
+                    await self._broadcast_batch_progress(queue)
+                if target is None:
+                    await asyncio.sleep(5)
+                    continue
+
+                proj_dir = resolve_project_dir(target.project_id)
+                lock = prepare_state.get_lock()
+
+                acquired = False
+                try:
+                    await asyncio.wait_for(
+                        lock.acquire(), timeout=PREGEMMA_LOCK_ACQUIRE_TIMEOUT_S
+                    )
+                    acquired = True
+                except asyncio.TimeoutError:
+                    await asyncio.sleep(5)
+                    continue
+
+                try:
+                    # === Полная переверификация после захвата lock ===
+                    if queue.status != "running":
+                        break
+                    if not self._is_current_running_past_gemma():
+                        continue
+                    fresh = self._find_batch_item(target.project_id)
+                    if (
+                        fresh is None
+                        or fresh is not target
+                        or fresh.status != "pending"
+                        or (fresh.action or queue.action) == "optimization"
+                        or fresh.gemma_prefetch_status
+                        in ("running", "done", "failed", "skipped")
+                    ):
+                        continue
+                    # target всё ещё после текущего running? Identity-поиск.
+                    idx = None
+                    for i, it in enumerate(queue.items):
+                        if it is target:
+                            idx = i
+                            break
+                    if idx is None or idx <= queue.current_index:
+                        continue
+                    # Outputs могли стать валидными за время ожидания
+                    ok, reason = gemma_outputs_are_valid(proj_dir)
+                    if ok:
+                        target.gemma_prefetched = True
+                        target.gemma_prefetch_status = "skipped"
+                        target.gemma_prefetch_finished_at = datetime.now().isoformat()
+                        self._persist_queue()
+                        await ws_manager.broadcast_global(
+                            WSMessage.log(
+                                "__BATCH__",
+                                f"  ⏭ Pre-Gemma skipped: {target.project_id} ({reason})",
+                                "info",
+                            )
+                        )
+                        continue
+
+                    target.gemma_prefetch_status = "running"
+                    target.gemma_prefetch_started_at = datetime.now().isoformat()
+                    self._persist_queue()
+                    await ws_manager.broadcast_global(
+                        WSMessage.log(
+                            "__BATCH__",
+                            f"  ⚡ Pre-Gemma start: {target.project_id}",
+                            "info",
+                        )
+                    )
+
+                    try:
+                        # «Фантомный» job для трассировки. НЕ регистрируем в
+                        # active_jobs (это операторский pre-fetch, не реальный аудит).
+                        phantom_job = AuditJob(
+                            job_id=f"__PREGEMMA_{target.project_id}__",
+                            project_id=target.project_id,
+                            stage=AuditStage.GEMMA_ENRICHMENT,
+                            status=JobStatus.RUNNING,
+                        )
+                        # ВАЖНО: вызываем _inner, не публичный _run_gemma_enrichment_stage
+                        # — иначе попытаемся рекурсивно захватить тот же lock.
+                        await self._run_gemma_enrichment_stage_inner(
+                            phantom_job, force=False
+                        )
+
+                        ok, reason = gemma_outputs_are_valid(proj_dir)
+                        if ok:
+                            target.gemma_prefetched = True
+                            target.gemma_prefetch_status = "done"
+                            await ws_manager.broadcast_global(
+                                WSMessage.log(
+                                    "__BATCH__",
+                                    f"  ✅ Pre-Gemma done: {target.project_id}",
+                                    "info",
+                                )
+                            )
+                        else:
+                            target.gemma_prefetched = False
+                            target.gemma_prefetch_status = "failed"
+                            target.gemma_prefetch_error = f"outputs_invalid:{reason}"
+                            await ws_manager.broadcast_global(
+                                WSMessage.log(
+                                    "__BATCH__",
+                                    f"  ⚠ Pre-Gemma завершился но outputs невалидны ({reason})",
+                                    "warn",
+                                )
+                            )
+                    except asyncio.CancelledError:
+                        if (
+                            target.gemma_prefetch_status == "running"
+                            and not target.gemma_prefetched
+                        ):
+                            target.gemma_prefetch_status = None
+                            target.gemma_prefetch_started_at = None
+                            target.gemma_prefetch_error = None
+                        target.gemma_prefetch_finished_at = datetime.now().isoformat()
+                        self._persist_queue()
+                        if acquired:
+                            lock.release()
+                            acquired = False
+                        raise
+                    except Exception as exc:
+                        target.gemma_prefetched = False
+                        target.gemma_prefetch_status = "failed"
+                        target.gemma_prefetch_error = str(exc)[:500]
+                        await ws_manager.broadcast_global(
+                            WSMessage.log(
+                                "__BATCH__",
+                                f"  ❌ Pre-Gemma fail {target.project_id}: {exc}",
+                                "warn",
+                            )
+                        )
+                    finally:
+                        if target.gemma_prefetch_status != "running":
+                            target.gemma_prefetch_finished_at = datetime.now().isoformat()
+                            self._persist_queue()
+                finally:
+                    if acquired:
+                        lock.release()
+
+                await asyncio.sleep(1)
+        except asyncio.CancelledError:
+            await ws_manager.broadcast_global(
+                WSMessage.log("__BATCH__", "⏹ Pre-Gemma loop остановлен", "info")
+            )
+            raise
+
     async def _run_batch_queue(self, queue: BatchQueueStatus, meta_job: AuditJob):
         """Последовательная обработка очереди проектов."""
         precrop_task = None
+        pregemma_task = None
         try:
             await ws_manager.broadcast_global(
                 WSMessage.log(
@@ -6306,9 +6678,15 @@ class PipelineManager:
                 )
             )
 
-            # Запустить фоновый pre-crop для будущих проектов
+            # Запустить фоновые таски для будущих проектов:
+            # - pre-crop: PDF→PNG для следующих pending;
+            # - pre-Gemma: gemma_enrichment для следующего pending (window=1)
+            #   под общим Gemma-локом, не пересекаясь с main pipeline.
             if queue.total > 1:
                 precrop_task = asyncio.create_task(self._run_precrop_loop(queue))
+                pregemma_task = asyncio.create_task(
+                    self._run_gemma_prefetch_loop(queue, self._pause_event)
+                )
 
             idx = 0
             while True:
@@ -6348,6 +6726,10 @@ class PipelineManager:
                 item.status = "running"
 
                 pid = item.project_id
+                # Сбросить per-project маркер прохождения Gemma этапа для нового
+                # running-проекта. Pre-Gemma loop увидит _is_current_running_past_gemma=False
+                # пока main pipeline не вызовет _mark_gemma_stage_done(pid).
+                self._current_gemma_stage_done.pop(pid, None)
                 print(f"[BATCH] ▶ Проект {idx + 1}/{queue.total}: {pid} ({queue.action})")
                 await ws_manager.broadcast_global(
                     WSMessage.log("__BATCH__", f"▶ Проект {idx + 1}/{queue.total}: {pid}", "info")
@@ -6437,12 +6819,17 @@ class PipelineManager:
             traceback.print_exc()
         finally:
             # Остановить фоновый pre-crop
-            if precrop_task and not precrop_task.done():
-                precrop_task.cancel()
-                try:
-                    await precrop_task
-                except (asyncio.CancelledError, Exception):
-                    pass
+            # Остановить фоновые таски (pre-crop, pre-Gemma)
+            for _task in (precrop_task, pregemma_task):
+                if _task is not None and not _task.done():
+                    _task.cancel()
+                    try:
+                        await _task
+                    except (asyncio.CancelledError, Exception):
+                        pass
+            # Очистить per-project маркеры — long-running PipelineManager не
+            # должен копить старые project_id между запусками batch.
+            self._current_gemma_stage_done.clear()
             self._cleanup("__BATCH__")
 
     # ─── Единый dispatcher action'ов ───────────────────────────────────

@@ -1103,6 +1103,17 @@
                         </select>
                         <span v-else class="queue-item__action-label">{{ batchActionLabel(item.action) }}</span>
 
+                        <!-- Pre-Gemma badge: показывает что Gemma OCR готов заранее (или идёт фоном) -->
+                        <span v-if="item.gemma_prefetched && (item.gemma_prefetch_status === 'done' || item.gemma_prefetch_status === 'skipped')"
+                              class="prefetch-badge prefetch-done"
+                              title="Gemma OCR готов заранее — этап будет пропущен">⚡</span>
+                        <span v-else-if="item.gemma_prefetch_status === 'running'"
+                              class="prefetch-badge prefetch-running"
+                              title="Pre-Gemma выполняется">↻</span>
+                        <span v-else-if="item.gemma_prefetch_status === 'failed'"
+                              class="prefetch-badge prefetch-failed"
+                              :title="'Pre-Gemma не удался — Gemma запустится штатно: ' + (item.gemma_prefetch_error || '')">⚠</span>
+
                         <!-- Статус -->
                         <span class="queue-item__status">
                             <template v-if="item.status === 'pending'">Ожидает</template>
