@@ -33,7 +33,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-12T14:23:07",
+      "last_seen_at": "2026-05-13T12:32:13",
       "occurrences": [
         {
           "project_id": "133-23-ГК-АИ2",
@@ -106,6 +106,14 @@
             "F-023"
           ],
           "seen_at": "2026-05-12T14:23:07"
+        },
+        {
+          "project_id": "2025_12_24_М31А",
+          "findings": [
+            "F-007",
+            "F-010"
+          ],
+          "seen_at": "2026-05-13T12:32:13"
         }
       ]
     },
@@ -777,7 +785,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-05T02:50:15",
+      "last_seen_at": "2026-05-13T11:54:41",
       "occurrences": [
         {
           "project_id": "133-23-ГК-АИ2",
@@ -805,6 +813,14 @@
             "F-055"
           ],
           "seen_at": "2026-05-05T02:50:15"
+        },
+        {
+          "project_id": "133_23-ГК-САКЗ",
+          "findings": [
+            "F-011",
+            "F-014"
+          ],
+          "seen_at": "2026-05-13T11:54:41"
         }
       ]
     },
@@ -1170,7 +1186,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-09T09:32:50",
+      "last_seen_at": "2026-05-13T11:54:41",
       "occurrences": [
         {
           "project_id": "133-23-ГК-АИ2",
@@ -1368,6 +1384,14 @@
             "F-050"
           ],
           "seen_at": "2026-05-09T09:32:50"
+        },
+        {
+          "project_id": "133_23-ГК-САКЗ",
+          "findings": [
+            "F-011",
+            "F-013"
+          ],
+          "seen_at": "2026-05-13T11:54:41"
         }
       ]
     },
@@ -1419,7 +1443,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-04-28T19:32:23",
+      "last_seen_at": "2026-05-13T12:32:13",
       "occurrences": [
         {
           "project_id": "133_23-ГК-АК",
@@ -1427,6 +1451,13 @@
             "F-002"
           ],
           "seen_at": "2026-04-28T19:31:37"
+        },
+        {
+          "project_id": "2025_12_24_М31А",
+          "findings": [
+            "F-006"
+          ],
+          "seen_at": "2026-05-13T12:32:13"
         }
       ]
     },
@@ -1470,7 +1501,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-12T06:56:18",
+      "last_seen_at": "2026-05-13T11:54:41",
       "occurrences": [
         {
           "project_id": "133_23-ГК-АК",
@@ -1823,6 +1854,19 @@
             "F-030"
           ],
           "seen_at": "2026-05-12T06:56:18"
+        },
+        {
+          "project_id": "133_23-ГК-САКЗ",
+          "findings": [
+            "F-004",
+            "F-007",
+            "F-008",
+            "F-009",
+            "F-013",
+            "F-021",
+            "F-023"
+          ],
+          "seen_at": "2026-05-13T11:54:41"
         }
       ]
     },
@@ -2301,7 +2345,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-12T14:23:07",
+      "last_seen_at": "2026-05-13T11:54:41",
       "occurrences": [
         {
           "project_id": "133_23-ГК-ОВ1.2",
@@ -2604,6 +2648,13 @@
             "F-030"
           ],
           "seen_at": "2026-05-12T14:23:07"
+        },
+        {
+          "project_id": "133_23-ГК-САКЗ",
+          "findings": [
+            "F-005"
+          ],
+          "seen_at": "2026-05-13T11:54:41"
         }
       ]
     },
@@ -2710,7 +2761,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-12T09:10:42",
+      "last_seen_at": "2026-05-13T11:54:41",
       "occurrences": [
         {
           "project_id": "133_23-ГК-ЭО3",
@@ -2980,6 +3031,14 @@
             "F-011"
           ],
           "seen_at": "2026-05-12T09:10:42"
+        },
+        {
+          "project_id": "133_23-ГК-САКЗ",
+          "findings": [
+            "F-007",
+            "F-017"
+          ],
+          "seen_at": "2026-05-13T11:54:41"
         }
       ]
     },
@@ -3191,7 +3250,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-04T05:51:34",
+      "last_seen_at": "2026-05-13T12:32:13",
       "occurrences": [
         {
           "project_id": "133_23-ГК-ВК4",
@@ -3220,6 +3279,13 @@
             "F-005"
           ],
           "seen_at": "2026-05-04T05:51:34"
+        },
+        {
+          "project_id": "2025_12_24_М31А",
+          "findings": [
+            "F-006"
+          ],
+          "seen_at": "2026-05-13T12:32:13"
         }
       ]
     },
@@ -3641,7 +3707,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-04T06:40:26",
+      "last_seen_at": "2026-05-13T12:32:13",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.1-К1К2 (2).pdf",
@@ -3705,6 +3771,14 @@
             "F-037"
           ],
           "seen_at": "2026-05-04T06:40:26"
+        },
+        {
+          "project_id": "2025_12_24_М31А",
+          "findings": [
+            "F-003",
+            "F-006"
+          ],
+          "seen_at": "2026-05-13T12:32:13"
         }
       ]
     },
@@ -3982,7 +4056,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-12T09:10:42",
+      "last_seen_at": "2026-05-13T12:32:13",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.1-К1К2 (2).pdf",
@@ -4093,6 +4167,26 @@
             "F-018"
           ],
           "seen_at": "2026-05-12T09:10:42"
+        },
+        {
+          "project_id": "133_23-ГК-САКЗ",
+          "findings": [
+            "F-001",
+            "F-002",
+            "F-003",
+            "F-025"
+          ],
+          "seen_at": "2026-05-13T11:54:41"
+        },
+        {
+          "project_id": "2025_12_24_М31А",
+          "findings": [
+            "F-001",
+            "F-004",
+            "F-005",
+            "F-009"
+          ],
+          "seen_at": "2026-05-13T12:32:13"
         }
       ]
     },
@@ -6211,7 +6305,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-04T07:55:11",
-      "last_seen_at": "2026-05-12T06:56:18",
+      "last_seen_at": "2026-05-13T12:32:13",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ7.2-К2 (Изм.2).pdf",
@@ -6276,6 +6370,13 @@
             "F-040"
           ],
           "seen_at": "2026-05-12T06:56:18"
+        },
+        {
+          "project_id": "2025_12_24_М31А",
+          "findings": [
+            "F-002"
+          ],
+          "seen_at": "2026-05-13T12:32:13"
         }
       ]
     },
@@ -7310,7 +7411,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-09T00:36:05",
-      "last_seen_at": "2026-05-09T03:01:11",
+      "last_seen_at": "2026-05-13T11:54:41",
       "occurrences": [
         {
           "project_id": "13АВ-РД-АПЗ.АПС-К4 (согл от 09.04.2026).pdf",
@@ -7325,6 +7426,13 @@
             "F-005"
           ],
           "seen_at": "2026-05-09T03:01:11"
+        },
+        {
+          "project_id": "133_23-ГК-САКЗ",
+          "findings": [
+            "F-009"
+          ],
+          "seen_at": "2026-05-13T11:54:41"
         }
       ]
     },
@@ -7980,6 +8088,58 @@
             "F-020"
           ],
           "seen_at": "2026-05-12T14:23:07"
+        }
+      ]
+    },
+    "СП 325.1325800.2017": {
+      "doc_number": "СП 325.1325800.2017",
+      "family": "СП",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-13T12:32:13",
+      "last_seen_at": "2026-05-13T12:32:13",
+      "occurrences": [
+        {
+          "project_id": "2025_12_24_М31А",
+          "findings": [
+            "F-003",
+            "F-011"
+          ],
+          "seen_at": "2026-05-13T12:32:13"
+        }
+      ]
+    },
+    "ГОСТ 23407-78": {
+      "doc_number": "ГОСТ 23407-78",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-13T12:32:13",
+      "last_seen_at": "2026-05-13T12:32:13",
+      "occurrences": [
+        {
+          "project_id": "2025_12_24_М31А",
+          "findings": [
+            "F-004"
+          ],
+          "seen_at": "2026-05-13T12:32:13"
+        }
+      ]
+    },
+    "СНиП 1.04.03-85*": {
+      "doc_number": "СНиП 1.04.03-85*",
+      "family": "СНиП",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-13T12:32:13",
+      "last_seen_at": "2026-05-13T12:32:13",
+      "occurrences": [
+        {
+          "project_id": "2025_12_24_М31А",
+          "findings": [
+            "F-005"
+          ],
+          "seen_at": "2026-05-13T12:32:13"
         }
       ]
     }

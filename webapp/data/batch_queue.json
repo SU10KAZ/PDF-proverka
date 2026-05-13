@@ -1,0 +1,39 @@
+{
+  "queue_id": "f937b80f-4bde-43c3-afbc-74b25bd94f43",
+  "action": "audit",
+  "items": [
+    {
+      "project_id": "133_23-ГК-САКЗ",
+      "action": "audit",
+      "retry_stage": null,
+      "status": "cancelled",
+      "error": "cancelled",
+      "extra_params": {},
+      "job_id": "d8e3f504-bc67-475e-b7b7-74edebaf6bf7",
+      "gemma_prefetched": false,
+      "gemma_prefetch_status": null,
+      "gemma_prefetch_error": null,
+      "gemma_prefetch_started_at": null,
+      "gemma_prefetch_finished_at": null
+    },
+    {
+      "project_id": "2025_12_24_М31А",
+      "action": "audit",
+      "retry_stage": null,
+      "status": "cancelled",
+      "error": null,
+      "extra_params": {},
+      "job_id": "832ed3a0-48c6-425f-afac-9bd2d0a645d2",
+      "gemma_prefetched": true,
+      "gemma_prefetch_status": "done",
+      "gemma_prefetch_error": null,
+      "gemma_prefetch_started_at": "2026-05-13T13:00:51.258194",
+      "gemma_prefetch_finished_at": "2026-05-13T13:01:30.230369"
+    }
+  ],
+  "current_index": 0,
+  "total": 2,
+  "completed": 0,
+  "failed": 0,
+  "status": "completed"
+}
