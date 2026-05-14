@@ -367,17 +367,15 @@
                         @click="navigate('/project/' + currentProject.project_id + '/discussions')">
                     Проработка замечаний
                 </button>
+                <!-- Единая вкладка Critic v2 (объединила disagreements-view
+                     и plain Critic v2). Sub-mode выбирается внутри view через
+                     sub-tab strip; старые hash-routes /critic-v2-disagreements
+                     и /critic-v2 поддерживаются и автоматически выбирают
+                     соответствующий sub-tab. -->
                 <button class="project-tab project-tab--experimental"
-                        :class="{'project-tab--active': currentView === 'critic-v2-project' && cv2ProjDisagreementsMode}"
+                        :class="{'project-tab--active': currentView === 'critic-v2-project'}"
                         @click="navigate('/project/' + currentProject.project_id + '/critic-v2-disagreements')"
-                        title="Открыть критика v2: только расхождения с экспертом. Experimental. LLM не запускается. Legacy critic остаётся основным.">
-                    Critic v2: Расхождения
-                    <span class="project-tab__count project-tab__count--exp">эксп.</span>
-                </button>
-                <button class="project-tab project-tab--experimental"
-                        :class="{'project-tab--active': currentView === 'critic-v2-project' && !cv2ProjDisagreementsMode}"
-                        @click="navigate('/project/' + currentProject.project_id + '/critic-v2')"
-                        title="Экспериментальный offline Critic v2. Production pipeline и legacy critic не заменены.">
+                        title="Экспериментальный Critic v2 для проекта. Внутри: расхождения, все замечания, assisted_round1, feedback.">
                     Critic v2
                     <span class="project-tab__count project-tab__count--exp">эксп.</span>
                 </button>
@@ -4067,22 +4065,61 @@
         </div>
 
         <!-- ═══ Critic v2 Project-Scoped View (experimental, read-only) ═══ -->
+        <!-- Единая вкладка с sub-tab strip:
+             - «Расхождения с экспертом» (legacy /critic-v2-disagreements)
+             - «Все замечания» (legacy /critic-v2)
+             - «assisted_round1» (фокус на review-package panel)
+             - «Feedback» (фокус на import/export panel)
+             Все sub-tabs работают над одним cv2Export — переключение чисто UI-уровня. -->
         <div v-if="currentView === 'critic-v2-project'" class="container">
-            <div class="cv2-experimental-banner" v-if="!cv2ProjDisagreementsMode">
-                <strong>EXPERIMENTAL — Critic v2 для проекта.</strong>
+            <div class="cv2-experimental-banner">
+                <strong>EXPERIMENTAL — Critic v2 — Расхождения с экспертом.</strong>
                 Замечания не удалены, это только раскладка по очередям.
                 Production pipeline и legacy critic не заменены.
-                03_findings_review.json не изменён.
-            </div>
-            <div class="cv2-experimental-banner cv2-experimental-banner--disagree"
-                 v-if="cv2ProjDisagreementsMode">
-                <strong>Critic v2 — Расхождения с экспертом.</strong>
-                Экспериментальный режим. Ничего не удаляется. Legacy critic остаётся основным.
-                LLM не запускается, production pipeline не изменён.
+                Legacy critic остаётся основным.
+                LLM не запускается. 03_findings_review.json не изменён.
             </div>
 
-            <!-- Глобальный переключатель режима показа (Расхождения / Все) -->
-            <div v-if="cv2Export && !cv2ProjLoading && !cv2ProjLoadError" class="cv2-project-mode-toggle">
+            <!-- ═══ Sub-tabs Critic v2 ═══ -->
+            <div class="cv2-sub-tabs">
+                <button class="cv2-sub-tab"
+                        :class="{'cv2-sub-tab--active': cv2ProjSubMode === 'disagreements'}"
+                        @click="cv2SetProjSubMode('disagreements')"
+                        title="Только расхождения с экспертом (legacy /critic-v2-disagreements).">
+                    Расхождения с экспертом
+                </button>
+                <button class="cv2-sub-tab"
+                        :class="{'cv2-sub-tab--active': cv2ProjSubMode === 'all'}"
+                        @click="cv2SetProjSubMode('all')"
+                        title="Все замечания проекта во вкладках Critic v2 (legacy /critic-v2).">
+                    Все замечания
+                </button>
+                <button class="cv2-sub-tab"
+                        :class="{'cv2-sub-tab--active': cv2ProjSubMode === 'assisted'}"
+                        @click="cv2SetProjSubMode('assisted')"
+                        :disabled="!cv2Export || cv2AssistedItems.length === 0"
+                        :title="cv2AssistedItems.length > 0
+                                ? 'Проверочные карточки assisted_round1 для этого проекта.'
+                                : 'Для этого проекта нет карточек в review-package assisted_round1.'">
+                    assisted_round1
+                    <span v-if="cv2AssistedItems.length > 0" class="cv2-sub-tab__count">
+                        {{ cv2AssistedItems.length }}
+                    </span>
+                </button>
+                <button class="cv2-sub-tab"
+                        :class="{'cv2-sub-tab--active': cv2ProjSubMode === 'feedback'}"
+                        @click="cv2SetProjSubMode('feedback')"
+                        title="Импорт / экспорт feedback экспертa, auto-load из *_feedback.json.">
+                    Feedback
+                </button>
+            </div>
+
+            <!-- Глобальный переключатель режима показа (Расхождения / Все).
+                 Видим только в sub-mode disagreements/all — для assisted/feedback
+                 он не имеет смысла. -->
+            <div v-if="cv2Export && !cv2ProjLoading && !cv2ProjLoadError
+                       && (cv2ProjSubMode === 'disagreements' || cv2ProjSubMode === 'all')"
+                 class="cv2-project-mode-toggle">
                 <button class="btn btn-sm"
                         :class="cv2Filter.alignment === '__disagreement__' ? 'btn-primary' : 'btn-outline'"
                         @click="cv2Filter.alignment = '__disagreement__'">
@@ -4115,7 +4152,12 @@
 
             <!-- ═══ Auto-load feedback (preferred_tab из *_feedback.json) — project-scoped ═══ -->
             <!-- Backend ищет подходящий feedback при открытии проекта и применяет его. -->
-            <div v-if="cv2Export && !cv2ProjLoading && !cv2ProjLoadError" class="cv2-feedback-import">
+            <!-- Видно в sub-mode 'feedback'. Auto-load всё равно выполняется
+                 в фоне при cv2LoadProject, поэтому effective_tab корректен и
+                 в других sub-modes — но самой панели нет, чтобы не дублировать. -->
+            <div v-if="cv2Export && !cv2ProjLoading && !cv2ProjLoadError
+                       && cv2ProjSubMode === 'feedback'"
+                 class="cv2-feedback-import">
                 <h3 style="margin:0 0 6px 0;font-size:14px">Feedback экспертa</h3>
                 <!-- Auto-load OK -->
                 <p v-if="cv2AutoLoadStatus === 'ok' && cv2AutoLoadedFeedbackFile"
@@ -4154,7 +4196,11 @@
             </div>
 
             <!-- ═══ Диагностика: badge vs rendered, raw vs effective — project-scoped ═══ -->
-            <div v-if="cv2Export && !cv2ProjLoading && !cv2ProjLoadError"
+            <!-- Видна в assisted/feedback sub-modes (помогает диагностировать
+                 несовпадения badge/rendered). В disagreements/all скрыта для
+                 чистоты UI — диагностика всё равно работает в фоне. -->
+            <div v-if="cv2Export && !cv2ProjLoading && !cv2ProjLoadError
+                       && (cv2ProjSubMode === 'assisted' || cv2ProjSubMode === 'feedback')"
                  class="cv2-debug-counts"
                  style="font-size:12px;color:var(--text-2);margin:8px 0;padding:8px;border:1px dashed var(--border);border-radius:4px">
                 <b>Диагностика очередей</b> (raw = тaб из artifact, effective = с учётом expert preferred_tab):<br>
@@ -4182,8 +4228,10 @@
                  проекта (22 обязательных + 60 выборочных). Видимость карточки
                  во вкладках определяется effective_tab; этот блок только
                  сообщает «должна быть в suggested_reject — найдено / не там».
-            -->
-            <div v-if="cv2Export && !cv2ProjLoading && !cv2ProjLoadError && cv2AssistedItems.length > 0"
+                 Видна в sub-mode 'assisted'. -->
+            <div v-if="cv2Export && !cv2ProjLoading && !cv2ProjLoadError
+                       && cv2AssistedItems.length > 0
+                       && cv2ProjSubMode === 'assisted'"
                  class="cv2-assisted-panel"
                  style="margin:10px 0;padding:10px;border:1px solid var(--border);border-radius:6px;background:var(--bg-2)">
                 <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">
@@ -4269,8 +4317,11 @@
                 </table>
             </div>
 
-            <!-- Если для проекта нет карточек review-package, показать это явно -->
-            <div v-else-if="cv2Export && !cv2ProjLoading && !cv2ProjLoadError && cv2AssistedAllTotal > 0 && cv2AssistedMatchedTotal === 0"
+            <!-- Если для проекта нет карточек review-package, показать это явно
+                 (только в sub-mode 'assisted'). -->
+            <div v-else-if="cv2Export && !cv2ProjLoading && !cv2ProjLoadError
+                            && cv2AssistedAllTotal > 0 && cv2AssistedMatchedTotal === 0
+                            && cv2ProjSubMode === 'assisted'"
                  class="cv2-assisted-panel"
                  style="margin:10px 0;padding:10px;border:1px dashed var(--border);border-radius:6px;font-size:12px;color:var(--text-2)">
                 <b>assisted_round1 review-package:</b>
@@ -4279,7 +4330,12 @@
                 на этот проект не попало ни одной.
             </div>
 
-            <div v-if="cv2Export && !cv2ProjLoading && !cv2ProjLoadError" class="cv2-summary">
+            <!-- Сводка / alignment / filters / queues видны в обычных sub-modes
+                 (disagreements/all/assisted). В sub-mode 'feedback' UI сужен
+                 до feedback-import + debug. -->
+            <div v-if="cv2Export && !cv2ProjLoading && !cv2ProjLoadError
+                       && cv2ProjSubMode !== 'feedback'"
+                 class="cv2-summary">
                 <h3>Сводка по проекту</h3>
                 <div v-if="cv2Export.scope" class="cv2-scope-info" style="margin-bottom:12px;font-size:13px;color:var(--text-2)">
                     <span><b>Проект:</b> {{ cv2Export.scope.project_name || cv2Export.scope.project_id }}</span>
@@ -4302,7 +4358,8 @@
             </div>
 
             <!-- ═══ Сверка с экспертом (alignment vs expert_review) — project-scoped ═══ -->
-            <div v-if="cv2Export && cv2HasHumanDecisions && cv2Export.items.length > 0"
+            <div v-if="cv2Export && cv2HasHumanDecisions && cv2Export.items.length > 0
+                       && cv2ProjSubMode !== 'feedback'"
                  class="cv2-alignment-summary">
                 <h3 title="alignment vs expert_review">Сверка с экспертом</h3>
                 <div class="cv2-alignment-grid">
@@ -4364,7 +4421,11 @@
                 </div>
             </div>
 
-            <div v-if="cv2Export && cv2Export.items.length > 0" class="cv2-feedback-bar">
+            <!-- «Дополнительная ручная корректировка» (quick-route + export
+                 feedback JSON). Логически принадлежит sub-mode 'feedback'. -->
+            <div v-if="cv2Export && cv2Export.items.length > 0
+                       && cv2ProjSubMode === 'feedback'"
+                 class="cv2-feedback-bar">
                 <h3 title="Feedback">Дополнительная ручная корректировка</h3>
                 <div style="font-size:12px;color:var(--text2);margin-bottom:8px;font-style:italic">
                     Используйте только если хотите исправить раскладку critic v2.
@@ -4390,7 +4451,11 @@
                 </div>
             </div>
 
-            <div v-if="cv2Export && cv2Export.items.length > 0" class="cv2-tabs">
+            <!-- Очереди Critic v2 (4 вкладки). В sub-mode 'feedback' скрыты —
+                 там фокус на import/export. В disagreements/all/assisted видны. -->
+            <div v-if="cv2Export && cv2Export.items.length > 0
+                       && cv2ProjSubMode !== 'feedback'"
+                 class="cv2-tabs">
                 <div class="cv2-tab-headers">
                     <button v-for="tab in cv2Export.tabs"
                             :key="tab.key"

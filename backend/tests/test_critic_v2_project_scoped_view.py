@@ -250,15 +250,19 @@ APP_JS = _PROJECT_ROOT / "frontend" / "static" / "js" / "app.js"
 
 
 def test_frontend_has_per_project_critic_v2_button():
-    """Button must be in project nav, after 'Проработка замечаний'."""
+    """После merge верхняя кнопка ведёт на /critic-v2-disagreements
+    (default sub-mode), но legacy hash /critic-v2 продолжает работать."""
     html = INDEX_HTML.read_text(encoding="utf-8")
-    # The button uses the navigate('/critic-v2') hash route.
-    assert "/critic-v2'" in html
+    # Top-tab уходит на disagreements route (default sub-mode).
+    assert "/critic-v2-disagreements'" in html
     assert "currentView === 'critic-v2-project'" in html
-    # And it should appear after the 'Проработка замечаний' button.
+    # Появляется после «Проработка замечаний».
     discuss_pos = html.find("Проработка замечаний")
     btn_pos = html.find("currentView === 'critic-v2-project'")
     assert 0 < discuss_pos < btn_pos
+    # Legacy hash /critic-v2 router всё ещё существует в JS.
+    js = APP_JS.read_text(encoding="utf-8")
+    assert "/critic-v2$" in js
 
 
 def test_frontend_view_block_has_no_file_input():
@@ -308,23 +312,26 @@ def test_frontend_feedback_export_includes_scope():
 # ──────────────────────────────────────────────────────────────────────────────
 
 
-def test_frontend_has_disagreements_button_after_discussions():
-    """Spec §3: button 'Critic v2: Расхождения' immediately after 'Проработка замечаний'."""
+def test_frontend_has_critic_v2_button_after_discussions():
+    """Spec §3 (post-merge): единый top-tab «Critic v2» сразу после
+    «Проработка замечаний». По умолчанию открывает sub-mode 'disagreements'
+    (через legacy hash /critic-v2-disagreements)."""
     html = INDEX_HTML.read_text(encoding="utf-8")
-    assert "Critic v2: Расхождения" in html
+    # Старый top-tab текст больше не присутствует.
+    assert "Critic v2: Расхождения" not in html
+    # Единственная экспериментальная вкладка проекта.
+    btn_pos = html.find("project-tab project-tab--experimental")
     discuss_pos = html.find("Проработка замечаний")
-    btn_pos = html.find("Critic v2: Расхождения")
-    # Plain "Critic v2" project-tab button uses the /critic-v2' route (no -disagreements suffix).
-    plain_btn_pos = html.find("/critic-v2'")
-    assert discuss_pos > 0 and btn_pos > discuss_pos, \
-        "'Critic v2: Расхождения' must come AFTER 'Проработка замечаний'"
-    # And BEFORE the plain 'Critic v2' tab — disagreements is the recommended entry.
-    if plain_btn_pos > 0:
-        assert btn_pos < plain_btn_pos, \
-            "'Critic v2: Расхождения' should appear before the plain 'Critic v2' tab"
+    assert btn_pos > 0 and discuss_pos > 0
+    assert btn_pos > discuss_pos, \
+        "Critic v2 top-tab must come AFTER 'Проработка замечаний'"
+    # Sub-tab strip с 4 вкладками внутри view.
+    assert 'class="cv2-sub-tabs"' in html
 
 
-def test_frontend_disagreements_button_uses_dedicated_route():
+def test_frontend_top_tab_uses_disagreements_route_by_default():
+    """Объединённый top-tab открывает /critic-v2-disagreements
+    (legacy hash), что включает sub-mode 'disagreements'."""
     html = INDEX_HTML.read_text(encoding="utf-8")
     assert "/critic-v2-disagreements'" in html
 

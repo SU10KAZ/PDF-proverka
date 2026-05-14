@@ -345,6 +345,113 @@ describe('cv2AssistedStatusOf (assignment-based)', () => {
   });
 });
 
+// ─── Sub-mode contract (объединённая вкладка Critic v2) ─────────────────
+//
+// После merge двух top-tabs в одну, sub-mode переключает routing:
+//   - 'disagreements'/'all' → effective_tab
+//   - 'assisted'            → assignment_tab (auto-on filter)
+//   - 'feedback'            → effective_tab (но queue hidden — фокус на import)
+//
+// Этот тест проверяет, что cv2SetProjSubMode корректно обновляет:
+//   * cv2ProjSubMode
+//   * cv2AssistedFilterOnly (auto-on в 'assisted', auto-off в других)
+//   * cv2ProjDisagreementsMode (true в 'disagreements', false в других)
+//   * cv2Filter.alignment (only в disagreements/all)
+
+function makeSubModeSetter() {
+  const state = {
+    cv2ProjSubMode: 'disagreements',
+    cv2AssistedFilterOnly: false,
+    cv2ProjDisagreementsMode: false,
+    cv2Filter: { alignment: '' },
+  };
+  function setSubMode(mode) {
+    if (!['disagreements', 'all', 'assisted', 'feedback'].includes(mode)) return;
+    state.cv2ProjSubMode = mode;
+    state.cv2AssistedFilterOnly = (mode === 'assisted');
+    if (mode === 'disagreements') {
+      state.cv2ProjDisagreementsMode = true;
+      state.cv2Filter.alignment = '__disagreement__';
+    } else {
+      state.cv2ProjDisagreementsMode = false;
+      if (mode === 'all') state.cv2Filter.alignment = '';
+    }
+  }
+  return { state, setSubMode };
+}
+
+describe('cv2SetProjSubMode contract', () => {
+  it('переход в disagreements ставит __disagreement__ и cv2ProjDisagreementsMode=true', () => {
+    const { state, setSubMode } = makeSubModeSetter();
+    setSubMode('disagreements');
+    expect(state.cv2ProjSubMode).toBe('disagreements');
+    expect(state.cv2ProjDisagreementsMode).toBe(true);
+    expect(state.cv2Filter.alignment).toBe('__disagreement__');
+    expect(state.cv2AssistedFilterOnly).toBe(false);
+  });
+
+  it('переход в all снимает disagreement-фильтр', () => {
+    const { state, setSubMode } = makeSubModeSetter();
+    setSubMode('disagreements');
+    setSubMode('all');
+    expect(state.cv2ProjSubMode).toBe('all');
+    expect(state.cv2ProjDisagreementsMode).toBe(false);
+    expect(state.cv2Filter.alignment).toBe('');
+    expect(state.cv2AssistedFilterOnly).toBe(false);
+  });
+
+  it('переход в assisted включает cv2AssistedFilterOnly', () => {
+    const { state, setSubMode } = makeSubModeSetter();
+    setSubMode('assisted');
+    expect(state.cv2ProjSubMode).toBe('assisted');
+    expect(state.cv2AssistedFilterOnly).toBe(true);
+    expect(state.cv2ProjDisagreementsMode).toBe(false);
+  });
+
+  it('выход из assisted выключает cv2AssistedFilterOnly (routing назад в effective_tab)', () => {
+    const { state, setSubMode } = makeSubModeSetter();
+    setSubMode('assisted');
+    setSubMode('all');
+    expect(state.cv2AssistedFilterOnly).toBe(false);
+  });
+
+  it('переход в feedback не трогает alignment-фильтр и assisted-filter', () => {
+    const { state, setSubMode } = makeSubModeSetter();
+    setSubMode('disagreements');  // alignment=__disagreement__
+    setSubMode('feedback');
+    expect(state.cv2ProjSubMode).toBe('feedback');
+    // alignment не reset'ится в feedback — feedback это просто другой view.
+    expect(state.cv2Filter.alignment).toBe('__disagreement__');
+    expect(state.cv2AssistedFilterOnly).toBe(false);
+    expect(state.cv2ProjDisagreementsMode).toBe(false);
+  });
+
+  it('игнорирует неизвестный mode', () => {
+    const { state, setSubMode } = makeSubModeSetter();
+    setSubMode('disagreements');
+    const before = { ...state };
+    setSubMode('fake-mode');
+    expect(state.cv2ProjSubMode).toBe(before.cv2ProjSubMode);
+  });
+});
+
+describe('sub-mode derived от hash-route (backward compat)', () => {
+  // cv2LoadProject(id, { disagreementsMode: true }) → sub-mode = 'disagreements'
+  // cv2LoadProject(id) → sub-mode = 'all'
+
+  function deriveSubMode(disagreementsMode) {
+    return disagreementsMode ? 'disagreements' : 'all';
+  }
+
+  it('старый hash /critic-v2-disagreements → sub-mode disagreements', () => {
+    expect(deriveSubMode(true)).toBe('disagreements');
+  });
+
+  it('старый hash /critic-v2 → sub-mode all', () => {
+    expect(deriveSubMode(false)).toBe('all');
+  });
+});
+
 describe('реальный сценарий ОЗДС', () => {
   // По headless smoke ОЗДС из прошлого раунда:
   // 30 items в artifact, 27 в primary, 3 в needs_context, 0 в suggested_reject

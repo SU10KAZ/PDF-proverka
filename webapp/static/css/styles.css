@@ -695,6 +695,14 @@ body {
    только что прыгнул через «Открыть», и метка «карточка из review-package». */
 .cv2-item--assisted { border-left: 3px solid #f59e0b !important; }
 .cv2-item--flash { background: rgba(245, 158, 11, 0.15) !important; transition: background 0.5s ease-out; }
+/* Critic v2 sub-tabs (внутри объединённой верхней вкладки «Critic v2»). */
+.cv2-sub-tabs { display: flex; gap: 4px; margin: 8px 0 12px 0; border-bottom: 1px solid var(--border); padding-bottom: 0; }
+.cv2-sub-tab { background: transparent; border: 1px solid transparent; border-bottom: none; padding: 8px 14px; font-size: 13px; font-weight: 500; color: var(--text-2); cursor: pointer; border-radius: 6px 6px 0 0; margin-bottom: -1px; }
+.cv2-sub-tab:hover:not(:disabled) { background: var(--bg-2); color: var(--text); }
+.cv2-sub-tab:disabled { opacity: 0.45; cursor: not-allowed; }
+.cv2-sub-tab--active { background: var(--bg); border-color: var(--border); border-bottom-color: var(--bg); color: var(--text); font-weight: 600; }
+.cv2-sub-tab__count { display: inline-block; margin-left: 6px; padding: 1px 6px; background: rgba(245, 158, 11, 0.15); color: #b45309; border-radius: 10px; font-size: 11px; font-weight: 600; }
+
 /* Статусы строк в assisted-round1 per-item таблице.
    still_candidate=зелёный (на месте), missing=красный, остальные=оранжевый
    (эксперт уже что-то сделал с карточкой; инженер должен подтвердить). */

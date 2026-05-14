@@ -325,6 +325,55 @@ const app = createApp({
         // the two flows apart.
         const cv2ProjDisagreementsMode = ref(false);
 
+        // Sub-mode внутри единой вкладки «Critic v2».
+        // Значения: 'disagreements' | 'all' | 'assisted' | 'feedback'.
+        // disagreements/all — режимы основного списка очередей (alignment-фильтр).
+        // assisted — фокус на panel «Проверочные карточки assisted_round1».
+        // feedback — фокус на panel «Импорт / экспорт feedback».
+        // Sub-mode derived из cv2ProjDisagreementsMode (для backward compat
+        // hash routes), но также может переключаться кликом sub-tab.
+        const cv2ProjSubMode = ref('disagreements');
+
+        // sync cv2ProjDisagreementsMode → cv2ProjSubMode когда меняется hash-route.
+        // (Прямой watch не использую — Vue 3 в setup() уже реактивен, и
+        // обновление cv2ProjDisagreementsMode из cv2LoadProject не должно
+        // overwrite-ить пользовательский выбор sub-tab. См. _cv2DerivedSubMode.)
+        function _cv2DerivedSubMode() {
+            return cv2ProjDisagreementsMode.value ? 'disagreements' : 'all';
+        }
+
+        // Click handler для sub-tab. Обновляет state + hash (для shareable URL):
+        // - disagreements/all → имеющиеся /critic-v2-disagreements и /critic-v2;
+        // - assisted/feedback → /critic-v2 (sub-mode только во frontend state).
+        function cv2SetProjSubMode(mode) {
+            const allowed = ['disagreements', 'all', 'assisted', 'feedback'];
+            if (!allowed.includes(mode)) return;
+            cv2ProjSubMode.value = mode;
+            // Auto-toggle cv2AssistedFilterOnly: в sub-mode 'assisted' включаем
+            // (это main use-case инженеров), при выходе — отключаем.
+            // cv2AssistedFilterOnly меняет ROUTING (assignment_tab vs effective_tab),
+            // поэтому держать его включённым в disagreements/all/feedback нельзя —
+            // там пользователь ожидает effective_tab.
+            cv2AssistedFilterOnly.value = (mode === 'assisted');
+            if (!currentProjectId.value) return;
+            const id = currentProjectId.value;
+            if (mode === 'disagreements') {
+                cv2ProjDisagreementsMode.value = true;
+                cv2Filter.value.alignment = '__disagreement__';
+                if (!location.hash.endsWith('/critic-v2-disagreements')) {
+                    navigate('/project/' + id + '/critic-v2-disagreements');
+                }
+            } else {
+                // 'all' / 'assisted' / 'feedback' живут под общим hash /critic-v2.
+                // Saved cv2ProjDisagreementsMode = false → корректный alignment.
+                cv2ProjDisagreementsMode.value = false;
+                if (mode === 'all') cv2Filter.value.alignment = '';
+                if (!location.hash.endsWith('/critic-v2')) {
+                    navigate('/project/' + id + '/critic-v2');
+                }
+            }
+        }
+
         // Auto-load state: какой feedback-файл подтянут backend'ом для текущего
         // project view + список альтернативных matches (если их несколько).
         const cv2AutoLoadedFeedbackFile = ref('');
@@ -446,6 +495,11 @@ const app = createApp({
             cv2ProjHint.value = '';
             cv2Export.value = null;
             cv2ProjDisagreementsMode.value = disagreementsMode;
+            // sub-mode по умолчанию следует hash-route (для backward compat):
+            // /critic-v2-disagreements → 'disagreements', /critic-v2 → 'all'.
+            // Дальше пользователь может переключить на 'assisted'/'feedback'
+            // через cv2SetProjSubMode.
+            cv2ProjSubMode.value = disagreementsMode ? 'disagreements' : 'all';
             // Чистим feedback от прошлого проекта, чтобы preferred_tab не утёк
             // в чужой view (например, при навигации между проектами).
             _cv2ClearProjectFeedback();
@@ -7565,7 +7619,7 @@ const app = createApp({
             cv2RefreshFeedbackFiles, cv2ImportFeedbackFromServer,
             // Critic v2 project-scoped view (read-only)
             cv2ProjLoading, cv2ProjLoadError, cv2ProjHint,
-            cv2ProjDisagreementsMode,
+            cv2ProjDisagreementsMode, cv2ProjSubMode, cv2SetProjSubMode,
             cv2LoadProject,
             // Critic v2 auto-load feedback for project view
             cv2AutoLoadedFeedbackFile, cv2AutoLoadedFeedbackMeta,

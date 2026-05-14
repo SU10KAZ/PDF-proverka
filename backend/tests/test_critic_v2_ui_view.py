@@ -174,6 +174,69 @@ class TestEffectiveTabRouting:
         assert "cv2DebugCounts" in js
 
 
+class TestCriticV2MergedTopTab:
+    """Регрессия: две верхние вкладки «Critic v2: Расхождения» и «Critic v2»
+    объединены в одну «Critic v2». Внутри — sub-tab strip с 4 вкладками."""
+
+    def test_html_has_single_top_tab(self):
+        html = INDEX_HTML.read_text(encoding="utf-8")
+        # «Critic v2: Расхождения» как название верхней вкладки больше не существует.
+        # (Текст «Расхождения с экспертом» допустим — это название sub-tab.)
+        # Считаем только заголовок button.project-tab--experimental.
+        assert "Critic v2: Расхождения" not in html, (
+            "Old top-tab «Critic v2: Расхождения» must be merged into «Critic v2»."
+        )
+        # Single «Critic v2» button as project tab (с эксп. бейджем).
+        assert html.count('project-tab project-tab--experimental') == 1, (
+            "Expected exactly one experimental project-tab (the merged Critic v2)."
+        )
+
+    def test_html_has_sub_tab_strip(self):
+        html = INDEX_HTML.read_text(encoding="utf-8")
+        assert 'class="cv2-sub-tabs"' in html
+        # Все четыре sub-tabs.
+        assert "cv2SetProjSubMode('disagreements')" in html
+        assert "cv2SetProjSubMode('all')" in html
+        assert "cv2SetProjSubMode('assisted')" in html
+        assert "cv2SetProjSubMode('feedback')" in html
+
+    def test_app_js_defines_sub_mode_state(self):
+        js = APP_JS.read_text(encoding="utf-8")
+        assert "const cv2ProjSubMode" in js
+        assert "function cv2SetProjSubMode" in js
+
+    def test_legacy_hash_disagreements_still_routes(self):
+        js = APP_JS.read_text(encoding="utf-8")
+        # Старая ссылка /critic-v2-disagreements должна обрабатываться
+        # (через cv2LoadProject с disagreementsMode=true → sub-mode 'disagreements').
+        assert "/critic-v2-disagreements" in js
+        assert "disagreementsMode: true" in js
+
+    def test_legacy_hash_critic_v2_still_routes(self):
+        js = APP_JS.read_text(encoding="utf-8")
+        # Старая ссылка /critic-v2 должна работать как раньше.
+        assert "/critic-v2$" in js or "'/critic-v2'" in js
+
+    def test_load_project_sets_sub_mode_from_hash(self):
+        js = APP_JS.read_text(encoding="utf-8")
+        # cv2LoadProject должен синхронизировать cv2ProjSubMode из
+        # disagreementsMode (для backward compat hash routes).
+        idx = js.find("async function cv2LoadProject")
+        assert idx != -1
+        body = js[idx:idx + 2000]
+        assert "cv2ProjSubMode.value" in body
+
+    def test_set_sub_mode_toggles_assisted_filter(self):
+        js = APP_JS.read_text(encoding="utf-8")
+        # cv2SetProjSubMode auto-включает cv2AssistedFilterOnly в 'assisted',
+        # и выключает в других sub-modes (потому что filter меняет routing).
+        idx = js.find("function cv2SetProjSubMode")
+        assert idx != -1
+        body = js[idx:idx + 2000]
+        assert "cv2AssistedFilterOnly" in body
+        assert "mode === 'assisted'" in body
+
+
 class TestFeedbackImport:
     def test_app_js_has_import_functions(self):
         js = APP_JS.read_text(encoding="utf-8")
