@@ -482,11 +482,167 @@ const app = createApp({
                 // подходящий *_feedback.json на backend и применяем его. Это
                 // главное отличие от offline-view (которая ждёт file upload).
                 await _cv2AutoLoadFeedbackForProject(projectId);
+                // Auto-load assisted_round1 review-package для проекта. Это
+                // независимо от feedback: review-package описывает, ЧТО надо
+                // проверить, а feedback — РЕЗУЛЬТАТ ручной корректировки.
+                await _cv2AutoLoadAssistedRound1ForProject(projectId);
             } catch (err) {
                 cv2ProjLoadError.value = 'Ошибка сети: ' + (err && err.message || err);
             } finally {
                 cv2ProjLoading.value = false;
             }
+        }
+
+        // ─── assisted_round1 review-package (read-only) ─────────────────────
+        // Список карточек, которые инженер должен проверить вручную: 22
+        // обязательных (risky_accepted_22) + 60 выборочных (sample_60). Источник
+        // — CSV-файлы в critic v2 test/assisted_round1_review/. Frontend не
+        // парсит их — только хранит то, что backend отдал по project_id.
+
+        const cv2AssistedItems = ref([]);           // matched items для current project
+        const cv2AssistedAllTotal = ref(0);         // 82 (22 + 60) на всех проектах
+        const cv2AssistedMatchedTotal = ref(0);
+        const cv2AssistedLoading = ref(false);
+        const cv2AssistedError = ref('');
+        // Filter toggle: только assisted_round1 карточки во вкладках.
+        const cv2AssistedFilterOnly = ref(false);
+
+        async function _cv2AutoLoadAssistedRound1ForProject(projectId) {
+            cv2AssistedItems.value = [];
+            cv2AssistedAllTotal.value = 0;
+            cv2AssistedMatchedTotal.value = 0;
+            cv2AssistedError.value = '';
+            cv2AssistedFilterOnly.value = false;
+            cv2AssistedLoading.value = true;
+            try {
+                const url = '/api/critic-v2/assisted-round1/items?project_id='
+                    + encodeURIComponent(projectId);
+                const resp = await fetch(url);
+                if (!resp.ok) {
+                    cv2AssistedError.value = 'assisted_round1: HTTP ' + resp.status;
+                    return;
+                }
+                const data = await resp.json();
+                cv2AssistedItems.value = Array.isArray(data.items) ? data.items : [];
+                cv2AssistedAllTotal.value = data.all_items_total || 0;
+                cv2AssistedMatchedTotal.value = data.matched_count || 0;
+            } catch (err) {
+                cv2AssistedError.value = 'assisted_round1: ' + (err && err.message || err);
+            } finally {
+                cv2AssistedLoading.value = false;
+            }
+        }
+
+        // Карта finding_id → assisted item, для быстрого lookup'а в computed'ах.
+        const cv2AssistedById = computed(() => {
+            const out = {};
+            for (const it of cv2AssistedItems.value) {
+                if (it.finding_id) out[it.finding_id] = it;
+            }
+            return out;
+        });
+
+        // Определяем статус assisted item:
+        // - 'on_target'        : finding есть в artifact и effective_tab=expected_queue
+        // - 'wrong_queue'      : finding есть в artifact, но effective_tab !== expected_queue
+        // - 'missing'          : finding_id отсутствует в artifact (другой project_name,
+        //                         migration, или просто не в текущем критик-выгрузке)
+        function cv2AssistedStatusOf(assistedItem) {
+            if (!assistedItem || !cv2Export.value) return 'missing';
+            const fid = assistedItem.finding_id;
+            const found = cv2Export.value.items.find(i => i.finding_id === fid);
+            if (!found) return 'missing';
+            const eff = cv2EffectiveTab(found);
+            const expected = assistedItem.expected_queue || 'suggested_reject';
+            return eff === expected ? 'on_target' : 'wrong_queue';
+        }
+
+        // Полная сводка для блока «Проверочные карточки» + debug.
+        // Считается всегда от cv2AssistedItems (matched под текущий проект),
+        // независимо от того, открыт ли filter-only.
+        const cv2AssistedReport = computed(() => {
+            const items = cv2AssistedItems.value;
+            const report = {
+                items_total_all_projects: cv2AssistedAllTotal.value,
+                items_for_project: items.length,
+                by_group: { risky_accepted_22: 0, sample_60: 0 },
+                by_reason_group: {},
+                found_in_artifact: 0,
+                missing_in_artifact: 0,
+                in_suggested_reject: 0,
+                not_in_suggested_reject: 0,
+                in_other_tab: { primary: 0, needs_context: 0, hidden_by_critic: 0 },
+                per_item: [],
+            };
+            if (!cv2Export.value) {
+                // Artifact ещё не загружен — статусы посчитать нельзя.
+                for (const it of items) {
+                    report.by_group[it.group] = (report.by_group[it.group] || 0) + 1;
+                    const rg = it.reason_group || '—';
+                    report.by_reason_group[rg] = (report.by_reason_group[rg] || 0) + 1;
+                }
+                return report;
+            }
+            const byArtifactId = {};
+            for (const it of cv2Export.value.items) byArtifactId[it.finding_id] = it;
+            for (const a of items) {
+                const status = cv2AssistedStatusOf(a);
+                const artifactItem = byArtifactId[a.finding_id] || null;
+                const effective = artifactItem ? cv2EffectiveTab(artifactItem) : null;
+                const fb = cv2Feedback[a.finding_id] || null;
+                report.by_group[a.group] = (report.by_group[a.group] || 0) + 1;
+                const rg = a.reason_group || '—';
+                report.by_reason_group[rg] = (report.by_reason_group[rg] || 0) + 1;
+                if (status === 'missing') {
+                    report.missing_in_artifact += 1;
+                } else {
+                    report.found_in_artifact += 1;
+                    if (effective === 'suggested_reject') {
+                        report.in_suggested_reject += 1;
+                    } else {
+                        report.not_in_suggested_reject += 1;
+                        if (effective in report.in_other_tab) {
+                            report.in_other_tab[effective] += 1;
+                        }
+                    }
+                }
+                report.per_item.push({
+                    finding_id: a.finding_id,
+                    source_file: a.source_file,
+                    group: a.group,
+                    reason: a.reason,
+                    reason_group: a.reason_group,
+                    title: a.title,
+                    expected_queue: a.expected_queue,
+                    critic_tab: artifactItem ? (artifactItem.tab || '') : null,
+                    expert_preferred_tab: fb ? (fb.preferred_tab || '') : '',
+                    effective_tab: effective,
+                    status: status,
+                    reviewer_instruction: a.reviewer_instruction,
+                });
+            }
+            return report;
+        });
+
+        // Открыть карточку в текущем view: переключить вкладку на effective_tab
+        // и проскроллить к данной строке. Используется кнопкой «Открыть».
+        function cv2AssistedFocusFinding(findingId) {
+            if (!cv2Export.value) return;
+            const item = cv2Export.value.items.find(i => i.finding_id === findingId);
+            if (!item) return;
+            const eff = cv2EffectiveTab(item);
+            if (eff && CV2_TABS.includes(eff)) {
+                cv2ActiveTab.value = eff;
+            }
+            // Дать Vue отрисовать tab, потом проскроллить.
+            setTimeout(() => {
+                const el = document.getElementById('cv2-item-' + findingId);
+                if (el && el.scrollIntoView) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    el.classList.add('cv2-item--flash');
+                    setTimeout(() => el.classList.remove('cv2-item--flash'), 1500);
+                }
+            }, 50);
         }
 
         function cv2OnFileSelected(event) {
@@ -544,6 +700,15 @@ const app = createApp({
                 } else if (al !== f.alignment) {
                     return false;
                 }
+            }
+            // Assisted-round1 filter: показывать только items, finding_id которых
+            // присутствует в review-package по текущему проекту. Этот фильтр НЕ
+            // подменяет cv2EffectiveTab — он лишь сужает видимый набор. Карточка
+            // остаётся в той вкладке, где её располагает effective_tab, поэтому
+            // если карточка в primary вместо suggested_reject — инженер увидит её
+            // в primary с включённым assisted-filter'ом.
+            if (cv2AssistedFilterOnly.value) {
+                if (!cv2AssistedById.value[it.finding_id]) return false;
             }
             return true;
         }
@@ -7320,6 +7485,11 @@ const app = createApp({
             cv2AutoLoadedFeedbackFile, cv2AutoLoadedFeedbackMeta,
             cv2AvailableFeedbackMatches, cv2AutoLoadStatus, cv2AutoLoadMessage,
             cv2SwitchFeedbackFile,
+            // Critic v2 assisted_round1 review-package (read-only)
+            cv2AssistedItems, cv2AssistedAllTotal, cv2AssistedMatchedTotal,
+            cv2AssistedLoading, cv2AssistedError,
+            cv2AssistedFilterOnly, cv2AssistedById,
+            cv2AssistedStatusOf, cv2AssistedReport, cv2AssistedFocusFinding,
             // Critic v2 — Russian labels (UI-only, backend tokens unchanged)
             cv2Label, cv2HumanizeExplanation,
             // Critic v2 — alignment vs expert_review (UI-only)

@@ -3910,7 +3910,8 @@
                     </div>
                     <div v-for="item in cv2ItemsByTab[tab.key]"
                          :key="item.finding_id"
-                         class="cv2-item">
+                         :id="'cv2-item-' + item.finding_id"
+                         :class="['cv2-item', { 'cv2-item--assisted': cv2AssistedById[item.finding_id] }]">
                         <div class="cv2-item-head">
                             <span class="cv2-item-id">{{ item.finding_id }}</span>
                             <span v-if="item.section" class="cv2-badge">{{ item.section }}</span>
@@ -4163,6 +4164,102 @@
                 hid={{ cv2DebugCounts.by_expert_preferred.hidden_by_critic }}
             </div>
 
+            <!-- ═══ assisted_round1 review-package: проверочные карточки ═══ -->
+            <!-- Список из CSV-файлов в critic v2 test/assisted_round1_review/.
+                 Показывает, что именно инженер должен проверить для текущего
+                 проекта (22 обязательных + 60 выборочных). Видимость карточки
+                 во вкладках определяется effective_tab; этот блок только
+                 сообщает «должна быть в suggested_reject — найдено / не там».
+            -->
+            <div v-if="cv2Export && !cv2ProjLoading && !cv2ProjLoadError && cv2AssistedItems.length > 0"
+                 class="cv2-assisted-panel"
+                 style="margin:10px 0;padding:10px;border:1px solid var(--border);border-radius:6px;background:var(--bg-2)">
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">
+                    <h3 style="margin:0;font-size:14px">
+                        Проверочные карточки assisted_round1
+                    </h3>
+                    <span style="font-size:12px;color:var(--text-2)">
+                        ({{ cv2AssistedReport.items_for_project }} по этому проекту
+                        из {{ cv2AssistedReport.items_total_all_projects }} всего;
+                        risky={{ cv2AssistedReport.by_group.risky_accepted_22 }},
+                        sample={{ cv2AssistedReport.by_group.sample_60 }})
+                    </span>
+                    <label style="margin-left:auto;font-size:12px;display:flex;align-items:center;gap:6px;cursor:pointer">
+                        <input type="checkbox" v-model="cv2AssistedFilterOnly">
+                        Показать только карточки assisted_round1
+                    </label>
+                </div>
+                <!-- Сводная диагностика -->
+                <div style="font-size:12px;color:var(--text-2);margin-bottom:6px;line-height:1.6">
+                    <b>found_in_artifact</b>={{ cv2AssistedReport.found_in_artifact }} ·
+                    <b>missing_in_artifact</b>={{ cv2AssistedReport.missing_in_artifact }} ·
+                    <b>в suggested_reject</b>={{ cv2AssistedReport.in_suggested_reject }} ·
+                    не в очереди={{ cv2AssistedReport.not_in_suggested_reject }}
+                    <span v-if="cv2AssistedReport.not_in_suggested_reject > 0">
+                        (pri={{ cv2AssistedReport.in_other_tab.primary }} /
+                        ctx={{ cv2AssistedReport.in_other_tab.needs_context }} /
+                        hid={{ cv2AssistedReport.in_other_tab.hidden_by_critic }})
+                    </span>
+                </div>
+                <!-- Per-item таблица -->
+                <table style="width:100%;font-size:12px;border-collapse:collapse">
+                    <thead>
+                        <tr style="text-align:left;border-bottom:1px solid var(--border);color:var(--text-2)">
+                            <th style="padding:4px 6px">finding_id</th>
+                            <th style="padding:4px 6px">group</th>
+                            <th style="padding:4px 6px" title="round1 reason / reason_group">причина</th>
+                            <th style="padding:4px 6px" title="critic.tab из artifact">critic</th>
+                            <th style="padding:4px 6px" title="expert.preferred_tab из feedback">expert</th>
+                            <th style="padding:4px 6px" title="effective_tab = expert ∨ critic">eff</th>
+                            <th style="padding:4px 6px">статус</th>
+                            <th style="padding:4px 6px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="row in cv2AssistedReport.per_item" :key="row.finding_id"
+                            :class="{
+                                'cv2-assisted-row--on-target': row.status === 'on_target',
+                                'cv2-assisted-row--wrong-queue': row.status === 'wrong_queue',
+                                'cv2-assisted-row--missing': row.status === 'missing',
+                            }"
+                            style="border-bottom:1px solid var(--border)">
+                            <td style="padding:4px 6px;font-family:monospace;font-size:11px">{{ row.finding_id }}</td>
+                            <td style="padding:4px 6px"><span class="cv2-badge" :class="'cv2-badge--' + row.group">{{ row.group === 'risky_accepted_22' ? 'risky' : 'sample' }}</span></td>
+                            <td style="padding:4px 6px" :title="row.reason || ''">
+                                {{ row.reason_group || '—' }}
+                            </td>
+                            <td style="padding:4px 6px">{{ row.critic_tab || '—' }}</td>
+                            <td style="padding:4px 6px">{{ row.expert_preferred_tab || '—' }}</td>
+                            <td style="padding:4px 6px"><b>{{ row.effective_tab || '—' }}</b></td>
+                            <td style="padding:4px 6px">
+                                <span v-if="row.status === 'on_target'" style="color:#22c55e" title="effective_tab = suggested_reject">на месте</span>
+                                <span v-else-if="row.status === 'wrong_queue'" style="color:#f59e0b" :title="'effective_tab=' + row.effective_tab + ', expected=' + row.expected_queue">не в очереди</span>
+                                <span v-else style="color:#ef4444" title="finding_id не найден в artifact (другой project_name / migration / отсутствует)">не найдено</span>
+                            </td>
+                            <td style="padding:4px 6px">
+                                <button v-if="row.status !== 'missing'"
+                                        class="btn btn-sm btn-outline"
+                                        style="padding:2px 8px;font-size:11px"
+                                        @click="cv2AssistedFocusFinding(row.finding_id)"
+                                        :title="row.reviewer_instruction || 'Открыть карточку и проскроллить к ней'">
+                                    Открыть
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Если для проекта нет карточек review-package, показать это явно -->
+            <div v-else-if="cv2Export && !cv2ProjLoading && !cv2ProjLoadError && cv2AssistedAllTotal > 0 && cv2AssistedMatchedTotal === 0"
+                 class="cv2-assisted-panel"
+                 style="margin:10px 0;padding:10px;border:1px dashed var(--border);border-radius:6px;font-size:12px;color:var(--text-2)">
+                <b>assisted_round1 review-package:</b>
+                для этого проекта нет проверочных карточек.
+                Всего в review-package: {{ cv2AssistedAllTotal }} карточек,
+                на этот проект не попало ни одной.
+            </div>
+
             <div v-if="cv2Export && !cv2ProjLoading && !cv2ProjLoadError" class="cv2-summary">
                 <h3>Сводка по проекту</h3>
                 <div v-if="cv2Export.scope" class="cv2-scope-info" style="margin-bottom:12px;font-size:13px;color:var(--text-2)">
@@ -4304,7 +4401,8 @@
                     </div>
                     <div v-for="item in cv2ItemsByTab[tab.key]"
                          :key="item.finding_id"
-                         class="cv2-item">
+                         :id="'cv2-item-' + item.finding_id"
+                         :class="['cv2-item', { 'cv2-item--assisted': cv2AssistedById[item.finding_id] }]">
                         <div class="cv2-item-head">
                             <span class="cv2-item-id">{{ item.finding_id }}</span>
                             <span v-if="item.section" class="cv2-badge">{{ item.section }}</span>
