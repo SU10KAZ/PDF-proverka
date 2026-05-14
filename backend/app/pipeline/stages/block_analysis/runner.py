@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -33,6 +34,41 @@ if TYPE_CHECKING:
     from backend.app.pipeline.context import PipelineStageContext
 
 RUNTIME_BATCHES_FILE = "block_batches.runtime.json"
+
+
+def _read_stage02_smoke_env() -> dict:
+    """Прочитать optional smoke-limits для Stage 02 из env.
+
+    Если env-переменные не заданы — возвращается пустой dict, и Stage 02
+    работает с production defaults (DEFAULT_PARALLELISM, без blocks_filter).
+
+    Поддерживаемые env:
+      AUDIT_STAGE02_MAX_BLOCKS        — int>0; ограничение количества блоков
+                                         (используется как `blocks_filter` —
+                                         берутся первые N блоков из stage02 index)
+      AUDIT_STAGE02_MAX_PARALLEL_BATCHES — int>0; жёсткое ограничение
+                                         параллельности (override DEFAULT_PARALLELISM)
+
+    Невалидные значения (не-int, ≤0) игнорируются с warn.
+    """
+    out: dict = {}
+    raw_blocks = os.environ.get("AUDIT_STAGE02_MAX_BLOCKS")
+    if raw_blocks is not None and raw_blocks != "":
+        try:
+            n = int(raw_blocks)
+            if n > 0:
+                out["max_blocks"] = n
+        except (TypeError, ValueError):
+            pass
+    raw_par = os.environ.get("AUDIT_STAGE02_MAX_PARALLEL_BATCHES")
+    if raw_par is not None and raw_par != "":
+        try:
+            p = int(raw_par)
+            if p > 0:
+                out["max_parallel"] = p
+        except (TypeError, ValueError):
+            pass
+    return out
 
 
 def expand_block_batches_for_single_block_mode(batches: list[dict]) -> tuple[list[dict], bool]:
@@ -501,11 +537,46 @@ async def run_block_analysis_findings_only(
         )
     effort = DEFAULT_EFFORT
 
+    # ── Smoke-limits via env (опционально, не активны в production) ──
+    smoke = _read_stage02_smoke_env()
+    parallelism = smoke.get("max_parallel", DEFAULT_PARALLELISM)
+    blocks_filter: list[str] | None = None
+    if smoke.get("max_blocks"):
+        # blocks_filter = первые N block_id из stage02 index. План остаётся
+        # детерминированным: Stage 02 обработает ровно N первых блоков, потом
+        # завершится `done` (без cancel-флага).
+        try:
+            from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
+                stage02_blocks_index_path,
+            )
+            idx_path = stage02_blocks_index_path(project_dir)
+            if idx_path.exists():
+                idx = json.loads(idx_path.read_text(encoding="utf-8"))
+                all_ids = [b["block_id"] for b in idx.get("blocks", [])]
+                blocks_filter = all_ids[: smoke["max_blocks"]]
+                await ctx.log(
+                    f"  · SMOKE-LIMIT: AUDIT_STAGE02_MAX_BLOCKS={smoke['max_blocks']} "
+                    f"→ ограничено до {len(blocks_filter)} из {len(all_ids)} блоков",
+                    "warn",
+                )
+        except Exception as exc:
+            await ctx.log(
+                f"  · SMOKE-LIMIT: AUDIT_STAGE02_MAX_BLOCKS не применён: {exc}",
+                "warn",
+            )
+
+    if parallelism != DEFAULT_PARALLELISM:
+        await ctx.log(
+            f"  · SMOKE-LIMIT: AUDIT_STAGE02_MAX_PARALLEL_BATCHES={parallelism} "
+            f"(default={DEFAULT_PARALLELISM})",
+            "warn",
+        )
+
     ctx.update_pipeline_log("block_analysis", "running")
     await ctx.log(
         f"═══ ЭТАП 02 (findings_only_gemma_pair): "
         f"{check['with_enrichment']}/{check['blocks_total']} "
-        f"блоков, model={model}, effort={effort}, parallelism={DEFAULT_PARALLELISM} ═══"
+        f"блоков, model={model}, effort={effort}, parallelism={parallelism} ═══"
     )
 
     cancel_event = asyncio.Event()
@@ -566,6 +637,8 @@ async def run_block_analysis_findings_only(
             project_dir,
             model=model,
             reasoning_effort=effort,
+            parallelism=parallelism,
+            blocks_filter=blocks_filter,
             claude_clean_cwd=CLAUDE_BLOCK_BATCH_CLEAN_CWD,
             on_progress=_on_progress,
             cancel_event=cancel_event,
@@ -581,6 +654,24 @@ async def run_block_analysis_findings_only(
     totals = summary["totals"]
 
     if summary.get("cancelled"):
+        # Учесть partial usage/cost даже при cancel — иначе job.cost_usd
+        # останется $0.0, а пользователь уже потратил deньги на N блоков
+        # GPT-5.4. cost_usd видим в /api/audit/{id}/status и в usage_tracker.
+        partial_ok = int(summary.get("blocks_ok", 0) or 0)
+        partial_cost = float(totals.get("estimated_cost_usd_total", 0.0) or 0.0)
+        await ctx.log(
+            f"  Stage 02 cancelled: обработано {partial_ok} блоков, "
+            f"~${partial_cost:.4f} списано до отмены",
+            "warn",
+        )
+        if ctx.record_block_analysis_usage and (partial_ok > 0 or partial_cost > 0):
+            try:
+                ctx.record_block_analysis_usage(summary)
+            except Exception as exc:
+                await ctx.log(
+                    f"  Stage 02 cancel: failed to record partial usage: {exc}",
+                    "warn",
+                )
         ctx.update_pipeline_log(
             "block_analysis", "error",
             error="findings_only_gemma_pair: отменено пользователем",
