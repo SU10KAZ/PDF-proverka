@@ -48,13 +48,12 @@ const app = createApp({
         // деплоя без CDN-фоллбека держим локальную stub-имплементацию.
         const VAPI = (typeof window !== 'undefined' && window.VersionAPI) ? window.VersionAPI : null;
 
-        // Capabilities текущего сервера. Legacy webapp.main:app пока не умеет
-        // запускать аудит V2 (safety-gate возвращает 409) и не учитывает
-        // ?version_id= в read-роутерах. Когда переедем на backend.app.main:app —
-        // поменять на true; UI разблокирует V2-аудит и V2-чтения.
+        // Capabilities текущего сервера. backend.app.main:app поддерживает V2
+        // audit и version-aware read-роутеры (cutover: 2026-05-14).
+        // Если когда-нибудь снова откатимся на webapp.main:app — поменять на false.
         const serverCaps = {
-            v2AuditSupported: false,
-            runner: 'legacy',
+            v2AuditSupported: true,
+            runner: 'backend',
         };
         function _apiUrl(path, withVersion) {
             if (!VAPI) return '/api' + (path.startsWith('/') ? path : '/' + path);
@@ -326,6 +325,118 @@ const app = createApp({
         // the two flows apart.
         const cv2ProjDisagreementsMode = ref(false);
 
+        // Auto-load state: какой feedback-файл подтянут backend'ом для текущего
+        // project view + список альтернативных matches (если их несколько).
+        const cv2AutoLoadedFeedbackFile = ref('');
+        const cv2AutoLoadedFeedbackMeta = ref(null);  // { entries, suggested_reject_count, match_quality }
+        const cv2AvailableFeedbackMatches = ref([]);  // [{name, match_quality, entries, suggested_reject_count, scope_project_name}]
+        const cv2AutoLoadStatus = ref('');            // '' | 'ok' | 'none' | 'error'
+        const cv2AutoLoadMessage = ref('');
+
+        function _cv2ClearProjectFeedback() {
+            // Чистим cv2Feedback in-place, чтобы не утечь expert override между
+            // проектами при навигации. cv2Feedback — reactive объект, нельзя
+            // переприсвоить ссылку.
+            for (const k of Object.keys(cv2Feedback)) {
+                delete cv2Feedback[k];
+            }
+        }
+
+        async function _cv2AutoLoadFeedbackForProject(projectId) {
+            // Запрашивает /api/critic-v2/feedback-files?project_id=... и тянет
+            // лучший match (если он есть). Backend возвращает sorted matches.
+            cv2AutoLoadedFeedbackFile.value = '';
+            cv2AutoLoadedFeedbackMeta.value = null;
+            cv2AvailableFeedbackMatches.value = [];
+            cv2AutoLoadStatus.value = '';
+            cv2AutoLoadMessage.value = '';
+            try {
+                const url = '/api/critic-v2/feedback-files?project_id='
+                    + encodeURIComponent(projectId);
+                const resp = await fetch(url);
+                if (!resp.ok) {
+                    cv2AutoLoadStatus.value = 'error';
+                    cv2AutoLoadMessage.value = 'Auto-load feedback: HTTP ' + resp.status;
+                    return;
+                }
+                const data = await resp.json();
+                const matches = Array.isArray(data.matches) ? data.matches : [];
+                cv2AvailableFeedbackMatches.value = matches;
+                if (matches.length === 0) {
+                    cv2AutoLoadStatus.value = 'none';
+                    cv2AutoLoadMessage.value =
+                        'feedback-файл для этого проекта не найден. Можно импортировать вручную (см. блок «Импорт feedback»).';
+                    return;
+                }
+                // Best match is matches[0]. Fetch its body and apply.
+                const best = matches[0];
+                const body = await fetch(
+                    '/api/critic-v2/feedback-files/' + encodeURIComponent(best.name)
+                );
+                if (!body.ok) {
+                    cv2AutoLoadStatus.value = 'error';
+                    cv2AutoLoadMessage.value =
+                        'Auto-load: HTTP ' + body.status + ' при чтении ' + best.name;
+                    return;
+                }
+                const payload = await body.json();
+                const res = _cv2MergeFeedbackEntries(payload.feedback || []);
+                cv2AutoLoadedFeedbackFile.value = best.name;
+                cv2AutoLoadedFeedbackMeta.value = {
+                    entries: best.entries,
+                    suggested_reject_count: best.suggested_reject_count,
+                    match_quality: best.match_quality,
+                    scope_project_name: best.scope_project_name,
+                };
+                cv2AutoLoadStatus.value = 'ok';
+                cv2AutoLoadMessage.value =
+                    'Auto-loaded ' + best.name + ' (' + res.merged + ' entries, '
+                    + best.suggested_reject_count + ' preferred_tab=suggested_reject, '
+                    + 'match=' + best.match_quality + ')';
+            } catch (err) {
+                cv2AutoLoadStatus.value = 'error';
+                cv2AutoLoadMessage.value = 'Auto-load: ошибка сети: ' + (err && err.message || err);
+            }
+        }
+
+        async function cv2SwitchFeedbackFile(name) {
+            // Manual override: переключить feedback на конкретный файл из
+            // dropdown. Сначала чистим, потом подтягиваем выбранный файл.
+            if (!name) return;
+            _cv2ClearProjectFeedback();
+            cv2AutoLoadedFeedbackFile.value = '';
+            cv2AutoLoadedFeedbackMeta.value = null;
+            try {
+                const body = await fetch(
+                    '/api/critic-v2/feedback-files/' + encodeURIComponent(name)
+                );
+                if (!body.ok) {
+                    cv2AutoLoadStatus.value = 'error';
+                    cv2AutoLoadMessage.value = 'Switch: HTTP ' + body.status;
+                    return;
+                }
+                const payload = await body.json();
+                const res = _cv2MergeFeedbackEntries(payload.feedback || []);
+                // Подсветим выбранный файл в metadata из cv2AvailableFeedbackMatches.
+                const meta = cv2AvailableFeedbackMatches.value.find(m => m.name === name);
+                cv2AutoLoadedFeedbackFile.value = name;
+                cv2AutoLoadedFeedbackMeta.value = meta
+                    ? {
+                        entries: meta.entries,
+                        suggested_reject_count: meta.suggested_reject_count,
+                        match_quality: meta.match_quality,
+                        scope_project_name: meta.scope_project_name,
+                    }
+                    : { entries: res.merged };
+                cv2AutoLoadStatus.value = 'ok';
+                cv2AutoLoadMessage.value =
+                    'Загружен ' + name + ' (' + res.merged + ' entries)';
+            } catch (err) {
+                cv2AutoLoadStatus.value = 'error';
+                cv2AutoLoadMessage.value = 'Switch: ' + (err && err.message || err);
+            }
+        }
+
         async function cv2LoadProject(projectId, opts) {
             // Read-only fetch. No LLM. No writes. No production pipeline mutation.
             const o = opts || {};
@@ -335,6 +446,9 @@ const app = createApp({
             cv2ProjHint.value = '';
             cv2Export.value = null;
             cv2ProjDisagreementsMode.value = disagreementsMode;
+            // Чистим feedback от прошлого проекта, чтобы preferred_tab не утёк
+            // в чужой view (например, при навигации между проектами).
+            _cv2ClearProjectFeedback();
             // Reset filters so two views don't bleed into each other, then
             // pre-apply the disagreement filter if we're in that mode.
             cv2ResetFilters();
@@ -364,6 +478,10 @@ const app = createApp({
                     // показываем warning через сам export, но logger в консоль для трассировки
                     console.warn('[cv2] project warning:', raw.warning);
                 }
+                // Auto-load feedback: после успешной загрузки artifact ищем
+                // подходящий *_feedback.json на backend и применяем его. Это
+                // главное отличие от offline-view (которая ждёт file upload).
+                await _cv2AutoLoadFeedbackForProject(projectId);
             } catch (err) {
                 cv2ProjLoadError.value = 'Ошибка сети: ' + (err && err.message || err);
             } finally {
@@ -511,12 +629,26 @@ const app = createApp({
             };
         });
 
+        // Effective tab for an item = expert override if set, else critic's tab.
+        // Expert override comes from cv2Feedback[id].preferred_tab (set via
+        // quick-route buttons or imported from *_feedback.json files).
+        // This is what makes findings the expert moved to "suggested_reject"
+        // actually appear in that queue instead of staying under critic's tab.
+        function cv2EffectiveTab(item) {
+            if (!item) return '';
+            const fid = item.finding_id;
+            const fb = fid ? cv2Feedback[fid] : null;
+            const pref = fb && fb.preferred_tab;
+            if (pref && CV2_TABS.includes(pref)) return pref;
+            return item.tab || '';
+        }
+
         const cv2ItemsByTab = computed(() => {
             const out = { primary: [], needs_context: [], suggested_reject: [], hidden_by_critic: [] };
             if (!cv2Export.value) return out;
             for (const it of cv2Export.value.items) {
                 if (!cv2ItemMatchesFilter(it)) continue;
-                const t = it.tab;
+                const t = cv2EffectiveTab(it);
                 if (out[t]) out[t].push(it);
             }
             return out;
@@ -530,6 +662,42 @@ const app = createApp({
                 suggested_reject: m.suggested_reject.length,
                 hidden_by_critic: m.hidden_by_critic.length,
             };
+        });
+
+        // Diagnostic counts: raw (critic's tab only) vs effective (after expert
+        // overrides). Helpful when "badge says 1, MD has 12" surprises.
+        const cv2DebugCounts = computed(() => {
+            const out = {
+                raw_total: 0,
+                normalized_total: 0,
+                by_critic_tab: { primary: 0, needs_context: 0, suggested_reject: 0, hidden_by_critic: 0 },
+                by_effective_tab: { primary: 0, needs_context: 0, suggested_reject: 0, hidden_by_critic: 0 },
+                by_expert_preferred: { primary: 0, needs_context: 0, suggested_reject: 0, hidden_by_critic: 0 },
+                expert_overrides_total: 0,
+                unmatched_critic_tab: 0,
+                feedback_entries_loaded: Object.keys(cv2Feedback).length,
+            };
+            if (!cv2Export.value) return out;
+            for (const it of cv2Export.value.items) {
+                out.raw_total += 1;
+                const ct = it.tab || '';
+                if (ct in out.by_critic_tab) out.by_critic_tab[ct] += 1;
+                else if (ct) out.unmatched_critic_tab += 1;
+
+                const et = cv2EffectiveTab(it);
+                if (et in out.by_effective_tab) {
+                    out.by_effective_tab[et] += 1;
+                    out.normalized_total += 1;
+                }
+
+                const fb = cv2Feedback[it.finding_id];
+                const pref = fb && fb.preferred_tab;
+                if (pref && pref in out.by_expert_preferred) {
+                    out.by_expert_preferred[pref] += 1;
+                    if (pref !== ct) out.expert_overrides_total += 1;
+                }
+            }
+            return out;
         });
 
         // ─── Critic v2 UI: Feedback (frontend-only, never hits backend) ────
@@ -695,6 +863,118 @@ const app = createApp({
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+        }
+
+        // ─── Critic v2 UI: Feedback Import ────────────────────────────────
+        // Reviewer feedback (preferred_tab, triage_correct, reviewer_note,
+        // priority) lives in browser-state cv2Feedback. After reload it's
+        // gone — so a finding the expert moved to "suggested_reject" stops
+        // appearing there. Import re-hydrates state from a previously
+        // downloaded *_feedback.json file or from the backend listing.
+
+        const cv2ImportStatus = ref('');  // 'ok' | 'error' | ''
+        const cv2ImportMessage = ref('');
+        const cv2AvailableFeedbackFiles = ref([]);  // [{name, size, mtime, project_name?}]
+
+        function _cv2MergeFeedbackEntries(entries) {
+            let merged = 0;
+            let skipped = 0;
+            if (!Array.isArray(entries)) return { merged, skipped };
+            for (const entry of entries) {
+                const fid = entry && entry.finding_id;
+                if (!fid) { skipped += 1; continue; }
+                const fb = cv2EnsureFeedback(fid);
+                if (entry.triage_correct) fb.triage_correct = entry.triage_correct;
+                if (entry.preferred_tab) fb.preferred_tab = entry.preferred_tab;
+                if (entry.priority) fb.priority = entry.priority;
+                if (typeof entry.reviewer_note === 'string') {
+                    fb.reviewer_note = entry.reviewer_note;
+                }
+                merged += 1;
+            }
+            return { merged, skipped };
+        }
+
+        function cv2ImportFeedbackFromObject(obj) {
+            // Accepts a parsed JSON object (output of cv2ExportFeedback or
+            // a *_feedback.json with the same shape). Merges in-place into
+            // cv2Feedback. Does NOT clear existing feedback.
+            cv2ImportStatus.value = '';
+            cv2ImportMessage.value = '';
+            if (!obj || typeof obj !== 'object') {
+                cv2ImportStatus.value = 'error';
+                cv2ImportMessage.value = 'Импорт: ожидается JSON-объект.';
+                return { merged: 0, skipped: 0 };
+            }
+            const entries = obj.feedback;
+            if (!Array.isArray(entries)) {
+                cv2ImportStatus.value = 'error';
+                cv2ImportMessage.value = 'Импорт: в JSON нет массива "feedback".';
+                return { merged: 0, skipped: 0 };
+            }
+            const res = _cv2MergeFeedbackEntries(entries);
+            cv2ImportStatus.value = 'ok';
+            cv2ImportMessage.value =
+                `Импортировано: ${res.merged} (пропущено без finding_id: ${res.skipped}).`;
+            return res;
+        }
+
+        function cv2OnFeedbackFileSelected(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const obj = JSON.parse(e.target.result);
+                    cv2ImportFeedbackFromObject(obj);
+                } catch (err) {
+                    cv2ImportStatus.value = 'error';
+                    cv2ImportMessage.value = 'Импорт: ошибка парсинга JSON: ' + (err.message || err);
+                }
+            };
+            reader.onerror = () => {
+                cv2ImportStatus.value = 'error';
+                cv2ImportMessage.value = 'Импорт: не удалось прочитать файл.';
+            };
+            reader.readAsText(file);
+            event.target.value = '';  // allow re-selecting the same file
+        }
+
+        async function cv2RefreshFeedbackFiles() {
+            // Read-only listing of *_feedback.json from the backend's
+            // CRITIC_V2_FEEDBACK_DIR (default: "<repo>/critic v2 test/").
+            try {
+                const resp = await fetch('/api/critic-v2/feedback-files');
+                if (!resp.ok) {
+                    cv2AvailableFeedbackFiles.value = [];
+                    return;
+                }
+                const data = await resp.json();
+                cv2AvailableFeedbackFiles.value = Array.isArray(data.files) ? data.files : [];
+            } catch (_) {
+                cv2AvailableFeedbackFiles.value = [];
+            }
+        }
+
+        async function cv2ImportFeedbackFromServer(name) {
+            cv2ImportStatus.value = '';
+            cv2ImportMessage.value = '';
+            if (!name) return;
+            try {
+                const resp = await fetch(
+                    '/api/critic-v2/feedback-files/' + encodeURIComponent(name)
+                );
+                if (!resp.ok) {
+                    cv2ImportStatus.value = 'error';
+                    cv2ImportMessage.value = 'Импорт: HTTP ' + resp.status;
+                    return;
+                }
+                const obj = await resp.json();
+                cv2ImportFeedbackFromObject(obj);
+            } catch (err) {
+                cv2ImportStatus.value = 'error';
+                cv2ImportMessage.value = 'Импорт: ошибка сети: ' + (err && err.message || err);
+            }
         }
 
         // Tiles
@@ -7020,6 +7300,7 @@ const app = createApp({
             cv2OnFileSelected, cv2ResetFilters, cv2ParseExport, cv2ScoreBucket,
             cv2ItemMatchesFilter, cv2HasHumanDecisions,
             cv2FilterOptions, cv2ItemsByTab, cv2VisibleCountByTab,
+            cv2EffectiveTab, cv2DebugCounts,
             // Critic v2 UI Feedback (frontend-only)
             cv2Feedback, cv2FeedbackSummary,
             cv2EnsureFeedback, cv2HasFeedback,
@@ -7027,10 +7308,18 @@ const app = createApp({
             cv2SetPriority, cv2SetReviewerNote,
             cv2QuickRoute, cv2QuickUnsure,
             cv2BuildFeedbackExport, cv2ExportFeedback,
+            // Critic v2 UI Feedback Import
+            cv2ImportStatus, cv2ImportMessage, cv2AvailableFeedbackFiles,
+            cv2ImportFeedbackFromObject, cv2OnFeedbackFileSelected,
+            cv2RefreshFeedbackFiles, cv2ImportFeedbackFromServer,
             // Critic v2 project-scoped view (read-only)
             cv2ProjLoading, cv2ProjLoadError, cv2ProjHint,
             cv2ProjDisagreementsMode,
             cv2LoadProject,
+            // Critic v2 auto-load feedback for project view
+            cv2AutoLoadedFeedbackFile, cv2AutoLoadedFeedbackMeta,
+            cv2AvailableFeedbackMatches, cv2AutoLoadStatus, cv2AutoLoadMessage,
+            cv2SwitchFeedbackFile,
             // Critic v2 — Russian labels (UI-only, backend tokens unchanged)
             cv2Label, cv2HumanizeExplanation,
             // Critic v2 — alignment vs expert_review (UI-only)

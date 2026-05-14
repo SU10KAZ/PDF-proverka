@@ -691,6 +691,13 @@ body {
 .project-card--reviewed { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.25); }
 .project-card__reviewed { position: absolute; top: 11px; right: 34px; color: #22c55e; font-size: 20px; font-weight: 900; line-height: 1; text-shadow: 0 0 1px #22c55e; }
 .project-card__reviewed--inline { position: static; font-size: 16px; line-height: 1; flex-shrink: 0; }
+/* Раздельные галочки для findings/optimization рисуются прямо в строках
+   с кнопками «Замечания» / «Оптимизация» — рядом с соответствующими счётчиками.
+   К checkbox выбора в правом верхнем углу они не относятся. */
+.project-card__row-status { font-size: 18px; font-weight: 900; line-height: 1; flex-shrink: 0; margin-left: 6px; }
+.project-card__row-status--findings { color: #22c55e; text-shadow: 0 0 1px #22c55e; }
+.project-card__row-status--opt { color: #a855f7; text-shadow: 0 0 1px #a855f7; }
+.project-card__row-status--partial { color: #94a3b8; opacity: 0.75; }
 .project-card__checkbox { position: static; }
 .project-card__checkbox input { accent-color: var(--teal); width: 15px; height: 15px; cursor: pointer; }
 .project-card__header { margin-bottom: 6px; display: flex; align-items: flex-start; gap: 6px; min-width: 0; }

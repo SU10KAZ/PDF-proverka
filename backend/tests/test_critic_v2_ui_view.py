@@ -141,6 +141,53 @@ class TestLoader:
         assert "FileReader" in js
 
 
+class TestEffectiveTabRouting:
+    """Regression: badge "Критик рекомендует отклонить" was 1 while expert had
+    moved several findings to suggested_reject. Fix: cv2ItemsByTab routes by
+    effective tab = expert.preferred_tab || critic.tab."""
+
+    def test_app_js_defines_effective_tab_helper(self):
+        js = APP_JS.read_text(encoding="utf-8")
+        assert "function cv2EffectiveTab(" in js
+
+    def test_items_by_tab_uses_effective_tab(self):
+        js = APP_JS.read_text(encoding="utf-8")
+        # The computed must call cv2EffectiveTab, not just read it.tab.
+        # Locate the cv2ItemsByTab block and assert it references the helper.
+        idx = js.find("const cv2ItemsByTab")
+        assert idx != -1, "cv2ItemsByTab not found"
+        block = js[idx:idx + 500]
+        assert "cv2EffectiveTab" in block, (
+            "cv2ItemsByTab must route by effective tab to honor expert preferred_tab"
+        )
+
+    def test_app_js_exposes_debug_counts(self):
+        js = APP_JS.read_text(encoding="utf-8")
+        assert "cv2DebugCounts" in js
+
+
+class TestFeedbackImport:
+    def test_app_js_has_import_functions(self):
+        js = APP_JS.read_text(encoding="utf-8")
+        for name in (
+            "cv2ImportFeedbackFromObject",
+            "cv2OnFeedbackFileSelected",
+            "cv2RefreshFeedbackFiles",
+            "cv2ImportFeedbackFromServer",
+        ):
+            assert name in js, f"{name} missing from app.js"
+
+    def test_html_has_import_ui(self):
+        html = INDEX_HTML.read_text(encoding="utf-8")
+        assert "cv2OnFeedbackFileSelected" in html
+        assert "cv2RefreshFeedbackFiles" in html
+        assert "cv2ImportFeedbackFromServer" in html
+
+    def test_html_has_debug_counts_panel(self):
+        html = INDEX_HTML.read_text(encoding="utf-8")
+        assert "cv2DebugCounts" in html
+
+
 # ─── Round-trip: parse rules vs replay output ───────────────────────────────
 
 

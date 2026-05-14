@@ -80,7 +80,12 @@ class ProjectStatus(BaseModel):
     pipeline_issues: list[str] = []
     pipeline_version: str = "legacy"
     # Экспертная оценка: "complete" (все решения), "partial" (частично), "" (нет)
+    # expert_review_status объединяет findings + optimizations.
+    # findings_review_status / optimization_review_status — независимые статусы
+    # для двух галочек в карточке проекта. Пустая строка = недостаточно данных.
     expert_review_status: str = ""
+    findings_review_status: str = ""
+    optimization_review_status: str = ""
     # ─── Версионность проекта ───────────────────────────────────
     # Для legacy-проектов без project_versions.json: v1 / 1 / "V1".
     version_id: str = "v1"

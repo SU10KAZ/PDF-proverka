@@ -487,8 +487,14 @@
                                       :title="'Версия проекта: ' + p.version_label">{{ versionBadgeFor(p).text }}</span>
                                 <span v-if="p.pipeline_issues && p.pipeline_issues.length > 0"
                                       class="pipeline-issues-dot pipeline-issues-dot--inline" :title="p.pipeline_issues.join('\n')">!</span>
-                                <span v-if="p.expert_review_status === 'complete'" class="project-card__reviewed project-card__reviewed--inline" title="Все решения заполнены">&#10003;</span>
-                                <label class="project-card__checkbox" @click.stop>
+                                <!-- Backward compatibility: если на сервере ещё нет раздельных
+                                     статусов findings_review_status/optimization_review_status,
+                                     fallback на общий expert_review_status. Иначе галочки
+                                     рисуются прямо в строках findings/optimization ниже. -->
+                                <span v-if="!p.findings_review_status && !p.optimization_review_status && p.expert_review_status === 'complete'"
+                                      class="project-card__reviewed project-card__reviewed--inline"
+                                      title="Все решения заполнены">&#10003;</span>
+                                <label class="project-card__checkbox" @click.stop title="Выбрать проект">
                                     <input type="checkbox" :checked="isProjectSelected(p.project_id)"
                                            @change="toggleProjectSelection(p.project_id)">
                                 </label>
@@ -505,6 +511,13 @@
                                 <span class="findings-total">= {{ p.findings_count }}</span>
                             </div>
                             <button class="btn btn-sm btn-outline" @click.stop="navigate('/project/' + p.project_id + '/findings')">Замечания</button>
+                            <!-- Индикатор статуса по замечаниям. Рядом с кнопкой «Замечания». -->
+                            <span v-if="p.findings_review_status === 'complete'"
+                                  class="project-card__row-status project-card__row-status--findings"
+                                  title="Замечания отработаны">&#10003;</span>
+                            <span v-else-if="p.findings_review_status === 'partial'"
+                                  class="project-card__row-status project-card__row-status--partial"
+                                  title="Замечания отработаны частично">&middot;</span>
                         </div>
                         <div v-if="p.optimization_count > 0" class="project-card__badges-row">
                             <div class="severity-badges opt-badges">
@@ -513,6 +526,13 @@
                                 <span class="findings-total">= {{ p.optimization_count }}</span>
                             </div>
                             <button class="btn btn-sm btn-outline" @click.stop="navigate('/project/' + p.project_id + '/optimization')">Оптимизация</button>
+                            <!-- Индикатор статуса по оптимизациям. Рядом с кнопкой «Оптимизация». -->
+                            <span v-if="p.optimization_review_status === 'complete'"
+                                  class="project-card__row-status project-card__row-status--opt"
+                                  title="Оптимизации отработаны">&#10003;</span>
+                            <span v-else-if="p.optimization_review_status === 'partial'"
+                                  class="project-card__row-status project-card__row-status--partial"
+                                  title="Оптимизации отработаны частично">&middot;</span>
                         </div>
                     </div>
                 </div>
@@ -3631,6 +3651,53 @@
                 <span v-if="cv2LoadError" class="cv2-error">{{ cv2LoadError }}</span>
             </div>
 
+            <!-- ═══ Импорт feedback (preferred_tab из *_feedback.json) ═══ -->
+            <div v-if="cv2Export" class="cv2-feedback-import">
+                <h3 style="margin:0 0 6px 0;font-size:14px">Импорт feedback экспертa</h3>
+                <p style="margin:0 0 6px 0;font-size:12px;color:var(--text-2)">
+                    Загрузите ранее сохранённый <code>*_feedback.json</code> (или нажмите
+                    «Обновить список», чтобы выбрать из <code>critic v2 test/</code>). После
+                    импорта замечания, помеченные экспертом как <code>preferred_tab=suggested_reject</code>,
+                    появятся во вкладке «Критик рекомендует отклонить».
+                </p>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                    <input type="file" accept=".json,application/json" @change="cv2OnFeedbackFileSelected" />
+                    <button class="btn btn-sm btn-outline" @click="cv2RefreshFeedbackFiles">
+                        Обновить список ({{ cv2AvailableFeedbackFiles.length }})
+                    </button>
+                    <select v-if="cv2AvailableFeedbackFiles.length > 0"
+                            @change="cv2ImportFeedbackFromServer($event.target.value); $event.target.value=''">
+                        <option value="">— выбрать файл с сервера —</option>
+                        <option v-for="f in cv2AvailableFeedbackFiles" :key="f.name" :value="f.name">
+                            {{ f.name }}
+                        </option>
+                    </select>
+                </div>
+                <p v-if="cv2ImportMessage" :class="cv2ImportStatus === 'ok' ? 'ok' : 'cv2-error'"
+                   style="margin:6px 0 0 0;font-size:12px">{{ cv2ImportMessage }}</p>
+            </div>
+
+            <!-- ═══ Диагностика: badge vs rendered, raw vs effective ═══ -->
+            <div v-if="cv2Export" class="cv2-debug-counts" style="font-size:12px;color:var(--text-2);margin:8px 0;padding:8px;border:1px dashed var(--border);border-radius:4px">
+                <b>Диагностика очередей</b> (raw = тaб из artifact, effective = с учётом expert preferred_tab):<br>
+                raw_total={{ cv2DebugCounts.raw_total }} ·
+                normalized_total={{ cv2DebugCounts.normalized_total }} ·
+                feedback_loaded={{ cv2DebugCounts.feedback_entries_loaded }} ·
+                expert_overrides={{ cv2DebugCounts.expert_overrides_total }}<br>
+                by_critic_tab: pri={{ cv2DebugCounts.by_critic_tab.primary }} /
+                ctx={{ cv2DebugCounts.by_critic_tab.needs_context }} /
+                <b>sr={{ cv2DebugCounts.by_critic_tab.suggested_reject }}</b> /
+                hid={{ cv2DebugCounts.by_critic_tab.hidden_by_critic }}<br>
+                by_effective_tab: pri={{ cv2DebugCounts.by_effective_tab.primary }} /
+                ctx={{ cv2DebugCounts.by_effective_tab.needs_context }} /
+                <b>sr={{ cv2DebugCounts.by_effective_tab.suggested_reject }}</b> /
+                hid={{ cv2DebugCounts.by_effective_tab.hidden_by_critic }}<br>
+                by_expert_preferred: pri={{ cv2DebugCounts.by_expert_preferred.primary }} /
+                ctx={{ cv2DebugCounts.by_expert_preferred.needs_context }} /
+                <b>sr={{ cv2DebugCounts.by_expert_preferred.suggested_reject }}</b> /
+                hid={{ cv2DebugCounts.by_expert_preferred.hidden_by_critic }}
+            </div>
+
             <div v-if="cv2Export" class="cv2-summary">
                 <h3>Сводка</h3>
                 <div class="cv2-summary-grid">
@@ -3744,7 +3811,9 @@
                         Экспортировать feedback JSON
                     </button>
                     <span class="cv2-feedback-hint">
-                        Feedback хранится только в браузере. Backend не вызывается.
+                        Auto-load: подтягивается с сервера при открытии проекта.
+                        Ручной импорт — через блок «Импорт feedback» выше.
+                        Изменения через quick-route — только в браузере, экспорт выгружает их в JSON.
                     </span>
                 </div>
             </div>
@@ -4031,6 +4100,69 @@
                 </p>
             </div>
 
+            <!-- ═══ Auto-load feedback (preferred_tab из *_feedback.json) — project-scoped ═══ -->
+            <!-- Backend ищет подходящий feedback при открытии проекта и применяет его. -->
+            <div v-if="cv2Export && !cv2ProjLoading && !cv2ProjLoadError" class="cv2-feedback-import">
+                <h3 style="margin:0 0 6px 0;font-size:14px">Feedback экспертa</h3>
+                <!-- Auto-load OK -->
+                <p v-if="cv2AutoLoadStatus === 'ok' && cv2AutoLoadedFeedbackFile"
+                   style="margin:0 0 6px 0;font-size:12px;color:var(--text-2)">
+                    Auto-loaded:
+                    <code>{{ cv2AutoLoadedFeedbackFile }}</code>
+                    <span v-if="cv2AutoLoadedFeedbackMeta">
+                        — {{ cv2AutoLoadedFeedbackMeta.entries }} entries,
+                        <b>{{ cv2AutoLoadedFeedbackMeta.suggested_reject_count }}</b>
+                        preferred_tab=suggested_reject,
+                        match=<i>{{ cv2AutoLoadedFeedbackMeta.match_quality }}</i>
+                    </span>
+                </p>
+                <!-- Auto-load not found -->
+                <p v-else-if="cv2AutoLoadStatus === 'none'"
+                   style="margin:0 0 6px 0;font-size:12px;color:#b45309">
+                    {{ cv2AutoLoadMessage }}
+                </p>
+                <!-- Auto-load error -->
+                <p v-else-if="cv2AutoLoadStatus === 'error'" class="cv2-error"
+                   style="margin:0 0 6px 0;font-size:12px">
+                    {{ cv2AutoLoadMessage }}
+                </p>
+                <!-- Manual switcher: показываем только если есть >1 match -->
+                <div v-if="cv2AvailableFeedbackMatches.length > 1"
+                     style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:4px">
+                    <label style="font-size:12px;color:var(--text-2)">Выбрать другой:</label>
+                    <select :value="cv2AutoLoadedFeedbackFile"
+                            @change="cv2SwitchFeedbackFile($event.target.value)">
+                        <option v-for="m in cv2AvailableFeedbackMatches" :key="m.name" :value="m.name">
+                            {{ m.name }} — {{ m.scope_project_name }}
+                            ({{ m.suggested_reject_count }} sr, match={{ m.match_quality }})
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- ═══ Диагностика: badge vs rendered, raw vs effective — project-scoped ═══ -->
+            <div v-if="cv2Export && !cv2ProjLoading && !cv2ProjLoadError"
+                 class="cv2-debug-counts"
+                 style="font-size:12px;color:var(--text-2);margin:8px 0;padding:8px;border:1px dashed var(--border);border-radius:4px">
+                <b>Диагностика очередей</b> (raw = тaб из artifact, effective = с учётом expert preferred_tab):<br>
+                raw_total={{ cv2DebugCounts.raw_total }} ·
+                normalized_total={{ cv2DebugCounts.normalized_total }} ·
+                feedback_loaded={{ cv2DebugCounts.feedback_entries_loaded }} ·
+                expert_overrides={{ cv2DebugCounts.expert_overrides_total }}<br>
+                by_critic_tab: pri={{ cv2DebugCounts.by_critic_tab.primary }} /
+                ctx={{ cv2DebugCounts.by_critic_tab.needs_context }} /
+                <b>sr={{ cv2DebugCounts.by_critic_tab.suggested_reject }}</b> /
+                hid={{ cv2DebugCounts.by_critic_tab.hidden_by_critic }}<br>
+                by_effective_tab: pri={{ cv2DebugCounts.by_effective_tab.primary }} /
+                ctx={{ cv2DebugCounts.by_effective_tab.needs_context }} /
+                <b>sr={{ cv2DebugCounts.by_effective_tab.suggested_reject }}</b> /
+                hid={{ cv2DebugCounts.by_effective_tab.hidden_by_critic }}<br>
+                by_expert_preferred: pri={{ cv2DebugCounts.by_expert_preferred.primary }} /
+                ctx={{ cv2DebugCounts.by_expert_preferred.needs_context }} /
+                <b>sr={{ cv2DebugCounts.by_expert_preferred.suggested_reject }}</b> /
+                hid={{ cv2DebugCounts.by_expert_preferred.hidden_by_critic }}
+            </div>
+
             <div v-if="cv2Export && !cv2ProjLoading && !cv2ProjLoadError" class="cv2-summary">
                 <h3>Сводка по проекту</h3>
                 <div v-if="cv2Export.scope" class="cv2-scope-info" style="margin-bottom:12px;font-size:13px;color:var(--text-2)">
@@ -4135,7 +4267,9 @@
                         Экспортировать feedback JSON
                     </button>
                     <span class="cv2-feedback-hint">
-                        Feedback хранится только в браузере. Backend не вызывается.
+                        Auto-load: подтягивается с сервера при открытии проекта.
+                        Ручной импорт — через блок «Импорт feedback» выше.
+                        Изменения через quick-route — только в браузере, экспорт выгружает их в JSON.
                     </span>
                 </div>
             </div>

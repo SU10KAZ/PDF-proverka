@@ -519,17 +519,42 @@ def get_project_status(
 
     # Статус экспертной оценки
     expert_review_status = ""
+    findings_review_status = ""
+    optimization_review_status = ""
     total_items = findings_count + optimization_count
     if total_items > 0:
         review_path = output_dir / "expert_review.json"
         if review_path.exists():
             rdata = _load_json(review_path)
             if rdata and "decisions" in rdata:
-                reviewed_count = len([d for d in rdata["decisions"] if d.get("decision") in ("accepted", "rejected")])
+                decisions = rdata["decisions"]
+                reviewed_count = len([d for d in decisions if d.get("decision") in ("accepted", "rejected")])
                 if reviewed_count >= total_items:
                     expert_review_status = "complete"
                 elif reviewed_count > 0:
                     expert_review_status = "partial"
+                # Раздельный статус: findings vs optimizations.
+                # Пустая строка означает "нет данных, не рисовать индикатор".
+                if findings_count > 0:
+                    f_reviewed = len([
+                        d for d in decisions
+                        if d.get("item_type") == "finding"
+                        and d.get("decision") in ("accepted", "rejected")
+                    ])
+                    if f_reviewed >= findings_count:
+                        findings_review_status = "complete"
+                    elif f_reviewed > 0:
+                        findings_review_status = "partial"
+                if optimization_count > 0:
+                    o_reviewed = len([
+                        d for d in decisions
+                        if d.get("item_type") == "optimization"
+                        and d.get("decision") in ("accepted", "rejected")
+                    ])
+                    if o_reviewed >= optimization_count:
+                        optimization_review_status = "complete"
+                    elif o_reviewed > 0:
+                        optimization_review_status = "partial"
 
     return ProjectStatus(
         project_id=project_id,
@@ -563,6 +588,8 @@ def get_project_status(
         pipeline_issues=pipeline_issues,
         pipeline_version=pipeline_version,
         expert_review_status=expert_review_status,
+        findings_review_status=findings_review_status,
+        optimization_review_status=optimization_review_status,
         version_id=version_entry["version_id"],
         version_no=version_entry["version_no"],
         version_label=version_entry["label"],
