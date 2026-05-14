@@ -40,6 +40,11 @@ class AuditJob(BaseModel):
     # его для резолва путей проекта, иначе переключение current_id в UI
     # перекинет write-пути в чужой объект (см. resolve_project_dir binding).
     object_id: Optional[str] = None
+    # version_id фиксируется один раз на старте job. Все стадии этого job
+    # обязаны писать только в _output этой версии. Если пользователь создаст
+    # V3 во время выполнения V2, эта job всё равно дописывает V2.
+    # None трактуется как "v1" (legacy: корневой _output проекта).
+    version_id: Optional[str] = None
     stage: AuditStage = AuditStage.PREPARE
     status: JobStatus = JobStatus.QUEUED
     started_at: Optional[str] = None
@@ -103,6 +108,9 @@ class BatchRequest(BaseModel):
 class BatchQueueItem(BaseModel):
     """Элемент очереди группового действия."""
     project_id: str
+    # Фиксированная версия проекта для этого элемента очереди (см. AuditJob.version_id).
+    # None == legacy V1.
+    version_id: Optional[str] = None
     action: str = "full"
     retry_stage: Optional[str] = None  # конкретный этап для retry (например "block_analysis")
     status: str = "pending"  # pending / running / completed / failed / skipped / cancelled

@@ -21,6 +21,7 @@ from backend.app.models.project import (
 )
 from backend.app.pipeline.stages.gemma_enrichment.gemma_gate import GEMMA_STAGE_LABEL, evaluate_gemma_enrichment
 from backend.app.pipeline.stages.gemma_enrichment.gemma_gate import detect_gemma_migration_state
+from backend.app.services.common import version_service
 
 
 # ─── Per-job object binding ────────────────────────────────────────────────
@@ -369,13 +370,42 @@ def list_projects() -> list[ProjectStatus]:
     return projects
 
 
-def get_project_status(project_id: str) -> Optional[ProjectStatus]:
-    """Получить полный статус одного проекта."""
+def get_project_status(
+    project_id: str,
+    *,
+    version_id: Optional[str] = None,
+) -> Optional[ProjectStatus]:
+    """Получить полный статус одного проекта.
+
+    При `version_id=None` читается **latest** версия проекта. Для legacy-проектов
+    без `project_versions.json` это эквивалентно чтению корневой папки (V1).
+    Для V2+ показатели читаются из `_versions/<version_id>/`; данные V1 НЕ
+    смешиваются.
+    """
     proj_dir = resolve_project_dir(project_id)
     if not proj_dir.exists():
         return None
 
-    info_path = proj_dir / "project_info.json"
+    # Метаданные версий (legacy-проекты без project_versions.json → V1)
+    versions_summary = version_service.get_versions_summary(proj_dir, project_id)
+    latest_id = versions_summary["latest_version_id"]
+    target_version_id = version_id or latest_id
+
+    try:
+        version_dir = version_service.get_version_dir(
+            proj_dir, project_id, target_version_id,
+        )
+        version_entry = version_service.get_version_entry(
+            proj_dir, project_id, target_version_id,
+        )
+    except version_service.VersionNotFoundError:
+        return None
+
+    # project_info: предпочитаем info из самой версии (V2+ создаёт свой
+    # project_info.json через create_next_version), иначе fallback на корень.
+    version_info_path = version_dir / "project_info.json"
+    root_info_path = proj_dir / "project_info.json"
+    info_path = version_info_path if version_info_path.exists() else root_info_path
     if not info_path.exists():
         return None
 
@@ -383,17 +413,19 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
     if not info:
         return None
 
-    output_dir = proj_dir / "_output"
-    pdf_file = info.get("pdf_file", "document.pdf")
-    pdf_files = info.get("pdf_files", [pdf_file])
-    pdf_path = proj_dir / pdf_file
-
-    # Проверяем наличие файлов — суммируем размеры всех PDF
-    has_pdf = pdf_path.exists()
+    output_dir = version_dir / "_output"
+    pdf_file = info.get("pdf_file") or ""
+    pdf_files = info.get("pdf_files") or ([pdf_file] if pdf_file else [])
+    # Пустая строка `pdf_file=""` (новая V2 без загрузок) → не пытаемся
+    # сверяться с `version_dir / ""`, потому что Path("dir") / "" == Path("dir"),
+    # и `dir.exists()` ошибочно даёт True.
+    has_pdf = bool(pdf_file) and (version_dir / pdf_file).exists()
     pdf_size_mb = 0.0
     for pf in pdf_files:
-        pp = proj_dir / pf
-        if pp.exists():
+        if not pf:
+            continue
+        pp = version_dir / pf
+        if pp.exists() and pp.is_file():
             has_pdf = True
             pdf_size_mb += pp.stat().st_size / 1024 / 1024
     pdf_size_mb = round(pdf_size_mb, 1)
@@ -407,7 +439,7 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
     has_md = False
     md_size_kb = 0.0
     if md_file_name:
-        md_path = proj_dir / md_file_name
+        md_path = version_dir / md_file_name
         if md_path.exists() and md_path.stat().st_size > 0:
             has_md = True
             md_size_kb = round(md_path.stat().st_size / 1024, 1)
@@ -416,14 +448,14 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
     # как fallback для Stage 01.
     text_source = "md" if has_md else "none"
 
-    # OCR result.json (от OCR-сервера)
-    has_ocr = bool(list(proj_dir.glob("*_result.json")))
+    # OCR result.json (от OCR-сервера) — в папке версии
+    has_ocr = bool(list(version_dir.glob("*_result.json")))
 
-    # OCR-блоки (кропнутые image-блоки)
+    # OCR-блоки (кропнутые image-блоки) — в папке версии
     block_count = 0
     block_errors = 0
     block_expected = 0
-    blocks_index = gemma_blocks_index_path(proj_dir)
+    blocks_index = gemma_blocks_index_path(version_dir)
     if blocks_index.exists():
         bi = _load_json(blocks_index)
         if bi:
@@ -432,7 +464,7 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
             block_expected = bi.get("total_expected", 0)
 
     # Pipeline status
-    pipeline = _get_pipeline_status(output_dir)
+    pipeline = _get_pipeline_status(output_dir, project_id=project_id)
 
     # Замечания
     findings_count = 0
@@ -531,13 +563,39 @@ def get_project_status(project_id: str) -> Optional[ProjectStatus]:
         pipeline_issues=pipeline_issues,
         pipeline_version=pipeline_version,
         expert_review_status=expert_review_status,
+        version_id=version_entry["version_id"],
+        version_no=version_entry["version_no"],
+        version_label=version_entry["label"],
+        latest_version_id=latest_id,
+        version_count=versions_summary["version_count"],
+        has_versions=versions_summary["has_versions"],
+        is_latest_version=(version_entry["version_id"] == latest_id),
+        versions_summary=versions_summary["versions"],
     )
 
 
-def get_project_info(project_id: str) -> Optional[dict]:
-    """Прочитать raw project_info.json."""
-    path = resolve_project_dir(project_id) / "project_info.json"
-    return _load_json(path)
+def get_project_info(project_id: str, *, version_id: Optional[str] = None) -> Optional[dict]:
+    """Прочитать raw project_info.json.
+
+    При `version_id` (или активном bind_version) пытается прочитать
+    `project_info.json` из папки версии; fallback — корневой info проекта.
+    """
+    proj_dir = resolve_project_dir(project_id)
+    target_vid = version_service.resolve_effective_version_id(
+        proj_dir, project_id, version_id,
+    )
+    try:
+        version_dir = version_service.get_version_dir(proj_dir, project_id, target_vid)
+    except version_service.VersionNotFoundError:
+        return None
+
+    version_info = version_dir / "project_info.json"
+    if version_info.exists():
+        info = _load_json(version_info)
+        if info:
+            return info
+    # Fallback — корневой info (legacy V1).
+    return _load_json(proj_dir / "project_info.json")
 
 
 def save_project_info(project_id: str, data: dict) -> bool:
@@ -551,10 +609,14 @@ def save_project_info(project_id: str, data: dict) -> bool:
         return False
 
 
-def _get_pipeline_status(output_dir: Path) -> PipelineStatus:
+def _get_pipeline_status(output_dir: Path, *, project_id: Optional[str] = None) -> PipelineStatus:
     """Определить статус конвейера.
 
     Приоритет: pipeline_log.json > файловая проверка (fallback).
+
+    `project_id` нужен для корректной проверки `pipeline_manager.is_running`:
+    для V2 `output_dir.parent.name` == "v2", не настоящий project_id, поэтому
+    имя папки использовать нельзя.
     """
     status = PipelineStatus()
     gemma_state = evaluate_gemma_enrichment(output_dir.parent)
@@ -613,7 +675,9 @@ def _get_pipeline_status(output_dir: Path) -> PipelineStatus:
                 # Защита: если "running" но нет активного job → считать "error"
                 if s == "running":
                     from backend.app.pipeline.manager import pipeline_manager
-                    proj_id = output_dir.parent.name
+                    # Для V2 output_dir.parent.name == "v2" и не равен
+                    # project_id — поэтому используем явно переданный.
+                    proj_id = project_id or output_dir.parent.name
                     if not pipeline_manager.is_running(proj_id):
                         s = "error"
                 if log_key == "gemma_enrichment":
@@ -1120,24 +1184,36 @@ def _parse_image_block(text: str) -> dict:
     return result
 
 
-def parse_md_document(project_id: str) -> Optional[dict]:
-    """Парсинг MD-файла проекта по страницам и блокам.
+def parse_md_document(project_id: str, *, version_id: Optional[str] = None) -> Optional[dict]:
+    """Парсинг MD-файла проекта по страницам и блокам (для нужной версии).
 
     Возвращает: {project_id, md_file, total_pages, pages: [{page_num, sheet_info, sheet_label, blocks: [...]}]}
     """
-    # Проверяем кэш
-    cached = _document_cache.get(project_id)
+    # Резолвим версию ПЕРЕД кэшированием, чтобы кеш ключался по реальному
+    # version_id, а не по строке "latest". Иначе при смене latest_version_id
+    # кеш продолжит отдавать данные старой версии.
+    proj_dir = resolve_project_dir(project_id)
+    try:
+        effective_vid = version_service.resolve_effective_version_id(
+            proj_dir, project_id, version_id,
+        )
+        version_dir = version_service.get_version_dir(proj_dir, project_id, effective_vid)
+    except version_service.VersionNotFoundError:
+        return None
+
+    cache_key = f"{project_id}::{effective_vid}"
+    cached = _document_cache.get(cache_key)
     if cached and (time.time() - cached['ts']) < _DOCUMENT_CACHE_TTL:
         return cached['data']
 
-    info = get_project_info(project_id)
+    info = get_project_info(project_id, version_id=effective_vid)
     if not info:
         return None
     md_file_name = info.get("md_file")
     if not md_file_name:
         return None
 
-    md_path = resolve_project_dir(project_id) / md_file_name
+    md_path = version_dir / md_file_name
     if not md_path.exists():
         return None
 
@@ -1206,13 +1282,18 @@ def parse_md_document(project_id: str) -> Optional[dict]:
         "pages": pages,
     }
 
-    _document_cache[project_id] = {"ts": time.time(), "data": result}
+    _document_cache[cache_key] = {"ts": time.time(), "data": result}
     return result
 
 
-def get_document_page(project_id: str, page_num: int) -> Optional[dict]:
+def get_document_page(
+    project_id: str,
+    page_num: int,
+    *,
+    version_id: Optional[str] = None,
+) -> Optional[dict]:
     """Получить данные одной страницы MD-документа."""
-    doc = parse_md_document(project_id)
+    doc = parse_md_document(project_id, version_id=version_id)
     if not doc:
         return None
     for page in doc['pages']:

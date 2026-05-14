@@ -2,7 +2,7 @@
  * Audit Manager — SPA на Vue 3.
  * Маршрутизация, состояние, API-вызовы, live-статус.
  */
-const { createApp, ref, computed, watch, onMounted, onUnmounted, nextTick, reactive } = Vue;
+const { createApp, ref, reactive, computed, watch, onMounted, onUnmounted, nextTick } = Vue;
 
 const app = createApp({
     setup() {
@@ -16,6 +16,53 @@ const app = createApp({
         const currentProject = ref(null);
         const projects = ref([]);
         const loading = ref(false);
+
+        // ─── Версионность проекта ───────────────────────────────────────
+        // activeVersionId — версия, в контексте которой сейчас работаем на
+        // странице проекта. null = latest (для дашборда тоже latest). Все
+        // load*/api*/start* функции автоматически подмешивают её в URL.
+        const activeVersionId = ref(null);
+        // versions_summary текущего проекта (массив записей из backend).
+        const projectVersions = ref([]);
+        const projectVersionsLoading = ref(false);
+        // Список файлов активной версии (для панели "Версии" / upload).
+        const versionFiles = ref([]);
+        // Прогресс / последняя ошибка загрузки файлов в версию.
+        const versionUploading = ref(false);
+        const versionUploadError = ref('');
+        // Состояние modal-а "Создать версию".
+        const showCreateVersionModal = ref(false);
+        const newVersionComment = ref('');
+        const versionsPanelOpen = ref(false);  // боковая панель/блок в info-вкладке
+
+        // ─── Контроль ранее согласованных замечаний (migrated findings) ───
+        // Отчёт пишется backend'ом в _versions/v{N}/_output/migrated_findings_report.json.
+        // На фронте — только чтение/запуск, без редактирования содержимого.
+        const migratedFindingsReport = ref(null);
+        const migratedFindingsReportLoading = ref(false);
+        const migratedFindingsCheckRunning = ref(false);
+        const migratedFindingsError = ref('');
+        const migratedFindingsPanelOpen = ref(false);
+
+        // VersionAPI помещён в глобал через version_api.js (UMD). На случай
+        // деплоя без CDN-фоллбека держим локальную stub-имплементацию.
+        const VAPI = (typeof window !== 'undefined' && window.VersionAPI) ? window.VersionAPI : null;
+
+        // Capabilities текущего сервера. Legacy webapp.main:app пока не умеет
+        // запускать аудит V2 (safety-gate возвращает 409) и не учитывает
+        // ?version_id= в read-роутерах. Когда переедем на backend.app.main:app —
+        // поменять на true; UI разблокирует V2-аудит и V2-чтения.
+        const serverCaps = {
+            v2AuditSupported: false,
+            runner: 'legacy',
+        };
+        function _apiUrl(path, withVersion) {
+            if (!VAPI) return '/api' + (path.startsWith('/') ? path : '/' + path);
+            return VAPI.apiUrl(path, {
+                versionId: activeVersionId.value,
+                withVersion: withVersion !== false,
+            });
+        }
 
         // ─── Data Cache ───
         const _cache = {
@@ -42,7 +89,6 @@ const app = createApp({
         // Sidebar
         const sidebarSectionsOpen = ref(true);
         const sidebarFilterSection = ref(null);  // null = все разделы
-        const lastSectionBeforeProject = ref(null);  // запоминаем раздел при входе в проект
 
         // Findings
         const findingsData = ref(null);
@@ -88,6 +134,12 @@ const app = createApp({
                 'det_reject:low_business_value': 'отклонено: низкая практическая ценность',
                 'llm_reject:already_resolved_by_project_note':
                     'отклонено LLM: уже решено в примечаниях проекта',
+                round1_ocr_artifact_suggested_reject:
+                    'OCR / ошибка распознавания',
+                round1_rd_vs_pz_suggested_reject:
+                    'расчётный параметр: ПЗ/расчёт, не чертёж РД',
+                round1_already_covered_suggested_reject:
+                    'уже есть в смежном разделе / спецификации',
             },
             evidence: {
                 valid: 'валидна',
@@ -1542,9 +1594,28 @@ const app = createApp({
         }
 
         // ─── API helpers ───
-        async function api(path) {
-            const resp = await fetch(`/api${path}`);
-            if (!resp.ok) throw new Error(`API error: ${resp.status}`);
+        // path — путь без `/api`. По умолчанию version_id из activeVersionId
+        // подмешивается автоматически (для read-эндпоинтов: projects,
+        // findings, optimization, blocks/tiles, document).
+        // Передай `opts.withVersion=false` для endpoint'ов, которые сами
+        // управляют версией (например `/projects/.../versions/v2/files`).
+        async function api(path, opts) {
+            opts = opts || {};
+            // V2-stub: если active V2 на legacy runner (serverCaps.v2AuditSupported=false),
+            // ряд read-endpoints отдают V1-данные, потому что legacy webapp
+            // игнорирует ?version_id=. Подменяем такой ответ на пустой stub,
+            // чтобы UI V2 не показывал V1 содержимое (см. smoke 2026-05-14).
+            // Логика вынесена в VAPI.v2EmptyStubFor для тестируемости.
+            if (VAPI && VAPI.v2EmptyStubFor) {
+                const stub = VAPI.v2EmptyStubFor(path, activeVersionId.value, serverCaps);
+                if (stub !== null) return stub;
+            }
+            const url = _apiUrl(path, opts.withVersion);
+            const resp = await fetch(url);
+            if (!resp.ok) {
+                const err = await resp.json().catch(() => ({}));
+                throw new Error(err.detail || `API error: ${resp.status}`);
+            }
             return resp.json();
         }
 
@@ -1561,7 +1632,35 @@ const app = createApp({
         }
 
         function handleRoute() {
-            const hash = window.location.hash.slice(1) || '/';
+            const rawHash = window.location.hash.slice(1) || '/';
+            // Отделяем query от path (хранится `?version_id=v2`).
+            const qIdx = rawHash.indexOf('?');
+            const hash = qIdx >= 0 ? rawHash.slice(0, qIdx) : rawHash;
+
+            // Версия из URL — если она задана, она перебивает activeVersionId.
+            // Если её нет — оставляем активной то, что уже выбрано пользователем,
+            // либо latest (определится после loadProjectVersions).
+            const urlVersion = (typeof window !== 'undefined' && window.VersionAPI)
+                ? window.VersionAPI.parseVersionFromHash(rawHash)
+                : null;
+            if (urlVersion && urlVersion !== activeVersionId.value) {
+                // Смена версии — чистим кэши проектных данных, чтобы не мигал V1
+                // контент внутри V2 (см. ТЗ "При переключении V2 → V1 старые
+                // данные должны очищаться до загрузки V1").
+                _cacheInvalidate('project');
+                _cacheInvalidate('findings');
+                _cacheInvalidate('optimization');
+                _cacheInvalidate('blocks');
+                currentProject.value = null;
+                findingsData.value = null;
+                _migratedReset();
+                activeVersionId.value = urlVersion;
+            } else if (!urlVersion && qIdx < 0 && !hash.startsWith('/project')) {
+                // На дашборде/прочих не-проектных страницах сбрасываем выбор
+                // версии, чтобы не утаскивать его при возврате к другому проекту.
+                activeVersionId.value = null;
+                _migratedReset();
+            }
 
             // При прямом открытии страницы проекта (refresh/bookmark) projects может быть пустым —
             // загружаем все проекты чтобы работала навигация по разделу и sidebar.
@@ -1588,6 +1687,10 @@ const app = createApp({
             } else if (hash === '/model-control') {
                 currentView.value = 'model-control';
                 connectGlobalWS();
+            } else if (hash === '/critic-v2-ui') {
+                // Experimental offline view. Does NOT touch production pipeline.
+                currentView.value = 'critic-v2-ui';
+                connectGlobalWS();
             } else if (hash === '/') {
                 currentView.value = 'dashboard';
                 sidebarFilterSection.value = null;
@@ -1602,7 +1705,6 @@ const app = createApp({
                 refreshProjects();
             } else if (hash.match(/^\/project\/(.+)\/findings$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/findings$/)[1]);
-                if (currentView.value === 'dashboard') lastSectionBeforeProject.value = sidebarFilterSection.value;
                 currentView.value = 'findings';
                 currentProjectId.value = id;
                 connectGlobalWS();
@@ -1611,7 +1713,6 @@ const app = createApp({
                 loadExpertDecisions();
             } else if (hash.match(/^\/project\/(.+)\/blocks$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/blocks$/)[1]);
-                if (currentView.value === 'dashboard') lastSectionBeforeProject.value = sidebarFilterSection.value;
                 currentView.value = 'blocks';
                 currentProjectId.value = id;
                 connectGlobalWS();
@@ -1619,7 +1720,6 @@ const app = createApp({
                 loadBlocks(id);
             } else if (hash.match(/^\/project\/(.+)\/optimization$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/optimization$/)[1]);
-                if (currentView.value === 'dashboard') lastSectionBeforeProject.value = sidebarFilterSection.value;
                 currentView.value = 'optimization';
                 currentProjectId.value = id;
                 connectGlobalWS();
@@ -1648,26 +1748,6 @@ const app = createApp({
                 loadProject(id);
                 loadDiscussionModels();
                 loadDiscussionItems(id, discussionTab.value);
-            } else if (hash.match(/^\/project\/(.+)\/critic-v2-disagreements$/)) {
-                // Project-scoped Critic v2 — opens straight on the disagreements filter.
-                // Read-only: backend endpoint fetches the offline artifact, no LLM,
-                // no production pipeline mutation.
-                const id = decodeURIComponent(
-                    hash.match(/^\/project\/(.+)\/critic-v2-disagreements$/)[1]
-                );
-                currentView.value = 'critic-v2-project';
-                currentProjectId.value = id;
-                connectGlobalWS();
-                loadProject(id);
-                cv2LoadProject(id, { disagreementsMode: true });
-            } else if (hash.match(/^\/project\/(.+)\/critic-v2$/)) {
-                // Project-scoped Critic v2 (experimental, offline read-only).
-                const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/critic-v2$/)[1]);
-                currentView.value = 'critic-v2-project';
-                currentProjectId.value = id;
-                connectGlobalWS();
-                loadProject(id);
-                cv2LoadProject(id);
             } else if (hash.match(/^\/project\/(.+)\/document$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/document$/)[1]);
                 currentView.value = 'document';
@@ -1689,6 +1769,26 @@ const app = createApp({
                     promptsDiscipline.value = section;
                     loadTemplates(section);
                 });
+            } else if (hash.match(/^\/project\/(.+)\/critic-v2-disagreements$/)) {
+                // Project-scoped Critic v2 — opens straight on the disagreements filter.
+                // Same view, same endpoint; only the default filter and the
+                // feedback-export scope change. Experimental, offline read-only.
+                const id = decodeURIComponent(
+                    hash.match(/^\/project\/(.+)\/critic-v2-disagreements$/)[1]
+                );
+                currentView.value = 'critic-v2-project';
+                currentProjectId.value = id;
+                connectGlobalWS();
+                loadProject(id);
+                cv2LoadProject(id, { disagreementsMode: true });
+            } else if (hash.match(/^\/project\/(.+)\/critic-v2$/)) {
+                // Project-scoped Critic v2 (experimental, offline read-only).
+                const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/critic-v2$/)[1]);
+                currentView.value = 'critic-v2-project';
+                currentProjectId.value = id;
+                connectGlobalWS();
+                loadProject(id);
+                cv2LoadProject(id);
             } else if (hash.match(/^\/project\/(.+)\/log$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/log$/)[1]);
                 currentView.value = 'log';
@@ -1702,7 +1802,6 @@ const app = createApp({
                 connectProjectWS(id);  // Project WS только для лога
             } else if (hash.match(/^\/project\/(.+)$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/(.+)$/)[1]);
-                if (currentView.value === 'dashboard') lastSectionBeforeProject.value = sidebarFilterSection.value;
                 currentView.value = 'project';
                 currentProjectId.value = id;
                 connectGlobalWS();  // Не нужен project WS
@@ -2303,13 +2402,15 @@ const app = createApp({
             return resp.json();
         }
 
-        async function apiPost(path, body) {
+        async function apiPost(path, body, postOpts) {
+            postOpts = postOpts || {};
             const opts = { method: 'POST' };
             if (body !== undefined) {
                 opts.headers = { 'Content-Type': 'application/json' };
                 opts.body = JSON.stringify(body);
             }
-            const resp = await fetch(`/api${path}`, opts);
+            const url = _apiUrl(path, postOpts.withVersion);
+            const resp = await fetch(url, opts);
             if (!resp.ok) {
                 const err = await resp.json().catch(() => ({}));
                 throw new Error(err.detail || `API error: ${resp.status}`);
@@ -2322,12 +2423,36 @@ const app = createApp({
             connectProjectWS(projectId);
         }
 
+        /**
+         * Сделать сообщение об ошибке audit/optimization read-friendly.
+         *
+         * Если backend ответил 409 «Запуск аудита... legacy runner», вместо
+         * сырого длинного текста показываем понятную фразу. Полный detail
+         * пишем в console для отладки.
+         *
+         * @param {Error} e
+         */
+        function _friendlyAuditError(e) {
+            const msg = e && e.message ? String(e.message) : 'Ошибка';
+            // По тексту определяем, это ли наш safety-gate 409.
+            if (/legacy runner/i.test(msg)) {
+                console.warn('[audit] safety-gate 409:', msg);
+                alert(
+                    'Запуск аудита этой версии временно недоступен на legacy ' +
+                    'runner. Версия и файлы сохранены, контроль ранее ' +
+                    'согласованных замечаний доступен.'
+                );
+                return;
+            }
+            alert(msg);
+        }
+
         async function startPrepare(projectId) {
             try {
                 auditRunning.value = true;
                 await apiPost(`/audit/${encodeURIComponent(projectId)}/prepare`);
                 _afterAuditStart(projectId);
-            } catch (e) { alert(e.message); auditRunning.value = false; }
+            } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
         }
 
         async function startMainAudit(projectId) {
@@ -2335,7 +2460,7 @@ const app = createApp({
                 auditRunning.value = true;
                 await apiPost(`/audit/${encodeURIComponent(projectId)}/main-audit`);
                 _afterAuditStart(projectId);
-            } catch (e) { alert(e.message); auditRunning.value = false; }
+            } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
         }
 
         async function startSmartAudit(projectId) {
@@ -2343,7 +2468,7 @@ const app = createApp({
                 auditRunning.value = true;
                 await apiPost(`/audit/${encodeURIComponent(projectId)}/smart-audit`);
                 _afterAuditStart(projectId);
-            } catch (e) { alert(e.message); auditRunning.value = false; }
+            } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
         }
 
         async function startAudit(projectId) {
@@ -2356,7 +2481,7 @@ const app = createApp({
                 auditRunning.value = true;
                 await apiPost(`/audit/${encodeURIComponent(projectId)}/full-audit`);
                 _afterAuditStart(projectId);
-            } catch (e) { alert(e.message); auditRunning.value = false; }
+            } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
         }
 
         // Legacy aliases
@@ -2368,7 +2493,7 @@ const app = createApp({
                 auditRunning.value = true;
                 await apiPost(`/audit/${encodeURIComponent(projectId)}/verify-norms`);
                 _afterAuditStart(projectId);
-            } catch (e) { alert(e.message); auditRunning.value = false; }
+            } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
         }
 
         async function resumePipeline(projectId) {
@@ -2376,7 +2501,7 @@ const app = createApp({
                 auditRunning.value = true;
                 await apiPost(`/audit/${encodeURIComponent(projectId)}/resume`);
                 _afterAuditStart(projectId);
-            } catch (e) { alert(e.message); auditRunning.value = false; }
+            } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
         }
 
         async function resumeToQueue(projectId) {
@@ -2588,7 +2713,7 @@ const app = createApp({
                     await apiPost(`/audit/${encodeURIComponent(projectId)}/retry/${stage}`);
                 }
                 _afterAuditStart(projectId);
-            } catch (e) { alert(e.message); auditRunning.value = false; }
+            } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
         }
 
         async function retryStageToQueue() {
@@ -3025,7 +3150,7 @@ const app = createApp({
                 projectGroups.value = data.groups || {};
             } catch (e) {
                 console.error('Failed to load project groups:', e);
-                projectGroups.value = {};
+                // не сбрасывать текущие группы при ошибке сети
             }
         }
 
@@ -3468,23 +3593,345 @@ const app = createApp({
 
         async function loadProject(id, forceRefresh) {
             currentProjectId.value = id;
+            // Кеш ключуется по (id, activeVersionId), чтобы V1/V2 одного проекта
+            // не наступали друг на друга.
+            const cacheKey = activeVersionId.value
+                ? `${id}::${activeVersionId.value}`
+                : id;
             if (!forceRefresh) {
-                const cached = _cacheGet('project', id);
+                const cached = _cacheGet('project', cacheKey);
                 if (cached) { currentProject.value = cached; return; }
             }
             try {
-                currentProject.value = await api(`/projects/${encodeURIComponent(id)}`);
-                _cacheSet('project', id, currentProject.value);
-                // Если зашли напрямую по URL — определить раздел из проекта
-                if (!lastSectionBeforeProject.value && currentProject.value?.section) {
-                    lastSectionBeforeProject.value = currentProject.value.section;
+                // Загружаем список версий параллельно — он нужен и для UI,
+                // и для определения latest, если activeVersionId ещё не задан.
+                await loadProjectVersions(id);
+                const project = await api(`/projects/${encodeURIComponent(id)}`);
+                // V2-leak fix: legacy webapp игнорирует ?version_id= в
+                // /api/projects/{id} → возвращает V1 счётчики/pipeline даже
+                // на V2 запрос. Для V2+ на legacy runner обнуляем поля,
+                // чтобы UI вкладок ("Замечания: 2") не показывал V1 данные
+                // как V2.
+                if (
+                    activeVersionId.value && activeVersionId.value !== 'v1'
+                    && !serverCaps.v2AuditSupported
+                ) {
+                    project.findings_count = 0;
+                    project.optimization_count = 0;
+                    project.block_count = 0;
+                    project.findings_by_severity = {};
+                    project.optimization_by_type = {};
+                    project.optimization_savings_pct = 0;
                 }
+                currentProject.value = project;
+                _cacheSet('project', cacheKey, currentProject.value);
                 loadResumeInfo(id);
                 fetchProjectUsage(id);  // загрузить детальный usage
+                // Migrated findings: для V2+ подгружаем отчёт (если есть).
+                // Для V1 не дёргаем — там отчёта не бывает.
+                if (activeVersionId.value && activeVersionId.value !== 'v1') {
+                    loadMigratedFindingsReport(id, activeVersionId.value);
+                } else {
+                    _migratedReset();
+                }
             } catch (e) {
                 console.error('Failed to load project:', e);
                 currentProject.value = null;
             }
+        }
+
+        // ─── Версионность проекта: загрузка / создание / upload ────────
+        async function loadProjectVersions(projectId, opts) {
+            opts = opts || {};
+            projectVersionsLoading.value = true;
+            try {
+                // Этот endpoint не зависит от activeVersionId — сам возвращает
+                // все версии проекта.
+                const data = await api(
+                    `/projects/${encodeURIComponent(projectId)}/versions`,
+                    { withVersion: false },
+                );
+                projectVersions.value = data.versions || [];
+                // Если activeVersionId не задан или невалиден — выставляем latest.
+                const ids = new Set(projectVersions.value.map(v => v.version_id));
+                if (!activeVersionId.value || !ids.has(activeVersionId.value)) {
+                    activeVersionId.value = data.latest_version_id || 'v1';
+                }
+                if (opts.loadFiles && activeVersionId.value) {
+                    await loadVersionFiles(projectId, activeVersionId.value);
+                }
+                return data;
+            } catch (e) {
+                console.error('Failed to load versions:', e);
+                projectVersions.value = [];
+                return null;
+            } finally {
+                projectVersionsLoading.value = false;
+            }
+        }
+
+        async function loadVersionFiles(projectId, versionId) {
+            try {
+                const data = await api(
+                    `/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(versionId)}/files`,
+                    { withVersion: false },
+                );
+                versionFiles.value = data.files || [];
+                return data;
+            } catch (e) {
+                console.error('Failed to load version files:', e);
+                versionFiles.value = [];
+                return null;
+            }
+        }
+
+        function selectVersion(versionId) {
+            if (!currentProjectId.value || activeVersionId.value === versionId) return;
+            // Очищаем кеши проектных данных, чтобы при переключении V2→V1
+            // не мигал старый V2 контент (см. ТЗ).
+            _cacheInvalidate('project');
+            _cacheInvalidate('findings');
+            _cacheInvalidate('optimization');
+            _cacheInvalidate('blocks');
+            currentProject.value = null;
+            findingsData.value = null;
+            _migratedReset();
+            activeVersionId.value = versionId;
+            // Синхронизируем URL: добавляем/обновляем ?version_id=
+            const hash = window.location.hash.slice(1) || '/';
+            const qIdx = hash.indexOf('?');
+            const path = qIdx >= 0 ? hash.slice(0, qIdx) : hash;
+            window.location.hash = window.VersionAPI
+                ? window.VersionAPI.buildHashRoute(path, versionId)
+                : path + '?version_id=' + encodeURIComponent(versionId);
+        }
+
+        async function createNewVersion() {
+            if (!currentProjectId.value) return;
+            const comment = (newVersionComment.value || '').trim();
+            try {
+                const data = await apiPost(
+                    `/projects/${encodeURIComponent(currentProjectId.value)}/versions`,
+                    { comment, source: 'manual', status: 'new' },
+                    { withVersion: false },
+                );
+                const newId = data.version && data.version.version_id;
+                newVersionComment.value = '';
+                showCreateVersionModal.value = false;
+                // Обновляем список и активируем новую версию
+                await loadProjectVersions(currentProjectId.value);
+                if (newId) selectVersion(newId);
+                versionsPanelOpen.value = true;
+                return data;
+            } catch (e) {
+                alert('Не удалось создать версию: ' + e.message);
+            }
+        }
+
+        async function uploadFilesToVersion(filesList, replaceExisting) {
+            if (!currentProjectId.value || !activeVersionId.value) return;
+            if (!filesList || !filesList.length) return;
+            versionUploading.value = true;
+            versionUploadError.value = '';
+            try {
+                const fd = new FormData();
+                for (const f of filesList) fd.append('files', f, f.name);
+                fd.append('replace_existing', replaceExisting ? 'true' : 'false');
+                const pid = encodeURIComponent(currentProjectId.value);
+                const vid = encodeURIComponent(activeVersionId.value);
+                const resp = await fetch(`/api/projects/${pid}/versions/${vid}/files`, {
+                    method: 'POST',
+                    body: fd,
+                });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    const msg = window.VersionAPI
+                        ? window.VersionAPI.describeUploadError(resp.status, err.detail || '')
+                        : (err.detail || `Ошибка ${resp.status}`);
+                    versionUploadError.value = msg;
+                    return null;
+                }
+                // Перезагрузка: список файлов + версии + статус проекта
+                await loadVersionFiles(currentProjectId.value, activeVersionId.value);
+                await loadProjectVersions(currentProjectId.value);
+                await loadProject(currentProjectId.value, true);
+                return await resp.json();
+            } catch (e) {
+                versionUploadError.value = e.message;
+                return null;
+            } finally {
+                versionUploading.value = false;
+            }
+        }
+
+        function handleUploadInput(event) {
+            const files = Array.from(event.target.files || []);
+            if (!files.length) return;
+            uploadFilesToVersion(files, false);
+            event.target.value = '';
+        }
+
+        function handleUploadInputReplace(event) {
+            const files = Array.from(event.target.files || []);
+            if (!files.length) return;
+            uploadFilesToVersion(files, true);
+            event.target.value = '';
+        }
+
+        // ─── Migrated findings (контроль ранее согласованных замечаний) ───
+
+        function _migratedReset() {
+            migratedFindingsReport.value = null;
+            migratedFindingsError.value = '';
+        }
+
+        async function loadMigratedFindingsReport(projectId, versionId) {
+            const pid = projectId || currentProjectId.value;
+            const vid = versionId || activeVersionId.value;
+            if (!pid || !vid) { _migratedReset(); return null; }
+            // V1 — отчёта нет и быть не может; не дёргаем сеть.
+            if (vid === 'v1') { _migratedReset(); return null; }
+            migratedFindingsReportLoading.value = true;
+            migratedFindingsError.value = '';
+            try {
+                const url = VAPI
+                    ? VAPI.migratedFindingsReportUrl(pid, vid)
+                    : `/api/projects/${encodeURIComponent(pid)}/versions/${encodeURIComponent(vid)}/migrated-findings/report`;
+                const resp = await fetch(url);
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    migratedFindingsError.value = err.detail || `Ошибка ${resp.status}`;
+                    migratedFindingsReport.value = null;
+                    return null;
+                }
+                const data = await resp.json();
+                // Бэкенд возвращает {exists, report, project_id, version_id}
+                migratedFindingsReport.value = data && data.exists ? data.report : null;
+                return migratedFindingsReport.value;
+            } catch (e) {
+                migratedFindingsError.value = e.message || String(e);
+                migratedFindingsReport.value = null;
+                return null;
+            } finally {
+                migratedFindingsReportLoading.value = false;
+            }
+        }
+
+        async function runMigratedFindingsCheck() {
+            const pid = currentProjectId.value;
+            const vid = activeVersionId.value;
+            if (!pid || !vid) return null;
+            const guard = VAPI ? VAPI.canRunMigratedCheck(vid) : { ok: vid !== 'v1', reason: '' };
+            if (!guard.ok) {
+                migratedFindingsError.value = guard.reason || 'Контроль недоступен.';
+                return null;
+            }
+            migratedFindingsCheckRunning.value = true;
+            migratedFindingsError.value = '';
+            try {
+                const url = VAPI
+                    ? VAPI.migratedFindingsCheckUrl(pid, vid)
+                    : `/api/projects/${encodeURIComponent(pid)}/versions/${encodeURIComponent(vid)}/migrated-findings/check`;
+                const resp = await fetch(url, { method: 'POST' });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    migratedFindingsError.value = VAPI
+                        ? VAPI.describeMigratedCheckError(resp.status, err.detail || '')
+                        : (err.detail || `Ошибка ${resp.status}`);
+                    return null;
+                }
+                const data = await resp.json();
+                // Backend возвращает {status, source_version_id, reason, report}.
+                // В UI нам нужен сам report (с items + counts).
+                const report = (data && data.report) ? data.report : data;
+                migratedFindingsReport.value = report || null;
+                migratedFindingsPanelOpen.value = true;
+
+                // still_relevant мог быть добавлен в 03_findings.json — обновляем
+                // список findings и статус проекта, чтобы пользователь увидел
+                // migrated-замечания и пересчитанные счётчики.
+                _cacheInvalidate('findings');
+                _cacheInvalidate('project');
+                if (currentView.value === 'findings') {
+                    loadFindings(pid);
+                }
+                loadProject(pid, true);
+
+                const total = report && report.total_previous_accepted_findings != null
+                    ? report.total_previous_accepted_findings
+                    : 0;
+                try {
+                    alert(`Контроль завершён. Проверено ${total} ранее согласованных замечаний.`);
+                } catch (_) {}
+                return data;
+            } catch (e) {
+                migratedFindingsError.value = e.message || String(e);
+                return null;
+            } finally {
+                migratedFindingsCheckRunning.value = false;
+            }
+        }
+
+        // Компьютед-summary для UI (через VersionAPI helper).
+        const migratedFindingsSummary = computed(() => {
+            if (!VAPI) {
+                return {
+                    hasReport: !!migratedFindingsReport.value,
+                    sourceVersionId: '',
+                    total: 0, stillRelevant: 0, duplicate: 0,
+                    resolved: 0, notVerifiable: 0, sourceMissing: 0,
+                    checkedAt: '', itemsCount: 0,
+                };
+            }
+            return VAPI.summarizeMigratedReport(migratedFindingsReport.value);
+        });
+
+        function migratedStatusLabel(status) {
+            return VAPI ? VAPI.formatMigratedStatusLabel(status) : (status || '—');
+        }
+        function migratedStatusTone(status) {
+            return VAPI ? VAPI.formatMigratedStatusTone(status) : 'muted';
+        }
+        function findingMigratedBadge(f) {
+            return VAPI ? VAPI.findingMigratedBadge(f) : null;
+        }
+
+        // Доступен ли контроль для текущей активной версии.
+        const canRunMigratedCheckNow = computed(() => {
+            const vid = activeVersionId.value
+                || (currentProject.value && currentProject.value.latest_version_id)
+                || null;
+            if (!VAPI) return { ok: vid && vid !== 'v1', reason: vid === 'v1' ? 'Только V2+' : '' };
+            return VAPI.canRunMigratedCheck(vid);
+        });
+
+        // ─── Computed-helpers для UI ───
+        const activeVersionEntry = computed(() => {
+            if (!activeVersionId.value) return null;
+            return projectVersions.value.find(v => v.version_id === activeVersionId.value) || null;
+        });
+
+        // serverCaps определён выше (вместе с VAPI), чтобы быть доступным
+        // и для api()-guard'а v2-стабов, и для canStartAuditNow.
+        const canStartAuditNow = computed(() => {
+            if (!window.VersionAPI) return { ok: true, reason: '' };
+            // Для legacy V1 без manifest всё ещё работаем по has_pdf currentProject.
+            if (!activeVersionEntry.value) {
+                if (currentProject.value && currentProject.value.has_pdf) {
+                    return { ok: true, reason: '' };
+                }
+                return { ok: false, reason: 'PDF не найден' };
+            }
+            return window.VersionAPI.canStartAudit(
+                activeVersionEntry.value,
+                { serverCaps },
+            );
+        });
+
+        function versionBadgeFor(project) {
+            return (window.VersionAPI && window.VersionAPI.formatVersionBadge)
+                ? window.VersionAPI.formatVersionBadge(project)
+                : null;
         }
 
         // ─── Finding → Block map ───
@@ -4407,7 +4854,7 @@ const app = createApp({
                     await apiPost(`/optimization/${id}/run`);
                     if (currentView.value === 'project') loadProject(id);
                 } catch (e) {
-                    alert('Ошибка запуска оптимизации: ' + (e.message || e));
+                    _friendlyAuditError(e);
                 }
             });
         }
@@ -6096,16 +6543,13 @@ const app = createApp({
             if (!currentProjectId.value) return;
             expertReviewSaving.value = true;
             try {
-                const activeType = currentView.value === 'optimization' ? 'optimization' : 'finding';
                 const decisions = [];
                 const removedIds = [];
                 for (const [itemId, d] of Object.entries(expertDecisions.value)) {
-                    const itemType = d.item_type || (itemId.startsWith('OPT') ? 'optimization' : 'finding');
-                    if (itemType !== activeType) continue;
                     if (d.decision) {
                         decisions.push({
                             item_id: itemId,
-                            item_type: itemType,
+                            item_type: d.item_type || (itemId.startsWith('OPT') ? 'optimization' : 'finding'),
                             decision: d.decision,
                             rejection_reason: d.rejection_reason || null,
                             timestamp: new Date().toISOString(),
@@ -6124,7 +6568,7 @@ const app = createApp({
                     throw new Error(err.detail || `Ошибка сохранения: ${resp.statusText}`);
                 }
                 const result = await resp.json();
-                // Синхронизировать все решения с системой обсуждений (проработка замечаний)
+                // Синхронизировать принятые/отклонённые решения с системой обсуждений
                 for (const d of decisions) {
                     const discType = d.item_id.startsWith('OPT') ? 'optimization' : 'finding';
                     const status = d.decision === 'accepted' ? 'confirmed' : 'rejected';
@@ -6135,6 +6579,7 @@ const app = createApp({
                         body: JSON.stringify({ status, summary }),
                     }).catch(() => {});
                 }
+                // Сбросить статус для отменённых решений
                 for (const itemId of removedIds) {
                     const discType = itemId.startsWith('OPT') ? 'optimization' : 'finding';
                     fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(itemId)}/resolve?type=${discType}`, {
@@ -6144,7 +6589,6 @@ const app = createApp({
                     }).catch(() => {});
                 }
                 alert(`Сохранено: ${result.accepted} принято, ${result.rejected} отклонено`);
-                expertReviewMode.value = false;
             } catch (e) {
                 console.error('Submit expert review error:', e);
                 alert('Ошибка сохранения: ' + (e.message || e));
@@ -6160,8 +6604,7 @@ const app = createApp({
             return (expertDecisions.value[itemId] || {}).rejection_reason || '';
         }
         function expertReviewSummary() {
-            const itemType = currentView.value === 'optimization' ? 'optimization' : 'finding';
-            const vals = Object.values(expertDecisions.value).filter(d => d.item_type === itemType);
+            const vals = Object.values(expertDecisions.value);
             return {
                 total: vals.filter(d => d.decision).length,
                 accepted: vals.filter(d => d.decision === 'accepted').length,
@@ -6495,7 +6938,7 @@ const app = createApp({
             // Disciplines
             supportedDisciplines, getDisciplineColor, disciplineLabel, disciplineBadgeStyle,
             objectName, projectsBySection, collapsedSections, toggleSection,
-            sidebarSectionsOpen, sidebarFilterSection, lastSectionBeforeProject,
+            sidebarSectionsOpen, sidebarFilterSection,
             allSectionsCollapsed, toggleAllSections,
             showEditSection, editSectionCode, editSectionName, editSectionColor,
             openEditSection, saveEditSection, deleteSection,
@@ -6572,22 +7015,41 @@ const app = createApp({
             confirmCustomer, unconfirmCustomer, revokeKBDecision,
             loadKBPatterns, detectPatterns, approvePattern, dismissPattern,
             uploadDecisionsExcel, uploadAndApplyDecisions,
-            // ─── Critic v2 (experimental, offline) ─────────────────────────
+            // Critic v2 UI Triage View (experimental, offline)
             cv2Export, cv2LoadError, cv2ActiveTab, cv2Filter,
             cv2OnFileSelected, cv2ResetFilters, cv2ParseExport, cv2ScoreBucket,
             cv2ItemMatchesFilter, cv2HasHumanDecisions,
             cv2FilterOptions, cv2ItemsByTab, cv2VisibleCountByTab,
+            // Critic v2 UI Feedback (frontend-only)
             cv2Feedback, cv2FeedbackSummary,
             cv2EnsureFeedback, cv2HasFeedback,
             cv2SetTriageCorrect, cv2SetPreferredTab,
             cv2SetPriority, cv2SetReviewerNote,
             cv2QuickRoute, cv2QuickUnsure,
             cv2BuildFeedbackExport, cv2ExportFeedback,
+            // Critic v2 project-scoped view (read-only)
             cv2ProjLoading, cv2ProjLoadError, cv2ProjHint,
             cv2ProjDisagreementsMode,
             cv2LoadProject,
+            // Critic v2 — Russian labels (UI-only, backend tokens unchanged)
             cv2Label, cv2HumanizeExplanation,
+            // Critic v2 — alignment vs expert_review (UI-only)
             cv2AlignmentOf, cv2IsDisagreement, cv2AlignmentSummary,
+            // ─── Версионность проекта ───
+            activeVersionId, projectVersions, projectVersionsLoading,
+            versionFiles, versionUploading, versionUploadError,
+            showCreateVersionModal, newVersionComment, versionsPanelOpen,
+            loadProjectVersions, loadVersionFiles, selectVersion,
+            createNewVersion, uploadFilesToVersion,
+            handleUploadInput, handleUploadInputReplace,
+            activeVersionEntry, canStartAuditNow, versionBadgeFor,
+            // ─── Migrated findings (контроль ранее согласованных замечаний) ───
+            migratedFindingsReport, migratedFindingsReportLoading,
+            migratedFindingsCheckRunning, migratedFindingsError,
+            migratedFindingsPanelOpen, migratedFindingsSummary,
+            canRunMigratedCheckNow,
+            loadMigratedFindingsReport, runMigratedFindingsCheck,
+            migratedStatusLabel, migratedStatusTone, findingMigratedBadge,
         };
     }
 });

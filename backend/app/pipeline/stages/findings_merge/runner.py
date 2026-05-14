@@ -49,13 +49,22 @@ def _error_detail(exit_code: int, output: str, max_len: int = 200) -> str:
 
 # ─── Pure helper functions (re-exported from previous pass) ──────────────────
 
+def _version_output_dir(project_id: str):
+    """Папка _output активной версии (через bind_version), fallback на корень."""
+    from backend.app.services.common import version_service
+    try:
+        return version_service.resolve_version_output_dir(project_id)
+    except (version_service.VersionNotFoundError, FileNotFoundError):
+        return resolve_project_dir(project_id) / "_output"
+
+
 def backfill_text_evidence_in_findings(project_id: str):
     """Backfill text-evidence + sheet в 03_findings.json.
 
     1. selected_text_block_ids/evidence_text_refs — из 02_blocks_analysis.json
     2. sheet — детерминированно из document_graph.json page_sheet_map
     """
-    output_dir = resolve_project_dir(project_id) / "_output"
+    output_dir = _version_output_dir(project_id)
     findings_path = output_dir / "03_findings.json"
     blocks_path = output_dir / "02_blocks_analysis.json"
     graph_path = output_dir / "document_graph.json"
@@ -166,7 +175,7 @@ def refresh_finding_quality(
     filename: str = "03_findings.json",
 ) -> dict | None:
     """Refresh deterministic practicality metadata for findings."""
-    target_path = resolve_project_dir(project_id) / "_output" / filename
+    target_path = _version_output_dir(project_id) / filename
     if not target_path.exists():
         return None
 
@@ -186,7 +195,7 @@ def merge_similar_findings(project_id: str) -> dict | None:
     import re as _re
     import shutil
 
-    output_dir = resolve_project_dir(project_id) / "_output"
+    output_dir = _version_output_dir(project_id)
     findings_path = output_dir / "03_findings.json"
     if not findings_path.exists():
         return None

@@ -37,6 +37,25 @@ from backend.app.pipeline.stages.prepare.task_builder import (
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.services.llm.llm_runner import build_interleaved_content, make_image_content
 
+
+def _version_output_dir(project_id: str) -> Path:
+    """Папка `_output` активной версии (через bind_version() ContextVar);
+    fallback — root `_output` для V1 / legacy.
+
+    Используем для всех reads/writes runtime artefacts, чтобы V2 audit не
+    читал V1 cached artifacts (01_text_analysis.json, 02_blocks_analysis.json и др.).
+    """
+    from backend.app.services.common import version_service
+    try:
+        return version_service.resolve_version_output_dir(project_id)
+    except (version_service.VersionNotFoundError, FileNotFoundError):
+        return resolve_project_dir(project_id) / "_output"
+
+
+def _version_project_dir(project_id: str) -> Path:
+    """version_dir активной версии (parent of _output)."""
+    return _version_output_dir(project_id).parent
+
 logger = logging.getLogger(__name__)
 
 
@@ -113,7 +132,7 @@ def _load_and_clean_template(
     # Подстановка путей (на случай если остались после очистки)
     _, output_path = _get_project_paths(project_id)
     md_file_path = _get_md_file_path(project_info, project_id)
-    project_path = str(resolve_project_dir(project_id))
+    project_path = str(_version_project_dir(project_id))
 
     template = template.replace("{OUTPUT_PATH}", output_path)
     template = template.replace("{MD_FILE_PATH}", md_file_path)
@@ -141,7 +160,7 @@ def _read_text_analysis_for_blocks(project_id: str) -> str:
       - image_block_priorities / image_blocks_priority — служебная
       - arithmetic_checks, arithmetic_verification и прочие промежуточные
     """
-    file_path = resolve_project_dir(project_id) / "_output" / "01_text_analysis.json"
+    file_path = _version_output_dir(project_id) / "01_text_analysis.json"
     if not file_path.exists():
         return "(файл 01_text_analysis.json не найден)"
     try:
@@ -162,7 +181,7 @@ def _read_json_file(project_id: str, filename: str) -> str:
     Returns:
         Содержимое файла или сообщение об отсутствии.
     """
-    file_path = resolve_project_dir(project_id) / "_output" / filename
+    file_path = _version_output_dir(project_id) / filename
     if not file_path.exists():
         return f"(файл {filename} не найден)"
     try:
@@ -178,7 +197,7 @@ def _read_findings_merge_blocks(project_id: str, *, compact_for_local: bool) -> 
     которые реально нужны, чтобы не терять свод замечаний из-за переполнения
     контекста и невалидного ответа.
     """
-    file_path = resolve_project_dir(project_id) / "_output" / "02_blocks_analysis.json"
+    file_path = _version_output_dir(project_id) / "02_blocks_analysis.json"
     if not file_path.exists():
         return "(файл 02_blocks_analysis.json не найден)"
 
@@ -260,7 +279,7 @@ def _read_md_file(project_info: dict, project_id: str) -> str:
         raise FileNotFoundError(
             "Markdown PDF representation is required: md_file is not set in project_info.json"
         )
-    md_path = resolve_project_dir(project_id) / md_file
+    md_path = _version_project_dir(project_id) / md_file
     if not md_path.exists():
         raise FileNotFoundError(
             f"Markdown PDF representation is required: {md_file} not found"
@@ -290,7 +309,7 @@ def _get_plan_images(project_id: str) -> list[Path]:
     Фильтрует блоки по sheet_type из document_graph и 02_blocks_analysis.json.
     Поддерживает английские и русские названия типов.
     """
-    project_dir = resolve_project_dir(project_id)
+    project_dir = _version_project_dir(project_id)
     blocks_dir = project_dir / "_output" / "blocks"
     if not blocks_dir.exists():
         return []
@@ -524,8 +543,9 @@ def build_block_batch_messages(
     # 01_text_analysis.json для cross-check (только нужные секции)
     text_analysis = _read_text_analysis_for_blocks(project_id)
 
-    # Interleaved content (text + PNG)
-    project_dir = resolve_project_dir(project_id)
+    # Interleaved content (text + PNG) — version-aware project_dir, чтобы PNG-блоки
+    # читались из _versions/v{N}/_output/blocks для V2 audit, а не из V1.
+    project_dir = _version_project_dir(project_id)
     page_contexts = _build_page_contexts_from_graph(project_id, block_ids, block_pages)
 
     interleaved = build_interleaved_content(

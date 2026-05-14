@@ -15,7 +15,6 @@ from __future__ import annotations
 from backend.app.core.config import (
     BASE_DIR,
     PROCESS_PROJECT_SCRIPT,
-    DEFAULT_TILE_QUALITY,
 )
 from backend.app.pipeline.context import PipelineStageContext
 from backend.app.pipeline.stage_result import StageResult
@@ -44,13 +43,17 @@ async def run_prepare(ctx: PipelineStageContext) -> StageResult:
     - job.status (оркестратор читает StageResult).
     """
     ctx.update_pipeline_log("prepare", "running")
-    await ctx.log("Запуск подготовки проекта (текст + тайлы)...")
+    await ctx.log("Запуск подготовки проекта...")
 
     project_rel = _project_rel_path(ctx.project_dir)
 
+    # process_project.py принимает только [project_dir, --force]; legacy
+    # `--quality` / `--pages` он не понимает (argparse ругается → exit 2).
+    # До 2026-05-14 здесь передавался `--quality standard` — endpoint
+    # /api/audit/{id}/prepare падал на ровном месте.
     exit_code, stdout, stderr = await ctx.run_subprocess(
         str(PROCESS_PROJECT_SCRIPT),
-        [project_rel, "--quality", DEFAULT_TILE_QUALITY],
+        [project_rel],
         on_output=ctx.log,
     )
 

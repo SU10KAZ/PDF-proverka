@@ -14,7 +14,7 @@ from typing import Optional
 from backend.app.core.config import (
     BASE_DIR, PROJECTS_DIR,
     PROCESS_PROJECT_SCRIPT, GENERATE_EXCEL_SCRIPT,
-    BLOCKS_SCRIPT, NORMS_SCRIPT, DEFAULT_TILE_QUALITY,
+    BLOCKS_SCRIPT, NORMS_SCRIPT,
     MAX_PARALLEL_BATCHES,
     get_block_batch_parallelism,
     get_stage_model,
@@ -99,9 +99,26 @@ from backend.app.pipeline.stages.gemma_enrichment.runner import (
 # ──────────────────────────────────────────────────────────────────────────
 
 
-def _project_path(pid: str) -> str:
-    """Относительный путь к папке проекта (с учётом подпапок-групп)."""
+def _project_path(pid: str, version_id: Optional[str] = None) -> str:
+    """Относительный путь к папке проекта c учётом версии.
+
+    - `version_id` пустой/"v1" → root project_dir (legacy V1 поведение).
+    - "v2", "v3" … → `<root>/_versions/v{N}/`.
+    - неизвестная версия → fallback root (legacy), чтобы случайный
+      mismatch не падал stack trace'ом из subprocess argv-builder'ов.
+
+    ВАЖНО: long-running job-ы должны передавать `job.version_id` явно либо
+    использовать `PipelineManager._project_path_for_job(job)`. Не полагаться
+    на дефолт «latest version» внутри версионо-зависимых stages.
+    """
     resolved = resolve_project_dir(pid)
+    if version_id:
+        try:
+            from backend.app.services.common import version_service
+            resolved = version_service.get_version_dir(resolved, pid, version_id)
+        except Exception:
+            # VersionNotFoundError / любая ошибка → legacy fallback на root.
+            pass
     try:
         return str(resolved.relative_to(BASE_DIR))
     except ValueError:
@@ -666,7 +683,7 @@ class PipelineManager:
                 log_key = m.group(1)
 
         try:
-            output_dir = resolve_project_dir(project_id) / "_output"
+            output_dir = self._output_dir_for_project(project_id)
             log_path = output_dir / "pipeline_log.json"
             if not log_path.exists():
                 return
@@ -702,7 +719,26 @@ class PipelineManager:
         """Legacy no-op. Обогащение из JSONL больше не требуется (токены приходят из API)."""
         pass
 
-    def is_running(self, project_id: str) -> bool:
+    @staticmethod
+    def job_key(project_id: str, version_id: Optional[str] = None) -> str:
+        """Сформировать ключ active_jobs с учётом версии.
+
+        Для legacy V1 (или version_id=None) ключом остаётся `project_id` —
+        это сохраняет обратную совместимость с уже работающими job-ами.
+        Для V2+ ключ строится как `<project_id>:<version_id>`, чтобы V1 и V2
+        одного проекта не конфликтовали.
+        """
+        if not version_id or version_id == "v1":
+            return project_id
+        return f"{project_id}:{version_id}"
+
+    def is_running(self, project_id: str, version_id: Optional[str] = None) -> bool:
+        """Проверить, бежит ли job для (project_id[, version_id]).
+
+        Без `version_id` — старая семантика (любая активная job по project_id).
+        """
+        if version_id and version_id != "v1":
+            return self.job_key(project_id, version_id) in self.active_jobs
         return project_id in self.active_jobs
 
     def is_queued(self, project_id: str) -> bool:
@@ -868,12 +904,93 @@ class PipelineManager:
         """Обёртка run_script с автоматическим project_id для трекинга процессов."""
         return await run_script(*args, project_id=project_id, **kwargs)
 
+    async def _run_script_for_job(
+        self,
+        job: "AuditJob",
+        script: str,
+        args: list[str] = None,
+        **kwargs,
+    ):
+        """run_script с автоинъекцией version-aware AUDIT_* env.
+
+        Использовать вместо `_run_script(pid, script, ...)` для всех subprocess
+        invocations, привязанных к конкретному job. Subprocess получает в env
+        достоверную идентификацию version, что позволяет скриптам логировать /
+        ветвиться по версии без необходимости парсить argv.
+
+        Если caller передал свои `env_overrides`, AUDIT_* добавляются поверх
+        (caller-overrides побеждают на коллизии).
+        """
+        env_extra = self._make_audit_env_for_job(job)
+        env_overrides = kwargs.pop("env_overrides", None) or {}
+        merged_env = {**env_extra, **env_overrides}
+        return await self._run_script(
+            job.project_id,
+            script,
+            args,
+            env_overrides=merged_env,
+            **kwargs,
+        )
+
+    def _make_audit_env_for_job(self, job: "AuditJob") -> dict:
+        """Собрать AUDIT_PROJECT_ID/VERSION_ID/VERSION_DIR/OUTPUT_DIR для subprocess env."""
+        _root, version_dir, output_dir = self._resolve_job_paths(job)
+        return {
+            "AUDIT_PROJECT_ID": str(job.project_id),
+            "AUDIT_VERSION_ID": str(job.version_id or "v1"),
+            "AUDIT_VERSION_DIR": str(version_dir),
+            "AUDIT_OUTPUT_DIR": str(output_dir),
+        }
+
+    def _project_path_for_job(self, job: "AuditJob") -> str:
+        """Version-aware path к папке проекта для subprocess argv.
+
+        Возвращает путь к `version_dir` (V1 → root project_dir; V2+ →
+        `<root>/_versions/v{N}/`), относительный к BASE_DIR, если возможно.
+
+        Использовать вместо `_project_path(job.project_id)` во всех subprocess
+        invocations внутри pipeline stages, чтобы V2 audit не передавал V1 root
+        в скрипты вроде process_project.py / blocks.py — иначе скрипт
+        перезапишет V1 `_output/`.
+        """
+        _root, version_dir, _output = self._resolve_job_paths(job)
+        try:
+            return str(version_dir.relative_to(BASE_DIR))
+        except ValueError:
+            return str(version_dir)
+
+    def _resolve_job_paths(self, job: "AuditJob") -> tuple[Path, Path, Path]:
+        """Вернуть version-aware пути для job: (root_project_dir, version_dir, output_dir).
+
+        - `root_project_dir`: корневая папка проекта (там, где лежит project_versions.json
+          и V1 source-файлы). Использовать только для root-level manifest операций.
+        - `version_dir`: папка активной версии (для V1 это = root_project_dir,
+          для V2+ это `root/_versions/v{N}/`). Здесь ищутся PDF, MD, project_info.json
+          для исполняемого аудита.
+        - `output_dir`: `version_dir / _output`.
+
+        Если `job.version_id` отсутствует или невалиден — возвращаем root в качестве
+        version_dir (legacy V1 поведение). Стартовые endpoint'ы валидируют версию
+        раньше и возвращают 404, поэтому сюда обычно доходит валидный version_id.
+        """
+        from backend.app.services.common import version_service
+        root_dir = resolve_project_dir(job.project_id)
+        try:
+            version_dir = version_service.get_version_dir(
+                root_dir, job.project_id, job.version_id,
+            )
+        except version_service.VersionNotFoundError:
+            version_dir = root_dir
+        return root_dir, version_dir, version_dir / "_output"
+
     def _make_stage_context(self, job: "AuditJob") -> "PipelineStageContext":
         """Построить PipelineStageContext из текущего job для передачи в stage runner-ы."""
         from backend.app.pipeline.context import PipelineStageContext
         pid = job.project_id
-        project_dir = resolve_project_dir(pid)
-        output_dir = project_dir / "_output"
+        # ctx.project_dir сейчас — это version_dir (V1: root; V2+: _versions/v{N}/).
+        # Это нужно, чтобы stage runner-ы видели правильные source-файлы версии.
+        _root, version_dir, output_dir = self._resolve_job_paths(job)
+        project_dir = version_dir
 
         async def _log(msg: str, level: str = "info") -> None:
             await self._log(job, msg, level)
@@ -896,8 +1013,13 @@ class PipelineManager:
         async def _run_subprocess(*args, **kwargs):
             return await self._run_script(pid, *args, **kwargs)
 
+        # project_info: предпочтительно из папки версии (создаётся
+        # create_next_version'ом для V2+), fallback — корневой info.
+        info_path_version = version_dir / "project_info.json"
+        info_path_root = project_dir / "project_info.json"
+        info_path = info_path_version if info_path_version.exists() else info_path_root
         try:
-            project_info = json.loads((project_dir / "project_info.json").read_text(encoding="utf-8"))
+            project_info = json.loads(info_path.read_text(encoding="utf-8"))
         except Exception:
             project_info = {}
 
@@ -940,6 +1062,7 @@ class PipelineManager:
             progress_sync=_progress_sync,
             record_block_analysis_usage=_record_block_analysis_usage,
             is_cancelled=_is_cancelled,
+            version_id=getattr(job, "version_id", None),
         )
 
     def _reset_job_progress(self, job: AuditJob):
@@ -949,15 +1072,20 @@ class PipelineManager:
         job.batch_durations = []
         job.batch_started_at = None
 
-    @staticmethod
-    def _backfill_highlight_regions(project_id: str):
+    def _backfill_highlight_regions(self, project_id: str):
         """Восстановить highlight_regions в 03_findings.json из 02_blocks_analysis.json.
 
         При findings_merge LLM иногда теряет highlight_regions из G-замечаний.
         Этот метод подтягивает координаты обратно по source_block_ids/related_block_ids.
+
+        Version-aware: использует `_output_dir_for_project`, parent которого =
+        version_dir; для V2 это `<root>/_versions/v{N}`. Иначе backfill_project
+        ушёл бы на V1 root и переписал V1 03_findings.json.
         """
         from backend.app.pipeline.stages.findings_merge.backfill_highlights import backfill_project
-        project_dir = resolve_project_dir(project_id)
+        # backfill_project работает с `project_dir / _output`, поэтому передаём
+        # parent от version-aware output_dir.
+        project_dir = self._output_dir_for_project(project_id).parent
         result = backfill_project(project_dir)
         if result["fixed"] > 0:
             print(f"[{project_id}] highlight_regions restored: {result['fixed']}")
@@ -1003,8 +1131,8 @@ class PipelineManager:
         try:
             from backend.app.pipeline.stages.prepare.graph_builder import build_document_graph_v2, generate_locality_debug
 
-            project_dir = resolve_project_dir(pid)
-            output_dir = project_dir / "_output"
+            # Version-aware: V1 = root, V2+ = _versions/v{N}/.
+            _root, project_dir, output_dir = self._resolve_job_paths(job)
 
             graph = build_document_graph_v2(project_dir, output_dir)
             if graph:
@@ -1059,7 +1187,8 @@ class PipelineManager:
     async def _ensure_stage02_crops(self, job: AuditJob) -> None:
         """Ensure findings_only Stage 02 has its own 100 DPI crop index."""
         pid = job.project_id
-        project_dir = resolve_project_dir(pid)
+        # Version-aware: V1 = root, V2+ = _versions/v{N}/.
+        _root, project_dir, _output = self._resolve_job_paths(job)
         policy = stage02_crop_policy()
         index_path = stage02_blocks_index_path(project_dir)
         blocks_dir = stage02_blocks_dir(project_dir)
@@ -1088,11 +1217,11 @@ class PipelineManager:
             f"({_crop_policy_label(policy)}); Gemma base/high-detail indexes не трогаю",
             "warn" if force else "info",
         )
-        exit_code, _, stderr = await self._run_script(
-            pid,
+        exit_code, _, stderr = await self._run_script_for_job(
+            job,
             str(BLOCKS_SCRIPT),
             _build_crop_args(
-                _project_path(pid),
+                self._project_path_for_job(job),
                 force=force,
                 policy=policy,
                 output_dir_name=STAGE02_BLOCKS_DIRNAME,
@@ -1119,7 +1248,8 @@ class PipelineManager:
         остаётся здесь. Бизнес-логика анализа блоков — в runner.
         """
         pid = job.project_id
-        project_dir = resolve_project_dir(pid)
+        # Version-aware: V1 = root, V2+ = _versions/v{N}/.
+        _root, project_dir, _output = self._resolve_job_paths(job)
         project_info = load_project_info(project_dir)
         await self._assert_gemma_ready_for_stage(job, project_info, "block_analysis")
         await self._ensure_stage02_crops(job)
@@ -1190,9 +1320,22 @@ class PipelineManager:
             job.project_id, "block_analysis", model, input_tokens, output_tokens
         )
 
+    def _output_dir_for_project(self, project_id: str) -> Path:
+        """Version-aware output_dir: если для project_id в active_jobs есть job
+        с version_id, использует его; иначе fallback на root project_dir/_output.
+
+        Защита от V2 audit, который случайно очищает V1 `_output/` через
+        version-unaware helper'ы (_clean_stage_files / _backup_findings_before_restart).
+        """
+        job = self.active_jobs.get(project_id)
+        if job is not None:
+            _root, _vdir, output_dir = self._resolve_job_paths(job)
+            return output_dir
+        return resolve_project_dir(project_id) / "_output"
+
     def _clean_stage_files(self, project_id: str, files: list[str]):
         """Удалить устаревшие JSON-файлы этапов перед перезапуском."""
-        output_dir = resolve_project_dir(project_id) / "_output"
+        output_dir = self._output_dir_for_project(project_id)
         for filename in files:
             if "*" in filename:
                 # glob-шаблон (например tile_batch_*.json)
@@ -1208,7 +1351,7 @@ class PipelineManager:
     def _backup_findings_before_restart(self, project_id: str):
         """Сохранить 03_findings.json как _pre_restart бэкап перед полной очисткой."""
         import shutil
-        output_dir = resolve_project_dir(project_id) / "_output"
+        output_dir = self._output_dir_for_project(project_id)
         findings_path = output_dir / "03_findings.json"
         if findings_path.exists():
             backup_path = output_dir / "03_findings_pre_restart.json"
@@ -1352,7 +1495,8 @@ class PipelineManager:
         """
         pid = job.project_id
         try:
-            output_dir = resolve_project_dir(pid) / "_output"
+            # Version-aware: V1 = root/_output, V2+ = _versions/v{N}/_output.
+            _root, _project_dir, output_dir = self._resolve_job_paths(job)
 
             if stage == "merge":
                 findings_path = output_dir / "03_findings.json"
@@ -1506,9 +1650,14 @@ class PipelineManager:
 
     # ─── Определение точки возобновления ───
 
-    def detect_resume_stage(self, project_id: str) -> dict:
-        """Делегирует в resume_detector.detect_resume_stage()."""
-        return _detect_resume_stage(project_id)
+    def detect_resume_stage(
+        self,
+        project_id: str,
+        *,
+        version_id: Optional[str] = None,
+    ) -> dict:
+        """Делегирует в resume_detector.detect_resume_stage() для нужной версии."""
+        return _detect_resume_stage(project_id, version_id=version_id)
 
     @staticmethod
     def _normalize_ocr_stage(stage: str) -> str:
@@ -1603,7 +1752,8 @@ class PipelineManager:
         project_info: dict,
         target_stage: str,
     ) -> dict:
-        project_dir = resolve_project_dir(job.project_id)
+        # Version-aware: V1 = root, V2+ = _versions/v{N}/.
+        _root, project_dir, _output = self._resolve_job_paths(job)
         state = evaluate_gemma_enrichment(project_dir, project_info)
         if state.get("ready"):
             if state.get("status") in {"partial_allowed", "partial"}:
@@ -1641,7 +1791,8 @@ class PipelineManager:
         project_info: dict,
         target_stage: str,
     ) -> dict:
-        project_dir = resolve_project_dir(job.project_id)
+        # Version-aware: V1 = root, V2+ = _versions/v{N}/.
+        _root, project_dir, _output = self._resolve_job_paths(job)
         state = evaluate_gemma_enrichment(project_dir, project_info)
         if not state.get("ready"):
             raise RuntimeError(gemma_gate_error(state, target_stage))
@@ -1668,7 +1819,13 @@ class PipelineManager:
                 "Сначала выполните text_analysis."
             )
 
-    async def start_from_stage(self, project_id: str, stage: str) -> AuditJob:
+    async def start_from_stage(
+        self,
+        project_id: str,
+        stage: str,
+        *,
+        version_id: Optional[str] = None,
+    ) -> AuditJob:
         """Запустить конвейер с указанного этапа (ручной перезапуск цепочки).
 
         Кладёт single-task в общую очередь — фактический запуск произойдёт,
@@ -1677,9 +1834,15 @@ class PipelineManager:
         stage = self._validate_start_from_stage_now(project_id, stage)
         return await self._enqueue_single(
             project_id, action="retry_stage", retry_stage=stage,
+            version_id=version_id,
         )
 
-    async def resume_pipeline(self, project_id: str) -> AuditJob:
+    async def resume_pipeline(
+        self,
+        project_id: str,
+        *,
+        version_id: Optional[str] = None,
+    ) -> AuditJob:
         """Продолжить пайплайн с места ошибки.
 
         resume-проверка детектит этап на момент непосредственного запуска
@@ -1688,10 +1851,12 @@ class PipelineManager:
         """
         # Быстрая проверка чтобы не пускать в очередь заведомо нечего возобновлять
         self._assert_stage_model_config_ready()
-        resume_info = self.detect_resume_stage(project_id)
+        resume_info = self.detect_resume_stage(project_id, version_id=version_id)
         if not resume_info.get("can_resume"):
             raise RuntimeError("Все этапы уже завершены — нечего возобновлять")
-        return await self._enqueue_single(project_id, action="resume")
+        return await self._enqueue_single(
+            project_id, action="resume", version_id=version_id,
+        )
 
     async def _run_resumed_pipeline(self, job: AuditJob, start_stage: str, resume_info: dict):
         """Запуск OCR-пайплайна с указанного этапа."""
@@ -1721,8 +1886,9 @@ class PipelineManager:
                 "info",
             )
 
-            output_dir = resolve_project_dir(pid) / "_output"
-            info_path = resolve_project_dir(pid) / "project_info.json"
+            # Version-aware пути: V1 = root, V2+ = _versions/v{N}/.
+            _root_dir, project_dir, output_dir = self._resolve_job_paths(job)
+            info_path = project_dir / "project_info.json"
             with open(info_path, "r", encoding="utf-8") as f:
                 project_info = json.load(f)
 
@@ -1753,7 +1919,7 @@ class PipelineManager:
                 job.stage = AuditStage.CROP_BLOCKS
                 print(f"[{pid}:resume] ═══ ЭТАП 1: Кроп image-блоков ═══")
                 gemma_crop_policy = gemma_enrichment_crop_policy()
-                project_dir = resolve_project_dir(pid)
+                # project_dir уже version-aware (см. начало _run_resumed_pipeline).
                 blocks_index = gemma_blocks_index_path(project_dir)
                 blocks_dir = gemma_blocks_dir(project_dir)
                 force_gemma_crop = (
@@ -1762,7 +1928,7 @@ class PipelineManager:
                 )
                 _crop_result = await _run_crop_blocks(
                     self._make_stage_context(job),
-                    project_rel_path=_project_path(pid),
+                    project_rel_path=self._project_path_for_job(job),
                     force=force_gemma_crop,
                     policy=gemma_crop_policy,
                     output_dir_name=GEMMA_BLOCKS_DIRNAME,
@@ -1847,12 +2013,12 @@ class PipelineManager:
                     self._reset_job_progress(job)
                     job.stage = AuditStage.CROP_BLOCKS  # reuse для генерации батчей
 
-                    gen_args = [_project_path(pid)]
+                    gen_args = [self._project_path_for_job(job)]
                     print(f"[{pid}:resume] ═══ ЭТАП 4: Генерация пакетов блоков ═══")
                     await self._log(job, "═══ ЭТАП 4: Генерация пакетов блоков ═══")
 
-                    exit_code, _, stderr = await self._run_script(
-                        pid,
+                    exit_code, _, stderr = await self._run_script_for_job(
+                        job,
                         str(BLOCKS_SCRIPT),
                         ["batches"] + gen_args,
                         on_output=lambda msg: self._log(job, msg),
@@ -2098,10 +2264,10 @@ class PipelineManager:
                 # Слияние результатов block_batch_*.json → 02_blocks_analysis.json
                 print(f"[{pid}:resume] Слияние block_batch_*.json → 02_blocks_analysis.json")
                 await self._log(job, "Слияние результатов блоков...")
-                exit_code, _, stderr = await self._run_script(
-                    pid,
+                exit_code, _, stderr = await self._run_script_for_job(
+                    job,
                     str(BLOCKS_SCRIPT),
-                    ["merge", _project_path(pid)],
+                    ["merge", self._project_path_for_job(job)],
                     on_output=lambda msg: self._log(job, msg),
                 )
                 if exit_code != 0:
@@ -2152,9 +2318,10 @@ class PipelineManager:
                 self._tasks[pid] = asyncio.current_task()
 
             # ═══ ЭТАПЫ 5.5-6: Параллельный запуск critic + norms (+ optimization) ═══
+            # output_dir уже version-aware (см. начало _run_resumed_pipeline).
             if start_idx < 5:
                 # Полный post-findings: critic + norms + optimization (параллельно)
-                findings_path = resolve_project_dir(pid) / "_output" / "03_findings.json"
+                findings_path = output_dir / "03_findings.json"
                 if findings_path.exists():
                     await self._run_post_findings_parallel(job, project_info)
 
@@ -2168,7 +2335,7 @@ class PipelineManager:
 
             # Resume только findings_review (critic+corrector) — без повтора norms/optimization
             if start_idx == 5:
-                findings_path = resolve_project_dir(pid) / "_output" / "03_findings.json"
+                findings_path = output_dir / "03_findings.json"
                 if findings_path.exists():
                     await self._start_heartbeat(job)
                     await self._run_findings_review(job, project_info)
@@ -2177,7 +2344,7 @@ class PipelineManager:
                         return
 
                     # Проверяем: если critic провалился — не маскировать ошибку
-                    _plog_path = resolve_project_dir(pid) / "_output" / "pipeline_log.json"
+                    _plog_path = output_dir / "pipeline_log.json"
                     try:
                         _plog = json.loads(_plog_path.read_text(encoding="utf-8")) if _plog_path.exists() else {}
                     except Exception:
@@ -2201,7 +2368,7 @@ class PipelineManager:
                     "missing_norms_queue.md",
                 ])
                 self._reset_job_progress(job)
-                findings_path = resolve_project_dir(pid) / "_output" / "03_findings.json"
+                findings_path = output_dir / "03_findings.json"
                 if findings_path.exists():
                     job.stage = AuditStage.NORM_VERIFY
                     job.status = JobStatus.RUNNING
@@ -2252,8 +2419,8 @@ class PipelineManager:
             self._cleanup(pid)
 
     # ─── Запуск подготовки ───
-    async def start_prepare(self, project_id: str) -> AuditJob:
-        return await self._enqueue_single(project_id, action="prepare")
+    async def start_prepare(self, project_id: str, *, version_id: Optional[str] = None) -> AuditJob:
+        return await self._enqueue_single(project_id, action="prepare", version_id=version_id)
 
     async def _run_prepare(self, job: AuditJob):
         """Подготовка проекта — оркестратор делегирует в prepare/runner.py."""
@@ -2286,17 +2453,25 @@ class PipelineManager:
             self._cleanup(pid)
 
     # ─── Запуск пакетного анализа тайлов ───
-    async def start_tile_audit(self, project_id: str, start_from: int = 1) -> AuditJob:
+    async def start_tile_audit(
+        self,
+        project_id: str,
+        start_from: int = 1,
+        *,
+        version_id: Optional[str] = None,
+    ) -> AuditJob:
         return await self._enqueue_single(
             project_id, action="tile_audit",
             extra_params={"start_from": start_from},
+            version_id=version_id,
         )
 
     async def _run_tile_audit(self, job: AuditJob, start_from: int = 1, pages_filter: list[int] | None = None, standalone: bool = True):
         pid = job.project_id
         try:
             self._update_pipeline_log(pid, "tile_audit", "running")
-            output_dir = resolve_project_dir(job.project_id) / "_output"
+            # Version-aware пути: V1 = root, V2+ = _versions/v{N}/.
+            _root_dir, project_dir, output_dir = self._resolve_job_paths(job)
             batches_file = output_dir / "tile_batches.json"
 
             # Шаг 1: Генерация пакетов (если нет или устарели)
@@ -2308,7 +2483,7 @@ class PipelineManager:
                 # Проверяем актуальность по двум критериям:
                 # 1) tile_config_source должен совпадать
                 # 2) количество тайлов в батчах = реальному количеству на диске
-                info_path = resolve_project_dir(job.project_id) / "project_info.json"
+                info_path = project_dir / "project_info.json"
                 with open(info_path, "r", encoding="utf-8") as f:
                     info = json.load(f)
                 current_source = info.get("tile_config_source", "")
@@ -2350,15 +2525,15 @@ class PipelineManager:
 
             if regenerate:
                 job.stage = AuditStage.TILE_BATCHES
-                gen_args = [_project_path(job.project_id)]
+                gen_args = [self._project_path_for_job(job)]
                 if pages_filter:
                     pages_str = ",".join(str(p) for p in pages_filter)
                     gen_args += ["--pages", pages_str]
                     await self._log(job, f"Генерация пакетов тайлов (страницы: {pages_str})...")
                 else:
                     await self._log(job, "Генерация пакетов тайлов...")
-                exit_code, _, stderr = await self._run_script(
-                    pid,
+                exit_code, _, stderr = await self._run_script_for_job(
+                    job,
                     str(BLOCKS_SCRIPT),
                     ["batches"] + gen_args,
                     on_output=lambda msg: self._log(job, msg),
@@ -2385,8 +2560,8 @@ class PipelineManager:
                     print(f"[{pid}:tile] Свежий запуск — удалено {deleted_batch_count} старых tile_batch_*.json")
                     await self._log(job, f"Очистка: удалено {deleted_batch_count} старых результатов батчей")
 
-            # Загружаем project_info
-            info_path = resolve_project_dir(job.project_id) / "project_info.json"
+            # Загружаем project_info (project_dir уже version-aware)
+            info_path = project_dir / "project_info.json"
             with open(info_path, "r", encoding="utf-8") as f:
                 project_info = json.load(f)
 
@@ -2545,10 +2720,10 @@ class PipelineManager:
             if job.status != JobStatus.CANCELLED:
                 job.stage = AuditStage.MERGE
                 await self._log(job, "Слияние результатов пакетного анализа...")
-                exit_code, _, stderr = await self._run_script(
-                    job.project_id,
+                exit_code, _, stderr = await self._run_script_for_job(
+                    job,
                     str(BLOCKS_SCRIPT),
-                    ["merge", _project_path(job.project_id)],
+                    ["merge", self._project_path_for_job(job)],
                     on_output=lambda msg: self._log(job, msg),
                 )
                 if exit_code == 0:
@@ -2583,15 +2758,24 @@ class PipelineManager:
                 self._cleanup(job.project_id)
 
     # ─── Запуск основного аудита ───
-    async def start_main_audit(self, project_id: str) -> AuditJob:
+    async def start_main_audit(
+        self,
+        project_id: str,
+        *,
+        version_id: Optional[str] = None,
+    ) -> AuditJob:
         # cleanup stage-файлов и установка stage перенесены в `_dispatch_action`
-        return await self._enqueue_single(project_id, action="main_audit")
+        return await self._enqueue_single(
+            project_id, action="main_audit", version_id=version_id,
+        )
 
     async def _run_main_audit(self, job: AuditJob, standalone: bool = True):
         pid = job.project_id
         try:
             self._update_pipeline_log(pid, "main_audit", "running")
-            info_path = resolve_project_dir(pid) / "project_info.json"
+            # Version-aware project_info: V1 = root, V2+ = _versions/v{N}/.
+            _root_dir, _project_dir, _output_dir = self._resolve_job_paths(job)
+            info_path = _project_dir / "project_info.json"
             with open(info_path, "r", encoding="utf-8") as f:
                 project_info = json.load(f)
 
@@ -2668,9 +2852,16 @@ class PipelineManager:
                 self._cleanup(pid)
 
     # ─── Верификация нормативных ссылок ───
-    async def start_norm_verify(self, project_id: str) -> AuditJob:
+    async def start_norm_verify(
+        self,
+        project_id: str,
+        *,
+        version_id: Optional[str] = None,
+    ) -> AuditJob:
         # cleanup перенесён в `_dispatch_action`
-        return await self._enqueue_single(project_id, action="norm_verify")
+        return await self._enqueue_single(
+            project_id, action="norm_verify", version_id=version_id,
+        )
 
     async def _retry_batch_split(
         self,
@@ -2975,9 +3166,16 @@ class PipelineManager:
         return count_manual_check_flags(output_dir)
 
     # ─── Запуск интеллектуального аудита (smart) ───
-    async def start_smart_audit(self, project_id: str) -> AuditJob:
+    async def start_smart_audit(
+        self,
+        project_id: str,
+        *,
+        version_id: Optional[str] = None,
+    ) -> AuditJob:
         """Интеллектуальный аудит: текст → триаж → выборочная нарезка → анализ."""
-        return await self._enqueue_single(project_id, action="smart")
+        return await self._enqueue_single(
+            project_id, action="smart", version_id=version_id,
+        )
 
     async def _run_smart_pipeline(self, job: AuditJob):
         """
@@ -2996,11 +3194,13 @@ class PipelineManager:
         start_time = datetime.now()
         pid = job.project_id
         try:
-            output_dir = resolve_project_dir(pid) / "_output"
-            info_path = resolve_project_dir(pid) / "project_info.json"
+            # Version-aware пути: для V1 это root проекта, для V2+ — _versions/v{N}/.
+            # См. _resolve_job_paths() — единый helper, чтобы MD-check и source-файлы
+            # больше не утекали из V1 root при V2-аудите.
+            _root_dir, project_dir, output_dir = self._resolve_job_paths(job)
+            info_path = project_dir / "project_info.json"
 
             # ═══ Проверка MD-файла (обязательный источник текста) ═══
-            project_dir = resolve_project_dir(pid)
             md_candidates = [
                 f for f in project_dir.iterdir()
                 if f.suffix == ".md" and f.name.endswith("_document.md")
@@ -3018,10 +3218,10 @@ class PipelineManager:
             print(f"[{pid}:smart] ═══ ЭТАП 1: Подготовка текста ═══")
             await self._log(job, "═══ ЭТАП 1: Подготовка текста ═══")
 
-            exit_code, _, stderr = await self._run_script(
-                pid,
+            exit_code, _, stderr = await self._run_script_for_job(
+                job,
                 str(PROCESS_PROJECT_SCRIPT),
-                [_project_path(pid)],
+                [self._project_path_for_job(job)],
                 on_output=lambda msg: self._log(job, msg),
             )
             if exit_code != 0:
@@ -3083,22 +3283,27 @@ class PipelineManager:
 
             # ═══ ЭТАП 3: Выборочная нарезка тайлов ═══
             if priority_pages:
-                self._reset_job_progress(job)
-                job.stage = AuditStage.PREPARE
-                job.status = JobStatus.RUNNING
+                # FIXME (Pass C, 2026-05-14): tile-нарезка через
+                # process_project.py с `--pages`/`--quality` фактически НЕ
+                # работала — process_project.py этих аргументов не понимает
+                # (argparse → exit 2). Раньше код всё равно вызывал subprocess
+                # и падал с traceback. Теперь — controlled failure: явно
+                # сообщаем, что фича временно отключена, и job завершается
+                # без запуска дорогих стадий.
+                #
+                # TODO: либо реализовать полноценный --pages в
+                # process_project.py (отдельный pass), либо переписать
+                # priority_pages branch на отдельный supported script.
                 pages_str = ",".join(str(p) for p in priority_pages)
-                print(f"[{pid}:smart] ═══ ЭТАП 3: Нарезка тайлов (стр. {pages_str}) ═══")
-                await self._log(job, f"═══ ЭТАП 3: Нарезка тайлов (стр. {pages_str}) ═══")
-
-                exit_code, _, stderr = await self._run_script(
-                    pid,
-                    str(PROCESS_PROJECT_SCRIPT),
-                    [_project_path(pid), "--pages", pages_str, "--quality", DEFAULT_TILE_QUALITY],
-                    on_output=lambda msg: self._log(job, msg),
+                msg = (
+                    f"priority_pages smart-pipeline branch is temporarily "
+                    f"disabled because process_project.py does not support "
+                    f"--pages/--quality (запрошены страницы: {pages_str})"
                 )
-                if exit_code != 0:
-                    raise RuntimeError(f"Нарезка тайлов: {stderr}")
-                print(f"[{pid}:smart] ЭТАП 3 OK")
+                print(f"[{pid}:smart] ═══ ЭТАП 3 SKIP: {msg} ═══")
+                await self._log(job, msg, "error")
+                self._update_pipeline_log(pid, "prepare", "error", error=msg)
+                raise RuntimeError(msg)
             else:
                 await self._log(job, "Нет приоритетных страниц — пропуск нарезки", "warn")
 
@@ -3198,16 +3403,21 @@ class PipelineManager:
                                 pages_str = ",".join(str(p) for p in additional_pages)
                                 await self._log(job, f"Gap analysis: нужны ещё страницы {pages_str}")
 
-                                # Донарезка тайлов
-                                exit_code, _, stderr = await self._run_script(
-                                    pid,
-                                    str(PROCESS_PROJECT_SCRIPT),
-                                    [_project_path(pid), "--pages", pages_str, "--quality", DEFAULT_TILE_QUALITY],
-                                    on_output=lambda msg: self._log(job, msg),
+                                # FIXME (Pass C, 2026-05-14): см. priority_pages
+                                # выше — process_project.py не понимает
+                                # `--pages`/`--quality`. Раньше код всё равно
+                                # вызывал subprocess и ловил exit 2 в warn.
+                                # Теперь — controlled skip с понятным логом
+                                # вместо генерации мусорного stderr.
+                                await self._log(
+                                    job,
+                                    "Донарезка тайлов временно отключена: "
+                                    "process_project.py не поддерживает "
+                                    "--pages/--quality. Gap-страницы пропущены: "
+                                    f"{pages_str}",
+                                    "warn",
                                 )
-                                if exit_code != 0:
-                                    await self._log(job, f"Донарезка: {stderr}", "warn")
-                                    additional_pages = []
+                                additional_pages = []
                     except Exception as e:
                         print(f"[{pid}:smart] Gap analysis error: {e}")
 
@@ -3222,7 +3432,8 @@ class PipelineManager:
             self._tasks[pid] = asyncio.current_task()
 
             # ═══ ЭТАПЫ 5.5-6: Параллельный запуск critic + norms ═══
-            findings_path = resolve_project_dir(pid) / "_output" / "03_findings.json"
+            # output_dir уже version-aware (см. начало _run_smart_pipeline).
+            findings_path = output_dir / "03_findings.json"
             if findings_path.exists():
                 await self._run_post_findings_parallel(
                     job, project_info, include_optimization=False,
@@ -3272,16 +3483,26 @@ class PipelineManager:
             self._cleanup(pid)
 
     # ─── Запуск аудита (OCR-пайплайн) ───
-    async def start_audit(self, project_id: str) -> AuditJob:
+    async def start_audit(
+        self,
+        project_id: str,
+        *,
+        version_id: Optional[str] = None,
+    ) -> AuditJob:
         """Аудит: кроп блоков → текстовый анализ → ВСЕ блоки → свод.
 
         Single-start — кладёт задачу в общую очередь. Реальный запуск
         случится, когда worker возьмёт её. kill зомби, сброс audit_log/usage
         живут в `_dispatch_action`, чтобы не сбрасывать данные на ещё не
         стартовавший проект.
+
+        `version_id`: фиксированная версия проекта, в которую пойдут все
+        write-операции. None → latest на момент enqueue.
         """
         self._assert_stage_model_config_ready()
-        return await self._enqueue_single(project_id, action="full")
+        return await self._enqueue_single(
+            project_id, action="full", version_id=version_id,
+        )
 
     # Legacy aliases
     start_standard_audit = start_audit
@@ -3325,8 +3546,12 @@ class PipelineManager:
         max_retry = 1 if _is_compact else MAX_RECROP_ITERATIONS
         had_unreadable = False
 
+        # Version-aware path для V1/V2 — все retry-helper'ы и BLOCKS_SCRIPT
+        # должны видеть тот же `version_dir`, что и остальные стадии.
+        proj_path = self._project_path_for_job(job)
+
         for retry_iter in range(1, max_retry + 1):
-            unreadable = find_unreadable_blocks(_project_path(pid))
+            unreadable = find_unreadable_blocks(proj_path)
             if not unreadable:
                 if retry_iter == 1:
                     await self._log(job, "Block retry: все блоки читаемы, пропуск")
@@ -3339,7 +3564,7 @@ class PipelineManager:
                 await self._log(job, f"Block retry: {len(block_ids)} нечитаемых → promote compact→full")
                 self._update_pipeline_log(pid, "block_retry", "running",
                                           message=f"Promote {len(block_ids)} блоков")
-                promote_result = promote_to_full(_project_path(pid), block_ids)
+                promote_result = promote_to_full(proj_path, block_ids)
                 if promote_result.get("promoted", 0) == 0:
                     await self._log(job, "Block retry: нет full-версий для промоута")
                     break
@@ -3347,16 +3572,16 @@ class PipelineManager:
                 await self._log(job, f"Block retry (итерация {retry_iter}): {len(block_ids)} нечитаемых блоков → перекачка ×2")
                 self._update_pipeline_log(pid, "block_retry", "running",
                                           message=f"Итерация {retry_iter}: {len(block_ids)} блоков")
-                recrop_result = recrop_blocks(_project_path(pid), block_ids, scale_multiplier=2.0)
+                recrop_result = recrop_blocks(proj_path, block_ids, scale_multiplier=2.0)
                 if recrop_result.get("recropped", 0) == 0:
                     await self._log(job, "Block retry: все блоки уже на максимальном разрешении, стоп")
                     break
 
-            exit_code, _, _ = await self._run_script(
-                pid, str(BLOCKS_SCRIPT),
+            exit_code, _, _ = await self._run_script_for_job(
+                job, str(BLOCKS_SCRIPT),
                 # --solo: 1 блок = 1 пакет, модель фокусируется на одной картинке
                 # (retry именно по ней и шёл, контекст других блоков уже есть в 02_blocks_analysis.json)
-                ["batches", _project_path(pid), "--block-ids", ",".join(block_ids), "--solo"],
+                ["batches", proj_path, "--block-ids", ",".join(block_ids), "--solo"],
                 on_output=lambda msg: self._log(job, msg),
             )
             if exit_code != 0:
@@ -3412,14 +3637,14 @@ class PipelineManager:
                 elif runtime_path.exists():
                     runtime_path.unlink()
 
-            exit_code, _, _ = await self._run_script(
-                pid, str(BLOCKS_SCRIPT),
-                ["merge", _project_path(pid)],
+            exit_code, _, _ = await self._run_script_for_job(
+                job, str(BLOCKS_SCRIPT),
+                ["merge", proj_path],
                 on_output=lambda msg: self._log(job, msg),
             )
             await self._log(job, f"Block retry итерация {retry_iter}: merge завершён")
 
-        final_unreadable = find_unreadable_blocks(_project_path(pid))
+        final_unreadable = find_unreadable_blocks(proj_path)
         if had_unreadable:
             if final_unreadable:
                 self._update_pipeline_log(pid, "block_retry", "done",
@@ -3447,14 +3672,14 @@ class PipelineManager:
         start_time = datetime.now()
         pid = job.project_id
         try:
-            output_dir = resolve_project_dir(pid) / "_output"
-            info_path = resolve_project_dir(pid) / "project_info.json"
+            # Version-aware пути: V1 = root, V2+ = _versions/v{N}/.
+            _root_dir, project_dir, output_dir = self._resolve_job_paths(job)
+            info_path = project_dir / "project_info.json"
 
             with open(info_path, "r", encoding="utf-8") as f:
                 project_info = json.load(f)
 
             # ═══ Проверка MD-файла (обязательный источник текста) ═══
-            project_dir = resolve_project_dir(pid)
             if find_project_markdown(project_dir, project_info) is None:
                 raise RuntimeError(
                     f"MD-файл не найден для проекта {pid}. "
@@ -3488,13 +3713,13 @@ class PipelineManager:
                     )
 
                 crop_args = _build_crop_args(
-                    _project_path(pid),
+                    self._project_path_for_job(job),
                     force=needs_recrop,
                     policy=gemma_crop_policy,
                     output_dir_name=GEMMA_BLOCKS_DIRNAME,
                 )
-                exit_code, _, stderr = await self._run_script(
-                    pid,
+                exit_code, _, stderr = await self._run_script_for_job(
+                    job,
                     str(BLOCKS_SCRIPT),
                     crop_args,
                     on_output=lambda msg: self._log(job, msg),
@@ -3566,14 +3791,14 @@ class PipelineManager:
                 job.stage = AuditStage.CROP_BLOCKS  # reuse для генерации батчей
 
                 # Все блоки — полное покрытие
-                gen_args = [_project_path(pid)]
+                gen_args = [self._project_path_for_job(job)]
                 await self._log(job, "Анализ ВСЕХ image-блоков")
 
                 print(f"[{pid}] ═══ ЭТАП 3: Генерация пакетов блоков ═══")
                 await self._log(job, "═══ ЭТАП 3: Генерация пакетов блоков ═══")
 
-                exit_code, _, stderr = await self._run_script(
-                    pid,
+                exit_code, _, stderr = await self._run_script_for_job(
+                    job,
                     str(BLOCKS_SCRIPT),
                     ["batches"] + gen_args,
                     on_output=lambda msg: self._log(job, msg),
@@ -3788,10 +4013,10 @@ class PipelineManager:
 
                     # Слияние block_batch_*.json → 02_blocks_analysis.json
                     await self._log(job, "Слияние результатов анализа блоков...")
-                    exit_code, _, stderr = await self._run_script(
-                        pid,
+                    exit_code, _, stderr = await self._run_script_for_job(
+                        job,
                         str(BLOCKS_SCRIPT),
-                        ["merge", _project_path(pid)],
+                        ["merge", self._project_path_for_job(job)],
                         on_output=lambda msg: self._log(job, msg),
                     )
                     if exit_code == 0:
@@ -3845,7 +4070,8 @@ class PipelineManager:
             # ═══ ЭТАПЫ 6.5-7-OPT: Параллельный запуск после findings_merge ═══
             # Critic+Corrector, Norm verify и Optimization — независимы.
             # Optimization_critic ждёт corrector (нужны финальные findings).
-            findings_path = resolve_project_dir(pid) / "_output" / "03_findings.json"
+            # output_dir уже version-aware (см. начало _run_ocr_pipeline).
+            findings_path = output_dir / "03_findings.json"
             if findings_path.exists():
                 await self._run_post_findings_parallel(
                     job, project_info,
@@ -3950,9 +4176,37 @@ class PipelineManager:
     # ─── Pre-crop: фоновая загрузка блоков для следующих проектов в очереди ───
 
     async def _precrop_project(self, pid: str) -> bool:
-        """Кроп блоков для одного проекта (фоновая задача). Возвращает True при успехе."""
+        """Кроп блоков для одного проекта (фоновая задача). Возвращает True при успехе.
+
+        Safety guard: pre-crop loop V1-only. Если у проекта `latest_version_id`
+        не V1 — skip с warn. Это защищает V1 _output/blocks_gemma_100 от
+        перезаписи crop'ами под V2 source. Полная версионность batch queue
+        отложена в отдельный pass (TODO: make pre-crop queue version-aware
+        before enabling V2 batch pre-crop).
+        """
         try:
             proj_dir = resolve_project_dir(pid)
+            # Safety guard: skip V2+ projects from V1-only pre-crop path.
+            try:
+                from backend.app.services.common import version_service
+                latest_vid = version_service.get_latest_version_id(proj_dir, pid) or "v1"
+                if latest_vid != "v1":
+                    msg = (
+                        f"[PRE-CROP] {pid}: skip — latest_version_id={latest_vid} "
+                        f"(pre-crop queue ещё не version-aware; V2+ pre-crop отключён)"
+                    )
+                    print(msg)
+                    try:
+                        await ws_manager.broadcast_global(
+                            WSMessage.log("__BATCH__", msg, "warn")
+                        )
+                    except Exception:
+                        pass
+                    return False
+            except Exception:
+                # Manifest не найден — это V1-only project, продолжаем.
+                pass
+
             # Пропустить если блоки уже есть
             blocks_dir = gemma_blocks_dir(proj_dir)
             index_file = gemma_blocks_index_path(proj_dir)
@@ -3969,6 +4223,11 @@ class PipelineManager:
             await ws_manager.broadcast_global(
                 WSMessage.log("__BATCH__", f"  ⚡ Pre-crop: {pid}", "info")
             )
+            # NOTE: pre-crop работает только над V1 root — batch queue ещё
+            # не version-aware. V2 проекты сюда не попадают (queue не различает
+            # версии), поэтому здесь явно используем V1 _project_path(pid).
+            # Если в будущем queue научится таскать V2 — заменить на
+            # version-aware path (см. _project_path_for_job).
             exit_code, _, stderr = await run_script(
                 str(BLOCKS_SCRIPT),
                 _build_crop_args(
@@ -4087,11 +4346,18 @@ class PipelineManager:
                     idx += 1
                     continue
 
+                # version_id зафиксирован на момент enqueue (см. _enqueue_single).
+                # Закрепляем его в ContextVar на весь срок жизни этого job —
+                # любые service-функции внутри pipeline, которые читают
+                # bind_version, увидят правильную версию.
+                from backend.app.services.common import version_service
+                version_token = version_service.bind_version(item.version_id)
                 try:
                     job = AuditJob(
                         job_id=item.job_id or str(uuid4()),
                         object_id=self._resolve_object_id(None),
                         project_id=pid,
+                        version_id=item.version_id,
                         stage=AuditStage.PREPARE,
                         status=JobStatus.RUNNING,
                         started_at=datetime.now().isoformat(),
@@ -4135,6 +4401,11 @@ class PipelineManager:
                     self.active_jobs.pop(pid, None)
                     self._tasks.pop(pid, None)
                     await self._broadcast_batch_progress(queue)
+                    # Снимаем bind_version, выставленный перед dispatch
+                    try:
+                        version_service.unbind_version(version_token)
+                    except Exception:
+                        pass
 
                 idx += 1
 
@@ -4232,7 +4503,9 @@ class PipelineManager:
                 self._clean_stage_files(pid, ["optimization.json"])
                 job.stage = AuditStage.OPTIMIZATION
             elif action == "optimization_review":
-                opt_path = resolve_project_dir(pid) / "_output" / "optimization.json"
+                # Version-aware: V1 = root/_output, V2+ = _versions/v{N}/_output.
+                _root_dir, _proj_dir, _output_dir = self._resolve_job_paths(job)
+                opt_path = _output_dir / "optimization.json"
                 if not opt_path.exists():
                     job.status = JobStatus.FAILED
                     job.error_message = "optimization.json не найден — сначала запустите оптимизацию"
@@ -4283,7 +4556,7 @@ class PipelineManager:
             return
 
         if action == "resume":
-            resume_info = self.detect_resume_stage(pid)
+            resume_info = self.detect_resume_stage(pid, version_id=job.version_id)
             if not resume_info.get("can_resume"):
                 job.status = JobStatus.FAILED
                 job.error_message = "Нечего возобновлять"
@@ -4319,8 +4592,8 @@ class PipelineManager:
                 job.status = JobStatus.COMPLETED
             return
 
-        # Полный аудит / batch-actions
-        proj_dir = resolve_project_dir(pid)
+        # Полный аудит / batch-actions. Для V2+ ищем _result.json в V2 dir.
+        _root, proj_dir, _od = self._resolve_job_paths(job)
         is_ocr = bool(list(proj_dir.glob("*_result.json")))
 
         if action == "full":
@@ -4394,6 +4667,7 @@ class PipelineManager:
         *,
         retry_stage: Optional[str] = None,
         extra_params: Optional[dict] = None,
+        version_id: Optional[str] = None,
     ) -> AuditJob:
         """Поставить single-project задачу в общую очередь.
 
@@ -4401,8 +4675,26 @@ class PipelineManager:
         запустится, когда worker дойдёт до этого item. Это единственный путь
         запуска одиночного проекта — start_audit/start_smart_audit/... все
         теперь делегируют сюда.
+
+        `version_id` фиксируется на момент enqueue. Если None — берётся
+        latest_version_id проекта (один раз). После этого пользователь может
+        создать V_{N+1}, на запущенный job-а это не повлияет.
         """
         _lmstudio_note_activity(f"pipeline job queued: {project_id}/{action}")
+        # Один раз резолвим effective_version_id — не каждый раз внутри стадии.
+        from backend.app.services.common import version_service
+        try:
+            project_dir_for_resolve = resolve_project_dir(project_id)
+            effective_vid = version_service.resolve_effective_version_id(
+                project_dir_for_resolve, project_id, version_id,
+            )
+            # Валидируем, что версия существует
+            version_service.get_version_entry(
+                project_dir_for_resolve, project_id, effective_vid,
+            )
+        except version_service.VersionNotFoundError as e:
+            raise RuntimeError(str(e)) from e
+
         async with self._enqueue_lock:
             try:
                 from backend.app.pipeline.stages.prepare.prepare_service import is_prepare_active_or_queued
@@ -4413,19 +4705,29 @@ class PipelineManager:
             except ImportError:
                 pass
 
-            # Уже бежит прямо сейчас?
-            if project_id in self.active_jobs:
-                raise RuntimeError(f"Аудит уже запущен для {project_id}")
+            jkey = self.job_key(project_id, effective_vid)
 
-            # Уже стоит в очереди (pending/running)?
+            # Уже бежит прямо сейчас (по этой версии)?
+            if jkey in self.active_jobs or (effective_vid in (None, "v1") and project_id in self.active_jobs):
+                raise RuntimeError(f"Аудит уже запущен для {project_id} ({effective_vid})")
+
+            # Уже стоит в очереди (pending/running) по той же версии?
             if self._batch_queue and self._batch_queue.status == "running":
                 for it in self._batch_queue.items:
-                    if it.project_id == project_id and it.status in ("pending", "running"):
-                        raise RuntimeError(f"Проект {project_id} уже в очереди")
+                    same_version = (it.version_id or "v1") == (effective_vid or "v1")
+                    if (
+                        it.project_id == project_id
+                        and same_version
+                        and it.status in ("pending", "running")
+                    ):
+                        raise RuntimeError(
+                            f"Проект {project_id} ({effective_vid}) уже в очереди"
+                        )
 
             job_id = str(uuid4())
             item = BatchQueueItem(
                 project_id=project_id,
+                version_id=effective_vid,
                 action=action,
                 retry_stage=retry_stage,
                 extra_params=extra_params or {},
@@ -4445,6 +4747,7 @@ class PipelineManager:
                 job_id=job_id,
                 object_id=self._resolve_object_id(None),
                 project_id=project_id,
+                version_id=effective_vid,
                 stage=AuditStage.PREPARE,
                 status=JobStatus.QUEUED,
             )
@@ -4658,19 +4961,38 @@ class PipelineManager:
         }
 
     # ─── Запуск оптимизации проектных решений ───
-    async def start_optimization(self, project_id: str) -> AuditJob:
+    async def start_optimization(
+        self,
+        project_id: str,
+        *,
+        version_id: Optional[str] = None,
+    ) -> AuditJob:
         """Запустить анализ оптимизации проектной документации."""
-        return await self._enqueue_single(project_id, action="optimization")
+        return await self._enqueue_single(
+            project_id, action="optimization", version_id=version_id,
+        )
 
-    async def start_optimization_review(self, project_id: str) -> AuditJob:
+    async def start_optimization_review(
+        self,
+        project_id: str,
+        *,
+        version_id: Optional[str] = None,
+    ) -> AuditJob:
         """Запустить только critic + corrector оптимизации (без перезапуска самой оптимизации)."""
         # Sanity-check на момент enqueue, чтобы не плодить заведомо ломанные
         # items в очереди. Повторная проверка существования файла происходит
         # внутри `_dispatch_action` на момент реального запуска.
-        opt_path = resolve_project_dir(project_id) / "_output" / "optimization.json"
+        from backend.app.services.common import version_service
+        try:
+            output_dir = version_service.resolve_version_output_dir(project_id, version_id)
+        except version_service.VersionNotFoundError as e:
+            raise RuntimeError(str(e)) from e
+        opt_path = output_dir / "optimization.json"
         if not opt_path.exists():
             raise RuntimeError("optimization.json не найден — сначала запустите оптимизацию")
-        return await self._enqueue_single(project_id, action="optimization_review")
+        return await self._enqueue_single(
+            project_id, action="optimization_review", version_id=version_id,
+        )
 
     async def _run_optimization_review_standalone(self, job: AuditJob):
         """Critic + Corrector оптимизации (standalone запуск)."""

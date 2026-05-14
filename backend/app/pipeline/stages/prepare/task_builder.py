@@ -32,6 +32,26 @@ import backend.app.services.common.discipline_service as discipline_service
 from backend.app.services.common.project_service import resolve_project_dir
 
 
+def _version_output_dir(project_id: str) -> Path:
+    """Папка `_output` активной версии (через bind_version() ContextVar);
+    fallback — root `_output` для V1 / legacy.
+
+    V2 audit binds version_id="v2" в ContextVar в начале job, поэтому все reads/writes
+    runtime artefacts (01_text_analysis, 02_blocks_analysis, document_graph, blocks/...)
+    автоматически уезжают в `_versions/v2/_output`.
+    """
+    from backend.app.services.common import version_service
+    try:
+        return version_service.resolve_version_output_dir(project_id)
+    except (version_service.VersionNotFoundError, FileNotFoundError):
+        return resolve_project_dir(project_id) / "_output"
+
+
+def _version_project_dir(project_id: str) -> Path:
+    """version_dir активной версии (parent of _output)."""
+    return _version_output_dir(project_id).parent
+
+
 # ─── Dual-language templates (RU/EN) ───
 
 _EN_DIR = BASE_DIR / "prompts" / "pipeline" / "en"
@@ -154,7 +174,7 @@ def check_template_sync() -> list[dict]:
 # ─── Prompt Overrides ───
 
 def _overrides_path(project_id: str) -> Path:
-    return resolve_project_dir(project_id) / "_output" / "prompt_overrides.json"
+    return _version_output_dir(project_id) / "prompt_overrides.json"
 
 
 def _load_all_overrides(project_id: str) -> dict:
@@ -187,8 +207,8 @@ def save_prompt_override(project_id: str, stage: str, content: str | None):
 
 
 def _load_project_info(project_id: str) -> dict:
-    """Загрузить project_info.json."""
-    info_path = resolve_project_dir(project_id) / "project_info.json"
+    """Загрузить project_info.json (version-aware: V2 → _versions/v{N}/project_info.json)."""
+    info_path = _version_project_dir(project_id) / "project_info.json"
     if info_path.exists():
         try:
             return json.loads(info_path.read_text(encoding="utf-8"))
@@ -290,7 +310,7 @@ def save_template(stage: str, content: str):
 
 def _get_block_analysis_example(project_info: dict, project_id: str) -> str:
     """Пример промпта для анализа блоков (первый пакет или шаблон)."""
-    batches_file = resolve_project_dir(project_id) / "_output" / "block_batches.json"
+    batches_file = _version_output_dir(project_id) / "block_batches.json"
     if batches_file.exists():
         try:
             data = json.loads(batches_file.read_text(encoding="utf-8"))
@@ -315,19 +335,17 @@ def _inject_discipline(template: str, project_info: dict) -> str:
 
 
 def _get_md_file_path(project_info: dict, project_id: str) -> str:
-    """Получить путь к MD-файлу проекта."""
+    """Получить путь к MD-файлу проекта (version-aware)."""
     md_file = project_info.get("md_file")
     if md_file:
-        return str(resolve_project_dir(project_id) / md_file)
+        return str(_version_project_dir(project_id) / md_file)
     return "(нет)"
 
 
 def _get_project_paths(project_id: str) -> tuple[str, str]:
-    """Получить пути к проекту и выходной папке."""
-    return (
-        str(resolve_project_dir(project_id)),
-        str(resolve_project_dir(project_id) / "_output"),
-    )
+    """Получить пути к проекту и выходной папке (version-aware: V2 → _versions/v{N}/)."""
+    vdir = _version_project_dir(project_id)
+    return (str(vdir), str(vdir / "_output"))
 
 
 # ─── Legacy stubs (для обратной совместимости с claude_runner.py) ───
@@ -726,7 +744,7 @@ def _extract_image_context_for_blocks(md_file_path: str, block_ids: list[str]) -
 
 def _load_document_graph(project_id: str) -> dict | None:
     """Загрузить document_graph.json если он существует."""
-    graph_path = resolve_project_dir(project_id) / "_output" / "document_graph.json"
+    graph_path = _version_output_dir(project_id) / "document_graph.json"
     if not graph_path.exists():
         return None
     try:
@@ -985,7 +1003,7 @@ def prepare_block_batch_task(
     block_lines = []
     for block in blocks:
         block_path = str(
-            resolve_project_dir(project_id) / "_output" / "blocks" / block["file"]
+            _version_output_dir(project_id) / "blocks" / block["file"]
         )
         pdf_page = block.get("page", "?")
         sheet_info = page_to_sheet.get(pdf_page, "")

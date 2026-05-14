@@ -1,7 +1,7 @@
 """
 REST API для проектов.
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel
 from typing import Optional
 import backend.app.services.common.project_service as project_service
@@ -207,10 +207,172 @@ async def register_external(req: RegisterExternalRequest):
 
 # ─── Динамические роуты /{project_id}/... ───
 
+@router.get("/{project_id:path}/versions")
+async def list_project_versions(project_id: str):
+    """Список версий проекта.
+
+    Для legacy-проектов (без project_versions.json) возвращает синтетическую
+    единственную версию V1, указывающую на корневую папку проекта.
+    """
+    from backend.app.services.common import version_service
+    proj_dir = project_service.resolve_project_dir(project_id)
+    if not proj_dir.exists():
+        raise HTTPException(404, f"Проект '{project_id}' не найден")
+    return version_service.get_versions_summary(proj_dir, project_id)
+
+
+@router.post("/{project_id:path}/versions/ensure-manifest")
+async def ensure_versions_manifest(project_id: str):
+    """Создать project_versions.json для legacy-проекта (если ещё нет).
+
+    Идемпотентно: если манифест уже есть, возвращает текущий.
+    """
+    from backend.app.services.common import version_service
+    proj_dir = project_service.resolve_project_dir(project_id)
+    if not proj_dir.exists():
+        raise HTTPException(404, f"Проект '{project_id}' не найден")
+    manifest = version_service.ensure_project_versions_manifest(proj_dir, project_id)
+    return {"status": "ok", "project_id": project_id, "manifest": manifest}
+
+
+class CreateVersionRequest(BaseModel):
+    """Запрос на создание новой версии проекта."""
+    comment: Optional[str] = None
+    label: Optional[str] = None
+    source: str = "manual"
+    status: str = "new"
+
+
+@router.post("/{project_id:path}/versions")
+async def create_project_version(project_id: str, req: CreateVersionRequest):
+    """Создать следующую версию проекта (V2, V3, ...).
+
+    - физически создаёт `_versions/v{N}/_output/`;
+    - кладёт минимальный `project_info.json` внутрь новой версии;
+    - обновляет `project_versions.json` (latest_version_id → новая версия);
+    - НЕ копирует и НЕ переносит существующий `_output` старой версии.
+    """
+    from backend.app.services.common import version_service
+    proj_dir = project_service.resolve_project_dir(project_id)
+    if not proj_dir.exists():
+        raise HTTPException(404, f"Проект '{project_id}' не найден")
+
+    try:
+        new_entry = version_service.create_next_version(
+            proj_dir,
+            project_id,
+            label=req.label,
+            source=req.source,
+            status=req.status,
+            comment=req.comment,
+        )
+    except FileNotFoundError as e:
+        raise HTTPException(404, str(e))
+
+    summary = version_service.get_versions_summary(proj_dir, project_id)
+    return {
+        "status": "ok",
+        "project_id": project_id,
+        "version": new_entry,
+        "latest_version_id": summary["latest_version_id"],
+        "version_count": summary["version_count"],
+    }
+
+
+# ─── Загрузка / просмотр исходных файлов версии ─────────────────────────────
+
+
+@router.get("/{project_id:path}/versions/{version_id}/files")
+async def list_version_files_endpoint(project_id: str, version_id: str):
+    """Список исходных файлов конкретной версии проекта.
+
+    Не включает `_output/`, манифест и `project_info.json`. Возвращает также
+    текущий `project_info.json` версии.
+    """
+    from backend.app.services.common import version_service
+    proj_dir = project_service.resolve_project_dir(project_id)
+    if not proj_dir.exists():
+        raise HTTPException(404, f"Проект '{project_id}' не найден")
+    try:
+        return version_service.list_version_files(project_id, version_id)
+    except version_service.VersionNotFoundError as e:
+        raise HTTPException(404, str(e))
+
+
+@router.post("/{project_id:path}/versions/{version_id}/files")
+async def upload_version_files_endpoint(
+    project_id: str,
+    version_id: str,
+    files: list[UploadFile] = File(..., description="Файлы для загрузки в версию"),
+    replace_existing: bool = Form(False),
+    comment: Optional[str] = Form(None),
+    allow_v1_upload: bool = Form(False),
+):
+    """Загрузить исходные PDF/MD-файлы в папку конкретной версии.
+
+    Поведение:
+    - V1 запрещён по умолчанию (set `allow_v1_upload=true` для override);
+    - неизвестная версия → 404;
+    - конфликт имени без `replace_existing` → 409;
+    - path traversal / запрещённое расширение → 400;
+    - после загрузки `project_info.json` версии обновляется (pdf_files, md_files, updated_at).
+    """
+    from backend.app.services.common import version_service
+    proj_dir = project_service.resolve_project_dir(project_id)
+    if not proj_dir.exists():
+        raise HTTPException(404, f"Проект '{project_id}' не найден")
+
+    if not files:
+        raise HTTPException(400, "Не передан ни один файл")
+
+    # Читаем содержимое заранее — UploadFile поток после ответа закрывается.
+    payload: list[tuple[str, bytes]] = []
+    for f in files:
+        content = await f.read()
+        payload.append((f.filename or "", content))
+
+    try:
+        result = version_service.save_files_to_version(
+            project_id,
+            version_id,
+            payload,
+            replace_existing=replace_existing,
+            comment=comment,
+            allow_v1_upload=allow_v1_upload,
+        )
+    except version_service.VersionNotFoundError as e:
+        raise HTTPException(404, str(e))
+    except version_service.VersionUploadForbiddenError as e:
+        raise HTTPException(403, str(e))
+    except version_service.VersionFileConflictError as e:
+        raise HTTPException(409, str(e))
+    except version_service.VersionFileError as e:
+        raise HTTPException(400, str(e))
+
+    return {"status": "ok", **result}
+
+
 @router.get("/{project_id:path}")
-async def get_project(project_id: str):
-    """Детали одного проекта."""
-    status = project_service.get_project_status(project_id)
+async def get_project(project_id: str, version_id: Optional[str] = None):
+    """Детали одного проекта.
+
+    Query param `version_id` (опционально): получить статус конкретной версии.
+    По умолчанию возвращается latest. Для legacy-проектов без манифеста
+    допустим только `v1` (это и есть корень проекта).
+    """
+    from backend.app.services.common import version_service
+    # Заранее проверяем валидность version_id, чтобы 404 не путал
+    # «проекта нет» и «версии нет».
+    if version_id:
+        proj_dir = project_service.resolve_project_dir(project_id)
+        if not proj_dir.exists():
+            raise HTTPException(404, f"Проект '{project_id}' не найден")
+        try:
+            version_service.get_version_entry(proj_dir, project_id, version_id)
+        except version_service.VersionNotFoundError as e:
+            raise HTTPException(404, str(e))
+
+    status = project_service.get_project_status(project_id, version_id=version_id)
     if not status:
         raise HTTPException(404, f"Проект '{project_id}' не найден")
     return status.model_dump()

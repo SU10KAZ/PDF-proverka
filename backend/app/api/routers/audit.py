@@ -7,6 +7,7 @@ import re
 import subprocess
 import traceback
 from pathlib import Path
+from typing import Optional
 from fastapi import APIRouter, Body, HTTPException, Query
 from backend.app.pipeline.manager import pipeline_manager
 import backend.app.services.common.project_service as project_service
@@ -647,10 +648,47 @@ async def get_all_live_status():
 
 # ─── Логи проектов ───
 
+
+def _resolve_log_path_for_version(
+    project_id: str,
+    version_id: Optional[str],
+) -> Path:
+    """Версия-aware путь к `audit_log.jsonl`.
+
+    - `version_id=None` → latest version (для нового V2-проекта это V2);
+    - `version_id="v1"` → root `_output/audit_log.jsonl`;
+    - `version_id="v2"` → `_versions/v2/_output/audit_log.jsonl`;
+    - неизвестная версия → 404.
+
+    Без fallback на V1: если V2 audit ещё не писал лог, GET вернёт пустой
+    результат, но НЕ покажет V1-лог пользователю (это сбивает с толку и
+    создаёт впечатление, что V2 audit что-то делал, хотя нет).
+    """
+    from backend.app.services.common import version_service
+    try:
+        output_dir = version_service.resolve_version_output_dir(
+            project_id, version_id=version_id,
+        )
+    except version_service.VersionNotFoundError as e:
+        raise HTTPException(404, str(e))
+    except FileNotFoundError as e:
+        raise HTTPException(404, str(e))
+    return output_dir / "audit_log.jsonl"
+
+
 @router.get("/{project_id:path}/log")
-async def get_project_log(project_id: str, limit: int = 500, offset: int = 0):
-    """Получить персистентный лог аудита из audit_log.jsonl."""
-    log_path = resolve_project_dir(project_id) / "_output" / "audit_log.jsonl"
+async def get_project_log(
+    project_id: str,
+    limit: int = 500,
+    offset: int = 0,
+    version_id: Optional[str] = Query(
+        None,
+        description="Версия лога (v1/v2/...); по умолчанию latest. "
+                    "Без fallback на V1: V2 без лога вернёт пустой результат.",
+    ),
+):
+    """Получить персистентный лог аудита из audit_log.jsonl (version-aware)."""
+    log_path = _resolve_log_path_for_version(project_id, version_id)
     if not log_path.exists():
         return {"entries": [], "total": 0, "has_more": False}
 
@@ -682,9 +720,16 @@ async def get_project_log(project_id: str, limit: int = 500, offset: int = 0):
 
 
 @router.delete("/{project_id:path}/log")
-async def clear_project_log(project_id: str):
-    """Очистить лог аудита проекта."""
-    log_path = resolve_project_dir(project_id) / "_output" / "audit_log.jsonl"
+async def clear_project_log(
+    project_id: str,
+    version_id: Optional[str] = Query(
+        None,
+        description="Версия лога (v1/v2/...); по умолчанию latest. "
+                    "DELETE V2 НЕ удаляет V1-лог.",
+    ),
+):
+    """Очистить лог аудита проекта (version-aware)."""
+    log_path = _resolve_log_path_for_version(project_id, version_id)
     if log_path.exists():
         log_path.unlink()
     return {"status": "ok"}
@@ -727,11 +772,14 @@ async def reset_prompt(project_id: str, stage: str):
 
 
 @router.post("/{project_id:path}/prepare")
-async def prepare_project(project_id: str):
+async def prepare_project(
+    project_id: str,
+    version_id: Optional[str] = Query(None, description="Версия (v1/v2/...), по умолчанию latest"),
+):
     """Запустить подготовку проекта (текст + тайлы)."""
-    _check_project(project_id)
+    _check_project(project_id, version_id)
     try:
-        job = await pipeline_manager.start_prepare(project_id)
+        job = await pipeline_manager.start_prepare(project_id, version_id=version_id)
         return {"status": "started", "job": job.model_dump()}
     except RuntimeError as e:
         raise HTTPException(409, str(e))
@@ -741,44 +789,47 @@ async def prepare_project(project_id: str):
 async def start_tile_audit(
     project_id: str,
     start_from: int = Query(1, description="Начать с пакета N"),
+    version_id: Optional[str] = Query(None),
 ):
     """Запустить пакетный анализ тайлов."""
-    _check_project(project_id)
+    _check_project(project_id, version_id)
     try:
-        job = await pipeline_manager.start_tile_audit(project_id, start_from=start_from)
+        job = await pipeline_manager.start_tile_audit(
+            project_id, start_from=start_from, version_id=version_id,
+        )
         return {"status": "started", "job": job.model_dump()}
     except RuntimeError as e:
         raise HTTPException(409, str(e))
 
 
 @router.post("/{project_id:path}/main-audit")
-async def start_main_audit(project_id: str):
+async def start_main_audit(project_id: str, version_id: Optional[str] = Query(None)):
     """Запустить основной аудит (Claude CLI)."""
-    _check_project(project_id)
+    _check_project(project_id, version_id)
     try:
-        job = await pipeline_manager.start_main_audit(project_id)
+        job = await pipeline_manager.start_main_audit(project_id, version_id=version_id)
         return {"status": "started", "job": job.model_dump()}
     except RuntimeError as e:
         raise HTTPException(409, str(e))
 
 
 @router.post("/{project_id:path}/smart-audit")
-async def start_smart_audit(project_id: str):
+async def start_smart_audit(project_id: str, version_id: Optional[str] = Query(None)):
     """Запустить интеллектуальный аудит (текст → триаж → выборочная нарезка → анализ → Excel)."""
-    _check_project(project_id)
+    _check_project(project_id, version_id)
     try:
-        job = await pipeline_manager.start_smart_audit(project_id)
+        job = await pipeline_manager.start_smart_audit(project_id, version_id=version_id)
         return {"status": "started", "mode": "smart", "job": job.model_dump()}
     except RuntimeError as e:
         raise HTTPException(409, str(e))
 
 
 @router.post("/{project_id:path}/full-audit")
-async def start_audit(project_id: str):
+async def start_audit(project_id: str, version_id: Optional[str] = Query(None)):
     """Аудит (OCR): кроп блоков → текст → все блоки → свод → нормы."""
-    _check_project(project_id)
+    _check_project(project_id, version_id)
     try:
-        job = await pipeline_manager.start_audit(project_id)
+        job = await pipeline_manager.start_audit(project_id, version_id=version_id)
         return {"status": "started", "job": job.model_dump()}
     except RuntimeError as e:
         raise HTTPException(409, str(e))
@@ -786,50 +837,56 @@ async def start_audit(project_id: str):
 
 # Legacy aliases
 @router.post("/{project_id:path}/standard-audit")
-async def start_standard_audit(project_id: str):
-    return await start_audit(project_id)
+async def start_standard_audit(project_id: str, version_id: Optional[str] = Query(None)):
+    return await start_audit(project_id, version_id)
 
 @router.post("/{project_id:path}/pro-audit")
-async def start_pro_audit(project_id: str):
-    return await start_audit(project_id)
+async def start_pro_audit(project_id: str, version_id: Optional[str] = Query(None)):
+    return await start_audit(project_id, version_id)
 
 
 @router.get("/{project_id:path}/resume-info")
-async def get_resume_info(project_id: str):
+async def get_resume_info(project_id: str, version_id: Optional[str] = Query(None)):
     """Определить, с какого этапа можно продолжить пайплайн."""
-    _check_project(project_id)
-    info = pipeline_manager.detect_resume_stage(project_id)
+    _check_project(project_id, version_id)
+    info = pipeline_manager.detect_resume_stage(project_id, version_id=version_id)
     return info
 
 
 @router.post("/{project_id:path}/resume")
-async def resume_pipeline(project_id: str):
+async def resume_pipeline(project_id: str, version_id: Optional[str] = Query(None)):
     """Продолжить пайплайн с места ошибки/остановки."""
-    _check_project(project_id)
+    _check_project(project_id, version_id)
     try:
-        job = await pipeline_manager.resume_pipeline(project_id)
+        job = await pipeline_manager.resume_pipeline(project_id, version_id=version_id)
         return {"status": "started", "job": job.model_dump()}
     except RuntimeError as e:
         raise HTTPException(409, str(e))
 
 
 @router.post("/{project_id:path}/start-from")
-async def start_from_stage(project_id: str, stage: str = Query(..., description="Этап: prepare, gemma_enrichment, text_analysis, block_analysis, findings_merge, norm_verify, excel")):
+async def start_from_stage(
+    project_id: str,
+    stage: str = Query(..., description="Этап: prepare, gemma_enrichment, text_analysis, block_analysis, findings_merge, norm_verify, excel"),
+    version_id: Optional[str] = Query(None),
+):
     """Запустить конвейер с указанного этапа (все последующие пересчитываются)."""
-    _check_project(project_id)
+    _check_project(project_id, version_id)
     try:
-        job = await pipeline_manager.start_from_stage(project_id, stage)
+        job = await pipeline_manager.start_from_stage(
+            project_id, stage, version_id=version_id,
+        )
         return {"status": "started", "job": job.model_dump()}
     except RuntimeError as e:
         raise HTTPException(409, str(e))
 
 
 @router.post("/{project_id:path}/verify-norms")
-async def start_norm_verification(project_id: str):
+async def start_norm_verification(project_id: str, version_id: Optional[str] = Query(None)):
     """Запустить верификацию нормативных ссылок через WebSearch."""
-    _check_project(project_id)
+    _check_project(project_id, version_id)
     try:
-        job = await pipeline_manager.start_norm_verify(project_id)
+        job = await pipeline_manager.start_norm_verify(project_id, version_id=version_id)
         return {"status": "started", "job": job.model_dump()}
     except RuntimeError as e:
         raise HTTPException(409, str(e))
@@ -1008,10 +1065,41 @@ async def cancel_audit(project_id: str):
     return {"status": "cancelled"}
 
 
-def _check_project(project_id: str):
-    """Проверка существования проекта."""
-    status = project_service.get_project_status(project_id)
+def _check_project(project_id: str, version_id: Optional[str] = None):
+    """Проверка существования проекта (и опционально — валидной версии).
+
+    Запуск аудита требует наличия PDF в папке выбранной версии:
+    - V1 / legacy: PDF в корне проекта (как и раньше);
+    - V2+: PDF/MD в `_versions/v{N}/`; если их нет — `409`, чтобы UI мог
+      подсказать пользователю сначала загрузить файлы через
+      `POST /api/projects/{id}/versions/{vid}/files`.
+
+    fallback на PDF из V1 запрещён.
+    """
+    from backend.app.services.common import version_service
+    status = project_service.get_project_status(project_id, version_id=version_id)
     if not status:
         raise HTTPException(404, f"Проект '{project_id}' не найден")
-    if not status.has_pdf:
-        raise HTTPException(400, f"В проекте '{project_id}' отсутствует PDF файл")
+    # Валидируем version_id явно
+    if version_id:
+        proj_dir = project_service.resolve_project_dir(project_id)
+        try:
+            version_service.get_version_entry(proj_dir, project_id, version_id)
+        except version_service.VersionNotFoundError as e:
+            raise HTTPException(404, str(e))
+
+    # Проверяем именно ту версию, которую планируется запускать.
+    effective_vid = version_id or status.version_id
+    readiness = version_service.version_audit_readiness(project_id, effective_vid)
+    if not readiness["can_run_audit"]:
+        # Для V1 формулировка такая же, как была (совместимость UI).
+        if effective_vid in (None, "v1"):
+            raise HTTPException(
+                400, f"В проекте '{project_id}' отсутствует PDF файл"
+            )
+        raise HTTPException(
+            409,
+            f"В версии '{effective_vid}' проекта '{project_id}' нет исходных "
+            f"PDF/MD файлов. Загрузите их через POST /api/projects/{{id}}/"
+            f"versions/{effective_vid}/files перед запуском аудита."
+        )

@@ -6,6 +6,7 @@
     <title>Audit Manager</title>
     <script src="/static/js/vue.global.prod.js"></script>
     <script src="/static/js/marked.min.js"></script>
+    <script src="/static/js/version_api.js?v={{js_version}}"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -328,6 +329,21 @@
                 <a href="#" @click.prevent="navigate('/')">Проекты</a>
                 <span v-if="currentProject"> / <a href="#" @click.prevent="navigate('/project/' + currentProject.project_id)">{{ currentProject.name }}</a></span>
             </div>
+            <div v-if="currentProject" class="project-version-switch" :title="'Активная версия проекта'">
+                <label class="project-version-switch__label">Версия:</label>
+                <select class="project-version-switch__select"
+                        :value="activeVersionId || currentProject.latest_version_id || 'v1'"
+                        @change="selectVersion($event.target.value)">
+                    <option v-for="v in projectVersions" :key="v.version_id" :value="v.version_id">
+                        {{ v.label }}{{ v.is_latest ? ' · текущая' : '' }}{{ !v.has_source_files ? ' (пусто)' : '' }}
+                    </option>
+                </select>
+                <button class="btn btn-sm btn-outline project-version-switch__btn"
+                        @click="versionsPanelOpen = !versionsPanelOpen"
+                        :title="'Версии проекта'">
+                    {{ projectVersions.length || 1 }} версии
+                </button>
+            </div>
             <div v-if="currentProject" class="project-tabs">
                 <button class="project-tab" :class="{'project-tab--active': currentView === 'project'}"
                         @click="navigate('/project/' + currentProject.project_id)">Инфо</button>
@@ -465,6 +481,10 @@
                                 <span class="project-card__name-text">{{ p.name }}</span>
                             </h3>
                             <div class="project-card__icons">
+                                <span v-if="versionBadgeFor(p)"
+                                      class="version-badge"
+                                      :class="'version-badge--' + (versionBadgeFor(p).tone)"
+                                      :title="'Версия проекта: ' + p.version_label">{{ versionBadgeFor(p).text }}</span>
                                 <span v-if="p.pipeline_issues && p.pipeline_issues.length > 0"
                                       class="pipeline-issues-dot pipeline-issues-dot--inline" :title="p.pipeline_issues.join('\n')">!</span>
                                 <span v-if="p.expert_review_status === 'complete'" class="project-card__reviewed project-card__reviewed--inline" title="Все решения заполнены">&#10003;</span>
@@ -1279,12 +1299,18 @@
                                 <span class="stage-tokens__out" v-if="stageTokensFormatted('optimization_corrector')">F: &#8595;{{ stageTokensFormatted('optimization_corrector').inp }}</span>
                             </div>
                         </div>
+                        <!-- Banner: legacy runner блокирует аудит V2 -->
+                        <div v-if="canStartAuditNow.code === 'runner_no_v2'" class="runner-warning">
+                            <strong>Аудит {{ activeVersionEntry?.label || activeVersionId }} временно недоступен на текущем legacy runner.</strong>
+                            Версия и файлы сохранены. Можно запустить контроль ранее согласованных замечаний из предыдущей версии,
+                            а полноценный аудит V2 будет доступен после переключения production на version-aware backend.
+                        </div>
                         <!-- Audit actions (inline with pipeline) -->
                         <div class="audit-buttons-inline">
                             <button class="btn btn-success" @click="startAudit(currentProject.project_id)"
-                                    :disabled="isProjectRunning(currentProject.project_id)"
-                                    title="Аудит: кроп → текст → блоки → свод → нормы → оптимизация">
-                                &#9654; Запустить аудит
+                                    :disabled="isProjectRunning(currentProject.project_id) || !canStartAuditNow.ok"
+                                    :title="canStartAuditNow.ok ? 'Аудит: кроп → текст → блоки → свод → нормы → оптимизация' : canStartAuditNow.reason">
+                                &#9654; Запустить аудит<span v-if="activeVersionId && activeVersionId !== 'v1'"> ({{ activeVersionId }})</span>
                             </button>
                             <button class="btn btn-danger" @click="cancelAudit(currentProject.project_id)"
                                     v-if="isProjectRunning(currentProject.project_id)">
@@ -1407,6 +1433,268 @@
                         <span class="resume-label">{{ resumeInfo.stage_label }}
                             <span v-if="resumeInfo.detail">({{ resumeInfo.detail }})</span>
                         </span>
+                    </div>
+
+                    <!-- ═══ Состояние новой версии (V2+, пустая) ═══ -->
+                    <div v-if="activeVersionEntry && !activeVersionEntry.has_source_files && activeVersionEntry.version_id !== 'v1'"
+                         class="version-empty-box">
+                        <div class="version-empty-box__title">
+                            Версия {{ activeVersionEntry.label }} создана, но исходные файлы ещё не загружены.
+                        </div>
+                        <div class="version-empty-box__hint">
+                            Запустить аудит можно только после загрузки PDF (опционально + Markdown).
+                        </div>
+                        <div class="version-empty-box__actions">
+                            <label class="btn btn-primary">
+                                Загрузить PDF/MD
+                                <input type="file" multiple
+                                       accept=".pdf,.md,.txt,.json,.html"
+                                       @change="handleUploadInput" style="display:none">
+                            </label>
+                            <button v-if="projectVersions.length > 1"
+                                    class="btn btn-outline"
+                                    @click="selectVersion(projectVersions[0].version_id)">
+                                Вернуться к {{ projectVersions[0].label }}
+                            </button>
+                        </div>
+                        <div v-if="versionUploading" class="version-empty-box__progress">Загрузка...</div>
+                        <div v-if="versionUploadError" class="version-empty-box__error">
+                            {{ versionUploadError }}
+                            <button v-if="versionUploadError.toLowerCase().includes('уже существует')"
+                                    class="btn btn-sm btn-outline"
+                                    style="margin-left:8px">
+                                <label style="cursor:pointer">
+                                    Заменить
+                                    <input type="file" multiple
+                                           accept=".pdf,.md,.txt,.json,.html"
+                                           @change="handleUploadInputReplace" style="display:none">
+                                </label>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ═══ Версии проекта (раскрываемая панель) ═══ -->
+                    <div v-if="versionsPanelOpen || (projectVersions.length > 1 && !activeVersionEntry?.has_source_files)"
+                         class="versions-panel">
+                        <div class="versions-panel__header">
+                            <h4>Версии проекта</h4>
+                            <div class="versions-panel__actions">
+                                <button class="btn btn-sm btn-primary" @click="showCreateVersionModal = true">
+                                    + Создать новую версию
+                                </button>
+                                <button class="btn btn-sm btn-outline" @click="versionsPanelOpen = false">Скрыть</button>
+                            </div>
+                        </div>
+                        <table class="versions-table">
+                            <thead>
+                                <tr>
+                                    <th>Версия</th>
+                                    <th>Статус</th>
+                                    <th>Дата создания</th>
+                                    <th>Файлы</th>
+                                    <th>Готовность</th>
+                                    <th>Комментарий</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="v in projectVersions" :key="v.version_id"
+                                    :class="{'versions-table__row--active': v.version_id === activeVersionId}">
+                                    <td>
+                                        <strong>{{ v.label }}</strong>
+                                        <span v-if="v.is_latest" class="version-badge version-badge--info" style="margin-left:6px">текущая</span>
+                                    </td>
+                                    <td>{{ v.status }}</td>
+                                    <td>{{ (v.created_at || '').slice(0, 10) }}</td>
+                                    <td>
+                                        <span v-if="v.has_source_files">PDF: {{ v.pdf_count }}, MD: {{ v.md_count }}</span>
+                                        <span v-else style="color: var(--text-muted)">— нет файлов —</span>
+                                    </td>
+                                    <td>
+                                        <span v-if="v.can_run_audit" class="version-badge version-badge--success">можно запускать</span>
+                                        <span v-else class="version-badge version-badge--warn">нужна загрузка</span>
+                                    </td>
+                                    <td :title="v.comment || ''">
+                                        {{ (v.comment || '').slice(0, 40) }}{{ v.comment && v.comment.length > 40 ? '…' : '' }}
+                                    </td>
+                                    <td>
+                                        <button v-if="v.version_id !== activeVersionId"
+                                                class="btn btn-sm btn-outline"
+                                                @click="selectVersion(v.version_id)">Открыть</button>
+                                        <span v-else style="color: var(--text-muted)">активна</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- ═══ Контроль ранее согласованных замечаний (migrated findings) ═══ -->
+                    <!-- Доступно только для V2 и выше: у V1 нет более ранней версии. -->
+                    <div v-if="activeVersionId && activeVersionId !== 'v1'" class="migrated-panel">
+                        <div class="migrated-panel__header">
+                            <h4>
+                                Контроль замечаний из предыдущей версии
+                                <button class="btn btn-sm btn-outline migrated-panel__toggle"
+                                        @click="migratedFindingsPanelOpen = !migratedFindingsPanelOpen">
+                                    {{ migratedFindingsPanelOpen ? 'Свернуть' : 'Раскрыть' }}
+                                </button>
+                            </h4>
+                            <div v-if="!migratedFindingsSummary.hasReport" class="migrated-panel__hint">
+                                Контроль ранее согласованных замечаний ещё не выполнялся.
+                            </div>
+                            <div v-else class="migrated-panel__summary">
+                                <span class="migrated-stat"><b>{{ migratedFindingsSummary.total }}</b> всего</span>
+                                <span class="migrated-stat migrated-stat--warn"><b>{{ migratedFindingsSummary.stillRelevant }}</b> актуальны</span>
+                                <span class="migrated-stat migrated-stat--info"><b>{{ migratedFindingsSummary.duplicate }}</b> уже в V2</span>
+                                <span class="migrated-stat migrated-stat--success"><b>{{ migratedFindingsSummary.resolved }}</b> устранены</span>
+                                <span v-if="migratedFindingsSummary.notVerifiable > 0"
+                                      class="migrated-stat migrated-stat--warn">
+                                    <b>{{ migratedFindingsSummary.notVerifiable }}</b> требуют проверки
+                                </span>
+                                <span v-if="migratedFindingsSummary.sourceMissing > 0"
+                                      class="migrated-stat migrated-stat--muted">
+                                    <b>{{ migratedFindingsSummary.sourceMissing }}</b> источник отсутствует
+                                </span>
+                                <span class="migrated-stat migrated-stat--muted"
+                                      :title="migratedFindingsSummary.checkedAt">
+                                    Источник: {{ migratedFindingsSummary.sourceVersionId || '—' }} ·
+                                    {{ (migratedFindingsSummary.checkedAt || '').slice(0, 10) }}
+                                </span>
+                            </div>
+                            <div class="migrated-panel__actions">
+                                <button class="btn btn-primary btn-sm"
+                                        :disabled="migratedFindingsCheckRunning || !canRunMigratedCheckNow.ok"
+                                        :title="canRunMigratedCheckNow.reason || ''"
+                                        @click="runMigratedFindingsCheck">
+                                    <template v-if="migratedFindingsCheckRunning">Выполняется...</template>
+                                    <template v-else-if="!migratedFindingsSummary.hasReport">Запустить контроль</template>
+                                    <template v-else>Перезапустить контроль</template>
+                                </button>
+                                <button v-if="migratedFindingsSummary.hasReport"
+                                        class="btn btn-outline btn-sm"
+                                        @click="loadMigratedFindingsReport(currentProject.project_id, activeVersionId)">
+                                    Обновить отчёт
+                                </button>
+                            </div>
+                            <div v-if="migratedFindingsError" class="migrated-panel__error">
+                                {{ migratedFindingsError }}
+                            </div>
+                        </div>
+
+                        <!-- Детальная таблица — раскрывается отдельно -->
+                        <div v-if="migratedFindingsPanelOpen && migratedFindingsSummary.hasReport"
+                             class="migrated-panel__body">
+                            <div v-if="!migratedFindingsReport.items || migratedFindingsReport.items.length === 0"
+                                 class="migrated-empty">
+                                <template v-if="migratedFindingsSummary.total === 0">
+                                    В предыдущих версиях нет экспертно согласованных замечаний для контроля.
+                                </template>
+                                <template v-else>
+                                    Отчёт пустой.
+                                </template>
+                            </div>
+                            <table v-else class="migrated-table">
+                                <thead>
+                                    <tr>
+                                        <th>Исходное замечание</th>
+                                        <th>Статус</th>
+                                        <th>Связанное замечание V2</th>
+                                        <th>Причина</th>
+                                        <th>Действие</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(item, idx) in migratedFindingsReport.items"
+                                        :key="(item.origin_version_id||'V') + '-' + (item.origin_finding_id||idx)"
+                                        :class="['migrated-row',
+                                                 'migrated-row--' + migratedStatusTone(item.migration_status)]">
+                                        <td>
+                                            <div class="migrated-origin">
+                                                <strong>{{ item.origin_finding_id || '—' }}</strong>
+                                                <span class="migrated-origin__src">{{ item.origin_version_id || '' }}</span>
+                                            </div>
+                                            <div v-if="item.origin_title" class="migrated-origin__title">
+                                                {{ item.origin_title }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="status-chip"
+                                                  :class="'status-chip--' + migratedStatusTone(item.migration_status)">
+                                                {{ migratedStatusLabel(item.migration_status) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <template v-if="item.linked_finding_id">
+                                                <a href="#"
+                                                   @click.prevent="navigate('/project/' + currentProjectId + '/findings')"
+                                                   :title="item.linked_finding_id">
+                                                    {{ item.linked_finding_id }}
+                                                </a>
+                                            </template>
+                                            <template v-else-if="item.new_finding_id">
+                                                <a href="#"
+                                                   @click.prevent="navigate('/project/' + currentProjectId + '/findings')"
+                                                   :title="item.new_finding_id">
+                                                    {{ item.new_finding_id }}
+                                                </a>
+                                            </template>
+                                            <span v-else style="color: var(--text-muted)">—</span>
+                                        </td>
+                                        <td>
+                                            <span :title="item.note || item.reason || ''">
+                                                {{ (item.note || item.reason || '').slice(0, 80) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button v-if="item.migration_status === 'duplicate_of_new_finding' && (item.linked_finding_id || item.new_finding_id)"
+                                                    class="btn btn-sm btn-outline"
+                                                    @click="navigate('/project/' + currentProjectId + '/findings')">
+                                                Открыть замечание
+                                            </button>
+                                            <button v-else-if="item.migration_status === 'still_relevant' && item.new_finding_id"
+                                                    class="btn btn-sm btn-outline"
+                                                    @click="navigate('/project/' + currentProjectId + '/findings')">
+                                                Открыть migrated
+                                            </button>
+                                            <span v-else-if="item.migration_status === 'not_verifiable'"
+                                                  class="migrated-warn-hint">
+                                                Проверить вручную
+                                            </span>
+                                            <span v-else style="color: var(--text-muted)">—</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Warning: V2 без current findings — отчёт может быть создан, но 03_findings не обновится -->
+                        <div v-if="migratedFindingsSummary.hasReport
+                                   && (currentProject && currentProject.findings_count === 0)
+                                   && migratedFindingsSummary.stillRelevant > 0"
+                             class="migrated-panel__warn">
+                            В текущей версии ещё нет результатов аудита. Сначала выполните полный аудит V2,
+                            затем перезапустите контроль, чтобы still_relevant попали в список замечаний.
+                        </div>
+                    </div>
+
+                    <!-- ═══ Modal: создать новую версию ═══ -->
+                    <div v-if="showCreateVersionModal" class="modal-backdrop" @click.self="showCreateVersionModal = false">
+                        <div class="modal-card">
+                            <h3>Создать новую версию</h3>
+                            <p style="color: var(--text-muted); margin: 8px 0 12px">
+                                Новая версия будет создана пустой. После создания загрузите PDF/MD.
+                                Старые версии и их результаты остаются нетронутыми.
+                            </p>
+                            <label class="form-label">Комментарий (необязательно)</label>
+                            <input v-model="newVersionComment"
+                                   class="form-input"
+                                   placeholder="Например: новая редакция документации, изм. 1"
+                                   maxlength="200">
+                            <div class="modal-actions" style="margin-top: 12px">
+                                <button class="btn btn-primary" @click="createNewVersion">Создать</button>
+                                <button class="btn btn-outline" @click="showCreateVersionModal = false; newVersionComment=''">Отмена</button>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Severity + Optimization summary -->
@@ -1577,12 +1865,26 @@
                                         </template>
                                     </td>
                                     <td class="desc-cell">
+                                        <!-- Бейдж migrated finding: "Из V1" / "Связано с V1" -->
+                                        <span v-if="findingMigratedBadge(f)"
+                                              class="migrated-badge"
+                                              :class="'migrated-badge--' + findingMigratedBadge(f).tone"
+                                              :title="(f.migration_note || f.migrated_from_label || f.origin_finding_id || '')">
+                                            {{ findingMigratedBadge(f).text }}
+                                        </span>
                                         <template v-if="f.sub_findings">
                                             <div v-for="(sub, idx) in f.sub_findings" :key="'d'+sub.original_id" class="merged-row-item">
                                                 <span class="merged-desc-num">{{ idx + 1 }}.</span> {{ cleanSubProblem(sub.problem) }}
                                             </div>
                                         </template>
                                         <template v-else>{{ f.description || f.problem || f.finding || '' }}</template>
+                                        <!-- Подробности origin для migrated finding -->
+                                        <div v-if="findingMigratedBadge(f) && (f.origin_finding_id || f.migration_status)"
+                                             class="migrated-meta">
+                                            <span v-if="f.origin_version_id">{{ f.origin_version_id }}</span>
+                                            <span v-if="f.origin_finding_id">· {{ f.origin_finding_id }}</span>
+                                            <span v-if="f.migration_status">· {{ migratedStatusLabel(f.migration_status) }}</span>
+                                        </div>
                                     </td>
                                     <td class="norm-cell">{{ f.norm }}</td>
                                     <td class="rec-cell">{{ f.solution || f.recommendation || '' }}</td>

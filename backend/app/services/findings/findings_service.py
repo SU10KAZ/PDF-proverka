@@ -9,12 +9,24 @@ from typing import Optional
 
 from backend.app.core.config import SEVERITY_CONFIG
 from backend.app.models.findings import FindingsResponse, FindingsSummary
+from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
 
 
-def _get_findings_path(project_id: str) -> Path:
+def _get_version_output_dir(project_id: str, version_id: Optional[str] = None) -> Path:
+    """Папка `_output/` нужной версии проекта (V1 = корень)."""
+    return version_service.resolve_version_output_dir(project_id, version_id)
+
+
+def _get_version_project_dir(project_id: str, version_id: Optional[str] = None) -> Path:
+    """Папка нужной версии проекта (V1 = корень, V2+ = `_versions/v{N}`)."""
+    ctx = version_service.resolve_project_version_context(project_id, version_id)
+    return ctx["version_dir"]
+
+
+def _get_findings_path(project_id: str, version_id: Optional[str] = None) -> Path:
     """Выбрать лучший файл замечаний: 03a (верифицированный) или 03 (базовый)."""
-    output_dir = resolve_project_dir(project_id) / "_output"
+    output_dir = _get_version_output_dir(project_id, version_id)
     verified = output_dir / "03a_norms_verified.json"
     if verified.exists():
         return verified
@@ -40,15 +52,17 @@ def get_findings(
     limit: Optional[int] = None,
     offset: Optional[int] = None,
     group: bool = False,
+    *,
+    version_id: Optional[str] = None,
 ) -> Optional[FindingsResponse]:
     """Получить замечания проекта с фильтрацией и пагинацией."""
-    path = _get_findings_path(project_id)
+    path = _get_findings_path(project_id, version_id)
     data = _load_json(path)
     if data is None:
         return None
 
     items = data.get("findings", data.get("items", []))
-    _enrich_sheet_page(items, project_id)
+    _enrich_sheet_page(items, project_id, version_id=version_id)
     audit_date = data.get("audit_date", data.get("generated_at"))
 
     # Фильтрация
@@ -104,9 +118,14 @@ def get_findings(
     )
 
 
-def get_finding_by_id(project_id: str, finding_id: str) -> Optional[dict]:
+def get_finding_by_id(
+    project_id: str,
+    finding_id: str,
+    *,
+    version_id: Optional[str] = None,
+) -> Optional[dict]:
     """Получить одно замечание по ID."""
-    path = _get_findings_path(project_id)
+    path = _get_findings_path(project_id, version_id)
     data = _load_json(path)
     if data is None:
         return None
@@ -118,16 +137,31 @@ def get_finding_by_id(project_id: str, finding_id: str) -> Optional[dict]:
     return None
 
 
+def _resolve_summary_output_dir(project_dir: Path, project_id: str) -> Path:
+    """Папка `_output/` latest версии для cross-project summary-ручек.
+
+    Для legacy V1 (без manifest) == `project_dir / _output`. Для V2+ — папка
+    latest версии (`_versions/v{N}/_output`), чтобы сводки на дашборде не
+    подтягивали старые V1-данные после переключения latest на V2.
+    """
+    try:
+        version_dir = version_service.get_version_dir(project_dir, project_id)
+    except version_service.VersionNotFoundError:
+        version_dir = project_dir
+    return version_dir / "_output"
+
+
 def get_all_summaries() -> list[FindingsSummary]:
     """Сводка замечаний по всем проектам."""
     from backend.app.services.common.project_service import iter_project_dirs
     summaries = []
     for project_id, entry in iter_project_dirs():
-        path = entry / "_output" / "03a_norms_verified.json"
+        output_dir = _resolve_summary_output_dir(entry, project_id)
+        path = output_dir / "03a_norms_verified.json"
         if not path.exists():
-            path = entry / "_output" / "03_findings.json"
+            path = output_dir / "03_findings.json"
         if not path.exists():
-            path = entry / "_output" / "03_findings_pre_merge.json"
+            path = output_dir / "03_findings_pre_merge.json"
         data = _load_json(path)
         if data is None:
             continue
@@ -153,7 +187,8 @@ def get_all_optimization_summaries() -> list[dict]:
     from backend.app.services.common.project_service import iter_project_dirs
     summaries = []
     for project_id, entry in iter_project_dirs():
-        opt_path = entry / "_output" / "optimization.json"
+        output_dir = _resolve_summary_output_dir(entry, project_id)
+        opt_path = output_dir / "optimization.json"
         data = _load_json(opt_path)
         if data is None:
             continue
@@ -172,7 +207,7 @@ def get_all_optimization_summaries() -> list[dict]:
         avg_savings = round(sum(savings_values) / len(savings_values), 1) if savings_values else 0
 
         # Review stats
-        review_path = entry / "_output" / "optimization_review.json"
+        review_path = output_dir / "optimization_review.json"
         review_data = _load_json(review_path)
         review_stats = None
         if review_data:
@@ -198,16 +233,20 @@ def get_all_optimization_summaries() -> list[dict]:
     return summaries
 
 
-def get_finding_block_map(project_id: str) -> Optional[dict]:
+def get_finding_block_map(
+    project_id: str,
+    *,
+    version_id: Optional[str] = None,
+) -> Optional[dict]:
     """Маппинг finding_id → [block_ids] через совпадение страниц."""
     import re
 
-    findings_path = _get_findings_path(project_id)
+    findings_path = _get_findings_path(project_id, version_id)
     findings_data = _load_json(findings_path)
     if findings_data is None:
         return None
 
-    blocks_by_page, block_info, all_block_ids = _load_blocks_data(project_id)
+    blocks_by_page, block_info, all_block_ids = _load_blocks_data(project_id, version_id)
     block_id_re = re.compile(r'\b([A-Z0-9]{3,5}-[A-Z0-9]{3,5}-[A-Z0-9]{2,4})\b')
 
     items = findings_data.get("findings", findings_data.get("items", []))
@@ -267,7 +306,7 @@ def get_finding_block_map(project_id: str) -> Optional[dict]:
             result[fid] = matched_blocks
 
     # ── Текстовые evidence из document_graph ──
-    text_evidence = _build_text_evidence(project_id, items)
+    text_evidence = _build_text_evidence(project_id, items, version_id=version_id)
 
     return {
         "project_id": project_id,
@@ -690,10 +729,15 @@ def _build_ocr_html_index(project_dir: Path) -> dict[str, str]:
     return index
 
 
-def _build_text_evidence(project_id: str, findings: list[dict]) -> dict[str, list[dict]]:
+def _build_text_evidence(
+    project_id: str,
+    findings: list[dict],
+    *,
+    version_id: Optional[str] = None,
+) -> dict[str, list[dict]]:
     """Маппинг finding_id → [{text_block_id, role, text, page}] из document_graph."""
-    output_dir = resolve_project_dir(project_id) / "_output"
-    project_dir = resolve_project_dir(project_id)
+    project_dir = _get_version_project_dir(project_id, version_id)
+    output_dir = project_dir / "_output"
     graph_path = output_dir / "document_graph.json"
     if not graph_path.exists():
         return {}
@@ -788,12 +832,12 @@ def _build_text_evidence(project_id: str, findings: list[dict]) -> dict[str, lis
     return result
 
 
-def _enrich_sheet_page(findings: list[dict], project_id: str):
+def _enrich_sheet_page(findings: list[dict], project_id: str, *, version_id: Optional[str] = None):
     """Обогатить findings: разделить sheet/page, подставить sheet_no из document_graph."""
     import re
 
-    # Загрузить маппинг page → sheet_no из document_graph
-    graph_path = resolve_project_dir(project_id) / "_output" / "document_graph.json"
+    # Загрузить маппинг page → sheet_no из document_graph (нужной версии)
+    graph_path = _get_version_output_dir(project_id, version_id) / "document_graph.json"
     page_to_sheet: dict[int, str] = {}
     graph_data = _load_json(graph_path)
     if graph_data:
@@ -870,7 +914,7 @@ def _enrich_sheet_page(findings: list[dict], project_id: str):
                     pass
 
 
-def _load_blocks_data(project_id: str) -> tuple[dict, dict, set]:
+def _load_blocks_data(project_id: str, version_id: Optional[str] = None) -> tuple[dict, dict, set]:
     """Загрузить блоки: blocks_by_page, block_info, all_block_ids."""
     import re
 
@@ -878,7 +922,8 @@ def _load_blocks_data(project_id: str) -> tuple[dict, dict, set]:
     all_block_ids: set[str] = set()
     block_info: dict[str, dict] = {}
 
-    blocks_path = resolve_project_dir(project_id) / "_output" / "02_blocks_analysis.json"
+    output_dir = _get_version_output_dir(project_id, version_id)
+    blocks_path = output_dir / "02_blocks_analysis.json"
     blocks_data = _load_json(blocks_path)
     if blocks_data:
         block_list = blocks_data.get("blocks") or blocks_data.get("block_analyses") or []
@@ -889,7 +934,7 @@ def _load_blocks_data(project_id: str) -> tuple[dict, dict, set]:
                 all_block_ids.add(bid)
                 blocks_by_page.setdefault(page, []).append(bid)
 
-    index_path = resolve_project_dir(project_id) / "_output" / "blocks" / "index.json"
+    index_path = output_dir / "blocks" / "index.json"
     index_data = _load_json(index_path)
     if index_data:
         for b in index_data.get("blocks", []):
@@ -937,9 +982,9 @@ def _parse_pages_from_text(text: str) -> set[int]:
     return pages
 
 
-def _load_sheet_to_page_map(project_id: str) -> dict[str, int]:
+def _load_sheet_to_page_map(project_id: str, version_id: Optional[str] = None) -> dict[str, int]:
     """Маппинг sheet_no → page из document_graph.json."""
-    graph_path = resolve_project_dir(project_id) / "_output" / "document_graph.json"
+    graph_path = _get_version_output_dir(project_id, version_id) / "document_graph.json"
     graph_data = _load_json(graph_path)
     if not graph_data:
         return {}
@@ -952,17 +997,21 @@ def _load_sheet_to_page_map(project_id: str) -> dict[str, int]:
     return result
 
 
-def get_optimization_block_map(project_id: str) -> Optional[dict]:
+def get_optimization_block_map(
+    project_id: str,
+    *,
+    version_id: Optional[str] = None,
+) -> Optional[dict]:
     """Маппинг optimization_id → [block_ids] через document_graph и page."""
     import re
 
-    opt_path = resolve_project_dir(project_id) / "_output" / "optimization.json"
+    opt_path = _get_version_output_dir(project_id, version_id) / "optimization.json"
     opt_data = _load_json(opt_path)
     if opt_data is None:
         return None
 
-    blocks_by_page, block_info, all_block_ids = _load_blocks_data(project_id)
-    sheet_to_page = _load_sheet_to_page_map(project_id)
+    blocks_by_page, block_info, all_block_ids = _load_blocks_data(project_id, version_id)
+    sheet_to_page = _load_sheet_to_page_map(project_id, version_id)
 
     block_id_re = re.compile(r'\b([A-Z0-9]{3,5}-[A-Z0-9]{3,5}-[A-Z0-9]{2,4})\b')
 

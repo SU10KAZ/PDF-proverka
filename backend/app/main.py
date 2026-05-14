@@ -47,6 +47,7 @@ from backend.app.api.routers import (
     model_control,
     lms,
     critic_v2_ui,
+    migrated_findings,
 )
 from backend.app.ws.manager import ws_manager
 
@@ -73,6 +74,10 @@ app = FastAPI(
 )
 
 # ─── REST Routers ───────────────────────────────────────────
+# migrated_findings регистрируется ДО projects.router, потому что в projects
+# зарегистрирован catch-all `GET /api/projects/{project_id:path}`, который
+# иначе перехватит более специфичные эндпоинты с тем же префиксом.
+app.include_router(migrated_findings.router)
 app.include_router(projects.router)
 app.include_router(projects.groups_router)
 app.include_router(findings.router)
@@ -88,6 +93,7 @@ app.include_router(objects.router)
 app.include_router(model_control.router)
 app.include_router(lms.router)
 app.include_router(critic_v2_ui.router)
+# migrated_findings уже подключён выше — повторно не подключаем.
 
 # ─── WebSocket Endpoints ────────────────────────────────────
 @app.websocket("/ws/audit/{project_id}")

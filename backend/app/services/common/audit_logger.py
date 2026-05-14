@@ -7,10 +7,24 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.models.audit import AuditJob
 from backend.app.models.websocket import WSMessage
 from backend.app.ws.manager import ws_manager
+
+
+def _project_output_dir(project_id: str) -> Path:
+    """Папка `_output` для текущей активной версии проекта.
+
+    Берёт `bind_version()` из ContextVar (выставляется на старте каждого job)
+    или latest_version_id. Для legacy V1 == корневой `_output`.
+    """
+    try:
+        return version_service.resolve_version_output_dir(project_id)
+    except (version_service.VersionNotFoundError, FileNotFoundError):
+        # Подстраховка: если manifest/проект ещё не созданы — пишем в корень.
+        return resolve_project_dir(project_id) / "_output"
 
 # Канонический порядок этапов конвейера — дубликат _PIPELINE_STAGE_ORDER,
 # чтобы не создавать цикл импорта project_service ↔ audit_logger.
@@ -46,8 +60,8 @@ def update_pipeline_log(
     detail: dict | None = None,
 ):
     """Записать статус этапа в pipeline_log.json и отправить WS-обновление."""
-    output_dir = resolve_project_dir(project_id) / "_output"
-    output_dir.mkdir(exist_ok=True)
+    output_dir = _project_output_dir(project_id)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     log_path = output_dir / "pipeline_log.json"
     if log_path.exists():
@@ -139,7 +153,7 @@ def reset_audit_log(project_id: str) -> None:
     писать в тот же файл (это «дозапуски» текущего прогона).
     """
     try:
-        log_path = resolve_project_dir(project_id) / "_output" / "audit_log.jsonl"
+        log_path = _project_output_dir(project_id) / "audit_log.jsonl"
         if not log_path.exists():
             return
         ts = _read_first_timestamp(log_path) or datetime.fromtimestamp(
@@ -188,7 +202,7 @@ def persist_log(project_id: str, message: str, level: str, stage: str,
     нужно восстанавливать после refresh браузера.
     """
     try:
-        output_dir = resolve_project_dir(project_id) / "_output"
+        output_dir = _project_output_dir(project_id)
         output_dir.mkdir(parents=True, exist_ok=True)
         log_path = output_dir / "audit_log.jsonl"
         entry = {

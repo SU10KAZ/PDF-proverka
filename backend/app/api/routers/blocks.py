@@ -4,8 +4,12 @@ REST API для OCR-блоков чертежей.
 import json
 import re
 from pathlib import Path
-from fastapi import APIRouter, HTTPException
+from typing import Optional
+
+from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse
+
+from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
 
 router = APIRouter(prefix="/api/tiles", tags=["blocks"])
@@ -488,10 +492,22 @@ def _v4_key_values(entities: list[dict]) -> list[dict]:
 
 # ─── OCR-блоки ───
 
+def _version_output(project_id: str, version_id: Optional[str]):
+    try:
+        return version_service.resolve_version_output_dir(project_id, version_id)
+    except version_service.VersionNotFoundError as e:
+        raise HTTPException(404, str(e))
+    except FileNotFoundError:
+        raise HTTPException(404, f"Проект '{project_id}' не найден")
+
+
 @router.get("/{project_id:path}/blocks")
-async def get_blocks(project_id: str):
+async def get_blocks(
+    project_id: str,
+    version_id: Optional[str] = Query(None, description="Конкретная версия, по умолчанию latest"),
+):
     """Список image-блоков, сгруппированных по страницам."""
-    blocks_dir = resolve_project_dir(project_id) / "_output" / "blocks"
+    blocks_dir = _version_output(project_id, version_id) / "blocks"
     index_path = blocks_dir / "index.json"
     if not index_path.exists():
         raise HTTPException(404, f"Блоки не найдены для '{project_id}'")
@@ -524,9 +540,12 @@ async def get_blocks(project_id: str):
 
 
 @router.get("/{project_id:path}/blocks/analysis")
-async def get_blocks_analysis(project_id: str):
+async def get_blocks_analysis(
+    project_id: str,
+    version_id: Optional[str] = Query(None),
+):
     """Агрегированные данные анализа блоков из block_batch_*.json или typed_facts_batch_*.json (v4)."""
-    output_dir = resolve_project_dir(project_id) / "_output"
+    output_dir = _version_output(project_id, version_id)
 
     # Legacy: block_batch_*.json
     batch_files = sorted(output_dir.glob("block_batch_*.json"))
@@ -717,9 +736,13 @@ async def get_blocks_analysis(project_id: str):
 
 
 @router.get("/{project_id:path}/blocks/image/{block_id}")
-async def get_block_image(project_id: str, block_id: str):
+async def get_block_image(
+    project_id: str,
+    block_id: str,
+    version_id: Optional[str] = Query(None),
+):
     """PNG-файл кропнутого блока."""
-    block_path = resolve_project_dir(project_id) / "_output" / "blocks" / f"block_{block_id}.png"
+    block_path = _version_output(project_id, version_id) / "blocks" / f"block_{block_id}.png"
     if not block_path.exists():
         raise HTTPException(404, f"Блок {block_id} не найден")
     return FileResponse(str(block_path), media_type="image/png")

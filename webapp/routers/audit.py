@@ -7,6 +7,7 @@ import re
 import subprocess
 import traceback
 from pathlib import Path
+from typing import Optional
 from fastapi import APIRouter, Body, HTTPException, Query
 from webapp.services.pipeline_service import pipeline_manager
 from webapp.services import project_service
@@ -23,6 +24,29 @@ from webapp.config import (
 )
 
 router = APIRouter(prefix="/api/audit", tags=["audit"])
+
+
+def _reject_v2_for_legacy_runner(version_id: Optional[str]) -> None:
+    """Safety-gate: legacy pipeline_manager не умеет работать с V2+.
+
+    Если пользователь явно передал version_id, отличный от 'v1', блокируем
+    запуск с 409 и понятным сообщением. Иначе legacy runner молча запустил бы
+    аудит на корневой папке V1, и пользователь, выбравший V2 в UI, получил
+    бы перезапись V1 и неверные результаты.
+
+    `None` и 'v1' пропускаем — это default legacy-поведение.
+    """
+    if version_id is None:
+        return
+    if str(version_id).strip().lower() == "v1":
+        return
+    raise HTTPException(
+        409,
+        f"Запуск аудита версии '{version_id}' временно недоступен в legacy "
+        f"runner. Версия создана и файлы загружены, но проверку V2+ нужно "
+        f"запускать через version-aware backend runner "
+        f"(backend.app.main:app)."
+    )
 
 
 # ─── prepare-data queue control ──────────────────────────────────
@@ -647,10 +671,43 @@ async def get_all_live_status():
 
 # ─── Логи проектов ───
 
+
+def _resolve_log_path_for_version(
+    project_id: str,
+    version_id: Optional[str],
+) -> Path:
+    """Версия-aware путь к `audit_log.jsonl` (legacy webapp).
+
+    Используем backend `version_service`, который уже доступен в legacy webapp
+    через version_compat router (Pass 11). Контракт идентичен backend
+    audit.py: V1 → root, V2+ → `_versions/v{N}/_output`, unknown → 404,
+    без fallback на V1.
+    """
+    from backend.app.services.common import version_service
+    try:
+        output_dir = version_service.resolve_version_output_dir(
+            project_id, version_id=version_id,
+        )
+    except version_service.VersionNotFoundError as e:
+        raise HTTPException(404, str(e))
+    except FileNotFoundError as e:
+        raise HTTPException(404, str(e))
+    return output_dir / "audit_log.jsonl"
+
+
 @router.get("/{project_id:path}/log")
-async def get_project_log(project_id: str, limit: int = 500, offset: int = 0):
-    """Получить персистентный лог аудита из audit_log.jsonl."""
-    log_path = resolve_project_dir(project_id) / "_output" / "audit_log.jsonl"
+async def get_project_log(
+    project_id: str,
+    limit: int = 500,
+    offset: int = 0,
+    version_id: Optional[str] = Query(
+        None,
+        description="Версия лога (v1/v2/...); по умолчанию latest. "
+                    "Без fallback на V1.",
+    ),
+):
+    """Получить персистентный лог аудита из audit_log.jsonl (version-aware)."""
+    log_path = _resolve_log_path_for_version(project_id, version_id)
     if not log_path.exists():
         return {"entries": [], "total": 0, "has_more": False}
 
@@ -682,9 +739,16 @@ async def get_project_log(project_id: str, limit: int = 500, offset: int = 0):
 
 
 @router.delete("/{project_id:path}/log")
-async def clear_project_log(project_id: str):
-    """Очистить лог аудита проекта."""
-    log_path = resolve_project_dir(project_id) / "_output" / "audit_log.jsonl"
+async def clear_project_log(
+    project_id: str,
+    version_id: Optional[str] = Query(
+        None,
+        description="Версия лога (v1/v2/...); по умолчанию latest. "
+                    "DELETE V2 НЕ удаляет V1-лог.",
+    ),
+):
+    """Очистить лог аудита проекта (version-aware)."""
+    log_path = _resolve_log_path_for_version(project_id, version_id)
     if log_path.exists():
         log_path.unlink()
     return {"status": "ok"}
@@ -727,8 +791,12 @@ async def reset_prompt(project_id: str, stage: str):
 
 
 @router.post("/{project_id:path}/prepare")
-async def prepare_project(project_id: str):
+async def prepare_project(
+    project_id: str,
+    version_id: Optional[str] = Query(None, description="Версия (v1/v2/...). V2+ временно не поддерживается legacy runner'ом"),
+):
     """Запустить подготовку проекта (текст + тайлы)."""
+    _reject_v2_for_legacy_runner(version_id)
     _check_project(project_id)
     try:
         job = await pipeline_manager.start_prepare(project_id)
@@ -741,8 +809,10 @@ async def prepare_project(project_id: str):
 async def start_tile_audit(
     project_id: str,
     start_from: int = Query(1, description="Начать с пакета N"),
+    version_id: Optional[str] = Query(None),
 ):
     """Запустить пакетный анализ тайлов."""
+    _reject_v2_for_legacy_runner(version_id)
     _check_project(project_id)
     try:
         job = await pipeline_manager.start_tile_audit(project_id, start_from=start_from)
@@ -752,8 +822,12 @@ async def start_tile_audit(
 
 
 @router.post("/{project_id:path}/main-audit")
-async def start_main_audit(project_id: str):
+async def start_main_audit(
+    project_id: str,
+    version_id: Optional[str] = Query(None),
+):
     """Запустить основной аудит (Claude CLI)."""
+    _reject_v2_for_legacy_runner(version_id)
     _check_project(project_id)
     try:
         job = await pipeline_manager.start_main_audit(project_id)
@@ -763,8 +837,12 @@ async def start_main_audit(project_id: str):
 
 
 @router.post("/{project_id:path}/smart-audit")
-async def start_smart_audit(project_id: str):
+async def start_smart_audit(
+    project_id: str,
+    version_id: Optional[str] = Query(None),
+):
     """Запустить интеллектуальный аудит (текст → триаж → выборочная нарезка → анализ → Excel)."""
+    _reject_v2_for_legacy_runner(version_id)
     _check_project(project_id)
     try:
         job = await pipeline_manager.start_smart_audit(project_id)
@@ -774,8 +852,12 @@ async def start_smart_audit(project_id: str):
 
 
 @router.post("/{project_id:path}/full-audit")
-async def start_audit(project_id: str):
+async def start_audit(
+    project_id: str,
+    version_id: Optional[str] = Query(None),
+):
     """Аудит (OCR): кроп блоков → текст → все блоки → свод → нормы."""
+    _reject_v2_for_legacy_runner(version_id)
     _check_project(project_id)
     try:
         job = await pipeline_manager.start_audit(project_id)
@@ -786,25 +868,39 @@ async def start_audit(project_id: str):
 
 # Legacy aliases
 @router.post("/{project_id:path}/standard-audit")
-async def start_standard_audit(project_id: str):
-    return await start_audit(project_id)
+async def start_standard_audit(
+    project_id: str,
+    version_id: Optional[str] = Query(None),
+):
+    return await start_audit(project_id, version_id)
 
 @router.post("/{project_id:path}/pro-audit")
-async def start_pro_audit(project_id: str):
-    return await start_audit(project_id)
+async def start_pro_audit(
+    project_id: str,
+    version_id: Optional[str] = Query(None),
+):
+    return await start_audit(project_id, version_id)
 
 
 @router.get("/{project_id:path}/resume-info")
-async def get_resume_info(project_id: str):
+async def get_resume_info(
+    project_id: str,
+    version_id: Optional[str] = Query(None),
+):
     """Определить, с какого этапа можно продолжить пайплайн."""
+    _reject_v2_for_legacy_runner(version_id)
     _check_project(project_id)
     info = pipeline_manager.detect_resume_stage(project_id)
     return info
 
 
 @router.post("/{project_id:path}/resume")
-async def resume_pipeline(project_id: str):
+async def resume_pipeline(
+    project_id: str,
+    version_id: Optional[str] = Query(None),
+):
     """Продолжить пайплайн с места ошибки/остановки."""
+    _reject_v2_for_legacy_runner(version_id)
     _check_project(project_id)
     try:
         job = await pipeline_manager.resume_pipeline(project_id)
@@ -814,8 +910,13 @@ async def resume_pipeline(project_id: str):
 
 
 @router.post("/{project_id:path}/start-from")
-async def start_from_stage(project_id: str, stage: str = Query(..., description="Этап: prepare, gemma_enrichment, text_analysis, block_analysis, findings_merge, norm_verify, excel")):
+async def start_from_stage(
+    project_id: str,
+    stage: str = Query(..., description="Этап: prepare, gemma_enrichment, text_analysis, block_analysis, findings_merge, norm_verify, excel"),
+    version_id: Optional[str] = Query(None),
+):
     """Запустить конвейер с указанного этапа (все последующие пересчитываются)."""
+    _reject_v2_for_legacy_runner(version_id)
     _check_project(project_id)
     try:
         job = await pipeline_manager.start_from_stage(project_id, stage)
@@ -825,8 +926,12 @@ async def start_from_stage(project_id: str, stage: str = Query(..., description=
 
 
 @router.post("/{project_id:path}/verify-norms")
-async def start_norm_verification(project_id: str):
+async def start_norm_verification(
+    project_id: str,
+    version_id: Optional[str] = Query(None),
+):
     """Запустить верификацию нормативных ссылок через WebSearch."""
+    _reject_v2_for_legacy_runner(version_id)
     _check_project(project_id)
     try:
         job = await pipeline_manager.start_norm_verify(project_id)

@@ -48,7 +48,13 @@ from webapp.routers import (
     model_control,
     lms,
     critic_v2_ui,
+    version_compat,
 )
+# Migrated findings (контроль ранее согласованных замечаний) живёт в новом
+# backend-пакете, но самодостаточен и работает с теми же projects/ через
+# backend.app.services.common.{project_service, version_service}. Подключаем
+# его в legacy webapp, чтобы фронт на 8081 имел один и тот же набор API.
+from backend.app.api.routers import migrated_findings as _migrated_findings
 from webapp.ws.manager import ws_manager
 
 
@@ -78,6 +84,12 @@ app = FastAPI(
 )
 
 # ─── REST Routers ───────────────────────────────────────────
+# version_compat и migrated_findings регистрируются ДО projects.router:
+# в projects.py есть catch-all `GET /api/projects/{project_id:path}` (и ещё
+# несколько path-роутов), которые иначе перехватили бы /versions/* и
+# /versions/{vid}/migrated-findings/*.
+app.include_router(version_compat.router)
+app.include_router(_migrated_findings.router)
 app.include_router(projects.router)
 app.include_router(projects.groups_router)
 app.include_router(findings.router)

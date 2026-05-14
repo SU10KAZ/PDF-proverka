@@ -165,8 +165,17 @@ def write_block_analysis_runtime_summary(
 
 
 def attach_stage02_coverage_to_findings(project_id: str) -> dict:
-    """Attach deterministic Stage 02 coverage warnings to final findings."""
-    output_dir = resolve_project_dir(project_id) / "_output"
+    """Attach deterministic Stage 02 coverage warnings to final findings.
+
+    Использует bind_version() из ContextVar — это значит, что когда функцию
+    зовут из активного pipeline job-а для V2, она будет писать в
+    `_versions/v2/_output`, а не в корень.
+    """
+    from backend.app.services.common import version_service
+    try:
+        output_dir = version_service.resolve_version_output_dir(project_id)
+    except (version_service.VersionNotFoundError, FileNotFoundError):
+        output_dir = resolve_project_dir(project_id) / "_output"
     findings_path = output_dir / "03_findings.json"
     blocks_path = output_dir / "02_blocks_analysis.json"
     gemma_summary_path = output_dir / "gemma_enrichment_summary.json"

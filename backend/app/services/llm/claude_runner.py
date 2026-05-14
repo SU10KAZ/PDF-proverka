@@ -285,9 +285,17 @@ def _write_json(path, data):
 
 
 def _resolve_output_dir(project_id: str):
-    """Получить _output/ директорию проекта."""
+    """Получить _output/ директорию активной версии проекта.
+
+    Использует `bind_version()` ContextVar (выставляется на старте каждого
+    pipeline job в `_run_batch_queue`) или latest_version_id.
+    """
+    from backend.app.services.common import version_service
     from backend.app.services.common.project_service import resolve_project_dir
-    return resolve_project_dir(project_id) / "_output"
+    try:
+        return version_service.resolve_version_output_dir(project_id)
+    except (version_service.VersionNotFoundError, FileNotFoundError):
+        return resolve_project_dir(project_id) / "_output"
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -314,13 +322,12 @@ async def run_text_analysis(
 
     import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
     import backend.app.services.llm.llm_runner as llm_runner
-    from backend.app.services.common.project_service import resolve_project_dir
 
     messages = prompt_builder.build_text_analysis_messages(project_info, project_id)
     result = await llm_runner.run_llm(stage="text_analysis", messages=messages, timeout=1800)
 
     if result.json_data and not result.is_error:
-        output_path = resolve_project_dir(project_id) / "_output" / "01_text_analysis.json"
+        output_path = _resolve_output_dir(project_id) / "01_text_analysis.json"
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(
             json.dumps(result.json_data, ensure_ascii=False, indent=2), encoding="utf-8",

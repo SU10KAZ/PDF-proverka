@@ -17,7 +17,16 @@ from typing import Optional
 from collections import defaultdict
 
 from backend.app.models.usage import UsageRecord, UsageCounters, GlobalUsageCounters
+from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
+
+
+def _usage_output_dir(project_id: str) -> Path:
+    """Папка _output версии (latest или bound), fallback на корень."""
+    try:
+        return version_service.resolve_version_output_dir(project_id)
+    except (version_service.VersionNotFoundError, FileNotFoundError):
+        return resolve_project_dir(project_id) / "_output"
 from backend.app.core.config import APP_DATA_DIR, USAGE_DATA_FILE, USAGE_OFFSETS_FILE
 
 _DATA_DIR = APP_DATA_DIR
@@ -270,7 +279,7 @@ class UsageTracker:
         Прочитать pipeline_log.json и вернуть wall-clock duration (ms) по этапам.
         Ключи приведены к stage-именам usage (block_analysis, findings_merge и т.д.).
         """
-        log_path = resolve_project_dir(project_id) / "_output" / "pipeline_log.json"
+        log_path = _usage_output_dir(project_id) / "pipeline_log.json"
         if not log_path.exists():
             return {}
 
@@ -315,7 +324,7 @@ class UsageTracker:
         Вернуть timestamp начала текущего аудита из pipeline_log.json.
         Берём started_at первого этапа (crop_blocks или text_analysis).
         """
-        log_path = resolve_project_dir(project_id) / "_output" / "pipeline_log.json"
+        log_path = _usage_output_dir(project_id) / "pipeline_log.json"
         if not log_path.exists():
             return None
         try:

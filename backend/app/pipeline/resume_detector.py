@@ -5,6 +5,7 @@
 """
 import json
 from pathlib import Path
+from typing import Optional
 
 from backend.app.pipeline.stages.gemma_enrichment.gemma_gate import (
     GEMMA_STAGE_LABEL,
@@ -12,18 +13,36 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_gate import (
     evaluate_gemma_enrichment,
     gemma_gate_error,
 )
+from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import gemma_blocks_dir
 
 
-def detect_resume_stage(project_id: str) -> dict:
+def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) -> dict:
     """
-    Определить, с какого этапа можно продолжить пайплайн.
+    Определить, с какого этапа можно продолжить пайплайн **для конкретной версии**.
+
     Возвращает: {stage, stage_label, detail, can_resume}
 
     Поддерживает оба пайплайна: блоковый (OCR) и тайловый (legacy).
+
+    Для V2+ читается `_versions/v{N}/_output`, V1 → корневая папка проекта.
+    Нельзя, чтобы resume V2 увидел completed outputs из V1 — версия проекта
+    фиксируется до анализа файлов.
     """
-    project_dir = resolve_project_dir(project_id)
+    project_dir_root = resolve_project_dir(project_id)
+    try:
+        project_dir = version_service.get_version_dir(
+            project_dir_root, project_id, version_id,
+        )
+    except version_service.VersionNotFoundError:
+        # Невалидная версия → не resumable
+        return {
+            "stage": "prepare",
+            "stage_label": "Подготовка",
+            "detail": f"Версия '{version_id}' не найдена",
+            "can_resume": False,
+        }
     output_dir = project_dir / "_output"
     tiles_dir = output_dir / "tiles"
     gemma_state = evaluate_gemma_enrichment(project_dir)

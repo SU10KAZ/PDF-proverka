@@ -90,3 +90,9 @@ class PipelineStageContext:
     # Синхронная проверка отмены job (используется внутри thread callbacks).
     # Signature: () -> bool — True если job отменён.
     is_cancelled: Optional[Callable[[], bool]] = field(default=None)
+
+    # Версия проекта, для которой запущен этап.
+    # Для legacy V1 — "v1" (или None, что трактуется как latest).
+    # Для V2+ — соответствующий version_id. Этот идентификатор должен
+    # включаться в job_key, чтобы V1 и V2 одного проекта не конфликтовали.
+    version_id: Optional[str] = field(default=None)

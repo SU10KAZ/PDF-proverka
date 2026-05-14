@@ -81,6 +81,16 @@ class ProjectStatus(BaseModel):
     pipeline_version: str = "legacy"
     # Экспертная оценка: "complete" (все решения), "partial" (частично), "" (нет)
     expert_review_status: str = ""
+    # ─── Версионность проекта ───────────────────────────────────
+    # Для legacy-проектов без project_versions.json: v1 / 1 / "V1".
+    version_id: str = "v1"
+    version_no: int = 1
+    version_label: str = "V1"
+    latest_version_id: str = "v1"
+    version_count: int = 1
+    has_versions: bool = False
+    is_latest_version: bool = True
+    versions_summary: list[dict] = []
 
 
 class ProjectCreate(BaseModel):
