@@ -150,16 +150,24 @@ class TestEffectiveTabRouting:
         js = APP_JS.read_text(encoding="utf-8")
         assert "function cv2EffectiveTab(" in js
 
-    def test_items_by_tab_uses_effective_tab(self):
+    def test_items_by_tab_uses_routing_tab(self):
         js = APP_JS.read_text(encoding="utf-8")
-        # The computed must call cv2EffectiveTab, not just read it.tab.
-        # Locate the cv2ItemsByTab block and assert it references the helper.
+        # cv2ItemsByTab routing goes through cv2RoutingTab — a thin layer that
+        # delegates to cv2EffectiveTab (normal mode) or cv2AssignmentTab
+        # (assisted-mode). Both pathways must exist.
         idx = js.find("const cv2ItemsByTab")
         assert idx != -1, "cv2ItemsByTab not found"
         block = js[idx:idx + 500]
-        assert "cv2EffectiveTab" in block, (
-            "cv2ItemsByTab must route by effective tab to honor expert preferred_tab"
+        assert "cv2RoutingTab" in block, (
+            "cv2ItemsByTab must route through cv2RoutingTab "
+            "to honor both effective_tab and assignment_tab"
         )
+        # cv2RoutingTab itself must reference both pathways.
+        routing_idx = js.find("function cv2RoutingTab")
+        assert routing_idx != -1, "cv2RoutingTab not defined"
+        routing_block = js[routing_idx:routing_idx + 500]
+        assert "cv2EffectiveTab" in routing_block
+        assert "cv2AssignmentTab" in routing_block
 
     def test_app_js_exposes_debug_counts(self):
         js = APP_JS.read_text(encoding="utf-8")

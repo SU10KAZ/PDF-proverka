@@ -542,11 +542,32 @@ const app = createApp({
             return out;
         });
 
-        // Определяем статус assisted item:
-        // - 'on_target'        : finding есть в artifact и effective_tab=expected_queue
-        // - 'wrong_queue'      : finding есть в artifact, но effective_tab !== expected_queue
-        // - 'missing'          : finding_id отсутствует в artifact (другой project_name,
-        //                         migration, или просто не в текущем критик-выгрузке)
+        // Русские ярлыки для статусов assisted_round1.
+        // Используются и в per-item таблице, и в expert-correction badge на
+        // карточке в assisted-mode.
+        const CV2_ASSISTED_STATUS_LABEL = {
+            still_candidate: 'ещё в к отклонению',
+            expert_returned_primary: 'эксперт вернул в основную',
+            expert_returned_context: 'эксперт отправил в контекст',
+            expert_hidden: 'эксперт скрыл',
+            missing: 'не найдено в artifact',
+        };
+        const CV2_TAB_LABEL_RU = {
+            primary: 'Основная проверка',
+            needs_context: 'Требует смежников',
+            suggested_reject: 'Критик рекомендует отклонить',
+            hidden_by_critic: 'Скрыто критиком',
+        };
+
+        // Определяем статус assisted item по семантике задания (assignment-based):
+        // - 'still_candidate'          : effective_tab всё ещё = suggested_reject
+        // - 'expert_returned_primary'  : expert вернул в primary
+        // - 'expert_returned_context'  : expert отправил в needs_context
+        // - 'expert_hidden'            : expert ушёл ещё дальше → hidden_by_critic
+        // - 'missing'                  : finding_id не найден в artifact
+        //
+        // Важно: статус НЕ убирает карточку из задания — он только сообщает,
+        // что с ней уже сделал эксперт. Инженер всё равно должен её увидеть.
         function cv2AssistedStatusOf(assistedItem) {
             if (!assistedItem || !cv2Export.value) return 'missing';
             const fid = assistedItem.finding_id;
@@ -554,7 +575,11 @@ const app = createApp({
             if (!found) return 'missing';
             const eff = cv2EffectiveTab(found);
             const expected = assistedItem.expected_queue || 'suggested_reject';
-            return eff === expected ? 'on_target' : 'wrong_queue';
+            if (eff === expected) return 'still_candidate';
+            if (eff === 'primary') return 'expert_returned_primary';
+            if (eff === 'needs_context') return 'expert_returned_context';
+            if (eff === 'hidden_by_critic') return 'expert_hidden';
+            return 'still_candidate';  // fallback на безопасный статус
         }
 
         // Полная сводка для блока «Проверочные карточки» + debug.
@@ -606,6 +631,14 @@ const app = createApp({
                         }
                     }
                 }
+                // expert_correction_label — что показать в badge на карточке
+                // в assisted-mode. Null если correction нет (effective_tab
+                // совпадает с expected_queue).
+                let correctionLabel = null;
+                if (status !== 'still_candidate' && status !== 'missing') {
+                    correctionLabel = 'Эксперт ранее перенёс в: '
+                        + (CV2_TAB_LABEL_RU[effective] || effective);
+                }
                 report.per_item.push({
                     finding_id: a.finding_id,
                     source_file: a.source_file,
@@ -613,26 +646,49 @@ const app = createApp({
                     reason: a.reason,
                     reason_group: a.reason_group,
                     title: a.title,
+                    assignment_tab: a.expected_queue || 'suggested_reject',
                     expected_queue: a.expected_queue,
                     critic_tab: artifactItem ? (artifactItem.tab || '') : null,
                     expert_preferred_tab: fb ? (fb.preferred_tab || '') : '',
                     effective_tab: effective,
                     status: status,
+                    status_label: CV2_ASSISTED_STATUS_LABEL[status] || status,
+                    expert_correction_label: correctionLabel,
                     reviewer_instruction: a.reviewer_instruction,
                 });
             }
             return report;
         });
 
-        // Открыть карточку в текущем view: переключить вкладку на effective_tab
-        // и проскроллить к данной строке. Используется кнопкой «Открыть».
+        // Per-finding-id lookup для DOM badge'а. cv2AssistedReport.per_item уже
+        // содержит всю информацию, но v-for'у внутри cv2-item нужен быстрый
+        // доступ. Возвращает { status, status_label, expert_correction_label,
+        // assignment_tab } или null если карточка не в review-package.
+        const cv2AssistedStatusByFid = computed(() => {
+            const out = {};
+            for (const row of cv2AssistedReport.value.per_item) {
+                out[row.finding_id] = {
+                    status: row.status,
+                    status_label: row.status_label,
+                    expert_correction_label: row.expert_correction_label,
+                    assignment_tab: row.assignment_tab,
+                    effective_tab: row.effective_tab,
+                };
+            }
+            return out;
+        });
+
+        // Открыть карточку в текущем view: переключить на нужную вкладку
+        // и проскроллить к данной строке. В assisted-mode используем
+        // assignment_tab (где карточка фактически отрисована в этом режиме),
+        // в обычном — effective_tab.
         function cv2AssistedFocusFinding(findingId) {
             if (!cv2Export.value) return;
             const item = cv2Export.value.items.find(i => i.finding_id === findingId);
             if (!item) return;
-            const eff = cv2EffectiveTab(item);
-            if (eff && CV2_TABS.includes(eff)) {
-                cv2ActiveTab.value = eff;
+            const target = cv2RoutingTab(item) || cv2EffectiveTab(item);
+            if (target && CV2_TABS.includes(target)) {
+                cv2ActiveTab.value = target;
             }
             // Дать Vue отрисовать tab, потом проскроллить.
             setTimeout(() => {
@@ -808,12 +864,42 @@ const app = createApp({
             return item.tab || '';
         }
 
+        // Assignment_tab — куда Critic v2 ИЗНАЧАЛЬНО назначил карточку.
+        // Источник: assisted_round1 expected_queue (== suggested_reject для всех
+        // current cards). Возвращает null если карточка не в review-package.
+        // В assisted-mode маршрутизация идёт по assignment_tab, чтобы инженеры
+        // видели ВСЕ кандидаты «к отклонению» — даже те, что эксперт ранее
+        // вернул в primary через preferred_tab.
+        function cv2AssignmentTab(item) {
+            if (!item) return null;
+            const a = cv2AssistedById.value[item.finding_id];
+            if (!a) return null;
+            const q = a.expected_queue;
+            return (q && CV2_TABS.includes(q)) ? q : null;
+        }
+
+        // Routing tab: в assisted-mode для items из review-package используем
+        // assignment_tab. Для не-review items и в обычном режиме — effective_tab.
+        // assisted-mode = cv2AssistedFilterOnly=true. Это контракт: toggle на
+        // панели становится семантическим переключателем view'а, а не просто
+        // фильтром выборки.
+        function cv2RoutingTab(item) {
+            if (cv2AssistedFilterOnly.value) {
+                const assignmentTab = cv2AssignmentTab(item);
+                if (assignmentTab) return assignmentTab;
+                // не-review карточка не маршрутизируется ни в одну вкладку
+                // в assisted-mode (filter уже отсёк её через cv2ItemMatchesFilter).
+                return '';
+            }
+            return cv2EffectiveTab(item);
+        }
+
         const cv2ItemsByTab = computed(() => {
             const out = { primary: [], needs_context: [], suggested_reject: [], hidden_by_critic: [] };
             if (!cv2Export.value) return out;
             for (const it of cv2Export.value.items) {
                 if (!cv2ItemMatchesFilter(it)) continue;
-                const t = cv2EffectiveTab(it);
+                const t = cv2RoutingTab(it);
                 if (out[t]) out[t].push(it);
             }
             return out;
@@ -7490,6 +7576,7 @@ const app = createApp({
             cv2AssistedLoading, cv2AssistedError,
             cv2AssistedFilterOnly, cv2AssistedById,
             cv2AssistedStatusOf, cv2AssistedReport, cv2AssistedFocusFinding,
+            cv2AssistedStatusByFid, cv2AssignmentTab, cv2RoutingTab,
             // Critic v2 — Russian labels (UI-only, backend tokens unchanged)
             cv2Label, cv2HumanizeExplanation,
             // Critic v2 — alignment vs expert_review (UI-only)

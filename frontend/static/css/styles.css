@@ -695,9 +695,29 @@ body {
    только что прыгнул через «Открыть», и метка «карточка из review-package». */
 .cv2-item--assisted { border-left: 3px solid #f59e0b !important; }
 .cv2-item--flash { background: rgba(245, 158, 11, 0.15) !important; transition: background 0.5s ease-out; }
-.cv2-assisted-row--on-target td { background: rgba(34, 197, 94, 0.06); }
-.cv2-assisted-row--wrong-queue td { background: rgba(245, 158, 11, 0.06); }
+/* Статусы строк в assisted-round1 per-item таблице.
+   still_candidate=зелёный (на месте), missing=красный, остальные=оранжевый
+   (эксперт уже что-то сделал с карточкой; инженер должен подтвердить). */
+.cv2-assisted-row--still_candidate td { background: rgba(34, 197, 94, 0.06); }
+.cv2-assisted-row--expert_returned_primary td { background: rgba(245, 158, 11, 0.06); }
+.cv2-assisted-row--expert_returned_context td { background: rgba(245, 158, 11, 0.06); }
+.cv2-assisted-row--expert_hidden td { background: rgba(245, 158, 11, 0.06); }
 .cv2-assisted-row--missing td { background: rgba(239, 68, 68, 0.06); }
+
+/* Badge поверх карточки в assisted-mode: видно сразу, что у этой карточки
+   уже есть экспертная корректировка. Инженер либо подтверждает её, либо
+   возвращает в исходное (preferred_tab=suggested_reject). */
+.cv2-assisted-correction-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    margin-bottom: 6px;
+    border-radius: 4px;
+    background: rgba(245, 158, 11, 0.18);
+    color: #b45309;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+}
 
 /* Раздельные галочки для findings/optimization рисуются прямо в строках
    с кнопками «Замечания» / «Оптимизация» — рядом с соответствующими счётчиками.

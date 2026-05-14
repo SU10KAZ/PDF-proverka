@@ -3912,6 +3912,18 @@
                          :key="item.finding_id"
                          :id="'cv2-item-' + item.finding_id"
                          :class="['cv2-item', { 'cv2-item--assisted': cv2AssistedById[item.finding_id] }]">
+                        <!-- Assisted-mode badge: показывает, что эксперт уже
+                             перенёс эту карточку из задания «к отклонению» в
+                             другую вкладку. Видно только в assisted-mode
+                             (cv2AssistedFilterOnly=true), и только если у
+                             карточки есть expert_correction_label. -->
+                        <div v-if="cv2AssistedFilterOnly
+                                   && cv2AssistedStatusByFid[item.finding_id]
+                                   && cv2AssistedStatusByFid[item.finding_id].expert_correction_label"
+                             class="cv2-assisted-correction-badge"
+                             :title="'Задание assisted_round1: карточка должна быть в «Критик рекомендует отклонить». Эксперт ранее перенёс её в другую вкладку. Решите, корректировка обоснована или вернуть в исходное.'">
+                            ⚠ {{ cv2AssistedStatusByFid[item.finding_id].expert_correction_label }}
+                        </div>
                         <div class="cv2-item-head">
                             <span class="cv2-item-id">{{ item.finding_id }}</span>
                             <span v-if="item.section" class="cv2-badge">{{ item.section }}</span>
@@ -4201,40 +4213,47 @@
                         hid={{ cv2AssistedReport.in_other_tab.hidden_by_critic }})
                     </span>
                 </div>
-                <!-- Per-item таблица -->
+                <!-- Per-item таблица: семантика assignment-based.
+                     assignment = куда Critic v2 ИЗНАЧАЛЬНО назначил карточку.
+                     effective_tab = текущая позиция с учётом expert.preferred_tab.
+                     Карточка не убирается из задания если expert уже её перенёс. -->
                 <table style="width:100%;font-size:12px;border-collapse:collapse">
                     <thead>
                         <tr style="text-align:left;border-bottom:1px solid var(--border);color:var(--text-2)">
                             <th style="padding:4px 6px">finding_id</th>
                             <th style="padding:4px 6px">group</th>
                             <th style="padding:4px 6px" title="round1 reason / reason_group">причина</th>
+                            <th style="padding:4px 6px" title="куда critic_v2 изначально назначил">назначение</th>
                             <th style="padding:4px 6px" title="critic.tab из artifact">critic</th>
                             <th style="padding:4px 6px" title="expert.preferred_tab из feedback">expert</th>
-                            <th style="padding:4px 6px" title="effective_tab = expert ∨ critic">eff</th>
+                            <th style="padding:4px 6px" title="effective_tab = expert ∨ critic">сейчас</th>
                             <th style="padding:4px 6px">статус</th>
                             <th style="padding:4px 6px"></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="row in cv2AssistedReport.per_item" :key="row.finding_id"
-                            :class="{
-                                'cv2-assisted-row--on-target': row.status === 'on_target',
-                                'cv2-assisted-row--wrong-queue': row.status === 'wrong_queue',
-                                'cv2-assisted-row--missing': row.status === 'missing',
-                            }"
+                            :class="['cv2-assisted-row--' + row.status]"
                             style="border-bottom:1px solid var(--border)">
                             <td style="padding:4px 6px;font-family:monospace;font-size:11px">{{ row.finding_id }}</td>
                             <td style="padding:4px 6px"><span class="cv2-badge" :class="'cv2-badge--' + row.group">{{ row.group === 'risky_accepted_22' ? 'risky' : 'sample' }}</span></td>
                             <td style="padding:4px 6px" :title="row.reason || ''">
                                 {{ row.reason_group || '—' }}
                             </td>
+                            <td style="padding:4px 6px"><b>{{ row.assignment_tab || '—' }}</b></td>
                             <td style="padding:4px 6px">{{ row.critic_tab || '—' }}</td>
                             <td style="padding:4px 6px">{{ row.expert_preferred_tab || '—' }}</td>
                             <td style="padding:4px 6px"><b>{{ row.effective_tab || '—' }}</b></td>
                             <td style="padding:4px 6px">
-                                <span v-if="row.status === 'on_target'" style="color:#22c55e" title="effective_tab = suggested_reject">на месте</span>
-                                <span v-else-if="row.status === 'wrong_queue'" style="color:#f59e0b" :title="'effective_tab=' + row.effective_tab + ', expected=' + row.expected_queue">не в очереди</span>
-                                <span v-else style="color:#ef4444" title="finding_id не найден в artifact (другой project_name / migration / отсутствует)">не найдено</span>
+                                <span v-if="row.status === 'still_candidate'"
+                                      style="color:#22c55e"
+                                      title="effective_tab = suggested_reject">{{ row.status_label }}</span>
+                                <span v-else-if="row.status === 'missing'"
+                                      style="color:#ef4444"
+                                      title="finding_id не найден в artifact (другой project_name / migration / отсутствует)">{{ row.status_label }}</span>
+                                <span v-else
+                                      style="color:#f59e0b"
+                                      :title="row.expert_correction_label || ''">{{ row.status_label }}</span>
                             </td>
                             <td style="padding:4px 6px">
                                 <button v-if="row.status !== 'missing'"
@@ -4403,6 +4422,18 @@
                          :key="item.finding_id"
                          :id="'cv2-item-' + item.finding_id"
                          :class="['cv2-item', { 'cv2-item--assisted': cv2AssistedById[item.finding_id] }]">
+                        <!-- Assisted-mode badge: показывает, что эксперт уже
+                             перенёс эту карточку из задания «к отклонению» в
+                             другую вкладку. Видно только в assisted-mode
+                             (cv2AssistedFilterOnly=true), и только если у
+                             карточки есть expert_correction_label. -->
+                        <div v-if="cv2AssistedFilterOnly
+                                   && cv2AssistedStatusByFid[item.finding_id]
+                                   && cv2AssistedStatusByFid[item.finding_id].expert_correction_label"
+                             class="cv2-assisted-correction-badge"
+                             :title="'Задание assisted_round1: карточка должна быть в «Критик рекомендует отклонить». Эксперт ранее перенёс её в другую вкладку. Решите, корректировка обоснована или вернуть в исходное.'">
+                            ⚠ {{ cv2AssistedStatusByFid[item.finding_id].expert_correction_label }}
+                        </div>
                         <div class="cv2-item-head">
                             <span class="cv2-item-id">{{ item.finding_id }}</span>
                             <span v-if="item.section" class="cv2-badge">{{ item.section }}</span>
