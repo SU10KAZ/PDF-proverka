@@ -732,7 +732,7 @@ body {
    К checkbox выбора в правом верхнем углу они не относятся. */
 .project-card__row-status { font-size: 18px; font-weight: 900; line-height: 1; flex-shrink: 0; margin-left: 6px; }
 .project-card__row-status--findings { color: #22c55e; text-shadow: 0 0 1px #22c55e; }
-.project-card__row-status--opt { color: #a855f7; text-shadow: 0 0 1px #a855f7; }
+.project-card__row-status--opt { color: #22c55e; text-shadow: 0 0 1px #22c55e; }
 .project-card__row-status--partial { color: #94a3b8; opacity: 0.75; }
 .project-card__checkbox { position: static; }
 .project-card__checkbox input { accent-color: var(--teal); width: 15px; height: 15px; cursor: pointer; }
@@ -800,6 +800,8 @@ body {
 .severity-badges--large .sev-badge { padding: 4px 10px; font-size: 12px; cursor: pointer; }
 .sev-badge { display: inline-block; padding: 2px 7px; border-radius: 5px; font-size: 10px; font-weight: 700; white-space: nowrap; letter-spacing: 0.02em; }
 .sev-badge--sm { font-size: 8px; padding: 1px 5px; }
+td .sev-badge--sm { white-space: normal; word-break: break-word; text-align: center; max-width: 100%; }
+td:has(> .sev-badge--sm) { vertical-align: middle; text-align: center; }
 .sev-critical, .sev-crit { background: var(--red-light); color: var(--red); border: 1px solid rgba(212,24,58,0.2); }
 .sev-economic, .sev-econ { background: var(--orange-light); color: var(--orange); border: 1px solid rgba(196,78,0,0.2); }
 .sev-operational, .sev-ops { background: var(--amber-light); color: var(--amber); border: 1px solid rgba(196,115,0,0.2); }
@@ -895,7 +897,7 @@ body {
 .findings-table tbody tr { background: var(--card-bg); transition: background 0.1s; }
 .findings-table tbody tr:hover { background: var(--card2-bg); }
 
-.id-cell { white-space: nowrap; }
+.id-cell { white-space: normal; word-break: break-word; text-align: center; vertical-align: middle; }
 .finding-id-link { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 11px; color: var(--blue); cursor: pointer; }
 .finding-id-link:hover { text-decoration: underline; }
 .finding-blocks-count { font-size: 9px; font-weight: 700; background: var(--teal-light); color: var(--teal); border-radius: 3px; padding: 1px 4px; margin-left: 4px; font-family: 'JetBrains Mono', monospace; }
