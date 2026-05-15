@@ -904,3 +904,409 @@ def version_audit_readiness(project_id: str, version_id: Optional[str] = None) -
         "can_run_audit": can_run,
         "reason": reason,
     }
+
+
+# ─── Создание версии из найденных файлов ───────────────────────────────────
+
+
+def _resolve_candidate_path(
+    raw_path: str,
+    *,
+    allowed_roots: list[Path],
+) -> Path:
+    """Разрешить путь candidate-файла и убедиться, что он лежит в `allowed_roots`.
+
+    Защита от path traversal: путь резолвится в абсолютный, и проверяется, что
+    он находится внутри хотя бы одного из allowed_roots (PROJECTS_DIR или
+    explicitly allowed external scan path).
+    """
+    if not raw_path:
+        raise VersionFileError("Пустой путь к файлу")
+    p = Path(raw_path).expanduser()
+    try:
+        resolved = p.resolve(strict=True)
+    except (OSError, RuntimeError):
+        raise VersionFileError(f"Файл не найден: {raw_path!r}")
+    if not resolved.is_file():
+        raise VersionFileError(f"Не является файлом: {raw_path!r}")
+    for root in allowed_roots:
+        try:
+            resolved.relative_to(root.resolve())
+            return resolved
+        except ValueError:
+            continue
+    raise VersionFileError(
+        f"Путь '{raw_path}' вне разрешённых директорий"
+    )
+
+
+def create_version_from_existing_files(
+    target_project_id: str,
+    candidate_files: dict[str, Optional[str]],
+    *,
+    expected_section: Optional[str] = None,
+    comment: Optional[str] = None,
+    source: str = "section_add_project_modal",
+    allowed_roots: Optional[list[Path]] = None,
+    resolve_project_dir_fn=None,
+) -> dict[str, Any]:
+    """Создать новую версию (V{N+1}) у target-проекта из уже лежащих на сервере
+    PDF/MD/result.json. Файлы копируются server-side, без upload через браузер.
+
+    Args:
+        target_project_id: проект-основание, к которому добавляется версия.
+        candidate_files: dict с ключами:
+            - `pdf` — путь к PDF (обязателен);
+            - `md`  — путь к MD (опционально);
+            - `result_json` — путь к OCR-результату (опционально);
+            - `extra` — list[str] дополнительных файлов (необязательно).
+        expected_section: если задан — проверим, что у target проекта
+            `section` совпадает. Защищает от случайного создания версии в
+            проекте другого раздела.
+        comment: комментарий к версии.
+        source: метка источника (по умолчанию section_add_project_modal).
+        allowed_roots: список разрешённых корней путей. По умолчанию —
+            `PROJECTS_DIR`. Чтобы пускать пути из внешней папки, добавьте её.
+        resolve_project_dir_fn: внедряемый резолвер папки проекта.
+
+    Returns:
+        dict: { "version": <new_entry>, "versions_summary": ..., "saved": [...],
+                "warnings": [...] }
+
+    Raises:
+        FileNotFoundError — target проект не найден.
+        ValueError — section проекта не совпадает с expected_section.
+        VersionFileError — PDF отсутствует, путь невалиден, ext недопустим.
+    """
+    if resolve_project_dir_fn is None:
+        from backend.app.services.common.project_service import resolve_project_dir
+        resolve_project_dir_fn = resolve_project_dir
+
+    proj_dir: Path = resolve_project_dir_fn(target_project_id)
+    if not proj_dir.exists() or not proj_dir.is_dir():
+        raise FileNotFoundError(
+            f"Проект '{target_project_id}' не найден: {proj_dir}"
+        )
+
+    # Проверка section.
+    if expected_section:
+        root_info_path = proj_dir / "project_info.json"
+        target_section: Optional[str] = None
+        if root_info_path.exists():
+            try:
+                with open(root_info_path, "r", encoding="utf-8") as f:
+                    target_section = (json.load(f) or {}).get("section")
+            except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+                target_section = None
+        if target_section and target_section != expected_section:
+            raise ValueError(
+                f"Раздел target проекта '{target_section}' не совпадает с "
+                f"ожидаемым '{expected_section}'"
+            )
+
+    if allowed_roots is None:
+        # Используем project_service._get_projects_dir() — поддерживает
+        # monkeypatch в тестах. Без circular import: project_service
+        # импортируется лениво.
+        from backend.app.services.common import project_service as _ps
+        allowed_roots = [_ps._get_projects_dir()]
+    else:
+        # фильтр пустых и приведение к Path
+        allowed_roots = [Path(r) for r in allowed_roots if r]
+
+    pdf_raw = (candidate_files or {}).get("pdf")
+    md_raw = (candidate_files or {}).get("md")
+    result_raw = (candidate_files or {}).get("result_json")
+    extra_raw = (candidate_files or {}).get("extra") or []
+
+    if not pdf_raw:
+        raise VersionFileError("Не передан PDF — версия требует хотя бы один PDF")
+
+    warnings: list[str] = []
+
+    # Резолвим и валидируем все пути ДО физических операций (атомарность).
+    pdf_path = _resolve_candidate_path(pdf_raw, allowed_roots=allowed_roots)
+    validate_filename(pdf_path.name)  # extension + safe name
+
+    md_path: Optional[Path] = None
+    if md_raw:
+        md_path = _resolve_candidate_path(md_raw, allowed_roots=allowed_roots)
+        validate_filename(md_path.name)
+    else:
+        warnings.append("MD не найден — аудит может быть недоступен до загрузки MD")
+
+    result_path: Optional[Path] = None
+    if result_raw:
+        result_path = _resolve_candidate_path(result_raw, allowed_roots=allowed_roots)
+        validate_filename(result_path.name)
+
+    extra_paths: list[Path] = []
+    for ex in extra_raw:
+        ep = _resolve_candidate_path(ex, allowed_roots=allowed_roots)
+        validate_filename(ep.name)
+        extra_paths.append(ep)
+
+    # Переиспользуем пустую latest-версию (V2+), если она есть. Иначе — V{N+1}.
+    latest_summary = get_versions_summary(proj_dir, target_project_id)
+    reused_empty_latest = False
+    new_entry: dict[str, Any] = {}
+    for v in latest_summary.get("versions", []):
+        if v.get("is_latest") and (v.get("pdf_count", 0) == 0):
+            if v.get("version_id") != "v1":
+                new_entry = {
+                    "version_id": v["version_id"],
+                    "version_no": v["version_no"],
+                    "label": v.get("label") or f"V{v['version_no']}",
+                    "folder": v.get("folder") or f"{VERSIONS_DIR_NAME}/{v['version_id']}",
+                    "status": v.get("status", "new"),
+                    "source": source,
+                }
+                if comment:
+                    new_entry["comment"] = comment
+                reused_empty_latest = True
+            break
+
+    if not reused_empty_latest:
+        new_entry = create_next_version(
+            proj_dir,
+            target_project_id,
+            source=source,
+            status="new",
+            comment=comment,
+            create_folder=True,
+            seed_project_info=True,
+        )
+    new_version_id = new_entry["version_id"]
+
+    # Копируем файлы. save_files_to_version делает атомарную пакетную запись.
+    payload: list[tuple[str, bytes]] = []
+    payload.append((pdf_path.name, pdf_path.read_bytes()))
+    if md_path is not None:
+        payload.append((md_path.name, md_path.read_bytes()))
+    if result_path is not None:
+        payload.append((result_path.name, result_path.read_bytes()))
+    for ep in extra_paths:
+        payload.append((ep.name, ep.read_bytes()))
+
+    saved_result = save_files_to_version(
+        target_project_id,
+        new_version_id,
+        payload,
+        replace_existing=False,
+        comment=comment,
+        allow_v1_upload=False,
+        resolve_project_dir_fn=resolve_project_dir_fn,
+    )
+
+    # Подмешаем section/version_source/version_comment в project_info новой
+    # версии, если их seed-вариант не содержал.
+    version_dir = proj_dir / new_entry["folder"]
+    info_path = version_dir / "project_info.json"
+    try:
+        info = json.loads(info_path.read_text(encoding="utf-8")) if info_path.exists() else {}
+    except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+        info = {}
+    if expected_section and not info.get("section"):
+        info["section"] = expected_section
+    info["version_source"] = source
+    if comment:
+        info["version_comment"] = comment
+    try:
+        info_path.write_text(
+            json.dumps(info, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+    except OSError:
+        pass
+
+    summary = get_versions_summary(proj_dir, target_project_id)
+
+    return {
+        "status": "ok",
+        "project_id": target_project_id,
+        "version": new_entry,
+        "version_id": new_version_id,
+        "reused_empty_latest": reused_empty_latest,
+        "saved": saved_result["saved"],
+        "warnings": warnings,
+        "versions_summary": summary,
+    }
+
+
+def merge_project_as_version(
+    source_project_id: str,
+    target_project_id: str,
+    *,
+    comment: Optional[str] = None,
+    source: str = "edit_projects_modal",
+    delete_source: bool = True,
+    resolve_project_dir_fn=None,
+) -> dict[str, Any]:
+    """Слить source-проект в target как новую версию (V{N+1}).
+
+    - source ≠ target;
+    - section должны совпадать (защита от cross-section merge);
+    - все PDF/MD source-проекта переносятся в `_versions/v{N+1}/` target'a;
+    - V1 (корень) target'a не трогается;
+    - `_output/` source-проекта НЕ копируется (новая версия начинается с нуля);
+    - после успешного копирования source-папка удаляется (delete_source=True).
+
+    Raises:
+        FileNotFoundError — source или target не найдены.
+        ValueError — source == target, section не совпадает, нет PDF в source.
+    """
+    import shutil
+
+    if resolve_project_dir_fn is None:
+        from backend.app.services.common.project_service import resolve_project_dir
+        resolve_project_dir_fn = resolve_project_dir
+
+    if not source_project_id or not target_project_id:
+        raise ValueError("source_project_id и target_project_id обязательны")
+    if source_project_id == target_project_id:
+        raise ValueError("source и target — один и тот же проект")
+
+    source_dir: Path = resolve_project_dir_fn(source_project_id)
+    target_dir: Path = resolve_project_dir_fn(target_project_id)
+    if not source_dir.exists() or not source_dir.is_dir():
+        raise FileNotFoundError(f"Source проект '{source_project_id}' не найден: {source_dir}")
+    if not target_dir.exists() or not target_dir.is_dir():
+        raise FileNotFoundError(f"Target проект '{target_project_id}' не найден: {target_dir}")
+
+    # Section guard
+    def _section(d: Path) -> Optional[str]:
+        info_path = d / "project_info.json"
+        if not info_path.exists():
+            return None
+        try:
+            with open(info_path, "r", encoding="utf-8") as f:
+                return (json.load(f) or {}).get("section")
+        except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+            return None
+
+    src_section = _section(source_dir)
+    tgt_section = _section(target_dir)
+    if src_section and tgt_section and src_section != tgt_section:
+        raise ValueError(
+            f"Раздел source ('{src_section}') не совпадает с target ('{tgt_section}')"
+        )
+
+    # Собираем PDF/MD из корня source. _versions/ и _output/ не трогаем.
+    source_files: list[tuple[str, bytes]] = []
+    pdf_found = False
+    for p in sorted(source_dir.iterdir()):
+        if not p.is_file():
+            continue
+        if p.name in {"project_info.json", VERSIONS_MANIFEST_FILENAME}:
+            continue
+        if p.name.startswith("."):
+            continue
+        suffix = p.suffix.lower()
+        if suffix not in ALLOWED_SOURCE_EXTENSIONS:
+            continue
+        validate_filename(p.name)  # ловит unsafe имена заранее
+        source_files.append((p.name, p.read_bytes()))
+        if suffix == ".pdf":
+            pdf_found = True
+
+    if not pdf_found:
+        raise ValueError(f"В source проекте '{source_project_id}' нет PDF — слияние невозможно")
+
+    # Если у target latest-версия пустая (pdf_count == 0) — переиспользуем её,
+    # вместо того чтобы плодить новую. Типичный кейс: пользователь нажал
+    # «Создать новую версию», получил пустую V2, теперь привязывает source.
+    latest_summary = get_versions_summary(target_dir, target_project_id)
+    reused_empty_latest = False
+    new_entry: dict[str, Any] = {}
+    for v in latest_summary.get("versions", []):
+        if v.get("is_latest") and (v.get("pdf_count", 0) == 0):
+            # Не переиспользуем V1 (legacy) — только V2+.
+            if v.get("version_id") != "v1":
+                new_entry = {
+                    "version_id": v["version_id"],
+                    "version_no": v["version_no"],
+                    "label": v.get("label") or f"V{v['version_no']}",
+                    "folder": v.get("folder") or f"{VERSIONS_DIR_NAME}/{v['version_id']}",
+                    "status": v.get("status", "new"),
+                    "source": source,
+                }
+                if comment:
+                    new_entry["comment"] = comment
+                reused_empty_latest = True
+            break
+
+    if not reused_empty_latest:
+        # Создаём новую версию у target.
+        new_entry = create_next_version(
+            target_dir,
+            target_project_id,
+            source=source,
+            status="new",
+            comment=comment,
+            create_folder=True,
+            seed_project_info=True,
+        )
+    new_version_id = new_entry["version_id"]
+
+    # Атомарный batch-write
+    saved_result = save_files_to_version(
+        target_project_id,
+        new_version_id,
+        source_files,
+        replace_existing=False,
+        comment=comment,
+        allow_v1_upload=False,
+        resolve_project_dir_fn=resolve_project_dir_fn,
+    )
+
+    # Обогатим project_info новой версии
+    version_dir = target_dir / new_entry["folder"]
+    info_path = version_dir / "project_info.json"
+    try:
+        info = json.loads(info_path.read_text(encoding="utf-8")) if info_path.exists() else {}
+    except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+        info = {}
+    if tgt_section and not info.get("section"):
+        info["section"] = tgt_section
+    info["version_source"] = source
+    info["merged_from_project_id"] = source_project_id
+    if comment:
+        info["version_comment"] = comment
+    try:
+        info_path.write_text(
+            json.dumps(info, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+    except OSError:
+        pass
+
+    # Удаляем source-папку. Делается после успешного копирования —
+    # если копирование упало, save_files_to_version поднял бы исключение
+    # и сюда мы бы не дошли.
+    if delete_source:
+        try:
+            shutil.rmtree(source_dir)
+        except OSError as e:
+            # Не катастрофа — сообщим в warnings, файлы уже скопированы.
+            return {
+                "status": "ok",
+                "project_id": target_project_id,
+                "source_project_id": source_project_id,
+                "version": new_entry,
+                "version_id": new_version_id,
+                "saved": saved_result["saved"],
+                "warnings": [f"Не удалось удалить source папку: {e}"],
+                "versions_summary": get_versions_summary(target_dir, target_project_id),
+            }
+
+    return {
+        "status": "ok",
+        "project_id": target_project_id,
+        "source_project_id": source_project_id,
+        "version": new_entry,
+        "version_id": new_version_id,
+        "reused_empty_latest": reused_empty_latest,
+        "saved": saved_result["saved"],
+        "warnings": [],
+        "versions_summary": get_versions_summary(target_dir, target_project_id),
+    }

@@ -137,7 +137,7 @@ describe('formatVersionBadge', () => {
     expect(b).toEqual({ text: 'Нет файлов', tone: 'warn' });
   });
 
-  it('две версии → "V1–V2"', () => {
+  it('две версии → метка последней ("V2")', () => {
     const p = {
       version_id: 'v2',
       version_count: 2,
@@ -147,7 +147,7 @@ describe('formatVersionBadge', () => {
         { version_id: 'v2', label: 'V2', is_latest: true, has_source_files: true },
       ],
     };
-    expect(VersionAPI.formatVersionBadge(p)).toEqual({ text: 'V1–V2', tone: 'info' });
+    expect(VersionAPI.formatVersionBadge(p)).toEqual({ text: 'V2', tone: 'info' });
   });
 
   it('две версии, V2 пустая → warn с подсказкой', () => {
@@ -162,7 +162,7 @@ describe('formatVersionBadge', () => {
     };
     const b = VersionAPI.formatVersionBadge(p);
     expect(b.tone).toBe('warn');
-    expect(b.text).toContain('V1–V2');
+    expect(b.text).toContain('V2');
     expect(b.text).toContain('нужна загрузка');
   });
 

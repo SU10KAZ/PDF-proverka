@@ -266,6 +266,117 @@ const app = createApp({
             return dict[token] || String(token);
         }
 
+        // ─── Critic v2 dev-flag: показывать ли отдельные debug-routes ─────────
+        // Основной UX — колонка в обычной таблице "Замечания". Старый
+        // experimental UI остаётся только для разработчика. Включается:
+        //   localStorage.setItem('cv2_debug', '1')       — постоянно
+        //   ?cv2debug=1 в URL                            — на текущую сессию
+        //   window.cv2EnableDebug() / cv2DisableDebug()  — из консоли
+        // Routes (#/critic-v2-ui, #/project/.../critic-v2*) остаются доступны
+        // напрямую по URL даже без флага — флаг прячет только entry в навигации.
+        function _readCv2DebugFlag() {
+            try {
+                if (typeof window === 'undefined') return false;
+                const url = new URL(window.location.href);
+                if (url.searchParams.get('cv2debug') === '1') return true;
+                if (window.localStorage && window.localStorage.getItem('cv2_debug') === '1') return true;
+            } catch (_) { /* SSR / sandboxed iframe */ }
+            return false;
+        }
+        const cv2DebugVisible = ref(_readCv2DebugFlag());
+        if (typeof window !== 'undefined') {
+            window.cv2EnableDebug = function () {
+                try { window.localStorage.setItem('cv2_debug', '1'); } catch (_) {}
+                cv2DebugVisible.value = true;
+                console.info('[cv2] debug nav enabled (localStorage.cv2_debug=1)');
+            };
+            window.cv2DisableDebug = function () {
+                try { window.localStorage.removeItem('cv2_debug'); } catch (_) {}
+                cv2DebugVisible.value = false;
+                console.info('[cv2] debug nav disabled');
+            };
+        }
+
+        // ─── Critic v2 → display score (0–100) for inline findings table ─────
+        // Pure-функции. Дублируются в frontend/tests/cv2_findings_table.test.js
+        // как mirror — если логика разойдётся, тест упадёт первым.
+        // Backend поля не меняются: queue/score/confidence приходят как есть.
+
+        // queue → диапазон [min, max] на 0–100
+        const CV2_DISPLAY_QUEUE_RANGE = {
+            strong_keep:      [90, 100],
+            main_review:      [65,  85],
+            borderline:       [50,  65],
+            needs_context:    [40,  59],
+            suggested_reject: [20,  39],
+            hidden_by_critic: [ 0,  19],
+        };
+
+        // bucket → [lo, hi] на 0–100; используется и для label, и для фильтра
+        const CV2_DISPLAY_BUCKETS = [
+            { key: 'must_review',     label: 'важно проверить',       lo: 85, hi: 100 },
+            { key: 'review',          label: 'на проверку',           lo: 60, hi:  84 },
+            { key: 'needs_context',   label: 'нужен контекст',        lo: 40, hi:  59 },
+            { key: 'likely_reject',   label: 'вероятно к отклонению', lo: 20, hi:  39 },
+            { key: 'hidden',          label: 'скрыто Critic v2',      lo:  0, hi:  19 },
+        ];
+
+        function cv2DisplayScore(item) {
+            // Маппит queue + (score 0–10, confidence 0–1) → display score 0–100.
+            // Внутри диапазона очереди двигаем по нормализованной (score+confidence).
+            if (!item) return null;
+            const range = CV2_DISPLAY_QUEUE_RANGE[item.queue];
+            if (!range) return null;
+            const [lo, hi] = range;
+            const span = hi - lo;
+            // Нормализуем интенсивность: 70% от score (0–10) + 30% от confidence (0–1).
+            const s = Number.isFinite(item.score) ? Math.max(0, Math.min(10, item.score)) / 10 : 0.5;
+            const c = Number.isFinite(item.confidence) ? Math.max(0, Math.min(1, item.confidence)) : 0.5;
+            const intensity = 0.7 * s + 0.3 * c;
+            // Для suggested_reject/hidden высокая уверенность critic'а = НИЖНЯЯ оценка
+            // (он уверен, что это не нужно), для остальных — наоборот.
+            const inverted = item.queue === 'suggested_reject' || item.queue === 'hidden_by_critic';
+            const t = inverted ? (1 - intensity) : intensity;
+            return Math.round(lo + span * t);
+        }
+
+        function cv2DisplayBucket(score) {
+            if (!Number.isFinite(score)) return null;
+            for (const b of CV2_DISPLAY_BUCKETS) {
+                if (score >= b.lo && score <= b.hi) return b;
+            }
+            return null;
+        }
+
+        function cv2DisplayLabel(score) {
+            const b = cv2DisplayBucket(score);
+            return b ? b.label : '';
+        }
+
+        // CSS-класс цвета бейджа (зелёный → красный по понижению score)
+        function cv2DisplayClass(score) {
+            const b = cv2DisplayBucket(score);
+            return b ? ('cv2-disp-' + b.key) : 'cv2-disp-na';
+        }
+
+        // finding_id в triage-ui = "<project>:F-NNN"; в /api/findings = "F-NNN".
+        // Извлекаем хвост после последнего ':'. Если ':' нет — возвращаем как есть.
+        function cv2BareFindingId(rawId) {
+            if (!rawId) return '';
+            const s = String(rawId);
+            const idx = s.lastIndexOf(':');
+            return idx >= 0 ? s.slice(idx + 1) : s;
+        }
+
+        // Скрывать ли finding по умолчанию (tab=hidden_by_critic ИЛИ score≤19).
+        // Используется в _applyFindingsFilter, когда cv2ShowHidden = false.
+        function cv2IsHiddenByDefault(item) {
+            if (!item) return false;
+            if (item.tab === 'hidden_by_critic') return true;
+            const score = cv2DisplayScore(item);
+            return Number.isFinite(score) && score <= 19;
+        }
+
         const cv2Export = ref(null);
         const cv2LoadError = ref('');
         const cv2ActiveTab = ref('primary');
@@ -2441,6 +2552,210 @@ const app = createApp({
         const batchModalCount = ref(0);
         const batchAllMode = ref(false);  // true = запуск для ВСЕХ проектов
 
+        // ─── Edit Projects (смена раздела / скрытие из UI) ───
+        const showEditProjectsModal = ref(false);
+        const editProjectsNewSection = ref('');
+        const editProjectsLoading = ref(false);
+        // Map { source_project_id: target_project_id } — для пакетного merge.
+        const editProjectsMergeMap = ref({});
+        const editProjectsSelected = computed(() => {
+            const ids = selectedProjects.value;
+            return projects.value.filter(p => ids.has(p.project_id));
+        });
+
+        function _emptyLatestForTarget(targetId) {
+            const t = (projects.value || []).find(p => p.project_id === targetId);
+            if (!t || !Array.isArray(t.versions_summary)) return null;
+            const latest = t.versions_summary.find(v => v.is_latest);
+            if (!latest) return null;
+            if (latest.version_id === 'v1') return null;
+            if ((latest.pdf_count || 0) > 0) return null;
+            return latest;
+        }
+
+        // Для конкретного source-проекта — список потенциальных target'ов того же
+        // раздела (исключая сам source). Совпадения по normalizeProjectName
+        // помечаются `_suggested` и поднимаются вверх.
+        function mergeTargetsFor(source) {
+            if (!source) return [];
+            const sec = source.section;
+            if (!sec) return [];
+            const srcName = (typeof normalizeProjectName === 'function')
+                ? normalizeProjectName(source.name || source.project_id) : '';
+            // Исключаем сам source и любые другие source'ы из этой же batch-сессии,
+            // чтобы пользователь случайно не привязал A→B и B→A.
+            const selectedIds = new Set(editProjectsSelected.value.map(p => p.project_id));
+            const out = (projects.value || [])
+                .filter(p => p.section === sec
+                    && p.project_id !== source.project_id
+                    && !selectedIds.has(p.project_id))
+                .map(p => {
+                    const norm = (typeof normalizeProjectName === 'function')
+                        ? normalizeProjectName(p.name || p.project_id) : '';
+                    return Object.assign({}, p, { _suggested: !!srcName && norm === srcName });
+                });
+            out.sort((a, b) => {
+                if (a._suggested && !b._suggested) return -1;
+                if (!a._suggested && b._suggested) return 1;
+                return String(a.name || a.project_id).localeCompare(String(b.name || b.project_id));
+            });
+            return out;
+        }
+
+        // Имя следующей версии у target (учитывает «пустую latest»).
+        function mergeNextLabelFor(targetId) {
+            if (!targetId) return 'V?';
+            const t = (projects.value || []).find(p => p.project_id === targetId);
+            if (!t) return 'V?';
+            const empty = _emptyLatestForTarget(targetId);
+            if (empty) return (empty.label || 'V' + empty.version_no) + ' (пустая)';
+            return 'V' + ((t.version_count || 1) + 1);
+        }
+
+        function mergeTargetNameFor(targetId) {
+            if (!targetId) return '';
+            const t = (projects.value || []).find(p => p.project_id === targetId);
+            return t ? (t.name || t.project_id) : targetId;
+        }
+
+        // Сколько строк имеют выбранный target — для кнопки «Привязать выбранные пары».
+        const editProjectsMergeReadyCount = computed(() => {
+            let n = 0;
+            for (const src of editProjectsSelected.value) {
+                if (editProjectsMergeMap.value[src.project_id]) n += 1;
+            }
+            return n;
+        });
+
+        function openEditProjectsModal() {
+            if (selectedProjects.value.size === 0) return;
+            editProjectsNewSection.value = '';
+            // Пред-заполняем map авто-подсказками: для каждого выбранного
+            // source ищем target с _suggested == true.
+            const seeded = {};
+            for (const src of editProjectsSelected.value) {
+                const opts = mergeTargetsFor(src);
+                const suggested = opts.find(o => o._suggested);
+                if (suggested) seeded[src.project_id] = suggested.project_id;
+            }
+            editProjectsMergeMap.value = seeded;
+            showEditProjectsModal.value = true;
+        }
+
+        // Пакетное применение merge: каждая (source → target) пара
+        // выполняется отдельным запросом, ошибки одной не останавливают другие.
+        async function applyMergeAllAsVersion() {
+            const pairs = [];
+            for (const src of editProjectsSelected.value) {
+                const tgt = editProjectsMergeMap.value[src.project_id];
+                if (tgt) pairs.push({ source: src, targetId: tgt });
+            }
+            if (pairs.length === 0) return;
+            if (!confirm(
+                `Привязать ${pairs.length} проект(ов) как версии существующих?\n` +
+                `Исходные карточки будут удалены. V1 каждого target не изменится.`
+            )) return;
+            editProjectsLoading.value = true;
+            const errors = [];
+            const okList = [];
+            try {
+                for (const { source, targetId } of pairs) {
+                    try {
+                        const resp = await fetch(
+                            '/api/projects/versions/from-project',
+                            {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    target_project_id: targetId,
+                                    source_project_id: source.project_id,
+                                    comment: 'Привязано из окна Изменить выбранные проекты',
+                                    source: 'edit_projects_modal',
+                                    delete_source: true,
+                                }),
+                            },
+                        );
+                        if (!resp.ok) {
+                            const err = await resp.json().catch(() => ({}));
+                            throw new Error(err.detail || `HTTP ${resp.status}`);
+                        }
+                        const data = await resp.json();
+                        const verLabel = (data.version && data.version.label) || 'V?';
+                        okList.push(`${source.name || source.project_id} → ${mergeTargetNameFor(targetId)} (${verLabel})`);
+                    } catch (e) {
+                        errors.push(`${source.name || source.project_id}: ${e.message}`);
+                    }
+                }
+                const lines = [];
+                if (okList.length) lines.push(`Готово (${okList.length}):\n` + okList.join('\n'));
+                if (errors.length) lines.push(`Ошибки (${errors.length}):\n` + errors.join('\n'));
+                if (lines.length) alert(lines.join('\n\n'));
+                selectedProjects.value = new Set();
+                selectAllChecked.value = false;
+                showEditProjectsModal.value = false;
+                await refreshProjects();
+            } finally {
+                editProjectsLoading.value = false;
+            }
+        }
+        async function applyNewSectionToSelected() {
+            const section = (editProjectsNewSection.value || '').trim();
+            if (!section) return;
+            const ids = Array.from(selectedProjects.value);
+            if (ids.length === 0) return;
+            editProjectsLoading.value = true;
+            try {
+                let failed = 0;
+                for (const pid of ids) {
+                    try {
+                        const resp = await fetch(`/api/projects/${encodeURIComponent(pid)}/section`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ section }),
+                        });
+                        if (!resp.ok) failed += 1;
+                    } catch (e) {
+                        failed += 1;
+                    }
+                }
+                if (failed > 0) {
+                    alert(`Не удалось обновить раздел у ${failed} из ${ids.length} проектов`);
+                }
+                selectedProjects.value = new Set();
+                selectAllChecked.value = false;
+                showEditProjectsModal.value = false;
+                await refreshProjects();
+            } finally {
+                editProjectsLoading.value = false;
+            }
+        }
+        async function hideSelectedFromUI() {
+            const ids = Array.from(selectedProjects.value);
+            if (ids.length === 0) return;
+            if (!confirm(`Скрыть из UI ${ids.length} проект(ов)? Файлы на диске останутся.`)) return;
+            editProjectsLoading.value = true;
+            try {
+                let failed = 0;
+                for (const pid of ids) {
+                    try {
+                        const resp = await fetch(`/api/projects/${encodeURIComponent(pid)}/hide`, { method: 'POST' });
+                        if (!resp.ok) failed += 1;
+                    } catch (e) {
+                        failed += 1;
+                    }
+                }
+                if (failed > 0) {
+                    alert(`Не удалось скрыть ${failed} из ${ids.length} проектов`);
+                }
+                selectedProjects.value = new Set();
+                selectAllChecked.value = false;
+                showEditProjectsModal.value = false;
+                await refreshProjects();
+            } finally {
+                editProjectsLoading.value = false;
+            }
+        }
+
         // ─── Pause / Resume ───
         const showPauseModal = ref(false);
         const isPaused = ref(false);
@@ -3982,6 +4297,86 @@ const app = createApp({
             }
         }
 
+        // Нормализация имени для матчинга candidate ↔ существующий проект.
+        // Убираем расширение, "(1)", "_document", "Изм.1", лишние пробелы,
+        // приводим к нижнему регистру.
+        function normalizeProjectName(name) {
+            if (!name) return '';
+            let s = String(name).toLowerCase();
+            s = s.replace(/\.pdf$/, '');
+            s = s.replace(/\.md$/, '');
+            s = s.replace(/_document$/, '');
+            s = s.replace(/\s*\(\d+\)\s*$/g, '');
+            s = s.replace(/[\s_\-]*изм\.?\s*\d+/g, '');
+            s = s.replace(/[\s_\-]+/g, ' ');
+            return s.trim();
+        }
+
+        function candidateBasename(f) {
+            const pdf = (f && f.pdf_files && f.pdf_files[0]) || f.folder || '';
+            return normalizeProjectName(pdf) || normalizeProjectName(f.folder);
+        }
+
+        // Список существующих проектов того же раздела, что candidate.
+        function candidateTargetOptions(f) {
+            const sec = f && f._selectedDiscipline;
+            if (!sec) return [];
+            const all = (projects.value || []).filter(p => p.section === sec);
+            const candName = candidateBasename(f);
+            // Помечаем "_suggested" — для подсказки в селекте
+            const out = all.map(p => {
+                const matched = !!candName
+                    && normalizeProjectName(p.name || p.project_id) === candName;
+                return Object.assign({}, p, { _suggested: matched });
+            });
+            // Sort: suggested first, then alpha
+            out.sort((a, b) => {
+                if (a._suggested && !b._suggested) return -1;
+                if (!a._suggested && b._suggested) return 1;
+                return String(a.name || a.project_id).localeCompare(String(b.name || b.project_id));
+            });
+            return out;
+        }
+
+        function candidateTargetName(f) {
+            const opts = candidateTargetOptions(f);
+            const t = opts.find(p => p.project_id === f._targetProjectId);
+            return t ? (t.name || t.project_id) : f._targetProjectId;
+        }
+
+        // Имя следующей версии у выбранного target-проекта. Если у target
+        // уже есть пустая latest-версия (V2+) — переиспользуем её.
+        function candidateNextVersionLabel(f) {
+            if (!f || !f._targetProjectId) return 'V?';
+            const t = (projects.value || []).find(p => p.project_id === f._targetProjectId);
+            if (!t) return 'V?';
+            if (Array.isArray(t.versions_summary)) {
+                const latest = t.versions_summary.find(v => v.is_latest);
+                if (latest && latest.version_id !== 'v1' && (latest.pdf_count || 0) === 0) {
+                    return (latest.label || 'V' + latest.version_no) + ' (пустая)';
+                }
+            }
+            const next = (t.version_count || 1) + 1;
+            return 'V' + next;
+        }
+
+        function _decorateCandidate(f, isExternal, detected) {
+            f._detectedDiscipline = detected;
+            f._selectedDiscipline = detected;
+            f._isExternal = isExternal;
+            f._selectedPdfs = [...f.pdf_files];
+            f._selectedMds = [...f.md_files];
+            f._addMode = 'new';
+            f._targetProjectId = '';
+            // Уверенное совпадение → дефолт «версия», иначе «новый проект»
+            const opts = candidateTargetOptions(f);
+            const suggested = opts.find(p => p._suggested);
+            if (suggested) {
+                f._addMode = 'version';
+                f._targetProjectId = suggested.project_id;
+            }
+        }
+
         async function scanFolders() {
             addProjectLoading.value = true;
             try {
@@ -3989,11 +4384,7 @@ const app = createApp({
                 const folders = data.folders;
                 for (const f of folders) {
                     const detected = await detectDiscipline(f.folder);
-                    f._detectedDiscipline = detected;
-                    f._selectedDiscipline = detected;
-                    f._isExternal = false;
-                    f._selectedPdfs = [...f.pdf_files];   // все PDF выбраны по умолчанию
-                    f._selectedMds = [...f.md_files];      // все MD выбраны по умолчанию
+                    _decorateCandidate(f, false, detected);
                 }
                 unregisteredFolders.value = folders;
             } catch (e) {
@@ -4020,15 +4411,94 @@ const app = createApp({
                 const folders = data.folders;
                 for (const f of folders) {
                     const detected = await detectDiscipline(f.folder);
-                    f._detectedDiscipline = detected;
-                    f._selectedDiscipline = detected;
-                    f._isExternal = true;
-                    f._selectedPdfs = [...f.pdf_files];
-                    f._selectedMds = [...f.md_files];
+                    _decorateCandidate(f, true, detected);
                 }
                 unregisteredFolders.value = folders;
             } catch (e) {
                 alert('Ошибка сканирования: ' + e.message);
+            }
+            addProjectLoading.value = false;
+        }
+
+        function onCandidatePrimaryAction(f) {
+            if (!f) return;
+            if (f._addMode === 'version') {
+                return registerProjectAsVersion(f.folder);
+            }
+            return registerProject(f.folder);
+        }
+
+        // Build a server-side path for a candidate file: backend allows files
+        // under PROJECTS_DIR or under the external_root scanned. For "local"
+        // candidates folderInfo.folder is `<section>/<name>` (relative to projects/);
+        // for external, folderInfo.full_path is absolute root, filenames are relative.
+        function _candidateFilePath(folderInfo, filename) {
+            if (!filename) return null;
+            if (folderInfo._isExternal && folderInfo.full_path) {
+                return folderInfo.full_path.replace(/[\\/]+$/, '') + '/' + filename;
+            }
+            // local: folderInfo.folder is a path under projects/. Resolve as
+            // <projects>/<folder>/<filename> via server side; we ship just the
+            // logical path and backend resolves against PROJECTS_DIR.
+            return 'projects/' + folderInfo.folder.replace(/[\\/]+$/, '') + '/' + filename;
+        }
+
+        async function registerProjectAsVersion(folder) {
+            const folderInfo = unregisteredFolders.value.find(f => f.folder === folder);
+            if (!folderInfo) return;
+            if (!folderInfo._targetProjectId) {
+                alert('Выберите проект-основание для версии');
+                return;
+            }
+            const selPdfs = folderInfo._selectedPdfs && folderInfo._selectedPdfs.length > 0
+                ? folderInfo._selectedPdfs : [folderInfo.pdf_files[0]];
+            const selMds = folderInfo._selectedMds && folderInfo._selectedMds.length > 0
+                ? folderInfo._selectedMds : (folderInfo.md_files.length > 0 ? [folderInfo.md_files[0]] : []);
+            const pdfPath = _candidateFilePath(folderInfo, selPdfs[0]);
+            const mdPath = selMds.length > 0 ? _candidateFilePath(folderInfo, selMds[0]) : null;
+            const targetId = folderInfo._targetProjectId;
+            const expectedVer = candidateNextVersionLabel(folderInfo);
+
+            addProjectLoading.value = true;
+            try {
+                const body = {
+                    target_project_id: targetId,
+                    candidate_pdf_path: pdfPath,
+                    candidate_md_path: mdPath,
+                    expected_section: folderInfo._selectedDiscipline || null,
+                    comment: 'Добавлено из окна Добавить проект',
+                    source: 'section_add_project_modal',
+                };
+                if (folderInfo._isExternal && folderInfo.full_path) {
+                    body.external_root = folderInfo.full_path;
+                }
+                // Flat-endpoint (target в body) — обходим %2F в URL.
+                const resp = await fetch(
+                    '/api/projects/versions/from-candidate',
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body),
+                    },
+                );
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || `Ошибка: ${resp.status}`);
+                }
+                const data = await resp.json();
+                const verLabel = (data.version && data.version.label) || expectedVer;
+                if (typeof showToast === 'function') {
+                    showToast(`Создана версия ${verLabel} для проекта ${candidateTargetName(folderInfo)}`);
+                } else {
+                    console.log(`Создана версия ${verLabel} для проекта ${candidateTargetName(folderInfo)}`);
+                }
+                unregisteredFolders.value = unregisteredFolders.value.filter(f => f.folder !== folder);
+                await refreshProjects();
+                if (unregisteredFolders.value.length === 0) {
+                    showAddProject.value = false;
+                }
+            } catch (e) {
+                alert('Ошибка создания версии: ' + e.message);
             }
             addProjectLoading.value = false;
         }
@@ -4097,6 +4567,16 @@ const app = createApp({
             addProjectLoading.value = true;
             let errors = [];
             for (const folderInfo of folders) {
+                // Если выбран режим «новая версия существующего» — идём через
+                // новый endpoint и пропускаем register/register-external.
+                if (folderInfo._addMode === 'version' && folderInfo._targetProjectId) {
+                    try {
+                        await registerProjectAsVersion(folderInfo.folder);
+                    } catch (e) {
+                        errors.push(`${folderInfo.folder}: ${e.message}`);
+                    }
+                    continue;
+                }
                 const sPdfs = folderInfo._selectedPdfs && folderInfo._selectedPdfs.length > 0
                     ? folderInfo._selectedPdfs : [folderInfo.pdf_files[0]];
                 const sMds = folderInfo._selectedMds && folderInfo._selectedMds.length > 0
@@ -4601,14 +5081,107 @@ const app = createApp({
         // Полные данные findings (без фильтрации) — для client-side фильтрации
         const _findingsAll = ref(null);
 
+        // ─── Inline Critic v2 для обычной таблицы Замечаний (experimental) ───
+        // Карта bareFindingId → cv2 item. Production pipeline не трогаем —
+        // только дополнительный fetch для отображения display-бейджа.
+        const findingsCv2Map = ref({});           // { 'F-001': {tab, queue, score, ...}, ... }
+        const findingsCv2Available = ref(false);  // true если endpoint вернул items
+        const findingsCv2Warning = ref('');       // warning из endpoint (нет данных по проекту)
+        const findingsCv2Loading = ref(false);    // pending state, рисуем "загрузка..." в фильтрах
+        const cv2ShowHidden = ref(false);         // toggle "показать скрытые Critic v2"
+        const cv2DisplayFilter = ref('');         // bucket key или '' = все
+
+        // Session-scoped cache: { [projectId]: { map, available, warning } }
+        // Инвалидируется при manual reload (loadFindings forceRefresh) или
+        // при F5. Перезагрузка страницы — ОК, кеш бэкенда переживает.
+        const _findingsCv2SessionCache = {};
+
+        // Deferred-runner: обычная таблица должна отрендериться сначала.
+        // Критик загружается в idle-callback, чтобы не конкурировать с DOM.
+        function _scheduleIdle(fn) {
+            if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
+                window.requestIdleCallback(fn, { timeout: 1500 });
+            } else {
+                setTimeout(fn, 0);
+            }
+        }
+
+        function _applyCv2Result(projectId, payload) {
+            // Применяем результат к state — но только если проект всё ещё актуален
+            // (юзер мог уйти на другой проект, пока fetch висел в воздухе).
+            if (currentProjectId.value && currentProjectId.value !== projectId) return;
+            findingsCv2Map.value = payload.map || {};
+            findingsCv2Available.value = !!payload.available;
+            findingsCv2Warning.value = payload.warning || '';
+            findingsCv2Loading.value = false;
+            _applyFindingsFilter();
+        }
+
+        async function _fetchCriticV2ForFindings(projectId) {
+            // Read-only fetch. Не пишем файлов, не вызываем LLM, production не трогаем.
+            // Возвращает payload {map, available, warning}.
+            try {
+                const resp = await fetch('/api/critic-v2/projects/' + encodeURIComponent(projectId) + '/triage-ui');
+                if (!resp.ok) {
+                    return { map: {}, available: false, warning: 'нет данных' };
+                }
+                const raw = await resp.json();
+                const items = (raw && Array.isArray(raw.items)) ? raw.items : [];
+                const warning = (raw && raw.warning) ? raw.warning : '';
+                const map = {};
+                for (const it of items) {
+                    const bare = cv2BareFindingId(it.finding_id);
+                    if (!bare) continue;
+                    map[bare] = it;
+                }
+                return { map, available: items.length > 0, warning };
+            } catch (e) {
+                console.warn('[critic-v2 inline] load failed:', e);
+                return { map: {}, available: false, warning: 'ошибка загрузки' };
+            }
+        }
+
+        function _scheduleCriticV2Load(projectId, opts) {
+            // opts.forceRefresh — пропустить session cache.
+            const force = !!(opts && opts.forceRefresh);
+            // Cache hit — мгновенно применяем, без сетевого вызова
+            if (!force && _findingsCv2SessionCache[projectId]) {
+                _applyCv2Result(projectId, _findingsCv2SessionCache[projectId]);
+                return;
+            }
+            findingsCv2Loading.value = true;
+            findingsCv2Warning.value = '';
+            _scheduleIdle(async () => {
+                // Между планированием и выполнением юзер мог уйти на другой проект
+                if (currentProjectId.value && currentProjectId.value !== projectId) {
+                    findingsCv2Loading.value = false;
+                    return;
+                }
+                const payload = await _fetchCriticV2ForFindings(projectId);
+                _findingsCv2SessionCache[projectId] = payload;
+                _applyCv2Result(projectId, payload);
+            });
+        }
+
         async function loadFindings(id, forceRefresh) {
             expandedFindingId.value = null;
             findingsPage.value = 1;
+            // Сбрасываем inline-критика при смене проекта
+            findingsCv2Map.value = {};
+            findingsCv2Available.value = false;
+            findingsCv2Warning.value = '';
+            findingsCv2Loading.value = false;
+            // Manual reload инвалидирует session-cache Critic v2 для этого проекта
+            if (forceRefresh) {
+                delete _findingsCv2SessionCache[id];
+            }
             if (!forceRefresh) {
                 const cached = _cacheGet('findings', id);
                 if (cached) {
                     _findingsAll.value = cached;
                     _applyFindingsFilter();
+                    // Critic v2 — deferred (idle), session-cached
+                    _scheduleCriticV2Load(id, { forceRefresh: false });
                     return;
                 }
             }
@@ -4621,6 +5194,8 @@ const app = createApp({
                 _applyFindingsFilter();
                 // Загрузить маппинг блоков параллельно
                 loadFindingBlockMap(id);
+                // Critic v2 — deferred (idle), session-cached, не блокирует таблицу
+                _scheduleCriticV2Load(id, { forceRefresh: forceRefresh });
             } catch (e) {
                 console.error('Failed to load findings:', e);
             }
@@ -4630,6 +5205,10 @@ const app = createApp({
             if (!_findingsAll.value) { findingsData.value = null; return; }
             const sev = filterSeverity.value;
             const search = filterSearch.value.toLowerCase();
+            const cv2Map = findingsCv2Map.value || {};
+            const cv2Has = findingsCv2Available.value;
+            const showHidden = cv2ShowHidden.value;
+            const displayFilter = cv2DisplayFilter.value;
             let items = _findingsAll.value.findings || [];
             if (sev) {
                 items = items.filter(f => f.severity === sev);
@@ -4642,7 +5221,69 @@ const app = createApp({
                     (f.sub_findings || []).some(s => (s.problem || '').toLowerCase().includes(search))
                 );
             }
+            // Скрытие по Critic v2 — только если данные есть и юзер не открыл их явно
+            if (cv2Has && !showHidden) {
+                items = items.filter(f => {
+                    const cv2 = cv2Map[f.id];
+                    return !cv2 || !cv2IsHiddenByDefault(cv2);
+                });
+            }
+            // Фильтр по bucket'у
+            if (cv2Has && displayFilter) {
+                items = items.filter(f => {
+                    const cv2 = cv2Map[f.id];
+                    if (!cv2) return false;
+                    const score = cv2DisplayScore(cv2);
+                    const b = cv2DisplayBucket(score);
+                    return b && b.key === displayFilter;
+                });
+            }
             findingsData.value = { ..._findingsAll.value, findings: items };
+        }
+
+        // Сколько findings скрыто по умолчанию (для счётчика возле toggle).
+        function cv2HiddenCount() {
+            if (!findingsCv2Available.value || !_findingsAll.value) return 0;
+            const cv2Map = findingsCv2Map.value || {};
+            let n = 0;
+            for (const f of (_findingsAll.value.findings || [])) {
+                const cv2 = cv2Map[f.id];
+                if (cv2 && cv2IsHiddenByDefault(cv2)) n += 1;
+            }
+            return n;
+        }
+
+        // Геттеры для шаблона: bare функции по id
+        function findingCv2(id) {
+            return (findingsCv2Map.value || {})[id] || null;
+        }
+        function findingCv2Score(id) {
+            const it = findingCv2(id);
+            return it ? cv2DisplayScore(it) : null;
+        }
+        function findingCv2Label(id) {
+            const s = findingCv2Score(id);
+            return s == null ? '' : cv2DisplayLabel(s);
+        }
+        function findingCv2Class(id) {
+            const s = findingCv2Score(id);
+            return s == null ? 'cv2-disp-na' : cv2DisplayClass(s);
+        }
+        function findingCv2Tooltip(id) {
+            const it = findingCv2(id);
+            if (!it) return '';
+            const score = cv2DisplayScore(it);
+            const lines = [
+                'Critic v2 (экспериментально, замечания не удаляются)',
+                'Оценка: ' + (score == null ? '—' : score) + ' (' + cv2DisplayLabel(score) + ')',
+                'Очередь: ' + (CV2_LABELS.queue[it.queue] || it.queue || '—'),
+            ];
+            if (it.reason)            lines.push('Причина: ' + (CV2_LABELS.reason[it.reason] || it.reason));
+            if (it.evidence_quality)  lines.push('Evidence: ' + (CV2_LABELS.evidence[it.evidence_quality] || it.evidence_quality));
+            if (it.taxonomy_reason)   lines.push('Таксономия: ' + (CV2_LABELS.taxonomy[it.taxonomy_reason] || it.taxonomy_reason));
+            if (it.source_dependency) lines.push('Источник: ' + (CV2_LABELS.source[it.source_dependency] || it.source_dependency));
+            if (it.explanation)       lines.push('Пояснение: ' + cv2HumanizeExplanation(it.explanation));
+            return lines.join('\n');
         }
 
         // ─── Blocks (OCR) ───
@@ -6127,9 +6768,31 @@ const app = createApp({
             return findingsData.value.findings;
         });
 
-        // Сортировка: отклонённые всегда внизу (если есть решения)
+        // Сортировка по столбцу Critic v2: null → 'desc' (100→0) → 'asc' (0→100) → null
+        const cv2SortDir = ref(null);
+        function toggleCv2Sort() {
+            if (cv2SortDir.value === null) cv2SortDir.value = 'desc';
+            else if (cv2SortDir.value === 'desc') cv2SortDir.value = 'asc';
+            else cv2SortDir.value = null;
+            findingsPage.value = 1;
+        }
+
+        // Сортировка: отклонённые всегда внизу (если есть решения).
+        // Если активна сортировка по Critic v2 — она имеет приоритет, nulls в конец.
         const sortedFindings = computed(() => {
             const items = filteredFindings.value;
+            if (cv2SortDir.value) {
+                const dir = cv2SortDir.value === 'asc' ? 1 : -1;
+                return [...items].sort((a, b) => {
+                    const sa = findingCv2Score(a.id);
+                    const sb = findingCv2Score(b.id);
+                    const aNull = sa == null, bNull = sb == null;
+                    if (aNull && bNull) return 0;
+                    if (aNull) return 1;
+                    if (bNull) return -1;
+                    return (sa - sb) * dir;
+                });
+            }
             if (!Object.keys(expertDecisions.value).length) return items;
             const accepted = [], pending = [], rejected = [];
             for (const f of items) {
@@ -7401,6 +8064,9 @@ const app = createApp({
         // Client-side фильтрация — без перезапроса с сервера
         watch(filterSeverity, () => _applyFindingsFilter());
         watch(filterSearch, () => _applyFindingsFilter());
+        // Inline Critic v2 toggles
+        watch(cv2ShowHidden, () => { findingsPage.value = 1; _applyFindingsFilter(); });
+        watch(cv2DisplayFilter, () => { findingsPage.value = 1; _applyFindingsFilter(); });
 
         // ─── Init ───
         onMounted(() => {
@@ -7433,6 +8099,12 @@ const app = createApp({
             // State
             currentView, currentProject, currentProjectId, projects, loading,
             findingsData, filterSeverity, filterSearch, severityOptions,
+            // Inline Critic v2 (experimental, в обычной таблице)
+            findingsCv2Available, findingsCv2Warning, findingsCv2Loading,
+            cv2ShowHidden, cv2DisplayFilter, cv2DebugVisible,
+            cv2HiddenCount, findingCv2Score, findingCv2Label, findingCv2Class, findingCv2Tooltip,
+            cv2SortDir, toggleCv2Sort,
+            CV2_DISPLAY_BUCKETS,
             findingBlockMap, findingBlockInfo, expandedFindingId, cleanSubProblem,
             toggleFindingBlocks, getFindingBlocks, getFindingTextEvidence, findingTextEvidence, navigateToBlock, blockBackRoute, goBackFromBlock,
             // Blocks (OCR)
@@ -7482,6 +8154,14 @@ const app = createApp({
             selectedProjects, selectAllChecked, selectedCount,
             batchRunning, batchQueue,
             showBatchModal, batchMode, batchScope, batchModalCount, batchAllMode,
+            // Edit projects (смена раздела / скрытие)
+            showEditProjectsModal, editProjectsNewSection, editProjectsLoading,
+            editProjectsSelected, openEditProjectsModal,
+            applyNewSectionToSelected, hideSelectedFromUI,
+            // Edit projects — merge as version of existing (per-row)
+            editProjectsMergeMap, editProjectsMergeReadyCount,
+            mergeTargetsFor, mergeNextLabelFor, mergeTargetNameFor,
+            applyMergeAllAsVersion,
             // Pause
             showPauseModal, isPaused, pauseMode, anyRunning,
             pausePipeline, resumePipelineGlobal,
@@ -7514,6 +8194,10 @@ const app = createApp({
             newSectionName, newSectionCode, newSectionColor,
             scanFolders, scanExternalFolder, registerProject, registerAllProjects, closeAddProject,
             externalPath, projectSource,
+            // Add project — version-of-existing mode
+            onCandidatePrimaryAction, registerProjectAsVersion,
+            candidateTargetOptions, candidateTargetName, candidateNextVersionLabel,
+            normalizeProjectName,
             // Objects
             objectsList, currentObjectId, showObjectPicker, showAddObjectModal, newObjectName,
             loadObjects, switchObject, addNewObject,

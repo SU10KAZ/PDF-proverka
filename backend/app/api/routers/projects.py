@@ -1,6 +1,8 @@
 """
 REST API для проектов.
 """
+from pathlib import Path
+
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel
 from typing import Optional
@@ -205,6 +207,119 @@ async def register_external(req: RegisterExternalRequest):
         raise HTTPException(400, str(e))
 
 
+# ─── Flat endpoints (target_project_id в body) — ДО динамических роутов ───
+# Эти роуты нужны для проектов со слешами в project_id (`KJ/M31A`): URL-форма
+# `/{p:path}/versions/from-project` после encodeURIComponent даёт `%2F`,
+# который блокируется Cloudflare/прокси с ответом 405. Поэтому target_project_id
+# передаём в теле, а URL остаётся flat.
+
+class FlatVersionFromProjectRequest(BaseModel):
+    target_project_id: str
+    source_project_id: str
+    comment: Optional[str] = None
+    source: str = "edit_projects_modal"
+    delete_source: bool = True
+
+
+@router.post("/versions/from-project")
+async def flat_create_version_from_project(req: FlatVersionFromProjectRequest):
+    """Flat-вариант POST /{target}/versions/from-project: target в body."""
+    from backend.app.services.common import version_service as _vs
+    from backend.app.pipeline.manager import pipeline_manager
+
+    src_dir = project_service.resolve_project_dir(req.source_project_id)
+    tgt_dir = project_service.resolve_project_dir(req.target_project_id)
+    if not src_dir.exists():
+        raise HTTPException(404, f"Source проект '{req.source_project_id}' не найден")
+    if not tgt_dir.exists():
+        raise HTTPException(404, f"Target проект '{req.target_project_id}' не найден")
+
+    try:
+        if pipeline_manager.is_running(req.source_project_id):
+            raise HTTPException(
+                409,
+                f"Аудит source проекта '{req.source_project_id}' выполняется. Сначала отмените.",
+            )
+    except AttributeError:
+        pass
+
+    try:
+        result = _vs.merge_project_as_version(
+            req.source_project_id,
+            req.target_project_id,
+            comment=req.comment,
+            source=req.source,
+            delete_source=req.delete_source,
+        )
+    except FileNotFoundError as e:
+        raise HTTPException(404, str(e))
+    except _vs.VersionFileConflictError as e:
+        raise HTTPException(409, str(e))
+    except _vs.VersionFileError as e:
+        raise HTTPException(400, str(e))
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+
+    return result
+
+
+class FlatVersionFromCandidateRequest(BaseModel):
+    target_project_id: str
+    candidate_pdf_path: str
+    candidate_md_path: Optional[str] = None
+    candidate_result_json_path: Optional[str] = None
+    candidate_extra_paths: list[str] = []
+    expected_section: Optional[str] = None
+    external_root: Optional[str] = None
+    comment: Optional[str] = None
+    source: str = "section_add_project_modal"
+
+
+@router.post("/versions/from-candidate")
+async def flat_create_version_from_candidate(req: FlatVersionFromCandidateRequest):
+    """Flat-вариант POST /{target}/versions/from-candidate: target в body."""
+    from backend.app.services.common import version_service as _vs
+
+    tgt_dir = project_service.resolve_project_dir(req.target_project_id)
+    if not tgt_dir.exists():
+        raise HTTPException(404, f"Проект '{req.target_project_id}' не найден")
+
+    allowed_roots: list = [project_service._get_projects_dir()]
+    if req.external_root:
+        try:
+            ext = Path(req.external_root).expanduser().resolve(strict=True)
+        except (OSError, RuntimeError):
+            raise HTTPException(400, f"external_root не существует: {req.external_root!r}")
+        if not ext.is_dir():
+            raise HTTPException(400, f"external_root не является папкой: {req.external_root!r}")
+        allowed_roots.append(ext)
+
+    try:
+        result = _vs.create_version_from_existing_files(
+            req.target_project_id,
+            candidate_files={
+                "pdf": req.candidate_pdf_path,
+                "md": req.candidate_md_path,
+                "result_json": req.candidate_result_json_path,
+                "extra": req.candidate_extra_paths,
+            },
+            expected_section=req.expected_section,
+            comment=req.comment,
+            source=req.source,
+            allowed_roots=allowed_roots,
+        )
+    except FileNotFoundError as e:
+        raise HTTPException(404, str(e))
+    except _vs.VersionFileConflictError as e:
+        raise HTTPException(409, str(e))
+    except _vs.VersionFileError as e:
+        raise HTTPException(400, str(e))
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+
+    return result
+
+
 # ─── Динамические роуты /{project_id}/... ───
 
 @router.get("/{project_id:path}/versions")
@@ -352,6 +467,141 @@ async def upload_version_files_endpoint(
     return {"status": "ok", **result}
 
 
+class VersionFromCandidateRequest(BaseModel):
+    """Создать новую версию у существующего проекта из найденных файлов.
+
+    Все пути — server-side. Файлы должны находиться внутри PROJECTS_DIR или
+    другого `allowed_root`; path traversal отклоняется.
+    """
+    candidate_pdf_path: str
+    candidate_md_path: Optional[str] = None
+    candidate_result_json_path: Optional[str] = None
+    candidate_extra_paths: list[str] = []
+    expected_section: Optional[str] = None  # защита от cross-section мисс-клика
+    external_root: Optional[str] = None     # дополнительный allowed_root (Из другой папки)
+    comment: Optional[str] = None
+    source: str = "section_add_project_modal"
+
+
+@router.post("/{target_project_id:path}/versions/from-candidate")
+async def create_version_from_candidate(
+    target_project_id: str,
+    req: VersionFromCandidateRequest,
+):
+    """Создать V{N+1} target-проекта из уже найденных PDF/MD/result.json.
+
+    Не создаёт новой карточки проекта: вся новая версия привязывается к
+    target_project_id. `expected_section` нужен, чтобы UI текущего раздела не
+    мог случайно «вставить» V2 в проект другого раздела.
+    """
+    from backend.app.services.common import version_service
+
+    proj_dir = project_service.resolve_project_dir(target_project_id)
+    if not proj_dir.exists():
+        raise HTTPException(404, f"Проект '{target_project_id}' не найден")
+
+    # PROJECTS_DIR через project_service — поддерживает monkeypatch в тестах.
+    allowed_roots: list = [project_service._get_projects_dir()]
+    if req.external_root:
+        try:
+            ext = Path(req.external_root).expanduser().resolve(strict=True)
+        except (OSError, RuntimeError):
+            raise HTTPException(400, f"external_root не существует: {req.external_root!r}")
+        if not ext.is_dir():
+            raise HTTPException(400, f"external_root не является папкой: {req.external_root!r}")
+        allowed_roots.append(ext)
+
+    try:
+        result = version_service.create_version_from_existing_files(
+            target_project_id,
+            candidate_files={
+                "pdf": req.candidate_pdf_path,
+                "md": req.candidate_md_path,
+                "result_json": req.candidate_result_json_path,
+                "extra": req.candidate_extra_paths,
+            },
+            expected_section=req.expected_section,
+            comment=req.comment,
+            source=req.source,
+            allowed_roots=allowed_roots,
+        )
+    except FileNotFoundError as e:
+        raise HTTPException(404, str(e))
+    except version_service.VersionFileConflictError as e:
+        raise HTTPException(409, str(e))
+    except version_service.VersionFileError as e:
+        raise HTTPException(400, str(e))
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+
+    return result
+
+
+class VersionFromProjectRequest(BaseModel):
+    """Слить source-проект в target как новую версию (V{N+1})."""
+    source_project_id: str
+    comment: Optional[str] = None
+    source: str = "edit_projects_modal"
+    delete_source: bool = True
+
+
+@router.post("/{target_project_id:path}/versions/from-project")
+async def create_version_from_project(
+    target_project_id: str,
+    req: VersionFromProjectRequest,
+):
+    """Слить source-проект в target как новую версию.
+
+    - source ≠ target;
+    - section должны совпадать;
+    - PDF/MD source переносятся в `_versions/v{N+1}/` target;
+    - V1 target не трогается;
+    - `_output/` source НЕ копируется;
+    - source-папка удаляется (delete_source=True по умолчанию);
+    - source проект не должен иметь активного аудита.
+    """
+    from backend.app.services.common import version_service
+    from backend.app.pipeline.manager import pipeline_manager
+
+    # source и target существуют?
+    src_dir = project_service.resolve_project_dir(req.source_project_id)
+    tgt_dir = project_service.resolve_project_dir(target_project_id)
+    if not src_dir.exists():
+        raise HTTPException(404, f"Source проект '{req.source_project_id}' не найден")
+    if not tgt_dir.exists():
+        raise HTTPException(404, f"Target проект '{target_project_id}' не найден")
+
+    # Не сливаем активный source
+    try:
+        if pipeline_manager.is_running(req.source_project_id):
+            raise HTTPException(
+                409,
+                f"Аудит source проекта '{req.source_project_id}' выполняется. Сначала отмените.",
+            )
+    except AttributeError:
+        # pipeline_manager может не быть готов в тестах — пропускаем
+        pass
+
+    try:
+        result = version_service.merge_project_as_version(
+            req.source_project_id,
+            target_project_id,
+            comment=req.comment,
+            source=req.source,
+            delete_source=req.delete_source,
+        )
+    except FileNotFoundError as e:
+        raise HTTPException(404, str(e))
+    except version_service.VersionFileConflictError as e:
+        raise HTTPException(409, str(e))
+    except version_service.VersionFileError as e:
+        raise HTTPException(400, str(e))
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+
+    return result
+
+
 @router.get("/{project_id:path}")
 async def get_project(project_id: str, version_id: Optional[str] = None):
     """Детали одного проекта.
@@ -427,3 +677,34 @@ async def clean_project(project_id: str):
         return {"status": "ok", "project_id": project_id, **result}
     except ValueError as e:
         raise HTTPException(404, str(e))
+
+
+class SetSectionRequest(BaseModel):
+    section: str
+
+
+@router.put("/{project_id:path}/section")
+async def set_project_section_endpoint(project_id: str, req: SetSectionRequest):
+    """Сменить дисциплину проекта (только запись `section` в project_info.json)."""
+    section = (req.section or "").strip()
+    if not section:
+        raise HTTPException(400, "Не задан раздел")
+    try:
+        info = project_service.set_project_section(project_id, section)
+        return {"status": "ok", "project_id": project_id, "section": info.get("section")}
+    except ValueError as e:
+        raise HTTPException(404, str(e))
+
+
+@router.post("/{project_id:path}/hide")
+async def hide_project_endpoint(project_id: str):
+    """Скрыть проект из UI (файлы на диске не трогаем)."""
+    project_service.hide_project(project_id)
+    return {"status": "ok", "project_id": project_id, "hidden": True}
+
+
+@router.post("/{project_id:path}/unhide")
+async def unhide_project_endpoint(project_id: str):
+    """Вернуть скрытый проект в UI."""
+    project_service.unhide_project(project_id)
+    return {"status": "ok", "project_id": project_id, "hidden": False}
