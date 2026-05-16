@@ -483,7 +483,15 @@ class UsageTracker:
                     s_dur = sum(r.get("duration_ms", 0) for r in dur_recs)
                 s_in, s_out, s_cost, s_calls = self._sum_records(srecs)
                 s_notional = self._sum_notional(srecs)
+                # Модель этапа: последняя non-retry запись (как в get_project_usage)
+                stage_model = ""
+                non_retry_recs = [r for r in srecs if not r.get("is_retry", False)]
+                model_recs = non_retry_recs if non_retry_recs else srecs
+                if model_recs:
+                    stage_model = model_recs[-1].get("model", "")
                 stages_summary[stage] = {
+                    "input_tokens": s_in,
+                    "output_tokens": s_out,
                     "total_tokens": s_in + s_out,
                     "cost_usd": round(s_cost, 4),
                     "paid_cost_usd": round(s_cost, 4),
@@ -491,9 +499,12 @@ class UsageTracker:
                     "notional_cost_usd": round(s_notional, 4),
                     "calls": s_calls,
                     "duration_ms": s_dur,
+                    "model": stage_model,
                 }
 
             result[pid] = {
+                "total_input_tokens": t_in,
+                "total_output_tokens": t_out,
                 "total_tokens": t_in + t_out,
                 "total_cost_usd": round(t_cost, 4),
                 "paid_cost_usd": round(t_cost, 4),

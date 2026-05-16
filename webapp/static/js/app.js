@@ -1643,10 +1643,47 @@ const app = createApp({
         // ─── Per-project usage (токены по проектам/этапам) ───
         const projectUsage = ref({});  // {project_id: {total_tokens, total_cost_usd, total_calls, stages_summary}}
 
+        // Защита от регрессии: /usage/projects-summary раньше возвращал
+        // неполный шейп (без input_tokens/output_tokens/model на этапах),
+        // и затирал детальную usage, загруженную через /usage/project/{id}.
+        // Теперь мы:
+        //   1) мержим вместо replace;
+        //   2) если по проекту уже есть более детальная запись
+        //      (хотя бы одна stage имеет input_tokens или model),
+        //      а пришедшая summary этих полей не содержит — оставляем старое.
+        function _stageEntryHasDetail(stage) {
+            if (!stage) return false;
+            return (
+                Object.prototype.hasOwnProperty.call(stage, 'input_tokens')
+                || Object.prototype.hasOwnProperty.call(stage, 'output_tokens')
+                || (typeof stage.model === 'string' && stage.model.length > 0)
+            );
+        }
+        function _usageEntryHasDetail(entry) {
+            if (!entry) return false;
+            if (Object.prototype.hasOwnProperty.call(entry, 'total_input_tokens')) return true;
+            const ss = entry.stages_summary || {};
+            for (const k in ss) {
+                if (_stageEntryHasDetail(ss[k])) return true;
+            }
+            return false;
+        }
         async function fetchAllProjectUsage() {
             try {
                 const data = await api('/usage/projects-summary');
-                projectUsage.value = data || {};
+                const incoming = data || {};
+                const prev = projectUsage.value || {};
+                const next = { ...prev };
+                for (const pid in incoming) {
+                    const oldEntry = prev[pid];
+                    const newEntry = incoming[pid];
+                    if (_usageEntryHasDetail(oldEntry) && !_usageEntryHasDetail(newEntry)) {
+                        // Старое полнее — не теряем поля карточек этапов.
+                        continue;
+                    }
+                    next[pid] = newEntry;
+                }
+                projectUsage.value = next;
             } catch (e) {
                 console.error('Failed to load projects usage:', e);
             }
