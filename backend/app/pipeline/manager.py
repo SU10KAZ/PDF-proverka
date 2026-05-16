@@ -640,8 +640,7 @@ class PipelineManager:
             cache_read_tokens=cache_read_tokens,
         )
         usage_tracker.record_usage(record)
-        if actual_cost > 0:
-            paid_cost_tracker.add(actual_cost)
+        # paid_cost_tracker инкрементируется внутри llm_runner.run_llm — здесь не дублируем.
         job.cost_usd += actual_cost
         job.cli_calls += 1
 
@@ -1312,8 +1311,15 @@ class PipelineManager:
             output_tokens=output_tokens,
         )
         usage_tracker.record_usage(record)
+        # Stage 02 (gemma_findings_only) ходит в OpenRouter напрямую, в обход
+        # llm_runner.run_llm — поэтому учёт paid_cost здесь обязателен.
         if actual_cost > 0:
-            paid_cost_tracker.add(actual_cost)
+            paid_cost_tracker.add(
+                actual_cost,
+                model=model,
+                project_id=job.project_id,
+                stage="block_analysis",
+            )
         job.cost_usd += actual_cost
         job.cli_calls += api_calls
         self._enrich_pipeline_log(

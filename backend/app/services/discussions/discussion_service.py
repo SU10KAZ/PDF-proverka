@@ -28,7 +28,6 @@ from backend.app.models.discussion import (
 from backend.app.models.usage import LLMResult
 from backend.app.services.llm.llm_runner import run_llm, make_image_content
 from backend.app.services.common.project_service import resolve_project_dir
-from backend.app.services.common.usage_service import paid_cost_tracker
 
 logger = logging.getLogger(__name__)
 
@@ -361,8 +360,7 @@ async def _maybe_compress_history(discussion: Discussion, model: str):
         discussion.total_input_tokens += result.input_tokens
         discussion.total_output_tokens += result.output_tokens
         discussion.total_cost_usd += result.cost_usd
-        if result.cost_usd > 0:
-            paid_cost_tracker.add(result.cost_usd)
+        # paid_cost учитывается внутри llm_runner.run_llm — здесь не дублируем.
 
 
 # ─── Claude CLI для чата ───────────────────────────────────────
@@ -569,8 +567,7 @@ async def send_chat_message(
     discussion.total_input_tokens += result.input_tokens
     discussion.total_output_tokens += result.output_tokens
     discussion.total_cost_usd += result.cost_usd
-    if result.cost_usd > 0:
-        paid_cost_tracker.add(result.cost_usd)
+    # paid_cost учитывается внутри llm_runner.run_llm — здесь не дублируем.
     discussion.model = model
 
     _save_discussion(project_id, discussion)
@@ -758,8 +755,7 @@ async def send_chat_message_stream(
     discussion.total_input_tokens += total_input
     discussion.total_output_tokens += total_output
     discussion.total_cost_usd += total_cost
-    if total_cost > 0:
-        paid_cost_tracker.add(total_cost)
+    # paid_cost учитывается внутри llm_runner.run_llm_stream — здесь не дублируем.
     discussion.model = model
     _save_discussion(project_id, discussion)
 
@@ -930,8 +926,7 @@ async def generate_revised_version(
     discussion.total_input_tokens += result.input_tokens
     discussion.total_output_tokens += result.output_tokens
     discussion.total_cost_usd += result.cost_usd
-    if result.cost_usd > 0:
-        paid_cost_tracker.add(result.cost_usd)
+    # paid_cost учитывается внутри llm_runner.run_llm — здесь не дублируем.
     _save_discussion(project_id, discussion)
 
     revised_data = result.json_data or {}
