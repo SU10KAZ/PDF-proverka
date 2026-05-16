@@ -30,6 +30,7 @@ def _project_output_dir(project_id: str) -> Path:
 # чтобы не создавать цикл импорта project_service ↔ audit_logger.
 _PIPELINE_STAGE_ORDER_KEYS = [
     "crop_blocks",
+    "gemma_enrichment",
     "text_analysis",
     "block_analysis",
     "block_retry",
@@ -42,7 +43,7 @@ _PIPELINE_STAGE_ORDER_KEYS = [
     "optimization_corrector",
     "excel",
 ]
-_TERMINAL_STATUSES = {"done", "skipped", "error", "interrupted"}
+_TERMINAL_STATUSES = {"done", "partial", "skipped", "error", "interrupted"}
 
 # Этапы, которые выполняются параллельно с findings_critic/findings_corrector
 # и не должны сбрасываться при их перезапуске.
@@ -107,7 +108,7 @@ def update_pipeline_log(
                 ds_info = log_data["stages"].get(downstream)
                 if ds_info and ds_info.get("status") in _TERMINAL_STATUSES:
                     log_data["stages"].pop(downstream, None)
-    elif status in ("done", "skipped"):
+    elif status in ("done", "partial", "skipped"):
         stage_info["completed_at"] = now
         # Очистить ложные ошибки от recovery (если этап успешно завершился)
         if not error:

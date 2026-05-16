@@ -1933,6 +1933,7 @@
                                     <template v-if="s.status === 'done'">✓</template>
                                     <template v-else-if="s.status === 'error' || s.status === 'interrupted'">✗</template>
                                     <template v-else-if="s.status === 'running'">⟳</template>
+                                    <template v-else-if="s.status === 'partial' || s.status === 'migration_required'">⚠</template>
                                     <template v-else-if="s.status === 'skipped'">—</template>
                                     <template v-else-if="s.status === 'pending'">○</template>
                                     <template v-else>·</template>

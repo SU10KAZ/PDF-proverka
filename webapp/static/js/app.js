@@ -6988,6 +6988,7 @@ const app = createApp({
             if (status === 'done') return 'step-done';
             if (status === 'error') return 'step-error';
             if (status === 'partial') return 'step-partial';
+            if (status === 'migration_required') return 'step-partial';
             if (status === 'running') return 'step-running';
             if (status === 'skipped') return 'step-skipped';
             return '';

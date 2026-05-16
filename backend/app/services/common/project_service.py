@@ -917,11 +917,201 @@ def _build_pipeline_issues(output_dir: Path, pipeline_version: str = "legacy") -
     return issues
 
 
+def _normalize_crop_blocks_status(
+    output_dir: Path,
+    stages: dict,
+) -> tuple[str, str]:
+    """Нормализовать статус crop_blocks.
+
+    Источники истины (по убыванию приоритета):
+      1) pipeline_log.crop_blocks.status == "done" → done
+      2) legacy pipeline_log.prepare.status == "done" → done
+      3) существующий _output/blocks_gemma_100/index.json → done
+      4) raw status из лога (running/error/partial/...) или pending
+    """
+    info = stages.get("crop_blocks") or {}
+    legacy = stages.get("prepare") or {}
+    message = info.get("message") or legacy.get("message") or ""
+    raw_status = info.get("status") or ""
+
+    if raw_status == "done":
+        return "done", message
+    if legacy.get("status") == "done":
+        return "done", message
+
+    blocks_index = gemma_blocks_index_path(output_dir.parent)
+    if blocks_index.exists():
+        try:
+            if blocks_index.stat().st_size > 10:
+                return "done", message
+        except OSError:
+            pass
+
+    if raw_status:
+        return raw_status, message
+    return "pending", message
+
+
+def _build_gemma_done_message(
+    *,
+    blocks_ok: int,
+    blocks_total: int,
+    blocks_failed: int,
+    high_detail_skipped_large: int,
+) -> str:
+    """Сформировать пользовательское message для status=done.
+
+    Учитывает high_detail_skipped_large_block — он не понижает статус,
+    но достоин упоминания, чтобы пользователь знал, что часть блоков прошла
+    через fallback base 100 DPI.
+    """
+    parts = [f"Готово: {blocks_ok}/{blocks_total} блоков обработано, {blocks_failed} упали."]
+    if high_detail_skipped_large > 0:
+        suffix = "блок" if high_detail_skipped_large == 1 else "блоков"
+        if high_detail_skipped_large == 1:
+            parts.append(
+                "Один блок не прошёл high-detail 300 DPI из-за safety cutoff, "
+                "использован базовый профиль gemma_100_base."
+            )
+        else:
+            parts.append(
+                f"{high_detail_skipped_large} {suffix} не прошли high-detail 300 DPI "
+                "из-за safety cutoff, использован базовый профиль gemma_100_base."
+            )
+    return " ".join(parts)
+
+
+def _build_gemma_partial_message(
+    *,
+    blocks_ok: int,
+    blocks_total: int,
+    blocks_failed: int,
+    uncovered_block_ids: list,
+) -> str:
+    """Сформировать пользовательское message для status=partial.
+
+    partial означает реальные пропуски: failed > 0 или uncovered != []. Сюда
+    же попадает legacy-кейс с partial из pipeline_log, если есть failed.
+    """
+    parts = [f"Выполнено с предупреждениями: {blocks_ok}/{blocks_total} блоков, {blocks_failed} упали."]
+    if uncovered_block_ids:
+        preview = ", ".join(str(b) for b in uncovered_block_ids[:5])
+        more = "" if len(uncovered_block_ids) <= 5 else f" (и ещё {len(uncovered_block_ids) - 5})"
+        parts.append(f"Есть непокрытые блоки: {preview}{more}.")
+    return " ".join(parts)
+
+
+def _normalize_gemma_enrichment_status(
+    output_dir: Path,
+    stages: dict,
+) -> tuple[str, str, str]:
+    """Нормализовать статус gemma_enrichment.
+
+    Возвращает (status, user_message, raw_message). raw_message — исходный
+    `pipeline_log.stages.gemma_enrichment.message` (может быть пустым); UI и
+    тесты используют его как debug/detail.original_message. user_message —
+    переформулированное под текущий статус сообщение для пользователя.
+
+    Логика статусов:
+      - migration_required (detect_gemma_migration_state) → migration_required
+      - evaluate_gemma_enrichment(...).ready == True:
+          * blocks_ok >= blocks_total и failed_blocks == 0 и нет uncovered → done
+          * иначе → partial
+      - log status=partial и detail.blocks_ok == detail.blocks_total и
+        detail.blocks_failed == 0 → done
+      - log status=partial и detail.blocks_failed > 0 → partial
+      - в остальном — raw status из лога (или pending)
+    """
+    info = stages.get("gemma_enrichment") or {}
+    raw_status = info.get("status") or ""
+    raw_message = info.get("message", "")
+    detail = info.get("detail") or {}
+
+    gemma_state = evaluate_gemma_enrichment(output_dir.parent)
+    gemma_migration = detect_gemma_migration_state(output_dir.parent, gemma_state=gemma_state)
+
+    if gemma_migration.get("migration_required"):
+        return "migration_required", raw_message, raw_message
+
+    if gemma_state.get("ready"):
+        blocks_ok = int(gemma_state.get("blocks_ok") or 0)
+        blocks_total = int(gemma_state.get("blocks_total") or 0)
+        uncovered = list(gemma_state.get("uncovered_block_ids") or [])
+        high_detail_skipped_large = int(gemma_state.get("high_detail_skipped_large") or 0)
+        # blocks_failed exposed только через сводку — читаем напрямую.
+        summary_path = output_dir / "gemma_enrichment_summary.json"
+        summary_failed = 0
+        if summary_path.exists():
+            try:
+                with open(summary_path, "r", encoding="utf-8") as f:
+                    sdata = json.load(f)
+                summary_failed = int(sdata.get("blocks_failed") or 0)
+                if not high_detail_skipped_large:
+                    high_detail_skipped_large = int(sdata.get("high_detail_skipped_large") or 0)
+            except (OSError, json.JSONDecodeError, ValueError):
+                summary_failed = 0
+        if (
+            blocks_ok >= blocks_total
+            and summary_failed == 0
+            and not uncovered
+        ):
+            user_message = _build_gemma_done_message(
+                blocks_ok=blocks_ok,
+                blocks_total=blocks_total,
+                blocks_failed=summary_failed,
+                high_detail_skipped_large=high_detail_skipped_large,
+            )
+            return "done", user_message, raw_message
+        user_message = _build_gemma_partial_message(
+            blocks_ok=blocks_ok,
+            blocks_total=blocks_total,
+            blocks_failed=summary_failed,
+            uncovered_block_ids=uncovered,
+        )
+        return "partial", user_message, raw_message
+
+    if raw_status == "partial" and isinstance(detail, dict):
+        blocks_ok = detail.get("blocks_ok")
+        blocks_total = detail.get("blocks_total")
+        blocks_failed = detail.get("blocks_failed")
+        if (
+            isinstance(blocks_ok, int)
+            and isinstance(blocks_total, int)
+            and isinstance(blocks_failed, int)
+        ):
+            if blocks_ok == blocks_total and blocks_failed == 0:
+                user_message = _build_gemma_done_message(
+                    blocks_ok=blocks_ok,
+                    blocks_total=blocks_total,
+                    blocks_failed=0,
+                    high_detail_skipped_large=0,
+                )
+                return "done", user_message, raw_message
+            if blocks_failed > 0:
+                user_message = _build_gemma_partial_message(
+                    blocks_ok=blocks_ok,
+                    blocks_total=blocks_total,
+                    blocks_failed=blocks_failed,
+                    uncovered_block_ids=list(detail.get("uncovered_block_ids") or []),
+                )
+                return "partial", user_message, raw_message
+
+    if raw_status:
+        return raw_status, raw_message, raw_message
+    return "pending", raw_message, raw_message
+
+
 def _build_pipeline_summary(output_dir: Path, pipeline_version: str = "legacy") -> list[dict]:
     """Собрать детальное саммари конвейера из pipeline_log.json.
 
     Возвращает ВСЕ этапы конвейера. Если этап ещё не запускался —
     возвращает его со статусом "pending".
+
+    Применяет нормализацию по тому же принципу, что и `_get_pipeline_status`:
+    crop_blocks/gemma_enrichment могут показать "done" даже если
+    pipeline_log говорит pending/partial, при условии что артефакты на ФС и
+    Gemma summary говорят об успешном завершении этапа. partial Gemma с
+    blocks_ok == blocks_total и без failed нормализуется в done.
 
     Возвращает список dict:
       {key, label, status, message, duration_sec, error}
@@ -931,14 +1121,36 @@ def _build_pipeline_summary(output_dir: Path, pipeline_version: str = "legacy") 
 
     result = []
     for key, label in _get_stage_order(pipeline_version):
-        info = stages.get(key)
-        if not info:
-            result.append({"key": key, "label": label, "status": "pending"})
-            continue
-        status = info.get("status", "pending")
+        info = stages.get(key) or {}
+        raw_status = info.get("status", "pending")
         message = info.get("message", "")
+        raw_message: str | None = None
 
-        # Вычислить длительность
+        # Нормализация по двум этапам, где UI должен корректно показывать
+        # завершённость даже при отсутствии записи в pipeline_log или при
+        # допустимом partial.
+        if key == "crop_blocks":
+            status, normalized_message = _normalize_crop_blocks_status(output_dir, stages)
+            if normalized_message:
+                message = normalized_message
+        elif key == "gemma_enrichment":
+            status, user_message, gemma_raw_message = _normalize_gemma_enrichment_status(
+                output_dir, stages,
+            )
+            # user_message — переформулированное под текущий status сообщение.
+            # gemma_raw_message — оригинальный pipeline_log.message (может
+            # отличаться от user_message и идёт в raw_message для UI/debug).
+            if user_message:
+                message = user_message
+            if gemma_raw_message and gemma_raw_message != user_message:
+                raw_message = gemma_raw_message
+        else:
+            status = raw_status
+
+        # Если по нормализации этап считается готовым, но в логе не было
+        # записи — info будет пустым (started_at/completed_at). Это нормально:
+        # просто возвращаем done без duration.
+        # Вычислить длительность только если в логе есть метки времени.
         duration_sec = None
         started = info.get("started_at")
         completed = info.get("completed_at") or info.get("interrupted_at")
@@ -956,8 +1168,14 @@ def _build_pipeline_summary(output_dir: Path, pipeline_version: str = "legacy") 
             "label": label,
             "status": status,
         }
+        if not info and status == "pending":
+            # Этап ещё не запускался — возвращаем минимальную запись.
+            result.append(entry)
+            continue
         if message:
             entry["message"] = message
+        if raw_message:
+            entry["raw_message"] = raw_message
         if duration_sec is not None:
             entry["duration_sec"] = duration_sec
         if status in ("error", "interrupted") and info.get("error"):
