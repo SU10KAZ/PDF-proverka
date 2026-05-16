@@ -47,9 +47,61 @@ def _resolve_artifact_path() -> Path:
     return Path(env) if env else DEFAULT_EXPORT_PATH
 
 
+# ─── Read-only cache (key = abs path + mtime_ns + size) ─────────────────────
+# critic_v2_triage_ui.json — единый файл со всеми проектами, может занимать
+# мегабайты. Без кеша каждый GET /triage-ui перечитывает и парсит его, а ещё
+# линейно сканирует items для project-фильтра. Кешируем:
+#   - parsed JSON;
+#   - предвычисленный индекс project_name → list[item] (exact + normalized).
+# Инвалидация по (path, mtime_ns, size). Cache никогда ничего не пишет.
+
+_CACHE: dict[str, Any] = {
+    "key": None,
+    "artifact": None,
+    "items_by_exact": {},      # project_name -> list[item]
+    "items_by_normalized": {}, # _normalize(project_name) -> list[item]
+}
+
+
+def _cache_key_for(path: Path) -> tuple[str, int, int] | None:
+    try:
+        st = path.stat()
+    except OSError:
+        return None
+    return (str(path), st.st_mtime_ns, st.st_size)
+
+
+def _build_project_index(items: list[dict[str, Any]]) -> tuple[
+    dict[str, list[dict[str, Any]]],
+    dict[str, list[dict[str, Any]]],
+]:
+    by_exact: dict[str, list[dict[str, Any]]] = {}
+    by_normalized: dict[str, list[dict[str, Any]]] = {}
+    for it in items:
+        name = it.get("project_name")
+        if not isinstance(name, str) or not name:
+            continue
+        by_exact.setdefault(name, []).append(it)
+        norm = _normalize(name)
+        if norm:
+            by_normalized.setdefault(norm, []).append(it)
+    return by_exact, by_normalized
+
+
 def _load_artifact() -> dict[str, Any]:
+    """Read artifact with mtime-based cache. Returns parsed JSON.
+
+    Side effect: keeps `_CACHE` warm with parsed artifact + project index so
+    `_match_project()` can use O(1) lookups instead of O(N) scans.
+    """
     path = _resolve_artifact_path()
     if not path.exists():
+        # инвалидируем кеш — иначе следующий read с восстановленным файлом
+        # мог бы попасть на старые данные из памяти процесса
+        _CACHE["key"] = None
+        _CACHE["artifact"] = None
+        _CACHE["items_by_exact"] = {}
+        _CACHE["items_by_normalized"] = {}
         raise HTTPException(
             status_code=404,
             detail={
@@ -61,8 +113,11 @@ def _load_artifact() -> dict[str, Any]:
                 "hint_command": REPLAY_HINT,
             },
         )
+    key = _cache_key_for(path)
+    if key is not None and _CACHE["key"] == key and _CACHE["artifact"] is not None:
+        return _CACHE["artifact"]
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
+        artifact = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise HTTPException(
             status_code=500,
@@ -72,6 +127,13 @@ def _load_artifact() -> dict[str, Any]:
                 "path": str(path),
             },
         )
+    items = artifact.get("items", []) or []
+    by_exact, by_normalized = _build_project_index(items)
+    _CACHE["key"] = key
+    _CACHE["artifact"] = artifact
+    _CACHE["items_by_exact"] = by_exact
+    _CACHE["items_by_normalized"] = by_normalized
+    return artifact
 
 
 def _normalize(name: str) -> str:
@@ -94,11 +156,39 @@ def _match_project(items: list[dict[str, Any]], project_id: str) -> tuple[
     1. exact match: item.project_name == project_id
     2. exact match без .pdf
     3. normalized match
+
+    Если кеш содержит готовый индекс — используем O(1) lookup; иначе fallback
+    на линейный скан переданных items (чтобы функцию можно было вызывать и
+    напрямую с произвольным списком, в т.ч. в тестах).
     """
     target = (project_id or "").strip()
     if not target:
         return [], None
 
+    use_index = (
+        _CACHE.get("artifact") is not None
+        and (_CACHE["artifact"].get("items") or []) is items
+    )
+
+    if use_index:
+        by_exact = _CACHE["items_by_exact"]
+        by_normalized = _CACHE["items_by_normalized"]
+        # 1. exact
+        if target in by_exact:
+            return by_exact[target], "project_name"
+        # 2. exact без .pdf — только если target оканчивается на .pdf
+        # (точно зеркалит fallback-ветку, чтобы поведение совпадало 1-в-1).
+        if target.lower().endswith(".pdf"):
+            stripped = target[:-4].rstrip()
+            if stripped and stripped in by_exact:
+                return by_exact[stripped], "project_name_no_pdf"
+        # 3. normalized
+        norm_target = _normalize(target)
+        if norm_target and norm_target in by_normalized:
+            return by_normalized[norm_target], "normalized"
+        return [], None
+
+    # Fallback: linear scan (без кеша)
     # 1. exact
     exact = [it for it in items if it.get("project_name") == target]
     if exact:

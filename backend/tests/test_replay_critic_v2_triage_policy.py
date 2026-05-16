@@ -355,3 +355,83 @@ class TestReplayProfiles:
                     "primary_queue_reduction_percent", "accepted_primary_visible_recall",
                     "accepted_not_hidden_recall"]:
             assert key in d, f"Missing key: {key}"
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# assisted_round1 profile in replay
+# ──────────────────────────────────────────────────────────────────────────────
+
+from backend.app.pipeline.stages.findings_review.critic_v2.triage import (  # noqa: E402
+    PROFILE_ASSISTED_ROUND1,
+    ROUND1_REASON_OCR,
+    ROUND1_REASON_RD_PZ,
+    ROUND1_REASON_ALREADY_COVERED,
+)
+from backend.scripts.replay_critic_v2_triage_policy import ALL_PROFILES as _ALL  # noqa: E402
+
+
+def test_replay_all_profiles_includes_round1():
+    """ALL_PROFILES must now include assisted_round1 so --profile all picks it up."""
+    assert PROFILE_ASSISTED_ROUND1 in _ALL
+
+
+def _with_text(rec: dict, *, title: str = "", description: str = "") -> dict:
+    """Override title/description on top of _make_record output."""
+    rec = dict(rec)
+    rec["title"] = title or rec.get("title", "")
+    rec["description"] = description or rec.get("description", "")
+    return rec
+
+
+def test_assisted_round1_routes_rd_pz_finding():
+    # severity=РЕКОМЕНДАТЕЛЬНОЕ: not protected by strong-keep guardrail,
+    # so rule C is allowed to downgrade.
+    rec = _with_text(
+        _make_record("F-RD", "accept", 10, EVIDENCE_VALID, "rejected",
+                     section="EOM", severity="РЕКОМЕНДАТЕЛЬНОЕ"),
+        title="REI 150 не указан в общих указаниях",
+        description="ПЗ раздела ЭОМ",
+    )
+    triage, metrics = replay_triage_on_records(
+        [rec], {}, profile=PROFILE_ASSISTED_ROUND1
+    )
+    assert triage[0].profile == PROFILE_ASSISTED_ROUND1
+    assert triage[0].reason == ROUND1_REASON_RD_PZ
+    assert triage[0].human_queue == "suggested_reject"
+
+
+def test_assisted_round1_never_emits_hidden():
+    """Even on OCR + already-covered text, the round1 path must not emit
+    hidden_by_critic."""
+    records = [
+        _with_text(
+            _make_record(f"F-{i}", "accept", 10, EVIDENCE_VALID, "rejected",
+                         section="EOM"),
+            title="OCR мусор",
+            description="уже указано в смежном разделе",
+        ) for i in range(5)
+    ]
+    triage, metrics = replay_triage_on_records(
+        records, {}, profile=PROFILE_ASSISTED_ROUND1
+    )
+    queues = {t.human_queue for t in triage}
+    assert "hidden_by_critic" not in queues
+    assert metrics.hidden_by_critic_count == 0
+
+
+def test_assisted_round1_keeps_clean_findings_in_primary():
+    """A clean finding without OCR / RD-PZ / already-covered markers must
+    stay where conservative routed it."""
+    rec = _with_text(
+        _make_record("F-CLEAN", "accept", 10, EVIDENCE_VALID, "accepted",
+                     section="AR"),
+        title="Не указан класс пожарной опасности",
+        description="Влияет на эвакуацию",
+    )
+    triage, _ = replay_triage_on_records(
+        [rec], {}, profile=PROFILE_ASSISTED_ROUND1
+    )
+    assert triage[0].human_queue not in ("suggested_reject", "hidden_by_critic")
+    assert triage[0].reason not in (
+        ROUND1_REASON_OCR, ROUND1_REASON_RD_PZ, ROUND1_REASON_ALREADY_COVERED
+    )

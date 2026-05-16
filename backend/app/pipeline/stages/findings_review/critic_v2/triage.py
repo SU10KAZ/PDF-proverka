@@ -47,8 +47,17 @@ from .models import (
 PROFILE_CONSERVATIVE = "conservative"
 PROFILE_ASSISTED = "assisted"
 PROFILE_AGGRESSIVE = "aggressive"
+# Experimental profile derived from round 1 manual feedback (9 projects, 499 items).
+# Inherits conservative behaviour, then applies post-processing rules A1+C+D
+# which downgrade specific patterns into suggested_reject only — never into
+# hidden_by_critic. See backend/scripts/simulate_critic_v2_tuning_rules_round1.py
+# for the simulation evidence and risk metrics.
+PROFILE_ASSISTED_ROUND1 = "assisted_round1"
 
-VALID_PROFILES = {PROFILE_CONSERVATIVE, PROFILE_ASSISTED, PROFILE_AGGRESSIVE}
+VALID_PROFILES = {
+    PROFILE_CONSERVATIVE, PROFILE_ASSISTED,
+    PROFILE_AGGRESSIVE, PROFILE_ASSISTED_ROUND1,
+}
 
 # ─── Human queue labels ───────────────────────────────────────────────────────
 
@@ -264,7 +273,226 @@ _PROFILE_CONFIGS: dict[str, TriageProfileConfig] = {
         aggressive_det_hide=True,
         non_production=True,
     ),
+    # assisted_round1: inherits the conservative base profile, then a
+    # post-processor applies A1+C+D rules from the round-1 manual review.
+    # Rationale: simulation showed precision ~30-50% with risk <5% accepted.
+    # All downgrades land in suggested_reject only; hidden_by_critic is never
+    # touched by these rules. See simulate_critic_v2_tuning_rules_round1.py.
+    PROFILE_ASSISTED_ROUND1: TriageProfileConfig(
+        name=PROFILE_ASSISTED_ROUND1,
+        label="Assisted round1 (conservative + A1+C+D post-rules)",
+        suggested_reject_conf_threshold=_CONF_THRESHOLD_HIDDEN,
+        suggested_reject_taxonomies=frozenset(),
+        allow_strong_keep_in_suggested_reject=False,
+        hidden_conf_threshold=_CONF_THRESHOLD_HIDDEN,
+        aggressive_det_hide=False,
+        non_production=True,  # experimental: do not use in production reports
+    ),
 }
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Round-1 post-processing rules (A1 / C / D)
+#
+# Pre-review features only. The rules MUST NOT read human_decision /
+# preferred_tab / reviewer_note / human_reason / triage_correct / priority.
+# That invariant is enforced by tests via a SpyDict.
+# ──────────────────────────────────────────────────────────────────────────────
+
+ROUND1_REASON_OCR = "round1_ocr_artifact_suggested_reject"
+ROUND1_REASON_RD_PZ = "round1_rd_vs_pz_suggested_reject"
+ROUND1_REASON_ALREADY_COVERED = "round1_already_covered_suggested_reject"
+
+# OCR markers — case-insensitive substrings.
+_ROUND1_OCR_MARKERS = (
+    "ocr", "распозна", "нераспозн", "мусор",
+    "битый", "неразборчив", "неверное определени",
+    "артефакт распозн",
+)
+# Broken short tokens like "А-А-А" or "ЦТ/ТЦ" — but only when at least one
+# textual OCR/обозначение marker is present nearby (per spec).
+import re as _re  # local alias to avoid shadowing module-level imports below
+_ROUND1_BROKEN_TOKEN_RE = _re.compile(
+    r"\b[а-яa-z]{1,3}(?:[-/][а-яa-z]{1,3}){2,}\b",
+    _re.IGNORECASE,
+)
+_ROUND1_OCR_CONTEXT_HINT = ("обозначен", "распозна", "ocr",
+                            "знак", "символ", "марк")
+
+# RD vs PZ markers (calculation parameters living in ПЗ, not in РД drawings).
+_ROUND1_RD_PZ_MARKERS = (
+    "пз раздела", "пояснительная записк", "расчёт", "расчет",
+    "расчётный параметр", "расчетный параметр",
+    "огнестойк", "rei ", " rei", "сп 468", "сп 385",
+    "экспертиз", "нормативная база",
+    "расчётное обоснован", "расчетное обоснован",
+)
+_ROUND1_RD_PZ_SECTIONS = {"KJ", "EOM"}
+
+# Already covered / adjacent section / spec / table.
+_ROUND1_ALREADY_COVERED_MARKERS = (
+    "смежн", "дублирован",
+    "присутствует в раздел", "присутствует на сторон",
+    "указано в спецификац", "указано в ведомост",
+    "есть схема", "имеется схема",
+    "уже указан", "уже учт",
+    "определяется по таблиц",
+    "в марке кабел",
+    "в общих указани",
+)
+
+
+def _round1_text_blob(finding: dict) -> str:
+    """
+    Build the text blob the round1 rules inspect.
+
+    Only pre-review fields are read: title, description, recommendation,
+    sub_problem, explanation. reviewer_note / human_reason are NEVER touched.
+    """
+    if not finding:
+        return ""
+    parts = []
+    for key in ("title", "description", "recommendation",
+                "sub_problem", "explanation"):
+        v = finding.get(key)
+        if v:
+            parts.append(str(v))
+    return " ".join(parts).lower()
+
+
+def _round1_match_ocr(blob: str) -> bool:
+    """A1 — OCR artifact rule."""
+    if any(m in blob for m in _ROUND1_OCR_MARKERS):
+        return True
+    if _ROUND1_BROKEN_TOKEN_RE.search(blob):
+        # only count broken tokens when supporting context appears
+        return any(h in blob for h in _ROUND1_OCR_CONTEXT_HINT)
+    return False
+
+
+def _round1_match_rd_pz(section: Optional[str], blob: str) -> bool:
+    """C — RD vs PZ rule. Section gated to KJ/EOM."""
+    if section not in _ROUND1_RD_PZ_SECTIONS:
+        return False
+    return any(m in blob for m in _ROUND1_RD_PZ_MARKERS)
+
+
+def _round1_match_already_covered(blob: str) -> bool:
+    """D — already covered / adjacent section / spec rule."""
+    return any(m in blob for m in _ROUND1_ALREADY_COVERED_MARKERS)
+
+
+def _round1_eligible(decision: TriageDecision) -> bool:
+    """
+    Guardrails: round1 rules may only fire when it's still possible (and safe)
+    to downgrade the item to suggested_reject.
+
+    Skips:
+      - already in hidden_by_critic (we never upgrade to hidden)
+      - already in suggested_reject (no point)
+      - already in needs_context (handled by spec separately, F is not enabled)
+      - strong_keep with critical evidence (per spec, do not touch if
+        evidence is valid + score >= 8 unless there's an explicit OCR/duplicate
+        marker — that check is performed in apply_round1_rules below).
+    """
+    if decision.human_queue in (
+        QUEUE_HIDDEN, QUEUE_SUGGESTED_REJECT, QUEUE_NEEDS_CONTEXT
+    ):
+        return False
+    return True
+
+
+def apply_round1_rules(decision: TriageDecision,
+                       finding: dict) -> TriageDecision:
+    """
+    Post-process a TriageDecision using A1+C+D round1 rules.
+
+    Returns the original decision when no rule fires or the decision is not
+    eligible. Otherwise returns a *new* TriageDecision moved to
+    suggested_reject, with the matching reason and `applied_round1_rules` in
+    `raw`.
+
+    This function is pure: it does not mutate the input.
+    """
+    if not _round1_eligible(decision):
+        return decision
+
+    blob = _round1_text_blob(finding)
+    if not blob:
+        return decision
+
+    section = finding.get("section") or finding.get("discipline")
+    matched: list[str] = []
+    primary_reason: Optional[str] = None
+
+    if _round1_match_ocr(blob):
+        matched.append("A1_ocr")
+        primary_reason = ROUND1_REASON_OCR
+    if _round1_match_rd_pz(section, blob):
+        matched.append("C_rd_pz")
+        if primary_reason is None:
+            primary_reason = ROUND1_REASON_RD_PZ
+    if _round1_match_already_covered(blob):
+        matched.append("D_already_covered")
+        if primary_reason is None:
+            primary_reason = ROUND1_REASON_ALREADY_COVERED
+
+    if not matched:
+        return decision
+
+    # Strong-keep extra guard (spec §4): don't override safety-critical findings
+    # unless there's an explicit OCR or duplicate marker.
+    if decision.human_queue == QUEUE_STRONG_KEEP:
+        severity = (finding.get("severity")
+                    or finding.get("category") or "").upper()
+        evidence = decision.evidence_quality
+        score = decision.usefulness_score or 0
+        if (
+            severity in _HIGH_SEVERITY
+            and evidence == EVIDENCE_VALID
+            and score >= 8
+            and "A1_ocr" not in matched
+            and "D_already_covered" not in matched
+        ):
+            return decision
+
+    # Preserve risk_level if it was already medium/high (spec §2).
+    new_risk = decision.risk_level
+    if new_risk not in (RISK_MEDIUM, RISK_HIGH):
+        new_risk = RISK_MEDIUM
+
+    new_raw = dict(decision.raw) if decision.raw else {}
+    new_raw["applied_round1_rules"] = matched
+    new_raw["round1_rule_reason"] = primary_reason
+    new_raw["round1_pre_queue"] = decision.human_queue
+    new_raw["round1_pre_reason"] = decision.reason
+
+    return TriageDecision(
+        finding_id=decision.finding_id,
+        human_queue=QUEUE_SUGGESTED_REJECT,
+        critic_recommendation=REC_REJECT,
+        visible_by_default=False,
+        collapsed_by_default=True,
+        can_restore=True,
+        confidence=decision.confidence,
+        risk_level=new_risk,
+        reason=primary_reason or decision.reason,
+        explanation=(
+            f"round1_rules={'+'.join(matched)} (was {decision.human_queue}); "
+            f"{decision.explanation}"
+        ),
+        evidence_quality=decision.evidence_quality,
+        usefulness_score=decision.usefulness_score,
+        source_dependency=decision.source_dependency,
+        taxonomy_reason=decision.taxonomy_reason,
+        deterministic_decision=decision.deterministic_decision,
+        llm_decision=decision.llm_decision,
+        final_decision=decision.final_decision,
+        was_guard_blocked=decision.was_guard_blocked,
+        was_downgraded_reject=decision.was_downgraded_reject,
+        profile=decision.profile,
+        raw=new_raw,
+    )
 
 
 def get_profile_config(profile: str) -> TriageProfileConfig:
@@ -305,6 +533,10 @@ def assign_triage_queue(
     TriageDecision with human_queue, visibility flags, risk level, and metrics.
     """
     cfg = get_profile_config(profile)
+
+    # assisted_round1 inherits the conservative routing (its profile config
+    # uses an empty suggested_reject_taxonomies set and the strong-keep guard).
+    # Round1 rules are applied as a post-processor in build_triage_result.
 
     fid = deterministic_decision.finding_id
     det_dec = deterministic_decision.decision
@@ -858,6 +1090,11 @@ def build_triage_result(
             llm_decision=llm_dec,
             profile=profile,
         )
+        # Apply round-1 post-processor for the experimental profile.
+        # Pure function: returns either the original `td` or a fresh
+        # TriageDecision moved to suggested_reject with the matching reason.
+        if profile == PROFILE_ASSISTED_ROUND1:
+            td = apply_round1_rules(td, finding)
         result.append(td)
 
     return result

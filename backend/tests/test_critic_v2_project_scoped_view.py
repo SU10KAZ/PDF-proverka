@@ -251,7 +251,11 @@ APP_JS = _PROJECT_ROOT / "frontend" / "static" / "js" / "app.js"
 
 def test_frontend_has_per_project_critic_v2_button():
     """После merge верхняя кнопка ведёт на /critic-v2-disagreements
-    (default sub-mode), но legacy hash /critic-v2 продолжает работать."""
+    (default sub-mode), но legacy hash /critic-v2 продолжает работать.
+
+    После introduction inline Critic v2 в обычной таблице "Замечания" сама
+    кнопка спрятана за dev-флагом cv2DebugVisible, но её код ОСТАЁТСЯ в HTML
+    (для разработчика, открывающего route напрямую)."""
     html = INDEX_HTML.read_text(encoding="utf-8")
     # Top-tab уходит на disagreements route (default sub-mode).
     assert "/critic-v2-disagreements'" in html
@@ -260,6 +264,11 @@ def test_frontend_has_per_project_critic_v2_button():
     discuss_pos = html.find("Проработка замечаний")
     btn_pos = html.find("currentView === 'critic-v2-project'")
     assert 0 < discuss_pos < btn_pos
+    # Кнопка скрыта за dev-флагом — не показывается обычному инженеру.
+    btn_block = html[btn_pos - 200:btn_pos + 50]
+    assert 'v-if="cv2DebugVisible"' in btn_block, (
+        "project-scoped Critic v2 button must be hidden behind cv2DebugVisible flag"
+    )
     # Legacy hash /critic-v2 router всё ещё существует в JS.
     js = APP_JS.read_text(encoding="utf-8")
     assert "/critic-v2$" in js
@@ -315,7 +324,10 @@ def test_frontend_feedback_export_includes_scope():
 def test_frontend_has_critic_v2_button_after_discussions():
     """Spec §3 (post-merge): единый top-tab «Critic v2» сразу после
     «Проработка замечаний». По умолчанию открывает sub-mode 'disagreements'
-    (через legacy hash /critic-v2-disagreements)."""
+    (через legacy hash /critic-v2-disagreements).
+
+    После inline-Critic-v2 рефакторинга entry скрыта за dev-флагом, но порядок
+    в исходнике сохраняется — для разработчика, который явно включит флаг."""
     html = INDEX_HTML.read_text(encoding="utf-8")
     # Старый top-tab текст больше не присутствует.
     assert "Critic v2: Расхождения" not in html
@@ -325,6 +337,11 @@ def test_frontend_has_critic_v2_button_after_discussions():
     assert btn_pos > 0 and discuss_pos > 0
     assert btn_pos > discuss_pos, \
         "Critic v2 top-tab must come AFTER 'Проработка замечаний'"
+    # Entry скрыта за dev-флагом
+    snippet = html[btn_pos - 150:btn_pos + 100]
+    assert 'v-if="cv2DebugVisible"' in snippet, (
+        "experimental top-tab must be guarded by cv2DebugVisible"
+    )
     # Sub-tab strip с 4 вкладками внутри view.
     assert 'class="cv2-sub-tabs"' in html
 

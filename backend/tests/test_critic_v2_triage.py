@@ -1392,3 +1392,275 @@ class TestUIExport:
         assert result.returncode == 0, f"Script failed: {result.stderr}"
         assert not (out_dir / "critic_v2_triage_ui.json").exists()
         assert not (out_dir / "critic_v2_triage_ui_preview.md").exists()
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Round-1 profile (assisted_round1) — A1+C+D post-processor
+# ──────────────────────────────────────────────────────────────────────────────
+
+from backend.app.pipeline.stages.findings_review.critic_v2.triage import (  # noqa: E402
+    PROFILE_ASSISTED_ROUND1,
+    ROUND1_REASON_ALREADY_COVERED,
+    ROUND1_REASON_OCR,
+    ROUND1_REASON_RD_PZ,
+    VALID_PROFILES,
+    apply_round1_rules,
+)
+
+
+def _finding(fid="F-1", title="", description="", recommendation="",
+             section="AR", severity="РЕКОМЕНДАТЕЛЬНОЕ"):
+    return {"finding_id": fid, "title": title, "description": description,
+            "recommendation": recommendation, "section": section,
+            "severity": severity}
+
+
+def _decision_in_queue(queue: str, **overrides) -> TriageDecision:
+    base = dict(
+        finding_id="F-1", human_queue=queue, critic_recommendation="keep",
+        visible_by_default=True, collapsed_by_default=False, can_restore=False,
+        confidence=None, risk_level="low", reason="something",
+        explanation="exp", evidence_quality=EVIDENCE_VALID,
+        usefulness_score=8, source_dependency="enough_source",
+        taxonomy_reason=None, deterministic_decision="accept",
+        llm_decision=None, final_decision="accept",
+        was_guard_blocked=False, was_downgraded_reject=False,
+        profile=PROFILE_ASSISTED_ROUND1, raw={},
+    )
+    base.update(overrides)
+    return TriageDecision(**base)
+
+
+# ─── Profile is registered ──────────────────────────────────────────────────
+
+
+def test_assisted_round1_profile_is_registered():
+    assert PROFILE_ASSISTED_ROUND1 in VALID_PROFILES
+    cfg = get_profile_config(PROFILE_ASSISTED_ROUND1)
+    assert cfg.name == "assisted_round1"
+    # Inherits conservative-like behaviour: no taxonomy-based SR expansion,
+    # strong_keep stays in primary.
+    assert cfg.suggested_reject_taxonomies == frozenset()
+    assert cfg.allow_strong_keep_in_suggested_reject is False
+
+
+# ─── Rule A1: OCR markers ───────────────────────────────────────────────────
+
+
+def test_A1_ocr_downgrades_main_review_to_suggested_reject():
+    td = _decision_in_queue(QUEUE_MAIN_REVIEW)
+    f = _finding(title="Обозначение — OCR мусор",
+                 description="неразборчиво")
+    new = apply_round1_rules(td, f)
+    assert new.human_queue == QUEUE_SUGGESTED_REJECT
+    assert new.reason == ROUND1_REASON_OCR
+    assert new.collapsed_by_default is True
+    assert new.visible_by_default is False
+    assert new.can_restore is True
+    assert "A1_ocr" in new.raw["applied_round1_rules"]
+    assert new.raw["round1_pre_queue"] == QUEUE_MAIN_REVIEW
+
+
+def test_A1_does_not_touch_hidden_by_critic():
+    td = _decision_in_queue(QUEUE_HIDDEN)
+    f = _finding(title="OCR мусор", description="нераспозн")
+    new = apply_round1_rules(td, f)
+    assert new is td  # untouched
+
+
+def test_A1_does_not_touch_already_suggested_reject():
+    td = _decision_in_queue(QUEUE_SUGGESTED_REJECT)
+    f = _finding(title="OCR мусор")
+    new = apply_round1_rules(td, f)
+    assert new is td
+
+
+def test_A1_does_not_route_to_hidden_by_critic():
+    """Critical: round1 rules MUST NEVER move things to hidden_by_critic."""
+    td = _decision_in_queue(QUEUE_MAIN_REVIEW)
+    f = _finding(title="OCR мусор", description="ничего не видно")
+    new = apply_round1_rules(td, f)
+    assert new.human_queue != QUEUE_HIDDEN
+
+
+# ─── Rule C: RD vs PZ ───────────────────────────────────────────────────────
+
+
+def test_C_rd_pz_matches_in_KJ():
+    td = _decision_in_queue(QUEUE_MAIN_REVIEW)
+    f = _finding(title="REI 150 не указан в общих указаниях",
+                 description="ПЗ раздела КЖ",
+                 section="KJ")
+    new = apply_round1_rules(td, f)
+    assert new.human_queue == QUEUE_SUGGESTED_REJECT
+    assert new.reason == ROUND1_REASON_RD_PZ
+    assert "C_rd_pz" in new.raw["applied_round1_rules"]
+
+
+def test_C_rd_pz_matches_in_EOM():
+    td = _decision_in_queue(QUEUE_BORDERLINE)
+    f = _finding(title="Расчётное обоснование отсутствует",
+                 description="ПЗ", section="EOM")
+    new = apply_round1_rules(td, f)
+    assert new.human_queue == QUEUE_SUGGESTED_REJECT
+
+
+def test_C_does_not_match_in_AR_without_markers():
+    td = _decision_in_queue(QUEUE_MAIN_REVIEW)
+    f = _finding(title="REI 150 отсутствует", section="AR")
+    new = apply_round1_rules(td, f)
+    # Section AR is outside Rule C's gate.
+    assert "C_rd_pz" not in (new.raw.get("applied_round1_rules") or [])
+
+
+# ─── Rule D: already covered ────────────────────────────────────────────────
+
+
+def test_D_already_in_adjacent_section():
+    td = _decision_in_queue(QUEUE_BORDERLINE)
+    f = _finding(title="Параметры АВ присутствуют в смежном разделе",
+                 description="дублирование не требуется", section="EOM")
+    new = apply_round1_rules(td, f)
+    assert new.human_queue == QUEUE_SUGGESTED_REJECT
+    assert "D_already_covered" in new.raw["applied_round1_rules"]
+
+
+def test_D_already_in_spec():
+    td = _decision_in_queue(QUEUE_MAIN_REVIEW)
+    f = _finding(title="Информация уже указана в спецификации",
+                 section="AR")
+    new = apply_round1_rules(td, f)
+    assert new.human_queue == QUEUE_SUGGESTED_REJECT
+
+
+def test_no_rule_fires_on_clean_text():
+    td = _decision_in_queue(QUEUE_MAIN_REVIEW)
+    f = _finding(title="Не указан класс пожарной опасности по ФЗ-123",
+                 description="Влияет на эвакуацию", section="AR")
+    new = apply_round1_rules(td, f)
+    assert new is td
+
+
+# ─── Strong-keep guardrail (spec §4) ───────────────────────────────────────
+
+
+def test_strong_keep_critical_protected_unless_ocr_or_already_covered():
+    """Critical strong_keep with valid evidence + score>=8 is protected
+    unless A1 or D fires."""
+    td = _decision_in_queue(
+        QUEUE_STRONG_KEEP, risk_level="low",
+        evidence_quality=EVIDENCE_VALID, usefulness_score=10,
+    )
+    # Rule C alone in KJ should NOT touch a critical strong_keep finding.
+    f = _finding(title="REI 150 не указан", description="ПЗ",
+                 section="KJ", severity="КРИТИЧЕСКОЕ")
+    new = apply_round1_rules(td, f)
+    assert new is td, "critical strong_keep must be protected from C alone"
+
+
+def test_strong_keep_critical_downgraded_when_ocr_marker():
+    """Strong_keep with OCR marker still gets downgraded (A1 overrides guard)."""
+    td = _decision_in_queue(
+        QUEUE_STRONG_KEEP, risk_level="low",
+        evidence_quality=EVIDENCE_VALID, usefulness_score=10,
+    )
+    f = _finding(title="OCR мусор", description="нераспозн",
+                 section="AR", severity="КРИТИЧЕСКОЕ")
+    new = apply_round1_rules(td, f)
+    assert new.human_queue == QUEUE_SUGGESTED_REJECT
+
+
+# ─── Risk preservation ─────────────────────────────────────────────────────
+
+
+def test_risk_level_medium_high_preserved():
+    """Spec §2: if risk_level was medium/high, do not silently downgrade."""
+    td = _decision_in_queue(QUEUE_BORDERLINE, risk_level="high")
+    f = _finding(title="OCR мусор", section="AR")
+    new = apply_round1_rules(td, f)
+    assert new.human_queue == QUEUE_SUGGESTED_REJECT
+    assert new.risk_level == "high"
+
+
+def test_risk_level_low_bumped_to_medium():
+    td = _decision_in_queue(QUEUE_MAIN_REVIEW, risk_level="low")
+    f = _finding(title="OCR мусор", section="AR")
+    new = apply_round1_rules(td, f)
+    assert new.risk_level == "medium"
+
+
+# ─── Label-only fields invariant ───────────────────────────────────────────
+
+
+class _SpyFinding(dict):
+    """Dict that records access to forbidden keys."""
+    FORBIDDEN = ("human_decision", "human_reason", "preferred_tab",
+                 "triage_correct", "reviewer_note", "priority")
+
+    def __init__(self, *a, **kw):
+        super().__init__(*a, **kw)
+        self.forbidden_reads = []
+
+    def get(self, key, default=None):
+        if key in self.FORBIDDEN:
+            self.forbidden_reads.append(key)
+        return super().get(key, default)
+
+
+def test_round1_rules_never_read_label_fields():
+    """A1/C/D MUST NOT inspect human_decision / preferred_tab / etc."""
+    td = _decision_in_queue(QUEUE_MAIN_REVIEW)
+    spy = _SpyFinding(title="OCR мусор", description="нераспозн",
+                      recommendation="", section="AR",
+                      severity="РЕКОМЕНДАТЕЛЬНОЕ",
+                      # Forbidden labels with non-trivial values:
+                      human_decision="accepted",
+                      human_reason="DO_NOT_READ",
+                      preferred_tab="hidden_by_critic",
+                      triage_correct="no",
+                      reviewer_note="DO_NOT_READ",
+                      priority="critical")
+    apply_round1_rules(td, spy)
+    assert spy.forbidden_reads == [], (
+        f"round1 rules read forbidden fields: {spy.forbidden_reads}"
+    )
+
+
+# ─── End-to-end through build_triage_result ────────────────────────────────
+
+
+def test_build_triage_result_applies_round1_only_for_round1_profile():
+    """Round1 post-processor is wired in build_triage_result, not in
+    assign_triage_queue, and runs only for the round1 profile."""
+    finding = {"finding_id": "F-1", "project_name": "P1", "section": "EOM",
+               "title": "REI 150 не указан", "description": "ПЗ",
+               "severity": "РЕКОМЕНДАТЕЛЬНОЕ"}
+    det = _make_det(fid="F-1", decision="accept", score=10,
+                    ev=EVIDENCE_VALID, severity="РЕКОМЕНДАТЕЛЬНОЕ")
+    # Conservative: should stay in strong_keep / main_review.
+    cons = build_triage_result([finding], [det], {},
+                               profile=PROFILE_CONSERVATIVE)
+    assert cons[0].human_queue != QUEUE_SUGGESTED_REJECT or \
+        cons[0].reason not in (ROUND1_REASON_RD_PZ, ROUND1_REASON_OCR,
+                               ROUND1_REASON_ALREADY_COVERED)
+    # assisted_round1: rule C should fire.
+    r1 = build_triage_result([finding], [det], {},
+                             profile=PROFILE_ASSISTED_ROUND1)
+    assert r1[0].human_queue == QUEUE_SUGGESTED_REJECT
+    assert r1[0].reason == ROUND1_REASON_RD_PZ
+
+
+def test_build_triage_result_round1_does_not_produce_hidden():
+    """No matter what text features, round1 must never emit hidden_by_critic."""
+    findings = [
+        {"finding_id": f"F-{i}", "project_name": "P", "section": "EOM",
+         "title": "OCR мусор", "description": "уже указано в смежном разделе",
+         "severity": "РЕКОМЕНДАТЕЛЬНОЕ"} for i in range(5)
+    ]
+    decisions = [_make_det(fid=f"F-{i}", decision="accept", score=10,
+                           ev=EVIDENCE_VALID, severity="РЕКОМЕНДАТЕЛЬНОЕ")
+                 for i in range(5)]
+    res = build_triage_result(findings, decisions, {},
+                              profile=PROFILE_ASSISTED_ROUND1)
+    queues = {td.human_queue for td in res}
+    assert QUEUE_HIDDEN not in queues

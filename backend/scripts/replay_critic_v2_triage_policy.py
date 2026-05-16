@@ -69,6 +69,7 @@ from backend.app.pipeline.stages.findings_review.critic_v2.models import Quality
 from backend.app.pipeline.stages.findings_review.critic_v2.triage import (
     PROFILE_AGGRESSIVE,
     PROFILE_ASSISTED,
+    PROFILE_ASSISTED_ROUND1,
     PROFILE_CONSERVATIVE,
     QUEUE_BORDERLINE,
     QUEUE_HIDDEN,
@@ -91,7 +92,10 @@ from backend.app.pipeline.stages.findings_review.critic_v2.triage import (
     triage_metrics_to_dict,
 )
 
-ALL_PROFILES = [PROFILE_CONSERVATIVE, PROFILE_ASSISTED, PROFILE_AGGRESSIVE]
+ALL_PROFILES = [
+    PROFILE_CONSERVATIVE, PROFILE_ASSISTED,
+    PROFILE_AGGRESSIVE, PROFILE_ASSISTED_ROUND1,
+]
 
 # ─── Loaders ─────────────────────────────────────────────────────────────────
 
@@ -244,8 +248,10 @@ def replay_triage_on_records(
             "id": cid,
             "severity": rec.get("severity", ""),
             "category": rec.get("category", ""),
+            "section": rec.get("section", ""),
             "title": rec.get("title", ""),
             "description": rec.get("description", ""),
+            "recommendation": rec.get("recommendation", ""),
         }
 
         td = assign_triage_queue(
@@ -255,6 +261,14 @@ def replay_triage_on_records(
             llm_decision=llm_proxy,
             profile=profile,
         )
+        # assisted_round1 inherits the conservative routing above; round1 rules
+        # are applied as an offline post-processor. Same wiring as in
+        # build_triage_result, kept consistent so both entry points behave
+        # identically for the round1 profile.
+        if profile == PROFILE_ASSISTED_ROUND1:
+            from backend.app.pipeline.stages.findings_review.critic_v2.triage \
+                import apply_round1_rules
+            td = apply_round1_rules(td, finding)
         triage_decisions.append(td)
 
     metrics = compute_triage_metrics(
