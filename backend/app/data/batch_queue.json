@@ -1,92 +1,21 @@
 {
-  "queue_id": "ce867439-d6d8-4cef-bd22-4068bbf4552f",
-  "action": "resume",
+  "queue_id": "01722c1e-db65-4ed9-bf0f-5ffc0c13d975",
+  "action": "full",
   "items": [
     {
-      "project_id": "13АВ-РД-АПЗ.АПС-К4 (согл от 09.04.2026).pdf",
-      "action": "resume",
+      "project_id": "M31A",
+      "version_id": "v2",
+      "action": "full",
       "retry_stage": null,
-      "status": "interrupted",
-      "error": null,
+      "status": "failed",
+      "error": "MD-файл не найден для проекта M31A. Анализ без MD-файла не поддерживается. Создайте MD через Chandra OCR и положите в папку проекта.",
       "extra_params": {},
-      "job_id": "c30d32e8-f081-4f66-a2cd-a395b37d4e9a"
-    },
-    {
-      "project_id": "13АВ-РД-АПЗ.АПС-К5 (согл от 02.04.2026).pdf",
-      "action": "resume",
-      "retry_stage": null,
-      "status": "pending",
-      "error": null,
-      "extra_params": {},
-      "job_id": "74334a08-9668-4dc5-bcb9-354184f48e07"
-    },
-    {
-      "project_id": "13АВ-РД-КК-К4-5 (от 03.03.2026).pdf",
-      "action": "resume",
-      "retry_stage": null,
-      "status": "pending",
-      "error": null,
-      "extra_params": {},
-      "job_id": "c0d1cf7a-62e8-4b46-9e7c-ba0c66631776"
-    },
-    {
-      "project_id": "13АВ-РД-СОТ-К3-6 (от 17.02.2026).pdf",
-      "action": "resume",
-      "retry_stage": null,
-      "status": "pending",
-      "error": null,
-      "extra_params": {},
-      "job_id": "4d128944-9d36-4786-9b65-5a42a2004579"
-    },
-    {
-      "project_id": "13АВ-РД-СОВ-К3-6 (согл от 14.04.2026) (1).pdf",
-      "action": "resume",
-      "retry_stage": null,
-      "status": "pending",
-      "error": null,
-      "extra_params": {},
-      "job_id": "d2a7f5a4-9e0f-410c-938c-7fcf2891d8f6"
-    },
-    {
-      "project_id": "13АВ-РД-КК-К3-6 (от 27.02.26).pdf",
-      "action": "resume",
-      "retry_stage": null,
-      "status": "pending",
-      "error": null,
-      "extra_params": {},
-      "job_id": "edb62025-fafb-40c4-add6-1031a4df1012"
-    },
-    {
-      "project_id": "13АВ-РД-КК-К2 (от 15.12.2025)_в1.pdf",
-      "action": "resume",
-      "retry_stage": null,
-      "status": "pending",
-      "error": null,
-      "extra_params": {},
-      "job_id": "3e6292be-de77-445a-9678-cc58ea7f4823"
-    },
-    {
-      "project_id": "13АВ-РД-КК-ПА (согл от 09.04.2026).pdf",
-      "action": "resume",
-      "retry_stage": null,
-      "status": "pending",
-      "error": null,
-      "extra_params": {},
-      "job_id": "8e988f95-aef8-41d5-939a-774c49a508b8"
-    },
-    {
-      "project_id": "13АВ-РД-СОУЭ-К3-К6 (от 12.02.2026).pdf",
-      "action": "resume",
-      "retry_stage": null,
-      "status": "pending",
-      "error": null,
-      "extra_params": {},
-      "job_id": "f68a2141-d7c3-48b8-bf2b-ef68afcc1e42"
+      "job_id": "75915c80-acb9-4235-9a99-ebad82a28a89"
     }
   ],
   "current_index": 0,
-  "total": 9,
+  "total": 1,
   "completed": 0,
-  "failed": 0,
-  "status": "interrupted"
+  "failed": 1,
+  "status": "completed"
 }
