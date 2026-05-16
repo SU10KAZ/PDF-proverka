@@ -642,6 +642,11 @@ async def run_block_analysis_findings_only(
             claude_clean_cwd=CLAUDE_BLOCK_BATCH_CLEAN_CWD,
             on_progress=_on_progress,
             cancel_event=cancel_event,
+            # Paid-API guard scope: пропускается во внутренний call_gpt_for_block.
+            project_id=ctx.project_id or "",
+            version_id=getattr(ctx, "version_id", None) or "",
+            manual_run_id=getattr(ctx, "manual_run_id", None) or "",
+            job_id=getattr(ctx, "job_id", None) or "",
         )
     except FindingsOnlyError as e:
         ctx.update_pipeline_log(

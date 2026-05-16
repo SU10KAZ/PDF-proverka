@@ -26,6 +26,28 @@ from backend.app.core.config import (
 router = APIRouter(prefix="/api/audit", tags=["audit"])
 
 
+# ─── Paid API guard: helper для endpoint'ов запуска ──────────────────
+def _issue_manual_run_if_allowed(
+    project_ids: list[str] | str,
+    *,
+    paid_api_allowed: bool,
+    batch_id: str = "",
+) -> Optional[str]:
+    """Если пользователь нажал кнопку с галкой "Разрешить платные API",
+    выдать manual_run_id для конкретного scope. Иначе None.
+
+    Auto-resume/retry/orphan/фоновые задачи НЕ имеют права передавать
+    paid_api_allowed=True — это контролируется на уровне endpoint'а.
+    """
+    if not paid_api_allowed:
+        return None
+    try:
+        from backend.app.services.llm.paid_api_guard import issue_manual_run
+        return issue_manual_run(project_ids=project_ids, batch_id=batch_id)
+    except (ValueError, ImportError):
+        return None
+
+
 # ─── prepare-data queue control ──────────────────────────────────
 # Регистрируются ПЕРВЫМИ, потому что ниже есть `/{project_id:path}/resume`
 # (для audit job pause/resume), который перехватывает любой `/audit/.../resume`.
@@ -310,7 +332,13 @@ async def start_all_projects():
 
 @router.post("/batch")
 async def start_batch_action(request: dict):
-    """Запустить групповое действие для выбранных проектов."""
+    """Запустить групповое действие для выбранных проектов.
+
+    Если в request передано "paid_api_allowed": true, выдаётся один общий
+    batch_manual_run_id для всех проектов batch — все Stage 02/discussion
+    внутри этих job будут разрешены guard'ом. Без галки — все платные
+    этапы заблокируются ДО network request (auto-resume safety).
+    """
     from backend.app.models.audit import BatchRequest
     req = BatchRequest(**request)
 
@@ -329,8 +357,21 @@ async def start_batch_action(request: dict):
     if not valid_ids:
         raise HTTPException(400, "Нет валидных проектов для обработки")
 
-    queue = await pipeline_manager.start_batch(valid_ids, req.action.value)
-    return {"status": "started", "queue": queue.model_dump()}
+    # Paid-API: один batch_manual_run_id на весь batch.
+    batch_manual_run_id = _issue_manual_run_if_allowed(
+        valid_ids,
+        paid_api_allowed=bool(getattr(req, "paid_api_allowed", False)),
+        batch_id=f"batch_{req.action.value}",
+    )
+
+    queue = await pipeline_manager.start_batch(
+        valid_ids, req.action.value, manual_run_id=batch_manual_run_id,
+    )
+    return {
+        "status": "started",
+        "queue": queue.model_dump(),
+        "manual_run_id": batch_manual_run_id,
+    }
 
 
 @router.get("/batch/status")
@@ -825,12 +866,29 @@ async def start_smart_audit(project_id: str, version_id: Optional[str] = Query(N
 
 
 @router.post("/{project_id:path}/full-audit")
-async def start_audit(project_id: str, version_id: Optional[str] = Query(None)):
+async def start_audit(
+    project_id: str,
+    version_id: Optional[str] = Query(None),
+    paid_api_allowed: bool = Query(
+        False,
+        description="True если пользователь явно разрешил платные API "
+                    "(чекбокс в UI). Без этого Stage 02/discussion блокируются.",
+    ),
+):
     """Аудит (OCR): кроп блоков → текст → все блоки → свод → нормы."""
     _check_project(project_id, version_id)
+    manual_run_id = _issue_manual_run_if_allowed(
+        project_id, paid_api_allowed=paid_api_allowed,
+    )
     try:
-        job = await pipeline_manager.start_audit(project_id, version_id=version_id)
-        return {"status": "started", "job": job.model_dump()}
+        job = await pipeline_manager.start_audit(
+            project_id, version_id=version_id, manual_run_id=manual_run_id,
+        )
+        return {
+            "status": "started",
+            "job": job.model_dump(),
+            "manual_run_id": manual_run_id,
+        }
     except RuntimeError as e:
         raise HTTPException(409, str(e))
 
@@ -854,12 +912,29 @@ async def get_resume_info(project_id: str, version_id: Optional[str] = Query(Non
 
 
 @router.post("/{project_id:path}/resume")
-async def resume_pipeline(project_id: str, version_id: Optional[str] = Query(None)):
+async def resume_pipeline(
+    project_id: str,
+    version_id: Optional[str] = Query(None),
+    paid_api_allowed: bool = Query(
+        False,
+        description="True если пользователь явно разрешил платные API при resume. "
+                    "AUTO-resume (без участия пользователя) ВСЕГДА передаёт False.",
+    ),
+):
     """Продолжить пайплайн с места ошибки/остановки."""
     _check_project(project_id, version_id)
+    manual_run_id = _issue_manual_run_if_allowed(
+        project_id, paid_api_allowed=paid_api_allowed,
+    )
     try:
-        job = await pipeline_manager.resume_pipeline(project_id, version_id=version_id)
-        return {"status": "started", "job": job.model_dump()}
+        job = await pipeline_manager.resume_pipeline(
+            project_id, version_id=version_id, manual_run_id=manual_run_id,
+        )
+        return {
+            "status": "started",
+            "job": job.model_dump(),
+            "manual_run_id": manual_run_id,
+        }
     except RuntimeError as e:
         raise HTTPException(409, str(e))
 
@@ -869,14 +944,26 @@ async def start_from_stage(
     project_id: str,
     stage: str = Query(..., description="Этап: prepare, gemma_enrichment, text_analysis, block_analysis, findings_merge, norm_verify, excel"),
     version_id: Optional[str] = Query(None),
+    paid_api_allowed: bool = Query(
+        False,
+        description="См. start_audit. True только если пользователь нажал галку.",
+    ),
 ):
     """Запустить конвейер с указанного этапа (все последующие пересчитываются)."""
     _check_project(project_id, version_id)
+    manual_run_id = _issue_manual_run_if_allowed(
+        project_id, paid_api_allowed=paid_api_allowed,
+    )
     try:
         job = await pipeline_manager.start_from_stage(
             project_id, stage, version_id=version_id,
+            manual_run_id=manual_run_id,
         )
-        return {"status": "started", "job": job.model_dump()}
+        return {
+            "status": "started",
+            "job": job.model_dump(),
+            "manual_run_id": manual_run_id,
+        }
     except RuntimeError as e:
         raise HTTPException(409, str(e))
 
@@ -1005,37 +1092,70 @@ async def get_audit_status(project_id: str):
 
 
 @router.post("/{project_id:path}/retry/{stage}")
-async def retry_stage(project_id: str, stage: str):
+async def retry_stage(
+    project_id: str,
+    stage: str,
+    paid_api_allowed: bool = Query(
+        False,
+        description="True только при ручном retry с галкой. Auto-retry/orphan = False.",
+    ),
+):
     """Повторить конкретный этап конвейера."""
     _check_project(project_id)
+    manual_run_id = _issue_manual_run_if_allowed(
+        project_id, paid_api_allowed=paid_api_allowed,
+    )
 
-    stage_methods = {
-        "crop_blocks": lambda: pipeline_manager.start_from_stage(project_id, "prepare"),
-        "gemma_enrichment": lambda: pipeline_manager.start_from_stage(project_id, "gemma_enrichment"),
-        "text_analysis": lambda: pipeline_manager.start_from_stage(project_id, "text_analysis"),
-        "block_analysis": lambda: pipeline_manager.start_from_stage(project_id, "block_analysis"),
-        "findings_merge": lambda: pipeline_manager.start_from_stage(project_id, "findings_merge"),
-        "findings_critic": lambda: pipeline_manager.start_from_stage(project_id, "findings_review"),
-        "findings_review": lambda: pipeline_manager.start_from_stage(project_id, "findings_review"),
-        "findings_corrector": lambda: pipeline_manager.start_from_stage(project_id, "findings_review"),
-        "norm_verify": lambda: pipeline_manager.start_norm_verify(project_id),
-        "norm_requote": lambda: pipeline_manager.start_norm_verify(project_id),
-        "optimization": lambda: pipeline_manager.start_optimization(project_id),
-        "optimization_critic": lambda: pipeline_manager.start_optimization_review(project_id),
-        "optimization_corrector": lambda: pipeline_manager.start_optimization_review(project_id),
-        # Legacy aliases
-        "prepare": lambda: pipeline_manager.start_from_stage(project_id, "prepare"),
-        "tile_audit": lambda: pipeline_manager.start_from_stage(project_id, "block_analysis"),
-        "main_audit": lambda: pipeline_manager.start_from_stage(project_id, "findings_merge"),
+    # Имя метода → этап для start_from_stage (или специальный starter).
+    stage_to_pipeline_stage = {
+        "crop_blocks": "prepare",
+        "gemma_enrichment": "gemma_enrichment",
+        "text_analysis": "text_analysis",
+        "block_analysis": "block_analysis",
+        "findings_merge": "findings_merge",
+        "findings_critic": "findings_review",
+        "findings_review": "findings_review",
+        "findings_corrector": "findings_review",
+        "prepare": "prepare",
+        "tile_audit": "block_analysis",
+        "main_audit": "findings_merge",
+    }
+    special_starters = {
+        "norm_verify",
+        "norm_requote",
+        "optimization",
+        "optimization_critic",
+        "optimization_corrector",
     }
 
-    starter = stage_methods.get(stage)
-    if not starter:
+    if stage in stage_to_pipeline_stage:
+        async def _starter():
+            return await pipeline_manager.start_from_stage(
+                project_id, stage_to_pipeline_stage[stage],
+                manual_run_id=manual_run_id,
+            )
+    elif stage == "norm_verify" or stage == "norm_requote":
+        async def _starter():
+            return await pipeline_manager.start_norm_verify(project_id)
+    elif stage == "optimization":
+        async def _starter():
+            return await pipeline_manager.start_optimization(project_id)
+    elif stage == "optimization_critic" or stage == "optimization_corrector":
+        async def _starter():
+            return await pipeline_manager.start_optimization_review(project_id)
+    else:
         raise HTTPException(400, f"Этап '{stage}' не поддерживает повтор")
 
     try:
-        job = await starter()
-        return {"status": "started", "stage": stage, "job": job.model_dump()}
+        job = await _starter()
+        # У старых start_* методов нет manual_run_id-параметра — там
+        # paid_api_guard заблокирует на уровне run_llm. Сообщаем UI scope:
+        return {
+            "status": "started",
+            "stage": stage,
+            "job": job.model_dump(),
+            "manual_run_id": manual_run_id,
+        }
     except RuntimeError as e:
         raise HTTPException(409, str(e))
 

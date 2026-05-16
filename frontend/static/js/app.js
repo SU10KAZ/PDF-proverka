@@ -1553,6 +1553,14 @@ const app = createApp({
         // ─── Paid API cost ───
         const paidCost = ref({ display_usd: 0, total_lifetime_usd: 0 });
         const showPaidCost = ref(false);
+        // Paid API guard: kill-switch статус + последние paid/blocked события.
+        const paidApiStatus = ref(null);
+        const paidEvents = ref([]);
+        const paidBlockedEvents = ref([]);
+        // Чекбокс «Разрешить платные API для этого запуска». По умолчанию false
+        // (безопасный default). При нажатии Start этот флаг передаётся в API,
+        // которое выдаёт manual_run_id и пробрасывает в job.
+        const paidApiAllowed = ref(false);
 
         async function fetchPaidCost() {
             try {
@@ -1563,8 +1571,35 @@ const app = createApp({
             }
         }
 
+        async function fetchPaidApiStatus() {
+            try {
+                paidApiStatus.value = await api('/usage/paid-api/status');
+            } catch (e) {
+                // не критично — продолжаем работу
+                console.warn('Failed to fetch paid-api/status:', e);
+            }
+        }
+
+        async function fetchPaidEvents() {
+            try {
+                const data = await api('/usage/paid-cost/events?limit=20');
+                paidEvents.value = data.events || [];
+            } catch (e) {
+                console.warn('Failed to fetch paid events:', e);
+            }
+        }
+
+        async function fetchPaidBlockedEvents() {
+            try {
+                const data = await api('/usage/paid-cost/blocked-events?limit=20');
+                paidBlockedEvents.value = data.events || [];
+            } catch (e) {
+                console.warn('Failed to fetch blocked events:', e);
+            }
+        }
+
         async function resetPaidCost() {
-            if (!confirm('Обнулить счётчик расходов? Общая сумма за всё время сохранится.')) return;
+            if (!confirm('Обнулить счётчик расходов? Общая сумма за всё время сохранится. Журналы paid_cost_events.jsonl и paid_api_blocked_events.jsonl НЕ очищаются.')) return;
             try {
                 const resp = await fetch('/api/usage/paid-cost/reset', { method: 'POST' });
                 if (resp.ok) paidCost.value = await resp.json();
@@ -3118,7 +3153,11 @@ const app = createApp({
                 const resp = await fetch('/api/audit/batch', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ project_ids: ids, action: action }),
+                    body: JSON.stringify({
+                        project_ids: ids,
+                        action: action,
+                        paid_api_allowed: !!paidApiAllowed.value,
+                    }),
                 });
                 if (!resp.ok) {
                     const err = await resp.json().catch(() => ({}));
@@ -3461,10 +3500,17 @@ const app = createApp({
             openModelConfig(projectId);
         }
 
+        // Paid-API guard helper: добавить query-параметр в audit endpoint URL.
+        // По умолчанию false (safe) — поэтому если пользователь не нажал галку,
+        // backend выдаст job БЕЗ manual_run_id, и платные этапы заблокируются.
+        function _paidQs() {
+            return paidApiAllowed.value ? '?paid_api_allowed=true' : '';
+        }
+
         async function startAuditDirect(projectId) {
             try {
                 auditRunning.value = true;
-                await apiPost(`/audit/${encodeURIComponent(projectId)}/full-audit`);
+                await apiPost(`/audit/${encodeURIComponent(projectId)}/full-audit${_paidQs()}`);
                 _afterAuditStart(projectId);
             } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
         }
@@ -3484,7 +3530,7 @@ const app = createApp({
         async function resumePipeline(projectId) {
             try {
                 auditRunning.value = true;
-                await apiPost(`/audit/${encodeURIComponent(projectId)}/resume`);
+                await apiPost(`/audit/${encodeURIComponent(projectId)}/resume${_paidQs()}`);
                 _afterAuditStart(projectId);
             } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
         }
@@ -3695,7 +3741,7 @@ const app = createApp({
                 if (stage === 'optimization') {
                     await apiPost(`/optimization/${encodeURIComponent(projectId)}/run`);
                 } else {
-                    await apiPost(`/audit/${encodeURIComponent(projectId)}/retry/${stage}`);
+                    await apiPost(`/audit/${encodeURIComponent(projectId)}/retry/${stage}${_paidQs()}`);
                 }
                 _afterAuditStart(projectId);
             } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
@@ -8193,8 +8239,17 @@ const app = createApp({
                 pollGlobalUsage(),
                 fetchAccountInfo(),
                 fetchPaidCost(),
+                fetchPaidApiStatus(),
+                fetchPaidEvents(),
+                fetchPaidBlockedEvents(),
             ]);
-            usagePollTimer = setInterval(() => { pollGlobalUsage(); fetchPaidCost(); }, 60000);
+            usagePollTimer = setInterval(() => {
+                pollGlobalUsage();
+                fetchPaidCost();
+                fetchPaidApiStatus();
+                fetchPaidEvents();
+                fetchPaidBlockedEvents();
+            }, 60000);
             startLmsHealthPolling();
         });
 
@@ -8336,6 +8391,8 @@ const app = createApp({
             // Model switcher
             // Paid cost
             paidCost, showPaidCost, fetchPaidCost, resetPaidCost, formatCostShort,
+            paidApiStatus, paidEvents, paidBlockedEvents, paidApiAllowed,
+            fetchPaidApiStatus, fetchPaidEvents, fetchPaidBlockedEvents,
             // Usage (global dashboard)
             globalUsage, showUsageDetails, sonnetPercent,
             accountInfo, showAccountInfo, fetchAccountInfo,

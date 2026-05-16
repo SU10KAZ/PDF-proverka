@@ -420,7 +420,38 @@ async def call_gpt_for_block(
     max_tokens: int,
     system_prompt: str,
     timeout: int,
+    project_id: str = "",
+    version_id: str = "",
+    manual_run_id: str = "",
+    job_id: str = "",
 ) -> dict:
+    # ─── Paid API guard (defence-in-depth) ──────────────────────────
+    # Главный guard стоит в orchestrator'е manager._run_block_analysis_findings_only.
+    # Тут — повторная проверка, чтобы прямой запуск runner'а (тест, ad-hoc
+    # скрипт, новый caller) тоже не смог утечь в OpenRouter без manual_run_id.
+    try:
+        from backend.app.services.llm.paid_api_guard import (
+            PaidApiBlockedError as _PaidApiBlockedError,
+            PaidApiContext as _PaidApiContext,
+            assert_paid_api_allowed as _assert_paid_api_allowed,
+        )
+        _assert_paid_api_allowed(_PaidApiContext(
+            source="manager.stage02.call_gpt_for_block",
+            model=model,
+            project_id=project_id,
+            version_id=version_id,
+            stage="block_analysis",
+            manual_run_id=manual_run_id,
+            job_id=job_id,
+        ))
+    except _PaidApiBlockedError as _e:
+        return {
+            "ok": False,
+            "error": f"paid_api_blocked: {_e.reason}",
+            "elapsed_ms": 0,
+            "paid_api_blocked": True,
+        }
+
     png_path = blocks_dir / block["file"]
     if not png_path.exists():
         return {"ok": False, "error": f"PNG missing: {png_path.name}", "elapsed_ms": 0}
@@ -733,6 +764,13 @@ async def run_findings_only_for_project(
     write_target: bool = True,
     write_run_log: bool = True,
     claude_clean_cwd: bool = True,
+    # ─── Paid API guard context ─────────────────────────────────────
+    # Обязательно для платных моделей (OpenRouter/GPT). Для Claude CLI
+    # (модели "claude-..." без слэша) — не требуется.
+    project_id: str = "",
+    version_id: str = "",
+    manual_run_id: str = "",
+    job_id: str = "",
 ) -> dict:
     """Прогнать stage 02 findings-only для проекта.
 
@@ -961,6 +999,10 @@ async def run_findings_only_for_project(
                     reasoning_effort=reasoning_effort,
                     max_tokens=max_tokens, system_prompt=system_prompt,
                     timeout=timeout_s,
+                    project_id=project_id,
+                    version_id=version_id,
+                    manual_run_id=manual_run_id,
+                    job_id=job_id,
                 )
             n = len((res.get("parsed") or {}).get("findings", [])) if res.get("ok") else 0
             record = {

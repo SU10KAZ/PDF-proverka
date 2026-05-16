@@ -133,9 +133,55 @@ async def get_paid_cost_daily(days: int = 30):
 
 @router.post("/paid-cost/reset")
 async def reset_paid_cost():
-    """Обнулить отображаемый счётчик (total_lifetime сохраняется)."""
+    """Обнулить отображаемый счётчик (total_lifetime сохраняется).
+
+    Журналы paid_cost_events.jsonl / paid_api_blocked_events.jsonl
+    НЕ очищаются reset'ом — это append-only forensic-источник.
+    """
     paid_cost_tracker.reset_display()
     return paid_cost_tracker.get()
+
+
+# ─── Paid API guard endpoints ────────────────────────────────────────
+
+
+@router.get("/paid-cost/events")
+async def get_paid_cost_events(limit: int = 100):
+    """Последние N успешных платных вызовов (append-only журнал).
+
+    Источник истины для forensic: какой именно job/manual_run потратил деньги.
+    Не truncate'ется при reset_display/clear_project_usage.
+    """
+    from backend.app.services.llm import paid_api_events
+    limit = max(1, min(int(limit), 1000))
+    return {"events": paid_api_events.read_paid_events_tail(limit=limit)}
+
+
+@router.get("/paid-cost/blocked-events")
+async def get_paid_api_blocked_events(limit: int = 100):
+    """Последние N заблокированных guard'ом попыток платных вызовов.
+
+    Если этот список растёт — значит фоновый процесс пытался уйти в OpenRouter
+    без manual_run_id (auto-resume, retry, orphan). Это намеренно блокировано;
+    нужно либо нажать Start с галкой, либо разобраться, почему процесс
+    инициируется фоном.
+    """
+    from backend.app.services.llm import paid_api_events
+    limit = max(1, min(int(limit), 1000))
+    return {"events": paid_api_events.read_blocked_events_tail(limit=limit)}
+
+
+@router.get("/paid-api/status")
+async def get_paid_api_status():
+    """Снапшот kill-switch + сводка за сегодня.
+
+    Возвращает:
+      paid_api_enabled, require_manual_start, daily_limit_usd,
+      today_spent_usd, today_remaining_usd, blocked_events_count_today,
+      last_paid_event, last_blocked_event, active_manual_runs.
+    """
+    from backend.app.services.llm.paid_api_guard import status_snapshot
+    return status_snapshot()
 
 
 @router.get("/config")

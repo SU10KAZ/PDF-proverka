@@ -33,6 +33,12 @@ from webapp.config import (
 )
 from webapp.models.usage import LLMResult
 from webapp.services import model_control_service
+from webapp.services.paid_api_guard import (
+    PaidApiBlockedError,
+    PaidApiContext,
+    assert_paid_api_allowed,
+    paid_api_events,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -784,6 +790,11 @@ async def run_llm(
     provider_data_collection: str | None = None,
     max_tokens_override: int | None = None,
     extra_body: dict | None = None,
+    project_id: str = "",
+    version_id: str = "",
+    manual_run_id: str = "",
+    job_id: str = "",
+    source: str = "webapp.llm_runner",
 ) -> LLMResult:
     """Единый вызов LLM через OpenRouter или локальный Chandra.
 
@@ -857,6 +868,26 @@ async def run_llm(
             temperature=temp,
             timeout=timeout,
             response_format=local_format,
+        )
+
+    # ─── Paid API guard ─────────────────────────────────────────────
+    paid_ctx = PaidApiContext(
+        source=source or "webapp.llm_runner",
+        model=model,
+        project_id=project_id,
+        version_id=version_id,
+        stage=stage_key,
+        manual_run_id=manual_run_id,
+        job_id=job_id,
+    )
+    try:
+        assert_paid_api_allowed(paid_ctx)
+    except PaidApiBlockedError as e:
+        return LLMResult(
+            text="",
+            is_error=True,
+            error_message=f"paid_api_blocked: {e.reason}",
+            model=model,
         )
 
     client = _get_client()
@@ -978,6 +1009,25 @@ async def run_llm(
             cost = _estimate_cost(model, input_tokens, output_tokens)
             cost_source = "estimated"
 
+        # Append-only forensic-event для webapp платных вызовов.
+        if cost > 0:
+            try:
+                paid_api_events.record_paid_event(
+                    cost_usd=cost,
+                    model=model,
+                    project_id=project_id,
+                    version_id=version_id,
+                    stage=stage_key,
+                    source=source or "webapp.llm_runner",
+                    manual_run_id=manual_run_id,
+                    job_id=job_id,
+                    input_tokens=input_tokens,
+                    output_tokens=output_tokens,
+                    response_id=getattr(response, "id", "") or "",
+                )
+            except Exception:
+                logger.exception("paid_api_events.record_paid_event failed (webapp)")
+
         finish_reason = ""
         try:
             finish_reason = response.choices[0].finish_reason or ""
@@ -1016,17 +1066,42 @@ async def run_llm_stream(
     model_override: str,
     temperature: float | None = None,
     timeout: int = 120,
+    *,
+    project_id: str = "",
+    version_id: str = "",
+    stage: str = "discussion",
+    manual_run_id: str = "",
+    job_id: str = "",
+    source: str = "webapp.llm_runner.stream",
 ) -> AsyncGenerator[dict, None]:
     """Стриминг ответа через OpenRouter (SSE).
 
     Yields:
         {"type": "delta", "text": "..."} — фрагмент текста
         {"type": "done", "text": "...", "input_tokens": N, "output_tokens": N, "cost_usd": F}
+        {"type": "error", "message": "..."} — в т.ч. paid_api_blocked
     """
     model = model_override
     if is_local_llm_model(model):
         yield {"type": "error", "message": "Local QWEN streaming is not supported in this UI yet"}
         return
+
+    # ─── Paid API guard ─────────────────────────────────────────────
+    paid_ctx = PaidApiContext(
+        source=source or "webapp.llm_runner.stream",
+        model=model,
+        project_id=project_id,
+        version_id=version_id,
+        stage=stage or "discussion",
+        manual_run_id=manual_run_id,
+        job_id=job_id,
+    )
+    try:
+        assert_paid_api_allowed(paid_ctx)
+    except PaidApiBlockedError as e:
+        yield {"type": "error", "message": f"paid_api_blocked: {e.reason}"}
+        return
+
     max_tokens = (
         GEMINI_MAX_OUTPUT_TOKENS if "gemini" in model
         else GPT_MAX_OUTPUT_TOKENS
@@ -1068,6 +1143,22 @@ async def run_llm_stream(
         return
 
     cost = _estimate_cost(model, input_tokens, output_tokens)
+    if cost > 0:
+        try:
+            paid_api_events.record_paid_event(
+                cost_usd=cost,
+                model=model,
+                project_id=project_id,
+                version_id=version_id,
+                stage=stage,
+                source=source or "webapp.llm_runner.stream",
+                manual_run_id=manual_run_id,
+                job_id=job_id,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+            )
+        except Exception:
+            logger.exception("paid_api_events.record_paid_event failed (webapp stream)")
     yield {
         "type": "done",
         "text": full_text,

@@ -96,3 +96,13 @@ class PipelineStageContext:
     # Для V2+ — соответствующий version_id. Этот идентификатор должен
     # включаться в job_key, чтобы V1 и V2 одного проекта не конфликтовали.
     version_id: Optional[str] = field(default=None)
+
+    # Paid-API guard scope для этого job:
+    #  - manual_run_id  — выдан endpoint'ом при ручном запуске с галкой
+    #                      "Разрешить платные API"; None для auto-resume/orphan.
+    #  - job_id         — идентификатор job (для forensic-журналов).
+    # Stage runner-ы, которые могут выйти в платный внешний API
+    # (block_analysis, discussion и т.п.), обязаны прокидывать оба значения
+    # в run_llm/run_llm_stream/gemma_findings_only.
+    manual_run_id: Optional[str] = field(default=None)
+    job_id: Optional[str] = field(default=None)

@@ -1556,6 +1556,31 @@ class OpenRouterProvider:
             "X-Title": "critic_v2_llm_gate",
         }
 
+        # ─── Paid API guard ─────────────────────────────────────────
+        # critic_v2 OpenRouterProvider — это offline benchmark / experimental
+        # path. Прямой requests.post в OpenRouter в обход llm_runner.
+        # Не оставляем известный обходной путь. context_packages при
+        # ручном запуске может передать project_id/manual_run_id; без них
+        # guard вернёт missing_manual_run_id (fail-closed).
+        try:
+            from backend.app.services.llm.paid_api_guard import (
+                PaidApiBlockedError as _PaidApiBlockedError,
+                PaidApiContext as _PaidApiContext,
+                assert_paid_api_allowed as _assert_paid_api_allowed,
+            )
+            _ctx_meta = (context_packages or {}).get("_paid_api_ctx", {}) if isinstance(context_packages, dict) else {}
+            _assert_paid_api_allowed(_PaidApiContext(
+                source="critic_v2.openrouter_provider",
+                model=self.model,
+                project_id=_ctx_meta.get("project_id", "") or "",
+                version_id=_ctx_meta.get("version_id", "") or "",
+                stage="findings_review",
+                manual_run_id=_ctx_meta.get("manual_run_id", "") or "",
+                job_id=_ctx_meta.get("job_id", "") or "",
+            ))
+        except _PaidApiBlockedError as _e:
+            return "[]", [f"paid_api_blocked: {_e.reason}"]
+
         try:
             resp = _requests.post(
                 "https://openrouter.ai/api/v1/chat/completions",

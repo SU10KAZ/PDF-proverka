@@ -162,11 +162,20 @@ async def _broadcast_queue() -> None:
 
 
 def _persist_queue() -> None:
-    """Persist prepare-data queue so it survives uvicorn restarts."""
+    """Persist prepare-data queue so it survives uvicorn restarts.
+
+    Paid-API guard: manual_run_id СТИРАЕТСЯ при persist. После рестарта
+    backend этот scope больше не валиден; пользователь должен заново
+    нажать Start с галкой "Разрешить платные API".
+    """
     try:
         PREPARE_QUEUE_FILE.parent.mkdir(parents=True, exist_ok=True)
+        data = prepare_state.queue_status.model_dump()
+        for it in data.get("items", []) or []:
+            if isinstance(it, dict):
+                it["manual_run_id"] = None
         PREPARE_QUEUE_FILE.write_text(
-            prepare_state.queue_status.model_dump_json(indent=2),
+            json.dumps(data, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
     except Exception as e:
@@ -178,11 +187,18 @@ def load_persisted_queue() -> None:
 
     We do not auto-resume Gemma work on startup: unfinished items become
     `interrupted` and the UI can resume them explicitly.
+
+    Paid-API guard: manual_run_id из persisted items ИГНОРИРУЕТСЯ
+    (обнуляется на лету). Registry в памяти после рестарта пуст —
+    даже если файл содержит старые значения, guard заблокирует.
     """
     if not PREPARE_QUEUE_FILE.exists():
         return
     try:
         data = json.loads(PREPARE_QUEUE_FILE.read_text(encoding="utf-8"))
+        for it in data.get("items", []) or []:
+            if isinstance(it, dict) and "manual_run_id" in it:
+                it["manual_run_id"] = None
         queue = PrepareQueueStatus(**data)
     except Exception as e:
         print(f"[PrepareQueue] Ошибка загрузки prepare_queue.json: {e}")

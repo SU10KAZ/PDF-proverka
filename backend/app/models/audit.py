@@ -63,6 +63,12 @@ class AuditJob(BaseModel):
     tokens_output: int = 0
     cost_usd: float = 0.0
     cli_calls: int = 0
+    # ─── Paid API guard ────────────────────────────────────────────────
+    # manual_run_id выдаётся только при ручном старте с галкой
+    # "Разрешить платные API для этого запуска". Без него любой внешний
+    # платный вызов (Stage 02, discussion, чужие LLM-этапы) будет блокирован
+    # paid_api_guard ДО network request.
+    manual_run_id: Optional[str] = None
 
 
 class BatchStatus(BaseModel):
@@ -103,6 +109,10 @@ class BatchRequest(BaseModel):
     """Запрос на групповое действие."""
     project_ids: list[str]
     action: BatchAction
+    # True если пользователь нажал кнопку с галкой "Разрешить платные API
+    # для этого запуска". Только тогда endpoint выдаст manual_run_id и
+    # пропустит платные этапы (Stage 02 GPT-5.4, optimization и т.п.).
+    paid_api_allowed: bool = False
 
 
 class BatchQueueItem(BaseModel):
@@ -119,6 +129,9 @@ class BatchQueueItem(BaseModel):
     extra_params: dict = {}
     # job_id, который вернётся клиенту при enqueue — используется для трассировки
     job_id: Optional[str] = None
+    # См. AuditJob.manual_run_id. Для batch все элементы получают один и тот же
+    # batch_manual_run_id, выданный endpoint'ом при старте batch.
+    manual_run_id: Optional[str] = None
 
 
 class BatchQueueStatus(BaseModel):
@@ -151,6 +164,9 @@ class PrepareQueueItem(BaseModel):
     # crop_status: pending → running → done / failed
     crop_status: str = "pending"
     crop_blocks_total: int = 0   # сколько блоков обработал crop (новые + пропущенные)
+    # Для prepare-этапа платные API обычно не нужны (crop + локальная Gemma),
+    # но поле резервируется на случай будущих платных подэтапов.
+    manual_run_id: Optional[str] = None
 
 
 class PrepareQueueStatus(BaseModel):

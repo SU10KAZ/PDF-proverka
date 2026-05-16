@@ -90,3 +90,11 @@ frontend/dist/
 
 # === Critic v2 manual feedback workspace (local only) ===
 critic v2 test/
+
+# === Paid API guard runtime state (forensic, локальные данные) ===
+# manual_run_id хранится только in-memory — никакого manual_runs.json быть
+# не должно. Перечисляем только append-only журналы.
+backend/app/data/paid_cost_events.jsonl
+backend/app/data/paid_api_blocked_events.jsonl
+webapp/data/paid_cost_events.jsonl
+webapp/data/paid_api_blocked_events.jsonl
