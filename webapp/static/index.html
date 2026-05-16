@@ -94,7 +94,10 @@
                     </svg>
                     Контроль моделей
                 </div>
-                <div class="nav-item" :class="{active: currentView === 'critic-v2-ui'}" @click="navigate('/critic-v2-ui')" title="Экспериментальный offline-режим. Production pipeline не затрагивается.">
+                <!-- Critic v2 debug nav: спрятано за dev-флагом cv2DebugVisible.
+                     Основной UX — колонка "Critic v2" в обычной таблице "Замечания".
+                     Включить: localStorage.setItem('cv2_debug','1') или ?cv2debug=1 -->
+                <div v-if="cv2DebugVisible" class="nav-item" :class="{active: currentView === 'critic-v2-ui'}" @click="navigate('/critic-v2-ui')" title="Экспериментальный offline-режим. Production pipeline не затрагивается.">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <path d="M2 4h12M2 8h12M2 12h7"/>
                         <circle cx="13" cy="12" r="1.5"/>
@@ -326,23 +329,8 @@
         <!-- Navigation breadcrumb + Project Tabs (merged into one bar) -->
         <nav class="breadcrumb" v-if="currentView !== 'dashboard' && currentView !== 'queue' && currentView !== 'knowledge-base'">
             <div class="breadcrumb__left">
-                <a href="#" @click.prevent="navigate('/')">Проекты</a>
+                <a href="#" @click.prevent="navigate(currentProject && currentProject.section ? '/section/' + encodeURIComponent(currentProject.section) : '/')">{{ currentProject && currentProject.section ? currentProject.section : 'Проекты' }}</a>
                 <span v-if="currentProject"> / <a href="#" @click.prevent="navigate('/project/' + currentProject.project_id)">{{ currentProject.name }}</a></span>
-            </div>
-            <div v-if="currentProject" class="project-version-switch" :title="'Активная версия проекта'">
-                <label class="project-version-switch__label">Версия:</label>
-                <select class="project-version-switch__select"
-                        :value="activeVersionId || currentProject.latest_version_id || 'v1'"
-                        @change="selectVersion($event.target.value)">
-                    <option v-for="v in projectVersions" :key="v.version_id" :value="v.version_id">
-                        {{ v.label }}{{ v.is_latest ? ' · текущая' : '' }}{{ !v.has_source_files ? ' (пусто)' : '' }}
-                    </option>
-                </select>
-                <button class="btn btn-sm btn-outline project-version-switch__btn"
-                        @click="versionsPanelOpen = !versionsPanelOpen"
-                        :title="'Версии проекта'">
-                    {{ projectVersions.length || 1 }} версии
-                </button>
             </div>
             <div v-if="currentProject" class="project-tabs">
                 <button class="project-tab" :class="{'project-tab--active': currentView === 'project'}"
@@ -372,7 +360,8 @@
                      sub-tab strip; старые hash-routes /critic-v2-disagreements
                      и /critic-v2 поддерживаются и автоматически выбирают
                      соответствующий sub-tab. -->
-                <button class="project-tab project-tab--experimental"
+                <button v-if="cv2DebugVisible"
+                        class="project-tab project-tab--experimental"
                         :class="{'project-tab--active': currentView === 'critic-v2-project'}"
                         @click="navigate('/project/' + currentProject.project_id + '/critic-v2-disagreements')"
                         title="Экспериментальный Critic v2 для проекта. Внутри: расхождения, все замечания, assisted_round1, feedback.">
@@ -382,13 +371,29 @@
             </div>
         </nav>
 
-        <!-- ═══ Dashboard ═══ -->
-        <!-- ═══ Главная ═══ -->
-        <div v-if="currentView === 'dashboard' && !sidebarFilterSection" class="container">
+        <div v-if="currentProject && currentView !== 'dashboard' && currentView !== 'queue' && currentView !== 'knowledge-base'"
+             class="project-version-bar">
+            <div class="project-version-switch" :title="'Активная версия проекта'">
+                <label class="project-version-switch__label">Версия:</label>
+                <select class="project-version-switch__select"
+                        :value="activeVersionId || currentProject.latest_version_id || 'v1'"
+                        @change="selectVersion($event.target.value)">
+                    <option v-for="v in projectVersions" :key="v.version_id" :value="v.version_id">
+                        {{ v.label }}{{ v.is_latest ? ' · текущая' : '' }}{{ !v.has_source_files ? ' (пусто)' : '' }}
+                    </option>
+                </select>
+                <button class="btn btn-sm btn-outline project-version-switch__btn"
+                        @click="versionsPanelOpen = !versionsPanelOpen"
+                        :title="'Версии проекта'">
+                    {{ projectVersions.length || 1 }} версии
+                </button>
+            </div>
         </div>
 
-        <!-- ═══ Все разделы ═══ -->
-        <div v-if="currentView === 'dashboard' && sidebarFilterSection === '__all__'" class="container">
+        <!-- ═══ Dashboard ═══ -->
+        <!-- ═══ Главная ═══ -->
+        <!-- ═══ Главная / Все разделы ═══ -->
+        <div v-if="currentView === 'dashboard' && (!sidebarFilterSection || sidebarFilterSection === '__all__')" class="container">
             <div class="dash-sections-overview">
                 <h3 class="dash-section-title">Разделы проекта</h3>
                 <div class="dash-sections-grid">
@@ -422,7 +427,11 @@
                 </h2>
                 <div class="dashboard-actions">
                     <button class="btn btn-outline" @click="showCreateGroup = true" title="Создать группу">+ Группа</button>
-                    <button class="btn btn-success" @click="openAddModal" :disabled="addProjectLoading">+ Добавить</button>
+                    <button v-if="selectedCount === 0" class="btn btn-success" @click="openAddModal" :disabled="addProjectLoading">+ Добавить</button>
+                    <button v-else class="btn btn-success" @click="openEditProjectsModal"
+                            :title="'Изменить раздел или скрыть выбранные проекты (' + selectedCount + ')'">
+                        Изменить ({{ selectedCount }})
+                    </button>
                     <button class="btn btn-primary" @click="refreshProjects" :disabled="loading">Обновить</button>
                 </div>
             </div>
@@ -773,7 +782,7 @@
                                     <div class="add-project-item__discipline">
                                         <select class="discipline-select"
                                                 v-model="f._selectedDiscipline"
-                                                :disabled="addProjectLoading">
+                                                :disabled="addProjectLoading || f._addMode === 'version'">
                                             <option v-for="d in supportedDisciplines" :key="d.code" :value="d.code">
                                                 {{ d.short_name }} — {{ d.name }}
                                             </option>
@@ -783,11 +792,57 @@
                                             авто
                                         </span>
                                     </div>
-                                    <button class="btn btn-success btn-sm" @click="registerProject(f.folder)"
-                                            :disabled="addProjectLoading || (f.pdf_files.length > 1 && f._selectedPdfs.length === 0)"
+                                    <button class="btn btn-success btn-sm"
+                                            @click="onCandidatePrimaryAction(f)"
+                                            :disabled="addProjectLoading
+                                                       || (f.pdf_files.length > 1 && f._selectedPdfs.length === 0)
+                                                       || (f._addMode === 'version' && !f._targetProjectId)"
                                             style="flex-shrink:0">
-                                        + Добавить
+                                        <template v-if="f._addMode === 'version'">
+                                            + Добавить как {{ candidateNextVersionLabel(f) }}
+                                        </template>
+                                        <template v-else>+ Добавить проект</template>
                                     </button>
+                                </div>
+                                <!-- Add-as: новый проект / новая версия существующего -->
+                                <div class="add-project-item__addmode">
+                                    <div class="addmode-row">
+                                        <span class="addmode-label">Добавить как:</span>
+                                        <label class="addmode-option">
+                                            <input type="radio" :name="'addmode-' + f.folder"
+                                                   value="new"
+                                                   v-model="f._addMode">
+                                            <span>Новый проект</span>
+                                        </label>
+                                        <label class="addmode-option">
+                                            <input type="radio" :name="'addmode-' + f.folder"
+                                                   value="version"
+                                                   v-model="f._addMode"
+                                                   :disabled="!candidateTargetOptions(f).length">
+                                            <span>Новая версия существующего проекта</span>
+                                        </label>
+                                    </div>
+                                    <div v-if="f._addMode === 'version'" class="addmode-version-row">
+                                        <label class="addmode-target-label">Проект-основание:</label>
+                                        <select class="discipline-select addmode-target-select"
+                                                v-model="f._targetProjectId"
+                                                :disabled="addProjectLoading">
+                                            <option value="" disabled>— выберите проект —</option>
+                                            <option v-for="p in candidateTargetOptions(f)"
+                                                    :key="p.project_id" :value="p.project_id"
+                                                    :class="{'editp-merge-option--suggested': p._suggested}"
+                                                    :style="p._suggested ? 'color:#c0392b;font-weight:600' : ''">
+                                                {{ p.name || p.project_id }}
+                                                <template v-if="p._suggested"> · совпадение</template>
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div v-if="f._addMode === 'version' && f._targetProjectId" class="addmode-hint">
+                                        Этот файл будет добавлен как
+                                        <strong>{{ candidateNextVersionLabel(f) }}</strong> к проекту
+                                        «{{ candidateTargetName(f) }}».
+                                        Новая карточка проекта создана не будет.
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -824,6 +879,75 @@
                         <button class="btn btn-success btn-sm" @click="saveEditSection"
                                 :disabled="!editSectionName.trim()">Сохранить</button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ Edit Projects Modal (раздел/скрытие) ═══ -->
+        <div v-if="showEditProjectsModal" class="modal-overlay" @click="showEditProjectsModal = false">
+            <div class="modal-content modal-edit-projects" @click.stop>
+                <button class="modal-close" @click="showEditProjectsModal = false">&times;</button>
+                <h3>Изменить выбранные проекты ({{ editProjectsSelected.length }})</h3>
+                <p class="modal-subtitle">
+                    Сменить дисциплину или скрыть проекты из UI. Файлы на диске не перемещаются и не удаляются —
+                    меняется только запись <code>section</code> в <code>project_info.json</code>.
+                </p>
+                <div class="edit-projects-list">
+                    <div v-for="p in editProjectsSelected" :key="p.project_id"
+                         class="edit-projects-row edit-projects-row--withmerge">
+                        <div class="edit-projects-row__main">
+                            <span class="section-badge" :style="disciplineBadgeStyle(p.section)">{{ p.section }}</span>
+                            <span class="edit-projects-name" :title="p.project_id">{{ p.name || p.project_id }}</span>
+                        </div>
+                        <div class="edit-projects-row__merge">
+                            <label class="edit-projects-row__merge-label">Привязать как версию:</label>
+                            <select v-model="editProjectsMergeMap[p.project_id]"
+                                    class="form-input editp-merge-select"
+                                    :class="{'is-suggested': !!(mergeTargetsFor(p).find(o => o.project_id === editProjectsMergeMap[p.project_id]) || {})._suggested}"
+                                    :disabled="editProjectsLoading">
+                                <option value="">— не привязывать —</option>
+                                <option v-for="opt in mergeTargetsFor(p)" :key="opt.project_id" :value="opt.project_id"
+                                        :class="{'editp-merge-option--suggested': opt._suggested}"
+                                        :style="opt._suggested ? 'color:#c0392b;font-weight:600' : ''">
+                                    {{ opt.name || opt.project_id }}<template v-if="opt._suggested"> · совпадение</template>
+                                </option>
+                            </select>
+                            <span v-if="editProjectsMergeMap[p.project_id]" class="editp-merge-row-hint">
+                                → <strong>{{ mergeNextLabelFor(editProjectsMergeMap[p.project_id]) }}</strong>
+                                «{{ mergeTargetNameFor(editProjectsMergeMap[p.project_id]) }}»
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label>Новый раздел</label>
+                    <select v-model="editProjectsNewSection" class="form-input">
+                        <option value="">— не менять —</option>
+                        <option v-for="d in supportedDisciplines" :key="d.code" :value="d.code">
+                            {{ d.code }} — {{ d.name }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-outline btn-danger" @click="hideSelectedFromUI"
+                            :disabled="editProjectsLoading"
+                            title="Скрыть выбранные проекты из UI (файлы остаются на диске)">
+                        Скрыть из UI
+                    </button>
+                    <div style="flex:1"></div>
+                    <button class="btn btn-outline" @click="showEditProjectsModal = false">Отмена</button>
+                    <button v-if="editProjectsMergeReadyCount > 0"
+                            class="btn btn-primary"
+                            :disabled="editProjectsLoading"
+                            @click="applyMergeAllAsVersion">
+                        Привязать выбранные пары ({{ editProjectsMergeReadyCount }})
+                    </button>
+                    <button class="btn btn-success"
+                            :disabled="!editProjectsNewSection || editProjectsLoading"
+                            @click="applyNewSectionToSelected">
+                        Применить раздел
+                    </button>
                 </div>
             </div>
         </div>
@@ -1799,6 +1923,32 @@
                     </select>
                     <input v-model="filterSearch" class="filter-input"
                            placeholder="Поиск по тексту..." @input="debounceSearch">
+                    <!-- Critic v2 (experimental) — фильтр по display-bucket'у.
+                         Грузится deferred, не блокирует таблицу. -->
+                    <template v-if="findingsCv2Available">
+                        <select v-model="cv2DisplayFilter" class="filter-select"
+                                title="Экспериментальная оценка Critic v2 (0–100)">
+                            <option value="">Critic v2: все</option>
+                            <option v-for="b in CV2_DISPLAY_BUCKETS" :key="b.key" :value="b.key">
+                                {{ b.label }} ({{ b.lo }}–{{ b.hi }})
+                            </option>
+                        </select>
+                        <label class="cv2-show-hidden-toggle"
+                               title="Скрыто Critic v2 — замечания не удаляются, только не показываются по умолчанию">
+                            <input type="checkbox" v-model="cv2ShowHidden">
+                            Показать скрытые Critic v2
+                            <span class="cv2-hidden-counter">({{ cv2HiddenCount() }})</span>
+                        </label>
+                    </template>
+                    <span v-else-if="findingsCv2Loading" class="cv2-loading-pill"
+                          title="Critic v2 эксп. — догружается, обычная таблица уже работает">
+                        <span class="cv2-loading-dot"></span>
+                        Critic v2: загрузка…
+                    </span>
+                    <span v-else-if="findingsCv2Warning" class="cv2-warning-pill"
+                          :title="findingsCv2Warning">
+                        Critic v2: нет данных
+                    </span>
                 </div>
 
                 <!-- Summary + Expert Review (одна строка) -->
@@ -1842,6 +1992,13 @@
                                 <th style="width:65px; text-align:center">Лист</th>
                                 <th style="width:35%">Замечание</th>
                                 <th style="width:120px">Норма</th>
+                                <th v-if="findingsCv2Available" style="width:78px; text-align:center; cursor:pointer; user-select:none"
+                                    @click="toggleCv2Sort()"
+                                    :class="{ 'cv2-sort-active': cv2SortDir }"
+                                    :title="cv2SortDir === 'desc' ? 'Сортировка: 100 → 0 (клик: 0 → 100)' : (cv2SortDir === 'asc' ? 'Сортировка: 0 → 100 (клик: сбросить)' : 'Экспериментальная оценка Critic v2. Клик: сортировать 100 → 0.')">
+                                    Critic v2 <span class="cv2-exp-mark">эксп.</span>
+                                    <span class="cv2-sort-indicator">{{ cv2SortDir === 'desc' ? '▼' : (cv2SortDir === 'asc' ? '▲' : '') }}</span>
+                                </th>
                                 <th :style="{ width: expertReviewMode ? '20%' : '30%' }">Рекомендация</th>
                                 <th v-if="expertReviewMode" style="width:90px; text-align:center">Решение</th>
                                 <th v-if="expertReviewMode" style="width:150px">Причина</th>
@@ -1905,6 +2062,16 @@
                                         </div>
                                     </td>
                                     <td class="norm-cell">{{ f.norm }}</td>
+                                    <td v-if="findingsCv2Available" class="cv2-disp-cell" style="text-align:center"
+                                        :title="findingCv2Tooltip(f.id)">
+                                        <template v-if="findingCv2Score(f.id) != null">
+                                            <span class="cv2-disp-badge" :class="findingCv2Class(f.id)">
+                                                {{ findingCv2Score(f.id) }}
+                                            </span>
+                                            <div class="cv2-disp-label">{{ findingCv2Label(f.id) }}</div>
+                                        </template>
+                                        <span v-else class="cv2-disp-na">—</span>
+                                    </td>
                                     <td class="rec-cell">{{ f.solution || f.recommendation || '' }}</td>
                                     <td v-if="expertReviewMode" class="decision-cell" style="text-align:center">
                                         <div class="decision-toggle">
@@ -1938,7 +2105,7 @@
                                 <!-- Раскрывающаяся полоска: блоки + текстовые evidence -->
                                 <tr v-if="expandedFindingId === f.id && (getFindingBlocks(f.id).length > 0 || getFindingTextEvidence(f.id).length > 0)"
                                     class="finding-blocks-row">
-                                    <td :colspan="expertReviewMode ? 9 : 7">
+                                    <td :colspan="(expertReviewMode ? 9 : 7) + (findingsCv2Available ? 1 : 0)">
                                         <!-- Графические блоки -->
                                         <div v-if="getFindingBlocks(f.id).length > 0" class="finding-blocks-strip">
                                             <div v-for="b in getFindingBlocks(f.id)" :key="b.block_id"

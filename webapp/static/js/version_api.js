@@ -93,12 +93,11 @@ function formatVersionBadge(project) {
   );
 
   if (count > 1) {
-    const first = summary[0]?.label || 'V1';
-    const last = summary[summary.length - 1]?.label || `V${count}`;
+    const last = (latest && latest.label) || summary[summary.length - 1]?.label || `V${count}`;
     if (latestEmpty) {
-      return { text: `${first}–${last} · нужна загрузка`, tone: 'warn' };
+      return { text: `${last} · нужна загрузка`, tone: 'warn' };
     }
-    return { text: `${first}–${last}`, tone: 'info' };
+    return { text: last, tone: 'info' };
   }
 
   // count == 1
