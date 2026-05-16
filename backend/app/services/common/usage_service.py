@@ -995,13 +995,19 @@ PAID_COST_FILE = _DATA_DIR / "paid_cost.json"
 class PaidCostTracker:
     """Трекер реальных расходов на платные нейросети (Gemini, GPT и др.).
 
-    Хранит два счётчика:
+    Хранит:
     - total_lifetime_usd — никогда не обнуляется
     - display_usd — обнуляется пользователем через UI
+    - daily_breakdown[YYYY-MM-DD] = {total, by_model, by_project, by_stage, n_calls}
     """
 
     def __init__(self):
-        self._data = {"total_lifetime_usd": 0.0, "display_usd": 0.0, "reset_history": []}
+        self._data = {
+            "total_lifetime_usd": 0.0,
+            "display_usd": 0.0,
+            "reset_history": [],
+            "daily_breakdown": {},
+        }
         self._lock = threading.Lock()
         self._load()
 
@@ -1012,35 +1018,112 @@ class PaidCostTracker:
                     self._data = json.load(f)
         except (json.JSONDecodeError, OSError):
             pass
+        self._data.setdefault("daily_breakdown", {})
 
     def _save(self):
         try:
             PAID_COST_FILE.parent.mkdir(parents=True, exist_ok=True)
-            with open(PAID_COST_FILE, "w", encoding="utf-8") as f:
+            tmp = PAID_COST_FILE.with_suffix(".json.tmp")
+            with open(tmp, "w", encoding="utf-8") as f:
                 json.dump(self._data, f, indent=2, ensure_ascii=False)
+            tmp.replace(PAID_COST_FILE)
         except OSError:
             pass
 
-    def add(self, cost_usd: float):
-        """Добавить расход (вызывается после каждого платного LLM-вызова)."""
-        if cost_usd <= 0:
+    def add(
+        self,
+        cost_usd: float,
+        *,
+        model: str = "",
+        project_id: str = "",
+        stage: str = "",
+    ):
+        """Добавить расход с разбивкой по дню/модели/проекту/этапу."""
+        if cost_usd is None or cost_usd <= 0:
             return
+        cost_usd = float(cost_usd)
+        day = datetime.now().date().isoformat()
         with self._lock:
-            self._data["total_lifetime_usd"] = round(self._data.get("total_lifetime_usd", 0.0) + cost_usd, 6)
-            self._data["display_usd"] = round(self._data.get("display_usd", 0.0) + cost_usd, 6)
+            # Перечитываем файл, чтобы не затереть инкременты, сделанные другим
+            # процессом (subprocess-скрипты, второй инстанс backend и т.п.).
+            self._load()
+            self._data["total_lifetime_usd"] = round(
+                self._data.get("total_lifetime_usd", 0.0) + cost_usd, 6,
+            )
+            self._data["display_usd"] = round(
+                self._data.get("display_usd", 0.0) + cost_usd, 6,
+            )
+            breakdown = self._data.setdefault("daily_breakdown", {})
+            day_entry = breakdown.setdefault(day, {
+                "total": 0.0,
+                "n_calls": 0,
+                "by_model": {},
+                "by_project": {},
+                "by_stage": {},
+            })
+            day_entry["total"] = round(day_entry.get("total", 0.0) + cost_usd, 6)
+            day_entry["n_calls"] = int(day_entry.get("n_calls", 0)) + 1
+            for bucket_key, bucket_field in (
+                (model or "unknown", "by_model"),
+                (project_id or "unknown", "by_project"),
+                (stage or "unknown", "by_stage"),
+            ):
+                bucket = day_entry.setdefault(bucket_field, {})
+                bucket[bucket_key] = round(bucket.get(bucket_key, 0.0) + cost_usd, 6)
             self._save()
 
     def get(self) -> dict:
-        """Текущие значения счётчиков."""
+        """Текущие значения счётчиков (без daily_breakdown — для лёгкого polling).
+
+        Перечитываем файл, чтобы видеть инкременты от subprocess'ов
+        (skripты simulate_*, ad-hoc запуски pipeline и т.п.).
+        """
         with self._lock:
+            self._load()
             return {
                 "display_usd": round(self._data.get("display_usd", 0.0), 4),
                 "total_lifetime_usd": round(self._data.get("total_lifetime_usd", 0.0), 4),
             }
 
-    def reset_display(self):
-        """Обнулить отображаемый счётчик, сохранив запись в истории."""
+    def get_daily(self, days: int = 30) -> dict:
+        """Daily breakdown за последние N дней + total.
+
+        Перечитываем файл по тем же причинам, что и в get() — иначе backend
+        in-memory state расходится с инкрементами из subprocess'ов.
+        """
+        from datetime import timedelta as _td
+        today = datetime.now().date()
+        cutoff = (today - _td(days=max(0, days - 1))).isoformat()
         with self._lock:
+            self._load()
+            breakdown = dict(self._data.get("daily_breakdown", {}))
+        days_out = []
+        for d in sorted(breakdown.keys(), reverse=True):
+            if d < cutoff:
+                continue
+            entry = breakdown[d]
+            days_out.append({
+                "date": d,
+                "total": round(entry.get("total", 0.0), 4),
+                "n_calls": entry.get("n_calls", 0),
+                "by_model": {k: round(v, 4) for k, v in entry.get("by_model", {}).items()},
+                "by_project": {k: round(v, 4) for k, v in entry.get("by_project", {}).items()},
+                "by_stage": {k: round(v, 4) for k, v in entry.get("by_stage", {}).items()},
+            })
+        total_window = round(sum(d["total"] for d in days_out), 4)
+        return {
+            "days": days_out,
+            "window_days": days,
+            "window_total_usd": total_window,
+        }
+
+    def reset_display(self):
+        """Обнулить отображаемый счётчик, сохранив запись в истории.
+
+        daily_breakdown НЕ обнуляется — это исторический срез.
+        """
+        with self._lock:
+            self._load()
             amount = self._data.get("display_usd", 0.0)
             if amount > 0:
                 history = self._data.get("reset_history", [])

@@ -5257,6 +5257,24 @@
       "output_tokens": 21319,
       "cache_creation_tokens": 138317,
       "cache_read_tokens": 1135774
+    },
+    {
+      "timestamp": "2026-05-14T10:08:28.040079",
+      "session_id": "1f6875e2-2cc4-4b02-961a-ff5bc873ead7",
+      "project_id": "SMOKE-POST-CUTOVER-V2-STAGE02.pdf",
+      "stage": "text_analysis",
+      "model": "claude-sonnet-4-6",
+      "cost_usd": 0.0,
+      "cost_usd_notional": 0.88895325,
+      "duration_ms": 164323,
+      "duration_api_ms": 163386,
+      "num_turns": 7,
+      "api_calls": 1,
+      "is_retry": false,
+      "input_tokens": 10,
+      "output_tokens": 11213,
+      "cache_creation_tokens": 71755,
+      "cache_read_tokens": 320219
     }
   ]
 }

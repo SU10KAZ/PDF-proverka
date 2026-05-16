@@ -784,6 +784,7 @@ async def run_llm(
     provider_data_collection: str | None = None,
     max_tokens_override: int | None = None,
     extra_body: dict | None = None,
+    project_id: str = "",
 ) -> LLMResult:
     """Единый вызов LLM через OpenRouter или локальный Chandra.
 
@@ -978,6 +979,21 @@ async def run_llm(
             cost = _estimate_cost(model, input_tokens, output_tokens)
             cost_source = "estimated"
 
+        # Учёт платных вызовов (OpenRouter возвращает actual cost; local LLM cost=0).
+        # Локальная Chandra/Gemma и Claude CLI не идут через этот путь, поэтому
+        # каждый ненулевой cost здесь — реальный платный API.
+        if cost > 0:
+            try:
+                from backend.app.services.common.usage_service import paid_cost_tracker as _paid
+                _paid.add(
+                    cost,
+                    model=model,
+                    project_id=project_id,
+                    stage=stage_key,
+                )
+            except Exception:
+                logger.exception("paid_cost_tracker.add failed")
+
         finish_reason = ""
         try:
             finish_reason = response.choices[0].finish_reason or ""
@@ -1016,6 +1032,9 @@ async def run_llm_stream(
     model_override: str,
     temperature: float | None = None,
     timeout: int = 120,
+    *,
+    project_id: str = "",
+    stage: str = "discussion",
 ) -> AsyncGenerator[dict, None]:
     """Стриминг ответа через OpenRouter (SSE).
 
@@ -1068,6 +1087,12 @@ async def run_llm_stream(
         return
 
     cost = _estimate_cost(model, input_tokens, output_tokens)
+    if cost > 0:
+        try:
+            from backend.app.services.common.usage_service import paid_cost_tracker as _paid
+            _paid.add(cost, model=model, project_id=project_id, stage=stage)
+        except Exception:
+            logger.exception("paid_cost_tracker.add failed (stream)")
     yield {
         "type": "done",
         "text": full_text,

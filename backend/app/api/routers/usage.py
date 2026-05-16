@@ -120,6 +120,17 @@ async def get_paid_cost():
     return paid_cost_tracker.get()
 
 
+@router.get("/paid-cost/daily")
+async def get_paid_cost_daily(days: int = 30):
+    """Дневной break-down платных расходов (по моделям, проектам, этапам).
+
+    Args:
+        days: окно в днях (по умолчанию 30, максимум 365).
+    """
+    days = max(1, min(int(days), 365))
+    return paid_cost_tracker.get_daily(days=days)
+
+
 @router.post("/paid-cost/reset")
 async def reset_paid_cost():
     """Обнулить отображаемый счётчик (total_lifetime сохраняется)."""
