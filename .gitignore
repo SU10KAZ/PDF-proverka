@@ -87,3 +87,6 @@ webapp/config.py.bak*
 # === Frontend node modules and build ===
 frontend/node_modules/
 frontend/dist/
+
+# === Critic v2 manual feedback workspace (local only) ===
+critic v2 test/
