@@ -158,14 +158,21 @@ _html_dir = _frontend_dir if _frontend_dir.exists() else _webapp_static_dir
 
 @app.get("/")
 async def serve_spa():
-    """Отдать SPA index.html."""
+    """Отдать SPA index.html.
+
+    Подменяет cache-bust токены `{{css_version}}` и `{{js_version}}` на mtime
+    `styles.css` / `app.js`. Считается max(mtime app.js, mtime version_api.js),
+    чтобы правка любого из двух JS принудительно инвалидировала кеш браузера.
+    """
     index_path = _html_dir / "index.html"
     if not index_path.exists():
         return {"message": "Audit Manager API. Frontend not found. Use /docs for Swagger."}
     css_path = (_static_mount_dir / "css" / "styles.css") if _static_mount_dir else None
     js_path = (_static_mount_dir / "js" / "app.js") if _static_mount_dir else None
+    vapi_path = (_static_mount_dir / "js" / "version_api.js") if _static_mount_dir else None
     css_ver = int(css_path.stat().st_mtime) if css_path and css_path.exists() else 0
-    js_ver = int(js_path.stat().st_mtime) if js_path and js_path.exists() else 0
+    js_mtimes = [int(p.stat().st_mtime) for p in (js_path, vapi_path) if p and p.exists()]
+    js_ver = max(js_mtimes) if js_mtimes else 0
     html = index_path.read_text(encoding="utf-8")
     html = html.replace("{{css_version}}", str(css_ver)).replace("{{js_version}}", str(js_ver))
     return HTMLResponse(html)

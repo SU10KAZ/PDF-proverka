@@ -2642,6 +2642,41 @@ const app = createApp({
             showEditProjectsModal.value = true;
         }
 
+        // У source есть готовые findings/нормы/оптимизации? Используется для
+        // pre-warn в модалке merge-as-version: backend всё равно отдаст 409
+        // с кодом `source_output_not_empty`, но нагляднее предупредить заранее.
+        function _projectHasAuditArtifacts(p) {
+            if (!p) return false;
+            if ((p.findings_count || 0) > 0) return true;
+            if ((p.optimization_count || 0) > 0) return true;
+            const pipeline = p.pipeline || {};
+            const STAGES = ['text_analysis','blocks_analysis','findings','optimization','norms_verified'];
+            return STAGES.some(s => pipeline[s] === 'done');
+        }
+
+        // Выполнить один merge с попыткой повторить запрос с discard_source_output
+        // при 409 / source_output_not_empty. Возвращает { ok, version_label, error }.
+        async function _mergeOnePair(source, targetId, { discardSourceOutput }) {
+            const resp = await fetch('/api/projects/versions/from-project', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    target_project_id: targetId,
+                    source_project_id: source.project_id,
+                    comment: 'Привязано из окна Изменить выбранные проекты',
+                    source: 'edit_projects_modal',
+                    delete_source: true,
+                    discard_source_output: !!discardSourceOutput,
+                }),
+            });
+            if (resp.ok) {
+                const data = await resp.json();
+                return { ok: true, data };
+            }
+            const err = await resp.json().catch(() => ({}));
+            return { ok: false, status: resp.status, detail: err.detail };
+        }
+
         // Пакетное применение merge: каждая (source → target) пара
         // выполняется отдельным запросом, ошибки одной не останавливают другие.
         async function applyMergeAllAsVersion() {
@@ -2651,36 +2686,49 @@ const app = createApp({
                 if (tgt) pairs.push({ source: src, targetId: tgt });
             }
             if (pairs.length === 0) return;
+
+            // Пред-предупреждение: если у части source есть готовые findings —
+            // спрашиваем явное подтверждение, что их потеря приемлема.
+            const withArtifacts = pairs.filter(p => _projectHasAuditArtifacts(p.source));
+            let discardAllowed = false;
             if (!confirm(
                 `Привязать ${pairs.length} проект(ов) как версии существующих?\n` +
                 `Исходные карточки будут удалены. V1 каждого target не изменится.`
             )) return;
+            if (withArtifacts.length > 0) {
+                const names = withArtifacts.map(p => p.source.name || p.source.project_id).join('\n  • ');
+                if (!confirm(
+                    `У ${withArtifacts.length} source-проект(ов) есть готовые результаты аудита:\n  • ${names}\n\n`
+                    + `Они БУДУТ ПОТЕРЯНЫ при слиянии (новая версия начинается с нуля).\n`
+                    + `Продолжить?`
+                )) return;
+                discardAllowed = true;
+            }
+
             editProjectsLoading.value = true;
             const errors = [];
             const okList = [];
             try {
                 for (const { source, targetId } of pairs) {
                     try {
-                        const resp = await fetch(
-                            '/api/projects/versions/from-project',
-                            {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    target_project_id: targetId,
-                                    source_project_id: source.project_id,
-                                    comment: 'Привязано из окна Изменить выбранные проекты',
-                                    source: 'edit_projects_modal',
-                                    delete_source: true,
-                                }),
-                            },
-                        );
-                        if (!resp.ok) {
-                            const err = await resp.json().catch(() => ({}));
-                            throw new Error(err.detail || `HTTP ${resp.status}`);
+                        let res = await _mergeOnePair(source, targetId, { discardSourceOutput: discardAllowed });
+                        // Backend может сам определить артефакты, которых фронт не увидел —
+                        // в этом случае возвращает 409 с code=source_output_not_empty.
+                        if (!res.ok && res.status === 409
+                            && res.detail && typeof res.detail === 'object'
+                            && res.detail.code === 'source_output_not_empty') {
+                            if (!confirm(
+                                `${source.name || source.project_id}: ${res.detail.message}\n\nПродолжить и потерять _output?`
+                            )) {
+                                throw new Error('Отменено пользователем');
+                            }
+                            res = await _mergeOnePair(source, targetId, { discardSourceOutput: true });
                         }
-                        const data = await resp.json();
-                        const verLabel = (data.version && data.version.label) || 'V?';
+                        if (!res.ok) {
+                            const msg = (res.detail && (res.detail.message || res.detail)) || `HTTP ${res.status}`;
+                            throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+                        }
+                        const verLabel = (res.data.version && res.data.version.label) || 'V?';
                         okList.push(`${source.name || source.project_id} → ${mergeTargetNameFor(targetId)} (${verLabel})`);
                     } catch (e) {
                         errors.push(`${source.name || source.project_id}: ${e.message}`);
@@ -8002,23 +8050,50 @@ const app = createApp({
             loadKBPatterns();
         }
 
+        async function _postExcelDecisions(file) {
+            // Возвращает {ok: true, data} | {ok: false, message}
+            const formData = new FormData();
+            formData.append('file', file);
+            let resp;
+            try {
+                resp = await fetch('/api/knowledge-base/upload-excel', { method: 'POST', body: formData });
+            } catch (netErr) {
+                console.error('[upload-excel] network error:', netErr);
+                return {
+                    ok: false,
+                    message: `Сеть/туннель: запрос не дошёл до сервера (${netErr.name || 'NetworkError'}). ` +
+                        `Файл: ${file.name} (${(file.size / 1024).toFixed(0)} КБ). ` +
+                        `Попробуйте ещё раз или пришлите файл напрямую.`,
+                };
+            }
+            const rawText = await resp.text().catch(() => '');
+            let data = null;
+            try { data = rawText ? JSON.parse(rawText) : null; } catch (_) { /* not JSON */ }
+            if (!resp.ok) {
+                const detail = (data && (data.detail || data.message)) || rawText.slice(0, 300) || resp.statusText;
+                console.error(`[upload-excel] HTTP ${resp.status}:`, rawText);
+                return { ok: false, message: `Сервер ответил ${resp.status}: ${detail}` };
+            }
+            if (!data || data.status !== 'ok') {
+                console.error('[upload-excel] unexpected response:', rawText);
+                return { ok: false, message: 'Неожиданный ответ сервера (см. консоль).' };
+            }
+            return { ok: true, data };
+        }
+
         async function uploadDecisionsExcel(event) {
             const file = event.target.files[0];
             if (!file) return;
             kbUploadLoading.value = true;
             try {
-                const formData = new FormData();
-                formData.append('file', file);
-                const resp = await fetch('/api/knowledge-base/upload-excel', { method: 'POST', body: formData });
-                const data = await resp.json();
-                if (data.status === 'ok') {
-                    alert('Решения загружены: ' + Object.keys(data.projects).length + ' проектов');
-                    loadKnowledgeBase();
-                    loadKBStats();
+                const result = await _postExcelDecisions(file);
+                if (!result.ok) {
+                    alert(result.message);
+                    return;
                 }
-            } catch (e) {
-                console.error('Upload error:', e);
-                alert('Ошибка загрузки файла');
+                alert('Решения загружены: ' + Object.keys(result.data.projects).length + ' проектов');
+                loadKnowledgeBase();
+                loadKBStats();
             } finally {
                 kbUploadLoading.value = false;
                 event.target.value = '';
@@ -8030,14 +8105,15 @@ const app = createApp({
             if (!file) return;
             kbUploadLoading.value = true;
             try {
-                const formData = new FormData();
-                formData.append('file', file);
-                const resp = await fetch('/api/knowledge-base/upload-excel', { method: 'POST', body: formData });
-                const data = await resp.json();
-                if (data.status === 'ok') {
-                    const count = Object.keys(data.projects).length;
-                    // Загрузить решения для текущего проекта и включить режим оценки
-                    if (currentProjectId.value) {
+                const result = await _postExcelDecisions(file);
+                if (!result.ok) {
+                    alert(result.message);
+                    return;
+                }
+                const count = Object.keys(result.data.projects).length;
+                // Загрузить решения для текущего проекта и включить режим оценки
+                if (currentProjectId.value) {
+                    try {
                         const revResp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}`);
                         const revData = await revResp.json();
                         if (revData.has_review && revData.data && revData.data.decisions) {
@@ -8048,12 +8124,11 @@ const app = createApp({
                             expertDecisions.value = map;
                             expertReviewMode.value = true;
                         }
+                    } catch (e) {
+                        console.warn('[upload-excel] не удалось дозагрузить expert-review:', e);
                     }
-                    alert(`Решения загружены (${count} проектов). Колонки заполнены автоматически.`);
                 }
-            } catch (e) {
-                console.error('Upload & apply error:', e);
-                alert('Ошибка загрузки файла');
+                alert(`Решения загружены (${count} проектов). Колонки заполнены автоматически.`);
             } finally {
                 kbUploadLoading.value = false;
                 event.target.value = '';

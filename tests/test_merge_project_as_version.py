@@ -47,7 +47,8 @@ def projects_dir(tmp_path, monkeypatch):
         encoding="utf-8",
     )
 
-    # Source: тоже зарегистрированный, того же раздела
+    # Source: тоже зарегистрированный, того же раздела. _output пуст —
+    # отдельный кейс `has_audit_artifacts=True` тестируем явно ниже.
     src = p / "SOURCE"
     (src / "_output").mkdir(parents=True)
     (src / "project_info.json").write_text(
@@ -56,10 +57,6 @@ def projects_dir(tmp_path, monkeypatch):
     )
     (src / "src.pdf").write_bytes(_PDF_SRC)
     (src / "src.md").write_bytes(_MD_SRC)
-    (src / "_output" / "03_findings.json").write_text(
-        json.dumps({"findings": [{"id": "F-SRC"}]}),
-        encoding="utf-8",
-    )
 
     # Другой раздел — для теста запрета cross-section
     ar = p / "AR_PROJ"
@@ -361,3 +358,192 @@ def test_merge_creates_new_version_when_latest_not_empty(client, projects_dir):
     v2_files = sorted(p.name for p in (projects_dir / "TARGET" / "_versions" / "v2").iterdir() if p.is_file())
     assert "doc.pdf" in v2_files
     assert "src.pdf" not in v2_files
+
+
+# ─── Source `_output` guard: запрещаем merge без discard_source_output ─────
+
+
+def test_merge_rejects_source_with_audit_artifacts_without_flag(client, projects_dir):
+    """Если source имеет непустой _output — без discard_source_output это 409."""
+    c, _ = client
+    # Кладём findings в source — имитация уже обработанного проекта
+    (projects_dir / "SOURCE" / "_output" / "03_findings.json").write_text(
+        json.dumps({"findings": [{"id": "F-SRC"}]}), encoding="utf-8",
+    )
+    r = c.post(
+        "/api/projects/TARGET/versions/from-project",
+        json={"source_project_id": "SOURCE"},
+    )
+    assert r.status_code == 409, r.text
+    detail = r.json()["detail"]
+    assert isinstance(detail, dict), detail
+    assert detail["code"] == "source_output_not_empty"
+    assert detail["needs_flag"] == "discard_source_output"
+    # Source не удалён, V2 не создана
+    assert (projects_dir / "SOURCE").exists()
+    assert not (projects_dir / "TARGET" / "_versions" / "v2").exists()
+
+
+def test_merge_allows_source_with_artifacts_when_discard_flag_set(client, projects_dir):
+    """С `discard_source_output=True` source мерджится, _output теряется."""
+    c, _ = client
+    (projects_dir / "SOURCE" / "_output" / "03_findings.json").write_text(
+        json.dumps({"findings": [{"id": "F-SRC"}]}), encoding="utf-8",
+    )
+    r = c.post(
+        "/api/projects/TARGET/versions/from-project",
+        json={"source_project_id": "SOURCE", "discard_source_output": True},
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["version_id"] == "v2"
+    # Source удалён, V2 _output пуст
+    assert not (projects_dir / "SOURCE").exists()
+    v2 = projects_dir / "TARGET" / "_versions" / "v2"
+    assert (v2 / "src.pdf").exists()
+    assert not (v2 / "_output" / "03_findings.json").exists()
+
+
+def test_merge_allows_source_with_empty_output(client):
+    """`_output` существует, но пуст → разрешено без discard."""
+    c, projects_dir = client
+    # Фикстурный SOURCE/_output уже пуст
+    assert (projects_dir / "SOURCE" / "_output").exists()
+    assert not any((projects_dir / "SOURCE" / "_output").iterdir())
+    r = c.post(
+        "/api/projects/TARGET/versions/from-project",
+        json={"source_project_id": "SOURCE"},
+    )
+    assert r.status_code == 200, r.text
+
+
+# ─── Target active audit guard ──────────────────────────────────────────────
+
+
+def test_merge_rejects_when_target_audit_running(client, projects_dir, monkeypatch):
+    """Если target сейчас в активном аудите — flat и path endpoint отдают 409."""
+    c, _ = client
+    from backend.app.pipeline import manager as pipeline_mod
+
+    calls = []
+    def fake_is_running(pid):
+        calls.append(pid)
+        return pid == "TARGET"
+
+    monkeypatch.setattr(pipeline_mod.pipeline_manager, "is_running", fake_is_running)
+
+    # Path endpoint
+    r1 = c.post(
+        "/api/projects/TARGET/versions/from-project",
+        json={"source_project_id": "SOURCE"},
+    )
+    assert r1.status_code == 409, r1.text
+    assert "находится в обработке" in r1.json()["detail"]
+
+    # Flat endpoint
+    r2 = c.post(
+        "/api/projects/versions/from-project",
+        json={"target_project_id": "TARGET", "source_project_id": "SOURCE"},
+    )
+    assert r2.status_code == 409, r2.text
+    assert "находится в обработке" in r2.json()["detail"]
+
+    # Никакой merge не произошёл
+    assert (projects_dir / "SOURCE").exists()
+    assert not (projects_dir / "TARGET" / "_versions" / "v2").exists()
+
+
+def test_merge_rejects_when_source_audit_running_still_works(client, projects_dir, monkeypatch):
+    """Sanity-check: source-guard остался на месте после правок."""
+    c, _ = client
+    from backend.app.pipeline import manager as pipeline_mod
+    monkeypatch.setattr(
+        pipeline_mod.pipeline_manager, "is_running",
+        lambda pid: pid == "SOURCE",
+    )
+    r = c.post(
+        "/api/projects/TARGET/versions/from-project",
+        json={"source_project_id": "SOURCE"},
+    )
+    assert r.status_code == 409
+    assert "Аудит source" in r.json()["detail"]
+
+
+# ─── Кеш списка проектов инвалидируется после merge ─────────────────────────
+
+
+def test_merge_invalidates_project_dirs_cache(client, projects_dir):
+    """После merge `/api/projects` не показывает удалённый source.
+
+    Без явной инвалидации TTL-кеш `_PROJECT_DIRS_CACHE` держал бы SOURCE до
+    30 секунд (см. project_service.iter_project_dirs). После фикса
+    `merge_project_as_version` сам вызывает `invalidate_project_cache`.
+    """
+    c, _ = client
+    import backend.app.services.common.project_service as ps
+
+    # «Прогреваем» кеш — он должен содержать SOURCE и TARGET
+    r0 = c.get("/api/projects")
+    assert r0.status_code == 200
+    ids_before = {p["project_id"] for p in r0.json()["projects"]}
+    assert "SOURCE" in ids_before
+    assert "TARGET" in ids_before
+
+    # До merge кеш не пуст
+    assert ps._PROJECT_DIRS_CACHE, "Кеш должен быть прогрет"
+
+    r = c.post(
+        "/api/projects/TARGET/versions/from-project",
+        json={"source_project_id": "SOURCE"},
+    )
+    assert r.status_code == 200, r.text
+
+    # Кеш сброшен (mtime=0 → следующий GET перестроит)
+    assert ps._PROJECT_DIRS_CACHE == []
+    assert ps._PROJECT_DIRS_CACHE_TIME == 0.0
+
+    # GET /api/projects сразу видит актуальное состояние без TTL ожидания
+    r2 = c.get("/api/projects")
+    ids_after = {p["project_id"] for p in r2.json()["projects"]}
+    assert "SOURCE" not in ids_after
+    assert "TARGET" in ids_after
+
+
+def test_invalidate_project_cache_helper():
+    """`invalidate_project_cache()` сбрасывает оба внутренних поля кеша."""
+    import backend.app.services.common.project_service as ps
+    ps._PROJECT_DIRS_CACHE = [("X", Path("/tmp/X"))]
+    ps._PROJECT_DIRS_CACHE_TIME = 12345.0
+    ps.invalidate_project_cache()
+    assert ps._PROJECT_DIRS_CACHE == []
+    assert ps._PROJECT_DIRS_CACHE_TIME == 0.0
+
+
+# ─── has_audit_artifacts ────────────────────────────────────────────────────
+
+
+def test_has_audit_artifacts_detects_files_and_subdirs(tmp_path):
+    from backend.app.services.common.version_service import has_audit_artifacts
+    proj = tmp_path / "p"
+    proj.mkdir()
+    assert has_audit_artifacts(proj) is False  # нет _output
+
+    (proj / "_output").mkdir()
+    assert has_audit_artifacts(proj) is False  # _output пуст
+
+    # Пустой файл (0 байт) тоже не считается артефактом
+    (proj / "_output" / "empty.txt").write_text("")
+    assert has_audit_artifacts(proj) is False
+
+    # Непустой файл → артефакт
+    (proj / "_output" / "03_findings.json").write_text("{}")
+    assert has_audit_artifacts(proj) is True
+
+    # Чистим, проверяем поддиректорию
+    (proj / "_output" / "03_findings.json").unlink()
+    (proj / "_output" / "empty.txt").unlink()
+    sub = proj / "_output" / "blocks_gemma_100"
+    sub.mkdir()
+    assert has_audit_artifacts(proj) is False  # пустая подпапка
+    (sub / "page_1.png").write_text("PNG")
+    assert has_audit_artifacts(proj) is True

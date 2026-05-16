@@ -219,6 +219,7 @@ class FlatVersionFromProjectRequest(BaseModel):
     comment: Optional[str] = None
     source: str = "edit_projects_modal"
     delete_source: bool = True
+    discard_source_output: bool = False
 
 
 @router.post("/versions/from-project")
@@ -240,6 +241,12 @@ async def flat_create_version_from_project(req: FlatVersionFromProjectRequest):
                 409,
                 f"Аудит source проекта '{req.source_project_id}' выполняется. Сначала отмените.",
             )
+        if pipeline_manager.is_running(req.target_project_id):
+            raise HTTPException(
+                409,
+                f"Target проект '{req.target_project_id}' сейчас находится в обработке. "
+                f"Привязка версии невозможна, пока активный аудит не завершится.",
+            )
     except AttributeError:
         pass
 
@@ -250,9 +257,19 @@ async def flat_create_version_from_project(req: FlatVersionFromProjectRequest):
             comment=req.comment,
             source=req.source,
             delete_source=req.delete_source,
+            discard_source_output=req.discard_source_output,
         )
     except FileNotFoundError as e:
         raise HTTPException(404, str(e))
+    except _vs.SourceOutputNotEmptyError as e:
+        raise HTTPException(
+            409,
+            {
+                "code": "source_output_not_empty",
+                "message": str(e),
+                "needs_flag": "discard_source_output",
+            },
+        )
     except _vs.VersionFileConflictError as e:
         raise HTTPException(409, str(e))
     except _vs.VersionFileError as e:
@@ -543,6 +560,7 @@ class VersionFromProjectRequest(BaseModel):
     comment: Optional[str] = None
     source: str = "edit_projects_modal"
     delete_source: bool = True
+    discard_source_output: bool = False
 
 
 @router.post("/{target_project_id:path}/versions/from-project")
@@ -556,9 +574,10 @@ async def create_version_from_project(
     - section должны совпадать;
     - PDF/MD source переносятся в `_versions/v{N+1}/` target;
     - V1 target не трогается;
-    - `_output/` source НЕ копируется;
+    - `_output/` source НЕ копируется (новая версия начинается с нуля);
+    - если source имеет непустой `_output` → 409 без флага `discard_source_output`;
     - source-папка удаляется (delete_source=True по умолчанию);
-    - source проект не должен иметь активного аудита.
+    - ни source, ни target не должны иметь активного аудита.
     """
     from backend.app.services.common import version_service
     from backend.app.pipeline.manager import pipeline_manager
@@ -571,12 +590,18 @@ async def create_version_from_project(
     if not tgt_dir.exists():
         raise HTTPException(404, f"Target проект '{target_project_id}' не найден")
 
-    # Не сливаем активный source
+    # Не сливаем активный source/target
     try:
         if pipeline_manager.is_running(req.source_project_id):
             raise HTTPException(
                 409,
                 f"Аудит source проекта '{req.source_project_id}' выполняется. Сначала отмените.",
+            )
+        if pipeline_manager.is_running(target_project_id):
+            raise HTTPException(
+                409,
+                f"Target проект '{target_project_id}' сейчас находится в обработке. "
+                f"Привязка версии невозможна, пока активный аудит не завершится.",
             )
     except AttributeError:
         # pipeline_manager может не быть готов в тестах — пропускаем
@@ -589,9 +614,19 @@ async def create_version_from_project(
             comment=req.comment,
             source=req.source,
             delete_source=req.delete_source,
+            discard_source_output=req.discard_source_output,
         )
     except FileNotFoundError as e:
         raise HTTPException(404, str(e))
+    except version_service.SourceOutputNotEmptyError as e:
+        raise HTTPException(
+            409,
+            {
+                "code": "source_output_not_empty",
+                "message": str(e),
+                "needs_flag": "discard_source_output",
+            },
+        )
     except version_service.VersionFileConflictError as e:
         raise HTTPException(409, str(e))
     except version_service.VersionFileError as e:

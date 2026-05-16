@@ -15,7 +15,7 @@ from datetime import datetime
 
 from backend.app.pipeline.stages.crop_blocks.block_markdown import BLOCK_HEADER_RE
 from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import GEMMA_BLOCKS_DIRNAME, gemma_blocks_index_path
-from backend.app.core.config import PROJECTS_DIR as _DEFAULT_PROJECTS_DIR, SEVERITY_CONFIG
+from backend.app.core.config import PROJECTS_DIR as _DEFAULT_PROJECTS_DIR, SEVERITY_CONFIG, HIDDEN_PROJECTS_FILE
 from backend.app.models.project import (
     ProjectInfo, ProjectStatus, PipelineStatus, TextExtractionQuality,
 )
@@ -234,6 +234,19 @@ _PROJECT_DIRS_CACHE_TIME: float = 0.0
 _PROJECT_DIRS_TTL: float = 30.0
 
 
+def invalidate_project_cache() -> None:
+    """Сбросить TTL-кеш `iter_project_dirs`.
+
+    Вызывать после операций, которые меняют состав папок в `PROJECTS_DIR`:
+    добавление/удаление/переименование проектов (например, после merge-as-version
+    удаления source-папки). Без этого `/api/projects` будет ~30 сек показывать
+    устаревший список.
+    """
+    global _PROJECT_DIRS_CACHE, _PROJECT_DIRS_CACHE_TIME
+    _PROJECT_DIRS_CACHE = []
+    _PROJECT_DIRS_CACHE_TIME = 0.0
+
+
 def iter_project_dirs(force: bool = False) -> list[tuple[str, Path]]:
     """Рекурсивно найти все папки проектов (включая подпапки-группы).
 
@@ -345,10 +358,43 @@ def resolve_project_dir(
     return direct  # fallback
 
 
+def _load_hidden_projects() -> set[str]:
+    """Прочитать множество скрытых project_id из hidden_projects.json."""
+    if not HIDDEN_PROJECTS_FILE.exists():
+        return set()
+    try:
+        with open(HIDDEN_PROJECTS_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return set(data.get("hidden", []))
+    except Exception:
+        return set()
+
+
+def _save_hidden_projects(hidden: set[str]) -> None:
+    HIDDEN_PROJECTS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with open(HIDDEN_PROJECTS_FILE, "w", encoding="utf-8") as f:
+        json.dump({"hidden": sorted(hidden)}, f, ensure_ascii=False, indent=2)
+
+
+def hide_project(project_id: str) -> None:
+    hidden = _load_hidden_projects()
+    hidden.add(project_id)
+    _save_hidden_projects(hidden)
+
+
+def unhide_project(project_id: str) -> None:
+    hidden = _load_hidden_projects()
+    hidden.discard(project_id)
+    _save_hidden_projects(hidden)
+
+
 def list_projects() -> list[ProjectStatus]:
     """Получить список всех проектов с их статусом."""
+    hidden = _load_hidden_projects()
     projects = []
     for project_id, entry in iter_project_dirs():
+        if project_id in hidden:
+            continue
         info_path = entry / "project_info.json"
         if not info_path.exists():
             pdf_files = list(entry.glob("*.pdf"))
@@ -634,6 +680,33 @@ def save_project_info(project_id: str, data: dict) -> bool:
         return True
     except Exception:
         return False
+
+
+def set_project_section(project_id: str, section: str) -> dict:
+    """Сменить дисциплину проекта (только метаданные, без перемещения файлов).
+
+    Для незарегистрированных проектов (папка с PDF, без project_info.json)
+    создаёт минимальный project_info.json с указанным разделом.
+    """
+    info = get_project_info(project_id)
+    if not info:
+        proj_dir = resolve_project_dir(project_id)
+        if not proj_dir.exists():
+            raise ValueError(f"Папка проекта '{project_id}' не найдена")
+        pdf_files = sorted(p.name for p in proj_dir.glob("*.pdf") if p.is_file())
+        info = {
+            "project_id": project_id,
+            "name": project_id,
+            "section": section,
+            "description": "",
+            "pdf_file": pdf_files[0] if pdf_files else "",
+            "pdf_files": pdf_files,
+        }
+    else:
+        info["section"] = section
+    if not save_project_info(project_id, info):
+        raise ValueError(f"Не удалось сохранить project_info.json для '{project_id}'")
+    return info
 
 
 def _get_pipeline_status(output_dir: Path, *, project_id: Optional[str] = None) -> PipelineStatus:

@@ -63,6 +63,14 @@ class VersionUploadForbiddenError(PermissionError):
     """Загрузка в эту версию запрещена (например, V1 legacy)."""
 
 
+class SourceOutputNotEmptyError(ValueError):
+    """У source-проекта есть непустой `_output/` (готовые результаты аудита).
+
+    Поднимается из `merge_project_as_version`, если `discard_source_output=False`.
+    Защищает пользователя от молчаливой потери findings/норм/оптимизации.
+    """
+
+
 # ─── Per-job version binding ──────────────────────────────────────────────
 # По аналогии с `bind_object` из project_service: pipeline-runner может
 # выставить ContextVar на старте job'а, и все service-методы под ним будут
@@ -1133,6 +1141,30 @@ def create_version_from_existing_files(
     }
 
 
+def has_audit_artifacts(project_dir: Path) -> bool:
+    """Есть ли у проекта непустой `_output/` с готовыми артефактами аудита.
+
+    Используется `merge_project_as_version`, чтобы не уничтожить findings/
+    нормы/оптимизацию при склейке source-проекта в новую версию target.
+    Пустой `_output/` (или его отсутствие) считается «никакого аудита нет».
+    """
+    output_dir = project_dir / "_output"
+    if not output_dir.exists() or not output_dir.is_dir():
+        return False
+    try:
+        for entry in output_dir.iterdir():
+            if entry.name.startswith("."):
+                continue
+            if entry.is_file() and entry.stat().st_size > 0:
+                return True
+            if entry.is_dir():
+                if any(True for _ in entry.iterdir()):
+                    return True
+    except OSError:
+        return False
+    return False
+
+
 def merge_project_as_version(
     source_project_id: str,
     target_project_id: str,
@@ -1140,6 +1172,7 @@ def merge_project_as_version(
     comment: Optional[str] = None,
     source: str = "edit_projects_modal",
     delete_source: bool = True,
+    discard_source_output: bool = False,
     resolve_project_dir_fn=None,
 ) -> dict[str, Any]:
     """Слить source-проект в target как новую версию (V{N+1}).
@@ -1149,10 +1182,17 @@ def merge_project_as_version(
     - все PDF/MD source-проекта переносятся в `_versions/v{N+1}/` target'a;
     - V1 (корень) target'a не трогается;
     - `_output/` source-проекта НЕ копируется (новая версия начинается с нуля);
-    - после успешного копирования source-папка удаляется (delete_source=True).
+    - если у source есть готовые артефакты в `_output/` и
+      `discard_source_output=False` → `SourceOutputNotEmptyError`. Это защита от
+      молчаливой потери findings/норм/оптимизации;
+    - после успешного копирования source-папка удаляется (delete_source=True);
+    - после удаления source инвалидируется `_PROJECT_DIRS_CACHE`, чтобы
+      `/api/projects` сразу не показывал удалённый source.
 
     Raises:
         FileNotFoundError — source или target не найдены.
+        SourceOutputNotEmptyError — у source есть `_output/` и нет
+            `discard_source_output=True`.
         ValueError — source == target, section не совпадает, нет PDF в source.
     """
     import shutil
@@ -1211,6 +1251,19 @@ def merge_project_as_version(
 
     if not pdf_found:
         raise ValueError(f"В source проекте '{source_project_id}' нет PDF — слияние невозможно")
+
+    # Guard: source имеет готовые артефакты аудита, а флаг discard не выставлен.
+    # _output source-проекта всё равно НЕ копируется в новую версию (это разрушает
+    # путевые ссылки внутри manifestов/findings). Поэтому если пользователь не
+    # подтвердил «согласен потерять findings» — отказываем.
+    # Проверка стоит после section/pdf guards, чтобы 409 не маскировал более
+    # фундаментальные ошибки (например, отсутствие PDF).
+    if not discard_source_output and has_audit_artifacts(source_dir):
+        raise SourceOutputNotEmptyError(
+            f"У source проекта '{source_project_id}' есть готовые результаты аудита "
+            f"в _output/. Они будут потеряны при слиянии. "
+            f"Передайте discard_source_output=true, чтобы подтвердить."
+        )
 
     # Если у target latest-версия пустая (pdf_count == 0) — переиспользуем её,
     # вместо того чтобы плодить новую. Типичный кейс: пользователь нажал
@@ -1298,6 +1351,13 @@ def merge_project_as_version(
                 "warnings": [f"Не удалось удалить source папку: {e}"],
                 "versions_summary": get_versions_summary(target_dir, target_project_id),
             }
+        # Инвалидируем кеш списка проектов, иначе удалённый source ещё ~30 сек
+        # будет висеть в `/api/projects` из-за TTL.
+        try:
+            from backend.app.services.common.project_service import invalidate_project_cache
+            invalidate_project_cache()
+        except ImportError:
+            pass
 
     return {
         "status": "ok",
