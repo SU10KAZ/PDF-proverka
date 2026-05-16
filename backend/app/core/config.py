@@ -287,6 +287,7 @@ USAGE_DATA_FILE              = APP_DATA_DIR / "usage_data.json"
 USAGE_OFFSETS_FILE           = APP_DATA_DIR / "usage_offsets.json"
 STAGE_MODELS_FILE            = APP_DATA_DIR / "stage_models.json"
 STAGE_BATCH_MODES_FILE_PATH  = APP_DATA_DIR / "stage_batch_modes.json"
+HIDDEN_PROJECTS_FILE         = APP_DATA_DIR / "hidden_projects.json"
 
 _STAGE_MODELS_FILE = STAGE_MODELS_FILE
 
