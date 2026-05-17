@@ -424,11 +424,51 @@ async def call_gpt_for_block(
     version_id: str = "",
     manual_run_id: str = "",
     job_id: str = "",
+    output_dir: Optional[Path] = None,
 ) -> dict:
+    png_path = blocks_dir / block["file"]
+    if not png_path.exists():
+        return {"ok": False, "error": f"PNG missing: {png_path.name}", "elapsed_ms": 0}
+
+    user_text = (
+        f"# Блок {block['block_id']} | страница PDF {block['page']}\n\n"
+        f"## Уже извлечённое описание блока (контекст, считай верным):\n"
+        f"```json\n{json.dumps(enrichment, ensure_ascii=False, indent=2)}\n```\n\n"
+        f"## Текст страницы (общие указания, спецификации и т.д.):\n"
+        f"{page_text or '(недоступен)'}\n\n"
+        f"## Задача:\n"
+        f"Посмотри на изображение блока и верни findings[]. Только проблемы. "
+        f"Не описывай что видишь. Если всё корректно — пустой массив."
+    )
+
+    # ─── Paid response cache check (до guard и до сети) ────────────
+    # Если этот блок с этим model/prompt/image уже отвечал — берём из
+    # cache, никаких paid_event и денег. Спасает в инциденте 2026-05-16,
+    # где retry платил $0.32 за повтор того же блока.
+    from backend.app.pipeline.stages.block_analysis import stage02_paid_cache
+    cache_key = ""
+    image_bytes_for_cache = b""
+    if stage02_paid_cache.cache_enabled() and output_dir is not None:
+        try:
+            image_bytes_for_cache = png_path.read_bytes()
+            cache_key = stage02_paid_cache.compute_cache_key(
+                model=model,
+                block_id=str(block.get("block_id", "")),
+                system_prompt=system_prompt,
+                user_text=user_text,
+                enrichment=enrichment,
+                page_text=page_text,
+                image_bytes=image_bytes_for_cache,
+            )
+            cached = stage02_paid_cache.try_load_cached(output_dir, cache_key)
+            if cached is not None:
+                return cached
+        except OSError:
+            # disk error при чтении PNG — пусть дальше упадёт на той же ошибке
+            cache_key = ""
+
     # ─── Paid API guard (defence-in-depth) ──────────────────────────
-    # Главный guard стоит в orchestrator'е manager._run_block_analysis_findings_only.
-    # Тут — повторная проверка, чтобы прямой запуск runner'а (тест, ad-hoc
-    # скрипт, новый caller) тоже не смог утечь в OpenRouter без manual_run_id.
+    # Cache miss → нужен сетевой вызов → нужен guard.
     try:
         from backend.app.services.llm.paid_api_guard import (
             PaidApiBlockedError as _PaidApiBlockedError,
@@ -451,21 +491,6 @@ async def call_gpt_for_block(
             "elapsed_ms": 0,
             "paid_api_blocked": True,
         }
-
-    png_path = blocks_dir / block["file"]
-    if not png_path.exists():
-        return {"ok": False, "error": f"PNG missing: {png_path.name}", "elapsed_ms": 0}
-
-    user_text = (
-        f"# Блок {block['block_id']} | страница PDF {block['page']}\n\n"
-        f"## Уже извлечённое описание блока (контекст, считай верным):\n"
-        f"```json\n{json.dumps(enrichment, ensure_ascii=False, indent=2)}\n```\n\n"
-        f"## Текст страницы (общие указания, спецификации и т.д.):\n"
-        f"{page_text or '(недоступен)'}\n\n"
-        f"## Задача:\n"
-        f"Посмотри на изображение блока и верни findings[]. Только проблемы. "
-        f"Не описывай что видишь. Если всё корректно — пустой массив."
-    )
 
     messages = [
         {"role": "system", "content": system_prompt},
@@ -536,7 +561,7 @@ async def call_gpt_for_block(
         parsed = None
         parse_err = str(e)
 
-    return {
+    response_dict = {
         "ok": parsed is not None,
         "parse_error": parse_err,
         "elapsed_ms": elapsed_ms,
@@ -545,7 +570,33 @@ async def call_gpt_for_block(
         "reasoning_tokens": completion_details.get("reasoning_tokens"),
         "raw_content": raw,
         "parsed": parsed,
+        "from_cache": False,
     }
+
+    # ─── Сохранить в cache СРАЗУ после успешного 2xx ────────────────
+    # Даже если parsed is None (parse_error), raw_content есть и за него уже
+    # заплачено — при retry хотим получить тот же ответ без новой оплаты.
+    if cache_key and output_dir is not None:
+        try:
+            in_tok = int(usage.get("prompt_tokens") or 0)
+            out_tok = int(usage.get("completion_tokens") or 0)
+            cost_est = (in_tok * PRICE_IN + out_tok * PRICE_OUT) / 1_000_000
+            stage02_paid_cache.save_to_cache(
+                output_dir,
+                cache_key,
+                response=response_dict,
+                model=model,
+                block_id=str(block.get("block_id", "")),
+                original_cost_usd=cost_est,
+                source_job_id=job_id,
+            )
+        except Exception:  # noqa: BLE001
+            # cache save — best-effort; ошибка не должна валить stage
+            logging.getLogger(__name__).warning(
+                "stage02_paid_cache.save_to_cache failed", exc_info=True
+            )
+
+    return response_dict
 
 
 # ─── Claude CLI transport (subscription) ────────────────────────────────────
@@ -1015,6 +1066,7 @@ async def run_findings_only_for_project(
                     version_id=version_id,
                     manual_run_id=manual_run_id,
                     job_id=job_id,
+                    output_dir=output_dir,
                 )
             n = len((res.get("parsed") or {}).get("findings", [])) if res.get("ok") else 0
             record = {
@@ -1227,14 +1279,21 @@ async def run_findings_only_for_project(
     total_out = sum((r["result"].get("output_tokens") or 0) for r in results)
     total_reason = sum((r["result"].get("reasoning_tokens") or 0) for r in results)
     total_findings = sum(len(b["findings"]) for b in block_analyses)
+    # Cache hits: токены отображаем (для UI/billing audit), но cost не платим.
+    cache_hits = [r for r in results if r["result"].get("from_cache")]
+    cached_in = sum((r["result"].get("input_tokens") or 0) for r in cache_hits)
+    cached_out = sum((r["result"].get("output_tokens") or 0) for r in cache_hits)
+    billable_in = max(0, total_in - cached_in)
+    billable_out = max(0, total_out - cached_out)
     if use_claude_cli:
         # Claude CLI subscription: суммируем cost_usd, отчитанный самим CLI.
+        # CLI не кешируется здесь, так что cached_* = 0.
         cost_total = sum((r["result"].get("cli_reported_cost_usd") or 0.0) for r in results)
         cost_in = 0.0
         cost_out = 0.0
     else:
-        cost_in = total_in * PRICE_IN / 1_000_000
-        cost_out = total_out * PRICE_OUT / 1_000_000
+        cost_in = billable_in * PRICE_IN / 1_000_000
+        cost_out = billable_out * PRICE_OUT / 1_000_000
         cost_total = cost_in + cost_out
 
     summary = {
@@ -1280,6 +1339,11 @@ async def run_findings_only_for_project(
             "estimated_cost_usd_out": round(cost_out, 4),
             "estimated_cost_usd_total": round(cost_total, 4),
             "estimated_cost_per_block_usd": round(cost_total / max(1, len(ok)), 4),
+            "cache_hits": len(cache_hits),
+            "cached_input_tokens": cached_in,
+            "cached_output_tokens": cached_out,
+            "billable_input_tokens": billable_in,
+            "billable_output_tokens": billable_out,
         },
         "enrichment_sources": enr_sources,
     }

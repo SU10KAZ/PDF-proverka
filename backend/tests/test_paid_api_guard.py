@@ -351,9 +351,12 @@ def test_llm_runner_stream_blocks_before_network(isolated_paid_api, monkeypatch)
 # ─── C. Stage 02 call_gpt_for_block (defence-in-depth) ────────────────
 
 
-def test_stage02_call_gpt_blocks_before_httpx(isolated_paid_api):
+def test_stage02_call_gpt_blocks_before_httpx(isolated_paid_api, tmp_path):
     """C1: call_gpt_for_block без manual_run возвращает paid_api_blocked
     БЕЗ обращения к client.post.
+
+    После добавления Stage 02 cache PNG читается до guard (для cache key), так
+    что PNG должен реально существовать — иначе тест получит "PNG missing".
     """
     from backend.app.pipeline.stages.block_analysis import gemma_findings_only
 
@@ -364,13 +367,19 @@ def test_stage02_call_gpt_blocks_before_httpx(isolated_paid_api):
             httpx_called["flag"] = True
             raise AssertionError("httpx.post was attempted despite block!")
 
+    # Подложим реальный PNG-файл (минимальный фейк, для cache key нужен только
+    # bytes-read, не валидный PNG).
+    blocks_dir = tmp_path / "blocks"
+    blocks_dir.mkdir()
+    (blocks_dir / "b1.png").write_bytes(b"\x89PNG\r\n\x1a\nFAKE")
+
     async def _run():
         return await gemma_findings_only.call_gpt_for_block(
             client=_FakeClient(),
             block={"block_id": "b1", "page": 1, "file": "b1.png"},
             enrichment={},
             page_text="",
-            blocks_dir=Path("/tmp/nonexistent_blocks_dir"),
+            blocks_dir=blocks_dir,
             api_key="sk-fake",
             model="openai/gpt-5.4",
             reasoning_effort="low",
@@ -379,12 +388,80 @@ def test_stage02_call_gpt_blocks_before_httpx(isolated_paid_api):
             timeout=30,
             project_id="proj/A.pdf",
             manual_run_id="",  # нет manual_run → блок
+            output_dir=tmp_path,
         )
 
     res = asyncio.run(_run())
     assert res.get("paid_api_blocked") is True
     assert "paid_api_blocked" in (res.get("error") or "")
     assert httpx_called["flag"] is False
+
+
+def test_stage02_cache_hit_skips_network_and_guard(isolated_paid_api, tmp_path, monkeypatch):
+    """C2 (новый): второй call_gpt_for_block с тем же model/block/prompt/image
+    должен взять ответ из cache → НЕ дёргать httpx, НЕ записывать paid_event.
+
+    Сценарий повторяет 2026-05-16: один блок, retry, должен быть бесплатным.
+    """
+    from backend.app.pipeline.stages.block_analysis import gemma_findings_only
+
+    blocks_dir = tmp_path / "blocks"
+    blocks_dir.mkdir()
+    (blocks_dir / "b1.png").write_bytes(b"\x89PNG\r\n\x1a\nFAKE_IMAGE_BYTES")
+
+    # 1) Первый вызов: эмулируем 2xx response от OpenRouter с usage.
+    post_calls = {"n": 0}
+
+    class _RealResp:
+        status_code = 200
+
+        def json(self):
+            return {
+                "choices": [{"message": {"content": '{"findings":[]}'}}],
+                "usage": {
+                    "prompt_tokens": 40517,
+                    "completion_tokens": 17118,
+                    "completion_tokens_details": {"reasoning_tokens": 0},
+                },
+            }
+
+        text = ""
+
+    class _RealClient:
+        async def post(self, *a, **kw):
+            post_calls["n"] += 1
+            return _RealResp()
+
+    # manual_run для project_id="proj/A.pdf"
+    guard = isolated_paid_api["guard"]
+    mrid = guard.issue_manual_run(project_ids=["proj/A.pdf"])
+
+    block = {"block_id": "b1", "page": 1, "file": "b1.png"}
+    common_kwargs = dict(
+        block=block, enrichment={"label": "test"}, page_text="page text",
+        blocks_dir=blocks_dir, api_key="sk-real", model="openai/gpt-5.4",
+        reasoning_effort="low", max_tokens=4096, system_prompt="SYS",
+        timeout=30, project_id="proj/A.pdf", manual_run_id=mrid, job_id="j1",
+        output_dir=tmp_path,
+    )
+
+    async def _first():
+        return await gemma_findings_only.call_gpt_for_block(client=_RealClient(), **common_kwargs)
+
+    async def _second():
+        return await gemma_findings_only.call_gpt_for_block(client=_RealClient(), **common_kwargs)
+
+    res1 = asyncio.run(_first())
+    assert res1["ok"] is True
+    assert res1.get("from_cache") is False
+    assert post_calls["n"] == 1  # один платный вызов
+
+    # 2) Повторный вызов с теми же параметрами — cache hit, нет network.
+    res2 = asyncio.run(_second())
+    assert res2["ok"] is True
+    assert res2.get("from_cache") is True
+    assert res2.get("cost_usd") == 0.0
+    assert post_calls["n"] == 1  # post больше НЕ вызывали
 
 
 # ─── D. Queue / resume / orphan ───────────────────────────────────────
