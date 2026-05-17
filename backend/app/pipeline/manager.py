@@ -87,6 +87,9 @@ from backend.app.pipeline.stages.norms.runner import (
 from backend.app.pipeline.stages.findings_review.runner import (
     run_findings_review as _run_findings_review_stage,
 )
+from backend.app.pipeline.stages.critic_v2_triage import (
+    run_critic_v2_triage as _run_critic_v2_triage_stage,
+)
 from backend.app.pipeline.stages.block_analysis.runner import (
     run_block_analysis_findings_only as _run_block_analysis_findings_only_stage,
 )
@@ -3034,6 +3037,100 @@ class PipelineManager:
         elif result.error and not result.critic_ok:
             job.status = JobStatus.FAILED
             job.error_message = result.error
+            return
+
+        # ─── Critic v2 post-processing (experimental, OFF by default) ──────
+        # Запускается ТОЛЬКО если legacy critic отработал (critic_ok=True) и
+        # CRITIC_V2_ENABLED=True. Никогда не запускается, если job отменён.
+        # Fail-open: ошибка stage не валит весь аудит (если только не включён
+        # CRITIC_V2_FAILS_PIPELINE).
+        if not result.cancelled and result.critic_ok:
+            await self._run_critic_v2_post_review(job)
+
+    async def _run_critic_v2_post_review(self, job: AuditJob) -> None:
+        """Post-processing critic v2 triage над уже готовыми 03_findings.json.
+
+        Не модифицирует production artifacts. Пишет только в
+        <project>/_output/<CRITIC_V2_OUTPUT_SUBDIR>/. LLM не вызывается.
+        Контроль через env (см. backend.app.core.config):
+          CRITIC_V2_ENABLED, CRITIC_V2_PROFILE, CRITIC_V2_LLM_ENABLED,
+          CRITIC_V2_FAILS_PIPELINE, CRITIC_V2_OUTPUT_SUBDIR.
+        """
+        from backend.app.core import config as cfg
+
+        pid = job.project_id
+        if not getattr(cfg, "CRITIC_V2_ENABLED", False):
+            self._update_pipeline_log(
+                pid, "critic_v2_triage", "skipped",
+                detail={"reason": "CRITIC_V2_ENABLED=false"},
+            )
+            return
+
+        profile = getattr(cfg, "CRITIC_V2_PROFILE", "conservative") or "conservative"
+        output_subdir = getattr(cfg, "CRITIC_V2_OUTPUT_SUBDIR", "critic_v2") or "critic_v2"
+        # llm_enabled из конфига передаём как hint, но runner внутри игнорирует
+        # его (см. runner.py) — это вторая линия защиты.
+        llm_enabled = bool(getattr(cfg, "CRITIC_V2_LLM_ENABLED", False))
+        fails_pipeline = bool(getattr(cfg, "CRITIC_V2_FAILS_PIPELINE", False))
+
+        project_dir = Path(_project_path(pid, getattr(job, "version_id", None)))
+
+        await self._log(job, f"Critic v2 triage: запуск (profile={profile}, "
+                              f"subdir={output_subdir}, llm=False)")
+        self._update_pipeline_log(
+            pid, "critic_v2_triage", "running",
+            detail={"profile": profile, "output_subdir": output_subdir},
+        )
+        try:
+            # Runner синхронный и быстрый — вынесем в thread, чтобы не блокировать loop.
+            result = await asyncio.to_thread(
+                _run_critic_v2_triage_stage,
+                project_dir,
+                output_subdir=output_subdir,
+                profile=profile,
+                llm_enabled=False,  # явно False — fail-safe независимо от cfg
+                project_id=pid,
+            )
+        except Exception as exc:  # noqa: BLE001 — fail-open
+            await self._log(job, f"Critic v2 triage упал: {exc}", "warn")
+            self._update_pipeline_log(
+                pid, "critic_v2_triage", "error",
+                error=str(exc),
+                detail={"non_blocking": not fails_pipeline},
+            )
+            if fails_pipeline:
+                job.status = JobStatus.FAILED
+                job.error_message = f"Critic v2 triage failed: {exc}"
+                raise
+            return
+
+        if not result.success:
+            await self._log(job, f"Critic v2 triage: {result.error}", "warn")
+            self._update_pipeline_log(
+                pid, "critic_v2_triage", "error",
+                error=result.error or "unknown",
+                detail={"non_blocking": not fails_pipeline},
+            )
+            if fails_pipeline:
+                job.status = JobStatus.FAILED
+                job.error_message = f"Critic v2 triage failed: {result.error}"
+            return
+
+        await self._log(
+            job,
+            f"Critic v2 triage готов: {result.triage_total}/{result.findings_total} "
+            f"замечаний обработано, артефакты в {result.artifacts_dir}",
+        )
+        self._update_pipeline_log(
+            pid, "critic_v2_triage", "done",
+            detail={
+                "profile": result.profile,
+                "findings_total": result.findings_total,
+                "triage_total": result.triage_total,
+                "artifacts_dir": str(result.artifacts_dir) if result.artifacts_dir else None,
+                "llm_called": False,
+            },
+        )
 
     # ─── Параллельный запуск post-findings этапов ───
 
