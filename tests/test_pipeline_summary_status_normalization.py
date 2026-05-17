@@ -477,3 +477,452 @@ def test_webapp_static_app_js_step_class_maps_migration_required():
     text = (_ROOT / "webapp" / "static" / "js" / "app.js").read_text(encoding="utf-8")
     assert "status === 'migration_required'" in text
     assert "step-partial" in text
+
+
+# ─── 13. Legacy v4-aliases для AR-проектов (АР0.3, АР0.4, АР1.1-К2) ───────
+
+
+def test_v4_extraction_alias_maps_to_block_analysis(tmp_path, monkeypatch):
+    """В pipeline_log есть legacy v4_extraction вместо block_analysis →
+    block_analysis должен быть done с user-friendly message."""
+    project_dir = tmp_path / "proj"
+    output_dir = project_dir / "_output"
+    _write_pipeline_log(output_dir, {
+        "crop_blocks": {"status": "done"},
+        "text_analysis": {"status": "done"},
+        "v4_extraction": {"status": "done", "message": "Все 4 пакетов OK"},
+        "v4_memory": {"status": "done"},
+        "v4_candidates": {"status": "done"},
+        "v4_formatter": {"status": "done"},
+        "findings_critic": {"status": "done", "message": "OK"},
+    })
+    _patch_gemma_state(monkeypatch, ready=False, status="missing_summary")
+
+    from backend.app.services.common.project_service import _build_pipeline_summary
+    summary = _summary_by_key(_build_pipeline_summary(output_dir))
+    ba = summary["block_analysis"]
+    assert ba["status"] == "done", ba
+    # message не пустой
+    assert ba.get("message"), f"empty message: {ba}"
+    # raw_stage_key показывает источник для UI/debug
+    assert ba.get("raw_stage_key") == "v4_extraction"
+
+
+def test_v4_formatter_alias_maps_to_findings_merge(tmp_path, monkeypatch):
+    """v4_formatter (legacy) в pipeline_log + 03_findings.json на диске →
+    findings_merge должен быть done."""
+    project_dir = tmp_path / "proj"
+    output_dir = project_dir / "_output"
+    _write_pipeline_log(output_dir, {
+        "crop_blocks": {"status": "done"},
+        "text_analysis": {"status": "done"},
+        "v4_formatter": {"status": "done"},
+        "findings_critic": {"status": "done"},
+    })
+    # 03_findings.json как доказательство
+    (output_dir / "03_findings.json").write_text(
+        json.dumps({"findings": [{"id": "F-001"}]}), encoding="utf-8",
+    )
+    _patch_gemma_state(monkeypatch, ready=False, status="missing_summary")
+
+    from backend.app.services.common.project_service import _build_pipeline_summary
+    summary = _summary_by_key(_build_pipeline_summary(output_dir))
+    fm = summary["findings_merge"]
+    assert fm["status"] == "done", fm
+    assert fm.get("message"), f"empty message: {fm}"
+
+
+# ─── 14. Artifact-based inference: 02_blocks_analysis.json ───────────────
+
+
+def test_block_analysis_done_from_artifact(tmp_path, monkeypatch):
+    """В pipeline_log нет block_analysis (ни канонический, ни alias),
+    но 02_blocks_analysis.json существует → block_analysis должен быть done."""
+    project_dir = tmp_path / "proj"
+    output_dir = project_dir / "_output"
+    _write_pipeline_log(output_dir, {
+        "crop_blocks": {"status": "done"},
+        "text_analysis": {"status": "done"},
+    })
+    (output_dir / "02_blocks_analysis.json").write_text(
+        json.dumps({"blocks": [{"page": 1}]}), encoding="utf-8",
+    )
+    _patch_gemma_state(monkeypatch, ready=False, status="missing_summary")
+
+    from backend.app.services.common.project_service import _build_pipeline_summary
+    summary = _summary_by_key(_build_pipeline_summary(output_dir))
+    assert summary["block_analysis"]["status"] == "done"
+    assert summary["block_analysis"].get("message")
+
+
+def test_text_analysis_done_from_artifact(tmp_path, monkeypatch):
+    """В pipeline_log нет text_analysis, но 01_text_analysis.json есть → done."""
+    project_dir = tmp_path / "proj"
+    output_dir = project_dir / "_output"
+    _write_pipeline_log(output_dir, {"crop_blocks": {"status": "done"}})
+    (output_dir / "01_text_analysis.json").write_text(
+        json.dumps({"text": "x"}), encoding="utf-8",
+    )
+    _patch_gemma_state(monkeypatch, ready=False, status="missing_summary")
+
+    from backend.app.services.common.project_service import _build_pipeline_summary
+    summary = _summary_by_key(_build_pipeline_summary(output_dir))
+    assert summary["text_analysis"]["status"] == "done"
+
+
+# ─── 15. Downstream-inference ────────────────────────────────────────────
+
+
+def test_findings_merge_inferred_from_findings_critic_done(tmp_path, monkeypatch):
+    """findings_critic done, но findings_merge ничего не написал в лог →
+    findings_merge должен подняться до done (предыдущий обязательный этап).
+    """
+    project_dir = tmp_path / "proj"
+    output_dir = project_dir / "_output"
+    _write_pipeline_log(output_dir, {
+        "crop_blocks": {"status": "done"},
+        "text_analysis": {"status": "done"},
+        "findings_critic": {"status": "done", "message": "OK"},
+    })
+    _patch_gemma_state(monkeypatch, ready=False, status="missing_summary")
+
+    from backend.app.services.common.project_service import _build_pipeline_summary
+    summary = _summary_by_key(_build_pipeline_summary(output_dir))
+    assert summary["findings_merge"]["status"] == "done"
+    assert summary["findings_merge"].get("message")
+
+
+def test_text_analysis_inferred_from_block_analysis_done(tmp_path, monkeypatch):
+    """block_analysis done → text_analysis должен быть done."""
+    project_dir = tmp_path / "proj"
+    output_dir = project_dir / "_output"
+    _write_pipeline_log(output_dir, {
+        "crop_blocks": {"status": "done"},
+        "block_analysis": {"status": "done"},
+    })
+    _patch_gemma_state(monkeypatch, ready=False, status="missing_summary")
+
+    from backend.app.services.common.project_service import _build_pipeline_summary
+    summary = _summary_by_key(_build_pipeline_summary(output_dir))
+    assert summary["text_analysis"]["status"] == "done"
+
+
+# ─── 16. Fallback message для непустого статуса ──────────────────────────
+
+
+def test_skipped_status_gets_fallback_message_if_empty(tmp_path, monkeypatch):
+    """Если в pipeline_log статус skipped без message → message заполнен
+    fallback'ом (не пустой)."""
+    project_dir = tmp_path / "proj"
+    output_dir = project_dir / "_output"
+    _write_pipeline_log(output_dir, {
+        "crop_blocks": {"status": "done"},
+        "optimization_corrector": {"status": "skipped"},
+    })
+    _patch_gemma_state(monkeypatch, ready=False, status="missing_summary")
+
+    from backend.app.services.common.project_service import _build_pipeline_summary
+    summary = _summary_by_key(_build_pipeline_summary(output_dir))
+    assert summary["optimization_corrector"]["status"] == "skipped"
+    assert summary["optimization_corrector"].get("message"), "fallback message ожидается"
+
+
+def test_skipped_with_existing_message_preserves_it(tmp_path, monkeypatch):
+    """Если в pipeline_log skipped + явный message — не перезаписываем fallback'ом."""
+    project_dir = tmp_path / "proj"
+    output_dir = project_dir / "_output"
+    _write_pipeline_log(output_dir, {
+        "crop_blocks": {"status": "done"},
+        "optimization_corrector": {
+            "status": "skipped",
+            "message": "Все предложения прошли Critic",
+        },
+    })
+    _patch_gemma_state(monkeypatch, ready=False, status="missing_summary")
+
+    from backend.app.services.common.project_service import _build_pipeline_summary
+    summary = _summary_by_key(_build_pipeline_summary(output_dir))
+    assert summary["optimization_corrector"]["message"] == "Все предложения прошли Critic"
+
+
+# ─── 17. block_retry: partial с message о нечитаемых блоках ───────────────
+
+
+def test_block_retry_done_with_residual_unreadable_preserved(tmp_path, monkeypatch):
+    """pipeline_log: block_retry done, message «Осталось 1 нечитаемых…» —
+    сохраняем как есть, не дёргаем fallback."""
+    project_dir = tmp_path / "proj"
+    output_dir = project_dir / "_output"
+    _write_pipeline_log(output_dir, {
+        "crop_blocks": {"status": "done"},
+        "block_retry": {
+            "status": "done",
+            "message": "Осталось 1 нечитаемых (макс разрешение)",
+        },
+    })
+    _patch_gemma_state(monkeypatch, ready=False, status="missing_summary")
+
+    from backend.app.services.common.project_service import _build_pipeline_summary
+    summary = _summary_by_key(_build_pipeline_summary(output_dir))
+    br = summary["block_retry"]
+    assert br["status"] == "done"
+    assert "Осталось 1 нечитаемых" in br["message"]
+
+
+# ─── 18a. Gemma для legacy v4-проектов → skipped, не pending ─────────────
+
+
+def test_gemma_legacy_v4_marker_returns_skipped(tmp_path, monkeypatch):
+    """Legacy v4-проект (есть v4_extraction в pipeline_log) без gemma artifacts
+    должен показать gemma_enrichment как skipped с понятным сообщением,
+    а НЕ pending (иначе UI рисует ○ как незавершённое)."""
+    project_dir = tmp_path / "proj"
+    output_dir = project_dir / "_output"
+    _write_pipeline_log(output_dir, {
+        "crop_blocks": {"status": "done"},
+        "text_analysis": {"status": "done"},
+        "v4_extraction": {"status": "done", "message": "Все 4 пакетов OK"},
+    })
+    _patch_gemma_state(monkeypatch, ready=False, status="missing_blocks",
+                       migration=False)
+
+    from backend.app.services.common.project_service import _build_pipeline_summary
+    summary = _summary_by_key(_build_pipeline_summary(output_dir))
+    ge = summary["gemma_enrichment"]
+    assert ge["status"] == "skipped", ge
+    msg = ge.get("message") or ""
+    assert "Пропущено" in msg or "legacy" in msg.lower(), (
+        f"Ожидали skipped-message про legacy, получили: {msg!r}"
+    )
+
+
+def test_gemma_legacy_via_downstream_done_returns_skipped(tmp_path, monkeypatch):
+    """Если в pipeline_log нет v4-маркера, но downstream block_analysis done
+    через 02_blocks_analysis.json — gemma_enrichment тоже skipped (legacy)."""
+    project_dir = tmp_path / "proj"
+    output_dir = project_dir / "_output"
+    _write_pipeline_log(output_dir, {
+        "crop_blocks": {"status": "done"},
+        "text_analysis": {"status": "done"},
+    })
+    # Артефакт block_analysis на диске.
+    (output_dir / "02_blocks_analysis.json").write_text(
+        json.dumps({"blocks": [{"page": 1}]}), encoding="utf-8",
+    )
+    _patch_gemma_state(monkeypatch, ready=False, status="missing_blocks",
+                       migration=False)
+
+    from backend.app.services.common.project_service import _build_pipeline_summary
+    summary = _summary_by_key(_build_pipeline_summary(output_dir))
+    ge = summary["gemma_enrichment"]
+    assert ge["status"] == "skipped", ge
+    assert ge.get("message"), "message не должен быть пустым"
+
+
+def test_gemma_qwen_enrichment_legacy_marker_returns_skipped(tmp_path, monkeypatch):
+    """KJ-like проект: в pipeline_log есть qwen_enrichment (старый Qwen).
+    Если новый Gemma не запущен и migration_required не выставлено —
+    показываем skipped, а не pending."""
+    project_dir = tmp_path / "proj"
+    output_dir = project_dir / "_output"
+    _write_pipeline_log(output_dir, {
+        "crop_blocks": {"status": "done"},
+        "qwen_enrichment": {"status": "done", "message": "Qwen OK"},
+        "text_analysis": {"status": "done"},
+        "block_analysis": {"status": "done"},
+    })
+    _patch_gemma_state(monkeypatch, ready=False, status="missing_blocks",
+                       migration=False)
+
+    from backend.app.services.common.project_service import _build_pipeline_summary
+    summary = _summary_by_key(_build_pipeline_summary(output_dir))
+    ge = summary["gemma_enrichment"]
+    assert ge["status"] == "skipped", ge
+
+
+def test_gemma_modern_project_without_evidence_stays_pending(tmp_path, monkeypatch):
+    """Современный проект (нет legacy v4/qwen маркеров, downstream НЕ done,
+    нет 02_blocks_analysis.json, нет gemma_summary): gemma_enrichment ДОЛЖЕН
+    остаться pending, чтобы UI показывал ○ как «ещё не выполнено»."""
+    project_dir = tmp_path / "proj"
+    output_dir = project_dir / "_output"
+    _write_pipeline_log(output_dir, {
+        "crop_blocks": {"status": "done"},
+    })
+    _patch_gemma_state(monkeypatch, ready=False, status="missing_blocks",
+                       migration=False)
+
+    from backend.app.services.common.project_service import _build_pipeline_summary
+    summary = _summary_by_key(_build_pipeline_summary(output_dir))
+    ge = summary["gemma_enrichment"]
+    assert ge["status"] == "pending", ge
+
+
+def test_gemma_modern_project_no_lifecycle_evidence_stays_pending(tmp_path, monkeypatch):
+    """Аналогично: только что зарегистрированный проект, в pipeline_log
+    нет ни одного маркера → pending."""
+    project_dir = tmp_path / "proj"
+    output_dir = project_dir / "_output"
+    _write_pipeline_log(output_dir, {})
+    _patch_gemma_state(monkeypatch, ready=False, status="missing_blocks",
+                       migration=False)
+
+    from backend.app.services.common.project_service import _build_pipeline_summary
+    summary = _summary_by_key(_build_pipeline_summary(output_dir))
+    ge = summary["gemma_enrichment"]
+    assert ge["status"] == "pending", ge
+
+
+# ─── 18. Full AR-проект сценарий: legacy v4 + missing block_retry ─────────
+
+
+def test_legacy_ar_project_v4_full_pipeline(tmp_path, monkeypatch):
+    """Реальный кейс AR проекта (13АВ-РД-АР0.3-ПА Изм.1):
+    pipeline_log использует v4_extraction/memory/candidates/formatter вместо
+    block_analysis/findings_merge. На ФС есть 03_findings.json, optimization.json
+    и т.д. UI ожидает все ключевые этапы как done."""
+    project_dir = tmp_path / "proj"
+    output_dir = project_dir / "_output"
+    _write_pipeline_log(output_dir, {
+        "crop_blocks": {"status": "done", "message": "Pre-cropped"},
+        "text_analysis": {"status": "done", "message": "OK"},
+        "v4_extraction": {"status": "done", "message": "Все 4 пакетов OK"},
+        "v4_memory": {"status": "done"},
+        "v4_candidates": {"status": "done"},
+        "v4_formatter": {"status": "done"},
+        "findings_critic": {"status": "done", "message": "OK"},
+        "findings_corrector": {"status": "done", "message": "OK (3 чанков)"},
+        "norm_verify": {"status": "done", "message": "OK"},
+        "optimization": {"status": "done", "message": "OK"},
+        "optimization_critic": {"status": "done", "message": "OK"},
+        "optimization_corrector": {"status": "done", "message": "OK"},
+        "excel": {"status": "done", "message": "OK"},
+    })
+    # Артефакты, которые в реальном проекте есть на диске.
+    (output_dir / "03_findings.json").write_text(
+        json.dumps({"findings": [{"id": "F-001"}]}), encoding="utf-8",
+    )
+    (output_dir / "optimization.json").write_text(
+        json.dumps({"meta": {}, "items": []}), encoding="utf-8",
+    )
+    _patch_gemma_state(monkeypatch, ready=False, status="missing_summary",
+                       migration=True)
+
+    from backend.app.services.common.project_service import _build_pipeline_summary
+    summary = _summary_by_key(_build_pipeline_summary(output_dir))
+    # block_analysis должен быть done через v4_extraction alias
+    assert summary["block_analysis"]["status"] == "done"
+    # findings_merge → через downstream (findings_critic/corrector done) или
+    # через 03_findings.json артефакт
+    assert summary["findings_merge"]["status"] == "done"
+    # block_retry в v4-конвейере не существовал. Раз есть legacy-маркеры
+    # (v4_extraction), block_retry должен быть skipped с понятным message,
+    # а не pending (○).
+    br = summary["block_retry"]
+    assert br["status"] == "skipped", br
+    assert br.get("message"), f"empty message: {br}"
+    assert "legacy" in br["message"].lower(), br["message"]
+    # Все нижестоящие — done из лога
+    for k in ("findings_critic", "findings_corrector", "norm_verify",
+              "optimization", "optimization_critic", "optimization_corrector",
+              "excel"):
+        assert summary[k]["status"] == "done", f"{k} not done: {summary[k]}"
+        assert summary[k].get("message"), f"{k} message empty: {summary[k]}"
+
+
+# ─── 19. block_retry: legacy v4 без block_retry в логе → skipped ──────────
+
+
+def test_block_retry_legacy_v4_marker_returns_skipped(tmp_path, monkeypatch):
+    """v4-проект: в pipeline_log есть v4_extraction, нет block_retry →
+    block_retry должен быть skipped, не pending (этап не существовал в v4)."""
+    project_dir = tmp_path / "proj"
+    output_dir = project_dir / "_output"
+    _write_pipeline_log(output_dir, {
+        "crop_blocks": {"status": "done"},
+        "text_analysis": {"status": "done"},
+        "v4_extraction": {"status": "done"},
+        "v4_formatter": {"status": "done"},
+    })
+    _patch_gemma_state(monkeypatch, ready=False, status="missing_blocks",
+                       migration=False)
+
+    from backend.app.services.common.project_service import _build_pipeline_summary
+    summary = _summary_by_key(_build_pipeline_summary(output_dir))
+    br = summary["block_retry"]
+    assert br["status"] == "skipped", br
+    assert br.get("message"), "block_retry message не должен быть пустым"
+
+
+def test_block_retry_modern_project_without_legacy_marker_stays_pending(
+        tmp_path, monkeypatch):
+    """Современный проект без legacy-маркеров и без записи block_retry →
+    block_retry остаётся pending (этап ещё не выполнен в этой эпохе)."""
+    project_dir = tmp_path / "proj"
+    output_dir = project_dir / "_output"
+    _write_pipeline_log(output_dir, {
+        "crop_blocks": {"status": "done"},
+        "gemma_enrichment": {"status": "done"},
+        "text_analysis": {"status": "done"},
+        "block_analysis": {"status": "done"},
+    })
+    # gemma_state=ready (modern проект)
+    _patch_gemma_state(monkeypatch, ready=True, status="ok",
+                       blocks_ok=10, blocks_total=10, uncovered=[])
+    (output_dir / "gemma_enrichment_summary.json").write_text(
+        json.dumps({"blocks_failed": 0}), encoding="utf-8",
+    )
+
+    from backend.app.services.common.project_service import _build_pipeline_summary
+    summary = _summary_by_key(_build_pipeline_summary(output_dir))
+    assert summary["block_retry"]["status"] == "pending", summary["block_retry"]
+
+
+def test_block_retry_explicit_done_in_log_not_overridden(tmp_path, monkeypatch):
+    """Если block_retry уже записан в pipeline_log как done (или partial),
+    legacy-heuristic его не должен переписывать."""
+    project_dir = tmp_path / "proj"
+    output_dir = project_dir / "_output"
+    _write_pipeline_log(output_dir, {
+        "crop_blocks": {"status": "done"},
+        # legacy маркер всё ещё может быть, но block_retry явно done
+        "v4_extraction": {"status": "done"},
+        "block_retry": {"status": "done", "message": "Все блоки читаемы"},
+    })
+    _patch_gemma_state(monkeypatch, ready=False, status="missing_blocks",
+                       migration=False)
+
+    from backend.app.services.common.project_service import _build_pipeline_summary
+    summary = _summary_by_key(_build_pipeline_summary(output_dir))
+    br = summary["block_retry"]
+    assert br["status"] == "done", br
+    assert br["message"] == "Все блоки читаемы"
+
+
+# ─── 20. migration_required: проект с попытанным Gemma → не skipped ───────
+
+
+def test_gemma_migration_required_with_legacy_artifacts_kept(
+        tmp_path, monkeypatch):
+    """AR0.2-like кейс: detect_gemma_migration_state говорит
+    migration_required=True (проект был частично прогнан через Gemma, но
+    schema v2 не закрыта). legacy-skipped heuristic не должен этого
+    переписывать в skipped — UI должен показать «требуется миграция»."""
+    project_dir = tmp_path / "proj"
+    output_dir = project_dir / "_output"
+    _write_pipeline_log(output_dir, {
+        "crop_blocks": {"status": "done"},
+        "text_analysis": {"status": "done"},
+        "block_analysis": {"status": "done"},
+        "block_retry": {"status": "done"},
+    })
+    # detect_gemma_migration_state → migration_required=True
+    _patch_gemma_state(monkeypatch, ready=False, status="missing_blocks",
+                       migration=True)
+
+    from backend.app.services.common.project_service import _build_pipeline_summary
+    summary = _summary_by_key(_build_pipeline_summary(output_dir))
+    ge = summary["gemma_enrichment"]
+    assert ge["status"] == "migration_required", ge
+    # migration_required всегда имеет message (fallback или явный)
+    assert ge.get("message"), ge

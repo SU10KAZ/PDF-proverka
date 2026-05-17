@@ -1101,55 +1101,288 @@ def _normalize_gemma_enrichment_status(
     return "pending", raw_message, raw_message
 
 
+# Legacy/alternative ключи pipeline_log → канонический stage_key.
+# При сборке pipeline_summary, если в pipeline_log нет канонического ключа,
+# но есть один из alias — берём его статус/message.
+_PIPELINE_STAGE_ALIASES: dict[str, tuple[str, ...]] = {
+    "crop_blocks": ("prepare",),
+    "block_analysis": ("v4_extraction", "tile_audit"),
+    "findings_merge": ("v4_formatter", "main_audit"),
+}
+
+# Артефакты на ФС, доказывающие что этап выполнен.
+# Путь относительно `_output/`. Если файл/папка существует и не пустой —
+# статус этапа можно поднять до done.
+_PIPELINE_STAGE_ARTIFACTS: dict[str, tuple[str, ...]] = {
+    "crop_blocks": (f"{GEMMA_BLOCKS_DIRNAME}/index.json",),
+    "text_analysis": ("01_text_analysis.json",),
+    "block_analysis": ("02_blocks_analysis.json",),
+    "findings_merge": ("03_findings.json",),
+    "findings_critic": ("03_findings_review.json",),
+    # corrector обновляет тот же 03_findings.json + оставляет pre_review бэкап
+    "findings_corrector": ("03_findings.json",),
+    "norm_verify": ("03a_norms_verified.json", "norm_checks.json"),
+    "optimization": ("optimization.json",),
+    "optimization_critic": ("optimization_review.json",),
+    "optimization_corrector": ("optimization.json",),
+}
+
+# Канонический порядок индексов для downstream-проверок. Если индекс этапа i
+# меньше индекса этапа j и j завершён, и есть артефакт для i — i тоже done.
+_DOWNSTREAM_DEPENDENCY: dict[str, tuple[str, ...]] = {
+    # findings_critic done → findings_merge done (corrector тоже зависит от merge)
+    "findings_merge": ("findings_critic", "findings_corrector"),
+    # findings_corrector done → findings_critic done
+    "findings_critic": ("findings_corrector",),
+    # norm_verify done → findings_merge done (нормы строятся из findings)
+    # Не выводим, потому что norm_verify может запускаться параллельно.
+    # block_analysis done подтверждает text_analysis: text используется
+    # для построения батчей анализа блоков.
+    "text_analysis": ("block_analysis", "findings_merge"),
+    # block_analysis done подтверждается findings_merge (мердж читает blocks).
+    "block_analysis": ("findings_merge",),
+    # optimization_corrector done → optimization_critic done
+    "optimization_critic": ("optimization_corrector",),
+    # optimization_critic done → optimization done
+    "optimization": ("optimization_critic", "optimization_corrector"),
+    # gemma_enrichment — legacy: если block_analysis/findings уже done без
+    # Gemma, значит проект использовал старый Qwen-конвейер.
+    "gemma_enrichment": ("block_analysis", "findings_merge"),
+}
+
+# Fallback message по терминальному статусу, если в логе message пустой.
+_STATUS_FALLBACK_MESSAGE: dict[str, str] = {
+    "done": "Готово",
+    "partial": "Выполнено с предупреждениями",
+    "skipped": "Пропущено",
+    "running": "Выполняется…",
+    "error": "Ошибка",
+    "interrupted": "Прервано",
+    "migration_required": "Требуется миграция",
+    "pending": "",
+}
+
+# Ключи, по которым определяется, что в pipeline_log записан legacy v4 или
+# pre-Gemma запуск. Используется для классификации pending → skipped.
+_LEGACY_PIPELINE_MARKERS: tuple[str, ...] = (
+    "v4_extraction", "v4_memory", "v4_candidates", "v4_formatter",
+    "main_audit", "qwen_enrichment",
+)
+
+# Этапы, которые в legacy v4/pre-Gemma конвейере не существовали и не должны
+# показываться как pending для уже завершённых старых аудитов. Эти этапы
+# превращаются в "skipped" с понятным сообщением, если присутствует legacy-
+# маркер или последующий обязательный этап уже done.
+#
+# gemma_enrichment вынесен в отдельный блок (специальная нормализация), здесь
+# перечисляем дополнительные этапы, появившиеся вместе/после Gemma:
+#   - block_retry — добавлен после внедрения Gemma OCR retry-логики;
+#     в v4 чёткого retry-этапа не было.
+_LEGACY_OPTIONAL_STAGES: dict[str, str] = {
+    "block_retry": (
+        "Пропущено: legacy-аудит не использовал retry нечитаемых блоков."
+    ),
+}
+
+
+def _has_legacy_marker(stages: dict) -> bool:
+    """Есть ли в pipeline_log хотя бы один legacy v4/pre-Gemma маркер."""
+    return any(stages.get(k) for k in _LEGACY_PIPELINE_MARKERS)
+
+
+def _artifact_exists(output_dir: Path, rel: str) -> bool:
+    """Проверить, что артефакт существует и не пустой."""
+    p = output_dir / rel
+    try:
+        if not p.exists():
+            return False
+        if p.is_file():
+            return p.stat().st_size > 10
+        if p.is_dir():
+            # для папок (например, blocks_gemma_100) считаем существование
+            # самого индекс-файла, который уже проверяет вызывающий код.
+            return True
+    except OSError:
+        return False
+    return False
+
+
+def _has_any_artifact(output_dir: Path, key: str) -> bool:
+    """Хотя бы один артефакт этапа существует на ФС."""
+    for rel in _PIPELINE_STAGE_ARTIFACTS.get(key, ()):
+        if _artifact_exists(output_dir, rel):
+            return True
+    return False
+
+
+def _stage_info_with_aliases(stages: dict, key: str) -> tuple[dict, str | None]:
+    """Вернуть (info, alias_used_or_none).
+
+    Если канонический ключ есть — возвращаем его. Иначе ищем alias.
+    """
+    info = stages.get(key)
+    if info:
+        return info, None
+    for alias in _PIPELINE_STAGE_ALIASES.get(key, ()):
+        alias_info = stages.get(alias)
+        if alias_info:
+            return alias_info, alias
+    return {}, None
+
+
+def _downstream_done(
+    stages: dict,
+    key: str,
+    inferred_status: dict[str, str],
+) -> bool:
+    """Есть ли downstream-этап в терминальном done/partial-состоянии.
+
+    inferred_status — уже посчитанные статусы для предыдущих этапов в текущем
+    проходе. Сюда же подтягиваются alias-этапы.
+    """
+    downstream_keys = _DOWNSTREAM_DEPENDENCY.get(key, ())
+    if not downstream_keys:
+        return False
+    for dk in downstream_keys:
+        # 1) inferred_status уже даёт ответ
+        s = inferred_status.get(dk)
+        if s in ("done", "partial"):
+            return True
+        # 2) raw pipeline_log
+        info, _ = _stage_info_with_aliases(stages, dk)
+        if info.get("status") in ("done", "partial"):
+            return True
+    return False
+
+
+def _normalize_pipeline_stage_status(
+    output_dir: Path,
+    key: str,
+    stages: dict,
+    inferred_status: dict[str, str],
+) -> tuple[str, str, str | None, str | None]:
+    """Универсальный нормализатор статуса этапа.
+
+    Возвращает (status, user_message, raw_message, alias_used).
+
+    Логика по приоритету:
+      1) crop_blocks → _normalize_crop_blocks_status (старый специальный).
+      2) gemma_enrichment → _normalize_gemma_enrichment_status (старый).
+      3) Прямая запись в pipeline_log для канонического ключа.
+      4) Запись в pipeline_log для legacy alias.
+      5) Артефакт на ФС → done (со сгенерированным message).
+      6) Downstream-этап done → done (со сгенерированным message).
+      7) pending (без message).
+    """
+    if key == "crop_blocks":
+        status, normalized_message = _normalize_crop_blocks_status(output_dir, stages)
+        return status, normalized_message or "", None, None
+    if key == "gemma_enrichment":
+        status, user_message, raw_message = _normalize_gemma_enrichment_status(
+            output_dir, stages,
+        )
+        # Legacy v4-проект без gemma_100: gemma_state.ready=False и
+        # migration_required=False (нет даже blocks_gemma_100). При этом
+        # downstream этапы (block_analysis, findings_merge) уже done.
+        # Для UI это не «незавершённый этап» (○), а «пропущенный» (—):
+        # этап был не нужен в legacy pipeline. Признак legacy: либо
+        # downstream done, либо в pipeline_log стоят legacy-маркеры
+        # v4_extraction / v4_formatter / main_audit / qwen_enrichment.
+        if status == "pending" and (
+            _has_legacy_marker(stages)
+            or _downstream_done(stages, "gemma_enrichment", inferred_status)
+        ):
+            status = "skipped"
+            if not user_message:
+                user_message = (
+                    "Пропущено: legacy-аудит выполнен до внедрения "
+                    "Gemma OCR enrichment."
+                )
+        return status, user_message, raw_message, None
+
+    info, alias_used = _stage_info_with_aliases(stages, key)
+    raw_status = info.get("status") or ""
+    raw_message = info.get("message") or ""
+
+    if raw_status:
+        # Если терминальный статус — пропускаем сразу.
+        if raw_status in ("done", "partial", "skipped", "error", "interrupted",
+                          "running", "migration_required"):
+            return raw_status, raw_message, None, alias_used
+
+    # Артефакт-based inference.
+    if _has_any_artifact(output_dir, key):
+        # Подбираем дружелюбный message.
+        msg = raw_message or "Готово (обнаружен артефакт)"
+        return "done", msg, raw_message or None, alias_used
+
+    # Downstream-based inference.
+    if _downstream_done(stages, key, inferred_status):
+        msg = raw_message or "Готово (определено по последующему этапу)"
+        return "done", msg, raw_message or None, alias_used
+
+    # Legacy-skipped inference: этапы, которых не было в v4/pre-Gemma конвейере.
+    # Если есть legacy-маркер (v4_extraction / qwen_enrichment / …) —
+    # этап в этом аудите никогда не запускался и не должен оставаться pending.
+    if key in _LEGACY_OPTIONAL_STAGES and _has_legacy_marker(stages):
+        legacy_msg = _LEGACY_OPTIONAL_STAGES[key]
+        msg = raw_message or legacy_msg
+        return "skipped", msg, raw_message or None, alias_used
+
+    # raw status есть, но не входит в известный набор → отдаём как есть.
+    if raw_status:
+        return raw_status, raw_message, None, alias_used
+
+    return "pending", raw_message, None, alias_used
+
+
 def _build_pipeline_summary(output_dir: Path, pipeline_version: str = "legacy") -> list[dict]:
     """Собрать детальное саммари конвейера из pipeline_log.json.
 
     Возвращает ВСЕ этапы конвейера. Если этап ещё не запускался —
     возвращает его со статусом "pending".
 
-    Применяет нормализацию по тому же принципу, что и `_get_pipeline_status`:
-    crop_blocks/gemma_enrichment могут показать "done" даже если
-    pipeline_log говорит pending/partial, при условии что артефакты на ФС и
-    Gemma summary говорят об успешном завершении этапа. partial Gemma с
-    blocks_ok == blocks_total и без failed нормализуется в done.
+    Источники истины (по убыванию приоритета):
+      1) pipeline_log.<key>.status (терминальный) → как есть.
+      2) pipeline_log.<alias>.status для legacy aliases (prepare, v4_extraction,
+         tile_audit, main_audit, …).
+      3) Артефакт на ФС (_PIPELINE_STAGE_ARTIFACTS) → done.
+      4) Downstream-этап done → done (например, findings_critic done означает
+         что findings_merge тоже done).
+      5) pending.
+
+    Для crop_blocks и gemma_enrichment действуют специальные нормализаторы
+    с расширенной семантикой (см. _normalize_crop_blocks_status и
+    _normalize_gemma_enrichment_status).
 
     Возвращает список dict:
-      {key, label, status, message, duration_sec, error}
+      {key, label, status, message, duration_sec, error, raw_message?}
     """
     log = _load_pipeline_log(output_dir)
     stages = log.get("stages", {}) if log else {}
 
+    # Предпроход: посчитать статусы по pipeline_log + alias + артефактам,
+    # чтобы _downstream_done мог смотреть и в "будущие" этапы. Без предпрохода
+    # gemma_enrichment не узнает что block_analysis done через v4_extraction.
+    prelim: dict[str, str] = {}
+    for key, _label in _get_stage_order(pipeline_version):
+        info, _ = _stage_info_with_aliases(stages, key)
+        raw_s = info.get("status") or ""
+        if raw_s:
+            prelim[key] = raw_s
+        elif _has_any_artifact(output_dir, key):
+            prelim[key] = "done"
+
     result = []
+    inferred_status: dict[str, str] = dict(prelim)
     for key, label in _get_stage_order(pipeline_version):
-        info = stages.get(key) or {}
-        raw_status = info.get("status", "pending")
-        message = info.get("message", "")
-        raw_message: str | None = None
+        info, alias_used = _stage_info_with_aliases(stages, key)
+        status, user_message, raw_message, _alias = _normalize_pipeline_stage_status(
+            output_dir, key, stages, inferred_status,
+        )
+        inferred_status[key] = status
+        message = user_message or ""
 
-        # Нормализация по двум этапам, где UI должен корректно показывать
-        # завершённость даже при отсутствии записи в pipeline_log или при
-        # допустимом partial.
-        if key == "crop_blocks":
-            status, normalized_message = _normalize_crop_blocks_status(output_dir, stages)
-            if normalized_message:
-                message = normalized_message
-        elif key == "gemma_enrichment":
-            status, user_message, gemma_raw_message = _normalize_gemma_enrichment_status(
-                output_dir, stages,
-            )
-            # user_message — переформулированное под текущий status сообщение.
-            # gemma_raw_message — оригинальный pipeline_log.message (может
-            # отличаться от user_message и идёт в raw_message для UI/debug).
-            if user_message:
-                message = user_message
-            if gemma_raw_message and gemma_raw_message != user_message:
-                raw_message = gemma_raw_message
-        else:
-            status = raw_status
-
-        # Если по нормализации этап считается готовым, но в логе не было
-        # записи — info будет пустым (started_at/completed_at). Это нормально:
-        # просто возвращаем done без duration.
         # Вычислить длительность только если в логе есть метки времени.
         duration_sec = None
         started = info.get("started_at")
@@ -1168,14 +1401,25 @@ def _build_pipeline_summary(output_dir: Path, pipeline_version: str = "legacy") 
             "label": label,
             "status": status,
         }
-        if not info and status == "pending":
-            # Этап ещё не запускался — возвращаем минимальную запись.
+        # Минимальная запись возможна только когда статус pending И не было
+        # ни лога, ни сгенерированного message (нормализатор может вернуть
+        # объяснительный message даже для pending — например, legacy v4).
+        if not info and status == "pending" and not message:
             result.append(entry)
             continue
+        # Гарантируем непустой message для терминальных статусов, чтобы UI не
+        # показывал «пустую» строку. Fallback применяется только если другие
+        # источники message пустые.
+        if not message and status in _STATUS_FALLBACK_MESSAGE:
+            fallback = _STATUS_FALLBACK_MESSAGE.get(status, "")
+            if fallback:
+                message = fallback
         if message:
             entry["message"] = message
-        if raw_message:
+        if raw_message and raw_message != message:
             entry["raw_message"] = raw_message
+        if alias_used:
+            entry["raw_stage_key"] = alias_used
         if duration_sec is not None:
             entry["duration_sec"] = duration_sec
         if status in ("error", "interrupted") and info.get("error"):
