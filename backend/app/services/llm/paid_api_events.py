@@ -9,6 +9,7 @@
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
@@ -70,6 +71,13 @@ def record_paid_event(
     extra: dict[str, Any] | None = None,
 ) -> None:
     """Записать факт реального платного вызова."""
+    mrid = manual_run_id or ""
+    mrid_present = bool(mrid.strip())
+    mrid_hash = (
+        hashlib.sha256(mrid.encode("utf-8")).hexdigest()[:12]
+        if mrid_present
+        else ""
+    )
     event = {
         "ts": datetime.now().isoformat(),
         "event": "paid_api_cost",
@@ -79,7 +87,9 @@ def record_paid_event(
         "version_id": version_id or "",
         "stage": stage or "",
         "source": source or "",
-        "manual_run_id": manual_run_id or "",
+        "manual_run_id": mrid,
+        "manual_run_id_present": mrid_present,
+        "manual_run_id_hash": mrid_hash,
         "job_id": job_id or "",
         "input_tokens": int(input_tokens or 0),
         "output_tokens": int(output_tokens or 0),

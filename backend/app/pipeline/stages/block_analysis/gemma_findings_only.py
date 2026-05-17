@@ -495,6 +495,18 @@ async def call_gpt_for_block(
         "X-Title": "stage02-findings-only",
     }
 
+    # Последняя защитная стена: без api_key не пускаем в сеть, даже если guard
+    # каким-то образом пропустил вызов (тест мокает guard, кто-то обошёл через
+    # monkeypatch, dev-конфиг). Без ключа OpenRouter всё равно вернёт 401, но
+    # отдельная цена за tokens не списывается — это явный refusal.
+    if not (api_key or "").strip():
+        return {
+            "ok": False,
+            "error": "paid_api_blocked: missing_api_key (OpenRouter key empty)",
+            "elapsed_ms": 0,
+            "paid_api_blocked": True,
+        }
+
     started = time.monotonic()
     try:
         resp = await client.post(OPENROUTER_URL, headers=headers, json=payload, timeout=timeout)

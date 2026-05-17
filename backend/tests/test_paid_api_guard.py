@@ -50,10 +50,12 @@ def isolated_paid_api(tmp_path, monkeypatch):
     guard_mod._registry.clear()
 
     # Конфиг по умолчанию: enabled=true, require_manual=true, limit=0.
-    # Тесты могут переопределить через monkeypatch.setattr на guard_mod.
-    monkeypatch.setattr(guard_mod, "PAID_API_ENABLED", True)
-    monkeypatch.setattr(guard_mod, "PAID_API_REQUIRE_MANUAL_START", True)
-    monkeypatch.setattr(guard_mod, "PAID_API_DAILY_LIMIT_USD", 0.0)
+    # Guard читает env на каждом вызове (runtime), поэтому подменяем env, а
+    # не атрибут модуля. Так тесты и production используют один и тот же путь
+    # резолва флагов.
+    monkeypatch.setenv("PAID_API_ENABLED", "true")
+    monkeypatch.setenv("PAID_API_REQUIRE_MANUAL_START", "true")
+    monkeypatch.setenv("PAID_API_DAILY_LIMIT_USD", "0")
 
     yield {
         "guard": guard_mod,
@@ -69,7 +71,7 @@ def isolated_paid_api(tmp_path, monkeypatch):
 def test_kill_switch_disabled_blocks_everything(isolated_paid_api, monkeypatch):
     """A1: PAID_API_ENABLED=false блокирует, даже с валидным manual_run."""
     guard = isolated_paid_api["guard"]
-    monkeypatch.setattr(guard, "PAID_API_ENABLED", False)
+    monkeypatch.setenv("PAID_API_ENABLED", "false")
 
     mrid = guard.issue_manual_run(project_ids=["pdf-proj-1"])
     ctx = guard.PaidApiContext(
@@ -199,7 +201,7 @@ def test_release_manual_run_revokes(isolated_paid_api):
 def test_daily_limit_blocks(isolated_paid_api, monkeypatch):
     """A9: daily_limit_usd=1.0 + estimated_cost_usd=2.0 → блок."""
     guard = isolated_paid_api["guard"]
-    monkeypatch.setattr(guard, "PAID_API_DAILY_LIMIT_USD", 1.0)
+    monkeypatch.setenv("PAID_API_DAILY_LIMIT_USD", "1.0")
     # _today_spent_usd возвращает 0.0 (нет paid_cost.daily), но
     # projected = 0 + 2 > 1.0 — блок.
     mrid = guard.issue_manual_run(project_ids=["proj/A.pdf"])
@@ -594,6 +596,112 @@ def test_critic_v2_openrouter_provider_blocks_without_manual_run(isolated_paid_a
             sys.modules["requests"] = saved
         else:
             sys.modules.pop("requests", None)
+
+
+def test_runtime_kill_switch_takes_effect_without_module_reload(
+    isolated_paid_api, monkeypatch
+):
+    """A10 (новый, root cause инцидента 2026-05-16): kill-switch должен
+    действовать сразу после смены os.environ, без перезапуска backend.
+
+    До фикса PAID_API_ENABLED резолвился на момент импорта модуля и его
+    нельзя было выключить руками. 9 платных вызовов на M31A прошли в т.ч.
+    потому, что значение флага было зафиксировано при старте uvicorn.
+    """
+    guard = isolated_paid_api["guard"]
+
+    # Шаг 1: enabled=true + валидный manual_run → разрешено.
+    monkeypatch.setenv("PAID_API_ENABLED", "true")
+    mrid = guard.issue_manual_run(project_ids=["proj/A.pdf"])
+    ctx = guard.PaidApiContext(
+        source="llm_runner",
+        model="openai/gpt-5.4",
+        project_id="proj/A.pdf",
+        stage="block_analysis",
+        manual_run_id=mrid,
+    )
+    guard.assert_paid_api_allowed(ctx)  # без исключения
+
+    # Шаг 2: тот же процесс, тот же импортированный модуль, тот же manual_run —
+    # меняем ТОЛЬКО env. Должен включиться kill-switch.
+    monkeypatch.setenv("PAID_API_ENABLED", "false")
+    with pytest.raises(guard.PaidApiBlockedError) as exc:
+        guard.assert_paid_api_allowed(ctx)
+    assert exc.value.reason == "paid_api_disabled"
+
+
+def test_canonical_project_id_allows_short_display_pid(isolated_paid_api):
+    """A11 (новый): короткий project_id "M31A" допустим, если передан
+    canonical_project_id с полным путём ИЛИ object_id. Так короткий код
+    можно безопасно использовать как display, а реальный scope — длинный.
+    """
+    guard = isolated_paid_api["guard"]
+    # scope manual_run выдаётся по canonical path
+    canon = "214. Alia (ASTERUS)/M31A"
+    mrid = guard.issue_manual_run(project_ids=[canon])
+    ctx = guard.PaidApiContext(
+        source="manager.stage02",
+        model="openai/gpt-5.4",
+        project_id="M31A",                 # короткий display
+        canonical_project_id=canon,        # полный canonical scope
+        stage="block_analysis",
+        manual_run_id=mrid,
+    )
+    # Не должно быть исключения.
+    guard.assert_paid_api_allowed(ctx)
+
+
+def test_record_paid_event_writes_manual_run_id_present_and_hash(
+    isolated_paid_api, tmp_path, monkeypatch
+):
+    """E3 (новый, root cause forensic): record_paid_event пишет три поля
+    про manual_run_id, чтобы можно было различить "был ли реально manual_run".
+
+    В инциденте 2026-05-16 все 9 платных событий имели manual_run_id="" —
+    раньше нельзя было понять, отсутствовал ли он реально или был стёрт при
+    записи. Теперь есть manual_run_id_present и manual_run_id_hash.
+    """
+    events = isolated_paid_api["events"]
+    paid_jsonl = isolated_paid_api["paid_jsonl"]
+
+    # 1) Платный вызов БЕЗ manual_run_id (forensic должен это явно показать)
+    events.record_paid_event(
+        cost_usd=0.3227,
+        model="openai/gpt-5.4",
+        project_id="proj/A.pdf",
+        stage="block_analysis",
+        source="manager.stage02",
+        manual_run_id="",
+        job_id="j1",
+        input_tokens=40517,
+        output_tokens=17118,
+    )
+
+    # 2) Платный вызов С manual_run_id (hash должен быть)
+    events.record_paid_event(
+        cost_usd=0.10,
+        model="openai/gpt-5.4",
+        project_id="proj/A.pdf",
+        stage="block_analysis",
+        source="manager.stage02",
+        manual_run_id="abc123def456",
+        job_id="j2",
+    )
+
+    lines = paid_jsonl.read_text(encoding="utf-8").strip().split("\n")
+    assert len(lines) == 2
+    ev1 = json.loads(lines[0])
+    ev2 = json.loads(lines[1])
+
+    # Без manual_run: present=False, hash=""
+    assert ev1["manual_run_id"] == ""
+    assert ev1["manual_run_id_present"] is False
+    assert ev1["manual_run_id_hash"] == ""
+
+    # С manual_run: present=True, hash непустой и стабильный
+    assert ev2["manual_run_id"] == "abc123def456"
+    assert ev2["manual_run_id_present"] is True
+    assert len(ev2["manual_run_id_hash"]) == 12
 
 
 def test_local_models_bypass_guard(isolated_paid_api, monkeypatch):
