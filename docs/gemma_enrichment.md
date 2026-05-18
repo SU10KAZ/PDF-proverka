@@ -1,18 +1,21 @@
 # Gemma OCR Enrichment
 
-**Дата обновления:** 2026-05-01
+**Дата обновления:** 2026-05-18
 
 Gemma enrichment is a mandatory OCR-audit stage between crop/document graph and
 Stage 01 text analysis.
 
 ```text
 Markdown PDF representation
-→ Gemma base OCR enrichment, 100 DPI, fast stable pass
-→ optional Gemma high-detail retry, 300 DPI only for safe small/medium text-heavy blocks
+→ Gemma base OCR enrichment, 100 DPI, GEMMA_BASE_CONTEXT_LENGTH
+→ optional Gemma high-detail retry, 300 DPI, GEMMA_HIGH_DETAIL_CONTEXT_LENGTH
 → Stage 01 text analysis
 → Stage 02 findings_only_gemma_pair + GPT-5.4 using 100 DPI Stage 02 crops
 → merge/review/norms/final report
 ```
+
+Два прохода используют **разный context_length**: base 100 DPI — небольшой и
+дешёвый, high-detail 300 DPI — больше, чтобы вместить плотный image-вход.
 
 ## Crop Sources Of Truth
 
@@ -61,7 +64,10 @@ for targeted retry candidates:
   `partially readable`;
 - block metadata suggests a table/spec/schedule/statement or dense OCR-heavy
   small text;
-- base returned only a reasoning tail / partial OCR salvage.
+- base returned only a reasoning tail / partial OCR salvage;
+- base pass упал с `Context size has been exceeded` на всех scale-tier'ах
+  (reason `base_context_overflow`) — high-detail pass под
+  `GEMMA_HIGH_DETAIL_CONTEXT_LENGTH` обычно пропускает такие блоки.
 
 Safety limits before sending a 300 DPI crop to Gemma:
 
@@ -106,6 +112,16 @@ Per-block metadata now records:
 - `uncovered_block_ids`, `large_block_skipped_ids`
 - per-block `base_status`, `high_detail_status`, `final_profile`, `coverage_status`
 
+Adaptive reload diagnostics (новые поля, `schema_version=2` не меняется):
+
+- `adaptive_reload_enabled` — bool, был ли pipeline reload включён в этом запуске
+- `base_context_length` — запрошенный ctx для base pass
+- `high_detail_context_length` — запрошенный ctx для high-detail pass
+- `loaded_base_context_length` — реально загруженный ctx (или null если skipped/preflight)
+- `loaded_high_detail_context_length` — то же для high-detail
+- `model_reload_events` — список событий reload/preflight: `{phase, requested_context_length, loaded_context_length, identifier, instances_after, ok, error?, skipped?}`
+- `context_guard_status` — `ok` / `preflight_ok` / `preflight_warning` / `skipped`
+
 The Markdown marker is human-readable only. Skip/resume must be based on the
 summary hashes and final block decisions.
 
@@ -121,19 +137,68 @@ Gemma stage is considered ready when:
 
 The gate does not require 300 DPI for every block.
 
-## Runtime LM Studio Policy
+## Adaptive Reload (Two-Pass Context Switch)
 
-Production runtime must not change LM Studio model config during a stage or job:
+Pipeline сам управляет единственным активным инстансом Gemma в LM Studio, когда
+`GEMMA_ADAPTIVE_RELOAD_ENABLED=true`. Между base и high-detail проходами
+предыдущий инстанс **обязательно выгружается** и загружается новый с нужным
+`context_length`.
 
-- no automatic `load` / `unload` / `reload` while Gemma base or high-detail is running
+Контракт перед каждым проходом:
+
+1. снимок `list_loaded` — узнать, что уже загружено;
+2. `unload_all_for(model)` — снять все инстансы Gemma этой модели;
+3. `load_model(model, context_length=…)` — загрузить ровно один инстанс;
+4. повторный `list_loaded` — verify ровно один инстанс с
+   `loaded_context_length >= requested`.
+
+Любое нарушение (после reload остаётся 2+ инстанса, loaded_context_length меньше
+запрошенного) поднимает `GemmaAdaptiveReloadError` и завершает stage с понятной
+ошибкой. Не «продолжаем как-нибудь».
+
+**Skip/resume.** Если уже загружен ровно один инстанс модели и его
+`loaded_context_length >= requested`, reload пропускается — это особенно важно
+для retry-flow, где base уже отстрелял и нужно только переключиться на
+high-detail.
+
+**Если adaptive reload выключен** (`GEMMA_ADAPTIVE_RELOAD_ENABLED=false`,
+default): pipeline не делает load/unload и доверяет оператору. Перед каждым
+проходом всё равно выполняется **preflight**: проверяется, что загружен
+подходящий инстанс. Если нет — warning в `gemma_enrichment_summary.json`
+(`context_guard_status=preflight_warning`), но stage продолжает работу.
+
+**Context overflow на base pass.** Если блок упал на всех scale-tier'ах с
+ошибкой `Context size has been exceeded` (даже после уменьшения картинки), он
+помечается флагом `context_overflow=True` и добавляется в кандидаты на
+high-detail retry с reason `base_context_overflow`. На high-detail pass'е под
+`GEMMA_HIGH_DETAIL_CONTEXT_LENGTH` блок повторяется и обычно проходит.
+
+### Env-переменные
+
+| Переменная | Default | Назначение |
+|---|---|---|
+| `GEMMA_ADAPTIVE_RELOAD_ENABLED` | `false` | Включить runtime управление инстансом |
+| `GEMMA_BASE_CONTEXT_LENGTH` | `8192` | context_length для base 100 DPI прохода |
+| `GEMMA_HIGH_DETAIL_CONTEXT_LENGTH` | `16000` | context_length для high-detail 300 DPI |
+
+Раньше base default был `4000`. На 100 DPI с page_text это нестабильно: блоки
+800×500 px регулярно падают с `Context size has been exceeded`. 8192 — рабочий
+минимум.
+
+## Runtime LM Studio Policy (when adaptive reload is OFF)
+
+Если `GEMMA_ADAPTIVE_RELOAD_ENABLED=false`, runtime не меняет конфигурацию
+LM Studio во время stage:
+
+- no automatic `load` / `unload` / `reload`
 - no runtime `context_length` changes
 - no runtime `parallel` changes
-- no runtime reasoning toggles such as `/no_think`, `reasoning=false`, or
-  `reasoning="off"`
+- no runtime reasoning toggles
 
-Gemma base 100 DPI and high-detail 300 DPI must reuse the same already-loaded
-model instance. The only thing that changes between passes is crop profile and
-backend request concurrency.
+В этом режиме оператор обязан держать **ровно один** инстанс Gemma в LM Studio с
+`context_length >= GEMMA_HIGH_DETAIL_CONTEXT_LENGTH`. Два одновременно
+загруженных инстанса (например, 4k и 16k) приводят к тому, что часть запросов
+роутится в маленький ctx и падает.
 
 ## Recommended LM Studio Settings
 
@@ -142,11 +207,14 @@ configuration as the real control surface.
 
 Recommended operator settings:
 
-- `context_length: 16000` or the largest stable value available
-- `parallel: 4` for the base 100 DPI pass
-- `parallel: 1` preferred for targeted 300 DPI retry
+- держать **только один** активный инстанс Gemma в LM Studio;
+- `context_length: 16000` или больше, если оператор управляет вручную;
+- если включён adaptive reload — LM Studio может быть пустой, pipeline сам
+  загрузит модель;
+- `parallel: 4` for the base 100 DPI pass;
+- `parallel: 1` preferred for targeted 300 DPI retry;
 - if backend cannot switch parallelism per stage, keep the 300 DPI safety
-  thresholds strict
+  thresholds strict.
 
 Do not change `chandra-ocr-2` or unrelated loaded models without an explicit
 reason.

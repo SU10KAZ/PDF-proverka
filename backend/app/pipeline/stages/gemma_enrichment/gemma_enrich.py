@@ -86,8 +86,11 @@ load_dotenv(_ROOT_DIR / ".env")
 DEFAULT_MODEL = "google/gemma-4-26b-a4b"
 DEFAULT_PARALLELISM = 1
 HIGH_DETAIL_PARALLELISM = 1
-# context_length для двух проходов (адаптивный reload)
-BASE_CONTEXT_LENGTH = 16000
+# context_length для двух проходов (адаптивный reload).
+# Значения читаются из конфигурации (env GEMMA_BASE_CONTEXT_LENGTH /
+# GEMMA_HIGH_DETAIL_CONTEXT_LENGTH) через helpers _resolve_*_context_length().
+# Константы здесь — только safe fallback на случай ImportError config.
+BASE_CONTEXT_LENGTH = 8192
 HIGH_DETAIL_CONTEXT_LENGTH = 16000
 DEFAULT_TIMEOUT_S = 300
 # Gemma3 с reasoning тратит ~1500-2000 токенов на размышления до JSON.
@@ -261,40 +264,262 @@ def _load_sheet_no(graph: dict, page: int) -> str:
 
 # ─── Adaptive model reload ──────────────────────────────────────────────────
 
-async def _reload_model_for_high_detail(model: str) -> dict:
-    """Unload → reload модели с HIGH_DETAIL_CONTEXT_LENGTH перед high-detail pass.
+class GemmaAdaptiveReloadError(RuntimeError):
+    """Поднимается, если adaptive reload не смог гарантировать единственный
+    инстанс с нужным loaded_context_length. Терминальная ошибка stage."""
 
-    Вызывается только если GEMMA_ADAPTIVE_RELOAD_ENABLED=true.
-    Возвращает dict с полями ok, context_length, error (если не ok).
+
+def _resolve_base_context_length() -> int:
+    """Прочитать GEMMA_BASE_CONTEXT_LENGTH из config.
+    Fallback на хард-константу, если config не импортируется (например, в legacy
+    окружении или в изолированном unit-тесте)."""
+    try:
+        from backend.app.core.config import GEMMA_BASE_CONTEXT_LENGTH as _cfg
+        return int(_cfg)
+    except Exception:
+        return int(BASE_CONTEXT_LENGTH)
+
+
+def _resolve_high_detail_context_length() -> int:
+    try:
+        from backend.app.core.config import GEMMA_HIGH_DETAIL_CONTEXT_LENGTH as _cfg
+        return int(_cfg)
+    except Exception:
+        return int(HIGH_DETAIL_CONTEXT_LENGTH)
+
+
+def _is_adaptive_reload_enabled() -> bool:
+    try:
+        from backend.app.core.config import GEMMA_ADAPTIVE_RELOAD_ENABLED as _cfg
+        return bool(_cfg)
+    except Exception:
+        return False
+
+
+def _instances_for_model(loaded: list[dict], model: str) -> list[dict]:
+    """Фильтрует список загруженных инстансов по model_key, учитывая что
+    LM Studio добавляет суффикс ":N" к identifier для второго инстанса."""
+    out: list[dict] = []
+    for entry in loaded or []:
+        ident = str(entry.get("identifier") or "")
+        if ident == model or ident.startswith(f"{model}:"):
+            out.append(entry)
+    return out
+
+
+async def _adaptive_reload_to_context(
+    *,
+    model: str,
+    target_context_length: int,
+    phase: str,
+    progress_cb: Optional["ProgressCb"] = None,
+) -> dict:
+    """Единый строгий контракт «выгрузить старое → загрузить нужное → проверить».
+
+    Гарантии после успешного возврата:
+      - в LM Studio остался ровно один инстанс модели `model`;
+      - его loaded_context_length >= target_context_length.
+
+    Любое нарушение → GemmaAdaptiveReloadError. Stage не должен продолжаться
+    с моделью в неизвестном состоянии — это и есть «полу-сломанная схема»,
+    от которой мы уходим.
+
+    Возвращает dict с полями reload event'а (записывается в summary):
+      {phase, requested_context_length, loaded_context_length,
+       identifier, unloaded_before, instances_after, ok=True}
     """
     import backend.app.services.llm.lms_service as lms_service
 
     logger = _get_logger()
-    try:
-        logger.info("Adaptive reload: unloading %s before high-detail pass", model)
-        unloaded = await asyncio.to_thread(lms_service.unload_all_for, model)
-        logger.info("Adaptive reload: unloaded %d instance(s)", unloaded)
-    except Exception as exc:
-        logger.warning("Adaptive reload: unload failed: %s", exc)
+    event: dict[str, Any] = {
+        "phase": phase,
+        "requested_context_length": int(target_context_length),
+        "loaded_context_length": None,
+        "identifier": None,
+        "unloaded_before": 0,
+        "instances_after": 0,
+        "ok": False,
+        "error": None,
+    }
 
+    # 1) Снимок до — нужен для логов и для решения «можем ли пропустить reload».
     try:
+        before = await asyncio.to_thread(lms_service.list_loaded)
+    except Exception as exc:
+        before = []
+        logger.warning("Gemma adaptive reload: list_loaded failed before: %s", exc)
+    existing = _instances_for_model(before, model)
+    event["unloaded_before"] = len(existing)
+
+    # Если уже загружен ровно один инстанс модели с подходящим ctx — не reload'им.
+    # Это сохраняет skip/resume: если до high-detail base уже отстрелял с верным ctx,
+    # повторный unload только тратит время.
+    if len(existing) == 1 and (existing[0].get("context_length") or 0) >= target_context_length:
+        loaded_ctx = int(existing[0].get("context_length") or 0)
+        ident = str(existing[0].get("identifier") or "")
         logger.info(
-            "Adaptive reload: loading %s with context_length=%d", model, HIGH_DETAIL_CONTEXT_LENGTH
+            "Gemma adaptive reload: skipping reload, already loaded "
+            "identifier=%s context_length=%d (>= requested %d) for phase=%s",
+            ident, loaded_ctx, target_context_length, phase,
         )
-        result = await asyncio.to_thread(
-            lms_service.load_model,
-            model,
-            context_length=HIGH_DETAIL_CONTEXT_LENGTH,
+        event.update({
+            "ok": True,
+            "loaded_context_length": loaded_ctx,
+            "identifier": ident,
+            "instances_after": 1,
+            "skipped": True,
+        })
+        await _emit(progress_cb, {"type": "adaptive_reload", **event})
+        return event
+
+    # 2) Выгрузить все имеющиеся инстансы этой модели.
+    if existing:
+        logger.info(
+            "Gemma adaptive reload: unloading existing instances "
+            "model=%s count=%d phase=%s", model, len(existing), phase,
+        )
+        try:
+            unloaded = await asyncio.to_thread(lms_service.unload_all_for, model)
+            event["unloaded_before"] = int(unloaded)
+            logger.info(
+                "Gemma adaptive reload: previous instance unloaded successfully "
+                "model=%s count=%d", model, unloaded,
+            )
+        except Exception as exc:
+            event["error"] = f"unload failed: {exc}"
+            logger.error("Gemma adaptive reload failed: unload: %s", exc)
+            await _emit(progress_cb, {"type": "adaptive_reload", **event})
+            raise GemmaAdaptiveReloadError(event["error"]) from exc
+
+    # 3) Загрузить с нужным ctx.
+    if phase == "base":
+        logger.info(
+            "Gemma adaptive reload: loading base model with context_length=%d (model=%s)",
+            target_context_length, model,
+        )
+    else:
+        logger.info(
+            "Gemma adaptive reload: switching to high-detail context_length=%d (model=%s)",
+            target_context_length, model,
+        )
+    try:
+        load_result = await asyncio.to_thread(
+            lms_service.load_model, model, context_length=int(target_context_length),
         )
         lms_service.invalidate_loaded_cache()
-        logger.info(
-            "Adaptive reload: loaded %s context_length=%d",
-            result.get("identifier"), result.get("context_length"),
-        )
-        return {"ok": True, "context_length": result.get("context_length")}
     except Exception as exc:
-        logger.warning("Adaptive reload: load failed: %s", exc)
-        return {"ok": False, "error": str(exc)}
+        event["error"] = f"load failed: {exc}"
+        logger.error("Gemma adaptive reload failed: load: %s", exc)
+        await _emit(progress_cb, {"type": "adaptive_reload", **event})
+        raise GemmaAdaptiveReloadError(event["error"]) from exc
+
+    event["identifier"] = str(load_result.get("identifier") or "")
+    event["loaded_context_length"] = int(load_result.get("context_length") or 0)
+
+    # 4) Verify: ровно один инстанс модели + loaded_context_length достаточен.
+    try:
+        after = await asyncio.to_thread(lms_service.list_loaded)
+    except Exception as exc:
+        after = []
+        logger.warning("Gemma adaptive reload: list_loaded failed after load: %s", exc)
+    after_for_model = _instances_for_model(after, model)
+    event["instances_after"] = len(after_for_model)
+
+    if len(after_for_model) != 1:
+        event["error"] = (
+            f"multiple Gemma instances are still loaded (count={len(after_for_model)}) — "
+            f"adaptive reload cannot guarantee context_length"
+        )
+        logger.error(
+            "Gemma adaptive reload failed: multiple Gemma instances are still loaded "
+            "(count=%d)", len(after_for_model),
+        )
+        await _emit(progress_cb, {"type": "adaptive_reload", **event})
+        raise GemmaAdaptiveReloadError(event["error"])
+
+    loaded_ctx = int(after_for_model[0].get("context_length") or event["loaded_context_length"] or 0)
+    event["loaded_context_length"] = loaded_ctx
+    if loaded_ctx < int(target_context_length):
+        event["error"] = (
+            f"loaded_context_length={loaded_ctx} < requested {target_context_length}"
+        )
+        logger.error("Gemma adaptive reload failed: %s", event["error"])
+        await _emit(progress_cb, {"type": "adaptive_reload", **event})
+        raise GemmaAdaptiveReloadError(event["error"])
+
+    event["ok"] = True
+    logger.info(
+        "Gemma adaptive reload: loaded model identifier=%s, context_length=%d (phase=%s)",
+        event["identifier"], loaded_ctx, phase,
+    )
+    await _emit(progress_cb, {"type": "adaptive_reload", **event})
+    return event
+
+
+async def _preflight_loaded_context(
+    *,
+    model: str,
+    required_context_length: int,
+    phase: str,
+) -> dict:
+    """Если adaptive reload выключен — pipeline reload не делает, но проверяет,
+    что у оператора уже загружен подходящий инстанс. Если нет — warning в summary
+    (не raise), потому что это операторская ответственность."""
+    import backend.app.services.llm.lms_service as lms_service
+
+    logger = _get_logger()
+    event: dict[str, Any] = {
+        "phase": phase,
+        "requested_context_length": int(required_context_length),
+        "loaded_context_length": None,
+        "identifier": None,
+        "instances_after": 0,
+        "ok": False,
+        "skipped": True,
+        "reason": "adaptive_reload_disabled",
+        "error": None,
+    }
+    try:
+        loaded = await asyncio.to_thread(lms_service.list_loaded)
+    except Exception as exc:
+        event["error"] = f"list_loaded failed: {exc}"
+        logger.warning(
+            "Gemma preflight (%s): list_loaded failed — нельзя проверить ctx: %s",
+            phase, exc,
+        )
+        return event
+    matching = _instances_for_model(loaded, model)
+    event["instances_after"] = len(matching)
+    if not matching:
+        event["error"] = f"no loaded instance of {model} found"
+        logger.warning(
+            "Gemma preflight (%s): no loaded instance of %s — оператор должен "
+            "загрузить модель вручную", phase, model,
+        )
+        return event
+    if len(matching) > 1:
+        event["error"] = f"{len(matching)} instances of {model} loaded (expected 1)"
+        logger.warning(
+            "Gemma preflight (%s): multiple instances of %s loaded (count=%d) — "
+            "запросы могут попасть в инстанс с малым ctx",
+            phase, model, len(matching),
+        )
+    chosen = matching[0]
+    event["identifier"] = str(chosen.get("identifier") or "")
+    event["loaded_context_length"] = int(chosen.get("context_length") or 0)
+    if event["loaded_context_length"] < int(required_context_length):
+        event["error"] = (
+            f"loaded_context_length={event['loaded_context_length']} "
+            f"< required {required_context_length}"
+        )
+        logger.warning("Gemma preflight (%s): %s", phase, event["error"])
+        return event
+    event["ok"] = True
+    logger.info(
+        "Gemma preflight (%s): existing instance %s context_length=%d satisfies >= %d",
+        phase, event["identifier"], event["loaded_context_length"], required_context_length,
+    )
+    return event
 
 
 def _get_logger():
@@ -319,6 +544,9 @@ class EnrichResult:
     response_source: str = "content"
     finish_reason: str = ""
     partial_ok: bool = False
+    # True если все scale-tier'ы получили "Context size has been exceeded" —
+    # block прорастает в high-detail кандидатов (см. _base_result_candidate_reasons).
+    context_overflow: bool = False
 
 
 def _coerce_message_text(value) -> str:
@@ -757,6 +985,9 @@ async def _enrich_block_single_pass(
     last_data: dict | None = None
     last_raw = ""
     total_elapsed_ms = 0
+    # Истинно, если последняя ошибка на текущем scale_idx была "Context size has been exceeded".
+    # Используется, чтобы пометить block.context_overflow=True при выходе по исчерпанию тиров.
+    last_was_context_exceeded = False
 
     while scale_idx < len(_IMAGE_SCALE_TIERS):
         scale = _IMAGE_SCALE_TIERS[scale_idx]
@@ -775,12 +1006,16 @@ async def _enrich_block_single_pass(
             break
 
         if status >= 400 and _is_invalid_image_error(data, raw):
+            last_was_context_exceeded = False
             scale_idx += 1
             continue
 
         if status >= 400 and _is_context_exceeded_error(data, raw):
+            last_was_context_exceeded = True
             scale_idx += 1
             continue
+
+        last_was_context_exceeded = False
 
         # JSON parse error после успешного HTTP — пробуем уменьшить изображение.
         # Это лечит блоки где модель «ломает» JSON при большом input, даже если
@@ -803,6 +1038,7 @@ async def _enrich_block_single_pass(
         return EnrichResult(
             block_id=block_id, page=page, ok=False,
             elapsed_ms=total_elapsed_ms, error=err or f"http {last_status}",
+            context_overflow=last_was_context_exceeded,
         )
 
     content_text, reasoning_text, finish_reason = _extract_response_texts(last_data)
@@ -1171,6 +1407,10 @@ def _base_result_candidate_reasons(block: dict, result: EnrichResult) -> list[st
     short_side = min(render_size) if render_size else 0
 
     if not result.ok or not result.enrichment:
+        # context_overflow на base pass — приоритетный сигнал. Повторная попытка
+        # на high-detail context_length должна вытащить блок.
+        if getattr(result, "context_overflow", False):
+            reasons.append("base_context_overflow")
         reasons.append("base_failed")
         return reasons
     if result.partial_ok:
@@ -1775,28 +2015,33 @@ async def enrich_project(
     ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
     started = time.monotonic()
 
-    # Если включён адаптивный reload — загружаем модель с BASE_CONTEXT_LENGTH (4K)
-    # перед base pass. Если уже загружена с нужным ctx — unload+reload всё равно,
-    # потому что оператор явно включил эту опцию.
-    try:
-        from backend.app.core.config import GEMMA_ADAPTIVE_RELOAD_ENABLED
-        _adaptive_reload_enabled = GEMMA_ADAPTIVE_RELOAD_ENABLED
-    except ImportError:
-        _adaptive_reload_enabled = False
-
-    if _adaptive_reload_enabled:
-        import backend.app.services.llm.lms_service as _lms
-        logger = _get_logger()
-        try:
-            logger.info("Adaptive reload: loading %s with context_length=%d for base pass", model, BASE_CONTEXT_LENGTH)
-            await asyncio.to_thread(_lms.unload_all_for, model)
-            await asyncio.to_thread(
-                _lms.load_model, model, context_length=BASE_CONTEXT_LENGTH
-            )
-            _lms.invalidate_loaded_cache()
-            logger.info("Adaptive reload: base pass model loaded at %d ctx", BASE_CONTEXT_LENGTH)
-        except Exception as _exc:
-            logger.warning("Adaptive reload: base pass load failed (continuing): %s", _exc)
+    # ─── Adaptive reload (base pass) ───
+    # adaptive_reload_enabled=true: pipeline сам выгружает все имеющиеся инстансы
+    # Gemma и загружает один с GEMMA_BASE_CONTEXT_LENGTH; иначе делаем preflight
+    # без побочных эффектов и продолжаем с тем, что уже загружено у оператора.
+    base_ctx_target = _resolve_base_context_length()
+    high_detail_ctx_target = _resolve_high_detail_context_length()
+    adaptive_reload_enabled = _is_adaptive_reload_enabled()
+    model_reload_events: list[dict[str, Any]] = []
+    context_guard_status = "skipped"
+    base_reload_event: dict[str, Any] | None = None
+    if adaptive_reload_enabled:
+        base_reload_event = await _adaptive_reload_to_context(
+            model=model,
+            target_context_length=base_ctx_target,
+            phase="base",
+            progress_cb=progress_cb,
+        )
+        model_reload_events.append(base_reload_event)
+        context_guard_status = "ok"
+    else:
+        preflight = await _preflight_loaded_context(
+            model=model,
+            required_context_length=base_ctx_target,
+            phase="base",
+        )
+        model_reload_events.append(preflight)
+        context_guard_status = "preflight_ok" if preflight.get("ok") else "preflight_warning"
 
     await _emit(progress_cb, {
         "type": "started",
@@ -1892,22 +2137,26 @@ async def enrich_project(
             "skipped_large_ids": sorted(skipped_large_ids),
         })
         if safe_candidates:
-            # Адаптивная перезагрузка: base прошёл на 4K ctx, high-detail нужен 16K.
-            # Reload только если оператор включил GEMMA_ADAPTIVE_RELOAD_ENABLED.
-            reload_result: dict = {"ok": False, "skipped": True}
-            try:
-                from backend.app.core.config import GEMMA_ADAPTIVE_RELOAD_ENABLED
-                adaptive_reload = GEMMA_ADAPTIVE_RELOAD_ENABLED
-            except ImportError:
-                adaptive_reload = False
-            if adaptive_reload:
-                reload_result = await _reload_model_for_high_detail(model)
-                await _emit(progress_cb, {
-                    "type": "adaptive_reload",
-                    "ok": reload_result.get("ok"),
-                    "context_length": reload_result.get("context_length"),
-                    "error": reload_result.get("error"),
-                })
+            # ─── Adaptive reload (high-detail pass) ───
+            # base прошёл на base_ctx_target; high-detail требует high_detail_ctx_target.
+            # Reload только если GEMMA_ADAPTIVE_RELOAD_ENABLED=true; иначе preflight.
+            if adaptive_reload_enabled:
+                high_detail_reload_event = await _adaptive_reload_to_context(
+                    model=model,
+                    target_context_length=high_detail_ctx_target,
+                    phase="high_detail",
+                    progress_cb=progress_cb,
+                )
+                model_reload_events.append(high_detail_reload_event)
+            else:
+                hd_preflight = await _preflight_loaded_context(
+                    model=model,
+                    required_context_length=high_detail_ctx_target,
+                    phase="high_detail",
+                )
+                model_reload_events.append(hd_preflight)
+                if not hd_preflight.get("ok"):
+                    context_guard_status = "preflight_warning"
             high_detail_results, high_detail_retry_stats = await _run_blocks_pass(
                 image_blocks=safe_candidates,
                 graph=graph,
@@ -2065,6 +2314,22 @@ async def enrich_project(
             "high_detail_blocks_index_hash": high_detail_index_hash,
             "blocks_analyzed_only_with_base_100": sorted(base_only_ids),
             "blocks_upgraded_to_300": sorted(upgraded_ids),
+            # adaptive reload diagnostics (schema_version=2 не меняется)
+            "adaptive_reload_enabled": bool(adaptive_reload_enabled),
+            "base_context_length": int(base_ctx_target),
+            "high_detail_context_length": int(high_detail_ctx_target),
+            "loaded_base_context_length": next(
+                (int(ev.get("loaded_context_length") or 0) for ev in model_reload_events
+                 if ev.get("phase") == "base"),
+                None,
+            ),
+            "loaded_high_detail_context_length": next(
+                (int(ev.get("loaded_context_length") or 0) for ev in model_reload_events
+                 if ev.get("phase") == "high_detail"),
+                None,
+            ),
+            "model_reload_events": model_reload_events,
+            "context_guard_status": context_guard_status,
         },
     )
 
@@ -2258,7 +2523,27 @@ async def retry_failed_blocks(
         "still_failed_after_retries": 0,
         "passes": [],
     }
+    retry_high_detail_ctx_target = _resolve_high_detail_context_length()
+    retry_adaptive_reload_enabled = _is_adaptive_reload_enabled()
+    retry_reload_events: list[dict[str, Any]] = []
     if safe_candidates:
+        # retry_failed_blocks работает только с high-detail candidates, поэтому
+        # переключаем контекст ровно один раз — на high_detail_ctx_target.
+        if retry_adaptive_reload_enabled:
+            ev = await _adaptive_reload_to_context(
+                model=model,
+                target_context_length=retry_high_detail_ctx_target,
+                phase="retry_high_detail",
+                progress_cb=progress_cb,
+            )
+            retry_reload_events.append(ev)
+        else:
+            ev = await _preflight_loaded_context(
+                model=model,
+                required_context_length=retry_high_detail_ctx_target,
+                phase="retry_high_detail",
+            )
+            retry_reload_events.append(ev)
         base_url = _env("CHANDRA_BASE_URL").rstrip("/")
         retry_results, retry_stats = await _run_blocks_pass(
             image_blocks=safe_candidates,
@@ -2396,6 +2681,15 @@ async def retry_failed_blocks(
                 "output_tokens": sum((result.output_tokens or 0) for result in all_results),
             },
             "high_detail_retry_stats": retry_stats,
+            # adaptive reload diagnostics для retry-flow.
+            "adaptive_reload_enabled": bool(retry_adaptive_reload_enabled),
+            "high_detail_context_length": int(retry_high_detail_ctx_target),
+            "loaded_high_detail_context_length": next(
+                (int(ev.get("loaded_context_length") or 0) for ev in retry_reload_events
+                 if "high_detail" in str(ev.get("phase") or "")),
+                None,
+            ),
+            "model_reload_events": retry_reload_events,
         },
     )
     new_summary["retry_mode"] = retry_mode

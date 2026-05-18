@@ -589,10 +589,12 @@ CHANDRA_BASIC_USER = os.environ.get("NGROK_AUTH_USER", "")
 CHANDRA_BASIC_PASS = os.environ.get("NGROK_AUTH_PASS", "")
 
 LMSTUDIO_AUTO_RELOAD_ENABLED = _env_bool("LMSTUDIO_AUTO_RELOAD_ENABLED", False)
-# Адаптивная перезагрузка модели между base (4K ctx) и high-detail (16K ctx) Gemma passes.
+# Адаптивная перезагрузка модели между base (8K ctx) и high-detail (16K ctx) Gemma passes.
 # Включать только если оператор разрешает runtime load/unload для Gemma.
 GEMMA_ADAPTIVE_RELOAD_ENABLED = _env_bool("GEMMA_ADAPTIVE_RELOAD_ENABLED", False)
-GEMMA_BASE_CONTEXT_LENGTH = int(os.environ.get("GEMMA_BASE_CONTEXT_LENGTH", "4000"))
+# 8192 — практический минимум для 100 DPI image-блока с page_text:
+# на 4096 в проде стабильно падают блоки 800×500 с "Context size has been exceeded".
+GEMMA_BASE_CONTEXT_LENGTH = int(os.environ.get("GEMMA_BASE_CONTEXT_LENGTH", "8192"))
 GEMMA_HIGH_DETAIL_CONTEXT_LENGTH = int(os.environ.get("GEMMA_HIGH_DETAIL_CONTEXT_LENGTH", "16000"))
 LMSTUDIO_UNLOAD_AFTER_QUEUE = _env_bool("LMSTUDIO_UNLOAD_AFTER_QUEUE", True)
 LMSTUDIO_UNLOAD_GRACE_SECONDS = int(os.environ.get("LMSTUDIO_UNLOAD_GRACE_SECONDS", "60"))
