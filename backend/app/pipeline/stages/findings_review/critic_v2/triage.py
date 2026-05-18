@@ -53,10 +53,19 @@ PROFILE_AGGRESSIVE = "aggressive"
 # hidden_by_critic. See backend/scripts/simulate_critic_v2_tuning_rules_round1.py
 # for the simulation evidence and risk metrics.
 PROFILE_ASSISTED_ROUND1 = "assisted_round1"
+# Experimental profile derived from round-2 simulation of risky_accepted feedback.
+# Inherits conservative routing, then applies STRICTER versions of C and D rules:
+#  C_v2 — RD vs PZ with >=2 independent signals (precision 100% on simulation);
+#  D_v2 — already_covered with >=2 strong signals (precision 57.9%, combined 63.6%).
+# A1_v2 OCR is NOT included (precision 33.3% in simulation — worse than round1).
+# Like round1, all downgrades land in suggested_reject only — never hidden.
+# See backend/scripts/simulate_critic_v2_assisted_round2.py for the evidence.
+PROFILE_ASSISTED_ROUND2_CANDIDATE = "assisted_round2_candidate"
 
 VALID_PROFILES = {
     PROFILE_CONSERVATIVE, PROFILE_ASSISTED,
     PROFILE_AGGRESSIVE, PROFILE_ASSISTED_ROUND1,
+    PROFILE_ASSISTED_ROUND2_CANDIDATE,
 }
 
 # ─── Human queue labels ───────────────────────────────────────────────────────
@@ -288,6 +297,19 @@ _PROFILE_CONFIGS: dict[str, TriageProfileConfig] = {
         aggressive_det_hide=False,
         non_production=True,  # experimental: do not use in production reports
     ),
+    # assisted_round2_candidate: inherits conservative base, then applies C_v2
+    # + D_v2 (no A1_v2). Both rules require >=2 independent signals and explicit
+    # guards. Never moves anything to hidden_by_critic.
+    PROFILE_ASSISTED_ROUND2_CANDIDATE: TriageProfileConfig(
+        name=PROFILE_ASSISTED_ROUND2_CANDIDATE,
+        label="Assisted round2 candidate (conservative + strict C_v2 + D_v2)",
+        suggested_reject_conf_threshold=_CONF_THRESHOLD_HIDDEN,
+        suggested_reject_taxonomies=frozenset(),
+        allow_strong_keep_in_suggested_reject=False,
+        hidden_conf_threshold=_CONF_THRESHOLD_HIDDEN,
+        aggressive_det_hide=False,
+        non_production=True,
+    ),
 }
 
 
@@ -479,6 +501,293 @@ def apply_round1_rules(decision: TriageDecision,
         reason=primary_reason or decision.reason,
         explanation=(
             f"round1_rules={'+'.join(matched)} (was {decision.human_queue}); "
+            f"{decision.explanation}"
+        ),
+        evidence_quality=decision.evidence_quality,
+        usefulness_score=decision.usefulness_score,
+        source_dependency=decision.source_dependency,
+        taxonomy_reason=decision.taxonomy_reason,
+        deterministic_decision=decision.deterministic_decision,
+        llm_decision=decision.llm_decision,
+        final_decision=decision.final_decision,
+        was_guard_blocked=decision.was_guard_blocked,
+        was_downgraded_reject=decision.was_downgraded_reject,
+        profile=decision.profile,
+        raw=new_raw,
+    )
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Round-2 candidate post-processing rules (C_v2 + D_v2 only)
+#
+# Stricter than round1: each rule fires only when >=2 INDEPENDENT signals match.
+# Like round1, the rules MUST NOT read human_decision / preferred_tab /
+# reviewer_note / human_reason / triage_correct / priority — pre-review fields
+# only. Enforced by SpyDict tests.
+#
+# A1_v2 OCR is intentionally NOT included (simulation precision 33.3% < round1).
+# E / B / F rules are not part of this candidate.
+# All downgrades land in suggested_reject only — never hidden_by_critic.
+# ──────────────────────────────────────────────────────────────────────────────
+
+ROUND2_REASON_RD_PZ = "round2_rd_vs_pz_suggested_reject"
+ROUND2_REASON_ALREADY_COVERED = "round2_already_covered_suggested_reject"
+
+_ROUND2_RD_PZ_SECTIONS = {"KJ", "EOM"}
+
+# Independent signal groups for C_v2 (RD vs PZ).
+# Each tuple = one "signal"; ≥2 distinct tuples must match for a hit.
+_ROUND2_RD_PZ_SIGNALS: tuple[tuple[str, ...], ...] = (
+    ("пз раздела", "пояснительная записк", " пз ", " пз,"),
+    ("расчёт", "расчет"),                                # calculation
+    ("расчётный параметр", "расчетный параметр",
+     "расчётное обоснован", "расчетное обоснован"),
+    ("огнестойк", "rei ", " rei", "rei-"),
+    ("сп 468", "сп 385"),
+    ("экспертиз",),
+    ("нормативная база",),
+    ("не чертёж рд", "не чертеж рд", "не в чертеже рд",
+     "не требуется в рд", "не требуется в рабочей документац"),
+)
+
+# Independent signal groups for D_v2 (already covered, strict).
+_ROUND2_ALREADY_COVERED_PHRASES: tuple[str, ...] = (
+    "уже указан", "уже учт", "уже определ",
+    "присутствует в спецификац", "присутствует в раздел",
+    "есть в смежном раздел", "есть в смежных раздел",
+    "определяется по таблиц", "указано в спецификац",
+    "указано в общих указани", "в общих указани", "в общих указаниях",
+)
+# "Concrete-place" markers in explanation/text — must point to a specific
+# location (sheet/table/spec/general notes) for D_v2 to consider it covered.
+_ROUND2_CONCRETE_PLACE_MARKERS: tuple[str, ...] = (
+    "лист", "таблиц", "спецификац", "общие указани", "общих указани",
+)
+_ROUND2_ALREADY_COVERED_TAXONOMIES = {
+    "duplicate_or_already_covered",
+    "already_resolved_by_project_note",
+}
+# A bare "смежный раздел" without specifics is NOT enough — explicit guard.
+_ROUND2_VAGUE_ADJACENT_ONLY = ("смежн",)
+
+# Pre-review fields the round2 rules are allowed to read from `finding`.
+# Adding new names here is the ONLY way to widen the contract — tests pin this.
+_ROUND2_ALLOWED_FINDING_FIELDS = frozenset({
+    "title", "description", "recommendation", "sub_problem",
+    "explanation", "section", "discipline", "severity", "category",
+    "taxonomy_reason",
+})
+
+
+def _round2_text_blob(finding: dict) -> str:
+    """Lowercased blob from pre-review text fields only."""
+    if not finding:
+        return ""
+    parts: list[str] = []
+    for key in ("title", "description", "recommendation",
+                "sub_problem", "explanation"):
+        v = finding.get(key)
+        if v:
+            parts.append(str(v))
+    return " ".join(parts).lower()
+
+
+def _count_distinct_signals(blob: str, signal_groups: tuple[tuple[str, ...], ...]) -> int:
+    """Count how many DIFFERENT signal groups have at least one substring hit."""
+    n = 0
+    for group in signal_groups:
+        if any(s in blob for s in group):
+            n += 1
+    return n
+
+
+def _round2_match_rd_pz(section: Optional[str], blob: str) -> bool:
+    """C_v2 — fires only with >=2 independent RD/PZ signals.
+
+    Section-gated to KJ/EOM. AR never matches (guard §2).
+    """
+    if section not in _ROUND2_RD_PZ_SECTIONS:
+        return False
+    return _count_distinct_signals(blob, _ROUND2_RD_PZ_SIGNALS) >= 2
+
+
+def _round2_match_already_covered(
+    blob: str,
+    taxonomy_reason: Optional[str],
+    source_dependency: Optional[str],
+    decision_explanation: str,
+) -> bool:
+    """D_v2 — fires only with >=2 strong "already covered" signals.
+
+    Signal pool (each contributes at most 1):
+      S1  taxonomy_reason ∈ {duplicate_or_already_covered, already_resolved_by_project_note}
+      S2  source_dependency == "enough_source"
+      S3  text blob contains one of the explicit "уже указано/...." phrases
+      S4  explanation or text mentions a concrete location (лист/таблиц/спецификац/общие указания)
+
+    A bare "смежный раздел" without anything else does NOT count.
+    """
+    signals = 0
+    if taxonomy_reason in _ROUND2_ALREADY_COVERED_TAXONOMIES:
+        signals += 1
+    if (source_dependency or "").lower() == "enough_source":
+        signals += 1
+    if any(p in blob for p in _ROUND2_ALREADY_COVERED_PHRASES):
+        signals += 1
+    haystack = (blob + " " + (decision_explanation or "").lower()).strip()
+    if any(m in haystack for m in _ROUND2_CONCRETE_PLACE_MARKERS):
+        # "Concrete-place" marker only counts when it's accompanied by some
+        # adjacency/covered hint — otherwise "лист" alone (any drawing has
+        # "лист") would be a false positive.
+        if (
+            any(p in blob for p in _ROUND2_ALREADY_COVERED_PHRASES)
+            or taxonomy_reason in _ROUND2_ALREADY_COVERED_TAXONOMIES
+            or any(v in blob for v in _ROUND2_VAGUE_ADJACENT_ONLY)
+        ):
+            signals += 1
+    return signals >= 2
+
+
+def _round2_rd_pz_guard_blocks(
+    finding: dict, decision: TriageDecision, blob: str
+) -> bool:
+    """Extra guards for C_v2 (§2 spec).
+
+    Returns True when the rule MUST NOT fire even though signals matched.
+    """
+    severity = (finding.get("severity") or finding.get("category") or "").upper()
+    # ЭКОНОМИЧЕСКОЕ + valid + score>=8 + no explicit RD-not-required marker → block.
+    if (
+        severity == "ЭКОНОМИЧЕСКОЕ"
+        and decision.evidence_quality == EVIDENCE_VALID
+        and (decision.usefulness_score or 0) >= 8
+    ):
+        explicit_rd_not_required = (
+            "не чертёж рд" in blob
+            or "не чертеж рд" in blob
+            or "не требуется в рд" in blob
+            or "не в чертеже рд" in blob
+        )
+        if not explicit_rd_not_required:
+            return True
+    # Category явно spec_mismatch с объёмом/стоимостью — не RD vs PZ.
+    cat = (finding.get("category") or "").lower()
+    if "spec_mismatch" in cat and ("объём" in blob or "объем" in blob or "стоимост" in blob):
+        return True
+    return False
+
+
+def _round2_already_covered_guard_blocks(
+    finding: dict, decision: TriageDecision, blob: str, source_dependency: Optional[str]
+) -> bool:
+    """Extra guards for D_v2 (§2 spec)."""
+    severity = (finding.get("severity") or finding.get("category") or "").upper()
+    # strong/economic/critical + valid + high-score + нет concrete place → block.
+    is_strong = severity in _HIGH_SEVERITY
+    if (
+        is_strong
+        and decision.evidence_quality == EVIDENCE_VALID
+        and (decision.usefulness_score or 0) >= 8
+    ):
+        has_concrete = any(
+            m in blob for m in _ROUND2_CONCRETE_PLACE_MARKERS
+            if m in ("спецификац", "общие указани", "общих указани", "таблиц")
+        )
+        if not has_concrete:
+            return True
+    # source_dependency != enough_source AND нет explicit already-covered phrase → block.
+    has_explicit_phrase = any(p in blob for p in _ROUND2_ALREADY_COVERED_PHRASES)
+    if (source_dependency or "").lower() != "enough_source" and not has_explicit_phrase:
+        return True
+    return False
+
+
+def _round2_eligible(decision: TriageDecision) -> bool:
+    """Same eligibility as round1: only move from primary tabs, never re-upgrade."""
+    if decision.human_queue in (
+        QUEUE_HIDDEN, QUEUE_SUGGESTED_REJECT, QUEUE_NEEDS_CONTEXT
+    ):
+        return False
+    return True
+
+
+def apply_round2_rules(decision: TriageDecision, finding: dict) -> TriageDecision:
+    """Post-process a TriageDecision using C_v2 + D_v2 round2 rules.
+
+    Returns the original decision when no rule fires / guard blocks / not
+    eligible. Otherwise returns a fresh TriageDecision moved to
+    suggested_reject (never hidden_by_critic), with can_restore=True.
+
+    Pure: does not mutate inputs. Reads ONLY pre-review fields from `finding`
+    (enforced by tests via SpyDict).
+    """
+    if not _round2_eligible(decision):
+        return decision
+    blob = _round2_text_blob(finding)
+    if not blob:
+        return decision
+
+    section = finding.get("section") or finding.get("discipline")
+    taxonomy_reason = finding.get("taxonomy_reason") or decision.taxonomy_reason
+    source_dependency = decision.source_dependency
+
+    matched: list[str] = []
+    primary_reason: Optional[str] = None
+
+    if _round2_match_rd_pz(section, blob):
+        if not _round2_rd_pz_guard_blocks(finding, decision, blob):
+            matched.append("C_v2_rd_pz")
+            primary_reason = ROUND2_REASON_RD_PZ
+
+    if _round2_match_already_covered(
+        blob, taxonomy_reason, source_dependency, decision.explanation,
+    ):
+        if not _round2_already_covered_guard_blocks(
+            finding, decision, blob, source_dependency,
+        ):
+            matched.append("D_v2_already_covered")
+            if primary_reason is None:
+                primary_reason = ROUND2_REASON_ALREADY_COVERED
+
+    if not matched:
+        return decision
+
+    # Strong-keep extra guard: don't override safety-critical findings unless
+    # we have a strong D_v2 hit (concrete place + explicit covered phrase).
+    if decision.human_queue == QUEUE_STRONG_KEEP:
+        severity = (finding.get("severity")
+                    or finding.get("category") or "").upper()
+        if (
+            severity in _HIGH_SEVERITY
+            and decision.evidence_quality == EVIDENCE_VALID
+            and (decision.usefulness_score or 0) >= 8
+            and "D_v2_already_covered" not in matched
+        ):
+            return decision
+
+    # Preserve risk_level (round2 never auto-lowers risk).
+    new_risk = decision.risk_level
+    if new_risk not in (RISK_MEDIUM, RISK_HIGH):
+        new_risk = RISK_MEDIUM
+
+    new_raw = dict(decision.raw) if decision.raw else {}
+    new_raw["applied_round2_rules"] = matched
+    new_raw["round2_rule_reason"] = primary_reason
+    new_raw["round2_pre_queue"] = decision.human_queue
+    new_raw["round2_pre_reason"] = decision.reason
+
+    return TriageDecision(
+        finding_id=decision.finding_id,
+        human_queue=QUEUE_SUGGESTED_REJECT,
+        critic_recommendation=REC_REJECT,
+        visible_by_default=False,
+        collapsed_by_default=True,
+        can_restore=True,
+        confidence=decision.confidence,
+        risk_level=new_risk,
+        reason=primary_reason or decision.reason,
+        explanation=(
+            f"round2_rules={'+'.join(matched)} (was {decision.human_queue}); "
             f"{decision.explanation}"
         ),
         evidence_quality=decision.evidence_quality,
@@ -1095,6 +1404,8 @@ def build_triage_result(
         # TriageDecision moved to suggested_reject with the matching reason.
         if profile == PROFILE_ASSISTED_ROUND1:
             td = apply_round1_rules(td, finding)
+        elif profile == PROFILE_ASSISTED_ROUND2_CANDIDATE:
+            td = apply_round2_rules(td, finding)
         result.append(td)
 
     return result

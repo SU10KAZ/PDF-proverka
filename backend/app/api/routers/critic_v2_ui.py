@@ -294,14 +294,163 @@ async def critic_v2_artifact_info() -> dict[str, Any]:
     return info
 
 
+def _candidate_project_dirs(project_id: str) -> list[Path]:
+    """Возвращает упорядоченный список potential project dirs для lookup.
+
+    Strategy (без побочных эффектов / без чтения objects.json):
+      1) PROJECTS_DIR / project_id                                  — самое прямое
+      2) PROJECTS_DIR / <SECTION>/ project_id                       — section-grouped layout
+      3) PROJECTS_DIR / <OBJECT>/<SECTION>/<project_id>             — multi-object layout
+      4) (через resolve_project_dir, если доступен)                — финальный fallback
+
+    Поиск дешёвый: не сканирует filesystem рекурсивно, только два уровня
+    директорий, и только для существующих candidate-путей. Не falls back на
+    cwd / другие env vars. Кеш не нужен — выполняется на запрос к одному id.
+    """
+    out: list[Path] = []
+    try:
+        from backend.app.core.config import PROJECTS_DIR
+    except Exception:  # noqa: BLE001
+        return out
+
+    projects_dir = Path(PROJECTS_DIR)
+
+    # AR projects often have project_id="<name>.pdf" while folder is "<name>".
+    # Try both forms — original first, then with .pdf stripped.
+    id_variants = [project_id]
+    if project_id.lower().endswith(".pdf"):
+        id_variants.append(project_id[:-4])
+
+    for pid in id_variants:
+        direct = projects_dir / pid
+        if direct not in out:
+            out.append(direct)
+
+    if projects_dir.exists():
+        # Уровень 1: PROJECTS_DIR/<SECTION_OR_OBJECT>/<project_id>
+        for sub in projects_dir.iterdir():
+            if not sub.is_dir() or sub.name.startswith("_"):
+                continue
+            for pid in id_variants:
+                cand1 = sub / pid
+                if cand1.exists() and cand1 not in out:
+                    out.append(cand1)
+            # Уровень 2: PROJECTS_DIR/<OBJECT>/<SECTION>/<project_id>
+            try:
+                for sub2 in sub.iterdir():
+                    if not sub2.is_dir() or sub2.name.startswith("_"):
+                        continue
+                    for pid in id_variants:
+                        cand2 = sub2 / pid
+                        if cand2.exists() and cand2 not in out:
+                            out.append(cand2)
+            except OSError:
+                continue
+
+    # Multi-object resolver (если доступен и не падает)
+    try:
+        from backend.app.services.common.project_service import resolve_project_dir
+        resolved = resolve_project_dir(project_id)
+        if resolved not in out:
+            out.append(resolved)
+    except Exception:  # noqa: BLE001 — AmbiguousProjectError и пр.
+        pass
+    return out
+
+
+def _load_project_local_triage_ui(project_id: str) -> tuple[dict[str, Any] | None, Path | None]:
+    """Попытаться найти project-local critic_v2_triage_ui.json.
+
+    Путь: <project_dir>/_output/<CRITIC_V2_OUTPUT_SUBDIR>/critic_v2_triage_ui.json
+    Read-only: ничего не пишет. Возвращает (artifact_dict | None, expected_path | None).
+    expected_path — путь, который endpoint попробует первым (для warning'а).
+    """
+    try:
+        from backend.app.core.config import CRITIC_V2_OUTPUT_SUBDIR
+    except Exception:  # noqa: BLE001
+        return None, None
+
+    first_expected: Path | None = None
+    for project_dir in _candidate_project_dirs(project_id):
+        candidate = project_dir / "_output" / CRITIC_V2_OUTPUT_SUBDIR / "critic_v2_triage_ui.json"
+        if first_expected is None:
+            first_expected = candidate
+        if not candidate.exists():
+            continue
+        try:
+            return json.loads(candidate.read_text(encoding="utf-8")), candidate
+        except (OSError, json.JSONDecodeError):
+            return None, candidate
+    return None, first_expected
+
+
 @router.get("/critic-v2/projects/{project_id:path}/triage-ui")
 async def project_critic_v2_triage_ui(project_id: str) -> dict[str, Any]:
     """
     Возвращает project-scoped UI export для experimental Critic v2 view.
 
     Read-only: не пишет файлов, не вызывает LLM, не меняет 03_findings_review.json.
+
+    Приоритет источников:
+      A. project-local artifact <project>/_output/<critic_v2_subdir>/critic_v2_triage_ui.json
+         (сгенерирован stage runner / backfill script);
+      B. fallback на глобальный CRITIC_V2_UI_EXPORT_PATH (offline matrix replay);
+      C. иначе — пустой ответ с warning.
     """
-    artifact = _load_artifact()
+    # ── A. project-local ──────────────────────────────────────────────────
+    local_artifact, local_path = _load_project_local_triage_ui(project_id)
+    if local_artifact is not None:
+        items = local_artifact.get("items", []) or []
+        scope = {
+            "mode": "project",
+            "project_id": project_id,
+            "project_name": local_artifact.get("source_project", {}).get("project_name")
+                or (items[0].get("project_name") if items else project_id),
+            "matched_by": "project_local_artifact",
+            "source_path": str(local_path) if local_path else None,
+        }
+        return {
+            "summary": _recompute_summary(items, local_artifact.get("summary", {}) or {}),
+            "tabs": _recompute_tabs(items, local_artifact.get("tabs", []) or []),
+            "items": items,
+            "scope": scope,
+            "experimental": True,
+            "production_pipeline_modified": False,
+            "source": "project_local",
+            "generated_at": local_artifact.get("generated_at"),
+            "profile": local_artifact.get("profile"),
+        }
+
+    # ── B. fallback: глобальный artifact ──────────────────────────────────
+    try:
+        artifact = _load_artifact()
+    except HTTPException as exc:
+        # Артефакта совсем нет (404) — отдаём обогащённый warning с подсказкой
+        # про project-local путь.
+        if exc.status_code == 404:
+            return {
+                "summary": _recompute_summary([], {}),
+                "tabs": _recompute_tabs([], []),
+                "items": [],
+                "scope": {
+                    "mode": "project",
+                    "project_id": project_id,
+                    "project_name": None,
+                    "matched_by": None,
+                },
+                "warning": (
+                    "Critic v2 данные для проекта отсутствуют. "
+                    "Запустите backfill: "
+                    "python backend/scripts/backfill_critic_v2_triage.py --project <path>"
+                ),
+                "hint_command": REPLAY_HINT,
+                "expected_project_local_path": str(local_path) if local_path else None,
+                "experimental": True,
+                "production_pipeline_modified": False,
+                "source": "none",
+            }
+        raise
+
     src_items = artifact.get("items", []) or []
     src_tabs = artifact.get("tabs", []) or []
     src_summary = artifact.get("summary", {}) or {}
@@ -316,7 +465,7 @@ async def project_critic_v2_triage_ui(project_id: str) -> dict[str, Any]:
     }
 
     if not matched_items:
-        # проект не найден в общем artifact
+        # проект не найден ни локально, ни в общем artifact
         return {
             "summary": _recompute_summary([], src_summary),
             "tabs": _recompute_tabs([], src_tabs),
@@ -324,12 +473,14 @@ async def project_critic_v2_triage_ui(project_id: str) -> dict[str, Any]:
             "scope": scope,
             "warning": (
                 "Этот проект отсутствует в Critic v2 UI export. "
-                "Возможно, для него ещё не запускался matrix replay. "
+                "Возможно, для него ещё не запускался matrix replay или backfill. "
                 "Замечания не удалены, production pipeline не изменён."
             ),
             "hint_command": REPLAY_HINT,
+            "expected_project_local_path": str(local_path) if local_path else None,
             "experimental": True,
             "production_pipeline_modified": False,
+            "source": "global_fallback_empty",
         }
 
     return {
@@ -339,6 +490,7 @@ async def project_critic_v2_triage_ui(project_id: str) -> dict[str, Any]:
         "scope": scope,
         "experimental": True,
         "production_pipeline_modified": False,
+        "source": "global_fallback",
     }
 
 

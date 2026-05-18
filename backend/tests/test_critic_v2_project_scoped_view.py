@@ -186,8 +186,16 @@ def test_pdf_suffix_match(client: TestClient, tmp_path: Path,
     assert body["scope"]["matched_by"] == "project_name_no_pdf"
 
 
-def test_missing_artifact_returns_404_with_hint(tmp_path: Path,
-                                                 monkeypatch: pytest.MonkeyPatch):
+def test_missing_artifact_returns_graceful_warning(tmp_path: Path,
+                                                    monkeypatch: pytest.MonkeyPatch):
+    """С добавлением project-local lookup endpoint перестаёт падать с 404 на
+    отсутствии глобального artifact'а. Контракт стал: HTTP 200 + warning +
+    hint_command (про backfill для project-local), чтобы фронт не ломался.
+
+    Старое поведение `404 critic_v2_artifact_missing` сохраняется только для
+    диагностического endpoint /api/critic-v2/artifact-info — см. отдельный
+    test_artifact_info_*.
+    """
     nonexistent = tmp_path / "nope.json"
     monkeypatch.setenv("CRITIC_V2_UI_EXPORT_PATH", str(nonexistent))
     from backend.app.api.routers import critic_v2_ui as _mod
@@ -196,12 +204,18 @@ def test_missing_artifact_returns_404_with_hint(tmp_path: Path,
     app.include_router(_mod.router)
     c = TestClient(app)
     r = c.get("/api/critic-v2/projects/P1/triage-ui")
-    assert r.status_code == 404
-    detail = r.json()["detail"]
-    assert detail["error"] == "critic_v2_artifact_missing"
-    assert "expected_path" in detail
-    assert "hint_command" in detail
-    assert "replay_critic_v2_triage_policy" in detail["hint_command"]
+    assert r.status_code == 200
+    body = r.json()
+    assert body["items"] == []
+    assert body["source"] == "none"
+    assert "warning" in body
+    assert "hint_command" in body
+    assert "replay_critic_v2_triage_policy" in body["hint_command"]
+    # Подсказка про backfill — новый альтернативный путь.
+    assert "backfill" in body["warning"].lower()
+    # Sanity: artifact-info всё ещё считает файл отсутствующим (не молчит)
+    info = c.get("/api/critic-v2/artifact-info").json()
+    assert info["exists"] is False
 
 
 def test_endpoint_does_not_write_files(client: TestClient, tmp_path: Path,

@@ -675,5 +675,19 @@ OPENROUTER_STAGE02_RAW_BYTE_CAP_KB = 9000
 OPENROUTER_STAGE02_TIMEOUT_SEC = 600
 OPENROUTER_STAGE02_MAX_OUTPUT_TOKENS = 32768
 
+# ─── Critic v2 post-processing stage (experimental, OFF by default) ──────────
+# Read-only re-triage поверх готовых findings. Не заменяет legacy critic,
+# не меняет 03_findings_review.json, не запускает LLM по умолчанию.
+# Все artifacts пишутся в <project>/_output/<CRITIC_V2_OUTPUT_SUBDIR>/.
+# По умолчанию stage НЕ подключён к manager pipeline — запускается только
+# через backfill script.
+CRITIC_V2_ENABLED = _env_bool("CRITIC_V2_ENABLED", False)
+CRITIC_V2_PROFILE = os.environ.get("CRITIC_V2_PROFILE", "conservative").strip() or "conservative"
+CRITIC_V2_LLM_ENABLED = _env_bool("CRITIC_V2_LLM_ENABLED", False)
+CRITIC_V2_FAILS_PIPELINE = _env_bool("CRITIC_V2_FAILS_PIPELINE", False)
+CRITIC_V2_OUTPUT_SUBDIR = (
+    os.environ.get("CRITIC_V2_OUTPUT_SUBDIR", "critic_v2").strip() or "critic_v2"
+)
+
 # Обратная совместимость: BASE_DIR → ROOT_DIR
 BASE_DIR = ROOT_DIR

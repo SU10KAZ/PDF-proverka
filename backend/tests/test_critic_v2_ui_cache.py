@@ -190,7 +190,12 @@ def test_mtime_change_invalidates_cache(
 def test_artifact_disappearing_invalidates_cache(
     client: TestClient, fresh_module, artifact_path: Path,
 ):
-    """If the file is deleted, cache must drop and 404 must be raised."""
+    """If the file is deleted, cache must drop. The /triage-ui endpoint now
+    returns a graceful 200+warning (project-local fallback path), but the
+    underlying cache must still be invalidated so any subsequent restore of
+    the artifact is picked up. Old behaviour was 404 from /triage-ui itself —
+    see test_missing_artifact_returns_graceful_warning for the new contract.
+    """
     # warm-up
     r = client.get("/api/critic-v2/projects/P1/triage-ui")
     assert r.status_code == 200
@@ -199,9 +204,18 @@ def test_artifact_disappearing_invalidates_cache(
     artifact_path.unlink()
 
     r2 = client.get("/api/critic-v2/projects/P1/triage-ui")
-    assert r2.status_code == 404
+    # New contract: 200 + warning, cache cleared underneath
+    assert r2.status_code == 200
+    body = r2.json()
+    assert body["items"] == []
+    assert body["source"] == "none"
+    assert "warning" in body
     assert fresh_module._CACHE["artifact"] is None
     assert fresh_module._CACHE["items_by_exact"] == {}
+
+    # artifact-info по-прежнему чётко говорит «exists=False»
+    info = client.get("/api/critic-v2/artifact-info").json()
+    assert info["exists"] is False
 
 
 # ─── Response shape stability ───────────────────────────────────────────────
