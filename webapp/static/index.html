@@ -183,6 +183,129 @@
                         <span class="paid-cost-panel__value" style="color:#b03030">{{ paidApiStatus.blocked_events_count_today }}</span>
                     </div>
 
+                    <!-- Расходы по датам (collapsible) -->
+                    <div class="paid-cost-panel__row paid-daily__header"
+                         style="margin-top:10px;cursor:pointer;font-weight:600;user-select:none"
+                         @click.stop="paidDailyExpanded = !paidDailyExpanded">
+                        <span>{{ paidDailyExpanded ? '▼' : '▶' }} Расходы по датам</span>
+                        <span class="paid-cost-panel__value" style="font-weight:400;opacity:.75">
+                            {{ formatCostFull(paidDailyTotals.period_total_usd) }} · {{ paidDailyTotals.period_calls }} вызовов
+                        </span>
+                    </div>
+                    <div v-if="paidDailyExpanded" class="paid-daily" style="margin-bottom:6px">
+                        <!-- Переключатель периода -->
+                        <div class="paid-daily__period-switch"
+                             style="display:flex;gap:4px;margin:6px 0;font-size:11px">
+                            <button v-for="p in [7, 30, 90]" :key="p"
+                                    @click.stop="setPaidDailyPeriod(p)"
+                                    class="btn btn--small"
+                                    :class="paidDailyPeriod === p ? 'btn--primary' : 'btn--secondary'"
+                                    style="padding:2px 8px;min-width:44px">
+                                {{ p }} дн
+                            </button>
+                        </div>
+                        <!-- Список дней -->
+                        <div v-if="paidDailyDays.length === 0"
+                             class="paid-cost-panel__hint"
+                             style="opacity:.7;font-style:italic;padding:6px 0">
+                            За выбранный период расходов нет
+                        </div>
+                        <div v-else class="paid-daily__days"
+                             style="max-height:160px;overflow:auto;border:1px solid #e0e0e0;border-radius:4px">
+                            <div v-for="d in paidDailyDays" :key="'pd-' + d.date"
+                                 @click.stop="selectPaidDailyDate(d.date)"
+                                 class="paid-daily__day"
+                                 :class="{ 'paid-daily__day--selected': paidDailySelectedDate === d.date }"
+                                 :style="{
+                                    display:'flex', justifyContent:'space-between',
+                                    padding:'4px 8px', cursor:'pointer',
+                                    fontSize:'11px', fontFamily:'monospace',
+                                    borderBottom:'1px dashed #eee',
+                                    background: paidDailySelectedDate === d.date ? 'rgba(60,130,220,.12)' : 'transparent',
+                                 }"
+                                 :title="d.aggregated_only ? 'Только агрегаты — детализация событий отсутствует (старые расходы)' : 'Кликните для детализации'">
+                                <span>{{ d.date }}</span>
+                                <span>
+                                    {{ formatCostFull(d.total_usd) }}
+                                    <span style="opacity:.6">· {{ d.n_calls }} {{ d.n_calls === 1 ? 'вызов' : 'вызовов' }}</span>
+                                    <span v-if="d.aggregated_only" style="opacity:.5">·agg</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Детализация выбранного дня -->
+                        <div v-if="paidDailySelectedDay" class="paid-daily__detail"
+                             style="margin-top:8px;padding:6px;background:rgba(0,0,0,.02);border-radius:4px">
+                            <div style="font-weight:600;font-size:11px;margin-bottom:4px">
+                                Детализация за {{ paidDailySelectedDay.date }}:
+                                <span style="font-weight:400;opacity:.7">
+                                    {{ formatCostFull(paidDailySelectedDay.total_usd) }} · {{ paidDailySelectedDay.n_calls }} вызовов
+                                </span>
+                            </div>
+
+                            <!-- by_model -->
+                            <div v-if="Object.keys(paidDailySelectedDay.by_model || {}).length"
+                                 style="font-size:11px;margin-top:4px">
+                                <span style="opacity:.7">Модели:</span>
+                                <div v-for="[k, v] in entriesSortedDesc(paidDailySelectedDay.by_model)" :key="'m-' + k"
+                                     style="display:flex;justify-content:space-between;font-family:monospace;padding-left:8px">
+                                    <span :title="k" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60%">{{ k }}</span>
+                                    <span>{{ formatCostFull(v) }}</span>
+                                </div>
+                            </div>
+
+                            <!-- by_stage -->
+                            <div v-if="Object.keys(paidDailySelectedDay.by_stage || {}).length"
+                                 style="font-size:11px;margin-top:4px">
+                                <span style="opacity:.7">Этапы:</span>
+                                <div v-for="[k, v] in entriesSortedDesc(paidDailySelectedDay.by_stage)" :key="'s-' + k"
+                                     style="display:flex;justify-content:space-between;font-family:monospace;padding-left:8px">
+                                    <span>{{ k }}</span>
+                                    <span>{{ formatCostFull(v) }}</span>
+                                </div>
+                            </div>
+
+                            <!-- by_project -->
+                            <div v-if="Object.keys(paidDailySelectedDay.by_project || {}).length"
+                                 style="font-size:11px;margin-top:4px">
+                                <span style="opacity:.7">Проекты:</span>
+                                <div v-for="[k, v] in entriesSortedDesc(paidDailySelectedDay.by_project)" :key="'p-' + k"
+                                     style="display:flex;justify-content:space-between;font-family:monospace;padding-left:8px">
+                                    <span :title="k" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60%">{{ k }}</span>
+                                    <span>{{ formatCostFull(v) }}</span>
+                                </div>
+                            </div>
+
+                            <!-- События -->
+                            <div v-if="paidDailySelectedDay.aggregated_only"
+                                 class="paid-cost-panel__hint"
+                                 style="margin-top:6px;opacity:.65;font-style:italic;font-size:11px">
+                                Агрегированные данные без детализации событий
+                            </div>
+                            <div v-else style="margin-top:6px">
+                                <div style="font-size:11px;opacity:.7;margin-bottom:2px">События:</div>
+                                <div v-if="(paidDailySelectedDay.events || []).length === 0"
+                                     class="paid-cost-panel__hint"
+                                     style="opacity:.6;font-size:11px;padding-left:8px">— нет</div>
+                                <div v-for="ev in (paidDailySelectedDay.events || []).slice(0, 20)"
+                                     :key="'ev-' + ev.ts + (ev.response_id || '') + (ev.job_id || '')"
+                                     style="display:grid;grid-template-columns:64px 1fr 1fr 1fr 64px;gap:4px;font-size:10px;font-family:monospace;padding:1px 0;border-bottom:1px dashed #f0f0f0"
+                                     :title="ev.ts + ' • source=' + (ev.source || '?') + ' • job=' + (ev.job_id || '?') + ' • manual_run=' + (ev.manual_run_id || '(none)') + ' • in=' + (ev.input_tokens || '?') + ' • out=' + (ev.output_tokens || '?')">
+                                    <span>{{ ev.time }}</span>
+                                    <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap" :title="ev.stage">{{ ev.stage }}</span>
+                                    <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap" :title="ev.model">{{ ev.model }}</span>
+                                    <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap" :title="ev.project_id">{{ ev.project_id }}</span>
+                                    <span style="text-align:right">{{ formatCostFull(ev.cost_usd) }}</span>
+                                </div>
+                                <div v-if="paidDailySelectedDay.events_truncated"
+                                     class="paid-cost-panel__hint"
+                                     style="opacity:.6;font-size:10px;padding-left:8px;margin-top:2px">
+                                    … (показаны последние 20 из {{ paidDailySelectedDay.n_calls }})
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Последние платные вызовы -->
                     <div class="paid-cost-panel__hint" style="margin-top:8px;font-weight:600">Последние платные вызовы:</div>
                     <div v-if="paidEvents.length === 0" class="paid-cost-panel__hint" style="opacity:.7">— нет</div>
@@ -888,7 +1011,9 @@
                                             <option v-for="p in candidateTargetOptions(f)"
                                                     :key="p.project_id" :value="p.project_id"
                                                     :class="{'editp-merge-option--suggested': p._suggested}"
-                                                    :style="p._suggested ? 'color:#c0392b;font-weight:600' : ''">
+                                                    :style="p._suggested
+                                                        ? { color: '#c0392b', fontWeight: '600' }
+                                                        : { color: 'inherit', fontWeight: '400' }">
                                                 {{ p.name || p.project_id }}
                                                 <template v-if="p._suggested"> · совпадение</template>
                                             </option>
@@ -965,7 +1090,9 @@
                                 <option value="">— не привязывать —</option>
                                 <option v-for="opt in mergeTargetsFor(p)" :key="opt.project_id" :value="opt.project_id"
                                         :class="{'editp-merge-option--suggested': opt._suggested}"
-                                        :style="opt._suggested ? 'color:#c0392b;font-weight:600' : ''">
+                                        :style="opt._suggested
+                                            ? { color: '#c0392b', fontWeight: '600' }
+                                            : { color: 'inherit', fontWeight: '400' }">
                                     {{ opt.name || opt.project_id }}<template v-if="opt._suggested"> · совпадение</template>
                                 </option>
                             </select>
@@ -2455,44 +2582,44 @@
                         <table class="kb-table">
                             <thead>
                                 <tr>
-                                    <th style="width:220px">Норма</th>
-                                    <th style="width:60px">Тип</th>
-                                    <th style="width:70px; text-align:center">Проектов</th>
-                                    <th style="width:70px; text-align:center">Замечаний</th>
+                                    <th class="mn-col-nowrap" style="width:220px">Норма</th>
+                                    <th class="mn-col-nowrap" style="width:72px">Тип</th>
+                                    <th class="mn-col-nowrap" style="width:84px; text-align:center">Проектов</th>
+                                    <th class="mn-col-nowrap" style="width:84px; text-align:center">Замечаний</th>
                                     <th>Проекты</th>
-                                    <th style="width:100px">Впервые</th>
-                                    <th style="width:120px; text-align:center">Действие</th>
+                                    <th class="mn-col-nowrap" style="width:104px">Впервые</th>
+                                    <th class="mn-col-nowrap" style="width:88px; text-align:center">Действие</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="norm in missingNorms" :key="norm.doc_number"
                                     :class="{ 'mn-row--added': norm.status === 'added', 'mn-row--dismissed': norm.status === 'dismissed' }">
-                                    <td>
+                                    <td class="mn-col-nowrap">
                                         <span class="mn-doc-number">{{ norm.doc_number }}</span>
                                         <div v-if="norm.status === 'added'" style="font-size:11px; color:#22c55e; margin-top:2px">
                                             ✓ добавлена {{ (norm.added_to_vault_at || '').slice(0,10) }}
                                         </div>
                                     </td>
-                                    <td><span class="kb-section-badge">{{ norm.family || '—' }}</span></td>
-                                    <td style="text-align:center">{{ norm.project_count }}</td>
-                                    <td style="text-align:center">{{ norm.finding_count }}</td>
-                                    <td style="font-size:11px; color:#94a3b8">
+                                    <td class="mn-col-nowrap"><span class="kb-section-badge">{{ norm.family || '—' }}</span></td>
+                                    <td class="mn-col-nowrap" style="text-align:center">{{ norm.project_count }}</td>
+                                    <td class="mn-col-nowrap" style="text-align:center">{{ norm.finding_count }}</td>
+                                    <td class="mn-col-projects">
                                         <span v-for="(occ, i) in norm.occurrences" :key="i">
                                             {{ occ.project_id }}<span v-if="i < norm.occurrences.length-1">, </span>
                                         </span>
                                     </td>
-                                    <td style="font-size:11px; color:#64748b">{{ (norm.first_seen_at || '').slice(0,10) }}</td>
-                                    <td style="text-align:center">
-                                        <button v-if="norm.status === 'pending'"
-                                                class="btn btn-sm" style="background:#22c55e; color:#fff; margin-right:4px"
-                                                @click="markNormAdded(norm.doc_number)" title="Отметить как добавленную в vault">
-                                            + Добавить
-                                        </button>
-                                        <button v-if="norm.status === 'pending'"
-                                                class="btn btn-sm" style="background:#475569; color:#fff"
-                                                @click="dismissNorm(norm.doc_number)" title="Не требуется">
-                                            ✕
-                                        </button>
+                                    <td class="mn-col-nowrap" style="font-size:11px; color:#64748b">{{ (norm.first_seen_at || '').slice(0,10) }}</td>
+                                    <td class="mn-col-nowrap" style="text-align:center">
+                                        <span v-if="norm.status === 'pending'" class="mn-actions">
+                                            <button class="btn btn-sm" style="background:#22c55e; color:#fff"
+                                                    @click="markNormAdded(norm.doc_number)" title="Отметить как добавленную в vault">
+                                                + Добавить
+                                            </button>
+                                            <button class="btn btn-sm mn-actions__dismiss" style="background:#475569; color:#fff"
+                                                    @click="dismissNorm(norm.doc_number)" title="Не требуется">
+                                                ✕
+                                            </button>
+                                        </span>
                                         <button v-if="norm.status !== 'pending'"
                                                 class="btn btn-sm" style="background:#334155; color:#94a3b8"
                                                 @click="restoreNorm(norm.doc_number)">

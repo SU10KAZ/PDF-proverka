@@ -1598,6 +1598,68 @@ const app = createApp({
             }
         }
 
+        // ─── Paid cost — daily dashboard ───
+        // Список дней с расходами + детализация выбранного дня.
+        // По умолчанию: окно 7 дней, выбран самый свежий день с расходом.
+        const paidDailyDays = ref([]);            // массив дней из endpoint'а
+        const paidDailyTotals = ref({ period_total_usd: 0, period_calls: 0 });
+        const paidDailyPeriod = ref(7);           // 7 / 30 / 90
+        const paidDailySelectedDate = ref(null);  // строка "YYYY-MM-DD"
+        const paidDailyExpanded = ref(false);     // collapsible
+
+        async function fetchPaidCostDaily() {
+            try {
+                const data = await api(`/usage/paid-cost/daily?days=${paidDailyPeriod.value}`);
+                paidDailyDays.value = data.days || [];
+                paidDailyTotals.value = data.totals || { period_total_usd: 0, period_calls: 0 };
+                // Авто-выбор: сохранить текущий, если он есть в новых данных;
+                // иначе — первый день с n_calls > 0, иначе первый день, иначе null.
+                const dates = paidDailyDays.value.map(d => d.date);
+                if (paidDailySelectedDate.value && dates.includes(paidDailySelectedDate.value)) {
+                    return;
+                }
+                const firstWithCost = paidDailyDays.value.find(d => (d.n_calls || 0) > 0);
+                paidDailySelectedDate.value = firstWithCost
+                    ? firstWithCost.date
+                    : (paidDailyDays.value[0] ? paidDailyDays.value[0].date : null);
+            } catch (e) {
+                console.warn('Failed to fetch paid-cost/daily:', e);
+                paidDailyDays.value = [];
+                paidDailyTotals.value = { period_total_usd: 0, period_calls: 0 };
+                paidDailySelectedDate.value = null;
+            }
+        }
+
+        function setPaidDailyPeriod(days) {
+            paidDailyPeriod.value = days;
+            // Сбросить выбранную дату чтобы fetcher переподобрал свежую.
+            paidDailySelectedDate.value = null;
+            fetchPaidCostDaily();
+        }
+
+        function selectPaidDailyDate(date) {
+            paidDailySelectedDate.value = date;
+        }
+
+        // Computed-helper для текущего выбранного дня (или null).
+        const paidDailySelectedDay = computed(() => {
+            if (!paidDailySelectedDate.value) return null;
+            return paidDailyDays.value.find(d => d.date === paidDailySelectedDate.value) || null;
+        });
+
+        function formatCostFull(usd) {
+            const v = Number(usd || 0);
+            if (v === 0) return '$0.00';
+            if (v < 0.01) return '$' + v.toFixed(4);
+            return '$' + v.toFixed(2);
+        }
+
+        function entriesSortedDesc(obj) {
+            // {key: usd} → [[key, usd], ...] отсортировано по сумме убыванию.
+            if (!obj || typeof obj !== 'object') return [];
+            return Object.entries(obj).sort((a, b) => Number(b[1]) - Number(a[1]));
+        }
+
         async function resetPaidCost() {
             if (!confirm('Обнулить счётчик расходов? Общая сумма за всё время сохранится. Журналы paid_cost_events.jsonl и paid_api_blocked_events.jsonl НЕ очищаются.')) return;
             try {
@@ -8243,6 +8305,7 @@ const app = createApp({
                 fetchPaidApiStatus(),
                 fetchPaidEvents(),
                 fetchPaidBlockedEvents(),
+                fetchPaidCostDaily(),
             ]);
             usagePollTimer = setInterval(() => {
                 pollGlobalUsage();
@@ -8250,6 +8313,7 @@ const app = createApp({
                 fetchPaidApiStatus();
                 fetchPaidEvents();
                 fetchPaidBlockedEvents();
+                fetchPaidCostDaily();
             }, 60000);
             startLmsHealthPolling();
         });
@@ -8394,6 +8458,11 @@ const app = createApp({
             paidCost, showPaidCost, fetchPaidCost, resetPaidCost, formatCostShort,
             paidApiStatus, paidEvents, paidBlockedEvents, paidApiAllowed,
             fetchPaidApiStatus, fetchPaidEvents, fetchPaidBlockedEvents,
+            // Paid-cost daily dashboard
+            paidDailyDays, paidDailyTotals, paidDailyPeriod,
+            paidDailySelectedDate, paidDailySelectedDay, paidDailyExpanded,
+            fetchPaidCostDaily, setPaidDailyPeriod, selectPaidDailyDate,
+            formatCostFull, entriesSortedDesc,
             // Usage (global dashboard)
             globalUsage, showUsageDetails, sonnetPercent,
             accountInfo, showAccountInfo, fetchAccountInfo,
