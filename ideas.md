@@ -327,3 +327,32 @@
 - ⏸ Отложено — требует более широкого теста (несколько проектов, разные дисциплины)
 - ⏸ Перспективный вариант: комбо 5.4/medium + 5.5/medium с мерджем findings даст максимальный охват, но ~1.3× дороже medium по отдельности
 - ❌ GPT-5.5 как прямая замена 5.4/low пока не оправдана — меньше findings при той же цене
+
+---
+
+### Идея 9 — LLM-gate для Critic v2 как second-opinion слой (не hard-delete)
+**Дата:** 2026-05-18
+**Формулировка (как сказал пользователь):**
+> В будущем повторно проверить LLM-gate для Critic v2 как second-opinion слой, но не как hard-delete. LLM может быть полезен для OCR-артефактов, дублей, already-covered, wrong norm context, requirement_not_mandatory и insufficient_source_context. Однако прошлый benchmark показал риск false_reject, поэтому LLM не должен иметь право скрывать или удалять замечания автоматически. Возможный будущий режим: LLM проверяет только risk-candidates, переводит их максимум в suggested_reject/needs_context, hard hidden_by_critic запрещён. Перед включением нужен новый benchmark на расширенном feedback инженеров.
+
+**Контекст / зачем:**
+- Сейчас Critic v2 в production / post-review hook работает **без LLM**:
+  - `CRITIC_V2_LLM_ENABLED=false`
+  - в manager hook `llm_enabled=False` передаётся жёстко
+  - профиль `assisted_round2_candidate` работает детерминированно
+  - LLM не вызывается → `paid_cost` не растёт, аудит не тормозит
+- Прошлый бенчмарк на human benchmark давал снижение `false_accept` ~15–22%, но в некоторых режимах появлялся `false_reject=1` (LLM отклонял замечание, которое эксперт принял).
+- Из-за этого LLM-gate не включён в production.
+
+**Возможный будущий режим (если переоценим):**
+- LLM работает только по risk-candidates: OCR-артефакты, дубли, already-covered, wrong norm context, requirement_not_mandatory, insufficient_source_context.
+- Результат LLM — максимум `suggested_reject` / `needs_context` (мягкие статусы).
+- `hard hidden_by_critic` через LLM **запрещён** — финальное решение остаётся за экспертом.
+- Перед включением — новый benchmark на расширенном feedback инженеров (не только старая выборка).
+
+**Что попробовали:**
+- Ничего не меняли в коде / env. LLM не запускали. Идея зафиксирована как future decision.
+
+**Результат:**
+- ⏸ Отложено до нового benchmark на расширенном экспертном feedback.
+- 🔒 Жёсткое ограничение на будущий режим: LLM ≠ hard-delete; только soft-vote / second opinion.
