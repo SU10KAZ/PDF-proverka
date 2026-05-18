@@ -810,3 +810,84 @@ def test_local_models_bypass_guard(isolated_paid_api, monkeypatch):
     result = asyncio.run(_run())
     assert result.text == "local-ok"
     assert result.is_error is False
+
+
+# ─── F. audit endpoint helper: paid_api_allowed → manual_run_id ─────────
+
+
+def test_issue_manual_run_if_allowed_returns_none_when_flag_false(isolated_paid_api):
+    """F1 (новый): без галки `paid_api_allowed=false` не выдаётся manual_run_id.
+
+    Это критический acceptance criterion фазы 4: дефолт endpoint'а — False.
+    Если backend случайно поднимет default → True, тест падает.
+    """
+    from backend.app.api.routers.audit import _issue_manual_run_if_allowed
+
+    result = _issue_manual_run_if_allowed(
+        "proj/A.pdf", paid_api_allowed=False,
+    )
+    assert result is None
+
+
+def test_issue_manual_run_if_allowed_returns_uuid_when_flag_true(isolated_paid_api):
+    """F2 (новый): при `paid_api_allowed=true` выдаётся UUID, и он валиден в guard.
+
+    Также проверяем, что guard потом разрешит вызов с этим manual_run_id.
+    """
+    from backend.app.api.routers.audit import _issue_manual_run_if_allowed
+    guard = isolated_paid_api["guard"]
+
+    mrid = _issue_manual_run_if_allowed(
+        "proj/A.pdf", paid_api_allowed=True,
+    )
+    assert mrid is not None
+    assert isinstance(mrid, str)
+    assert len(mrid) >= 16  # UUID hex
+
+    # Guard принимает этот manual_run_id:
+    ctx = guard.PaidApiContext(
+        source="llm_runner",
+        model="openai/gpt-5.4",
+        project_id="proj/A.pdf",
+        stage="block_analysis",
+        manual_run_id=mrid,
+    )
+    guard.assert_paid_api_allowed(ctx)  # без исключения
+
+
+def test_issue_manual_run_if_allowed_for_batch_scope(isolated_paid_api):
+    """F3 (новый): batch с несколькими project_id получает один manual_run_id
+    с общим scope. Каждый project в scope разрешён.
+    """
+    from backend.app.api.routers.audit import _issue_manual_run_if_allowed
+    guard = isolated_paid_api["guard"]
+
+    mrid = _issue_manual_run_if_allowed(
+        ["proj/A.pdf", "proj/B.pdf", "proj/C.pdf"],
+        paid_api_allowed=True,
+        batch_id="batch-xyz",
+    )
+    assert mrid is not None
+
+    # Проверим все три project'а в scope.
+    for pid in ("proj/A.pdf", "proj/B.pdf", "proj/C.pdf"):
+        ctx = guard.PaidApiContext(
+            source="manager.stage02",
+            model="openai/gpt-5.4",
+            project_id=pid,
+            stage="block_analysis",
+            manual_run_id=mrid,
+        )
+        guard.assert_paid_api_allowed(ctx)  # без исключения для каждого
+
+    # А вот posторонний project НЕ в scope — должен блокироваться.
+    ctx_off = guard.PaidApiContext(
+        source="manager.stage02",
+        model="openai/gpt-5.4",
+        project_id="proj/OUTSIDE.pdf",
+        stage="block_analysis",
+        manual_run_id=mrid,
+    )
+    with pytest.raises(guard.PaidApiBlockedError) as exc:
+        guard.assert_paid_api_allowed(ctx_off)
+    assert exc.value.reason == "manual_run_scope_mismatch"

@@ -440,7 +440,14 @@ async def add_to_batch(request: dict):
 
 
 @router.post("/batch/add-retry")
-async def add_retry_to_batch(request: dict):
+async def add_retry_to_batch(
+    request: dict,
+    paid_api_allowed: bool = Query(
+        False,
+        description="True только если пользователь явно поставил галку «Разрешить платные API» в UI. "
+                    "По умолчанию False (fail-closed). Auto-retry/orphan = False.",
+    ),
+):
     """Добавить retry конкретного этапа в очередь (создаёт новую если нет)."""
     project_id = request.get("project_id")
     stage = request.get("stage")
@@ -448,12 +455,26 @@ async def add_retry_to_batch(request: dict):
         raise HTTPException(400, "project_id и stage обязательны")
 
     _check_project(project_id)
+    manual_run_id = _issue_manual_run_if_allowed(
+        project_id, paid_api_allowed=paid_api_allowed,
+    )
 
     try:
-        queue = await pipeline_manager.add_retry_to_batch(project_id, stage)
+        queue = await pipeline_manager.add_retry_to_batch(
+            project_id, stage, manual_run_id=manual_run_id,
+        )
         return {"status": "added", "queue": queue.model_dump()}
     except RuntimeError as e:
         raise HTTPException(409, str(e))
+    except TypeError:
+        # Backward-compat: если pipeline_manager.add_retry_to_batch ещё не
+        # принимает manual_run_id, вызываем без него. guard всё равно сработает
+        # на стадии перед network request.
+        try:
+            queue = await pipeline_manager.add_retry_to_batch(project_id, stage)
+            return {"status": "added", "queue": queue.model_dump()}
+        except RuntimeError as e:
+            raise HTTPException(409, str(e))
 
 
 @router.post("/batch/add-resume")

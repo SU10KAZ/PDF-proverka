@@ -139,6 +139,10 @@ const app = createApp({
                     'расчётный параметр: ПЗ/расчёт, не чертёж РД',
                 round1_already_covered_suggested_reject:
                     'уже есть в смежном разделе / спецификации',
+                round2_rd_vs_pz_suggested_reject:
+                    'расчётный параметр: ПЗ/расчёт, не чертёж РД',
+                round2_already_covered_suggested_reject:
+                    'уже есть в смежном разделе / спецификации',
             },
             evidence: {
                 valid: 'валидна',
@@ -1562,6 +1566,36 @@ const app = createApp({
         // которое выдаёт manual_run_id и пробрасывает в job.
         const paidApiAllowed = ref(false);
 
+        // ─── Submit lock (защита от double-submit) ────────────────────
+        // В инциденте 2026-05-16 на M31A было 3 retry за 35 секунд (14:29:41,
+        // 14:30:07, 14:30:16) — каждый стоил $0.32. Похоже на double-click
+        // или Enter, проскочивший защиту auditRunning.value.
+        //
+        // _withSubmitLock(key, fn) гарантирует: пока fn для данного key не
+        // завершилась (resolve или reject), повторные клики/Enter с тем же
+        // key игнорируются. Также игнорируются попытки в первые 800 мс
+        // после release — защита от «отпустил мышь, тут же снова кликнул».
+        const _submitLocks = new Map();   // key -> 'running' | 'cooldown'
+        const _SUBMIT_COOLDOWN_MS = 800;
+
+        async function _withSubmitLock(key, fn) {
+            if (_submitLocks.has(key)) {
+                console.warn('[submit-lock] ignored duplicate:', key);
+                return null;
+            }
+            _submitLocks.set(key, 'running');
+            try {
+                return await fn();
+            } finally {
+                _submitLocks.set(key, 'cooldown');
+                setTimeout(() => _submitLocks.delete(key), _SUBMIT_COOLDOWN_MS);
+            }
+        }
+
+        function _isSubmitLocked(key) {
+            return _submitLocks.has(key);
+        }
+
         async function fetchPaidCost() {
             try {
                 const data = await api('/usage/paid-cost');
@@ -1596,6 +1630,68 @@ const app = createApp({
             } catch (e) {
                 console.warn('Failed to fetch blocked events:', e);
             }
+        }
+
+        // ─── Paid cost — daily dashboard ───
+        // Список дней с расходами + детализация выбранного дня.
+        // По умолчанию: окно 7 дней, выбран самый свежий день с расходом.
+        const paidDailyDays = ref([]);            // массив дней из endpoint'а
+        const paidDailyTotals = ref({ period_total_usd: 0, period_calls: 0 });
+        const paidDailyPeriod = ref(7);           // 7 / 30 / 90
+        const paidDailySelectedDate = ref(null);  // строка "YYYY-MM-DD"
+        const paidDailyExpanded = ref(false);     // collapsible
+
+        async function fetchPaidCostDaily() {
+            try {
+                const data = await api(`/usage/paid-cost/daily?days=${paidDailyPeriod.value}`);
+                paidDailyDays.value = data.days || [];
+                paidDailyTotals.value = data.totals || { period_total_usd: 0, period_calls: 0 };
+                // Авто-выбор: сохранить текущий, если он есть в новых данных;
+                // иначе — первый день с n_calls > 0, иначе первый день, иначе null.
+                const dates = paidDailyDays.value.map(d => d.date);
+                if (paidDailySelectedDate.value && dates.includes(paidDailySelectedDate.value)) {
+                    return;
+                }
+                const firstWithCost = paidDailyDays.value.find(d => (d.n_calls || 0) > 0);
+                paidDailySelectedDate.value = firstWithCost
+                    ? firstWithCost.date
+                    : (paidDailyDays.value[0] ? paidDailyDays.value[0].date : null);
+            } catch (e) {
+                console.warn('Failed to fetch paid-cost/daily:', e);
+                paidDailyDays.value = [];
+                paidDailyTotals.value = { period_total_usd: 0, period_calls: 0 };
+                paidDailySelectedDate.value = null;
+            }
+        }
+
+        function setPaidDailyPeriod(days) {
+            paidDailyPeriod.value = days;
+            // Сбросить выбранную дату чтобы fetcher переподобрал свежую.
+            paidDailySelectedDate.value = null;
+            fetchPaidCostDaily();
+        }
+
+        function selectPaidDailyDate(date) {
+            paidDailySelectedDate.value = date;
+        }
+
+        // Computed-helper для текущего выбранного дня (или null).
+        const paidDailySelectedDay = computed(() => {
+            if (!paidDailySelectedDate.value) return null;
+            return paidDailyDays.value.find(d => d.date === paidDailySelectedDate.value) || null;
+        });
+
+        function formatCostFull(usd) {
+            const v = Number(usd || 0);
+            if (v === 0) return '$0.00';
+            if (v < 0.01) return '$' + v.toFixed(4);
+            return '$' + v.toFixed(2);
+        }
+
+        function entriesSortedDesc(obj) {
+            // {key: usd} → [[key, usd], ...] отсортировано по сумме убыванию.
+            if (!obj || typeof obj !== 'object') return [];
+            return Object.entries(obj).sort((a, b) => Number(b[1]) - Number(a[1]));
         }
 
         async function resetPaidCost() {
@@ -3148,6 +3244,12 @@ const app = createApp({
 
         async function startBatchAction(action) {
             const ids = Array.from(selectedProjects.value);
+            const lockKey = `batch:${action}:${ids.length}`;
+            if (_isSubmitLocked(lockKey)) {
+                console.warn('[submit-lock] batch duplicate ignored');
+                return;
+            }
+            return _withSubmitLock(lockKey, async () => {
             try {
                 batchRunning.value = true;
                 const resp = await fetch('/api/audit/batch', {
@@ -3171,6 +3273,7 @@ const app = createApp({
                 alert(e.message);
                 batchRunning.value = false;
             }
+            }); // end _withSubmitLock
         }
 
         function batchActionLabel(action) {
@@ -3508,11 +3611,13 @@ const app = createApp({
         }
 
         async function startAuditDirect(projectId) {
-            try {
-                auditRunning.value = true;
-                await apiPost(`/audit/${encodeURIComponent(projectId)}/full-audit${_paidQs()}`);
-                _afterAuditStart(projectId);
-            } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
+            return _withSubmitLock(`start:${projectId}`, async () => {
+                try {
+                    auditRunning.value = true;
+                    await apiPost(`/audit/${encodeURIComponent(projectId)}/full-audit${_paidQs()}`);
+                    _afterAuditStart(projectId);
+                } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
+            });
         }
 
         // Legacy aliases
@@ -3528,11 +3633,13 @@ const app = createApp({
         }
 
         async function resumePipeline(projectId) {
-            try {
-                auditRunning.value = true;
-                await apiPost(`/audit/${encodeURIComponent(projectId)}/resume${_paidQs()}`);
-                _afterAuditStart(projectId);
-            } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
+            return _withSubmitLock(`resume:${projectId}`, async () => {
+                try {
+                    auditRunning.value = true;
+                    await apiPost(`/audit/${encodeURIComponent(projectId)}/resume${_paidQs()}`);
+                    _afterAuditStart(projectId);
+                } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
+            });
         }
 
         async function resumeToQueue(projectId) {
@@ -3736,32 +3843,43 @@ const app = createApp({
         }
 
         async function _executeRetryStage(projectId, stage) {
-            try {
-                auditRunning.value = true;
-                if (stage === 'optimization') {
-                    await apiPost(`/optimization/${encodeURIComponent(projectId)}/run`);
-                } else {
-                    await apiPost(`/audit/${encodeURIComponent(projectId)}/retry/${stage}${_paidQs()}`);
-                }
-                _afterAuditStart(projectId);
-            } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
+            return _withSubmitLock(`retry:${projectId}:${stage}`, async () => {
+                try {
+                    auditRunning.value = true;
+                    if (stage === 'optimization') {
+                        await apiPost(`/optimization/${encodeURIComponent(projectId)}/run`);
+                    } else {
+                        await apiPost(`/audit/${encodeURIComponent(projectId)}/retry/${stage}${_paidQs()}`);
+                    }
+                    _afterAuditStart(projectId);
+                } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
+            });
         }
 
         async function retryStageToQueue() {
             const { projectId, stage, mode } = retryDialog.value;
+            // Submit-lock на эту пару — двойной клик «Запустить» в retry-dialog
+            // не должен порождать второй request.
+            if (_isSubmitLocked(`retry-queue:${projectId}:${stage}`)) {
+                console.warn('[submit-lock] retry-queue duplicate ignored');
+                return;
+            }
+            return _withSubmitLock(`retry-queue:${projectId}:${stage}`, async () => {
             retryDialog.value.show = false;
             try {
                 let resp;
                 if (mode === 'resume') {
-                    // Запустить с этапа + все последующие
-                    resp = await fetch('/api/audit/batch/add-retry', {
+                    // Запустить с этапа + все последующие. paid_api_allowed —
+                    // через query, чтобы backend выдал manual_run_id, если есть галка.
+                    resp = await fetch(`/api/audit/batch/add-retry${_paidQs()}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ project_id: projectId, stage: stage }),
                     });
                 } else {
-                    // Только один этап — прямой retry
-                    resp = await fetch(`/api/audit/${encodeURIComponent(projectId)}/retry/${stage}`, {
+                    // Только один этап — прямой retry. БАГ-фикс: раньше _paidQs()
+                    // здесь не передавался, и manual_run_id не выдавался даже с галкой.
+                    resp = await fetch(`/api/audit/${encodeURIComponent(projectId)}/retry/${stage}${_paidQs()}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                     });
@@ -3776,6 +3894,7 @@ const app = createApp({
                     batchRunning.value = true;
                 }
             } catch (e) { alert(e.message); }
+            }); // end _withSubmitLock
         }
 
         async function skipStage(projectId, stage) {
@@ -8243,6 +8362,7 @@ const app = createApp({
                 fetchPaidApiStatus(),
                 fetchPaidEvents(),
                 fetchPaidBlockedEvents(),
+                fetchPaidCostDaily(),
             ]);
             usagePollTimer = setInterval(() => {
                 pollGlobalUsage();
@@ -8250,6 +8370,7 @@ const app = createApp({
                 fetchPaidApiStatus();
                 fetchPaidEvents();
                 fetchPaidBlockedEvents();
+                fetchPaidCostDaily();
             }, 60000);
             startLmsHealthPolling();
         });
@@ -8394,6 +8515,11 @@ const app = createApp({
             paidCost, showPaidCost, fetchPaidCost, resetPaidCost, formatCostShort,
             paidApiStatus, paidEvents, paidBlockedEvents, paidApiAllowed,
             fetchPaidApiStatus, fetchPaidEvents, fetchPaidBlockedEvents,
+            // Paid-cost daily dashboard
+            paidDailyDays, paidDailyTotals, paidDailyPeriod,
+            paidDailySelectedDate, paidDailySelectedDay, paidDailyExpanded,
+            fetchPaidCostDaily, setPaidDailyPeriod, selectPaidDailyDate,
+            formatCostFull, entriesSortedDesc,
             // Usage (global dashboard)
             globalUsage, showUsageDetails, sonnetPercent,
             accountInfo, showAccountInfo, fetchAccountInfo,
