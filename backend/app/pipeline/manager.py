@@ -1370,33 +1370,28 @@ class PipelineManager:
         usage_tracker.record_usage(record)
         # Stage 02 (gemma_findings_only) ходит в OpenRouter напрямую, в обход
         # llm_runner.run_llm — поэтому учёт paid_cost здесь обязателен.
+        # Единый helper record_paid гарантирует, что paid_cost.json и
+        # paid_cost_events.jsonl увеличиваются одной операцией (структурный
+        # инвариант, заменяет два независимых вызова — root cause 9 vs 15).
         if actual_cost > 0:
-            paid_cost_tracker.add(
-                actual_cost,
-                model=model,
-                project_id=job.project_id,
-                stage="block_analysis",
-            )
-            # Append-only forensic-event: который job/manual_run потратил.
             try:
-                from backend.app.services.llm import paid_api_events as _pae
-                _pae.record_paid_event(
-                    cost_usd=actual_cost,
+                paid_cost_tracker.record_paid(
+                    actual_cost,
                     model=model,
                     project_id=job.project_id,
-                    version_id=getattr(job, "version_id", None) or "",
                     stage="block_analysis",
                     source="manager.stage02",
                     manual_run_id=getattr(job, "manual_run_id", None) or "",
                     job_id=getattr(job, "job_id", "") or "",
+                    version_id=getattr(job, "version_id", None) or "",
                     input_tokens=input_tokens,
                     output_tokens=output_tokens,
                 )
             except Exception as _pae_err:
                 # logger в manager.py не настроен — пишем в stderr, чтобы не
-                # уронить запись paid_cost из-за ошибки журнала.
+                # уронить пайплайн из-за ошибки журнала.
                 print(
-                    f"[paid_api_events] record_paid_event failed (stage02): {_pae_err}",
+                    f"[paid_cost_tracker] record_paid failed (stage02): {_pae_err}",
                     flush=True,
                 )
         job.cost_usd += actual_cost

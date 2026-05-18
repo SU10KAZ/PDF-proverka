@@ -1017,34 +1017,27 @@ async def run_llm(
         # Учёт платных вызовов (OpenRouter возвращает actual cost; local LLM cost=0).
         # Локальная Chandra/Gemma и Claude CLI не идут через этот путь, поэтому
         # каждый ненулевой cost здесь — реальный платный API.
+        # Единый helper paid_cost_tracker.record_paid гарантирует, что paid_cost.json
+        # и paid_cost_events.jsonl увеличиваются вместе. Раньше эти две записи
+        # были независимыми вызовами, что привело к расхождению 9 vs 15 в инциденте.
         if cost > 0:
             try:
                 from backend.app.services.common.usage_service import paid_cost_tracker as _paid
-                _paid.add(
+                _paid.record_paid(
                     cost,
                     model=model,
                     project_id=project_id,
                     stage=stage_key,
-                )
-            except Exception:
-                logger.exception("paid_cost_tracker.add failed")
-            # Append-only forensic-event: какой именно вызов потратил деньги.
-            try:
-                paid_api_events.record_paid_event(
-                    cost_usd=cost,
-                    model=model,
-                    project_id=project_id,
-                    version_id=version_id,
-                    stage=stage_key,
                     source=source or "llm_runner",
                     manual_run_id=manual_run_id,
                     job_id=job_id,
+                    version_id=version_id,
                     input_tokens=input_tokens,
                     output_tokens=output_tokens,
                     response_id=getattr(response, "id", "") or "",
                 )
             except Exception:
-                logger.exception("paid_api_events.record_paid_event failed")
+                logger.exception("paid_cost_tracker.record_paid failed")
 
         finish_reason = ""
         try:
@@ -1162,26 +1155,23 @@ async def run_llm_stream(
 
     cost = _estimate_cost(model, input_tokens, output_tokens)
     if cost > 0:
+        # Единый helper: paid_cost.json + paid_cost_events.jsonl одной записью.
         try:
             from backend.app.services.common.usage_service import paid_cost_tracker as _paid
-            _paid.add(cost, model=model, project_id=project_id, stage=stage)
-        except Exception:
-            logger.exception("paid_cost_tracker.add failed (stream)")
-        try:
-            paid_api_events.record_paid_event(
-                cost_usd=cost,
+            _paid.record_paid(
+                cost,
                 model=model,
                 project_id=project_id,
-                version_id=version_id,
                 stage=stage,
                 source=source or "llm_runner.stream",
                 manual_run_id=manual_run_id,
                 job_id=job_id,
+                version_id=version_id,
                 input_tokens=input_tokens,
                 output_tokens=output_tokens,
             )
         except Exception:
-            logger.exception("paid_api_events.record_paid_event failed (stream)")
+            logger.exception("paid_cost_tracker.record_paid failed (stream)")
     yield {
         "type": "done",
         "text": full_text,

@@ -122,13 +122,40 @@ async def get_paid_cost():
 
 @router.get("/paid-cost/daily")
 async def get_paid_cost_daily(days: int = 30):
-    """Дневной break-down платных расходов (по моделям, проектам, этапам).
+    """Дневной break-down платных расходов для dashboard.
+
+    Объединяет два источника:
+      - paid_cost.json daily_breakdown — агрегаты (total, by_model, by_stage,
+        by_project, n_calls);
+      - paid_cost_events.jsonl — детальные события за каждый день.
+
+    Старые дни, для которых есть только агрегат без событий, помечаются
+    `aggregated_only=true` и приходят с `events: []`.
+
+    Контракт ответа:
+      {
+        "days": [
+          {
+            "date": "2026-05-16",
+            "total_usd": 4.1951, "n_calls": 13,
+            "by_model": {...}, "by_project": {...}, "by_stage": {...},
+            "aggregated_only": false,
+            "events": [ {ts, time, cost_usd, model, project_id, stage, ...} ],
+            "events_truncated": false
+          }, ...
+        ],
+        "window_days": 30,
+        "totals": { "period_total_usd": ..., "period_calls": ... }
+      }
 
     Args:
         days: окно в днях (по умолчанию 30, максимум 365).
     """
+    from backend.app.services.llm.paid_cost_dashboard import (
+        build_paid_cost_daily_dashboard,
+    )
     days = max(1, min(int(days), 365))
-    return paid_cost_tracker.get_daily(days=days)
+    return build_paid_cost_daily_dashboard(days=days)
 
 
 @router.post("/paid-cost/reset")

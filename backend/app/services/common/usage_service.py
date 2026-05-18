@@ -1146,6 +1146,64 @@ class PaidCostTracker:
             self._data["display_usd"] = 0.0
             self._save()
 
+    # ─── Единый paid-API helper (фаза 5: invariant fix) ─────────────
+    # Расхождение 9 vs 15 в paid_cost.json и paid_cost_events.jsonl произошло
+    # потому, что .add() и record_paid_event() были двумя независимыми
+    # вызовами, и каждое новое место учёта могло забыть один из них.
+    # record_paid() — единственный путь, гарантирующий обе записи атомарно
+    # с точки зрения caller'а. Новые callsite'ы должны использовать его.
+    # Старые .add()-only callsite'ы остаются совместимы (но не пишут events).
+    def record_paid(
+        self,
+        cost_usd: float,
+        *,
+        model: str = "",
+        project_id: str = "",
+        stage: str = "",
+        source: str = "",
+        manual_run_id: str = "",
+        job_id: str = "",
+        version_id: str = "",
+        input_tokens: int = 0,
+        output_tokens: int = 0,
+        response_id: str = "",
+        extra: dict | None = None,
+    ) -> None:
+        """Учесть платный вызов: paid_cost.json + paid_cost_events.jsonl.
+
+        Атомарно с точки зрения caller'а: невозможно увеличить paid_cost.json
+        без append-only записи в paid_cost_events.jsonl. Если cost_usd<=0 —
+        событие не пишется (например, cache hit или Claude CLI subscription).
+        """
+        if cost_usd is None or cost_usd <= 0:
+            return
+        # Шаг 1: bucket-aggregate в paid_cost.json (под lock'ом).
+        self.add(cost_usd, model=model, project_id=project_id, stage=stage)
+        # Шаг 2: append-only forensic event. Импорт локальный — circular import
+        # safety (usage_service не должен зависеть от llm/* на module load).
+        try:
+            from backend.app.services.llm import paid_api_events
+            paid_api_events.record_paid_event(
+                cost_usd=cost_usd,
+                model=model,
+                project_id=project_id,
+                version_id=version_id,
+                stage=stage,
+                source=source,
+                manual_run_id=manual_run_id,
+                job_id=job_id,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                response_id=response_id,
+                extra=extra,
+            )
+        except Exception:  # noqa: BLE001
+            # Запись события не должна валить учёт. Лог.
+            import logging
+            logging.getLogger(__name__).exception(
+                "paid_api_events.record_paid_event failed inside record_paid()"
+            )
+
 
 # Глобальные экземпляры
 usage_tracker = UsageTracker()

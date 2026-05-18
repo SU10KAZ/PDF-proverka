@@ -1,11 +1,16 @@
 """Append-only журналы платных и заблокированных вызовов.
 
 Файлы:
-  - paid_cost_events.jsonl    — каждый успешный paid_cost_tracker.add()
+  - paid_cost_events.jsonl    — каждый успешный paid_cost_tracker.record_paid()
   - paid_api_blocked_events.jsonl — каждый блок от paid_api_guard
 
 Журналы НЕ truncate'ятся (даже при clear_project_usage / reset_display).
 Это forensic-источник истины: что отправили в платный API и что заблокировали.
+
+Прямой вызов record_paid_event() допустим только из PaidCostTracker.record_paid:
+это структурный инвариант paid_cost.json ↔ paid_cost_events.jsonl. Новые
+production callsite'ы должны ходить через record_paid, а не дёргать
+record_paid_event напрямую.
 """
 from __future__ import annotations
 
