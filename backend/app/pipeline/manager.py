@@ -325,21 +325,12 @@ class PipelineManager:
 
         Вызывается после каждого изменения состояния очереди. Если очереди
         нет — файл не трогаем (старая история остаётся видимой).
-
-        Paid-API guard: manual_run_id из item'ов СТИРАЕТСЯ перед записью.
-        Это политика fail-closed для restart — после рестарта resumed jobs
-        становятся orphan и платные этапы блокируются. Пользователь должен
-        заново нажать Start с галкой "Разрешить платные API".
         """
         if self._batch_queue is None:
             return
         try:
             BATCH_QUEUE_FILE.parent.mkdir(parents=True, exist_ok=True)
             data = self._batch_queue.model_dump()
-            # Стираем manual_run_id из items при persist.
-            for it in data.get("items", []) or []:
-                if isinstance(it, dict):
-                    it["manual_run_id"] = None
             BATCH_QUEUE_FILE.write_text(
                 json.dumps(data, ensure_ascii=False, indent=2),
                 encoding="utf-8",
@@ -354,19 +345,18 @@ class PipelineManager:
         pending-элементы → остаются pending (не были запущены).
         Статус очереди → "interrupted" (не "running") чтобы worker не запустился.
 
-        Paid-API guard: manual_run_id из persisted items ИГНОРИРУЕТСЯ
-        (обнуляется). Даже если файл содержит старые значения (legacy/тест),
-        registry в памяти пуст — guard заблокирует.
+        Pipeline сам управляет платными вызовами — после рестарта resume
+        продолжает работу без галок (kill-switch PAID_API_ENABLED — глобальный).
         """
         if not BATCH_QUEUE_FILE.exists():
             return
         try:
             data = json.loads(BATCH_QUEUE_FILE.read_text(encoding="utf-8"))
-            # Зачистка manual_run_id ДО построения pydantic-модели —
-            # на случай если в файле хранились старые значения.
+            # Legacy очистка: старые batch_queue.json могли содержать
+            # manual_run_id — поле удалено, не передаём в BatchQueueItem.
             for it in data.get("items", []) or []:
-                if isinstance(it, dict) and "manual_run_id" in it:
-                    it["manual_run_id"] = None
+                if isinstance(it, dict):
+                    it.pop("manual_run_id", None)
             queue = BatchQueueStatus(**data)
         except Exception as e:
             print(f"[Recovery] Ошибка загрузки batch_queue.json: {e}")
@@ -1084,7 +1074,6 @@ class PipelineManager:
             record_block_analysis_usage=_record_block_analysis_usage,
             is_cancelled=_is_cancelled,
             version_id=getattr(job, "version_id", None),
-            manual_run_id=getattr(job, "manual_run_id", None),
             job_id=getattr(job, "job_id", None),
         )
 
@@ -1273,16 +1262,14 @@ class PipelineManager:
         pid = job.project_id
         # ─── Paid API guard: проверка ДО любого network request Stage 02 ────
         # Stage 02 (findings_only_gemma_pair) идёт в OpenRouter напрямую и
-        # тратит реальные деньги. Без manual_run_id (auto-resume, orphan job,
-        # retry без галки UI) — блокируем перед prerequisites/crops.
+        # тратит реальные деньги. Блокируем только если глобальный kill-switch
+        # PAID_API_ENABLED=false или превышен daily limit.
         try:
             from backend.app.services.llm.paid_api_guard import (
                 PaidApiBlockedError,
                 PaidApiContext,
                 assert_paid_api_allowed,
             )
-            # Модель — текущая stage02 модель из настроек. Используем самую
-            # популярную как метку; реальная модель проверится в runner ещё раз.
             from backend.app.core.config import get_stage_model
             stage02_model = get_stage_model("block_analysis") or "openai/gpt-5.4"
             assert_paid_api_allowed(PaidApiContext(
@@ -1291,14 +1278,13 @@ class PipelineManager:
                 project_id=pid,
                 version_id=getattr(job, "version_id", None) or "",
                 stage="block_analysis",
-                manual_run_id=getattr(job, "manual_run_id", None) or "",
                 job_id=getattr(job, "job_id", "") or "",
             ))
         except PaidApiBlockedError as _e:
             await self._log(
                 job,
                 f"Stage 02 заблокирован paid_api_guard: {_e.reason}. "
-                f"Запустите аудит вручную с галкой «Разрешить платные API».",
+                f"Включите PAID_API_ENABLED=true либо проверьте daily limit.",
                 "error",
             )
             job.status = JobStatus.FAILED
@@ -1381,7 +1367,6 @@ class PipelineManager:
                     project_id=job.project_id,
                     stage="block_analysis",
                     source="manager.stage02",
-                    manual_run_id=getattr(job, "manual_run_id", None) or "",
                     job_id=getattr(job, "job_id", "") or "",
                     version_id=getattr(job, "version_id", None) or "",
                     input_tokens=input_tokens,
@@ -1905,20 +1890,16 @@ class PipelineManager:
         stage: str,
         *,
         version_id: Optional[str] = None,
-        manual_run_id: Optional[str] = None,
     ) -> AuditJob:
         """Запустить конвейер с указанного этапа (ручной перезапуск цепочки).
 
         Кладёт single-task в общую очередь — фактический запуск произойдёт,
         когда worker дойдёт до элемента (см. `_enqueue_single`/`_dispatch_action`).
-
-        `manual_run_id` выдаётся endpoint'ом, если пользователь нажал кнопку
-        "Разрешить платные API". Без него платные этапы блокируются guard'ом.
         """
         stage = self._validate_start_from_stage_now(project_id, stage)
         return await self._enqueue_single(
             project_id, action="retry_stage", retry_stage=stage,
-            version_id=version_id, manual_run_id=manual_run_id,
+            version_id=version_id,
         )
 
     async def resume_pipeline(
@@ -1926,22 +1907,14 @@ class PipelineManager:
         project_id: str,
         *,
         version_id: Optional[str] = None,
-        manual_run_id: Optional[str] = None,
     ) -> AuditJob:
-        """Продолжить пайплайн с места ошибки.
-
-        resume-проверка детектит этап на момент непосредственного запуска
-        (внутри `_dispatch_action`) — на момент enqueue достаточно знать
-        проект.
-        """
-        # Быстрая проверка чтобы не пускать в очередь заведомо нечего возобновлять
+        """Продолжить пайплайн с места ошибки."""
         self._assert_stage_model_config_ready()
         resume_info = self.detect_resume_stage(project_id, version_id=version_id)
         if not resume_info.get("can_resume"):
             raise RuntimeError("Все этапы уже завершены — нечего возобновлять")
         return await self._enqueue_single(
             project_id, action="resume", version_id=version_id,
-            manual_run_id=manual_run_id,
         )
 
     async def _run_resumed_pipeline(self, job: AuditJob, start_stage: str, resume_info: dict):
@@ -3668,25 +3641,18 @@ class PipelineManager:
         project_id: str,
         *,
         version_id: Optional[str] = None,
-        manual_run_id: Optional[str] = None,
     ) -> AuditJob:
         """Аудит: кроп блоков → текстовый анализ → ВСЕ блоки → свод.
 
         Single-start — кладёт задачу в общую очередь. Реальный запуск
-        случится, когда worker возьмёт её. kill зомби, сброс audit_log/usage
-        живут в `_dispatch_action`, чтобы не сбрасывать данные на ещё не
-        стартовавший проект.
+        случится, когда worker возьмёт её.
 
         `version_id`: фиксированная версия проекта, в которую пойдут все
         write-операции. None → latest на момент enqueue.
-
-        `manual_run_id`: scope разрешения платных API. Без него Stage 02
-        (GPT/OpenRouter) и discussions будут заблокированы paid_api_guard.
         """
         self._assert_stage_model_config_ready()
         return await self._enqueue_single(
             project_id, action="full", version_id=version_id,
-            manual_run_id=manual_run_id,
         )
 
     # Legacy aliases
@@ -4315,17 +4281,12 @@ class PipelineManager:
         self,
         project_ids: list[str],
         action: str,
-        *,
-        manual_run_id: Optional[str] = None,
     ) -> BatchQueueStatus:
         """Запустить групповое действие для списка проектов.
 
         Дописывает items в общую очередь (создавая её если нужно). Если в
         очереди уже есть single-task'и от `start_audit`, новые items
         добавляются после них — всё бежит последовательно.
-
-        `manual_run_id`: общий scope разрешения платных API на весь batch.
-        Без него все Stage 02/discussion внутри этих job блокируются guard'ом.
         """
         if self.is_running("__ALL__"):
             raise RuntimeError("Запуск всех проектов уже выполняется")
@@ -4352,7 +4313,6 @@ class PipelineManager:
                     action=action,
                     status="pending",
                     job_id=str(uuid4()),
-                    manual_run_id=manual_run_id,
                 )
                 for pid in filtered
             ]
@@ -4556,11 +4516,6 @@ class PipelineManager:
                         stage=AuditStage.PREPARE,
                         status=JobStatus.RUNNING,
                         started_at=datetime.now().isoformat(),
-                        # Paid-API guard scope: manual_run_id выдан endpoint'ом
-                        # при ручном старте с галкой "Разрешить платные API".
-                        # None для auto-resume/orphan — Stage 02/discussion
-                        # будут заблокированы paid_api_guard.
-                        manual_run_id=getattr(item, "manual_run_id", None),
                     )
                     self.active_jobs[pid] = job
                     self._tasks[pid] = asyncio.current_task()
@@ -4868,7 +4823,6 @@ class PipelineManager:
         retry_stage: Optional[str] = None,
         extra_params: Optional[dict] = None,
         version_id: Optional[str] = None,
-        manual_run_id: Optional[str] = None,
     ) -> AuditJob:
         """Поставить single-project задачу в общую очередь.
 
@@ -4934,7 +4888,6 @@ class PipelineManager:
                 extra_params=extra_params or {},
                 status="pending",
                 job_id=job_id,
-                manual_run_id=manual_run_id,
             )
 
             queue = self._ensure_batch_worker(action_for_label=action)
@@ -4952,7 +4905,6 @@ class PipelineManager:
                 version_id=effective_vid,
                 stage=AuditStage.PREPARE,
                 status=JobStatus.QUEUED,
-                manual_run_id=manual_run_id,
             )
 
         # Broadcast делаем вне лока (там тоже awaits) — на корректность не влияет.
@@ -4988,7 +4940,11 @@ class PipelineManager:
         )
         return await self.start_batch(project_ids, effective_action)
 
-    async def add_retry_to_batch(self, project_id: str, stage: str) -> BatchQueueStatus:
+    async def add_retry_to_batch(
+        self,
+        project_id: str,
+        stage: str,
+    ) -> BatchQueueStatus:
         """Добавить retry конкретного этапа в очередь."""
         # Маппинг ключей pipeline_summary → внутренних ключей этапов
         stage_map = {

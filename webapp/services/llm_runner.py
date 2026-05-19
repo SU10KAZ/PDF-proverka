@@ -14,10 +14,47 @@ import logging
 import re
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 import httpx
-from openai import AsyncOpenAI, RateLimitError, APITimeoutError, APIError
+
+if TYPE_CHECKING:
+    from openai import AsyncOpenAI
+
+
+def _import_openai():
+    """Ленивый импорт openai с понятным сообщением, если пакета нет."""
+    try:
+        import openai as _openai  # noqa: F401
+        from openai import (
+            AsyncOpenAI,
+            RateLimitError,
+            APITimeoutError,
+            APIError,
+        )
+        return AsyncOpenAI, RateLimitError, APITimeoutError, APIError
+    except ImportError as e:
+        raise RuntimeError(
+            "Пакет 'openai' не установлен, но requested LLM-runner call requires it. "
+            "Установите `pip install openai` или используйте только Claude CLI-пайплайн."
+        ) from e
+
+
+try:
+    from openai import (
+        RateLimitError as RateLimitError,
+        APITimeoutError as APITimeoutError,
+        APIError as APIError,
+    )
+except ImportError:
+    class _OpenAIUnavailable(Exception):
+        """No-op заглушка для except-блоков, когда openai не установлен."""
+        pass
+
+    RateLimitError = _OpenAIUnavailable  # type: ignore[assignment,misc]
+    APITimeoutError = _OpenAIUnavailable  # type: ignore[assignment,misc]
+    APIError = _OpenAIUnavailable  # type: ignore[assignment,misc]
+
 
 from webapp.config import (
     OPENROUTER_API_KEY, OPENROUTER_BASE_URL,
@@ -58,12 +95,13 @@ _LOCAL_STRUCTURED_COMPLETION_STAGES = {
 }
 
 # Единый клиент -- создаётся лениво (чтобы не падать при импорте без ключа)
-_client: AsyncOpenAI | None = None
+_client: "AsyncOpenAI | None" = None
 
 
-def _get_client() -> AsyncOpenAI:
+def _get_client() -> "AsyncOpenAI":
     global _client
     if _client is None:
+        AsyncOpenAI, _, _, _ = _import_openai()
         _client = AsyncOpenAI(
             base_url=OPENROUTER_BASE_URL,
             api_key=OPENROUTER_API_KEY,
@@ -792,7 +830,6 @@ async def run_llm(
     extra_body: dict | None = None,
     project_id: str = "",
     version_id: str = "",
-    manual_run_id: str = "",
     job_id: str = "",
     source: str = "webapp.llm_runner",
 ) -> LLMResult:
@@ -877,7 +914,6 @@ async def run_llm(
         project_id=project_id,
         version_id=version_id,
         stage=stage_key,
-        manual_run_id=manual_run_id,
         job_id=job_id,
     )
     try:
@@ -1019,7 +1055,6 @@ async def run_llm(
                     version_id=version_id,
                     stage=stage_key,
                     source=source or "webapp.llm_runner",
-                    manual_run_id=manual_run_id,
                     job_id=job_id,
                     input_tokens=input_tokens,
                     output_tokens=output_tokens,
@@ -1070,7 +1105,6 @@ async def run_llm_stream(
     project_id: str = "",
     version_id: str = "",
     stage: str = "discussion",
-    manual_run_id: str = "",
     job_id: str = "",
     source: str = "webapp.llm_runner.stream",
 ) -> AsyncGenerator[dict, None]:
@@ -1093,7 +1127,6 @@ async def run_llm_stream(
         project_id=project_id,
         version_id=version_id,
         stage=stage or "discussion",
-        manual_run_id=manual_run_id,
         job_id=job_id,
     )
     try:
@@ -1152,7 +1185,6 @@ async def run_llm_stream(
                 version_id=version_id,
                 stage=stage,
                 source=source or "webapp.llm_runner.stream",
-                manual_run_id=manual_run_id,
                 job_id=job_id,
                 input_tokens=input_tokens,
                 output_tokens=output_tokens,

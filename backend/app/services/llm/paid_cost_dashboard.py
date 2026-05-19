@@ -82,7 +82,6 @@ def _shorten_event(ev: dict) -> dict:
         "version_id": ev.get("version_id") or "",
         "stage": ev.get("stage") or "",
         "source": ev.get("source") or "",
-        "manual_run_id": ev.get("manual_run_id") or "",
         "job_id": ev.get("job_id") or "",
         "input_tokens": ev.get("input_tokens"),
         "output_tokens": ev.get("output_tokens"),

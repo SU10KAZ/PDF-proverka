@@ -422,7 +422,6 @@ async def call_gpt_for_block(
     timeout: int,
     project_id: str = "",
     version_id: str = "",
-    manual_run_id: str = "",
     job_id: str = "",
     output_dir: Optional[Path] = None,
 ) -> dict:
@@ -481,7 +480,6 @@ async def call_gpt_for_block(
             project_id=project_id,
             version_id=version_id,
             stage="block_analysis",
-            manual_run_id=manual_run_id,
             job_id=job_id,
         ))
     except _PaidApiBlockedError as _e:
@@ -832,7 +830,6 @@ async def run_findings_only_for_project(
     # (модели "claude-..." без слэша) — не требуется.
     project_id: str = "",
     version_id: str = "",
-    manual_run_id: str = "",
     job_id: str = "",
 ) -> dict:
     """Прогнать stage 02 findings-only для проекта.
@@ -1064,7 +1061,6 @@ async def run_findings_only_for_project(
                     timeout=timeout_s,
                     project_id=project_id,
                     version_id=version_id,
-                    manual_run_id=manual_run_id,
                     job_id=job_id,
                     output_dir=output_dir,
                 )

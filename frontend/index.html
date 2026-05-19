@@ -290,7 +290,7 @@
                                 <div v-for="ev in (paidDailySelectedDay.events || []).slice(0, 20)"
                                      :key="'ev-' + ev.ts + (ev.response_id || '') + (ev.job_id || '')"
                                      style="display:grid;grid-template-columns:64px 1fr 1fr 1fr 64px;gap:4px;font-size:10px;font-family:monospace;padding:1px 0;border-bottom:1px dashed #f0f0f0"
-                                     :title="ev.ts + ' • source=' + (ev.source || '?') + ' • job=' + (ev.job_id || '?') + ' • manual_run=' + (ev.manual_run_id || '(none)') + ' • in=' + (ev.input_tokens || '?') + ' • out=' + (ev.output_tokens || '?')">
+                                     :title="ev.ts + ' • source=' + (ev.source || '?') + ' • job=' + (ev.job_id || '?') + ' • in=' + (ev.input_tokens || '?') + ' • out=' + (ev.output_tokens || '?')">
                                     <span>{{ ev.time }}</span>
                                     <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap" :title="ev.stage">{{ ev.stage }}</span>
                                     <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap" :title="ev.model">{{ ev.model }}</span>
@@ -312,7 +312,7 @@
                     <div v-for="ev in paidEvents.slice(-5).reverse()" :key="'p-' + ev.ts + ev.response_id"
                          class="paid-cost-panel__row"
                          style="font-size:11px;font-family:monospace;border-bottom:1px dashed #e5e5e5;padding:2px 0">
-                        <span :title="ev.ts + ' • ' + (ev.model || '?') + ' • ' + (ev.project_id || '?') + ' • ' + (ev.stage || '?') + ' • job=' + (ev.job_id || '?') + ' • manual_run=' + (ev.manual_run_id || '(none)')">
+                        <span :title="ev.ts + ' • ' + (ev.model || '?') + ' • ' + (ev.project_id || '?') + ' • ' + (ev.stage || '?') + ' • job=' + (ev.job_id || '?')">
                             {{ ev.ts.slice(11, 19) }} {{ (ev.stage || '?').slice(0, 10) }} ${{ Number(ev.cost_usd || 0).toFixed(4) }}
                         </span>
                     </div>
@@ -329,18 +329,6 @@
                     </div>
 
                     <div class="paid-cost-panel__hint" style="margin-top:8px">Gemini, GPT и другие платные модели через OpenRouter</div>
-
-                    <!-- Чекбокс: разрешить платные API на следующем запуске -->
-                    <div class="paid-cost-panel__row"
-                         style="margin-top:10px;padding:6px 8px;background:rgba(255,200,0,.08);border-radius:6px;border:1px solid rgba(255,200,0,.35)">
-                        <label style="display:flex;align-items:flex-start;gap:6px;cursor:pointer;font-size:12px;line-height:1.35">
-                            <input type="checkbox" v-model="paidApiAllowed" @click.stop style="margin-top:2px"/>
-                            <span>
-                                <b>Разрешить платные API для следующего запуска</b><br>
-                                <span style="opacity:.75">Применится к Start / Resume / Retry / Batch. Без галки Stage 02 (GPT‑5.4) и discussion блокируются guard'ом ДО network request.</span>
-                            </span>
-                        </label>
-                    </div>
 
                     <div class="paid-cost-panel__footer">
                         <button class="btn btn--small btn--danger" @click.stop="resetPaidCost" :disabled="!paidCost.display_usd">

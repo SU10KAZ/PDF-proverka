@@ -14,10 +14,56 @@ import logging
 import re
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 import httpx
-from openai import AsyncOpenAI, RateLimitError, APITimeoutError, APIError
+
+# Ленивый импорт openai: модуль не должен падать при импорте, если пакет не
+# установлен (например, в окружениях, где Claude CLI используется без LLM-runner).
+# Реальный импорт выполняется только при первом обращении к API через
+# _get_client(). Для except-блоков используется _openai_exc() — он либо
+# возвращает классы исключений openai, либо безопасный fallback-tuple.
+if TYPE_CHECKING:
+    from openai import AsyncOpenAI
+
+
+def _import_openai():
+    """Ленивый импорт openai с понятным сообщением, если пакета нет."""
+    try:
+        import openai as _openai  # noqa: F401
+        from openai import (
+            AsyncOpenAI,
+            RateLimitError,
+            APITimeoutError,
+            APIError,
+        )
+        return AsyncOpenAI, RateLimitError, APITimeoutError, APIError
+    except ImportError as e:
+        raise RuntimeError(
+            "Пакет 'openai' не установлен, но requested LLM-runner call requires it. "
+            "Установите `pip install openai` или используйте только Claude CLI-пайплайн."
+        ) from e
+
+
+try:
+    # Получаем классы исключений на уровне модуля. Если openai не установлен,
+    # except-блоки получат no-op заглушки, которые никогда не сработают —
+    # это безопасно, потому что openai-функции в этом случае всё равно не
+    # запустятся (фейл произойдёт на _import_openai() в _get_client()).
+    from openai import (
+        RateLimitError as RateLimitError,
+        APITimeoutError as APITimeoutError,
+        APIError as APIError,
+    )
+except ImportError:
+    class _OpenAIUnavailable(Exception):
+        """No-op заглушка для except-блоков, когда openai не установлен."""
+        pass
+
+    RateLimitError = _OpenAIUnavailable  # type: ignore[assignment,misc]
+    APITimeoutError = _OpenAIUnavailable  # type: ignore[assignment,misc]
+    APIError = _OpenAIUnavailable  # type: ignore[assignment,misc]
+
 
 from backend.app.core.config import (
     OPENROUTER_API_KEY, OPENROUTER_BASE_URL,
@@ -58,12 +104,13 @@ _LOCAL_STRUCTURED_COMPLETION_STAGES = {
 }
 
 # Единый клиент -- создаётся лениво (чтобы не падать при импорте без ключа)
-_client: AsyncOpenAI | None = None
+_client: "AsyncOpenAI | None" = None
 
 
-def _get_client() -> AsyncOpenAI:
+def _get_client() -> "AsyncOpenAI":
     global _client
     if _client is None:
+        AsyncOpenAI, _, _, _ = _import_openai()
         _client = AsyncOpenAI(
             base_url=OPENROUTER_BASE_URL,
             api_key=OPENROUTER_API_KEY,
@@ -792,7 +839,6 @@ async def run_llm(
     extra_body: dict | None = None,
     project_id: str = "",
     version_id: str = "",
-    manual_run_id: str = "",
     job_id: str = "",
     source: str = "llm_runner",
 ) -> LLMResult:
@@ -806,9 +852,9 @@ async def run_llm(
         timeout: таймаут запроса в секундах
         max_retries: макс. число повторов при rate limit / timeout
         model_override: явная модель (если задана — игнорирует stage config)
-        project_id/version_id/manual_run_id/job_id/source: контекст для
-            paid_api_guard. Без валидного manual_run_id любой внешний платный
-            вызов будет заблокирован.
+        project_id/version_id/job_id/source: контекст для paid_api_guard.
+            Если PAID_API_ENABLED=false или превышен daily limit, внешний
+            платный вызов будет заблокирован.
 
     Returns:
         LLMResult с текстом, распарсенным JSON, токенами и метриками.
@@ -882,7 +928,6 @@ async def run_llm(
         project_id=project_id,
         version_id=version_id,
         stage=stage_key,
-        manual_run_id=manual_run_id,
         job_id=job_id,
     )
     try:
@@ -1029,7 +1074,6 @@ async def run_llm(
                     project_id=project_id,
                     stage=stage_key,
                     source=source or "llm_runner",
-                    manual_run_id=manual_run_id,
                     job_id=job_id,
                     version_id=version_id,
                     input_tokens=input_tokens,
@@ -1081,7 +1125,6 @@ async def run_llm_stream(
     project_id: str = "",
     stage: str = "discussion",
     version_id: str = "",
-    manual_run_id: str = "",
     job_id: str = "",
     source: str = "llm_runner.stream",
 ) -> AsyncGenerator[dict, None]:
@@ -1104,7 +1147,6 @@ async def run_llm_stream(
         project_id=project_id,
         version_id=version_id,
         stage=stage or "discussion",
-        manual_run_id=manual_run_id,
         job_id=job_id,
     )
     try:
@@ -1164,7 +1206,6 @@ async def run_llm_stream(
                 project_id=project_id,
                 stage=stage,
                 source=source or "llm_runner.stream",
-                manual_run_id=manual_run_id,
                 job_id=job_id,
                 version_id=version_id,
                 input_tokens=input_tokens,

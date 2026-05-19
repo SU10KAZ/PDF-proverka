@@ -5,8 +5,8 @@
       "args": ["/c", "npx", "@playwright/mcp@latest"]
     },
     "norms": {
-      "command": "/home/coder/projects/Norms/tools/venv/bin/python",
-      "args": ["/home/coder/projects/Norms/tools/mcp_server.py"]
+      "command": "/home/coder/projects/PDF-proverka/norms/tools/venv/bin/python",
+      "args": ["/home/coder/projects/PDF-proverka/norms/tools/mcp_server.py"]
     }
   }
 }

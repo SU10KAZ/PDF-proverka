@@ -19,10 +19,6 @@ try:
         PaidApiContext,
         assert_paid_api_allowed,
         is_paid_api_enabled,
-        issue_manual_run,
-        release_manual_run,
-        get_manual_run,
-        list_active_manual_runs,
         status_snapshot,
     )
     from backend.app.services.llm import paid_api_events  # type: ignore
@@ -42,35 +38,20 @@ except ImportError as e:  # pragma: no cover — fail-closed shim
             self.__dict__.update(kw)
 
     def assert_paid_api_allowed(ctx) -> None:  # type: ignore[no-redef]
-        # Без backend guard'а считаем kill-switch жёстко "off".
         raise PaidApiBlockedError("guard_unavailable_failclosed", ctx)
 
     def is_paid_api_enabled() -> bool:  # type: ignore[no-redef]
         return False
 
-    def issue_manual_run(*, project_ids, batch_id="", source_job_id=""):  # type: ignore[no-redef]
-        raise RuntimeError("guard_unavailable")
-
-    def release_manual_run(manual_run_id: str) -> None:  # type: ignore[no-redef]
-        return
-
-    def get_manual_run(manual_run_id: str):  # type: ignore[no-redef]
-        return None
-
-    def list_active_manual_runs():  # type: ignore[no-redef]
-        return []
-
     def status_snapshot():  # type: ignore[no-redef]
         return {
             "paid_api_enabled": False,
-            "require_manual_start": True,
             "daily_limit_usd": 0.0,
             "today_spent_usd": 0.0,
             "today_remaining_usd": None,
             "blocked_events_count_today": 0,
             "last_paid_event": None,
             "last_blocked_event": None,
-            "active_manual_runs": 0,
             "_note": "backend paid_api_guard unavailable — fail-closed",
         }
 
@@ -103,10 +84,6 @@ __all__ = [
     "PaidApiContext",
     "assert_paid_api_allowed",
     "is_paid_api_enabled",
-    "issue_manual_run",
-    "release_manual_run",
-    "get_manual_run",
-    "list_active_manual_runs",
     "status_snapshot",
     "paid_api_events",
 ]

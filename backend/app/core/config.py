@@ -290,13 +290,11 @@ STAGE_BATCH_MODES_FILE_PATH  = APP_DATA_DIR / "stage_batch_modes.json"
 HIDDEN_PROJECTS_FILE         = APP_DATA_DIR / "hidden_projects.json"
 
 # ─── Paid API guard ─────────────────────────────────────────────────────────
-# Fail-closed defaults: при отсутствии env платные API заблокированы.
-# Чтобы реально пользоваться платными моделями, нужно явно выставить
-#   PAID_API_ENABLED=true
-# а каждый job должен иметь manual_run_id (выдаётся через UI "Разрешить
-# платные API для этого запуска").
+# Глобальный kill-switch. Default = False (fail-closed): чтобы реально
+# пользоваться платными моделями (Stage 02 GPT-5.4, Gemini, OpenRouter etc.),
+# нужно явно выставить PAID_API_ENABLED=true. При true pipeline имеет право
+# вызывать платные модели автоматически без ручного подтверждения.
 PAID_API_ENABLED              = _env_bool("PAID_API_ENABLED", False)
-PAID_API_REQUIRE_MANUAL_START = _env_bool("PAID_API_REQUIRE_MANUAL_START", True)
 
 def _env_float(name: str, default: float) -> float:
     raw = os.environ.get(name)
@@ -313,11 +311,6 @@ PAID_API_DAILY_LIMIT_USD      = _env_float("PAID_API_DAILY_LIMIT_USD", 0.0)
 # Append-only журналы (НЕ truncate'ятся при clear_project_usage).
 PAID_COST_EVENTS_FILE         = APP_DATA_DIR / "paid_cost_events.jsonl"
 PAID_API_BLOCKED_EVENTS_FILE  = APP_DATA_DIR / "paid_api_blocked_events.jsonl"
-
-# manual_run registry — ТОЛЬКО in-memory в текущем backend-процессе.
-# После рестарта все manual_run'ы пропадают; resumed jobs становятся orphan
-# и их платные этапы блокируются paid_api_guard. Это намеренная политика
-# fail-closed для restart: пользователь должен заново нажать Start с галкой.
 
 _STAGE_MODELS_FILE = STAGE_MODELS_FILE
 

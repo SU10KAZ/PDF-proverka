@@ -1561,10 +1561,6 @@ const app = createApp({
         const paidApiStatus = ref(null);
         const paidEvents = ref([]);
         const paidBlockedEvents = ref([]);
-        // Чекбокс «Разрешить платные API для этого запуска». По умолчанию false
-        // (безопасный default). При нажатии Start этот флаг передаётся в API,
-        // которое выдаёт manual_run_id и пробрасывает в job.
-        const paidApiAllowed = ref(false);
 
         // ─── Submit lock (защита от double-submit) ────────────────────
         // В инциденте 2026-05-16 на M31A было 3 retry за 35 секунд (14:29:41,
@@ -3258,7 +3254,6 @@ const app = createApp({
                     body: JSON.stringify({
                         project_ids: ids,
                         action: action,
-                        paid_api_allowed: !!paidApiAllowed.value,
                     }),
                 });
                 if (!resp.ok) {
@@ -3603,18 +3598,11 @@ const app = createApp({
             openModelConfig(projectId);
         }
 
-        // Paid-API guard helper: добавить query-параметр в audit endpoint URL.
-        // По умолчанию false (safe) — поэтому если пользователь не нажал галку,
-        // backend выдаст job БЕЗ manual_run_id, и платные этапы заблокируются.
-        function _paidQs() {
-            return paidApiAllowed.value ? '?paid_api_allowed=true' : '';
-        }
-
         async function startAuditDirect(projectId) {
             return _withSubmitLock(`start:${projectId}`, async () => {
                 try {
                     auditRunning.value = true;
-                    await apiPost(`/audit/${encodeURIComponent(projectId)}/full-audit${_paidQs()}`);
+                    await apiPost(`/audit/${encodeURIComponent(projectId)}/full-audit`);
                     _afterAuditStart(projectId);
                 } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
             });
@@ -3636,7 +3624,7 @@ const app = createApp({
             return _withSubmitLock(`resume:${projectId}`, async () => {
                 try {
                     auditRunning.value = true;
-                    await apiPost(`/audit/${encodeURIComponent(projectId)}/resume${_paidQs()}`);
+                    await apiPost(`/audit/${encodeURIComponent(projectId)}/resume`);
                     _afterAuditStart(projectId);
                 } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
             });
@@ -3849,7 +3837,7 @@ const app = createApp({
                     if (stage === 'optimization') {
                         await apiPost(`/optimization/${encodeURIComponent(projectId)}/run`);
                     } else {
-                        await apiPost(`/audit/${encodeURIComponent(projectId)}/retry/${stage}${_paidQs()}`);
+                        await apiPost(`/audit/${encodeURIComponent(projectId)}/retry/${stage}`);
                     }
                     _afterAuditStart(projectId);
                 } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
@@ -3869,17 +3857,13 @@ const app = createApp({
             try {
                 let resp;
                 if (mode === 'resume') {
-                    // Запустить с этапа + все последующие. paid_api_allowed —
-                    // через query, чтобы backend выдал manual_run_id, если есть галка.
-                    resp = await fetch(`/api/audit/batch/add-retry${_paidQs()}`, {
+                    resp = await fetch(`/api/audit/batch/add-retry`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ project_id: projectId, stage: stage }),
                     });
                 } else {
-                    // Только один этап — прямой retry. БАГ-фикс: раньше _paidQs()
-                    // здесь не передавался, и manual_run_id не выдавался даже с галкой.
-                    resp = await fetch(`/api/audit/${encodeURIComponent(projectId)}/retry/${stage}${_paidQs()}`, {
+                    resp = await fetch(`/api/audit/${encodeURIComponent(projectId)}/retry/${stage}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                     });
@@ -8513,7 +8497,7 @@ const app = createApp({
             // Model switcher
             // Paid cost
             paidCost, showPaidCost, fetchPaidCost, resetPaidCost, formatCostShort,
-            paidApiStatus, paidEvents, paidBlockedEvents, paidApiAllowed,
+            paidApiStatus, paidEvents, paidBlockedEvents,
             fetchPaidApiStatus, fetchPaidEvents, fetchPaidBlockedEvents,
             // Paid-cost daily dashboard
             paidDailyDays, paidDailyTotals, paidDailyPeriod,

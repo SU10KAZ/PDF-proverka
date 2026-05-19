@@ -1,22 +1,21 @@
-"""Tests for paid_api_guard — единая точка проверки прав на платный API.
+"""Tests for paid_api_guard — упрощённая версия после рефакторинга 2026-05-18.
 
-Покрытие (из ТЗ):
+Покрытие:
   A. paid_api_guard поведение:
      - PAID_API_ENABLED=false блокирует;
-     - PAID_API_ENABLED=true + require_manual_start=true без manual_run_id блокирует;
+     - PAID_API_ENABLED=true разрешает автоматически (без manual_run_id);
      - короткий project_id ("M31A") блокируется;
-     - валидный manual_run + scope разрешает;
      - daily limit блокирует;
+     - sanity-поля (source/model/stage/project_id) обязательны;
   B. llm_runner.run_llm не делает внешний request когда blocked;
-  C. manager Stage 02 (call_gpt_for_block) блокирует перед httpx.post;
-  D. queue/resume: BatchQueueItem без manual_run_id → AuditJob без него → блок;
+  C. manager Stage 02 (call_gpt_for_block) блокирует перед httpx.post при kill-switch;
+  D. queue/resume: после рестарта resume не падает orphan (нет требования manual_run_id);
   E. events: успех пишет paid_cost_events.jsonl, блок пишет paid_api_blocked_events.jsonl;
      reset_paid_cost / clear_project_usage НЕ удаляют jsonl.
 """
 from __future__ import annotations
 
 import asyncio
-import importlib
 import json
 import sys
 from pathlib import Path
@@ -26,17 +25,11 @@ import pytest
 
 @pytest.fixture
 def isolated_paid_api(tmp_path, monkeypatch):
-    """Изолированный paid_api_guard + paid_api_events в tmp_path.
-
-    Monkey-patch'им PAID_COST_EVENTS_FILE и PAID_API_BLOCKED_EVENTS_FILE,
-    чтобы тест не трогал реальные журналы. manual_run_registry —
-    in-memory only, файла нет.
-    """
+    """Изолированный paid_api_guard + paid_api_events в tmp_path."""
     _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
     if str(_PROJECT_ROOT) not in sys.path:
         sys.path.insert(0, str(_PROJECT_ROOT))
 
-    # Импорт модулей.
     from backend.app.services.llm import paid_api_events as events_mod
     from backend.app.services.llm import paid_api_guard as guard_mod
 
@@ -46,15 +39,8 @@ def isolated_paid_api(tmp_path, monkeypatch):
     monkeypatch.setattr(events_mod, "PAID_COST_EVENTS_FILE", paid_jsonl)
     monkeypatch.setattr(events_mod, "PAID_API_BLOCKED_EVENTS_FILE", blocked_jsonl)
 
-    # Сбрасываем in-memory registry между тестами.
-    guard_mod._registry.clear()
-
-    # Конфиг по умолчанию: enabled=true, require_manual=true, limit=0.
-    # Guard читает env на каждом вызове (runtime), поэтому подменяем env, а
-    # не атрибут модуля. Так тесты и production используют один и тот же путь
-    # резолва флагов.
+    # Default: enabled=true, daily limit=0 (отключён).
     monkeypatch.setenv("PAID_API_ENABLED", "true")
-    monkeypatch.setenv("PAID_API_REQUIRE_MANUAL_START", "true")
     monkeypatch.setenv("PAID_API_DAILY_LIMIT_USD", "0")
 
     yield {
@@ -69,48 +55,42 @@ def isolated_paid_api(tmp_path, monkeypatch):
 
 
 def test_kill_switch_disabled_blocks_everything(isolated_paid_api, monkeypatch):
-    """A1: PAID_API_ENABLED=false блокирует, даже с валидным manual_run."""
+    """A1: PAID_API_ENABLED=false блокирует."""
     guard = isolated_paid_api["guard"]
     monkeypatch.setenv("PAID_API_ENABLED", "false")
 
-    mrid = guard.issue_manual_run(project_ids=["pdf-proj-1"])
     ctx = guard.PaidApiContext(
         source="llm_runner",
         model="openai/gpt-5.4",
-        project_id="pdf-proj-1",
+        project_id="proj/A.pdf",
         stage="block_analysis",
-        manual_run_id=mrid,
     )
     with pytest.raises(guard.PaidApiBlockedError) as exc:
         guard.assert_paid_api_allowed(ctx)
     assert exc.value.reason == "paid_api_disabled"
 
 
-def test_missing_manual_run_id_blocks(isolated_paid_api):
-    """A2: require_manual_start=true и нет manual_run_id → блок."""
+def test_paid_api_allowed_without_manual_run_id(isolated_paid_api):
+    """A2 (новый): PAID_API_ENABLED=true разрешает вызов без manual_run_id —
+    pipeline сам управляет платными вызовами."""
     guard = isolated_paid_api["guard"]
     ctx = guard.PaidApiContext(
         source="llm_runner",
         model="openai/gpt-5.4",
-        project_id="pdf-proj-1",
+        project_id="proj/A.pdf",
         stage="block_analysis",
-        manual_run_id="",
     )
-    with pytest.raises(guard.PaidApiBlockedError) as exc:
-        guard.assert_paid_api_allowed(ctx)
-    assert exc.value.reason == "missing_manual_run_id"
+    guard.assert_paid_api_allowed(ctx)  # не должно поднять
 
 
 def test_short_discipline_code_project_id_blocks(isolated_paid_api):
-    """A3: project_id "M31A" — короткий код, блок (даже с manual_run)."""
+    """A3: project_id "M31A" — короткий код, блок."""
     guard = isolated_paid_api["guard"]
-    mrid = guard.issue_manual_run(project_ids=["M31A"])
     ctx = guard.PaidApiContext(
         source="manager.stage02",
         model="openai/gpt-5.4",
         project_id="M31A",
         stage="block_analysis",
-        manual_run_id=mrid,
     )
     with pytest.raises(guard.PaidApiBlockedError) as exc:
         guard.assert_paid_api_allowed(ctx)
@@ -123,108 +103,86 @@ def test_missing_source_model_stage_blocked(isolated_paid_api):
     for missing in ("source", "model", "stage"):
         ctx = guard.PaidApiContext(
             source="x", model="m/x", project_id="some/full/project.pdf",
-            stage="s", manual_run_id="anything",
+            stage="s",
         )
-        # Сбрасываем выбранное поле.
         setattr(ctx, missing, "")
         with pytest.raises(guard.PaidApiBlockedError) as exc:
             guard.assert_paid_api_allowed(ctx)
-        assert exc.value.reason in {
-            f"missing_{missing}", "missing_manual_run_id", "short_discipline_code_project_id",
-        }
+        assert exc.value.reason == f"missing_{missing}"
 
 
-def test_valid_manual_run_allows(isolated_paid_api):
-    """A5: валидный manual_run + полный project_id → пропускает."""
+def test_missing_project_id_blocked(isolated_paid_api):
+    """A4b: missing project_id блокируется."""
     guard = isolated_paid_api["guard"]
-    mrid = guard.issue_manual_run(project_ids=["proj/A.pdf"])
-    ctx = guard.PaidApiContext(
-        source="llm_runner",
-        model="openai/gpt-5.4",
-        project_id="proj/A.pdf",
-        stage="block_analysis",
-        manual_run_id=mrid,
-    )
-    guard.assert_paid_api_allowed(ctx)  # не должно поднять
-    # registry проинкрементил used_count
-    rec = guard.get_manual_run(mrid)
-    assert rec is not None
-    assert rec["used_count"] >= 1
-
-
-def test_manual_run_scope_mismatch(isolated_paid_api):
-    """A6: manual_run выдан под proj-A, но используется на proj-B → блок."""
-    guard = isolated_paid_api["guard"]
-    mrid = guard.issue_manual_run(project_ids=["proj/A.pdf"])
-    ctx = guard.PaidApiContext(
-        source="llm_runner",
-        model="openai/gpt-5.4",
-        project_id="proj/B.pdf",
-        stage="block_analysis",
-        manual_run_id=mrid,
-    )
-    with pytest.raises(guard.PaidApiBlockedError) as exc:
-        guard.assert_paid_api_allowed(ctx)
-    assert exc.value.reason == "manual_run_scope_mismatch"
-
-
-def test_batch_manual_run_allows_multiple_projects(isolated_paid_api):
-    """A7: batch выдаёт один manual_run на список — все проекты внутри
-    проходят без подтверждения."""
-    guard = isolated_paid_api["guard"]
-    mrid = guard.issue_manual_run(
-        project_ids=["proj/A.pdf", "proj/B.pdf", "proj/C.pdf"],
-        batch_id="batch_full",
-    )
-    for pid in ["proj/A.pdf", "proj/B.pdf", "proj/C.pdf"]:
-        ctx = guard.PaidApiContext(
-            source="llm_runner", model="openai/gpt-5.4",
-            project_id=pid, stage="block_analysis", manual_run_id=mrid,
-        )
-        guard.assert_paid_api_allowed(ctx)
-
-
-def test_release_manual_run_revokes(isolated_paid_api):
-    """A8: release_manual_run → последующий call блокируется."""
-    guard = isolated_paid_api["guard"]
-    mrid = guard.issue_manual_run(project_ids=["proj/X.pdf"])
-    guard.release_manual_run(mrid)
     ctx = guard.PaidApiContext(
         source="llm_runner", model="openai/gpt-5.4",
-        project_id="proj/X.pdf", stage="block_analysis", manual_run_id=mrid,
+        project_id="", stage="block_analysis",
     )
     with pytest.raises(guard.PaidApiBlockedError) as exc:
         guard.assert_paid_api_allowed(ctx)
-    assert exc.value.reason == "unknown_manual_run_id"
+    assert exc.value.reason == "missing_project_id"
 
 
 def test_daily_limit_blocks(isolated_paid_api, monkeypatch):
-    """A9: daily_limit_usd=1.0 + estimated_cost_usd=2.0 → блок."""
+    """A5: daily_limit_usd=1.0 + estimated_cost_usd=2.0 → блок."""
     guard = isolated_paid_api["guard"]
     monkeypatch.setenv("PAID_API_DAILY_LIMIT_USD", "1.0")
-    # _today_spent_usd возвращает 0.0 (нет paid_cost.daily), но
-    # projected = 0 + 2 > 1.0 — блок.
-    mrid = guard.issue_manual_run(project_ids=["proj/A.pdf"])
     ctx = guard.PaidApiContext(
         source="llm_runner", model="openai/gpt-5.4",
         project_id="proj/A.pdf", stage="block_analysis",
-        manual_run_id=mrid, estimated_cost_usd=2.0,
+        estimated_cost_usd=2.0,
     )
     with pytest.raises(guard.PaidApiBlockedError) as exc:
         guard.assert_paid_api_allowed(ctx)
     assert exc.value.reason == "daily_limit_exceeded"
 
 
+def test_runtime_kill_switch_takes_effect_without_module_reload(
+    isolated_paid_api, monkeypatch
+):
+    """A6: kill-switch действует сразу после смены os.environ, без рестарта."""
+    guard = isolated_paid_api["guard"]
+
+    monkeypatch.setenv("PAID_API_ENABLED", "true")
+    ctx = guard.PaidApiContext(
+        source="llm_runner",
+        model="openai/gpt-5.4",
+        project_id="proj/A.pdf",
+        stage="block_analysis",
+    )
+    guard.assert_paid_api_allowed(ctx)  # без исключения
+
+    monkeypatch.setenv("PAID_API_ENABLED", "false")
+    with pytest.raises(guard.PaidApiBlockedError) as exc:
+        guard.assert_paid_api_allowed(ctx)
+    assert exc.value.reason == "paid_api_disabled"
+
+
+def test_canonical_project_id_allows_short_display_pid(isolated_paid_api):
+    """A7: короткий project_id "M31A" допустим, если передан
+    canonical_project_id с полным путём ИЛИ object_id."""
+    guard = isolated_paid_api["guard"]
+    ctx = guard.PaidApiContext(
+        source="manager.stage02",
+        model="openai/gpt-5.4",
+        project_id="M31A",
+        canonical_project_id="214. Alia (ASTERUS)/M31A",
+        stage="block_analysis",
+    )
+    guard.assert_paid_api_allowed(ctx)
+
+
 # ─── E. Append-only events ────────────────────────────────────────────
 
 
-def test_blocked_event_is_appended(isolated_paid_api):
+def test_blocked_event_is_appended(isolated_paid_api, monkeypatch):
     """E1: каждый block пишет строку в paid_api_blocked_events.jsonl."""
     guard = isolated_paid_api["guard"]
+    monkeypatch.setenv("PAID_API_ENABLED", "false")
+
     ctx = guard.PaidApiContext(
         source="manager.stage02", model="openai/gpt-5.4",
         project_id="proj/A.pdf", stage="block_analysis",
-        manual_run_id="",
     )
     with pytest.raises(guard.PaidApiBlockedError):
         guard.assert_paid_api_allowed(ctx)
@@ -235,14 +193,14 @@ def test_blocked_event_is_appended(isolated_paid_api):
     assert len(lines) == 1
     event = json.loads(lines[0])
     assert event["event"] == "paid_api_blocked"
-    assert event["reason"] == "missing_manual_run_id"
+    assert event["reason"] == "paid_api_disabled"
     assert event["source"] == "manager.stage02"
     assert event["project_id"] == "proj/A.pdf"
     assert event["pid"]
 
 
 def test_paid_event_written_and_blocked_jsonl_not_cleared(isolated_paid_api):
-    """E2: paid_event пишется отдельным API; reset/clear НЕ удаляют jsonl."""
+    """E2: paid_event пишется отдельным API."""
     events = isolated_paid_api["events"]
     paid_jsonl = isolated_paid_api["paid_jsonl"]
 
@@ -252,7 +210,6 @@ def test_paid_event_written_and_blocked_jsonl_not_cleared(isolated_paid_api):
         project_id="proj/A.pdf",
         stage="block_analysis",
         source="manager.stage02",
-        manual_run_id="abc",
         job_id="job-1",
         input_tokens=100,
         output_tokens=50,
@@ -263,22 +220,20 @@ def test_paid_event_written_and_blocked_jsonl_not_cleared(isolated_paid_api):
     assert ev["event"] == "paid_api_cost"
     assert ev["cost_usd"] == pytest.approx(1.234)
     assert ev["model"] == "openai/gpt-5.4"
-    assert ev["manual_run_id"] == "abc"
 
-    # Tail reader
     tail = events.read_paid_events_tail(limit=10)
     assert len(tail) == 1
     assert tail[0]["job_id"] == "job-1"
 
 
-def test_count_blocked_today(isolated_paid_api):
+def test_count_blocked_today(isolated_paid_api, monkeypatch):
     """E3: count_blocked_today корректно считает только сегодняшние."""
     guard = isolated_paid_api["guard"]
+    monkeypatch.setenv("PAID_API_ENABLED", "false")
     for _ in range(3):
         ctx = guard.PaidApiContext(
             source="llm_runner", model="openai/gpt-5.4",
             project_id="proj/A.pdf", stage="block_analysis",
-            manual_run_id="",
         )
         with pytest.raises(guard.PaidApiBlockedError):
             guard.assert_paid_api_allowed(ctx)
@@ -288,13 +243,14 @@ def test_count_blocked_today(isolated_paid_api):
 # ─── B. llm_runner — guard работает ПЕРЕД network ─────────────────────
 
 
-def test_llm_runner_blocks_before_network(isolated_paid_api, monkeypatch):
-    """B1: run_llm на OpenRouter модель без manual_run_id → возвращает
-    LLMResult is_error="paid_api_blocked:..." БЕЗ вызова OpenAI клиента.
-    """
+def test_llm_runner_blocks_before_network_when_kill_switch_off(
+    isolated_paid_api, monkeypatch
+):
+    """B1: run_llm на OpenRouter модель при kill-switch=off → возвращает
+    LLMResult is_error="paid_api_blocked:..." БЕЗ вызова OpenAI клиента."""
     from backend.app.services.llm import llm_runner
+    monkeypatch.setenv("PAID_API_ENABLED", "false")
 
-    # Шпион на _get_client — если функция полезет в сеть, увидим вызов.
     network_called = {"flag": False}
 
     def fake_get_client():
@@ -309,19 +265,21 @@ def test_llm_runner_blocks_before_network(isolated_paid_api, monkeypatch):
             messages=[{"role": "user", "content": "test"}],
             model_override="openai/gpt-5.4",
             project_id="proj/A.pdf",
-            # Нет manual_run_id → блок ДО _get_client.
         )
 
     result = asyncio.run(_run())
     assert result.is_error is True
     assert "paid_api_blocked" in (result.error_message or "")
     assert result.cost_usd == 0
-    assert network_called["flag"] is False  # сеть НЕ была вызвана
+    assert network_called["flag"] is False
 
 
-def test_llm_runner_stream_blocks_before_network(isolated_paid_api, monkeypatch):
-    """B2: run_llm_stream также блокируется ДО network."""
+def test_llm_runner_stream_blocks_before_network_when_kill_switch_off(
+    isolated_paid_api, monkeypatch
+):
+    """B2: run_llm_stream также блокируется ДО network при kill-switch=off."""
     from backend.app.services.llm import llm_runner
+    monkeypatch.setenv("PAID_API_ENABLED", "false")
 
     network_called = {"flag": False}
 
@@ -351,14 +309,13 @@ def test_llm_runner_stream_blocks_before_network(isolated_paid_api, monkeypatch)
 # ─── C. Stage 02 call_gpt_for_block (defence-in-depth) ────────────────
 
 
-def test_stage02_call_gpt_blocks_before_httpx(isolated_paid_api, tmp_path):
-    """C1: call_gpt_for_block без manual_run возвращает paid_api_blocked
-    БЕЗ обращения к client.post.
-
-    После добавления Stage 02 cache PNG читается до guard (для cache key), так
-    что PNG должен реально существовать — иначе тест получит "PNG missing".
-    """
+def test_stage02_call_gpt_blocks_before_httpx_when_kill_switch_off(
+    isolated_paid_api, tmp_path, monkeypatch
+):
+    """C1: call_gpt_for_block при kill-switch=off возвращает paid_api_blocked
+    БЕЗ обращения к client.post."""
     from backend.app.pipeline.stages.block_analysis import gemma_findings_only
+    monkeypatch.setenv("PAID_API_ENABLED", "false")
 
     httpx_called = {"flag": False}
 
@@ -367,8 +324,6 @@ def test_stage02_call_gpt_blocks_before_httpx(isolated_paid_api, tmp_path):
             httpx_called["flag"] = True
             raise AssertionError("httpx.post was attempted despite block!")
 
-    # Подложим реальный PNG-файл (минимальный фейк, для cache key нужен только
-    # bytes-read, не валидный PNG).
     blocks_dir = tmp_path / "blocks"
     blocks_dir.mkdir()
     (blocks_dir / "b1.png").write_bytes(b"\x89PNG\r\n\x1a\nFAKE")
@@ -387,7 +342,6 @@ def test_stage02_call_gpt_blocks_before_httpx(isolated_paid_api, tmp_path):
             system_prompt="",
             timeout=30,
             project_id="proj/A.pdf",
-            manual_run_id="",  # нет manual_run → блок
             output_dir=tmp_path,
         )
 
@@ -397,19 +351,15 @@ def test_stage02_call_gpt_blocks_before_httpx(isolated_paid_api, tmp_path):
     assert httpx_called["flag"] is False
 
 
-def test_stage02_cache_hit_skips_network_and_guard(isolated_paid_api, tmp_path, monkeypatch):
-    """C2 (новый): второй call_gpt_for_block с тем же model/block/prompt/image
-    должен взять ответ из cache → НЕ дёргать httpx, НЕ записывать paid_event.
-
-    Сценарий повторяет 2026-05-16: один блок, retry, должен быть бесплатным.
-    """
+def test_stage02_cache_hit_skips_network(isolated_paid_api, tmp_path):
+    """C2: повторный call_gpt_for_block с теми же параметрами → cache hit,
+    без httpx и без записи paid_event."""
     from backend.app.pipeline.stages.block_analysis import gemma_findings_only
 
     blocks_dir = tmp_path / "blocks"
     blocks_dir.mkdir()
     (blocks_dir / "b1.png").write_bytes(b"\x89PNG\r\n\x1a\nFAKE_IMAGE_BYTES")
 
-    # 1) Первый вызов: эмулируем 2xx response от OpenRouter с usage.
     post_calls = {"n": 0}
 
     class _RealResp:
@@ -432,16 +382,12 @@ def test_stage02_cache_hit_skips_network_and_guard(isolated_paid_api, tmp_path, 
             post_calls["n"] += 1
             return _RealResp()
 
-    # manual_run для project_id="proj/A.pdf"
-    guard = isolated_paid_api["guard"]
-    mrid = guard.issue_manual_run(project_ids=["proj/A.pdf"])
-
     block = {"block_id": "b1", "page": 1, "file": "b1.png"}
     common_kwargs = dict(
         block=block, enrichment={"label": "test"}, page_text="page text",
         blocks_dir=blocks_dir, api_key="sk-real", model="openai/gpt-5.4",
         reasoning_effort="low", max_tokens=4096, system_prompt="SYS",
-        timeout=30, project_id="proj/A.pdf", manual_run_id=mrid, job_id="j1",
+        timeout=30, project_id="proj/A.pdf", job_id="j1",
         output_dir=tmp_path,
     )
 
@@ -454,105 +400,56 @@ def test_stage02_cache_hit_skips_network_and_guard(isolated_paid_api, tmp_path, 
     res1 = asyncio.run(_first())
     assert res1["ok"] is True
     assert res1.get("from_cache") is False
-    assert post_calls["n"] == 1  # один платный вызов
+    assert post_calls["n"] == 1
 
-    # 2) Повторный вызов с теми же параметрами — cache hit, нет network.
     res2 = asyncio.run(_second())
     assert res2["ok"] is True
     assert res2.get("from_cache") is True
     assert res2.get("cost_usd") == 0.0
-    assert post_calls["n"] == 1  # post больше НЕ вызывали
+    assert post_calls["n"] == 1
 
 
 # ─── D. Queue / resume / orphan ───────────────────────────────────────
 
 
-def test_orphan_job_without_manual_run_blocks(isolated_paid_api):
-    """D1: AuditJob без manual_run_id (orphan/auto-resume) → guard блокирует."""
+def test_resumed_job_allowed_without_manual_run(isolated_paid_api):
+    """D1 (новый): после рестарта resumed job (без manual_run_id) разрешён.
+    Это ключевое требование: orphan-состояния больше не блокируют pipeline."""
     guard = isolated_paid_api["guard"]
-    # Имитируем job как dict с пустым manual_run_id.
     ctx = guard.PaidApiContext(
         source="manager.stage02.orchestrator",
         model="openai/gpt-5.4",
         project_id="proj/A.pdf",
         stage="block_analysis",
-        manual_run_id="",  # orphan
         job_id="job-orphan-42",
     )
-    with pytest.raises(guard.PaidApiBlockedError) as exc:
-        guard.assert_paid_api_allowed(ctx)
-    assert exc.value.reason == "missing_manual_run_id"
+    # Не должно поднять
+    guard.assert_paid_api_allowed(ctx)
 
 
-def test_batch_queue_item_carries_manual_run(isolated_paid_api):
-    """D2: BatchQueueItem (Pydantic) хранит manual_run_id, которое
-    становится атрибутом AuditJob.
-    """
-    from backend.app.models.audit import AuditJob, BatchQueueItem, AuditStage, JobStatus
+def test_batch_queue_item_has_no_manual_run_field(isolated_paid_api):
+    """D2 (новый): BatchQueueItem больше не содержит manual_run_id."""
+    from backend.app.models.audit import AuditJob, BatchQueueItem
 
     item = BatchQueueItem(
         project_id="proj/A.pdf",
         action="full",
         job_id="job-1",
-        manual_run_id="mrid-abc",
     )
-    assert item.manual_run_id == "mrid-abc"
+    assert not hasattr(item, "manual_run_id") or getattr(item, "manual_run_id", None) is None
 
     job = AuditJob(
         job_id=item.job_id,
         project_id=item.project_id,
-        manual_run_id=item.manual_run_id,
     )
-    assert job.manual_run_id == "mrid-abc"
+    assert not hasattr(job, "manual_run_id") or getattr(job, "manual_run_id", None) is None
 
 
-def test_persisted_batch_queue_strips_manual_run(isolated_paid_api, tmp_path, monkeypatch):
-    """D3: pipeline_manager._persist_queue стирает manual_run_id из items
-    при записи в batch_queue.json — даже если он был в памяти.
-
-    Это намеренная политика fail-closed: после рестарта resumed job не должен
-    автоматически проходить платные этапы со старым scope.
-    """
+def test_persisted_batch_queue_legacy_manual_run_stripped(isolated_paid_api, tmp_path, monkeypatch):
+    """D3: load_persisted_queue корректно глотает старые batch_queue.json с
+    устаревшим manual_run_id (он просто игнорируется)."""
     from backend.app.pipeline import manager as manager_mod
-    from backend.app.models.audit import BatchQueueStatus, BatchQueueItem
 
-    # Изолируем BATCH_QUEUE_FILE в tmp.
-    fake_batch_file = tmp_path / "batch_queue.json"
-    monkeypatch.setattr(manager_mod, "BATCH_QUEUE_FILE", fake_batch_file)
-
-    pm = manager_mod.pipeline_manager
-    pm._batch_queue = BatchQueueStatus(
-        queue_id="q1",
-        action="full",
-        items=[
-            BatchQueueItem(
-                project_id="proj/A.pdf",
-                action="full",
-                job_id="job-1",
-                manual_run_id="mrid-must-not-persist",
-            ),
-        ],
-        total=1,
-        status="running",
-    )
-    pm._persist_queue()
-
-    raw = json.loads(fake_batch_file.read_text(encoding="utf-8"))
-    assert raw["items"][0]["manual_run_id"] is None, (
-        "manual_run_id должен быть стёрт при persist — иначе после рестарта "
-        "будет ложное разрешение платных API"
-    )
-
-
-def test_old_manual_run_id_after_restart_is_invalid(isolated_paid_api, tmp_path, monkeypatch):
-    """D4: имитация рестарта — batch_queue.json содержит старый manual_run_id
-    (как если бы кто-то восстановил файл из бэкапа), registry пуст.
-    После load + попытки платного вызова — блок: unknown_manual_run_id.
-    """
-    from backend.app.pipeline import manager as manager_mod
-    guard = isolated_paid_api["guard"]
-
-    # Имитируем "плохой" persisted-файл с manual_run_id внутри.
     fake_batch_file = tmp_path / "batch_queue.json"
     fake_batch_file.write_text(json.dumps({
         "queue_id": "q-restart",
@@ -578,217 +475,19 @@ def test_old_manual_run_id_after_restart_is_invalid(isolated_paid_api, tmp_path,
 
     pm = manager_mod.pipeline_manager
     pm._batch_queue = None
-    # Очистим registry в памяти на всякий случай (имитируя "fresh process").
-    guard._registry.clear()
-
     pm.load_persisted_queue()
 
-    # После load: status переходит в interrupted, items.manual_run_id обнулён.
     assert pm._batch_queue is not None
     assert pm._batch_queue.status == "interrupted"
-    assert pm._batch_queue.items[0].manual_run_id is None
-
-    # Даже если бы code где-то взял старый mrid из файла напрямую и
-    # попытался использовать — guard заблокирует, потому что registry пуст.
-    ctx = guard.PaidApiContext(
-        source="llm_runner", model="openai/gpt-5.4",
-        project_id="proj/A.pdf", stage="block_analysis",
-        manual_run_id="stale-mrid-from-disk",
-        job_id="job-restart-1",
-    )
-    with pytest.raises(guard.PaidApiBlockedError) as exc:
-        guard.assert_paid_api_allowed(ctx)
-    assert exc.value.reason == "unknown_manual_run_id"
-
-
-def test_registry_is_memory_only_no_file(isolated_paid_api, tmp_path, monkeypatch):
-    """D5: issue_manual_run НЕ создаёт никакого файла на диске.
-
-    Проверяем, что в backend/app/data/ нет paid_api_manual_runs.json
-    после issue+release (registry — только in-memory).
-    """
-    guard = isolated_paid_api["guard"]
-    from backend.app.core.config import APP_DATA_DIR
-
-    candidate = APP_DATA_DIR / "paid_api_manual_runs.json"
-    # Если файл вдруг есть — это уже регрессия предыдущей реализации.
-    # Удалим, чтобы тест проверил именно НОВУЮ запись.
-    if candidate.exists():
-        candidate.unlink()
-
-    mrid = guard.issue_manual_run(project_ids=["proj/A.pdf"])
-    assert guard.get_manual_run(mrid) is not None
-    assert not candidate.exists(), (
-        "paid_api_manual_runs.json не должен создаваться — registry только in-memory"
-    )
-
-    guard.release_manual_run(mrid)
-    assert not candidate.exists()
-
-
-def test_critic_v2_openrouter_provider_blocks_without_manual_run(isolated_paid_api):
-    """D6: critic_v2 OpenRouterProvider — экспериментальный путь с прямым
-    requests.post в openrouter.ai — должен быть закрыт guard'ом.
-
-    Без manual_run_id в context_packages → возвращает paid_api_blocked
-    БЕЗ обращения к requests.post.
-    """
-    from backend.app.pipeline.stages.findings_review.critic_v2 import llm_gate
-
-    # Подменяем requests в модуле, чтобы если guard НЕ сработает,
-    # тест упал на AssertionError, а не уйдёт в сеть.
-    class _RequestsSpy:
-        Timeout = Exception
-        ConnectionError = Exception
-
-        @staticmethod
-        def post(*args, **kwargs):
-            raise AssertionError(
-                "critic_v2 OpenRouterProvider полез в сеть несмотря на guard"
-            )
-
-    import sys
-    # Подменяем 'requests' в sys.modules, потому что llm_gate импортирует
-    # его lazy внутри __call__ через `import requests as _requests`.
-    saved = sys.modules.get("requests")
-    sys.modules["requests"] = _RequestsSpy  # type: ignore[assignment]
-    try:
-        # Также нужен валидный API key, чтобы пройти до guard'а.
-        import os
-        os.environ.setdefault("OPENROUTER_API_KEY", "sk-test-dummy")
-
-        provider = llm_gate.OpenRouterProvider(model="openai/gpt-5.4")
-        content, errors = provider(
-            candidates=[],
-            findings_by_id={},
-            prompt="test",
-            context_packages={},  # пусто → нет project_id/manual_run_id
-        )
-        assert content == "[]"
-        assert any("paid_api_blocked" in e for e in errors), (
-            f"Ожидалась блокировка guard'ом, получено: {errors}"
-        )
-    finally:
-        if saved is not None:
-            sys.modules["requests"] = saved
-        else:
-            sys.modules.pop("requests", None)
-
-
-def test_runtime_kill_switch_takes_effect_without_module_reload(
-    isolated_paid_api, monkeypatch
-):
-    """A10 (новый, root cause инцидента 2026-05-16): kill-switch должен
-    действовать сразу после смены os.environ, без перезапуска backend.
-
-    До фикса PAID_API_ENABLED резолвился на момент импорта модуля и его
-    нельзя было выключить руками. 9 платных вызовов на M31A прошли в т.ч.
-    потому, что значение флага было зафиксировано при старте uvicorn.
-    """
-    guard = isolated_paid_api["guard"]
-
-    # Шаг 1: enabled=true + валидный manual_run → разрешено.
-    monkeypatch.setenv("PAID_API_ENABLED", "true")
-    mrid = guard.issue_manual_run(project_ids=["proj/A.pdf"])
-    ctx = guard.PaidApiContext(
-        source="llm_runner",
-        model="openai/gpt-5.4",
-        project_id="proj/A.pdf",
-        stage="block_analysis",
-        manual_run_id=mrid,
-    )
-    guard.assert_paid_api_allowed(ctx)  # без исключения
-
-    # Шаг 2: тот же процесс, тот же импортированный модуль, тот же manual_run —
-    # меняем ТОЛЬКО env. Должен включиться kill-switch.
-    monkeypatch.setenv("PAID_API_ENABLED", "false")
-    with pytest.raises(guard.PaidApiBlockedError) as exc:
-        guard.assert_paid_api_allowed(ctx)
-    assert exc.value.reason == "paid_api_disabled"
-
-
-def test_canonical_project_id_allows_short_display_pid(isolated_paid_api):
-    """A11 (новый): короткий project_id "M31A" допустим, если передан
-    canonical_project_id с полным путём ИЛИ object_id. Так короткий код
-    можно безопасно использовать как display, а реальный scope — длинный.
-    """
-    guard = isolated_paid_api["guard"]
-    # scope manual_run выдаётся по canonical path
-    canon = "214. Alia (ASTERUS)/M31A"
-    mrid = guard.issue_manual_run(project_ids=[canon])
-    ctx = guard.PaidApiContext(
-        source="manager.stage02",
-        model="openai/gpt-5.4",
-        project_id="M31A",                 # короткий display
-        canonical_project_id=canon,        # полный canonical scope
-        stage="block_analysis",
-        manual_run_id=mrid,
-    )
-    # Не должно быть исключения.
-    guard.assert_paid_api_allowed(ctx)
-
-
-def test_record_paid_event_writes_manual_run_id_present_and_hash(
-    isolated_paid_api, tmp_path, monkeypatch
-):
-    """E3 (новый, root cause forensic): record_paid_event пишет три поля
-    про manual_run_id, чтобы можно было различить "был ли реально manual_run".
-
-    В инциденте 2026-05-16 все 9 платных событий имели manual_run_id="" —
-    раньше нельзя было понять, отсутствовал ли он реально или был стёрт при
-    записи. Теперь есть manual_run_id_present и manual_run_id_hash.
-    """
-    events = isolated_paid_api["events"]
-    paid_jsonl = isolated_paid_api["paid_jsonl"]
-
-    # 1) Платный вызов БЕЗ manual_run_id (forensic должен это явно показать)
-    events.record_paid_event(
-        cost_usd=0.3227,
-        model="openai/gpt-5.4",
-        project_id="proj/A.pdf",
-        stage="block_analysis",
-        source="manager.stage02",
-        manual_run_id="",
-        job_id="j1",
-        input_tokens=40517,
-        output_tokens=17118,
-    )
-
-    # 2) Платный вызов С manual_run_id (hash должен быть)
-    events.record_paid_event(
-        cost_usd=0.10,
-        model="openai/gpt-5.4",
-        project_id="proj/A.pdf",
-        stage="block_analysis",
-        source="manager.stage02",
-        manual_run_id="abc123def456",
-        job_id="j2",
-    )
-
-    lines = paid_jsonl.read_text(encoding="utf-8").strip().split("\n")
-    assert len(lines) == 2
-    ev1 = json.loads(lines[0])
-    ev2 = json.loads(lines[1])
-
-    # Без manual_run: present=False, hash=""
-    assert ev1["manual_run_id"] == ""
-    assert ev1["manual_run_id_present"] is False
-    assert ev1["manual_run_id_hash"] == ""
-
-    # С manual_run: present=True, hash непустой и стабильный
-    assert ev2["manual_run_id"] == "abc123def456"
-    assert ev2["manual_run_id_present"] is True
-    assert len(ev2["manual_run_id_hash"]) == 12
+    # Поле manual_run_id больше не существует
+    assert not hasattr(pm._batch_queue.items[0], "manual_run_id") or \
+        getattr(pm._batch_queue.items[0], "manual_run_id", None) is None
 
 
 def test_local_models_bypass_guard(isolated_paid_api, monkeypatch):
     """D4: Локальные модели (Chandra/local QWEN) не должны блокироваться —
-    они не отправляют данные во внешний платный API.
-    """
+    они не отправляют данные во внешний платный API."""
     from backend.app.services.llm import llm_runner
-
-    # Сделаем "local" модель, и подменим local-path функции на no-op
-    # которые возвращают валидный LLMResult.
     from backend.app.models.usage import LLMResult
 
     async def fake_local(*args, **kwargs):
@@ -803,8 +502,7 @@ def test_local_models_bypass_guard(isolated_paid_api, monkeypatch):
             stage="findings_merge",
             messages=[{"role": "user", "content": "t"}],
             model_override="local-qwen-3.6-35b",
-            project_id="",       # пустой — у local не нужен
-            manual_run_id="",    # нет — у local не нужен
+            project_id="",
         )
 
     result = asyncio.run(_run())
@@ -812,82 +510,57 @@ def test_local_models_bypass_guard(isolated_paid_api, monkeypatch):
     assert result.is_error is False
 
 
-# ─── F. audit endpoint helper: paid_api_allowed → manual_run_id ─────────
+def test_critic_v2_openrouter_provider_blocks_when_kill_switch_off(
+    isolated_paid_api, monkeypatch
+):
+    """D5: critic_v2 OpenRouterProvider — guard блокирует при kill-switch=off."""
+    from backend.app.pipeline.stages.findings_review.critic_v2 import llm_gate
+    monkeypatch.setenv("PAID_API_ENABLED", "false")
 
+    class _RequestsSpy:
+        Timeout = Exception
+        ConnectionError = Exception
 
-def test_issue_manual_run_if_allowed_returns_none_when_flag_false(isolated_paid_api):
-    """F1 (новый): без галки `paid_api_allowed=false` не выдаётся manual_run_id.
+        @staticmethod
+        def post(*args, **kwargs):
+            raise AssertionError(
+                "critic_v2 OpenRouterProvider полез в сеть несмотря на guard"
+            )
 
-    Это критический acceptance criterion фазы 4: дефолт endpoint'а — False.
-    Если backend случайно поднимет default → True, тест падает.
-    """
-    from backend.app.api.routers.audit import _issue_manual_run_if_allowed
+    saved = sys.modules.get("requests")
+    sys.modules["requests"] = _RequestsSpy  # type: ignore[assignment]
+    try:
+        import os
+        os.environ.setdefault("OPENROUTER_API_KEY", "sk-test-dummy")
 
-    result = _issue_manual_run_if_allowed(
-        "proj/A.pdf", paid_api_allowed=False,
-    )
-    assert result is None
-
-
-def test_issue_manual_run_if_allowed_returns_uuid_when_flag_true(isolated_paid_api):
-    """F2 (новый): при `paid_api_allowed=true` выдаётся UUID, и он валиден в guard.
-
-    Также проверяем, что guard потом разрешит вызов с этим manual_run_id.
-    """
-    from backend.app.api.routers.audit import _issue_manual_run_if_allowed
-    guard = isolated_paid_api["guard"]
-
-    mrid = _issue_manual_run_if_allowed(
-        "proj/A.pdf", paid_api_allowed=True,
-    )
-    assert mrid is not None
-    assert isinstance(mrid, str)
-    assert len(mrid) >= 16  # UUID hex
-
-    # Guard принимает этот manual_run_id:
-    ctx = guard.PaidApiContext(
-        source="llm_runner",
-        model="openai/gpt-5.4",
-        project_id="proj/A.pdf",
-        stage="block_analysis",
-        manual_run_id=mrid,
-    )
-    guard.assert_paid_api_allowed(ctx)  # без исключения
-
-
-def test_issue_manual_run_if_allowed_for_batch_scope(isolated_paid_api):
-    """F3 (новый): batch с несколькими project_id получает один manual_run_id
-    с общим scope. Каждый project в scope разрешён.
-    """
-    from backend.app.api.routers.audit import _issue_manual_run_if_allowed
-    guard = isolated_paid_api["guard"]
-
-    mrid = _issue_manual_run_if_allowed(
-        ["proj/A.pdf", "proj/B.pdf", "proj/C.pdf"],
-        paid_api_allowed=True,
-        batch_id="batch-xyz",
-    )
-    assert mrid is not None
-
-    # Проверим все три project'а в scope.
-    for pid in ("proj/A.pdf", "proj/B.pdf", "proj/C.pdf"):
-        ctx = guard.PaidApiContext(
-            source="manager.stage02",
-            model="openai/gpt-5.4",
-            project_id=pid,
-            stage="block_analysis",
-            manual_run_id=mrid,
+        provider = llm_gate.OpenRouterProvider(model="openai/gpt-5.4")
+        # Передаём project_id через _paid_api_ctx
+        content, errors = provider(
+            candidates=[],
+            findings_by_id={},
+            prompt="test",
+            context_packages={"_paid_api_ctx": {"project_id": "proj/A.pdf"}},
         )
-        guard.assert_paid_api_allowed(ctx)  # без исключения для каждого
+        assert content == "[]"
+        assert any("paid_api_blocked" in e for e in errors), (
+            f"Ожидалась блокировка guard'ом, получено: {errors}"
+        )
+    finally:
+        if saved is not None:
+            sys.modules["requests"] = saved
+        else:
+            sys.modules.pop("requests", None)
 
-    # А вот posторонний project НЕ в scope — должен блокироваться.
-    ctx_off = guard.PaidApiContext(
-        source="manager.stage02",
-        model="openai/gpt-5.4",
-        project_id="proj/OUTSIDE.pdf",
-        stage="block_analysis",
-        manual_run_id=mrid,
-    )
-    with pytest.raises(guard.PaidApiBlockedError) as exc:
-        guard.assert_paid_api_allowed(ctx_off)
-    assert exc.value.reason == "manual_run_scope_mismatch"
+
+# ─── F. Status snapshot ───────────────────────────────────────────────
+
+
+def test_status_snapshot_no_manual_run_fields(isolated_paid_api):
+    """F1: status_snapshot не возвращает поля require_manual_start / active_manual_runs."""
+    guard = isolated_paid_api["guard"]
+    snap = guard.status_snapshot()
+    assert "paid_api_enabled" in snap
+    assert "daily_limit_usd" in snap
+    assert "today_spent_usd" in snap
+    assert "require_manual_start" not in snap
+    assert "active_manual_runs" not in snap

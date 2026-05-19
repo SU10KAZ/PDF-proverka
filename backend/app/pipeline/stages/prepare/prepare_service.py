@@ -28,7 +28,7 @@ from backend.app.services.llm.lmstudio_lifecycle_service import (
     register_idle_probe as _register_lmstudio_idle_probe,
     schedule_post_queue_cleanup as _schedule_lmstudio_post_queue_cleanup,
 )
-from backend.app.services.common.process_runner import run_script
+from backend.app.services.common.process_runner import run_script, kill_all_processes
 from backend.app.pipeline.stages.gemma_enrichment.gemma_gate import find_project_markdown, load_project_info
 from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
     ENRICHMENT_MARKER_RE,
@@ -162,18 +162,10 @@ async def _broadcast_queue() -> None:
 
 
 def _persist_queue() -> None:
-    """Persist prepare-data queue so it survives uvicorn restarts.
-
-    Paid-API guard: manual_run_id СТИРАЕТСЯ при persist. После рестарта
-    backend этот scope больше не валиден; пользователь должен заново
-    нажать Start с галкой "Разрешить платные API".
-    """
+    """Persist prepare-data queue so it survives uvicorn restarts."""
     try:
         PREPARE_QUEUE_FILE.parent.mkdir(parents=True, exist_ok=True)
         data = prepare_state.queue_status.model_dump()
-        for it in data.get("items", []) or []:
-            if isinstance(it, dict):
-                it["manual_run_id"] = None
         PREPARE_QUEUE_FILE.write_text(
             json.dumps(data, ensure_ascii=False, indent=2),
             encoding="utf-8",
@@ -187,18 +179,15 @@ def load_persisted_queue() -> None:
 
     We do not auto-resume Gemma work on startup: unfinished items become
     `interrupted` and the UI can resume them explicitly.
-
-    Paid-API guard: manual_run_id из persisted items ИГНОРИРУЕТСЯ
-    (обнуляется на лету). Registry в памяти после рестарта пуст —
-    даже если файл содержит старые значения, guard заблокирует.
     """
     if not PREPARE_QUEUE_FILE.exists():
         return
     try:
         data = json.loads(PREPARE_QUEUE_FILE.read_text(encoding="utf-8"))
+        # Legacy fields cleanup.
         for it in data.get("items", []) or []:
-            if isinstance(it, dict) and "manual_run_id" in it:
-                it["manual_run_id"] = None
+            if isinstance(it, dict):
+                it.pop("manual_run_id", None)
         queue = PrepareQueueStatus(**data)
     except Exception as e:
         print(f"[PrepareQueue] Ошибка загрузки prepare_queue.json: {e}")
@@ -797,6 +786,14 @@ async def _run_prepare(
     s_failed = summary.get("blocks_failed", 0) or 0
     s_wall = summary.get("wall_clock_s", 0) or 0
 
+    # Stdout-watcher парсит только base-проход и не видит retry_block_done,
+    # поэтому seen_failed может остаться завышенным даже когда runner всё
+    # восстановил. Источник истины — summary.
+    if s_total:
+        item.blocks_total = s_total
+    item.blocks_done = s_ok + s_failed
+    item.blocks_failed = s_failed
+
     if s_status == "ok":
         item.status = "completed"
         update_pipeline_log(
@@ -1120,7 +1117,7 @@ async def resume_queue() -> dict:
 
 
 async def cancel_queue() -> dict:
-    """Отменить очередь: текущие блоки доработают, остальные станут cancelled.
+    """Отменить очередь: убиваем активные subprocess'ы, pending пропускаем.
 
     Если на паузе — снимем паузу, чтобы runner смог увидеть cancel и выйти.
     """
@@ -1128,19 +1125,47 @@ async def cancel_queue() -> dict:
     cev.set()
     pev = prepare_state.get_pause_event()
     pev.set()  # снимаем паузу чтобы runner вышел
-    # помечаем pending items как cancelled
+
     cancelled_pending = 0
-    for it in prepare_state.queue_status.items:
+    killed_running = 0
+    killed_procs = 0
+    for it in list(prepare_state.queue_status.items):
+        pid = it.project_id
         if it.status == "pending":
-            it.status = "skipped"  # не запускался — пометим skipped
+            it.status = "skipped"
             it.error = "cancelled by user"
             cancelled_pending += 1
-            # Отменяем фоновую crop-таску, если ещё не закончилась
-            ct = prepare_state.crop_tasks.pop(it.project_id, None)
+            ct = prepare_state.crop_tasks.pop(pid, None)
             if ct is not None and not ct.done():
                 ct.cancel()
+        elif it.status == "running":
+            killed_running += 1
+            # Убиваем crop subprocess (blocks.py, ключ project_id)
+            try:
+                killed_procs += await kill_all_processes(pid)
+            except Exception:
+                pass
+            # Убиваем gemma_enrich subprocess (ключ prepare_gemma:project_id)
+            try:
+                killed_procs += await kill_all_processes(f"prepare_gemma:{pid}")
+            except Exception:
+                pass
+            # Cancel'аем asyncio tasks — run_script поймает CancelledError
+            ct = prepare_state.crop_tasks.pop(pid, None)
+            if ct is not None and not ct.done():
+                ct.cancel()
+            wrapped = prepare_state.tasks.get(pid)
+            if wrapped is not None and not wrapped.done():
+                wrapped.cancel()
+            it.status = "failed"
+            it.error = "cancelled by user"
     await _broadcast_queue()
-    return {"cancelled": True, "cancelled_pending": cancelled_pending}
+    return {
+        "cancelled": True,
+        "cancelled_pending": cancelled_pending,
+        "killed_running": killed_running,
+        "killed_processes": killed_procs,
+    }
 
 
 def reset_cancel() -> None:

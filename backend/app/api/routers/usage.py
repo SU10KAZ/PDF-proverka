@@ -188,10 +188,8 @@ async def get_paid_cost_events(limit: int = 100):
 async def get_paid_api_blocked_events(limit: int = 100):
     """Последние N заблокированных guard'ом попыток платных вызовов.
 
-    Если этот список растёт — значит фоновый процесс пытался уйти в OpenRouter
-    без manual_run_id (auto-resume, retry, orphan). Это намеренно блокировано;
-    нужно либо нажать Start с галкой, либо разобраться, почему процесс
-    инициируется фоном.
+    Если этот список растёт — значит kill-switch выключен (PAID_API_ENABLED=false)
+    или превышен daily limit. См. /paid-api/status.
     """
     from backend.app.services.llm import paid_api_events
     limit = max(1, min(int(limit), 1000))
@@ -203,9 +201,8 @@ async def get_paid_api_status():
     """Снапшот kill-switch + сводка за сегодня.
 
     Возвращает:
-      paid_api_enabled, require_manual_start, daily_limit_usd,
-      today_spent_usd, today_remaining_usd, blocked_events_count_today,
-      last_paid_event, last_blocked_event, active_manual_runs.
+      paid_api_enabled, daily_limit_usd, today_spent_usd, today_remaining_usd,
+      blocked_events_count_today, last_paid_event, last_blocked_event.
     """
     from backend.app.services.llm.paid_api_guard import status_snapshot
     return status_snapshot()

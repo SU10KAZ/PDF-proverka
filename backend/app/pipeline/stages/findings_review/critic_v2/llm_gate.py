@@ -1559,9 +1559,8 @@ class OpenRouterProvider:
         # ─── Paid API guard ─────────────────────────────────────────
         # critic_v2 OpenRouterProvider — это offline benchmark / experimental
         # path. Прямой requests.post в OpenRouter в обход llm_runner.
-        # Не оставляем известный обходной путь. context_packages при
-        # ручном запуске может передать project_id/manual_run_id; без них
-        # guard вернёт missing_manual_run_id (fail-closed).
+        # Не оставляем известный обходной путь — guard блокирует, если
+        # PAID_API_ENABLED=false или daily limit превышен.
         try:
             from backend.app.services.llm.paid_api_guard import (
                 PaidApiBlockedError as _PaidApiBlockedError,
@@ -1575,7 +1574,6 @@ class OpenRouterProvider:
                 project_id=_ctx_meta.get("project_id", "") or "",
                 version_id=_ctx_meta.get("version_id", "") or "",
                 stage="findings_review",
-                manual_run_id=_ctx_meta.get("manual_run_id", "") or "",
                 job_id=_ctx_meta.get("job_id", "") or "",
             ))
         except _PaidApiBlockedError as _e:

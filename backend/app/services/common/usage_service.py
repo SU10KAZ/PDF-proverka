@@ -1002,6 +1002,11 @@ class GlobalUsageScanner:
 # ══════════════════════════════════════════════════════════════
 
 PAID_COST_FILE = _DATA_DIR / "paid_cost.json"
+# Snapshot production-пути на момент импорта модуля. Используется гардом в
+# record_paid(), чтобы под pytest не писать в боевой paid_cost.json через
+# глобальный paid_cost_tracker. Тесты, которые monkeypatch'ат PAID_COST_FILE
+# на tmp_path, под гард не попадают — путь у них другой.
+_PRODUCTION_PAID_COST_FILE = PAID_COST_FILE
 
 class PaidCostTracker:
     """Трекер реальных расходов на платные нейросети (Gemini, GPT и др.).
@@ -1161,7 +1166,6 @@ class PaidCostTracker:
         project_id: str = "",
         stage: str = "",
         source: str = "",
-        manual_run_id: str = "",
         job_id: str = "",
         version_id: str = "",
         input_tokens: int = 0,
@@ -1177,6 +1181,21 @@ class PaidCostTracker:
         """
         if cost_usd is None or cost_usd <= 0:
             return
+        # Гард: под pytest не писать в боевой paid_cost.json. Tests, которые
+        # специально хотят проверить запись, изолируют PAID_COST_FILE через
+        # monkeypatch на tmp_path — у них PAID_COST_FILE != production-snapshot
+        # и гард их пропускает. Регрессия 2026-05-18: тест
+        # test_record_findings_only_usage_openrouter_writes_real_cost дёргает
+        # PipelineManager._record_findings_only_usage(), который ходит в
+        # глобальный paid_cost_tracker и писал реальные $0.3227 в
+        # backend/app/data/paid_cost.json при каждом прогоне.
+        import os
+        if (
+            os.environ.get("PYTEST_CURRENT_TEST")
+            and PAID_COST_FILE == _PRODUCTION_PAID_COST_FILE
+            and os.environ.get("PAID_COST_ALLOW_WRITE") != "1"
+        ):
+            return
         # Шаг 1: bucket-aggregate в paid_cost.json (под lock'ом).
         self.add(cost_usd, model=model, project_id=project_id, stage=stage)
         # Шаг 2: append-only forensic event. Импорт локальный — circular import
@@ -1190,7 +1209,6 @@ class PaidCostTracker:
                 version_id=version_id,
                 stage=stage,
                 source=source,
-                manual_run_id=manual_run_id,
                 job_id=job_id,
                 input_tokens=input_tokens,
                 output_tokens=output_tokens,

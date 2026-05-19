@@ -139,6 +139,10 @@ const app = createApp({
                     'расчётный параметр: ПЗ/расчёт, не чертёж РД',
                 round1_already_covered_suggested_reject:
                     'уже есть в смежном разделе / спецификации',
+                round2_rd_vs_pz_suggested_reject:
+                    'расчётный параметр: ПЗ/расчёт, не чертёж РД',
+                round2_already_covered_suggested_reject:
+                    'уже есть в смежном разделе / спецификации',
             },
             evidence: {
                 valid: 'валидна',
@@ -1557,10 +1561,36 @@ const app = createApp({
         const paidApiStatus = ref(null);
         const paidEvents = ref([]);
         const paidBlockedEvents = ref([]);
-        // Чекбокс «Разрешить платные API для этого запуска». По умолчанию false
-        // (безопасный default). При нажатии Start этот флаг передаётся в API,
-        // которое выдаёт manual_run_id и пробрасывает в job.
-        const paidApiAllowed = ref(false);
+
+        // ─── Submit lock (защита от double-submit) ────────────────────
+        // В инциденте 2026-05-16 на M31A было 3 retry за 35 секунд (14:29:41,
+        // 14:30:07, 14:30:16) — каждый стоил $0.32. Похоже на double-click
+        // или Enter, проскочивший защиту auditRunning.value.
+        //
+        // _withSubmitLock(key, fn) гарантирует: пока fn для данного key не
+        // завершилась (resolve или reject), повторные клики/Enter с тем же
+        // key игнорируются. Также игнорируются попытки в первые 800 мс
+        // после release — защита от «отпустил мышь, тут же снова кликнул».
+        const _submitLocks = new Map();   // key -> 'running' | 'cooldown'
+        const _SUBMIT_COOLDOWN_MS = 800;
+
+        async function _withSubmitLock(key, fn) {
+            if (_submitLocks.has(key)) {
+                console.warn('[submit-lock] ignored duplicate:', key);
+                return null;
+            }
+            _submitLocks.set(key, 'running');
+            try {
+                return await fn();
+            } finally {
+                _submitLocks.set(key, 'cooldown');
+                setTimeout(() => _submitLocks.delete(key), _SUBMIT_COOLDOWN_MS);
+            }
+        }
+
+        function _isSubmitLocked(key) {
+            return _submitLocks.has(key);
+        }
 
         async function fetchPaidCost() {
             try {
@@ -3210,6 +3240,12 @@ const app = createApp({
 
         async function startBatchAction(action) {
             const ids = Array.from(selectedProjects.value);
+            const lockKey = `batch:${action}:${ids.length}`;
+            if (_isSubmitLocked(lockKey)) {
+                console.warn('[submit-lock] batch duplicate ignored');
+                return;
+            }
+            return _withSubmitLock(lockKey, async () => {
             try {
                 batchRunning.value = true;
                 const resp = await fetch('/api/audit/batch', {
@@ -3218,7 +3254,6 @@ const app = createApp({
                     body: JSON.stringify({
                         project_ids: ids,
                         action: action,
-                        paid_api_allowed: !!paidApiAllowed.value,
                     }),
                 });
                 if (!resp.ok) {
@@ -3233,6 +3268,7 @@ const app = createApp({
                 alert(e.message);
                 batchRunning.value = false;
             }
+            }); // end _withSubmitLock
         }
 
         function batchActionLabel(action) {
@@ -3562,19 +3598,14 @@ const app = createApp({
             openModelConfig(projectId);
         }
 
-        // Paid-API guard helper: добавить query-параметр в audit endpoint URL.
-        // По умолчанию false (safe) — поэтому если пользователь не нажал галку,
-        // backend выдаст job БЕЗ manual_run_id, и платные этапы заблокируются.
-        function _paidQs() {
-            return paidApiAllowed.value ? '?paid_api_allowed=true' : '';
-        }
-
         async function startAuditDirect(projectId) {
-            try {
-                auditRunning.value = true;
-                await apiPost(`/audit/${encodeURIComponent(projectId)}/full-audit${_paidQs()}`);
-                _afterAuditStart(projectId);
-            } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
+            return _withSubmitLock(`start:${projectId}`, async () => {
+                try {
+                    auditRunning.value = true;
+                    await apiPost(`/audit/${encodeURIComponent(projectId)}/full-audit`);
+                    _afterAuditStart(projectId);
+                } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
+            });
         }
 
         // Legacy aliases
@@ -3590,11 +3621,13 @@ const app = createApp({
         }
 
         async function resumePipeline(projectId) {
-            try {
-                auditRunning.value = true;
-                await apiPost(`/audit/${encodeURIComponent(projectId)}/resume${_paidQs()}`);
-                _afterAuditStart(projectId);
-            } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
+            return _withSubmitLock(`resume:${projectId}`, async () => {
+                try {
+                    auditRunning.value = true;
+                    await apiPost(`/audit/${encodeURIComponent(projectId)}/resume`);
+                    _afterAuditStart(projectId);
+                } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
+            });
         }
 
         async function resumeToQueue(projectId) {
@@ -3798,31 +3831,38 @@ const app = createApp({
         }
 
         async function _executeRetryStage(projectId, stage) {
-            try {
-                auditRunning.value = true;
-                if (stage === 'optimization') {
-                    await apiPost(`/optimization/${encodeURIComponent(projectId)}/run`);
-                } else {
-                    await apiPost(`/audit/${encodeURIComponent(projectId)}/retry/${stage}${_paidQs()}`);
-                }
-                _afterAuditStart(projectId);
-            } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
+            return _withSubmitLock(`retry:${projectId}:${stage}`, async () => {
+                try {
+                    auditRunning.value = true;
+                    if (stage === 'optimization') {
+                        await apiPost(`/optimization/${encodeURIComponent(projectId)}/run`);
+                    } else {
+                        await apiPost(`/audit/${encodeURIComponent(projectId)}/retry/${stage}`);
+                    }
+                    _afterAuditStart(projectId);
+                } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
+            });
         }
 
         async function retryStageToQueue() {
             const { projectId, stage, mode } = retryDialog.value;
+            // Submit-lock на эту пару — двойной клик «Запустить» в retry-dialog
+            // не должен порождать второй request.
+            if (_isSubmitLocked(`retry-queue:${projectId}:${stage}`)) {
+                console.warn('[submit-lock] retry-queue duplicate ignored');
+                return;
+            }
+            return _withSubmitLock(`retry-queue:${projectId}:${stage}`, async () => {
             retryDialog.value.show = false;
             try {
                 let resp;
                 if (mode === 'resume') {
-                    // Запустить с этапа + все последующие
-                    resp = await fetch('/api/audit/batch/add-retry', {
+                    resp = await fetch(`/api/audit/batch/add-retry`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ project_id: projectId, stage: stage }),
                     });
                 } else {
-                    // Только один этап — прямой retry
                     resp = await fetch(`/api/audit/${encodeURIComponent(projectId)}/retry/${stage}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -3838,6 +3878,7 @@ const app = createApp({
                     batchRunning.value = true;
                 }
             } catch (e) { alert(e.message); }
+            }); // end _withSubmitLock
         }
 
         async function skipStage(projectId, stage) {
@@ -8456,7 +8497,7 @@ const app = createApp({
             // Model switcher
             // Paid cost
             paidCost, showPaidCost, fetchPaidCost, resetPaidCost, formatCostShort,
-            paidApiStatus, paidEvents, paidBlockedEvents, paidApiAllowed,
+            paidApiStatus, paidEvents, paidBlockedEvents,
             fetchPaidApiStatus, fetchPaidEvents, fetchPaidBlockedEvents,
             // Paid-cost daily dashboard
             paidDailyDays, paidDailyTotals, paidDailyPeriod,

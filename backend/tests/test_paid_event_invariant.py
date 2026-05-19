@@ -79,15 +79,15 @@ def test_three_paid_events_keep_invariant(isolated_tracker):
     t = isolated_tracker["tracker"]
     t.record_paid(0.3227, model="openai/gpt-5.4", project_id="proj/A.pdf",
                   stage="block_analysis", source="manager.stage02",
-                  manual_run_id="m1", job_id="j1",
+                  job_id="j1",
                   input_tokens=40000, output_tokens=17000)
     t.record_paid(0.1500, model="openai/gpt-5.4", project_id="proj/A.pdf",
                   stage="block_analysis", source="manager.stage02",
-                  manual_run_id="m1", job_id="j1",
+                  job_id="j1",
                   input_tokens=20000, output_tokens=8000)
     t.record_paid(0.0500, model="google/gemini-2.5-flash", project_id="proj/B.pdf",
                   stage="text_analysis", source="llm_runner",
-                  manual_run_id="m2", job_id="j2",
+                  job_id="j2",
                   input_tokens=5000, output_tokens=2000)
 
     today = datetime.now().date().isoformat()
@@ -124,9 +124,6 @@ def test_three_paid_events_keep_invariant(isolated_tracker):
         assert ev["project_id"]
         assert ev["stage"]
         assert ev["source"]
-        # Phase-2 forensic поля:
-        assert "manual_run_id_present" in ev
-        assert "manual_run_id_hash" in ev
 
     # 8. Sum cost_usd в jsonl == total в paid_cost.json
     sum_jsonl = sum(ev["cost_usd"] for ev in events)
@@ -158,8 +155,8 @@ def test_zero_cost_records_nothing(isolated_tracker):
         assert paid_cost.get("daily_breakdown", {}).get(today, {}).get("n_calls", 0) == 0
 
 
-def test_record_paid_propagates_source_and_manual_run(isolated_tracker):
-    """Event content должен содержать source и manual_run_id_present для forensic.
+def test_record_paid_propagates_source_and_job(isolated_tracker):
+    """Event content должен содержать source и job_id для forensic.
 
     Это проверяет, что record_paid правильно пробрасывает поля во второй вызов
     (paid_api_events.record_paid_event) — а не только в bucket aggregation.
@@ -167,16 +164,13 @@ def test_record_paid_propagates_source_and_manual_run(isolated_tracker):
     t = isolated_tracker["tracker"]
     t.record_paid(0.1, model="openai/gpt-5.4", project_id="proj/A.pdf",
                   stage="block_analysis", source="manager.stage02",
-                  manual_run_id="real-mrid-xyz", job_id="j-real")
+                  job_id="j-real")
 
     events = _read_jsonl(isolated_tracker["paid_jsonl"])
     assert len(events) == 1
     ev = events[0]
     assert ev["source"] == "manager.stage02"
     assert ev["job_id"] == "j-real"
-    assert ev["manual_run_id"] == "real-mrid-xyz"
-    assert ev["manual_run_id_present"] is True
-    assert len(ev["manual_run_id_hash"]) == 12
 
 
 def test_event_failure_doesnt_block_aggregate(isolated_tracker, monkeypatch):
