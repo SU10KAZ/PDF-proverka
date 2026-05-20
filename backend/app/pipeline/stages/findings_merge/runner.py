@@ -170,6 +170,132 @@ def backfill_text_evidence_in_findings(project_id: str):
         )
 
 
+def apply_phase0_dedup(project_id: str) -> dict | None:
+    """Phase 0 post-merge dedup: class-key + fuzzy. Gated by STAGE01_DEDUP_ENABLED.
+
+    Reads 03_findings.json, runs class_dedup.collapse_to_canonical then
+    fuzzy_dedup, writes back the deduped findings plus meta.dedup_report.
+
+    Safety contract (see backend/app/services/findings/dedup/README.md):
+      - КРИТИЧЕСКОЕ findings are never silently collapsed.
+      - Output count never exceeds input count.
+      - Fail-open: on any exception, original findings are preserved
+        on disk and a {"error": ...} dict is returned. Pipeline never fails
+        because of dedup.
+
+    Returns:
+        None if feature flag is off or the findings file is missing.
+        Otherwise a telemetry dict:
+            {
+              "enabled": True,
+              "before": int, "after": int,
+              "class_dedup": {...DedupReport.to_dict()...},
+              "fuzzy_dedup": {...DedupReport.to_dict()...},
+              "critical_collapsed_count": int,  # combined, MUST be 0 in production
+              "duration_ms": int,
+              "error": str | None,
+            }
+    """
+    from backend.app.core.config import (
+        STAGE01_DEDUP_ENABLED,
+        STAGE01_DEDUP_FUZZY_THRESHOLD,
+    )
+    if not STAGE01_DEDUP_ENABLED:
+        return None
+
+    output_dir = _version_output_dir(project_id)
+    findings_path = output_dir / "03_findings.json"
+    if not findings_path.exists():
+        return None
+
+    import time
+    started = time.monotonic()
+    try:
+        fd = json.loads(findings_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as exc:
+        return {
+            "enabled": True,
+            "before": 0,
+            "after": 0,
+            "error": f"read_failed: {exc}",
+            "duration_ms": int((time.monotonic() - started) * 1000),
+        }
+
+    items = fd.get("findings") or fd.get("items") or []
+    if not items:
+        return {
+            "enabled": True,
+            "before": 0,
+            "after": 0,
+            "duration_ms": int((time.monotonic() - started) * 1000),
+        }
+
+    before = len(items)
+    try:
+        from backend.app.services.findings.dedup import (
+            collapse_to_canonical, fuzzy_dedup,
+        )
+        kept, class_report = collapse_to_canonical(items)
+        kept, fuzzy_report = fuzzy_dedup(
+            kept, sim_threshold=STAGE01_DEDUP_FUZZY_THRESHOLD,
+        )
+        crit_count = int(
+            class_report.critical_collapsed_count
+            + fuzzy_report.critical_collapsed_count
+        )
+        # Defensive: output count must not exceed input count.
+        if len(kept) > before:
+            raise AssertionError(
+                f"phase0_dedup count invariant violated: in={before} out={len(kept)}"
+            )
+
+        # ── Write back ────────────────────────────────────────────────────
+        fd["findings"] = kept
+        meta = fd.get("meta") or {}
+        meta_dedup = {
+            "class_dedup": class_report.to_dict(),
+            "fuzzy_dedup": fuzzy_report.to_dict(),
+            "before": before,
+            "after": len(kept),
+            "critical_collapsed_count": crit_count,
+            "fuzzy_threshold": STAGE01_DEDUP_FUZZY_THRESHOLD,
+        }
+        meta["dedup_report"] = meta_dedup
+        # If existing total_findings was set by merge_similar_findings, refresh.
+        if "total_findings" in meta:
+            meta["total_findings"] = len(kept)
+        if "by_severity" in meta:
+            by_sev: dict[str, int] = {}
+            for it in kept:
+                sev = it.get("severity", "НЕИЗВЕСТНО")
+                by_sev[sev] = by_sev.get(sev, 0) + 1
+            meta["by_severity"] = by_sev
+        fd["meta"] = meta
+
+        findings_path.write_text(
+            json.dumps(fd, ensure_ascii=False, indent=2), encoding="utf-8",
+        )
+
+        return {
+            "enabled": True,
+            "before": before,
+            "after": len(kept),
+            "class_dedup": class_report.to_dict(),
+            "fuzzy_dedup": fuzzy_report.to_dict(),
+            "critical_collapsed_count": crit_count,
+            "duration_ms": int((time.monotonic() - started) * 1000),
+            "error": None,
+        }
+    except Exception as exc:
+        return {
+            "enabled": True,
+            "before": before,
+            "after": before,
+            "error": f"{type(exc).__name__}: {exc}",
+            "duration_ms": int((time.monotonic() - started) * 1000),
+        }
+
+
 def refresh_finding_quality(
     project_id: str,
     filename: str = "03_findings.json",
@@ -420,6 +546,32 @@ async def run_findings_merge(ctx: PipelineStageContext) -> FindingsMergeResult:
             f"Объединено похожих замечаний: {merge_result['before']} → {merge_result['after']} "
             f"({merge_result['merged_groups']} групп)",
         )
+
+    # ── Phase 0 post-merge dedup (class-key + fuzzy) ─────────────────────────
+    # OFF by default (STAGE01_DEDUP_ENABLED=false). On A0 baseline this is a
+    # provable no-op. Fail-open: errors are logged, original findings preserved.
+    dedup_telemetry = apply_phase0_dedup(pid)
+    if dedup_telemetry and dedup_telemetry.get("enabled"):
+        crit_collapsed = int(dedup_telemetry.get("critical_collapsed_count") or 0)
+        err = dedup_telemetry.get("error")
+        if err:
+            await ctx.log(f"Phase 0 dedup: ошибка (findings оставлены без изменений) — {err}", "warn")
+        elif crit_collapsed > 0:
+            await ctx.log(
+                f"Phase 0 dedup: ALARM critical_collapsed_count={crit_collapsed}"
+                f" (must be 0 in production)",
+                "error",
+            )
+        else:
+            before = dedup_telemetry.get("before", 0)
+            after = dedup_telemetry.get("after", 0)
+            if before != after:
+                await ctx.log(
+                    f"Phase 0 dedup: {before} → {after} замечаний "
+                    f"(class+fuzzy, threshold={dedup_telemetry.get('fuzzy_dedup', {}).get('sim_threshold')})",
+                )
+            else:
+                await ctx.log("Phase 0 dedup: no-op (0 duplicates)")
 
     refresh_finding_quality(pid)
 

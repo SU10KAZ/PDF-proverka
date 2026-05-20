@@ -684,5 +684,21 @@ CRITIC_V2_OUTPUT_SUBDIR = (
     os.environ.get("CRITIC_V2_OUTPUT_SUBDIR", "critic_v2").strip() or "critic_v2"
 )
 
+# ─── Stage 01 Phase 0 post-merge dedup (OFF by default, safe to enable) ──────
+# Post-process applied at the tail of findings_merge after merge_similar_findings.
+# On A0 baseline outputs this is a provable no-op (validated 8-case dataset,
+# see experiments/md_analysis_comparison/production_preparation/rollout/phase0_rollout.md).
+# Adds meta.dedup_report to 03_findings.json. Findings schema is additive.
+# Fail-open: any exception → log + skip + return original findings.
+STAGE01_DEDUP_ENABLED = _env_bool("STAGE01_DEDUP_ENABLED", False)
+try:
+    STAGE01_DEDUP_FUZZY_THRESHOLD = float(
+        os.environ.get("STAGE01_DEDUP_FUZZY_THRESHOLD", "0.7")
+    )
+except (TypeError, ValueError):
+    STAGE01_DEDUP_FUZZY_THRESHOLD = 0.7
+if not (0.0 <= STAGE01_DEDUP_FUZZY_THRESHOLD <= 1.0):
+    STAGE01_DEDUP_FUZZY_THRESHOLD = 0.7
+
 # Обратная совместимость: BASE_DIR → ROOT_DIR
 BASE_DIR = ROOT_DIR
