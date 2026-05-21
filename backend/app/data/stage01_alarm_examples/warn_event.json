@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "timestamp": "2026-05-21T18:30:15",
+  "alarm_id": "AL-11",
+  "alarm_name": "fp_speculative_spike",
+  "severity": "warn",
+  "project_id": null,
+  "discipline": null,
+  "metric_refs": [
+    "E1"
+  ],
+  "observed": {
+    "e1_rolling_7d": 12,
+    "a0_baseline_7d": 7,
+    "pct_over_baseline": 0.71
+  },
+  "threshold": {
+    "pct_over_baseline_warn": 0.5
+  },
+  "auto_mitigated": false,
+  "mitigation_target_flag": null
+}

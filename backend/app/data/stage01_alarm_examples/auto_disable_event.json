@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "timestamp": "2026-05-21T23:45:02",
+  "alarm_id": "AL-06",
+  "alarm_name": "completeness_lens_failure_spike_high",
+  "severity": "page",
+  "project_id": null,
+  "discipline": null,
+  "metric_refs": [
+    "C7"
+  ],
+  "observed": {
+    "c7_error_rate_24h": 0.21,
+    "runs_24h": 144,
+    "errors_24h": 30
+  },
+  "threshold": {
+    "error_rate_page": 0.15
+  },
+  "auto_mitigated": true,
+  "mitigation_target_flag": "STAGE01_COMPLETENESS_LENS_ENABLED"
+}
