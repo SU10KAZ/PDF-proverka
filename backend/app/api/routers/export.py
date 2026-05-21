@@ -18,6 +18,7 @@ from typing import Optional
 
 from backend.app.core.config import BASE_DIR
 import backend.app.services.export.excel_service as excel_service
+from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
 
 router = APIRouter(prefix="/api/export", tags=["export"])
@@ -84,10 +85,14 @@ async def download_file(filename: str):
 
 
 @router.get("/audit-package/{project_id:path}")
-async def download_audit_package(project_id: str):
+async def download_audit_package(project_id: str, version_id: Optional[str] = None):
     """Скачать ZIP-пакет аудита для обсуждения в любой нейронке."""
     project_dir = resolve_project_dir(project_id)
-    output_dir = project_dir / "_output"
+    try:
+        version_dir = version_service.get_version_dir(project_dir, project_id, version_id)
+    except version_service.VersionNotFoundError as e:
+        raise HTTPException(404, str(e))
+    output_dir = version_dir / "_output"
 
     # Проверяем что есть хоть какие-то результаты аудита
     findings_file = output_dir / "03_findings.json"
@@ -96,13 +101,15 @@ async def download_audit_package(project_id: str):
 
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
-        # --- project_info.json ---
-        pi = project_dir / "project_info.json"
+        # --- project_info.json (версия, fallback на корень логического проекта) ---
+        pi = version_dir / "project_info.json"
+        if not pi.exists():
+            pi = project_dir / "project_info.json"
         if pi.exists():
             zf.write(str(pi), "project_info.json")
 
         # --- MD-файл (основной текст документа) ---
-        md_files = list(project_dir.glob("*_document.md"))
+        md_files = list(version_dir.glob("*_document.md"))
         for md in md_files:
             zf.write(str(md), md.name)
 
@@ -144,7 +151,7 @@ async def download_audit_package(project_id: str):
             env = {**os.environ, "AUDIT_NO_OPEN": "1"}
             result = subprocess.run(
                 [sys.executable, str(GENERATE_EXCEL_SCRIPT),
-                 str(project_dir), "--out", tmp_xlsx, "--no-summary"],
+                 str(version_dir), "--out", tmp_xlsx, "--no-summary"],
                 capture_output=True, timeout=60, env=env,
             )
             if result.returncode == 0 and os.path.exists(tmp_xlsx) and os.path.getsize(tmp_xlsx) > 0:
@@ -161,13 +168,15 @@ async def download_audit_package(project_id: str):
             zf.write(str(er), "expert_review.json")
 
         # --- README.md с инструкцией для LLM ---
-        readme = _build_audit_readme(project_dir, output_dir)
+        readme = _build_audit_readme(version_dir, output_dir)
         zf.writestr("README.md", readme)
 
     buf.seek(0)
     # Имя из project_info.json → name, fallback на project_id
     project_name = project_id
-    pi_path = project_dir / "project_info.json"
+    pi_path = version_dir / "project_info.json"
+    if not pi_path.exists():
+        pi_path = project_dir / "project_info.json"
     if pi_path.exists():
         try:
             pi_data = json.loads(pi_path.read_text(encoding="utf-8"))
