@@ -1,0 +1,21 @@
+{
+  "queue_id": "be657f2b-e896-43b5-8843-c5ab7ae05098",
+  "action": "full",
+  "items": [
+    {
+      "project_id": "M31A",
+      "version_id": "v2",
+      "action": "full",
+      "retry_stage": null,
+      "status": "failed",
+      "error": "MD-файл не найден для проекта M31A. Анализ без MD-файла не поддерживается. Создайте MD через Chandra OCR и положите в папку проекта.",
+      "extra_params": {},
+      "job_id": "9f3df5b4-9db9-4037-a765-99fe68c04bac"
+    }
+  ],
+  "current_index": 0,
+  "total": 1,
+  "completed": 0,
+  "failed": 1,
+  "status": "completed"
+}

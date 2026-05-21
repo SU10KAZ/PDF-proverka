@@ -4,7 +4,7 @@
     "СП 29.13330.2022": {
       "doc_number": "СП 29.13330.2022",
       "family": "СП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -25,15 +25,16 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Версии 2022 не существует; действует СП 29.13330.2011 с Изм. 3 от 14.12.2022"
     },
     "СП 71.13330.2017": {
       "doc_number": "СП 71.13330.2017",
       "family": "СП",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-04-29T18:19:32",
+      "last_seen_at": "2026-05-19T04:57:10",
       "occurrences": [
         {
           "project_id": "133-23-ГК-АИ2",
@@ -70,13 +71,29 @@
             "F-062"
           ],
           "seen_at": "2026-04-29T11:57:33"
+        },
+        {
+          "project_id": "13АВ-РД-АР3-К6_в2.pdf",
+          "findings": [
+            "F-069"
+          ],
+          "seen_at": "2026-05-18T18:13:13"
+        },
+        {
+          "project_id": "13АВ-РД-АР4.2-К6.pdf",
+          "findings": [
+            "F-021",
+            "F-036"
+          ],
+          "seen_at": "2026-05-19T04:57:10"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=СП 71.13330.2017, file=СП 71_13330_2017_ Свод правил_ Изоляционные и отделочные по_document.md"
     },
     "ГОСТ 31173-2003": {
       "doc_number": "ГОСТ 31173-2003",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -97,7 +114,8 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:33:22: known via status_overrides (replaced, replaced_by=ГОСТ 31173-2016)"
     },
     "СП 2.13130.2020": {
       "doc_number": "СП 2.13130.2020",
@@ -105,7 +123,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-05T16:13:30",
+      "last_seen_at": "2026-05-20T14:02:11",
       "occurrences": [
         {
           "project_id": "133-23-ГК-АИ2",
@@ -329,6 +347,81 @@
             "F-002"
           ],
           "seen_at": "2026-05-05T16:13:30"
+        },
+        {
+          "project_id": "13АВ-РД-КЖ5.24.1-К2 (1) (1).pdf",
+          "findings": [
+            "F-002",
+            "F-003"
+          ],
+          "seen_at": "2026-05-18T15:49:42"
+        },
+        {
+          "project_id": "13АВ-РД-АР3-К4-К5.pdf",
+          "findings": [
+            "F-020"
+          ],
+          "seen_at": "2026-05-19T01:58:23"
+        },
+        {
+          "project_id": "13АВ-РД-АР4.2-К6.pdf",
+          "findings": [
+            "F-005",
+            "F-010",
+            "F-032"
+          ],
+          "seen_at": "2026-05-19T04:57:10"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-003"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К4.pdf",
+          "findings": [
+            "F-011"
+          ],
+          "seen_at": "2026-05-19T14:32:21"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К5.pdf",
+          "findings": [
+            "F-002"
+          ],
+          "seen_at": "2026-05-19T15:45:31"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К6.pdf",
+          "findings": [
+            "F-003"
+          ],
+          "seen_at": "2026-05-19T16:25:53"
+        },
+        {
+          "project_id": "13АВ-РД-НВФ-К5.pdf",
+          "findings": [
+            "F-008"
+          ],
+          "seen_at": "2026-05-19T16:38:35"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-ПА.pdf",
+          "findings": [
+            "F-016"
+          ],
+          "seen_at": "2026-05-19T17:12:59"
+        },
+        {
+          "project_id": "13АВ-РД-НВФ-К4 .pdf",
+          "findings": [
+            "F-006",
+            "F-023",
+            "F-036"
+          ],
+          "seen_at": "2026-05-19T20:55:55"
         }
       ]
     },
@@ -338,7 +431,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-05T18:17:28",
+      "last_seen_at": "2026-05-20T14:02:11",
       "occurrences": [
         {
           "project_id": "133-23-ГК-АИ2",
@@ -447,6 +540,52 @@
             "F-004"
           ],
           "seen_at": "2026-05-05T18:17:28"
+        },
+        {
+          "project_id": "13АВ-РД-АР3-К6_в2.pdf",
+          "findings": [
+            "F-002",
+            "F-003",
+            "F-045",
+            "F-046"
+          ],
+          "seen_at": "2026-05-18T18:13:13"
+        },
+        {
+          "project_id": "25.12.22_13АВ-РД-АР3-К5-К6_в2.pdf",
+          "findings": [
+            "F-007"
+          ],
+          "seen_at": "2026-05-18T18:56:17"
+        },
+        {
+          "project_id": "13АВ-РД-КЖ6-К1К2 (1).pdf",
+          "findings": [
+            "F-035"
+          ],
+          "seen_at": "2026-05-18T21:39:31"
+        },
+        {
+          "project_id": "13АВ-РД-АР3-К4-К5.pdf",
+          "findings": [
+            "F-021"
+          ],
+          "seen_at": "2026-05-19T01:58:23"
+        },
+        {
+          "project_id": "13АВ-РД-АР4.2-К6.pdf",
+          "findings": [
+            "F-047"
+          ],
+          "seen_at": "2026-05-19T04:57:10"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-ПА.pdf",
+          "findings": [
+            "F-018",
+            "F-019"
+          ],
+          "seen_at": "2026-05-19T17:12:59"
         }
       ]
     },
@@ -456,7 +595,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-04-28T19:32:23",
+      "last_seen_at": "2026-05-20T14:02:11",
       "occurrences": [
         {
           "project_id": "133-23-ГК-АИ2",
@@ -471,13 +610,21 @@
             "F-005"
           ],
           "seen_at": "2026-04-28T19:31:37"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-ПА.pdf",
+          "findings": [
+            "F-016"
+          ],
+          "seen_at": "2026-05-19T17:12:59"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=СП 506.1311500.2021, verified=2026-04-17)"
     },
     "СП 29.13330.2021": {
       "doc_number": "СП 29.13330.2021",
       "family": "СП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -500,7 +647,8 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Версии 2021 не существует; действует СП 29.13330.2011 с Изм. 2 (введено 23.01.2022)"
     },
     "ГОСТ Р 57058-2016": {
       "doc_number": "ГОСТ Р 57058-2016",
@@ -529,7 +677,7 @@
     "СО 10545-7": {
       "doc_number": "СО 10545-7",
       "family": "СО",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -548,12 +696,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Это ISO 10545-7 (керамическая плитка), не СО; СО — стандарт организации, кодировка обрезана"
     },
     "СП 113.13330.2016": {
       "doc_number": "СП 113.13330.2016",
       "family": "СП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-05-05T02:50:15",
@@ -585,12 +734,13 @@
           ],
           "seen_at": "2026-05-05T02:50:15"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=СП 113.13330.2023, verified=2026-04-16)"
     },
     "СНиП 2.03.13-88": {
       "doc_number": "СНиП 2.03.13-88",
       "family": "СНиП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -611,12 +761,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=СП 29.13330.2011, verified=2026-03-16)"
     },
     "ГОСТ Р 21.1101-2013": {
       "doc_number": "ГОСТ Р 21.1101-2013",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -651,15 +802,16 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:33:22: known via status_overrides (replaced, replaced_by=ГОСТ Р 21_101-2020)"
     },
     "ГОСТ 27751-2014": {
       "doc_number": "ГОСТ 27751-2014",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-04T07:55:11",
+      "last_seen_at": "2026-05-18T21:39:31",
       "occurrences": [
         {
           "project_id": "133-23-ГК-АИ2",
@@ -770,14 +922,24 @@
             "F-041"
           ],
           "seen_at": "2026-05-04T06:40:26"
+        },
+        {
+          "project_id": "13АВ-РД-КЖ5.24.1-К2 (1) (1).pdf",
+          "findings": [
+            "F-001",
+            "F-003",
+            "F-021"
+          ],
+          "seen_at": "2026-05-18T15:49:42"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 27751-2014, file=ГОСТ 27751-2014_ Межгосударственный стандарт_ Надежность ст_document.md"
     },
     "ГОСТ Р 57258-2016": {
       "doc_number": "ГОСТ Р 57258-2016",
       "family": "ГОСТ Р",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
       "occurrences": [
@@ -795,12 +957,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ Р 57258-2016, file=ГОСТ Р 57258-2016_ Национальный стандарт Российской Федерац_document.md"
     },
     "ГОСТ 8509-2014": {
       "doc_number": "ГОСТ 8509-2014",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -819,7 +982,8 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Версии 2014 не существует; действующая редакция — ГОСТ 8509-93"
     },
     "СП 485.1311500.2020": {
       "doc_number": "СП 485.1311500.2020",
@@ -992,7 +1156,7 @@
     "ГОСТ Р МЭК 60598-1": {
       "doc_number": "ГОСТ Р МЭК 60598-1",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -1011,12 +1175,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ IEC 60598-1-2017, verified=2026-05-06)"
     },
     "СП 7.13130.2023": {
       "doc_number": "СП 7.13130.2023",
       "family": "СП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -1029,7 +1194,8 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Редакции 2023 не существует; действует СП 7.13130.2013 c Изм. 3 от 27.03.2025"
     },
     "ПП РФ №1479": {
       "doc_number": "ПП РФ №1479",
@@ -1051,7 +1217,7 @@
     "ПП РФ №390": {
       "doc_number": "ПП РФ №390",
       "family": "ПП РФ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -1063,12 +1229,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ПП РФ №1479 от 16.09.2020, verified=2026-04-01)"
     },
     "СП 71.13330.2016": {
       "doc_number": "СП 71.13330.2016",
       "family": "СП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -1080,7 +1247,8 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=СП 71.13330.2017, verified=2026-05-06)"
     },
     "СП 6.13130.2021": {
       "doc_number": "СП 6.13130.2021",
@@ -1306,7 +1474,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-04-28T19:32:23",
+      "last_seen_at": "2026-05-19T22:14:04",
       "occurrences": [
         {
           "project_id": "133_23-ГК-ПТ",
@@ -1327,13 +1495,48 @@
             "F-013"
           ],
           "seen_at": "2026-04-28T19:31:37"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-001"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К4.pdf",
+          "findings": [
+            "F-001"
+          ],
+          "seen_at": "2026-05-19T14:32:21"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К5.pdf",
+          "findings": [
+            "F-003"
+          ],
+          "seen_at": "2026-05-19T15:45:31"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К6.pdf",
+          "findings": [
+            "F-001"
+          ],
+          "seen_at": "2026-05-19T16:25:53"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-ПА.pdf",
+          "findings": [
+            "F-002"
+          ],
+          "seen_at": "2026-05-19T17:12:59"
         }
       ]
     },
     "ГОСТ 14202-69": {
       "doc_number": "ГОСТ 14202-69",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -1345,12 +1548,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=None, verified=2026-05-06)"
     },
     "ГОСТ Р 51049-2019": {
       "doc_number": "ГОСТ Р 51049-2019",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -1362,12 +1566,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ 34779-2021, verified=2026-05-06)"
     },
     "ГОСТ 9923-93": {
       "doc_number": "ГОСТ 9923-93",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -1379,12 +1584,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=ГОСТ 9923-2021); Заменён ГОСТ 9923-2021 (стволы пожарные ручные), введ. 01.07.2024"
     },
     "ГОСТ Р 51049-2009": {
       "doc_number": "ГОСТ Р 51049-2009",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -1396,12 +1602,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ Р 51049-2019, verified=2026-04-03)"
     },
     "ГОСТ 21.601-2021": {
       "doc_number": "ГОСТ 21.601-2021",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -1413,7 +1620,8 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Версии 2021 не существует; действует ГОСТ 21.601-2011, заменён ГОСТ Р 21.619-2023 с 01.09.2023"
     },
     "СП 7.13130.2013": {
       "doc_number": "СП 7.13130.2013",
@@ -1432,12 +1640,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Reverted to pending on 2026-05-19T20:38:14: status=unknown via override but no .md in vault — нужно скачать"
     },
     "СНиП 3.05.01-85": {
       "doc_number": "СНиП 3.05.01-85",
       "family": "СНиП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -1449,13 +1658,14 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=СП 73.13330.2016, verified=2026-03-24)"
     },
     "ГОСТ 31311-2022": {
       "doc_number": "ГОСТ 31311-2022",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
       "occurrences": [
@@ -1473,12 +1683,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 31311-2022, file=ГОСТ 31311-2022_ Межгосударственный стандарт_ Приборы отопи_document.md"
     },
     "СНиП 23-01-99*": {
       "doc_number": "СНиП 23-01-99*",
       "family": "СНиП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -1504,13 +1715,14 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=СП 131.13330.2020); Актуализирован в СП 131.13330; текущая редакция 2020, СП 131.13330.2025 введён с 2025"
     },
     "СП 131.13330.2025": {
       "doc_number": "СП 131.13330.2025",
       "family": "СП",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
       "occurrences": [
@@ -1535,7 +1747,8 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=СП 131.13330.2025, file=СП 131_13330_2025_ Свод правил_ Строительная климатология__document.md"
     },
     "СП 7.13330.2013": {
       "doc_number": "СП 7.13330.2013",
@@ -1564,7 +1777,7 @@
     "СП 7.13330.2021": {
       "doc_number": "СП 7.13330.2021",
       "family": "СП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -1583,12 +1796,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Опечатка: 7.13330 не существует. Правильно СП 7.13130 (пожарная безопасность ОВиК)"
     },
     "ГОСТ 30494-2022": {
       "doc_number": "ГОСТ 30494-2022",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -1607,12 +1821,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Версии 2022 нет; действует ГОСТ 30494-2011 с Изм. 1 от 22.11.2022"
     },
     "СП 54.13330.2020": {
       "doc_number": "СП 54.13330.2020",
       "family": "СП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -1631,12 +1846,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=СП 54.13330.2022, verified=2026-05-06)"
     },
     "СП 61.13330.2011": {
       "doc_number": "СП 61.13330.2011",
       "family": "СП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -1655,12 +1871,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=СП 61.13330.2012, verified=2026-05-06)"
     },
     "СП 61.13330.2016": {
       "doc_number": "СП 61.13330.2016",
       "family": "СП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -1679,12 +1896,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Версии 2016 не существует; действует СП 61.13330.2012 с Изм. 1 (Приказ 882/пр от 03.12.2016)"
     },
     "ГОСТ 3266-75": {
       "doc_number": "ГОСТ 3266-75",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -1703,7 +1921,8 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ 3266-81, verified=2026-05-06)"
     },
     "СП 131.13330.2020": {
       "doc_number": "СП 131.13330.2020",
@@ -1739,7 +1958,7 @@
     "ГОСТ 21.001-2014": {
       "doc_number": "ГОСТ 21.001-2014",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -1760,7 +1979,8 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Версии 2014 нет; действует ГОСТ 21.001-2013 (СПДС. Общие положения)"
     },
     "ГОСТ 21.101-2020": {
       "doc_number": "ГОСТ 21.101-2020",
@@ -1768,7 +1988,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-05T19:53:00",
+      "last_seen_at": "2026-05-19T17:12:59",
       "occurrences": [
         {
           "project_id": "133_23-ГК-ОВ1.2",
@@ -1958,13 +2178,60 @@
             "F-038"
           ],
           "seen_at": "2026-05-05T19:53:00"
+        },
+        {
+          "project_id": "25.12.22_13АВ-РД-АР3-К5-К6_в2.pdf",
+          "findings": [
+            "F-019"
+          ],
+          "seen_at": "2026-05-18T18:56:17"
+        },
+        {
+          "project_id": "13АВ-РД-КЖ5.25-29.2-К2.pdf",
+          "findings": [
+            "F-037"
+          ],
+          "seen_at": "2026-05-19T01:21:02"
+        },
+        {
+          "project_id": "13АВ-РД-АР3-К4-К5.pdf",
+          "findings": [
+            "F-003",
+            "F-005",
+            "F-022",
+            "F-023",
+            "F-024",
+            "F-025",
+            "F-026",
+            "F-027",
+            "F-031",
+            "F-035",
+            "F-036",
+            "F-040",
+            "F-041"
+          ],
+          "seen_at": "2026-05-19T01:58:23"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К6.pdf",
+          "findings": [
+            "F-018"
+          ],
+          "seen_at": "2026-05-19T16:25:53"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-ПА.pdf",
+          "findings": [
+            "F-030"
+          ],
+          "seen_at": "2026-05-19T17:12:59"
         }
       ]
     },
     "ГОСТ Р 50345-2010": {
       "doc_number": "ГОСТ Р 50345-2010",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-05-05T05:34:56",
@@ -1990,13 +2257,14 @@
           ],
           "seen_at": "2026-05-05T05:34:56"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ IEC 60898-1-2020, verified=2026-05-06)"
     },
     "ГОСТ IEC 62606-2016": {
       "doc_number": "ГОСТ IEC 62606-2016",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-05-05T02:03:00",
       "occurrences": [
@@ -2021,7 +2289,8 @@
           ],
           "seen_at": "2026-05-05T02:03:00"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ IEC 62606-2016_ Межгосударственный стандарт_ Устройств, file=ГОСТ IEC 62606-2016_ Межгосударственный стандарт_ Устройств_document.md"
     },
     "ГОСТ 33542-2015": {
       "doc_number": "ГОСТ 33542-2015",
@@ -2044,8 +2313,8 @@
     "ГОСТ 30331.1-2013": {
       "doc_number": "ГОСТ 30331.1-2013",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
       "occurrences": [
@@ -2056,7 +2325,8 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 30331_1-2013, file=ГОСТ 30331_1-2013 (IEC 60364-1 2005)_ Межгосударственный ст_document.md"
     },
     "ПУЭ-7": {
       "doc_number": "ПУЭ-7",
@@ -2064,7 +2334,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-05T19:53:00",
+      "last_seen_at": "2026-05-19T04:57:10",
       "occurrences": [
         {
           "project_id": "133_23-ГК-ЭО3",
@@ -2271,14 +2541,28 @@
             "F-024"
           ],
           "seen_at": "2026-05-05T19:53:00"
+        },
+        {
+          "project_id": "25.12.22_13АВ-РД-АР3-К5-К6_в2.pdf",
+          "findings": [
+            "F-047"
+          ],
+          "seen_at": "2026-05-18T18:56:17"
+        },
+        {
+          "project_id": "13АВ-РД-АР4.2-К6.pdf",
+          "findings": [
+            "F-006"
+          ],
+          "seen_at": "2026-05-19T04:57:10"
         }
       ]
     },
     "ГОСТ Р 50571.4.43-2012": {
       "doc_number": "ГОСТ Р 50571.4.43-2012",
       "family": "ГОСТ Р",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
       "occurrences": [
@@ -2289,7 +2573,8 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ Р 50571.4.43-2012, file=ГОСТ Р 50571_4_43-2012 МЭК 60364-4-43 2008_ Национальный ст_document.md"
     },
     "СП 61.13330.2024": {
       "doc_number": "СП 61.13330.2024",
@@ -2315,7 +2600,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-05T03:53:52",
+      "last_seen_at": "2026-05-19T16:25:53",
       "occurrences": [
         {
           "project_id": "133_23-ГК-ВК1",
@@ -2341,6 +2626,13 @@
             "F-060"
           ],
           "seen_at": "2026-05-05T03:53:52"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К6.pdf",
+          "findings": [
+            "F-021"
+          ],
+          "seen_at": "2026-05-19T16:25:53"
         }
       ]
     },
@@ -2367,7 +2659,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-05T05:34:56",
+      "last_seen_at": "2026-05-19T20:55:55",
       "occurrences": [
         {
           "project_id": "133_23-ГК-ВК4",
@@ -2398,13 +2690,27 @@
             "F-008"
           ],
           "seen_at": "2026-05-05T05:34:56"
+        },
+        {
+          "project_id": "13АВ-РД-НВФ-К5.pdf",
+          "findings": [
+            "F-001"
+          ],
+          "seen_at": "2026-05-19T16:38:35"
+        },
+        {
+          "project_id": "13АВ-РД-НВФ-К4 .pdf",
+          "findings": [
+            "F-003"
+          ],
+          "seen_at": "2026-05-19T20:55:55"
         }
       ]
     },
     "ГОСТ Р 21.101-2013": {
       "doc_number": "ГОСТ Р 21.101-2013",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -2426,15 +2732,16 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=ГОСТ Р 21.101-2020); Заменён ГОСТ Р 21.101-2020 (Приказ 282-ст от 23.06.2020) с 01.01.2021"
     },
     "СНиП 3.01.04-87": {
       "doc_number": "СНиП 3.01.04-87",
       "family": "СНиП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-04-28T19:32:23",
+      "last_seen_at": "2026-05-19T20:55:55",
       "occurrences": [
         {
           "project_id": "133_23-ГК-ВК4",
@@ -2442,13 +2749,21 @@
             "F-008"
           ],
           "seen_at": "2026-04-28T19:31:37"
+        },
+        {
+          "project_id": "13АВ-РД-НВФ-К4 .pdf",
+          "findings": [
+            "F-002"
+          ],
+          "seen_at": "2026-05-19T20:55:55"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=СП 68.13330.2017); Актуализирован в СП 68.13330.2017 (приемка в эксплуатацию), действ. с 28.01.2018"
     },
     "СНиП 3.05.04-85*": {
       "doc_number": "СНиП 3.05.04-85*",
       "family": "СНиП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -2460,7 +2775,8 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=СП 129.13330.2019); Актуализирован в СП 129.13330.2019 (Приказ 925/пр от 31.12.2019), наружные сети ВК"
     },
     "СП 49.13330.2010": {
       "doc_number": "СП 49.13330.2010",
@@ -2468,7 +2784,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-04T05:51:34",
+      "last_seen_at": "2026-05-19T01:21:02",
       "occurrences": [
         {
           "project_id": "133_23-ГК-ВК4",
@@ -2497,13 +2813,20 @@
             "F-005"
           ],
           "seen_at": "2026-05-04T05:51:34"
+        },
+        {
+          "project_id": "13АВ-РД-КЖ5.25-29.2-К2.pdf",
+          "findings": [
+            "F-026"
+          ],
+          "seen_at": "2026-05-19T01:21:02"
         }
       ]
     },
     "СП 12.135.2003": {
       "doc_number": "СП 12.135.2003",
       "family": "СП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -2515,13 +2838,14 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch cancelled; Отменён с 01.01.2021 (ПП РФ от 04.08.2020 N 1181); СП 12-135-2003 безопасность труда в строительстве"
     },
     "ГОСТ 535-2005": {
       "doc_number": "ГОСТ 535-2005",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
       "occurrences": [
@@ -2532,15 +2856,16 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 535-2005, file=ГОСТ 535-2005_ Межгосударственный стандарт_ Прокат сортовой_document.md"
     },
     "ГОСТ 8568-77": {
       "doc_number": "ГОСТ 8568-77",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-04-28T19:32:23",
+      "last_seen_at": "2026-05-19T13:33:32",
       "occurrences": [
         {
           "project_id": "133_23-ГК-ВК4",
@@ -2548,13 +2873,21 @@
             "F-010"
           ],
           "seen_at": "2026-04-28T19:31:37"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-021"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 8568-77, file=ГОСТ 8568-77_ Государственный стандарт Союза ССР_ Ленты ста_document.md"
     },
     "ГОСТ 380-60": {
       "doc_number": "ГОСТ 380-60",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -2566,12 +2899,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=ГОСТ 380-71); Отменён 01.01.1972 (заменён ГОСТ 380-71); актуальный — ГОСТ 380-2005"
     },
     "ГОСТ 535-58": {
       "doc_number": "ГОСТ 535-58",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -2583,12 +2917,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=ГОСТ 535-79); Историческая редакция, заменена цепочкой 535-79 → 535-88 → 535-2005 (действ.)"
     },
     "ГОСТ 8240-72": {
       "doc_number": "ГОСТ 8240-72",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -2600,12 +2935,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ 8240-97, verified=2026-05-06)"
     },
     "ГОСТ 8509-57": {
       "doc_number": "ГОСТ 8509-57",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -2617,12 +2953,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=ГОСТ 8509-72); Историческая редакция, актуальная — ГОСТ 8509-93 (уголки горячекатаные равнополочные)"
     },
     "ГОСТ 8568-57": {
       "doc_number": "ГОСТ 8568-57",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -2634,13 +2971,14 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ 8568-77, verified=2026-05-06)"
     },
     "ГОСТ 2405-88": {
       "doc_number": "ГОСТ 2405-88",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
       "occurrences": [
@@ -2651,7 +2989,8 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 2405-88, file=ГОСТ 2405-88 (СТ СЭВ 6128-87)_ Государственный стандарт Сою_document.md"
     },
     "СП 8.13130.2020": {
       "doc_number": "СП 8.13130.2020",
@@ -2673,8 +3012,8 @@
     "ГОСТ Р 50193.1-92": {
       "doc_number": "ГОСТ Р 50193.1-92",
       "family": "ГОСТ Р",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
       "occurrences": [
@@ -2685,13 +3024,14 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ Р 50193_1-92, file=ГОСТ Р 50193_1-92 (ИСО 4064 1-77)_ Государственный стандарт_document.md"
     },
     "ГОСТ Р 50601-93": {
       "doc_number": "ГОСТ Р 50601-93",
       "family": "ГОСТ Р",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
       "occurrences": [
@@ -2702,13 +3042,14 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ Р 50601-93, file=ГОСТ Р 50601-93_ Государственный стандарт Российской Федера_document.md"
     },
     "ГОСТ 27477-87": {
       "doc_number": "ГОСТ 27477-87",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
       "occurrences": [
@@ -2719,13 +3060,14 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 27477-87, file=ГОСТ 27477-87_ Клапаны обратные_ Основные параметры  (утв__document.md"
     },
     "ГОСТ 33423-2015": {
       "doc_number": "ГОСТ 33423-2015",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
       "occurrences": [
@@ -2736,7 +3078,8 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 33423-2015, file=ГОСТ 33423-2015_ Межгосударственный стандарт_ Арматура труб_document.md"
     },
     "ГОСТ Р 21.704-2011": {
       "doc_number": "ГОСТ Р 21.704-2011",
@@ -2758,7 +3101,7 @@
     "ГОСТ 8105-2018": {
       "doc_number": "ГОСТ 8105-2018",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-29T18:19:32",
@@ -2770,15 +3113,16 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T22:14:04: не существует или опечатка без явной замены; не обнаружен; возможно ошибочный код"
     },
     "СП 468.1325800.2019": {
       "doc_number": "СП 468.1325800.2019",
       "family": "СП",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-04T07:55:11",
+      "last_seen_at": "2026-05-19T03:39:57",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.1-К1К2 (2).pdf",
@@ -2909,8 +3253,18 @@
             "F-042"
           ],
           "seen_at": "2026-05-04T06:40:26"
+        },
+        {
+          "project_id": "13АВ-РД-КЖ5.24.1-К2 (1) (1).pdf",
+          "findings": [
+            "F-002",
+            "F-003",
+            "F-014"
+          ],
+          "seen_at": "2026-05-18T15:49:42"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=СП 468.1325800.2019, file=СП 468_1325800_2019_ Свод правил_ Бетонные и железобетонные_document.md"
     },
     "СНиП 12-04-2002": {
       "doc_number": "СНиП 12-04-2002",
@@ -2918,7 +3272,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-04T06:40:26",
+      "last_seen_at": "2026-05-20T11:03:32",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.1-К1К2 (2).pdf",
@@ -2982,16 +3336,37 @@
             "F-037"
           ],
           "seen_at": "2026-05-04T06:40:26"
+        },
+        {
+          "project_id": "13АВ-РД-КЖ5.24.1-К2 (1) (1).pdf",
+          "findings": [
+            "F-010"
+          ],
+          "seen_at": "2026-05-18T15:49:42"
+        },
+        {
+          "project_id": "13АВ-РД-КЖ5.25-29.2-К2.pdf",
+          "findings": [
+            "F-026"
+          ],
+          "seen_at": "2026-05-19T01:21:02"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К5.pdf",
+          "findings": [
+            "F-020"
+          ],
+          "seen_at": "2026-05-19T15:45:31"
         }
       ]
     },
     "СП 385.1325800.2018": {
       "doc_number": "СП 385.1325800.2018",
       "family": "СП",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-04T07:55:11",
+      "last_seen_at": "2026-05-19T03:39:57",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.1-К1К2 (2).pdf",
@@ -3103,8 +3478,17 @@
             "F-041"
           ],
           "seen_at": "2026-05-04T06:40:26"
+        },
+        {
+          "project_id": "13АВ-РД-КЖ5.24.1-К2 (1) (1).pdf",
+          "findings": [
+            "F-001",
+            "F-003"
+          ],
+          "seen_at": "2026-05-18T15:49:42"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=СП 385.1325800.2018, file=СП 385_1325800_2018_ Свод правил_ Защита зданий и сооружени_document.md"
     },
     "ПП РФ № 87": {
       "doc_number": "ПП РФ № 87",
@@ -3112,7 +3496,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-04-29T18:19:32",
+      "last_seen_at": "2026-05-20T11:03:32",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.1-К1К2 (2).pdf",
@@ -3134,6 +3518,20 @@
             "F-008"
           ],
           "seen_at": "2026-04-28T19:31:37"
+        },
+        {
+          "project_id": "13АВ-РД-КЖ6-К1К2 (1).pdf",
+          "findings": [
+            "F-028"
+          ],
+          "seen_at": "2026-05-18T21:39:31"
+        },
+        {
+          "project_id": "13АВ-РД-НВФ-К5.pdf",
+          "findings": [
+            "F-004"
+          ],
+          "seen_at": "2026-05-19T16:38:35"
         }
       ]
     },
@@ -3157,10 +3555,10 @@
     "ГОСТ 21.502-2016": {
       "doc_number": "ГОСТ 21.502-2016",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-04T05:51:34",
+      "last_seen_at": "2026-05-19T13:33:32",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.1-К1К2 (2).pdf",
@@ -3243,8 +3641,31 @@
             "F-016"
           ],
           "seen_at": "2026-05-04T05:51:34"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-004",
+            "F-005",
+            "F-008",
+            "F-010",
+            "F-017",
+            "F-020",
+            "F-024",
+            "F-025",
+            "F-026",
+            "F-029",
+            "F-030",
+            "F-032",
+            "F-040",
+            "F-041",
+            "F-043",
+            "F-046"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 21_502-2016, file=ГОСТ 21_502-2016_ Межгосударственный стандарт_ Система прое_document.md"
     },
     "ПП РФ №87": {
       "doc_number": "ПП РФ №87",
@@ -3252,7 +3673,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-05T19:53:00",
+      "last_seen_at": "2026-05-19T14:32:21",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.1-К1К2 (2).pdf",
@@ -3324,13 +3745,35 @@
             "F-033"
           ],
           "seen_at": "2026-05-05T19:53:00"
+        },
+        {
+          "project_id": "13АВ-РД-КЖ5.25-29.2-К2.pdf",
+          "findings": [
+            "F-028"
+          ],
+          "seen_at": "2026-05-19T01:21:02"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-015"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К4.pdf",
+          "findings": [
+            "F-006",
+            "F-022"
+          ],
+          "seen_at": "2026-05-19T14:32:21"
         }
       ]
     },
     "ГОСТ 32702-2014": {
       "doc_number": "ГОСТ 32702-2014",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -3342,7 +3785,8 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T22:14:04: не существует или опечатка без явной замены; точные сведения не найдены"
     },
     "ГОСТ Р 50827.1-2009": {
       "doc_number": "ГОСТ Р 50827.1-2009",
@@ -3350,7 +3794,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-05T04:42:18",
+      "last_seen_at": "2026-05-20T11:03:32",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.17-23.2-К2 (Изм.1).pdf",
@@ -3436,6 +3880,13 @@
             "F-033"
           ],
           "seen_at": "2026-05-05T04:42:18"
+        },
+        {
+          "project_id": "13АВ-РД-КЖ5.24.1-К2 (1) (1).pdf",
+          "findings": [
+            "F-013"
+          ],
+          "seen_at": "2026-05-18T15:49:42"
         }
       ]
     },
@@ -3445,7 +3896,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-05T04:42:18",
+      "last_seen_at": "2026-05-20T11:03:32",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.17-23.2-К2 (Изм.1).pdf",
@@ -3545,16 +3996,24 @@
             "F-033"
           ],
           "seen_at": "2026-05-05T04:42:18"
+        },
+        {
+          "project_id": "13АВ-РД-КЖ5.24.1-К2 (1) (1).pdf",
+          "findings": [
+            "F-013"
+          ],
+          "seen_at": "2026-05-18T15:49:42"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=ГОСТ Р 50827.1-2009); Заменён серией ГОСТ Р 50827.x-2009 (МЭК 60670-1:2002)"
     },
     "ГОСТ 2.312-72": {
       "doc_number": "ГОСТ 2.312-72",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-04T02:50:17",
+      "last_seen_at": "2026-05-19T13:33:32",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.17-23.2-К2 (Изм.1).pdf",
@@ -3586,16 +4045,24 @@
             "F-045"
           ],
           "seen_at": "2026-05-04T02:50:17"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-029"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 2_312-72, file=ГОСТ 2_312-72 _ Межгосударственный стандарт_ Единая система_document.md"
     },
     "ГОСТ 2.307-2011": {
       "doc_number": "ГОСТ 2.307-2011",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-05T01:13:42",
+      "last_seen_at": "2026-05-19T13:33:32",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.17-23.2-К2 (Изм.1).pdf",
@@ -3620,13 +4087,23 @@
             "F-059"
           ],
           "seen_at": "2026-05-05T01:13:42"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-034",
+            "F-038",
+            "F-045"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 2_307-2011, file=ГОСТ 2_307-2011_ Межгосударственный стандарт_ Единая систем_document.md"
     },
     "ГОСТ 9467-2009": {
       "doc_number": "ГОСТ 9467-2009",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-29T00:23:31",
@@ -3638,13 +4115,14 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T22:14:04: не существует или опечатка без явной замены; Версия 2009 не существует; ГОСТ 9467-75 отменён"
     },
     "ГОСТ Р 55724-2013": {
       "doc_number": "ГОСТ Р 55724-2013",
       "family": "ГОСТ Р",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-29T00:23:31",
       "occurrences": [
@@ -3655,12 +4133,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ Р 55724-2013, file=ГОСТ Р 55724-2013_ Национальный стандарт Российской Федерац_document.md"
     },
     "СО 17637-2014": {
       "doc_number": "СО 17637-2014",
       "family": "СО",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-29T00:23:31",
@@ -3672,7 +4151,8 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Корректный шифр — ГОСТ Р ИСО 17637-2014; 2014 заменён на 2024 (с 01.12.2024)"
     },
     "ГОСТ 3242-79": {
       "doc_number": "ГОСТ 3242-79",
@@ -3680,7 +4160,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-04-29T17:01:15",
+      "last_seen_at": "2026-05-20T14:02:11",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.17-23.2-К2 (Изм.1).pdf",
@@ -3695,6 +4175,21 @@
             "F-038"
           ],
           "seen_at": "2026-04-29T14:33:02"
+        },
+        {
+          "project_id": "13АВ-РД-КЖ5.25-29.2-К2.pdf",
+          "findings": [
+            "F-037"
+          ],
+          "seen_at": "2026-05-19T01:21:02"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-ПА.pdf",
+          "findings": [
+            "F-020",
+            "F-024"
+          ],
+          "seen_at": "2026-05-19T17:12:59"
         }
       ]
     },
@@ -3704,7 +4199,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-04T07:55:11",
+      "last_seen_at": "2026-05-20T11:03:32",
       "occurrences": [
         {
           "project_id": "_output",
@@ -3756,15 +4251,16 @@
           ],
           "seen_at": "2026-05-04T07:55:11"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=ГОСТ 34278-2017); Прекращено применение в РФ с 01.05.2018, приказ Росстандарта N 1835-ст; замена ГОСТ 34278-2017"
     },
     "ГОСТ 2.304-81": {
       "doc_number": "ГОСТ 2.304-81",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-05T02:50:15",
+      "last_seen_at": "2026-05-19T03:39:57",
       "occurrences": [
         {
           "project_id": "_output",
@@ -3780,16 +4276,24 @@
             "F-040"
           ],
           "seen_at": "2026-05-05T02:50:15"
+        },
+        {
+          "project_id": "13АВ-РД-КЖ5.24.2-К2.pdf",
+          "findings": [
+            "F-020"
+          ],
+          "seen_at": "2026-05-19T03:39:57"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 2_304-81, file=ГОСТ 2_304-81_ Межгосударственный стандарт_ Единая система_document.md"
     },
     "ГОСТ 2.109-73": {
       "doc_number": "ГОСТ 2.109-73",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-04-29T22:27:16",
+      "last_seen_at": "2026-05-19T16:38:35",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.30-31.2-К2.pdf",
@@ -3804,14 +4308,29 @@
             "F-016"
           ],
           "seen_at": "2026-04-29T22:27:16"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-035"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
+        },
+        {
+          "project_id": "13АВ-РД-НВФ-К5.pdf",
+          "findings": [
+            "F-030"
+          ],
+          "seen_at": "2026-05-19T16:38:35"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ Р 2.109-2023, verified=2026-03-19)"
     },
     "ГОСТ Р 55295-2012": {
       "doc_number": "ГОСТ Р 55295-2012",
       "family": "ГОСТ Р",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-29T00:43:21",
       "occurrences": [
@@ -3822,15 +4341,16 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ Р 55295-2012, file=ГОСТ Р 55295-2012_ Национальный стандарт Российской Федерац_document.md"
     },
     "ГОСТ IEC 60670-1-2017": {
       "doc_number": "ГОСТ IEC 60670-1-2017",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-04-29T00:43:21",
+      "last_seen_at": "2026-05-18T16:58:17",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.30-31.2-К2.pdf",
@@ -3838,13 +4358,21 @@
             "F-033"
           ],
           "seen_at": "2026-04-28T19:31:37"
+        },
+        {
+          "project_id": "13АВ-РД-КЖ5.24.1-К2 (1) (1).pdf",
+          "findings": [
+            "F-013"
+          ],
+          "seen_at": "2026-05-18T15:49:42"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch edition_outdated (current=ГОСТ IEC 60670-1-2016); В реестре фигурирует ГОСТ IEC 60670-1-2016 (введён 01.07.2018), а не 2017"
     },
     "ГОСТ 17624-2012": {
       "doc_number": "ГОСТ 17624-2012",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-05-04T05:51:34",
@@ -3912,12 +4440,13 @@
           ],
           "seen_at": "2026-05-04T05:51:34"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:33:22: known via status_overrides (replaced, replaced_by=ГОСТ 17624-2021)"
     },
     "ГОСТ 18105-2010": {
       "doc_number": "ГОСТ 18105-2010",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-05-04T05:51:34",
@@ -3992,7 +4521,8 @@
           ],
           "seen_at": "2026-05-04T05:51:34"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:33:22: known via status_overrides (replaced, replaced_by=ГОСТ 18105-2018)"
     },
     "СНиП 2.03.11-85": {
       "doc_number": "СНиП 2.03.11-85",
@@ -4000,7 +4530,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-04-28T19:32:23",
+      "last_seen_at": "2026-05-20T14:02:11",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ6-К1К2 (1).pdf",
@@ -4008,16 +4538,24 @@
             "F-003"
           ],
           "seen_at": "2026-04-28T19:31:37"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-ПА.pdf",
+          "findings": [
+            "F-017"
+          ],
+          "seen_at": "2026-05-19T17:12:59"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=СП 28.13330.2017); Актуализированная редакция СП 28.13330.2017 (с изм. 1, 2)"
     },
     "ГОСТ 34.028-2016": {
       "doc_number": "ГОСТ 34.028-2016",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-04T06:40:26",
+      "last_seen_at": "2026-05-18T21:39:31",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ6-К1К2 (1).pdf",
@@ -4061,12 +4599,13 @@
           ],
           "seen_at": "2026-05-04T06:40:26"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Корректный шифр без точки: ГОСТ 34028-2016 (прокат арматурный), действует"
     },
     "СП 20.1330.2016": {
       "doc_number": "СП 20.1330.2016",
       "family": "СП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -4078,12 +4617,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Опечатка в коде; корректно — СП 20.13330.2016 (с изм. 1-6), действует"
     },
     "ГОСТ 34208-2016": {
       "doc_number": "ГОСТ 34208-2016",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -4096,12 +4636,13 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T22:14:04: typo, корректный код ГОСТ 34028-2016; опечатка вместо ГОСТ 34028-2016"
     },
     "ГОСТ 24633-2015": {
       "doc_number": "ГОСТ 24633-2015",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
       "last_seen_at": "2026-04-28T19:32:23",
@@ -4113,7 +4654,8 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T22:14:04: не существует или опечатка без явной замены; в открытых базах не найден; возможна опечатка"
     },
     "ГОСТ IEC 60670-1-2011": {
       "doc_number": "ГОСТ IEC 60670-1-2011",
@@ -4121,7 +4663,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-04-29T01:13:21",
+      "last_seen_at": "2026-05-20T11:03:32",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.39.2-К2.pdf",
@@ -4130,7 +4672,8 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=ГОСТ IEC 60670-1-2016); Серия 60670-1 в РФ: 32126.1-2013, затем ГОСТ IEC 60670-1-2016 (введён 01.07.2018)"
     },
     "СП 246.1325800.2016": {
       "doc_number": "СП 246.1325800.2016",
@@ -4138,7 +4681,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-04-29T01:13:21",
+      "last_seen_at": "2026-05-20T11:03:32",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.39.2-К2.pdf",
@@ -4152,10 +4695,10 @@
     "ГОСТ 9.307-2021": {
       "doc_number": "ГОСТ 9.307-2021",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-04-29T01:13:21",
+      "last_seen_at": "2026-05-19T03:39:57",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.39.2-К2.pdf",
@@ -4163,8 +4706,16 @@
             "F-029"
           ],
           "seen_at": "2026-04-28T19:31:37"
+        },
+        {
+          "project_id": "13АВ-РД-КЖ5.24.2-К2.pdf",
+          "findings": [
+            "F-016"
+          ],
+          "seen_at": "2026-05-19T03:39:57"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 9_307-2021, file=ГОСТ 9_307-2021_ Межгосударственный стандарт_ Единая систем_document.md"
     },
     "ГОСТ Р 51693-2000": {
       "doc_number": "ГОСТ Р 51693-2000",
@@ -4172,7 +4723,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-04-29T01:13:21",
+      "last_seen_at": "2026-05-20T11:03:32",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.39.2-К2.pdf",
@@ -4181,13 +4732,14 @@
           ],
           "seen_at": "2026-04-28T19:31:37"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch cancelled; Грунтовки антикоррозионные. Общие технические условия; статус — отменён"
     },
     "ГОСТ Р 58766-2019": {
       "doc_number": "ГОСТ Р 58766-2019",
       "family": "ГОСТ Р",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T22:20:39",
       "last_seen_at": "2026-04-29T11:57:33",
       "occurrences": [
@@ -4205,12 +4757,13 @@
           ],
           "seen_at": "2026-04-29T11:11:02"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ Р 58766-2019, file=ГОСТ Р 58766-2019_ Национальный стандарт Российской Федерац_document.md"
     },
     "ГОСТ 28013-98": {
       "doc_number": "ГОСТ 28013-98",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T22:20:39",
       "last_seen_at": "2026-04-29T11:57:33",
@@ -4229,12 +4782,13 @@
           ],
           "seen_at": "2026-04-29T11:11:02"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ Р 58766-2019, verified=2026-05-06)"
     },
     "ГОСТ 6727-2014": {
       "doc_number": "ГОСТ 6727-2014",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T22:20:39",
       "last_seen_at": "2026-04-28T22:20:39",
@@ -4246,13 +4800,14 @@
           ],
           "seen_at": "2026-04-28T22:20:39"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T22:14:04: не существует или опечатка без явной замены; версия 2014 не существует; ГОСТ 6727-80 отменён"
     },
     "ГОСТ 19904-90": {
       "doc_number": "ГОСТ 19904-90",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-28T22:20:39",
       "last_seen_at": "2026-04-28T22:20:39",
       "occurrences": [
@@ -4263,7 +4818,8 @@
           ],
           "seen_at": "2026-04-28T22:20:39"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 19904-90, file=ГОСТ 19904-90_ Межгосударственный стандарт_ Прокат листовой_document.md"
     },
     "СП 12.13130.2009": {
       "doc_number": "СП 12.13130.2009",
@@ -4271,7 +4827,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T22:20:39",
-      "last_seen_at": "2026-05-05T15:28:08",
+      "last_seen_at": "2026-05-19T15:45:31",
       "occurrences": [
         {
           "project_id": "13АВ-РД-АР1.1-К4-К5",
@@ -4293,6 +4849,27 @@
             "F-034"
           ],
           "seen_at": "2026-05-05T15:28:08"
+        },
+        {
+          "project_id": "13АВ-РД-АР3-К6_в2.pdf",
+          "findings": [
+            "F-042"
+          ],
+          "seen_at": "2026-05-18T18:13:13"
+        },
+        {
+          "project_id": "13АВ-РД-АР4.2-К6.pdf",
+          "findings": [
+            "F-040"
+          ],
+          "seen_at": "2026-05-19T04:57:10"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К5.pdf",
+          "findings": [
+            "F-020"
+          ],
+          "seen_at": "2026-05-19T15:45:31"
         }
       ]
     },
@@ -4302,7 +4879,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T22:20:39",
-      "last_seen_at": "2026-05-05T01:13:42",
+      "last_seen_at": "2026-05-19T04:57:10",
       "occurrences": [
         {
           "project_id": "13АВ-РД-АР1.1-К4-К5",
@@ -4334,13 +4911,29 @@
             "F-014"
           ],
           "seen_at": "2026-05-05T01:13:42"
+        },
+        {
+          "project_id": "13АВ-РД-АР3-К6_в2.pdf",
+          "findings": [
+            "F-042",
+            "F-045"
+          ],
+          "seen_at": "2026-05-18T18:13:13"
+        },
+        {
+          "project_id": "13АВ-РД-АР4.2-К6.pdf",
+          "findings": [
+            "F-032",
+            "F-041"
+          ],
+          "seen_at": "2026-05-19T04:57:10"
         }
       ]
     },
     "ГОСТ Р 53301": {
       "doc_number": "ГОСТ Р 53301",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T22:20:39",
       "last_seen_at": "2026-04-28T22:20:39",
@@ -4352,7 +4945,8 @@
           ],
           "seen_at": "2026-04-28T22:20:39"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Усечённый код без года/частей; нужно ГОСТ Р 53301-2013 или подобный полный шифр"
     },
     "ГОСТ Р 56703-2015": {
       "doc_number": "ГОСТ Р 56703-2015",
@@ -4377,7 +4971,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T23:44:18",
-      "last_seen_at": "2026-05-05T04:42:18",
+      "last_seen_at": "2026-05-19T20:55:55",
       "occurrences": [
         {
           "project_id": "13АВ-РД-АР1.2-К4 (3)",
@@ -4407,13 +5001,81 @@
             "F-018"
           ],
           "seen_at": "2026-05-05T04:42:18"
+        },
+        {
+          "project_id": "13АВ-РД-АР3-К6_в2.pdf",
+          "findings": [
+            "F-022"
+          ],
+          "seen_at": "2026-05-18T18:13:13"
+        },
+        {
+          "project_id": "25.12.22_13АВ-РД-АР3-К5-К6_в2.pdf",
+          "findings": [
+            "F-043"
+          ],
+          "seen_at": "2026-05-18T18:56:17"
+        },
+        {
+          "project_id": "13АВ-РД-АР3-К4-К5.pdf",
+          "findings": [
+            "F-002",
+            "F-010"
+          ],
+          "seen_at": "2026-05-19T01:58:23"
+        },
+        {
+          "project_id": "13АВ-РД-АР4.2-К6.pdf",
+          "findings": [
+            "F-016",
+            "F-042"
+          ],
+          "seen_at": "2026-05-19T04:57:10"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-037"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К4.pdf",
+          "findings": [
+            "F-024"
+          ],
+          "seen_at": "2026-05-19T14:32:21"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К5.pdf",
+          "findings": [
+            "F-017",
+            "F-026"
+          ],
+          "seen_at": "2026-05-19T15:45:31"
+        },
+        {
+          "project_id": "13АВ-РД-НВФ-К5.pdf",
+          "findings": [
+            "F-016",
+            "F-028"
+          ],
+          "seen_at": "2026-05-19T16:38:35"
+        },
+        {
+          "project_id": "13АВ-РД-НВФ-К4 .pdf",
+          "findings": [
+            "F-003"
+          ],
+          "seen_at": "2026-05-19T20:55:55"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=СП 50.13330.2024, verified=2026-04-16)"
     },
     "СП 506.1311500.2021": {
       "doc_number": "СП 506.1311500.2021",
       "family": "СП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T23:44:18",
       "last_seen_at": "2026-04-29T09:55:45",
@@ -4425,7 +5087,8 @@
           ],
           "seen_at": "2026-04-28T23:44:18"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: cancelled via norms_db.json (verified=2026-04-16)"
     },
     "ГОСТ 8645-68": {
       "doc_number": "ГОСТ 8645-68",
@@ -4447,7 +5110,7 @@
     "СП 112.13330.2011": {
       "doc_number": "СП 112.13330.2011",
       "family": "СП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T23:44:18",
       "last_seen_at": "2026-04-29T09:55:45",
@@ -4459,12 +5122,13 @@
           ],
           "seen_at": "2026-04-28T23:44:18"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch cancelled; Утратил силу с 01.01.2021 (ПП РФ N 1034 от 11.07.2020); требования — в ФЗ-123"
     },
     "ГОСТ 31360-2007": {
       "doc_number": "ГОСТ 31360-2007",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-29T11:11:02",
       "last_seen_at": "2026-04-29T11:11:02",
@@ -4476,15 +5140,16 @@
           ],
           "seen_at": "2026-04-29T11:11:02"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ 31360-2024, verified=2026-03-19)"
     },
     "ГОСТ 31359-2007": {
       "doc_number": "ГОСТ 31359-2007",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-29T11:11:02",
-      "last_seen_at": "2026-04-29T11:11:02",
+      "last_seen_at": "2026-05-18T18:13:13",
       "occurrences": [
         {
           "project_id": "13АВ-РД-АР1.1-К4 (Изм.2)",
@@ -4492,8 +5157,16 @@
             "F-044"
           ],
           "seen_at": "2026-04-29T11:11:02"
+        },
+        {
+          "project_id": "13АВ-РД-АР3-К6_в2.pdf",
+          "findings": [
+            "F-052"
+          ],
+          "seen_at": "2026-05-18T18:13:13"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ 31359-2024, verified=2026-04-16)"
     },
     "ГОСТ 53308-2009": {
       "doc_number": "ГОСТ 53308-2009",
@@ -4515,8 +5188,8 @@
     "ГОСТ 948-2016": {
       "doc_number": "ГОСТ 948-2016",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-29T11:57:33",
       "last_seen_at": "2026-04-29T11:57:33",
       "occurrences": [
@@ -4527,12 +5200,13 @@
           ],
           "seen_at": "2026-04-29T11:57:33"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 948-2016, file=ГОСТ 948-2016_ Межгосударственный стандарт_ Перемычки желез_document.md"
     },
     "СП 132.13330.2024": {
       "doc_number": "СП 132.13330.2024",
       "family": "СП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-29T11:57:33",
       "last_seen_at": "2026-04-29T11:57:33",
@@ -4543,14 +5217,22 @@
             "F-038"
           ],
           "seen_at": "2026-04-29T11:57:33"
+        },
+        {
+          "project_id": "13АВ-РД-АР4.2-К6.pdf",
+          "findings": [
+            "F-036"
+          ],
+          "seen_at": "2026-05-19T04:57:10"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T22:14:04: typo, корректный код СП 132.13330.2011; версии 2024 нет; действует СП 132.13330.2011"
     },
     "ГОСТ Р 1.5-2012": {
       "doc_number": "ГОСТ Р 1.5-2012",
       "family": "ГОСТ Р",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-29T11:57:33",
       "last_seen_at": "2026-05-04T03:54:51",
       "occurrences": [
@@ -4568,13 +5250,14 @@
           ],
           "seen_at": "2026-05-04T03:54:51"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ Р 1_5-2012, file=ГОСТ Р 1_5-2012_ Национальный стандарт Российской Федерации_document.md"
     },
     "ГОСТ 9466-75": {
       "doc_number": "ГОСТ 9466-75",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-29T14:33:02",
       "last_seen_at": "2026-04-29T17:01:15",
       "occurrences": [
@@ -4585,7 +5268,8 @@
           ],
           "seen_at": "2026-04-29T14:33:02"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 9466-75, file=ГОСТ 9466-75 (СТ СЭВ 6568-89)_ Государственный стандарт Сою_document.md"
     },
     "СО 153-34.21.122-2003": {
       "doc_number": "СО 153-34.21.122-2003",
@@ -4687,8 +5371,8 @@
     "ГОСТ 31947-2012": {
       "doc_number": "ГОСТ 31947-2012",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-29T19:27:12",
       "last_seen_at": "2026-04-29T19:27:12",
       "occurrences": [
@@ -4699,13 +5383,14 @@
           ],
           "seen_at": "2026-04-29T19:27:12"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 31947-2012, file=ГОСТ 31947-2012_ Межгосударственный стандарт_ Провода и каб_document.md"
     },
     "ГОСТ 9.602-2016": {
       "doc_number": "ГОСТ 9.602-2016",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-29T19:27:12",
       "last_seen_at": "2026-04-29T19:27:12",
       "occurrences": [
@@ -4719,12 +5404,13 @@
           ],
           "seen_at": "2026-04-29T19:27:12"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 9_602-2016, file=ГОСТ 9_602-2016_ Межгосударственный стандарт_ Единая систем_document.md"
     },
     "ГОСТ Р МЭК 62561-1": {
       "doc_number": "ГОСТ Р МЭК 62561-1",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-29T19:27:12",
       "last_seen_at": "2026-04-29T19:27:12",
@@ -4736,13 +5422,14 @@
           ],
           "seen_at": "2026-04-29T19:27:12"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Без года; действующий — ГОСТ Р МЭК 62561.1-2014 (компоненты молниезащиты, ч.1)"
     },
     "ГОСТ 23792-79": {
       "doc_number": "ГОСТ 23792-79",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-29T19:27:12",
       "last_seen_at": "2026-04-29T19:27:12",
       "occurrences": [
@@ -4753,7 +5440,8 @@
           ],
           "seen_at": "2026-04-29T19:27:12"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 23792-79, file=ГОСТ 23792-79_ Государственный стандарт Союза ССР_ Соединен_document.md"
     },
     "ГОСТ Р 21.110-2013": {
       "doc_number": "ГОСТ Р 21.110-2013",
@@ -4776,7 +5464,7 @@
     "СО 153": {
       "doc_number": "СО 153",
       "family": "СО",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-29T19:27:12",
       "last_seen_at": "2026-04-29T19:27:12",
@@ -4788,7 +5476,8 @@
           ],
           "seen_at": "2026-04-29T19:27:12"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Усечённый код; корректно — СО 153-34.21.122-2003 (Инструкция по молниезащите)"
     },
     "ГОСТ Р 21.501-2018": {
       "doc_number": "ГОСТ Р 21.501-2018",
@@ -4796,7 +5485,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-29T19:27:12",
-      "last_seen_at": "2026-05-05T16:13:30",
+      "last_seen_at": "2026-05-19T16:38:35",
       "occurrences": [
         {
           "project_id": "13АВ-РД-МЗ (Изм.1) от 13.02.2026.pdf",
@@ -4811,6 +5500,13 @@
             "F-039"
           ],
           "seen_at": "2026-05-05T16:13:30"
+        },
+        {
+          "project_id": "13АВ-РД-НВФ-К5.pdf",
+          "findings": [
+            "F-023"
+          ],
+          "seen_at": "2026-05-19T16:38:35"
         }
       ]
     },
@@ -4834,8 +5530,8 @@
     "ГОСТ Р МЭК 62305-4-2016": {
       "doc_number": "ГОСТ Р МЭК 62305-4-2016",
       "family": "ГОСТ Р",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-29T19:27:12",
       "last_seen_at": "2026-04-29T19:27:12",
       "occurrences": [
@@ -4846,12 +5542,13 @@
           ],
           "seen_at": "2026-04-29T19:27:12"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ Р МЭК 62305-4-2016_ Национальный стандарт Российской Ф, file=ГОСТ Р МЭК 62305-4-2016_ Национальный стандарт Российской Ф_document.md"
     },
     "ГОСТ Р 50571.3-2009": {
       "doc_number": "ГОСТ Р 50571.3-2009",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-29T20:17:27",
       "last_seen_at": "2026-04-29T20:17:27",
@@ -4863,12 +5560,13 @@
           ],
           "seen_at": "2026-04-29T20:17:27"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ Р 50571.4.41-2022, verified=2026-03-26)"
     },
     "ГОСТ 21.608-2014": {
       "doc_number": "ГОСТ 21.608-2014",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-29T22:27:16",
       "last_seen_at": "2026-04-29T22:27:16",
@@ -4890,12 +5588,13 @@
           ],
           "seen_at": "2026-04-29T22:27:16"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:33:22: known via status_overrides (replaced, replaced_by=ГОСТ 21_608-2021)"
     },
     "ГОСТ Р 50571.5.534-2014": {
       "doc_number": "ГОСТ Р 50571.5.534-2014",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-29T22:27:16",
       "last_seen_at": "2026-04-29T22:27:16",
@@ -4907,12 +5606,13 @@
           ],
           "seen_at": "2026-04-29T22:27:16"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T22:14:04: typo, корректный код ГОСТ Р 50571.5.54-2013; опечатка: .534 → .54"
     },
     "ГОСТ Р 53316-2009": {
       "doc_number": "ГОСТ Р 53316-2009",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-29T22:27:16",
       "last_seen_at": "2026-05-05T05:34:56",
@@ -4948,15 +5648,16 @@
           ],
           "seen_at": "2026-05-05T05:34:56"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ Р 53316-2021, verified=2026-03-01)"
     },
     "ГОСТ Р 50571.7.701-2013": {
       "doc_number": "ГОСТ Р 50571.7.701-2013",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-29T22:27:16",
-      "last_seen_at": "2026-05-05T02:03:00",
+      "last_seen_at": "2026-05-19T04:57:10",
       "occurrences": [
         {
           "project_id": "13АВ-РД-ЭМ-К3 (от 19.03.2026).pdf",
@@ -4971,14 +5672,22 @@
             "F-002"
           ],
           "seen_at": "2026-05-05T02:03:00"
+        },
+        {
+          "project_id": "13АВ-РД-АР4.2-К6.pdf",
+          "findings": [
+            "F-006"
+          ],
+          "seen_at": "2026-05-19T04:57:10"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ Р 50571.7.701-2024, verified=2026-03-27)"
     },
     "ГОСТ 2.710-81": {
       "doc_number": "ГОСТ 2.710-81",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-29T22:27:16",
       "last_seen_at": "2026-05-05T05:34:56",
       "occurrences": [
@@ -4997,12 +5706,13 @@
           ],
           "seen_at": "2026-05-05T05:34:56"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 2_710-81, file=ГОСТ 2_710-81 (СТ СЭВ 2182-80, СТ СЭВ 6306-88)_ Единая сист_document.md"
     },
     "ГОСТ Р 51321.1-2007": {
       "doc_number": "ГОСТ Р 51321.1-2007",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-29T22:27:16",
       "last_seen_at": "2026-05-05T05:34:56",
@@ -5021,13 +5731,14 @@
           ],
           "seen_at": "2026-05-05T05:34:56"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ IEC 61439-1-2013, verified=2026-03-17)"
     },
     "ГОСТ 29322-2014": {
       "doc_number": "ГОСТ 29322-2014",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-04-29T22:27:16",
       "last_seen_at": "2026-05-05T04:42:18",
       "occurrences": [
@@ -5053,12 +5764,13 @@
           ],
           "seen_at": "2026-05-05T04:42:18"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 29322-2014, file=ГОСТ 29322-2014 (IEC 60038 2009)_ Межгосударственный станда_document.md"
     },
     "ГОСТ 10434-83": {
       "doc_number": "ГОСТ 10434-83",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-29T22:27:16",
       "last_seen_at": "2026-04-29T22:27:16",
@@ -5070,12 +5782,13 @@
           ],
           "seen_at": "2026-04-29T22:27:16"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch edition_outdated (current=ГОСТ 10434-82); Корректный код ГОСТ 10434-82 (действует с 01.01.83), а не -83"
     },
     "ГОСТ 21.614-88": {
       "doc_number": "ГОСТ 21.614-88",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-29T22:27:16",
       "last_seen_at": "2026-04-29T22:27:16",
@@ -5087,12 +5800,13 @@
           ],
           "seen_at": "2026-04-29T22:27:16"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:33:22: known via status_overrides (replaced, replaced_by=ГОСТ 21_210-2014)"
     },
     "ГОСТ Р 52544-2006": {
       "doc_number": "ГОСТ Р 52544-2006",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-02T14:32:49",
       "last_seen_at": "2026-05-04T07:55:11",
@@ -5118,12 +5832,13 @@
           ],
           "seen_at": "2026-05-04T06:40:26"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ 34028-2016, verified=2026-04-17)"
     },
     "ГОСТ 15588-2024": {
       "doc_number": "ГОСТ 15588-2024",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-02T14:32:49",
       "last_seen_at": "2026-05-02T14:32:49",
@@ -5135,12 +5850,13 @@
           ],
           "seen_at": "2026-05-02T14:32:49"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T22:14:04: typo, корректный код ГОСТ 15588-2014; версии 2024 нет; актуальна 2014"
     },
     "СП 63.13330.2022": {
       "doc_number": "СП 63.13330.2022",
       "family": "СП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-04T00:55:55",
       "last_seen_at": "2026-05-04T00:55:55",
@@ -5152,12 +5868,13 @@
           ],
           "seen_at": "2026-05-04T00:55:55"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch edition_outdated (current=СП 63.13330.2018); Актуальная редакция СП 63.13330.2018 с Изм. 1 и 2, а не 2022"
     },
     "ГОСТ Р 50827": {
       "doc_number": "ГОСТ Р 50827",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-04T02:50:17",
       "last_seen_at": "2026-05-04T02:50:17",
@@ -5169,12 +5886,13 @@
           ],
           "seen_at": "2026-05-04T02:50:17"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=ГОСТ IEC 60670-1-2016); Серия ГОСТ Р 50827-95/50827.x-2009 заменена ГОСТ IEC 60670-1-2016 и 60670-22-2016"
     },
     "ГОСТ 32126.1-2013": {
       "doc_number": "ГОСТ 32126.1-2013",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-04T03:54:51",
       "last_seen_at": "2026-05-04T03:54:51",
@@ -5186,12 +5904,13 @@
           ],
           "seen_at": "2026-05-04T03:54:51"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ IEC 60670-1-2016, verified=2026-05-06)"
     },
     "ГОСТ Р МЭК 60670-1-2007": {
       "doc_number": "ГОСТ Р МЭК 60670-1-2007",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-04T03:54:51",
       "last_seen_at": "2026-05-04T03:54:51",
@@ -5203,12 +5922,13 @@
           ],
           "seen_at": "2026-05-04T03:54:51"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=ГОСТ IEC 60670-1-2016); Заменён ГОСТ IEC 60670-1-2016 (введ. 01.07.2018)"
     },
     "ГОСТ Р 56368-2015": {
       "doc_number": "ГОСТ Р 56368-2015",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-04T03:54:51",
       "last_seen_at": "2026-05-04T03:54:51",
@@ -5220,12 +5940,13 @@
           ],
           "seen_at": "2026-05-04T03:54:51"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T22:14:04: не существует или опечатка без явной замены; в открытых базах не обнаружен"
     },
     "ГОСТ IEC 60670-1-2014": {
       "doc_number": "ГОСТ IEC 60670-1-2014",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-04T05:51:34",
       "last_seen_at": "2026-05-05T03:53:52",
@@ -5251,13 +5972,14 @@
           ],
           "seen_at": "2026-05-05T03:53:52"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=ГОСТ IEC 60670-1-2016); ГОСТ 32126.1-2013 (введ. 01.01.2014) заменён ГОСТ IEC 60670-1-2016"
     },
     "ГОСТ 1.5-2001": {
       "doc_number": "ГОСТ 1.5-2001",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-05-04T06:40:26",
       "last_seen_at": "2026-05-04T06:40:26",
       "occurrences": [
@@ -5268,12 +5990,13 @@
           ],
           "seen_at": "2026-05-04T06:40:26"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 1_5-2001, file=ГОСТ 1_5-2001_ Межгосударственный стандарт_ Межгосударствен_document.md"
     },
     "СНиП 21-01": {
       "doc_number": "СНиП 21-01",
       "family": "СНиП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-04T07:55:11",
       "last_seen_at": "2026-05-04T07:55:11",
@@ -5285,15 +6008,16 @@
           ],
           "seen_at": "2026-05-04T07:55:11"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Полный код СНиП 21-01-97* (заменён СП 112.13330.2011, утратил силу с 01.01.2021)"
     },
     "ПП РФ №815": {
       "doc_number": "ПП РФ №815",
       "family": "ПП РФ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-04T07:55:11",
-      "last_seen_at": "2026-05-05T19:08:58",
+      "last_seen_at": "2026-05-19T04:57:10",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ7.2-К2 (Изм.2).pdf",
@@ -5315,14 +6039,22 @@
             "F-030"
           ],
           "seen_at": "2026-05-05T19:08:58"
+        },
+        {
+          "project_id": "13АВ-РД-АР4.2-К6.pdf",
+          "findings": [
+            "F-036"
+          ],
+          "seen_at": "2026-05-19T04:57:10"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: cancelled via norms_db.json (verified=2026-04-17)"
     },
     "ГОСТ 10181-2014": {
       "doc_number": "ГОСТ 10181-2014",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-05-04T07:55:11",
       "last_seen_at": "2026-05-04T07:55:11",
       "occurrences": [
@@ -5333,13 +6065,14 @@
           ],
           "seen_at": "2026-05-04T07:55:11"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 10181-2014, file=ГОСТ 10181-2014_ Межгосударственный стандарт_ Смеси бетонны_document.md"
     },
     "ГОСТ 27006-2019": {
       "doc_number": "ГОСТ 27006-2019",
       "family": "ГОСТ",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-05-04T07:55:11",
       "last_seen_at": "2026-05-04T07:55:11",
       "occurrences": [
@@ -5350,12 +6083,13 @@
           ],
           "seen_at": "2026-05-04T07:55:11"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ 27006-2019, file=ГОСТ 27006-2019_ Межгосударственный стандарт_ Бетоны_ Прави_document.md"
     },
     "ГОСТ Р МЭК 62305-1...4": {
       "doc_number": "ГОСТ Р МЭК 62305-1...4",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T01:13:42",
       "last_seen_at": "2026-05-05T04:42:18",
@@ -5374,7 +6108,8 @@
           ],
           "seen_at": "2026-05-05T04:42:18"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Не единый ГОСТ, а серия из 4 частей -1, -2, -3, -4; требуется указать конкретную часть"
     },
     "ГОСТ Р МЭК 62305-1-2010": {
       "doc_number": "ГОСТ Р МЭК 62305-1-2010",
@@ -5403,8 +6138,8 @@
     "ГОСТ Р МЭК 62305": {
       "doc_number": "ГОСТ Р МЭК 62305",
       "family": "ГОСТ Р",
-      "status": "pending",
-      "added_to_vault_at": null,
+      "status": "added",
+      "added_to_vault_at": "2026-05-19T20:33:22",
       "first_seen_at": "2026-05-05T01:13:42",
       "last_seen_at": "2026-05-05T04:42:18",
       "occurrences": [
@@ -5422,12 +6157,13 @@
           ],
           "seen_at": "2026-05-05T04:42:18"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-marked added on 2026-05-19T20:33:22: matched=ГОСТ Р МЭК 62305-4-2016_ Национальный стандарт Российской Ф, file=ГОСТ Р МЭК 62305-4-2016_ Национальный стандарт Российской Ф_document.md"
     },
     "ГОСТ IEC 60446-2014": {
       "doc_number": "ГОСТ IEC 60446-2014",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T01:13:42",
       "last_seen_at": "2026-05-05T01:13:42",
@@ -5439,7 +6175,8 @@
           ],
           "seen_at": "2026-05-05T01:13:42"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T22:14:04: typo, корректный код ГОСТ Р 50462-2009; ГОСТ IEC 60446-2014 не существует; действует ГОСТ Р 50462-2009 (МЭК 60446:2007)"
     },
     "ПП РФ № 890": {
       "doc_number": "ПП РФ № 890",
@@ -5461,7 +6198,7 @@
     "ГОСТ 21.1101-2013": {
       "doc_number": "ГОСТ 21.1101-2013",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T01:13:42",
       "last_seen_at": "2026-05-05T01:13:42",
@@ -5473,7 +6210,8 @@
           ],
           "seen_at": "2026-05-05T01:13:42"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ Р 21.101-2020, verified=2026-03-21)"
     },
     "ГОСТ 7746-2015": {
       "doc_number": "ГОСТ 7746-2015",
@@ -5513,7 +6251,7 @@
     "ГОСТ Р МЭК 61439-1-2013": {
       "doc_number": "ГОСТ Р МЭК 61439-1-2013",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T02:03:00",
       "last_seen_at": "2026-05-05T02:03:00",
@@ -5526,12 +6264,13 @@
           ],
           "seen_at": "2026-05-05T02:03:00"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=ГОСТ IEC 61439-1-2013); ГОСТ Р МЭК 61439-1-2012 отменён; действует межгос. ГОСТ IEC 61439-1-2013"
     },
     "ГОСТ Р МЭК 61439-1": {
       "doc_number": "ГОСТ Р МЭК 61439-1",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T02:03:00",
       "last_seen_at": "2026-05-05T02:03:00",
@@ -5543,7 +6282,8 @@
           ],
           "seen_at": "2026-05-05T02:03:00"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=ГОСТ IEC 61439-1-2013); Серия ГОСТ Р МЭК заменена на межгосударственный ГОСТ IEC 61439-1-2013"
     },
     "ГОСТ 31818.11-2012": {
       "doc_number": "ГОСТ 31818.11-2012",
@@ -5565,7 +6305,7 @@
     "ГОСТ Р 21.1101-2009": {
       "doc_number": "ГОСТ Р 21.1101-2009",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T02:03:00",
       "last_seen_at": "2026-05-05T02:03:00",
@@ -5577,12 +6317,13 @@
           ],
           "seen_at": "2026-05-05T02:03:00"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ Р 21.101-2026, verified=2026-05-06)"
     },
     "ГОСТ Р 51326.1-99": {
       "doc_number": "ГОСТ Р 51326.1-99",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T02:03:00",
       "last_seen_at": "2026-05-05T02:03:00",
@@ -5594,7 +6335,8 @@
           ],
           "seen_at": "2026-05-05T02:03:00"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch cancelled; Не действует на территории РФ; заменён серией ГОСТ IEC 61008-1"
     },
     "ГОСТ 2.303-68": {
       "doc_number": "ГОСТ 2.303-68",
@@ -5616,7 +6358,7 @@
     "ГОСТ Р МЭК 60800-2012": {
       "doc_number": "ГОСТ Р МЭК 60800-2012",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T02:03:00",
       "last_seen_at": "2026-05-05T02:03:00",
@@ -5628,7 +6370,8 @@
           ],
           "seen_at": "2026-05-05T02:03:00"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ IEC 60800-2024, verified=2026-05-06)"
     },
     "ГОСТ 9.014-78": {
       "doc_number": "ГОСТ 9.014-78",
@@ -5650,7 +6393,7 @@
     "СНиП 35-01-2001": {
       "doc_number": "СНиП 35-01-2001",
       "family": "СНиП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T02:50:15",
       "last_seen_at": "2026-05-05T04:42:18",
@@ -5669,7 +6412,8 @@
           ],
           "seen_at": "2026-05-05T04:42:18"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=СП 59.13330.2020); Актуализирован: СП 59.13330.2020 (действует с 01.07.2021)"
     },
     "ГОСТ IEC 61008-1-2020": {
       "doc_number": "ГОСТ IEC 61008-1-2020",
@@ -5751,7 +6495,7 @@
     "ГОСТ 8.417-2002": {
       "doc_number": "ГОСТ 8.417-2002",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T02:50:15",
       "last_seen_at": "2026-05-05T05:34:56",
@@ -5780,7 +6524,8 @@
           ],
           "seen_at": "2026-05-05T05:34:56"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=ГОСТ 8.417-2024); Заменён ГОСТ 8.417-2024 с 30.09.2024 (приказ Росстандарта №684-ст)"
     },
     "ГОСТ 14254-2015": {
       "doc_number": "ГОСТ 14254-2015",
@@ -5817,7 +6562,7 @@
     "СНиП 3.05.06-85": {
       "doc_number": "СНиП 3.05.06-85",
       "family": "СНиП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T02:50:15",
       "last_seen_at": "2026-05-05T19:08:58",
@@ -5836,12 +6581,13 @@
           ],
           "seen_at": "2026-05-05T19:08:58"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=СП 76.13330.2016, verified=2026-03-01)"
     },
     "ГОСТ IEC 60598-2-3-2014": {
       "doc_number": "ГОСТ IEC 60598-2-3-2014",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T02:50:15",
       "last_seen_at": "2026-05-05T02:50:15",
@@ -5853,7 +6599,8 @@
           ],
           "seen_at": "2026-05-05T02:50:15"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=ГОСТ IEC 60598-2-3-2017); Светильники для улиц и дорог; актуальная редакция -2017"
     },
     "ГОСТ 30244-94": {
       "doc_number": "ГОСТ 30244-94",
@@ -5882,7 +6629,7 @@
     "ГОСТ IEC 60670-22-2017": {
       "doc_number": "ГОСТ IEC 60670-22-2017",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T03:53:52",
       "last_seen_at": "2026-05-05T03:53:52",
@@ -5894,7 +6641,8 @@
           ],
           "seen_at": "2026-05-05T03:53:52"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch edition_outdated (current=ГОСТ IEC 60670-22-2016); Реальный код -2016 (введён 01.09.2017); цифра 2017 в обозначении некорректна"
     },
     "ГОСТ IEC 60598-1-2017": {
       "doc_number": "ГОСТ IEC 60598-1-2017",
@@ -5916,7 +6664,7 @@
     "ГОСТ Р МЭК 61347-2-13-2018": {
       "doc_number": "ГОСТ Р МЭК 61347-2-13-2018",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T03:53:52",
       "last_seen_at": "2026-05-05T03:53:52",
@@ -5928,12 +6676,13 @@
           ],
           "seen_at": "2026-05-05T03:53:52"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T22:14:04: typo, корректный код ГОСТ IEC 61347-2-13-2013; версии 2018 нет; известна 2013"
     },
     "ГОСТ 2.316-2008": {
       "doc_number": "ГОСТ 2.316-2008",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T03:53:52",
       "last_seen_at": "2026-05-05T03:53:52",
@@ -5945,7 +6694,8 @@
           ],
           "seen_at": "2026-05-05T03:53:52"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ Р 2.316-2023, verified=2026-05-06)"
     },
     "ГОСТ Р 12.4.026-2015": {
       "doc_number": "ГОСТ Р 12.4.026-2015",
@@ -5985,7 +6735,7 @@
     "ГОСТ Р 53313-2009": {
       "doc_number": "ГОСТ Р 53313-2009",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T04:42:18",
       "last_seen_at": "2026-05-05T04:42:18",
@@ -5997,12 +6747,13 @@
           ],
           "seen_at": "2026-05-05T04:42:18"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ 35043-2023, verified=2026-03-27)"
     },
     "ГОСТ Р МЭК 62305-3-2009": {
       "doc_number": "ГОСТ Р МЭК 62305-3-2009",
       "family": "ГОСТ Р",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T04:42:18",
       "last_seen_at": "2026-05-05T04:42:18",
@@ -6014,7 +6765,8 @@
           ],
           "seen_at": "2026-05-05T04:42:18"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=ГОСТ Р 59789-2021); Версия 2009 не вводилась; действовала 2010 ред., затем заменена ГОСТ Р 59789-2021"
     },
     "СП 437.1325800.2018": {
       "doc_number": "СП 437.1325800.2018",
@@ -6119,7 +6871,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T05:34:56",
-      "last_seen_at": "2026-05-05T05:34:56",
+      "last_seen_at": "2026-05-19T20:55:55",
       "occurrences": [
         {
           "project_id": "13АВ-РД-ЭО-К6 (согл от 09.04.2026).pdf",
@@ -6127,13 +6879,34 @@
             "F-019"
           ],
           "seen_at": "2026-05-05T05:34:56"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К5.pdf",
+          "findings": [
+            "F-012"
+          ],
+          "seen_at": "2026-05-19T15:45:31"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-ПА.pdf",
+          "findings": [
+            "F-024"
+          ],
+          "seen_at": "2026-05-19T17:12:59"
+        },
+        {
+          "project_id": "13АВ-РД-НВФ-К4 .pdf",
+          "findings": [
+            "F-037"
+          ],
+          "seen_at": "2026-05-19T20:55:55"
         }
       ]
     },
     "ГОСТ 2.105-95": {
       "doc_number": "ГОСТ 2.105-95",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T05:34:56",
       "last_seen_at": "2026-05-05T05:34:56",
@@ -6145,12 +6918,13 @@
           ],
           "seen_at": "2026-05-05T05:34:56"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ 2.105-2019, verified=2026-04-16)"
     },
     "ГОСТ 2.709-89": {
       "doc_number": "ГОСТ 2.709-89",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T15:28:08",
       "last_seen_at": "2026-05-05T15:28:08",
@@ -6163,12 +6937,13 @@
           ],
           "seen_at": "2026-05-05T15:28:08"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch cancelled; Отменён с 01.01.2019 приказом от 14.12.2015 №187 (с переносом)"
     },
     "СП 5.13130.2009": {
       "doc_number": "СП 5.13130.2009",
       "family": "СП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T17:09:00",
       "last_seen_at": "2026-05-05T17:09:00",
@@ -6180,12 +6955,13 @@
           ],
           "seen_at": "2026-05-05T17:09:00"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=None, verified=2026-04-03)"
     },
     "СНиП 3.05.07-85": {
       "doc_number": "СНиП 3.05.07-85",
       "family": "СНиП",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T17:09:00",
       "last_seen_at": "2026-05-05T19:08:58",
@@ -6204,7 +6980,8 @@
           ],
           "seen_at": "2026-05-05T19:08:58"
         }
-      ]
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=СП 77.13330.2016); Актуализированная редакция СП 77.13330.2016 (системы автоматизации)"
     },
     "ГОСТ Р 50571.5.51-2013": {
       "doc_number": "ГОСТ Р 50571.5.51-2013",
@@ -6226,7 +7003,7 @@
     "ГОСТ 34303-2017": {
       "doc_number": "ГОСТ 34303-2017",
       "family": "ГОСТ",
-      "status": "pending",
+      "status": "dismissed",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T19:53:00",
       "last_seen_at": "2026-05-05T19:53:00",
@@ -6238,7 +7015,1523 @@
           ],
           "seen_at": "2026-05-05T19:53:00"
         }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ 34303-2024, verified=2026-05-06)"
+    },
+    "ГОСТ 31359-2024": {
+      "doc_number": "ГОСТ 31359-2024",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-18T18:13:13",
+      "last_seen_at": "2026-05-18T18:13:13",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-АР3-К6_в2.pdf",
+          "findings": [
+            "F-052"
+          ],
+          "seen_at": "2026-05-18T18:13:13"
+        }
       ]
+    },
+    "ГОСТ 25485-2019": {
+      "doc_number": "ГОСТ 25485-2019",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-18T18:13:13",
+      "last_seen_at": "2026-05-18T18:13:13",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-АР3-К6_в2.pdf",
+          "findings": [
+            "F-052"
+          ],
+          "seen_at": "2026-05-18T18:13:13"
+        }
+      ]
+    },
+    "ГОСТ 25772-21": {
+      "doc_number": "ГОСТ 25772-21",
+      "family": "ГОСТ",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-18T18:13:13",
+      "last_seen_at": "2026-05-18T18:56:17",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-АР3-К6_в2.pdf",
+          "findings": [
+            "F-065"
+          ],
+          "seen_at": "2026-05-18T18:13:13"
+        },
+        {
+          "project_id": "25.12.22_13АВ-РД-АР3-К5-К6_в2.pdf",
+          "findings": [
+            "F-002"
+          ],
+          "seen_at": "2026-05-18T18:56:17"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ 25772-2025, verified=2026-05-06)"
+    },
+    "ГОСТ 8478-81": {
+      "doc_number": "ГОСТ 8478-81",
+      "family": "ГОСТ",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-18T18:13:13",
+      "last_seen_at": "2026-05-19T01:58:23",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-АР3-К6_в2.pdf",
+          "findings": [
+            "F-072"
+          ],
+          "seen_at": "2026-05-18T18:13:13"
+        },
+        {
+          "project_id": "25.12.22_13АВ-РД-АР3-К5-К6_в2.pdf",
+          "findings": [
+            "F-001"
+          ],
+          "seen_at": "2026-05-18T18:56:17"
+        },
+        {
+          "project_id": "13АВ-РД-АР3-К4-К5.pdf",
+          "findings": [
+            "F-039"
+          ],
+          "seen_at": "2026-05-19T01:58:23"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch cancelled; В РФ утратил силу с 01.08.2024; сетки сварные для ж/б"
+    },
+    "ГОСТ Р 51032-97": {
+      "doc_number": "ГОСТ Р 51032-97",
+      "family": "ГОСТ Р",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-18T18:56:17",
+      "last_seen_at": "2026-05-18T18:56:17",
+      "occurrences": [
+        {
+          "project_id": "25.12.22_13АВ-РД-АР3-К5-К6_в2.pdf",
+          "findings": [
+            "F-008"
+          ],
+          "seen_at": "2026-05-18T18:56:17"
+        }
+      ]
+    },
+    "СП 2.13330.2020": {
+      "doc_number": "СП 2.13330.2020",
+      "family": "СП",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-18T18:56:17",
+      "last_seen_at": "2026-05-18T18:56:17",
+      "occurrences": [
+        {
+          "project_id": "25.12.22_13АВ-РД-АР3-К5-К6_в2.pdf",
+          "findings": [
+            "F-008"
+          ],
+          "seen_at": "2026-05-18T18:56:17"
+        }
+      ]
+    },
+    "ГОСТ 32210-2021": {
+      "doc_number": "ГОСТ 32210-2021",
+      "family": "ГОСТ",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T01:58:23",
+      "last_seen_at": "2026-05-19T04:57:10",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-АР3-К4-К5.pdf",
+          "findings": [
+            "F-038"
+          ],
+          "seen_at": "2026-05-19T01:58:23"
+        },
+        {
+          "project_id": "13АВ-РД-АР4.2-К6.pdf",
+          "findings": [
+            "F-035"
+          ],
+          "seen_at": "2026-05-19T04:57:10"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T22:14:04: typo, корректный код ГОСТ 32210-2013; версии 2021 нет; действует 2013"
+    },
+    "ГОСТ 23279-2022": {
+      "doc_number": "ГОСТ 23279-2022",
+      "family": "ГОСТ",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T01:58:23",
+      "last_seen_at": "2026-05-19T01:58:23",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-АР3-К4-К5.pdf",
+          "findings": [
+            "F-039"
+          ],
+          "seen_at": "2026-05-19T01:58:23"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T22:14:04: typo, корректный код ГОСТ 23279-2012; версии 2022 нет; действует 2012"
+    },
+    "ГОСТ Р 53306-2009": {
+      "doc_number": "ГОСТ Р 53306-2009",
+      "family": "ГОСТ Р",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T03:39:57",
+      "last_seen_at": "2026-05-19T03:39:57",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КЖ5.24.2-К2.pdf",
+          "findings": [
+            "F-018"
+          ],
+          "seen_at": "2026-05-19T03:39:57"
+        }
+      ]
+    },
+    "ГОСТ Р 12.2.143-2009": {
+      "doc_number": "ГОСТ Р 12.2.143-2009",
+      "family": "ГОСТ Р",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T04:57:10",
+      "last_seen_at": "2026-05-19T04:57:10",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-АР4.2-К6.pdf",
+          "findings": [
+            "F-007"
+          ],
+          "seen_at": "2026-05-19T04:57:10"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ 34428-2018, verified=2026-05-06)"
+    },
+    "ГОСТ 30247-2014": {
+      "doc_number": "ГОСТ 30247-2014",
+      "family": "ГОСТ",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T04:57:10",
+      "last_seen_at": "2026-05-19T04:57:10",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-АР4.2-К6.pdf",
+          "findings": [
+            "F-010"
+          ],
+          "seen_at": "2026-05-19T04:57:10"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T22:14:04: не существует или опечатка без явной замены; версии 2014 нет; есть ГОСТ 30247.0-94 и 30247.1-94 (разные части)"
+    },
+    "ГОСТ Р 21.201-2020": {
+      "doc_number": "ГОСТ Р 21.201-2020",
+      "family": "ГОСТ Р",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T04:57:10",
+      "last_seen_at": "2026-05-19T04:57:10",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-АР4.2-К6.pdf",
+          "findings": [
+            "F-035"
+          ],
+          "seen_at": "2026-05-19T04:57:10"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T22:14:04: typo, корректный код ГОСТ 21.201-2011; версии Р 2020 нет; действует межгос. 2011"
+    },
+    "ГОСТ Р 21.1101-2020": {
+      "doc_number": "ГОСТ Р 21.1101-2020",
+      "family": "ГОСТ Р",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T04:57:10",
+      "last_seen_at": "2026-05-19T04:57:10",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-АР4.2-К6.pdf",
+          "findings": [
+            "F-035"
+          ],
+          "seen_at": "2026-05-19T04:57:10"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Опечатка: такого кода нет, существует ГОСТ Р 21.101-2020 (СПДС, требования к ПД и РД)"
+    },
+    "СП 132.13330.2022": {
+      "doc_number": "СП 132.13330.2022",
+      "family": "СП",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T04:57:10",
+      "last_seen_at": "2026-05-19T04:57:10",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-АР4.2-К6.pdf",
+          "findings": [
+            "F-036"
+          ],
+          "seen_at": "2026-05-19T04:57:10"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T22:14:04: typo, корректный код СП 132.13330.2011; версии 2022 нет; действует СП 132.13330.2011"
+    },
+    "СП 10.13330.2017": {
+      "doc_number": "СП 10.13330.2017",
+      "family": "СП",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T13:33:32",
+      "last_seen_at": "2026-05-20T14:02:11",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-001"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К4.pdf",
+          "findings": [
+            "F-001"
+          ],
+          "seen_at": "2026-05-19T14:32:21"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К5.pdf",
+          "findings": [
+            "F-003"
+          ],
+          "seen_at": "2026-05-19T15:45:31"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К6.pdf",
+          "findings": [
+            "F-001"
+          ],
+          "seen_at": "2026-05-19T16:25:53"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-ПА.pdf",
+          "findings": [
+            "F-002"
+          ],
+          "seen_at": "2026-05-19T17:12:59"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T22:14:04: typo, корректный код СП 10.13130.2020; опечатка: .13330 → .13130"
+    },
+    "СО 898-2-2013": {
+      "doc_number": "СО 898-2-2013",
+      "family": "СО",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T13:33:32",
+      "last_seen_at": "2026-05-19T13:33:32",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-002"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Не СО, а ГОСТ Р ИСО 898-2-2013 (механич. свойства крепежа, гайки)"
+    },
+    "ГОСТ Р 52628-2006": {
+      "doc_number": "ГОСТ Р 52628-2006",
+      "family": "ГОСТ Р",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T13:33:32",
+      "last_seen_at": "2026-05-19T13:33:32",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-002"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=None); Заменён (гайки, мех. свойства и методы испытаний)"
+    },
+    "СО 898-2": {
+      "doc_number": "СО 898-2",
+      "family": "СО",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T13:33:32",
+      "last_seen_at": "2026-05-19T13:33:32",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-002"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Неполный код, без года; вероятно опечатка ГОСТ Р ИСО 898-2"
+    },
+    "ГОСТ Р 53295-2009": {
+      "doc_number": "ГОСТ Р 53295-2009",
+      "family": "ГОСТ Р",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T13:33:32",
+      "last_seen_at": "2026-05-20T14:02:11",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-003"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К5.pdf",
+          "findings": [
+            "F-002"
+          ],
+          "seen_at": "2026-05-19T15:45:31"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К6.pdf",
+          "findings": [
+            "F-003"
+          ],
+          "seen_at": "2026-05-19T16:25:53"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-ПА.pdf",
+          "findings": [
+            "F-016"
+          ],
+          "seen_at": "2026-05-19T17:12:59"
+        },
+        {
+          "project_id": "13АВ-РД-НВФ-К4 .pdf",
+          "findings": [
+            "F-006"
+          ],
+          "seen_at": "2026-05-19T20:55:55"
+        }
+      ]
+    },
+    "ГОСТ 23118-2019": {
+      "doc_number": "ГОСТ 23118-2019",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T13:33:32",
+      "last_seen_at": "2026-05-20T14:02:11",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-006",
+            "F-018"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К4.pdf",
+          "findings": [
+            "F-013"
+          ],
+          "seen_at": "2026-05-19T14:32:21"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К5.pdf",
+          "findings": [
+            "F-029",
+            "F-031"
+          ],
+          "seen_at": "2026-05-19T15:45:31"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К6.pdf",
+          "findings": [
+            "F-017",
+            "F-018",
+            "F-026"
+          ],
+          "seen_at": "2026-05-19T16:25:53"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-ПА.pdf",
+          "findings": [
+            "F-020",
+            "F-021",
+            "F-024"
+          ],
+          "seen_at": "2026-05-19T17:12:59"
+        }
+      ]
+    },
+    "ГОСТ 23118-2012": {
+      "doc_number": "ГОСТ 23118-2012",
+      "family": "ГОСТ",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T13:33:32",
+      "last_seen_at": "2026-05-19T17:12:59",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-006"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К4.pdf",
+          "findings": [
+            "F-013"
+          ],
+          "seen_at": "2026-05-19T14:32:21"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К5.pdf",
+          "findings": [
+            "F-029"
+          ],
+          "seen_at": "2026-05-19T15:45:31"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К6.pdf",
+          "findings": [
+            "F-018"
+          ],
+          "seen_at": "2026-05-19T16:25:53"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-ПА.pdf",
+          "findings": [
+            "F-021"
+          ],
+          "seen_at": "2026-05-19T17:12:59"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ 23118-2019, verified=2026-03-18)"
+    },
+    "ГОСТ 7798-70": {
+      "doc_number": "ГОСТ 7798-70",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T13:33:32",
+      "last_seen_at": "2026-05-19T16:25:53",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-012",
+            "F-027"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К4.pdf",
+          "findings": [
+            "F-007"
+          ],
+          "seen_at": "2026-05-19T14:32:21"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К6.pdf",
+          "findings": [
+            "F-006"
+          ],
+          "seen_at": "2026-05-19T16:25:53"
+        }
+      ]
+    },
+    "ГОСТ Р 52644-2006": {
+      "doc_number": "ГОСТ Р 52644-2006",
+      "family": "ГОСТ Р",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T13:33:32",
+      "last_seen_at": "2026-05-19T14:32:21",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-012"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К4.pdf",
+          "findings": [
+            "F-007"
+          ],
+          "seen_at": "2026-05-19T14:32:21"
+        }
+      ]
+    },
+    "ГОСТ 28778-90": {
+      "doc_number": "ГОСТ 28778-90",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T13:33:32",
+      "last_seen_at": "2026-05-20T14:02:11",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-012"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К4.pdf",
+          "findings": [
+            "F-007"
+          ],
+          "seen_at": "2026-05-19T14:32:21"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К6.pdf",
+          "findings": [
+            "F-026"
+          ],
+          "seen_at": "2026-05-19T16:25:53"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-ПА.pdf",
+          "findings": [
+            "F-012"
+          ],
+          "seen_at": "2026-05-19T17:12:59"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch cancelled; В РФ не действует (с 01.01.2018), болты самоанкерующиеся распорные"
+    },
+    "ГОСТ 2.114-2016": {
+      "doc_number": "ГОСТ 2.114-2016",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T13:33:32",
+      "last_seen_at": "2026-05-19T13:33:32",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-016"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
+        }
+      ]
+    },
+    "ГОСТ 5915-70": {
+      "doc_number": "ГОСТ 5915-70",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T13:33:32",
+      "last_seen_at": "2026-05-19T16:25:53",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-027"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К6.pdf",
+          "findings": [
+            "F-006"
+          ],
+          "seen_at": "2026-05-19T16:25:53"
+        }
+      ]
+    },
+    "ГОСТ 6402-70": {
+      "doc_number": "ГОСТ 6402-70",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T13:33:32",
+      "last_seen_at": "2026-05-19T16:25:53",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-027"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К6.pdf",
+          "findings": [
+            "F-006"
+          ],
+          "seen_at": "2026-05-19T16:25:53"
+        }
+      ]
+    },
+    "СП 230.1325800.2015": {
+      "doc_number": "СП 230.1325800.2015",
+      "family": "СП",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T13:33:32",
+      "last_seen_at": "2026-05-19T13:33:32",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К3.pdf",
+          "findings": [
+            "F-037"
+          ],
+          "seen_at": "2026-05-19T13:33:32"
+        }
+      ]
+    },
+    "ГОСТ 2772-2015": {
+      "doc_number": "ГОСТ 2772-2015",
+      "family": "ГОСТ",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T14:32:21",
+      "last_seen_at": "2026-05-19T17:12:59",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К4.pdf",
+          "findings": [
+            "F-002"
+          ],
+          "seen_at": "2026-05-19T14:32:21"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К5.pdf",
+          "findings": [
+            "F-013"
+          ],
+          "seen_at": "2026-05-19T15:45:31"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-ПА.pdf",
+          "findings": [
+            "F-001"
+          ],
+          "seen_at": "2026-05-19T17:12:59"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Опечатка - вероятно ГОСТ 27772-2015 (прокат для строительных стальных конструкций)"
+    },
+    "ГОСТ 7805-70": {
+      "doc_number": "ГОСТ 7805-70",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T14:32:21",
+      "last_seen_at": "2026-05-19T14:32:21",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К4.pdf",
+          "findings": [
+            "F-007"
+          ],
+          "seen_at": "2026-05-19T14:32:21"
+        }
+      ]
+    },
+    "ГОСТ Р 51691-2008": {
+      "doc_number": "ГОСТ Р 51691-2008",
+      "family": "ГОСТ Р",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T14:32:21",
+      "last_seen_at": "2026-05-19T14:32:21",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К4.pdf",
+          "findings": [
+            "F-014"
+          ],
+          "seen_at": "2026-05-19T14:32:21"
+        }
+      ]
+    },
+    "ГОСТ 9.410-88": {
+      "doc_number": "ГОСТ 9.410-88",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T14:32:21",
+      "last_seen_at": "2026-05-19T20:55:55",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К4.pdf",
+          "findings": [
+            "F-014"
+          ],
+          "seen_at": "2026-05-19T14:32:21"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-ПА.pdf",
+          "findings": [
+            "F-024"
+          ],
+          "seen_at": "2026-05-19T17:12:59"
+        },
+        {
+          "project_id": "13АВ-РД-НВФ-К4 .pdf",
+          "findings": [
+            "F-008"
+          ],
+          "seen_at": "2026-05-19T20:55:55"
+        }
+      ]
+    },
+    "ГОСТ 25772-83": {
+      "doc_number": "ГОСТ 25772-83",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T14:32:21",
+      "last_seen_at": "2026-05-20T14:02:11",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К4.pdf",
+          "findings": [
+            "F-015"
+          ],
+          "seen_at": "2026-05-19T14:32:21"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-ПА.pdf",
+          "findings": [
+            "F-003",
+            "F-018",
+            "F-024"
+          ],
+          "seen_at": "2026-05-19T17:12:59"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ 25772-2021, verified=2026-04-13)"
+    },
+    "СП 28.13330.2012": {
+      "doc_number": "СП 28.13330.2012",
+      "family": "СП",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T14:32:21",
+      "last_seen_at": "2026-05-19T16:38:35",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К4.pdf",
+          "findings": [
+            "F-020"
+          ],
+          "seen_at": "2026-05-19T14:32:21"
+        },
+        {
+          "project_id": "13АВ-РД-НВФ-К5.pdf",
+          "findings": [
+            "F-002"
+          ],
+          "seen_at": "2026-05-19T16:38:35"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=СП 28.13330.2017, verified=2026-05-06)"
+    },
+    "ГОСТ 1759.4-87": {
+      "doc_number": "ГОСТ 1759.4-87",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T15:45:31",
+      "last_seen_at": "2026-05-19T16:38:35",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К5.pdf",
+          "findings": [
+            "F-008"
+          ],
+          "seen_at": "2026-05-19T15:45:31"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-К6.pdf",
+          "findings": [
+            "F-018"
+          ],
+          "seen_at": "2026-05-19T16:25:53"
+        },
+        {
+          "project_id": "13АВ-РД-НВФ-К5.pdf",
+          "findings": [
+            "F-009"
+          ],
+          "seen_at": "2026-05-19T16:38:35"
+        }
+      ]
+    },
+    "ГОСТ 28778": {
+      "doc_number": "ГОСТ 28778",
+      "family": "ГОСТ",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T15:45:31",
+      "last_seen_at": "2026-05-19T15:45:31",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К5.pdf",
+          "findings": [
+            "F-008"
+          ],
+          "seen_at": "2026-05-19T15:45:31"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Код без года. Полный: ГОСТ 28778-90 (болты самоанкерующиеся), действующий"
+    },
+    "ГОСТ 9.032-74": {
+      "doc_number": "ГОСТ 9.032-74",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T15:45:31",
+      "last_seen_at": "2026-05-19T17:12:59",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К5.pdf",
+          "findings": [
+            "F-012"
+          ],
+          "seen_at": "2026-05-19T15:45:31"
+        },
+        {
+          "project_id": "13АВ-РД-КМ-ПА.pdf",
+          "findings": [
+            "F-024"
+          ],
+          "seen_at": "2026-05-19T17:12:59"
+        }
+      ]
+    },
+    "ГОСТ 13917-78": {
+      "doc_number": "ГОСТ 13917-78",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T16:25:53",
+      "last_seen_at": "2026-05-19T16:25:53",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К6.pdf",
+          "findings": [
+            "F-002"
+          ],
+          "seen_at": "2026-05-19T16:25:53"
+        }
+      ]
+    },
+    "ГОСТ 18123-82": {
+      "doc_number": "ГОСТ 18123-82",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T16:25:53",
+      "last_seen_at": "2026-05-19T16:25:53",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К6.pdf",
+          "findings": [
+            "F-002"
+          ],
+          "seen_at": "2026-05-19T16:25:53"
+        }
+      ]
+    },
+    "СО 273": {
+      "doc_number": "СО 273",
+      "family": "СО",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T16:25:53",
+      "last_seen_at": "2026-05-19T16:25:53",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-К6.pdf",
+          "findings": [
+            "F-006"
+          ],
+          "seen_at": "2026-05-19T16:25:53"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Обрезанный код без года/полного индекса, однозначной нормы найти не удалось"
+    },
+    "ГОСТ Р 58883-2020": {
+      "doc_number": "ГОСТ Р 58883-2020",
+      "family": "ГОСТ Р",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T16:38:35",
+      "last_seen_at": "2026-05-19T16:38:35",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-НВФ-К5.pdf",
+          "findings": [
+            "F-003",
+            "F-004",
+            "F-005",
+            "F-009",
+            "F-010",
+            "F-011",
+            "F-029"
+          ],
+          "seen_at": "2026-05-19T16:38:35"
+        }
+      ]
+    },
+    "ГОСТ Р 588883-2020": {
+      "doc_number": "ГОСТ Р 588883-2020",
+      "family": "ГОСТ Р",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T16:38:35",
+      "last_seen_at": "2026-05-19T16:38:35",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-НВФ-К5.pdf",
+          "findings": [
+            "F-003"
+          ],
+          "seen_at": "2026-05-19T16:38:35"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Опечатка - лишняя цифра. Корректный: ГОСТ Р 58883-2020 (НВФ, действует)"
+    },
+    "ГОСТ 22233-2018": {
+      "doc_number": "ГОСТ 22233-2018",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T16:38:35",
+      "last_seen_at": "2026-05-19T20:55:55",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-НВФ-К5.pdf",
+          "findings": [
+            "F-005"
+          ],
+          "seen_at": "2026-05-19T16:38:35"
+        },
+        {
+          "project_id": "13АВ-РД-НВФ-К4 .pdf",
+          "findings": [
+            "F-017"
+          ],
+          "seen_at": "2026-05-19T20:55:55"
+        }
+      ]
+    },
+    "СП 518.1311500.2022": {
+      "doc_number": "СП 518.1311500.2022",
+      "family": "СП",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T16:38:35",
+      "last_seen_at": "2026-05-19T16:38:35",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-НВФ-К5.pdf",
+          "findings": [
+            "F-008",
+            "F-015",
+            "F-024"
+          ],
+          "seen_at": "2026-05-19T16:38:35"
+        }
+      ]
+    },
+    "ГОСТ 9.005-72": {
+      "doc_number": "ГОСТ 9.005-72",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T16:38:35",
+      "last_seen_at": "2026-05-19T16:38:35",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-НВФ-К5.pdf",
+          "findings": [
+            "F-014"
+          ],
+          "seen_at": "2026-05-19T16:38:35"
+        }
+      ]
+    },
+    "ГОСТ 30244": {
+      "doc_number": "ГОСТ 30244",
+      "family": "ГОСТ",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T16:38:35",
+      "last_seen_at": "2026-05-19T16:38:35",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-НВФ-К5.pdf",
+          "findings": [
+            "F-015"
+          ],
+          "seen_at": "2026-05-19T16:38:35"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Код без года. Полный: ГОСТ 30244-94 (методы испытаний на горючесть), действует с 14.05.2018"
+    },
+    "ГОСТ Р 51032": {
+      "doc_number": "ГОСТ Р 51032",
+      "family": "ГОСТ Р",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T16:38:35",
+      "last_seen_at": "2026-05-19T16:38:35",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-НВФ-К5.pdf",
+          "findings": [
+            "F-015"
+          ],
+          "seen_at": "2026-05-19T16:38:35"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Код без года. Полный: ГОСТ Р 51032-97 (испытание на распространение пламени), действует"
+    },
+    "СО 3506-1": {
+      "doc_number": "СО 3506-1",
+      "family": "СО",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T16:38:35",
+      "last_seen_at": "2026-05-19T16:38:35",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-НВФ-К5.pdf",
+          "findings": [
+            "F-020"
+          ],
+          "seen_at": "2026-05-19T16:38:35"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Вероятно ошибка префикса - имеется в виду ГОСТ ISO 3506-1-2014 (крепёж из коррозионностойких сталей)"
+    },
+    "СП 522.1325800.2023": {
+      "doc_number": "СП 522.1325800.2023",
+      "family": "СП",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T16:38:35",
+      "last_seen_at": "2026-05-19T20:55:55",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-НВФ-К5.pdf",
+          "findings": [
+            "F-029"
+          ],
+          "seen_at": "2026-05-19T16:38:35"
+        },
+        {
+          "project_id": "13АВ-РД-НВФ-К4 .pdf",
+          "findings": [
+            "F-004",
+            "F-005",
+            "F-006",
+            "F-007",
+            "F-011",
+            "F-012",
+            "F-013",
+            "F-015",
+            "F-017",
+            "F-023",
+            "F-036",
+            "F-055"
+          ],
+          "seen_at": "2026-05-19T20:55:55"
+        }
+      ]
+    },
+    "СП 131.13330.2018": {
+      "doc_number": "СП 131.13330.2018",
+      "family": "СП",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T17:12:59",
+      "last_seen_at": "2026-05-19T17:12:59",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-ПА.pdf",
+          "findings": [
+            "F-011",
+            "F-024"
+          ],
+          "seen_at": "2026-05-19T17:12:59"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=СП 131.13330.2025, verified=2026-05-06)"
+    },
+    "ГОСТ 8706-78": {
+      "doc_number": "ГОСТ 8706-78",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T17:12:59",
+      "last_seen_at": "2026-05-20T14:02:11",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-ПА.pdf",
+          "findings": [
+            "F-024",
+            "F-027"
+          ],
+          "seen_at": "2026-05-19T17:12:59"
+        }
+      ]
+    },
+    "ГОСТ 9.306-85": {
+      "doc_number": "ГОСТ 9.306-85",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T17:12:59",
+      "last_seen_at": "2026-05-19T17:12:59",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-ПА.pdf",
+          "findings": [
+            "F-024"
+          ],
+          "seen_at": "2026-05-19T17:12:59"
+        }
+      ]
+    },
+    "ГОСТ 2.305": {
+      "doc_number": "ГОСТ 2.305",
+      "family": "ГОСТ",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T17:12:59",
+      "last_seen_at": "2026-05-19T17:12:59",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-ПА.pdf",
+          "findings": [
+            "F-030"
+          ],
+          "seen_at": "2026-05-19T17:12:59"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch invalid_code; Код без года. Действующая версия: ГОСТ 2.305-2008 (ЕСКД. Изображения - виды, разрезы, сечения)"
+    },
+    "ГОСТ 2.305-2008": {
+      "doc_number": "ГОСТ 2.305-2008",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T17:12:59",
+      "last_seen_at": "2026-05-19T17:12:59",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КМ-ПА.pdf",
+          "findings": [
+            "F-030"
+          ],
+          "seen_at": "2026-05-19T17:12:59"
+        }
+      ]
+    },
+    "ПП РФ № 1479": {
+      "doc_number": "ПП РФ № 1479",
+      "family": "ПП РФ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T20:55:55",
+      "last_seen_at": "2026-05-19T20:55:55",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-НВФ-К4 .pdf",
+          "findings": [
+            "F-002"
+          ],
+          "seen_at": "2026-05-19T20:55:55"
+        }
+      ]
+    },
+    "СП 513.1325800.2022": {
+      "doc_number": "СП 513.1325800.2022",
+      "family": "СП",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T20:55:55",
+      "last_seen_at": "2026-05-19T20:55:55",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-НВФ-К4 .pdf",
+          "findings": [
+            "F-005",
+            "F-016"
+          ],
+          "seen_at": "2026-05-19T20:55:55"
+        }
+      ]
+    },
+    "ГОСТ Р 70573-2022": {
+      "doc_number": "ГОСТ Р 70573-2022",
+      "family": "ГОСТ Р",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T20:55:55",
+      "last_seen_at": "2026-05-19T20:55:55",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-НВФ-К4 .pdf",
+          "findings": [
+            "F-007",
+            "F-013",
+            "F-018",
+            "F-037",
+            "F-055"
+          ],
+          "seen_at": "2026-05-19T20:55:55"
+        }
+      ]
+    },
+    "ГОСТ Р 56934-2016": {
+      "doc_number": "ГОСТ Р 56934-2016",
+      "family": "ГОСТ Р",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T20:55:55",
+      "last_seen_at": "2026-05-19T20:55:55",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-НВФ-К4 .pdf",
+          "findings": [
+            "F-042"
+          ],
+          "seen_at": "2026-05-19T20:55:55"
+        }
+      ]
+    },
+    "ГОСТ 28457-90": {
+      "doc_number": "ГОСТ 28457-90",
+      "family": "ГОСТ",
+      "status": "dismissed",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T20:55:55",
+      "last_seen_at": "2026-05-19T20:55:55",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-НВФ-К4 .pdf",
+          "findings": [
+            "F-044"
+          ],
+          "seen_at": "2026-05-19T20:55:55"
+        }
+      ],
+      "cleanup_note": "Auto-dismissed on 2026-05-19T22:15:23: WebSearch cancelled; Дюбели-шпильки распорные. Утратил силу в РФ с 01.07.1995 без замены"
+    },
+    "ГОСТ 34028-2016": {
+      "doc_number": "ГОСТ 34028-2016",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T22:14:04",
+      "last_seen_at": "2026-05-19T22:14:04",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КЖ5.39.2-К2.pdf",
+          "findings": [
+            "F-002",
+            "F-016"
+          ],
+          "seen_at": "2026-04-28T19:31:37"
+        }
+      ],
+      "cleanup_note": "Auto-added on 2026-05-19T22:14:04: typo-correction from ГОСТ 34208-2016; опечатка вместо ГОСТ 34028-2016"
+    },
+    "СП 132.13330.2011": {
+      "doc_number": "СП 132.13330.2011",
+      "family": "СП",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T22:14:04",
+      "last_seen_at": "2026-05-19T22:14:04",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-АР1.1-К4 (Изм.2)",
+          "findings": [
+            "F-038"
+          ],
+          "seen_at": "2026-04-29T11:57:33"
+        },
+        {
+          "project_id": "13АВ-РД-АР4.2-К6.pdf",
+          "findings": [
+            "F-036"
+          ],
+          "seen_at": "2026-05-19T04:57:10"
+        }
+      ],
+      "cleanup_note": "Auto-added on 2026-05-19T22:14:04: typo-correction from СП 132.13330.2024; версии 2024 нет; действует СП 132.13330.2011"
+    },
+    "ГОСТ Р 50571.5.54-2013": {
+      "doc_number": "ГОСТ Р 50571.5.54-2013",
+      "family": "ГОСТ Р",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T22:14:04",
+      "last_seen_at": "2026-05-19T22:14:04",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-ЭМ-К3 (от 19.03.2026).pdf",
+          "findings": [
+            "F-004"
+          ],
+          "seen_at": "2026-04-29T22:27:16"
+        }
+      ],
+      "cleanup_note": "Auto-added on 2026-05-19T22:14:04: typo-correction from ГОСТ Р 50571.5.534-2014; опечатка: .534 → .54"
+    },
+    "ГОСТ 15588-2014": {
+      "doc_number": "ГОСТ 15588-2014",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T22:14:04",
+      "last_seen_at": "2026-05-19T22:14:04",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-КЖ7.2-К2 (Изм.2).pdf",
+          "findings": [
+            "F-018"
+          ],
+          "seen_at": "2026-05-02T14:32:49"
+        }
+      ],
+      "cleanup_note": "Auto-added on 2026-05-19T22:14:04: typo-correction from ГОСТ 15588-2024; версии 2024 нет; актуальна 2014"
+    },
+    "ГОСТ Р 50462-2009": {
+      "doc_number": "ГОСТ Р 50462-2009",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T22:14:04",
+      "last_seen_at": "2026-05-19T22:14:04",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-ЭМ-К4 (от 27.02.26).pdf",
+          "findings": [
+            "F-015"
+          ],
+          "seen_at": "2026-05-05T01:13:42"
+        }
+      ],
+      "cleanup_note": "Auto-added on 2026-05-19T22:14:04: typo-correction from ГОСТ IEC 60446-2014; ГОСТ IEC 60446-2014 не существует; действует ГОСТ Р 50462-2009 (МЭК 60446:2007)"
+    },
+    "ГОСТ IEC 61347-2-13-2013": {
+      "doc_number": "ГОСТ IEC 61347-2-13-2013",
+      "family": "ГОСТ Р",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T22:14:04",
+      "last_seen_at": "2026-05-19T22:14:04",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-ЭО-К4 (от 21.01.2026).pdf",
+          "findings": [
+            "F-024"
+          ],
+          "seen_at": "2026-05-05T03:53:52"
+        }
+      ],
+      "cleanup_note": "Auto-added on 2026-05-19T22:14:04: typo-correction from ГОСТ Р МЭК 61347-2-13-2018; версии 2018 нет; известна 2013"
+    },
+    "ГОСТ 32210-2013": {
+      "doc_number": "ГОСТ 32210-2013",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T22:14:04",
+      "last_seen_at": "2026-05-19T22:14:04",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-АР3-К4-К5.pdf",
+          "findings": [
+            "F-038"
+          ],
+          "seen_at": "2026-05-19T01:58:23"
+        },
+        {
+          "project_id": "13АВ-РД-АР4.2-К6.pdf",
+          "findings": [
+            "F-035"
+          ],
+          "seen_at": "2026-05-19T04:57:10"
+        }
+      ],
+      "cleanup_note": "Auto-added on 2026-05-19T22:14:04: typo-correction from ГОСТ 32210-2021; версии 2021 нет; действует 2013"
+    },
+    "ГОСТ 23279-2012": {
+      "doc_number": "ГОСТ 23279-2012",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T22:14:04",
+      "last_seen_at": "2026-05-19T22:14:04",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-АР3-К4-К5.pdf",
+          "findings": [
+            "F-039"
+          ],
+          "seen_at": "2026-05-19T01:58:23"
+        }
+      ],
+      "cleanup_note": "Auto-added on 2026-05-19T22:14:04: typo-correction from ГОСТ 23279-2022; версии 2022 нет; действует 2012"
+    },
+    "ГОСТ 21.201-2011": {
+      "doc_number": "ГОСТ 21.201-2011",
+      "family": "ГОСТ Р",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-19T22:14:04",
+      "last_seen_at": "2026-05-19T22:14:04",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-АР4.2-К6.pdf",
+          "findings": [
+            "F-035"
+          ],
+          "seen_at": "2026-05-19T04:57:10"
+        }
+      ],
+      "cleanup_note": "Auto-added on 2026-05-19T22:14:04: typo-correction from ГОСТ Р 21.201-2020; версии Р 2020 нет; действует межгос. 2011"
     }
   }
 }
