@@ -1,0 +1,15 @@
+{
+  "id": "eom_01_cable_sizing",
+  "discipline": "EOM",
+  "title": "EOM — выбор сечения питающего кабеля ВРУ",
+  "md_file": "input.md",
+  "stage": "РД",
+  "notes": "Тестовый кейс на: занижение сечения, обсолетную норму (СНиП → СП), отсутствие УЗО, противоречие в таблице нагрузок",
+  "document_type": "full_rd",
+  "expected_complexity": "medium",
+  "has_cross_discipline": false,
+  "has_completeness_gaps": true,
+  "has_calculation_errors": true,
+  "has_normative_errors": true,
+  "has_hidden_contradictions": false
+}

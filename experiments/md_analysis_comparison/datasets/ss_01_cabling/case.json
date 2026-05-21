@@ -1,0 +1,15 @@
+{
+  "id": "ss_01_cabling",
+  "discipline": "SS",
+  "title": "СС — структурированная кабельная система офисных помещений",
+  "md_file": "input.md",
+  "stage": "РД",
+  "notes": "Тестовый кейс на: ГОСТ Р 53246-2008 (отменён), UTP кат.5e для магистрали 10G, отсутствие кабельного журнала, рассогласование с АР по нишам стояков, противоречие сечений в тексте/таблице",
+  "document_type": "full_rd",
+  "expected_complexity": "medium",
+  "has_cross_discipline": false,
+  "has_completeness_gaps": true,
+  "has_calculation_errors": false,
+  "has_normative_errors": true,
+  "has_hidden_contradictions": false
+}

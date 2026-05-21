@@ -1,0 +1,15 @@
+{
+  "id": "km_03_connections",
+  "discipline": "KM",
+  "title": "КМ — узлы крепления стропильных ферм к колоннам",
+  "md_file": "input.md",
+  "stage": "РД",
+  "notes": "Болтовые и сварные соединения. Чистый прогон без serious грубых ошибок — для baseline noise check. Только мелкие неточности.",
+  "document_type": "full_rd",
+  "expected_complexity": "low",
+  "has_cross_discipline": false,
+  "has_completeness_gaps": true,
+  "has_calculation_errors": false,
+  "has_normative_errors": false,
+  "has_hidden_contradictions": false
+}

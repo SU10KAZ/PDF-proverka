@@ -1,0 +1,5397 @@
+[
+  {
+    "id": "AR-01",
+    "discipline": "AR",
+    "item_name": "Пояснительная записка к разделу АР",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "ГОСТ Р 21.1101-2013, п. 4.2",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "ПЗ к разделу АР обязательна на стадии ПД (раздел 3 ПП РФ 87). На стадии РД (отдельная марка АР-К3) — может отсутствовать как атрибут тома ПД.",
+    "normative_basis": "ПП РФ №87, раздел 3 (для ПД); ГОСТ Р 21.101-2020 (для РД-комплектов)",
+    "exact_clause_or_section": "ПП РФ 87 разд. III, ст. 13",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать; если стадия документа — РД-марка (а не ПД-том), пункт может быть атрибутом раздела ПД и в данной марке отсутствовать обоснованно",
+    "example_valid_missing_case": "ПД-том АР целиком: ПЗ отсутствует → finding",
+    "example_invalid_missing_case": "РД-марка АР-К3 (отдельная книга): ПЗ может быть в верхнем томе → drop",
+    "current_norm_issues": [
+      "ГОСТ Р 21.1101-2013 заменён на ГОСТ Р 21.101-2020 — обновить ссылку"
+    ]
+  },
+  {
+    "id": "AR-02",
+    "discipline": "AR",
+    "item_name": "Поэтажные планы с экспликацией помещений",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "ГОСТ 21.501-2018, п. 5.3",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "ГОСТ 21.501-2018",
+    "exact_clause_or_section": "п. 5.3, форма 7",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать",
+    "example_valid_missing_case": "Том АР не содержит ни одного поэтажного плана",
+    "example_invalid_missing_case": "Документ — спецификация заполнения проёмов",
+    "current_norm_issues": []
+  },
+  {
+    "id": "AR-03",
+    "discipline": "AR",
+    "item_name": "Разрезы здания (продольный и поперечный) с отметками",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "ГОСТ 21.501-2018, п. 5.5",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "ГОСТ 21.501-2018",
+    "exact_clause_or_section": "п. 5.5",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать",
+    "example_valid_missing_case": "Том АР с этажными планами, но без разрезов",
+    "example_invalid_missing_case": "Документ — обмерный чертёж одного помещения",
+    "current_norm_issues": []
+  },
+  {
+    "id": "AR-04",
+    "discipline": "AR",
+    "item_name": "Фасады с указанием отметок, материалов отделки и узлов",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "ГОСТ 21.501-2018, п. 5.6",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "ГОСТ 21.501-2018",
+    "exact_clause_or_section": "п. 5.6",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "AR-05",
+    "discipline": "AR",
+    "item_name": "Раздел \"Пожарная безопасность\" / огнестойкость",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "ФЗ-123, СП 2.13130.2020",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "Раздел ПБ — самостоятельный раздел ПД (раздел 9 ПП РФ 87). Не должен дублироваться целиком внутри АР. В АР достаточно ссылок на класс пожарной опасности и предел огнестойкости конструкций.",
+    "normative_basis": "ПП РФ 87 раздел 9; ФЗ-123",
+    "exact_clause_or_section": "ФЗ-123 ст. 87 (класс конструктивной пожарной опасности)",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; в РД-марке АР раздел ПБ может быть в отдельном томе ПД",
+    "example_valid_missing_case": "ПД-том АР без указания класса пожарной опасности → ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "example_invalid_missing_case": "Флагать как «отсутствует раздел ПБ» в АР, когда ПБ — отдельный том",
+    "current_norm_issues": []
+  },
+  {
+    "id": "AR-06",
+    "discipline": "AR",
+    "item_name": "Раздел \"Эвакуация\" — пути, ширина, протяжённость, выходы",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 1.13130.2020",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "В АР даются эвакуационные пути и выходы на планах. Целиком раздел эвакуации входит в ПБ.",
+    "normative_basis": "СП 1.13130.2020",
+    "exact_clause_or_section": "разд. 4-6",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "КРИТИЧЕСКОЕ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты",
+    "example_valid_missing_case": "АР содержит планы, но без указания эвакуационных путей → КРИТИЧЕСКОЕ для МКД",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "AR-07",
+    "discipline": "AR",
+    "item_name": "Штамп с указанием стадии (П / Р) и нормоконтроль",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "ГОСТ Р 21.1101-2013, п. 5",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "audit_comparison",
+      "tz_vs_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД",
+      "КМД"
+    ],
+    "applicability_conditions": "Применяется ко всем PDF-документам РД/ПД",
+    "normative_basis": "ГОСТ Р 21.101-2020",
+    "exact_clause_or_section": "разд. 5, формы 3/4/6",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "Если штамп явно присутствует — drop",
+    "example_valid_missing_case": "Стадия в штампе не указана / штамп пустой",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": [
+      "ГОСТ Р 21.1101-2013 заменён на ГОСТ Р 21.101-2020 — обновить ссылку"
+    ]
+  },
+  {
+    "id": "AR-08",
+    "discipline": "AR",
+    "item_name": "Расчёт инсоляции жилых помещений",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "СП 50.13330.2012, СанПиН 1.2.3685-21",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "Только для жилых МКД. Не обязателен для общественных зданий, складов, апартаментов с временным проживанием. Проверить тип объекта.",
+    "normative_basis": "СанПиН 1.2.3685-21 (раздел III); ранее СанПиН 2.2.1/2.1.1.1076-01",
+    "exact_clause_or_section": "СанПиН 1.2.3685-21 п. 79 и табл. 5.34",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; нежилое назначение; не та стадия",
+    "example_valid_missing_case": "ПД-том АР жилого МКД без расчёта инсоляции квартир",
+    "example_invalid_missing_case": "Расчёт инсоляции для офисного центра — не требуется",
+    "current_norm_issues": [
+      "СП 50.13330.2012 → есть актуальная редакция 2024; пункт по инсоляции точнее искать в СанПиН 1.2.3685-21"
+    ]
+  },
+  {
+    "id": "AR-09",
+    "discipline": "AR",
+    "item_name": "ТЭП объекта (этажность, площади, строит. объём)",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "ГОСТ Р 21.1101-2013, п. 4.2.2",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "ТЭП — атрибут раздела ПЗ ПД-тома, а не отдельной марки АР",
+    "normative_basis": "ПП РФ 87 раздел 1 (ПЗ); ГОСТ Р 21.101-2020",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; если стадия документа — РД-марка (а не ПД-том), пункт может быть атрибутом раздела ПД и в данной марке отсутствовать обоснованно",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "РД-марка АР3 без ТЭП — ТЭП в томе ПЗ, не здесь",
+    "current_norm_issues": [
+      "ГОСТ Р 21.1101-2013 заменён на ГОСТ Р 21.101-2020 — обновить ссылку"
+    ]
+  },
+  {
+    "id": "AR-10",
+    "discipline": "AR",
+    "item_name": "Спецификация заполнения оконных и дверных проёмов",
+    "current_section": "Mandatory required specifications / schedules",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_schedule",
+    "current_norm_reference": "ГОСТ 21.501-2018, п. 5.10",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Применима к РД-тому или к Excel-выгрузке спецификации",
+    "normative_basis": "ГОСТ 21.501-2018",
+    "exact_clause_or_section": "п. 5.10, форма 7",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "AR-11",
+    "discipline": "AR",
+    "item_name": "Ведомость отделки помещений",
+    "current_section": "Mandatory required specifications / schedules",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_schedule",
+    "current_norm_reference": "ГОСТ 21.501-2018, п. 5.11",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "ГОСТ 21.501-2018",
+    "exact_clause_or_section": "п. 5.11",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "AR-12",
+    "discipline": "AR",
+    "item_name": "Экспликация помещений с привязкой к этажным планам",
+    "current_section": "Mandatory required specifications / schedules",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_schedule",
+    "current_norm_reference": "ГОСТ 21.501-2018, п. 5.3",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "ГОСТ 21.501-2018",
+    "exact_clause_or_section": "п. 5.3, форма 2",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "AR-13",
+    "discipline": "AR",
+    "item_name": "Характерные узлы (кровля, парапет, цоколь)",
+    "current_section": "Mandatory required diagrams / schemes",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_diagram",
+    "current_norm_reference": "ГОСТ 21.501-2018, п. 5.9",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Обязательны для тех узлов, что фактически есть в проекте (если нет эксплуатируемой кровли — нет смысла требовать узлы кровли)",
+    "normative_basis": "ГОСТ 21.501-2018",
+    "exact_clause_or_section": "п. 5.9",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "если в MD нет упоминания соответствующего оборудования — пункт неприменим",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "AR-14",
+    "discipline": "AR",
+    "item_name": "Схема эвакуационных путей и выходов на планах",
+    "current_section": "Mandatory required diagrams / schemes",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_diagram",
+    "current_norm_reference": "СП 1.13130.2020",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "СП 1.13130.2020",
+    "exact_clause_or_section": "разд. 4-6",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "КРИТИЧЕСКОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "AR-15",
+    "discipline": "AR",
+    "item_name": "Координация проходов / отверстий ОВ/ВК/ЭОМ",
+    "current_section": "Mandatory coordination requirements (cross-discipline)",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "ГОСТ 21.501-2018, п. 5.8",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Coordination — process artifact, часто оформляется заданием смежнику в виде отдельного письма. Отсутствие его в самой марке АР не = нарушение нормы.",
+    "normative_basis": "ГОСТ 21.501-2018 (рекомендация по координации)",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "Coordination — это часто отдельный документ задания смежнику; флагать missing нельзя; можно флагать только при явном противоречии (отверстие на плане АР, но размер не указан)",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "Флагать «отсутствует координация ОВ» как missing finding — координация может быть в письме-задании, которое мы не видим",
+    "current_norm_issues": []
+  },
+  {
+    "id": "AR-16",
+    "discipline": "AR",
+    "item_name": "Координация с КЖ/КМ по закладным и опиранию",
+    "current_section": "Mandatory coordination requirements (cross-discipline)",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "ГОСТ 21.501-2018",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "То же — координация часто это задание смежнику",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "AR-17",
+    "discipline": "AR",
+    "item_name": "Указания по приёмке отделочных работ",
+    "current_section": "Mandatory testing / commissioning requirements",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 71.13330.2017",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Указания по приёмке часто выносятся в отдельный документ (ПОС/ППР). Их отсутствие в АР не = нарушение.",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "AR-18",
+    "discipline": "AR",
+    "item_name": "Раздел отделки с привязкой к экспликации",
+    "current_section": "Recommended items",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "incomplete_specification",
+    "current_norm_reference": "ГОСТ 21.501-2018, п. 5.11",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "AR-19",
+    "discipline": "AR",
+    "item_name": "Решение по доступности для МГН",
+    "current_section": "Recommended items",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 59.13330.2020",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "ОДИ — самостоятельный раздел 10 ПП РФ 87. В АР достаточно проектных решений; целиком раздел в АР не входит.",
+    "normative_basis": "СП 59.13330.2020; ПП РФ 87 раздел 10",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "Если в проекте есть отдельный том ОДИ — флагать «отсутствует МГН в АР» нельзя",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "AR-20",
+    "discipline": "AR",
+    "item_name": "Звукоизоляционные характеристики ограждений",
+    "current_section": "Recommended items",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 51.13330.2011",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "если стадия документа — РД-марка (а не ПД-том), пункт может быть атрибутом раздела ПД и в данной марке отсутствовать обоснованно",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "AR-21",
+    "discipline": "AR",
+    "item_name": "Расчёт КЕО (естественная освещённость) — для жилых МКД",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "СП 52.13330.2016",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "Только жилые МКД и определённые типы общественных зданий (детсады, школы)",
+    "normative_basis": "СП 52.13330.2016",
+    "exact_clause_or_section": "разд. 5",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "нежилое и не социальное назначение",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "AR-22",
+    "discipline": "AR",
+    "item_name": "Узлы крепления светопрозрачных конструкций — при наличии витражей",
+    "current_section": "Conditional items",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 426.1325800.2020",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии витражей/СПФ-фасадов",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "нет витражей в MD",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "AR-23",
+    "discipline": "AR",
+    "item_name": "План кровли — при наличии эксплуатируемой кровли",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_diagram",
+    "current_norm_reference": "ГОСТ 21.501-2018",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии эксплуатируемой кровли",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "нет эксплуатируемой кровли",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "EOM-01",
+    "discipline": "EOM",
+    "item_name": "Общие данные: категория надёжности, система заземления, U",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "ПУЭ-7 п. 1.2.18; СП 256.1325800.2016 п. 5",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "В РД-марке ЭМ-К3 общие данные могут быть атрибутом тома ПД (ЭОМ).",
+    "normative_basis": "СП 256.1325800.2016 (ред. 2024)",
+    "exact_clause_or_section": "разд. 5",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать; если стадия документа — РД-марка (а не ПД-том), пункт может быть атрибутом раздела ПД и в данной марке отсутствовать обоснованно",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": [
+      "ПУЭ-7 не зарегистрирован Минюстом — применяется добровольно; требуется параллельная ссылка на СП 256"
+    ]
+  },
+  {
+    "id": "EOM-02",
+    "discipline": "EOM",
+    "item_name": "\"Защита от поражения электротоком и заземление\" + СУП",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "ПУЭ-7 гл. 1.7; СП 256.1325800.2016",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "СП 256.1325800.2016; СП 437.1325800.2018",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": [
+      "ПУЭ-7 — добровольное; основная ссылка должна быть на СП"
+    ]
+  },
+  {
+    "id": "EOM-03",
+    "discipline": "EOM",
+    "item_name": "Освещение: рабочее, аварийное (эвакуац. и резервное)",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 52.13330.2016, СП 256.1325800.2016",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "СП 256.1325800.2016 (разд. 7); СП 52.13330.2016",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "EOM-04",
+    "discipline": "EOM",
+    "item_name": "Расчёт электрических нагрузок (электробаланс)",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "КРИТИЧЕСКОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 256.1325800.2016 п. 6.1",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "Электробаланс — атрибут раздела 5.1 ПД. В РД-марке может ссылаться на ПД.",
+    "normative_basis": "СП 256.1325800.2016",
+    "exact_clause_or_section": "разд. 6 (расчётные нагрузки)",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "КРИТИЧЕСКОЕ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать; если стадия документа — РД-марка (а не ПД-том), пункт может быть атрибутом раздела ПД и в данной марке отсутствовать обоснованно",
+    "example_valid_missing_case": "ПД-том ЭОМ без электробаланса вообще → КРИТИЧЕСКОЕ",
+    "example_invalid_missing_case": "РД ЭМ-К3, в текстовой части ссылка «нагрузки см. ЭОМ-ПД» → drop",
+    "current_norm_issues": []
+  },
+  {
+    "id": "EOM-05",
+    "discipline": "EOM",
+    "item_name": "Перечень электроприёмников с P_уст, K_с, P_расч",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 256.1325800.2016 п. 6.4",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "СП 256.1325800.2016",
+    "exact_clause_or_section": "разд. 6 (нужна проверка точного п. 6.4)",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": [
+      "Точный пункт «6.4» нужно сверить с действующей редакцией СП 256"
+    ]
+  },
+  {
+    "id": "EOM-06",
+    "discipline": "EOM",
+    "item_name": "Расчёт токов КЗ и проверка селективности",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "ГОСТ Р 50571.5.52-2011, СП 256.1325800.2016",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "Расчёт КЗ — атрибут ПД. В РД-марке часто ссылается на ПД.",
+    "normative_basis": "СП 256.1325800.2016; ГОСТ Р 50571.4.43; ГОСТ Р 50571.5.52",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать; если стадия документа — РД-марка (а не ПД-том), пункт может быть атрибутом раздела ПД и в данной марке отсутствовать обоснованно",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "EOM-07",
+    "discipline": "EOM",
+    "item_name": "Расчёт потерь напряжения в магистральных и групповых линиях",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 256.1325800.2016 п. 8.5",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": [
+      "Пункт 8.5 в СП 256 — проверить номер"
+    ]
+  },
+  {
+    "id": "EOM-08",
+    "discipline": "EOM",
+    "item_name": "Кабельный журнал отходящих линий",
+    "current_section": "Mandatory required specifications / schedules",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_schedule",
+    "current_norm_reference": "ГОСТ 21.613-2014 п. 5.5",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "ГОСТ 21.613-2014",
+    "exact_clause_or_section": "п. 5.5",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "EOM-09",
+    "discipline": "EOM",
+    "item_name": "Спецификация оборудования, изделий и материалов",
+    "current_section": "Mandatory required specifications / schedules",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_schedule",
+    "current_norm_reference": "ГОСТ 21.110-2013",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "ГОСТ 21.110-2013",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "EOM-10",
+    "discipline": "EOM",
+    "item_name": "Однолинейная схема ВРУ/ГРЩ с аппаратами и кабелями",
+    "current_section": "Mandatory required diagrams / schemes",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_diagram",
+    "current_norm_reference": "ГОСТ 21.613-2014 п. 5.4",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "ГОСТ 21.613-2014",
+    "exact_clause_or_section": "п. 5.4",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "EOM-11",
+    "discipline": "EOM",
+    "item_name": "Схемы ЩР/ЩО/ЩЭ с группами потребителей",
+    "current_section": "Mandatory required diagrams / schemes",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_diagram",
+    "current_norm_reference": "ГОСТ 21.613-2014",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "EOM-12",
+    "discipline": "EOM",
+    "item_name": "План этажей с трассировкой кабелей и щитами",
+    "current_section": "Mandatory required diagrams / schemes",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_diagram",
+    "current_norm_reference": "ГОСТ 21.613-2014",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "EOM-13",
+    "discipline": "EOM",
+    "item_name": "На каждом кабеле: сечение и марка (FRLS — для ПБ)",
+    "current_section": "Mandatory required parameters",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "ГОСТ 31996-2012",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "ГОСТ 31996-2012; ГОСТ 31565-2012 (исполнение FRLS/FRHF)",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "EOM-14",
+    "discipline": "EOM",
+    "item_name": "На каждом АВ: I_ном, x-ка (B/C/D), I_откл",
+    "current_section": "Mandatory required parameters",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "ГОСТ Р 50345-2010",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "EOM-15",
+    "discipline": "EOM",
+    "item_name": "Длина участка кабеля (для расчёта потерь и КЗ)",
+    "current_section": "Mandatory required parameters",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Длина — частый параметр в кабельных журналах, но не всегда выводится в спецификации",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "EOM-16",
+    "discipline": "EOM",
+    "item_name": "Перечень электроприёмников ОВ/ВК от смежников",
+    "current_section": "Mandatory coordination requirements",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Это задание смежнику, часто в виде отдельного письма",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "Cross-discipline coordination — обычно процесс-артефакт; флагать missing нельзя",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "EOM-17",
+    "discipline": "EOM",
+    "item_name": "Координация АПС: управление ОВ и ППО при пожаре",
+    "current_section": "Mandatory coordination requirements",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 7.13130.2013; СП 484.1311500.2020",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Только если в проекте есть АПС и противодымная вентиляция",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "Алгоритм управления — обычно в АПС, не в ЭОМ",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "EOM-18",
+    "discipline": "EOM",
+    "item_name": "Закладные / отверстия от АР/КЖ для кабельных трасс",
+    "current_section": "Mandatory coordination requirements",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "EOM-19",
+    "discipline": "EOM",
+    "item_name": "Указания по приёмо-сдаточным испытаниям электроустановок",
+    "current_section": "Mandatory testing / commissioning",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "ПУЭ-7 гл. 1.8; ГОСТ Р 50571.16-2019; СП 76.13330.2016",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Программа испытаний — часто отдельный документ для пусконаладки",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "EOM-20",
+    "discipline": "EOM",
+    "item_name": "Расчёт компенсации реактивной мощности",
+    "current_section": "Recommended items",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "Только для объектов с большой нагрузкой двигателей / промышленных",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "жилой МКД без больших двигательных нагрузок — компенсация необязательна",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "EOM-21",
+    "discipline": "EOM",
+    "item_name": "Схема АВР для потребителей I категории",
+    "current_section": "Recommended items",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_diagram",
+    "current_norm_reference": "СП 256.1325800.2016",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Только если в проекте заявлена I или I-особая категория",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "Категория не выше II — АВР не обязателен",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "EOM-22",
+    "discipline": "EOM",
+    "item_name": "Молниезащита с расчётом класса",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СО-153-34.21.122-2003",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "Только при попадании объекта в категории по СО-153",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "низкое здание, низкая категория объекта",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "EOM-23",
+    "discipline": "EOM",
+    "item_name": "Схема резервного питания (АВР/ДГУ/ИБП) для I категории",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "ПУЭ-7 п. 1.2",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Только при I/I-особой категории надёжности",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "EOM-24",
+    "discipline": "EOM",
+    "item_name": "УЗО для розеток (30 мА) и ванных (10 мА)",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "ПУЭ-7 п. 7.1.71-7.1.83",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Применяется к розеточным группам и санузлам",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": [
+      "Пункты ПУЭ-7 — добровольное применение; параллель: СП 256.1325800.2016 разд. 7"
+    ]
+  },
+  {
+    "id": "EOM-25",
+    "discipline": "EOM",
+    "item_name": "Координация с разделом ВТ — электропитание лифтов",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии лифтов",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-01",
+    "discipline": "KJ",
+    "item_name": "Общие данные: классы бетона, арматуры, F, W",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 63.13330.2018, разделы 6 и 10",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "СП 63.13330.2018",
+    "exact_clause_or_section": "разд. 6, 10",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-02",
+    "discipline": "KJ",
+    "item_name": "Схема расположения элементов: фундаменты, плиты, балки",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "ГОСТ 21.501-2018 п. 5.4",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-03",
+    "discipline": "KJ",
+    "item_name": "Антикоррозионная защита бетонных и арматурных конструкций",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 28.13330.2017",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Подробно — только при агрессивной среде по СП 28; для нормальной среды достаточно ссылки",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-04",
+    "discipline": "KJ",
+    "item_name": "Требования к производству работ (опалубка, бетонирование)",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 70.13330.2012",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Часто оформляется отдельным ППР; в КЖ-марке может быть только ссылка",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-05",
+    "discipline": "KJ",
+    "item_name": "Расчётная схема несущего каркаса с нагрузками",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "КРИТИЧЕСКОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 20.13330.2016, СП 63.13330.2018 п. 6",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "Расчётная схема — атрибут ПД",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "КРИТИЧЕСКОЕ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать; если стадия документа — РД-марка (а не ПД-том), пункт может быть атрибутом раздела ПД и в данной марке отсутствовать обоснованно",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-06",
+    "discipline": "KJ",
+    "item_name": "Сбор нагрузок (постоянные, временные, снег, ветер)",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "КРИТИЧЕСКОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 20.13330.2016",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "КРИТИЧЕСКОЕ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать; если стадия документа — РД-марка (а не ПД-том), пункт может быть атрибутом раздела ПД и в данной марке отсутствовать обоснованно",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-07",
+    "discipline": "KJ",
+    "item_name": "Расчёт по I группе предельных состояний",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "КРИТИЧЕСКОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 63.13330.2018 п. 8",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "КРИТИЧЕСКОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-08",
+    "discipline": "KJ",
+    "item_name": "Расчёт по II ГПС + продавливание",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 63.13330.2018 п. 8.1.46, 8.2",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": [
+      "Точные пункты 8.1.46 и 8.2 проверить через mcp__norms"
+    ]
+  },
+  {
+    "id": "KJ-09",
+    "discipline": "KJ",
+    "item_name": "Геотехнический расчёт оснований с привязкой к ИГИ",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 22.13330.2016",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "Только при наличии ИГИ и при типе фундамента, требующем расчёта основания",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-10",
+    "discipline": "KJ",
+    "item_name": "Спецификация арматуры (класс, диаметр, длина)",
+    "current_section": "Mandatory required specifications / schedules",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_schedule",
+    "current_norm_reference": "ГОСТ 21.501-2018, СП 63.13330.2018",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-11",
+    "discipline": "KJ",
+    "item_name": "Ведомость расхода стали",
+    "current_section": "Mandatory required specifications / schedules",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_schedule",
+    "current_norm_reference": "ГОСТ 21.501-2018",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-12",
+    "discipline": "KJ",
+    "item_name": "Спецификация закладных деталей (ГОСТ 14098-2014)",
+    "current_section": "Mandatory required specifications / schedules",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_schedule",
+    "current_norm_reference": "ГОСТ 21.502-2016",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Только если в КЖ есть закладные детали",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-13",
+    "discipline": "KJ",
+    "item_name": "Узлы армирования (колонна-плита, балка-колонна и т.п.)",
+    "current_section": "Mandatory required diagrams / schemes",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_diagram",
+    "current_norm_reference": "ГОСТ 21.501-2018, СП 63.13330.2018 п. 10",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-14",
+    "discipline": "KJ",
+    "item_name": "Узлы сварных соединений арматуры",
+    "current_section": "Mandatory required diagrams / schemes",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_diagram",
+    "current_norm_reference": "ГОСТ 14098-2014",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии сварных соединений арматуры",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "нет сварных соединений (все стыки вязаные/механические)",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-15",
+    "discipline": "KJ",
+    "item_name": "Класс арматуры, диаметр, шаг, защитный слой на каждом элементе",
+    "current_section": "Mandatory required parameters",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "СП 63.13330.2018 п. 10.3",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-16",
+    "discipline": "KJ",
+    "item_name": "Длина анкеровки / нахлёста",
+    "current_section": "Mandatory required parameters",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "СП 63.13330.2018 п. 10.3.5",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": [
+      "Точный пункт 10.3.5 в СП 63 — сверить"
+    ]
+  },
+  {
+    "id": "KJ-17",
+    "discipline": "KJ",
+    "item_name": "Закладные для КМ/ЭОМ/ОВ",
+    "current_section": "Mandatory coordination requirements",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Coordination — process artifact",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-18",
+    "discipline": "KJ",
+    "item_name": "Отверстия в плитах для ОВ/ВК с армированием",
+    "current_section": "Mandatory coordination requirements",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии отверстий ≥ установленного размера",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-19",
+    "discipline": "KJ",
+    "item_name": "Привязка фундаментов к ИГИ",
+    "current_section": "Mandatory coordination requirements",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 22.13330.2016",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "ИГИ — отдельный документ; в КЖ — ссылка",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "Если есть ссылка «по данным ИГИ от …» — нормально",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-20",
+    "discipline": "KJ",
+    "item_name": "Контроль качества бетонирования и приёмка скрытых работ",
+    "current_section": "Mandatory testing / commissioning",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 70.13330.2012",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Часто в ППР",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-21",
+    "discipline": "KJ",
+    "item_name": "Расчёт прогибов и раскрытия трещин",
+    "current_section": "Recommended items",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 63.13330.2018",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-22",
+    "discipline": "KJ",
+    "item_name": "Технологическая последовательность бетонных работ",
+    "current_section": "Recommended items",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 70.13330.2012",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-23",
+    "discipline": "KJ",
+    "item_name": "Расчёт на ветровую нагрузку с пульсациями (≥ 75 м)",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 20.13330.2016",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "Только для высоких зданий (≥ 75 м)",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "Здание ниже 75 м",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-24",
+    "discipline": "KJ",
+    "item_name": "Расчёт на сейсмические воздействия (сейсмо-районы)",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 14.13330.2018",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "Только в сейсмических районах ≥ 6 баллов",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "несейсмический район по карте ОСР",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KJ-25",
+    "discipline": "KJ",
+    "item_name": "Гидроизоляция и расчёт водонепроницаемости подземной части",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 250.1325800.2016",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии подземной части",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "нет подземной части",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-01",
+    "discipline": "KM",
+    "item_name": "Общие данные: классы стали, обозначения швов, точность",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "ГОСТ 21.502-2016 п. 4",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "ГОСТ 21.502-2016; ГОСТ 27772-2015",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-02",
+    "discipline": "KM",
+    "item_name": "Антикоррозионная защита (система покрытия)",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 28.13330.2017",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Подробный раздел — для агрессивной среды; для нормальной — ссылка достаточна",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-03",
+    "discipline": "KM",
+    "item_name": "Огнезащита несущих стальных элементов с пределом R",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 2.13130.2020",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Только при требуемом пределе огнестойкости ≥ R15. Для R0 — не требуется.",
+    "normative_basis": "СП 2.13130.2020; ФЗ-123",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-04",
+    "discipline": "KM",
+    "item_name": "Требования к контролю качества сварных соединений",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "ГОСТ Р ИСО 17637, ГОСТ 7512-82",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Часто в ППР / технологических картах",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-05",
+    "discipline": "KM",
+    "item_name": "Расчётная схема каркаса с l_ef",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "КРИТИЧЕСКОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 16.13330.2017 п. 7-8",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "КРИТИЧЕСКОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-06",
+    "discipline": "KM",
+    "item_name": "Подбор сечений: прочность + устойчивость",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "КРИТИЧЕСКОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 16.13330.2017 п. 7.1",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "КРИТИЧЕСКОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-07",
+    "discipline": "KM",
+    "item_name": "Подбор по двум ГПС (прочность + прогиб)",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 20.13330.2016, СП 16.13330.2017 п. 6",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-08",
+    "discipline": "KM",
+    "item_name": "Расчёт узлов и соединений (болт + сварка)",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "КРИТИЧЕСКОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 16.13330.2017 п. 14",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "КРИТИЧЕСКОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-09",
+    "discipline": "KM",
+    "item_name": "Ведомость элементов / отправочных марок",
+    "current_section": "Mandatory required specifications",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_schedule",
+    "current_norm_reference": "ГОСТ 21.502-2016",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД",
+      "КМД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-10",
+    "discipline": "KM",
+    "item_name": "Спецификация металлопроката по сортаменту",
+    "current_section": "Mandatory required specifications",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_schedule",
+    "current_norm_reference": "ГОСТ 8239/8240/26020/30245",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-11",
+    "discipline": "KM",
+    "item_name": "Ведомость метизов (болты, заклёпки) с классом прочности",
+    "current_section": "Mandatory required specifications",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_schedule",
+    "current_norm_reference": "",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии болтовых соединений",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-12",
+    "discipline": "KM",
+    "item_name": "Узлы соединений (опорные, монтажные стыки, узлы ферм)",
+    "current_section": "Mandatory required diagrams",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_diagram",
+    "current_norm_reference": "ГОСТ 21.502-2016",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-13",
+    "discipline": "KM",
+    "item_name": "Монтажные схемы с маркировкой отправочных элементов",
+    "current_section": "Mandatory required diagrams",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_diagram",
+    "current_norm_reference": "ГОСТ 21.502-2016",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД",
+      "КМД"
+    ],
+    "applicability_conditions": "Монтажные схемы — атрибут КМ или КМД (детализации)",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-14",
+    "discipline": "KM",
+    "item_name": "На элементе: сечение профиля и класс стали",
+    "current_section": "Mandatory required parameters",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "ГОСТ 27772-2015",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-15",
+    "discipline": "KM",
+    "item_name": "Болт: класс прочности, кол-во, шаг, μ для фрикц.",
+    "current_section": "Mandatory required parameters",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "СП 16.13330.2017 п. 14",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-16",
+    "discipline": "KM",
+    "item_name": "Сварной шов: тип, k_f, длина, электроды",
+    "current_section": "Mandatory required parameters",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-17",
+    "discipline": "KM",
+    "item_name": "Нагрузки от ОВ/ВК на покрытие и фермы",
+    "current_section": "Mandatory coordination",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Координация — задание смежнику",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-18",
+    "discipline": "KM",
+    "item_name": "Опирание перекрытий КЖ на металлические колонны",
+    "current_section": "Mandatory coordination",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Только в гибридном каркасе КЖ+КМ",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-19",
+    "discipline": "KM",
+    "item_name": "Координация с АР по узлам сопряжения с фасадом",
+    "current_section": "Mandatory coordination",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-20",
+    "discipline": "KM",
+    "item_name": "Контроль швов (РК/УЗД) и моменты затяжки болтов",
+    "current_section": "Mandatory testing / commissioning",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "ГОСТ Р ИСО 17637, СП 70.13330.2012",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Часто в ППР",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-21",
+    "discipline": "KM",
+    "item_name": "Явное указание γ_c, γ_n, γ_f",
+    "current_section": "Recommended items",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "СП 16.13330.2017 п. 1.5",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-22",
+    "discipline": "KM",
+    "item_name": "Сертификат соответствия проката для ответственных конструкций",
+    "current_section": "Recommended items",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "incomplete_specification",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Сертификат — атрибут исполнительной документации, а не проектной",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-23",
+    "discipline": "KM",
+    "item_name": "Расширенный АКЗ-раздел при агрессивной среде",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 28.13330.2017",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Только при агрессивной/слабоагрессивной среде",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "среда неагрессивная",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-24",
+    "discipline": "KM",
+    "item_name": "Расчёт на динамические воздействия (высотные/большепролётные)",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 20.13330.2016",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "Только для высотных и большепролётных объектов",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "KM-25",
+    "discipline": "KM",
+    "item_name": "Расчёт устойчивости поясов и раскосов фермы",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_diagram",
+    "current_norm_reference": "СП 16.13330.2017",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "Только при ферменном решении покрытия",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "MULTI-01",
+    "discipline": "MULTI",
+    "item_name": "Сводный перечень разделов проекта",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd|audit_comparison",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "ГОСТ Р 21.1101-2013",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "audit_comparison"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "Сводный перечень — атрибут проекта в целом (ПЗ или общая часть тома 1). Для одной марки РД не обязателен.",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "одна марка РД в PDF — сводный перечень не её атрибут",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": [
+      "ГОСТ Р 21.1101-2013 заменён на ГОСТ Р 21.101-2020 — обновить ссылку"
+    ]
+  },
+  {
+    "id": "MULTI-02",
+    "discipline": "MULTI",
+    "item_name": "Каждое требование ТЗ имеет решение в РД",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "tz_vs_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "ГОСТ Р 21.1101-2013",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "tz_vs_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "ГОСТ Р 21.101-2020",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "document_type не tz_vs_rd",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": [
+      "ГОСТ Р 21.1101-2013 заменён на ГОСТ Р 21.101-2020 — обновить ссылку"
+    ]
+  },
+  {
+    "id": "MULTI-03",
+    "discipline": "MULTI",
+    "item_name": "Отклонения от ТЗ оформлены явно (лист изм. / протокол)",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "tz_vs_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "ГОСТ Р 21.1101-2013",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "tz_vs_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": [
+      "ГОСТ Р 21.1101-2013 заменён на ГОСТ Р 21.101-2020 — обновить ссылку"
+    ]
+  },
+  {
+    "id": "MULTI-04",
+    "discipline": "MULTI",
+    "item_name": "Сводная ведомость замечаний с статусом",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "audit_comparison",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "audit_comparison"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "MULTI-05",
+    "discipline": "MULTI",
+    "item_name": "ЭОМ↔ОВ: P_уст вентиляторов совпадают",
+    "current_section": "Mandatory cross-section consistency",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "ГОСТ Р 21.1101-2013",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Требует наличия обоих разделов в одном MD. Один MD = один раздел → проверять нельзя.",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "один MD = один раздел; cross-section consistency требует двух разделов одновременно",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": [
+      "ГОСТ Р 21.1101-2013 заменён на ГОСТ Р 21.101-2020 — обновить ссылку"
+    ]
+  },
+  {
+    "id": "MULTI-06",
+    "discipline": "MULTI",
+    "item_name": "ЭОМ↔ВК: P_уст насосов совпадают",
+    "current_section": "Mandatory cross-section consistency",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "То же — нужны два раздела",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "MULTI-07",
+    "discipline": "MULTI",
+    "item_name": "ЭОМ↔СС: мощность стойки СС совпадает с электробалансом",
+    "current_section": "Mandatory cross-section consistency",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "То же",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "MULTI-08",
+    "discipline": "MULTI",
+    "item_name": "ОВ↔АПС (СС): алгоритм управления ПДВ",
+    "current_section": "Mandatory cross-section consistency",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 7.13130.2013; СП 484.1311500.2020",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Алгоритм — обычно в АПС-разделе",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "MULTI-09",
+    "discipline": "MULTI",
+    "item_name": "ВК↔АПС: запуск противопожарной насосной",
+    "current_section": "Mandatory cross-section consistency",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 10.13130.2020",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "MULTI-10",
+    "discipline": "MULTI",
+    "item_name": "АР↔КЖ: габариты и привязки конструктивных элементов",
+    "current_section": "Mandatory cross-section consistency",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Требует два раздела одновременно",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "MULTI-11",
+    "discipline": "MULTI",
+    "item_name": "АР↔КМ: узлы сопряжения с фасадом",
+    "current_section": "Mandatory cross-section consistency",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "MULTI-12",
+    "discipline": "MULTI",
+    "item_name": "КЖ↔КМ: закладные для опирания КМ на ж/б",
+    "current_section": "Mandatory cross-section consistency",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "MULTI-13",
+    "discipline": "MULTI",
+    "item_name": "АР↔ОВ/ВК/ЭОМ: проходы и отверстия",
+    "current_section": "Mandatory cross-section consistency",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "MULTI-14",
+    "discipline": "MULTI",
+    "item_name": "Единицы измерения одинаковые во всех разделах",
+    "current_section": "Mandatory parameter consistency",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|audit_comparison|tz_vs_rd",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "audit_comparison",
+      "tz_vs_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Может проверяться внутри одного раздела (внутренние единицы)",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "MULTI-15",
+    "discipline": "MULTI",
+    "item_name": "Параметры РД количественно совпадают с ТЗ",
+    "current_section": "Mandatory parameter consistency",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "tz_vs_rd",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "tz_vs_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "MULTI-16",
+    "discipline": "MULTI",
+    "item_name": "Спецификация соответствует составу ТЗ",
+    "current_section": "Mandatory parameter consistency",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "ГОСТ 21.110-2013",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "MULTI-17",
+    "discipline": "MULTI",
+    "item_name": "Сводная схема взаимодействия инженерных систем",
+    "current_section": "Mandatory required diagrams",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_diagram",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "MULTI-18",
+    "discipline": "MULTI",
+    "item_name": "Программа комплексных испытаний (АПС+ОВ+ЭОМ+ВК)",
+    "current_section": "Mandatory testing",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "MULTI-19",
+    "discipline": "MULTI",
+    "item_name": "Журнал согласований между смежниками",
+    "current_section": "Recommended items",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "MULTI-20",
+    "discipline": "MULTI",
+    "item_name": "Каждое замечание из исходного аудита прокомментировано",
+    "current_section": "Recommended items",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "audit_comparison",
+    "current_problem_class": "incomplete_specification",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "audit_comparison"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "MULTI-21",
+    "discipline": "MULTI",
+    "item_name": "Специфические требования ТЗ (BIM, LEED) — отражение в РД",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "tz_vs_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "tz_vs_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии таких требований в ТЗ",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "MULTI-22",
+    "discipline": "MULTI",
+    "item_name": "Статус устранения каждого КРИТ из исходного аудита",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "audit_comparison",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "audit_comparison"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Только если исходный аудит содержал КРИТ",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-01",
+    "discipline": "OV",
+    "item_name": "Общие данные: клим. параметры, темп. график",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 60.13330.2020 п. 5",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "Это атрибут ПД (раздел 5.3 ПП РФ 87), может быть в томе ПД, а не в РД-марке",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "если стадия документа — РД-марка (а не ПД-том), пункт может быть атрибутом раздела ПД и в данной марке отсутствовать обоснованно; document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-02",
+    "discipline": "OV",
+    "item_name": "\"Отопление\": тип системы, теплоноситель, регулирование",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 60.13330.2020",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Только если объект отапливается (не для летних/неотапливаемых)",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-03",
+    "discipline": "OV",
+    "item_name": "\"Вентиляция\": приток и вытяжка",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 60.13330.2020 п. 7",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-04",
+    "discipline": "OV",
+    "item_name": "\"Противодымная вентиляция\" для МКД и общественных",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 7.13130.2013",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Обязательна только для МКД ≥ 28 м и определённых общественных зданий (СП 7.13130.2013 п. 7.2)",
+    "normative_basis": "СП 7.13130.2013",
+    "exact_clause_or_section": "п. 7.2 (область применения)",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "низкие МКД < 28 м и обычные общественные без массового пребывания",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-05",
+    "discipline": "OV",
+    "item_name": "Расчёт воздухообмена по помещениям",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "КРИТИЧЕСКОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 60.13330.2020 п. 7",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "Атрибут ПД",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "КРИТИЧЕСКОЕ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать; если стадия документа — РД-марка (а не ПД-том), пункт может быть атрибутом раздела ПД и в данной марке отсутствовать обоснованно",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-06",
+    "discipline": "OV",
+    "item_name": "Расчёт тепловых нагрузок и теплопотерь",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 60.13330.2020",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-07",
+    "discipline": "OV",
+    "item_name": "Расчёт потерь давления, подбор вентустановок",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 60.13330.2020",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-08",
+    "discipline": "OV",
+    "item_name": "Проверка кратности по нормативам помещений",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 60.13330.2020, СанПиН 1.2.3685-21",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-09",
+    "discipline": "OV",
+    "item_name": "Гидравлический и акустический расчёт",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 60.13330.2020, СП 51.13330.2011",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-10",
+    "discipline": "OV",
+    "item_name": "Спецификация оборудования и материалов",
+    "current_section": "Mandatory required specifications",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_schedule",
+    "current_norm_reference": "ГОСТ 21.602-2016",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-11",
+    "discipline": "OV",
+    "item_name": "Ведомость воздуховодов (сечения, материалы, крепления)",
+    "current_section": "Mandatory required specifications",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_schedule",
+    "current_norm_reference": "",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии воздуховодов (нет вентсистем — нет ведомости)",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-12",
+    "discipline": "OV",
+    "item_name": "Аксонометрические схемы и планы (П1, В1...)",
+    "current_section": "Mandatory required diagrams",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_diagram",
+    "current_norm_reference": "ГОСТ 21.602-2016",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-13",
+    "discipline": "OV",
+    "item_name": "Узлы прохода воздуховодов через ограждения с ОЗК",
+    "current_section": "Mandatory required diagrams",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_diagram",
+    "current_norm_reference": "СП 7.13130.2013",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии огнезадерживающих клапанов в проекте",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-14",
+    "discipline": "OV",
+    "item_name": "На установке: L (м³/ч), P (Па)",
+    "current_section": "Mandatory required parameters",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "СП 60.13330.2020",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-15",
+    "discipline": "OV",
+    "item_name": "На установке: P_уст (кВт), U, число фаз — для ЭОМ",
+    "current_section": "Mandatory required parameters",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-16",
+    "discipline": "OV",
+    "item_name": "КПД и класс энергоэффективности",
+    "current_section": "Mandatory required parameters",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-17",
+    "discipline": "OV",
+    "item_name": "Передача в ЭОМ перечня электроприёмников ОВ",
+    "current_section": "Mandatory coordination",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Coordination — задание смежнику",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-18",
+    "discipline": "OV",
+    "item_name": "Координация с АПС — управление при пожаре",
+    "current_section": "Mandatory coordination",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 7.13130.2013",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Только если есть АПС в проекте",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-19",
+    "discipline": "OV",
+    "item_name": "Координация с АР/КЖ по проходкам",
+    "current_section": "Mandatory coordination",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-20",
+    "discipline": "OV",
+    "item_name": "Координация с газоснабжением (для кухонь с газом)",
+    "current_section": "Mandatory coordination",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии газа",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-21",
+    "discipline": "OV",
+    "item_name": "Программа ПНР вентсистем и испытаний ПДВ",
+    "current_section": "Mandatory testing / commissioning",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 7.13130.2013",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Часто отдельный документ",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-22",
+    "discipline": "OV",
+    "item_name": "Тепловая изоляция труб/воздуховодов",
+    "current_section": "Recommended items",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 60.13330.2020, СП 61.13330.2012",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-23",
+    "discipline": "OV",
+    "item_name": "Огнестойкость воздуховодов EI 30/60/90/150",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 7.13130.2013",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Зависит от схемы вентиляции и типа здания",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-24",
+    "discipline": "OV",
+    "item_name": "Схема узла АХЗ/ИТП и теплоноситель",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии АХЗ/ИТП",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "OV-25",
+    "discipline": "OV",
+    "item_name": "Вентиляция канализационных стояков — жилой МКД",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_diagram",
+    "current_norm_reference": "",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Только в жилом МКД",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "вентиляция стояков обычно решается в разделе ВК; во избежание дублирования флагать в ВК",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-01",
+    "discipline": "SS",
+    "item_name": "Общие данные раздела СС с перечнем подсистем",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "ГОСТ 21.602-2016",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Перечень — атрибут уровня раздела ПД (5.4)",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-02",
+    "discipline": "SS",
+    "item_name": "АПС — автоматическая пожарная сигнализация",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 484.1311500.2020, СП 486.1311500.2020",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "АПС обязательна по СП 486.1311500.2020 для определённых классов объектов. Для МКД — по высоте/числу квартир.",
+    "normative_basis": "СП 486.1311500.2020 (перечень обязательных)",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "КРИТИЧЕСКОЕ",
+    "do_not_report_if": "объект не попадает в перечень СП 486",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-03",
+    "discipline": "SS",
+    "item_name": "СОУЭ с указанием типа",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 3.13130.2009",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Тип СОУЭ зависит от типа здания (СП 3.13130.2009 табл.)",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-04",
+    "discipline": "SS",
+    "item_name": "Заземление слаботочного оборудования",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "ПУЭ-7 гл. 1.7",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": [
+      "ПУЭ-7 — добровольное; параллель: ГОСТ Р 50571.5.54, СП 437.1325800.2018"
+    ]
+  },
+  {
+    "id": "SS-05",
+    "discipline": "SS",
+    "item_name": "Расчёт батарей резервного питания (АКБ/ИБП)",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 134.13330.2012, СП 484.1311500.2020",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "Только при наличии активных систем, требующих резерва",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-06",
+    "discipline": "SS",
+    "item_name": "Расчёт извещателей АПС",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 484.1311500.2020",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "Только если АПС обязательна для этого объекта",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-07",
+    "discipline": "SS",
+    "item_name": "Акустический расчёт СОУЭ",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 3.13130.2009",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "Только если СОУЭ — речевая (3-5 тип)",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-08",
+    "discipline": "SS",
+    "item_name": "Спецификация оборудования СС",
+    "current_section": "Mandatory required specifications",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_schedule",
+    "current_norm_reference": "ГОСТ 21.110-2013",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-09",
+    "discipline": "SS",
+    "item_name": "Кабельный журнал слаботочных кабелей",
+    "current_section": "Mandatory required specifications",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_schedule",
+    "current_norm_reference": "ГОСТ 21.602-2016",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-10",
+    "discipline": "SS",
+    "item_name": "Адресация устройств АПС/СКУД/СОУЭ",
+    "current_section": "Mandatory required specifications",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_schedule",
+    "current_norm_reference": "ГОСТ 21.602-2016",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-11",
+    "discipline": "SS",
+    "item_name": "Структурная схема каждой подсистемы",
+    "current_section": "Mandatory required diagrams",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_diagram",
+    "current_norm_reference": "ГОСТ 21.602-2016",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-12",
+    "discipline": "SS",
+    "item_name": "Схемы расположения оборудования на планах",
+    "current_section": "Mandatory required diagrams",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_diagram",
+    "current_norm_reference": "ГОСТ 21.602-2016",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-13",
+    "discipline": "SS",
+    "item_name": "Узлы прохода кабелей с противопожарными уплотнениями",
+    "current_section": "Mandatory required diagrams",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_diagram",
+    "current_norm_reference": "СП 6.13130.2021",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Только при прохождении кабелей через противопожарные преграды",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-14",
+    "discipline": "SS",
+    "item_name": "На кабеле: тип/категория (Cat.5e/Cat.6/FRLS/FRHF)",
+    "current_section": "Mandatory required parameters",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "СП 6.13130.2021",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-15",
+    "discipline": "SS",
+    "item_name": "На устройстве: тип, U, P",
+    "current_section": "Mandatory required parameters",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-16",
+    "discipline": "SS",
+    "item_name": "Передача в ЭОМ перечня электроприёмников СС",
+    "current_section": "Mandatory coordination",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Coordination — задание смежнику",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-17",
+    "discipline": "SS",
+    "item_name": "Координация АПС с ОВ — ПДВ",
+    "current_section": "Mandatory coordination",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 7.13130.2013; СП 484.1311500.2020",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Только если есть АПС и ПДВ",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-18",
+    "discipline": "SS",
+    "item_name": "Координация АПС с лифтами ВТ",
+    "current_section": "Mandatory coordination",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии лифтов",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-19",
+    "discipline": "SS",
+    "item_name": "Координация АПС с ВК — запуск противопожарной насосной",
+    "current_section": "Mandatory coordination",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии ВПВ",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-20",
+    "discipline": "SS",
+    "item_name": "Программа ПСИ АПС/СОУЭ + сертификация",
+    "current_section": "Mandatory testing",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 484.1311500.2020, ФЗ-123, ТР ТС 043/2017",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Обычно отдельный документ",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-21",
+    "discipline": "SS",
+    "item_name": "Описание интерфейсов интеграции (SDK/OPC/БДД)",
+    "current_section": "Recommended items",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-22",
+    "discipline": "SS",
+    "item_name": "Расчёт сегментов СКС с длиной линии",
+    "current_section": "Recommended items",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "ГОСТ Р 53246-2008",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-23",
+    "discipline": "SS",
+    "item_name": "Домофония и СКУД входных групп (МКД)",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 134.13330.2012",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Только МКД с контролируемым доступом",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-24",
+    "discipline": "SS",
+    "item_name": "СОУЭ 3-5 типа для массовых объектов",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 3.13130.2009",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Только для объектов с массовым пребыванием",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "SS-25",
+    "discipline": "SS",
+    "item_name": "СОТС и газоанализаторы CO — подземные автостоянки",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 154.13130.2013",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии подземной автостоянки",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-01",
+    "discipline": "VK",
+    "item_name": "Общие данные: источник, исходное давление, сток",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 30.13330.2020 п. 5",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "Атрибут раздела 5.2 ПД",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "если стадия документа — РД-марка (а не ПД-том), пункт может быть атрибутом раздела ПД и в данной марке отсутствовать обоснованно; document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-02",
+    "discipline": "VK",
+    "item_name": "ХПВ В1",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 30.13330.2020",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-03",
+    "discipline": "VK",
+    "item_name": "ГВС Т3/Т4 с циркуляцией",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 30.13330.2020",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Только если в проекте есть ГВС (например, ИТП с подогревом). В объектах без ГВС — не применима.",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-04",
+    "discipline": "VK",
+    "item_name": "Бытовая К1 и ливневая К2 канализация",
+    "current_section": "Mandatory required sections / artifacts",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 30.13330.2020",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-05",
+    "discipline": "VK",
+    "item_name": "Q_сут, Q_час, Q_сек",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "КРИТИЧЕСКОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 30.13330.2020",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "КРИТИЧЕСКОЕ",
+    "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать; если стадия документа — РД-марка (а не ПД-том), пункт может быть атрибутом раздела ПД и в данной марке отсутствовать обоснованно",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-06",
+    "discipline": "VK",
+    "item_name": "Гидравлический расчёт сетей",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 30.13330.2020",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-07",
+    "discipline": "VK",
+    "item_name": "Расчёт стоков К1/К2 (диаметры, уклоны, наполн.)",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 30.13330.2020, СП 32.13330.2018",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-08",
+    "discipline": "VK",
+    "item_name": "Расчёт гидроудара",
+    "current_section": "Mandatory required calculations",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 30.13330.2020",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-09",
+    "discipline": "VK",
+    "item_name": "Спецификация оборудования",
+    "current_section": "Mandatory required specifications",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_schedule",
+    "current_norm_reference": "ГОСТ 21.601-2011",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-10",
+    "discipline": "VK",
+    "item_name": "Спецификация сантехоборудования с расходами",
+    "current_section": "Mandatory required specifications",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_schedule",
+    "current_norm_reference": "ГОСТ 21.601-2011",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-11",
+    "discipline": "VK",
+    "item_name": "Аксонометрии В1/Т3/Т4/К1/К2 и планы",
+    "current_section": "Mandatory required diagrams",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_diagram",
+    "current_norm_reference": "ГОСТ 21.601-2011",
+    "normative_status": "mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-12",
+    "discipline": "VK",
+    "item_name": "Узлы прохода с гильзами и противопожарными муфтами",
+    "current_section": "Mandatory required diagrams",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_diagram",
+    "current_norm_reference": "СП 30.13330.2020",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии проходов через противопожарные преграды",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-13",
+    "discipline": "VK",
+    "item_name": "На насосе: Q (м³/ч), H (м вод.ст.)",
+    "current_section": "Mandatory required parameters",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "СП 30.13330.2020",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии насосного оборудования",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "нет насосов в проекте",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-14",
+    "discipline": "VK",
+    "item_name": "На насосе: P_уст, U, число фаз — для ЭОМ",
+    "current_section": "Mandatory required parameters",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии насосов",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-15",
+    "discipline": "VK",
+    "item_name": "КПД, класс защиты IP насосов",
+    "current_section": "Mandatory required parameters",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd|specification_only",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd",
+      "specification_only"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-16",
+    "discipline": "VK",
+    "item_name": "Передача в ЭОМ перечня электроприёмников ВК",
+    "current_section": "Mandatory coordination",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Coordination — задание смежнику",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-17",
+    "discipline": "VK",
+    "item_name": "Координация с АПС для пожарного водопровода",
+    "current_section": "Mandatory coordination",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 10.13130.2020",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии ВПВ и АПС",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-18",
+    "discipline": "VK",
+    "item_name": "Координация с ИТП для ГВС",
+    "current_section": "Mandatory coordination",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии ИТП",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-19",
+    "discipline": "VK",
+    "item_name": "Отверстия/гильзы в АР и КЖ",
+    "current_section": "Mandatory coordination",
+    "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "low",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-20",
+    "discipline": "VK",
+    "item_name": "Программа гидравлических испытаний, дезинфекция",
+    "current_section": "Mandatory testing",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 30.13330.2020, СП 73.13330.2016, СанПиН 2.1.4.1074-01",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Часто отдельный документ",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": false,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": [
+      "СанПиН 2.1.4.1074-01 — нужна верификация актуальности; вероятно ссылается на СанПиН 2.1.3684-21 или СанПиН 1.2.3685-21"
+    ]
+  },
+  {
+    "id": "VK-21",
+    "discipline": "VK",
+    "item_name": "Тепловая изоляция труб ГВС/ХВС и узел учёта",
+    "current_section": "Recommended items",
+    "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_calculation_basis",
+    "current_norm_reference": "СП 61.13330.2012",
+    "normative_status": "recommended",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "medium",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-22",
+    "discipline": "VK",
+    "item_name": "Схема насосной — при наличии повысительной",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 30.13330.2020",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии насосной станции",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-23",
+    "discipline": "VK",
+    "item_name": "Расчёт ёмкости бака ГВС — при наличии",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_parameter",
+    "current_norm_reference": "СП 30.13330.2020",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии бака-аккумулятора",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-24",
+    "discipline": "VK",
+    "item_name": "Расчёт ВПВ (число струй, расход) — при наличии",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_mandatory_section",
+    "current_norm_reference": "СП 10.13130.2020",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "ПД",
+      "РД"
+    ],
+    "applicability_conditions": "Только при обязательности ВПВ (СП 10 определяет область)",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  },
+  {
+    "id": "VK-25",
+    "discipline": "VK",
+    "item_name": "Жироуловители — для общепита",
+    "current_section": "Conditional items",
+    "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "current_applies": "full_rd",
+    "current_problem_class": "missing_diagram",
+    "current_norm_reference": "СП 30.13330.2020",
+    "normative_status": "conditionally_mandatory",
+    "applicable_document_types": [
+      "full_rd"
+    ],
+    "applicable_stages": [
+      "РД"
+    ],
+    "applicability_conditions": "Только при наличии общепита",
+    "normative_basis": "",
+    "exact_clause_or_section": "",
+    "confidence": "high",
+    "can_be_reported_as_missing": true,
+    "recommended_severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "do_not_report_if": "",
+    "example_valid_missing_case": "",
+    "example_invalid_missing_case": "",
+    "current_norm_issues": []
+  }
+]

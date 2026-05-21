@@ -1,0 +1,294 @@
+{
+  "phase0": {
+    "A0_phase0_classdedup__baseline": {
+      "status": "pass",
+      "rules": {
+        "critical_recall_not_worse": {
+          "status": "pass",
+          "detail": "missed_crit A0=3 variant=3"
+        },
+        "matched_gt_not_worse": {
+          "status": "pass",
+          "detail": "matched_gt A0=49 variant=49"
+        },
+        "duplicates_fp_reduced_or_equal": {
+          "status": "pass",
+          "detail": "FP+dupes A0=73 variant=73"
+        },
+        "no_llm_cost": {
+          "status": "pass",
+          "detail": "Phase 0 is pure Python post-process (verified by code review)"
+        },
+        "production_risk_low": {
+          "status": "pass",
+          "detail": "Dedup runs after the pipeline; can be guarded by feature flag"
+        }
+      }
+    },
+    "A0_phase0_fuzzydedup__baseline": {
+      "status": "pass",
+      "rules": {
+        "critical_recall_not_worse": {
+          "status": "pass",
+          "detail": "missed_crit A0=3 variant=3"
+        },
+        "matched_gt_not_worse": {
+          "status": "pass",
+          "detail": "matched_gt A0=49 variant=49"
+        },
+        "duplicates_fp_reduced_or_equal": {
+          "status": "pass",
+          "detail": "FP+dupes A0=73 variant=73"
+        },
+        "no_llm_cost": {
+          "status": "pass",
+          "detail": "Phase 0 is pure Python post-process (verified by code review)"
+        },
+        "production_risk_low": {
+          "status": "pass",
+          "detail": "Dedup runs after the pipeline; can be guarded by feature flag"
+        }
+      }
+    },
+    "A0_phase0_combined__baseline": {
+      "status": "pass",
+      "rules": {
+        "critical_recall_not_worse": {
+          "status": "pass",
+          "detail": "missed_crit A0=3 variant=3"
+        },
+        "matched_gt_not_worse": {
+          "status": "pass",
+          "detail": "matched_gt A0=49 variant=49"
+        },
+        "duplicates_fp_reduced_or_equal": {
+          "status": "pass",
+          "detail": "FP+dupes A0=73 variant=73"
+        },
+        "no_llm_cost": {
+          "status": "pass",
+          "detail": "Phase 0 is pure Python post-process (verified by code review)"
+        },
+        "production_risk_low": {
+          "status": "pass",
+          "detail": "Dedup runs after the pipeline; can be guarded by feature flag"
+        }
+      }
+    }
+  },
+  "phase1_full_aggregates": {
+    "overall": "see_details",
+    "rules": {
+      "missed_critical_not_worse": {
+        "status": "pass",
+        "detail": "A0=3 A1v2=3"
+      },
+      "critical_recall_not_worse": {
+        "status": "pass",
+        "detail": "A0=0.942 A1v2=0.973"
+      },
+      "fp_within_15pct": {
+        "status": "fail",
+        "detail": "A0_fp=73 A1v2_fp=326 threshold=83.9"
+      },
+      "strict_score_at_least_plus_10pct": {
+        "status": "fail",
+        "detail": "A0=50.5 A1v2=34.5 threshold=55.6"
+      },
+      "human_review_load_within_20pct": {
+        "status": "fail",
+        "detail": "A0_total=127 A1v2_total=444"
+      },
+      "document_type_routing_used": {
+        "status": "pass",
+        "detail": "Verified by test_document_type_routing.py"
+      },
+      "subset_stochasticity_reported": {
+        "status": "see_report",
+        "detail": "Requires repeated runs (see Stage 5 report)"
+      },
+      "sonnet_failure_graceful_fallback": {
+        "status": "pass",
+        "detail": "Verified by test_fallback_to_a0.py"
+      },
+      "avg_cost_increase_le_70pct": {
+        "status": "pass",
+        "detail": "A0_avg_sec=158.7 A1v2_avg_sec=244.1 threshold=269.8"
+      },
+      "no_production_files_modified": {
+        "status": "pass",
+        "detail": "Verified by test_no_production_changes.py"
+      }
+    }
+  },
+  "phase1_same_case_set": {
+    "overall": "see_details",
+    "rules": {
+      "missed_critical_not_worse": {
+        "status": "pass",
+        "detail": "A0=3 A1v2=1"
+      },
+      "critical_recall_not_worse": {
+        "status": "pass",
+        "detail": "A0=0.942 A1v2=0.981"
+      },
+      "fp_within_15pct": {
+        "status": "fail",
+        "detail": "A0_fp=73 A1v2_fp=119 threshold=83.9"
+      },
+      "strict_score_at_least_plus_10pct": {
+        "status": "fail",
+        "detail": "A0=50.5 A1v2=35.7 threshold=55.6"
+      },
+      "human_review_load_within_20pct": {
+        "status": "fail",
+        "detail": "A0_total=127 A1v2_total=173"
+      },
+      "document_type_routing_used": {
+        "status": "pass",
+        "detail": "Verified by test_document_type_routing.py"
+      },
+      "subset_stochasticity_reported": {
+        "status": "see_report",
+        "detail": "Requires repeated runs (see Stage 5 report)"
+      },
+      "sonnet_failure_graceful_fallback": {
+        "status": "pass",
+        "detail": "Verified by test_fallback_to_a0.py"
+      },
+      "avg_cost_increase_le_70pct": {
+        "status": "fail",
+        "detail": "A0_avg_sec=158.7 A1v2_avg_sec=315.1 threshold=269.8"
+      },
+      "no_production_files_modified": {
+        "status": "pass",
+        "detail": "Verified by test_no_production_changes.py"
+      }
+    }
+  },
+  "v1_vs_v2_comparison": {
+    "A1_v1": {
+      "cases": 2,
+      "matched_gt": 12,
+      "missed_critical": 0,
+      "false_positives": 10,
+      "beyond_gt": 0,
+      "avg_score_strict": 72.8,
+      "avg_score_balanced": 82.8
+    },
+    "A1_v2": {
+      "cases": 24,
+      "matched_gt": 108,
+      "missed_critical": 3,
+      "false_positives": 326,
+      "beyond_gt": 0,
+      "avg_score_strict": 34.5,
+      "avg_score_balanced": 62.4
+    }
+  },
+  "raw_aggregates": {
+    "A0_baseline_current__baseline": {
+      "cases": 8,
+      "total_findings": 127,
+      "matched_gt": 49,
+      "missed_critical": 3,
+      "false_positives": 73,
+      "duplicates_internal": 0,
+      "beyond_gt": 0,
+      "cross_discipline_found": 9,
+      "hidden_contradictions_found": 6,
+      "avg_cost_sec": 158.7,
+      "avg_score": {
+        "strict_production": 50.5,
+        "recall_priority": 79.8,
+        "balanced_engineering": 70.6,
+        "cost_aware": 50.4,
+        "human_review_load": 79.8
+      }
+    },
+    "A1_hybrid_lite__v1": {
+      "cases": 2,
+      "total_findings": 23,
+      "matched_gt": 12,
+      "missed_critical": 0,
+      "false_positives": 10,
+      "duplicates_internal": 0,
+      "beyond_gt": 0,
+      "cross_discipline_found": 3,
+      "hidden_contradictions_found": 2,
+      "avg_cost_sec": 329.2,
+      "avg_score": {
+        "strict_production": 72.8,
+        "recall_priority": 87.8,
+        "balanced_engineering": 82.8,
+        "cost_aware": 66.4,
+        "human_review_load": 87.8
+      }
+    },
+    "A1_hybrid_lite__v2": {
+      "cases": 24,
+      "total_findings": 444,
+      "matched_gt": 108,
+      "missed_critical": 3,
+      "false_positives": 326,
+      "duplicates_internal": 2,
+      "beyond_gt": 0,
+      "cross_discipline_found": 16,
+      "hidden_contradictions_found": 11,
+      "avg_cost_sec": 244.1,
+      "avg_score": {
+        "strict_production": 34.5,
+        "recall_priority": 76.0,
+        "balanced_engineering": 62.4,
+        "cost_aware": 32.0,
+        "human_review_load": 75.9
+      }
+    }
+  },
+  "same_case_subset": {
+    "cases_in_both": [
+      "ar_01_evacuation",
+      "cross_01_eom_ov_loads",
+      "eom_01_cable_sizing",
+      "kj_01_rebar",
+      "multi_01_tz_vs_rd",
+      "ov_01_ventilation",
+      "ss_01_cabling",
+      "vk_01_water_flow"
+    ],
+    "A0_aggregate": {
+      "cases": 8,
+      "total_findings": 127,
+      "matched_gt": 49,
+      "missed_critical": 3,
+      "false_positives": 73,
+      "duplicates_internal": 0,
+      "beyond_gt": 0,
+      "avg_cost_sec": 158.7,
+      "avg_score": {
+        "strict_production": 50.5,
+        "recall_priority": 79.8,
+        "balanced_engineering": 70.6,
+        "cost_aware": 50.4,
+        "human_review_load": 79.8
+      }
+    },
+    "A1_v2_aggregate": {
+      "cases": 8,
+      "total_findings": 173,
+      "matched_gt": 52,
+      "missed_critical": 1,
+      "false_positives": 119,
+      "duplicates_internal": 0,
+      "beyond_gt": 0,
+      "avg_cost_sec": 315.1,
+      "avg_score": {
+        "strict_production": 35.7,
+        "recall_priority": 80.9,
+        "balanced_engineering": 66.0,
+        "cost_aware": 29.8,
+        "human_review_load": 80.9
+      }
+    }
+  }
+}

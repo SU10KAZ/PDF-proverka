@@ -1,0 +1,15 @@
+{
+  "id": "ss_02_fire_alarm",
+  "discipline": "SS",
+  "title": "СС/АПС — система пожарной сигнализации МКД",
+  "md_file": "input.md",
+  "stage": "РД",
+  "notes": "Fire alarm system. Применён ранний СП 5.13130.2009 (заменён на СП 484/485/486), неверная разводка по зонам, отсутствие СОУЭ",
+  "document_type": "full_rd",
+  "expected_complexity": "high",
+  "has_cross_discipline": true,
+  "has_completeness_gaps": true,
+  "has_calculation_errors": false,
+  "has_normative_errors": true,
+  "has_hidden_contradictions": false
+}

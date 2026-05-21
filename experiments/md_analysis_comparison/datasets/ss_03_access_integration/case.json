@@ -1,0 +1,15 @@
+{
+  "id": "ss_03_access_integration",
+  "discipline": "SS",
+  "title": "СС — система контроля и управления доступом (СКУД) офисного центра",
+  "md_file": "input.md",
+  "stage": "РД",
+  "notes": "Access control. Минимум критических ошибок — baseline для проверки FP. Только одно cross с АПС по разблокировке при пожаре + completeness gaps.",
+  "document_type": "full_rd",
+  "expected_complexity": "low",
+  "has_cross_discipline": true,
+  "has_completeness_gaps": true,
+  "has_calculation_errors": false,
+  "has_normative_errors": false,
+  "has_hidden_contradictions": false
+}
