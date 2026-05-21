@@ -11,13 +11,13 @@
 
 - [problem_class=missing_mandatory_section, severity=ПРОВЕРИТЬ_ПО_СМЕЖНЫМ, applies=full_rd|audit_comparison]
   Сводный перечень разделов проекта (ЭОМ / ОВ / ВК / АР / КЖ / КМ /
-  СС) с указанием стадии и шифров (ГОСТ Р 21.1101-2013).
+  СС) с указанием стадии и шифров (ГОСТ Р 21.101-2020).
 - [problem_class=missing_mandatory_section, severity=ПРОВЕРИТЬ_ПО_СМЕЖНЫМ, applies=tz_vs_rd]
   Каждое требование ТЗ имеет соответствующее решение в РД
-  (ГОСТ Р 21.1101-2013).
+  (ГОСТ Р 21.101-2020).
 - [problem_class=missing_mandatory_section, severity=ПРОВЕРИТЬ_ПО_СМЕЖНЫМ, applies=tz_vs_rd]
   Отклонения от ТЗ обозначены явно (через лист изменений или
-  согласованный протокол) (ГОСТ Р 21.1101-2013).
+  согласованный протокол) (ГОСТ Р 21.101-2020).
 - [problem_class=missing_mandatory_section, severity=ПРОВЕРИТЬ_ПО_СМЕЖНЫМ, applies=audit_comparison]
   Сводная ведомость замечаний и их статуса (учтено / частично /
   отклонено).
@@ -26,7 +26,7 @@
 
 - [problem_class=missing_mandatory_section, severity=ПРОВЕРИТЬ_ПО_СМЕЖНЫМ, applies=full_rd]
   ЭОМ ↔ ОВ: значения P_уст вентиляторов в ЭОМ совпадают с
-  заявленными в ОВ (ГОСТ Р 21.1101-2013).
+  заявленными в ОВ (ГОСТ Р 21.101-2020).
 - [problem_class=missing_mandatory_section, severity=ПРОВЕРИТЬ_ПО_СМЕЖНЫМ, applies=full_rd]
   ЭОМ ↔ ВК: значения P_уст насосов в ЭОМ совпадают с заявленными
   в ВК.
