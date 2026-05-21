@@ -2551,6 +2551,10 @@ const app = createApp({
                 // Experimental offline view. Does NOT touch production pipeline.
                 currentView.value = 'critic-v2-ui';
                 connectGlobalWS();
+            } else if (hash === '/external-register') {
+                currentView.value = 'external-register';
+                connectGlobalWS();
+                loadExternalRegister();
             } else if (hash === '/') {
                 currentView.value = 'dashboard';
                 sidebarFilterSection.value = null;
@@ -6497,7 +6501,9 @@ const app = createApp({
             if (!currentProjectId.value) return;
             auditPackageLoading.value = true;
             try {
-                const url = `/api/export/audit-package/${encodeURIComponent(currentProjectId.value)}`;
+                const vid = activeVersionId.value;
+                const qs = vid ? `?version_id=${encodeURIComponent(vid)}` : '';
+                const url = `/api/export/audit-package/${encodeURIComponent(currentProjectId.value)}${qs}`;
                 const resp = await fetch(url);
                 if (!resp.ok) {
                     const err = await resp.json().catch(() => ({}));
@@ -6641,7 +6647,9 @@ const app = createApp({
             resolvedFindingsLoading.value = true;
             try {
                 const pid = currentProjectId.value;
-                const resp = await fetch(`/api/discussions/${encodeURIComponent(pid)}/resolved/excel?type=${discussionTab.value}`);
+                const vid = activeVersionId.value;
+                const vq = vid ? `&version_id=${encodeURIComponent(vid)}` : '';
+                const resp = await fetch(`/api/discussions/${encodeURIComponent(pid)}/resolved/excel?type=${discussionTab.value}${vq}`);
                 if (!resp.ok) throw new Error(await resp.text());
                 const blob = await resp.blob();
                 const url = URL.createObjectURL(blob);
@@ -6711,7 +6719,9 @@ const app = createApp({
             scrollChatToBottom();
 
             try {
-                const url = `/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(activeDiscussion.value)}/chat/stream?type=${discussionTab.value}`;
+                const vid = activeVersionId.value;
+                const vq = vid ? `&version_id=${encodeURIComponent(vid)}` : '';
+                const url = `/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(activeDiscussion.value)}/chat/stream?type=${discussionTab.value}${vq}`;
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -7972,7 +7982,9 @@ const app = createApp({
             if (!currentProjectId.value) return;
             const map = {};
             try {
-                const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}`);
+                const vid = activeVersionId.value;
+                const vq = vid ? `?version_id=${encodeURIComponent(vid)}` : '';
+                const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}${vq}`);
                 const data = await resp.json();
                 if (data.has_review && data.data && data.data.decisions) {
                     for (const d of data.data.decisions) {
@@ -7997,17 +8009,19 @@ const app = createApp({
             // Синхронизация с системой обсуждений (confirmed/rejected/open)
             if (currentProjectId.value) {
                 const discType = itemId.startsWith('OPT') ? 'optimization' : 'finding';
+                const vid = activeVersionId.value;
+                const vq = vid ? `&version_id=${encodeURIComponent(vid)}` : '';
                 if (existing.decision) {
                     const status = existing.decision === 'accepted' ? 'confirmed' : 'rejected';
                     const reason = existing.rejection_reason || '';
                     const summary = reason || (status === 'confirmed' ? 'Принято экспертом' : 'Отклонено экспертом');
-                    fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(itemId)}/resolve?type=${discType}`, {
+                    fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(itemId)}/resolve?type=${discType}${vq}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ status, summary }),
                     }).catch(() => {});
                 } else {
-                    fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(itemId)}/resolve?type=${discType}`, {
+                    fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(itemId)}/resolve?type=${discType}${vq}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ status: 'open', summary: '' }),
@@ -8041,7 +8055,9 @@ const app = createApp({
                         removedIds.push(itemId);
                     }
                 }
-                const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}`, {
+                const vidPost = activeVersionId.value;
+                const vqPost = vidPost ? `?version_id=${encodeURIComponent(vidPost)}` : '';
+                const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}${vqPost}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ decisions, removed_ids: removedIds, reviewer: '' }),
@@ -8052,11 +8068,13 @@ const app = createApp({
                 }
                 const result = await resp.json();
                 // Синхронизировать принятые/отклонённые решения с системой обсуждений
+                const vid2 = activeVersionId.value;
+                const vq2 = vid2 ? `&version_id=${encodeURIComponent(vid2)}` : '';
                 for (const d of decisions) {
                     const discType = d.item_id.startsWith('OPT') ? 'optimization' : 'finding';
                     const status = d.decision === 'accepted' ? 'confirmed' : 'rejected';
                     const summary = d.rejection_reason || (status === 'confirmed' ? 'Принято экспертом' : 'Отклонено экспертом');
-                    fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(d.item_id)}/resolve?type=${discType}`, {
+                    fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(d.item_id)}/resolve?type=${discType}${vq2}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ status, summary }),
@@ -8065,7 +8083,7 @@ const app = createApp({
                 // Сбросить статус для отменённых решений
                 for (const itemId of removedIds) {
                     const discType = itemId.startsWith('OPT') ? 'optimization' : 'finding';
-                    fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(itemId)}/resolve?type=${discType}`, {
+                    fetch(`/api/discussions/${encodeURIComponent(currentProjectId.value)}/${encodeURIComponent(itemId)}/resolve?type=${discType}${vq2}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ status: 'open', summary: '' }),
@@ -8243,7 +8261,14 @@ const app = createApp({
             formData.append('file', file);
             let resp;
             try {
-                resp = await fetch('/api/knowledge-base/upload-excel', { method: 'POST', body: formData });
+                const vid = activeVersionId.value;
+                const pid = currentProjectId.value;
+                const qs = new URLSearchParams();
+                if (vid) qs.set('version_id', vid);
+                if (pid) qs.set('project_id', pid);
+                const q = qs.toString();
+                const url = q ? `/api/knowledge-base/upload-excel?${q}` : '/api/knowledge-base/upload-excel';
+                resp = await fetch(url, { method: 'POST', body: formData });
             } catch (netErr) {
                 console.error('[upload-excel] network error:', netErr);
                 return {
@@ -8301,7 +8326,9 @@ const app = createApp({
                 // Загрузить решения для текущего проекта и включить режим оценки
                 if (currentProjectId.value) {
                     try {
-                        const revResp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}`);
+                        const vidUp = activeVersionId.value;
+                        const vqUp = vidUp ? `?version_id=${encodeURIComponent(vidUp)}` : '';
+                        const revResp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}${vqUp}`);
                         const revData = await revResp.json();
                         if (revData.has_review && revData.data && revData.data.decisions) {
                             const map = {};
@@ -8365,6 +8392,176 @@ const app = createApp({
             if (usagePollTimer) { clearInterval(usagePollTimer); usagePollTimer = null; }
             stopLmsHealthPolling();
         });
+
+        // ───────────────────────────────────────────────────────────────
+        // External register (СУ-10) — реестр уже-отправленных заказчику
+        // findings + сопоставление с нашими 03_findings.json
+        // ───────────────────────────────────────────────────────────────
+        const extRegLoading = ref(false);
+        const extRegMatchRunning = ref(false);
+        const extRegEntries = ref([]);
+        const extRegCoverage = ref(null);
+        const extRegRegisterId = ref('su10_2026-05-13');
+        const extRegFilterStatus = ref('all');
+        const extRegFilterSection = ref('');
+        const extRegFilterResponse = ref('');
+        const extRegError = ref('');
+
+        const EXTREG_OBJECT_ID = '_';  // backend подставит current_id
+
+        function _extRegUrl(path) {
+            return '/api/external-register' + (path.startsWith('/') ? path : '/' + path);
+        }
+
+        async function loadExternalRegister() {
+            extRegLoading.value = true;
+            extRegError.value = '';
+            try {
+                const url = _extRegUrl(`/${EXTREG_OBJECT_ID}?register_id=${encodeURIComponent(extRegRegisterId.value)}`);
+                const resp = await fetch(url);
+                if (resp.status === 404) {
+                    extRegEntries.value = [];
+                    extRegCoverage.value = null;
+                    extRegError.value = 'Реестр не импортирован. Нажми «Импортировать реестр».';
+                    return;
+                }
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const data = await resp.json();
+                extRegEntries.value = data.entries || [];
+                await loadExternalRegisterCoverage();
+            } catch (e) {
+                extRegError.value = String(e);
+            } finally {
+                extRegLoading.value = false;
+            }
+        }
+
+        async function loadExternalRegisterCoverage() {
+            try {
+                const url = _extRegUrl(`/${EXTREG_OBJECT_ID}/coverage?register_id=${encodeURIComponent(extRegRegisterId.value)}`);
+                const resp = await fetch(url);
+                if (!resp.ok) return;
+                extRegCoverage.value = await resp.json();
+            } catch (_) { /* swallow */ }
+        }
+
+        async function importExternalRegister(sourceMdPath) {
+            const path = sourceMdPath || prompt(
+                'Путь к markdown-файлу реестра (относительно корня проекта):',
+                '2026.05.13_СУ-10_О рассмотрении замечаний к рабочей документации _document.md'
+            );
+            if (!path) return;
+            extRegLoading.value = true;
+            try {
+                const resp = await fetch(_extRegUrl('/import'), {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        source_md_path: path,
+                        register_id: extRegRegisterId.value,
+                    }),
+                });
+                const data = await resp.json();
+                if (!resp.ok) throw new Error(data.detail || `HTTP ${resp.status}`);
+                alert(`Импортировано: ${data.entries_total} замечаний. Unmapped: ${(data.unmapped_sections||[]).join(', ') || 'нет'}`);
+                await loadExternalRegister();
+            } catch (e) {
+                extRegError.value = String(e);
+                alert('Ошибка импорта: ' + e);
+            } finally {
+                extRegLoading.value = false;
+            }
+        }
+
+        async function runExternalRegisterMatch() {
+            if (!confirm('Запустить LLM-сопоставление? Это может занять 5-15 минут.')) return;
+            extRegMatchRunning.value = true;
+            try {
+                const resp = await fetch(_extRegUrl(`/${EXTREG_OBJECT_ID}/match?register_id=${encodeURIComponent(extRegRegisterId.value)}`), {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({}),
+                });
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                alert('Matching запущен в фоне. Обновляйте страницу для прогресса.');
+            } catch (e) {
+                alert('Ошибка: ' + e);
+            } finally {
+                extRegMatchRunning.value = false;
+            }
+        }
+
+        async function confirmExternalEntry(entryKey, fid, pid) {
+            try {
+                const url = _extRegUrl(`/${EXTREG_OBJECT_ID}/entry/${encodeURIComponent(entryKey)}/confirm?register_id=${encodeURIComponent(extRegRegisterId.value)}`);
+                const resp = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({user: 'operator', finding_id: fid, project_id: pid}),
+                });
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                await loadExternalRegister();
+            } catch (e) {
+                alert('Ошибка confirm: ' + e);
+            }
+        }
+
+        async function rejectExternalEntry(entryKey) {
+            try {
+                const url = _extRegUrl(`/${EXTREG_OBJECT_ID}/entry/${encodeURIComponent(entryKey)}/reject?register_id=${encodeURIComponent(extRegRegisterId.value)}`);
+                const resp = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({user: 'operator'}),
+                });
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                await loadExternalRegister();
+            } catch (e) {
+                alert('Ошибка reject: ' + e);
+            }
+        }
+
+        function downloadExternalRegisterXlsx() {
+            const url = _extRegUrl(`/${EXTREG_OBJECT_ID}/export.xlsx?register_id=${encodeURIComponent(extRegRegisterId.value)}`);
+            window.open(url, '_blank');
+        }
+
+        const extRegFilteredEntries = computed(() => {
+            const status = extRegFilterStatus.value;
+            const section = extRegFilterSection.value;
+            const response = extRegFilterResponse.value;
+            return (extRegEntries.value || []).filter(e => {
+                if (status !== 'all' && e.match_status !== status) return false;
+                if (section && e.section_code !== section) return false;
+                if (response && e.customer_response !== response) return false;
+                return true;
+            });
+        });
+
+        const extRegSectionOptions = computed(() => {
+            const s = new Set((extRegEntries.value || []).map(e => e.section_code).filter(Boolean));
+            return Array.from(s).sort();
+        });
+
+        // Бейдж для finding'а: отрисовываем поверх его карточки, если у finding'а
+        // есть external_register payload.
+        function findingExtRegBadge(f) {
+            const er = f && f.external_register;
+            if (!er) return null;
+            const labelMap = {
+                'Учтено': {text: 'Учтено', tone: 'green'},
+                'Внесено': {text: 'Внесено', tone: 'green'},
+                'Отклонено': {text: 'Отклонено', tone: 'red'},
+                'По согласованию Заказчика': {text: 'По согл.', tone: 'amber'},
+                'Не определено': {text: '—', tone: 'grey'},
+            };
+            const meta = labelMap[er.customer_response] || labelMap['Не определено'];
+            return {
+                text: 'Принято · ' + meta.text,
+                tone: meta.tone,
+                title: (er.customer_comment || '') + '\nКлюч: ' + (er.comment_key || ''),
+            };
+        }
 
         return {
             // Theme
@@ -8614,6 +8811,13 @@ const app = createApp({
             canRunMigratedCheckNow,
             loadMigratedFindingsReport, runMigratedFindingsCheck,
             migratedStatusLabel, migratedStatusTone, findingMigratedBadge,
+            // ─── External register (СУ-10) ───
+            extRegLoading, extRegMatchRunning, extRegEntries, extRegCoverage,
+            extRegRegisterId, extRegFilterStatus, extRegFilterSection, extRegFilterResponse,
+            extRegError, extRegFilteredEntries, extRegSectionOptions,
+            loadExternalRegister, importExternalRegister, runExternalRegisterMatch,
+            confirmExternalEntry, rejectExternalEntry, downloadExternalRegisterXlsx,
+            findingExtRegBadge,
         };
     }
 });

@@ -3054,3 +3054,65 @@ tr.row-rejected:hover { opacity: 0.7; }
     margin-bottom: 4px;
     font-weight: 600;
 }
+
+/* ─── External Register (СУ-10) ─────────────────────────────────────── */
+.extreg-badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-right: 6px;
+    margin-bottom: 4px;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+.extreg-badge--green { background:#dcfce7; color:#15803d; border:1px solid #86efac; }
+.extreg-badge--red   { background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; }
+.extreg-badge--amber { background:#fef3c7; color:#92400e; border:1px solid #fcd34d; }
+.extreg-badge--grey  { background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; }
+
+.extreg-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+.extreg-table th {
+    background: var(--surface-2, #f3f4f6);
+    text-align: left;
+    padding: 8px;
+    border-bottom: 2px solid var(--border, #e5e7eb);
+    font-weight: 600;
+}
+.extreg-table td {
+    padding: 8px;
+    border-bottom: 1px solid var(--border, #e5e7eb);
+    vertical-align: top;
+}
+.extreg-table tbody tr:hover { background: var(--surface-hover, #f9fafb); }
+
+.extreg-resp {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+.extreg-resp--green { background:#dcfce7; color:#15803d; }
+.extreg-resp--red   { background:#fee2e2; color:#b91c1c; }
+.extreg-resp--amber { background:#fef3c7; color:#92400e; }
+
+.extreg-status {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: #f3f4f6;
+    color: #4b5563;
+    font-weight: 600;
+}
+.extreg-status--auto_matched { background:#dcfce7; color:#15803d; }
+.extreg-status--confirmed    { background:#bbf7d0; color:#166534; }
+.extreg-status--needs_review { background:#fef3c7; color:#92400e; }
+.extreg-status--rejected     { background:#fecaca; color:#991b1b; }
+.extreg-status--unmatched    { background:#f3f4f6; color:#6b7280; }

@@ -87,6 +87,14 @@
                     База знаний
                     <span v-if="kbStats.total" class="nav-badge">{{ kbStats.total }}</span>
                 </div>
+                <div class="nav-item" :class="{active: currentView === 'external-register'}" @click="navigate('/external-register')">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M3 2h8l2 2v10H3z"/>
+                        <path d="M5 6h6M5 9h6M5 12h4"/>
+                    </svg>
+                    Реестр СУ-10
+                    <span v-if="extRegCoverage && extRegCoverage.matched" class="nav-badge" style="background:#16a34a">{{ extRegCoverage.matched }}/{{ extRegCoverage.total }}</span>
+                </div>
                 <div class="nav-item" :class="{active: currentView === 'model-control'}" @click="navigate('/model-control')">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <rect x="2" y="2" width="12" height="12" rx="2"/>
@@ -2213,6 +2221,13 @@
                                         </template>
                                     </td>
                                     <td class="desc-cell">
+                                        <!-- Бейдж "Принято заказчику" — если finding есть в реестре СУ-10 -->
+                                        <span v-if="findingExtRegBadge(f)"
+                                              class="extreg-badge"
+                                              :class="'extreg-badge--' + findingExtRegBadge(f).tone"
+                                              :title="findingExtRegBadge(f).title">
+                                            {{ findingExtRegBadge(f).text }}
+                                        </span>
                                         <!-- Бейдж migrated finding: "Из V1" / "Связано с V1" -->
                                         <span v-if="findingMigratedBadge(f)"
                                               class="migrated-badge"
@@ -4965,6 +4980,104 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- ──────────── External Register (СУ-10) ──────────── -->
+        <div v-if="currentView === 'external-register'" class="container">
+            <div class="page-header">
+                <h2>Реестр замечаний СУ-10</h2>
+                <p class="page-subtitle">Замечания, отправленные заказчику, и их сопоставление с findings'ами на платформе. Принято = мы отправили finding заказчику.</p>
+            </div>
+
+            <div v-if="extRegError" class="alert alert-warning" style="margin-bottom: 12px">
+                {{ extRegError }}
+            </div>
+
+            <div class="extreg-toolbar" style="display:flex; gap:8px; align-items:center; margin-bottom:12px; flex-wrap:wrap">
+                <button class="btn btn-secondary" @click="loadExternalRegister()" :disabled="extRegLoading">
+                    {{ extRegLoading ? 'Загрузка...' : 'Обновить' }}
+                </button>
+                <button class="btn btn-secondary" @click="importExternalRegister()">Импортировать реестр</button>
+                <button class="btn btn-primary" @click="runExternalRegisterMatch()" :disabled="extRegMatchRunning || !extRegEntries.length">
+                    {{ extRegMatchRunning ? 'Сопоставление…' : 'Запустить LLM-сопоставление' }}
+                </button>
+                <button class="btn btn-secondary" @click="downloadExternalRegisterXlsx()" :disabled="!extRegEntries.length">Excel</button>
+                <div style="flex:1"></div>
+                <div v-if="extRegCoverage" class="extreg-stats" style="display:flex; gap:18px; font-size:13px">
+                    <span><strong>{{ extRegCoverage.matched }}</strong> / {{ extRegCoverage.total }} принято</span>
+                    <span style="color:#f59e0b">⚠️ {{ extRegCoverage.needs_review }} на проверку</span>
+                    <span style="opacity:.7">{{ extRegCoverage.unmatched }} не принято</span>
+                </div>
+            </div>
+
+            <div class="extreg-filters" style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap">
+                <select v-model="extRegFilterStatus" class="form-control" style="width:auto">
+                    <option value="all">Все статусы</option>
+                    <option value="unmatched">Не принято</option>
+                    <option value="needs_review">На проверку</option>
+                    <option value="auto_matched">Авто-сопоставлено</option>
+                    <option value="confirmed">Подтверждено</option>
+                    <option value="rejected">Отклонено</option>
+                </select>
+                <select v-model="extRegFilterSection" class="form-control" style="width:auto">
+                    <option value="">Все разделы</option>
+                    <option v-for="s in extRegSectionOptions" :key="s" :value="s">{{ s }}</option>
+                </select>
+                <select v-model="extRegFilterResponse" class="form-control" style="width:auto">
+                    <option value="">Любой ответ</option>
+                    <option value="Учтено">Учтено</option>
+                    <option value="Отклонено">Отклонено</option>
+                    <option value="Внесено">Внесено</option>
+                    <option value="По согласованию Заказчика">По согласованию</option>
+                </select>
+            </div>
+
+            <table class="extreg-table" v-if="extRegEntries.length">
+                <thead>
+                    <tr>
+                        <th style="width:5%">#</th>
+                        <th style="width:14%">Раздел</th>
+                        <th style="width:14%">Лист/Раздел</th>
+                        <th style="width:9%">Категория</th>
+                        <th style="width:24%">Проблема</th>
+                        <th style="width:9%">Ответ заказчика</th>
+                        <th style="width:15%">Наш finding</th>
+                        <th style="width:10%">Статус</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(e, idx) in extRegFilteredEntries" :key="e.key">
+                        <td>{{ idx + 1 }}</td>
+                        <td><code style="font-size:11px">{{ e.section_code || '—' }}</code></td>
+                        <td style="font-size:12px">{{ e.sheet_ref }}</td>
+                        <td><span class="sev-badge sev-badge--sm">{{ e.cat_su10 }}</span></td>
+                        <td style="font-size:12px">{{ e.problem }}</td>
+                        <td>
+                            <span class="extreg-resp" :class="'extreg-resp--' + (e.customer_response === 'Отклонено' ? 'red' : (e.customer_response === 'По согласованию Заказчика' ? 'amber' : 'green'))">
+                                {{ e.customer_response }}
+                            </span>
+                        </td>
+                        <td style="font-size:12px">
+                            <template v-if="e.match">
+                                <div><code>{{ e.match.finding_id }}</code> <span style="opacity:.6">({{ Math.round(e.match.confidence*100) }}%)</span></div>
+                                <div style="font-size:11px; opacity:.7">{{ e.match.project_id }}</div>
+                            </template>
+                            <template v-else>—</template>
+                        </td>
+                        <td>
+                            <span :class="'extreg-status extreg-status--' + e.match_status">{{ e.match_status }}</span>
+                            <div v-if="e.match && e.match_status !== 'confirmed'" style="margin-top:4px; display:flex; gap:4px">
+                                <button class="btn btn-sm btn-success" @click="confirmExternalEntry(e.key)" title="Подтвердить">✓</button>
+                                <button class="btn btn-sm btn-danger" @click="rejectExternalEntry(e.key)" title="Отклонить">✗</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div v-else-if="!extRegLoading && !extRegError" class="empty-state">
+                <p>Реестр пока пуст. Нажмите «Импортировать реестр», чтобы загрузить markdown СУ-10.</p>
             </div>
         </div>
 
