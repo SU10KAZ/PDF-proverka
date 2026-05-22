@@ -1,0 +1,1002 @@
+{
+  "schema_version": 1,
+  "discipline": "AR",
+  "source_research_dir": "experiments/md_analysis_comparison/normative_checklist_research/",
+  "source_matrix": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json",
+  "counts": {
+    "total": 23,
+    "mandatory": 9,
+    "conditionally_mandatory": 9,
+    "recommended": 5,
+    "cannot_be_reported_as_missing": 3,
+    "requires_cross_section": 2,
+    "requires_human_validation": 9,
+    "with_object_signals": 6,
+    "disabled_by_default": 0
+  },
+  "items": [
+    {
+      "item_id": "AR-01",
+      "item_name": "Пояснительная записка к разделу АР",
+      "discipline": "AR",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "ПЗ к разделу АР обязательна на стадии ПД (раздел 3 ПП РФ 87). На стадии РД (отдельная марка АР-К3) — может отсутствовать как атрибут тома ПД.",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "shadow_only_until_clause_verified",
+      "normative_basis": "ПП РФ №87, раздел 3 (для ПД); ГОСТ Р 21.101-2020 (для РД-комплектов)",
+      "exact_clause_or_section": "ПП РФ 87 разд. III, ст. 13",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": true,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-01",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "ГОСТ Р 21.1101-2013, п. 4.2",
+      "current_norm_issues": [
+        "ГОСТ Р 21.1101-2013 заменён на ГОСТ Р 21.101-2020 — обновить ссылку"
+      ],
+      "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать; если стадия документа — РД-марка (а не ПД-том), пункт может быть атрибутом раздела ПД и в данной марке отсутствовать обоснованно",
+      "example_valid_missing_case": "ПД-том АР целиком: ПЗ отсутствует → finding",
+      "example_invalid_missing_case": "РД-марка АР-К3 (отдельная книга): ПЗ может быть в верхнем томе → drop"
+    },
+    {
+      "item_id": "AR-02",
+      "item_name": "Поэтажные планы с экспликацией помещений",
+      "discipline": "AR",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "ГОСТ 21.501-2018",
+      "exact_clause_or_section": "п. 5.3, форма 7",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-02",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "ГОСТ 21.501-2018, п. 5.3",
+      "current_norm_issues": [],
+      "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать",
+      "example_valid_missing_case": "Том АР не содержит ни одного поэтажного плана",
+      "example_invalid_missing_case": "Документ — спецификация заполнения проёмов"
+    },
+    {
+      "item_id": "AR-03",
+      "item_name": "Разрезы здания (продольный и поперечный) с отметками",
+      "discipline": "AR",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "ГОСТ 21.501-2018",
+      "exact_clause_or_section": "п. 5.5",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-03",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "ГОСТ 21.501-2018, п. 5.5",
+      "current_norm_issues": [],
+      "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать",
+      "example_valid_missing_case": "Том АР с этажными планами, но без разрезов",
+      "example_invalid_missing_case": "Документ — обмерный чертёж одного помещения"
+    },
+    {
+      "item_id": "AR-04",
+      "item_name": "Фасады с указанием отметок, материалов отделки и узлов",
+      "discipline": "AR",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "ГОСТ 21.501-2018",
+      "exact_clause_or_section": "п. 5.6",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-04",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "ГОСТ 21.501-2018, п. 5.6",
+      "current_norm_issues": [],
+      "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "AR-05",
+      "item_name": "Раздел \"Пожарная безопасность\" / огнестойкость",
+      "discipline": "AR",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "Раздел ПБ — самостоятельный раздел ПД (раздел 9 ПП РФ 87). Не должен дублироваться целиком внутри АР. В АР достаточно ссылок на класс пожарной опасности и предел огнестойкости конструкций.",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_stage_matches",
+      "normative_basis": "ПП РФ 87 раздел 9; ФЗ-123",
+      "exact_clause_or_section": "ФЗ-123 ст. 87 (класс конструктивной пожарной опасности)",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-05",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "ФЗ-123, СП 2.13130.2020",
+      "current_norm_issues": [],
+      "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; в РД-марке АР раздел ПБ может быть в отдельном томе ПД",
+      "example_valid_missing_case": "ПД-том АР без указания класса пожарной опасности → ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "example_invalid_missing_case": "Флагать как «отсутствует раздел ПБ» в АР, когда ПБ — отдельный том"
+    },
+    {
+      "item_id": "AR-06",
+      "item_name": "Раздел \"Эвакуация\" — пути, ширина, протяжённость, выходы",
+      "discipline": "AR",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "В АР даются эвакуационные пути и выходы на планах. Целиком раздел эвакуации входит в ПБ.",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "КРИТИЧЕСКОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_stage_matches",
+      "normative_basis": "СП 1.13130.2020",
+      "exact_clause_or_section": "разд. 4-6",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-06",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 1.13130.2020",
+      "current_norm_issues": [],
+      "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты",
+      "example_valid_missing_case": "АР содержит планы, но без указания эвакуационных путей → КРИТИЧЕСКОЕ для МКД",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "AR-07",
+      "item_name": "Штамп с указанием стадии (П / Р) и нормоконтроль",
+      "discipline": "AR",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "audit_comparison",
+        "tz_vs_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД",
+        "КМД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation",
+        "detailing"
+      ],
+      "applicability_conditions": "Применяется ко всем PDF-документам РД/ПД",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "shadow_only_until_clause_verified",
+      "normative_basis": "ГОСТ Р 21.101-2020",
+      "exact_clause_or_section": "разд. 5, формы 3/4/6",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": true,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-07",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "ГОСТ Р 21.1101-2013, п. 5",
+      "current_norm_issues": [
+        "ГОСТ Р 21.1101-2013 заменён на ГОСТ Р 21.101-2020 — обновить ссылку"
+      ],
+      "do_not_report_if": "Если штамп явно присутствует — drop",
+      "example_valid_missing_case": "Стадия в штампе не указана / штамп пустой",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "AR-08",
+      "item_name": "Расчёт инсоляции жилых помещений",
+      "discipline": "AR",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "Только для жилых МКД. Не обязателен для общественных зданий, складов, апартаментов с временным проживанием. Проверить тип объекта.",
+      "object_signals": [
+        "residential_building"
+      ],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "shadow_only_until_clause_verified",
+      "normative_basis": "СанПиН 1.2.3685-21 (раздел III); ранее СанПиН 2.2.1/2.1.1.1076-01",
+      "exact_clause_or_section": "СанПиН 1.2.3685-21 п. 79 и табл. 5.34",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": true,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-08",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_parameter",
+      "current_norm_reference": "СП 50.13330.2012, СанПиН 1.2.3685-21",
+      "current_norm_issues": [
+        "СП 50.13330.2012 → есть актуальная редакция 2024; пункт по инсоляции точнее искать в СанПиН 1.2.3685-21"
+      ],
+      "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; нежилое назначение; не та стадия",
+      "example_valid_missing_case": "ПД-том АР жилого МКД без расчёта инсоляции квартир",
+      "example_invalid_missing_case": "Расчёт инсоляции для офисного центра — не требуется"
+    },
+    {
+      "item_id": "AR-09",
+      "item_name": "ТЭП объекта (этажность, площади, строит. объём)",
+      "discipline": "AR",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "ТЭП — атрибут раздела ПЗ ПД-тома, а не отдельной марки АР",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "shadow_only_until_clause_verified",
+      "normative_basis": "ПП РФ 87 раздел 1 (ПЗ); ГОСТ Р 21.101-2020",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": true,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-09",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "ГОСТ Р 21.1101-2013, п. 4.2.2",
+      "current_norm_issues": [
+        "ГОСТ Р 21.1101-2013 заменён на ГОСТ Р 21.101-2020 — обновить ссылку"
+      ],
+      "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; если стадия документа — РД-марка (а не ПД-том), пункт может быть атрибутом раздела ПД и в данной марке отсутствовать обоснованно",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": "РД-марка АР3 без ТЭП — ТЭП в томе ПЗ, не здесь"
+    },
+    {
+      "item_id": "AR-10",
+      "item_name": "Спецификация заполнения оконных и дверных проёмов",
+      "discipline": "AR",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Применима к РД-тому или к Excel-выгрузке спецификации",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "ГОСТ 21.501-2018",
+      "exact_clause_or_section": "п. 5.10, форма 7",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-10",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_schedule",
+      "current_norm_reference": "ГОСТ 21.501-2018, п. 5.10",
+      "current_norm_issues": [],
+      "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "AR-11",
+      "item_name": "Ведомость отделки помещений",
+      "discipline": "AR",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "ГОСТ 21.501-2018",
+      "exact_clause_or_section": "п. 5.11",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-11",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_schedule",
+      "current_norm_reference": "ГОСТ 21.501-2018, п. 5.11",
+      "current_norm_issues": [],
+      "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "AR-12",
+      "item_name": "Экспликация помещений с привязкой к этажным планам",
+      "discipline": "AR",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "ГОСТ 21.501-2018",
+      "exact_clause_or_section": "п. 5.3, форма 2",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-12",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_schedule",
+      "current_norm_reference": "ГОСТ 21.501-2018, п. 5.3",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "AR-13",
+      "item_name": "Характерные узлы (кровля, парапет, цоколь)",
+      "discipline": "AR",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Обязательны для тех узлов, что фактически есть в проекте (если нет эксплуатируемой кровли — нет смысла требовать узлы кровли)",
+      "object_signals": [
+        "roof_operated"
+      ],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "shadow_only_until_clause_verified",
+      "normative_basis": "ГОСТ 21.501-2018",
+      "exact_clause_or_section": "п. 5.9",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": true,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-13",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_diagram",
+      "current_norm_reference": "ГОСТ 21.501-2018, п. 5.9",
+      "current_norm_issues": [],
+      "do_not_report_if": "если в MD нет упоминания соответствующего оборудования — пункт неприменим",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "AR-14",
+      "item_name": "Схема эвакуационных путей и выходов на планах",
+      "discipline": "AR",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "КРИТИЧЕСКОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "СП 1.13130.2020",
+      "exact_clause_or_section": "разд. 4-6",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-14",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_diagram",
+      "current_norm_reference": "СП 1.13130.2020",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "AR-15",
+      "item_name": "Координация проходов / отверстий ОВ/ВК/ЭОМ",
+      "discipline": "AR",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Coordination — process artifact, часто оформляется заданием смежнику в виде отдельного письма. Отсутствие его в самой марке АР не = нарушение нормы.",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only_cross_section",
+      "normative_basis": "ГОСТ 21.501-2018 (рекомендация по координации)",
+      "exact_clause_or_section": "",
+      "confidence": "low",
+      "requires_cross_section": true,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-15",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "ГОСТ 21.501-2018, п. 5.8",
+      "current_norm_issues": [],
+      "do_not_report_if": "Coordination — это часто отдельный документ задания смежнику; флагать missing нельзя; можно флагать только при явном противоречии (отверстие на плане АР, но размер не указан)",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": "Флагать «отсутствует координация ОВ» как missing finding — координация может быть в письме-задании, которое мы не видим"
+    },
+    {
+      "item_id": "AR-16",
+      "item_name": "Координация с КЖ/КМ по закладным и опиранию",
+      "discipline": "AR",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "То же — координация часто это задание смежнику",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only_cross_section",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "low",
+      "requires_cross_section": true,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-16",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "ГОСТ 21.501-2018",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "AR-17",
+      "item_name": "Указания по приёмке отделочных работ",
+      "discipline": "AR",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Указания по приёмке часто выносятся в отдельный документ (ПОС/ППР). Их отсутствие в АР не = нарушение.",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-17",
+      "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 71.13330.2017",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "AR-18",
+      "item_name": "Раздел отделки с привязкой к экспликации",
+      "discipline": "AR",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_low_severity_or_drop",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-18",
+      "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "current_problem_class": "incomplete_specification",
+      "current_norm_reference": "ГОСТ 21.501-2018, п. 5.11",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "AR-19",
+      "item_name": "Решение по доступности для МГН",
+      "discipline": "AR",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "ОДИ — самостоятельный раздел 10 ПП РФ 87. В АР достаточно проектных решений; целиком раздел в АР не входит.",
+      "object_signals": [
+        "public_building",
+        "residential_building"
+      ],
+      "severity_policy": {
+        "default": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "shadow_only_until_clause_verified",
+      "normative_basis": "СП 59.13330.2020; ПП РФ 87 раздел 10",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": true,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-19",
+      "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 59.13330.2020",
+      "current_norm_issues": [],
+      "do_not_report_if": "Если в проекте есть отдельный том ОДИ — флагать «отсутствует МГН в АР» нельзя",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "AR-20",
+      "item_name": "Звукоизоляционные характеристики ограждений",
+      "discipline": "AR",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_low_severity_or_drop",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-20",
+      "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 51.13330.2011",
+      "current_norm_issues": [],
+      "do_not_report_if": "если стадия документа — РД-марка (а не ПД-том), пункт может быть атрибутом раздела ПД и в данной марке отсутствовать обоснованно",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "AR-21",
+      "item_name": "Расчёт КЕО (естественная освещённость) — для жилых МКД",
+      "discipline": "AR",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "Только жилые МКД и определённые типы общественных зданий (детсады, школы)",
+      "object_signals": [
+        "residential_building",
+        "public_building"
+      ],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "shadow_only_until_clause_verified",
+      "normative_basis": "СП 52.13330.2016",
+      "exact_clause_or_section": "разд. 5",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": true,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-21",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_parameter",
+      "current_norm_reference": "СП 52.13330.2016",
+      "current_norm_issues": [],
+      "do_not_report_if": "нежилое и не социальное назначение",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "AR-22",
+      "item_name": "Узлы крепления светопрозрачных конструкций — при наличии витражей",
+      "discipline": "AR",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только при наличии витражей/СПФ-фасадов",
+      "object_signals": [
+        "facade_present"
+      ],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "shadow_only_until_clause_verified",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": true,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-22",
+      "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 426.1325800.2020",
+      "current_norm_issues": [],
+      "do_not_report_if": "нет витражей в MD",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "AR-23",
+      "item_name": "План кровли — при наличии эксплуатируемой кровли",
+      "discipline": "AR",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только при наличии эксплуатируемой кровли",
+      "object_signals": [
+        "roof_operated"
+      ],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "shadow_only_until_clause_verified",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": true,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#AR-23",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_diagram",
+      "current_norm_reference": "ГОСТ 21.501-2018",
+      "current_norm_issues": [],
+      "do_not_report_if": "нет эксплуатируемой кровли",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    }
+  ]
+}

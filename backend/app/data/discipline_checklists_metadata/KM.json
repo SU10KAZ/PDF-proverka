@@ -1,0 +1,1069 @@
+{
+  "schema_version": 1,
+  "discipline": "KM",
+  "source_research_dir": "experiments/md_analysis_comparison/normative_checklist_research/",
+  "source_matrix": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json",
+  "counts": {
+    "total": 25,
+    "mandatory": 11,
+    "conditionally_mandatory": 8,
+    "recommended": 6,
+    "cannot_be_reported_as_missing": 6,
+    "requires_cross_section": 3,
+    "requires_human_validation": 0,
+    "with_object_signals": 2,
+    "disabled_by_default": 0
+  },
+  "items": [
+    {
+      "item_id": "KM-01",
+      "item_name": "Общие данные: классы стали, обозначения швов, точность",
+      "discipline": "KM",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "ГОСТ 21.502-2016; ГОСТ 27772-2015",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-01",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "ГОСТ 21.502-2016 п. 4",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-02",
+      "item_name": "Антикоррозионная защита (система покрытия)",
+      "discipline": "KM",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "Подробный раздел — для агрессивной среды; для нормальной — ссылка достаточна",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_stage_matches",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-02",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 28.13330.2017",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-03",
+      "item_name": "Огнезащита несущих стальных элементов с пределом R",
+      "discipline": "KM",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только при требуемом пределе огнестойкости ≥ R15. Для R0 — не требуется.",
+      "object_signals": [
+        "fire_system_present"
+      ],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_signals_match",
+      "normative_basis": "СП 2.13130.2020; ФЗ-123",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-03",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 2.13130.2020",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-04",
+      "item_name": "Требования к контролю качества сварных соединений",
+      "discipline": "KM",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Часто в ППР / технологических картах",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-04",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "ГОСТ Р ИСО 17637, ГОСТ 7512-82",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-05",
+      "item_name": "Расчётная схема каркаса с l_ef",
+      "discipline": "KM",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "КРИТИЧЕСКОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-05",
+      "current_severity": "КРИТИЧЕСКОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 16.13330.2017 п. 7-8",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-06",
+      "item_name": "Подбор сечений: прочность + устойчивость",
+      "discipline": "KM",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "КРИТИЧЕСКОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-06",
+      "current_severity": "КРИТИЧЕСКОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 16.13330.2017 п. 7.1",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-07",
+      "item_name": "Подбор по двум ГПС (прочность + прогиб)",
+      "discipline": "KM",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-07",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 20.13330.2016, СП 16.13330.2017 п. 6",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-08",
+      "item_name": "Расчёт узлов и соединений (болт + сварка)",
+      "discipline": "KM",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "КРИТИЧЕСКОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-08",
+      "current_severity": "КРИТИЧЕСКОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 16.13330.2017 п. 14",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-09",
+      "item_name": "Ведомость элементов / отправочных марок",
+      "discipline": "KM",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД",
+        "КМД"
+      ],
+      "applicable_stages": [
+        "working_documentation",
+        "detailing"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-09",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_schedule",
+      "current_norm_reference": "ГОСТ 21.502-2016",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-10",
+      "item_name": "Спецификация металлопроката по сортаменту",
+      "discipline": "KM",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-10",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_schedule",
+      "current_norm_reference": "ГОСТ 8239/8240/26020/30245",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-11",
+      "item_name": "Ведомость метизов (болты, заклёпки) с классом прочности",
+      "discipline": "KM",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только при наличии болтовых соединений",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_stage_matches",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-11",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_schedule",
+      "current_norm_reference": "",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-12",
+      "item_name": "Узлы соединений (опорные, монтажные стыки, узлы ферм)",
+      "discipline": "KM",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-12",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_diagram",
+      "current_norm_reference": "ГОСТ 21.502-2016",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-13",
+      "item_name": "Монтажные схемы с маркировкой отправочных элементов",
+      "discipline": "KM",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД",
+        "КМД"
+      ],
+      "applicable_stages": [
+        "working_documentation",
+        "detailing"
+      ],
+      "applicability_conditions": "Монтажные схемы — атрибут КМ или КМД (детализации)",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_stage_matches",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-13",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_diagram",
+      "current_norm_reference": "ГОСТ 21.502-2016",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-14",
+      "item_name": "На элементе: сечение профиля и класс стали",
+      "discipline": "KM",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-14",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_parameter",
+      "current_norm_reference": "ГОСТ 27772-2015",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-15",
+      "item_name": "Болт: класс прочности, кол-во, шаг, μ для фрикц.",
+      "discipline": "KM",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-15",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_parameter",
+      "current_norm_reference": "СП 16.13330.2017 п. 14",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-16",
+      "item_name": "Сварной шов: тип, k_f, длина, электроды",
+      "discipline": "KM",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-16",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_parameter",
+      "current_norm_reference": "",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-17",
+      "item_name": "Нагрузки от ОВ/ВК на покрытие и фермы",
+      "discipline": "KM",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "Координация — задание смежнику",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only_cross_section",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "low",
+      "requires_cross_section": true,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-17",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-18",
+      "item_name": "Опирание перекрытий КЖ на металлические колонны",
+      "discipline": "KM",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только в гибридном каркасе КЖ+КМ",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only_cross_section",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": true,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-18",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-19",
+      "item_name": "Координация с АР по узлам сопряжения с фасадом",
+      "discipline": "KM",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only_cross_section",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "low",
+      "requires_cross_section": true,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-19",
+      "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-20",
+      "item_name": "Контроль швов (РК/УЗД) и моменты затяжки болтов",
+      "discipline": "KM",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Часто в ППР",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-20",
+      "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "ГОСТ Р ИСО 17637, СП 70.13330.2012",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-21",
+      "item_name": "Явное указание γ_c, γ_n, γ_f",
+      "discipline": "KM",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_low_severity_or_drop",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-21",
+      "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "current_problem_class": "missing_mandatory_parameter",
+      "current_norm_reference": "СП 16.13330.2017 п. 1.5",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-22",
+      "item_name": "Сертификат соответствия проката для ответственных конструкций",
+      "discipline": "KM",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Сертификат — атрибут исполнительной документации, а не проектной",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-22",
+      "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "current_problem_class": "incomplete_specification",
+      "current_norm_reference": "",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-23",
+      "item_name": "Расширенный АКЗ-раздел при агрессивной среде",
+      "discipline": "KM",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только при агрессивной/слабоагрессивной среде",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_stage_matches",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-23",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 28.13330.2017",
+      "current_norm_issues": [],
+      "do_not_report_if": "среда неагрессивная",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-24",
+      "item_name": "Расчёт на динамические воздействия (высотные/большепролётные)",
+      "discipline": "KM",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "Только для высотных и большепролётных объектов",
+      "object_signals": [
+        "high_rise"
+      ],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_signals_match",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-24",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 20.13330.2016",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KM-25",
+      "item_name": "Расчёт устойчивости поясов и раскосов фермы",
+      "discipline": "KM",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "Только при ферменном решении покрытия",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_stage_matches",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KM-25",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_diagram",
+      "current_norm_reference": "СП 16.13330.2017",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    }
+  ]
+}

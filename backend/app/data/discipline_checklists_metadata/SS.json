@@ -1,0 +1,1092 @@
+{
+  "schema_version": 1,
+  "discipline": "SS",
+  "source_research_dir": "experiments/md_analysis_comparison/normative_checklist_research/",
+  "source_matrix": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json",
+  "counts": {
+    "total": 25,
+    "mandatory": 7,
+    "conditionally_mandatory": 13,
+    "recommended": 5,
+    "cannot_be_reported_as_missing": 5,
+    "requires_cross_section": 4,
+    "requires_human_validation": 6,
+    "with_object_signals": 12,
+    "disabled_by_default": 0
+  },
+  "items": [
+    {
+      "item_id": "SS-01",
+      "item_name": "Общие данные раздела СС с перечнем подсистем",
+      "discipline": "SS",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "Перечень — атрибут уровня раздела ПД (5.4)",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_stage_matches",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-01",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "ГОСТ 21.602-2016",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-02",
+      "item_name": "АПС — автоматическая пожарная сигнализация",
+      "discipline": "SS",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "АПС обязательна по СП 486.1311500.2020 для определённых классов объектов. Для МКД — по высоте/числу квартир.",
+      "object_signals": [
+        "fire_system_present"
+      ],
+      "severity_policy": {
+        "default": "КРИТИЧЕСКОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_signals_match",
+      "normative_basis": "СП 486.1311500.2020 (перечень обязательных)",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-02",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 484.1311500.2020, СП 486.1311500.2020",
+      "current_norm_issues": [],
+      "do_not_report_if": "объект не попадает в перечень СП 486",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-03",
+      "item_name": "СОУЭ с указанием типа",
+      "discipline": "SS",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "Тип СОУЭ зависит от типа здания (СП 3.13130.2009 табл.)",
+      "object_signals": [
+        "fire_system_present"
+      ],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_signals_match",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-03",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 3.13130.2009",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-04",
+      "item_name": "Заземление слаботочного оборудования",
+      "discipline": "SS",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "shadow_only_until_clause_verified",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": true,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-04",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "ПУЭ-7 гл. 1.7",
+      "current_norm_issues": [
+        "ПУЭ-7 — добровольное; параллель: ГОСТ Р 50571.5.54, СП 437.1325800.2018"
+      ],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-05",
+      "item_name": "Расчёт батарей резервного питания (АКБ/ИБП)",
+      "discipline": "SS",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "Только при наличии активных систем, требующих резерва",
+      "object_signals": [
+        "fire_system_present"
+      ],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "shadow_only_until_clause_verified",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": true,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-05",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 134.13330.2012, СП 484.1311500.2020",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-06",
+      "item_name": "Расчёт извещателей АПС",
+      "discipline": "SS",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "Только если АПС обязательна для этого объекта",
+      "object_signals": [
+        "fire_system_present"
+      ],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_signals_match",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-06",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 484.1311500.2020",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-07",
+      "item_name": "Акустический расчёт СОУЭ",
+      "discipline": "SS",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "Только если СОУЭ — речевая (3-5 тип)",
+      "object_signals": [
+        "fire_system_present"
+      ],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_signals_match",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-07",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 3.13130.2009",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-08",
+      "item_name": "Спецификация оборудования СС",
+      "discipline": "SS",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-08",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_schedule",
+      "current_norm_reference": "ГОСТ 21.110-2013",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-09",
+      "item_name": "Кабельный журнал слаботочных кабелей",
+      "discipline": "SS",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-09",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_schedule",
+      "current_norm_reference": "ГОСТ 21.602-2016",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-10",
+      "item_name": "Адресация устройств АПС/СКУД/СОУЭ",
+      "discipline": "SS",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_low_severity_or_drop",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-10",
+      "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "current_problem_class": "missing_mandatory_schedule",
+      "current_norm_reference": "ГОСТ 21.602-2016",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-11",
+      "item_name": "Структурная схема каждой подсистемы",
+      "discipline": "SS",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-11",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_diagram",
+      "current_norm_reference": "ГОСТ 21.602-2016",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-12",
+      "item_name": "Схемы расположения оборудования на планах",
+      "discipline": "SS",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-12",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_diagram",
+      "current_norm_reference": "ГОСТ 21.602-2016",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-13",
+      "item_name": "Узлы прохода кабелей с противопожарными уплотнениями",
+      "discipline": "SS",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только при прохождении кабелей через противопожарные преграды",
+      "object_signals": [
+        "fire_system_present"
+      ],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_signals_match",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-13",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_diagram",
+      "current_norm_reference": "СП 6.13130.2021",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-14",
+      "item_name": "На кабеле: тип/категория (Cat.5e/Cat.6/FRLS/FRHF)",
+      "discipline": "SS",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-14",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_parameter",
+      "current_norm_reference": "СП 6.13130.2021",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-15",
+      "item_name": "На устройстве: тип, U, P",
+      "discipline": "SS",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-15",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_parameter",
+      "current_norm_reference": "",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-16",
+      "item_name": "Передача в ЭОМ перечня электроприёмников СС",
+      "discipline": "SS",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Coordination — задание смежнику",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only_cross_section",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "low",
+      "requires_cross_section": true,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-16",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-17",
+      "item_name": "Координация АПС с ОВ — ПДВ",
+      "discipline": "SS",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только если есть АПС и ПДВ",
+      "object_signals": [
+        "fire_system_present",
+        "smoke_ventilation_required"
+      ],
+      "severity_policy": {
+        "default": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only_cross_section",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": true,
+      "requires_human_validation": true,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-17",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 7.13130.2013; СП 484.1311500.2020",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-18",
+      "item_name": "Координация АПС с лифтами ВТ",
+      "discipline": "SS",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только при наличии лифтов",
+      "object_signals": [
+        "elevators_present"
+      ],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only_cross_section",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": true,
+      "requires_human_validation": true,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-18",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-19",
+      "item_name": "Координация АПС с ВК — запуск противопожарной насосной",
+      "discipline": "SS",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только при наличии ВПВ",
+      "object_signals": [
+        "fire_system_present"
+      ],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only_cross_section",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": true,
+      "requires_human_validation": true,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-19",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-20",
+      "item_name": "Программа ПСИ АПС/СОУЭ + сертификация",
+      "discipline": "SS",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Обычно отдельный документ",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-20",
+      "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 484.1311500.2020, ФЗ-123, ТР ТС 043/2017",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-21",
+      "item_name": "Описание интерфейсов интеграции (SDK/OPC/БДД)",
+      "discipline": "SS",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_low_severity_or_drop",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "low",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-21",
+      "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-22",
+      "item_name": "Расчёт сегментов СКС с длиной линии",
+      "discipline": "SS",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_low_severity_or_drop",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-22",
+      "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "ГОСТ Р 53246-2008",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-23",
+      "item_name": "Домофония и СКУД входных групп (МКД)",
+      "discipline": "SS",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только МКД с контролируемым доступом",
+      "object_signals": [
+        "residential_building",
+        "automation_present"
+      ],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "shadow_only_until_clause_verified",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": true,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-23",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 134.13330.2012",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-24",
+      "item_name": "СОУЭ 3-5 типа для массовых объектов",
+      "discipline": "SS",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только для объектов с массовым пребыванием",
+      "object_signals": [
+        "public_building"
+      ],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_signals_match",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-24",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 3.13130.2009",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "SS-25",
+      "item_name": "СОТС и газоанализаторы CO — подземные автостоянки",
+      "discipline": "SS",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только при наличии подземной автостоянки",
+      "object_signals": [
+        "underground_structure"
+      ],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_signals_match",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#SS-25",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 154.13130.2013",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    }
+  ]
+}

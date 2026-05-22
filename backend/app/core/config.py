@@ -700,5 +700,71 @@ except (TypeError, ValueError):
 if not (0.0 <= STAGE01_DEDUP_FUZZY_THRESHOLD <= 1.0):
     STAGE01_DEDUP_FUZZY_THRESHOLD = 0.7
 
+# ─── Stage 01 Phase 1 completeness lens (SCAFFOLDING ONLY — all OFF) ─────────
+# All vars below are scaffolding for the upcoming completeness-lens rollout
+# documented in
+#   experiments/md_analysis_comparison/production_preparation/rollout/phase1_rollout.md
+# They are NOT yet read by any pipeline code. Adding them here so future
+# sub-tasks can wire them up incrementally without touching this module again.
+# Every flag defaults OFF; per-doc-type map is empty (no doc_type opted in);
+# discipline allowlist is empty; fallback-to-A0 is the safe default (ON).
+#
+# Production guarantee: with these defaults, behaviour is identical to a
+# build without these vars — they are inert until referenced by a runner.
+
+STAGE01_COMPLETENESS_LENS_ENABLED          = _env_bool("STAGE01_COMPLETENESS_LENS_ENABLED", False)
+STAGE01_COMPLETENESS_SHADOW                = _env_bool("STAGE01_COMPLETENESS_SHADOW", False)
+STAGE01_SHADOW_ON_DISABLED_DOCTYPE         = _env_bool("STAGE01_SHADOW_ON_DISABLED_DOCTYPE", False)
+STAGE01_FALLBACK_TO_A0_ON_LENS_FAILURE     = _env_bool("STAGE01_FALLBACK_TO_A0_ON_LENS_FAILURE", True)
+
+
+def _env_int(name: str, default: int) -> int:
+    raw = os.environ.get(name)
+    if raw is None or not raw.strip():
+        return default
+    try:
+        return int(raw)
+    except ValueError:
+        return default
+
+
+STAGE01_COMPLETENESS_MAX_FINDINGS          = _env_int("STAGE01_COMPLETENESS_MAX_FINDINGS", 10)
+STAGE01_COMPLETENESS_MAX_FINDINGS_FULL_RD  = _env_int("STAGE01_COMPLETENESS_MAX_FINDINGS_FULL_RD", 6)
+
+STAGE01_DOCUMENT_TYPE_CONFIDENCE_MIN       = _env_float("STAGE01_DOCUMENT_TYPE_CONFIDENCE_MIN", 0.7)
+if not (0.0 <= STAGE01_DOCUMENT_TYPE_CONFIDENCE_MIN <= 1.0):
+    STAGE01_DOCUMENT_TYPE_CONFIDENCE_MIN   = 0.7
+
+# Per-doc-type opt-in for the completeness lens. JSON dict; empty default
+# means no document_type is opted in, so even if LENS_ENABLED=true the lens
+# only runs in shadow mode (controlled by STAGE01_COMPLETENESS_SHADOW).
+#
+# Expected shape:
+#   {"audit_comparison": true, "specification_only": true,
+#    "tz_vs_rd": false, "full_rd": false}
+def _env_json_dict(name: str, default: dict) -> dict:
+    raw = os.environ.get(name)
+    if raw is None or not raw.strip():
+        return dict(default)
+    try:
+        parsed = json.loads(raw)
+        if isinstance(parsed, dict):
+            return parsed
+    except (TypeError, ValueError, json.JSONDecodeError):
+        pass
+    return dict(default)
+
+
+STAGE01_COMPLETENESS_BY_DOC_TYPE           = _env_json_dict(
+    "STAGE01_COMPLETENESS_BY_DOC_TYPE", {}
+)
+
+# Per-discipline allowlist (CSV, e.g. "AR,EOM"). Empty = no discipline opted
+# in. Used by Step 4 of phase1_rollout when expanding to full_rd within a
+# given discipline.
+STAGE01_COMPLETENESS_DISCIPLINE_ALLOWLIST  = _env_csv(
+    "STAGE01_COMPLETENESS_DISCIPLINE_ALLOWLIST", []
+)
+
 # Обратная совместимость: BASE_DIR → ROOT_DIR
 BASE_DIR = ROOT_DIR

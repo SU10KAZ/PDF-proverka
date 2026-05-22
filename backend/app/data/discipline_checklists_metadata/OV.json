@@ -1,0 +1,1075 @@
+{
+  "schema_version": 1,
+  "discipline": "OV",
+  "source_research_dir": "experiments/md_analysis_comparison/normative_checklist_research/",
+  "source_matrix": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json",
+  "counts": {
+    "total": 25,
+    "mandatory": 9,
+    "conditionally_mandatory": 10,
+    "recommended": 6,
+    "cannot_be_reported_as_missing": 5,
+    "requires_cross_section": 4,
+    "requires_human_validation": 3,
+    "with_object_signals": 7,
+    "disabled_by_default": 1
+  },
+  "items": [
+    {
+      "item_id": "OV-01",
+      "item_name": "Общие данные: клим. параметры, темп. график",
+      "discipline": "OV",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "Это атрибут ПД (раздел 5.3 ПП РФ 87), может быть в томе ПД, а не в РД-марке",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_stage_matches",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-01",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 60.13330.2020 п. 5",
+      "current_norm_issues": [],
+      "do_not_report_if": "если стадия документа — РД-марка (а не ПД-том), пункт может быть атрибутом раздела ПД и в данной марке отсутствовать обоснованно; document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-02",
+      "item_name": "\"Отопление\": тип системы, теплоноситель, регулирование",
+      "discipline": "OV",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только если объект отапливается (не для летних/неотапливаемых)",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_stage_matches",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-02",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 60.13330.2020",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-03",
+      "item_name": "\"Вентиляция\": приток и вытяжка",
+      "discipline": "OV",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-03",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 60.13330.2020 п. 7",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-04",
+      "item_name": "\"Противодымная вентиляция\" для МКД и общественных",
+      "discipline": "OV",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "Обязательна только для МКД ≥ 28 м и определённых общественных зданий (СП 7.13130.2013 п. 7.2)",
+      "object_signals": [
+        "high_rise",
+        "smoke_ventilation_required"
+      ],
+      "severity_policy": {
+        "default": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_signals_match",
+      "normative_basis": "СП 7.13130.2013",
+      "exact_clause_or_section": "п. 7.2 (область применения)",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-04",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 7.13130.2013",
+      "current_norm_issues": [],
+      "do_not_report_if": "низкие МКД < 28 м и обычные общественные без массового пребывания",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-05",
+      "item_name": "Расчёт воздухообмена по помещениям",
+      "discipline": "OV",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "Атрибут ПД",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "КРИТИЧЕСКОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-05",
+      "current_severity": "КРИТИЧЕСКОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 60.13330.2020 п. 7",
+      "current_norm_issues": [],
+      "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать; если стадия документа — РД-марка (а не ПД-том), пункт может быть атрибутом раздела ПД и в данной марке отсутствовать обоснованно",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-06",
+      "item_name": "Расчёт тепловых нагрузок и теплопотерь",
+      "discipline": "OV",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-06",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 60.13330.2020",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-07",
+      "item_name": "Расчёт потерь давления, подбор вентустановок",
+      "discipline": "OV",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-07",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 60.13330.2020",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-08",
+      "item_name": "Проверка кратности по нормативам помещений",
+      "discipline": "OV",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-08",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 60.13330.2020, СанПиН 1.2.3685-21",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-09",
+      "item_name": "Гидравлический и акустический расчёт",
+      "discipline": "OV",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_low_severity_or_drop",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-09",
+      "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 60.13330.2020, СП 51.13330.2011",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-10",
+      "item_name": "Спецификация оборудования и материалов",
+      "discipline": "OV",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-10",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_schedule",
+      "current_norm_reference": "ГОСТ 21.602-2016",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-11",
+      "item_name": "Ведомость воздуховодов (сечения, материалы, крепления)",
+      "discipline": "OV",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только при наличии воздуховодов (нет вентсистем — нет ведомости)",
+      "object_signals": [
+        "ventilation_system_present"
+      ],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "shadow_only_until_clause_verified",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": true,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-11",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_schedule",
+      "current_norm_reference": "",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-12",
+      "item_name": "Аксонометрические схемы и планы (П1, В1...)",
+      "discipline": "OV",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-12",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_diagram",
+      "current_norm_reference": "ГОСТ 21.602-2016",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-13",
+      "item_name": "Узлы прохода воздуховодов через ограждения с ОЗК",
+      "discipline": "OV",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только при наличии огнезадерживающих клапанов в проекте",
+      "object_signals": [
+        "fire_system_present",
+        "ventilation_system_present"
+      ],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_signals_match",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-13",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_diagram",
+      "current_norm_reference": "СП 7.13130.2013",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-14",
+      "item_name": "На установке: L (м³/ч), P (Па)",
+      "discipline": "OV",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-14",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_parameter",
+      "current_norm_reference": "СП 60.13330.2020",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-15",
+      "item_name": "На установке: P_уст (кВт), U, число фаз — для ЭОМ",
+      "discipline": "OV",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-15",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_parameter",
+      "current_norm_reference": "",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-16",
+      "item_name": "КПД и класс энергоэффективности",
+      "discipline": "OV",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_low_severity_or_drop",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-16",
+      "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "current_problem_class": "missing_mandatory_parameter",
+      "current_norm_reference": "",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-17",
+      "item_name": "Передача в ЭОМ перечня электроприёмников ОВ",
+      "discipline": "OV",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Coordination — задание смежнику",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only_cross_section",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "low",
+      "requires_cross_section": true,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-17",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-18",
+      "item_name": "Координация с АПС — управление при пожаре",
+      "discipline": "OV",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только если есть АПС в проекте",
+      "object_signals": [
+        "fire_system_present"
+      ],
+      "severity_policy": {
+        "default": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only_cross_section",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": true,
+      "requires_human_validation": true,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-18",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 7.13130.2013",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-19",
+      "item_name": "Координация с АР/КЖ по проходкам",
+      "discipline": "OV",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only_cross_section",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "low",
+      "requires_cross_section": true,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-19",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-20",
+      "item_name": "Координация с газоснабжением (для кухонь с газом)",
+      "discipline": "OV",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только при наличии газа",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only_cross_section",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "low",
+      "requires_cross_section": true,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-20",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-21",
+      "item_name": "Программа ПНР вентсистем и испытаний ПДВ",
+      "discipline": "OV",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Часто отдельный документ",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-21",
+      "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 7.13130.2013",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-22",
+      "item_name": "Тепловая изоляция труб/воздуховодов",
+      "discipline": "OV",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_low_severity_or_drop",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-22",
+      "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 60.13330.2020, СП 61.13330.2012",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-23",
+      "item_name": "Огнестойкость воздуховодов EI 30/60/90/150",
+      "discipline": "OV",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Зависит от схемы вентиляции и типа здания",
+      "object_signals": [
+        "ventilation_system_present"
+      ],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_signals_match",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-23",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 7.13130.2013",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-24",
+      "item_name": "Схема узла АХЗ/ИТП и теплоноситель",
+      "discipline": "OV",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только при наличии АХЗ/ИТП",
+      "object_signals": [
+        "automation_present"
+      ],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "shadow_only_until_clause_verified",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": true,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-24",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "OV-25",
+      "item_name": "Вентиляция канализационных стояков — жилой МКД",
+      "discipline": "OV",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только в жилом МКД",
+      "object_signals": [
+        "residential_building"
+      ],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "low",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": true,
+      "disabled_reason": "Дубль с VK (см. final_report.md §3). Подлежит удалению из чек-листа.",
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#OV-25",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_diagram",
+      "current_norm_reference": "",
+      "current_norm_issues": [],
+      "do_not_report_if": "вентиляция стояков обычно решается в разделе ВК; во избежание дублирования флагать в ВК",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    }
+  ]
+}

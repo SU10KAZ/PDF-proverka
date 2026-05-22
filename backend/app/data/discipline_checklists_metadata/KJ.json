@@ -1,0 +1,1065 @@
+{
+  "schema_version": 1,
+  "discipline": "KJ",
+  "source_research_dir": "experiments/md_analysis_comparison/normative_checklist_research/",
+  "source_matrix": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json",
+  "counts": {
+    "total": 25,
+    "mandatory": 11,
+    "conditionally_mandatory": 8,
+    "recommended": 6,
+    "cannot_be_reported_as_missing": 6,
+    "requires_cross_section": 3,
+    "requires_human_validation": 2,
+    "with_object_signals": 3,
+    "disabled_by_default": 0
+  },
+  "items": [
+    {
+      "item_id": "KJ-01",
+      "item_name": "Общие данные: классы бетона, арматуры, F, W",
+      "discipline": "KJ",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "СП 63.13330.2018",
+      "exact_clause_or_section": "разд. 6, 10",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-01",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 63.13330.2018, разделы 6 и 10",
+      "current_norm_issues": [],
+      "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-02",
+      "item_name": "Схема расположения элементов: фундаменты, плиты, балки",
+      "discipline": "KJ",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-02",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "ГОСТ 21.501-2018 п. 5.4",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-03",
+      "item_name": "Антикоррозионная защита бетонных и арматурных конструкций",
+      "discipline": "KJ",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "Подробно — только при агрессивной среде по СП 28; для нормальной среды достаточно ссылки",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_stage_matches",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-03",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 28.13330.2017",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-04",
+      "item_name": "Требования к производству работ (опалубка, бетонирование)",
+      "discipline": "KJ",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Часто оформляется отдельным ППР; в КЖ-марке может быть только ссылка",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-04",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 70.13330.2012",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-05",
+      "item_name": "Расчётная схема несущего каркаса с нагрузками",
+      "discipline": "KJ",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "Расчётная схема — атрибут ПД",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "КРИТИЧЕСКОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-05",
+      "current_severity": "КРИТИЧЕСКОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 20.13330.2016, СП 63.13330.2018 п. 6",
+      "current_norm_issues": [],
+      "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать; если стадия документа — РД-марка (а не ПД-том), пункт может быть атрибутом раздела ПД и в данной марке отсутствовать обоснованно",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-06",
+      "item_name": "Сбор нагрузок (постоянные, временные, снег, ветер)",
+      "discipline": "KJ",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "КРИТИЧЕСКОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-06",
+      "current_severity": "КРИТИЧЕСКОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 20.13330.2016",
+      "current_norm_issues": [],
+      "do_not_report_if": "document_type=audit_comparison — out-of-scope для documentation-completeness, флагать только формальные атрибуты; document_type=specification_only — спецификация по определению без расчётов/схем/ПЗ; не флагать; если стадия документа — РД-марка (а не ПД-том), пункт может быть атрибутом раздела ПД и в данной марке отсутствовать обоснованно",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-07",
+      "item_name": "Расчёт по I группе предельных состояний",
+      "discipline": "KJ",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "КРИТИЧЕСКОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-07",
+      "current_severity": "КРИТИЧЕСКОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 63.13330.2018 п. 8",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-08",
+      "item_name": "Расчёт по II ГПС + продавливание",
+      "discipline": "KJ",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "shadow_only_until_clause_verified",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": true,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-08",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 63.13330.2018 п. 8.1.46, 8.2",
+      "current_norm_issues": [
+        "Точные пункты 8.1.46 и 8.2 проверить через mcp__norms"
+      ],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-09",
+      "item_name": "Геотехнический расчёт оснований с привязкой к ИГИ",
+      "discipline": "KJ",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "Только при наличии ИГИ и при типе фундамента, требующем расчёта основания",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_stage_matches",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-09",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 22.13330.2016",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-10",
+      "item_name": "Спецификация арматуры (класс, диаметр, длина)",
+      "discipline": "KJ",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-10",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_schedule",
+      "current_norm_reference": "ГОСТ 21.501-2018, СП 63.13330.2018",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-11",
+      "item_name": "Ведомость расхода стали",
+      "discipline": "KJ",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-11",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_schedule",
+      "current_norm_reference": "ГОСТ 21.501-2018",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-12",
+      "item_name": "Спецификация закладных деталей (ГОСТ 14098-2014)",
+      "discipline": "KJ",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только если в КЖ есть закладные детали",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_stage_matches",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-12",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_schedule",
+      "current_norm_reference": "ГОСТ 21.502-2016",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-13",
+      "item_name": "Узлы армирования (колонна-плита, балка-колонна и т.п.)",
+      "discipline": "KJ",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-13",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_diagram",
+      "current_norm_reference": "ГОСТ 21.501-2018, СП 63.13330.2018 п. 10",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-14",
+      "item_name": "Узлы сварных соединений арматуры",
+      "discipline": "KJ",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только при наличии сварных соединений арматуры",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_stage_matches",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-14",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_diagram",
+      "current_norm_reference": "ГОСТ 14098-2014",
+      "current_norm_issues": [],
+      "do_not_report_if": "нет сварных соединений (все стыки вязаные/механические)",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-15",
+      "item_name": "Класс арматуры, диаметр, шаг, защитный слой на каждом элементе",
+      "discipline": "KJ",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_if_absent",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-15",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_parameter",
+      "current_norm_reference": "СП 63.13330.2018 п. 10.3",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-16",
+      "item_name": "Длина анкеровки / нахлёста",
+      "discipline": "KJ",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd",
+        "specification_only"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "shadow_only_until_clause_verified",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": true,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-16",
+      "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "current_problem_class": "missing_mandatory_parameter",
+      "current_norm_reference": "СП 63.13330.2018 п. 10.3.5",
+      "current_norm_issues": [
+        "Точный пункт 10.3.5 в СП 63 — сверить"
+      ],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-17",
+      "item_name": "Закладные для КМ/ЭОМ/ОВ",
+      "discipline": "KJ",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Coordination — process artifact",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only_cross_section",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "low",
+      "requires_cross_section": true,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-17",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-18",
+      "item_name": "Отверстия в плитах для ОВ/ВК с армированием",
+      "discipline": "KJ",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только при наличии отверстий ≥ установленного размера",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only_cross_section",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": true,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-18",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-19",
+      "item_name": "Привязка фундаментов к ИГИ",
+      "discipline": "KJ",
+      "normative_status": "mandatory",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "ИГИ — отдельный документ; в КЖ — ссылка",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only_cross_section",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": true,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": true,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-19",
+      "current_severity": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 22.13330.2016",
+      "current_norm_issues": [],
+      "do_not_report_if": "Если есть ссылка «по данным ИГИ от …» — нормально",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-20",
+      "item_name": "Контроль качества бетонирования и приёмка скрытых работ",
+      "discipline": "KJ",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "Часто в ППР",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-20",
+      "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 70.13330.2012",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-21",
+      "item_name": "Расчёт прогибов и раскрытия трещин",
+      "discipline": "KJ",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_low_severity_or_drop",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-21",
+      "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 63.13330.2018",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-22",
+      "item_name": "Технологическая последовательность бетонных работ",
+      "discipline": "KJ",
+      "normative_status": "recommended",
+      "can_be_reported_as_missing": false,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "РД"
+      ],
+      "applicable_stages": [
+        "working_documentation"
+      ],
+      "applicability_conditions": "",
+      "object_signals": [],
+      "severity_policy": {
+        "default": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "context_only",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "medium",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-22",
+      "current_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 70.13330.2012",
+      "current_norm_issues": [],
+      "do_not_report_if": "",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-23",
+      "item_name": "Расчёт на ветровую нагрузку с пульсациями (≥ 75 м)",
+      "discipline": "KJ",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "Только для высоких зданий (≥ 75 м)",
+      "object_signals": [
+        "high_rise"
+      ],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_signals_match",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-23",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 20.13330.2016",
+      "current_norm_issues": [],
+      "do_not_report_if": "Здание ниже 75 м",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-24",
+      "item_name": "Расчёт на сейсмические воздействия (сейсмо-районы)",
+      "discipline": "KJ",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД"
+      ],
+      "applicable_stages": [
+        "project_documentation"
+      ],
+      "applicability_conditions": "Только в сейсмических районах ≥ 6 баллов",
+      "object_signals": [
+        "seismic_region"
+      ],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_signals_match",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-24",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_calculation_basis",
+      "current_norm_reference": "СП 14.13330.2018",
+      "current_norm_issues": [],
+      "do_not_report_if": "несейсмический район по карте ОСР",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    },
+    {
+      "item_id": "KJ-25",
+      "item_name": "Гидроизоляция и расчёт водонепроницаемости подземной части",
+      "discipline": "KJ",
+      "normative_status": "conditionally_mandatory",
+      "can_be_reported_as_missing": true,
+      "applicable_document_types": [
+        "full_rd"
+      ],
+      "applicable_stages_raw": [
+        "ПД",
+        "РД"
+      ],
+      "applicable_stages": [
+        "project_documentation",
+        "working_documentation"
+      ],
+      "applicability_conditions": "Только при наличии подземной части",
+      "object_signals": [
+        "underground_structure"
+      ],
+      "severity_policy": {
+        "default": "ЭКСПЛУАТАЦИОННОЕ",
+        "if_stage_unknown_or_mismatch": "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ",
+        "if_doc_type_mismatch": "drop",
+        "if_signal_missing": "drop"
+      },
+      "recommended_action": "report_missing_only_if_signals_match",
+      "normative_basis": "",
+      "exact_clause_or_section": "",
+      "confidence": "high",
+      "requires_cross_section": false,
+      "requires_human_validation": false,
+      "allow_in_shadow_only": false,
+      "disabled_by_default": false,
+      "disabled_reason": null,
+      "source_research_reference": "experiments/md_analysis_comparison/normative_checklist_research/matrix/completeness_requirements_matrix.json#KJ-25",
+      "current_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "current_problem_class": "missing_mandatory_section",
+      "current_norm_reference": "СП 250.1325800.2016",
+      "current_norm_issues": [],
+      "do_not_report_if": "нет подземной части",
+      "example_valid_missing_case": "",
+      "example_invalid_missing_case": ""
+    }
+  ]
+}
