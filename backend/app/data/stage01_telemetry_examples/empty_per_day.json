@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "date": "2026-05-21",
+  "projects_count": 0,
+  "A1_findings_count_total_sum": 0,
+  "A2_findings_count_by_severity_sum": {},
+  "A3_severity_distribution_pct": {},
+  "A4_avg_findings_per_project": 0.0,
+  "B1_dedup_total_in_sum": 0,
+  "B2_dedup_same_class_drops_sum": 0,
+  "B3_dedup_fuzzy_drops_sum": 0,
+  "B4_dedup_critical_protected_sum": 0,
+  "B6_duplicate_rate": 0.0,
+  "completeness": {
+    "C2_applied_over_enabled_ratio": 0.0,
+    "C3_completeness_findings_added_total": 0,
+    "C4_completeness_findings_after_dedup_total": 0,
+    "C5_completeness_cap_hit_rate": 0.0,
+    "C6_completeness_lens_duration_ms_p95": 0,
+    "C7_completeness_lens_error_rate": 0.0,
+    "C8_completeness_lens_fallback_fired_count": 0
+  },
+  "document_type": {
+    "D3_document_type_low_confidence_rate": 0.0,
+    "D4_document_type_distribution": {},
+    "D5_document_type_override_count": 0
+  },
+  "fp": {
+    "E1_fp_estimate_speculative_keyword_total": 0,
+    "E2_fp_estimate_low_confidence_no_norm_total": 0,
+    "E3_engineer_rejection_count_7d": 0,
+    "E4_fp_rate_proxy": 0.0
+  },
+  "G1_wall_clock_stage01_ms_p95": 0,
+  "G5_llm_cost_project_usd_mean": 0.0,
+  "G6_llm_cost_by_lens": {},
+  "shadow": {
+    "H1_shadow_a0_findings_count_total": 0,
+    "H2_shadow_a1v2_findings_count_total": 0,
+    "H3_shadow_engineer_chose_a1v2_count": 0
+  }
+}

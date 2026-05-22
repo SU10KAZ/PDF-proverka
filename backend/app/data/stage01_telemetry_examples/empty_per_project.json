@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "project_id": "213. Мосфильмовская 31А \"King&Sons\"/EOM/133_23-ГК-ЭГ",
+  "discipline": "EOM",
+  "findings": {
+    "A1_findings_count_total": 0,
+    "A2_findings_count_by_severity": {},
+    "A5_is_beyond_gt_useful_count": 0
+  },
+  "dedup": {
+    "B1_dedup_total_in": 0,
+    "B2_dedup_same_class_drops": 0,
+    "B3_dedup_fuzzy_drops": 0,
+    "B4_dedup_critical_protected": 0,
+    "B5_dedup_total_out": 0,
+    "B7_dedup_error_rate": 0
+  },
+  "completeness": {
+    "C1_completeness_lens_enabled": false,
+    "C2_completeness_lens_applied": false,
+    "C3_completeness_findings_added": 0,
+    "C4_completeness_findings_after_dedup": 0,
+    "C5_completeness_cap_hit": false,
+    "C6_completeness_lens_duration_ms": 0,
+    "C8_completeness_lens_fallback_fired": false
+  },
+  "document_type": {
+    "D1_document_type_detected": "full_rd",
+    "D2_document_type_confidence": 0.5
+  },
+  "fp": {
+    "E1_fp_estimate_speculative_keyword": 0,
+    "E2_fp_estimate_low_confidence_no_norm": 0
+  },
+  "wallclock_cost": {
+    "G1_wall_clock_stage01_ms": 0,
+    "G2_wall_clock_current_method_ms": 0,
+    "G3_wall_clock_completeness_ms": 0,
+    "G4_wall_clock_dedup_ms": 0,
+    "G5_llm_cost_project_usd": 0.0,
+    "G6_llm_cost_by_lens": {}
+  }
+}

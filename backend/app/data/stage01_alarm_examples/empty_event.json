@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "timestamp": "2026-05-21T12:00:00",
+  "alarm_id": "AL-03",
+  "alarm_name": "dedup_error",
+  "severity": "warn",
+  "project_id": null,
+  "discipline": null,
+  "metric_refs": [
+    "B7"
+  ],
+  "observed": {
+    "dedup_error_count_1d": 0
+  },
+  "threshold": {
+    "min_count": 1
+  },
+  "auto_mitigated": false,
+  "mitigation_target_flag": null
+}
