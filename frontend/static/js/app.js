@@ -2555,6 +2555,10 @@ const app = createApp({
                 currentView.value = 'external-register';
                 connectGlobalWS();
                 loadExternalRegister();
+            } else if (hash === '/stage-comparison') {
+                currentView.value = 'stage-comparison';
+                connectGlobalWS();
+                scLoadObjects();
             } else if (hash === '/') {
                 currentView.value = 'dashboard';
                 sidebarFilterSection.value = null;
@@ -3946,6 +3950,9 @@ const app = createApp({
                 if (obj) objectName.value = obj.name;
                 showObjectPicker.value = false;
                 await Promise.all([refreshProjects(), loadProjectGroups()]);
+                if (currentView.value === 'stage-comparison') {
+                    scLoadObjects();
+                }
             } catch (e) {
                 console.error('Failed to switch object:', e);
             }
@@ -4002,6 +4009,13 @@ const app = createApp({
             if (!sidebarFilterSection.value) return [];
             return projects.value.filter(p => p.section === sidebarFilterSection.value);
         });
+
+        const PROJECT_SCOPED_VIEWS = new Set([
+            'project', 'blocks', 'prompts', 'log',
+            'findings', 'optimization', 'discussions',
+            'document', 'critic-v2-project',
+        ]);
+        const isProjectView = computed(() => PROJECT_SCOPED_VIEWS.has(currentView.value));
 
         // ─── Disciplines & Section Groups ───
         const objectName = ref('');
@@ -8563,11 +8577,2764 @@ const app = createApp({
             };
         }
 
+        // ──────────────────────────────────────────────────────────────────
+        // Stage Comparison (раздел «Сравнение стадий») — v2 (slot-based)
+        // ──────────────────────────────────────────────────────────────────
+        const scTab            = ref('upload');     // upload | links | diffs
+        const scDiffSubtab     = ref('unified');    // unified (primary) | text (debug) | graphic (debug)
+        const scStageAPath     = ref('');
+        const scStageBPath     = ref('');
+        const scScanning       = ref(false);
+        // Автообъекты (Объект → stage_A / stage_B) ─────────────────────
+        const scObjects        = ref([]);    // [{id, name, root_path, stages, default_stage_a, default_stage_b}]
+        const scObjectsRoots   = ref([]);
+        const scObjectsLoading = ref(false);
+        const scObjectsError   = ref('');
+        const scSelectedObjectId = ref('');
+        const scSelectedStageA = ref('');    // имя выбранной stage_*, не путь
+        const scSelectedStageB = ref('');
+        const scLinking        = ref(false);
+        const scError          = ref('');
+        const scWarnings       = ref([]);
+        const scSession        = ref(null);          // {id, pairs, ...}
+        const scSessions       = ref([]);            // history list
+        const scSessionsListOpen = ref(false);
+        // Автоподгрузка ранее сохранённой сессии для выбранных stage_a/stage_b
+        // (срабатывает на обновлении страницы и при смене объекта/стадии).
+        const scAutoLoadInfo   = ref(null);          // {session_id, created_at, pairs_total, pairs_matched} | null
+        const scAutoLoading    = ref(false);
+        const scActivePair     = ref(null);          // pair-summary object
+        const scPairData       = ref(null);          // full pair view with blocks
+        const scCurrentPage    = ref(1);             // legacy, не используется в slot-based viewer
+        const scCanvasRefs     = reactive({});       // legacy (single img ref)
+        const scCanvasNat      = reactive({left: null, right: null});
+        // Slot-based refs
+        const scPaneRefs       = reactive({});       // {left,right: scrollable container}
+        const scSlotRefs       = reactive({});       // 'left:1' | 'right:1' → DOM-node
+        // Per-slot content heights (left/right img clientHeight). Используется чтобы
+        // обоим панелям дать одинаковую высоту слота — иначе левая и правая стороны
+        // расходятся по скроллу когда страницы разной длины.
+        const scSlotHeights    = reactive({});       // {[slotId]: {left?: number, right?: number}}
+        const scSelectedLeft   = ref(null);
+        const scSelectedRight  = ref(null);
+        const scSelectedSlotLeft  = ref(null);
+        const scSelectedSlotRight = ref(null);
+        // Pair config template (Save button + auto-apply banner)
+        const scTemplateSaving       = ref(false);
+        const scTemplateLastSaveMsg  = ref('');   // короткое подтверждение «сохранён шаблон …»
+        const scTemplateError        = ref('');
+        // Семантический LLM-анализ текста (Claude Sonnet через Claude Code) — session-only.
+        // Per-pair результат остаётся доступен по GET-endpoint'у (для отладки), но в UI
+        // мы агрегируем все пары в один плоский список (см. scTextLLMFlat ниже).
+        const scTextLLMDiff    = ref(null);     // legacy: используется кодом, который инспектирует текущую пару (blocks-view)
+        const scTextLLMConfig  = ref(null);     // {enabled, provider, model, available, reason}
+        // Batch / session preflight + job (единственный путь запуска)
+        const scTextLLMBatchPreflight  = ref(null);   // агрегированный preflight по сессии
+        const scTextLLMBatchLoading    = ref(false);
+        const scTextLLMBatchOpen       = ref(false);
+        const scTextLLMBatchError      = ref('');
+        const scTextLLMBatchForce      = ref(false);
+        const scTextLLMBatchJob        = ref(null);   // {id, status, items, progress, current_pair_id}
+        const scTextLLMBatchPolling    = ref(false);
+        // Session-level flat aggregation (GET .../text-llm-diff-flat)
+        const scTextLLMFlat            = ref(null);   // {session_id, summary, items}
+        const scTextLLMFlatLoading     = ref(false);
+        const scTextLLMFlatError       = ref('');
+        // Filters для plotting flat list
+        const scTextFlatFilterPair     = ref('');
+        const scTextFlatFilterType     = ref('');
+        const scTextFlatFilterCategory = ref('');
+        const scTextFlatFilterSeverity = ref('');
+        const scTextFlatFilterHumanReview = ref(false);
+        const scTextFlatSearch         = ref('');
+        const scGraphicSummary = ref(null);
+        const scGraphicPreview = ref(null);
+        const scGraphicDiffRunning = ref(false);
+        // MD enrichment (Qwen image descriptions for enriched MD)
+        const scMdEnrichmentSummary     = ref(null);     // {pair_id, left:{...}, right:{...}}
+        const scMdEnrichmentLoading     = ref(false);
+        const scMdEnrichmentRunning     = ref(false);
+        const scMdEnrichmentError       = ref('');
+        const scMdEnrichmentConfirmOpen = ref(false);
+        // Background job (Qwen run_model=true): UI больше не вызывает sync endpoint
+        // напрямую, чтобы не упираться в HTTP 524 от ngrok/Cloudflare.
+        const scMdEnrichmentJob         = ref(null);     // {id,status,items[],progress,...}
+        const scMdEnrichmentJobPolling  = ref(false);
+        const scMdEnrichmentJobTimedOut = ref(false);    // true если стартовый POST упал по таймауту/524 — job мог продолжаться
+        // ── Stage 1: «Распознать графику» (session-level Qwen enrichment job) ──
+        // Используется отдельно от per-pair job (scMdEnrichmentJob): запускается
+        // одной кнопкой на этапе «1. Загрузка документации», обрабатывает все
+        // PDF-пары сессии по очереди, не параллелит Qwen-запросы. Прогресс
+        // отображается агрегированно: total/done/partial/error по парам,
+        // image-блоки done/total, текущая пара/сторона/блок, cache_hits.
+        const scRecogJob              = ref(null);   // {id, aggregate:{...}, items, ...}
+        const scRecogPolling          = ref(false);
+        const scRecogStarting         = ref(false);
+        const scRecogError            = ref('');
+        const scRecogStartedAtClient  = ref(null);  // fallback elapsed_sec до прихода aggregate
+        // Per-pair analysis mode: 'block_links' (default) | 'concept_no_block_links'.
+        // Если concept_no_block_links — unified pipeline сравнивает enriched MD
+        // целиком, не требуя связей блоков (см. backend/store.py).
+        const scAnalysisMode            = ref('block_links');
+        const scAnalysisModeSaving      = ref(false);
+        const scAnalysisModeError       = ref('');
+        // ── Unified analysis (Qwen enrichment → Opus comparison) ──────────
+        // Это primary UX «Сравнение стадий»: одна кнопка «Проанализировать и
+        // сравнить» вместо отдельных text-llm + md-enrichment + graphic-diff.
+        const scUnifiedConfig           = ref(null);     // {enabled, provider, model, available, reason}
+        const scUnifiedPairStatus       = ref(null);     // {pair_id, enrichment:{}, comparison:{}}
+        const scUnifiedPairLoading      = ref(false);
+        const scUnifiedFlat             = ref(null);     // {session_id, summary, items}
+        const scUnifiedFlatLoading      = ref(false);
+        const scUnifiedFlatError        = ref('');
+        // По умолчанию вкладка «Расхождения» показывает findings ТОЛЬКО активной
+        // PDF-пары. Пользователь явно переключает на «все пары» через toggle —
+        // это защищает от ситуации, когда переход «Связь блоков» → «Расхождения»
+        // показывает stale aggregate findings другой пары. См. unified-diff-flat
+        // backend filter (?pair_id=).
+        const scUnifiedShowAllPairs     = ref(false);
+        const scUnifiedFlatScopePairId  = ref(null);     // pair_id, по которому реально загружен текущий scUnifiedFlat
+        const scUnifiedPreflight        = ref(null);     // pair- или session-level
+        const scUnifiedPreflightScope   = ref('pair');   // 'pair' | 'session'
+        const scUnifiedPreflightOpen    = ref(false);
+        const scUnifiedPreflightLoading = ref(false);
+        const scUnifiedPreflightError   = ref('');
+        const scUnifiedForceEnrichment  = ref(false);
+        const scUnifiedForceCompare     = ref(false);
+        const scUnifiedRunning          = ref(false);    // single-pair run в полёте
+        const scUnifiedJob              = ref(null);     // {id, status, items, progress}
+        const scUnifiedJobPolling       = ref(false);
+        const scUnifiedError            = ref('');
+        // Filters для unified flat-таблицы
+        const scUnifiedFilterPair        = ref('');
+        const scUnifiedFilterSourceLayer = ref('');
+        const scUnifiedFilterType        = ref('');
+        const scUnifiedFilterCategory    = ref('');
+        const scUnifiedFilterSeverity    = ref('');
+        const scUnifiedFilterHumanReview = ref(false);
+        const scUnifiedSearch            = ref('');
+        // Sync scroll/zoom (sync zoom toggle убран — масштаб всегда общий)
+        const scZoom           = ref(1.0);
+        const scSyncScroll     = ref(true);
+        const scIsSyncing      = { value: false };  // mutex (не ref — внутренний)
+        // Виртуализация: какие slot'ы реально отрендерены
+        const scVisibleSlot    = ref(1);            // slot, ближе всего к viewport (для виртуализации; берётся с левой панели)
+        const scVisibleSlotLeft  = ref(1);          // slot в центре левой панели
+        const scVisibleSlotRight = ref(1);          // slot в центре правой панели
+        const scRenderBufferBefore = 3;
+        const scRenderBufferAfter  = 5;
+        // Alignment (внутренний page_alignment продолжает использоваться для синхронизации страниц,
+        // пустых листов, перестановки страниц, auto-link и graphic-summary; пользовательский UI
+        // «Карта листов» удалён, остались только per-pane icon-кнопки)
+        const scAlignment      = ref(null);     // {items: [...], left_page_count, right_page_count}
+        const scAlignmentActionRunning = ref(false);  // защита от двойного клика на ⊕/↑/↓
+        const scAlignmentActionError   = ref('');     // последняя ошибка действия (если есть)
+        // Ручное сопоставление PDF
+        const scUnmatched      = ref({left_unmatched: [], right_unmatched: [], left_all: [], right_all: []});
+        const scMatchPairDialogOpen = ref(false);
+        const scMatchPairTargetPair = ref(null);
+        const scMatchPairChoiceRight = ref('');
+        const scMatchPairError = ref('');
+        const scMatchPairSaving = ref(false);
+        // Массовое подтверждение всех «возможных» сопоставлений.
+        const scConfirmAllRunning = ref(false);
+        const scConfirmAllError   = ref('');
+        const scCreatePairDialogOpen = ref(false);
+        const scCreatePairLeft = ref('');
+        const scCreatePairRight = ref('');
+        const scCreatePairError = ref('');
+        const scCreatePairSaving = ref(false);
+        // ── Findings / Report tab ───────────────────────────────────────
+        const scFindingsItems   = ref([]);
+        const scFindingsSummary = ref(null);
+        const scFindingsTotal   = ref(null);
+        const scFindingsLoading = ref(false);
+        const scFindingsRebuilding = ref(false);
+        const scFindingsError   = ref('');
+        const scFindingsFilter  = reactive({pair_id:'', category:'', status:'', severity:'', type:'', q:''});
+        let _scFindingsDebounceT = null;
+        const scFindingsSelectedIds = ref(new Set());
+        const scActiveFinding   = ref(null);
+        const scActiveFindingDraftNote = ref('');
+        const scActiveFindingDraftSeverity = ref('medium');
+        // Группировка (Задача 7): кэш child findings и развёрнутые parent_id
+        const scExpandedParents = ref(new Set());
+        const scChildFindingsCache = reactive({});  // parent_id -> [children]
+        // Bulk actions (Задача 8)
+        const scBulkSeverity = ref('medium');
+        const scBulkNote = ref('');
+        const scBulkActionRunning = ref(false);
+        // Warnings (Задача 9)
+        const scWarningsItems = ref([]);
+        const scWarningsSummary = ref(null);
+        const scWarningsLoading = ref(false);
+        // Batch LLM
+        const scBatchLLMConfirmOpen = ref(false);
+        const scBatchLLMScope = ref('selected');
+        const scBatchLLMCount = ref(0);
+        const scBatchLLMModel = ref('google/gemini-3.1-pro-preview');
+        const scBatchLLMRunning = ref(false);
+        const scBatchLLMError = ref('');
+        const scBatchLLMLastJob = ref(null);
+        // Прогресс активного job + polling-таймер
+        const scBatchLLMProgressOpen = ref(false);
+        let _scBatchLLMPollT = null;
+        const scBatchLLMCancelling = ref(false);
+        // Reports
+        const scReportForm = reactive({
+            format: 'md',
+            include_images: true,
+            include_llm_summary: true,
+            include_user_notes: true,
+            include_rejected: false,
+            include_ignored: false,
+            include_child_findings: false,
+            severity_filter: '',
+        });
+        const scReportCreating = ref(false);
+        const scLastReport     = ref(null);
+        const scReportsList    = ref([]);
+
+        const scPairs = computed(() => scSession.value ? (scSession.value.pairs || []) : []);
+        const scPairsCounts = computed(() => {
+            const c = {matched:0, maybe:0, unmatched:0};
+            for (const p of scPairs.value) {
+                if (p.status in c) c[p.status] += 1;
+            }
+            return c;
+        });
+        const scAlignmentItems = computed(() => {
+            if (scAlignment.value && Array.isArray(scAlignment.value.items)) return scAlignment.value.items;
+            // Fallback: alignment может прийти в составе pair view
+            if (scPairData.value && scPairData.value.alignment && Array.isArray(scPairData.value.alignment.items)) {
+                return scPairData.value.alignment.items;
+            }
+            return [];
+        });
+        const scAllLinksForGraphic = computed(() => {
+            if (!scGraphicSummary.value) return [];
+            return [
+                ...(scGraphicSummary.value.manual_links || []),
+                ...(scGraphicSummary.value.auto_links || []),
+            ];
+        });
+        const scStaleLinksCount = computed(() => {
+            const links = (scPairData.value && scPairData.value.links) || [];
+            return links.filter(l => String(l.method || '').endsWith('_stale')).length;
+        });
+
+        // ── Link visualization (replaced "Связи блоков" table) ─────────────
+        // Палитра для цветных плашек на связанных блоках. Каждая активная связь
+        // получает номер (по порядку в links[]) и цвет = palette[(n-1) % N].
+        const SC_LINK_PALETTE = [
+            "#2563eb", "#16a34a", "#dc2626", "#9333ea",
+            "#ea580c", "#0891b2", "#ca8a04", "#be123c",
+        ];
+        function scLinkColor(index) {
+            const i = Math.max(1, parseInt(index, 10) || 1) - 1;
+            return SC_LINK_PALETTE[i % SC_LINK_PALETTE.length];
+        }
+        // Активные (не-stale) связи нумеруются 1..N подряд, чтобы не было дырок
+        // после удаления. Stale-связи попадают в карту тоже, но без номера
+        // (вместо номера ставим '?', цвет — серый). Это удобнее, чем держать
+        // отдельные структуры.
+        const scLinkVisualMap = computed(() => {
+            const links = (scPairData.value && scPairData.value.links) || [];
+            const map = new Map();
+            let activeNumber = 0;
+            for (let i = 0; i < links.length; i++) {
+                const l = links[i];
+                const method = String(l.method || '');
+                const isStale = method.endsWith('_stale');
+                const isCross = method === 'manual_cross_page';
+                const isManual = method.startsWith('manual');
+                let number = null;
+                let color = '#9ca3af';  // нейтральный для stale
+                if (!isStale) {
+                    activeNumber += 1;
+                    number = activeNumber;
+                    color = scLinkColor(number);
+                }
+                const info = {
+                    number, color, link: l,
+                    isStale, isCross, isManual,
+                    isAuto: !isManual && !isStale,
+                    key: l.left_block_id + '::' + l.right_block_id,
+                };
+                map.set('left|' + l.left_block_id, info);
+                map.set('right|' + l.right_block_id, info);
+            }
+            return map;
+        });
+        function scBlockLinkInfo(side, blockId) {
+            return scLinkVisualMap.value.get(side + '|' + blockId) || null;
+        }
+        // Активная (выбранная пользователем) связь — для компактной панели удаления
+        const scActiveLinkKey = ref(null);  // 'left_id::right_id'
+        const scActiveLink = computed(() => {
+            if (!scActiveLinkKey.value) return null;
+            const links = (scPairData.value && scPairData.value.links) || [];
+            const [lid, rid] = scActiveLinkKey.value.split('::');
+            return links.find(l => l.left_block_id === lid && l.right_block_id === rid) || null;
+        });
+        const scActiveLinkInfo = computed(() => {
+            if (!scActiveLink.value) return null;
+            return scLinkVisualMap.value.get('left|' + scActiveLink.value.left_block_id) || null;
+        });
+        function scStatusLabel(s) {
+            return {matched: 'Сопоставлено', maybe: 'Возможно', unmatched: 'Не найдено', manual: 'Вручную', disabled: 'Скрыто'}[s] || s;
+        }
+        function scDiffTypeLabel(t) {
+            return {added: 'добавлено', removed: 'удалено', modified: 'изменено'}[t] || t;
+        }
+        function scIsPdfUsedRight(pdfPath) {
+            if (!scSession.value) return false;
+            for (const p of scSession.value.pairs || []) {
+                if (p.status === 'disabled') continue;
+                if (p.right && p.right.pdf_path === pdfPath) return true;
+            }
+            return false;
+        }
+
+        async function scLoadObjects() {
+            scObjectsLoading.value = true;
+            scObjectsError.value = '';
+            try {
+                const r = await fetch('/api/stage-comparison/objects');
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const data = await r.json();
+                scObjects.value = data.items || [];
+                scObjectsRoots.value = data.roots || [];
+                scAutoSelectFromTopObject();
+            } catch (e) {
+                scObjectsError.value = String(e.message || e);
+            } finally {
+                scObjectsLoading.value = false;
+            }
+        }
+
+        // На первой загрузке /stage-comparison `scLoadObjects()` стартует параллельно с
+        // `loadObjects()` (который заполняет `objectName`). Любой из них может
+        // финишировать первым — поэтому ещё watch'им obj/objects и переподставляем
+        // объект, когда обе стороны готовы.
+        watch([objectName, scObjects], () => {
+            if (currentView.value !== 'stage-comparison') return;
+            if (scSelectedObjectId.value) return;
+            scAutoSelectFromTopObject();
+        });
+
+        function scAutoSelectFromTopObject() {
+            const top = (objectName.value || '').trim();
+            if (!top) return;
+            const match = scObjects.value.find(o => (o.name || '').trim() === top);
+            if (!match) return;
+            if (scSelectedObjectId.value === match.id) return;
+            scSelectedObjectId.value = match.id;
+            scSelectedStageA.value = '';
+            scSelectedStageB.value = '';
+            scApplySelectedObject();
+        }
+
+        function scApplySelectedObject() {
+            const obj = scObjects.value.find(o => o.id === scSelectedObjectId.value);
+            if (!obj) { scStageAPath.value = ''; scStageBPath.value = ''; return; }
+            // Подставляем дефолтные стадии при первом выборе или если ранее выбранных уже нет
+            const stageNames = (obj.stages || []).map(s => s.name);
+            if (!stageNames.includes(scSelectedStageA.value)) {
+                scSelectedStageA.value = obj.default_stage_a?.name || stageNames[0] || '';
+            }
+            if (!stageNames.includes(scSelectedStageB.value)) {
+                scSelectedStageB.value = obj.default_stage_b?.name || stageNames[stageNames.length - 1] || '';
+            }
+            const sA = (obj.stages || []).find(s => s.name === scSelectedStageA.value);
+            const sB = (obj.stages || []).find(s => s.name === scSelectedStageB.value);
+            scStageAPath.value = sA ? sA.path : '';
+            scStageBPath.value = sB ? sB.path : '';
+        }
+
+        const scSelectedObject = computed(() =>
+            scObjects.value.find(o => o.id === scSelectedObjectId.value) || null
+        );
+
+        async function scScanFolders() {
+            scError.value = '';
+            scWarnings.value = [];
+            scScanning.value = true;
+            // Если пользователь явно жмёт «Сканировать» — снимаем баннер
+            // авто-подгрузки: дальнейшее состояние принадлежит новой сессии.
+            scAutoLoadInfo.value = null;
+            try {
+                const resp = await fetch('/api/stage-comparison/sessions', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({stage_a_path: scStageAPath.value, stage_b_path: scStageBPath.value}),
+                });
+                if (!resp.ok) {
+                    const j = await resp.json().catch(() => ({detail: 'HTTP ' + resp.status}));
+                    throw new Error(j.detail || ('HTTP ' + resp.status));
+                }
+                const data = await resp.json();
+                scSession.value = {
+                    id: data.session_id,
+                    pairs: data.pairs || [],
+                    stage_a_path: data.stage_a_path,
+                    stage_b_path: data.stage_b_path,
+                    created_at: data.created_at,
+                };
+                scWarnings.value = data.warnings || [];
+            } catch (e) {
+                scError.value = String(e.message || e);
+            } finally {
+                scScanning.value = false;
+            }
+        }
+
+        // Сравнение путей: нормализуем trailing slash и пробелы, чтобы не
+        // зависеть от того, как именно бекенд их вернул в session.json.
+        function _scNormalizePath(p) {
+            if (!p) return '';
+            const s = String(p).trim();
+            return s.endsWith('/') ? s.slice(0, -1) : s;
+        }
+
+        // Найти самую свежую сессию для текущих stage_a_path / stage_b_path и
+        // подгрузить её. Запускается при смене объекта/стадии и при первичном
+        // монтировании (после восстановления выбранного объекта с бекенда).
+        async function scTryAutoLoadSession() {
+            const a = _scNormalizePath(scStageAPath.value);
+            const b = _scNormalizePath(scStageBPath.value);
+            if (!a || !b) return;
+            // Если уже открыта сессия ровно для этих путей — не трогаем.
+            if (scSession.value && scSession.value.stage_a_path
+                && _scNormalizePath(scSession.value.stage_a_path) === a
+                && _scNormalizePath(scSession.value.stage_b_path) === b) {
+                return;
+            }
+            scAutoLoading.value = true;
+            try {
+                const r = await fetch('/api/stage-comparison/sessions');
+                if (!r.ok) return;
+                const j = await r.json();
+                const list = j.sessions || [];
+                scSessions.value = list;
+                const match = list.find(s =>
+                    _scNormalizePath(s.stage_a_path) === a &&
+                    _scNormalizePath(s.stage_b_path) === b
+                );
+                if (!match) {
+                    // Для этих путей сессии ещё нет — старую сессию (если она
+                    // от других путей) убираем, баннер тоже.
+                    if (scSession.value && (
+                        _scNormalizePath(scSession.value.stage_a_path) !== a ||
+                        _scNormalizePath(scSession.value.stage_b_path) !== b)) {
+                        scSession.value = null;
+                        scActivePair.value = null;
+                        scPairData.value = null;
+                    }
+                    scAutoLoadInfo.value = null;
+                    return;
+                }
+                // Грузим. Не используем scLoadSession напрямую, потому что та
+                // закрывает список сессий и не выставляет наш баннер.
+                const rs = await fetch('/api/stage-comparison/sessions/' + encodeURIComponent(match.id));
+                if (!rs.ok) return;
+                const data = await rs.json();
+                scSession.value = data;
+                scAutoLoadInfo.value = {
+                    session_id: match.id,
+                    created_at: match.created_at,
+                    pairs_total: match.pairs_total,
+                    pairs_matched: match.pairs_matched,
+                };
+            } catch (e) {
+                // Тихо — авто-подгрузка не должна ломать UX выбора объекта.
+                console.warn('[stage-comparison] auto-load failed:', e);
+            } finally {
+                scAutoLoading.value = false;
+            }
+        }
+
+        // Авто-подгрузка триггерится при изменении путей (включая первичную
+        // подстановку из объекта после рефреша страницы).
+        watch([scStageAPath, scStageBPath], () => {
+            if (currentView.value !== 'stage-comparison') return;
+            scTryAutoLoadSession();
+        });
+
+        async function scLoadSessionsList() {
+            scSessionsListOpen.value = !scSessionsListOpen.value;
+            if (!scSessionsListOpen.value) return;
+            try {
+                const r = await fetch('/api/stage-comparison/sessions');
+                const j = await r.json();
+                scSessions.value = j.sessions || [];
+            } catch (e) {
+                scError.value = 'Не удалось загрузить список сессий: ' + e;
+            }
+        }
+
+        async function scLoadSession(sessionId) {
+            try {
+                const r = await fetch('/api/stage-comparison/sessions/' + encodeURIComponent(sessionId));
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const data = await r.json();
+                scSession.value = data;
+                scSessionsListOpen.value = false;
+                // Пользователь явно выбрал сессию — баннер «авто-подгрузка»
+                // больше не релевантен.
+                scAutoLoadInfo.value = null;
+                // Restore last/active session-scope Qwen recognition job, чтобы
+                // на этапе 1 сразу показать актуальный прогресс/последний прогон.
+                try { await scRecogRestoreActive(); } catch (_) {}
+            } catch (e) {
+                scError.value = 'Не удалось загрузить сессию: ' + e;
+            }
+        }
+
+        async function scOpenPair(pair) {
+            if (!pair || !pair.left || !pair.right) return;
+            scActivePair.value = pair;
+            scSelectedLeft.value = null;
+            scSelectedRight.value = null;
+            scSelectedSlotLeft.value = null;
+            scSelectedSlotRight.value = null;
+            scTextLLMDiff.value = null;
+            scGraphicSummary.value = null;
+            scGraphicPreview.value = null;
+            scCanvasNat.left = null;
+            scCanvasNat.right = null;
+            scAlignment.value = null;
+            scAlignmentActionError.value = '';
+            scActiveLinkKey.value = null;
+            scVisibleSlot.value = 1;
+            scVisibleSlotLeft.value = 1;
+            scVisibleSlotRight.value = 1;
+            // Очищаем slot-refs и кеш высот прошлой пары
+            for (const k of Object.keys(scSlotRefs)) delete scSlotRefs[k];
+            for (const k of Object.keys(scSlotHeights)) delete scSlotHeights[k];
+            await scLoadPairData();
+            await scLoadAlignment();
+            // Загружаем analysis_mode чтобы кнопка «Блоки без связей» сразу
+            // отражала текущее состояние.
+            try { await scLoadAnalysisMode(); } catch (_) {}
+            scTab.value = 'links';
+        }
+
+        async function scLoadPairData() {
+            if (!scSession.value || !scActivePair.value) return;
+            const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}`;
+            try {
+                const r = await fetch(url);
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                scPairData.value = await r.json();
+                // Подсасываем alignment если он пришёл в pair view
+                if (scPairData.value.alignment && Array.isArray(scPairData.value.alignment.items)) {
+                    scAlignment.value = {
+                        items: scPairData.value.alignment.items,
+                        left_page_count: scPairData.value.left_page_count,
+                        right_page_count: scPairData.value.right_page_count,
+                    };
+                }
+            } catch (e) {
+                scError.value = 'Не удалось загрузить пару: ' + e;
+            }
+        }
+
+        async function scLoadAlignment() {
+            if (!scSession.value || !scActivePair.value) return;
+            const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/page-alignment`;
+            try {
+                const r = await fetch(url);
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const data = await r.json();
+                scAlignment.value = {
+                    items: (data.alignment && data.alignment.items) || [],
+                    left_page_count: data.left_page_count || 0,
+                    right_page_count: data.right_page_count || 0,
+                };
+            } catch (e) {
+                scError.value = 'Не удалось загрузить карту страниц: ' + e;
+            }
+        }
+
+        function scPageImageUrl(side, page) {
+            if (!scSession.value || !scActivePair.value) return '';
+            if (!page) return '';
+            return `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/page-image?side=${side}&page=${page}&target_long_side=1400`;
+        }
+
+        let _scSlotRO = null;
+        function _scEnsureSlotRO() {
+            if (_scSlotRO || typeof ResizeObserver === 'undefined') return _scSlotRO;
+            _scSlotRO = new ResizeObserver((entries) => {
+                for (const e of entries) {
+                    const el = e.target;
+                    const side = el.dataset.scSide;
+                    const slotId = parseInt(el.dataset.scSlot, 10);
+                    if (!side || !Number.isFinite(slotId)) continue;
+                    const h = Math.round(e.contentRect.height);
+                    if (h <= 0) continue;
+                    const prev = scSlotHeights[slotId] || {};
+                    if (prev[side] !== h) {
+                        scSlotHeights[slotId] = {...prev, [side]: h};
+                    }
+                }
+            });
+            return _scSlotRO;
+        }
+
+        function scOnPageImageLoad(side, slot, ev) {
+            const img = ev.target;
+            // Запомнить natural dims последней страницы стороны (для возможных перерасчётов)
+            scCanvasNat[side] = {w: img.naturalWidth, h: img.naturalHeight, dw: img.clientWidth, dh: img.clientHeight};
+            // Зарегистрировать высоту контента для синхронизации высоты слота
+            // между левой и правой панелями. Без этого slot N справа и слева могут
+            // быть разной высоты — и скролл разъезжается.
+            if (slot && slot.slot != null) {
+                img.dataset.scSide = side;
+                img.dataset.scSlot = String(slot.slot);
+                const ro = _scEnsureSlotRO();
+                if (ro) ro.observe(img);
+                const h = Math.round(img.clientHeight);
+                if (h > 0) {
+                    const prev = scSlotHeights[slot.slot] || {};
+                    if (prev[side] !== h) {
+                        scSlotHeights[slot.slot] = {...prev, [side]: h};
+                    }
+                }
+            }
+        }
+
+        // Совместимость со старым кодом (если где-то ещё используется)
+        function scOnImageLoad(side, ev) { scOnPageImageLoad(side, null, ev); }
+
+        function scSlotBlocks(side, slot) {
+            if (!scPairData.value) return [];
+            const page = side === 'left' ? slot.left_page : slot.right_page;
+            if (!page) return [];
+            const blocks = side === 'left' ? (scPairData.value.left_blocks || []) : (scPairData.value.right_blocks || []);
+            return blocks.filter(b => (b.page || 1) === page);
+        }
+
+        function scBlankPageStyle() {
+            // Растягивается на всю свободную высоту слота через flex (см. .sc-blank-page).
+            // min-height — страховка, когда у slot нет картинки ни с одной стороны
+            // и min-height из scSlotContainerStyle не применился.
+            return {minHeight: Math.round(280 * scZoom.value) + 'px', width: '100%'};
+        }
+
+        function scBlockOverlayStyle(side, block, slot) {
+            // Coords из result.json. bbox_norm в [0,1] — самый надёжный.
+            let nx0, ny0, nx1, ny1;
+            if (block.bbox_norm) {
+                [nx0, ny0, nx1, ny1] = block.bbox_norm;
+            } else if (block.bbox && block.page_width && block.page_height) {
+                nx0 = block.bbox[0] / block.page_width;
+                ny0 = block.bbox[1] / block.page_height;
+                nx1 = block.bbox[2] / block.page_width;
+                ny1 = block.bbox[3] / block.page_height;
+            } else {
+                return {display: 'none'};
+            }
+            const style = {
+                position: 'absolute',
+                left:   (nx0 * 100).toFixed(3) + '%',
+                top:    (ny0 * 100).toFixed(3) + '%',
+                width:  ((nx1 - nx0) * 100).toFixed(3) + '%',
+                height: ((ny1 - ny0) * 100).toFixed(3) + '%',
+            };
+            // Если блок связан — окрашиваем рамку цветом связи. Selected
+            // приоритет выше (рамка остаётся синей при ручном выборе нового блока).
+            const sel = (side === 'left' ? scSelectedLeft : scSelectedRight).value;
+            if (sel !== block.id) {
+                const info = scBlockLinkInfo(side, block.id);
+                if (info) {
+                    style.borderColor = info.color;
+                }
+            }
+            return style;
+        }
+
+        // Legacy совместимость: возвращает method первой найденной связи.
+        function scIsBlockLinked(side, blockId) {
+            const info = scBlockLinkInfo(side, blockId);
+            return info ? (info.link.method || null) : null;
+        }
+        function scBlockOverlayClass(side, blockId, slot) {
+            const cls = [];
+            const sel = (side === 'left' ? scSelectedLeft : scSelectedRight).value;
+            if (sel === blockId) cls.push('selected');
+            const info = scBlockLinkInfo(side, blockId);
+            if (info) {
+                cls.push('linked');
+                if (info.isStale) cls.push('linked-stale');
+                if (info.isCross) cls.push('linked-cross');
+                if (info.isManual && !info.isCross && !info.isStale) cls.push('linked-manual');
+                if (scActiveLinkKey.value === info.key) cls.push('linked-active');
+            }
+            return cls.join(' ');
+        }
+        function scSelectBlock(side, blockId, slot) {
+            // Если кликнули на уже связанный блок — выбираем эту связь как
+            // активную (для компактной панели удаления), не трогая
+            // selected-state создания новой связи.
+            const info = scBlockLinkInfo(side, blockId);
+            if (info) {
+                scActiveLinkKey.value = (scActiveLinkKey.value === info.key) ? null : info.key;
+                // Сбрасываем selected на этой стороне, чтобы не путать с активной связью
+                if (side === 'left') {
+                    scSelectedLeft.value = null;
+                    scSelectedSlotLeft.value = null;
+                } else {
+                    scSelectedRight.value = null;
+                    scSelectedSlotRight.value = null;
+                }
+                return;
+            }
+            // Несвязанный блок — обычное toggle-выделение для создания новой связи
+            scActiveLinkKey.value = null;
+            if (side === 'left') {
+                scSelectedLeft.value = scSelectedLeft.value === blockId ? null : blockId;
+                scSelectedSlotLeft.value = slot ? slot.slot : null;
+            } else {
+                scSelectedRight.value = scSelectedRight.value === blockId ? null : blockId;
+                scSelectedSlotRight.value = slot ? slot.slot : null;
+            }
+        }
+        // Явный helper из ТЗ — обёртка, использующая scSelectBlock с учётом инфо
+        function scSelectLinkedBlock(side, blockId) {
+            const info = scBlockLinkInfo(side, blockId);
+            if (!info) return false;
+            scActiveLinkKey.value = (scActiveLinkKey.value === info.key) ? null : info.key;
+            return true;
+        }
+        function scLinkVisualIndex(link) {
+            if (!link) return null;
+            const info = scLinkVisualMap.value.get('left|' + link.left_block_id);
+            return info ? info.number : null;
+        }
+
+        // ── Sync scroll ────────────────────────────────────────────────────
+        // Алгоритм: для левой панели определяем slot, в центре viewport, и
+        // относительную позицию внутри его карточки. На правой панели
+        // ставим scrollTop так, чтобы тот же slot оказался в том же месте.
+        function _scTopSlotInfo(side) {
+            const pane = scPaneRefs[side];
+            if (!pane) return null;
+            const items = scAlignmentItems.value;
+            const probeY = pane.scrollTop + pane.clientHeight * 0.4;  // 40% от верха
+            let best = null;
+            for (const it of items) {
+                const node = scSlotRefs[side + ':' + it.slot];
+                if (!node) continue;
+                const top = node.offsetTop;
+                const bot = top + node.offsetHeight;
+                if (probeY >= top && probeY < bot) {
+                    const rel = (probeY - top) / Math.max(1, node.offsetHeight);
+                    return {slot: it.slot, rel: rel};
+                }
+                if (best == null || Math.abs(probeY - (top + node.offsetHeight/2)) <
+                                    Math.abs(probeY - (best.center))) {
+                    best = {slot: it.slot, rel: 0.5, center: top + node.offsetHeight/2};
+                }
+            }
+            return best;
+        }
+
+        function _scScrollToSlot(side, slotId, rel) {
+            const pane = scPaneRefs[side];
+            const node = scSlotRefs[side + ':' + slotId];
+            if (!pane || !node) return;
+            const target = node.offsetTop + node.offsetHeight * rel - pane.clientHeight * 0.4;
+            pane.scrollTop = Math.max(0, target);
+        }
+
+        function scOnPaneScroll(side, ev) {
+            // Виртуализация: обновляем видимый slot всегда
+            _scUpdateVisibleSlot();
+            if (!scSyncScroll.value) return;
+            if (scIsSyncing.value) return;
+            const info = _scTopSlotInfo(side);
+            if (!info) return;
+            const other = side === 'left' ? 'right' : 'left';
+            // Slot Id в обоих панелях одинаковый — это и есть карта.
+            scIsSyncing.value = true;
+            try {
+                _scScrollToSlot(other, info.slot, info.rel);
+            } finally {
+                // Снимаем флаг в следующем тике, чтобы scroll event'ы успели отработать
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => { scIsSyncing.value = false; });
+                });
+            }
+        }
+
+        // ── Zoom ───────────────────────────────────────────────────────────
+        function _scSaveAnchor() {
+            // Сохраним позицию текущего slot перед изменением zoom,
+            // чтобы после ресайза вернуться.
+            return _scTopSlotInfo('left') || _scTopSlotInfo('right');
+        }
+        function _scRestoreAnchor(anchor) {
+            if (!anchor) return;
+            nextTick(() => {
+                _scScrollToSlot('left', anchor.slot, anchor.rel);
+                if (scSyncScroll.value) _scScrollToSlot('right', anchor.slot, anchor.rel);
+            });
+        }
+        function scZoomBy(factor) {
+            const anchor = _scSaveAnchor();
+            scZoom.value = Math.max(0.2, Math.min(4.0, scZoom.value * factor));
+            _scRestoreAnchor(anchor);
+        }
+        function scZoomReset() {
+            const anchor = _scSaveAnchor();
+            scZoom.value = 1.0;
+            _scRestoreAnchor(anchor);
+        }
+        function scZoomFitWidth() {
+            // «По ширине» — pane целиком вмещает картинку без горизонтального скролла.
+            // Картинка рендерится с width: zoom*100% относительно pane'а, поэтому zoom=1 ≈ fit.
+            scZoomReset();
+        }
+
+        // ── Per-pane alignment actions (icon-кнопки рядом с PDF-окнами) ────
+        // Старый UI «Карта листов» удалён. Эти функции вызывают backend
+        // endpoints insert-blank-side / move-page-side и обновляют viewer.
+        function scCurrentSlotForSide(side) {
+            const items = scAlignmentItems.value || [];
+            if (!items.length) return 0;
+            const ref = side === 'left' ? scVisibleSlotLeft : scVisibleSlotRight;
+            const slot = ref.value || scVisibleSlot.value || 1;
+            const max = items[items.length - 1].slot;
+            return Math.max(1, Math.min(slot, max));
+        }
+        function _scSideRowForSlot(slot) {
+            const items = scAlignmentItems.value || [];
+            return items.find(it => it.slot === slot) || null;
+        }
+        function scCanInsertBlankSide(_side) {
+            return !!(scSession.value && scActivePair.value && (scAlignmentItems.value || []).length > 0);
+        }
+        function scCanMovePageSide(side, direction) {
+            if (!scSession.value || !scActivePair.value) return false;
+            const items = scAlignmentItems.value || [];
+            if (!items.length) return false;
+            const slot = scCurrentSlotForSide(side);
+            const row = _scSideRowForSlot(slot);
+            if (!row) return false;
+            const key = side === 'left' ? 'left_page' : 'right_page';
+            if (row[key] == null) return false;            // на этой стороне null → двигать нечего
+            if (direction === 'up' && slot <= 1) return false;
+            if (direction === 'down' && slot >= items.length) return false;
+            return true;
+        }
+
+        async function _scRefreshAfterAlignment(data) {
+            // Обновить локальный alignment, перезагрузить pair data (links могут
+            // стать stale/cross-page), при необходимости — graphic-summary и
+            // findings/warnings, если они уже были загружены пользователем.
+            scAlignment.value = {
+                items: data.items || [],
+                left_page_count: data.left_page_count || 0,
+                right_page_count: data.right_page_count || 0,
+            };
+            await scLoadPairData();
+            if (scGraphicSummary.value) {
+                try { await scLoadGraphicSummary(); } catch (_) {}
+            }
+            if (scFindingsItems.value && scFindingsItems.value.length) {
+                try { await scLoadFindings(); } catch (_) {}
+            }
+            if (scWarningsItems.value && scWarningsItems.value.length) {
+                try { await scLoadWarnings(); } catch (_) {}
+            }
+            await nextTick();
+            _scUpdateVisibleSlot();
+        }
+
+        async function scInsertBlankSide(side) {
+            if (!scSession.value || !scActivePair.value) return;
+            if (!scCanInsertBlankSide(side)) return;
+            if (scAlignmentActionRunning.value) return;
+            const slot = scCurrentSlotForSide(side) || 1;
+            scAlignmentActionRunning.value = true;
+            scAlignmentActionError.value = '';
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/page-alignment/insert-blank-side`;
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({slot: slot, side: side}),
+                });
+                const data = await r.json().catch(() => ({}));
+                if (!r.ok) {
+                    scAlignmentActionError.value = String(data.detail || ('HTTP ' + r.status));
+                    return;
+                }
+                await _scRefreshAfterAlignment(data);
+            } catch (e) {
+                scAlignmentActionError.value = String(e.message || e);
+            } finally {
+                scAlignmentActionRunning.value = false;
+            }
+        }
+
+        async function scMovePageSide(side, direction) {
+            if (!scSession.value || !scActivePair.value) return;
+            if (!scCanMovePageSide(side, direction)) return;
+            if (scAlignmentActionRunning.value) return;
+            const slot = scCurrentSlotForSide(side);
+            scAlignmentActionRunning.value = true;
+            scAlignmentActionError.value = '';
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/page-alignment/move-page-side`;
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({slot: slot, side: side, direction: direction}),
+                });
+                const data = await r.json().catch(() => ({}));
+                if (!r.ok) {
+                    scAlignmentActionError.value = String(data.detail || ('HTTP ' + r.status));
+                    return;
+                }
+                await _scRefreshAfterAlignment(data);
+                // Удерживаем фокус на том же slot: после swap "вверх" страница
+                // переехала вверх → переключим visible-slot туда же, чтобы
+                // следующий клик ↑/↓ работал на ту же страницу.
+                const newSlot = direction === 'up'
+                    ? Math.max(1, slot - 1)
+                    : Math.min((scAlignmentItems.value || []).length, slot + 1);
+                if (side === 'left') scVisibleSlotLeft.value = newSlot;
+                else scVisibleSlotRight.value = newSlot;
+                scAlignmentGoToSlot(newSlot);
+            } catch (e) {
+                scAlignmentActionError.value = String(e.message || e);
+            } finally {
+                scAlignmentActionRunning.value = false;
+            }
+        }
+
+        // ── Перейти к slot в просмотрщике ─────────────────────────────────
+        function scAlignmentGoToSlot(slotId) {
+            // Не закрываем модалку
+            const leftNode = scSlotRefs['left:' + slotId];
+            const rightNode = scSlotRefs['right:' + slotId];
+            const pane = scPaneRefs.left;
+            if (pane && leftNode) {
+                pane.scrollTop = leftNode.offsetTop - pane.clientHeight * 0.3;
+            }
+            const paneR = scPaneRefs.right;
+            if (paneR && rightNode) {
+                paneR.scrollTop = rightNode.offsetTop - paneR.clientHeight * 0.3;
+            }
+        }
+
+        // ── Виртуализация (Задача 3) ──────────────────────────────────────
+        function scSetSlotRef(side, slotId, el) {
+            const key = side + ':' + slotId;
+            if (el) {
+                scSlotRefs[key] = el;
+            } else {
+                delete scSlotRefs[key];
+            }
+        }
+        function scIsSlotRendered(slotId) {
+            const visible = scVisibleSlot.value;
+            return slotId >= (visible - scRenderBufferBefore) && slotId <= (visible + scRenderBufferAfter);
+        }
+        // Высота «обвязки» слота: 1px верхняя рамка + header (padding 4*2 + ~14px текст + 1px border-bottom) ≈ 24px.
+        const _SC_SLOT_CHROME_PX = 26;
+
+        function scSlotContainerStyle(side, slot) {
+            // Синхронизируем высоту слота между левой и правой панелями:
+            // min-height = max(leftImgHeight, rightImgHeight) + chrome. Если одна из
+            // сторон пустая/placeholder, slot всё равно вырастает до высоты «полной»
+            // стороны и скролл остаётся синхронным.
+            const h = scSlotHeights[slot.slot];
+            if (!h) return {};
+            const m = Math.max(h.left || 0, h.right || 0);
+            if (m <= 0) return {};
+            return {minHeight: (m + _SC_SLOT_CHROME_PX) + 'px'};
+        }
+        function scSlotPlaceholderStyle() {
+            // Высота управляется flex (см. .sc-slot-placeholder). min-height —
+            // только когда slot ещё не имеет min-height из scSlotContainerStyle.
+            return {minHeight: Math.round(280 * scZoom.value) + 'px'};
+        }
+        function _scComputeVisibleSlotForSide(side) {
+            const pane = scPaneRefs[side];
+            if (!pane) return null;
+            const items = scAlignmentItems.value;
+            const probeY = pane.scrollTop + pane.clientHeight * 0.4;
+            let best = null;
+            let bestDist = Infinity;
+            for (const it of items) {
+                const node = scSlotRefs[side + ':' + it.slot];
+                if (!node) continue;
+                const center = node.offsetTop + node.offsetHeight / 2;
+                const d = Math.abs(probeY - center);
+                if (d < bestDist) { bestDist = d; best = it.slot; }
+            }
+            return best;
+        }
+        function _scUpdateVisibleSlot() {
+            const lhs = _scComputeVisibleSlotForSide('left');
+            const rhs = _scComputeVisibleSlotForSide('right');
+            if (lhs != null && lhs !== scVisibleSlotLeft.value) scVisibleSlotLeft.value = lhs;
+            if (rhs != null && rhs !== scVisibleSlotRight.value) scVisibleSlotRight.value = rhs;
+            // Виртуализация рендерит общий буфер: для неё берём слот левой панели
+            // (с фолбэком на правую), как раньше.
+            const best = lhs != null ? lhs : (rhs != null ? rhs : scVisibleSlot.value || 1);
+            if (best !== scVisibleSlot.value) scVisibleSlot.value = best;
+        }
+
+        // ── Unmatched / manual pair management (Задача 2) ─────────────────
+        async function scLoadUnmatched() {
+            if (!scSession.value) return;
+            try {
+                const r = await fetch(`/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/unmatched`);
+                if (r.ok) scUnmatched.value = await r.json();
+            } catch (e) {
+                scError.value = 'Не удалось загрузить список несопоставленных PDF: ' + e;
+            }
+        }
+        function scOpenMatchPairDialog(pair) {
+            scMatchPairTargetPair.value = pair;
+            scMatchPairChoiceRight.value = (pair.right && pair.right.pdf_path) || '';
+            scMatchPairError.value = '';
+            scMatchPairDialogOpen.value = true;
+            scLoadUnmatched();
+        }
+        function scCloseMatchPairDialog() {
+            scMatchPairDialogOpen.value = false;
+            scMatchPairTargetPair.value = null;
+        }
+        async function scConfirmAllMaybe() {
+            if (!scSession.value) return;
+            const n = scPairsCounts.value.maybe;
+            if (!n) return;
+            if (!window.confirm(`Подтвердить ${n} автосопоставлен${n === 1 ? 'ие' : (n < 5 ? 'ия' : 'ий')}? Статус «Возможно» сменится на «Сопоставлено».`)) {
+                return;
+            }
+            scConfirmAllRunning.value = true;
+            scConfirmAllError.value = '';
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/confirm-all`;
+                const r = await fetch(url, {method: 'POST'});
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                await scLoadSession(scSession.value.id);
+            } catch (e) {
+                scConfirmAllError.value = String(e.message || e);
+            } finally {
+                scConfirmAllRunning.value = false;
+            }
+        }
+
+        async function scSavePairMatch() {
+            if (!scMatchPairTargetPair.value) return;
+            scMatchPairSaving.value = true;
+            scMatchPairError.value = '';
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scMatchPairTargetPair.value.id)}/match`;
+                const body = {right_pdf: scMatchPairChoiceRight.value || null};
+                const r = await fetch(url, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(body),
+                });
+                if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.detail || ('HTTP ' + r.status)); }
+                // Обновим список пар
+                await scLoadSession(scSession.value.id);
+                scMatchPairDialogOpen.value = false;
+            } catch (e) {
+                scMatchPairError.value = String(e.message || e);
+            } finally {
+                scMatchPairSaving.value = false;
+            }
+        }
+        function scOpenCreatePairDialog() {
+            scCreatePairLeft.value = '';
+            scCreatePairRight.value = '';
+            scCreatePairError.value = '';
+            scCreatePairDialogOpen.value = true;
+            scLoadUnmatched();
+        }
+        async function scSaveCreatePair() {
+            if (!scSession.value) return;
+            scCreatePairSaving.value = true;
+            scCreatePairError.value = '';
+            try {
+                if (!scCreatePairLeft.value && !scCreatePairRight.value) {
+                    scCreatePairError.value = 'Нужно выбрать хотя бы один PDF';
+                    return;
+                }
+                const r = await fetch(`/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        left_pdf: scCreatePairLeft.value || null,
+                        right_pdf: scCreatePairRight.value || null,
+                    }),
+                });
+                if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.detail || ('HTTP ' + r.status)); }
+                await scLoadSession(scSession.value.id);
+                scCreatePairDialogOpen.value = false;
+            } catch (e) {
+                scCreatePairError.value = String(e.message || e);
+            } finally {
+                scCreatePairSaving.value = false;
+            }
+        }
+        async function scDeletePair(pair) {
+            const hard = confirm(`Удалить пару?\n\nOK — удалить полностью.\nОтмена — только скрыть (можно вернуть редактированием JSON).`);
+            if (!scSession.value) return;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(pair.id)}` + (hard ? '?hard=true' : '');
+                const r = await fetch(url, {method: 'DELETE'});
+                if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.detail || ('HTTP ' + r.status)); }
+                // Если активная пара — снимаем её
+                if (scActivePair.value && scActivePair.value.id === pair.id) {
+                    scActivePair.value = null;
+                    scPairData.value = null;
+                    scTab.value = 'upload';
+                }
+                await scLoadSession(scSession.value.id);
+            } catch (e) {
+                scError.value = 'Не удалось удалить пару: ' + e;
+            }
+        }
+
+        // ── Findings ───────────────────────────────────────────────────
+        const scAllSelected = computed(() => {
+            return scFindingsItems.value.length > 0 &&
+                   scFindingsItems.value.every(f => scFindingsSelectedIds.value.has(f.id));
+        });
+        const scFindingsSelectedLLM = computed(() => {
+            return scFindingsItems.value.filter(f =>
+                scFindingsSelectedIds.value.has(f.id) &&
+                f.category === 'graphic' &&
+                (f.left?.block_id || f.left?.block_id === '') &&
+                f.left?.block_id && f.right?.block_id
+            );
+        });
+
+        async function scOpenReportTab() {
+            if (!scSession.value) return;
+            scTab.value = 'report';
+            scLoadWarnings();  // в фоне
+            // Если findings пуст — попросим пересобрать
+            if (scFindingsItems.value.length === 0 && scFindingsTotal.value == null) {
+                await scLoadFindings();
+                if ((scFindingsSummary.value?.total_all || 0) === 0) {
+                    await scRebuildFindings();
+                }
+            } else {
+                await scLoadFindings();
+            }
+        }
+
+        async function scRebuildFindings() {
+            if (!scSession.value) return;
+            scFindingsRebuilding.value = true;
+            scFindingsError.value = '';
+            try {
+                const r = await fetch(`/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/findings/rebuild`, {method: 'POST'});
+                if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.detail || ('HTTP ' + r.status)); }
+                const data = await r.json();
+                console.log('[stage-comparison] rebuild findings:', data);
+                // Сбросим кэш children/expanded — структура могла измениться
+                scExpandedParents.value = new Set();
+                for (const k of Object.keys(scChildFindingsCache)) delete scChildFindingsCache[k];
+                await scLoadFindings();
+                scLoadWarnings();
+            } catch (e) {
+                scFindingsError.value = String(e.message || e);
+            } finally {
+                scFindingsRebuilding.value = false;
+            }
+        }
+
+        async function scLoadFindings() {
+            if (!scSession.value) return;
+            scFindingsLoading.value = true;
+            scFindingsError.value = '';
+            try {
+                const params = new URLSearchParams();
+                for (const k of ['pair_id', 'category', 'status', 'severity', 'type', 'q']) {
+                    if (scFindingsFilter[k]) params.set(k, scFindingsFilter[k]);
+                }
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/findings?` + params.toString();
+                const r = await fetch(url);
+                if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.detail || ('HTTP ' + r.status)); }
+                const data = await r.json();
+                scFindingsItems.value = data.items || [];
+                scFindingsSummary.value = data.summary;
+                scFindingsTotal.value = data.summary?.total_all ?? 0;
+            } catch (e) {
+                scFindingsError.value = String(e.message || e);
+            } finally {
+                scFindingsLoading.value = false;
+            }
+        }
+
+        function scDebouncedLoadFindings() {
+            if (_scFindingsDebounceT) clearTimeout(_scFindingsDebounceT);
+            _scFindingsDebounceT = setTimeout(() => scLoadFindings(), 300);
+        }
+
+        function scToggleFindingSelect(id) {
+            const s = new Set(scFindingsSelectedIds.value);
+            if (s.has(id)) s.delete(id); else s.add(id);
+            scFindingsSelectedIds.value = s;
+        }
+        function scToggleSelectAll(checked) {
+            if (!checked) {
+                scFindingsSelectedIds.value = new Set();
+            } else {
+                scFindingsSelectedIds.value = new Set(scFindingsItems.value.map(f => f.id));
+            }
+        }
+
+        function scOpenFinding(f) {
+            scActiveFinding.value = f;
+            scActiveFindingDraftNote.value = f.user_note || '';
+            scActiveFindingDraftSeverity.value = f.severity || 'medium';
+        }
+
+        async function scPatchFinding(newStatus) {
+            if (!scActiveFinding.value || !scSession.value) return;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/findings/${encodeURIComponent(scActiveFinding.value.id)}`;
+                const body = {
+                    status: newStatus,
+                    severity: scActiveFindingDraftSeverity.value,
+                    user_note: scActiveFindingDraftNote.value,
+                };
+                const r = await fetch(url, {
+                    method: 'PATCH',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(body),
+                });
+                if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.detail || ('HTTP ' + r.status)); }
+                const updated = await r.json();
+                // Обновим строку в списке
+                const idx = scFindingsItems.value.findIndex(f => f.id === updated.id);
+                if (idx >= 0) scFindingsItems.value.splice(idx, 1, updated);
+                scActiveFinding.value = updated;
+            } catch (e) {
+                scFindingsError.value = String(e.message || e);
+            }
+        }
+        async function scSaveFindingNote() {
+            if (!scActiveFinding.value) return;
+            await scPatchFinding(scActiveFinding.value.status || 'new');
+        }
+
+        // ── Группировка: load children для parent finding (Задача 7) ──
+        async function scLoadChildren(parentId) {
+            if (!scSession.value || !parentId) return [];
+            if (scChildFindingsCache[parentId]) return scChildFindingsCache[parentId];
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/findings/${encodeURIComponent(parentId)}/children`;
+                const r = await fetch(url);
+                if (!r.ok) return [];
+                const data = await r.json();
+                scChildFindingsCache[parentId] = data.items || [];
+                return scChildFindingsCache[parentId];
+            } catch (e) {
+                return [];
+            }
+        }
+        async function scToggleParentExpand(parentId) {
+            const s = new Set(scExpandedParents.value);
+            if (s.has(parentId)) {
+                s.delete(parentId);
+            } else {
+                s.add(parentId);
+                await scLoadChildren(parentId);
+            }
+            scExpandedParents.value = s;
+        }
+
+        // ── Bulk actions (Задача 8) ───────────────────────────────────
+        async function scBulkPatchFindings(patch) {
+            if (!scSession.value || !scFindingsSelectedIds.value.size) return;
+            scBulkActionRunning.value = true;
+            try {
+                const ids = Array.from(scFindingsSelectedIds.value);
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/findings`;
+                const r = await fetch(url, {
+                    method: 'PATCH',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ids, patch: patch || {}}),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                await scLoadFindings();
+            } catch (e) {
+                scFindingsError.value = 'Ошибка bulk-обновления: ' + (e.message || e);
+            } finally {
+                scBulkActionRunning.value = false;
+            }
+        }
+        function scBulkAccept()      { return scBulkPatchFindings({status: 'accepted'}); }
+        function scBulkReject()      { return scBulkPatchFindings({status: 'rejected'}); }
+        function scBulkNeedsReview() { return scBulkPatchFindings({status: 'needs_review'}); }
+        function scBulkIgnore()      { return scBulkPatchFindings({status: 'ignored'}); }
+        function scBulkSetSeverity() { return scBulkPatchFindings({severity: scBulkSeverity.value}); }
+        function scBulkAppendNote()  {
+            if (!scBulkNote.value || !scBulkNote.value.trim()) return;
+            return scBulkPatchFindings({append_user_note: scBulkNote.value.trim()})
+                .then(() => { scBulkNote.value = ''; });
+        }
+
+        // ── Warnings (Задача 9) ───────────────────────────────────────
+        async function scLoadWarnings() {
+            if (!scSession.value) return;
+            scWarningsLoading.value = true;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/warnings`;
+                const r = await fetch(url);
+                if (!r.ok) return;
+                const data = await r.json();
+                scWarningsItems.value = data.items || [];
+                scWarningsSummary.value = data.summary || null;
+            } catch (e) {
+                /* silent */
+            } finally {
+                scWarningsLoading.value = false;
+            }
+        }
+
+        // ── Переход из finding в просмотрщик ──────────────────────────
+        function _scFlashElement(el, durationMs) {
+            if (!el) return;
+            try { el.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'nearest'}); } catch (_) {}
+            el.classList.add('sc-flash-highlight');
+            setTimeout(() => el.classList.remove('sc-flash-highlight'),
+                       durationMs || 2500);
+        }
+
+        function _scFlashById(elId, durationMs) {
+            const el = document.getElementById(elId);
+            _scFlashElement(el, durationMs);
+        }
+
+        async function scGoToFindingPlace(f) {
+            if (!f || !scSession.value) return;
+            // Найти пару
+            const pid = f.pair_id;
+            const pair = (scSession.value.pairs || []).find(p => p.id === pid);
+            if (!pair) {
+                scFindingsError.value = 'Пара не найдена';
+                return;
+            }
+            // Открыть пару (если ещё не активна)
+            if (!scActivePair.value || scActivePair.value.id !== pid) {
+                await scOpenPair(pair);
+            }
+            const category = f.category || '';
+            const ftype = f.type || '';
+            const slot = (f.source && f.source.alignment_slot) || null;
+            const leftBlockId = f.left?.block_id;
+            const rightBlockId = f.right?.block_id;
+
+            // Text finding → вкладка «Расхождения → Текст»
+            if (category === 'text') {
+                scTab.value = 'diffs';
+                scDiffSubtab.value = 'text';
+                await nextTick();
+                const idx = f.source && f.source.text_diff_idx;
+                if (idx != null) {
+                    _scFlashById('sc-text-diff-' + idx, 3000);
+                }
+                return;
+            }
+
+            // Stale link → вкладка «Связь блоков» + подсветка stale link
+            if (ftype === 'stale_link' || category === 'link') {
+                scTab.value = 'links';
+                if (!scGraphicSummary.value) {
+                    try { await scLoadGraphicSummary(); } catch (_) {}
+                }
+                await nextTick();
+                if (slot) scAlignmentGoToSlot(slot);
+                if (leftBlockId && rightBlockId) {
+                    _scFlashById('sc-stale-link-' + leftBlockId + '-' + rightBlockId, 3000);
+                }
+                if (leftBlockId) { scSelectedLeft.value = leftBlockId; _scFlashById('sc-block-left-' + leftBlockId, 2500); }
+                if (rightBlockId) { scSelectedRight.value = rightBlockId; _scFlashById('sc-block-right-' + rightBlockId, 2500); }
+                return;
+            }
+
+            // Graphic / page → вкладка «Связь блоков»
+            scTab.value = 'links';
+            await nextTick();
+            if (slot) scAlignmentGoToSlot(slot);
+            // Для page-level подсвечиваем slot целиком, для graphic — конкретные блоки
+            if (category === 'page' || ftype === 'page_added' || ftype === 'page_removed' || ftype === 'page_reordered') {
+                if (slot) {
+                    _scFlashById('sc-slot-left-' + slot, 2500);
+                    _scFlashById('sc-slot-right-' + slot, 2500);
+                }
+            } else {
+                if (leftBlockId) { scSelectedLeft.value = leftBlockId; _scFlashById('sc-block-left-' + leftBlockId, 2500); }
+                if (rightBlockId) { scSelectedRight.value = rightBlockId; _scFlashById('sc-block-right-' + rightBlockId, 2500); }
+            }
+        }
+
+        // ── Batch LLM ─────────────────────────────────────────────────
+        function scOpenBatchLLMConfirm(scope) {
+            scBatchLLMScope.value = scope;
+            scBatchLLMError.value = '';
+            scBatchLLMLastJob.value = null;
+            // Оценка количества
+            if (scope === 'selected') {
+                scBatchLLMCount.value = scFindingsSelectedLLM.value.length;
+            } else if (scope === 'pair') {
+                const pid = scFindingsFilter.pair_id;
+                scBatchLLMCount.value = scFindingsItems.value.filter(f =>
+                    f.category === 'graphic' && f.pair_id === pid &&
+                    f.left?.block_id && f.right?.block_id
+                ).length;
+            } else {  // session
+                scBatchLLMCount.value = scFindingsItems.value.filter(f =>
+                    f.category === 'graphic' && f.left?.block_id && f.right?.block_id
+                ).length;
+            }
+            scBatchLLMConfirmOpen.value = true;
+        }
+
+        async function scRunBatchLLM() {
+            if (!scSession.value) return;
+            scBatchLLMRunning.value = true;
+            scBatchLLMError.value = '';
+            try {
+                const body = {
+                    scope: scBatchLLMScope.value,
+                    run_paid: true,
+                    confirm_paid: true,
+                    model: scBatchLLMModel.value,
+                };
+                if (scBatchLLMScope.value === 'pair') {
+                    body.pair_id = scFindingsFilter.pair_id;
+                }
+                if (scBatchLLMScope.value === 'selected') {
+                    body.items = scFindingsSelectedLLM.value.map(f => ({
+                        pair_id: f.pair_id,
+                        left_block_id: f.left.block_id,
+                        right_block_id: f.right.block_id,
+                    }));
+                }
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/graphic-diff-jobs`;
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(body),
+                });
+                const job = await r.json().catch(() => ({}));
+                if (!r.ok) {
+                    throw new Error(job.detail || ('HTTP ' + r.status));
+                }
+                // Backend сразу вернул {ok, job_id, status, progress}.
+                scBatchLLMLastJob.value = job;
+                // Закрываем confirm-модалку и открываем прогресс
+                scBatchLLMConfirmOpen.value = false;
+                if (job.job_id && (job.status === 'queued' || job.status === 'running')) {
+                    scBatchLLMProgressOpen.value = true;
+                    scStartBatchLLMPolling(job.job_id);
+                } else if (job.status === 'rejected_no_confirm') {
+                    scBatchLLMError.value = 'Запуск отклонён: не подтверждена платная операция.';
+                    scBatchLLMConfirmOpen.value = true;
+                } else {
+                    // Уже завершён сразу (skipped/total=0) — обновим findings
+                    await scLoadFindings();
+                }
+            } catch (e) {
+                scBatchLLMError.value = String(e.message || e);
+            } finally {
+                scBatchLLMRunning.value = false;
+            }
+        }
+
+        async function scRefreshBatchLLMJob() {
+            if (!scSession.value || !scBatchLLMLastJob.value || !scBatchLLMLastJob.value.job_id) return null;
+            const jobId = scBatchLLMLastJob.value.job_id;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/graphic-diff-jobs/${encodeURIComponent(jobId)}`;
+                const r = await fetch(url);
+                if (!r.ok) return null;
+                const job = await r.json();
+                // Прокидываем top-level поля прогресса в last_job (сохраняя job_id)
+                scBatchLLMLastJob.value = {
+                    ...scBatchLLMLastJob.value,
+                    status: job.status,
+                    progress: job.progress,
+                    items: job.items,
+                    warnings: job.warnings,
+                    model: job.model,
+                };
+                return job;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function scStartBatchLLMPolling(jobId) {
+            if (_scBatchLLMPollT) clearInterval(_scBatchLLMPollT);
+            _scBatchLLMPollT = setInterval(async () => {
+                const job = await scRefreshBatchLLMJob();
+                if (!job) return;
+                const st = job.status;
+                if (st !== 'queued' && st !== 'running') {
+                    // Завершён (done/failed/cancelled/rejected/interrupted)
+                    clearInterval(_scBatchLLMPollT);
+                    _scBatchLLMPollT = null;
+                    // Перегружаем findings — job сам триггерит rebuild на бекенде
+                    await scLoadFindings();
+                }
+            }, 2500);
+        }
+
+        function scStopBatchLLMPolling() {
+            if (_scBatchLLMPollT) { clearInterval(_scBatchLLMPollT); _scBatchLLMPollT = null; }
+        }
+
+        async function scCancelBatchLLMJob() {
+            if (!scSession.value || !scBatchLLMLastJob.value || !scBatchLLMLastJob.value.job_id) return;
+            scBatchLLMCancelling.value = true;
+            try {
+                const jobId = scBatchLLMLastJob.value.job_id;
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/graphic-diff-jobs/${encodeURIComponent(jobId)}/cancel`;
+                await fetch(url, {method: 'POST'});
+                await scRefreshBatchLLMJob();
+            } catch (e) {
+                scBatchLLMError.value = String(e.message || e);
+            } finally {
+                scBatchLLMCancelling.value = false;
+            }
+        }
+
+        function scCloseBatchLLMProgress() {
+            scBatchLLMProgressOpen.value = false;
+            scStopBatchLLMPolling();
+        }
+
+        // ── Reports ───────────────────────────────────────────────────
+        async function scCreateReport() {
+            if (!scSession.value) return;
+            scReportCreating.value = true;
+            try {
+                const filters = {};
+                if (scReportForm.severity_filter) {
+                    filters.severity = scReportForm.severity_filter.split(',');
+                }
+                const body = {
+                    format: scReportForm.format,
+                    filters,
+                    include_images: scReportForm.include_images,
+                    include_llm_summary: scReportForm.include_llm_summary,
+                    include_user_notes: scReportForm.include_user_notes,
+                    include_rejected: scReportForm.include_rejected,
+                    include_ignored: scReportForm.include_ignored,
+                    include_child_findings: scReportForm.include_child_findings,
+                };
+                const r = await fetch(`/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/reports`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(body),
+                });
+                if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.detail || ('HTTP ' + r.status)); }
+                scLastReport.value = await r.json();
+                await scLoadReports();
+            } catch (e) {
+                scFindingsError.value = 'Ошибка создания отчёта: ' + (e.message || e);
+            } finally {
+                scReportCreating.value = false;
+            }
+        }
+        async function scLoadReports() {
+            if (!scSession.value) return;
+            try {
+                const r = await fetch(`/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/reports`);
+                if (r.ok) scReportsList.value = (await r.json()).reports || [];
+            } catch (e) {
+                /* silent */
+            }
+        }
+
+        async function scCreateLink() {
+            if (!scSelectedLeft.value || !scSelectedRight.value) return;
+            scLinking.value = true;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/links`;
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({left_block_id: scSelectedLeft.value, right_block_id: scSelectedRight.value}),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                scSelectedLeft.value = null;
+                scSelectedRight.value = null;
+                await scLoadPairData();
+            } catch (e) {
+                scError.value = 'Не удалось связать блоки: ' + e;
+            } finally {
+                scLinking.value = false;
+            }
+        }
+
+        async function scDeleteLink(link) {
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/links`;
+                await fetch(url, {
+                    method: 'DELETE',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({left_block_id: link.left_block_id, right_block_id: link.right_block_id}),
+                });
+                // Если удалили активную связь — сбрасываем выбор
+                const key = link.left_block_id + '::' + link.right_block_id;
+                if (scActiveLinkKey.value === key) scActiveLinkKey.value = null;
+                await scLoadPairData();
+            } catch (e) {
+                scError.value = 'Не удалось удалить связь: ' + e;
+            }
+        }
+
+        async function scDeleteActiveLink() {
+            if (!scActiveLink.value) return;
+            await scDeleteLink(scActiveLink.value);
+        }
+
+        async function scClearStaleLinks() {
+            const links = (scPairData.value && scPairData.value.links) || [];
+            const stale = links.filter(l => String(l.method || '').endsWith('_stale'));
+            if (!stale.length) return;
+            // Удаляем последовательно — backend сам пересчитает оставшиеся.
+            for (const l of stale) {
+                try {
+                    const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/links`;
+                    await fetch(url, {
+                        method: 'DELETE',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({left_block_id: l.left_block_id, right_block_id: l.right_block_id}),
+                    });
+                } catch (e) {
+                    /* продолжаем — каждая ошибка не должна останавливать batch */
+                }
+            }
+            scActiveLinkKey.value = null;
+            await scLoadPairData();
+        }
+
+        async function scRunAutoLink() {
+            scLinking.value = true;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/auto-link`;
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({iou_threshold: 0.5}),
+                });
+                await scLoadPairData();
+            } catch (e) {
+                scError.value = 'Auto-link error: ' + e;
+            } finally {
+                scLinking.value = false;
+            }
+        }
+
+        // ── Pair config template (save links + alignment) ─────────────────
+        async function scSavePairTemplate() {
+            if (!scSession.value || !scActivePair.value) return;
+            if (scTemplateSaving.value) return;
+            scTemplateError.value = '';
+            scTemplateLastSaveMsg.value = '';
+            scTemplateSaving.value = true;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/save-template`;
+                const r = await fetch(url, {method: 'POST'});
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                const d = await r.json();
+                scTemplateLastSaveMsg.value = `Шаблон сохранён (${d.links_count || 0} связей) — будет применён при повторном открытии пары.`;
+                // через несколько секунд скрыть, чтобы не висел на UI
+                setTimeout(() => { scTemplateLastSaveMsg.value = ''; }, 8000);
+            } catch (e) {
+                scTemplateError.value = 'Не удалось сохранить шаблон: ' + e;
+            } finally {
+                scTemplateSaving.value = false;
+            }
+        }
+        // ── Семантический LLM-анализ текста (Claude Sonnet) ────────────────
+        async function scLoadTextLLMConfig() {
+            if (!scSession.value) return;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/text-llm-config`;
+                const r = await fetch(url);
+                if (r.ok) scTextLLMConfig.value = await r.json();
+            } catch (e) { /* silent */ }
+        }
+        async function scLoadTextLLMDiff() {
+            if (!scSession.value || !scActivePair.value) return;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/text-llm-diff`;
+                const r = await fetch(url);
+                if (!r.ok) return;
+                scTextLLMDiff.value = await r.json();
+            } catch (e) { /* silent */ }
+        }
+        // ── Analysis mode (block_links | concept_no_block_links) ─────────
+        async function scLoadAnalysisMode() {
+            if (!scSession.value || !scActivePair.value) {
+                scAnalysisMode.value = 'block_links';
+                return;
+            }
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/analysis-mode`;
+                const r = await fetch(url);
+                if (!r.ok) {
+                    scAnalysisMode.value = 'block_links';
+                    return;
+                }
+                const data = await r.json();
+                scAnalysisMode.value = data.analysis_mode || 'block_links';
+            } catch (e) {
+                scAnalysisMode.value = 'block_links';
+            }
+        }
+        async function scSetAnalysisMode(mode) {
+            if (!scSession.value || !scActivePair.value) return;
+            scAnalysisModeError.value = '';
+            scAnalysisModeSaving.value = true;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/analysis-mode`;
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({mode}),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                const data = await r.json();
+                scAnalysisMode.value = data.analysis_mode || mode;
+            } catch (e) {
+                scAnalysisModeError.value = 'Не удалось сохранить режим: ' + e;
+            } finally {
+                scAnalysisModeSaving.value = false;
+            }
+        }
+        async function scToggleAnalysisMode() {
+            const next = scAnalysisMode.value === 'concept_no_block_links'
+                       ? 'block_links'
+                       : 'concept_no_block_links';
+            if (next === 'concept_no_block_links') {
+                if (!confirm(
+                    'Для этой PDF-пары будет отключена логика обязательного сопоставления блоков. ' +
+                    'Анализ будет выполнен по концепции документа целиком: Qwen подготовит ' +
+                    'enriched MD для каждой стороны, затем Opus сравнит две enriched версии. Продолжить?'
+                )) return;
+            } else {
+                if (!confirm('Вернуть обычный режим со связями блоков для этой PDF-пары?')) return;
+            }
+            await scSetAnalysisMode(next);
+        }
+
+        // ── MD enrichment (Qwen image descriptions) ──────────────────────
+        async function scLoadMdEnrichmentSummary() {
+            if (!scSession.value || !scActivePair.value) return;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/md-enrichment`;
+                const r = await fetch(url);
+                if (!r.ok) return;
+                scMdEnrichmentSummary.value = await r.json();
+            } catch (e) { /* silent */ }
+        }
+        async function scMdEnrichmentDryRun() {
+            if (!scSession.value || !scActivePair.value) return;
+            scMdEnrichmentError.value = '';
+            scMdEnrichmentLoading.value = true;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/md-enrichment`;
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({side: 'both', force: false, run_model: false}),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                await scLoadMdEnrichmentSummary();
+            } catch (e) {
+                scMdEnrichmentError.value = 'Dry-run не выполнен: ' + e;
+            } finally {
+                scMdEnrichmentLoading.value = false;
+            }
+        }
+        function scMdEnrichmentRequestConfirm() {
+            scMdEnrichmentConfirmOpen.value = true;
+        }
+        async function scMdEnrichmentRunModel() {
+            // Запуск Qwen перенесён на background job — sync endpoint с
+            // run_model=true давал HTTP 524 на ngrok/Cloudflare при ≥7 image
+            // блоках (~50–60 с на блок). Теперь UI всегда идёт через job +
+            // polling и видит block-level прогресс.
+            scMdEnrichmentConfirmOpen.value = false;
+            if (!scSession.value || !scActivePair.value) return;
+            scMdEnrichmentError.value = '';
+            scMdEnrichmentJobTimedOut.value = false;
+            scMdEnrichmentRunning.value = true;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/md-enrichment-jobs`;
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        scope: 'pair',
+                        pair_id: scActivePair.value.id,
+                        side: 'both',
+                        force: false,
+                        confirm: true,
+                    }),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    const msg = (j && j.detail && (j.detail.message || j.detail)) || ('HTTP ' + r.status);
+                    if (r.status === 524 || r.status === 504 || r.status === 408) {
+                        // job всё равно мог стартовать на сервере
+                        scMdEnrichmentJobTimedOut.value = true;
+                    }
+                    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+                }
+                const job = await r.json();
+                scMdEnrichmentJob.value = job;
+                if (job && job.id && (job.status === 'queued' || job.status === 'running')) {
+                    scPollMdEnrichmentJob(job.id);
+                } else {
+                    // job done/failed/rejected моментально (например, rejected_no_confirm)
+                    await scLoadMdEnrichmentSummary();
+                }
+            } catch (e) {
+                if (e && (e.name === 'TypeError' || /timeout|abort|fetch/i.test(String(e)))) {
+                    // network / fetch fail — job могла стартовать
+                    scMdEnrichmentJobTimedOut.value = true;
+                }
+                scMdEnrichmentError.value = scMdEnrichmentJobTimedOut.value
+                    ? 'Запрос был прерван по таймауту. Проверьте статус задачи — обработка могла продолжиться на сервере.'
+                    : 'Запуск Qwen не удался: ' + e;
+            } finally {
+                // running остаётся true пока polling не закончится; здесь сбрасываем
+                // только если job не запустился.
+                if (!scMdEnrichmentJob.value || !scMdEnrichmentJob.value.id) {
+                    scMdEnrichmentRunning.value = false;
+                }
+            }
+        }
+        async function scPollMdEnrichmentJob(jobId) {
+            if (!scSession.value || !jobId) return;
+            if (scMdEnrichmentJobPolling.value) return;
+            scMdEnrichmentJobPolling.value = true;
+            try {
+                while (true) {
+                    const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/md-enrichment-jobs/${encodeURIComponent(jobId)}`;
+                    let r;
+                    try {
+                        r = await fetch(url);
+                    } catch (_) {
+                        // transient network — попробуем снова через интервал
+                        await new Promise(res => setTimeout(res, 3000));
+                        continue;
+                    }
+                    if (!r.ok) break;
+                    const job = await r.json();
+                    scMdEnrichmentJob.value = job;
+                    if (['done', 'failed', 'cancelled', 'rejected_no_confirm'].includes(job.status)) break;
+                    await new Promise(res => setTimeout(res, 3000));
+                }
+                try { await scLoadMdEnrichmentSummary(); } catch (_) {}
+            } finally {
+                scMdEnrichmentJobPolling.value = false;
+                scMdEnrichmentRunning.value = false;
+            }
+        }
+        async function scCancelMdEnrichmentJob() {
+            const job = scMdEnrichmentJob.value;
+            if (!job || !job.id || !scSession.value) return;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/md-enrichment-jobs/${encodeURIComponent(job.id)}/cancel`;
+                const r = await fetch(url, {method: 'POST'});
+                if (r.ok) scMdEnrichmentJob.value = await r.json();
+            } catch (_) { /* silent */ }
+        }
+        async function scRefreshMdEnrichmentJob() {
+            // Вручную обновить статус — нужно когда стартовый POST оборвался
+            // (524/504/timeout) и job всё ещё может крутиться на сервере.
+            scMdEnrichmentError.value = '';
+            scMdEnrichmentJobTimedOut.value = false;
+            const job = scMdEnrichmentJob.value;
+            if (job && job.id) {
+                if (!scMdEnrichmentJobPolling.value) {
+                    scPollMdEnrichmentJob(job.id);
+                }
+                return;
+            }
+            // Если job_id не получили — обновим summary; пользователь увидит,
+            // что enrichment мог завершиться/частично завершиться.
+            try { await scLoadMdEnrichmentSummary(); } catch (_) {}
+        }
+
+        // ──────────────────────────────────────────────────────────────────
+        // Stage 1: «Распознать графику» — session-level Qwen enrichment
+        // ──────────────────────────────────────────────────────────────────
+        async function scRecogStart(force) {
+            if (!scSession.value || !scSession.value.id) return;
+            if (scRecogStarting.value) return;
+            scRecogStarting.value = true;
+            scRecogError.value = '';
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/md-enrichment-jobs`;
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        scope: 'session',
+                        side: 'both',
+                        force: !!force,
+                        confirm: true,
+                        skip_done: !force,
+                    }),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    const msg = (j && j.detail && (j.detail.message || j.detail)) || ('HTTP ' + r.status);
+                    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+                }
+                const job = await r.json();
+                scRecogJob.value = job;
+                scRecogStartedAtClient.value = Date.now();
+                if (job && job.id && (job.status === 'queued' || job.status === 'running')) {
+                    scRecogPoll(job.id);
+                }
+            } catch (e) {
+                scRecogError.value = String(e.message || e);
+            } finally {
+                scRecogStarting.value = false;
+            }
+        }
+
+        async function scRecogRetryErrors() {
+            // Перезапустить только пары, у которых есть ошибки/partial.
+            // force=false → готовые блоки берутся из cache.
+            if (!scSession.value || !scRecogJob.value) return;
+            const agg = scRecogJob.value.aggregate || {};
+            const ps  = agg.pair_statuses || {};
+            const pairIds = Object.values(ps)
+                .filter(p => p && (p.status === 'error' || p.status === 'partial'))
+                .map(p => p.pair_id)
+                .filter(Boolean);
+            if (!pairIds.length) return;
+            scRecogStarting.value = true;
+            scRecogError.value = '';
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/md-enrichment-jobs`;
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        scope: 'selected',
+                        pair_ids: pairIds,
+                        side: 'both',
+                        force: false,
+                        confirm: true,
+                        skip_done: false,   // повторить именно эти пары, не пропускать
+                    }),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    const msg = (j && j.detail && (j.detail.message || j.detail)) || ('HTTP ' + r.status);
+                    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+                }
+                const job = await r.json();
+                scRecogJob.value = job;
+                scRecogStartedAtClient.value = Date.now();
+                if (job && job.id && (job.status === 'queued' || job.status === 'running')) {
+                    scRecogPoll(job.id);
+                }
+            } catch (e) {
+                scRecogError.value = String(e.message || e);
+            } finally {
+                scRecogStarting.value = false;
+            }
+        }
+
+        async function scRecogPoll(jobId) {
+            if (!scSession.value || !jobId) return;
+            if (scRecogPolling.value) return;
+            scRecogPolling.value = true;
+            try {
+                while (true) {
+                    const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/md-enrichment-jobs/${encodeURIComponent(jobId)}`;
+                    let r;
+                    try {
+                        r = await fetch(url);
+                    } catch (_) {
+                        await new Promise(res => setTimeout(res, 3000));
+                        continue;
+                    }
+                    if (!r.ok) break;
+                    const job = await r.json();
+                    scRecogJob.value = job;
+                    if (['done', 'failed', 'cancelled', 'rejected_no_confirm'].includes(job.status)) break;
+                    await new Promise(res => setTimeout(res, 3000));
+                }
+            } finally {
+                scRecogPolling.value = false;
+            }
+        }
+
+        async function scRecogCancel() {
+            const job = scRecogJob.value;
+            if (!job || !job.id || !scSession.value) return;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/md-enrichment-jobs/${encodeURIComponent(job.id)}/cancel`;
+                const r = await fetch(url, {method: 'POST'});
+                if (r.ok) scRecogJob.value = await r.json();
+            } catch (_) { /* silent */ }
+        }
+
+        async function scRecogRestoreActive() {
+            // Подтянуть последнюю активную (или вообще последнюю) job сессии,
+            // чтобы UI при возврате на этап 1 показал актуальный прогресс.
+            if (!scSession.value || !scSession.value.id) return;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/md-enrichment-jobs/active`;
+                const r = await fetch(url);
+                if (!r.ok) return;
+                const data = await r.json();
+                const job = data && data.job;
+                if (!job) return;
+                scRecogJob.value = job;
+                if (job.id && (job.status === 'queued' || job.status === 'running') && !scRecogPolling.value) {
+                    scRecogStartedAtClient.value = Date.now();
+                    scRecogPoll(job.id);
+                }
+            } catch (_) { /* silent */ }
+        }
+
+        // Per-pair status lookup для рендера таблицы пар на этапе 1.
+        function scRecogPairStatus(pairId) {
+            const agg = scRecogJob.value && scRecogJob.value.aggregate;
+            if (!agg || !agg.pair_statuses) return null;
+            return agg.pair_statuses[pairId] || null;
+        }
+
+        function scRecogPairBadge(pairId) {
+            const ps = scRecogPairStatus(pairId);
+            if (!ps) return {label: '—', cls: 'sc-status-unmatched', title: 'графика не распознавалась'};
+            const s = ps.status;
+            const m = {
+                done:      {label: '✓ готово',  cls: 'sc-status-matched',   title: 'enriched MD готов'},
+                partial:   {label: '⚠ частично',cls: 'sc-status-maybe',     title: 'есть нераспознанные блоки'},
+                error:     {label: '✗ ошибка',  cls: 'sc-status-unmatched', title: 'есть failed-блоки'},
+                running:   {label: '… идёт',    cls: 'sc-status-maybe',     title: 'обработка'},
+                queued:    {label: '⏱ в очереди', cls: 'sc-status-unmatched', title: 'ждёт обработки'},
+                skipped:   {label: '✓ из кэша', cls: 'sc-status-matched',   title: 'пропущено как уже готовое'},
+                cancelled: {label: '⊘ отменено',cls: 'sc-status-unmatched', title: 'отменено пользователем'},
+                not_run:   {label: '—',         cls: 'sc-status-unmatched', title: 'не запускалось'},
+            };
+            return m[s] || {label: s || '—', cls: 'sc-status-unmatched', title: s || ''};
+        }
+
+        function scRecogElapsedLabel() {
+            const agg = scRecogJob.value && scRecogJob.value.aggregate;
+            if (!agg) return '—';
+            const sec = Math.max(0, Math.round(agg.elapsed_sec || 0));
+            if (sec < 60) return sec + 'с';
+            const m = Math.floor(sec / 60), s = sec % 60;
+            if (m < 60) return m + 'м ' + s + 'с';
+            const h = Math.floor(m / 60), mm = m % 60;
+            return h + 'ч ' + mm + 'м';
+        }
+
+        // Загрузить плоский session-level список текстовых изменений.
+        async function scLoadTextLLMFlat() {
+            if (!scSession.value) return;
+            scTextLLMFlatLoading.value = true;
+            scTextLLMFlatError.value = '';
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/text-llm-diff-flat`;
+                const r = await fetch(url);
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                scTextLLMFlat.value = await r.json();
+            } catch (e) {
+                scTextLLMFlatError.value = String(e.message || e);
+            } finally {
+                scTextLLMFlatLoading.value = false;
+            }
+        }
+        // ── Unified analysis (Qwen enrichment → Opus comparison) ────────
+        async function scLoadUnifiedConfig() {
+            try {
+                const r = await fetch('/api/stage-comparison/enriched-compare-config');
+                if (!r.ok) return;
+                scUnifiedConfig.value = await r.json();
+            } catch (_) { /* silent */ }
+        }
+        async function scLoadUnifiedPairStatus() {
+            if (!scSession.value || !scActivePair.value) return;
+            scUnifiedPairLoading.value = true;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/unified-analysis`;
+                const r = await fetch(url);
+                if (!r.ok) return;
+                scUnifiedPairStatus.value = await r.json();
+            } catch (e) { /* silent */ }
+            finally { scUnifiedPairLoading.value = false; }
+        }
+        async function scLoadUnifiedFlat() {
+            if (!scSession.value) return;
+            scUnifiedFlatLoading.value = true;
+            scUnifiedFlatError.value = '';
+            try {
+                // По умолчанию — фильтр по активной паре. UI «Расхождения»
+                // всегда привязана к scActivePair, кроме явного «Показать все».
+                const sid = encodeURIComponent(scSession.value.id);
+                let url = `/api/stage-comparison/sessions/${sid}/unified-diff-flat`;
+                let scopePid = null;
+                if (!scUnifiedShowAllPairs.value && scActivePair.value && scActivePair.value.id) {
+                    scopePid = scActivePair.value.id;
+                    url += `?pair_id=${encodeURIComponent(scopePid)}`;
+                }
+                const r = await fetch(url);
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                scUnifiedFlat.value = await r.json();
+                scUnifiedFlatScopePairId.value = scopePid;
+            } catch (e) {
+                scUnifiedFlatError.value = String(e.message || e);
+            } finally {
+                scUnifiedFlatLoading.value = false;
+            }
+        }
+        async function scUnifiedToggleShowAllPairs() {
+            // Toggle между «текущая пара» и «вся сессия». В режиме «вся сессия»
+            // показывается баннер-предупреждение, чтобы пользователь не путал.
+            if (scUnifiedShowAllPairs.value) {
+                // выключаем — возвращаемся к текущей паре
+                scUnifiedShowAllPairs.value = false;
+            } else {
+                if (!confirm('Показать расхождения по ВСЕМ PDF-парам сессии? Сейчас отображается текущая пара.')) return;
+                scUnifiedShowAllPairs.value = true;
+            }
+            // Сбросить локальный pair-фильтр, чтобы он не дублировал backend-фильтр.
+            scUnifiedFilterPair.value = '';
+            await scLoadUnifiedFlat();
+        }
+        async function scOpenUnifiedPairPreflight() {
+            if (!scSession.value || !scActivePair.value) return;
+            scUnifiedPreflightScope.value = 'pair';
+            scUnifiedPreflightError.value = '';
+            scUnifiedPreflight.value = null;
+            scUnifiedPreflightLoading.value = true;
+            scUnifiedPreflightOpen.value = true;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/unified-analysis/preflight`;
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        force_enrichment: !!scUnifiedForceEnrichment.value,
+                        force_compare: !!scUnifiedForceCompare.value,
+                    }),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                scUnifiedPreflight.value = await r.json();
+            } catch (e) {
+                scUnifiedPreflightError.value = 'Preflight не выполнен: ' + e;
+            } finally {
+                scUnifiedPreflightLoading.value = false;
+            }
+        }
+        async function scOpenUnifiedSessionPreflight() {
+            if (!scSession.value) return;
+            scUnifiedPreflightScope.value = 'session';
+            scUnifiedPreflightError.value = '';
+            scUnifiedPreflight.value = null;
+            scUnifiedPreflightLoading.value = true;
+            scUnifiedPreflightOpen.value = true;
+            // Session-preflight = aggregated preflight по всем парам через jobs
+            // endpoint без confirm (rejected_no_confirm возвращает items[]).
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/unified-analysis-jobs`;
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        scope: 'session',
+                        confirm: false,
+                        force_enrichment: !!scUnifiedForceEnrichment.value,
+                        force_compare: !!scUnifiedForceCompare.value,
+                    }),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                const job = await r.json();
+                // Используем item-список из rejected job как preview
+                scUnifiedPreflight.value = {
+                    scope: 'session',
+                    total_pairs: (job.items || []).length,
+                    runnable_pairs: (job.items || []).length,
+                    items: (job.items || []).map(it => ({pair_id: it.pair_id, status: it.status})),
+                    note: 'Preflight для сессии: будет запущено по всем парам с MD.',
+                };
+            } catch (e) {
+                scUnifiedPreflightError.value = 'Preflight не выполнен: ' + e;
+            } finally {
+                scUnifiedPreflightLoading.value = false;
+            }
+        }
+        function scCloseUnifiedPreflight() {
+            scUnifiedPreflightOpen.value = false;
+            scUnifiedPreflightError.value = '';
+        }
+        async function scRunUnifiedPair() {
+            if (!scSession.value || !scActivePair.value) return;
+            scUnifiedError.value = '';
+            scUnifiedRunning.value = true;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/unified-analysis`;
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        confirm: true,
+                        force_enrichment: !!scUnifiedForceEnrichment.value,
+                        force_compare: !!scUnifiedForceCompare.value,
+                    }),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                const data = await r.json();
+                scUnifiedPairStatus.value = null; // force reload
+                await scLoadUnifiedPairStatus();
+                await scLoadUnifiedFlat();
+                scCloseUnifiedPreflight();
+                return data;
+            } catch (e) {
+                scUnifiedError.value = 'Запуск unified-анализа не удался: ' + e;
+            } finally {
+                scUnifiedRunning.value = false;
+            }
+        }
+        async function scRunUnifiedSession() {
+            if (!scSession.value) return;
+            scUnifiedError.value = '';
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/unified-analysis-jobs`;
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        scope: 'session',
+                        confirm: true,
+                        force_enrichment: !!scUnifiedForceEnrichment.value,
+                        force_compare: !!scUnifiedForceCompare.value,
+                    }),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                const job = await r.json();
+                scUnifiedJob.value = job;
+                scCloseUnifiedPreflight();
+                if (job.id && (job.status === 'queued' || job.status === 'running')) {
+                    scPollUnifiedJob(job.id);
+                }
+            } catch (e) {
+                scUnifiedError.value = 'Запуск unified-анализа сессии не удался: ' + e;
+            }
+        }
+        async function scPollUnifiedJob(jobId) {
+            if (!scSession.value || !jobId) return;
+            if (scUnifiedJobPolling.value) return;
+            scUnifiedJobPolling.value = true;
+            try {
+                while (true) {
+                    const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/unified-analysis-jobs/${encodeURIComponent(jobId)}`;
+                    const r = await fetch(url);
+                    if (!r.ok) break;
+                    const job = await r.json();
+                    scUnifiedJob.value = job;
+                    if (['done', 'failed', 'cancelled', 'rejected_no_confirm'].includes(job.status)) break;
+                    await new Promise(res => setTimeout(res, 3000));
+                }
+                try { await scLoadUnifiedFlat(); } catch (_) {}
+                if (scActivePair.value) {
+                    try { await scLoadUnifiedPairStatus(); } catch (_) {}
+                }
+            } finally {
+                scUnifiedJobPolling.value = false;
+            }
+        }
+        async function scCancelUnifiedJob() {
+            const job = scUnifiedJob.value;
+            if (!job || !job.id) return;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/unified-analysis-jobs/${encodeURIComponent(job.id)}/cancel`;
+                const r = await fetch(url, {method: 'POST'});
+                if (r.ok) scUnifiedJob.value = await r.json();
+            } catch (e) { /* silent */ }
+        }
+        // Stage 1: при возврате на вкладку «Загрузка документации» подтягиваем
+        // актуальный статус Qwen-job, а если она running — снова запускаем polling.
+        watch(() => scTab.value, (newTab) => {
+            if (newTab !== 'upload') return;
+            if (!scSession.value || !scSession.value.id) return;
+            scRecogRestoreActive();
+        });
+        // Если активная пара меняется (например, через scOpenPair или «Перейти»)
+        // и пользователь сейчас на вкладке «Расхождения» в scope=pair —
+        // нужно перезагрузить unified flat под новую пару, иначе UI покажет
+        // findings старой пары.
+        watch(() => scActivePair.value && scActivePair.value.id, (newPid, oldPid) => {
+            if (newPid === oldPid) return;
+            if (scTab.value !== 'diffs') return;
+            if (scDiffSubtab.value !== 'unified') return;
+            if (scUnifiedShowAllPairs.value) return;
+            scUnifiedFilterPair.value = '';
+            scLoadUnifiedFlat();
+            if (newPid) scLoadUnifiedPairStatus();
+        });
+        // ── Computed filters для unified flat ─────────────────────────────
+        const scUnifiedPairOptions = computed(() => {
+            const items = (scUnifiedFlat.value && scUnifiedFlat.value.items) || [];
+            const seen = new Set();
+            const out = [];
+            for (const it of items) {
+                const k = it.pair_label || it.pair_id;
+                if (k && !seen.has(k)) { seen.add(k); out.push(k); }
+            }
+            return out.sort();
+        });
+        const scUnifiedSourceLayerOptions = computed(() => {
+            const items = (scUnifiedFlat.value && scUnifiedFlat.value.items) || [];
+            return Array.from(new Set(items.map(it => it.source_layer).filter(Boolean))).sort();
+        });
+        const scUnifiedTypeOptions = computed(() => {
+            const items = (scUnifiedFlat.value && scUnifiedFlat.value.items) || [];
+            return Array.from(new Set(items.map(it => it.type).filter(Boolean))).sort();
+        });
+        const scUnifiedCategoryOptions = computed(() => {
+            const items = (scUnifiedFlat.value && scUnifiedFlat.value.items) || [];
+            return Array.from(new Set(items.map(it => it.category).filter(Boolean))).sort();
+        });
+        const scUnifiedItemsFiltered = computed(() => {
+            const items = (scUnifiedFlat.value && scUnifiedFlat.value.items) || [];
+            const fp = scUnifiedFilterPair.value;
+            const fs = scUnifiedFilterSourceLayer.value;
+            const ft = scUnifiedFilterType.value;
+            const fc = scUnifiedFilterCategory.value;
+            const fsev = scUnifiedFilterSeverity.value;
+            const fhr = scUnifiedFilterHumanReview.value;
+            const q = (scUnifiedSearch.value || '').toLowerCase().trim();
+            return items.filter(it => {
+                if (fp && (it.pair_label || it.pair_id) !== fp) return false;
+                if (fs && it.source_layer !== fs) return false;
+                if (ft && it.type !== ft) return false;
+                if (fc && it.category !== fc) return false;
+                if (fsev && (it.severity || '') !== fsev) return false;
+                if (fhr && !it.requires_human_review) return false;
+                if (q) {
+                    const hay = [
+                        it.title, it.summary, it.old_value, it.new_value,
+                        it.construction_impact,
+                        it.evidence_left && it.evidence_left.quote,
+                        it.evidence_right && it.evidence_right.quote,
+                        it.sheet,
+                    ].filter(Boolean).join(' ').toLowerCase();
+                    if (!hay.includes(q)) return false;
+                }
+                return true;
+            });
+        });
+        // Source-layer labels (UI)
+        const _SC_UNIFIED_SOURCE_LABELS = {
+            text: 'Текст',
+            image_enrichment: 'Описание изобр.',
+            scheme_analysis: 'Схема',
+            table: 'Таблица',
+            stamp: 'Штамп',
+            mixed: 'Текст + изобр.',
+        };
+        function scUnifiedSourceLabel(s) { return _SC_UNIFIED_SOURCE_LABELS[s] || s || '—'; }
+        // Go-to-place для unified finding (по сути то же, что для текстового)
+        async function scGotoUnifiedChange(item) {
+            // Делегируем существующий go-to (он обрабатывает alignment_slot).
+            return scGotoTextChange(item);
+        }
+
+        // Переключение под-вкладки diff (unified/text/graphic) с lazy-loading.
+        function scSwitchDiffSubtab(name) {
+            scDiffSubtab.value = name;
+            if (name === 'unified') {
+                scLoadUnifiedConfig();
+                // При заходе на «Расхождения» — всегда возвращаемся к scope
+                // «текущая пара». Это устраняет stale показ findings другой
+                // пары при переходе из вкладки «Связь блоков».
+                scUnifiedShowAllPairs.value = false;
+                scUnifiedFilterPair.value = '';
+                scLoadUnifiedFlat();
+                if (scActivePair.value) {
+                    scLoadUnifiedPairStatus();
+                }
+            } else if (name === 'text') {
+                scLoadTextLLMConfig();
+                scLoadTextLLMFlat();
+                if (scActivePair.value) {
+                    scLoadTextLLMDiff();
+                    scLoadMdEnrichmentSummary();
+                }
+            } else if (name === 'graphic') {
+                scLoadGraphicSummary();
+            }
+        }
+        // Batch preflight + run для всей сессии.
+        async function scOpenBatchTextLLM() {
+            if (!scSession.value) return;
+            scTextLLMBatchError.value = '';
+            scTextLLMBatchPreflight.value = null;
+            scTextLLMBatchLoading.value = true;
+            scTextLLMBatchOpen.value = true;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/text-llm-preflight`;
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({scope: 'session', force: !!scTextLLMBatchForce.value}),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                scTextLLMBatchPreflight.value = await r.json();
+            } catch (e) {
+                scTextLLMBatchError.value = 'Preflight не выполнен: ' + e;
+            } finally {
+                scTextLLMBatchLoading.value = false;
+            }
+        }
+        async function scRefreshBatchPreflight() {
+            // Перезапросить preflight, если пользователь переключил force-checkbox
+            if (!scSession.value) return;
+            await scOpenBatchTextLLM();
+        }
+        function scCloseBatchPreflight() {
+            scTextLLMBatchOpen.value = false;
+            scTextLLMBatchError.value = '';
+            // job не сбрасываем — пользователь может хотеть видеть прогресс
+        }
+        async function scConfirmBatchRun() {
+            const pf = scTextLLMBatchPreflight.value;
+            if (!pf || !pf.can_run_batch) return;
+            scTextLLMBatchError.value = '';
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/text-llm-diff-jobs`;
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        scope: 'session',
+                        confirm: true,
+                        force: !!scTextLLMBatchForce.value,
+                    }),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    const msg = (j && j.detail && (j.detail.message || j.detail)) || ('HTTP ' + r.status);
+                    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+                }
+                const job = await r.json();
+                scTextLLMBatchJob.value = job;
+                scCloseBatchPreflight();
+                if (job.status === 'queued' || job.status === 'running') {
+                    scPollTextLLMJob(job.id);
+                }
+            } catch (e) {
+                scTextLLMBatchError.value = 'Запуск batch не удался: ' + e;
+            }
+        }
+        async function scPollTextLLMJob(jobId) {
+            if (!scSession.value || !jobId) return;
+            if (scTextLLMBatchPolling.value) return;
+            scTextLLMBatchPolling.value = true;
+            try {
+                while (true) {
+                    const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/text-llm-diff-jobs/${encodeURIComponent(jobId)}`;
+                    const r = await fetch(url);
+                    if (!r.ok) break;
+                    const job = await r.json();
+                    scTextLLMBatchJob.value = job;
+                    if (['done', 'failed', 'cancelled', 'rejected_no_confirm'].includes(job.status)) break;
+                    await new Promise(res => setTimeout(res, 3000));
+                }
+                // По завершении подтянем session-level плоский список + per-pair (для blocks-view)
+                try { await scLoadTextLLMFlat(); } catch (_) {}
+                if (scActivePair.value) {
+                    try { await scLoadTextLLMDiff(); } catch (_) {}
+                }
+            } finally {
+                scTextLLMBatchPolling.value = false;
+            }
+        }
+        async function scCancelTextLLMJob() {
+            const job = scTextLLMBatchJob.value;
+            if (!job || !job.id) return;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/text-llm-diff-jobs/${encodeURIComponent(job.id)}/cancel`;
+                const r = await fetch(url, {method: 'POST'});
+                if (r.ok) scTextLLMBatchJob.value = await r.json();
+            } catch (e) { /* silent */ }
+        }
+        function scHumanizeDuration(seconds) {
+            const s = Math.max(0, Math.round(seconds || 0));
+            if (s < 60) return s + ' с';
+            const m = Math.floor(s / 60), rs = s % 60;
+            if (s < 3600) return rs ? `${m} мин ${rs} с` : `${m} мин`;
+            const h = Math.floor(s / 3600), rm = Math.floor((s % 3600) / 60);
+            return rm ? `${h} ч ${rm} мин` : `${h} ч`;
+        }
+        const _SC_TEXT_LLM_TYPE_LABELS = {
+            added: 'Добавлено', removed: 'Удалено', changed: 'Изменено',
+            equipment_changed: 'Изменение оборудования',
+            material_changed: 'Изменение материала',
+            calculation_changed: 'Изменение расчётных данных',
+            requirement_changed: 'Изменение требований',
+            design_logic_changed: 'Изменение проектной логики',
+            section_changed: 'Изменение состава проекта',
+            declared_by_designer: 'Заявлено проектировщиком',
+        };
+        const _SC_TEXT_LLM_CATEGORY_LABELS = {
+            design_solution: 'Проектное решение',
+            equipment: 'Оборудование',
+            material: 'Материал',
+            calculation: 'Расчёт',
+            requirement: 'Требование',
+            composition: 'Состав',
+            construction_technology: 'Технология',
+            safety: 'Безопасность',
+            fire_safety: 'Пожарная безопасность',
+            engineering_systems: 'Инж. системы',
+            architecture: 'Архитектура',
+            structures: 'Конструкции',
+            other: 'Прочее',
+        };
+        const _SC_TEXT_LLM_SEVERITY_LABELS = {high: 'Важно', medium: 'Средне', low: 'Низкое'};
+        const _SC_TEXT_LLM_STATUS_LABELS = {
+            done: 'Готово', not_run: 'Не выполнялся',
+            disabled: 'Выключено', provider_not_available: 'Provider недоступен',
+            missing_md: 'Нет MD', too_large: 'Слишком большой ввод',
+            error: 'Ошибка', timeout: 'Таймаут', blocked: 'Заблокировано',
+        };
+        function scTextLLMTypeLabel(t) { return _SC_TEXT_LLM_TYPE_LABELS[t] || t || '—'; }
+        function scTextLLMCategoryLabel(c) { return _SC_TEXT_LLM_CATEGORY_LABELS[c] || c || 'Прочее'; }
+        function scTextLLMSeverityLabel(s) { return _SC_TEXT_LLM_SEVERITY_LABELS[s] || s || '—'; }
+        function scTextLLMStatusLabel(s) { return _SC_TEXT_LLM_STATUS_LABELS[s] || s || '—'; }
+
+        // ── Computed-ы для session-level flat-таблицы ─────────────────────
+        const scTextFlatPairOptions = computed(() => {
+            const items = (scTextLLMFlat.value && scTextLLMFlat.value.items) || [];
+            const seen = new Set();
+            const out = [];
+            for (const it of items) {
+                const k = it.pair_label || it.pair_id;
+                if (k && !seen.has(k)) { seen.add(k); out.push(k); }
+            }
+            return out.sort();
+        });
+        const scTextFlatTypeOptions = computed(() => {
+            const items = (scTextLLMFlat.value && scTextLLMFlat.value.items) || [];
+            return Array.from(new Set(items.map(it => it.type).filter(Boolean))).sort();
+        });
+        const scTextFlatCategoryOptions = computed(() => {
+            const items = (scTextLLMFlat.value && scTextLLMFlat.value.items) || [];
+            return Array.from(new Set(items.map(it => it.category).filter(Boolean))).sort();
+        });
+        const scTextFlatItemsFiltered = computed(() => {
+            const items = (scTextLLMFlat.value && scTextLLMFlat.value.items) || [];
+            const fp = scTextFlatFilterPair.value;
+            const ft = scTextFlatFilterType.value;
+            const fc = scTextFlatFilterCategory.value;
+            const fs = scTextFlatFilterSeverity.value;
+            const fhr = scTextFlatFilterHumanReview.value;
+            const q = (scTextFlatSearch.value || '').toLowerCase().trim();
+            return items.filter(it => {
+                if (fp && (it.pair_label || it.pair_id) !== fp) return false;
+                if (ft && it.type !== ft) return false;
+                if (fc && it.category !== fc) return false;
+                if (fs && (it.severity || '') !== fs) return false;
+                if (fhr && !it.requires_human_review) return false;
+                if (q) {
+                    const hay = [
+                        it.title, it.summary, it.old_value, it.new_value,
+                        it.construction_impact,
+                        it.evidence_left && it.evidence_left.quote,
+                        it.evidence_right && it.evidence_right.quote,
+                        it.sheet,
+                    ].filter(Boolean).join(' ').toLowerCase();
+                    if (!hay.includes(q)) return false;
+                }
+                return true;
+            });
+        });
+
+        // ── Go-to-place для текстового изменения ──────────────────────────
+        // 1) Открыть PDF-пару (если не активна),
+        // 2) переключиться на под-вкладку «Связь блоков»,
+        // 3) проскроллить к alignment_slot и подсветить.
+        async function scGotoTextChange(item) {
+            if (!item || !scSession.value) return;
+            const targetPair = (scSession.value.pairs || []).find(p => p.id === item.pair_id);
+            if (!targetPair) {
+                scError.value = 'Не нашёл PDF-пару для этого изменения.';
+                return;
+            }
+            if (!scActivePair.value || scActivePair.value.id !== targetPair.id) {
+                await scOpenPair(targetPair);
+            }
+            scTab.value = 'links';
+            const slot = item.alignment_slot;
+            if (!slot) {
+                scError.value = 'Точную страницу определить не удалось. Изменение найдено по тексту MD.';
+                return;
+            }
+            // Дождаться рендера панелей и проскроллить к слоту с обеих сторон.
+            await nextTick();
+            setTimeout(() => {
+                for (const side of ['left', 'right']) {
+                    const el = document.getElementById('sc-slot-' + side + '-' + slot);
+                    if (el && el.scrollIntoView) {
+                        el.scrollIntoView({behavior: 'smooth', block: 'center'});
+                        el.classList.add('sc-slot--highlight');
+                        setTimeout(() => el.classList.remove('sc-slot--highlight'), 2400);
+                    }
+                }
+            }, 80);
+        }
+
+        // Лейблы для finding.type (универсальные, в т.ч. новые text_* типы)
+        const _SC_FINDING_TYPE_LABELS = {
+            text_added: 'Добавлено в тексте',
+            text_removed: 'Удалено из текста',
+            text_changed: 'Изменено в тексте',
+            text_equipment_changed: 'Изменение оборудования',
+            text_material_changed: 'Изменение материала',
+            text_calculation_changed: 'Изменение расчётных данных',
+            text_requirement_changed: 'Изменение требований',
+            text_design_logic_changed: 'Изменение проектной логики',
+            text_section_changed: 'Изменение состава проекта',
+            text_declared_change: 'Заявлено проектировщиком',
+            graphic_added: 'Графика добавлена',
+            graphic_removed: 'Графика удалена',
+            graphic_changed: 'Графика изменена',
+            page_added: 'Новый лист',
+            page_removed: 'Лист удалён',
+            page_reordered: 'Лист перенесён',
+            stale_link: 'Устаревшая связь',
+        };
+        function scFindingTypeLabel(t) { return _SC_FINDING_TYPE_LABELS[t] || t || '—'; }
+
+        async function scLoadGraphicSummary() {
+            if (!scSession.value || !scActivePair.value) return;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/graphic-summary`;
+                const r = await fetch(url);
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                scGraphicSummary.value = await r.json();
+            } catch (e) {
+                scError.value = 'Не удалось загрузить graphic summary: ' + e;
+            }
+        }
+
+        function scFindGraphicDiff(link) {
+            if (!scGraphicSummary.value) return null;
+            const compared = scGraphicSummary.value.compared || [];
+            return compared.find(d => d.left_block_id === link.left_block_id && d.right_block_id === link.right_block_id) || null;
+        }
+
+        async function scPrepareGraphicDiff(link) {
+            await scRunGraphicDiff(link, false);
+        }
+
+        async function scRunGraphicDiff(link, runPaid) {
+            scGraphicDiffRunning.value = true;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/graphic-diff`;
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({left_block_id: link.left_block_id, right_block_id: link.right_block_id, run_paid: !!runPaid}),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({detail: 'HTTP ' + r.status}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                const data = await r.json();
+                // Backend теперь возвращает 200 OK с status в body (blocked/error/done/prepared).
+                if (data.status === 'blocked') {
+                    scGraphicPreview.value = {
+                        ...data,
+                        note: 'Платный API заблокирован: ' + (data.error || 'unknown') + '. Проверьте PAID_API_ENABLED.',
+                    };
+                    await scLoadGraphicSummary();
+                    return;
+                }
+                if (data.status === 'error') {
+                    scGraphicPreview.value = {
+                        ...data,
+                        note: 'LLM error: ' + (data.error || 'unknown'),
+                    };
+                    await scLoadGraphicSummary();
+                    return;
+                }
+                scGraphicPreview.value = data;
+                if (data.status === 'done') await scLoadGraphicSummary();
+            } catch (e) {
+                scError.value = 'Graphic diff failed: ' + e;
+            } finally {
+                scGraphicDiffRunning.value = false;
+            }
+        }
+
         return {
             // Theme
             theme, toggleTheme,
             // State
-            currentView, currentProject, currentProjectId, projects, loading,
+            currentView, currentProject, currentProjectId, projects, loading, isProjectView,
             findingsData, filterSeverity, filterSearch, severityOptions,
             // Inline Critic v2 (experimental, в обычной таблице)
             findingsCv2Available, findingsCv2Warning, findingsCv2Loading,
@@ -8818,6 +11585,132 @@ const app = createApp({
             loadExternalRegister, importExternalRegister, runExternalRegisterMatch,
             confirmExternalEntry, rejectExternalEntry, downloadExternalRegisterXlsx,
             findingExtRegBadge,
+            // ─── Stage Comparison ───
+            scTab, scDiffSubtab, scStageAPath, scStageBPath,
+            // Auto-objects (выбор объекта вместо ручного ввода путей)
+            scObjects, scObjectsRoots, scObjectsLoading, scObjectsError,
+            scSelectedObjectId, scSelectedStageA, scSelectedStageB,
+            scSelectedObject, scLoadObjects, scApplySelectedObject,
+            scScanning, scLinking, scError, scWarnings,
+            scSession, scSessions, scSessionsListOpen,
+            scAutoLoadInfo, scAutoLoading,
+            scActivePair, scPairData, scCurrentPage,
+            scCanvasRefs, scCanvasNat, scSelectedLeft, scSelectedRight,
+            scSelectedSlotLeft, scSelectedSlotRight,
+            scTextLLMDiff, scTextLLMConfig,
+            scLoadTextLLMDiff, scLoadTextLLMConfig,
+            // Session-level batch preflight + job
+            scTextLLMBatchPreflight, scTextLLMBatchLoading, scTextLLMBatchOpen,
+            scTextLLMBatchError, scTextLLMBatchForce, scTextLLMBatchJob, scTextLLMBatchPolling,
+            scOpenBatchTextLLM, scRefreshBatchPreflight, scCloseBatchPreflight,
+            scConfirmBatchRun, scPollTextLLMJob, scCancelTextLLMJob,
+            // Session-level flat-таблица текстовых изменений
+            scTextLLMFlat, scTextLLMFlatLoading, scTextLLMFlatError, scLoadTextLLMFlat,
+            scTextFlatFilterPair, scTextFlatFilterType, scTextFlatFilterCategory,
+            scTextFlatFilterSeverity, scTextFlatFilterHumanReview, scTextFlatSearch,
+            scTextFlatPairOptions, scTextFlatTypeOptions, scTextFlatCategoryOptions,
+            scTextFlatItemsFiltered,
+            // MD enrichment (Qwen image descriptions for enriched MD)
+            scMdEnrichmentSummary, scMdEnrichmentLoading, scMdEnrichmentRunning,
+            scMdEnrichmentError, scMdEnrichmentConfirmOpen,
+            scMdEnrichmentJob, scMdEnrichmentJobPolling, scMdEnrichmentJobTimedOut,
+            scLoadMdEnrichmentSummary, scMdEnrichmentDryRun,
+            scMdEnrichmentRequestConfirm, scMdEnrichmentRunModel,
+            scPollMdEnrichmentJob, scCancelMdEnrichmentJob, scRefreshMdEnrichmentJob,
+            // Stage 1: «Распознать графику» (session-level Qwen enrichment job)
+            scRecogJob, scRecogPolling, scRecogStarting, scRecogError,
+            scRecogStart, scRecogRetryErrors, scRecogCancel,
+            scRecogRestoreActive, scRecogPairStatus, scRecogPairBadge,
+            scRecogElapsedLabel,
+            // Per-pair analysis mode
+            scAnalysisMode, scAnalysisModeSaving, scAnalysisModeError,
+            scLoadAnalysisMode, scSetAnalysisMode, scToggleAnalysisMode,
+            // Unified analysis (Qwen enrichment + Opus comparison) — primary UX
+            scUnifiedConfig, scUnifiedPairStatus, scUnifiedPairLoading,
+            scUnifiedFlat, scUnifiedFlatLoading, scUnifiedFlatError,
+            scUnifiedShowAllPairs, scUnifiedFlatScopePairId, scUnifiedToggleShowAllPairs,
+            scUnifiedPreflight, scUnifiedPreflightScope, scUnifiedPreflightOpen,
+            scUnifiedPreflightLoading, scUnifiedPreflightError,
+            scUnifiedForceEnrichment, scUnifiedForceCompare,
+            scUnifiedRunning, scUnifiedJob, scUnifiedJobPolling, scUnifiedError,
+            scUnifiedFilterPair, scUnifiedFilterSourceLayer, scUnifiedFilterType,
+            scUnifiedFilterCategory, scUnifiedFilterSeverity,
+            scUnifiedFilterHumanReview, scUnifiedSearch,
+            scUnifiedPairOptions, scUnifiedSourceLayerOptions, scUnifiedTypeOptions,
+            scUnifiedCategoryOptions, scUnifiedItemsFiltered,
+            scLoadUnifiedConfig, scLoadUnifiedPairStatus, scLoadUnifiedFlat,
+            scOpenUnifiedPairPreflight, scOpenUnifiedSessionPreflight, scCloseUnifiedPreflight,
+            scRunUnifiedPair, scRunUnifiedSession, scPollUnifiedJob, scCancelUnifiedJob,
+            scUnifiedSourceLabel, scGotoUnifiedChange,
+            scSwitchDiffSubtab, scGotoTextChange,
+            scHumanizeDuration,
+            scTextLLMTypeLabel, scTextLLMCategoryLabel, scTextLLMSeverityLabel, scTextLLMStatusLabel,
+            scFindingTypeLabel,
+            scGraphicSummary, scGraphicPreview,
+            scGraphicDiffRunning,
+            scPaneRefs, scSlotRefs, scZoom, scSyncScroll,
+            scVisibleSlot, scVisibleSlotLeft, scVisibleSlotRight,
+            scRenderBufferBefore, scRenderBufferAfter,
+            scAlignment, scAlignmentItems,
+            scAlignmentActionRunning, scAlignmentActionError,
+            scAlignmentGoToSlot,
+            scCurrentSlotForSide, scCanInsertBlankSide, scCanMovePageSide,
+            scInsertBlankSide, scMovePageSide,
+            scUnmatched, scIsPdfUsedRight,
+            scMatchPairDialogOpen, scMatchPairTargetPair, scMatchPairChoiceRight,
+            scMatchPairError, scMatchPairSaving,
+            scConfirmAllRunning, scConfirmAllError, scConfirmAllMaybe,
+            scCreatePairDialogOpen, scCreatePairLeft, scCreatePairRight,
+            scCreatePairError, scCreatePairSaving,
+            scLoadUnmatched, scOpenMatchPairDialog, scCloseMatchPairDialog,
+            scSavePairMatch, scOpenCreatePairDialog, scSaveCreatePair,
+            scDeletePair, scStaleLinksCount,
+            scPairs, scPairsCounts, scAllLinksForGraphic,
+            scStatusLabel, scDiffTypeLabel,
+            scScanFolders, scLoadSessionsList, scLoadSession,
+            scOpenPair, scLoadPairData, scLoadAlignment,
+            scPageImageUrl, scOnImageLoad, scOnPageImageLoad,
+            scSlotBlocks, scBlankPageStyle,
+            scBlockOverlayStyle, scBlockOverlayClass, scIsBlockLinked, scSelectBlock,
+            scBlockLinkInfo, scLinkColor, scLinkVisualIndex, scSelectLinkedBlock,
+            scActiveLinkKey, scActiveLink, scActiveLinkInfo,
+            scDeleteActiveLink, scClearStaleLinks,
+            scOnPaneScroll, scZoomBy, scZoomReset,
+            scSetSlotRef, scIsSlotRendered, scSlotContainerStyle, scSlotPlaceholderStyle,
+            scCreateLink, scDeleteLink, scRunAutoLink,
+            // Pair config templates
+            scTemplateSaving, scTemplateLastSaveMsg, scTemplateError,
+            scSavePairTemplate,
+            scLoadGraphicSummary,
+            scFindGraphicDiff, scPrepareGraphicDiff, scRunGraphicDiff,
+            // ─── Findings/Reports v4 ───
+            scFindingsItems, scFindingsSummary, scFindingsTotal,
+            scFindingsLoading, scFindingsRebuilding, scFindingsError,
+            scFindingsFilter, scFindingsSelectedIds, scActiveFinding,
+            scActiveFindingDraftNote, scActiveFindingDraftSeverity,
+            scAllSelected, scFindingsSelectedLLM,
+            scOpenReportTab, scRebuildFindings, scLoadFindings,
+            scDebouncedLoadFindings,
+            scToggleFindingSelect, scToggleSelectAll,
+            scOpenFinding, scPatchFinding, scSaveFindingNote,
+            scGoToFindingPlace,
+            // Grouping (Task 7)
+            scExpandedParents, scChildFindingsCache,
+            scToggleParentExpand, scLoadChildren,
+            // Bulk actions (Task 8)
+            scBulkSeverity, scBulkNote, scBulkActionRunning,
+            scBulkAccept, scBulkReject, scBulkNeedsReview, scBulkIgnore,
+            scBulkSetSeverity, scBulkAppendNote, scBulkPatchFindings,
+            // Warnings (Task 9)
+            scWarningsItems, scWarningsSummary, scWarningsLoading, scLoadWarnings,
+            scBatchLLMConfirmOpen, scBatchLLMScope, scBatchLLMCount,
+            scBatchLLMModel, scBatchLLMRunning, scBatchLLMError, scBatchLLMLastJob,
+            scBatchLLMProgressOpen, scBatchLLMCancelling,
+            scRefreshBatchLLMJob, scCancelBatchLLMJob, scCloseBatchLLMProgress,
+            scOpenBatchLLMConfirm, scRunBatchLLM,
+            scBatchLLMConfirmCount: scBatchLLMCount,
+            scReportForm, scReportCreating, scLastReport, scReportsList,
+            scCreateReport, scLoadReports,
         };
     }
 });
