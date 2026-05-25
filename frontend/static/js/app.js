@@ -10917,6 +10917,16 @@ const app = createApp({
             if (!scSession.value || !scSession.value.id) return;
             scRecogRestoreActive();
         });
+        // Stage 3: при смене активной пары подгрузить per-pair md-enrichment
+        // статус, чтобы баннер «Графика распознана/ещё не распознана» был
+        // актуален без явного клика на dry-run.
+        watch(() => scActivePair.value && scActivePair.value.id, (newPid) => {
+            if (!newPid) {
+                scMdEnrichmentSummary.value = null;
+                return;
+            }
+            scLoadMdEnrichmentSummary();
+        });
         // Если активная пара меняется (например, через scOpenPair или «Перейти»)
         // и пользователь сейчас на вкладке «Расхождения» в scope=pair —
         // нужно перезагрузить unified flat под новую пару, иначе UI покажет

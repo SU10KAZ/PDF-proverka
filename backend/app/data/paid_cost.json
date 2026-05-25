@@ -1,6 +1,6 @@
 {
-  "total_lifetime_usd": 179.338643,
-  "display_usd": 23.2668,
+  "total_lifetime_usd": 184.214095,
+  "display_usd": 28.142252,
   "reset_history": [
     {
       "date": "2026-04-27T16:26:13.771908",
@@ -71,6 +71,56 @@
       },
       "by_stage": {
         "block_analysis": 18.2869
+      }
+    },
+    "2026-05-22": {
+      "total": 1.67533,
+      "n_calls": 3,
+      "by_model": {
+        "google/gemini-3.1-pro-preview": 0.01953,
+        "openai/gpt-5.4": 1.6558
+      },
+      "by_project": {
+        "stage_comparison/0e519fc257c84d6a": 0.01953,
+        "13АВ-РД-ТХ2-К4.pdf": 0.8245,
+        "13АВ-РД-ТХ2-К5.pdf": 0.8313
+      },
+      "by_stage": {
+        "stage_comparison_graphic_diff": 0.01953,
+        "block_analysis": 1.6558
+      }
+    },
+    "2026-05-23": {
+      "total": 1.237992,
+      "n_calls": 3,
+      "by_model": {
+        "google/gemini-3.1-pro-preview": 0.090592,
+        "openai/gpt-5.4": 1.1474
+      },
+      "by_project": {
+        "stage_comparison/eba94141d2064624": 0.090592,
+        "13АВ-РД-АК-К6 (Книга 1) (согл от 17.04.2026).pdf": 1.1474
+      },
+      "by_stage": {
+        "stage_comparison_graphic_diff": 0.090592,
+        "block_analysis": 1.1474
+      }
+    },
+    "2026-05-24": {
+      "total": 1.96213,
+      "n_calls": 4,
+      "by_model": {
+        "google/gemini-3.1-pro-preview": 0.07033,
+        "openai/gpt-5.4": 1.8918
+      },
+      "by_project": {
+        "stage_comparison/f8d1f3de21fb4a32": 0.07033,
+        "13АВ-РД-ЭО-К6 (согл от 09.04.2026).pdf": 0.7574,
+        "13АВ-РД-ЭМ-К6 (согл от 14.05.2026).pdf": 1.1344
+      },
+      "by_stage": {
+        "stage_comparison_graphic_diff": 0.07033,
+        "block_analysis": 1.8918
       }
     }
   }

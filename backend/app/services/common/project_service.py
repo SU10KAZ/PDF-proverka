@@ -502,6 +502,11 @@ def get_project_status(
     block_errors = 0
     block_expected = 0
     blocks_index = gemma_blocks_index_path(version_dir)
+    if not blocks_index.exists():
+        # Fallback на legacy-папку для немигрированных проектов
+        legacy_index = output_dir / "blocks" / "index.json"
+        if legacy_index.exists():
+            blocks_index = legacy_index
     if blocks_index.exists():
         bi = _load_json(blocks_index)
         if bi:

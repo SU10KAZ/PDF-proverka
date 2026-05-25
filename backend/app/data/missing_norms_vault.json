@@ -123,7 +123,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-20T14:02:11",
+      "last_seen_at": "2026-05-24T06:15:04",
       "occurrences": [
         {
           "project_id": "133-23-ГК-АИ2",
@@ -422,6 +422,20 @@
             "F-036"
           ],
           "seen_at": "2026-05-19T20:55:55"
+        },
+        {
+          "project_id": "13АВ-РД-АК-К6 (Книга 1) (согл от 17.04.2026).pdf",
+          "findings": [
+            "F-005"
+          ],
+          "seen_at": "2026-05-23T10:29:51"
+        },
+        {
+          "project_id": "13АВ-РД-ЭМ-К6 (согл от 14.05.2026).pdf",
+          "findings": [
+            "F-007"
+          ],
+          "seen_at": "2026-05-24T06:15:04"
         }
       ]
     },
@@ -431,7 +445,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-20T14:02:11",
+      "last_seen_at": "2026-05-24T03:46:04",
       "occurrences": [
         {
           "project_id": "133-23-ГК-АИ2",
@@ -586,6 +600,21 @@
             "F-019"
           ],
           "seen_at": "2026-05-19T17:12:59"
+        },
+        {
+          "project_id": "13АВ-РД-ТХ2-К4.pdf",
+          "findings": [
+            "F-026"
+          ],
+          "seen_at": "2026-05-22T15:04:43"
+        },
+        {
+          "project_id": "13АВ-РД-ТХ2-К5.pdf",
+          "findings": [
+            "F-004",
+            "F-013"
+          ],
+          "seen_at": "2026-05-22T15:45:01"
         }
       ]
     },
@@ -595,7 +624,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-20T14:02:11",
+      "last_seen_at": "2026-05-22T17:01:43",
       "occurrences": [
         {
           "project_id": "133-23-ГК-АИ2",
@@ -617,6 +646,20 @@
             "F-016"
           ],
           "seen_at": "2026-05-19T17:12:59"
+        },
+        {
+          "project_id": "13АВ-РД-ТХ2-К4.pdf",
+          "findings": [
+            "F-011"
+          ],
+          "seen_at": "2026-05-22T15:04:43"
+        },
+        {
+          "project_id": "13АВ-РД-ТХ2-К5.pdf",
+          "findings": [
+            "F-001"
+          ],
+          "seen_at": "2026-05-22T15:45:01"
         }
       ],
       "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=СП 506.1311500.2021, verified=2026-04-17)"
@@ -702,10 +745,10 @@
     "СП 113.13330.2016": {
       "doc_number": "СП 113.13330.2016",
       "family": "СП",
-      "status": "dismissed",
+      "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-05T02:50:15",
+      "last_seen_at": "2026-05-22T15:04:43",
       "occurrences": [
         {
           "project_id": "133-23-ГК-АИ2",
@@ -733,6 +776,13 @@
             "F-055"
           ],
           "seen_at": "2026-05-05T02:50:15"
+        },
+        {
+          "project_id": "13АВ-РД-ТХ2-К4.pdf",
+          "findings": [
+            "F-011"
+          ],
+          "seen_at": "2026-05-22T15:04:43"
         }
       ],
       "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=СП 113.13330.2023, verified=2026-04-16)"
@@ -991,7 +1041,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-04-28T19:32:23",
+      "last_seen_at": "2026-05-24T13:12:10",
       "occurrences": [
         {
           "project_id": "133-23-ГК-АИ2",
@@ -1019,6 +1069,20 @@
             "F-014"
           ],
           "seen_at": "2026-04-28T19:31:37"
+        },
+        {
+          "project_id": "133_23-ГК-ВК1 (8).pdf",
+          "findings": [
+            "F-002"
+          ],
+          "seen_at": "2026-05-24T12:10:18"
+        },
+        {
+          "project_id": "133_23-ГК-ВК3 (5).pdf",
+          "findings": [
+            "F-003"
+          ],
+          "seen_at": "2026-05-24T13:12:10"
         }
       ]
     },
@@ -1067,7 +1131,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-05T19:53:00",
+      "last_seen_at": "2026-05-24T06:15:04",
       "occurrences": [
         {
           "project_id": "133-23-ГК-АИ2",
@@ -1150,6 +1214,22 @@
             "F-033"
           ],
           "seen_at": "2026-05-05T19:53:00"
+        },
+        {
+          "project_id": "13АВ-РД-АК-К6 (Книга 1) (согл от 17.04.2026).pdf",
+          "findings": [
+            "F-011",
+            "F-013",
+            "F-020"
+          ],
+          "seen_at": "2026-05-23T10:29:51"
+        },
+        {
+          "project_id": "13АВ-РД-ЭМ-К6 (согл от 14.05.2026).pdf",
+          "findings": [
+            "F-027"
+          ],
+          "seen_at": "2026-05-24T06:15:04"
         }
       ]
     },
@@ -1256,7 +1336,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-05T19:53:00",
+      "last_seen_at": "2026-05-24T06:15:04",
       "occurrences": [
         {
           "project_id": "133_23-ГК-АК",
@@ -1465,6 +1545,34 @@
             "F-033"
           ],
           "seen_at": "2026-05-05T19:53:00"
+        },
+        {
+          "project_id": "13АВ-РД-ТХ2-К4.pdf",
+          "findings": [
+            "F-019"
+          ],
+          "seen_at": "2026-05-22T15:04:43"
+        },
+        {
+          "project_id": "13АВ-РД-АК-К6 (Книга 1) (согл от 17.04.2026).pdf",
+          "findings": [
+            "F-004",
+            "F-005",
+            "F-013",
+            "F-027",
+            "F-036"
+          ],
+          "seen_at": "2026-05-23T10:29:51"
+        },
+        {
+          "project_id": "13АВ-РД-ЭМ-К6 (согл от 14.05.2026).pdf",
+          "findings": [
+            "F-001",
+            "F-002",
+            "F-005",
+            "F-006"
+          ],
+          "seen_at": "2026-05-24T06:15:04"
         }
       ]
     },
@@ -1474,7 +1582,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-19T22:14:04",
+      "last_seen_at": "2026-05-24T13:12:10",
       "occurrences": [
         {
           "project_id": "133_23-ГК-ПТ",
@@ -1530,6 +1638,21 @@
             "F-002"
           ],
           "seen_at": "2026-05-19T17:12:59"
+        },
+        {
+          "project_id": "133-23-ГК-ВК4 (4).pdf",
+          "findings": [
+            "F-005"
+          ],
+          "seen_at": "2026-05-24T11:35:28"
+        },
+        {
+          "project_id": "133_23-ГК-ВК3 (5).pdf",
+          "findings": [
+            "F-003",
+            "F-005"
+          ],
+          "seen_at": "2026-05-24T13:12:10"
         }
       ]
     },
@@ -1930,7 +2053,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-04-29T11:11:02",
+      "last_seen_at": "2026-05-24T13:43:14",
       "occurrences": [
         {
           "project_id": "133_23-ГК-ОВ1.2",
@@ -1952,6 +2075,20 @@
             "F-030"
           ],
           "seen_at": "2026-04-29T11:11:02"
+        },
+        {
+          "project_id": "133_23-ГК-ВК3 (5).pdf",
+          "findings": [
+            "F-012"
+          ],
+          "seen_at": "2026-05-24T13:12:10"
+        },
+        {
+          "project_id": "75СГ-24-ДК1 (врем. сети).pdf",
+          "findings": [
+            "F-017"
+          ],
+          "seen_at": "2026-05-24T13:43:14"
         }
       ]
     },
@@ -1988,7 +2125,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-19T17:12:59",
+      "last_seen_at": "2026-05-24T06:15:04",
       "occurrences": [
         {
           "project_id": "133_23-ГК-ОВ1.2",
@@ -2225,16 +2362,46 @@
             "F-030"
           ],
           "seen_at": "2026-05-19T17:12:59"
+        },
+        {
+          "project_id": "13АВ-РД-ТХ2-К4.pdf",
+          "findings": [
+            "F-009",
+            "F-017",
+            "F-036"
+          ],
+          "seen_at": "2026-05-22T15:04:43"
+        },
+        {
+          "project_id": "13АВ-РД-ЭО-К6 (согл от 09.04.2026).pdf",
+          "findings": [
+            "F-029",
+            "F-041"
+          ],
+          "seen_at": "2026-05-24T03:46:04"
+        },
+        {
+          "project_id": "13АВ-РД-ЭМ-К6 (согл от 14.05.2026).pdf",
+          "findings": [
+            "F-020",
+            "F-021",
+            "F-025",
+            "F-041",
+            "F-044",
+            "F-045",
+            "F-047"
+          ],
+          "seen_at": "2026-05-24T06:15:04"
         }
       ]
     },
     "ГОСТ Р 50345-2010": {
       "doc_number": "ГОСТ Р 50345-2010",
       "family": "ГОСТ Р",
-      "status": "dismissed",
+      "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-05T05:34:56",
+      "last_seen_at": "2026-05-24T06:15:04",
       "occurrences": [
         {
           "project_id": "133_23-ГК-ЭО3",
@@ -2256,6 +2423,13 @@
             "F-031"
           ],
           "seen_at": "2026-05-05T05:34:56"
+        },
+        {
+          "project_id": "13АВ-РД-ЭМ-К6 (согл от 14.05.2026).pdf",
+          "findings": [
+            "F-018"
+          ],
+          "seen_at": "2026-05-24T06:15:04"
         }
       ],
       "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ IEC 60898-1-2020, verified=2026-05-06)"
@@ -2334,7 +2508,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-19T04:57:10",
+      "last_seen_at": "2026-05-24T06:15:04",
       "occurrences": [
         {
           "project_id": "133_23-ГК-ЭО3",
@@ -2555,6 +2729,47 @@
             "F-006"
           ],
           "seen_at": "2026-05-19T04:57:10"
+        },
+        {
+          "project_id": "13АВ-РД-ТХ2-К4.pdf",
+          "findings": [
+            "F-019",
+            "F-021"
+          ],
+          "seen_at": "2026-05-22T15:04:43"
+        },
+        {
+          "project_id": "13АВ-РД-ТХ2-К5.pdf",
+          "findings": [
+            "F-031"
+          ],
+          "seen_at": "2026-05-22T15:45:01"
+        },
+        {
+          "project_id": "13АВ-РД-АК-К6 (Книга 1) (согл от 17.04.2026).pdf",
+          "findings": [
+            "F-012",
+            "F-015",
+            "F-027"
+          ],
+          "seen_at": "2026-05-23T10:29:51"
+        },
+        {
+          "project_id": "13АВ-РД-ЭМ-К6 (согл от 14.05.2026).pdf",
+          "findings": [
+            "F-002",
+            "F-003",
+            "F-004",
+            "F-009",
+            "F-014",
+            "F-016",
+            "F-017",
+            "F-018",
+            "F-028",
+            "F-032",
+            "F-033"
+          ],
+          "seen_at": "2026-05-24T06:15:04"
         }
       ]
     },
@@ -2710,10 +2925,10 @@
     "ГОСТ Р 21.101-2013": {
       "doc_number": "ГОСТ Р 21.101-2013",
       "family": "ГОСТ Р",
-      "status": "dismissed",
+      "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-04-28T19:32:23",
+      "last_seen_at": "2026-05-24T11:35:28",
       "occurrences": [
         {
           "project_id": "133_23-ГК-ВК4",
@@ -2731,6 +2946,13 @@
             "F-027"
           ],
           "seen_at": "2026-04-28T19:31:37"
+        },
+        {
+          "project_id": "133-23-ГК-ВК4 (4).pdf",
+          "findings": [
+            "F-009"
+          ],
+          "seen_at": "2026-05-24T11:35:28"
         }
       ],
       "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=ГОСТ Р 21.101-2020); Заменён ГОСТ Р 21.101-2020 (Приказ 282-ст от 23.06.2020) с 01.01.2021"
@@ -2738,10 +2960,10 @@
     "СНиП 3.01.04-87": {
       "doc_number": "СНиП 3.01.04-87",
       "family": "СНиП",
-      "status": "dismissed",
+      "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-19T20:55:55",
+      "last_seen_at": "2026-05-24T11:35:28",
       "occurrences": [
         {
           "project_id": "133_23-ГК-ВК4",
@@ -2756,6 +2978,13 @@
             "F-002"
           ],
           "seen_at": "2026-05-19T20:55:55"
+        },
+        {
+          "project_id": "133-23-ГК-ВК4 (4).pdf",
+          "findings": [
+            "F-003"
+          ],
+          "seen_at": "2026-05-24T11:35:28"
         }
       ],
       "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=СП 68.13330.2017); Актуализирован в СП 68.13330.2017 (приемка в эксплуатацию), действ. с 28.01.2018"
@@ -2763,10 +2992,10 @@
     "СНиП 3.05.04-85*": {
       "doc_number": "СНиП 3.05.04-85*",
       "family": "СНиП",
-      "status": "dismissed",
+      "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-04-28T19:32:23",
+      "last_seen_at": "2026-05-24T11:35:28",
       "occurrences": [
         {
           "project_id": "133_23-ГК-ВК4",
@@ -2774,6 +3003,13 @@
             "F-008"
           ],
           "seen_at": "2026-04-28T19:31:37"
+        },
+        {
+          "project_id": "133-23-ГК-ВК4 (4).pdf",
+          "findings": [
+            "F-003"
+          ],
+          "seen_at": "2026-05-24T11:35:28"
         }
       ],
       "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=СП 129.13330.2019); Актуализирован в СП 129.13330.2019 (Приказ 925/пр от 31.12.2019), наружные сети ВК"
@@ -2826,10 +3062,10 @@
     "СП 12.135.2003": {
       "doc_number": "СП 12.135.2003",
       "family": "СП",
-      "status": "dismissed",
+      "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-04-28T19:32:23",
+      "last_seen_at": "2026-05-24T11:35:28",
       "occurrences": [
         {
           "project_id": "133_23-ГК-ВК4",
@@ -2837,6 +3073,13 @@
             "F-009"
           ],
           "seen_at": "2026-04-28T19:31:37"
+        },
+        {
+          "project_id": "133-23-ГК-ВК4 (4).pdf",
+          "findings": [
+            "F-002"
+          ],
+          "seen_at": "2026-05-24T11:35:28"
         }
       ],
       "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch cancelled; Отменён с 01.01.2021 (ПП РФ от 04.08.2020 N 1181); СП 12-135-2003 безопасность труда в строительстве"
@@ -3496,7 +3739,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-20T11:03:32",
+      "last_seen_at": "2026-05-24T13:12:10",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.1-К1К2 (2).pdf",
@@ -3532,6 +3775,21 @@
             "F-004"
           ],
           "seen_at": "2026-05-19T16:38:35"
+        },
+        {
+          "project_id": "133-23-ГК-ВК4 (4).pdf",
+          "findings": [
+            "F-010"
+          ],
+          "seen_at": "2026-05-24T11:35:28"
+        },
+        {
+          "project_id": "133_23-ГК-ВК3 (5).pdf",
+          "findings": [
+            "F-004",
+            "F-006"
+          ],
+          "seen_at": "2026-05-24T13:12:10"
         }
       ]
     },
@@ -3673,7 +3931,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-19T14:32:21",
+      "last_seen_at": "2026-05-24T12:43:58",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.1-К1К2 (2).pdf",
@@ -3767,6 +4025,13 @@
             "F-022"
           ],
           "seen_at": "2026-05-19T14:32:21"
+        },
+        {
+          "project_id": "133_23-ГК-ВК2 (6).pdf",
+          "findings": [
+            "F-008"
+          ],
+          "seen_at": "2026-05-24T12:43:58"
         }
       ]
     },
@@ -3794,7 +4059,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-20T11:03:32",
+      "last_seen_at": "2026-05-24T03:46:04",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.17-23.2-К2 (Изм.1).pdf",
@@ -3887,6 +4152,13 @@
             "F-013"
           ],
           "seen_at": "2026-05-18T15:49:42"
+        },
+        {
+          "project_id": "13АВ-РД-ЭО-К6 (согл от 09.04.2026).pdf",
+          "findings": [
+            "F-024"
+          ],
+          "seen_at": "2026-05-24T03:46:04"
         }
       ]
     },
@@ -4290,10 +4562,10 @@
     "ГОСТ 2.109-73": {
       "doc_number": "ГОСТ 2.109-73",
       "family": "ГОСТ",
-      "status": "dismissed",
+      "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T19:31:37",
-      "last_seen_at": "2026-05-19T16:38:35",
+      "last_seen_at": "2026-05-22T15:04:43",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ5.30-31.2-К2.pdf",
@@ -4322,6 +4594,13 @@
             "F-030"
           ],
           "seen_at": "2026-05-19T16:38:35"
+        },
+        {
+          "project_id": "13АВ-РД-ТХ2-К4.pdf",
+          "findings": [
+            "F-010"
+          ],
+          "seen_at": "2026-05-22T15:04:43"
         }
       ],
       "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ Р 2.109-2023, verified=2026-03-19)"
@@ -4827,7 +5106,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T22:20:39",
-      "last_seen_at": "2026-05-19T15:45:31",
+      "last_seen_at": "2026-05-24T03:46:04",
       "occurrences": [
         {
           "project_id": "13АВ-РД-АР1.1-К4-К5",
@@ -4870,6 +5149,14 @@
             "F-020"
           ],
           "seen_at": "2026-05-19T15:45:31"
+        },
+        {
+          "project_id": "13АВ-РД-ЭО-К6 (согл от 09.04.2026).pdf",
+          "findings": [
+            "F-010",
+            "F-025"
+          ],
+          "seen_at": "2026-05-24T03:46:04"
         }
       ]
     },
@@ -4879,7 +5166,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T22:20:39",
-      "last_seen_at": "2026-05-19T04:57:10",
+      "last_seen_at": "2026-05-24T06:15:04",
       "occurrences": [
         {
           "project_id": "13АВ-РД-АР1.1-К4-К5",
@@ -4927,6 +5214,29 @@
             "F-041"
           ],
           "seen_at": "2026-05-19T04:57:10"
+        },
+        {
+          "project_id": "13АВ-РД-ТХ2-К5.pdf",
+          "findings": [
+            "F-001",
+            "F-024",
+            "F-029"
+          ],
+          "seen_at": "2026-05-22T15:45:01"
+        },
+        {
+          "project_id": "13АВ-РД-ЭО-К6 (согл от 09.04.2026).pdf",
+          "findings": [
+            "F-010"
+          ],
+          "seen_at": "2026-05-24T03:46:04"
+        },
+        {
+          "project_id": "13АВ-РД-ЭМ-К6 (согл от 14.05.2026).pdf",
+          "findings": [
+            "F-008"
+          ],
+          "seen_at": "2026-05-24T06:15:04"
         }
       ]
     },
@@ -5075,10 +5385,10 @@
     "СП 506.1311500.2021": {
       "doc_number": "СП 506.1311500.2021",
       "family": "СП",
-      "status": "dismissed",
+      "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-28T23:44:18",
-      "last_seen_at": "2026-04-29T09:55:45",
+      "last_seen_at": "2026-05-24T12:10:18",
       "occurrences": [
         {
           "project_id": "13АВ-РД-АР1.2-К4 (3)",
@@ -5086,6 +5396,13 @@
             "F-042"
           ],
           "seen_at": "2026-04-28T23:44:18"
+        },
+        {
+          "project_id": "133_23-ГК-ВК1 (8).pdf",
+          "findings": [
+            "F-002"
+          ],
+          "seen_at": "2026-05-24T12:10:18"
         }
       ],
       "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: cancelled via norms_db.json (verified=2026-04-16)"
@@ -5277,7 +5594,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-29T19:27:12",
-      "last_seen_at": "2026-05-05T19:08:58",
+      "last_seen_at": "2026-05-24T06:15:04",
       "occurrences": [
         {
           "project_id": "13АВ-РД-МЗ (Изм.1) от 13.02.2026.pdf",
@@ -5348,6 +5665,13 @@
             "F-043"
           ],
           "seen_at": "2026-05-05T19:08:58"
+        },
+        {
+          "project_id": "13АВ-РД-ЭМ-К6 (согл от 14.05.2026).pdf",
+          "findings": [
+            "F-028"
+          ],
+          "seen_at": "2026-05-24T06:15:04"
         }
       ]
     },
@@ -5485,7 +5809,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-29T19:27:12",
-      "last_seen_at": "2026-05-19T16:38:35",
+      "last_seen_at": "2026-05-22T17:01:43",
       "occurrences": [
         {
           "project_id": "13АВ-РД-МЗ (Изм.1) от 13.02.2026.pdf",
@@ -5507,6 +5831,13 @@
             "F-023"
           ],
           "seen_at": "2026-05-19T16:38:35"
+        },
+        {
+          "project_id": "13АВ-РД-ТХ2-К5.pdf",
+          "findings": [
+            "F-015"
+          ],
+          "seen_at": "2026-05-22T15:45:01"
         }
       ]
     },
@@ -5612,10 +5943,10 @@
     "ГОСТ Р 53316-2009": {
       "doc_number": "ГОСТ Р 53316-2009",
       "family": "ГОСТ Р",
-      "status": "dismissed",
+      "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-29T22:27:16",
-      "last_seen_at": "2026-05-05T05:34:56",
+      "last_seen_at": "2026-05-24T03:46:04",
       "occurrences": [
         {
           "project_id": "13АВ-РД-ЭМ-К3 (от 19.03.2026).pdf",
@@ -5770,10 +6101,10 @@
     "ГОСТ 10434-83": {
       "doc_number": "ГОСТ 10434-83",
       "family": "ГОСТ",
-      "status": "dismissed",
+      "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-04-29T22:27:16",
-      "last_seen_at": "2026-04-29T22:27:16",
+      "last_seen_at": "2026-05-24T06:15:04",
       "occurrences": [
         {
           "project_id": "13АВ-РД-ЭМ-К3 (от 19.03.2026).pdf",
@@ -5781,6 +6112,13 @@
             "F-046"
           ],
           "seen_at": "2026-04-29T22:27:16"
+        },
+        {
+          "project_id": "13АВ-РД-ЭМ-К6 (согл от 14.05.2026).pdf",
+          "findings": [
+            "F-038"
+          ],
+          "seen_at": "2026-05-24T06:15:04"
         }
       ],
       "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch edition_outdated (current=ГОСТ 10434-82); Корректный код ГОСТ 10434-82 (действует с 01.01.83), а не -83"
@@ -6014,10 +6352,10 @@
     "ПП РФ №815": {
       "doc_number": "ПП РФ №815",
       "family": "ПП РФ",
-      "status": "dismissed",
+      "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-04T07:55:11",
-      "last_seen_at": "2026-05-19T04:57:10",
+      "last_seen_at": "2026-05-24T12:10:18",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КЖ7.2-К2 (Изм.2).pdf",
@@ -6046,6 +6384,21 @@
             "F-036"
           ],
           "seen_at": "2026-05-19T04:57:10"
+        },
+        {
+          "project_id": "13АВ-РД-ЭО-К6 (согл от 09.04.2026).pdf",
+          "findings": [
+            "F-001",
+            "F-008"
+          ],
+          "seen_at": "2026-05-24T03:46:04"
+        },
+        {
+          "project_id": "133_23-ГК-ВК1 (8).pdf",
+          "findings": [
+            "F-003"
+          ],
+          "seen_at": "2026-05-24T12:10:18"
         }
       ],
       "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: cancelled via norms_db.json (verified=2026-04-17)"
@@ -6219,7 +6572,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T02:03:00",
-      "last_seen_at": "2026-05-05T02:03:00",
+      "last_seen_at": "2026-05-24T06:15:04",
       "occurrences": [
         {
           "project_id": "13АВ-РД-ЭМ-К5 (согл от 24.04.2026).pdf",
@@ -6228,6 +6581,13 @@
             "F-005"
           ],
           "seen_at": "2026-05-05T02:03:00"
+        },
+        {
+          "project_id": "13АВ-РД-ЭМ-К6 (согл от 14.05.2026).pdf",
+          "findings": [
+            "F-004"
+          ],
+          "seen_at": "2026-05-24T06:15:04"
         }
       ]
     },
@@ -6438,7 +6798,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T02:50:15",
-      "last_seen_at": "2026-05-05T02:50:15",
+      "last_seen_at": "2026-05-24T06:15:04",
       "occurrences": [
         {
           "project_id": "13АВ-РД-ЭО-К3 (согл от 02.04.2026).pdf",
@@ -6447,6 +6807,13 @@
             "F-007"
           ],
           "seen_at": "2026-05-05T02:50:15"
+        },
+        {
+          "project_id": "13АВ-РД-ЭМ-К6 (согл от 14.05.2026).pdf",
+          "findings": [
+            "F-005"
+          ],
+          "seen_at": "2026-05-24T06:15:04"
         }
       ]
     },
@@ -6495,10 +6862,10 @@
     "ГОСТ 8.417-2002": {
       "doc_number": "ГОСТ 8.417-2002",
       "family": "ГОСТ",
-      "status": "dismissed",
+      "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T02:50:15",
-      "last_seen_at": "2026-05-05T05:34:56",
+      "last_seen_at": "2026-05-22T17:01:43",
       "occurrences": [
         {
           "project_id": "13АВ-РД-ЭО-К3 (согл от 02.04.2026).pdf",
@@ -6523,6 +6890,21 @@
             "F-039"
           ],
           "seen_at": "2026-05-05T05:34:56"
+        },
+        {
+          "project_id": "13АВ-РД-ТХ2-К4.pdf",
+          "findings": [
+            "F-003",
+            "F-018"
+          ],
+          "seen_at": "2026-05-22T15:04:43"
+        },
+        {
+          "project_id": "13АВ-РД-ТХ2-К5.pdf",
+          "findings": [
+            "F-011"
+          ],
+          "seen_at": "2026-05-22T15:45:01"
         }
       ],
       "cleanup_note": "Auto-dismissed on 2026-05-19T20:57:56: WebSearch replaced (by=ГОСТ 8.417-2024); Заменён ГОСТ 8.417-2024 с 30.09.2024 (приказ Росстандарта №684-ст)"
@@ -6703,7 +7085,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T04:42:18",
-      "last_seen_at": "2026-05-05T04:42:18",
+      "last_seen_at": "2026-05-24T03:46:04",
       "occurrences": [
         {
           "project_id": "13АВ-РД-ЭО-К5 (от 26.01.2026).pdf",
@@ -6711,6 +7093,13 @@
             "F-012"
           ],
           "seen_at": "2026-05-05T04:42:18"
+        },
+        {
+          "project_id": "13АВ-РД-ЭО-К6 (согл от 09.04.2026).pdf",
+          "findings": [
+            "F-014"
+          ],
+          "seen_at": "2026-05-24T03:46:04"
         }
       ]
     },
@@ -6735,10 +7124,10 @@
     "ГОСТ Р 53313-2009": {
       "doc_number": "ГОСТ Р 53313-2009",
       "family": "ГОСТ Р",
-      "status": "dismissed",
+      "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T04:42:18",
-      "last_seen_at": "2026-05-05T04:42:18",
+      "last_seen_at": "2026-05-24T03:46:04",
       "occurrences": [
         {
           "project_id": "13АВ-РД-ЭО-К5 (от 26.01.2026).pdf",
@@ -6746,6 +7135,13 @@
             "F-019"
           ],
           "seen_at": "2026-05-05T04:42:18"
+        },
+        {
+          "project_id": "13АВ-РД-ЭО-К6 (согл от 09.04.2026).pdf",
+          "findings": [
+            "F-024"
+          ],
+          "seen_at": "2026-05-24T03:46:04"
         }
       ],
       "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=ГОСТ 35043-2023, verified=2026-03-27)"
@@ -6774,7 +7170,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T04:42:18",
-      "last_seen_at": "2026-05-05T19:53:00",
+      "last_seen_at": "2026-05-24T03:46:04",
       "occurrences": [
         {
           "project_id": "13АВ-РД-ЭО-К5 (от 26.01.2026).pdf",
@@ -6811,6 +7207,13 @@
             "F-033"
           ],
           "seen_at": "2026-05-05T19:53:00"
+        },
+        {
+          "project_id": "13АВ-РД-ЭО-К6 (согл от 09.04.2026).pdf",
+          "findings": [
+            "F-022"
+          ],
+          "seen_at": "2026-05-24T03:46:04"
         }
       ]
     },
@@ -6943,10 +7346,10 @@
     "СП 5.13130.2009": {
       "doc_number": "СП 5.13130.2009",
       "family": "СП",
-      "status": "dismissed",
+      "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-05T17:09:00",
-      "last_seen_at": "2026-05-05T17:09:00",
+      "last_seen_at": "2026-05-24T13:12:10",
       "occurrences": [
         {
           "project_id": "13АВ-РД-АК-К4 (Книга 1) (согл от 30.03.2026).pdf",
@@ -6954,6 +7357,13 @@
             "F-029"
           ],
           "seen_at": "2026-05-05T17:09:00"
+        },
+        {
+          "project_id": "133_23-ГК-ВК3 (5).pdf",
+          "findings": [
+            "F-003"
+          ],
+          "seen_at": "2026-05-24T13:12:10"
         }
       ],
       "cleanup_note": "Auto-dismissed on 2026-05-19T20:51:53: replaced via norms_db.json (replaced_by=None, verified=2026-04-03)"
@@ -7916,7 +8326,7 @@
       "status": "pending",
       "added_to_vault_at": null,
       "first_seen_at": "2026-05-19T15:45:31",
-      "last_seen_at": "2026-05-19T17:12:59",
+      "last_seen_at": "2026-05-23T10:29:51",
       "occurrences": [
         {
           "project_id": "13АВ-РД-КМ-К5.pdf",
@@ -7931,6 +8341,13 @@
             "F-024"
           ],
           "seen_at": "2026-05-19T17:12:59"
+        },
+        {
+          "project_id": "13АВ-РД-АК-К6 (Книга 1) (согл от 17.04.2026).pdf",
+          "findings": [
+            "F-026"
+          ],
+          "seen_at": "2026-05-23T10:29:51"
         }
       ]
     },
@@ -8532,6 +8949,566 @@
         }
       ],
       "cleanup_note": "Auto-added on 2026-05-19T22:14:04: typo-correction from ГОСТ Р 21.201-2020; версии Р 2020 нет; действует межгос. 2011"
+    },
+    "ГОСТ Р 51631-2008": {
+      "doc_number": "ГОСТ Р 51631-2008",
+      "family": "ГОСТ Р",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-22T15:04:43",
+      "last_seen_at": "2026-05-22T17:01:43",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-ТХ2-К4.pdf",
+          "findings": [
+            "F-012",
+            "F-031"
+          ],
+          "seen_at": "2026-05-22T15:04:43"
+        },
+        {
+          "project_id": "13АВ-РД-ТХ2-К5.pdf",
+          "findings": [
+            "F-003"
+          ],
+          "seen_at": "2026-05-22T15:45:01"
+        }
+      ]
+    },
+    "ГОСТ 53780": {
+      "doc_number": "ГОСТ 53780",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-22T15:04:43",
+      "last_seen_at": "2026-05-22T15:45:01",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-ТХ2-К4.pdf",
+          "findings": [
+            "F-015"
+          ],
+          "seen_at": "2026-05-22T15:04:43"
+        },
+        {
+          "project_id": "13АВ-РД-ТХ2-К5.pdf",
+          "findings": [
+            "F-024"
+          ],
+          "seen_at": "2026-05-22T15:45:01"
+        }
+      ]
+    },
+    "ГОСТ Р 33984.1-2016": {
+      "doc_number": "ГОСТ Р 33984.1-2016",
+      "family": "ГОСТ Р",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-22T15:04:43",
+      "last_seen_at": "2026-05-22T17:01:43",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-ТХ2-К4.pdf",
+          "findings": [
+            "F-016"
+          ],
+          "seen_at": "2026-05-22T15:04:43"
+        },
+        {
+          "project_id": "13АВ-РД-ТХ2-К5.pdf",
+          "findings": [
+            "F-004",
+            "F-014",
+            "F-015",
+            "F-016",
+            "F-019",
+            "F-022",
+            "F-023",
+            "F-024",
+            "F-027",
+            "F-032",
+            "F-033"
+          ],
+          "seen_at": "2026-05-22T15:45:01"
+        }
+      ]
+    },
+    "ГОСТ Р 34305-2017": {
+      "doc_number": "ГОСТ Р 34305-2017",
+      "family": "ГОСТ Р",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-22T15:04:43",
+      "last_seen_at": "2026-05-22T15:04:43",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-ТХ2-К4.pdf",
+          "findings": [
+            "F-016"
+          ],
+          "seen_at": "2026-05-22T15:04:43"
+        }
+      ]
+    },
+    "ГОСТ Р 50571.5.54-2011": {
+      "doc_number": "ГОСТ Р 50571.5.54-2011",
+      "family": "ГОСТ Р",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-22T15:04:43",
+      "last_seen_at": "2026-05-22T15:04:43",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-ТХ2-К4.pdf",
+          "findings": [
+            "F-019"
+          ],
+          "seen_at": "2026-05-22T15:04:43"
+        }
+      ]
+    },
+    "ГОСТ 12.1.030-81": {
+      "doc_number": "ГОСТ 12.1.030-81",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-22T15:04:43",
+      "last_seen_at": "2026-05-22T15:04:43",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-ТХ2-К4.pdf",
+          "findings": [
+            "F-019"
+          ],
+          "seen_at": "2026-05-22T15:04:43"
+        }
+      ]
+    },
+    "СП 251.1325800.2016": {
+      "doc_number": "СП 251.1325800.2016",
+      "family": "СП",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-22T15:04:43",
+      "last_seen_at": "2026-05-22T15:04:43",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-ТХ2-К4.pdf",
+          "findings": [
+            "F-032"
+          ],
+          "seen_at": "2026-05-22T15:04:43"
+        }
+      ]
+    },
+    "ГОСТ 8829-94": {
+      "doc_number": "ГОСТ 8829-94",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-22T15:45:01",
+      "last_seen_at": "2026-05-22T17:01:43",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-ТХ2-К5.pdf",
+          "findings": [
+            "F-017"
+          ],
+          "seen_at": "2026-05-22T15:45:01"
+        }
+      ]
+    },
+    "ГОСТ Р МЭК 61158-2-2006": {
+      "doc_number": "ГОСТ Р МЭК 61158-2-2006",
+      "family": "ГОСТ Р",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-23T10:29:51",
+      "last_seen_at": "2026-05-23T10:29:51",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-АК-К6 (Книга 1) (согл от 17.04.2026).pdf",
+          "findings": [
+            "F-022"
+          ],
+          "seen_at": "2026-05-23T10:29:51"
+        }
+      ]
+    },
+    "ГОСТ 9.303-84": {
+      "doc_number": "ГОСТ 9.303-84",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-23T10:29:51",
+      "last_seen_at": "2026-05-23T10:29:51",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-АК-К6 (Книга 1) (согл от 17.04.2026).pdf",
+          "findings": [
+            "F-026"
+          ],
+          "seen_at": "2026-05-23T10:29:51"
+        }
+      ]
+    },
+    "ГОСТ IEC 61140-2012": {
+      "doc_number": "ГОСТ IEC 61140-2012",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-24T03:46:04",
+      "last_seen_at": "2026-05-24T03:46:04",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-ЭО-К6 (согл от 09.04.2026).pdf",
+          "findings": [
+            "F-004"
+          ],
+          "seen_at": "2026-05-24T03:46:04"
+        }
+      ]
+    },
+    "ГОСТ 2.503-2013": {
+      "doc_number": "ГОСТ 2.503-2013",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-24T03:46:04",
+      "last_seen_at": "2026-05-24T03:46:04",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-ЭО-К6 (согл от 09.04.2026).pdf",
+          "findings": [
+            "F-049"
+          ],
+          "seen_at": "2026-05-24T03:46:04"
+        }
+      ]
+    },
+    "ГОСТ 8.216-2011": {
+      "doc_number": "ГОСТ 8.216-2011",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-24T06:15:04",
+      "last_seen_at": "2026-05-24T06:15:04",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-ЭМ-К6 (согл от 14.05.2026).pdf",
+          "findings": [
+            "F-003"
+          ],
+          "seen_at": "2026-05-24T06:15:04"
+        }
+      ]
+    },
+    "ГОСТ 32396-2020": {
+      "doc_number": "ГОСТ 32396-2020",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-24T06:15:04",
+      "last_seen_at": "2026-05-24T06:15:04",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-ЭМ-К6 (согл от 14.05.2026).pdf",
+          "findings": [
+            "F-009",
+            "F-012",
+            "F-035"
+          ],
+          "seen_at": "2026-05-24T06:15:04"
+        }
+      ]
+    },
+    "ГОСТ IEC 62395-1-2017": {
+      "doc_number": "ГОСТ IEC 62395-1-2017",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-24T06:15:04",
+      "last_seen_at": "2026-05-24T06:15:04",
+      "occurrences": [
+        {
+          "project_id": "13АВ-РД-ЭМ-К6 (согл от 14.05.2026).pdf",
+          "findings": [
+            "F-032"
+          ],
+          "seen_at": "2026-05-24T06:15:04"
+        }
+      ]
+    },
+    "ГОСТ 9544-2015": {
+      "doc_number": "ГОСТ 9544-2015",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-24T11:35:28",
+      "last_seen_at": "2026-05-24T11:35:28",
+      "occurrences": [
+        {
+          "project_id": "133-23-ГК-ВК4 (4).pdf",
+          "findings": [
+            "F-018"
+          ],
+          "seen_at": "2026-05-24T11:35:28"
+        }
+      ]
+    },
+    "СП 263.1325800.2016": {
+      "doc_number": "СП 263.1325800.2016",
+      "family": "СП",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-24T12:10:18",
+      "last_seen_at": "2026-05-24T12:10:18",
+      "occurrences": [
+        {
+          "project_id": "133_23-ГК-ВК1 (8).pdf",
+          "findings": [
+            "F-002"
+          ],
+          "seen_at": "2026-05-24T12:10:18"
+        }
+      ]
+    },
+    "ГОСТ 25151-82": {
+      "doc_number": "ГОСТ 25151-82",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-24T12:10:18",
+      "last_seen_at": "2026-05-24T12:10:18",
+      "occurrences": [
+        {
+          "project_id": "133_23-ГК-ВК1 (8).pdf",
+          "findings": [
+            "F-008"
+          ],
+          "seen_at": "2026-05-24T12:10:18"
+        }
+      ]
+    },
+    "СП 347.1325800.2017": {
+      "doc_number": "СП 347.1325800.2017",
+      "family": "СП",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-24T12:10:18",
+      "last_seen_at": "2026-05-24T12:10:18",
+      "occurrences": [
+        {
+          "project_id": "133_23-ГК-ВК1 (8).pdf",
+          "findings": [
+            "F-011",
+            "F-019"
+          ],
+          "seen_at": "2026-05-24T12:10:18"
+        }
+      ]
+    },
+    "ГОСТ Р 53671-2009": {
+      "doc_number": "ГОСТ Р 53671-2009",
+      "family": "ГОСТ Р",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-24T12:10:18",
+      "last_seen_at": "2026-05-24T12:43:58",
+      "occurrences": [
+        {
+          "project_id": "133_23-ГК-ВК1 (8).pdf",
+          "findings": [
+            "F-013"
+          ],
+          "seen_at": "2026-05-24T12:10:18"
+        },
+        {
+          "project_id": "133_23-ГК-ВК2 (6).pdf",
+          "findings": [
+            "F-012"
+          ],
+          "seen_at": "2026-05-24T12:43:58"
+        }
+      ]
+    },
+    "ГОСТ Р 56221-2014": {
+      "doc_number": "ГОСТ Р 56221-2014",
+      "family": "ГОСТ Р",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-24T12:43:58",
+      "last_seen_at": "2026-05-24T13:12:10",
+      "occurrences": [
+        {
+          "project_id": "133_23-ГК-ВК2 (6).pdf",
+          "findings": [
+            "F-003",
+            "F-011"
+          ],
+          "seen_at": "2026-05-24T12:43:58"
+        },
+        {
+          "project_id": "133_23-ГК-ВК3 (5).pdf",
+          "findings": [
+            "F-013"
+          ],
+          "seen_at": "2026-05-24T13:12:10"
+        }
+      ]
+    },
+    "ГОСТ 18599-2001": {
+      "doc_number": "ГОСТ 18599-2001",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-24T12:43:58",
+      "last_seen_at": "2026-05-24T12:43:58",
+      "occurrences": [
+        {
+          "project_id": "133_23-ГК-ВК2 (6).pdf",
+          "findings": [
+            "F-003"
+          ],
+          "seen_at": "2026-05-24T12:43:58"
+        }
+      ]
+    },
+    "ГОСТ Р 51613-2000": {
+      "doc_number": "ГОСТ Р 51613-2000",
+      "family": "ГОСТ Р",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-24T12:43:58",
+      "last_seen_at": "2026-05-24T12:43:58",
+      "occurrences": [
+        {
+          "project_id": "133_23-ГК-ВК2 (6).pdf",
+          "findings": [
+            "F-006"
+          ],
+          "seen_at": "2026-05-24T12:43:58"
+        }
+      ]
+    },
+    "ГОСТ 32413-2013": {
+      "doc_number": "ГОСТ 32413-2013",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-24T12:43:58",
+      "last_seen_at": "2026-05-24T12:43:58",
+      "occurrences": [
+        {
+          "project_id": "133_23-ГК-ВК2 (6).pdf",
+          "findings": [
+            "F-006"
+          ],
+          "seen_at": "2026-05-24T12:43:58"
+        }
+      ]
+    },
+    "ГОСТ 1811-81": {
+      "doc_number": "ГОСТ 1811-81",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-24T12:43:58",
+      "last_seen_at": "2026-05-24T12:43:58",
+      "occurrences": [
+        {
+          "project_id": "133_23-ГК-ВК2 (6).pdf",
+          "findings": [
+            "F-007"
+          ],
+          "seen_at": "2026-05-24T12:43:58"
+        }
+      ]
+    },
+    "ГОСТ 1811-2019": {
+      "doc_number": "ГОСТ 1811-2019",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-24T12:43:58",
+      "last_seen_at": "2026-05-24T12:43:58",
+      "occurrences": [
+        {
+          "project_id": "133_23-ГК-ВК2 (6).pdf",
+          "findings": [
+            "F-007"
+          ],
+          "seen_at": "2026-05-24T12:43:58"
+        }
+      ]
+    },
+    "ГОСТ 17376-2001": {
+      "doc_number": "ГОСТ 17376-2001",
+      "family": "ГОСТ",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-24T13:12:10",
+      "last_seen_at": "2026-05-24T13:12:10",
+      "occurrences": [
+        {
+          "project_id": "133_23-ГК-ВК3 (5).pdf",
+          "findings": [
+            "F-015"
+          ],
+          "seen_at": "2026-05-24T13:12:10"
+        }
+      ]
+    },
+    "СНиП 2.07.01-89*": {
+      "doc_number": "СНиП 2.07.01-89*",
+      "family": "СНиП",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-24T13:43:14",
+      "last_seen_at": "2026-05-24T13:43:14",
+      "occurrences": [
+        {
+          "project_id": "75СГ-24-ДК1 (врем. сети).pdf",
+          "findings": [
+            "F-001"
+          ],
+          "seen_at": "2026-05-24T13:43:14"
+        }
+      ]
+    },
+    "СП 4.2.1333": {
+      "doc_number": "СП 4.2.1333",
+      "family": "СП",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-24T13:43:14",
+      "last_seen_at": "2026-05-24T13:43:14",
+      "occurrences": [
+        {
+          "project_id": "75СГ-24-ДК1 (врем. сети).pdf",
+          "findings": [
+            "F-001"
+          ],
+          "seen_at": "2026-05-24T13:43:14"
+        }
+      ]
+    },
+    "СП 32.13330.2012": {
+      "doc_number": "СП 32.13330.2012",
+      "family": "СП",
+      "status": "pending",
+      "added_to_vault_at": null,
+      "first_seen_at": "2026-05-24T13:43:14",
+      "last_seen_at": "2026-05-24T13:43:14",
+      "occurrences": [
+        {
+          "project_id": "75СГ-24-ДК1 (врем. сети).pdf",
+          "findings": [
+            "F-002"
+          ],
+          "seen_at": "2026-05-24T13:43:14"
+        }
+      ]
     }
   }
 }
