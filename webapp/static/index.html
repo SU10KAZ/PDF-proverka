@@ -5399,11 +5399,18 @@
                      class="sc-card"
                      style="background:#fffbeb; color:#92400e; border:1px solid #fde68a; border-radius:6px; padding:8px 12px; margin-bottom:8px; font-size:12px; display:flex; gap:10px; align-items:center; flex-wrap:wrap">
                     <strong>Режим: концептуальное сравнение без связей блоков</strong>
-                    <span style="opacity:.85">Block-to-block matching отключён. Unified pipeline сравнит enriched MD (Qwen → Opus) целиком.</span>
+                    <span style="opacity:.85">Сравнивается весь документ целиком. Связи блоков не используются.</span>
                     <div style="flex:1"></div>
                     <button class="btn btn-sm btn-secondary"
                             :disabled="scAnalysisModeSaving"
                             @click="scToggleAnalysisMode()">Вернуть режим связей блоков</button>
+                </div>
+                <!-- Mode banner: block_links (anchors/focus, not exclusive scope) -->
+                <div v-else
+                     class="sc-card"
+                     style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; border-radius:6px; padding:8px 12px; margin-bottom:8px; font-size:12px; display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+                    <strong>Режим: со связями блоков</strong>
+                    <span style="opacity:.85">Сравнивается весь документ целиком. Связанные блоки используются как ориентиры с повышенным вниманием, но изменения ищутся и вне них.</span>
                 </div>
                 <!-- Компактный toolbar (zoom + sync + действия в одной строке) -->
                 <div class="sc-card" style="background:#f8fafc; border:1px solid #e5e7eb; border-radius:6px; padding:8px 12px; margin-bottom:10px; display:flex; gap:12px; flex-wrap:wrap; align-items:center; font-size:13px">
@@ -6039,6 +6046,22 @@
                                         · из cache: {{ (scMdEnrichmentSummary[side]||{}).from_cache ?? 0 }}
                                         · ошибок: {{ (scMdEnrichmentSummary[side]||{}).errors ?? 0 }}
                                         · pending: {{ (scMdEnrichmentSummary[side]||{}).pending ?? 0 }}</div>
+                                    <div v-if="(scMdEnrichmentSummary[side]||{}).replacement_mode !== undefined"
+                                         style="opacity:.85; font-size:11.5px">
+                                        Формат enriched MD:
+                                        <code v-if="(scMdEnrichmentSummary[side]||{}).replacement_mode">replacement</code>
+                                        <code v-else style="color:#92400e">{{ (scMdEnrichmentSummary[side]||{}).enriched_md_format_version || 'append_v0' }} (устар.)</code>
+                                        <span v-if="((scMdEnrichmentSummary[side]||{}).original_image_blocks ?? 0) > 0">
+                                            · графических блоков заменено:
+                                            {{ (scMdEnrichmentSummary[side]||{}).replaced_image_blocks ?? 0 }}/{{ (scMdEnrichmentSummary[side]||{}).original_image_blocks ?? 0 }}
+                                        </span>
+                                        <span v-if="!(scMdEnrichmentSummary[side]||{}).replacement_mode &&
+                                                     (scMdEnrichmentSummary[side]||{}).status &&
+                                                     (scMdEnrichmentSummary[side]||{}).status !== 'not_run'"
+                                              style="color:#92400e">
+                                            — требуется пересборка enriched MD
+                                        </span>
+                                    </div>
                                     <div v-if="(scMdEnrichmentSummary[side]||{}).enriched_md_path"
                                          style="opacity:.75; font-family:monospace; word-break:break-all">enriched MD: {{ (scMdEnrichmentSummary[side]||{}).enriched_md_path }}</div>
                                 </div>

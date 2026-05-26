@@ -154,6 +154,87 @@ def test_enriched_comparison_prompt_mentions_enriched_md_and_scheme():
     assert "LEFT" in user_prompt and "RIGHT" in user_prompt
 
 
+# 1b. Prompt описывает новый формат enriched MD (replace_image_blocks_v1).
+def test_enriched_comparison_prompt_mentions_replacement_format():
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+    system_prompt, _ = ec.build_prompts("L", "R")
+    # Упоминаются новые маркеры обёртки и format version.
+    assert "QWEN_IMAGE_DESCRIPTION_START" in system_prompt
+    assert "QWEN_IMAGE_DESCRIPTION_END" in system_prompt
+    assert "replace_image_blocks_v1" in system_prompt
+    assert "ЗАМЕНЁН" in system_prompt or "заменён" in system_prompt.lower()
+    # Чётко указано, что Qwen не дублируется со старым OCR.
+    assert "Старого OCR" in system_prompt or "OCR-описания image" in system_prompt.lower()
+
+
+# 1c. Prompt трактует block_links как anchors / focus, а не exclusive scope.
+def test_enriched_comparison_prompt_block_links_are_anchors_not_scope():
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+    system_prompt, _ = ec.build_prompts("L", "R")
+    sys_lc = system_prompt.lower()
+    assert "anchors" in sys_lc or "якор" in sys_lc
+    # И прямо сказано про full-document scope.
+    assert "весь" in sys_lc or "всему" in sys_lc or "целиком" in sys_lc
+    # Explicit «не exclusive scope»: предупреждение, что искать надо и вне.
+    assert "вне" in sys_lc
+
+
+# 1d. build_user_prompt with block_links includes <BLOCK_LINKS> section.
+def test_build_user_prompt_includes_block_links_when_provided():
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+    links = [
+        {"left_block_id": "L1", "right_block_id": "R1", "left_page": 1, "right_page": 2, "method": "manual", "score": 1.0},
+        {"left_block_id": "L2", "right_block_id": "R2", "left_page": 1, "right_page": 2, "method": "iou", "score": 0.8},
+    ]
+    user_prompt = ec.build_user_prompt(
+        "LEFT-MD-BODY", "RIGHT-MD-BODY",
+        block_links=links, analysis_mode="block_links",
+    )
+    assert "<BLOCK_LINKS>" in user_prompt
+    assert "</BLOCK_LINKS>" in user_prompt
+    assert "L1" in user_prompt and "R1" in user_prompt
+    # Heavy fields не передаются (нет таких ключей):
+    assert "base64" not in user_prompt.lower()
+    # Режим явно указан
+    assert "block_links" in user_prompt
+    # Тэг режима concept_no_block_links не должен попасть.
+    assert "concept_no_block_links" not in user_prompt
+
+
+# 1e. concept_no_block_links → BLOCK_LINKS не передаются даже если есть.
+def test_build_user_prompt_concept_no_block_links_omits_block_links_section():
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+    links = [{"left_block_id": "L1", "right_block_id": "R1", "score": 1.0}]
+    user_prompt = ec.build_user_prompt(
+        "L", "R", block_links=links, analysis_mode="concept_no_block_links",
+    )
+    assert "<BLOCK_LINKS>" not in user_prompt
+    assert "Связи блоков не используются" in user_prompt
+
+
+# 1f. build_block_links_context strips heavy raw fields.
+def test_build_block_links_context_drops_heavy_fields():
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+    links = [
+        {
+            "left_block_id": "L1", "right_block_id": "R1",
+            "method": "manual", "score": 0.9,
+            "left_page": 1, "right_page": 1,
+            "crop_base64": "AAAA" * 5000,  # heavy → должно отрезаться
+            "raw_blob": "x" * 10000,
+            "label": "Цепь освещения",
+        },
+    ]
+    ctx = ec.build_block_links_context(links)
+    assert "<BLOCK_LINKS>" in ctx
+    assert "L1" in ctx and "R1" in ctx
+    assert "Цепь освещения" in ctx
+    # heavy поля выкинуты
+    assert "crop_base64" not in ctx
+    assert "raw_blob" not in ctx
+    assert "AAAA" not in ctx
+
+
 # 2. Opus provider disabled → status="disabled".
 def test_enriched_comparison_disabled_returns_disabled_status(tmp_path, monkeypatch):
     from backend.app.services.stage_comparison import enriched_comparison as ec
@@ -1084,8 +1165,8 @@ def test_ui_shows_active_concept_mode_banner():
     assert "scAnalysisMode==='concept_no_block_links'" in text
     # Баннер режима
     assert "концептуальное сравнение без связей блоков" in text
-    # Badge в unified-таблице
-    assert "Без связей" in text
+    # Badge в unified-таблице (lowercase post-redesign 2026-05-27)
+    assert "без связей</span>" in text
     # JS ref зарегистрирован
     js = Path(__file__).resolve().parent.parent / "frontend" / "static" / "js" / "app.js"
     js_text = js.read_text(encoding="utf-8")
@@ -1122,13 +1203,14 @@ another image
     assert d["image_blocks_source"] == "parsed_md"
 
 
-# 11. .env.example содержит STAGE_COMPARISON_GRAPHIC_LLM_MAX_TOKENS=4000.
-def test_env_example_recommends_max_tokens_4000():
+# 11. .env.example содержит рекомендованный default для MAX_TOKENS под v4_compact.
+def test_env_example_recommends_max_tokens_default():
     from pathlib import Path
     p = Path(__file__).resolve().parent.parent / ".env.example"
     text = p.read_text(encoding="utf-8")
-    # Должна быть рекомендация 4000 (а не 1800)
-    assert "STAGE_COMPARISON_GRAPHIC_LLM_MAX_TOKENS=4000" in text
+    # Default может быть 4000 или 5500 (production-cutover 2026-05-26 под v4_compact);
+    # главное — не legacy 1800 и не вообще отсутствует.
+    assert "STAGE_COMPARISON_GRAPHIC_LLM_MAX_TOKENS=" in text
     assert "STAGE_COMPARISON_GRAPHIC_LLM_MAX_TOKENS=1800" not in text
 
 
@@ -1174,3 +1256,55 @@ def test_get_analysis_mode_fallback_when_pair_json_has_bogus_mode(tmp_path):
     pp.write_text(_json.dumps(data), encoding="utf-8")
     # Helper должен вернуть default
     assert store.get_pair_analysis_mode("sess_bogus", "p1") == "block_links"
+
+
+# ─── Replacement-format preflight ────────────────────────────────────────
+
+
+def test_preflight_detects_outdated_enriched_md_format(tmp_path, monkeypatch):
+    """Если enriched MD на диске в legacy append_v0 — preflight должен это
+    обнаружить и поставить needs_rebuild=True + outdated_format=True."""
+    from backend.app.services.stage_comparison import unified_analysis as ua
+
+    _make_pair("sess_outdated", "p1",
+               left_md=_write_md(tmp_path / "L.md", "left"),
+               right_md=_write_md(tmp_path / "R.md", "right"))
+    # legacy enriched MD (append_v0)
+    legacy_md = (
+        "### BLOCK [IMAGE]\n<!-- original_imagine_start -->\n"
+        "<image>x</image>\n<!-- original_imagine_end -->\n\n"
+        "#### QWEN_IMAGE_DESCRIPTION\nstatus: done\n"
+    )
+    _write_enriched("sess_outdated", "p1", "left",  legacy_md)
+    _write_enriched("sess_outdated", "p1", "right", legacy_md)
+
+    pre = ua.preflight_pair("sess_outdated", "p1")
+    assert pre.enrichment_ready is True
+    assert pre.enriched_md_outdated_format is True
+    assert pre.needs_rebuild is True
+    # И в warnings — человекочитаемая фраза.
+    assert any("устаревшем формате" in w or "пересборка" in w for w in pre.warnings)
+
+
+def test_preflight_replacement_format_does_not_warn(tmp_path):
+    """Свежий replace_image_blocks_v1 MD — preflight не помечает outdated."""
+    from backend.app.services.stage_comparison import unified_analysis as ua
+
+    _make_pair("sess_replfmt", "p1",
+               left_md=_write_md(tmp_path / "L.md", "left"),
+               right_md=_write_md(tmp_path / "R.md", "right"))
+    new_md = (
+        "<!-- ENRICHED_MD_FORMAT: replace_image_blocks_v1 -->\n\n"
+        "### BLOCK [TEXT]\nObservation\n\n"
+        "<!-- QWEN_IMAGE_DESCRIPTION_START\n"
+        "format_version: replace_image_blocks_v1\nstatus: done\n-->\n"
+        "### Графический блок / схема\n\nКраткое описание: ...\n\n"
+        "<!-- QWEN_IMAGE_DESCRIPTION_END -->\n"
+    )
+    _write_enriched("sess_replfmt", "p1", "left", new_md)
+    _write_enriched("sess_replfmt", "p1", "right", new_md)
+
+    pre = ua.preflight_pair("sess_replfmt", "p1")
+    assert pre.enrichment_ready is True
+    assert pre.enriched_md_outdated_format is False
+    assert pre.needs_rebuild is False

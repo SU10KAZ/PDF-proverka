@@ -52,206 +52,131 @@ logger = logging.getLogger(__name__)
 
 
 # Версия prompt'а — входит в cache-key. При изменении prompt'а — инкрементируем.
-# v1                  → базовое описание + structured-поля
-# v2_scheme_analysis  → + structural/single-line schemes (электро, ОВиК, гидравлика,
-#                        автоматика, слаботочка, технологические процессы)
-PROMPT_VERSION = "v2_scheme_analysis"
+# v1                       → базовое описание + structured-поля
+# v2_scheme_analysis       → + structural/single-line schemes (электро, ОВиК, гидравлика,
+#                             автоматика, слаботочка, технологические процессы)
+# v3_no_ellipsis_chunking  → анти-ellipsis + continues/next_chunk_hint/coverage_notes
+#                             (борьба с массовыми json_parse_failed)
+# v4_compact               → короткий prompt без агрессивных "ВНИМАНИЕ"/"ПОВТОРЯЮ",
+#                             explicit limits на массивы, scheme_analysis сохранён.
+#                             Benchmark 2026-05-26 на 4 heavy HVAC блоках:
+#                             4/4 success (vs 2/4 на v2), avg 27s vs 96s.
+PROMPT_VERSION = "v4_compact"
+
+
+# Версия формата enriched MD (left_enriched.md / right_enriched.md):
+#   "append_v0"               — legacy: <!-- original_imagine_start --> wrapper +
+#                                #### QWEN_IMAGE_DESCRIPTION рядом со старым блоком.
+#                                В таком формате Opus видел и старое OCR-описание,
+#                                и Qwen-описание одного и того же блока — это
+#                                раздувало enriched MD и могло конфликтовать.
+#   "replace_image_blocks_v1" — НЫНЕШНИЙ default: image/imagine-блок ПОЛНОСТЬЮ
+#                                заменяется на структурированное Qwen-описание
+#                                в HTML-обёртке <!-- QWEN_IMAGE_DESCRIPTION_START
+#                                ... QWEN_IMAGE_DESCRIPTION_END -->. Старое OCR
+#                                из исходного MD физически отсутствует в основном
+#                                enriched.md (debug-метаданные сохранены в
+#                                image_descriptions.json).
+ENRICHED_MD_FORMAT_VERSION = "replace_image_blocks_v1"
+
+# Маркеры старого формата — используются для детекции outdated enriched.md
+# при rebuild без повторного Qwen.
+_LEGACY_ENRICHED_MARKER = "<!-- original_imagine_start -->"
+# Маркер нового формата
+_REPLACE_ENRICHED_MARKER = "QWEN_IMAGE_DESCRIPTION_START"
+
+
+# Compact-mode лимиты прописаны прямо в prompt'е — модель видит верхнюю границу
+# и не пытается перечислить «всё» (что приводило к truncation'у на max_tokens).
+# Эти числа также используются для документации.
+COMPACT_PROMPT_LIMITS = {
+    "nodes": 30,
+    "connections": 30,
+    "numeric_parameters": 40,
+    "visible_text": 25,
+    "comparison_relevant_facts": 8,
+    "comparison_relevant_scheme_facts": 8,
+    "uncertainties": 5,
+}
 
 
 QWEN_IMAGE_DESCRIPTION_PROMPT = """Ты анализируешь изображение из проектной/рабочей документации в строительстве.
 
-Твоя задача — не просто описать картинку, а извлечь из неё информацию, которая может быть важна для сравнения стадий проекта.
+Задача — извлечь информацию для сравнения стадий проекта.
 
-Опиши:
+ПРАВИЛА ВЫВОДА:
 
-1. Что изображено: чертёж, узел, схема, фасад, план, таблица, спецификация, штамп, ведомость.
-2. Какие проектные решения видны.
-3. Какие материалы указаны.
-4. Какие элементы/оборудование/системы указаны.
-5. Какие числовые параметры видны:
+1. Возвращай только валидный, полностью закрытый JSON. Никакого markdown, никакого текста до или после JSON, никаких комментариев `//`.
+2. Не используй многоточие (`…`, `...`, `etc.`, `и т.д.`, `и др.`, `и тому подобное`) нигде в JSON.
+3. Не обрывай ключи или значения «на полуслове». Сократи формулировку, но всегда закрывай кавычку и ставь `,` или `}` где надо.
+4. Лимиты массивов (не превышай):
+   - `nodes`: до 30
+   - `connections`: до 30
+   - `numeric_parameters`: до 40
+   - `visible_text`: до 25 строк (только значимый текст: штампы, маркировка, отметки)
+   - `comparison_relevant_facts`: до 8
+   - `comparison_relevant_scheme_facts`: до 8
+   - `uncertainties`: до 5
+5. Поля `coverage_notes`, `continues`, `next_chunk_hint` идут В САМОМ КОНЦЕ JSON, после `confidence`, в указанном порядке. Не пиши их в начале.
+   - Если не помещаешься: `continues=true`, `next_chunk_hint` = что осталось.
+   - Если помещаешься полностью: `continues=false`, `next_chunk_hint=""`.
 
-   * размеры;
-   * отметки;
-   * высоты;
-   * площади;
-   * мощности;
-   * расходы;
-   * марки;
-   * типы;
-   * количества.
-6. Какие требования, примечания или условия видны.
-7. Какие таблицы или спецификации присутствуют.
-8. Какие изменения может быть важно отслеживать при сравнении с другой стадией.
+Опиши: что изображено (чертёж, схема, таблица, штамп, спецификация); проектные решения, материалы, оборудование, числовые параметры (размеры, отметки, мощности, расходы, марки, количества), требования, таблицы; видимый значимый текст (штампы, маркировка); что важно отслеживать при сравнении со следующей стадией.
 
-Не выдумывай данные.
-Если текст на изображении не читается — так и напиши.
-Если это штамп/титульный лист — извлеки:
+Если это штамп — извлеки организацию, стадию, шифр, лист, год, разработчика/проверяющего.
+Если читается плохо — пиши явно («не читается», «низкое разрешение»), не многоточие.
 
-* организацию;
-* стадию;
-* шифр;
-* номер тома;
-* год;
-* лист;
-* наименование раздела;
-* разработчика/проверяющего, если читается.
+ДОПОЛНИТЕЛЬНЫЙ АНАЛИЗ СХЕМЫ:
+Если изображение — структурная/однолинейная схема, схема воздуха/воды/электричества/сигналов/автоматики/слаботочка/технологический процесс — заполни `scheme_analysis`:
 
-ДОПОЛНИТЕЛЬНЫЙ АНАЛИЗ СХЕМЫ
+- `scheme_type`: electrical_single_line | hvac_air_flow | water_or_liquid_flow | automation_signal | low_voltage_system | process_scheme | structural_scheme | unknown_scheme
+- `flow_medium`: electricity | air | water | liquid | heat_carrier | signal | control | data | unknown
+- `nodes`: узлы (источник, ввод, оборудование, щит, автомат, насос, клапан, датчик, контроллер, потребитель и т.п.)
+- `connections`: связи `{from,to,direction,line_label,parameters,evidence,confidence}`
+- `sequence_summary`: последовательности типа «Ввод → ВРУ → АВР → нагрузка»
+- `independent_circuits`: независимые контуры, если их несколько
+- `comparison_relevant_scheme_facts`: байпасы, резервные линии, изменения порядка/маркировки/параметров
+- `uncertainties`: что не читается, где направление непонятно
 
-Если изображение является структурной схемой, однолинейной схемой, схемой движения
-воздуха, жидкости, электроэнергии, сигнала, управления, автоматики, слаботочной
-системы или технологического процесса, выполни дополнительный анализ схемы.
+Не выдумывай связи. Если направление не определено — пиши «направление не определено».
+Если изображение НЕ является схемой — `scheme_analysis.is_scheme=false`, массивы пустые.
 
-Нужно определить:
-
-1. Тип схемы:
-   * electrical_single_line — однолинейная электрическая схема;
-   * hvac_air_flow — схема движения воздуха / вентиляции;
-   * water_or_liquid_flow — схема движения воды, теплоносителя или другой жидкости;
-   * automation_signal — схема автоматики, управления или сигналов;
-   * low_voltage_system — слаботочные системы;
-   * process_scheme — технологическая схема;
-   * structural_scheme — структурная схема;
-   * unknown_scheme — схема есть, но тип не определён.
-
-2. Среду / поток:
-   * electricity;
-   * air;
-   * water;
-   * liquid;
-   * heat_carrier;
-   * signal;
-   * control;
-   * data;
-   * unknown.
-
-3. Основные узлы схемы:
-   источник; ввод; оборудование; щит; автомат; счётчик; насос; вентилятор;
-   фильтр; калорифер; клапан; задвижка; датчик; контроллер; исполнительный
-   механизм; потребитель; помещение; контур; линия; соединение; неизвестный
-   элемент.
-
-4. Связи между элементами:
-   * откуда идёт поток/питание/сигнал;
-   * куда он приходит;
-   * направление;
-   * подпись линии;
-   * параметры линии;
-   * уверенность.
-
-5. Последовательность прохождения. Примеры:
-   * «Ввод → ВРУ → АВР → ГРЩ → групповой автомат → нагрузка»;
-   * «Приточный воздух → фильтр → калорифер → вентилятор → воздуховод → помещение»;
-   * «Насос → обратный клапан → теплообменник → регулирующий клапан → потребитель»;
-   * «Датчик температуры → контроллер → привод клапана».
-
-6. Независимые контуры: если на схеме несколько независимых линий/контуров/групп,
-   описать каждый отдельно.
-
-7. Важные для сравнения факты:
-   * добавлен или удалён элемент в цепочке;
-   * изменён порядок элементов;
-   * изменено направление;
-   * изменена точка подключения;
-   * появилась перемычка, байпас, резервная линия, обходная линия;
-   * изменился номер линии, маркировка, группа, контур;
-   * изменились параметры оборудования;
-   * изменилось количество линий или контуров.
-
-8. Неопределённости: что не читается, где направление непонятно, где подписи
-   слишком мелкие, где невозможно определить соединение.
-
-ВАЖНО:
-* НЕ выдумывай связи, которых не видно. Если направление потока/питания/сигнала
-  не читается — пиши «направление не определено» или «предположительно».
-* Если есть несколько независимых контуров — описывай каждый отдельно.
-* Если схема слишком сложная или нечитаемая — фиксируй неопределённости.
-* Если изображение НЕ является схемой — поле `scheme_analysis.is_scheme=false`
-  и остальные поля внутри `scheme_analysis` оставь пустыми.
-
-Верни JSON:
+Верни JSON по такой схеме (заполнители вида `<...>` — это шаблон, не пиши их в ответе):
 
 {
 "status": "done",
 "image_kind": "drawing|table|scheme|plan|facade|section|node|stamp|specification|unknown",
-"summary": "...",
-"design_solutions": ["..."],
-"materials": ["..."],
-"equipment": ["..."],
-"numeric_parameters": [
-{
-"name": "...",
-"value": "...",
-"unit": "...",
-"context": "..."
-}
-],
-"requirements": ["..."],
-"tables": ["..."],
-"visible_text": ["..."],
-"comparison_relevant_facts": ["..."],
-"uncertainties": ["..."],
+"summary": "<краткое описание>",
+"design_solutions": ["<решение_1>"],
+"materials": ["<материал_1>"],
+"equipment": ["<оборудование_1>"],
+"numeric_parameters": [{"name":"<имя>","value":"<значение>","unit":"<единица>","context":"<контекст>"}],
+"requirements": ["<требование_1>"],
+"tables": ["<табличный_факт_1>"],
+"visible_text": ["<видимый_текст_1>"],
+"comparison_relevant_facts": ["<существенный_факт_1>"],
+"uncertainties": ["<неопределённость_1>"],
 "scheme_analysis": {
 "is_scheme": true,
 "scheme_type": "electrical_single_line|hvac_air_flow|water_or_liquid_flow|automation_signal|low_voltage_system|process_scheme|structural_scheme|unknown_scheme",
 "flow_medium": "electricity|air|water|liquid|heat_carrier|signal|control|data|unknown",
-"nodes": [
-{
-"id": "node_1",
-"label": "ВРУ",
-"type": "source|input|panel|breaker|meter|equipment|valve|pump|fan|filter|heater|sensor|controller|actuator|consumer|junction|line|unknown",
-"visible_mark": "...",
-"parameters": ["..."],
-"confidence": 0.0
-}
-],
-"connections": [
-{
-"from": "node_1",
-"to": "node_2",
-"direction": "left_to_right|right_to_left|top_to_bottom|bottom_to_top|bidirectional|unknown",
-"line_label": "...",
-"parameters": ["..."],
-"evidence": "стрелка, линия, подпись или другое видимое основание",
-"confidence": 0.0
-}
-],
-"sequence_summary": [
-"Ввод → ВРУ → АВР → ГРЩ → нагрузка"
-],
-"independent_circuits": [
-{
-"name": "Контур 1",
-"sequence": "Источник → элемент → потребитель",
-"notes": "..."
-}
-],
-"comparison_relevant_scheme_facts": [
-"В цепочке присутствует байпасная линия",
-"Питание идёт через АВР"
-],
-"uncertainties": [
-"Направление потока между узлами X и Y не читается"
-]
+"nodes": [{"id":"node_1","label":"ВРУ","type":"source|input|panel|breaker|meter|equipment|valve|pump|fan|filter|heater|sensor|controller|actuator|consumer|junction|line|unknown","visible_mark":"...","parameters":["..."],"confidence":0.0}],
+"connections": [{"from":"node_1","to":"node_2","direction":"left_to_right|right_to_left|top_to_bottom|bottom_to_top|bidirectional|unknown","line_label":"...","parameters":["..."],"evidence":"стрелка/линия/подпись","confidence":0.0}],
+"sequence_summary": ["Ввод → ВРУ → АВР → ГРЩ → нагрузка"],
+"independent_circuits": [{"name":"Контур 1","sequence":"Источник → элемент → потребитель","notes":"..."}],
+"comparison_relevant_scheme_facts": ["В цепочке присутствует байпасная линия"],
+"uncertainties": ["Направление потока между узлами X и Y не читается"]
 },
-"confidence": 0.0
+"confidence": 0.0,
+"coverage_notes": "<охвачено: ...; осталось: ...>",
+"continues": false,
+"next_chunk_hint": ""
 }
 
-Если изображение не является схемой:
+Если изображение не схема — оставь:
+"scheme_analysis": {"is_scheme": false, "scheme_type": "unknown_scheme", "flow_medium": "unknown", "nodes": [], "connections": [], "sequence_summary": [], "independent_circuits": [], "comparison_relevant_scheme_facts": [], "uncertainties": []}
 
-"scheme_analysis": {
-"is_scheme": false,
-"scheme_type": "unknown_scheme",
-"flow_medium": "unknown",
-"nodes": [],
-"connections": [],
-"sequence_summary": [],
-"independent_circuits": [],
-"comparison_relevant_scheme_facts": [],
-"uncertainties": []
-}
-
-Никакого markdown вне JSON.
+Никакого markdown вне JSON. Все скобки и кавычки закрыты.
 """
 
 
@@ -606,31 +531,68 @@ def _utc_now() -> str:
 
 
 def _format_qwen_description_md(desc_payload: dict, *, model: str, page: Optional[int], block_id: Optional[str]) -> str:
-    """Сформировать markdown-блок `#### QWEN_IMAGE_DESCRIPTION` для enriched MD.
+    """Сформировать тело markdown-блока Qwen-описания для enriched MD (без HTML-обёртки).
+
+    Используется новым builder'ом `build_enriched_md`: HTML-обёртка
+    `<!-- QWEN_IMAGE_DESCRIPTION_START ... -->` строится наружу, а это тело —
+    структурированное описание (заголовок «Графический блок / схема», секции
+    «Краткое описание», «Видимый текст», «Оборудование», «Материалы»,
+    «Числовые параметры», «Схема», «Неопределённости»).
 
     `desc_payload` — это либо `{"status": "done", ...}` (parsed JSON-ответ
     модели), либо `{"status": "error", "error": "..."}`.
     """
     lines: list[str] = []
-    lines.append("#### QWEN_IMAGE_DESCRIPTION")
     status = (desc_payload.get("status") or "").strip()
     if status == "error":
         err = (desc_payload.get("error") or "unknown").strip()
-        lines.append("status: error")
-        lines.append(f"Описание недоступно: {err}")
+        lines.append("### Графический блок не распознан")
+        lines.append("")
+        lines.append("Описание графического блока отсутствует из-за ошибки распознавания.")
+        lines.append(f"Этот блок требует повторного Qwen-enrichment / ручной проверки.")
+        lines.append(f"Причина: {err}")
         lines.append("")
         return "\n".join(lines)
 
-    lines.append(f"Модель: {model}")
+    lines.append("### Графический блок / схема")
+    lines.append("")
+    if model:
+        lines.append(f"Модель: {model}")
     if page is not None:
         lines.append(f"Страница: {page}")
     if block_id:
         lines.append(f"Block ID: {block_id}")
+    if desc_payload.get("_salvaged"):
+        lines.append("Salvaged: yes (partial JSON, восстановлен с пропусками — модель оборвалась многоточием)")
+    chunks_count = desc_payload.get("chunks_count")
+    continued = desc_payload.get("continued")
+    if isinstance(chunks_count, int) and chunks_count > 1:
+        lines.append(f"Chunks: {chunks_count}")
+    if continued is True:
+        lines.append("Continued: yes (Qwen вернул несколько chunk'ов с continuation_prompt)")
+    elif isinstance(chunks_count, int):
+        lines.append("Continued: no")
+    cont_warnings = desc_payload.get("continuation_warnings")
+    if isinstance(cont_warnings, list) and cont_warnings:
+        # Любая запись `*_cap_reached*` означает: модель ещё хотела продолжать,
+        # но мы упёрлись в лимит → явное предупреждение.
+        cap_hit = any("cap_reached" in str(w) for w in cont_warnings)
+        if cap_hit:
+            lines.append("⚠ Continuation cap reached — описание может быть неполным, увеличьте STAGE_COMPARISON_GRAPHIC_LLM_MAX_CONTINUATIONS")
+        for w in cont_warnings:
+            lines.append(f"  · continuation warning: {w}")
+    continues_flag = desc_payload.get("continues")
+    if continues_flag is True:
+        nxt = (desc_payload.get("next_chunk_hint") or "").strip()
+        lines.append(f"Продолжение требуется: yes — {nxt}" if nxt else "Продолжение требуется: yes")
+    cov = (desc_payload.get("coverage_notes") or "").strip()
+    if cov:
+        lines.append(f"Покрытие: {cov}")
     lines.append("")
 
     summary = (desc_payload.get("summary") or "").strip()
     if summary:
-        lines.append("Описание:")
+        lines.append("Краткое описание:")
         lines.append(summary)
         lines.append("")
 
@@ -643,9 +605,10 @@ def _format_qwen_description_md(desc_payload: dict, *, model: str, page: Optiona
                 lines.append(f"- {it.strip()}")
         lines.append("")
 
-    _bullets("Проектные решения:", desc_payload.get("design_solutions"))
+    _bullets("Видимый текст:", desc_payload.get("visible_text"))
+    _bullets("Оборудование и элементы:", desc_payload.get("equipment"))
     _bullets("Материалы:", desc_payload.get("materials"))
-    _bullets("Оборудование:", desc_payload.get("equipment"))
+    _bullets("Проектные решения:", desc_payload.get("design_solutions"))
 
     nums = desc_payload.get("numeric_parameters")
     if isinstance(nums, list) and nums:
@@ -669,9 +632,7 @@ def _format_qwen_description_md(desc_payload: dict, *, model: str, page: Optiona
 
     _bullets("Требования / примечания:", desc_payload.get("requirements"))
     _bullets("Таблицы:", desc_payload.get("tables"))
-    _bullets("Видимый текст:", desc_payload.get("visible_text"))
     _bullets("Существенно для сравнения стадий:", desc_payload.get("comparison_relevant_facts"))
-    _bullets("Неопределённости:", desc_payload.get("uncertainties"))
 
     image_kind = (desc_payload.get("image_kind") or "").strip()
     if image_kind:
@@ -793,11 +754,77 @@ def _format_qwen_description_md(desc_payload: dict, *, model: str, page: Optiona
             _bullets("Существенно для сравнения (схема):", scheme.get("comparison_relevant_scheme_facts"))
             _bullets("Неопределённости (схема):", scheme.get("uncertainties"))
 
+    # Top-level Неопределённости — в самом конце, после scheme_analysis,
+    # по новому формату replace_image_blocks_v1.
+    _bullets("Неопределённости:", desc_payload.get("uncertainties"))
+
     return "\n".join(lines).rstrip() + "\n"
+
+
+def _format_image_block_header(
+    *,
+    status: str,
+    source_kind: str,
+    block_id: Optional[str],
+    page: Optional[int],
+    desc_item: Optional[dict] = None,
+    error: Optional[str] = None,
+) -> str:
+    """Сформировать HTML-комментарий <!-- QWEN_IMAGE_DESCRIPTION_START ... -->.
+
+    Используется как обёртка вокруг тела Qwen-описания в новом формате
+    `replace_image_blocks_v1`. В метаданных сохраняется:
+      - format_version (как маркер для preflight);
+      - block_id / page (из исходного MD-блока);
+      - source (image / imagine);
+      - status (done / done_with_salvage / error / pending / no_image);
+      - prompt_version / model / confidence — если описание есть;
+      - original_block_id (для debug).
+    """
+    lines = ["<!-- QWEN_IMAGE_DESCRIPTION_START"]
+    lines.append(f"format_version: {ENRICHED_MD_FORMAT_VERSION}")
+    if block_id:
+        lines.append(f"block_id: {block_id}")
+    if page is not None:
+        lines.append(f"page: {page}")
+    lines.append(f"source: {source_kind or 'image'}")
+    lines.append(f"status: {status}")
+    if desc_item:
+        prompt_version = desc_item.get("used_prompt_version") or desc_item.get("prompt_version")
+        if prompt_version:
+            lines.append(f"prompt_version: {prompt_version}")
+        model = (desc_item.get("model_used") or desc_item.get("model") or "").strip()
+        if model:
+            lines.append(f"model: {model}")
+        payload = desc_item.get("description")
+        if isinstance(payload, dict):
+            conf = payload.get("confidence")
+            if isinstance(conf, (int, float)):
+                try:
+                    lines.append(f"confidence: {float(conf):.2f}")
+                except (TypeError, ValueError):
+                    pass
+        if block_id:
+            lines.append(f"original_block_id: {block_id}")
+    if error:
+        # экранируем переводы строк, чтобы HTML-комментарий не сломался
+        safe_err = str(error).replace("\n", " ").replace("--", "—")
+        lines.append(f"error: {safe_err[:200]}")
+    lines.append("-->")
+    return "\n".join(lines) + "\n"
 
 
 def build_enriched_md(blocks: list[MdBlock], descriptions: list[dict]) -> str:
     """Собрать enriched MD из блоков + сопоставленных описаний.
+
+    Формат `replace_image_blocks_v1`:
+      - text-блоки переносятся как есть, под заголовком `### BLOCK [TEXT]`;
+      - image/imagine-блоки ПОЛНОСТЬЮ ЗАМЕНЯЮТСЯ структурированным
+        Qwen-описанием в обёртке
+        `<!-- QWEN_IMAGE_DESCRIPTION_START … --> … <!-- QWEN_IMAGE_DESCRIPTION_END -->`.
+        Старое OCR из исходного MD физически отсутствует в основном
+        enriched.md (debug сохранён в image_descriptions.json: original_block_id,
+        original_page, original_kind, original_order).
 
     `descriptions` — список dict'ов по индексу, соответствующему `block.order`
     для image-блоков. Каждый элемент: один блок image, со всеми полями.
@@ -809,6 +836,9 @@ def build_enriched_md(blocks: list[MdBlock], descriptions: list[dict]) -> str:
             desc_by_image_order[order] = d
 
     out_parts: list[str] = []
+    # Документ-уровневый header — упрощает детекцию формата в preflight.
+    out_parts.append(f"<!-- ENRICHED_MD_FORMAT: {ENRICHED_MD_FORMAT_VERSION} -->\n\n")
+
     for block in blocks:
         if block.kind == "text":
             out_parts.append("### BLOCK [TEXT]\n")
@@ -818,44 +848,95 @@ def build_enriched_md(blocks: list[MdBlock], descriptions: list[dict]) -> str:
             out_parts.append("\n")
             continue
 
-        # image
-        out_parts.append("### BLOCK [IMAGE]\n")
-        out_parts.append("<!-- original_imagine_start -->\n")
-        out_parts.append(block.text)
-        if not block.text.endswith("\n"):
-            out_parts.append("\n")
-        out_parts.append("<!-- original_imagine_end -->\n\n")
-
+        # ── image-блок: REPLACE (не append) ─────────────────────────
         d = desc_by_image_order.get(block.order)
+
+        def _wrap(body: str, *, status: str, error: Optional[str] = None) -> None:
+            header = _format_image_block_header(
+                status=status,
+                source_kind="image",
+                block_id=block.block_id,
+                page=block.page,
+                desc_item=d,
+                error=error,
+            )
+            out_parts.append(header)
+            out_parts.append("\n")
+            out_parts.append(body)
+            if not body.endswith("\n"):
+                out_parts.append("\n")
+            out_parts.append("\n<!-- QWEN_IMAGE_DESCRIPTION_END -->\n\n")
+
         if d is None:
-            # block pending (dry-run) — пометим явно, чтобы было видно в enriched MD
-            out_parts.append("#### QWEN_IMAGE_DESCRIPTION\n")
-            out_parts.append("status: pending\n")
-            out_parts.append("Описание ещё не сформировано (dry-run или модель не запущена).\n\n")
+            body = (
+                "### Графический блок не распознан\n\n"
+                "Описание ещё не сформировано (dry-run или модель не запущена).\n"
+            )
+            _wrap(body, status="pending")
             continue
 
         item_status = (d.get("status") or "").lower()
         if item_status in ("pending", "no_image"):
-            out_parts.append("#### QWEN_IMAGE_DESCRIPTION\n")
-            out_parts.append(f"status: {item_status}\n")
-            note = (d.get("error") or
-                    ("Описание ещё не сформировано (dry-run)." if item_status == "pending"
-                     else "Для блока не найдено изображения."))
-            out_parts.append(f"{note}\n\n")
+            note = (
+                d.get("error")
+                or (
+                    "Описание ещё не сформировано (dry-run)."
+                    if item_status == "pending"
+                    else "Для блока не найдено изображения."
+                )
+            )
+            body = (
+                "### Графический блок не распознан\n\n"
+                f"{note}\n"
+            )
+            _wrap(body, status=item_status, error=str(note))
+            continue
+
+        if item_status == "error":
+            err_msg = str(d.get("error") or "unknown")
+            body = (
+                "### Графический блок не распознан\n\n"
+                "Описание графического блока отсутствует из-за ошибки распознавания.\n"
+                "Этот блок требует повторного Qwen-enrichment / ручной проверки.\n"
+                f"Причина: {err_msg}\n"
+            )
+            _wrap(body, status="error", error=err_msg)
             continue
 
         payload = d.get("description") or {"status": "error", "error": d.get("error") or "unknown"}
         model = (d.get("model_used") or d.get("model") or "").strip()
-        md_chunk = _format_qwen_description_md(
+        body = _format_qwen_description_md(
             payload,
             model=model,
             page=block.page,
             block_id=block.block_id,
         )
-        out_parts.append(md_chunk)
-        out_parts.append("\n")
+        # «status» отражает реальный per-item статус (done / partial → done_with_salvage).
+        wrap_status = "done_with_salvage" if (item_status == "partial" or d.get("salvaged")) else (
+            item_status or "done"
+        )
+        _wrap(body, status=wrap_status)
 
     return "".join(out_parts)
+
+
+def detect_enriched_md_format(text: str | bytes | None) -> str:
+    """Определить формат enriched MD: `replace_image_blocks_v1` / `append_v0` / `unknown`.
+
+    Используется preflight'ом для решения «можно ли запускать Opus» и
+    «нужна ли пересборка enriched.md без повторного Qwen».
+    """
+    if not text:
+        return "unknown"
+    sample = text if isinstance(text, str) else text.decode("utf-8", errors="replace")
+    sample = sample[:4096]  # достаточно для header'а
+    if _REPLACE_ENRICHED_MARKER in sample or ENRICHED_MD_FORMAT_VERSION in sample:
+        return ENRICHED_MD_FORMAT_VERSION
+    if _LEGACY_ENRICHED_MARKER in sample:
+        return "append_v0"
+    # Edge case: совсем пустой файл / без image-блоков. Считаем legacy, чтобы
+    # rebuild пересобрал в новом формате (это безопасно — image-блоков нет).
+    return "append_v0"
 
 
 # ─── Подготовка карты блоков из result.json ──────────────────────────────
@@ -971,7 +1052,7 @@ class EnrichSideSummary:
     """Сводка одной стороны (left/right) для UI/API."""
 
     side: str
-    status: str = "not_run"   # not_run | done | partial | error
+    status: str = "not_run"   # not_run | done | done_with_salvage | partial | error
     md_path: Optional[str] = None
     md_exists: bool = False
     enriched_md_path: Optional[str] = None
@@ -980,6 +1061,7 @@ class EnrichSideSummary:
     from_cache: int = 0
     errors: int = 0
     pending: int = 0
+    salvaged: int = 0    # сколько блоков спасены из обрезанного JSON
     warnings: list[str] = field(default_factory=list)
     items: list[dict] = field(default_factory=list)
 
@@ -1013,7 +1095,18 @@ def _save_prompt_and_raw(
     md_block: MdBlock,
     prompt: str,
     raw_excerpt: str,
-) -> None:
+    raw_full: str = "",
+) -> Optional[Path]:
+    """Сохранить prompt + raw для одного image-блока.
+
+    `raw_excerpt` (≤1500 chars) пишется в `<side>_<order>.txt` (backward
+    compatible). `raw_full` (полный content_text от модели, может быть >100КБ)
+    пишется отдельно в `<side>_<order>.full.txt`, чтобы forensics не были
+    обрезаны при сохранении.
+
+    Возвращает Path к полному raw'у (или к excerpt'у, если raw_full пустой)
+    для записи в item["raw_response_path"]. None — если ничего не записалось.
+    """
     prompts_dir = paths_mod.text_enrichment_prompts_dir(session_id, pair_id)
     raw_dir = paths_mod.text_enrichment_raw_dir(session_id, pair_id)
     safe_suffix = f"{side}_{md_block.order:04d}"
@@ -1021,10 +1114,22 @@ def _save_prompt_and_raw(
         (prompts_dir / f"{safe_suffix}.txt").write_text(prompt, encoding="utf-8")
     except OSError:
         pass
+    excerpt_path = raw_dir / f"{safe_suffix}.txt"
     try:
-        (raw_dir / f"{safe_suffix}.txt").write_text(raw_excerpt or "", encoding="utf-8")
+        excerpt_path.write_text(raw_excerpt or "", encoding="utf-8")
     except OSError:
         pass
+    full_path: Optional[Path] = None
+    if raw_full and raw_full != raw_excerpt:
+        # Полный raw обычно длиннее excerpt'а — пишем отдельно, чтобы не
+        # ломать инструменты, которые читают <side>_<order>.txt как короткий
+        # excerpt.
+        full_path = raw_dir / f"{safe_suffix}.full.txt"
+        try:
+            full_path.write_text(raw_full, encoding="utf-8")
+        except OSError:
+            full_path = None
+    return full_path or (excerpt_path if (raw_excerpt or "") else None)
 
 
 def _read_side_md(md_path: Optional[str | Path]) -> Optional[str]:
@@ -1132,6 +1237,10 @@ async def enrich_side(
             logger.debug("on_block_progress callback raised; ignored", exc_info=True)
 
     for _block_idx, mb in enumerate(image_blocks, start=1):
+        # Debug-метаданные оригинального image/imagine-блока. Они не уходят в
+        # основной enriched.md (там только Qwen-описание), но сохраняются в
+        # image_descriptions.json для трассировки.
+        original_md_excerpt = (mb.text or "")[:400].replace("\n", " ").strip()
         item: dict[str, Any] = {
             "order": mb.order,
             "page": mb.page,
@@ -1146,6 +1255,12 @@ async def enrich_side(
             "matched_by": None,
             "warnings": [],
             "created_at": _now_iso(),
+            # Debug-only метаданные исходного MD-блока (не отображаются в enriched.md).
+            "original_block_id": mb.block_id,
+            "original_page": mb.page,
+            "original_kind": "image",
+            "original_order": mb.order,
+            "original_md_excerpt": original_md_excerpt,
         }
 
         resolution = resolve_image_for_block(
@@ -1222,13 +1337,46 @@ async def enrich_side(
         item["model_used"] = (result.model_used or cfg.model)
         item["fallback_used"] = bool(result.fallback_used)
         item["raw_response_excerpt"] = result.raw_response_excerpt or ""
-        _save_prompt_and_raw(session_id, pair_id, side, mb, prompt, result.raw_response_excerpt or "")
+        # Расширенная диагностика для тюнинга prompt/max_tokens без чтения raw'а.
+        item["finish_reason"] = result.finish_reason
+        item["usage"] = result.usage or None
+        item["response_char_count"] = int(result.response_char_count or 0)
+        item["parse_error_detail"] = result.parse_error_detail
+        # Production tracking: какая версия prompt'а реально применена.
+        # Полезно при rolling cache invalidation, чтобы оператор мог
+        # увидеть, какие items описаны под v4_compact, а какие — под legacy.
+        item["used_prompt_version"] = PROMPT_VERSION
+        item["compact_mode_used"] = (PROMPT_VERSION.startswith("v4") or PROMPT_VERSION.startswith("v5"))
+        # Сохраняем полный raw отдельным файлом, чтобы forensics не были
+        # обрезаны excerpt'ом до 1500 символов.
+        raw_full = getattr(result, "full_raw_response", "") or ""
+        full_path = _save_prompt_and_raw(
+            session_id, pair_id, side, mb, prompt, result.raw_response_excerpt or "",
+            raw_full=raw_full,
+        )
+        if full_path is not None:
+            try:
+                item["raw_response_path"] = str(full_path)
+            except (TypeError, ValueError):
+                pass
+
+        # Continuation accounting: chunks_count лежит внутри parsed,
+        # вытащим в item для удобного агрегирования на session-level.
+        parsed_for_diag = result.parsed if isinstance(result.parsed, dict) else {}
+        cc = parsed_for_diag.get("chunks_count")
+        item["chunks_count"] = int(cc) if isinstance(cc, int) and cc > 0 else 1
+        item["continuation_count"] = max(0, item["chunks_count"] - 1)
+        item["continued"] = bool(parsed_for_diag.get("continued"))
+        cont_warns = parsed_for_diag.get("continuation_warnings")
+        if isinstance(cont_warns, list) and cont_warns:
+            item["continuation_warnings"] = list(cont_warns)
 
         if result.status == "done" and isinstance(result.parsed, dict):
             payload = dict(result.parsed)
             payload.setdefault("status", "done")
             item["status"] = "done"
             item["description"] = payload
+            item["final_status_reason"] = "primary_done"
             cache_payload = {
                 "status": "done",
                 "description": payload,
@@ -1243,6 +1391,25 @@ async def enrich_side(
             except OSError:
                 item["warnings"].append("cache_write_failed")
             summary.described += 1
+        elif result.status == "partial" and isinstance(result.parsed, dict):
+            # Salvage из оборванного JSON: данные частично восстановлены, но
+            # это НЕ полноценный success — не кешируем, чтобы следующий прогон
+            # мог попытаться получить полный ответ.
+            payload = dict(result.parsed)
+            payload["status"] = "salvaged_partial"
+            payload["_salvaged"] = True
+            item["status"] = "partial"
+            item["salvaged"] = True
+            item["description"] = payload
+            item["error"] = result.error or "salvaged_partial_json"
+            item["warnings"].append("salvaged_partial_json")
+            # Human-readable explanation: труд оператора в Stage 02/Opus
+            # начинается с диагностики, почему конкретный блок попал в partial.
+            item["final_status_reason"] = (
+                "salvaged_with_continuation" if item["continued"] else "salvaged_partial"
+            )
+            summary.described += 1
+            summary.salvaged += 1
         else:
             item["status"] = "error"
             err_payload: dict[str, Any] = {
@@ -1251,6 +1418,11 @@ async def enrich_side(
             }
             item["error"] = result.error or result.status
             item["description"] = err_payload
+            # Категория сбоя из describe_image_local (markdown_reasoning,
+            # truncated_json, empty_content, ctx_mismatch, ...).
+            item["final_status_reason"] = (
+                result.parse_error_detail or result.status or "unknown_error"
+            )
             summary.errors += 1
 
         descriptions.append(item)
@@ -1268,8 +1440,23 @@ async def enrich_side(
     else:
         summary.enriched_md_path = str(md_out) if md_out.exists() else None
 
+    # Replacement-mode counters: сколько image/imagine блоков в исходном MD,
+    # сколько было реально заменено Qwen-описанием (любой usable status:
+    # done / done_with_salvage), и сколько Qwen-описаний попало в enriched.md.
+    original_image_blocks = summary.image_blocks
+    replaced_image_blocks = sum(
+        1 for d in descriptions
+        if (d.get("status") or "").lower() in ("done", "partial", "no_image", "error", "pending")
+    )
+    qwen_description_blocks = sum(
+        1 for d in descriptions
+        if (d.get("status") or "").lower() in ("done", "partial")
+    )
+
     payload_json = {
         "version": 1,
+        "enriched_md_format_version": ENRICHED_MD_FORMAT_VERSION,
+        "replacement_mode": True,
         "session_id": session_id,
         "pair_id": pair_id,
         "side": side,
@@ -1285,6 +1472,10 @@ async def enrich_side(
         "from_cache": summary.from_cache,
         "errors": summary.errors,
         "pending": summary.pending,
+        "salvaged": summary.salvaged,
+        "original_image_blocks": original_image_blocks,
+        "replaced_image_blocks": replaced_image_blocks,
+        "qwen_description_blocks": qwen_description_blocks,
         "updated_at": _now_iso(),
         "items": descriptions,
         "run_model": bool(run_model),
@@ -1297,8 +1488,21 @@ async def enrich_side(
 
     if summary.image_blocks == 0:
         summary.status = "done"
-    elif summary.described == summary.image_blocks and summary.errors == 0 and summary.pending == 0:
+    elif (summary.described == summary.image_blocks
+          and summary.errors == 0
+          and summary.pending == 0
+          and summary.salvaged == 0):
         summary.status = "done"
+    elif (summary.described == summary.image_blocks
+          and summary.errors == 0
+          and summary.pending == 0
+          and summary.salvaged > 0):
+        # Все блоки получили usable description, но часть восстановлена
+        # salvage'ом / continuation'ом. Это готовое состояние для pipeline:
+        # enriched MD создан, ready_for_unified_analysis истинно, но в
+        # диагностике сохраняется метка "восстановлено", чтобы оператор
+        # мог при желании дёрнуть quality-retry.
+        summary.status = "done_with_salvage"
     elif summary.described == 0 and summary.errors == 0 and summary.pending > 0 and not run_model:
         summary.status = "not_run"
     elif summary.errors > 0:
@@ -1317,6 +1521,14 @@ def read_summary_only(session_id: str, pair_id: str, side: str) -> dict:
     JSON, чтобы быстро отрисовать статус в UI.
     """
     data = _read_image_descriptions(session_id, pair_id, side)
+    md_path_resolved = paths_mod.text_enrichment_md_path(session_id, pair_id, side)
+    md_format = "unknown"
+    if md_path_resolved.exists():
+        try:
+            head = md_path_resolved.read_text(encoding="utf-8", errors="replace")[:4096]
+            md_format = detect_enriched_md_format(head)
+        except OSError:
+            md_format = "unknown"
     if not data:
         return {
             "side": side,
@@ -1326,27 +1538,147 @@ def read_summary_only(session_id: str, pair_id: str, side: str) -> dict:
             "from_cache": 0,
             "errors": 0,
             "pending": 0,
+            "salvaged": 0,
             "enriched_md_path": None,
+            "enriched_md_format_version": md_format,
+            "replacement_mode": md_format == ENRICHED_MD_FORMAT_VERSION,
+            "original_image_blocks": 0,
+            "replaced_image_blocks": 0,
+            "qwen_description_blocks": 0,
         }
+    salvaged = int(data.get("salvaged") or 0)
+    described = int(data.get("described") or 0)
+    image_blocks_total = int(data.get("image_blocks_total") or 0)
+    errors_n = int(data.get("errors") or 0)
+    pending_n = int(data.get("pending") or 0)
+    if image_blocks_total and described == image_blocks_total and errors_n == 0 and pending_n == 0 and salvaged == 0:
+        status = "done"
+    elif (image_blocks_total
+          and described == image_blocks_total
+          and errors_n == 0
+          and pending_n == 0
+          and salvaged > 0):
+        # Все блоки описаны, часть восстановлена salvage'ом — это
+        # backward-совместимое представление старых artifact'ов,
+        # которые писали status="partial" по той же ситуации.
+        status = "done_with_salvage"
+    elif described > 0:
+        status = "partial"
+    else:
+        status = "not_run"
+    # Replacement-mode metadata. JSON может быть legacy (без полей) — тогда
+    # source-of-truth — формат enriched.md на диске.
+    json_format = (data.get("enriched_md_format_version") or "").strip() or None
+    if json_format:
+        format_version = json_format
+    else:
+        format_version = md_format
     return {
         "side": side,
-        "status": "done" if (data.get("described") and data["described"] == data.get("image_blocks_total")) else (
-            "partial" if data.get("described") else "not_run"
-        ),
-        "image_blocks": int(data.get("image_blocks_total") or 0),
-        "described": int(data.get("described") or 0),
+        "status": status,
+        "image_blocks": image_blocks_total,
+        "described": described,
         "from_cache": int(data.get("from_cache") or 0),
-        "errors": int(data.get("errors") or 0),
-        "pending": int(data.get("pending") or 0),
+        "errors": errors_n,
+        "pending": pending_n,
+        "salvaged": salvaged,
         "enriched_md_path": data.get("enriched_md_path"),
         "model": data.get("model"),
         "provider": data.get("provider"),
         "updated_at": data.get("updated_at"),
+        "enriched_md_format_version": format_version,
+        "replacement_mode": format_version == ENRICHED_MD_FORMAT_VERSION,
+        "original_image_blocks": int(data.get("original_image_blocks") or image_blocks_total),
+        "replaced_image_blocks": int(data.get("replaced_image_blocks") or 0),
+        "qwen_description_blocks": int(data.get("qwen_description_blocks") or described),
+        "md_format_on_disk": md_format,
+    }
+
+
+def rebuild_enriched_md_from_descriptions(
+    session_id: str,
+    pair_id: str,
+    side: str,
+    *,
+    md_path: Optional[str | Path] = None,
+) -> dict:
+    """Пересобрать `<side>_enriched.md` из существующего image_descriptions.json,
+    не вызывая Qwen повторно.
+
+    Используется когда:
+      - Qwen descriptions уже готовы и валидны;
+      - но enriched.md лежит в старом `append_v0` формате (с
+        `<!-- original_imagine_start -->` обёрткой).
+
+    Возвращает dict с counts: `original_image_blocks`,
+    `replaced_image_blocks`, `qwen_description_blocks`, `enriched_md_path`,
+    `enriched_md_format_version`, `status`.
+
+    Cache key включает PROMPT_VERSION (не ENRICHED_MD_FORMAT_VERSION) — потому
+    что при rebuild мы не дёргаем модель, мы только пересобираем enriched.md
+    из уже готовых items. Cache-инвалидация формата не нужна.
+    """
+    if side not in ("left", "right"):
+        raise ValueError("side must be 'left' or 'right'")
+
+    data = _read_image_descriptions(session_id, pair_id, side)
+    if not data:
+        return {"status": "no_descriptions", "side": side}
+
+    items = data.get("items") if isinstance(data.get("items"), list) else []
+
+    md_resolved: Optional[str | Path] = md_path or data.get("md_path")
+    md_text = _read_side_md(md_resolved)
+    if md_text is None:
+        return {"status": "md_not_found", "side": side, "md_path": str(md_resolved) if md_resolved else None}
+
+    blocks, image_blocks = discover_image_blocks_for_side(md_text)
+
+    enriched_md = build_enriched_md(blocks, items)
+    md_out = paths_mod.text_enrichment_md_path(session_id, pair_id, side)
+    try:
+        md_out.write_text(enriched_md, encoding="utf-8")
+    except OSError as exc:
+        return {"status": f"write_failed:{type(exc).__name__}", "side": side, "error": str(exc)[:200]}
+
+    original_image_blocks = len(image_blocks)
+    replaced_image_blocks = sum(
+        1 for d in items
+        if (d.get("status") or "").lower() in ("done", "partial", "no_image", "error", "pending")
+    )
+    qwen_description_blocks = sum(
+        1 for d in items
+        if (d.get("status") or "").lower() in ("done", "partial")
+    )
+
+    data["enriched_md_format_version"] = ENRICHED_MD_FORMAT_VERSION
+    data["replacement_mode"] = True
+    data["enriched_md_path"] = str(md_out)
+    data["original_image_blocks"] = original_image_blocks
+    data["replaced_image_blocks"] = replaced_image_blocks
+    data["qwen_description_blocks"] = qwen_description_blocks
+    data["updated_at"] = _now_iso()
+    try:
+        _write_image_descriptions(session_id, pair_id, side, data)
+    except OSError:
+        pass
+
+    return {
+        "status": "rebuilt",
+        "side": side,
+        "enriched_md_path": str(md_out),
+        "enriched_md_format_version": ENRICHED_MD_FORMAT_VERSION,
+        "original_image_blocks": original_image_blocks,
+        "replaced_image_blocks": replaced_image_blocks,
+        "qwen_description_blocks": qwen_description_blocks,
+        "size_bytes": len(enriched_md.encode("utf-8")),
+        "size_chars": len(enriched_md),
     }
 
 
 __all__ = [
     "PROMPT_VERSION",
+    "ENRICHED_MD_FORMAT_VERSION",
     "QWEN_IMAGE_DESCRIPTION_PROMPT",
     "MdBlock",
     "ImageResolution",
@@ -1357,6 +1689,8 @@ __all__ = [
     "read_cache",
     "write_cache",
     "build_enriched_md",
+    "detect_enriched_md_format",
+    "rebuild_enriched_md_from_descriptions",
     "resolve_image_for_block",
     "load_image_blocks_index_from_result_json",
     "enrich_side",

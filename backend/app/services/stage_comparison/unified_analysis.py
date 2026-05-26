@@ -64,6 +64,11 @@ class PairPreflight:
     qwen_calls_estimated: int = 0                   # сколько image-блоков ещё не покрыто cache
     qwen_provider_available: bool = False
     qwen_provider_reason: Optional[str] = None
+    # Replacement-format metadata.
+    enriched_md_format_version_left: str = "unknown"
+    enriched_md_format_version_right: str = "unknown"
+    enriched_md_outdated_format: bool = False
+    needs_rebuild: bool = False
 
     # Opus comparison
     comparison_ready: bool = False                  # есть comparison_result.json со status=done
@@ -104,6 +109,10 @@ class PairPreflight:
                 "qwen_calls_estimated": self.qwen_calls_estimated,
                 "provider_available": self.qwen_provider_available,
                 "provider_reason": self.qwen_provider_reason,
+                "format_version_left": self.enriched_md_format_version_left,
+                "format_version_right": self.enriched_md_format_version_right,
+                "outdated_format": self.enriched_md_outdated_format,
+                "needs_rebuild": self.needs_rebuild,
             },
             "comparison": {
                 "ready": self.comparison_ready,
@@ -225,6 +234,17 @@ def preflight_pair(
 
     enriched_status = enriched_mod.enriched_md_status(session_id, pair_id)
     out.enrichment_ready = bool(enriched_status.get("ready"))
+    out.enriched_md_format_version_left = str((enriched_status.get("left") or {}).get("format_version") or "unknown")
+    out.enriched_md_format_version_right = str((enriched_status.get("right") or {}).get("format_version") or "unknown")
+    out.enriched_md_outdated_format = bool(enriched_status.get("outdated_format"))
+    # Rebuild требуется, если enriched.md уже есть, но формат не replacement.
+    if out.enrichment_ready and out.enriched_md_outdated_format:
+        out.needs_rebuild = True
+        out.warnings.append(
+            "Enriched MD в устаревшем формате (append_v0). Требуется пересборка в "
+            "replace_image_blocks_v1 (без повторного Qwen). При запуске unified-analysis "
+            "пересборка произойдёт автоматически перед Opus."
+        )
 
     # Сколько вызовов Qwen ещё нужно: всего image-блоков − уже покрытых cache.
     # Если force_enrichment=true — считаем все блоки заново.
@@ -495,6 +515,31 @@ async def run_pair(
         res.warnings.append("Enriched MD одной из сторон отсутствует после enrichment.")
         res.duration_sec = _time.monotonic() - started
         return res
+
+    # Auto-rebuild outdated enriched.md в replacement format (без повторного Qwen).
+    if enriched_status.get("outdated_format"):
+        outdated_sides = enriched_status.get("outdated_sides") or []
+        for _side in outdated_sides:
+            try:
+                rebuild_info = md_enrich_mod.rebuild_enriched_md_from_descriptions(
+                    session_id, pair_id, _side,
+                )
+                if rebuild_info.get("status") == "rebuilt":
+                    res.warnings.append(
+                        f"{_side}_enriched.md auto-rebuilt в формат "
+                        f"replace_image_blocks_v1 (replaced "
+                        f"{rebuild_info.get('replaced_image_blocks')}/"
+                        f"{rebuild_info.get('original_image_blocks')} image blocks)."
+                    )
+                else:
+                    res.warnings.append(
+                        f"{_side}_enriched.md rebuild failed: {rebuild_info.get('status')}"
+                    )
+            except Exception as exc:  # noqa: BLE001
+                logger.exception("unified_analysis: rebuild %s enriched failed", _side)
+                res.warnings.append(f"{_side}_enriched_rebuild_exception:{type(exc).__name__}:{exc}")
+        # обновляем enriched_status уже из новых файлов (для actual chars)
+        enriched_status = enriched_mod.enriched_md_status(session_id, pair_id)
 
     res.status = "comparing"
     if progress_cb:

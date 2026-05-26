@@ -127,13 +127,32 @@ SYSTEM_PROMPT = """Ты — эксперт по сравнению стадий 
   - старая стадия / версия (<OLD_ENRICHED_MD>);
   - новая стадия / версия (<NEW_ENRICHED_MD>).
 
-Enriched MD содержит:
-  - обычный транскрибированный текст;
-  - Qwen-описания image/imagine-блоков (`#### QWEN_IMAGE_DESCRIPTION`);
-  - описания таблиц;
-  - описания схем;
-  - схемный анализ: узлы, связи, последовательности, независимые контуры,
-    неопределённости.
+ФОРМАТ ENRICHED MD (`replace_image_blocks_v1`):
+  - обычный текст и таблицы транскрипции лежат как есть в `### BLOCK [TEXT]`;
+  - каждый image/imagine-блок исходной документации ЗАМЕНЁН на структурированное
+    Qwen-описание, обёрнутое в HTML-комментарий
+    `<!-- QWEN_IMAGE_DESCRIPTION_START ... -->` …
+    `<!-- QWEN_IMAGE_DESCRIPTION_END -->`.
+    Метаданные header'а: `block_id`, `page`, `status`, `prompt_version`, `confidence`.
+  - внутри обёртки тело начинается с заголовка `### Графический блок / схема`
+    и содержит секции: «Краткое описание», «Видимый текст»,
+    «Оборудование и элементы», «Материалы», «Числовые параметры»,
+    «Схемный анализ» (Узлы / Связи / Последовательность),
+    «Неопределённости».
+  - если Qwen не справился, блок заменяется на `### Графический блок не распознан`
+    с явным `status: error` в header'е — эти блоки сравнивать НЕ надо,
+    отметь их в `warnings`.
+
+Старого OCR-описания image/imagine-блоков в основном тексте enriched.md больше
+нет — каждое графическое содержимое представлено только новым Qwen-описанием.
+
+ОПЦИОНАЛЬНО — БЛОК-СВЯЗИ (`block_links` / anchors):
+Если в user-prompt'е есть тег `<BLOCK_LINKS>`, это список парных привязок
+блоков OLD ↔ NEW (с полями `left_block_id`, `right_block_id`, `left_page`,
+`right_page`, `method`, `score`). Эти пары — это **anchors / focus areas**, а
+не exclusive scope. Удели им повышенное внимание (внимательно сравни описания
+каждой пары), но обязательно ищи изменения и ВНЕ привязанных блоков —
+сравнение идёт по ВСЕМУ документу. Отсутствие привязок — это НЕ ошибка.
 
 Твоя задача — найти существенные проектные изменения между стадиями.
 
@@ -228,18 +247,131 @@ quote должен быть КОРОТКИМ (до 240 символов) — н�
 """
 
 
-def build_user_prompt(left_md: str, right_md: str) -> str:
-    """Собрать user-prompt с фиксированными разделителями."""
+# Сколько block_links максимум прокидываем в prompt. Каждая запись — короткий
+# JSON-объект с 6-8 полями, ~120-200 chars. 50 пар = ~10 КБ, безопасный
+# overhead. Если линков больше — будут переданы только первые N (с высшим score).
+_BLOCK_LINKS_LIMIT_IN_PROMPT = 50
+
+
+def _normalize_block_link_for_prompt(raw: Any) -> Optional[dict]:
+    """Оставить только полезные поля для prompt'а; отрезать crop/base64/heavy raw."""
+    if not isinstance(raw, dict):
+        return None
+    out: dict[str, Any] = {}
+    for key in (
+        "left_block_id", "right_block_id",
+        "left_page", "right_page",
+        "left_order", "right_order",
+        "method", "score",
+    ):
+        if key in raw and raw.get(key) is not None:
+            out[key] = raw[key]
+    # short label / snippet — если уже есть в links.json. Тяжёлый raw / crop /
+    # base64 не трогаем — даже если случайно окажется в record'е.
+    for key in ("left_label", "right_label", "label", "snippet"):
+        val = raw.get(key)
+        if isinstance(val, str) and val:
+            out[key] = val[:160]
+    if "confidence" in raw and isinstance(raw.get("confidence"), (int, float)):
+        out["confidence"] = raw["confidence"]
+    return out if out else None
+
+
+def build_block_links_context(block_links: Optional[list[dict]]) -> str:
+    """Сформировать `<BLOCK_LINKS>` JSON-блок для user-prompt'а.
+
+    Возвращает либо пустую строку (если линков нет), либо короткий блок:
+
+        <BLOCK_LINKS>
+        [{"left_block_id": "...", "right_block_id": "...", ...}, ...]
+        </BLOCK_LINKS>
+
+    Тяжёлые поля (crop/base64/raw) НЕ передаются.
+    """
+    if not block_links:
+        return ""
+    norm: list[dict] = []
+    for raw in block_links:
+        n = _normalize_block_link_for_prompt(raw)
+        if n is not None:
+            norm.append(n)
+    if not norm:
+        return ""
+    # Сортируем по score (desc), берём top-N — у нас есть лимит.
+    norm.sort(key=lambda x: float(x.get("score") or 0.0), reverse=True)
+    capped = norm[:_BLOCK_LINKS_LIMIT_IN_PROMPT]
+    truncated = len(norm) > _BLOCK_LINKS_LIMIT_IN_PROMPT
+    body = json.dumps(capped, ensure_ascii=False, separators=(",", ":"))
+    note = ""
+    if truncated:
+        note = (
+            f"\nПримечание: всего связей {len(norm)}, в prompt включено "
+            f"{_BLOCK_LINKS_LIMIT_IN_PROMPT} с наивысшим score. Остальные связи учитывай "
+            "как «вероятно тоже якоря», но обязательно ищи изменения и вне них.\n"
+        )
     return (
-        "Сравни два enriched Markdown-файла (старая стадия ↔ новая стадия) и "
-        "верни JSON по описанной в системном промпте схеме.\n\n"
-        "<OLD_ENRICHED_MD>\n" + (left_md or "") + "\n</OLD_ENRICHED_MD>\n\n"
-        "<NEW_ENRICHED_MD>\n" + (right_md or "") + "\n</NEW_ENRICHED_MD>\n"
+        "\n<BLOCK_LINKS>\n"
+        + body
+        + "\n</BLOCK_LINKS>"
+        + note
+        + "\n"
     )
 
 
-def build_prompts(left_md: str, right_md: str) -> tuple[str, str]:
-    return SYSTEM_PROMPT, build_user_prompt(left_md, right_md)
+def build_user_prompt(
+    left_md: str,
+    right_md: str,
+    *,
+    block_links: Optional[list[dict]] = None,
+    analysis_mode: Optional[str] = None,
+) -> str:
+    """Собрать user-prompt с фиксированными разделителями.
+
+    `block_links` — если переданы, добавляются как anchors/focus (не как
+    exclusive scope). См. `build_block_links_context`.
+
+    `analysis_mode` — `block_links` (default) или `concept_no_block_links`.
+    Влияет только на короткое напоминание для модели; основной prompt всегда
+    говорит «сравни весь документ».
+    """
+    intro = (
+        "Сравни два enriched Markdown-файла (старая стадия ↔ новая стадия) "
+        "по ВСЕМУ их содержимому и верни JSON по описанной в системном промпте схеме.\n"
+    )
+    if analysis_mode == "concept_no_block_links":
+        intro += (
+            "Режим: concept_no_block_links. Связи блоков не используются; "
+            "отсутствие связей — это НЕ ошибка.\n"
+        )
+    elif analysis_mode == "block_links":
+        intro += (
+            "Режим: block_links. Если ниже есть тег <BLOCK_LINKS>, "
+            "трактуй каждую пару как якорь повышенного внимания, "
+            "но сравнение идёт по ВСЕМУ документу.\n"
+        )
+    links_ctx = ""
+    if analysis_mode != "concept_no_block_links":
+        links_ctx = build_block_links_context(block_links)
+    return (
+        intro
+        + links_ctx
+        + "\n<OLD_ENRICHED_MD>\n" + (left_md or "") + "\n</OLD_ENRICHED_MD>\n\n"
+        + "<NEW_ENRICHED_MD>\n" + (right_md or "") + "\n</NEW_ENRICHED_MD>\n"
+    )
+
+
+def build_prompts(
+    left_md: str,
+    right_md: str,
+    *,
+    block_links: Optional[list[dict]] = None,
+    analysis_mode: Optional[str] = None,
+) -> tuple[str, str]:
+    return SYSTEM_PROMPT, build_user_prompt(
+        left_md, right_md,
+        block_links=block_links,
+        analysis_mode=analysis_mode,
+    )
 
 
 # ─── Response parsing ────────────────────────────────────────────────────
@@ -470,9 +602,11 @@ def get_comparison_result(session_id: str, pair_id: str) -> Optional[dict]:
 
 def enriched_md_status(session_id: str, pair_id: str) -> dict:
     """Лёгкая read-only проверка: есть ли enriched MD для обеих сторон + размеры."""
-    out = {
-        "left": {"exists": False, "chars": 0, "path": None},
-        "right": {"exists": False, "chars": 0, "path": None},
+    # Импорт внутри функции для избежания циклической зависимости.
+    from . import md_image_enrichment as _md_mod
+    out: dict[str, Any] = {
+        "left": {"exists": False, "chars": 0, "path": None, "format_version": "unknown"},
+        "right": {"exists": False, "chars": 0, "path": None, "format_version": "unknown"},
     }
     for side in ("left", "right"):
         p = paths_mod.text_enrichment_md_path(session_id, pair_id, side)
@@ -482,10 +616,16 @@ def enriched_md_status(session_id: str, pair_id: str) -> dict:
                 txt = p.read_text(encoding="utf-8", errors="replace")
                 out[side]["exists"] = True
                 out[side]["chars"] = len(txt)
+                out[side]["format_version"] = _md_mod.detect_enriched_md_format(txt)
             except OSError:
                 pass
     out["total_chars"] = out["left"]["chars"] + out["right"]["chars"]
     out["ready"] = out["left"]["exists"] and out["right"]["exists"]
+    # outdated_format: если хотя бы одна сторона ещё в legacy `append_v0`.
+    outdated_sides = [s for s in ("left", "right") if out[s]["exists"] and out[s]["format_version"] != _md_mod.ENRICHED_MD_FORMAT_VERSION]
+    out["outdated_format"] = bool(outdated_sides)
+    out["outdated_sides"] = outdated_sides
+    out["enriched_md_format_version"] = _md_mod.ENRICHED_MD_FORMAT_VERSION
     return out
 
 
@@ -610,7 +750,23 @@ def run_enriched_comparison(
 
         # Provider availability
         avail, reason = prov.check_availability()
-        system_prompt, user_prompt = build_prompts(left_md, right_md)
+        # Load block_links + analysis_mode для построения prompt'а. Импорт
+        # внутри функции, чтобы избежать circular import (store ↔ enriched_comparison).
+        try:
+            from . import store as _store_mod
+            analysis_mode_val = _store_mod.get_pair_analysis_mode(session_id, pair_id)
+        except Exception:  # noqa: BLE001
+            analysis_mode_val = "block_links"
+        try:
+            from . import store as _store_mod  # noqa: F401
+            block_links_payload = _store_mod._pair_links(session_id, pair_id)  # type: ignore[attr-defined]
+        except Exception:  # noqa: BLE001
+            block_links_payload = []
+        system_prompt, user_prompt = build_prompts(
+            left_md, right_md,
+            block_links=block_links_payload if analysis_mode_val != "concept_no_block_links" else None,
+            analysis_mode=analysis_mode_val,
+        )
         if not avail:
             prompt_file = _save_prompt(session_id, pair_id, system_prompt, user_prompt)
             payload = {
@@ -774,6 +930,7 @@ __all__ = [
     "resolve_provider",
     "build_prompts",
     "build_user_prompt",
+    "build_block_links_context",
     "get_comparison_result",
     "enriched_md_status",
     "run_enriched_comparison",
