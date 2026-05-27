@@ -234,6 +234,14 @@ def unified_findings_path(session_id: str) -> Path:
     return session_dir(session_id) / "unified_findings.json"
 
 
+def unified_findings_grouped_path(session_id: str) -> Path:
+    """`comparison/sessions/<sid>/unified_findings_grouped.json` — deterministic post-processing
+    слой поверх unified_findings.json: группировка дублей, отделение формальных
+    штампов от значимых отличий. Без LLM. См. `unified_grouping.py`.
+    """
+    return session_dir(session_id) / "unified_findings_grouped.json"
+
+
 def pages_dir(session_id: str, pair_id: str, side: str) -> Path:
     if side not in ("left", "right"):
         raise ValueError("side must be 'left' or 'right'")
@@ -365,6 +373,7 @@ __all__ = [
     "enriched_comparison_raw_path",
     "enriched_comparison_job_path",
     "unified_findings_path",
+    "unified_findings_grouped_path",
     "pages_dir",
     "crops_dir",
     "previews_dir",

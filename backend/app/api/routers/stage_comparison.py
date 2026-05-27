@@ -20,13 +20,15 @@ run_paid=true в POST .../graphic-diff и только через paid_api_guard
 from __future__ import annotations
 
 import base64
+import io
 import json
 import logging
+import re
 from pathlib import Path
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 from backend.app.services.stage_comparison import diff_text, store, findings as findings_mod, jobs as jobs_mod, reports as reports_mod, warnings as warnings_mod, objects as objects_mod
@@ -42,6 +44,7 @@ from backend.app.services.stage_comparison import enriched_comparison as enriche
 from backend.app.services.stage_comparison import unified_analysis as unified_analysis_mod
 from backend.app.services.stage_comparison import unified_analysis_jobs as unified_jobs_mod
 from backend.app.services.stage_comparison import unified_findings as unified_findings_mod
+from backend.app.services.stage_comparison import unified_grouping as unified_grouping_mod
 from backend.app.services.stage_comparison import paths as sc_paths_mod
 
 logger = logging.getLogger(__name__)
@@ -1096,6 +1099,200 @@ async def unified_diff_flat_endpoint(session_id: str, pair_id: Optional[str] = N
         return unified_findings_mod.build_unified_flat(session_id, pair_id=pair_id)
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
+
+
+_SC_UNIFIED_SOURCE_LABELS = {
+    "text": "Текст",
+    "image_enrichment": "Описание изобр.",
+    "scheme_analysis": "Схема",
+    "table": "Таблица",
+    "stamp": "Штамп",
+    "mixed": "Текст + изобр.",
+}
+
+
+@router.get("/sessions/{session_id}/unified-diff-flat/export.xlsx")
+async def unified_diff_flat_export_xlsx(
+    session_id: str,
+    pair_id: Optional[str] = None,
+):
+    """Экспорт таблицы расхождений в Excel (xlsx).
+
+    Формат соответствует UI-таблице на вкладке «Расхождения»:
+    №, Место (лист/стр.PDF/PDF-пара), Важность, Изменение (title + summary),
+    Было, Стало, Влияние, Стоимость, Источник, На ручную проверку.
+
+    Если задан `pair_id` — выгружаем только эту PDF-пару (соответствует
+    текущему scope в UI). Без параметра — все пары сессии.
+    """
+    try:
+        from openpyxl import Workbook
+        from openpyxl.styles import Alignment, Font, PatternFill, Border, Side
+    except ImportError:
+        raise HTTPException(500, "openpyxl not installed")
+
+    try:
+        flat = unified_findings_mod.build_unified_flat(session_id, pair_id=pair_id)
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+    items = flat.get("items") or []
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Расхождения"
+
+    header = [
+        "№", "Лист", "Стр. PDF", "PDF-пара", "Важность",
+        "Изменение", "Описание",
+        "Было", "Стало",
+        "Влияние", "Стоимость",
+        "Источник", "На ручную проверку",
+    ]
+    ws.append(header)
+    thin = Side(border_style="thin", color="D1D5DB")
+    border = Border(left=thin, right=thin, top=thin, bottom=thin)
+    for cell in ws[1]:
+        cell.font = Font(bold=True, size=10)
+        cell.fill = PatternFill("solid", fgColor="E5E7EB")
+        cell.alignment = Alignment(wrap_text=True, vertical="center", horizontal="center")
+        cell.border = border
+
+    sev_fill = {
+        "high":   PatternFill("solid", fgColor="FEE2E2"),
+        "medium": PatternFill("solid", fgColor="FEF3C7"),
+        "low":    PatternFill("solid", fgColor="DBEAFE"),
+    }
+    was_fill = PatternFill("solid", fgColor="FEF2F2")
+    became_fill = PatternFill("solid", fgColor="ECFDF5")
+    impact_fill = PatternFill("solid", fgColor="FEFCE8")
+
+    for i, it in enumerate(items, start=1):
+        page = it.get("page")
+        if isinstance(page, list):
+            page_str = ", ".join(str(p) for p in page if p is not None)
+        elif page is None:
+            page_str = ""
+        else:
+            page_str = str(page)
+
+        old_value = it.get("old_value") or ((it.get("evidence_left") or {}).get("quote")) or ""
+        new_value = it.get("new_value") or ((it.get("evidence_right") or {}).get("quote")) or ""
+        cost = it.get("cost_impact")
+        cost_str = "" if (not cost or cost == "none") else cost
+        source_layer = it.get("source_layer") or ""
+        source_label = _SC_UNIFIED_SOURCE_LABELS.get(source_layer, source_layer)
+
+        ws.append([
+            i,
+            it.get("sheet") or "",
+            page_str,
+            it.get("pair_label") or "",
+            it.get("severity") or "",
+            it.get("title") or "",
+            it.get("summary") or "",
+            old_value,
+            new_value,
+            it.get("construction_impact") or "",
+            cost_str,
+            source_label,
+            "да" if it.get("requires_human_review") else "",
+        ])
+        row = ws[ws.max_row]
+        sev = (it.get("severity") or "").lower()
+        # №-ячейка подкрашена под severity
+        if sev in sev_fill:
+            row[0].fill = sev_fill[sev]
+            row[4].fill = sev_fill[sev]
+        row[7].fill = was_fill         # Было
+        row[8].fill = became_fill      # Стало
+        row[9].fill = impact_fill      # Влияние
+        for cell in row:
+            cell.alignment = Alignment(wrap_text=True, vertical="top")
+            cell.border = border
+            cell.font = Font(size=10)
+
+    widths = [5, 14, 10, 30, 11, 38, 50, 38, 38, 32, 12, 18, 11]
+    for col_idx, w in enumerate(widths, start=1):
+        ws.column_dimensions[ws.cell(row=1, column=col_idx).column_letter].width = w
+    ws.freeze_panes = "A2"
+
+    buf = io.BytesIO()
+    wb.save(buf)
+    buf.seek(0)
+
+    safe_sid = re.sub(r"[^A-Za-z0-9_.-]", "_", session_id)[:64] or "session"
+    scope = "pair" if pair_id else "all"
+    fname = f"stage_comparison_{safe_sid}_{scope}.xlsx"
+    return StreamingResponse(
+        buf,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f'attachment; filename="{fname}"'},
+    )
+
+
+# ─── Unified GROUPED (deterministic post-processing) ─────────────────────
+
+
+class RegroupRequest(BaseModel):
+    force: bool = True
+
+
+@router.get("/sessions/{session_id}/unified-grouped")
+async def unified_grouped_endpoint(
+    session_id: str,
+    pair_id: Optional[str] = None,
+    include_formal: bool = False,
+    force_rebuild: bool = False,
+    significance: Optional[str] = None,
+    theme: Optional[str] = None,
+):
+    """Сгруппированный реестр значимых отличий (без LLM).
+
+    Lazy-build: если `unified_findings_grouped.json` отсутствует, собираем
+    его из `unified_findings.json` (или live flat) и сохраняем на диск.
+    `force_rebuild=true` всегда пересобирает.
+
+    Query params:
+        pair_id          фильтр по конкретной паре
+        include_formal   true → отдать hidden_formal_groups; default false
+        significance     high|medium|low|formal — фильтр groups
+        theme            фильтр по теме (см. THEMES в unified_grouping.py)
+        force_rebuild    пересборка из flat findings
+    """
+    try:
+        return unified_grouping_mod.get_unified_grouped(
+            session_id,
+            pair_id=pair_id,
+            include_formal=include_formal,
+            force_rebuild=force_rebuild,
+            significance=significance,
+            theme=theme,
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+
+@router.post("/sessions/{session_id}/regroup")
+async def regroup_endpoint(session_id: str, req: RegroupRequest):
+    """Принудительно пересобрать `unified_findings_grouped.json`.
+
+    Не запускает Qwen/Opus. Только пересборка из существующего
+    `unified_findings.json` / `unified-diff-flat`.
+    """
+    try:
+        payload = unified_grouping_mod.build_unified_grouped(
+            session_id, force=bool(req.force), persist=True,
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    return {
+        "ok": True,
+        "session_id": session_id,
+        "summary": payload.get("summary", {}),
+        "groups_count": len(payload.get("groups") or []),
+        "hidden_formal_count": len(payload.get("hidden_formal_groups") or []),
+    }
 
 
 class SetAnalysisModeRequest(BaseModel):
