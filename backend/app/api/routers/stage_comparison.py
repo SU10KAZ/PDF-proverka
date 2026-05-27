@@ -46,6 +46,7 @@ from backend.app.services.stage_comparison import unified_analysis_jobs as unifi
 from backend.app.services.stage_comparison import unified_findings as unified_findings_mod
 from backend.app.services.stage_comparison import unified_grouping as unified_grouping_mod
 from backend.app.services.stage_comparison import paths as sc_paths_mod
+from backend.app.services.stage_comparison import saved_config as saved_config_mod
 
 logger = logging.getLogger(__name__)
 
@@ -221,6 +222,223 @@ async def list_comparison_objects():
     return objects_mod.list_objects()
 
 
+# ─── Saved configuration ──────────────────────────────────────────────────
+
+
+class SaveConfigRequest(BaseModel):
+    """Тело для PUT /saved-config (legacy path-only сохранение).
+
+    Полная каноничная конфигурация сохраняется через
+    POST /sessions/{sid}/save-canonical — там подтягиваются пары/режимы.
+    """
+
+    stage_a_path: str = Field(..., description="Абсолютный путь к stage_1 директории")
+    stage_b_path: str = Field(..., description="Абсолютный путь к stage_2 директории")
+    object_label: Optional[str] = Field(default=None, description="UI-имя объекта")
+    stage_a_label: Optional[str] = Field(default=None, description="UI-имя стадии A")
+    stage_b_label: Optional[str] = Field(default=None, description="UI-имя стадии B")
+    note: Optional[str] = Field(default=None, description="Свободная пометка")
+
+
+@router.get("/saved-config")
+async def get_saved_config_endpoint():
+    """Прочитать «сохранённую конфигурацию» Stage Comparison.
+
+    Используется UI для кнопки «Применить сохранённую конфигурацию»:
+    клик → fetch → автозаполнение stage_a_path/stage_b_path в форме
+    создания сессии.
+
+    Возвращает ``{"saved": false}`` если конфиг ещё не сохранён, иначе
+    объект с полями stage_a_path / stage_b_path / object_label /
+    stage_a_label / stage_b_label / saved_at / note.
+    """
+    cfg = saved_config_mod.load_saved_config()
+    if cfg is None:
+        return {"saved": False}
+    return {"saved": True, **cfg}
+
+
+@router.put("/saved-config")
+async def put_saved_config_endpoint(req: SaveConfigRequest):
+    """Сохранить «сохранённую конфигурацию» (перезаписать существующую).
+
+    Проверяет allowlist для stage_a_path / stage_b_path, чтобы кто-то не
+    закрепил ссылку на чужую папку вне разрешённого root'а.
+    """
+    try:
+        store.assert_path_in_allowlist(req.stage_a_path)
+        store.assert_path_in_allowlist(req.stage_b_path)
+    except PermissionError as exc:
+        raise HTTPException(403, str(exc)) from exc
+    try:
+        saved = saved_config_mod.save_saved_config(
+            stage_a_path=req.stage_a_path,
+            stage_b_path=req.stage_b_path,
+            object_label=req.object_label,
+            stage_a_label=req.stage_a_label,
+            stage_b_label=req.stage_b_label,
+            note=req.note,
+        )
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    except OSError as exc:
+        raise HTTPException(500, f"Ошибка записи saved-config: {exc}") from exc
+    return {"saved": True, **saved}
+
+
+@router.delete("/saved-config")
+async def delete_saved_config_endpoint():
+    """Удалить «сохранённую конфигурацию» (UI скроет/задизейблит кнопку)."""
+    deleted = saved_config_mod.clear_saved_config()
+    return {"deleted": deleted}
+
+
+# ─── Canonical configuration (UX-обёртка над saved-config) ───────────────
+# «Каноничная конфигурация» = одна актуальная рабочая конфигурация объекта:
+# пара stage_a/stage_b, canonical_session_id и компактный summary пар (без
+# артефактов анализа). Старый saved-config endpoint оставлен для обратной
+# совместимости (одни пути), но обычный UI работает через canonical-config.
+
+
+def _canonical_payload(cfg: Optional[dict]) -> dict:
+    """Привести cfg к payload для UI с разрешённой каноничной сессией.
+
+    Если canonical_session_id указывает на несуществующую сессию,
+    возвращается ``canonical_session_available=false`` — UI покажет
+    предупреждение «Каноничная конфигурация недоступна».
+    """
+    if cfg is None:
+        return {"saved": False}
+    sid = (cfg.get("canonical_session_id") or "").strip() or None
+    session_available = False
+    if sid:
+        try:
+            session_available = store.get_session(sid) is not None
+        except Exception:  # noqa: BLE001
+            session_available = False
+    return {
+        "saved": True,
+        "canonical_session_available": session_available if sid else None,
+        **cfg,
+    }
+
+
+@router.get("/canonical-config")
+async def get_canonical_config():
+    """Каноничная конфигурация объекта (одна актуальная).
+
+    Возвращает ``{"saved": false}`` если ничего не сохранено. Иначе
+    включает все поля saved-config + ``canonical_session_available``
+    (bool, есть ли canonical_session_id физически на диске).
+    """
+    return _canonical_payload(saved_config_mod.load_saved_config())
+
+
+@router.post("/sessions/{session_id}/save-canonical")
+async def save_session_as_canonical(session_id: str, req: Optional[dict] = None):
+    """Сохранить текущую сессию как каноничную конфигурацию объекта.
+
+    Тело: ``{object_label?, stage_a_label?, stage_b_label?, note?,
+    updated_by?}``. Все поля опциональны — служат для UI badge'а.
+    Перезаписывает предыдущую каноничную конфигурацию (история не
+    ведётся).
+    """
+    sess = store.get_session(session_id)
+    if sess is None:
+        raise HTTPException(404, f"Сессия {session_id} не найдена")
+    stage_a_path = (sess.get("stage_a_path") or "").strip()
+    stage_b_path = (sess.get("stage_b_path") or "").strip()
+    if not stage_a_path or not stage_b_path:
+        raise HTTPException(400, "Сессия не содержит stage_a_path/stage_b_path")
+    try:
+        store.assert_path_in_allowlist(stage_a_path)
+        store.assert_path_in_allowlist(stage_b_path)
+    except PermissionError as exc:
+        raise HTTPException(403, str(exc)) from exc
+
+    body = req if isinstance(req, dict) else {}
+    try:
+        saved = saved_config_mod.save_saved_config(
+            stage_a_path=stage_a_path,
+            stage_b_path=stage_b_path,
+            object_label=body.get("object_label"),
+            stage_a_label=body.get("stage_a_label"),
+            stage_b_label=body.get("stage_b_label"),
+            note=body.get("note"),
+            canonical_session_id=session_id,
+            pairs=sess.get("pairs") or [],
+            updated_by=body.get("updated_by"),
+        )
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    except OSError as exc:
+        raise HTTPException(500, f"Ошибка записи canonical-config: {exc}") from exc
+    return _canonical_payload(saved)
+
+
+@router.get("/canonical-config/open")
+async def open_canonical_config():
+    """Получить полные данные каноничной сессии (для автозагрузки UI).
+
+    Контракт:
+      * ``saved=false`` — ничего не сохранено.
+      * ``canonical_session_available=false`` — canonical_session_id есть,
+        но сессия не найдена (повреждена / удалена) → UI предложит
+        перезапустить сопоставление.
+      * иначе — полный объект сессии + ``canonical_config`` (метаданные
+        канона) + ``config_hash_current`` (recompute по факту, для
+        invalidation analysis artifacts).
+    """
+    cfg = saved_config_mod.load_saved_config()
+    if cfg is None:
+        return {"saved": False}
+    sid = (cfg.get("canonical_session_id") or "").strip()
+    if not sid:
+        # legacy v1 config: только пути, сессии нет
+        return {
+            "saved": True,
+            "canonical_session_id": None,
+            "canonical_session_available": None,
+            "canonical_config": cfg,
+        }
+    sess = store.get_session(sid)
+    if sess is None:
+        return {
+            "saved": True,
+            "canonical_session_id": sid,
+            "canonical_session_available": False,
+            "canonical_config": cfg,
+        }
+    # Пересчитываем config_hash по текущему состоянию пар сессии — если он
+    # отличается от saved_hash, UI покажет «результаты могут быть устаревшими».
+    current_pairs_summary = []
+    for idx, p in enumerate(sess.get("pairs") or []):
+        if isinstance(p, dict) and p.get("id"):
+            current_pairs_summary.append({
+                "pair_id": str(p.get("id")),
+                "left_filename": ((p.get("left") or {}).get("filename") or None),
+                "right_filename": ((p.get("right") or {}).get("filename") or None),
+                "left_pdf_path": ((p.get("left") or {}).get("pdf_path") or None),
+                "right_pdf_path": ((p.get("right") or {}).get("pdf_path") or None),
+                "disabled": str(p.get("status") or "") == "disabled",
+                "status": (p.get("status") or None),
+                "analysis_mode": (p.get("analysis_mode") or None),
+                "manual_links_count": len(p.get("links") or []),
+                "order": idx + 1,
+            })
+    current_hash = saved_config_mod._compute_config_hash(current_pairs_summary)
+    return {
+        "saved": True,
+        "canonical_session_id": sid,
+        "canonical_session_available": True,
+        "config_hash_saved": cfg.get("config_hash"),
+        "config_hash_current": current_hash,
+        "config_stale": bool(cfg.get("config_hash") and cfg.get("config_hash") != current_hash),
+        "canonical_config": cfg,
+        "session": sess,
+    }
+
+
 @router.get("/sessions/{session_id}/unmatched")
 async def list_unmatched_endpoint(session_id: str):
     try:
@@ -289,6 +507,26 @@ async def delete_pair_endpoint(session_id: str, pair_id: str, hard: bool = Query
         return {"ok": True, "hard": hard}
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
+
+
+class PairOrderRequest(BaseModel):
+    pair_ids: list[str] = Field(..., description="Ordered list of pair_ids (top → bottom)")
+
+
+@router.put("/sessions/{session_id}/pair-order")
+async def set_pair_order_endpoint(session_id: str, req: PairOrderRequest):
+    """Drag-and-drop reorder пар в session.json → pair_order.
+
+    UI шлёт список pair_id'ов в желаемом порядке (сверху вниз).
+    Backend нормализует (отфильтровывает несуществующие, добавляет в
+    конец потерянные) и сохраняет в session.json. Возвращает фактический
+    порядок после нормализации.
+    """
+    try:
+        new_order = store.set_pair_order(session_id, req.pair_ids or [])
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    return {"ok": True, "pair_order": new_order}
 
 
 @router.get("/sessions")
