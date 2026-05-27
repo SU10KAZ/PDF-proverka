@@ -5328,6 +5328,33 @@
                                         @click="scRecogCancel()"
                                         title="Отменить выполнение задачи">Отменить</button>
                             </template>
+                            <template v-if="!(scOpusJob && ['queued','running'].includes(scOpusJob.status))">
+                                <button class="btn btn-sm btn-primary"
+                                        :disabled="scOpusStarting || !scPairs.length || (scRecogJob && ['queued','running'].includes(scRecogJob.status)) || (scOpusPreflight && scOpusPreflight.will_run === 0)"
+                                        @click="scOpusStart()"
+                                        :title="scOpusStartTitle">
+                                    {{ scOpusStarting ? 'Запуск…' : '🔍 Проанализировать и сравнить' }}
+                                </button>
+                                <button v-if="scOpusJob && scOpusJob.aggregate && scOpusJob.aggregate.failed > 0"
+                                        class="btn btn-sm btn-secondary"
+                                        :disabled="scOpusStarting"
+                                        @click="scOpusRetryErrors()"
+                                        title="Повторить только пары, которые упали с ошибкой в прошлом прогоне">
+                                    Повторить ошибки ({{ scOpusJob.aggregate.failed }})
+                                </button>
+                            </template>
+                            <template v-else>
+                                <span style="color:#15803d">Обработка…</span>
+                                <button class="btn btn-sm btn-secondary"
+                                        @click="scOpusCancel()"
+                                        title="Отменить выполнение задачи">Отменить</button>
+                            </template>
+                            <button v-if="scOpusJob && ['done','cancelled','failed'].includes(scOpusJob.status) && (scOpusJob.aggregate && scOpusJob.aggregate.done > 0)"
+                                    class="btn btn-sm btn-secondary"
+                                    @click="scTab='diffs'"
+                                    title="Перейти к таблице расхождений">
+                                Открыть расхождения
+                            </button>
                         </div>
                         <div v-if="scRecogError"
                              style="margin-top:6px; background:#fee2e2; color:#991b1b; padding:6px 8px; border-radius:6px">
@@ -5454,6 +5481,92 @@
                              style="margin-top:6px; font-size:11px; opacity:.75">
                             Последний прогон: <code>{{ scRecogJob.id }}</code> · status: <code>{{ scRecogJob.status }}</code>
                             <span v-if="scRecogJob.created_at"> · создан: {{ scRecogJob.created_at }}</span>
+                        </div>
+                    </div>
+
+                    <!-- ── Opus session batch — статус (кнопка перенесена в шапку Qwen-карточки выше) ── -->
+                    <div class="sc-card"
+                         style="background:#f0fdf4; border-bottom:1px solid #bbf7d0; border-radius:0; padding:10px 14px; font-size:12px">
+                        <!-- Warning: Qwen ещё идёт -->
+                        <div v-if="scRecogJob && ['queued','running'].includes(scRecogJob.status)"
+                             style="margin-top:6px; background:#fef3c7; color:#92400e; padding:6px 8px; border-radius:6px; font-size:12px">
+                            Сначала дождитесь завершения распознавания графики.
+                        </div>
+
+                        <!-- Warning: enriched MD ещё не готов хотя бы по одной паре -->
+                        <div v-if="scOpusPreflight && scOpusPreflight.skip_not_ready > 0"
+                             style="margin-top:6px; background:#fef3c7; color:#92400e; padding:6px 8px; border-radius:6px; font-size:12px">
+                            Не готово к сравнению: <strong>{{ scOpusPreflight.skip_not_ready }}</strong> пар без enriched MD. Будут пропущены.
+                        </div>
+
+                        <!-- Warning: too_large пары -->
+                        <div v-if="scOpusPreflight && scOpusPreflight.skip_too_large > 0"
+                             style="margin-top:6px; background:#fef3c7; color:#92400e; padding:6px 8px; border-radius:6px; font-size:12px">
+                            Слишком большие пары: <strong>{{ scOpusPreflight.skip_too_large }}</strong>. Превышают лимит enriched MD; будут пропущены. Рассмотрите section split или compact compare.
+                        </div>
+
+                        <!-- Warning: canonical конфигурация -->
+                        <div v-if="scSavedConfig && scSavedConfig.saved && scSavedConfig.canonical_session_id && scSession && scSavedConfig.canonical_session_id !== scSession.id"
+                             style="margin-top:6px; background:#fef3c7; color:#92400e; padding:6px 8px; border-radius:6px; font-size:12px">
+                            Текущая сессия не каноничная. Если вы меняли связи блоков / порядок / disabled — сохраните как каноничную, иначе результат может быть устаревшим.
+                        </div>
+
+                        <div v-if="scOpusError"
+                             style="margin-top:6px; background:#fee2e2; color:#991b1b; padding:6px 8px; border-radius:6px">
+                            {{ scOpusError }}
+                        </div>
+
+                        <!-- Preflight сводка (до запуска) -->
+                        <div v-if="scOpusPreflight && !scOpusJob"
+                             style="margin-top:8px; display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:6px 14px; font-size:12px">
+                            <div>всего пар: <strong>{{ scOpusPreflight.total_pairs }}</strong></div>
+                            <div style="color:#15803d">будет запущено: <strong>{{ scOpusPreflight.will_run }}</strong></div>
+                            <div v-if="scOpusPreflight.skip_done" style="color:#1d4ed8" title="Comparison уже сделан, force_compare=false">уже готово: <strong>{{ scOpusPreflight.skip_done }}</strong></div>
+                            <div v-if="scOpusPreflight.skip_not_ready" style="color:#92400e">не готовы: <strong>{{ scOpusPreflight.skip_not_ready }}</strong></div>
+                            <div v-if="scOpusPreflight.skip_too_large" style="color:#991b1b">too_large: <strong>{{ scOpusPreflight.skip_too_large }}</strong></div>
+                        </div>
+
+                        <!-- Общий статус job -->
+                        <div v-if="scOpusJob && scOpusJob.aggregate"
+                             style="margin-top:8px; display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:6px 14px; font-size:12px">
+                            <div>всего пар: <strong>{{ scOpusJob.aggregate.total_pairs }}</strong></div>
+                            <div style="color:#065f46">готово: <strong>{{ scOpusJob.aggregate.done }}</strong></div>
+                            <div style="color:#991b1b">ошибок: <strong>{{ scOpusJob.aggregate.failed }}</strong></div>
+                            <div style="opacity:.75">пропущено: <strong>{{ scOpusJob.aggregate.skipped }}</strong>
+                                <span v-if="scOpusJob.aggregate.skipped_too_large" style="opacity:.7" :title="'too_large: ' + scOpusJob.aggregate.skipped_too_large + ', not_ready: ' + scOpusJob.aggregate.skipped_not_ready">
+                                    (too_large: {{ scOpusJob.aggregate.skipped_too_large }}, not_ready: {{ scOpusJob.aggregate.skipped_not_ready }})
+                                </span>
+                            </div>
+                            <div>расхождений: <strong>{{ scOpusJob.aggregate.total_changes }}</strong></div>
+                            <div>elapsed: <strong>{{ scOpusElapsedLabel() }}</strong></div>
+                            <div v-if="scOpusJob.aggregate.eta_sec">ETA: <strong>{{ scFormatDuration(scOpusJob.aggregate.eta_sec) }}</strong></div>
+                        </div>
+
+                        <!-- Текущая пара (live) -->
+                        <div v-if="scOpusJob && scOpusJob.status === 'running' && scOpusJob.aggregate && scOpusJob.aggregate.current_pair_id"
+                             style="margin-top:10px; padding:12px 14px; background:linear-gradient(90deg,#ecfdf5,#fff); border:1px solid #bbf7d0; border-radius:8px">
+                            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px">
+                                <span style="display:inline-flex; align-items:center; gap:6px; font-weight:600; color:#15803d">
+                                    <span class="sc-pulse" style="display:inline-block; width:10px; height:10px; background:#16a34a; border-radius:50%"></span>
+                                    Идёт сравнение
+                                </span>
+                                <span style="font-size:13px; color:#374151">
+                                    пара <strong>{{ scOpusJob.aggregate.current_pair_index }}</strong> / {{ scOpusJob.aggregate.total_pairs }}
+                                </span>
+                                <span style="font-size:12px; opacity:.65; margin-left:auto" v-if="scOpusJob.aggregate.current_pair_status">
+                                    status: <code>{{ scOpusJob.aggregate.current_pair_status }}</code>
+                                </span>
+                            </div>
+                            <div style="font-family:monospace; font-size:13px; color:#1f2937; word-break:break-all">
+                                {{ scOpusCurrentPairLabel() }}
+                            </div>
+                        </div>
+
+                        <!-- Финальный статус -->
+                        <div v-if="scOpusJob && ['done','cancelled','rejected_no_confirm','failed'].includes(scOpusJob.status)"
+                             style="margin-top:6px; font-size:11px; opacity:.75">
+                            Последний прогон: <code>{{ scOpusJob.id }}</code> · status: <code>{{ scOpusJob.status }}</code>
+                            <span v-if="scOpusJob.created_at"> · создан: {{ scOpusJob.created_at }}</span>
                         </div>
                     </div>
 
@@ -5857,11 +5970,16 @@
                     <button v-if="scDevTools" class="btn btn-secondary" style="opacity:.85" :class="{'btn-primary': scDiffSubtab==='graphic'}" @click="scDiffSubtab='graphic'; scLoadGraphicSummary()" title="Dev: графическое сравнение блоков (для отладки)">Графика (debug)</button>
                     <template v-if="scDiffSubtab==='unified'">
                         <div style="flex:1"></div>
-                        <button class="btn btn-primary"
-                                :disabled="scUnifiedRunning || scUnifiedJobPolling"
+                        <!-- Раздел «Расхождения» — read-only просмотр. Основной
+                             запуск Opus batch перенесён на этап «1. Загрузка
+                             документации» (кнопка «🔍 Проанализировать и
+                             сравнить»). Здесь — только manual retry текущей
+                             пары как secondary action. -->
+                        <button class="btn btn-secondary"
+                                :disabled="scUnifiedRunning || scUnifiedJobPolling || (scOpusJob && ['queued','running'].includes(scOpusJob.status))"
                                 @click="scOpenUnifiedPairPreflight()"
-                                title="Запустить анализ для текущей PDF-пары: Qwen enrichment + Opus comparison">
-                            Проанализировать и сравнить
+                                title="Manual retry: пересчитать только активную PDF-пару. Основной запуск — кнопка «Проанализировать и сравнить» на этапе 1.">
+                            Пересчитать текущую пару
                         </button>
                         <!-- Session-wide Opus batch — тяжёлая операция, обычному
                              пользователю не показываем. Доступна в dev-режиме. -->
@@ -5980,6 +6098,24 @@
                             → <strong>скрыто формальных:</strong> {{ scUnifiedGrouped.summary.hidden_formal_count }}
                         </span>
                         <div style="flex:1"></div>
+                        <button class="btn btn-sm"
+                                :class="scExpertReviewMode ? 'btn-primary' : 'btn-secondary'"
+                                @click="scToggleExpertReview()"
+                                title="Подтверждать или опровергать расхождения. Решения хранятся на стороне сервера и переживают регруппировку.">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px; margin-right:3px"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                            {{ scExpertReviewMode ? 'Скрыть оценку' : 'Экспертная оценка' }}
+                        </button>
+                        <template v-if="scExpertReviewMode">
+                            <span style="font-size:12px; opacity:.85">
+                                Принято: <b style="color:#22c55e">{{ scExpertReviewSummary().accepted }}</b>
+                                · Отклонено: <b style="color:#ef4444">{{ scExpertReviewSummary().rejected }}</b>
+                            </span>
+                            <button class="btn btn-sm btn-primary"
+                                    @click="scSubmitExpertReview()"
+                                    :disabled="scExpertReviewSaving || scExpertReviewSummary().total === 0">
+                                {{ scExpertReviewSaving ? 'Сохранение…' : 'Сохранить решения' }}
+                            </button>
+                        </template>
                         <button v-if="scUnifiedViewMode === 'grouped'"
                                 class="btn btn-sm btn-secondary"
                                 :disabled="scGroupedRegrouping"
@@ -6055,7 +6191,7 @@
                     <!-- Empty state: pair выбрана, но анализ ещё не запускался -->
                     <div v-if="!scUnifiedFlatLoading && !scUnifiedShowAllPairs && scActivePair && scUnifiedFlat && (!scUnifiedFlat.items || !scUnifiedFlat.items.length)"
                          class="empty-state" style="padding:14px 0; font-size:13px; opacity:.85">
-                        Для выбранной PDF-пары анализ ещё не запускался. Нажмите «Проанализировать и сравнить».
+                        Для выбранной PDF-пары анализ ещё не запускался. Перейдите на этап «1. Загрузка документации» и нажмите «🔍 Проанализировать и сравнить» — будут обработаны все готовые пары сессии.
                     </div>
 
                     <!-- ════════════════════════════════════════════════════════
@@ -6159,12 +6295,14 @@
                                         <th class="sc-col-became" style="width:16%">Стало</th>
                                         <th style="width:150px">Где найдено</th>
                                         <th class="sc-col-impact" style="width:14%">Влияние</th>
+                                        <th v-if="scExpertReviewMode" style="width:84px; text-align:center">Решение</th>
+                                        <th v-if="scExpertReviewMode" style="width:150px">Причина</th>
                                         <th style="width:54px"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <template v-for="g in scGroupedItemsSorted" :key="g.id">
-                                        <tr :class="'sc-row sc-row--' + (g.significance || 'unknown')">
+                                        <tr :class="['sc-row', 'sc-row--' + (g.significance || 'unknown'), { 'row-accepted': scGetExpertDecision(g) === 'accepted', 'row-rejected': scGetExpertDecision(g) === 'rejected', 'sc-row-mixed': scGetExpertDecision(g) === 'mixed' }]">
                                             <td class="sc-cell-no">
                                                 <div class="sc-cell-no__num">№{{ g._displayNo }}</div>
                                                 <span :class="'sc-sev-chip sc-sev-chip--' + (g.significance || 'unknown')"
@@ -6256,6 +6394,32 @@
                                                     Стоимость: <strong>{{ g.cost_impact }}</strong>
                                                 </div>
                                             </td>
+                                            <!-- Экспертное решение -->
+                                            <td v-if="scExpertReviewMode" class="decision-cell" style="text-align:center">
+                                                <div class="decision-toggle"
+                                                     :title="scGetExpertDecision(g) === 'mixed' ? 'Смешанные решения по объединённым raw-расхождениям. Клик задаст общее решение.' : ''">
+                                                    <button class="btn-decision btn-accept btn-sm"
+                                                            :class="{ active: scGetExpertDecision(g) === 'accepted' }"
+                                                            @click.stop="scSetExpertDecision(g, 'accepted')" title="Принять">
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                                                    </button>
+                                                    <button class="btn-decision btn-reject btn-sm"
+                                                            :class="{ active: scGetExpertDecision(g) === 'rejected' }"
+                                                            @click.stop="scSetExpertDecision(g, 'rejected')" title="Отклонить">
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M6 18L18 6"/></svg>
+                                                    </button>
+                                                </div>
+                                                <div v-if="scGetExpertDecision(g) === 'mixed'" style="font-size:9px; opacity:.65; margin-top:2px">смешано</div>
+                                            </td>
+                                            <!-- Причина -->
+                                            <td v-if="scExpertReviewMode" class="reason-cell">
+                                                <textarea v-if="scGetExpertDecision(g)"
+                                                          class="rejection-reason-input"
+                                                          :value="scGetExpertReason(g)"
+                                                          @input="scSetExpertReason(g, $event.target.value)"
+                                                          :placeholder="scGetExpertDecision(g) === 'accepted' ? 'Почему подтверждено…' : 'Почему отклонено…'"
+                                                          rows="2"></textarea>
+                                            </td>
                                             <!-- К месту (первое evidence) -->
                                             <td class="sc-cell-goto">
                                                 <button class="sc-goto-btn"
@@ -6274,7 +6438,7 @@
                                         <!-- Expandable evidence row -->
                                         <tr v-if="scIsGroupExpanded(g.id)" :class="'sc-row sc-row--' + (g.significance || 'unknown') + ' sc-row-evidence'">
                                             <td></td>
-                                            <td colspan="7" class="sc-grouped-evidence-cell">
+                                            <td :colspan="scExpertReviewMode ? 9 : 7" class="sc-grouped-evidence-cell">
                                                 <!-- value_variants -->
                                                 <div v-if="scGroupedHasVariants(g)" class="sc-grouped-variants">
                                                     <strong style="font-size:11px; opacity:.8">Варианты old → new (всего {{ g.value_variants.length }}):</strong>
@@ -6389,7 +6553,7 @@
                     <!-- Empty state (для всей сессии — фолбэк) -->
                     <div v-if="scUnifiedViewMode === 'raw' && scUnifiedShowAllPairs && scUnifiedFlat && (!scUnifiedFlat.items || !scUnifiedFlat.items.length)"
                          class="empty-state" style="padding:14px 0; font-size:13px">
-                        Расхождений пока нет. Запустите анализ через «Проанализировать и сравнить» на каждой PDF-паре.
+                        Расхождений пока нет. Перейдите на этап «1. Загрузка документации» и запустите «🔍 Проанализировать и сравнить» по всей сессии.
                     </div>
 
                     <!-- Unified Excel-style table (номер / место / изменение / было / стало / влияние) -->
@@ -6419,12 +6583,14 @@
                                         title="Кликните для сортировки по влиянию (важность × стоимость)">
                                         Влияние <span class="sc-sort-ind">{{ scUnifiedSortIndicator('impact') }}</span>
                                     </th>
+                                    <th v-if="scExpertReviewMode" style="width:84px; text-align:center">Решение</th>
+                                    <th v-if="scExpertReviewMode" style="width:150px">Причина</th>
                                     <th style="width:36px"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="it in scUnifiedItemsSorted" :key="it.id"
-                                    :class="'sc-row sc-row--' + (it.severity || 'unknown')">
+                                    :class="['sc-row', 'sc-row--' + (it.severity || 'unknown'), { 'row-accepted': scGetExpertDecision(it) === 'accepted', 'row-rejected': scGetExpertDecision(it) === 'rejected' }]">
                                     <!-- № + severity -->
                                     <td class="sc-cell-no">
                                         <div class="sc-cell-no__num">№{{ it._displayNo }}</div>
@@ -6482,6 +6648,30 @@
                                         <div v-if="it.cost_impact && it.cost_impact !== 'none'" class="sc-impact-cost">
                                             Стоимость: <strong>{{ it.cost_impact }}</strong>
                                         </div>
+                                    </td>
+                                    <!-- Экспертное решение -->
+                                    <td v-if="scExpertReviewMode" class="decision-cell" style="text-align:center">
+                                        <div class="decision-toggle">
+                                            <button class="btn-decision btn-accept btn-sm"
+                                                    :class="{ active: scGetExpertDecision(it) === 'accepted' }"
+                                                    @click.stop="scSetExpertDecision(it, 'accepted')" title="Принять">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                                            </button>
+                                            <button class="btn-decision btn-reject btn-sm"
+                                                    :class="{ active: scGetExpertDecision(it) === 'rejected' }"
+                                                    @click.stop="scSetExpertDecision(it, 'rejected')" title="Отклонить">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M6 18L18 6"/></svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <!-- Причина -->
+                                    <td v-if="scExpertReviewMode" class="reason-cell">
+                                        <textarea v-if="scGetExpertDecision(it)"
+                                                  class="rejection-reason-input"
+                                                  :value="scGetExpertReason(it)"
+                                                  @input="scSetExpertReason(it, $event.target.value)"
+                                                  :placeholder="scGetExpertDecision(it) === 'accepted' ? 'Почему подтверждено…' : 'Почему отклонено…'"
+                                                  rows="2"></textarea>
                                     </td>
                                     <!-- Перейти к месту (иконка) -->
                                     <td class="sc-cell-goto">
