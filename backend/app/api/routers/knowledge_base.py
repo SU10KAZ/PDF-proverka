@@ -5,19 +5,37 @@ import os
 import tempfile
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, UploadFile, File, Query
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
 
 from backend.app.models.expert_review import (
     ExpertReviewSubmission, CustomerConfirmRequest, PatternActionRequest,
 )
+from backend.app.services.common import version_service
 import backend.app.services.knowledge_base.knowledge_base_service as kb_svc
 import backend.app.services.knowledge_base.missing_norms_service as mn_svc
 
 router = APIRouter(prefix="/api/knowledge-base", tags=["knowledge-base"])
 
 
+async def use_version(version_id: Optional[str] = None):
+    """Подвязать version_id к ContextVar на время запроса.
+
+    Должна быть `async`, чтобы set/reset ContextVar шли в одном Context'е
+    (см. комментарий в discussions.use_version).
+    """
+    token = version_service.bind_version(version_id)
+    try:
+        yield version_id
+    finally:
+        version_service.unbind_version(token)
+
+
 @router.post("/expert-review/{project_id:path}")
-async def submit_expert_review(project_id: str, body: ExpertReviewSubmission):
+async def submit_expert_review(
+    project_id: str,
+    body: ExpertReviewSubmission,
+    _vid: Optional[str] = Depends(use_version),
+):
     """Сохранить решения эксперта по проекту."""
     try:
         result = kb_svc.save_expert_review(project_id, body.decisions, body.reviewer, removed_ids=body.removed_ids)
@@ -27,7 +45,10 @@ async def submit_expert_review(project_id: str, body: ExpertReviewSubmission):
 
 
 @router.get("/expert-review/{project_id:path}")
-async def get_expert_review(project_id: str):
+async def get_expert_review(
+    project_id: str,
+    _vid: Optional[str] = Depends(use_version),
+):
     """Загрузить сохранённые решения эксперта для проекта."""
     data = kb_svc.load_expert_review(project_id)
     if data is None:
@@ -126,8 +147,19 @@ async def edit_pattern(pattern_id: str, body: PatternActionRequest):
 
 
 @router.post("/upload-excel")
-async def upload_decisions_excel(file: UploadFile = File(...)):
-    """Загрузить Excel с решениями эксперта."""
+async def upload_decisions_excel(
+    file: UploadFile = File(...),
+    project_id: Optional[str] = None,
+    _vid: Optional[str] = Depends(use_version),
+):
+    """Загрузить Excel с решениями эксперта.
+
+    `version_id` (query) применяется ко всем найденным в Excel проектам.
+    `project_id` (query) используется только как fallback: когда в Excel
+    скрытая ячейка / имя листа не позволяют определить настоящий project_id
+    (например, старые экспорты для V2 писали в скрытую ячейку basename
+    папки = "v2"). UI всегда знает текущий project_id и шлёт его явно.
+    """
     if not file.filename.endswith((".xlsx", ".xls")):
         raise HTTPException(400, "Ожидается файл .xlsx")
 
@@ -138,7 +170,7 @@ async def upload_decisions_excel(file: UploadFile = File(...)):
         tmp_path = tmp.name
 
     try:
-        results = kb_svc.import_decisions_from_excel(tmp_path)
+        results = kb_svc.import_decisions_from_excel(tmp_path, default_project_id=project_id)
         return {"status": "ok", "projects": results}
     except Exception as e:
         raise HTTPException(500, f"Ошибка импорта: {e}")

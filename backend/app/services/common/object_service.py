@@ -128,13 +128,11 @@ def add_object(name: str, projects_dir: Optional[str] = None) -> dict:
     data = _ensure_default_object(_load_objects())
     if not name.strip():
         raise ValueError("Название объекта не может быть пустым")
-    # Создать папку для проектов
+    from backend.app.core.config import PROJECTS_DIR
     if projects_dir:
         proj_dir = Path(projects_dir)
     else:
-        # Создаём подпапку в projects_root/
-        safe_name = name.strip().replace(" ", "_").replace('"', '').replace("'", "")
-        proj_dir = BASE_DIR / "projects_objects" / safe_name
+        proj_dir = PROJECTS_DIR / name.strip()
     proj_dir.mkdir(parents=True, exist_ok=True)
     new_obj = {
         "id": str(uuid.uuid4())[:8],

@@ -1,0 +1,15 @@
+{
+  "id": "eom_02_grounding",
+  "discipline": "EOM",
+  "title": "ЭОМ — заземление и уравнивание потенциалов жилого дома",
+  "md_file": "input.md",
+  "stage": "РД",
+  "notes": "Заземление здания. Не указана система TN-C-S явно, противоречие сечения PEN/PE, отсутствие расчёта молниезащиты",
+  "document_type": "full_rd",
+  "expected_complexity": "medium",
+  "has_cross_discipline": false,
+  "has_completeness_gaps": true,
+  "has_calculation_errors": false,
+  "has_normative_errors": true,
+  "has_hidden_contradictions": true
+}

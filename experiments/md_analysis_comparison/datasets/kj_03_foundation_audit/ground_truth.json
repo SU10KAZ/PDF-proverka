@@ -1,0 +1,47 @@
+{
+  "case_id": "kj_03_foundation_audit",
+  "discipline": "KJ",
+  "expected_findings": [
+    {
+      "id": "GT-01",
+      "severity": "КРИТИЧЕСКОЕ",
+      "is_critical": true,
+      "description": "Cross-discipline: подошва плиты по КЖ на отметке −2,5 м попадает в слой ИГЭ-2 (суглинок мягкопластичный, R = 130 кПа), но в расчёте использован R = 230 кПа от ИГЭ-3. Среднее давление P_ср = 210 кПа > фактического R = 130 кПа → расчёт неверен, основание перегружено.",
+      "must_match_substring": "ИГЭ-2",
+      "category": "cross_discipline",
+      "cross_discipline": true
+    },
+    {
+      "id": "GT-02",
+      "severity": "КРИТИЧЕСКОЕ",
+      "is_critical": true,
+      "description": "Hidden contradiction между разделом ИГИ и КЖ: разные отметки подошвы (КЖ −2,5 м vs ИГИ −3,2 м для условного фундамента) и разные параметры грунта на одной отметке. Требуется пересогласование.",
+      "must_match_substring": "−2,5",
+      "category": "contradiction",
+      "hidden_contradiction": true
+    },
+    {
+      "id": "GT-03",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "description": "При корректной R = 130 кПа осадка S = 5,2 см не подтверждается — расчёт по методу послойного суммирования должен быть пересчитан с правильными E_i по слоям ИГЭ-2 (E=8 МПа) и ИГЭ-3 (E=18 МПа).",
+      "must_match_substring": "Осадка",
+      "category": "calculation"
+    },
+    {
+      "id": "GT-04",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "is_trap": true,
+      "description": "Trap (FP-провокатор): отсутствие чертежей армирования, ведомости расхода арматуры — НЕ замечание для аудит-документа (document_type=audit_comparison). Эти артефакты находятся в полном разделе КЖ, не в сопоставительном отчёте.",
+      "must_match_substring": "Часть В"
+    }
+  ],
+  "trap_count": 1,
+  "hidden_contradiction_count": 1,
+  "cross_discipline_count": 1,
+  "false_positive_traps": [
+    "отсутствие однолинейной схемы",
+    "отсутствие чертежей армирования",
+    "отсутствие ведомости арматуры",
+    "отсутствие полного комплекта раздела КЖ"
+  ]
+}

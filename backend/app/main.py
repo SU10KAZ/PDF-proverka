@@ -49,6 +49,8 @@ from backend.app.api.routers import (
     critic_v2_ui,
     critic_v2_assisted_round1,
     migrated_findings,
+    external_register,
+    stage_comparison,
 )
 from backend.app.ws.manager import ws_manager
 
@@ -95,6 +97,8 @@ app.include_router(model_control.router)
 app.include_router(lms.router)
 app.include_router(critic_v2_ui.router)
 app.include_router(critic_v2_assisted_round1.router)
+app.include_router(external_register.router)
+app.include_router(stage_comparison.router)
 # migrated_findings уже подключён выше — повторно не подключаем.
 
 # ─── WebSocket Endpoints ────────────────────────────────────

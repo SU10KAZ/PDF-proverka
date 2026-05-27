@@ -1,0 +1,15 @@
+{
+  "id": "km_02_metal_protection_spec",
+  "discipline": "KM",
+  "title": "КМ — спецификация антикоррозионной защиты металлоконструкций",
+  "md_file": "input.md",
+  "stage": "РД",
+  "notes": "Только ведомость антикоррозионной защиты, не полный раздел КМ. Нельзя критиковать отсутствие сечений ферм и т.п.",
+  "document_type": "specification_only",
+  "expected_complexity": "low",
+  "has_cross_discipline": false,
+  "has_completeness_gaps": true,
+  "has_calculation_errors": false,
+  "has_normative_errors": true,
+  "has_hidden_contradictions": false
+}

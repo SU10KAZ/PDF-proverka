@@ -12,7 +12,22 @@ from backend.app.core.config import KNOWLEDGE_BASE_DIR, DECISIONS_LOG_FILE, PATT
 from backend.app.models.expert_review import (
     ExpertDecision, KnowledgeBaseEntry, PatternSuggestion,
 )
+from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
+
+
+def _version_dir(project_id: str) -> Path:
+    """Активная версия проекта (из ContextVar bound_version_id, fallback на latest)."""
+    project_dir = resolve_project_dir(project_id)
+    vid = version_service.get_bound_version_id()
+    try:
+        return version_service.get_version_dir(project_dir, project_id, vid)
+    except version_service.VersionNotFoundError:
+        return project_dir
+
+
+def _output_dir(project_id: str) -> Path:
+    return _version_dir(project_id) / "_output"
 
 
 def _ensure_kb_dir():
@@ -55,8 +70,7 @@ def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewe
     2. Обогащает решения контекстом из findings/optimization
     3. Добавляет записи в глобальный decisions_log.json
     """
-    project_dir = resolve_project_dir(project_id)
-    output_dir = project_dir / "_output"
+    output_dir = _output_dir(project_id)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # 1. Сохранить per-project файл (merge с существующими решениями)
@@ -93,15 +107,13 @@ def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewe
 
 def load_expert_review(project_id: str) -> Optional[dict]:
     """Загрузить сохранённые решения эксперта для проекта."""
-    project_dir = resolve_project_dir(project_id)
-    path = project_dir / "_output" / "expert_review.json"
+    path = _output_dir(project_id) / "expert_review.json"
     return _load_json(path)
 
 
 def _enrich_decisions(project_id: str, decisions: list[ExpertDecision], reviewer: str) -> list[KnowledgeBaseEntry]:
     """Обогатить решения контекстом из findings/optimization JSON."""
-    project_dir = resolve_project_dir(project_id)
-    output_dir = project_dir / "_output"
+    output_dir = _output_dir(project_id)
 
     # Загрузить findings
     findings_map = {}
@@ -120,8 +132,12 @@ def _enrich_decisions(project_id: str, decisions: list[ExpertDecision], reviewer
         for item in opt_data.get("items", []):
             opt_map[item.get("id", "")] = item
 
-    # Загрузить project_info для section
-    info = _load_json(project_dir / "project_info.json") or {}
+    # Загрузить project_info для section (из активной версии, fallback на корень)
+    version_dir = _version_dir(project_id)
+    info_path = version_dir / "project_info.json"
+    if not info_path.exists():
+        info_path = resolve_project_dir(project_id) / "project_info.json"
+    info = _load_json(info_path) or {}
     section = info.get("section", "")
 
     # Следующий ID
@@ -308,11 +324,11 @@ def revoke_decision(entry_id: str, project_id: str, item_id: str) -> int:
     _save_decisions_log(entries)
     removed = before - len(entries)
 
-    # 2. Удалить из expert_review.json проекта
+    # 2. Удалить из expert_review.json проекта (активная версия)
     if project_id and item_id:
         project_dir = _find_project_dir(project_id)
         if project_dir:
-            review_path = project_dir / "_output" / "expert_review.json"
+            review_path = _output_dir(project_id) / "expert_review.json"
             if review_path.exists():
                 review_data = _load_json(review_path)
                 if review_data and "decisions" in review_data:
@@ -469,10 +485,14 @@ def _resolve_project_id_from_sheet(ws_title: str) -> str:
     return name  # fallback — вернуть как есть
 
 
-def import_decisions_from_excel(file_path: str) -> dict:
+def import_decisions_from_excel(file_path: str, default_project_id: Optional[str] = None) -> dict:
     """Импортировать решения из Excel-файла с колонками 'Решение эксперта' и 'Причина отклонения'.
 
     Возвращает {project_id: {saved, accepted, rejected}} для каждого обнаруженного проекта.
+
+    `default_project_id` — fallback из UI-контекста, когда в Excel ни скрытая
+    ячейка, ни имя листа не дают валидный project_id (старые экспорты для V2
+    клали в скрытую ячейку "v2" вместо реального ID).
     """
     import openpyxl
 
@@ -507,16 +527,31 @@ def import_decisions_from_excel(file_path: str) -> dict:
         if "decision" not in headers or "id" not in headers:
             continue
 
-        # Определить project_id: скрытый столбец (строка 2) → имя листа → fallback
+        # Определить project_id: скрытый столбец (строка 2) → имя листа → fallback.
+        # Защита: если в скрытой ячейке или в имени листа лежит просто метка
+        # версии ("v1"/"v2"/…) — это не project_id (старые экспорты для V2
+        # клали туда basename папки = "v2"). В таких случаях используем
+        # default_project_id, переданный из UI-контекста (currentProjectId).
+        import re as _re
+        def _looks_like_version(s: str) -> bool:
+            return bool(s and _re.fullmatch(r"v\d+", s.strip(), flags=_re.IGNORECASE))
+
         project_id = None
         if "project_id" in headers:
             row2 = list(next(ws.iter_rows(min_row=2, max_row=2), []))
             if row2 and headers["project_id"] < len(row2):
                 pid_val = str(row2[headers["project_id"]].value or "").strip()
-                if pid_val:
+                if pid_val and not _looks_like_version(pid_val):
                     project_id = pid_val
         if not project_id:
-            project_id = _resolve_project_id_from_sheet(ws.title)
+            # Снимаем префикс "ОПТ " вручную, чтобы проверить «голое» имя
+            bare_title = ws.title[4:] if ws.title.startswith("ОПТ ") else ws.title
+            if not _looks_like_version(bare_title):
+                resolved = _resolve_project_id_from_sheet(ws.title)
+                if resolved and not _looks_like_version(resolved):
+                    project_id = resolved
+        if not project_id and default_project_id:
+            project_id = default_project_id
 
         decisions = []
         for row in ws.iter_rows(min_row=3, values_only=False):
@@ -555,9 +590,19 @@ def import_decisions_from_excel(file_path: str) -> dict:
                 timestamp=_now_iso(),
             ))
 
-        if decisions:
+        import logging
+        _log = logging.getLogger(__name__)
+        _log.warning(
+            "[import-excel] sheet=%r project_id=%r decisions=%d headers=%s bound_vid=%s",
+            ws.title, project_id, len(decisions), list(headers.keys()),
+            version_service.get_bound_version_id(),
+        )
+
+        if decisions and project_id:
             result = save_expert_review(project_id, decisions)
             results[project_id] = result
+        elif decisions and not project_id:
+            _log.warning("[import-excel] decisions=%d but project_id not resolved for sheet=%r", len(decisions), ws.title)
 
     wb.close()
     return results

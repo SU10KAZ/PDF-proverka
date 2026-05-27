@@ -3,15 +3,35 @@ REST API для обсуждений замечаний/оптимизаций.
 """
 import io
 import json
+from typing import Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 
 from backend.app.core.config import DISCUSSION_MODELS, DISCUSSION_DEFAULT_MODEL
 from backend.app.models.discussion import ChatRequest, ResolutionRequest, ReviseRequest
+from backend.app.services.common import version_service
 import backend.app.services.discussions.discussion_service as discussion_service
 
 router = APIRouter(prefix="/api/discussions", tags=["discussions"])
+
+
+async def use_version(version_id: Optional[str] = None):
+    """FastAPI dependency: подвязывает version_id к ContextVar на время запроса.
+
+    Все нижележащие функции discussion_service читают активную версию через
+    `version_service.get_bound_version_id()`. Если параметр не передан, в
+    бинд кладётся None → сервис fallback'нется на latest_version_id.
+
+    ВАЖНО: dependency должна быть `async`, иначе FastAPI исполнит её в
+    threadpool, set() и reset() ContextVar окажутся в разных Context'ах
+    и `reset()` упадёт с `ValueError: created in a different Context`.
+    """
+    token = version_service.bind_version(version_id)
+    try:
+        yield version_id
+    finally:
+        version_service.unbind_version(token)
 
 
 @router.get("/models")
@@ -24,7 +44,11 @@ async def get_discussion_models():
 
 
 @router.get("/{project_id:path}/resolved/excel")
-async def download_resolved_excel(project_id: str, type: str = "finding"):
+async def download_resolved_excel(
+    project_id: str,
+    type: str = "finding",
+    _vid: Optional[str] = Depends(use_version),
+):
     """Скачать Excel с отработанными (confirmed/revised) замечаниями."""
     try:
         from openpyxl import Workbook
@@ -37,9 +61,8 @@ async def download_resolved_excel(project_id: str, type: str = "finding"):
     if not resolved:
         raise HTTPException(404, "Нет отработанных замечаний")
 
-    from backend.app.services.discussions.discussion_service import _load_json
-    from backend.app.core.config import PROJECTS_DIR
-    proj_dir = PROJECTS_DIR / project_id / "_output"
+    from backend.app.services.discussions.discussion_service import _load_json, _output_dir
+    proj_dir = _output_dir(project_id)
     if type == "finding":
         fdata = _load_json(proj_dir / "03_findings.json")
         findings_data = fdata.get("findings", []) if fdata else []
@@ -132,7 +155,11 @@ async def download_resolved_excel(project_id: str, type: str = "finding"):
 
 
 @router.get("/{project_id:path}/list")
-async def list_items(project_id: str, type: str = "finding"):
+async def list_items(
+    project_id: str,
+    type: str = "finding",
+    _vid: Optional[str] = Depends(use_version),
+):
     """Список замечаний/оптимизаций с индикатором статуса обсуждения."""
     if type not in ("finding", "optimization"):
         raise HTTPException(400, "type must be 'finding' or 'optimization'")
@@ -141,7 +168,12 @@ async def list_items(project_id: str, type: str = "finding"):
 
 
 @router.get("/{project_id:path}/{item_id}/estimate-tokens")
-async def estimate_tokens(project_id: str, item_id: str, type: str = "finding"):
+async def estimate_tokens(
+    project_id: str,
+    item_id: str,
+    type: str = "finding",
+    _vid: Optional[str] = Depends(use_version),
+):
     """Оценить количество токенов контекста для обсуждения."""
     if type not in ("finding", "optimization"):
         raise HTTPException(400, "type must be 'finding' or 'optimization'")
@@ -149,7 +181,11 @@ async def estimate_tokens(project_id: str, item_id: str, type: str = "finding"):
 
 
 @router.get("/{project_id:path}/{item_id}")
-async def get_discussion(project_id: str, item_id: str):
+async def get_discussion(
+    project_id: str,
+    item_id: str,
+    _vid: Optional[str] = Depends(use_version),
+):
     """Получить историю обсуждения."""
     disc = discussion_service.get_discussion(project_id, item_id)
     if disc is None:
@@ -158,7 +194,13 @@ async def get_discussion(project_id: str, item_id: str):
 
 
 @router.post("/{project_id:path}/{item_id}/chat")
-async def send_message(project_id: str, item_id: str, req: ChatRequest, type: str = "finding"):
+async def send_message(
+    project_id: str,
+    item_id: str,
+    req: ChatRequest,
+    type: str = "finding",
+    _vid: Optional[str] = Depends(use_version),
+):
     """Отправить сообщение в чат."""
     if type not in ("finding", "optimization"):
         raise HTTPException(400, "type must be 'finding' or 'optimization'")
@@ -176,23 +218,35 @@ async def send_message(project_id: str, item_id: str, req: ChatRequest, type: st
 
 
 @router.post("/{project_id:path}/{item_id}/chat/stream")
-async def send_message_stream(project_id: str, item_id: str, req: ChatRequest, type: str = "finding"):
+async def send_message_stream(
+    project_id: str,
+    item_id: str,
+    req: ChatRequest,
+    type: str = "finding",
+    _vid: Optional[str] = Depends(use_version),
+):
     """SSE стриминг ответа чата."""
     if type not in ("finding", "optimization"):
         raise HTTPException(400, "type must be 'finding' or 'optimization'")
     if not req.message.strip() and not req.image:
         raise HTTPException(400, "message or image required")
 
+    # SSE генератор стартует ПОСЛЕ возврата handler'а — к тому моменту
+    # `use_version` уже unbind'нется. Подвязываем version_id ещё раз
+    # внутри генератора, чтобы discussion_service видел нужную версию.
+    captured_vid = _vid
+
     async def event_generator():
-        async for event in discussion_service.send_chat_message_stream(
-            project_id=project_id,
-            item_id=item_id,
-            item_type=type,
-            user_message=req.message,
-            model=req.model,
-            image=req.image,
-        ):
-            yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+        with version_service.pinned_version(captured_vid):
+            async for event in discussion_service.send_chat_message_stream(
+                project_id=project_id,
+                item_id=item_id,
+                item_type=type,
+                user_message=req.message,
+                model=req.model,
+                image=req.image,
+            ):
+                yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
 
     return StreamingResponse(
         event_generator(),
@@ -202,7 +256,13 @@ async def send_message_stream(project_id: str, item_id: str, req: ChatRequest, t
 
 
 @router.post("/{project_id:path}/{item_id}/resolve")
-async def resolve(project_id: str, item_id: str, req: ResolutionRequest, type: str = "finding"):
+async def resolve(
+    project_id: str,
+    item_id: str,
+    req: ResolutionRequest,
+    type: str = "finding",
+    _vid: Optional[str] = Depends(use_version),
+):
     """Установить резолюцию (confirmed / rejected / revised)."""
     if req.status not in ("confirmed", "rejected", "revised"):
         raise HTTPException(400, "status must be confirmed, rejected, or revised")
@@ -223,7 +283,13 @@ async def resolve(project_id: str, item_id: str, req: ResolutionRequest, type: s
 
 
 @router.post("/{project_id:path}/{item_id}/revise")
-async def revise(project_id: str, item_id: str, req: ReviseRequest, type: str = "finding"):
+async def revise(
+    project_id: str,
+    item_id: str,
+    req: ReviseRequest,
+    type: str = "finding",
+    _vid: Optional[str] = Depends(use_version),
+):
     """Сгенерировать изменённую версию на основе диалога."""
     if type not in ("finding", "optimization"):
         raise HTTPException(400, "type must be 'finding' or 'optimization'")
@@ -240,7 +306,13 @@ async def revise(project_id: str, item_id: str, req: ReviseRequest, type: str = 
 
 
 @router.post("/{project_id:path}/{item_id}/apply-revision")
-async def apply_revision(project_id: str, item_id: str, revised: dict, type: str = "finding"):
+async def apply_revision(
+    project_id: str,
+    item_id: str,
+    revised: dict,
+    type: str = "finding",
+    _vid: Optional[str] = Depends(use_version),
+):
     """Применить изменённую версию замечания."""
     if type not in ("finding", "optimization"):
         raise HTTPException(400, "type must be 'finding' or 'optimization'")
@@ -252,7 +324,12 @@ async def apply_revision(project_id: str, item_id: str, revised: dict, type: str
 
 
 @router.post("/{project_id:path}/{item_id}/truncate")
-async def truncate_discussion(project_id: str, item_id: str, body: dict):
+async def truncate_discussion(
+    project_id: str,
+    item_id: str,
+    body: dict,
+    _vid: Optional[str] = Depends(use_version),
+):
     """Обрезать историю обсуждения до keep_count сообщений."""
     keep_count = body.get("keep_count", 0)
     result = discussion_service.truncate_messages(project_id, item_id, keep_count)
@@ -260,7 +337,11 @@ async def truncate_discussion(project_id: str, item_id: str, body: dict):
 
 
 @router.delete("/{project_id:path}/{item_id}")
-async def delete_discussion(project_id: str, item_id: str):
+async def delete_discussion(
+    project_id: str,
+    item_id: str,
+    _vid: Optional[str] = Depends(use_version),
+):
     """Удалить историю обсуждения."""
     path = discussion_service._discussion_path(project_id, item_id)
     if path.exists():

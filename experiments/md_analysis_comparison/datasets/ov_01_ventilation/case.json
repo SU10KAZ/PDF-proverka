@@ -1,0 +1,15 @@
+{
+  "id": "ov_01_ventilation",
+  "discipline": "OV",
+  "title": "ОВиК — расчёт воздухообмена кухни",
+  "md_file": "input.md",
+  "stage": "РД",
+  "notes": "Кратность ниже норматива + противоречие текста/таблицы + СНиП → СП замена",
+  "document_type": "full_rd",
+  "expected_complexity": "medium",
+  "has_cross_discipline": false,
+  "has_completeness_gaps": true,
+  "has_calculation_errors": true,
+  "has_normative_errors": true,
+  "has_hidden_contradictions": false
+}

@@ -358,6 +358,17 @@ def find_projects(specific_paths=None) -> list:
         fp  = os.path.join(d, "_output", "03_findings.json")
         op  = os.path.join(d, "_output", "optimization.json")
         ip  = os.path.join(d, "project_info.json")
+        # Если передан путь к версионной папке (`_versions/v2`), basename даёт
+        # "v2" — это не project_id. Читаем настоящий из project_info.json.
+        if os.path.isfile(ip):
+            try:
+                with open(ip, "r", encoding="utf-8-sig") as _f:
+                    _pi = json.load(_f)
+                _real_pid = (_pi.get("project_id") or "").strip()
+                if _real_pid:
+                    pid = _real_pid
+            except Exception:
+                pass
         # Имя Excel-листа (≤ 31 символ, без спецсимволов)
         sheet_name = pid.replace("/", "-").replace("\\", "-")
         for ch in r'*?[]':

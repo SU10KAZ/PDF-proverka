@@ -1,0 +1,53 @@
+{
+  "case_id": "cross_02_kj_ar_opening",
+  "discipline": "MULTI",
+  "expected_findings": [
+    {
+      "id": "GT-01",
+      "severity": "КРИТИЧЕСКОЕ",
+      "is_critical": true,
+      "description": "Cross-discipline (АР↔КЖ): проём Д-2/П-2 в несущей стене оси «Б» имеет разные параметры. АР: 1200×2400 (раздвижной). КЖ: 900×2100 (стандартный). Несовпадение размеров проёма в несущей стене недопустимо — это разные нагрузки на перемычку и разный расчёт армирования.",
+      "must_match_substring": "1200",
+      "category": "cross_discipline",
+      "cross_discipline": true
+    },
+    {
+      "id": "GT-02",
+      "severity": "КРИТИЧЕСКОЕ",
+      "is_critical": true,
+      "description": "При фактическом проёме 1200 мм (по АР) расчёт перемычки КЖ с пролётом 900+200+200 = 1300 мм НЕ применим — нужен пересчёт для пролёта 1200+200+200 = 1600 мм. Армирование 4Ø16 может быть недостаточным для увеличенного пролёта и удвоенной высоты проёма (2400 мм).",
+      "must_match_substring": "1300",
+      "category": "calculation"
+    },
+    {
+      "id": "GT-03",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "description": "Hidden contradiction: тип проёма Д-2 «раздвижной дверной» подразумевает направляющий механизм, который требует от КЖ дополнительной закладной детали или другого решения по перемычке. КЖ это не отразил.",
+      "must_match_substring": "раздвижной",
+      "category": "contradiction",
+      "hidden_contradiction": true
+    },
+    {
+      "id": "GT-04",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "is_trap": true,
+      "description": "Trap (FP-провокатор): проёмы Д-1, Д-3, Д-4 — соответствуют между АР и КЖ. Не выписывать их как cross-discipline проблему.",
+      "must_match_substring": "Д-1"
+    },
+    {
+      "id": "GT-05",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "is_trap": true,
+      "description": "Trap (FP-провокатор): отсутствие полного раздела КЖ (общие виды, ведомости, узлы) — НЕ замечание для аудит-документа (document_type=audit_comparison).",
+      "must_match_substring": "Cross-discipline"
+    }
+  ],
+  "trap_count": 2,
+  "hidden_contradiction_count": 1,
+  "cross_discipline_count": 1,
+  "false_positive_traps": [
+    "отсутствие полного раздела КЖ или АР",
+    "отсутствие чертежей",
+    "отсутствие узлов"
+  ]
+}

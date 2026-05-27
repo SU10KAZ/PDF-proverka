@@ -289,6 +289,13 @@ STAGE_MODELS_FILE            = APP_DATA_DIR / "stage_models.json"
 STAGE_BATCH_MODES_FILE_PATH  = APP_DATA_DIR / "stage_batch_modes.json"
 HIDDEN_PROJECTS_FILE         = APP_DATA_DIR / "hidden_projects.json"
 
+# Реестры внешних замечаний (письма заказчика / контрагентов с уже-отправленными findings).
+# Ключ файла: {object_id}__{register_id}.json. Хранит структурированный список
+# с per-entry match'ами на наши findings + ответ заказчика.
+EXTERNAL_REGISTERS_DIR        = APP_DATA_DIR / "external_registers"
+EXTERNAL_REGISTER_MATCH_THRESHOLD = 0.8   # confidence >= → auto-mark finding
+EXTERNAL_REGISTER_REVIEW_THRESHOLD = 0.5  # confidence in [0.5, 0.8) → needs_review
+
 # ─── Paid API guard ─────────────────────────────────────────────────────────
 # Глобальный kill-switch. Default = False (fail-closed): чтобы реально
 # пользоваться платными моделями (Stage 02 GPT-5.4, Gemini, OpenRouter etc.),

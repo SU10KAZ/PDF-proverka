@@ -27,6 +27,7 @@ from backend.app.models.discussion import (
 )
 from backend.app.models.usage import LLMResult
 from backend.app.services.llm.llm_runner import run_llm, make_image_content
+from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
 
 logger = logging.getLogger(__name__)
@@ -37,10 +38,31 @@ def _is_cli_model(model: str) -> bool:
     return model == "claude-cli"
 
 
+# ─── Пути ────────────────────────────────────────────────────
+# Используем активную версию (ContextVar `bound_version_id`), которую
+# роутер выставляет через `version_service.pinned_version(...)`. Если она
+# не задана — fallback на latest_version_id из манифеста (для legacy V1
+# это эквивалентно корню проекта).
+
+def _version_dir(project_id: str) -> Path:
+    project_dir = resolve_project_dir(project_id)
+    vid = version_service.get_bound_version_id()
+    try:
+        return version_service.get_version_dir(project_dir, project_id, vid)
+    except version_service.VersionNotFoundError:
+        # Невалидный bound vid не должен валить весь discussion-сервис —
+        # отдаём корень логического проекта (V1) как было исторически.
+        return project_dir
+
+
+def _output_dir(project_id: str) -> Path:
+    return _version_dir(project_id) / "_output"
+
+
 # ─── Хранение ────────────────────────────────────────────────
 
 def _discussions_dir(project_id: str) -> Path:
-    return resolve_project_dir(project_id) / "_output" / "discussions"
+    return _output_dir(project_id) / "discussions"
 
 
 def _discussion_path(project_id: str, item_id: str) -> Path:
@@ -94,8 +116,7 @@ def _build_finding_context(project_id: str, item_id: str) -> tuple[str, list[dic
     Returns:
         (context_text, image_content_blocks)
     """
-    project_dir = resolve_project_dir(project_id)
-    output_dir = project_dir / "_output"
+    output_dir = _output_dir(project_id)
 
     parts: list[str] = []
     images: list[dict] = []
@@ -183,8 +204,7 @@ def _build_finding_context(project_id: str, item_id: str) -> tuple[str, list[dic
 
 def _build_optimization_context(project_id: str, item_id: str) -> tuple[str, list[dict]]:
     """Собрать контекст для обсуждения оптимизации."""
-    project_dir = resolve_project_dir(project_id)
-    output_dir = project_dir / "_output"
+    output_dir = _output_dir(project_id)
 
     parts: list[str] = []
     images: list[dict] = []
@@ -798,7 +818,7 @@ def _update_item_status(
     summary: str,
 ):
     """Записать discussion_status в 03_findings.json или optimization.json."""
-    output_dir = resolve_project_dir(project_id) / "_output"
+    output_dir = _output_dir(project_id)
 
     if item_type == "finding":
         path = output_dir / "03_findings.json"
@@ -851,7 +871,7 @@ async def generate_revised_version(
         return {"error": "Нет истории обсуждения"}
 
     # Загрузить оригинал
-    output_dir = resolve_project_dir(project_id) / "_output"
+    output_dir = _output_dir(project_id)
     if item_type == "finding":
         data = _load_json(output_dir / "03_findings.json")
         items = data.get("findings", data.get("items", [])) if data else []
@@ -941,7 +961,7 @@ async def generate_revised_version(
 
 def apply_revision(project_id: str, item_id: str, item_type: str, revised: dict) -> dict:
     """Применить изменённую версию замечания в основной JSON."""
-    output_dir = resolve_project_dir(project_id) / "_output"
+    output_dir = _output_dir(project_id)
 
     if item_type == "finding":
         path = output_dir / "03_findings.json"
@@ -1007,7 +1027,7 @@ def list_discussion_items(
     item_type: str = "finding",
 ) -> list[DiscussionListItem]:
     """Список замечаний/оптимизаций с индикатором статуса обсуждения."""
-    output_dir = resolve_project_dir(project_id) / "_output"
+    output_dir = _output_dir(project_id)
     discussions_dir = output_dir / "discussions"
 
     # Загрузить существующие обсуждения

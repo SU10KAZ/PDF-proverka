@@ -11,6 +11,10 @@ from fastapi.responses import FileResponse
 
 from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
+from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
+    gemma_blocks_dir,
+    gemma_blocks_index_path,
+)
 
 router = APIRouter(prefix="/api/tiles", tags=["blocks"])
 
@@ -507,10 +511,15 @@ async def get_blocks(
     version_id: Optional[str] = Query(None, description="Конкретная версия, по умолчанию latest"),
 ):
     """Список image-блоков, сгруппированных по страницам."""
-    blocks_dir = _version_output(project_id, version_id) / "blocks"
-    index_path = blocks_dir / "index.json"
+    output_dir = _version_output(project_id, version_id)
+    index_path = gemma_blocks_index_path(output_dir.parent)
     if not index_path.exists():
-        raise HTTPException(404, f"Блоки не найдены для '{project_id}'")
+        # Fallback на legacy-папку для немигрированных проектов
+        legacy_index = output_dir / "blocks" / "index.json"
+        if legacy_index.exists():
+            index_path = legacy_index
+        else:
+            raise HTTPException(404, f"Блоки не найдены для '{project_id}'")
 
     with open(index_path, "r", encoding="utf-8") as f:
         index_data = json.load(f)
@@ -675,7 +684,11 @@ async def get_blocks_analysis(
             block["status"] = "no_findings"
 
     # Добавляем B (merged) и C (skipped) из index.json
-    index_path = output_dir / "blocks" / "index.json"
+    index_path = gemma_blocks_index_path(output_dir.parent)
+    if not index_path.exists():
+        legacy_index = output_dir / "blocks" / "index.json"
+        if legacy_index.exists():
+            index_path = legacy_index
     if index_path.exists():
         try:
             index_data = json.loads(index_path.read_text(encoding="utf-8"))
@@ -742,7 +755,12 @@ async def get_block_image(
     version_id: Optional[str] = Query(None),
 ):
     """PNG-файл кропнутого блока."""
-    block_path = _version_output(project_id, version_id) / "blocks" / f"block_{block_id}.png"
+    output_dir = _version_output(project_id, version_id)
+    block_path = gemma_blocks_dir(output_dir.parent) / f"block_{block_id}.png"
     if not block_path.exists():
-        raise HTTPException(404, f"Блок {block_id} не найден")
+        legacy_path = output_dir / "blocks" / f"block_{block_id}.png"
+        if legacy_path.exists():
+            block_path = legacy_path
+        else:
+            raise HTTPException(404, f"Блок {block_id} не найден")
     return FileResponse(str(block_path), media_type="image/png")

@@ -1940,6 +1940,10 @@ th.cv2-sort-active {
 tr.row-accepted { border-left: 3px solid #22c55e; }
 tr.row-accepted td { background: rgba(34,197,94,.04) !important; }
 
+/* Row states: mixed (grouped view aggregates конфликтующие raw-решения) */
+tr.sc-row-mixed { border-left: 3px solid #f59e0b; }
+tr.sc-row-mixed td { background: rgba(245,158,11,.06) !important; }
+
 /* Row states: rejected (strikethrough, dimmed, pushed down) */
 tr.row-rejected { border-left: 3px solid #ef4444; opacity: 0.45; }
 tr.row-rejected .desc-cell,
@@ -3053,4 +3057,516 @@ tr.row-rejected:hover { opacity: 0.7; }
     display: block;
     margin-bottom: 4px;
     font-weight: 600;
+}
+
+/* ─── External Register (СУ-10) ─────────────────────────────────────── */
+.extreg-badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-right: 6px;
+    margin-bottom: 4px;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+.extreg-badge--green { background:#dcfce7; color:#15803d; border:1px solid #86efac; }
+.extreg-badge--red   { background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; }
+.extreg-badge--amber { background:#fef3c7; color:#92400e; border:1px solid #fcd34d; }
+.extreg-badge--grey  { background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; }
+
+.extreg-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+.extreg-table th {
+    background: var(--surface-2, #f3f4f6);
+    text-align: left;
+    padding: 8px;
+    border-bottom: 2px solid var(--border, #e5e7eb);
+    font-weight: 600;
+}
+.extreg-table td {
+    padding: 8px;
+    border-bottom: 1px solid var(--border, #e5e7eb);
+    vertical-align: top;
+}
+.extreg-table tbody tr:hover { background: var(--surface-hover, #f9fafb); }
+
+.extreg-resp {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+.extreg-resp--green { background:#dcfce7; color:#15803d; }
+.extreg-resp--red   { background:#fee2e2; color:#b91c1c; }
+.extreg-resp--amber { background:#fef3c7; color:#92400e; }
+
+.extreg-status {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: #f3f4f6;
+    color: #4b5563;
+    font-weight: 600;
+}
+.extreg-status--auto_matched { background:#dcfce7; color:#15803d; }
+.extreg-status--confirmed    { background:#bbf7d0; color:#166534; }
+.extreg-status--needs_review { background:#fef3c7; color:#92400e; }
+.extreg-status--rejected     { background:#fecaca; color:#991b1b; }
+.extreg-status--unmatched    { background:#f3f4f6; color:#6b7280; }
+
+/* ─── Stage Comparison ───────────────────────────────────────────────── */
+.sc-steps-bar {
+  display: flex; justify-content: center; align-items: center;
+  min-height: 40px; margin: -20px -24px 16px;
+  padding: 0 24px; background: var(--topbar-bg);
+  border-bottom: 1px solid var(--border);
+}
+.project-tab[disabled],
+.project-tab[disabled]:hover {
+  color: var(--text2); opacity: 0.4; cursor: not-allowed; border-bottom-color: transparent;
+}
+
+.sc-status { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
+.sc-status-matched   { background: #dcfce7; color: #15803d; }
+.sc-status-maybe     { background: #fef3c7; color: #92400e; }
+.sc-status-unmatched { background: #f3f4f6; color: #6b7280; }
+
+.sc-diff-added    { color: #15803d; font-weight: 600; }
+.sc-diff-removed  { color: #b91c1c; font-weight: 600; }
+.sc-diff-modified { color: #92400e; font-weight: 600; }
+
+.sc-diffrow-added    td { background: rgba(220,252,231,.15); }
+.sc-diffrow-removed  td { background: rgba(254,226,226,.15); }
+.sc-diffrow-modified td { background: rgba(254,243,199,.15); }
+
+/* Overlay-блоки поверх PDF-изображения */
+.sc-block-overlay {
+    position: absolute;
+    border: 1.5px solid rgba(37, 99, 235, 0.55);
+    background: rgba(37, 99, 235, 0.08);
+    cursor: pointer;
+    transition: background 0.1s, border-color 0.1s;
+    box-sizing: border-box;
+}
+.sc-block-overlay:hover {
+    background: rgba(37, 99, 235, 0.16);
+    border-color: rgba(37, 99, 235, 0.85);
+}
+.sc-block-overlay.selected {
+    border: 2.5px solid #2563eb;
+    background: rgba(37, 99, 235, 0.22);
+    z-index: 5;
+}
+/* Связанный блок: рамка цветом конкретной связи задаётся inline-style из
+   scBlockOverlayStyle (style.borderColor = info.color). Здесь только толщина. */
+.sc-block-overlay.linked {
+    border-width: 2px;
+    background: rgba(37, 99, 235, 0.06);
+}
+.sc-block-overlay.linked-stale {
+    border-style: dashed;
+    background: rgba(245, 158, 11, 0.08);
+}
+.sc-block-overlay.linked-cross {
+    border-style: dashed;
+}
+.sc-block-overlay.linked-active {
+    box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.35);
+    z-index: 6;
+}
+/* Цветная плашка-номер связи: рисуется внутри overlay, поверх рамки */
+.sc-block-link-badge {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 999px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 22px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,.25);
+    pointer-events: auto;
+    cursor: pointer;
+    z-index: 5;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+}
+.sc-block-link-badge--stale {
+    border: 1px dashed rgba(0,0,0,.4);
+    opacity: .85;
+}
+.sc-block-link-badge--manual .sc-block-link-badge__m {
+    font-size: 9px;
+    opacity: .8;
+    margin-left: 1px;
+}
+.sc-block-link-badge--inline {
+    position: static;
+    box-shadow: none;
+    cursor: default;
+}
+/* Компактная панель выбранной активной связи (заменяет таблицу) */
+.sc-active-link-panel {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* ─── Stage Comparison v2 ──────────────────────────────────────────────── */
+.sc-viewer__pane { scroll-behavior: auto; }
+.sc-viewer__pane--panning,
+.sc-viewer__pane--panning * { cursor: grabbing !important; user-select: none; }
+.sc-canvas-wrap img { max-width: none; -webkit-user-drag: none; user-select: none; }
+.sc-slot { display: flex; flex-direction: column; }
+.sc-slot > :first-child { flex-shrink: 0; }
+.sc-slot--highlight {
+  outline: 3px solid #f59e0b; outline-offset: 2px;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25);
+}
+.sc-blank-page,
+.sc-slot-placeholder {
+    flex: 1 1 auto;
+    background: repeating-linear-gradient(
+        45deg, #f8fafc, #f8fafc 8px, #f1f5f9 8px, #f1f5f9 16px
+    );
+    display: flex; align-items: center; justify-content: center;
+}
+.sc-block-id {
+    position: absolute; top: 1px; left: 2px;
+    font-size: 10px; background: rgba(255,255,255,.85);
+    padding: 0 3px; border-radius: 2px; pointer-events: none;
+}
+/* legacy: окраска строк stale-таблицы на вкладке «Расхождения» */
+.sc-link-cross td { background: rgba(254,243,199,0.25); }
+
+/* Stage Comparison: shared modal styles (match-pair, create-pair, ...) */
+.sc-modal-backdrop {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(15, 23, 42, 0.45);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: 40px 20px; overflow: auto;
+}
+.sc-modal {
+    background: #fff; border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    max-height: calc(100vh - 80px); display: flex; flex-direction: column;
+}
+.sc-modal__header {
+    padding: 12px 16px; border-bottom: 1px solid #e5e7eb;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.sc-modal__body { padding: 14px 16px; overflow: auto; }
+.sc-modal__body .btn-icon { background: transparent; border: 0; font-size: 18px; cursor: pointer; color: #6b7280; }
+
+/* ─── Stage Comparison v3 ──────────────────────────────────────────────── */
+.sc-pair-disabled td { opacity: .55; }
+/* Drag-and-drop reorder для строк в таблице пар */
+.sc-pair-row { transition: background-color 0.12s, transform 0.12s; }
+.sc-pair-row.sc-pair-dragging  { opacity: .45; }
+.sc-pair-row.sc-pair-drag-over { background-color: #eef2ff; box-shadow: inset 0 2px 0 #4f46e5; }
+/* Live-pulse точка для индикатора «идёт обработка» */
+@keyframes sc-pulse-kf {
+    0%   { transform: scale(1);   opacity: 1;   box-shadow: 0 0 0 0 rgba(79,70,229,.45); }
+    70%  { transform: scale(1.2); opacity: .7;  box-shadow: 0 0 0 8px rgba(79,70,229,0);   }
+    100% { transform: scale(1);   opacity: 1;   box-shadow: 0 0 0 0 rgba(79,70,229,0);     }
+}
+.sc-pulse { animation: sc-pulse-kf 1.6s ease-in-out infinite; }
+
+/* Inline-match: клик по имени правого PDF → выпадающий popover */
+.sc-pair-right-name {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 6px; border-radius: 4px;
+    cursor: pointer; transition: background-color 0.1s;
+}
+.sc-pair-right-name:hover { background-color: #eef2ff; }
+.sc-pair-right-caret { color: #6366f1; font-size: 11px; opacity: .55; }
+.sc-pair-right-name:hover .sc-pair-right-caret { opacity: 1; }
+
+.sc-match-popover {
+    position: absolute; top: 100%; left: 0; z-index: 100;
+    min-width: 360px; max-width: 520px;
+    margin-top: 2px;
+    background: #fff;
+    border: 1px solid #c7d2fe;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.12);
+    font-family: monospace;
+    font-size: 12px;
+}
+.sc-match-popover__header { padding: 8px; border-bottom: 1px solid #eef2ff; }
+.sc-match-popover__list { max-height: 280px; overflow-y: auto; padding: 4px 0; }
+.sc-match-popover__item {
+    padding: 6px 12px; cursor: pointer;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sc-match-popover__item:hover { background-color: #eef2ff; }
+.sc-match-popover__item--active { background-color: #ddd6fe; font-weight: 600; }
+.sc-match-popover__item--current { background-color: #f3f4f6; font-style: italic; }
+.sc-match-popover__item--current.sc-match-popover__item--active { background-color: #ddd6fe; }
+.sc-match-popover__item--detach { color: #b91c1c; font-style: italic; border-bottom: 1px solid #eef2ff; }
+.sc-match-popover__actions {
+    display: flex; gap: 6px; justify-content: flex-end;
+    padding: 8px; border-top: 1px solid #eef2ff;
+    font-family: inherit;
+}
+/* Per-pane icon-toolbar над PDF-окнами (Карта листов удалена) */
+.sc-pane-toolbar .sc-pane-icon-btn {
+    min-width: 30px; padding: 2px 8px; font-size: 14px; line-height: 1.1;
+}
+.sc-pane-toolbar .sc-pane-icon-btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* ─── Text LLM diff (Claude Sonnet) ─────────────────────────────────────── */
+.sc-text-llm-status { background: #e5e7eb; color: #374151; }
+.sc-text-llm-status--done { background: #dcfce7; color: #166534; }
+.sc-text-llm-status--disabled,
+.sc-text-llm-status--blocked { background: #e0f2fe; color: #075985; }
+.sc-text-llm-status--provider_not_available,
+.sc-text-llm-status--missing_md,
+.sc-text-llm-status--too_large,
+.sc-text-llm-status--error,
+.sc-text-llm-status--timeout { background: #fee2e2; color: #991b1b; }
+.sc-text-llm-status--not_run { background: #fef3c7; color: #92400e; }
+
+.sc-text-llm-importance { background: #e5e7eb; color: #374151; }
+.sc-text-llm-importance--high { background: #fee2e2; color: #991b1b; }
+.sc-text-llm-importance--medium { background: #fef3c7; color: #92400e; }
+.sc-text-llm-importance--low { background: #e0f2fe; color: #075985; }
+
+.sc-text-llm-card { border-left-width: 3px !important; }
+.sc-text-llm-card--sev-high { border-left-color: #dc2626; }
+.sc-text-llm-card--sev-medium { border-left-color: #f59e0b; }
+.sc-text-llm-card--sev-low { border-left-color: #9ca3af; }
+
+.sc-text-llm-pill--sev-high { background: #fee2e2; color: #991b1b; }
+.sc-text-llm-pill--sev-medium { background: #fef3c7; color: #92400e; }
+.sc-text-llm-pill--sev-low { background: #e5e7eb; color: #374151; }
+.sc-text-llm-pill--type { background: #ede9fe; color: #6d28d9; }
+.sc-text-llm-pill--cat { background: #e0f2fe; color: #075985; }
+.sc-slot-placeholder {
+    border-top: 1px dashed #e5e7eb;
+    color: #94a3b8;
+    text-align: center;
+}
+
+/* ─── Stage Comparison v4: report tab ──────────────────────────────────── */
+.sc-pill-type, .sc-pill-status, .sc-pill-sev {
+    display: inline-block; padding: 1px 6px; border-radius: 8px;
+    font-size: 11px; font-weight: 500;
+}
+.sc-pill-type { background: #f3f4f6; color: #374151; }
+.sc-pill-status-new          { background: #dbeafe; color: #1d4ed8; }
+.sc-pill-status-needs_review { background: #fef3c7; color: #92400e; }
+.sc-pill-status-accepted     { background: #d1fae5; color: #047857; }
+.sc-pill-status-rejected     { background: #fee2e2; color: #991b1b; }
+.sc-pill-status-resolved     { background: #e5e7eb; color: #4b5563; }
+.sc-pill-status-ignored      { background: #f3f4f6; color: #9ca3af; }
+.sc-pill-sev-high   { background: #fee2e2; color: #991b1b; }
+.sc-pill-sev-medium { background: #fef3c7; color: #92400e; }
+.sc-pill-sev-low    { background: #dbeafe; color: #1d4ed8; }
+.sc-pill-sev-unknown{ background: #f3f4f6; color: #6b7280; }
+
+.sc-finding-row:hover td { background: #f8fafc; }
+.sc-finding-active td { background: #eff6ff !important; }
+.sc-finding-row.sc-sev-high   td:first-child { box-shadow: inset 3px 0 0 #b91c1c; }
+.sc-finding-row.sc-sev-medium td:first-child { box-shadow: inset 3px 0 0 #b45309; }
+.sc-finding-row.sc-sev-low    td:first-child { box-shadow: inset 3px 0 0 #1d4ed8; }
+
+/* Go-to-place: временная подсветка элемента (Задача 6) */
+@keyframes sc-flash-pulse {
+    0%   { box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.85); background-color: rgba(251, 191, 36, 0.25); }
+    60%  { box-shadow: 0 0 0 6px rgba(251, 191, 36, 0.55); background-color: rgba(251, 191, 36, 0.15); }
+    100% { box-shadow: 0 0 0 0   rgba(251, 191, 36, 0.0);  background-color: transparent; }
+}
+.sc-flash-highlight {
+    animation: sc-flash-pulse 2.5s ease-out 1;
+    outline: 2px solid #f59e0b;
+    outline-offset: 1px;
+    border-radius: 4px;
+    z-index: 30;
+    position: relative;
+    transition: background-color .2s;
+}
+
+/* Сессионные предупреждения (Задача 9) */
+.sc-warnings { background:#fff7ed; border:1px solid #fdba74; border-radius:6px; padding:10px 12px; margin-bottom:10px; font-size:12px; }
+.sc-warnings__title { color:#9a3412; font-weight:600; margin-bottom:6px; }
+.sc-warnings__item { padding:3px 0; display:flex; gap:8px; align-items:flex-start; }
+.sc-warnings__sev-high   { color:#b91c1c; font-weight:600; }
+.sc-warnings__sev-medium { color:#b45309; font-weight:600; }
+.sc-warnings__sev-low    { color:#1d4ed8; }
+
+/* Сгруппированные findings (Задача 7) */
+.sc-finding-row.sc-finding-child td:first-child { padding-left: 18px; }
+.sc-finding-row.sc-finding-parent td:nth-child(3)::before {
+    content: "▼ ";
+    color: #6b7280;
+    font-size: 10px;
+}
+
+/* ─── Unified Excel-style table (Сравнение стадий → Расхождения) ─── */
+.sc-unified-table-wrap { overflow-x: auto; }
+.sc-unified-table { font-size: 12px; }
+.sc-unified-table td { padding: 8px 10px; vertical-align: top; }
+.sc-unified-table th { padding: 6px 10px; }
+
+/* Sortable column headers */
+.sc-unified-table th.sc-th-sortable { cursor: pointer; user-select: none; }
+.sc-unified-table th.sc-th-sortable:hover { background: var(--card-bg); }
+.sc-unified-table th.sc-th-active { background: var(--teal-light); color: var(--teal); }
+.sc-unified-table .sc-sort-ind { display: inline-block; min-width: 10px; margin-left: 2px; font-size: 9px; opacity: 0.75; }
+
+/* Severity row markers (как в findings-table, но через классы sc-row) */
+.sc-row--high td:first-child   { border-left: 3px solid var(--red); }
+.sc-row--medium td:first-child { border-left: 3px solid var(--orange); }
+.sc-row--low td:first-child    { border-left: 3px solid var(--blue); }
+.sc-row--unknown td:first-child{ border-left: 3px solid var(--text3); }
+
+/* №-cell: номер + severity-чип под ним */
+.sc-cell-no { text-align: center; }
+.sc-cell-no__num { font-weight: 700; opacity: 0.7; margin-bottom: 4px; font-size: 11px; }
+.sc-sev-chip { display: inline-block; padding: 1px 7px; border-radius: 999px; font-size: 9px; font-weight: 700; letter-spacing: 0.02em; text-transform: lowercase; }
+.sc-sev-chip--high    { background: var(--red-light);   color: var(--red);    border: 1px solid rgba(212,24,58,0.2); }
+.sc-sev-chip--medium  { background: var(--amber-light); color: var(--amber);  border: 1px solid rgba(196,115,0,0.2); }
+.sc-sev-chip--low     { background: var(--blue-light);  color: var(--blue);   border: 1px solid rgba(20,96,212,0.2); }
+.sc-sev-chip--unknown { background: var(--card2-bg);    color: var(--text2);  border: 1px solid var(--border2); }
+
+/* Место (sheet + page + pair) */
+.sc-cell-place { font-size: 11px; line-height: 1.4; }
+.sc-place-sheet { color: var(--text); }
+.sc-place-page { opacity: 0.7; margin-top: 2px; }
+.sc-place-pair {
+    margin-top: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 10px;
+    opacity: 0.55;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+/* Изменение */
+.sc-change-badges { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
+.sc-chip { display: inline-block; padding: 1px 7px; border-radius: 999px; font-size: 10px; line-height: 1.5; white-space: nowrap; }
+.sc-chip--manual  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+.sc-chip--source  { background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; }
+.sc-chip--nolinks { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+.sc-change-title { font-weight: 600; font-size: 13px; line-height: 1.35; color: var(--text); }
+.sc-change-summary { opacity: 0.85; margin-top: 4px; line-height: 1.45; }
+.sc-change-details { margin-top: 6px; font-size: 11px; opacity: 0.85; }
+.sc-change-details summary { cursor: pointer; opacity: 0.7; }
+.sc-change-details__grid { margin-top: 4px; display: grid; grid-template-columns: auto 1fr; gap: 2px 8px; }
+.sc-change-details__grid .muted { opacity: 0.6; }
+
+/* Было / Стало — цветные ячейки */
+.sc-unified-table .sc-col-was    { background: #fef2f2; color: #991b1b; }
+.sc-unified-table .sc-col-became { background: #ecfdf5; color: #065f46; }
+.sc-cell-was {
+    background: #fef2f2;
+    border-left: 2px solid #fca5a5 !important;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.45;
+}
+.sc-cell-became {
+    background: #ecfdf5;
+    border-left: 2px solid #6ee7b7 !important;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.45;
+}
+
+/* Влияние */
+.sc-unified-table .sc-col-impact { background: #fefce8; color: #713f12; }
+.sc-cell-impact { background: #fefce8; line-height: 1.45; }
+.sc-impact-text { white-space: pre-wrap; word-break: break-word; }
+.sc-impact-text.muted { opacity: 0.5; }
+.sc-impact-cost { margin-top: 4px; font-size: 11px; opacity: 0.75; }
+
+/* Перейти к месту — кнопка-иконка */
+.sc-cell-goto { text-align: center; padding: 4px !important; }
+.sc-goto-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px; height: 26px;
+    background: transparent;
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.sc-goto-btn:hover { background: var(--teal-light); border-color: var(--teal-border); color: var(--teal); }
+.sc-goto-btn:active { transform: scale(0.95); }
+
+/* Hover на строке — не подсвечиваем спец-ячейки слишком сильно */
+.sc-unified-table tbody tr:hover .sc-cell-was    { background: #fee2e2; }
+.sc-unified-table tbody tr:hover .sc-cell-became { background: #d1fae5; }
+.sc-unified-table tbody tr:hover .sc-cell-impact { background: #fef9c3; }
+
+/* ─── Grouped / high-value findings (Сгруппированные расхождения) ─── */
+
+/* View-mode toggle row */
+.sc-unified-mode { user-select: none; }
+.sc-grouped-hidden-count { font-weight: 600; }
+
+/* Formal / escalated / rollup chips (extra colors on top of .sc-chip*) */
+.sc-chip--formal    { background: var(--card2-bg); color: var(--text2); border: 1px solid var(--border2); }
+.sc-chip--escalated { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+.sc-chip--rollup    { background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; }
+
+/* Direction / cost-direction chips in «Тема / значимость» column */
+.sc-grouped-dir-chip,
+.sc-grouped-cost-chip {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 999px;
+    font-size: 9px;
+    line-height: 1.5;
+    white-space: nowrap;
+}
+.sc-grouped-dir-chip--complication  { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+.sc-grouped-dir-chip--simplification { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+.sc-grouped-dir-chip--neutral       { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
+.sc-grouped-dir-chip--unknown       { background: #f9fafb; color: #6b7280; border: 1px solid #e5e7eb; }
+.sc-grouped-cost-chip--increase     { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+.sc-grouped-cost-chip--decrease     { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+.sc-grouped-cost-chip--unknown      { background: #f9fafb; color: #6b7280; border: 1px solid #e5e7eb; }
+
+/* Severity chips for grouped: добавляем 'formal' цвет (нейтральный серый) */
+.sc-sev-chip--formal { background: var(--card2-bg); color: var(--text2); border: 1px solid var(--border2); }
+
+/* Row for formal-grouped — нейтральный левый border */
+.sc-row--formal td:first-child { border-left: 3px solid var(--text3); }
+
+/* Expandable evidence row */
+.sc-row-evidence td { background: #fafafa; }
+.sc-grouped-evidence-cell {
+    padding: 8px 10px;
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--text2);
+}
+.sc-grouped-evidence-cell ul li { margin: 1px 0; }
+.sc-grouped-evidence-cell code { background: #f3f4f6; padding: 0 4px; border-radius: 3px; }
+.sc-grouped-variants { margin-bottom: 6px; }
+
+/* Compact «Where found» cell (reused class .sc-place-page color) */
+.sc-grouped-table tbody tr.sc-row-evidence:hover td {
+    background: #f3f4f6;
 }
