@@ -3,6 +3,7 @@
 Проверяют:
   - md_page_marker метод: ищет цитату → берёт ближайший `## СТРАНИЦА N` сверху
   - heading_match fallback: если quote не найден, ищет по evidence.section
+  - approx_location fallback: парсит «стр. 2» / «стр. 1–3» из LLM-подсказки
   - alignment_slot: маппится через page_alignment.items
   - not_found: ничего не нашлось — confidence=0.0, method='not_found'
   - двусторонний матч (left+right) даёт confidence=1.0 при наличии slot
@@ -143,6 +144,107 @@ def test_no_alignment_still_returns_pages(sample_md):
     assert loc["left_page"] == 3
     assert loc["alignment_slot"] is None
     assert loc["confidence"] == 0.5
+
+
+def test_approx_location_single_page(tmp_path):
+    """Quote/section не нашлись, но approx_location='стр. 2' → page=2, conf=0.2."""
+    from backend.app.services.stage_comparison import text_location as tl
+
+    md = tmp_path / "left.md"
+    md.write_text("## СТРАНИЦА 1\nA\n## СТРАНИЦА 2\nB\n", encoding="utf-8")
+    pair = {
+        "id": "p1",
+        "left":  {"md_path": str(md)},
+        "right": {"md_path": str(md)},
+    }
+    change = {
+        "evidence_left": {
+            "quote": "цитата которой нет в MD",
+            "section": "Титульный лист",
+            "approx_location": "стр. 2",
+        },
+        "evidence_right": {
+            "quote": "тоже нет",
+            "section": "Титульный лист",
+            "approx_location": "стр. 1–3",
+        },
+    }
+    loc = tl.resolve_text_change_location(pair, change, alignment_items=[])
+    assert loc["method"] == "approx_location"
+    assert loc["left_page"] == 2
+    assert loc["right_page"] == 1  # начало диапазона «стр. 1–3»
+    assert loc["confidence"] == 0.2
+
+
+def test_approx_location_only_one_side(tmp_path):
+    """Только evidence_right.approx_location валиден — left остаётся None."""
+    from backend.app.services.stage_comparison import text_location as tl
+
+    md = tmp_path / "left.md"
+    md.write_text("## СТРАНИЦА 1\nA\n", encoding="utf-8")
+    pair = {
+        "id": "p1",
+        "left":  {"md_path": str(md)},
+        "right": {"md_path": str(md)},
+    }
+    change = {
+        "evidence_left": {"quote": "нет в MD", "section": "Титульный лист"},
+        "evidence_right": {
+            "quote": "тоже нет",
+            "section": "Титульный лист",
+            "approx_location": "Лист 5",
+        },
+    }
+    loc = tl.resolve_text_change_location(pair, change, alignment_items=[])
+    assert loc["method"] == "approx_location"
+    assert loc["left_page"] is None
+    assert loc["right_page"] == 5
+    assert loc["confidence"] == 0.2
+
+
+def test_approx_location_unparseable_falls_through_to_not_found(tmp_path):
+    """approx_location без цифры → method='not_found'."""
+    from backend.app.services.stage_comparison import text_location as tl
+
+    md = tmp_path / "left.md"
+    md.write_text("## СТРАНИЦА 1\nA\n", encoding="utf-8")
+    pair = {
+        "id": "p1",
+        "left":  {"md_path": str(md)},
+        "right": {"md_path": str(md)},
+    }
+    change = {
+        "evidence_left": {"quote": "нет", "approx_location": "штамп"},
+    }
+    loc = tl.resolve_text_change_location(pair, change, alignment_items=[])
+    assert loc["method"] == "not_found"
+    assert loc["left_page"] is None
+    assert loc["confidence"] == 0.0
+
+
+def test_md_page_marker_wins_over_approx_location(tmp_path):
+    """Если md_page_marker сработал — approx_location не перетирает результат."""
+    from backend.app.services.stage_comparison import text_location as tl
+
+    md = tmp_path / "left.md"
+    md.write_text(
+        "## СТРАНИЦА 1\nуникальная цитата здесь\n## СТРАНИЦА 2\nB\n",
+        encoding="utf-8",
+    )
+    pair = {
+        "id": "p1",
+        "left":  {"md_path": str(md)},
+        "right": {"md_path": str(md)},
+    }
+    change = {
+        "evidence_left": {
+            "quote": "уникальная цитата здесь",
+            "approx_location": "стр. 99",  # должен быть проигнорирован
+        },
+    }
+    loc = tl.resolve_text_change_location(pair, change, alignment_items=[])
+    assert loc["method"] == "md_page_marker"
+    assert loc["left_page"] == 1
 
 
 def test_missing_md_returns_not_found(tmp_path):

@@ -1549,3 +1549,64 @@ async def test_unified_job_skips_pre_marked_skipped_items(tmp_path, monkeypatch)
     assert out_by_pid["p_run"]["status"] == "done"
     # Provider вызван 1 раз (только для p_run).
     assert len(fake_provider.invoke_calls) == 1
+
+
+def test_aggregate_job_progress_counts_comparing_enriching_as_running():
+    """comparing/enriching — активные подсостояния running, должны учитываться."""
+    from backend.app.services.stage_comparison import unified_analysis_jobs as jobs
+    job = {
+        "items": [
+            {"pair_id": "a", "status": "done", "duration_sec": 10.0},
+            {"pair_id": "b", "status": "comparing"},
+            {"pair_id": "c", "status": "enriching"},
+            {"pair_id": "d", "status": "queued"},
+        ],
+    }
+    agg = jobs.aggregate_job_progress(job)
+    assert agg["done"] == 1
+    assert agg["running"] == 2  # comparing + enriching
+    assert agg["queued"] == 1
+    # current = первый non-terminal не-queued → b (comparing)
+    assert agg["current_pair_id"] == "b"
+    assert agg["current_pair_status"] == "comparing"
+
+
+def test_read_job_marks_stale_running_as_failed_interrupted(tmp_path, monkeypatch):
+    """_maybe_mark_interrupted: если на диске status=running, но воркера нет,
+    job помечается failed_interrupted и items с активным статусом — тоже."""
+    from backend.app.services.stage_comparison import unified_analysis_jobs as jobs
+    from backend.app.services.stage_comparison import paths as paths_mod
+
+    sid = "sess_stale"
+    job_id = "uajob_stale_test"
+    paths_mod.jobs_root(sid).mkdir(parents=True, exist_ok=True)
+    stale = {
+        "id": job_id,
+        "session_id": sid,
+        "type": "unified_stage_comparison",
+        "status": "running",
+        "created_at": "2026-01-01T00:00:00Z",
+        "updated_at": "2026-01-01T00:00:00Z",
+        "items": [
+            {"pair_id": "a", "status": "done"},
+            {"pair_id": "b", "status": "comparing"},
+            {"pair_id": "c", "status": "queued"},
+        ],
+    }
+    paths_mod.job_json_path(sid, job_id).write_text(
+        json.dumps(stale, ensure_ascii=False), encoding="utf-8",
+    )
+    # Никакого _active_tasks для (sid, job_id) → _is_task_alive=False.
+    jobs._active_tasks.pop(sid, None)
+
+    read = jobs._read_job(sid, job_id)
+    assert read is not None
+    assert read["status"] == "failed_interrupted"
+    item_statuses = {it["pair_id"]: it["status"] for it in read["items"]}
+    assert item_statuses["a"] == "done"           # терминальный — не трогаем
+    assert item_statuses["b"] == "failed_interrupted"
+    assert item_statuses["c"] == "failed_interrupted"
+
+    # Файл на диске тоже обновлён.
+    disk = json.loads(paths_mod.job_json_path(sid, job_id).read_text(encoding="utf-8"))
+    assert disk["status"] == "failed_interrupted"

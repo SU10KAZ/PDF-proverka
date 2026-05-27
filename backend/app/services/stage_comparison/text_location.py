@@ -13,9 +13,11 @@
   2. **heading_match** — если цитаты не нашли, пытаемся опереться на
      `evidence.section` (например `Содержание тома`) и ищем такой заголовок
      в MD. Низкая уверенность.
-  3. **result_text_block** — fallback на result.json (Chandra blocks).
-     Не реализован: нужен полный OCR-текст по блокам, который сейчас в
-     `blocks.py` не нормализуется. Оставлено как точка расширения.
+  3. **approx_location** — последний fallback: парсим текст
+     `evidence.approx_location` ("стр. 2", "стр. 1–3", "Лист 5") в номер
+     страницы. Полезно для stamp/титул-finding'ов, где LLM явно указывает
+     страницу, но текст квоты не совпадает с Chandra MD по символам и
+     `section` не является заголовком.
   4. **not_found** — ни одна стратегия не сработала. finding всё равно
      валидный; page/slot будут None.
 
@@ -24,6 +26,7 @@
   - 0.7 — нашли страницу с одной стороны, slot есть.
   - 0.5 — нашли страницу с одной стороны, slot не определён.
   - 0.3 — heading_match.
+  - 0.2 — approx_location (LLM hint без верификации по MD).
   - 0.0 — not_found.
 """
 from __future__ import annotations
@@ -49,6 +52,13 @@ _PAGE_MARKER_RE = re.compile(
 # нам они полезны как доп. подсказка.
 _SHEET_LINE_RE = re.compile(
     r"^\s*\*\*\s*Лист\s*:\*\*\s+(\d+)",
+    re.IGNORECASE,
+)
+# Парсинг LLM-подсказки `approx_location`: «стр. 2», «стр. 1–3», «стр 1-3»,
+# «Лист 5», «л. 7». Берём первое число (для диапазона — начало). Поддерживаем
+# обычный дефис, en dash (–) и em dash (—).
+_APPROX_LOCATION_PAGE_RE = re.compile(
+    r"(?:стр(?:аниц[ауы]?)?\.?|page|лист|л\.)\s*(\d+)",
     re.IGNORECASE,
 )
 
@@ -202,6 +212,29 @@ def _extract_section(change: dict, side: str) -> str:
     return ""
 
 
+def _extract_approx_page(change: dict, side: str) -> Optional[int]:
+    """Распарсить `evidence[side].approx_location` в номер страницы.
+
+    Принимает строки вида «стр. 2», «стр. 1–3», «Лист 5», «л. 7».
+    Для диапазона возвращает первое число. Возвращает None, если ничего
+    распознать не удалось.
+    """
+    ev_key = "evidence_left" if side == "left" else "evidence_right"
+    ev = change.get(ev_key) if isinstance(change, dict) else None
+    if not isinstance(ev, dict):
+        return None
+    raw = str(ev.get("approx_location") or "").strip()
+    if not raw:
+        return None
+    m = _APPROX_LOCATION_PAGE_RE.search(raw)
+    if not m:
+        return None
+    try:
+        return int(m.group(1))
+    except (TypeError, ValueError):
+        return None
+
+
 def resolve_text_change_location(
     pair: dict,
     change: dict,
@@ -222,7 +255,8 @@ def resolve_text_change_location(
             "right_page":  int | None,
             "alignment_slot": int | None,
             "confidence":  float (0.0–1.0),
-            "method":      "md_page_marker" | "heading_match" | "not_found",
+            "method":      "md_page_marker" | "heading_match"
+                         | "approx_location" | "not_found",
         }
     """
     left_pair = pair.get("left") if isinstance(pair, dict) else {}
@@ -274,6 +308,22 @@ def resolve_text_change_location(
                 if right_page is not None:
                     method = "heading_match"
 
+    # Шаг 2b: approx_location fallback — для stamp/титул-finding'ов LLM явно
+    # пишет «стр. 2» в evidence, но quote не матчится с Chandra MD по символам
+    # и section не является заголовком. Парсим текст LLM-подсказки в номер
+    # страницы. Не верифицируем по MD — это сознательно «слабая» эвристика
+    # (confidence=0.2), но это лучше чем «Не определён» когда LLM уже сказал
+    # ответ.
+    if method == "not_found":
+        approx_left = _extract_approx_page(change, "left")
+        approx_right = _extract_approx_page(change, "right")
+        if approx_left is not None or approx_right is not None:
+            if left_page is None and approx_left is not None:
+                left_page = approx_left
+            if right_page is None and approx_right is not None:
+                right_page = approx_right
+            method = "approx_location"
+
     # Шаг 3: alignment_slot из page_alignment, если есть.
     alignment_slot: Optional[int] = None
     if alignment_items:
@@ -292,6 +342,8 @@ def resolve_text_change_location(
             method = "not_found"
     elif method == "heading_match":
         confidence = 0.3
+    elif method == "approx_location":
+        confidence = 0.2
     else:
         confidence = 0.0
 

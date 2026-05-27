@@ -146,6 +146,25 @@ SYSTEM_PROMPT = """Ты — эксперт по сравнению стадий 
 Старого OCR-описания image/imagine-блоков в основном тексте enriched.md больше
 нет — каждое графическое содержимое представлено только новым Qwen-описанием.
 
+IMAGE_DIFF_INDEX (нынешний enriched MD): в самом начале enriched MD ставится
+компактный блок между `<!-- IMAGE_DIFF_INDEX_START -->` и
+`<!-- IMAGE_DIFF_INDEX_END -->`. В нём по каждому image-блоку перечислены
+буквальные diff-якоря: `labels:` (raw маркировки щитов/панелей/автоматов:
+ЩР-1а, ВРУ-2 с.ш.1, QF3 и т.п.), `ratings:` (кабели/номиналы: 4х185, 1000А),
+`connections:` (связи типа `ВРУ-2 с.ш.1 -> ЩР-1а`). У каждого заголовка
+указаны page, block_id, block_type (scheme/dense_scheme/plan/table_legend/
+stamp/photo_or_general), confidence и `usable_for_diff=true/false`.
+Этот индекс — приоритетный источник по части графики: ищи различия по нему
+ПЕРВЫМ, а уже потом смотри в QWEN_IMAGE_DESCRIPTION тело.
+
+Блоки с `usable_for_diff=false` (warnings содержит hallucination_suspected /
+repeated_pattern_detected / continuation_salvaged / low_literal_label_recall
+и т.п.) НЕЛЬЗЯ использовать как единственное основание для нового change'а.
+Они допускаются только как weak confirmation, когда то же изменение видно
+и из надёжного источника (текст/таблица/штамп/другой usable_for_diff=true
+блок). Если используешь такой блок — обязательно `requires_human_review=true`
+и evidence обозначь явно с пометкой о low confidence.
+
 ОПЦИОНАЛЬНО — БЛОК-СВЯЗИ (`block_links` / anchors):
 Если в user-prompt'е есть тег `<BLOCK_LINKS>`, это список парных привязок
 блоков OLD ↔ NEW (с полями `left_block_id`, `right_block_id`, `left_page`,
@@ -221,22 +240,49 @@ SYSTEM_PROMPT = """Ты — эксперт по сравнению стадий 
         "quote": "...",
         "section": "...",
         "approx_location": "..."
-      }
+      },
+      "evidence": [
+        {
+          "origin": "text|table|stamp|image_enrichment|scheme_analysis|image_diff_index",
+          "side": "left|right",
+          "page": 24,
+          "block_id": "optional",
+          "quote": "Короткая цитата/якорь, до 240 символов"
+        }
+      ]
     }
   ],
   "warnings": []
 }
 
+Поле `evidence[]` — опциональный, более подробный массив evidence (несколько
+записей, разные origin'ы). `evidence_left` / `evidence_right` остаются
+обязательными (для обратной совместимости с UI), но `evidence[]` крайне
+рекомендован — он позволяет точно показать, откуда взято изменение.
+
 Правила выбора `source`:
-  - `text` — изменение в обычном текстовом слое (не из QWEN_IMAGE_DESCRIPTION).
-  - `image_enrichment` — изменение видно только в Qwen-описании изображения
-    (поля design_solutions / equipment / materials / numeric_parameters /
-    visible_text и т.п.), но не в самом тексте.
-  - `scheme_analysis` — изменение видно в `Схемный анализ:` (узлы, связи,
-    последовательность, контуры).
-  - `table` — изменение в таблице/спецификации.
+  - `text` — изменение видно ИСКЛЮЧИТЕЛЬНО в обычном текстовом слое
+    (не в QWEN_IMAGE_DESCRIPTION и не в IMAGE_DIFF_INDEX). Если хоть один
+    elemento evidence — визуальный (image_enrichment / scheme_analysis /
+    image_diff_index), `source=text` использовать ЗАПРЕЩЕНО.
+  - `table` — изменение в обычной таблице/спецификации документа.
   - `stamp` — штамп / титульный лист / шифр / разработчик / стадия.
-  - `mixed` — то же изменение подтверждается и текстом, и enriched-описанием.
+  - `image_enrichment` — изменение видно из visible_text / labels /
+    equipment / materials / numeric_parameters Qwen-описания image-блока
+    ИЛИ из IMAGE_DIFF_INDEX (labels / ratings).
+  - `scheme_analysis` — изменение видно из image-derived graph relations
+    (узлы, связи, последовательность, контуры). НЕ используй
+    `scheme_analysis` для обычного ТЕКСТОВОГО списка/таблицы листов в
+    пояснительной записке — такой список это `text` или `table`, не
+    `scheme_analysis`. `scheme_analysis` — только из image-derived
+    содержимого.
+  - `mixed` — ОБЯЗАТЕЛЬНО, когда одно и то же изменение подтверждается
+    И обычным текстом/таблицей/штампом, И визуальным источником (Qwen-
+    описание / IMAGE_DIFF_INDEX). Если evidence содержит и визуальный, и
+    невизуальный origin — source ДОЛЖЕН быть `mixed`.
+
+Визуальные origin'ы: image_enrichment, scheme_analysis, image_diff_index.
+Невизуальные origin'ы: text, table, stamp.
 
 Для схем обязательно фиксируй изменение последовательности элементов, если
 оно видно в enriched MD (`Последовательность:`, `Связи:`, `Узлы:`).
@@ -475,6 +521,88 @@ def _normalize_evidence(raw: Any) -> dict:
     }
 
 
+_ALLOWED_EVIDENCE_ORIGINS = {
+    "text", "table", "stamp",
+    "image_enrichment", "scheme_analysis", "image_diff_index",
+}
+_VISUAL_EVIDENCE_ORIGINS = {
+    "image_enrichment", "scheme_analysis", "image_diff_index",
+}
+_NONVISUAL_EVIDENCE_ORIGINS = {"text", "table", "stamp"}
+
+
+def _normalize_evidence_array_item(raw: Any) -> Optional[dict]:
+    """Нормализовать один элемент evidence[].
+
+    Возвращает None, если запись непригодна (нет ни origin, ни quote).
+    Обрезает quote до 240 символов (как в evidence_left/right).
+    """
+    if not isinstance(raw, dict):
+        return None
+    origin = str(raw.get("origin") or "").strip().lower()
+    if origin not in _ALLOWED_EVIDENCE_ORIGINS:
+        origin = ""
+    side = str(raw.get("side") or "").strip().lower()
+    if side not in ("left", "right"):
+        side = ""
+    page_val = raw.get("page")
+    try:
+        page_norm: Optional[int] = int(page_val) if page_val is not None else None
+    except (TypeError, ValueError):
+        page_norm = None
+    block_id = str(raw.get("block_id") or "").strip()[:80]
+    quote = str(raw.get("quote") or "").strip()[:240]
+    if not origin and not quote:
+        return None
+    out: dict[str, Any] = {"origin": origin or "text"}
+    if side:
+        out["side"] = side
+    if page_norm is not None:
+        out["page"] = page_norm
+    if block_id:
+        out["block_id"] = block_id
+    out["quote"] = quote
+    return out
+
+
+def _normalize_evidence_array(raw: Any) -> list[dict]:
+    if not isinstance(raw, list):
+        return []
+    out: list[dict] = []
+    for r in raw[:32]:  # cap для защиты от мегараздутых ответов
+        norm = _normalize_evidence_array_item(r)
+        if norm is not None:
+            out.append(norm)
+    return out
+
+
+def _coerce_source_from_evidence(declared_source: str, evidence: list[dict]) -> str:
+    """Логика принудительного выбора `source` по evidence[] origin'ам.
+
+    Правила:
+      * если evidence содержит и визуальный, и невизуальный origin → mixed;
+      * если source=text, но в evidence есть визуальный origin → принудительно
+        привести source к ближайшему визуальному (если он один-в-один) или
+        к mixed (если визуальных несколько / есть невизуальный).
+
+    Если evidence пуст — оставляем declared_source.
+    """
+    if not evidence:
+        return declared_source
+    has_visual = any(e.get("origin") in _VISUAL_EVIDENCE_ORIGINS for e in evidence)
+    has_nonvisual = any(e.get("origin") in _NONVISUAL_EVIDENCE_ORIGINS for e in evidence)
+    if has_visual and has_nonvisual:
+        return "mixed"
+    if has_visual and declared_source == "text":
+        # выберем визуальный источник по уникальному origin'у
+        visual_origins = {e.get("origin") for e in evidence if e.get("origin") in _VISUAL_EVIDENCE_ORIGINS}
+        if visual_origins == {"scheme_analysis"}:
+            return "scheme_analysis"
+        # image_enrichment и image_diff_index обе мап-ятся на image_enrichment как source
+        return "image_enrichment"
+    return declared_source
+
+
 def _normalize_change(raw: Any) -> Optional[dict]:
     """Нормализовать одно изменение под жёсткие enum'ы. Возвращает None, если запись пустая."""
     if not isinstance(raw, dict):
@@ -486,6 +614,10 @@ def _normalize_change(raw: Any) -> Optional[dict]:
     source = str(raw.get("source") or "").strip().lower()
     if source not in _ALLOWED_SOURCE:
         source = "text"
+    # Нормализовать optional evidence[]; затем привести source к
+    # mixed/visual в зависимости от origin'ов.
+    evidence_array = _normalize_evidence_array(raw.get("evidence"))
+    source = _coerce_source_from_evidence(source, evidence_array)
     type_ = str(raw.get("type") or "").strip().lower()
     if type_ not in _ALLOWED_TYPE:
         type_ = "changed"
@@ -501,7 +633,7 @@ def _normalize_change(raw: Any) -> Optional[dict]:
     except (TypeError, ValueError):
         confidence = 0.0
     confidence = max(0.0, min(1.0, confidence))
-    return {
+    out: dict[str, Any] = {
         "id": str(raw.get("id") or f"chg_{uuid.uuid4().hex[:10]}"),
         "source": source,
         "type": type_,
@@ -518,6 +650,11 @@ def _normalize_change(raw: Any) -> Optional[dict]:
         "evidence_left": _normalize_evidence(raw.get("evidence_left")),
         "evidence_right": _normalize_evidence(raw.get("evidence_right")),
     }
+    # evidence[] добавляем ТОЛЬКО если в ответе она была — backward-compat:
+    # старые changes без evidence[] не получают пустого массива.
+    if evidence_array:
+        out["evidence"] = evidence_array
+    return out
 
 
 # ─── IO ──────────────────────────────────────────────────────────────────

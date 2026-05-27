@@ -128,6 +128,11 @@ class MovePageSideRequest(BaseModel):
     direction: str = Field(..., pattern="^(up|down)$")
 
 
+class DeletePageSideRequest(BaseModel):
+    slot: int = Field(..., ge=1)
+    side: str = Field(..., pattern="^(left|right)$")
+
+
 class UpdatePairMatchRequest(BaseModel):
     right_pdf: Optional[str] = None
     right_md: Optional[str] = None
@@ -782,6 +787,19 @@ async def move_page_alignment_side(session_id: str, pair_id: str, req: MovePageS
     try:
         return store.alignment_move_page_side(
             session_id, pair_id, req.slot, req.side, req.direction
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.post("/sessions/{session_id}/pairs/{pair_id}/page-alignment/delete-page-side")
+async def delete_page_alignment_side(session_id: str, pair_id: str, req: DeletePageSideRequest):
+    """Удалить страницу одной стороны в slot'е; другая сторона не меняется."""
+    try:
+        return store.alignment_delete_page_side(
+            session_id, pair_id, req.slot, req.side
         )
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc

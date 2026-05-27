@@ -13,7 +13,8 @@ URL'ы внешних провайдеров явно отвергаются н�
   STAGE_COMPARISON_GRAPHIC_LLM_MODEL=qwen/qwen3.6-35b-a3b
   STAGE_COMPARISON_GRAPHIC_LLM_FALLBACK_MODEL=qwen3.6-35b-a3b-mtp
   STAGE_COMPARISON_GRAPHIC_LLM_TEMPERATURE=0.0
-  STAGE_COMPARISON_GRAPHIC_LLM_MAX_TOKENS=1800
+  STAGE_COMPARISON_GRAPHIC_LLM_MAX_TOKENS=6000
+  STAGE_COMPARISON_GRAPHIC_LLM_MAX_CONTINUATIONS=2
   STAGE_COMPARISON_GRAPHIC_LLM_TIMEOUT_SEC=300
   STAGE_COMPARISON_GRAPHIC_LLM_IMAGE_LONG_SIDE=1100
   STAGE_COMPARISON_GRAPHIC_LLM_AUTH=basic
@@ -148,6 +149,7 @@ class LocalGraphicLLMConfig:
     fallback_model: str
     temperature: float
     max_tokens: int
+    max_continuations: int
     timeout_sec: int
     image_long_side: int
     auth: str
@@ -195,7 +197,8 @@ def load_local_graphic_llm_config() -> LocalGraphicLLMConfig:
         model=os.environ.get("STAGE_COMPARISON_GRAPHIC_LLM_MODEL", "").strip(),
         fallback_model=os.environ.get("STAGE_COMPARISON_GRAPHIC_LLM_FALLBACK_MODEL", "").strip(),
         temperature=_env_float("STAGE_COMPARISON_GRAPHIC_LLM_TEMPERATURE", 0.0),
-        max_tokens=_env_int("STAGE_COMPARISON_GRAPHIC_LLM_MAX_TOKENS", 1800),
+        max_tokens=_env_int("STAGE_COMPARISON_GRAPHIC_LLM_MAX_TOKENS", 6000),
+        max_continuations=max(0, _env_int("STAGE_COMPARISON_GRAPHIC_LLM_MAX_CONTINUATIONS", 2)),
         timeout_sec=_env_int("STAGE_COMPARISON_GRAPHIC_LLM_TIMEOUT_SEC", 300),
         image_long_side=_env_int("STAGE_COMPARISON_GRAPHIC_LLM_IMAGE_LONG_SIDE", 1100),
         auth=os.environ.get("STAGE_COMPARISON_GRAPHIC_LLM_AUTH", "basic").strip().lower() or "basic",
@@ -794,6 +797,254 @@ def parse_diff_json(text: str) -> Optional[dict[str, Any]]:
     return None
 
 
+# Маркеры self-truncation от модели. Качество salvage напрямую зависит от того,
+# что мы режем строку именно по последнему многоточию (а не по случайной точке
+# внутри числа или сокращения).
+_ELLIPSIS_RE = re.compile(r"(?:…|\.\.\.)")
+
+
+def salvage_partial_json(text: str) -> Optional[dict[str, Any]]:
+    """Попытаться вытащить структурированные поля из оборванного JSON.
+
+    Возвращаемый dict помечен ключом ``_salvaged: True``. Если salvage
+    невозможен — None.
+
+    Тактика:
+      1. Найти крупный brace-блок (от первого `{` до конца);
+      2. Отрезать всё после последнего многоточия `…`/`...`, найденного
+         внутри JSON-значения, — модель почти всегда после этого
+         останавливается;
+      3. Откатиться к последней позиции, где можно безопасно закрыть
+         текущую строку/массив/объект (то есть стереть незавершённую
+         трейлинговую конструкцию);
+      4. Сбалансировать `{}` и `[]` дописыванием закрывающих скобок;
+      5. Попробовать `json.loads`. Если получилось — добавить
+         ``_salvaged: True`` и вернуть.
+
+    Salvage намеренно консервативный: он спасает summary/image_kind/
+    список равных-уровней-выше элементов, а не дофантазирует поля.
+    """
+    if not text or not text.strip():
+        return None
+    s = text.strip()
+    # markdown-fences off
+    s = re.sub(r"```(?:json)?", "", s).replace("```", "").strip()
+
+    # Локализуем основной JSON-блок: от первого `{` до конца.
+    start = s.find("{")
+    if start < 0:
+        return None
+    body = s[start:]
+
+    # Отрезаем хвост по последнему многоточию — обычно именно там модель
+    # самооборвалась.
+    last_ell = None
+    for m in _ELLIPSIS_RE.finditer(body):
+        last_ell = m
+    if last_ell is not None:
+        body = body[: last_ell.start()]
+
+    # Аккуратно откатываемся до последней «безопасной» точки:
+    # удаляем недозакрытую трейлинговую строку и неполную последнюю запись.
+    salvaged = _trim_to_last_safe_boundary(body)
+    if salvaged is None:
+        return None
+
+    try:
+        out = json.loads(salvaged)
+    except Exception:
+        return None
+    if not isinstance(out, dict):
+        return None
+    out["_salvaged"] = True
+    return out
+
+
+def _trim_to_last_safe_boundary(body: str) -> Optional[str]:
+    """Срезать недозакрытый хвост JSON и сбалансировать скобки.
+
+    Идём по строке посимвольно. Для каждого `{`/`[` запоминаем тип контейнера
+    и, для объектов, текущее «ожидание»: ключ → `:` → значение → `,`/`}`.
+    Запоминаем «безопасную» позицию ТОЛЬКО после полностью завершённой
+    `key: value` пары (внутри объекта) либо после полностью завершённого
+    элемента массива.
+
+    Затем срезаем висящие запятые/пробелы и дописываем закрывающие скобки
+    в правильном порядке.
+    """
+    if not body:
+        return None
+
+    # Каждый элемент стека: ("{", expecting) или ("[", None).
+    # expecting ∈ "key" | "colon" | "value" | "separator"
+    stack: list[tuple[str, Optional[str]]] = []
+    in_str = False
+    escape = False
+    last_safe = -1
+    last_safe_stack: list[tuple[str, Optional[str]]] = []
+
+    def _mark_safe(pos: int):
+        nonlocal last_safe, last_safe_stack
+        last_safe = pos
+        last_safe_stack = [t for t in stack]
+
+    def _on_value_complete(pos_after: int):
+        """Значение завершено: внутри объекта переходим к 'separator',
+        внутри массива — к 'separator'. На любом уровне — это безопасная точка.
+        """
+        if stack:
+            kind, _ = stack[-1]
+            stack[-1] = (kind, "separator")
+            _mark_safe(pos_after)
+        else:
+            # значение на топ-уровне (редкость) — отметим.
+            _mark_safe(pos_after)
+
+    i = 0
+    n = len(body)
+    while i < n:
+        c = body[i]
+
+        if in_str:
+            if escape:
+                escape = False
+            elif c == "\\":
+                escape = True
+            elif c == '"':
+                in_str = False
+                # Конец строки. Что это было — ключ или значение?
+                if stack:
+                    kind, expecting = stack[-1]
+                    if kind == "{":
+                        if expecting == "key":
+                            # это был ключ — следующее обязательно ':'
+                            stack[-1] = ("{", "colon")
+                            # НЕ помечаем как safe — мы посередине пары.
+                        else:
+                            # expecting == "value" → строка-значение
+                            _on_value_complete(i + 1)
+                    else:
+                        # array — строка-значение
+                        _on_value_complete(i + 1)
+                else:
+                    _mark_safe(i + 1)
+            i += 1
+            continue
+
+        if c == '"':
+            in_str = True
+            i += 1
+            continue
+        if c == "{":
+            stack.append(("{", "key"))
+            i += 1
+            continue
+        if c == "[":
+            stack.append(("[", None))
+            i += 1
+            continue
+        if c == "}":
+            if not stack or stack[-1][0] != "{":
+                break
+            stack.pop()
+            _on_value_complete(i + 1)
+            i += 1
+            continue
+        if c == "]":
+            if not stack or stack[-1][0] != "[":
+                break
+            stack.pop()
+            _on_value_complete(i + 1)
+            i += 1
+            continue
+        if c == ":":
+            if stack and stack[-1][0] == "{" and stack[-1][1] == "colon":
+                stack[-1] = ("{", "value")
+            i += 1
+            continue
+        if c == ",":
+            if stack:
+                kind, expecting = stack[-1]
+                if kind == "{":
+                    # после value/separator — снова ждём key
+                    stack[-1] = ("{", "key")
+                # array — ждём следующее значение
+                _mark_safe(i)  # safe ПЕРЕД запятой
+            i += 1
+            continue
+        if c.isdigit() or (c == "-" and i + 1 < n and body[i + 1].isdigit()):
+            j = i + 1
+            while j < n and body[j] in "0123456789.eE+-":
+                j += 1
+            _on_value_complete(j)
+            i = j
+            continue
+        if c in "tfn":
+            matched = False
+            for token in ("true", "false", "null"):
+                if body.startswith(token, i):
+                    _on_value_complete(i + len(token))
+                    i += len(token)
+                    matched = True
+                    break
+            if not matched:
+                # неизвестный токен — стоп
+                break
+            continue
+        # пробелы, переводы строк — пропускаем
+        i += 1
+
+    if last_safe <= 0:
+        return None
+
+    head = body[:last_safe]
+    # Срезать висящие запятые/пробелы.
+    head = re.sub(r"[,\s]+$", "", head)
+    # Закрыть оставшиеся открытые скобки в правильном порядке (LIFO).
+    closers = "".join("}" if kind == "{" else "]" for kind, _ in reversed(last_safe_stack))
+    return head + closers
+
+
+# ─── Retry / transient error detection ─────────────────────────────────────
+
+
+# Эти подстроки в теле HTTP-ответа LM Studio сигнализируют о transient-
+# проблеме: модель выгрузилась JIT'ом, LM Studio внутренне отменил load,
+# или схватил 500. Все они исправляются повторной попыткой через 5с.
+_RETRYABLE_BODY_MARKERS = (
+    "model unloaded",
+    "operation canceled",
+    "operation cancelled",
+    "failed to load model",
+    "model_not_loaded",
+    "model is not loaded",
+)
+
+
+def _is_retryable_http(status_code: int, body_text: str) -> Optional[str]:
+    """Вернуть короткую причину для retry или None.
+
+    Используется как в Compare flow, так и в Describe flow.
+    """
+    if status_code >= 500:
+        return f"http_{status_code}"
+    if status_code == 400 and isinstance(body_text, str):
+        low = body_text.lower()
+        for marker in _RETRYABLE_BODY_MARKERS:
+            if marker in low:
+                return f"http_400:{marker}"
+    return None
+
+
+def _is_retryable_exception(exc: Exception) -> Optional[str]:
+    """Сетевые/транспортные ошибки, которые имеет смысл пере-запросить."""
+    if isinstance(exc, httpx.TimeoutException):
+        return f"timeout:{type(exc).__name__}"
+    if isinstance(exc, (httpx.ConnectError, httpx.ReadError, httpx.RemoteProtocolError, httpx.NetworkError)):
+        return f"network:{type(exc).__name__}"
+    return None
+
+
 def _build_summary_text(parsed: dict[str, Any]) -> str:
     """Собрать человекочитаемую summary из распарсенного JSON для UI."""
     if not isinstance(parsed, dict):
@@ -1044,6 +1295,19 @@ class DescribeResult:
     """Результат одного описания картинки локальной VLM.
 
     Не путать с `CompareResult` (тот возвращает diff двух картинок).
+
+    Диагностические поля (помогают тюнить max_tokens/prompt без чтения raw'а):
+      * ``finish_reason`` — finish_reason от первого chunk'а
+        (``stop`` | ``length`` | ``error`` | None).
+      * ``usage`` — usage от первого chunk'а
+        (``prompt_tokens`` / ``completion_tokens`` / ``total_tokens``).
+      * ``response_char_count`` — длина content из первого chunk'а в символах.
+      * ``parse_error_detail`` — короткая категория сбоя парсера
+        (``no_opening_brace`` | ``markdown_reasoning`` | ``truncated_json`` |
+        ``empty_content`` | ``salvage_no_safe_boundary`` | None при успехе).
+      * ``full_raw_response`` — full content_text от первого chunk'а, чтобы
+        caller (например, enrich_side) мог записать его на диск целиком.
+        В UI/JSON это поле НЕ пишется — оно только для caller-side persistence.
     """
 
     status: str  # done | error | provider_unavailable | invalid_json | timeout
@@ -1055,52 +1319,100 @@ class DescribeResult:
     raw_response_excerpt: str = ""
     duration_sec: float = 0.0
     error: Optional[str] = None
+    finish_reason: Optional[str] = None
+    usage: Optional[dict[str, int]] = None
+    response_char_count: int = 0
+    parse_error_detail: Optional[str] = None
+    full_raw_response: str = ""
 
 
-async def describe_image_local(
-    image_path: str | Path,
-    prompt: str,
-    *,
-    model: Optional[str] = None,
-    cfg: Optional[LocalGraphicLLMConfig] = None,
-    model_used_hint: Optional[str] = None,
-    fallback_used_hint: bool = False,
-) -> DescribeResult:
-    """Послать одну картинку + текстовый prompt в локальный OpenAI-compatible vision endpoint.
+def _classify_parse_error(content_text: str) -> str:
+    """Короткая категория, почему `parse_diff_json` вернул None.
 
-    Используется MD enrichment'ом для генерации structured-описания image/imagine
-    блоков (Qwen 35B). Не делает diff — только описывает одно изображение.
-
-    External paid hosts (OpenRouter / OpenAI / Gemini / Anthropic) явно
-    запрещены через `_validate_base_url`.
+    Используется для диагностики: ``markdown_reasoning`` сразу подсказывает,
+    что модель ушла в chain-of-thought; ``truncated_json`` — что не хватило
+    max_tokens; ``empty_content`` — что модель вернула пустоту.
     """
-    cfg = cfg or load_local_graphic_llm_config()
-    ok, reason = check_local_graphic_llm_available(cfg)
-    if not ok:
-        return DescribeResult(
-            status="provider_unavailable",
-            provider=cfg.provider or PROVIDER_NAME,
-            model=model or cfg.model,
-            model_used=model_used_hint or "",
-            fallback_used=fallback_used_hint,
-            error=f"local_graphic_llm_unavailable:{reason}",
+    if not content_text:
+        return "empty_content"
+    stripped = content_text.strip()
+    if not stripped:
+        return "empty_content"
+    # Markdown-reasoning от mtp обычно начинается с нумерованного списка
+    # ("1. **Analyze the Request:**") или с заголовка "###" и не содержит `{`.
+    if "{" not in stripped:
+        # Похоже на markdown reasoning, если есть характерные маркеры.
+        low = stripped[:400].lower()
+        markdown_markers = (
+            "**analyze",
+            "** analyze",
+            "1.  **",
+            "**task:**",
+            "**output format",
+            "*   **",
+            "- **",
         )
+        if any(m in low for m in markdown_markers) or stripped.startswith(("#", "*", "-")):
+            return "markdown_reasoning"
+        return "no_opening_brace"
+    # Есть `{`, но parse не справился — почти всегда обрыв на max_tokens.
+    if _ELLIPSIS_RE.search(stripped):
+        return "truncated_json"
+    # `{` есть, но нет финальной `}` — также похоже на обрыв.
+    if not stripped.rstrip().endswith("}"):
+        return "truncated_json"
+    return "malformed_json"
 
-    primary_model = (model or cfg.model).strip()
-    use_model = (model_used_hint or primary_model).strip()
-    if not prompt or not prompt.strip():
-        return DescribeResult(
-            status="error",
-            provider=cfg.provider,
-            model=primary_model,
-            model_used=use_model,
-            fallback_used=fallback_used_hint,
-            error="empty_prompt",
-        )
 
-    img_bytes = _resize_png_to_long_side(Path(image_path), cfg.image_long_side)
-    img_url = _png_bytes_to_data_url(img_bytes)
+def _extract_usage(data: Any) -> dict[str, int]:
+    """Извлечь {prompt_tokens, completion_tokens, total_tokens} из API-ответа.
 
+    OpenAI-compatible API кладёт usage в data["usage"]. LM Studio тоже
+    возвращает их. Если поля нет — пустой dict.
+    """
+    if not isinstance(data, dict):
+        return {}
+    usage = data.get("usage")
+    if not isinstance(usage, dict):
+        return {}
+    out: dict[str, int] = {}
+    for key in ("prompt_tokens", "completion_tokens", "total_tokens"):
+        val = usage.get(key)
+        if isinstance(val, int):
+            out[key] = val
+        elif isinstance(val, float):
+            out[key] = int(val)
+    return out
+
+
+def _extract_finish_reason(data: Any) -> Optional[str]:
+    if not isinstance(data, dict):
+        return None
+    choices = data.get("choices") or []
+    if not choices or not isinstance(choices[0], dict):
+        return None
+    fr = choices[0].get("finish_reason")
+    if isinstance(fr, str):
+        return fr
+    return None
+
+
+async def _describe_image_once(
+    *,
+    img_url: str,
+    prompt: str,
+    cfg: LocalGraphicLLMConfig,
+    use_model: str,
+    primary_model: str,
+    fallback_used: bool,
+) -> tuple[DescribeResult, str]:
+    """Один HTTP-вызов к LM Studio. Возвращает (DescribeResult, content_text).
+
+    `content_text` — это полный текст ответа модели (для последующего
+    salvage), а не обрезанный excerpt. Дублируется в
+    ``DescribeResult.full_raw_response`` для удобства caller'а
+    (например, ``enrich_side`` пишет его на диск целиком).
+    """
     payload = {
         "model": use_model,
         "max_tokens": int(cfg.max_tokens),
@@ -1130,20 +1442,20 @@ async def describe_image_local(
             provider=cfg.provider,
             model=primary_model,
             model_used=use_model,
-            fallback_used=fallback_used_hint,
+            fallback_used=fallback_used,
             duration_sec=time.monotonic() - started,
             error=f"timeout:{exc}",
-        )
+        ), ""
     except Exception as exc:  # noqa: BLE001
         return DescribeResult(
             status="error",
             provider=cfg.provider,
             model=primary_model,
             model_used=use_model,
-            fallback_used=fallback_used_hint,
+            fallback_used=fallback_used,
             duration_sec=time.monotonic() - started,
             error=f"http_error:{type(exc).__name__}:{exc}",
-        )
+        ), ""
 
     duration = time.monotonic() - started
     body_text = response.text or ""
@@ -1152,17 +1464,25 @@ async def describe_image_local(
     except Exception:
         data = None
 
+    finish_reason = _extract_finish_reason(data)
+    usage = _extract_usage(data)
+
     if response.status_code >= 400:
         return DescribeResult(
             status="error",
             provider=cfg.provider,
             model=primary_model,
             model_used=use_model,
-            fallback_used=fallback_used_hint,
+            fallback_used=fallback_used,
             duration_sec=duration,
             raw_response_excerpt=_excerpt(body_text),
             error=f"http_{response.status_code}",
-        )
+            finish_reason=finish_reason,
+            usage=usage or None,
+            response_char_count=len(body_text or ""),
+            parse_error_detail="http_error",
+            full_raw_response=body_text or "",
+        ), body_text
 
     content_text = ""
     if isinstance(data, dict):
@@ -1183,6 +1503,7 @@ async def describe_image_local(
                 if isinstance(reasoning, str):
                     content_text = reasoning
 
+    response_chars = len(content_text or "")
     parsed = parse_diff_json(content_text)
     if parsed is None:
         return DescribeResult(
@@ -1190,31 +1511,772 @@ async def describe_image_local(
             provider=cfg.provider,
             model=primary_model,
             model_used=use_model,
-            fallback_used=fallback_used_hint,
+            fallback_used=fallback_used,
             duration_sec=duration,
             raw_response_excerpt=_excerpt(content_text or body_text),
             error="json_parse_failed",
-        )
+            finish_reason=finish_reason,
+            usage=usage or None,
+            response_char_count=response_chars,
+            parse_error_detail=_classify_parse_error(content_text),
+            full_raw_response=content_text or body_text or "",
+        ), content_text or body_text
 
     return DescribeResult(
         status="done",
         provider=cfg.provider,
         model=primary_model,
         model_used=use_model,
-        fallback_used=fallback_used_hint,
+        fallback_used=fallback_used,
         parsed=parsed,
         raw_response_excerpt=_excerpt(content_text),
         duration_sec=duration,
         error=None,
+        finish_reason=finish_reason,
+        usage=usage or None,
+        response_char_count=response_chars,
+        parse_error_detail=None,
+        full_raw_response=content_text,
+    ), content_text
+
+
+# Retry/fallback константы.
+DESCRIBE_TRANSIENT_RETRY_SLEEP_SEC = 5.0
+DESCRIBE_TRANSIENT_RETRY_COUNT = 1   # сколько повторов на одну модель-кандидата
+
+
+CONTINUATION_PROMPT_TEMPLATE = """Это ПРОДОЛЖЕНИЕ описания одного и того же изображения из проектной/рабочей документации в строительстве.
+
+Предыдущий chunk закончился с пометкой next_chunk_hint:
+"{hint}"
+
+ЗАДАЧА:
+Продолжи описание той же схемы/чертежа. Не повторяй уже описанное. Начни именно с того места, на которое указывает next_chunk_hint выше. Опиши столько новых элементов, сколько помещается в один валидный JSON.
+
+ПРАВИЛА ВЫВОДА (строгие):
+
+1. Возвращай ТОЛЬКО валидный, полностью закрытый JSON. Никакого markdown, никакого текста до или после JSON, никаких комментариев `//`.
+2. ЗАПРЕЩЕНО использовать многоточие в любом виде: `…` (U+2026), `...`, `etc.`, `и т. д.`, `и т.п.`, `<…>`, `[...]`, `и др.`, `и тому подобное`.
+3. ЗАПРЕЩЕНО обрывать ключи или значения JSON «на полуслове». Если строка не помещается полностью — сократи её формулировку, но всегда закрывай кавычку.
+4. НЕ ограничивай себя «топ-10». Опиши столько элементов, сколько успеваешь корректно вместить.
+5. Если ты понимаешь, что не помещаешься, заверши текущий объект, закрой все массивы и поставь:
+   * `"continues": true`;
+   * `"next_chunk_hint": "что осталось показать в следующем chunk'е"`;
+   * `"coverage_notes": "что охвачено именно в этом chunk'е"`.
+6. Если описание полностью завершено — поставь `"continues": false`.
+
+ОБЯЗАТЕЛЬНЫЕ ПОЛЯ:
+
+{{
+"status": "done",
+"continues": true|false,
+"next_chunk_hint": "" или строка,
+"coverage_notes": "" или строка (что охвачено именно в этом chunk'е)
+}}
+
+ОПЦИОНАЛЬНЫЕ ПОЛЯ (заполняй только те, по которым есть НОВЫЕ данные именно в этом chunk'е — не повторяй уже описанное):
+"image_kind", "summary", "design_solutions", "materials", "equipment", "numeric_parameters", "requirements", "tables", "visible_text", "comparison_relevant_facts", "uncertainties", "scheme_analysis" (с её узлами/связями/последовательностями/контурами).
+
+ФИНАЛЬНАЯ ПРОВЕРКА:
+
+* ни одного `…` или `...` нигде;
+* все строки закрыты двойной кавычкой;
+* все массивы закрыты `]`;
+* все объекты закрыты `}}`;
+* `continues` и `coverage_notes` присутствуют;
+* если `continues: true`, `next_chunk_hint` обязательно содержит осмысленный текст.
+
+Никакого markdown вне JSON.
+"""
+
+
+def _build_continuation_prompt(hint: str) -> str:
+    return CONTINUATION_PROMPT_TEMPLATE.format(hint=(hint or "").strip())
+
+
+# ─── Merge of chunked image descriptions ─────────────────────────────────
+
+
+# Ключи скаляров, которые мы берём из ПЕРВОГО chunk'а (характеризуют всё
+# изображение целиком — kind, тип схемы, общий confidence). Не перезаписываются
+# последующими chunk'ами.
+_DESC_SCALAR_FIRST_WINS = ("image_kind", "confidence")
+
+# Ключи списков из верхнего уровня JSON, которые надо объединять с дедупом.
+# Соответствуют schema v4_compact prompt'а (см. md_image_enrichment.py).
+_DESC_LIST_FIELDS = (
+    "design_solutions",
+    "materials",
+    "equipment",
+    "requirements",
+    "tables",
+    "visible_text",
+    "comparison_relevant_facts",
+    "uncertainties",
+)
+
+# Списки списков-словарей: дедуп по name+unit+context (для numeric) / id+label /
+# from+to (для connections) / name (для circuits).
+_DESC_DICT_LIST_FIELDS = ("numeric_parameters",)
+
+# scheme_analysis.{...}
+_SCHEME_LIST_FIELDS = (
+    "sequence_summary",
+    "comparison_relevant_scheme_facts",
+    "uncertainties",
+)
+_SCHEME_DICT_LIST_FIELDS = ("nodes", "connections", "independent_circuits")
+_SCHEME_SCALAR_FIRST_WINS = ("is_scheme", "scheme_type", "flow_medium")
+
+
+def _norm_str(s: Any) -> str:
+    return re.sub(r"\s+", " ", str(s or "").strip().lower())
+
+
+def _dedup_strings(xs: list[Any]) -> list[Any]:
+    seen: set[str] = set()
+    out: list[Any] = []
+    for x in xs:
+        if not isinstance(x, str):
+            # сохраняем не-строки как есть (без дедупа)
+            out.append(x)
+            continue
+        key = _norm_str(x)
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        out.append(x)
+    return out
+
+
+def _dict_key(d: dict, key_fields: tuple[str, ...]) -> str:
+    parts = []
+    for f in key_fields:
+        v = d.get(f)
+        if isinstance(v, (str, int, float, bool)):
+            parts.append(_norm_str(v))
+    if not any(parts):
+        # fallback на JSON-сериализацию
+        try:
+            return json.dumps(d, sort_keys=True, ensure_ascii=False)
+        except Exception:  # noqa: BLE001
+            return repr(d)
+    return "|".join(parts)
+
+
+def _dedup_dicts(xs: list[Any], key_fields: tuple[str, ...]) -> list[Any]:
+    seen: set[str] = set()
+    out: list[Any] = []
+    for x in xs:
+        if not isinstance(x, dict):
+            out.append(x)
+            continue
+        key = _dict_key(x, key_fields)
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(x)
+    return out
+
+
+def _merge_string(base: Any, addition: Any) -> str:
+    bs = (base or "").strip() if isinstance(base, str) else ""
+    asx = (addition or "").strip() if isinstance(addition, str) else ""
+    if not asx:
+        return bs
+    if not bs:
+        return asx
+    if _norm_str(bs) == _norm_str(asx):
+        return bs
+    return f"{bs}\n\n{asx}"
+
+
+def _merge_image_descriptions(base: dict, addition: dict) -> dict:
+    """Сжатый merge двух image-description JSON.
+
+    `base` — итог предыдущих chunk'ов; `addition` — новый chunk.
+    Возвращает новый dict; `base` не мутируется.
+
+    Правила:
+      * скалярные поля типа image_kind / confidence — берём из base (если есть);
+      * summary, coverage_notes — конкатенация без дублей;
+      * массивы строк / dict'ов на верхнем уровне — append + dedup;
+      * scheme_analysis — рекурсивно: scalars first-wins, lists/dict-lists merge;
+      * continues / next_chunk_hint — берутся из addition (это «последний chunk»);
+      * status — "done", но если хоть один chunk был _salvaged, помечаем _salvaged=True.
+    """
+    if not isinstance(base, dict):
+        base = {}
+    if not isinstance(addition, dict):
+        return dict(base)
+
+    out: dict[str, Any] = dict(base)
+
+    # scalar first-wins, но non-None wins over None: если salvage оборвал
+    # base.image_kind на null literal или модель в первом chunk'е не успела
+    # дописать поле — берём из addition, если у него есть осмысленное значение.
+    for k in _DESC_SCALAR_FIRST_WINS:
+        if out.get(k) is None and addition.get(k) is not None:
+            out[k] = addition.get(k)
+
+    # summary, coverage_notes — concat
+    out["summary"] = _merge_string(out.get("summary"), addition.get("summary"))
+    out["coverage_notes"] = _merge_string(out.get("coverage_notes"), addition.get("coverage_notes"))
+
+    # status: "done" если оба done; если хоть один partial/salvaged — пометить
+    if base.get("_salvaged") or addition.get("_salvaged"):
+        out["_salvaged"] = True
+    # status оставляем из addition если он "done", иначе из base
+    if (addition.get("status") or "").lower() == "done":
+        out["status"] = "done"
+    elif (out.get("status") or "").lower() != "done":
+        out["status"] = addition.get("status") or out.get("status")
+
+    # continues / next_chunk_hint — из addition (это последний chunk)
+    if "continues" in addition:
+        out["continues"] = bool(addition.get("continues"))
+    if "next_chunk_hint" in addition:
+        out["next_chunk_hint"] = addition.get("next_chunk_hint") or ""
+
+    # списки строк
+    for k in _DESC_LIST_FIELDS:
+        b = out.get(k) if isinstance(out.get(k), list) else []
+        a = addition.get(k) if isinstance(addition.get(k), list) else []
+        if not b and not a:
+            continue
+        out[k] = _dedup_strings(list(b) + list(a))
+
+    # numeric_parameters и прочие списки dict'ов
+    for k in _DESC_DICT_LIST_FIELDS:
+        b = out.get(k) if isinstance(out.get(k), list) else []
+        a = addition.get(k) if isinstance(addition.get(k), list) else []
+        if not b and not a:
+            continue
+        out[k] = _dedup_dicts(list(b) + list(a), key_fields=("name", "unit", "context"))
+
+    # scheme_analysis
+    b_sc = out.get("scheme_analysis") if isinstance(out.get("scheme_analysis"), dict) else {}
+    a_sc = addition.get("scheme_analysis") if isinstance(addition.get("scheme_analysis"), dict) else {}
+    if b_sc or a_sc:
+        merged_sc: dict[str, Any] = dict(b_sc)
+        # Non-None wins over None — иначе truncated chunk1 с
+        # scheme_analysis.is_scheme: null теряет уточнение из continuation.
+        for k in _SCHEME_SCALAR_FIRST_WINS:
+            if merged_sc.get(k) is None and a_sc.get(k) is not None:
+                merged_sc[k] = a_sc.get(k)
+        for k in _SCHEME_LIST_FIELDS:
+            b = merged_sc.get(k) if isinstance(merged_sc.get(k), list) else []
+            a = a_sc.get(k) if isinstance(a_sc.get(k), list) else []
+            if b or a:
+                merged_sc[k] = _dedup_strings(list(b) + list(a))
+        for k in _SCHEME_DICT_LIST_FIELDS:
+            b = merged_sc.get(k) if isinstance(merged_sc.get(k), list) else []
+            a = a_sc.get(k) if isinstance(a_sc.get(k), list) else []
+            if not b and not a:
+                continue
+            if k == "nodes":
+                merged_sc[k] = _dedup_dicts(list(b) + list(a), key_fields=("id", "label", "visible_mark"))
+            elif k == "connections":
+                merged_sc[k] = _dedup_dicts(list(b) + list(a), key_fields=("from", "to", "direction", "line_label"))
+            else:  # independent_circuits
+                merged_sc[k] = _dedup_dicts(list(b) + list(a), key_fields=("name", "sequence"))
+        # is_scheme: True если хотя бы один chunk пометил True
+        if a_sc.get("is_scheme") is True:
+            merged_sc["is_scheme"] = True
+        out["scheme_analysis"] = merged_sc
+
+    return out
+
+
+def _content_signature(parsed: dict) -> tuple:
+    """Грубая «подпись» содержимого для defensive no-progress detection.
+
+    Возвращает tuple из размеров основных list-полей. Если после merge
+    continuation'а подпись не изменилась — значит continuation не добавил
+    ничего нового (модель повторила то, что уже было), и продолжать цикл
+    бессмысленно — отдаём partial.
+    """
+    if not isinstance(parsed, dict):
+        return ()
+    sc = parsed.get("scheme_analysis") if isinstance(parsed.get("scheme_analysis"), dict) else {}
+    return (
+        len(parsed.get("design_solutions") or []),
+        len(parsed.get("materials") or []),
+        len(parsed.get("equipment") or []),
+        len(parsed.get("numeric_parameters") or []),
+        len(parsed.get("visible_text") or []),
+        len(parsed.get("comparison_relevant_facts") or []),
+        len(parsed.get("uncertainties") or []),
+        len(sc.get("nodes") or []),
+        len(sc.get("connections") or []),
+        len(sc.get("sequence_summary") or []),
+        len(sc.get("independent_circuits") or []),
+        len(sc.get("comparison_relevant_scheme_facts") or []),
+        len(parsed.get("summary") or ""),
+    )
+
+
+def _next_chunk_hint(parsed: dict) -> str:
+    if not isinstance(parsed, dict):
+        return ""
+    v = parsed.get("next_chunk_hint")
+    if not isinstance(v, str):
+        return ""
+    v = v.strip()
+    # placeholder'ы от модели — не считаем валидным hint
+    if v in ("", "<…>", "<...>", "...", "…"):
+        return ""
+    return v
+
+
+def _wants_continuation(parsed: dict) -> bool:
+    if not isinstance(parsed, dict):
+        return False
+    return bool(parsed.get("continues")) and bool(_next_chunk_hint(parsed))
+
+
+def _should_try_fallback_after_invalid_json(parse_error_detail: Optional[str]) -> bool:
+    """Решить, имеет ли смысл звать fallback после invalid_json primary'я.
+
+    Эмпирически (benchmark 2026-05-26): fallback `qwen3.6-35b-a3b-mtp`
+    стабильно срывается в markdown reasoning на больших prompt'ах. Если
+    primary вернул *обрезанный JSON* (`truncated_json` / `malformed_json`),
+    salvage_partial_json на нём почти всегда успешен — нет смысла тратить
+    ещё 30s на fallback, который вернёт markdown без `{` и забьёт salvage
+    более длинной нерелевантной строкой.
+
+    Fallback оправдан только когда primary не дал ничего полезного:
+      * `empty_content`            — модель вернула пусто;
+      * `markdown_reasoning`       — primary тоже ушёл в reasoning;
+      * `no_opening_brace`         — нет JSON-якоря, salvage бессмысленен;
+      * `http_error`               — транспорт упал;
+      * None                       — на всякий случай (defensive default).
+    """
+    if not parse_error_detail:
+        return True
+    detail = (parse_error_detail or "").lower()
+    if detail in ("truncated_json", "malformed_json", "salvaged_from_invalid_json", "salvage_no_safe_boundary"):
+        return False
+    return True
+
+
+def _pick_salvage_candidate(contents: list[tuple[str, str]]) -> tuple[str, str]:
+    """Выбрать лучший content_text для salvage'а из list[(model_label, content)].
+
+    Старый подход (max длины) ломался, когда mtp-fallback писал длинное
+    markdown-reasoning, перекрывая обрезанный JSON primary'я. Новый
+    приоритет:
+
+      1. Среди тех, кто содержит `{` (есть хотя бы тень JSON), берём самый
+         длинный — это даёт salvage'у больше материала для парсинга.
+      2. Если ни в одном нет `{` — берём самый длинный как есть (terminal
+         fallback; salvage всё равно вернёт None, но мы хотя бы запишем
+         характеристики).
+      3. Пустой пул — `("", "")`.
+    """
+    if not contents:
+        return ("", "")
+    with_brace = [(label, c) for label, c in contents if "{" in (c or "")]
+    if with_brace:
+        return max(with_brace, key=lambda x: len(x[1] or ""))
+    return max(contents, key=lambda x: len(x[1] or ""))
+
+
+async def _describe_with_retry_and_fallback(
+    *,
+    img_url: str,
+    prompt: str,
+    cfg: LocalGraphicLLMConfig,
+    primary_model: str,
+    fallback_used_hint: bool,
+    allow_fallback: bool,
+    pinned_model: Optional[str] = None,
+) -> DescribeResult:
+    """retry + (conditional) fallback + salvage для одного chunk'а.
+
+    Параметры:
+      pinned_model: если задан, ходим ТОЛЬКО к этой модели (для
+        continuation, чтобы не переключаться между primary и fallback
+        посреди описания одной картинки).
+      allow_fallback: разрешён ли fallback на cfg.fallback_model при
+        invalid_json (по умолчанию True для первого chunk'а, False для
+        continuation).
+
+    Conditional fallback (2026-05-26):
+      Fallback вызывается ТОЛЬКО если у primary нет шансов на salvage —
+      см. ``_should_try_fallback_after_invalid_json``. Это убирает ~30s
+      холостого вызова mtp на каждом обрезанном primary JSON и убирает
+      загрязнение salvage-кандидата markdown reasoning'ом.
+    """
+    fallback_model = (cfg.fallback_model or "").strip()
+    if pinned_model:
+        candidates: list[tuple[str, bool]] = [(pinned_model, fallback_used_hint)]
+        fallback_available = False
+    else:
+        candidates = [(primary_model, fallback_used_hint)]
+        fallback_available = bool(
+            allow_fallback and fallback_model and fallback_model.lower() != primary_model.lower()
+        )
+
+    last_result: Optional[DescribeResult] = None
+    last_content_text = ""
+    # Список (label, content) для умного выбора salvage candidate'а.
+    salvage_pool: list[tuple[str, str]] = []
+
+    cand_idx = 0
+    while cand_idx < len(candidates):
+        cand_model, is_fallback = candidates[cand_idx]
+        result: Optional[DescribeResult] = None
+        content_text: str = ""
+        for attempt in range(1 + DESCRIBE_TRANSIENT_RETRY_COUNT):
+            result, content_text = await _describe_image_once(
+                img_url=img_url,
+                prompt=prompt,
+                cfg=cfg,
+                use_model=cand_model,
+                primary_model=primary_model,
+                fallback_used=is_fallback,
+            )
+
+            if result.status == "done":
+                if cand_idx > 0:
+                    logger.info(
+                        "describe_image_local: fallback model %s rescued after primary failure",
+                        cand_model,
+                    )
+                return result
+
+            transient_reason = None
+            if result.status == "error":
+                err = (result.error or "")
+                if err.startswith("http_"):
+                    try:
+                        status_code = int(err.split("_", 1)[1].split(":", 1)[0])
+                    except (ValueError, IndexError):
+                        status_code = 0
+                    transient_reason = _is_retryable_http(status_code, content_text)
+                elif err.startswith("http_error:") or err.startswith("network:"):
+                    transient_reason = err.split(":", 1)[0]
+            elif result.status == "timeout":
+                transient_reason = "timeout"
+
+            if transient_reason and attempt < DESCRIBE_TRANSIENT_RETRY_COUNT:
+                logger.warning(
+                    "describe_image_local: transient %s on model %s (attempt %d), retrying after %.1fs",
+                    transient_reason, cand_model, attempt + 1, DESCRIBE_TRANSIENT_RETRY_SLEEP_SEC,
+                )
+                await asyncio.sleep(DESCRIBE_TRANSIENT_RETRY_SLEEP_SEC)
+                continue
+            break
+
+        last_result = result
+        last_content_text = content_text
+        if result is not None and result.status == "invalid_json":
+            salvage_pool.append((cand_model, content_text))
+            # Решаем ДОБАВЛЯТЬ ли fallback в список кандидатов «по
+            # потребности», а не заранее. Это избавляет от лишнего вызова
+            # mtp, когда primary дал truncated_json — salvage и без mtp
+            # отлично справится с обрезанным JSON.
+            if (
+                cand_idx == 0
+                and fallback_available
+                and _should_try_fallback_after_invalid_json(result.parse_error_detail)
+            ):
+                candidates.append((fallback_model, True))
+                fallback_available = False
+                logger.info(
+                    "describe_image_local: primary returned invalid_json (%s), trying fallback model %s",
+                    result.parse_error_detail or "json_parse_failed", fallback_model,
+                )
+                cand_idx += 1
+                continue
+            elif cand_idx == 0 and fallback_available:
+                logger.info(
+                    "describe_image_local: primary returned invalid_json (%s), "
+                    "fallback skipped — primary content is salvage-friendly",
+                    result.parse_error_detail or "json_parse_failed",
+                )
+                # fallback не зовём, идём прямо к salvage
+                break
+        break
+
+    if last_result is not None and last_result.status == "invalid_json":
+        # Берём содержимое с `{` максимальной длины (см. _pick_salvage_candidate).
+        if not salvage_pool:
+            salvage_pool = [(last_result.model_used or "?", last_content_text or "")]
+        chosen_label, salvage_input = _pick_salvage_candidate(salvage_pool)
+        salvaged = salvage_partial_json(salvage_input)
+        if isinstance(salvaged, dict):
+            logger.warning(
+                "describe_image_local: salvaged partial JSON from %s (raw_len=%d, pool=%d)",
+                chosen_label, len(salvage_input), len(salvage_pool),
+            )
+            return DescribeResult(
+                status="partial",
+                provider=cfg.provider,
+                model=primary_model,
+                model_used=last_result.model_used,
+                fallback_used=last_result.fallback_used,
+                parsed=salvaged,
+                raw_response_excerpt=_excerpt(salvage_input),
+                duration_sec=last_result.duration_sec,
+                error="salvaged_partial_json",
+                finish_reason=last_result.finish_reason,
+                usage=last_result.usage,
+                response_char_count=len(salvage_input or ""),
+                parse_error_detail=(last_result.parse_error_detail or "salvaged_from_invalid_json"),
+                full_raw_response=salvage_input or "",
+            )
+        # Salvage не справился — оставим parse_error_detail для диагностики
+        last_result.parse_error_detail = (
+            last_result.parse_error_detail or "salvage_no_safe_boundary"
+        )
+
+    return last_result or DescribeResult(
+        status="error",
+        provider=cfg.provider,
+        model=primary_model,
+        model_used=primary_model,
+        fallback_used=fallback_used_hint,
+        error="no_candidate_attempted",
+    )
+
+
+async def describe_image_local(
+    image_path: str | Path,
+    prompt: str,
+    *,
+    model: Optional[str] = None,
+    cfg: Optional[LocalGraphicLLMConfig] = None,
+    model_used_hint: Optional[str] = None,
+    fallback_used_hint: bool = False,
+) -> DescribeResult:
+    """Послать одну картинку + текстовый prompt в локальный OpenAI-compatible vision endpoint.
+
+    Поведение:
+      1. Используется primary `cfg.model`. На transient-ошибках (модель
+         выгружена, http_500, timeout, network) — один retry через 5с.
+      2. Если итог — `invalid_json` (`json_parse_failed`), пробуем fallback
+         модель `cfg.fallback_model` (если задана и отличается). На ней
+         тоже доступен retry.
+      3. Если оба кандидата вернули `invalid_json` — пытаемся `salvage_partial_json`
+         на полном тексте ответа. Salvaged-результат идёт как
+         `status="partial"` с `parsed["_salvaged"] = True`.
+      4. Если первый chunk вернул `continues: true` + `next_chunk_hint`,
+         автоматически делаем до `cfg.max_continuations` дополнительных
+         запросов к той же модели (без fallback) и merge'им результат.
+      5. Любые иные status ('timeout', 'error') от последнего кандидата
+         бросаются наружу как есть.
+
+    Используется MD enrichment'ом для генерации structured-описания image/imagine
+    блоков. Не делает diff — только описывает одно изображение.
+
+    External paid hosts (OpenRouter / OpenAI / Gemini / Anthropic) явно
+    запрещены через `_validate_base_url`.
+    """
+    cfg = cfg or load_local_graphic_llm_config()
+    ok, reason = check_local_graphic_llm_available(cfg)
+    if not ok:
+        return DescribeResult(
+            status="provider_unavailable",
+            provider=cfg.provider or PROVIDER_NAME,
+            model=model or cfg.model,
+            model_used=model_used_hint or "",
+            fallback_used=fallback_used_hint,
+            error=f"local_graphic_llm_unavailable:{reason}",
+        )
+
+    primary_model = (model or cfg.model).strip()
+    if not prompt or not prompt.strip():
+        return DescribeResult(
+            status="error",
+            provider=cfg.provider,
+            model=primary_model,
+            model_used=primary_model,
+            fallback_used=fallback_used_hint,
+            error="empty_prompt",
+        )
+
+    img_bytes = _resize_png_to_long_side(Path(image_path), cfg.image_long_side)
+    img_url = _png_bytes_to_data_url(img_bytes)
+
+    # ── Chunk #1 — primary + fallback + salvage ─────────────────────────
+    base_result = await _describe_with_retry_and_fallback(
+        img_url=img_url,
+        prompt=prompt,
+        cfg=cfg,
+        primary_model=primary_model,
+        fallback_used_hint=fallback_used_hint,
+        allow_fallback=True,
+        pinned_model=None,
+    )
+
+    # Pass-through на non-done/partial: error/timeout/provider_unavailable.
+    if base_result.status not in ("done", "partial") or not isinstance(base_result.parsed, dict):
+        return base_result
+
+    # ── Continuation loop ──────────────────────────────────────────────
+    final_parsed: dict[str, Any] = dict(base_result.parsed)
+    chunks_count = 1
+    continued = False
+    continuation_warnings: list[str] = []
+    any_salvaged = bool(base_result.status == "partial" or final_parsed.get("_salvaged"))
+    used_model = base_result.model_used or primary_model
+
+    # Если ответ был salvaged, поля `continues`/`next_chunk_hint`/`coverage_notes`
+    # почти всегда отсутствуют в parsed (они должны были идти в самом конце JSON,
+    # но генерация оборвалась раньше). Принудительно ставим continues=true и
+    # синтезируем generic hint, чтобы continuation-цикл смог попросить добор.
+    if base_result.status == "partial" and final_parsed.get("continues") is None:
+        final_parsed["continues"] = True
+        if not _next_chunk_hint(final_parsed):
+            final_parsed["next_chunk_hint"] = (
+                "Продолжи описание схемы/чертежа с того места, где обрыв. "
+                "Допиши оставшиеся узлы, связи, числовые параметры и закрой "
+                "scheme_analysis. В следующем chunk'е перечисли всё, что не вошло "
+                "в первый chunk."
+            )
+        logger.info(
+            "describe_image_local: salvaged chunk #1 had no `continues`, "
+            "forcing continues=true to trigger continuation"
+        )
+
+    cap = max(0, int(cfg.max_continuations or 0))
+    stop_reason = "continues_false"
+    previous_hint: Optional[str] = None
+
+    while True:
+        if not _wants_continuation(final_parsed):
+            stop_reason = "continues_false"
+            break
+        if chunks_count - 1 >= cap:
+            stop_reason = "cap_reached"
+            break
+
+        hint = _next_chunk_hint(final_parsed)
+        # Защита от «stuck» continuation: модель повторяет тот же hint, не
+        # делая прогресса. Срабатывает на втором повторе hint'а подряд —
+        # лучше отдать partial, чем впустую тратить ещё 2 запроса.
+        if previous_hint is not None and _norm_str(hint) == _norm_str(previous_hint):
+            warn = f"continuation_{chunks_count + 1}_skipped:hint_repeated"
+            logger.warning("describe_image_local: %s", warn)
+            continuation_warnings.append(warn)
+            stop_reason = "hint_repeated"
+            break
+
+        cont_idx = chunks_count + 1
+        logger.info(
+            "describe_image_local: continuation %d/%d on model %s (hint=%r)",
+            cont_idx, cap, used_model, hint[:80],
+        )
+        cont_prompt = _build_continuation_prompt(hint)
+        cont_result = await _describe_with_retry_and_fallback(
+            img_url=img_url,
+            prompt=cont_prompt,
+            cfg=cfg,
+            primary_model=primary_model,
+            fallback_used_hint=base_result.fallback_used,
+            allow_fallback=False,
+            pinned_model=used_model,
+        )
+
+        if cont_result.status not in ("done", "partial") or not isinstance(cont_result.parsed, dict):
+            warn = f"continuation_{cont_idx}_failed:{cont_result.error or cont_result.status}"
+            logger.warning("describe_image_local: %s", warn)
+            continuation_warnings.append(warn)
+            stop_reason = "continuation_failed"
+            break
+
+        if cont_result.status == "partial":
+            warn = f"continuation_{cont_idx}_salvaged"
+            logger.warning("describe_image_local: %s", warn)
+            continuation_warnings.append(warn)
+            any_salvaged = True
+
+        # Защита от «no-op» continuation: merge должен реально что-то добавить
+        # к base. Если ни одного нового узла/связи/строки не появилось —
+        # модель ничего не описала, дальше просить бессмысленно.
+        pre_signature = _content_signature(final_parsed)
+        final_parsed = _merge_image_descriptions(final_parsed, cont_result.parsed)
+        post_signature = _content_signature(final_parsed)
+        if pre_signature == post_signature:
+            warn = f"continuation_{cont_idx}_no_progress"
+            logger.warning("describe_image_local: %s", warn)
+            continuation_warnings.append(warn)
+            stop_reason = "no_progress"
+            chunks_count = cont_idx
+            continued = True
+            break
+
+        previous_hint = hint
+        chunks_count = cont_idx
+        continued = True
+
+    # Если уперлись в cap, но модель всё ещё хочет продолжать — отдельный warning.
+    if stop_reason == "cap_reached" and bool(final_parsed.get("continues")):
+        continuation_warnings.append(f"continuation_cap_reached:{cap}")
+
+    # Финальная мета.
+    final_parsed["chunks_count"] = chunks_count
+    final_parsed["continued"] = continued
+    if continuation_warnings:
+        final_parsed["continuation_warnings"] = continuation_warnings
+    if any_salvaged:
+        final_parsed["_salvaged"] = True
+
+    logger.info(
+        "describe_image_local: done block in %d chunk(s), continued=%s, model=%s, "
+        "stop=%s, warnings=%d, salvaged=%s",
+        chunks_count, continued, used_model, stop_reason,
+        len(continuation_warnings), any_salvaged,
+    )
+
+    # Если хоть что-то salvaged → статус "partial" с уважением к данным.
+    final_status = "partial" if any_salvaged else "done"
+    final_error = "salvaged_partial_json" if any_salvaged else None
+
+    return DescribeResult(
+        status=final_status,
+        provider=cfg.provider,
+        model=primary_model,
+        model_used=used_model,
+        fallback_used=base_result.fallback_used,
+        parsed=final_parsed,
+        raw_response_excerpt=base_result.raw_response_excerpt,
+        duration_sec=base_result.duration_sec,
+        error=final_error,
+        # Diagnostic поля propagируются от первого chunk'а: они нужны для
+        # тюнинга prompt/max_tokens и для отчётности после batch run'а.
+        # Continuation-chunk'и имеют свои собственные finish_reason/usage,
+        # но их аггрегация не пересиливает «как primary справился».
+        finish_reason=base_result.finish_reason,
+        usage=base_result.usage,
+        response_char_count=base_result.response_char_count,
+        parse_error_detail=base_result.parse_error_detail,
+        full_raw_response=base_result.full_raw_response,
     )
 
 
 def config_info_for_endpoint(
     cfg: Optional[LocalGraphicLLMConfig] = None,
 ) -> dict[str, Any]:
-    """Safe-вид конфига для GET /graphic-llm-config — без секретов."""
+    """Safe-вид конфига для GET /graphic-llm-config — без секретов.
+
+    UI рендерит часть этих полей в config-panel'и (model, max_tokens,
+    prompt_version, max_continuations), чтобы оператор видел РЕАЛЬНУЮ
+    production-конфигурацию, а не догадывался по .env-сэмплам.
+    """
     cfg = cfg or load_local_graphic_llm_config()
     available, reason = check_local_graphic_llm_available(cfg)
+    # Импортируем поздно, чтобы не словить циклический импорт через
+    # md_image_enrichment → graphic_llm_local при загрузке модуля.
+    try:
+        from . import md_image_enrichment as _mi
+        prompt_version = _mi.PROMPT_VERSION
+        compact_limits = dict(_mi.COMPACT_PROMPT_LIMITS)
+    except (ImportError, AttributeError):
+        prompt_version = "unknown"
+        compact_limits = {}
     return {
         "provider": cfg.provider,
         "base_url_present": cfg.base_url_present,
@@ -1228,6 +2290,7 @@ def config_info_for_endpoint(
         # Полезные read-only поля для UI (без секретов)
         "temperature": cfg.temperature,
         "max_tokens": cfg.max_tokens,
+        "max_continuations": cfg.max_continuations,
         "timeout_sec": cfg.timeout_sec,
         "image_long_side": cfg.image_long_side,
         "load_context_length": cfg.load_context_length,
@@ -1235,6 +2298,14 @@ def config_info_for_endpoint(
         "protect_models": list(cfg.protect_models or []),
         "unload_after_request": cfg.unload_after_request,
         "unload_after_batch": cfg.unload_after_batch,
+        # Production prompt info (для UI и для диагностики кеша).
+        "prompt_version": prompt_version,
+        "compact_prompt_limits": compact_limits,
+        # Production architecture markers — чтобы UI/инженер видел, что
+        # включена salvage-first + conditional-fallback политика 2026-05-26.
+        "salvage_first_enabled": True,
+        "conditional_fallback_enabled": True,
+        "ctx_preload_mandatory": True,
     }
 
 
@@ -1324,6 +2395,7 @@ __all__ = [
     "describe_image_local",
     "DescribeResult",
     "parse_diff_json",
+    "salvage_partial_json",
     "config_info_for_endpoint",
     "loaded_models_diagnostics",
     "snapshot_loaded_models",

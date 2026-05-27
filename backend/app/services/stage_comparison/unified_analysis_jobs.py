@@ -29,7 +29,7 @@ import json
 import logging
 import threading
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Optional
 
 from . import enriched_comparison as ec_mod
@@ -54,7 +54,7 @@ def _new_job_id() -> str:
     return f"uajob_{uuid.uuid4().hex[:12]}"
 
 
-def _read_job(session_id: str, job_id: str) -> Optional[dict]:
+def _read_job_raw(session_id: str, job_id: str) -> Optional[dict]:
     try:
         p = paths_mod.job_json_path(session_id, job_id)
     except ValueError:
@@ -67,12 +67,84 @@ def _read_job(session_id: str, job_id: str) -> Optional[dict]:
         return None
 
 
+def _read_job(session_id: str, job_id: str) -> Optional[dict]:
+    data = _read_job_raw(session_id, job_id)
+    if data is None:
+        return None
+    return _maybe_mark_interrupted(session_id, data)
+
+
 def _write_job(session_id: str, job: dict) -> None:
     p = paths_mod.job_json_path(session_id, job["id"])
     p.parent.mkdir(parents=True, exist_ok=True)
     tmp = p.with_suffix(p.suffix + ".tmp")
     tmp.write_text(json.dumps(job, ensure_ascii=False, indent=2), encoding="utf-8")
     tmp.replace(p)
+
+
+_STALE_QUEUED_GRACE_SECONDS = 60
+_NON_TERMINAL_ITEM_STATES = ("queued", "running", "enriching", "comparing")
+
+
+def _parse_iso(value: Optional[str]) -> Optional[datetime]:
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(value.rstrip("Z")).replace(tzinfo=timezone.utc)
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _is_task_alive(session_id: str, job_id: str) -> bool:
+    bucket = _active_tasks.get(session_id) or {}
+    task = bucket.get(job_id)
+    return bool(task and not task.done())
+
+
+def _maybe_mark_interrupted(session_id: str, job: dict) -> dict:
+    """Stale-job detection для unified-jobs.
+
+    Если на диске job со status=running/queued, но `asyncio.Task` в текущем
+    процессе не живёт (uvicorn перезапустился или task крэшнулся) — помечаем
+    job как `failed_interrupted`, чтобы UI не висел на «Обработка…».
+    Незавершённые items тоже становятся `failed_interrupted` — это нужно,
+    чтобы при resume через `skip_ineligible=true, force_compare=false`
+    готовые пары попали в skip_done, а незавершённые перезапустились.
+
+    `queued` имеет grace-period 60s на гонку между create_job и
+    start_job_in_background.
+    """
+    if not isinstance(job, dict):
+        return job
+    status = job.get("status")
+    if status not in ("running", "queued"):
+        return job
+    job_id = job.get("id")
+    if not job_id:
+        return job
+    if _is_task_alive(session_id, job_id):
+        return job
+    if status == "queued":
+        updated = _parse_iso(job.get("updated_at") or job.get("created_at"))
+        if updated is None:
+            return job
+        age = (datetime.now(timezone.utc) - updated).total_seconds()
+        if age < _STALE_QUEUED_GRACE_SECONDS:
+            return job
+    job["status"] = "failed_interrupted"
+    job["updated_at"] = _utc_now()
+    job.setdefault(
+        "error",
+        "Backend перезапустился во время выполнения, воркер был потерян.",
+    )
+    for it in job.get("items") or []:
+        if it.get("status") in _NON_TERMINAL_ITEM_STATES:
+            it["status"] = "failed_interrupted"
+    try:
+        _write_job(session_id, job)
+    except OSError:
+        pass
+    return job
 
 
 def _collect_pair_ids(
@@ -311,7 +383,10 @@ def cancel_job(session_id: str, job_id: str) -> Optional[dict]:
         job = _read_job(session_id, job_id)
         if job is None:
             return None
-        if job.get("status") in ("done", "failed", "cancelled", "rejected_no_confirm"):
+        if job.get("status") in (
+            "done", "failed", "cancelled", "rejected_no_confirm",
+            "failed_interrupted",
+        ):
             return job
         job["status"] = "cancelled"
         job["updated_at"] = _utc_now()
@@ -499,6 +574,9 @@ def aggregate_job_progress(job: dict) -> dict:
         s = (it.get("status") or "").lower()
         if s in counts:
             counts[s] += 1
+        # enriching/comparing — это активные подсостояния running; объединяем.
+        elif s in ("enriching", "comparing"):
+            counts["running"] += 1
         if s == "skipped":
             reason = (it.get("preflight_action") or it.get("error") or "")
             if "too_large" in reason:
