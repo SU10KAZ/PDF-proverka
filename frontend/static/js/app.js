@@ -301,6 +301,34 @@ const app = createApp({
             };
         }
 
+        // ─── Stage-comparison dev-tools: legacy debug-subtabs + session-wide
+        // Opus batch button. Скрыты от обычного пользователя. Включить:
+        //   localStorage.setItem('sc_dev', '1')   — постоянно
+        //   ?scdev=1 в URL                        — на текущую сессию
+        //   window.scEnableDev() / scDisableDev() — из консоли.
+        function _readScDevFlag() {
+            try {
+                if (typeof window === 'undefined') return false;
+                const url = new URL(window.location.href);
+                if (url.searchParams.get('scdev') === '1') return true;
+                if (window.localStorage && window.localStorage.getItem('sc_dev') === '1') return true;
+            } catch (_) { /* SSR / sandboxed iframe */ }
+            return false;
+        }
+        const scDevTools = ref(_readScDevFlag());
+        if (typeof window !== 'undefined') {
+            window.scEnableDev = function () {
+                try { window.localStorage.setItem('sc_dev', '1'); } catch (_) {}
+                scDevTools.value = true;
+                console.info('[sc] dev-tools enabled (localStorage.sc_dev=1)');
+            };
+            window.scDisableDev = function () {
+                try { window.localStorage.removeItem('sc_dev'); } catch (_) {}
+                scDevTools.value = false;
+                console.info('[sc] dev-tools disabled');
+            };
+        }
+
         // ─── Critic v2 → display score (0–100) for inline findings table ─────
         // Pure-функции. Дублируются в frontend/tests/cv2_findings_table.test.js
         // как mirror — если логика разойдётся, тест упадёт первым.
@@ -2559,6 +2587,12 @@ const app = createApp({
                 currentView.value = 'stage-comparison';
                 connectGlobalWS();
                 scLoadObjects();
+                scLoadSavedConfig();
+                // Каноничная конфигурация v2: пробуем автоматически открыть
+                // ранее сохранённую рабочую сессию. История сессий обычному
+                // пользователю не показывается.
+                scLoadCanonicalConfig();
+                scTryOpenCanonical();
             } else if (hash === '/') {
                 currentView.value = 'dashboard';
                 sidebarFilterSection.value = null;
@@ -8372,8 +8406,19 @@ const app = createApp({
         watch(cv2DisplayFilter, () => { findingsPage.value = 1; _applyFindingsFilter(); });
 
         // ─── Init ───
+        // Закрываем inline-match popover при клике вне него (любой клик
+        // на document'е, кроме самого popover'а — оба внутренних обработчика
+        // используют @click.stop, чтобы не триггериться сами на себя).
+        function _scInlineMatchOutsideClick(ev) {
+            if (!scInlineMatchPairId.value) return;
+            // Если клик пришёл внутри popover или по имени правого PDF —
+            // сам popover закроет/перезапустит. Сюда долетают только клики
+            // ВНЕ popover'а.
+            scCloseInlineMatch();
+        }
         onMounted(() => {
             window.addEventListener('hashchange', handleRoute);
+            window.addEventListener('click', _scInlineMatchOutsideClick);
             handleRoute();
             connectGlobalWS();
             startPolling();
@@ -8402,6 +8447,7 @@ const app = createApp({
 
         onUnmounted(() => {
             window.removeEventListener('hashchange', handleRoute);
+            window.removeEventListener('click', _scInlineMatchOutsideClick);
             stopPolling();
             if (usagePollTimer) { clearInterval(usagePollTimer); usagePollTimer = null; }
             stopLmsHealthPolling();
@@ -8585,6 +8631,25 @@ const app = createApp({
         const scStageAPath     = ref('');
         const scStageBPath     = ref('');
         const scScanning       = ref(false);
+        // Канонический «сохранённый config»: одной кнопкой подставляется в форму.
+        // {saved, stage_a_path, stage_b_path, object_label, stage_a_label, stage_b_label, saved_at, note}
+        const scSavedConfig    = ref(null);
+        const scSavedConfigSaving = ref(false);
+        const scSavedConfigMsg = ref('');
+        // Каноничная конфигурация (новая модель v2): объекту соответствует одна
+        // активная конфигурация (canonical_session_id + pairs + режимы).
+        // {saved, canonical_session_id, canonical_session_available, config_hash,
+        //  pairs:[{pair_id, left_filename, right_filename, disabled, analysis_mode, order, ...}],
+        //  updated_at, ...}
+        const scCanonicalConfig = ref(null);
+        const scCanonicalStale  = ref(false);  // true если saved hash != current hash
+        // Drag-and-drop reorder для таблицы пар.
+        // scPairDragFromIdx — индекс перетаскиваемой строки в scPairs;
+        // scPairDragOverIdx — индекс цели hover'а; используется для visual feedback.
+        const scPairDragFromIdx = ref(-1);
+        const scPairDragOverIdx = ref(-1);
+        const scPairOrderSaving = ref(false);
+        const scPairOrderError  = ref('');
         // Автообъекты (Объект → stage_A / stage_B) ─────────────────────
         const scObjects        = ref([]);    // [{id, name, root_path, stages, default_stage_a, default_stage_b}]
         const scObjectsRoots   = ref([]);
@@ -8713,6 +8778,34 @@ const app = createApp({
         const scUnifiedFilterSeverity    = ref('');
         const scUnifiedFilterHumanReview = ref(false);
         const scUnifiedSearch            = ref('');
+        // Sort state for unified table (excel-style view).
+        // Field: '' (default order) | 'no' | 'sheet' | 'impact'.
+        // Dir: 'asc' | 'desc'. Default order = stable global numbering by original position.
+        const scUnifiedSortField         = ref('');
+        const scUnifiedSortDir           = ref('asc');
+
+        // ─── Grouped / high-value findings (deterministic post-processing) ────
+        // Backend: GET /api/stage-comparison/sessions/{sid}/unified-grouped
+        // Это второй режим вкладки «Расхождения»: пользователь видит
+        // сгруппированный реестр значимых отличий вместо сырых 346 findings.
+        // По умолчанию вкладка открывается в режиме 'grouped'.
+        const scUnifiedViewMode          = ref('grouped'); // 'grouped' | 'raw'
+        const scUnifiedGrouped           = ref(null);      // {summary, groups, hidden_formal_groups, pair_modes?}
+        const scUnifiedGroupedLoading    = ref(false);
+        const scUnifiedGroupedError      = ref('');
+        const scUnifiedGroupedScopePairId = ref(null);
+        // Filters / toggles for grouped view.
+        const scGroupedShowFormal        = ref(false);     // include_formal toggle
+        const scGroupedFilterSignificance = ref('');       // '' | high | medium | low
+        const scGroupedFilterTheme        = ref('');
+        const scGroupedFilterDirection    = ref('');       // '' | complication | simplification | neutral | unknown
+        const scGroupedFilterCostDir      = ref('');       // '' | increase | decrease | unknown
+        const scGroupedFilterHumanReview  = ref(false);
+        const scGroupedSearch             = ref('');
+        // Раскрытые группы (для evidence drill-down).
+        const scGroupedExpanded           = ref({});       // {group_id: true}
+        // Регроуп: POST /regroup (только по кнопке, не auto).
+        const scGroupedRegrouping         = ref(false);
         // Sync scroll/zoom (sync zoom toggle убран — масштаб всегда общий)
         const scZoom           = ref(1.0);
         const scSyncScroll     = ref(true);
@@ -8736,6 +8829,13 @@ const app = createApp({
         const scMatchPairChoiceRight = ref('');
         const scMatchPairError = ref('');
         const scMatchPairSaving = ref(false);
+        // Inline-сопоставление: клик по имени правого PDF → выпадающий
+        // список вместо отдельной кнопки «Сопоставить».
+        const scInlineMatchPairId = ref('');
+        const scInlineMatchChoice = ref('');
+        const scInlineMatchFilter = ref('');
+        const scInlineMatchSaving = ref(false);
+        const scInlineMatchError  = ref('');
         // Массовое подтверждение всех «возможных» сопоставлений.
         const scConfirmAllRunning = ref(false);
         const scConfirmAllError   = ref('');
@@ -8913,6 +9013,152 @@ const app = createApp({
             }
         }
 
+        // ── Saved canonical config (one-click apply/save) ───────────────
+        // Кнопка «★ Применить сохранённую конфигурацию» подставляет в форму
+        // stage_a_path / stage_b_path из persistent config'а; «💾 Сохранить
+        // как канонические» перезаписывает config текущими путями.
+
+        async function scLoadSavedConfig() {
+            try {
+                const r = await fetch('/api/stage-comparison/saved-config');
+                if (!r.ok) return;
+                scSavedConfig.value = await r.json();
+            } catch (_) { /* silent — UI просто не покажет кнопку */ }
+        }
+
+        async function scApplySavedConfig() {
+            if (!scSavedConfig.value || !scSavedConfig.value.saved) return;
+            scStageAPath.value = scSavedConfig.value.stage_a_path || '';
+            scStageBPath.value = scSavedConfig.value.stage_b_path || '';
+            // Если есть object/stage labels — попытаемся подсветить дропдауны.
+            const lbl = scSavedConfig.value.object_label;
+            const objs = scObjects.value || [];
+            if (lbl) {
+                const matched = objs.find(o => o.name === lbl || o.id === lbl);
+                if (matched) {
+                    scSelectedObjectId.value = matched.id;
+                    if (scSavedConfig.value.stage_a_label) {
+                        scSelectedStageA.value = scSavedConfig.value.stage_a_label;
+                    }
+                    if (scSavedConfig.value.stage_b_label) {
+                        scSelectedStageB.value = scSavedConfig.value.stage_b_label;
+                    }
+                }
+            }
+            scSavedConfigMsg.value = 'Канонические пути подставлены — нажмите «Сканировать»';
+            setTimeout(() => { scSavedConfigMsg.value = ''; }, 3500);
+        }
+
+        async function scSaveCurrentAsCanonical() {
+            if (!scStageAPath.value || !scStageBPath.value) return;
+            scSavedConfigSaving.value = true;
+            scSavedConfigMsg.value = '';
+            try {
+                const obj = (scObjects.value || []).find(o => o.id === scSelectedObjectId.value);
+                const body = {
+                    stage_a_path: scStageAPath.value,
+                    stage_b_path: scStageBPath.value,
+                    object_label: obj ? obj.name : null,
+                    stage_a_label: scSelectedStageA.value || null,
+                    stage_b_label: scSelectedStageB.value || null,
+                };
+                const r = await fetch('/api/stage-comparison/saved-config', {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(body),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                scSavedConfig.value = await r.json();
+                scSavedConfigMsg.value = '✓ Сохранено как канонические';
+                setTimeout(() => { scSavedConfigMsg.value = ''; }, 3500);
+            } catch (e) {
+                scSavedConfigMsg.value = '✗ ' + String(e.message || e);
+            } finally {
+                scSavedConfigSaving.value = false;
+            }
+        }
+
+        // ── Каноничная конфигурация v2 (canonical-config) ──────────────────
+        // Объекту соответствует одна актуальная конфигурация: канонический
+        // session_id + pairs + режимы. Кнопка «Сохранить как каноничную»
+        // делает POST /sessions/{sid}/save-canonical; при открытии раздела
+        // система пробует автоматически открыть каноничную сессию.
+
+        async function scLoadCanonicalConfig() {
+            try {
+                const r = await fetch('/api/stage-comparison/canonical-config');
+                if (!r.ok) return;
+                scCanonicalConfig.value = await r.json();
+            } catch (_) { /* silent — UI просто не покажет блок */ }
+        }
+
+        async function scSaveSessionAsCanonical() {
+            if (!scSession.value || !scSession.value.id) return;
+            scSavedConfigSaving.value = true;
+            scSavedConfigMsg.value = '';
+            try {
+                const obj = (scObjects.value || []).find(o => o.id === scSelectedObjectId.value);
+                const body = {
+                    object_label: obj ? obj.name : null,
+                    stage_a_label: scSelectedStageA.value || null,
+                    stage_b_label: scSelectedStageB.value || null,
+                };
+                const r = await fetch(
+                    '/api/stage-comparison/sessions/' + encodeURIComponent(scSession.value.id) + '/save-canonical',
+                    {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(body),
+                    },
+                );
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                scCanonicalConfig.value = await r.json();
+                // savedConfig (legacy paths-only) тоже синхронизируем — после
+                // save-canonical обновлены и пути, и canonical_session_id.
+                scSavedConfig.value = scCanonicalConfig.value;
+                scCanonicalStale.value = false;
+                scSavedConfigMsg.value = '✓ Каноничная конфигурация сохранена';
+                setTimeout(() => { scSavedConfigMsg.value = ''; }, 3500);
+            } catch (e) {
+                scSavedConfigMsg.value = '✗ ' + String(e.message || e);
+            } finally {
+                scSavedConfigSaving.value = false;
+            }
+        }
+
+        // Автоматически открыть каноничную конфигурацию (если есть и сессия
+        // существует). Возвращает true если открыли каноничную сессию.
+        async function scTryOpenCanonical() {
+            try {
+                const r = await fetch('/api/stage-comparison/canonical-config/open');
+                if (!r.ok) return false;
+                const j = await r.json();
+                if (!j.saved) return false;
+                scCanonicalConfig.value = {saved: true, ...(j.canonical_config || {})};
+                scCanonicalStale.value = !!j.config_stale;
+                if (!j.canonical_session_id || !j.canonical_session_available || !j.session) {
+                    // canonical metadata есть, но сессия не найдена — UI покажет
+                    // предупреждение через scCanonicalConfig + scSession=null.
+                    return false;
+                }
+                scSession.value = j.session;
+                // Подставляем пути в форму, чтобы при ручном «Открыть проект»
+                // тоже всё совпадало.
+                if (j.session.stage_a_path) scStageAPath.value = j.session.stage_a_path;
+                if (j.session.stage_b_path) scStageBPath.value = j.session.stage_b_path;
+                // Баннер автоподгрузки старой модели не показываем — он про историю сессий.
+                scAutoLoadInfo.value = null;
+                try { await scRecogRestoreActive(); } catch (_) {}
+                return true;
+            } catch (_) { return false; }
+        }
+
         // На первой загрузке /stage-comparison `scLoadObjects()` стартует параллельно с
         // `loadObjects()` (который заполняет `objectName`). Любой из них может
         // финишировать первым — поэтому ещё watch'им obj/objects и переподставляем
@@ -8955,6 +9201,57 @@ const app = createApp({
         const scSelectedObject = computed(() =>
             scObjects.value.find(o => o.id === scSelectedObjectId.value) || null
         );
+
+        // Открыть проект: если для текущих stage_a_path/stage_b_path уже
+        // есть сессия — подгрузить её (без перерасчётов). Иначе создать
+        // новую через scScanFolders. Это «вариант A» — у проекта один
+        // живой контекст, история скрыта.
+        async function scOpenProject() {
+            scError.value = '';
+            scWarnings.value = [];
+            const a = _scNormalizePath(scStageAPath.value);
+            const b = _scNormalizePath(scStageBPath.value);
+            if (!a || !b) return;
+            // Если уже открыта сессия ровно для этих путей — ничего не делаем
+            if (scSession.value && scSession.value.stage_a_path
+                && _scNormalizePath(scSession.value.stage_a_path) === a
+                && _scNormalizePath(scSession.value.stage_b_path) === b) {
+                return;
+            }
+            // Пробуем найти существующую (тихий fetch)
+            scAutoLoading.value = true;
+            try {
+                const r = await fetch('/api/stage-comparison/sessions');
+                if (r.ok) {
+                    const j = await r.json();
+                    const list = j.sessions || [];
+                    scSessions.value = list;
+                    const match = list.find(s =>
+                        _scNormalizePath(s.stage_a_path) === a &&
+                        _scNormalizePath(s.stage_b_path) === b
+                    );
+                    if (match) {
+                        const rs = await fetch('/api/stage-comparison/sessions/' + encodeURIComponent(match.id));
+                        if (rs.ok) {
+                            scSession.value = await rs.json();
+                            scAutoLoadInfo.value = {
+                                session_id: match.id,
+                                created_at: match.created_at,
+                                pairs_total: match.pairs_total,
+                                pairs_matched: match.pairs_matched,
+                            };
+                            try { await scRecogRestoreActive(); } catch (_) {}
+                            return;
+                        }
+                    }
+                }
+            } catch (_) { /* fall through to scan */ }
+            finally {
+                scAutoLoading.value = false;
+            }
+            // Существующей сессии нет → создаём новую
+            await scScanFolders();
+        }
 
         async function scScanFolders() {
             scError.value = '';
@@ -9071,6 +9368,15 @@ const app = createApp({
             } catch (e) {
                 scError.value = 'Не удалось загрузить список сессий: ' + e;
             }
+        }
+        // Fetch only — без toggle. Используется <details> в истории сессий.
+        async function scFetchSessionsList() {
+            try {
+                const r = await fetch('/api/stage-comparison/sessions');
+                if (!r.ok) return;
+                const j = await r.json();
+                scSessions.value = j.sessions || [];
+            } catch (_) { /* silent */ }
         }
 
         async function scLoadSession(sessionId) {
@@ -9355,12 +9661,18 @@ const app = createApp({
             if (!scSyncScroll.value) return;
             if (scIsSyncing.value) return;
             const info = _scTopSlotInfo(side);
-            if (!info) return;
             const other = side === 'left' ? 'right' : 'left';
-            // Slot Id в обоих панелях одинаковый — это и есть карта.
+            const pane = scPaneRefs[side];
+            const otherPane = scPaneRefs[other];
             scIsSyncing.value = true;
             try {
-                _scScrollToSlot(other, info.slot, info.rel);
+                // Slot Id в обоих панелях одинаковый — это карта по вертикали.
+                if (info) _scScrollToSlot(other, info.slot, info.rel);
+                // Горизонталь: зум общий → картинки одинаковой ширины,
+                // повторяем scrollLeft 1:1.
+                if (pane && otherPane) {
+                    otherPane.scrollLeft = pane.scrollLeft;
+                }
             } finally {
                 // Снимаем флаг в следующем тике, чтобы scroll event'ы успели отработать
                 requestAnimationFrame(() => {
@@ -9396,6 +9708,129 @@ const app = createApp({
             // «По ширине» — pane целиком вмещает картинку без горизонтального скролла.
             // Картинка рендерится с width: zoom*100% относительно pane'а, поэтому zoom=1 ≈ fit.
             scZoomReset();
+        }
+
+        // ── Ctrl+wheel zoom-to-cursor (Adobe Acrobat style) ────────────────
+        // Привязываемся к slot'у под курсором (ID + относительная позиция
+        // внутри его карточки) — заголовки/маргины слотов и виртуализация
+        // не масштабируются с zoom'ом, поэтому "contentY * factor" уехал бы
+        // на чужой лист. После reflow перечитываем offsetTop того же slot'а
+        // и ставим скролл так, чтобы та же относительная точка осталась
+        // под курсором.
+        function scOnPaneWheel(side, ev) {
+            if (!(ev.ctrlKey || ev.metaKey)) return;        // обычное колесо — стандартный скролл
+            ev.preventDefault();
+            const pane = scPaneRefs[side];
+            if (!pane) return;
+            const rect = pane.getBoundingClientRect();
+            const cursorX = ev.clientX - rect.left;
+            const cursorY = ev.clientY - rect.top;
+            const startScrollLeft = pane.scrollLeft;
+            const contentY = pane.scrollTop + cursorY;
+            // Slot под курсором + относительная позиция внутри slot'а (0..1)
+            const items = scAlignmentItems.value || [];
+            let anchorSlot = null;
+            let anchorRel = 0;
+            for (const it of items) {
+                const node = scSlotRefs[side + ':' + it.slot];
+                if (!node) continue;
+                const top = node.offsetTop;
+                const bot = top + node.offsetHeight;
+                if (contentY >= top && contentY < bot) {
+                    anchorSlot = it.slot;
+                    anchorRel = (contentY - top) / Math.max(1, node.offsetHeight);
+                    break;
+                }
+            }
+            const oldZoom = scZoom.value;
+            const step = ev.deltaY < 0 ? 1.1 : 1 / 1.1;
+            const newZoom = Math.max(0.2, Math.min(4.0, oldZoom * step));
+            if (newZoom === oldZoom) return;
+            const factor = newZoom / oldZoom;
+            scZoom.value = newZoom;
+            scIsSyncing.value = true;                       // отключаем sync-scroll на этот тик
+            nextTick(() => {
+                // Вертикаль: восстанавливаем точно ту же точку того же slot'а
+                if (anchorSlot != null) {
+                    const node = scSlotRefs[side + ':' + anchorSlot];
+                    if (node) {
+                        const newContentY = node.offsetTop + node.offsetHeight * anchorRel;
+                        pane.scrollTop = Math.max(0, newContentY - cursorY);
+                    }
+                }
+                // Горизонталь: картинка масштабируется линейно с zoom'ом,
+                // contentX_new = factor * (startScrollLeft + cursorX)
+                pane.scrollLeft = Math.max(0, startScrollLeft * factor + cursorX * (factor - 1));
+                // Противоположная панель: тот же slot, та же relPos, тот же cursorY
+                const otherSide = side === 'left' ? 'right' : 'left';
+                const otherPane = scPaneRefs[otherSide];
+                if (otherPane && anchorSlot != null) {
+                    const otherNode = scSlotRefs[otherSide + ':' + anchorSlot];
+                    if (otherNode) {
+                        const otherContentY = otherNode.offsetTop + otherNode.offsetHeight * anchorRel;
+                        otherPane.scrollTop = Math.max(0, otherContentY - cursorY);
+                    }
+                }
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => { scIsSyncing.value = false; });
+                });
+            });
+        }
+
+        // ── LMB hand-pan (Adobe Acrobat style) ─────────────────────────────
+        // Зажатие ЛКМ + перетаскивание двигает pane как «рука». Если движение
+        // меньше порога — это обычный клик (попадёт в scSelectBlock на блоке).
+        // Если больше — глотаем следующий click чтобы случайно не выделить блок.
+        function scOnPanePanStart(side, ev) {
+            if (ev.button !== 0) return;                    // только ЛКМ
+            if (ev.ctrlKey || ev.metaKey || ev.altKey || ev.shiftKey) return;
+            const target = ev.target;
+            if (target && target.closest && target.closest(
+                'button, a, input, select, textarea, label, .sc-block-link-badge'
+            )) return;
+            const pane = scPaneRefs[side];
+            if (!pane) return;
+            const startX = ev.clientX;
+            const startY = ev.clientY;
+            const startScrollLeft = pane.scrollLeft;
+            const startScrollTop  = pane.scrollTop;
+            let moved = false;
+            const PAN_THRESHOLD = 5;
+            const onMove = (e) => {
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                if (!moved && (Math.abs(dx) + Math.abs(dy) > PAN_THRESHOLD)) {
+                    moved = true;
+                    pane.style.cursor = 'grabbing';
+                    pane.classList.add('sc-viewer__pane--panning');
+                }
+                if (moved) {
+                    pane.scrollLeft = startScrollLeft - dx;
+                    pane.scrollTop  = startScrollTop  - dy;
+                    e.preventDefault();
+                }
+            };
+            const onUp = (_e) => {
+                window.removeEventListener('mousemove', onMove, true);
+                window.removeEventListener('mouseup', onUp, true);
+                pane.style.cursor = '';
+                pane.classList.remove('sc-viewer__pane--panning');
+                if (moved) {
+                    const swallow = (ce) => {
+                        ce.stopPropagation();
+                        ce.preventDefault();
+                        window.removeEventListener('click', swallow, true);
+                    };
+                    window.addEventListener('click', swallow, true);
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            window.removeEventListener('click', swallow, true);
+                        });
+                    });
+                }
+            };
+            window.addEventListener('mousemove', onMove, true);
+            window.addEventListener('mouseup', onUp, true);
         }
 
         // ── Per-pane alignment actions (icon-кнопки рядом с PDF-окнами) ────
@@ -9611,6 +10046,77 @@ const app = createApp({
             scMatchPairDialogOpen.value = false;
             scMatchPairTargetPair.value = null;
         }
+
+        // ── Inline сопоставление правого PDF (клик по filename → dropdown) ─
+        function scOpenInlineMatch(pair) {
+            if (!pair || !pair.id) return;
+            if (scInlineMatchPairId.value === pair.id) {
+                scCloseInlineMatch();
+                return;
+            }
+            scInlineMatchPairId.value = pair.id;
+            scInlineMatchChoice.value = (pair.right && pair.right.pdf_path) || '';
+            scInlineMatchFilter.value = '';
+            scInlineMatchError.value = '';
+            // Загружаем список несопоставленных правых PDF (если ещё не загружен)
+            if (!(scUnmatched.value && (scUnmatched.value.right_unmatched || []).length)) {
+                scLoadUnmatched();
+            }
+        }
+        function scCloseInlineMatch() {
+            scInlineMatchPairId.value = '';
+            scInlineMatchChoice.value = '';
+            scInlineMatchFilter.value = '';
+            scInlineMatchError.value = '';
+        }
+        // Список опций для inline-выпадашки: текущий выбор + несопоставленные
+        // правые PDF, с фильтрацией по подстроке.
+        function scInlineMatchOptions() {
+            const cur = scInlineMatchChoice.value || '';
+            const all = (scUnmatched.value && scUnmatched.value.right_unmatched) || [];
+            const filter = (scInlineMatchFilter.value || '').trim().toLowerCase();
+            const out = [];
+            // Текущий правый PDF (если есть) — отдельной строкой сверху, чтобы
+            // оператор видел исходное состояние и мог понять, что меняет.
+            if (cur) {
+                out.push({pdf_path: cur, filename: cur.split('/').pop(), is_current: true});
+            }
+            for (const f of all) {
+                if (!f || !f.pdf_path) continue;
+                if (f.pdf_path === cur) continue;  // не дублируем текущий
+                const name = (f.filename || f.pdf_path.split('/').pop() || '').toLowerCase();
+                if (filter && !name.includes(filter)) continue;
+                out.push({pdf_path: f.pdf_path, filename: f.filename || f.pdf_path.split('/').pop()});
+            }
+            return out;
+        }
+        async function scInlineMatchConfirm() {
+            if (!scSession.value || !scInlineMatchPairId.value) return;
+            scInlineMatchSaving.value = true;
+            scInlineMatchError.value = '';
+            try {
+                const sid = scSession.value.id;
+                const pid = scInlineMatchPairId.value;
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(sid)}/pairs/${encodeURIComponent(pid)}/match`;
+                const body = {right_pdf: scInlineMatchChoice.value || null};
+                const r = await fetch(url, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(body),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                await scLoadSession(scSession.value.id);
+                await scLoadUnmatched();
+                scCloseInlineMatch();
+            } catch (e) {
+                scInlineMatchError.value = String(e.message || e);
+            } finally {
+                scInlineMatchSaving.value = false;
+            }
+        }
         async function scConfirmAllMaybe() {
             if (!scSession.value) return;
             const n = scPairsCounts.value.maybe;
@@ -9707,6 +10213,71 @@ const app = createApp({
             } catch (e) {
                 scError.value = 'Не удалось удалить пару: ' + e;
             }
+        }
+
+        // ── Drag-and-drop pair reorder ───────────────────────────────────
+        function scOnPairDragStart(event, idx) {
+            scPairDragFromIdx.value = idx;
+            scPairOrderError.value = '';
+            try {
+                event.dataTransfer.effectAllowed = 'move';
+                // dataTransfer.setData нужен для Firefox чтобы drag реально стартанул.
+                event.dataTransfer.setData('text/plain', String(idx));
+            } catch (_) { /* defensive */ }
+        }
+        function scOnPairDragOver(event, idx) {
+            if (scPairDragFromIdx.value < 0) return;
+            try { event.dataTransfer.dropEffect = 'move'; } catch (_) {}
+            if (scPairDragOverIdx.value !== idx) scPairDragOverIdx.value = idx;
+        }
+        function scOnPairDragLeave(event, idx) {
+            if (scPairDragOverIdx.value === idx) scPairDragOverIdx.value = -1;
+        }
+        async function scOnPairDrop(event, toIdx) {
+            event.preventDefault();
+            const fromIdx = scPairDragFromIdx.value;
+            scPairDragOverIdx.value = -1;
+            scPairDragFromIdx.value = -1;
+            if (fromIdx < 0 || fromIdx === toIdx) return;
+            if (!scSession.value) return;
+            const pairs = (scSession.value.pairs || []).slice();
+            if (fromIdx >= pairs.length || toIdx >= pairs.length) return;
+            const [moved] = pairs.splice(fromIdx, 1);
+            pairs.splice(toIdx, 0, moved);
+            // Оптимистичный апдейт UI — мгновенный visual reorder.
+            // scPairs — computed из scSession.value.pairs, поэтому мутируем источник.
+            scSession.value.pairs = pairs;
+            scPairOrderSaving.value = true;
+            scPairOrderError.value = '';
+            try {
+                const sid = scSession.value.id;
+                const r = await fetch(`/api/stage-comparison/sessions/${encodeURIComponent(sid)}/pair-order`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({pair_ids: pairs.map(p => p.id)}),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                // Backend вернёт нормализованный order — синкуем UI с ним.
+                const body = await r.json();
+                const order = body.pair_order || [];
+                if (order.length) {
+                    const byId = Object.fromEntries(pairs.map(p => [p.id, p]));
+                    scSession.value.pairs = order.map(id => byId[id]).filter(Boolean);
+                }
+            } catch (e) {
+                scPairOrderError.value = 'Не удалось сохранить порядок: ' + (e.message || e);
+                // Откатываемся: перечитываем session.
+                try { await scLoadSession(scSession.value.id); } catch (_) {}
+            } finally {
+                scPairOrderSaving.value = false;
+            }
+        }
+        function scOnPairDragEnd() {
+            scPairDragFromIdx.value = -1;
+            scPairDragOverIdx.value = -1;
         }
 
         // ── Findings ───────────────────────────────────────────────────
@@ -10270,6 +10841,13 @@ const app = createApp({
                 }
                 const d = await r.json();
                 scTemplateLastSaveMsg.value = `Шаблон сохранён (${d.links_count || 0} связей) — будет применён при повторном открытии пары.`;
+                // Локально включаем ✓ в «Загрузке документации» без полного перезапроса сессии.
+                if (scActivePair.value) scActivePair.value.has_template = true;
+                const sess = scSession.value;
+                if (sess && Array.isArray(sess.pairs)) {
+                    const row = sess.pairs.find(p => p.id === scActivePair.value?.id);
+                    if (row) row.has_template = true;
+                }
                 // через несколько секунд скрыть, чтобы не висел на UI
                 setTimeout(() => { scTemplateLastSaveMsg.value = ''; }, 8000);
             } catch (e) {
@@ -10538,8 +11116,10 @@ const app = createApp({
         }
 
         async function scRecogRetryErrors() {
-            // Перезапустить только пары, у которых есть ошибки/partial.
-            // force=false → готовые блоки берутся из cache.
+            // Перезапустить только пары, у которых есть РЕАЛЬНЫЕ ошибки/partial.
+            // done_with_salvage сюда НЕ попадает: данные пригодны, перегенерация
+            // дала бы лишь cache-hit для уже salvaged блоков. force=false →
+            // готовые блоки берутся из cache.
             if (!scSession.value || !scRecogJob.value) return;
             const agg = scRecogJob.value.aggregate || {};
             const ps  = agg.pair_statuses || {};
@@ -10599,7 +11179,7 @@ const app = createApp({
                     if (!r.ok) break;
                     const job = await r.json();
                     scRecogJob.value = job;
-                    if (['done', 'failed', 'cancelled', 'rejected_no_confirm'].includes(job.status)) break;
+                    if (['done', 'failed', 'cancelled', 'rejected_no_confirm', 'failed_interrupted'].includes(job.status)) break;
                     await new Promise(res => setTimeout(res, 3000));
                 }
             } finally {
@@ -10647,28 +11227,62 @@ const app = createApp({
             const ps = scRecogPairStatus(pairId);
             if (!ps) return {label: '—', cls: 'sc-status-unmatched', title: 'графика не распознавалась'};
             const s = ps.status;
+            // Сколько блоков восстановлено salvage'ом — для тултипа на
+            // done_with_salvage. Метрика приходит из backend block_metrics.
+            const lSalv = ((ps.block_metrics || {}).left || {}).blocks_salvaged || 0;
+            const rSalv = ((ps.block_metrics || {}).right || {}).blocks_salvaged || 0;
+            const salvSum = lSalv + rSalv;
             const m = {
-                done:      {label: '✓ готово',  cls: 'sc-status-matched',   title: 'enriched MD готов'},
-                partial:   {label: '⚠ частично',cls: 'sc-status-maybe',     title: 'есть нераспознанные блоки'},
-                error:     {label: '✗ ошибка',  cls: 'sc-status-unmatched', title: 'есть failed-блоки'},
-                running:   {label: '… идёт',    cls: 'sc-status-maybe',     title: 'обработка'},
-                queued:    {label: '⏱ в очереди', cls: 'sc-status-unmatched', title: 'ждёт обработки'},
-                skipped:   {label: '✓ из кэша', cls: 'sc-status-matched',   title: 'пропущено как уже готовое'},
-                cancelled: {label: '⊘ отменено',cls: 'sc-status-unmatched', title: 'отменено пользователем'},
-                not_run:   {label: '—',         cls: 'sc-status-unmatched', title: 'не запускалось'},
+                done:               {label: '✓ готово',           cls: 'sc-status-matched',   title: 'enriched MD готов'},
+                done_with_salvage:  {label: '✓ готово (salvage)', cls: 'sc-status-matched',   title: salvSum ? `enriched MD готов · восстановлено блоков: ${salvSum}` : 'enriched MD готов · использовался salvage'},
+                partial:            {label: '⚠ частично',         cls: 'sc-status-maybe',     title: 'есть нераспознанные блоки'},
+                error:              {label: '✗ ошибка',           cls: 'sc-status-unmatched', title: 'есть failed-блоки'},
+                running:            {label: '… идёт',             cls: 'sc-status-maybe',     title: 'обработка'},
+                queued:             {label: '⏱ в очереди',         cls: 'sc-status-unmatched', title: 'ждёт обработки'},
+                skipped:            {label: '✓ из кэша',          cls: 'sc-status-matched',   title: 'пропущено как уже готовое'},
+                cancelled:          {label: '⊘ отменено',         cls: 'sc-status-unmatched', title: 'отменено пользователем'},
+                not_run:            {label: '—',                  cls: 'sc-status-unmatched', title: 'не запускалось'},
             };
-            return m[s] || {label: s || '—', cls: 'sc-status-unmatched', title: s || ''};
+            const base = m[s] || {label: s || '—', cls: 'sc-status-unmatched', title: s || ''};
+            // Подсказка из backend (parse_error_detail → human text) — оператор
+            // сразу видит, ПОЧЕМУ пара упала, без открытия pair-view. Только
+            // для реальных проблемных состояний; done_with_salvage сюда не
+            // попадает: backend specifically не выставляет problem_hint в этом
+            // состоянии.
+            if (ps.problem_hint && (s === 'error' || s === 'partial')) {
+                return {...base, title: `${base.title} · ${ps.problem_hint}`};
+            }
+            return base;
         }
 
         function scRecogElapsedLabel() {
             const agg = scRecogJob.value && scRecogJob.value.aggregate;
             if (!agg) return '—';
-            const sec = Math.max(0, Math.round(agg.elapsed_sec || 0));
-            if (sec < 60) return sec + 'с';
-            const m = Math.floor(sec / 60), s = sec % 60;
-            if (m < 60) return m + 'м ' + s + 'с';
+            return scFormatDuration(agg.elapsed_sec || 0);
+        }
+
+        // Универсальный форматер длительности (для elapsed + ETA + средние).
+        function scFormatDuration(sec) {
+            const s = Math.max(0, Math.round(Number(sec) || 0));
+            if (s < 60) return s + 'с';
+            const m = Math.floor(s / 60), ss = s % 60;
+            if (m < 60) return m + 'м ' + ss + 'с';
             const h = Math.floor(m / 60), mm = m % 60;
             return h + 'ч ' + mm + 'м';
+        }
+
+        // Считаем «пара X / Y» для шапки live-индикатора. running_pair_id
+        // вычисляется backend'ом, но мы считаем порядковый номер по
+        // pair_order в session.json, чтобы UX был «3 / 20 пар» как в табличке.
+        function scRecogPairProgress() {
+            const agg = scRecogJob.value && scRecogJob.value.aggregate;
+            const sess = scSession.value;
+            const pairs = (sess && sess.pairs) || [];
+            const total = pairs.length || (agg && agg.total_pairs) || 0;
+            if (!agg || !agg.current_pair_id) return {current: 0, total: total};
+            // Индекс текущей пары в session.pair_order — это и есть «X из Y»
+            const idx = pairs.findIndex(p => p && p.id === agg.current_pair_id);
+            return {current: idx >= 0 ? idx + 1 : (agg.done_pairs || 0) + 1, total: total};
         }
 
         // Загрузить плоский session-level список текстовых изменений.
@@ -10733,6 +11347,82 @@ const app = createApp({
                 scUnifiedFlatLoading.value = false;
             }
         }
+        // ─── Grouped loader / regroup ──────────────────────────────────────
+        async function scLoadUnifiedGrouped() {
+            if (!scSession.value) return;
+            scUnifiedGroupedLoading.value = true;
+            scUnifiedGroupedError.value = '';
+            try {
+                const sid = encodeURIComponent(scSession.value.id);
+                let url = `/api/stage-comparison/sessions/${sid}/unified-grouped`;
+                const qs = [];
+                // pair-scope: тот же контракт, что и raw flat (active pair vs all).
+                let scopePid = null;
+                if (!scUnifiedShowAllPairs.value && scActivePair.value && scActivePair.value.id) {
+                    scopePid = scActivePair.value.id;
+                    qs.push(`pair_id=${encodeURIComponent(scopePid)}`);
+                }
+                // include_formal: backend сам считает hidden_formal_count, и при
+                // include_formal=false возвращает groups + пустой hidden_formal_groups.
+                // Чтобы UI мог переключаться без повторного fetch'а, грузим
+                // ВСЕГДА include_formal=true; UI сам отфильтрует визуально.
+                qs.push('include_formal=true');
+                if (qs.length) url += '?' + qs.join('&');
+                const r = await fetch(url);
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                scUnifiedGrouped.value = await r.json();
+                scUnifiedGroupedScopePairId.value = scopePid;
+            } catch (e) {
+                scUnifiedGroupedError.value = String(e.message || e);
+                scUnifiedGrouped.value = null;
+            } finally {
+                scUnifiedGroupedLoading.value = false;
+            }
+        }
+        async function scRegroupUnifiedFindings() {
+            if (!scSession.value) return;
+            scGroupedRegrouping.value = true;
+            try {
+                const sid = encodeURIComponent(scSession.value.id);
+                const r = await fetch(`/api/stage-comparison/sessions/${sid}/regroup`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({force: true}),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                await scLoadUnifiedGrouped();
+            } catch (e) {
+                scUnifiedGroupedError.value = 'Не удалось пересобрать группировку: ' + e;
+            } finally {
+                scGroupedRegrouping.value = false;
+            }
+        }
+        function scSetUnifiedViewMode(mode) {
+            // 'grouped' | 'raw'. Переключение не сбрасывает activePairId.
+            if (mode !== 'grouped' && mode !== 'raw') return;
+            scUnifiedViewMode.value = mode;
+            if (mode === 'grouped' && !scUnifiedGrouped.value && !scUnifiedGroupedLoading.value) {
+                scLoadUnifiedGrouped();
+            }
+            if (mode === 'raw' && !scUnifiedFlat.value && !scUnifiedFlatLoading.value) {
+                scLoadUnifiedFlat();
+            }
+        }
+        function scToggleGroupExpand(gid) {
+            if (!gid) return;
+            const cur = scGroupedExpanded.value[gid];
+            // Vue 3 ref<Object> reactivity: пересоздаём объект.
+            scGroupedExpanded.value = { ...scGroupedExpanded.value, [gid]: !cur };
+        }
+        function scIsGroupExpanded(gid) {
+            return !!scGroupedExpanded.value[gid];
+        }
         async function scUnifiedToggleShowAllPairs() {
             // Toggle между «текущая пара» и «вся сессия». В режиме «вся сессия»
             // показывается баннер-предупреждение, чтобы пользователь не путал.
@@ -10745,7 +11435,12 @@ const app = createApp({
             }
             // Сбросить локальный pair-фильтр, чтобы он не дублировал backend-фильтр.
             scUnifiedFilterPair.value = '';
+            // Перезагрузить оба источника: raw (всегда), grouped (если данные уже
+            // были или мы сейчас в grouped-режиме — иначе lazy при переключении).
             await scLoadUnifiedFlat();
+            if (scUnifiedViewMode.value === 'grouped' || scUnifiedGrouped.value) {
+                await scLoadUnifiedGrouped();
+            }
         }
         async function scOpenUnifiedPairPreflight() {
             if (!scSession.value || !scActivePair.value) return;
@@ -10842,6 +11537,12 @@ const app = createApp({
                 scUnifiedPairStatus.value = null; // force reload
                 await scLoadUnifiedPairStatus();
                 await scLoadUnifiedFlat();
+                // После Opus comparison grouped кеш на диске устарел. Backend
+                // на следующем GET увидит файл и вернёт его, но он отражает
+                // прежнее состояние flat. Перегенерируем безопасно (без LLM).
+                if (scUnifiedViewMode.value === 'grouped' || scUnifiedGrouped.value) {
+                    try { await scRegroupUnifiedFindings(); } catch (_) {}
+                }
                 scCloseUnifiedPreflight();
                 return data;
             } catch (e) {
@@ -10894,6 +11595,10 @@ const app = createApp({
                     await new Promise(res => setTimeout(res, 3000));
                 }
                 try { await scLoadUnifiedFlat(); } catch (_) {}
+                // grouped cache на диске мог устареть после batch'а — пересоберём.
+                if (scUnifiedViewMode.value === 'grouped' || scUnifiedGrouped.value) {
+                    try { await scRegroupUnifiedFindings(); } catch (_) {}
+                }
                 if (scActivePair.value) {
                     try { await scLoadUnifiedPairStatus(); } catch (_) {}
                 }
@@ -10938,6 +11643,11 @@ const app = createApp({
             if (scUnifiedShowAllPairs.value) return;
             scUnifiedFilterPair.value = '';
             scLoadUnifiedFlat();
+            // Перезагрузить grouped, если он уже используется (открыт grouped view
+            // или данные уже загружены).
+            if (scUnifiedViewMode.value === 'grouped' || scUnifiedGrouped.value) {
+                scLoadUnifiedGrouped();
+            }
             if (newPid) scLoadUnifiedPairStatus();
         });
         // ── Computed filters для unified flat ─────────────────────────────
@@ -10972,13 +11682,16 @@ const app = createApp({
             const fsev = scUnifiedFilterSeverity.value;
             const fhr = scUnifiedFilterHumanReview.value;
             const q = (scUnifiedSearch.value || '').toLowerCase().trim();
-            return items.filter(it => {
-                if (fp && (it.pair_label || it.pair_id) !== fp) return false;
-                if (fs && it.source_layer !== fs) return false;
-                if (ft && it.type !== ft) return false;
-                if (fc && it.category !== fc) return false;
-                if (fsev && (it.severity || '') !== fsev) return false;
-                if (fhr && !it.requires_human_review) return false;
+            const out = [];
+            // Стабильный №: позиция в исходном items, не зависит от filter/sort.
+            for (let i = 0; i < items.length; i++) {
+                const it = items[i];
+                if (fp && (it.pair_label || it.pair_id) !== fp) continue;
+                if (fs && it.source_layer !== fs) continue;
+                if (ft && it.type !== ft) continue;
+                if (fc && it.category !== fc) continue;
+                if (fsev && (it.severity || '') !== fsev) continue;
+                if (fhr && !it.requires_human_review) continue;
                 if (q) {
                     const hay = [
                         it.title, it.summary, it.old_value, it.new_value,
@@ -10987,11 +11700,207 @@ const app = createApp({
                         it.evidence_right && it.evidence_right.quote,
                         it.sheet,
                     ].filter(Boolean).join(' ').toLowerCase();
-                    if (!hay.includes(q)) return false;
+                    if (!hay.includes(q)) continue;
                 }
-                return true;
-            });
+                out.push({ ...it, _displayNo: i + 1 });
+            }
+            return out;
         });
+        // Сортируем уже отфильтрованный список.
+        // Поля для sort: 'no' (стабильный №), 'sheet' (лист+страница), 'impact'
+        // (severity * 4 + cost_impact ранк). '' = исходный порядок.
+        const _SC_SEV_RANK = { high: 3, medium: 2, low: 1 };
+        const _SC_COST_RANK = { high: 3, likely: 2, possible: 1, none: 0 };
+        function _scImpactRank(it) {
+            const sev = _SC_SEV_RANK[it.severity || ''] || 0;
+            const cost = _SC_COST_RANK[it.cost_impact || 'none'] || 0;
+            return sev * 4 + cost;
+        }
+        const scUnifiedItemsSorted = computed(() => {
+            const items = scUnifiedItemsFiltered.value || [];
+            const field = scUnifiedSortField.value;
+            if (!field) return items;
+            const dir = scUnifiedSortDir.value === 'desc' ? -1 : 1;
+            const arr = items.slice();
+            if (field === 'no') {
+                arr.sort((a, b) => (a._displayNo - b._displayNo) * dir);
+            } else if (field === 'sheet') {
+                arr.sort((a, b) => {
+                    const sa = (a.sheet || '') + '';
+                    const sb = (b.sheet || '') + '';
+                    const c = sa.localeCompare(sb, 'ru', { numeric: true, sensitivity: 'base' });
+                    if (c !== 0) return c * dir;
+                    const pa = Array.isArray(a.page) ? (a.page[0] || 0) : (a.page || 0);
+                    const pb = Array.isArray(b.page) ? (b.page[0] || 0) : (b.page || 0);
+                    return (pa - pb) * dir;
+                });
+            } else if (field === 'impact') {
+                arr.sort((a, b) => (_scImpactRank(a) - _scImpactRank(b)) * dir);
+            }
+            return arr;
+        });
+        function scUnifiedToggleSort(field) {
+            if (scUnifiedSortField.value === field) {
+                if (scUnifiedSortDir.value === 'asc') {
+                    scUnifiedSortDir.value = 'desc';
+                } else {
+                    // 3-й клик → сброс к исходному порядку
+                    scUnifiedSortField.value = '';
+                    scUnifiedSortDir.value = 'asc';
+                }
+            } else {
+                scUnifiedSortField.value = field;
+                scUnifiedSortDir.value = 'asc';
+            }
+        }
+        function scUnifiedSortIndicator(field) {
+            if (scUnifiedSortField.value !== field) return '';
+            return scUnifiedSortDir.value === 'desc' ? '▼' : '▲';
+        }
+
+        // ─── Grouped view: computed + helpers ──────────────────────────────
+        // Все groups (visible + optional formal) после backend lazy-build.
+        const scGroupedAllItems = computed(() => {
+            const g = scUnifiedGrouped.value;
+            if (!g) return [];
+            const visible = g.groups || [];
+            if (!scGroupedShowFormal.value) return visible;
+            const hidden = g.hidden_formal_groups || [];
+            return visible.concat(hidden);
+        });
+        // Опции тем для select'ов — только реально присутствующие.
+        const scGroupedThemeOptions = computed(() => {
+            const items = scGroupedAllItems.value || [];
+            const set = new Set();
+            items.forEach(g => { if (g.theme) set.add(g.theme); });
+            return Array.from(set).sort();
+        });
+        // Фильтрация группированных items.
+        const scGroupedItemsFiltered = computed(() => {
+            const items = scGroupedAllItems.value || [];
+            const fsig = scGroupedFilterSignificance.value;
+            const fth = scGroupedFilterTheme.value;
+            const fdir = scGroupedFilterDirection.value;
+            const fcost = scGroupedFilterCostDir.value;
+            const fhr = scGroupedFilterHumanReview.value;
+            const q = (scGroupedSearch.value || '').toLowerCase().trim();
+            const out = [];
+            for (let i = 0; i < items.length; i++) {
+                const g = items[i];
+                if (fsig && g.significance !== fsig) continue;
+                if (fth && g.theme !== fth) continue;
+                if (fdir && (g.change_direction || 'unknown') !== fdir) continue;
+                if (fcost && (g.cost_impact_direction || 'unknown') !== fcost) continue;
+                if (fhr && !g.requires_human_review) continue;
+                if (q) {
+                    const hay = [
+                        g.title, g.old_value, g.new_value, g.construction_impact,
+                        g.theme, g.semantic_subject, g.semantic_action, g.discipline,
+                    ].filter(Boolean).join(' ').toLowerCase();
+                    if (!hay.includes(q)) continue;
+                }
+                out.push({ ...g, _displayNo: i + 1 });
+            }
+            return out;
+        });
+        // Сортировка: significance high→low→formal, затем cost_impact_direction
+        // (increase сверху, decrease ниже), затем affected_count desc.
+        const _SC_GROUPED_SIG_RANK = { high: 0, medium: 1, low: 2, formal: 3 };
+        const _SC_GROUPED_COSTDIR_RANK = { increase: 0, decrease: 1, unknown: 2 };
+        const scGroupedItemsSorted = computed(() => {
+            const items = (scGroupedItemsFiltered.value || []).slice();
+            items.sort((a, b) => {
+                const sa = _SC_GROUPED_SIG_RANK[a.significance] ?? 9;
+                const sb = _SC_GROUPED_SIG_RANK[b.significance] ?? 9;
+                if (sa !== sb) return sa - sb;
+                const ca = _SC_GROUPED_COSTDIR_RANK[a.cost_impact_direction || 'unknown'] ?? 9;
+                const cb = _SC_GROUPED_COSTDIR_RANK[b.cost_impact_direction || 'unknown'] ?? 9;
+                if (ca !== cb) return ca - cb;
+                return (b.affected_count || 0) - (a.affected_count || 0);
+            });
+            return items;
+        });
+        // Human-readable labels.
+        const _SC_GROUPED_SIG_LABELS = {
+            high: 'высокая', medium: 'средняя', low: 'низкая', formal: 'формальное',
+        };
+        const _SC_GROUPED_DIR_LABELS = {
+            complication: 'усложнение', simplification: 'упрощение',
+            neutral: 'нейтрально', unknown: '—',
+        };
+        const _SC_GROUPED_COSTDIR_LABELS = {
+            increase: '↑ стоимость', decrease: '↓ стоимость', unknown: '—',
+        };
+        const _SC_GROUPED_THEME_LABELS = {
+            equipment: 'Оборудование', materials: 'Материалы',
+            geometry: 'Геометрия', quantities: 'Количества',
+            system_topology: 'Топология систем', routes_lengths: 'Трассы/длины',
+            power_load_perf: 'Нагрузки/мощность', construction_scope: 'Объём работ',
+            finishing_scope: 'Отделка', fire_safety: 'Пожарная безопасность',
+            commissioning_tests: 'ПНР / испытания',
+            exclusions_additions: 'Исключения / Добавления',
+            simplifications: 'Упрощения', documentation_formal: 'Документация (формальное)',
+            norms: 'Нормы', other: 'Прочее',
+        };
+        function scGroupedSigLabel(sig) { return _SC_GROUPED_SIG_LABELS[sig] || sig || '—'; }
+        function scGroupedDirLabel(d) { return _SC_GROUPED_DIR_LABELS[d || 'unknown']; }
+        function scGroupedCostDirLabel(d) { return _SC_GROUPED_COSTDIR_LABELS[d || 'unknown']; }
+        function scGroupedThemeLabel(t) { return _SC_GROUPED_THEME_LABELS[t] || (t || 'other'); }
+        function scGroupedHasVariants(g) {
+            const v = g && g.value_variants;
+            return Array.isArray(v) && v.length > 1;
+        }
+        function scGroupedEvidencePreview(g, limit) {
+            const ev = (g && g.evidence) || [];
+            const n = Number(limit) > 0 ? Number(limit) : 3;
+            return ev.slice(0, n);
+        }
+        // «К месту»: для одного evidence — сразу переход; для нескольких —
+        // раскрываем строку. Передаём конкретный evidence-item.
+        //
+        // Если ev не передан и группа session_rollup (cross-pair), выбираем
+        // preferred evidence по правилам:
+        //   1) evidence с pair_id === scActivePair.value.id (current pair);
+        //   2) fallback — первый evidence группы.
+        // Без этого UX путал пользователя: «К месту» из pair-scoped view
+        // мог увести в другую PDF-пару, если evidence[0] был оттуда.
+        function scGotoGroupEvidence(g, ev) {
+            if (!g) return;
+            let pickedEv = ev || null;
+            if (!pickedEv) {
+                const all = (g && g.evidence) || [];
+                const activePid = scActivePair.value && scActivePair.value.id;
+                if (activePid) {
+                    pickedEv = all.find(e => e && e.pair_id === activePid) || null;
+                }
+                if (!pickedEv) {
+                    pickedEv = all[0] || null;
+                }
+            }
+            const pid = (pickedEv && pickedEv.pair_id) || (g.affected_pair_ids && g.affected_pair_ids[0]);
+            if (!pid) return;
+            // Подсветить нужную PDF-пару + перейти к листу/странице.
+            try {
+                const fake = {
+                    pair_id: pid,
+                    sheet: (pickedEv && pickedEv.sheet) || (g.affected_locations && g.affected_locations[0] && g.affected_locations[0].sheet),
+                    page: (pickedEv && pickedEv.page) || (g.affected_pages && g.affected_pages[0]),
+                };
+                scGotoUnifiedChange(fake);
+            } catch (_) { /* no-op */ }
+        }
+
+        // URL для экспорта таблицы расхождений в Excel (учитывает scope по паре).
+        function scUnifiedExportXlsxUrl() {
+            if (!scSession.value) return '';
+            const sid = encodeURIComponent(scSession.value.id);
+            const params = new URLSearchParams();
+            if (!scUnifiedShowAllPairs.value && scActivePair.value) {
+                params.set('pair_id', scActivePair.value.id);
+            }
+            const qs = params.toString();
+            return `/api/stage-comparison/sessions/${sid}/unified-diff-flat/export.xlsx${qs ? '?' + qs : ''}`;
+        }
         // Source-layer labels (UI)
         const _SC_UNIFIED_SOURCE_LABELS = {
             text: 'Текст',
@@ -11018,6 +11927,11 @@ const app = createApp({
                 // пары при переходе из вкладки «Связь блоков».
                 scUnifiedShowAllPairs.value = false;
                 scUnifiedFilterPair.value = '';
+                // По умолчанию пользователь сразу видит grouped findings;
+                // raw flat грузим параллельно (для быстрого переключения).
+                if (scUnifiedViewMode.value === 'grouped') {
+                    scLoadUnifiedGrouped();
+                }
                 scLoadUnifiedFlat();
                 if (scActivePair.value) {
                     scLoadUnifiedPairStatus();
@@ -11348,7 +12262,7 @@ const app = createApp({
             findingsData, filterSeverity, filterSearch, severityOptions,
             // Inline Critic v2 (experimental, в обычной таблице)
             findingsCv2Available, findingsCv2Warning, findingsCv2Loading,
-            cv2ShowHidden, cv2DisplayFilter, cv2DebugVisible,
+            cv2ShowHidden, cv2DisplayFilter, cv2DebugVisible, scDevTools,
             cv2HiddenCount, findingCv2Score, findingCv2Label, findingCv2Class, findingCv2Tooltip,
             cv2SortDir, toggleCv2Sort,
             CV2_DISPLAY_BUCKETS,
@@ -11597,6 +12511,15 @@ const app = createApp({
             findingExtRegBadge,
             // ─── Stage Comparison ───
             scTab, scDiffSubtab, scStageAPath, scStageBPath,
+            // Saved canonical config (one-click apply/save)
+            scSavedConfig, scSavedConfigSaving, scSavedConfigMsg,
+            scLoadSavedConfig, scApplySavedConfig, scSaveCurrentAsCanonical,
+            // Каноничная конфигурация v2 (одна на объект, session-aware)
+            scCanonicalConfig, scCanonicalStale,
+            scLoadCanonicalConfig, scSaveSessionAsCanonical, scTryOpenCanonical,
+            // Drag-and-drop pair reorder
+            scPairDragFromIdx, scPairDragOverIdx, scPairOrderSaving, scPairOrderError,
+            scOnPairDragStart, scOnPairDragOver, scOnPairDragLeave, scOnPairDrop, scOnPairDragEnd,
             // Auto-objects (выбор объекта вместо ручного ввода путей)
             scObjects, scObjectsRoots, scObjectsLoading, scObjectsError,
             scSelectedObjectId, scSelectedStageA, scSelectedStageB,
@@ -11631,7 +12554,7 @@ const app = createApp({
             scRecogJob, scRecogPolling, scRecogStarting, scRecogError,
             scRecogStart, scRecogRetryErrors, scRecogCancel,
             scRecogRestoreActive, scRecogPairStatus, scRecogPairBadge,
-            scRecogElapsedLabel,
+            scRecogElapsedLabel, scFormatDuration, scRecogPairProgress,
             // Per-pair analysis mode
             scAnalysisMode, scAnalysisModeSaving, scAnalysisModeError,
             scLoadAnalysisMode, scSetAnalysisMode, scToggleAnalysisMode,
@@ -11646,8 +12569,23 @@ const app = createApp({
             scUnifiedFilterPair, scUnifiedFilterSourceLayer, scUnifiedFilterType,
             scUnifiedFilterCategory, scUnifiedFilterSeverity,
             scUnifiedFilterHumanReview, scUnifiedSearch,
+            scUnifiedSortField, scUnifiedSortDir, scUnifiedToggleSort, scUnifiedSortIndicator,
+            scUnifiedExportXlsxUrl,
             scUnifiedPairOptions, scUnifiedSourceLayerOptions, scUnifiedTypeOptions,
-            scUnifiedCategoryOptions, scUnifiedItemsFiltered,
+            scUnifiedCategoryOptions, scUnifiedItemsFiltered, scUnifiedItemsSorted,
+            // Grouped/high-value findings (UI mode 'grouped')
+            scUnifiedViewMode, scSetUnifiedViewMode,
+            scUnifiedGrouped, scUnifiedGroupedLoading, scUnifiedGroupedError,
+            scUnifiedGroupedScopePairId,
+            scGroupedShowFormal, scGroupedFilterSignificance, scGroupedFilterTheme,
+            scGroupedFilterDirection, scGroupedFilterCostDir,
+            scGroupedFilterHumanReview, scGroupedSearch,
+            scGroupedAllItems, scGroupedThemeOptions,
+            scGroupedItemsFiltered, scGroupedItemsSorted,
+            scGroupedSigLabel, scGroupedDirLabel, scGroupedCostDirLabel, scGroupedThemeLabel,
+            scGroupedHasVariants, scGroupedEvidencePreview, scGotoGroupEvidence,
+            scToggleGroupExpand, scIsGroupExpanded,
+            scLoadUnifiedGrouped, scRegroupUnifiedFindings, scGroupedRegrouping,
             scLoadUnifiedConfig, scLoadUnifiedPairStatus, scLoadUnifiedFlat,
             scOpenUnifiedPairPreflight, scOpenUnifiedSessionPreflight, scCloseUnifiedPreflight,
             scRunUnifiedPair, scRunUnifiedSession, scPollUnifiedJob, scCancelUnifiedJob,
@@ -11668,6 +12606,10 @@ const app = createApp({
             scInsertBlankSide, scMovePageSide,
             scUnmatched, scIsPdfUsedRight,
             scMatchPairDialogOpen, scMatchPairTargetPair, scMatchPairChoiceRight,
+            // Inline-match (popover на клик по названию правого PDF)
+            scInlineMatchPairId, scInlineMatchChoice, scInlineMatchFilter,
+            scInlineMatchSaving, scInlineMatchError,
+            scOpenInlineMatch, scCloseInlineMatch, scInlineMatchOptions, scInlineMatchConfirm,
             scMatchPairError, scMatchPairSaving,
             scConfirmAllRunning, scConfirmAllError, scConfirmAllMaybe,
             scCreatePairDialogOpen, scCreatePairLeft, scCreatePairRight,
@@ -11677,7 +12619,7 @@ const app = createApp({
             scDeletePair, scStaleLinksCount,
             scPairs, scPairsCounts, scAllLinksForGraphic,
             scStatusLabel, scDiffTypeLabel,
-            scScanFolders, scLoadSessionsList, scLoadSession,
+            scScanFolders, scOpenProject, scLoadSessionsList, scFetchSessionsList, scLoadSession,
             scOpenPair, scLoadPairData, scLoadAlignment,
             scPageImageUrl, scOnImageLoad, scOnPageImageLoad,
             scSlotBlocks, scBlankPageStyle,
@@ -11685,7 +12627,7 @@ const app = createApp({
             scBlockLinkInfo, scLinkColor, scLinkVisualIndex, scSelectLinkedBlock,
             scActiveLinkKey, scActiveLink, scActiveLinkInfo,
             scDeleteActiveLink, scClearStaleLinks,
-            scOnPaneScroll, scZoomBy, scZoomReset,
+            scOnPaneScroll, scOnPaneWheel, scOnPanePanStart, scZoomBy, scZoomReset,
             scSetSlotRef, scIsSlotRendered, scSlotContainerStyle, scSlotPlaceholderStyle,
             scCreateLink, scDeleteLink, scRunAutoLink,
             // Pair config templates

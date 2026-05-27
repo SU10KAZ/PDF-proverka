@@ -5182,15 +5182,34 @@
                             <input v-model="scStageBPath" class="form-control" placeholder="/path/to/stage_B" style="width:100%; padding:8px; font-family:monospace; font-size:13px" />
                         </div>
                     </div>
-                    <div style="display:flex; gap:8px; align-items:center">
-                        <button class="btn btn-primary" @click="scScanFolders()" :disabled="scScanning || !scStageAPath || !scStageBPath">
-                            {{ scScanning ? 'Сканирование…' : 'Сканировать' }}
+                    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+                        <button class="btn btn-primary"
+                                @click="scOpenProject()"
+                                :disabled="scScanning || scAutoLoading || !scStageAPath || !scStageBPath"
+                                title="Если у проекта уже есть сессия — открыть её; иначе создать новую">
+                            {{ scScanning ? 'Сканирование…' : (scAutoLoading ? 'Открываю…' : 'Открыть проект') }}
                         </button>
-                        <button v-if="scSessions.length" class="btn btn-secondary" @click="scLoadSessionsList()">
-                            Прошлые сессии ({{ scSessions.length }})
+                        <!-- Saved canonical config: one-click apply + save -->
+                        <!-- «Применить сохранённую конфигурацию» по-старому подставляет только пути.
+                             Видимо в dev-режиме — обычный пользователь работает через автозагрузку
+                             каноничной сессии при заходе в раздел. -->
+                        <button v-if="scDevTools && scSavedConfig && scSavedConfig.saved"
+                                class="btn btn-sm btn-secondary"
+                                @click="scApplySavedConfig()"
+                                :disabled="scScanning"
+                                :title="'Применить: ' + scSavedConfig.stage_a_path + ' ↔ ' + scSavedConfig.stage_b_path">
+                            ★ Применить пути (debug)
+                        </button>
+                        <button v-if="scSession"
+                                class="btn btn-sm btn-primary"
+                                @click="scSaveSessionAsCanonical()"
+                                :disabled="scScanning || scSavedConfigSaving"
+                                title="Сохранить текущую сессию (пары, режимы, порядок, связи блоков) как каноничную для объекта. Перезаписывает предыдущую каноничную.">
+                            {{ scSavedConfigSaving ? 'Сохраняю…' : (scCanonicalConfig && scCanonicalConfig.saved ? '★ Обновить каноничную' : '★ Сохранить как каноничную') }}
                         </button>
                         <span v-if="scAutoLoading" style="font-size:12px; opacity:.7">Подгружаю сохранённое сопоставление…</span>
                         <div v-if="scError" style="color:#b91c1c; font-size:13px">{{ scError }}</div>
+                        <div v-if="scSavedConfigMsg" style="color:#065f46; font-size:12px">{{ scSavedConfigMsg }}</div>
                     </div>
                     <div v-if="scAutoLoadInfo"
                          style="margin-top:10px; background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; padding:8px 12px; border-radius:6px; font-size:12px; display:flex; gap:10px; align-items:center; flex-wrap:wrap">
@@ -5213,15 +5232,56 @@
                     </div>
                 </div>
 
-                <div v-if="scSessionsListOpen && scSessions.length" class="sc-card" style="background:#f8fafc; border:1px solid #e5e7eb; border-radius:6px; padding:10px; margin-bottom:12px">
-                    <div style="font-weight:600; margin-bottom:6px">Прошлые сессии</div>
-                    <div v-for="s in scSessions" :key="s.id" style="display:flex; gap:8px; align-items:center; padding:4px 0; font-size:12px">
-                        <code style="background:#fff; padding:1px 6px; border:1px solid #e5e7eb; border-radius:3px">{{ s.id }}</code>
-                        <span style="opacity:.7">{{ s.created_at }}</span>
-                        <span>{{ s.pairs_matched }}/{{ s.pairs_total }} пар</span>
-                        <button class="btn btn-sm" @click="scLoadSession(s.id)">Открыть</button>
+                <!-- Каноничная конфигурация: статус для пользователя.
+                     Обычный пользователь не должен видеть session_id и старые сессии. -->
+                <div v-if="scCanonicalConfig && scCanonicalConfig.saved"
+                     class="sc-card"
+                     style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:12px">
+                    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+                        <strong style="color:#065f46">★ Каноничная конфигурация открыта</strong>
+                        <span v-if="scCanonicalConfig.updated_at" style="opacity:.7">
+                            обновлена {{ scCanonicalConfig.updated_at }}
+                        </span>
+                        <span v-if="(scCanonicalConfig.pairs || []).length" style="opacity:.7">
+                            · пар: <strong>{{ (scCanonicalConfig.pairs || []).length }}</strong>
+                        </span>
+                        <span v-if="scCanonicalStale" style="color:#9a3412; font-weight:600">
+                            ⚠ Конфигурация изменилась — результаты анализа могут быть устаревшими
+                        </span>
+                        <span style="flex:1"></span>
+                        <span v-if="scDevTools" style="opacity:.6; font-family:monospace; font-size:11px">
+                            {{ scCanonicalConfig.canonical_session_id }}
+                        </span>
                     </div>
                 </div>
+                <div v-else-if="scSession"
+                     class="sc-card"
+                     style="background:#fff7ed; border:1px solid #fed7aa; border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:12px; color:#9a3412">
+                    Каноничная конфигурация ещё не сохранена.
+                    После сопоставления пар нажмите «★ Сохранить как каноничную».
+                </div>
+
+                <!-- Старая «История сессий» доступна только в dev-mode (?scdev=1).
+                     По требованию (Pass canonical-config 2026-05-27) обычный
+                     пользователь не должен выбирать из истории технических
+                     session_id — у объекта одна каноничная конфигурация. -->
+                <details v-if="scDevTools" class="sc-card"
+                         style="background:#f8fafc; border:1px solid #e5e7eb; border-radius:6px; padding:6px 10px; margin-bottom:12px"
+                         @toggle="$event.target.open && !scSessions.length && scFetchSessionsList()">
+                    <summary style="cursor:pointer; font-size:12px; opacity:.75">
+                        История сессий (debug)
+                        <span v-if="scSessions.length">({{ scSessions.length }})</span>
+                        <span style="opacity:.6"> — для отладки/восстановления, обычному пользователю не нужна</span>
+                    </summary>
+                    <div style="margin-top:6px">
+                        <div v-for="s in scSessions" :key="s.id" style="display:flex; gap:8px; align-items:center; padding:4px 0; font-size:12px">
+                            <code style="background:#fff; padding:1px 6px; border:1px solid #e5e7eb; border-radius:3px">{{ s.id }}</code>
+                            <span style="opacity:.7">{{ s.created_at }}</span>
+                            <span>{{ s.pairs_matched }}/{{ s.pairs_total }} пар</span>
+                            <button class="btn btn-sm" @click="scLoadSession(s.id)">Открыть</button>
+                        </div>
+                    </div>
+                </details>
 
                 <div v-if="scSession" class="sc-card" style="background:var(--card-bg,#fff); border:1px solid var(--border,#e5e7eb); border-radius:8px; padding:0; overflow:hidden">
                     <div style="padding:10px 14px; border-bottom:1px solid #e5e7eb; background:#f8fafc; font-size:12px; display:flex; gap:10px; align-items:center; flex-wrap:wrap">
@@ -5251,14 +5311,14 @@
                                 <button class="btn btn-sm btn-primary"
                                         :disabled="scRecogStarting || !scPairs.length"
                                         @click="scRecogStart(false)"
-                                        title="Запустить Qwen image enrichment для всех PDF-пар сессии (готовые из cache)">
-                                    {{ scRecogStarting ? 'Запуск…' : '🖼 Распознать графику' }}
+                                        :title="scRecogJob && ['failed_interrupted','cancelled'].includes(scRecogJob.status) ? 'Запустить заново с пропуском готовых сторон (cache hits сохранятся)' : 'Запустить Qwen image enrichment для всех PDF-пар сессии (готовые из cache)'">
+                                    {{ scRecogStarting ? 'Запуск…' : (scRecogJob && ['failed_interrupted','cancelled'].includes(scRecogJob.status) ? '▶ Продолжить (пропустить готовые)' : '🖼 Распознать графику') }}
                                 </button>
                                 <button v-if="scRecogJob && scRecogJob.aggregate && (scRecogJob.aggregate.error_pairs > 0 || scRecogJob.aggregate.partial_pairs > 0)"
                                         class="btn btn-sm btn-secondary"
                                         :disabled="scRecogStarting"
                                         @click="scRecogRetryErrors()"
-                                        title="Перезапустить только проблемные пары (cache hits сохранятся)">
+                                        title="Перезапустить только реально проблемные пары (errors/partial). done_with_salvage не трогается — данные пригодны.">
                                     Повторить ошибки ({{ (scRecogJob.aggregate.error_pairs || 0) + (scRecogJob.aggregate.partial_pairs || 0) }})
                                 </button>
                             </template>
@@ -5274,11 +5334,26 @@
                             {{ scRecogError }}
                         </div>
 
+                        <div v-if="scRecogJob && scRecogJob.status === 'failed_interrupted'"
+                             style="margin-top:6px; background:#fff7ed; color:#9a3412; padding:8px 10px; border:1px solid #fed7aa; border-radius:6px; font-size:12px; display:flex; gap:8px; align-items:flex-start">
+                            <span style="font-size:16px; line-height:1">⚡</span>
+                            <div>
+                                <strong>Распознавание было прервано.</strong>
+                                {{ scRecogJob.error || 'Backend перезапустился во время выполнения, воркер был потерян.' }}
+                                Готовые стороны сохранены в кеше — нажмите «▶ Продолжить (пропустить готовые)», чтобы дописать остальные.
+                            </div>
+                        </div>
+
                         <!-- Общий статус по сессии -->
                         <div v-if="scRecogJob && scRecogJob.aggregate"
                              style="margin-top:8px; display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:6px 14px; font-size:12px">
                             <div>всего пар: <strong>{{ scRecogJob.aggregate.total_pairs }}</strong></div>
                             <div style="color:#065f46">готово: <strong>{{ scRecogJob.aggregate.done_pairs }}</strong></div>
+                            <div v-if="scRecogJob.aggregate.done_with_salvage_pairs"
+                                 style="color:#065f46"
+                                 title="Пары полностью описаны, но часть блоков восстановлена salvage'ом / continuation'ом. Pipeline-смысл — готово.">
+                                готово (salvage): <strong>{{ scRecogJob.aggregate.done_with_salvage_pairs }}</strong>
+                            </div>
                             <div style="color:#92400e">частично: <strong>{{ scRecogJob.aggregate.partial_pairs }}</strong></div>
                             <div style="color:#991b1b">ошибок: <strong>{{ scRecogJob.aggregate.error_pairs }}</strong></div>
                             <div style="opacity:.75">ещё не запускалось: <strong>{{ scRecogJob.aggregate.not_run_pairs }}</strong></div>
@@ -5305,17 +5380,52 @@
                             </div>
                         </div>
 
-                        <!-- Текущая пара/блок -->
+                        <!-- Текущая пара/блок — заметный live-индикатор -->
                         <div v-if="scRecogJob && scRecogJob.status === 'running' && scRecogJob.aggregate && scRecogJob.aggregate.current_pair_id"
-                             style="margin-top:8px; padding:6px 8px; background:#fff; border:1px solid #c7d2fe; border-radius:6px; font-size:12px">
-                            <strong>Сейчас:</strong>
-                            <span style="font-family:monospace">{{ scRecogJob.aggregate.current_pair_label || scRecogJob.aggregate.current_pair_id }}</span>
-                            <span v-if="scRecogJob.aggregate.current_side"> · сторона: <code>{{ scRecogJob.aggregate.current_side }}</code></span>
-                            <span v-if="scRecogJob.aggregate.current_total_blocks">
-                                · блок {{ scRecogJob.aggregate.current_block_index }}/{{ scRecogJob.aggregate.current_total_blocks }}
-                            </span>
-                            <span v-if="scRecogJob.aggregate.current_page != null"> · стр. {{ scRecogJob.aggregate.current_page }}</span>
-                            <span v-if="scRecogJob.aggregate.current_status_message" style="opacity:.7"> · {{ scRecogJob.aggregate.current_status_message }}</span>
+                             style="margin-top:10px; padding:12px 14px; background:linear-gradient(90deg,#eef2ff,#fff); border:1px solid #c7d2fe; border-radius:8px">
+                            <!-- Шапка: «Сейчас» + пара X/Y + ETA -->
+                            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px">
+                                <span style="display:inline-flex; align-items:center; gap:6px; font-weight:600; color:#3730a3">
+                                    <span class="sc-pulse" style="display:inline-block; width:10px; height:10px; background:#4f46e5; border-radius:50%"></span>
+                                    Идёт обработка
+                                </span>
+                                <span style="font-size:13px; color:#374151">
+                                    пара <strong>{{ scRecogPairProgress().current }}</strong> / {{ scRecogPairProgress().total }}
+                                </span>
+                                <span v-if="scRecogJob.aggregate.eta_sec"
+                                      style="font-size:12px; opacity:.65; margin-left:auto">
+                                    ETA ≈ {{ scFormatDuration(scRecogJob.aggregate.eta_sec) }}
+                                </span>
+                            </div>
+                            <!-- Сейчас обрабатываемая пара/сторона/страница -->
+                            <div style="font-family:monospace; font-size:13px; color:#1f2937; margin-bottom:8px; word-break:break-all">
+                                {{ scRecogJob.aggregate.current_pair_label || scRecogJob.aggregate.current_pair_id }}
+                                <span style="opacity:.6"> · сторона: <strong>{{ scRecogJob.aggregate.current_side }}</strong></span>
+                                <span v-if="scRecogJob.aggregate.current_page != null"
+                                      style="opacity:.6"> · стр. <strong>{{ scRecogJob.aggregate.current_page }}</strong></span>
+                                <span v-if="scRecogJob.aggregate.current_status_message"
+                                      style="opacity:.6"> · {{ scRecogJob.aggregate.current_status_message }}</span>
+                            </div>
+                            <!-- БОЛЬШОЙ прогресс по блокам ВНУТРИ текущей пары -->
+                            <div v-if="scRecogJob.aggregate.current_total_blocks > 0">
+                                <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:3px">
+                                    <span style="color:#3730a3">блок</span>
+                                    <span style="font-weight:600; color:#3730a3">
+                                        {{ scRecogJob.aggregate.current_block_index }} / {{ scRecogJob.aggregate.current_total_blocks }}
+                                    </span>
+                                </div>
+                                <div style="height:14px; background:#e0e7ff; border-radius:7px; overflow:hidden; box-shadow:inset 0 1px 2px rgba(0,0,0,.08)">
+                                    <div :style="{
+                                            width: Math.min(100, Math.round(100 * (scRecogJob.aggregate.current_block_index / Math.max(1, scRecogJob.aggregate.current_total_blocks))) ) + '%',
+                                            height: '100%',
+                                            background: 'linear-gradient(90deg,#4f46e5,#6366f1)',
+                                            transition: 'width 0.4s'
+                                         }"></div>
+                                </div>
+                            </div>
+                            <div v-else style="font-size:12px; opacity:.6">
+                                подсчитываю блоки текущей пары…
+                            </div>
                         </div>
 
                         <!-- Проблемные пары -->
@@ -5350,6 +5460,9 @@
                     <table style="width:100%; border-collapse:collapse; font-size:13px">
                         <thead style="background:#fafafa">
                             <tr>
+                                <th style="width:30px; padding:8px; border-bottom:1px solid #e5e7eb"
+                                    :title="'Перетащите за иконку '+'⋮⋮'+' чтобы изменить порядок пар'"></th>
+                                <th style="width:36px; text-align:right; padding:8px; border-bottom:1px solid #e5e7eb">№</th>
                                 <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb">Статус</th>
                                 <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb">PDF слева</th>
                                 <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb">PDF справа</th>
@@ -5363,11 +5476,84 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="p in scPairs" :key="p.id" style="border-bottom:1px solid #f1f5f9"
-                                :class="{'sc-pair-disabled': p.status === 'disabled'}">
+                            <tr v-for="(p, idx) in scPairs" :key="p.id"
+                                draggable="true"
+                                @dragstart="scOnPairDragStart($event, idx)"
+                                @dragover.prevent="scOnPairDragOver($event, idx)"
+                                @dragleave="scOnPairDragLeave($event, idx)"
+                                @drop="scOnPairDrop($event, idx)"
+                                @dragend="scOnPairDragEnd"
+                                :class="['sc-pair-row', {
+                                    'sc-pair-disabled': p.status === 'disabled',
+                                    'sc-pair-drag-over': scPairDragOverIdx === idx && scPairDragFromIdx !== idx,
+                                    'sc-pair-dragging': scPairDragFromIdx === idx
+                                }]"
+                                style="border-bottom:1px solid #f1f5f9">
+                                <td style="padding:8px; text-align:center; color:#9ca3af; cursor:grab; user-select:none"
+                                    title="Перетащите чтобы изменить порядок">⋮⋮</td>
+                                <td style="padding:8px; text-align:right; color:#6b7280; font-variant-numeric:tabular-nums; white-space:nowrap">
+                                    <span v-if="p.has_template"
+                                          style="color:#16a34a; font-weight:700; margin-right:4px"
+                                          title="Конфигурация пары сохранена — связи блоков и карта страниц">✓</span>
+                                    {{ idx + 1 }}
+                                </td>
                                 <td style="padding:8px"><span :class="'sc-status sc-status-' + p.status">{{ scStatusLabel(p.status) }}</span></td>
                                 <td style="padding:8px; font-family:monospace; font-size:12px">{{ p.left ? p.left.filename : '—' }}</td>
-                                <td style="padding:8px; font-family:monospace; font-size:12px">{{ p.right ? p.right.filename : '—' }}</td>
+                                <td style="padding:8px; font-family:monospace; font-size:12px; position:relative">
+                                    <span class="sc-pair-right-name"
+                                          @click.stop="scOpenInlineMatch(p)"
+                                          :title="p.right ? 'Кликните чтобы выбрать другой правый PDF' : 'Кликните чтобы назначить правый PDF'">
+                                        {{ p.right ? p.right.filename : '— нажмите чтобы назначить —' }}
+                                        <span class="sc-pair-right-caret">▾</span>
+                                    </span>
+                                    <!-- Inline popover для выбора правого PDF -->
+                                    <div v-if="scInlineMatchPairId === p.id"
+                                         class="sc-match-popover"
+                                         @click.stop>
+                                        <div class="sc-match-popover__header">
+                                            <input v-model="scInlineMatchFilter"
+                                                   placeholder="фильтр по имени файла…"
+                                                   class="form-control"
+                                                   @keydown.esc="scCloseInlineMatch"
+                                                   style="font-size:12px; padding:4px 8px" />
+                                        </div>
+                                        <div class="sc-match-popover__list">
+                                            <div class="sc-match-popover__item sc-match-popover__item--detach"
+                                                 :class="{'sc-match-popover__item--active': !scInlineMatchChoice}"
+                                                 @click="scInlineMatchChoice = ''"
+                                                 title="Снять правый PDF — пара станет «не найдено»">
+                                                — отвязать —
+                                            </div>
+                                            <div v-for="opt in scInlineMatchOptions()"
+                                                 :key="opt.pdf_path"
+                                                 class="sc-match-popover__item"
+                                                 :class="{
+                                                    'sc-match-popover__item--active': scInlineMatchChoice === opt.pdf_path,
+                                                    'sc-match-popover__item--current': opt.is_current
+                                                 }"
+                                                 @click="scInlineMatchChoice = opt.pdf_path">
+                                                <span v-if="opt.is_current" style="opacity:.6; font-size:10px; margin-right:4px">текущий →</span>
+                                                {{ opt.filename }}
+                                            </div>
+                                            <div v-if="scInlineMatchOptions().length === 0"
+                                                 style="padding:8px; font-size:12px; opacity:.6">
+                                                нет несопоставленных файлов
+                                            </div>
+                                        </div>
+                                        <div v-if="scInlineMatchError"
+                                             style="padding:6px 8px; color:#b91c1c; font-size:12px">{{ scInlineMatchError }}</div>
+                                        <div class="sc-match-popover__actions">
+                                            <button class="btn btn-sm btn-secondary"
+                                                    @click="scCloseInlineMatch"
+                                                    :disabled="scInlineMatchSaving">Отмена</button>
+                                            <button class="btn btn-sm btn-primary"
+                                                    @click="scInlineMatchConfirm"
+                                                    :disabled="scInlineMatchSaving">
+                                                {{ scInlineMatchSaving ? 'Сохраняю…' : 'Согласовать' }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
                                 <td style="padding:8px; text-align:center">{{ p.left && p.left.has_md ? '✓' : '—' }}</td>
                                 <td style="padding:8px; text-align:center">{{ p.right && p.right.has_md ? '✓' : '—' }}</td>
                                 <td style="padding:8px; text-align:center">{{ p.left && p.left.has_result_json ? '✓' : '—' }}</td>
@@ -5380,12 +5566,17 @@
                                 <td style="padding:8px; text-align:right; opacity:.7">{{ p.match_score ? (p.match_score*100).toFixed(0) + '%' : '—' }}</td>
                                 <td style="padding:8px; text-align:right; white-space:nowrap">
                                     <button class="btn btn-sm" :disabled="!p.left || !p.right" @click="scOpenPair(p)">Открыть</button>
-                                    <button class="btn btn-sm btn-secondary" @click="scOpenMatchPairDialog(p)" :title="p.right ? 'Изменить правый PDF' : 'Назначить правый PDF'">Сопоставить</button>
                                     <button class="btn btn-sm btn-danger" @click="scDeletePair(p)" title="Скрыть/удалить пару">✕</button>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                    <div v-if="scPairOrderSaving" style="margin-top:4px; font-size:11px; opacity:.7">
+                        Сохраняю новый порядок…
+                    </div>
+                    <div v-if="scPairOrderError" style="margin-top:4px; font-size:12px; color:#b91c1c">
+                        {{ scPairOrderError }}
+                    </div>
                     <div style="margin-top:10px">
                         <button class="btn btn-secondary" @click="scOpenCreatePairDialog()">+ Создать пару вручную</button>
                     </div>
@@ -5414,11 +5605,13 @@
                 </div>
                 <!-- Компактный toolbar (zoom + sync + действия в одной строке) -->
                 <div class="sc-card" style="background:#f8fafc; border:1px solid #e5e7eb; border-radius:6px; padding:8px 12px; margin-bottom:10px; display:flex; gap:12px; flex-wrap:wrap; align-items:center; font-size:13px">
-                    <div style="display:flex; gap:4px; align-items:center">
+                    <div style="display:flex; gap:4px; align-items:center"
+                         title="Ctrl + колесо мыши над листом — масштаб от курсора; зажатие ЛКМ — рука (как в Adobe Acrobat)">
                         <button class="btn btn-sm btn-secondary" @click="scZoomBy(0.85)" title="Уменьшить">−</button>
                         <span style="min-width:60px; text-align:center; font-weight:600">Масштаб: {{ Math.round(scZoom*100) }}%</span>
                         <button class="btn btn-sm btn-secondary" @click="scZoomBy(1.18)" title="Увеличить">+</button>
                         <button class="btn btn-sm btn-secondary" @click="scZoomReset()" title="Сброс">100%</button>
+                        <span style="margin-left:6px; font-size:11px; opacity:.55; white-space:nowrap" title="Ctrl + колесо — зум от курсора, ЛКМ — рука">⌨ Ctrl+колесо · 🖐 ЛКМ</span>
                     </div>
                     <label style="display:flex; gap:4px; align-items:center; cursor:pointer">
                         <input type="checkbox" v-model="scSyncScroll" /> Синхронизировать прокрутку
@@ -5521,7 +5714,10 @@
                          class="sc-viewer__pane"
                          :ref="el => { if (el) scPaneRefs[side] = el }"
                          @scroll="scOnPaneScroll(side, $event)"
-                         style="border:1px solid #e5e7eb; border-radius:6px; background:#fafafa; height:calc(100vh - 280px); overflow:auto; position:relative">
+                         @wheel="scOnPaneWheel(side, $event)"
+                         @mousedown="scOnPanePanStart(side, $event)"
+                         title="Ctrl + колесо — масштаб от курсора; зажатие ЛКМ — перетаскивание (как в Adobe Acrobat)"
+                         style="border:1px solid #e5e7eb; border-radius:6px; background:#fafafa; height:calc(100vh - 280px); overflow:auto; position:relative; cursor:grab">
                         <div v-for="(slot, idx) in scAlignmentItems" :key="side+'-slot-'+slot.slot"
                              class="sc-slot"
                              :id="'sc-slot-' + side + '-' + slot.slot"
@@ -5654,9 +5850,11 @@
                 <div class="sc-subtabs" style="display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap; align-items:center">
                     <!-- Unified (primary) — единый pipeline: Qwen enrichment + Opus comparison. -->
                     <button class="btn" :class="{'btn-primary': scDiffSubtab==='unified', 'btn-secondary': scDiffSubtab!=='unified'}" @click="scSwitchDiffSubtab('unified')">Расхождения</button>
-                    <!-- Legacy debug-tabs: текст и графика отдельно (advanced). -->
-                    <button class="btn btn-secondary" style="opacity:.85" :class="{'btn-primary': scDiffSubtab==='text'}" @click="scSwitchDiffSubtab('text')" title="Legacy: текстовый LLM-анализ отдельно (для отладки)">Текст (debug)</button>
-                    <button class="btn btn-secondary" style="opacity:.85" :class="{'btn-primary': scDiffSubtab==='graphic'}" @click="scDiffSubtab='graphic'; scLoadGraphicSummary()" title="Legacy: графическое сравнение блоков (для отладки)">Графика (debug)</button>
+                    <!-- Legacy debug-subtabs: текст и графика отдельно. Скрыты от
+                         обычного пользователя; включить через localStorage.sc_dev=1
+                         или ?scdev=1, либо window.scEnableDev() в консоли. -->
+                    <button v-if="scDevTools" class="btn btn-secondary" style="opacity:.85" :class="{'btn-primary': scDiffSubtab==='text'}" @click="scSwitchDiffSubtab('text')" title="Dev: текстовый LLM-анализ отдельно (для отладки)">Текст (debug)</button>
+                    <button v-if="scDevTools" class="btn btn-secondary" style="opacity:.85" :class="{'btn-primary': scDiffSubtab==='graphic'}" @click="scDiffSubtab='graphic'; scLoadGraphicSummary()" title="Dev: графическое сравнение блоков (для отладки)">Графика (debug)</button>
                     <template v-if="scDiffSubtab==='unified'">
                         <div style="flex:1"></div>
                         <button class="btn btn-primary"
@@ -5665,11 +5863,14 @@
                                 title="Запустить анализ для текущей PDF-пары: Qwen enrichment + Opus comparison">
                             Проанализировать и сравнить
                         </button>
-                        <button class="btn btn-secondary"
+                        <!-- Session-wide Opus batch — тяжёлая операция, обычному
+                             пользователю не показываем. Доступна в dev-режиме. -->
+                        <button v-if="scDevTools"
+                                class="btn btn-secondary"
                                 :disabled="scUnifiedJobPolling || (scUnifiedJob && ['queued','running'].includes(scUnifiedJob.status))"
-                                @click="(confirm('Запустить анализ ВСЕЙ сессии (все PDF-пары)? Это может занять много минут и потребует Opus calls. Текущая пара уже доступна через «Проанализировать и сравнить».')) && scOpenUnifiedSessionPreflight()"
-                                title="Полный unified-анализ всей сессии — НЕ текущей пары">
-                            Проанализировать всю сессию
+                                @click="(confirm('Запустить анализ ВСЕЙ сессии (все PDF-пары)? Это может занять много минут и потребует Opus calls.')) && scOpenUnifiedSessionPreflight()"
+                                title="Dev: полный unified-анализ всей сессии — НЕ текущей пары">
+                            Проанализировать всю сессию (dev)
                         </button>
                     </template>
                     <template v-if="scDiffSubtab==='text'">
@@ -5757,14 +5958,61 @@
                         {{ scUnifiedError }}
                     </div>
 
-                    <!-- Loading flat list -->
-                    <div v-if="scUnifiedFlatLoading" class="empty-state" style="padding:14px 0; font-size:13px">Загрузка списка расхождений…</div>
+                    <!-- View-mode toggle: «Сгруппировано» / «Все расхождения» -->
+                    <div class="sc-unified-mode" style="display:flex; gap:6px; align-items:center; margin-bottom:8px; font-size:12px">
+                        <span style="opacity:.7">Вид:</span>
+                        <button class="btn btn-sm"
+                                :class="scUnifiedViewMode === 'grouped' ? 'btn-primary' : 'btn-secondary'"
+                                @click="scSetUnifiedViewMode('grouped')"
+                                title="Сгруппированный реестр значимых отличий (детерминированная пост-обработка, без LLM)">
+                            Сгруппировано
+                        </button>
+                        <button class="btn btn-sm"
+                                :class="scUnifiedViewMode === 'raw' ? 'btn-primary' : 'btn-secondary'"
+                                @click="scSetUnifiedViewMode('raw')"
+                                title="Сырой список всех расхождений как пришли от Opus">
+                            Все расхождения
+                        </button>
+                        <span v-if="scUnifiedViewMode === 'grouped' && scUnifiedGrouped && scUnifiedGrouped.summary"
+                              style="opacity:.7; margin-left:8px">
+                            {{ scUnifiedGrouped.summary.raw_findings_count }} raw
+                            → {{ scUnifiedGrouped.summary.grouped_findings_count }} сгруппировано
+                            → <strong>скрыто формальных:</strong> {{ scUnifiedGrouped.summary.hidden_formal_count }}
+                        </span>
+                        <div style="flex:1"></div>
+                        <button v-if="scUnifiedViewMode === 'grouped'"
+                                class="btn btn-sm btn-secondary"
+                                :disabled="scGroupedRegrouping"
+                                @click="scRegroupUnifiedFindings()"
+                                title="Пересобрать группировку из сырых findings (без LLM)">
+                            {{ scGroupedRegrouping ? 'Пересобираем…' : '⟳ Обновить группировку' }}
+                        </button>
+                    </div>
+
+                    <!-- Loading flat list (raw mode) -->
+                    <div v-if="scUnifiedViewMode === 'raw' && scUnifiedFlatLoading" class="empty-state" style="padding:14px 0; font-size:13px">Загрузка списка расхождений…</div>
+                    <!-- Loading grouped (grouped mode) -->
+                    <div v-if="scUnifiedViewMode === 'grouped' && scUnifiedGroupedLoading" class="empty-state" style="padding:14px 0; font-size:13px">Загрузка сгруппированных расхождений…</div>
+                    <!-- Grouped fallback when error -->
+                    <div v-if="scUnifiedViewMode === 'grouped' && !scUnifiedGroupedLoading && scUnifiedGroupedError"
+                         style="background:#fef3c7; color:#92400e; padding:8px 12px; border-radius:6px; margin-bottom:10px; font-size:13px; border:1px solid #fde68a">
+                        <div>Сгруппированные расхождения пока не сформированы или произошла ошибка: {{ scUnifiedGroupedError }}</div>
+                        <div style="margin-top:6px; display:flex; gap:6px">
+                            <button class="btn btn-sm btn-primary" @click="scRegroupUnifiedFindings()"
+                                    :disabled="scGroupedRegrouping">
+                                {{ scGroupedRegrouping ? 'Пересобираем…' : 'Сформировать группировку' }}
+                            </button>
+                            <button class="btn btn-sm btn-secondary" @click="scSetUnifiedViewMode('raw')">
+                                Показать все расхождения (raw)
+                            </button>
+                        </div>
+                    </div>
 
                     <!-- Scope badge: показана текущая PDF-пара / все PDF-пары сессии -->
                     <div v-if="!scUnifiedFlatLoading"
                          class="sc-card"
                          :style="{
-                            display:'flex', gap:10px, alignItems:'baseline', flexWrap:'wrap',
+                            display:'flex', gap:'10px', alignItems:'baseline', flexWrap:'wrap',
                             padding:'8px 12px', borderRadius:'6px', marginBottom:'10px', fontSize:'12px',
                             background: scUnifiedShowAllPairs ? '#fef3c7' : '#eef2ff',
                             border: scUnifiedShowAllPairs ? '1px solid #fde68a' : '1px solid #c7d2fe',
@@ -5782,6 +6030,26 @@
                                 :title="scUnifiedShowAllPairs ? 'Вернуть фильтр к текущей PDF-паре' : 'Показать расхождения по всей сессии (потребует подтверждения)'">
                             {{ scUnifiedShowAllPairs ? 'Показать только текущую пару' : 'Показать все PDF-пары' }}
                         </button>
+                        <a v-if="scUnifiedFlat && (scUnifiedFlat.items || []).length"
+                           class="btn btn-sm btn-secondary"
+                           :href="scUnifiedExportXlsxUrl()"
+                           target="_blank" rel="noopener"
+                           title="Скачать таблицу расхождений в формате Excel (текущий scope)">
+                            ⬇ Экспорт в Excel
+                        </a>
+                    </div>
+
+                    <!-- Analysis-mode hint: что именно сравнивается у текущей пары -->
+                    <div v-if="!scUnifiedShowAllPairs && scActivePair && scAnalysisMode"
+                         class="sc-card"
+                         style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:6px; padding:8px 12px; margin-bottom:10px; font-size:12px; line-height:1.45">
+                        <strong>Сравнивается весь документ целиком.</strong>
+                        <span v-if="scAnalysisMode === 'concept_no_block_links'" style="opacity:.85">
+                            Связи блоков не используются — анализ опирается только на enriched MD.
+                        </span>
+                        <span v-else style="opacity:.85">
+                            Связанные блоки используются как ориентиры с повышенным вниманием, но изменения находятся и вне их.
+                        </span>
                     </div>
 
                     <!-- Empty state: pair выбрана, но анализ ещё не запускался -->
@@ -5790,8 +6058,268 @@
                         Для выбранной PDF-пары анализ ещё не запускался. Нажмите «Проанализировать и сравнить».
                     </div>
 
+                    <!-- ════════════════════════════════════════════════════════
+                         GROUPED MODE (default): сгруппированный реестр значимых
+                         отличий. Источник: GET /unified-grouped.
+                         ════════════════════════════════════════════════════════ -->
+                    <template v-if="scUnifiedViewMode === 'grouped' && scUnifiedGrouped && !scUnifiedGroupedLoading">
+                        <!-- Summary panel (grouped) -->
+                        <div class="sc-card sc-grouped-summary"
+                             style="background:#fafafa; border:1px solid #e5e7eb; border-radius:6px; padding:10px 12px; margin-bottom:10px; font-size:12px">
+                            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:6px 12px">
+                                <div>
+                                    <strong>Расхождений (raw):</strong> {{ scUnifiedGrouped.summary.raw_findings_count }}
+                                </div>
+                                <div>
+                                    <strong>Сгруппировано:</strong> {{ scUnifiedGrouped.summary.grouped_findings_count }}
+                                </div>
+                                <div>
+                                    <strong>Скрыто формальных:</strong>
+                                    <span class="sc-grouped-hidden-count">{{ scUnifiedGrouped.summary.hidden_formal_count }}</span>
+                                </div>
+                                <div>
+                                    <strong>Значимость:</strong>
+                                    high {{ scUnifiedGrouped.summary.high_value_count }}
+                                    / med {{ scUnifiedGrouped.summary.medium_value_count }}
+                                    / low {{ scUnifiedGrouped.summary.low_value_count }}
+                                </div>
+                            </div>
+                            <div style="margin-top:6px; opacity:.75">
+                                Направление изменения:
+                                усложн. {{ scUnifiedGrouped.summary.by_change_direction?.complication ?? 0 }}
+                                · упрощ. {{ scUnifiedGrouped.summary.by_change_direction?.simplification ?? 0 }}
+                                · нейтр. {{ scUnifiedGrouped.summary.by_change_direction?.neutral ?? 0 }}
+                                · неизв. {{ scUnifiedGrouped.summary.by_change_direction?.unknown ?? 0 }}
+                                &nbsp;·&nbsp;
+                                Стоимость:
+                                ↑ {{ scUnifiedGrouped.summary.by_cost_impact_direction?.increase ?? 0 }}
+                                / ↓ {{ scUnifiedGrouped.summary.by_cost_impact_direction?.decrease ?? 0 }}
+                                / ? {{ scUnifiedGrouped.summary.by_cost_impact_direction?.unknown ?? 0 }}
+                            </div>
+                        </div>
+
+                        <!-- Filters (grouped) -->
+                        <div class="sc-filters" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:6px; font-size:12px">
+                            <select v-model="scGroupedFilterSignificance" style="font-size:12px; padding:4px 6px">
+                                <option value="">Любая значимость</option>
+                                <option value="high">High</option>
+                                <option value="medium">Medium</option>
+                                <option value="low">Low</option>
+                                <option value="formal">Formal</option>
+                            </select>
+                            <select v-model="scGroupedFilterTheme" style="font-size:12px; padding:4px 6px">
+                                <option value="">Любая тема</option>
+                                <option v-for="t in scGroupedThemeOptions" :key="t" :value="t">{{ scGroupedThemeLabel(t) }}</option>
+                            </select>
+                            <select v-model="scGroupedFilterDirection" style="font-size:12px; padding:4px 6px"
+                                    title="Направление изменения">
+                                <option value="">Любое направление</option>
+                                <option value="complication">Усложнение</option>
+                                <option value="simplification">Упрощение</option>
+                                <option value="neutral">Нейтрально</option>
+                                <option value="unknown">Неизвестно</option>
+                            </select>
+                            <select v-model="scGroupedFilterCostDir" style="font-size:12px; padding:4px 6px"
+                                    title="Направление стоимости">
+                                <option value="">Любая стоимость</option>
+                                <option value="increase">↑ увеличение</option>
+                                <option value="decrease">↓ уменьшение</option>
+                                <option value="unknown">Неизвестно</option>
+                            </select>
+                            <label style="display:flex; gap:4px; align-items:center">
+                                <input type="checkbox" v-model="scGroupedFilterHumanReview" />
+                                Только на ручную проверку
+                            </label>
+                            <label style="display:flex; gap:4px; align-items:center"
+                                   title="Показать формальные изменения (проектировщик, ГИП, шифр, дата и т.п.)">
+                                <input type="checkbox" v-model="scGroupedShowFormal" />
+                                Показать формальные
+                            </label>
+                            <input v-model="scGroupedSearch" type="text" placeholder="Поиск по тексту…"
+                                   style="flex:1; min-width:200px; padding:4px 8px; font-size:12px">
+                        </div>
+
+                        <!-- Empty state (grouped) -->
+                        <div v-if="!scGroupedItemsSorted.length"
+                             class="empty-state" style="padding:14px 0; font-size:13px; opacity:.85">
+                            Сгруппированных расхождений по заданным фильтрам нет.
+                            <span v-if="scUnifiedGrouped.summary.hidden_formal_count">Скрыто формальных: {{ scUnifiedGrouped.summary.hidden_formal_count }} — включите «Показать формальные».</span>
+                        </div>
+
+                        <!-- Grouped Excel-style table -->
+                        <div v-if="scGroupedItemsSorted.length"
+                             class="table-container sc-unified-table-wrap">
+                            <table class="findings-table sc-unified-table sc-grouped-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:54px; text-align:center">№</th>
+                                        <th style="width:170px">Тема / значимость</th>
+                                        <th style="width:28%">Изменение</th>
+                                        <th class="sc-col-was" style="width:16%">Было</th>
+                                        <th class="sc-col-became" style="width:16%">Стало</th>
+                                        <th style="width:150px">Где найдено</th>
+                                        <th class="sc-col-impact" style="width:14%">Влияние</th>
+                                        <th style="width:54px"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template v-for="g in scGroupedItemsSorted" :key="g.id">
+                                        <tr :class="'sc-row sc-row--' + (g.significance || 'unknown')">
+                                            <td class="sc-cell-no">
+                                                <div class="sc-cell-no__num">№{{ g._displayNo }}</div>
+                                                <span :class="'sc-sev-chip sc-sev-chip--' + (g.significance || 'unknown')"
+                                                      :title="'Значимость: ' + scGroupedSigLabel(g.significance)">{{ scGroupedSigLabel(g.significance) }}</span>
+                                            </td>
+                                            <!-- Тема / значимость -->
+                                            <td class="sc-cell-place">
+                                                <div class="sc-place-sheet">
+                                                    <strong>{{ scGroupedThemeLabel(g.theme) }}</strong>
+                                                </div>
+                                                <div v-if="g.semantic_subject" class="sc-place-page">
+                                                    {{ g.semantic_subject }}<span v-if="g.semantic_action"> · {{ g.semantic_action }}</span>
+                                                </div>
+                                                <div class="sc-grouped-dir-row" style="margin-top:4px; display:flex; gap:4px; flex-wrap:wrap">
+                                                    <span v-if="g.change_direction && g.change_direction !== 'unknown'"
+                                                          :class="'sc-grouped-dir-chip sc-grouped-dir-chip--' + g.change_direction">
+                                                        {{ scGroupedDirLabel(g.change_direction) }}
+                                                    </span>
+                                                    <span v-if="g.cost_impact_direction && g.cost_impact_direction !== 'unknown'"
+                                                          :class="'sc-grouped-cost-chip sc-grouped-cost-chip--' + g.cost_impact_direction">
+                                                        {{ scGroupedCostDirLabel(g.cost_impact_direction) }}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <!-- Изменение -->
+                                            <td class="sc-cell-change">
+                                                <div class="sc-change-badges">
+                                                    <span v-if="g.is_formal && !g.escalation_reason"
+                                                          class="sc-chip sc-chip--formal"
+                                                          :title="'Формальное: ' + (g.formal_reason || '—')">формальное</span>
+                                                    <span v-else-if="g.is_formal && g.escalation_reason"
+                                                          class="sc-chip sc-chip--escalated"
+                                                          :title="'Escalation: ' + g.escalation_reason">escalated · {{ g.escalation_reason }}</span>
+                                                    <span v-if="g.requires_human_review"
+                                                          class="sc-chip sc-chip--manual"
+                                                          :title="'Reason: ' + (g.review_reason || 'manual')">⚑ ручная</span>
+                                                    <span v-if="g.scope_level === 'session_rollup'"
+                                                          class="sc-chip sc-chip--rollup"
+                                                          :title="'Объединено из ' + (g.affected_pair_ids && g.affected_pair_ids.length || 0) + ' PDF-пар'">
+                                                        по нескольким разделам
+                                                    </span>
+                                                </div>
+                                                <div class="sc-change-title">{{ g.title || '—' }}</div>
+                                                <div v-if="g.affected_count > 1" class="sc-change-summary"
+                                                     style="opacity:.7; font-size:11px">
+                                                    Объединено: {{ g.affected_count }} расхождений
+                                                </div>
+                                            </td>
+                                            <!-- Было -->
+                                            <td class="sc-cell-was">
+                                                <template v-if="scGroupedHasVariants(g)">
+                                                    <em style="opacity:.75">несколько вариантов ({{ g.value_variants.length }})</em>
+                                                </template>
+                                                <template v-else>
+                                                    {{ g.old_value || '—' }}
+                                                </template>
+                                            </td>
+                                            <!-- Стало -->
+                                            <td class="sc-cell-became">
+                                                <template v-if="scGroupedHasVariants(g)">
+                                                    <em style="opacity:.75">несколько вариантов ({{ g.value_variants.length }})</em>
+                                                </template>
+                                                <template v-else>
+                                                    {{ g.new_value || '—' }}
+                                                </template>
+                                            </td>
+                                            <!-- Где найдено -->
+                                            <td class="sc-cell-place">
+                                                <div v-if="g.affected_pair_ids && g.affected_pair_ids.length"
+                                                     class="sc-place-sheet">
+                                                    PDF-пар: <strong>{{ g.affected_pair_ids.length }}</strong>
+                                                </div>
+                                                <div v-if="g.affected_pages && g.affected_pages.length"
+                                                     class="sc-place-page">
+                                                    стр. PDF: {{ (g.affected_pages || []).slice(0, 6).join(', ') }}
+                                                    <span v-if="(g.affected_pages || []).length > 6">…</span>
+                                                </div>
+                                                <button class="btn btn-sm btn-secondary"
+                                                        style="margin-top:4px; padding:1px 6px; font-size:10px"
+                                                        @click="scToggleGroupExpand(g.id)">
+                                                    {{ scIsGroupExpanded(g.id) ? 'Свернуть evidence' : 'Показать evidence' }}
+                                                </button>
+                                            </td>
+                                            <!-- Влияние -->
+                                            <td class="sc-cell-impact">
+                                                <div v-if="g.construction_impact" class="sc-impact-text">{{ g.construction_impact }}</div>
+                                                <div v-else class="sc-impact-text muted">—</div>
+                                                <div v-if="g.cost_impact && g.cost_impact !== 'none'" class="sc-impact-cost">
+                                                    Стоимость: <strong>{{ g.cost_impact }}</strong>
+                                                </div>
+                                            </td>
+                                            <!-- К месту (первое evidence) -->
+                                            <td class="sc-cell-goto">
+                                                <button class="sc-goto-btn"
+                                                        :disabled="!(g.evidence && g.evidence.length)"
+                                                        @click="scGotoGroupEvidence(g, null)"
+                                                        title="Открыть PDF-пару и перейти к evidence (предпочитается текущая пара, если есть)">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                                         stroke="currentColor" stroke-width="2"
+                                                         stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M5 12h14"></path>
+                                                        <path d="M13 6l6 6-6 6"></path>
+                                                    </svg>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <!-- Expandable evidence row -->
+                                        <tr v-if="scIsGroupExpanded(g.id)" :class="'sc-row sc-row--' + (g.significance || 'unknown') + ' sc-row-evidence'">
+                                            <td></td>
+                                            <td colspan="7" class="sc-grouped-evidence-cell">
+                                                <!-- value_variants -->
+                                                <div v-if="scGroupedHasVariants(g)" class="sc-grouped-variants">
+                                                    <strong style="font-size:11px; opacity:.8">Варианты old → new (всего {{ g.value_variants.length }}):</strong>
+                                                    <ul style="margin:4px 0 8px 16px; padding:0; font-size:11px; line-height:1.5">
+                                                        <li v-for="(v, idx) in g.value_variants" :key="idx">
+                                                            <span style="color:#991b1b">{{ v.old_value || '—' }}</span>
+                                                            <span style="opacity:.5; margin:0 4px">→</span>
+                                                            <span style="color:#065f46">{{ v.new_value || '—' }}</span>
+                                                            <span v-if="v.source_finding_ids && v.source_finding_ids.length" style="opacity:.55; margin-left:6px">
+                                                                ({{ v.source_finding_ids.length }} ev.)
+                                                            </span>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <!-- evidence list -->
+                                                <strong style="font-size:11px; opacity:.8">Evidence ({{ (g.evidence || []).length }}):</strong>
+                                                <ul style="margin:4px 0 0 16px; padding:0; font-size:11px; line-height:1.5">
+                                                    <li v-for="(ev, idx) in (g.evidence || [])" :key="idx">
+                                                        <code style="font-size:10px">{{ ev.pair_id }}</code>
+                                                        <span v-if="ev.sheet" style="opacity:.7"> · {{ ev.sheet }}</span>
+                                                        <span v-if="ev.page" style="opacity:.7"> · стр. {{ ev.page }}</span>
+                                                        <span v-if="ev.side" style="opacity:.55"> · {{ ev.side }}</span>:
+                                                        <span style="opacity:.85">{{ ev.quote }}</span>
+                                                        <button class="btn btn-sm btn-secondary"
+                                                                style="margin-left:6px; padding:0 6px; font-size:9px"
+                                                                @click="scGotoGroupEvidence(g, ev)"
+                                                                title="Перейти к этому evidence">→ к месту</button>
+                                                    </li>
+                                                </ul>
+                                                <div v-if="g.review_reason" style="margin-top:6px; font-size:10px; opacity:.65">
+                                                    review_reason: <code>{{ g.review_reason }}</code>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+
+                    <!-- ════════════════════════════════════════════════════════
+                         RAW MODE: сырой Excel-style список (unified-diff-flat).
+                         ════════════════════════════════════════════════════════ -->
                     <!-- Summary card -->
-                    <div v-if="scUnifiedFlat && scUnifiedFlat.summary && scUnifiedFlat.summary.total_pairs"
+                    <div v-if="scUnifiedViewMode === 'raw' && scUnifiedFlat && scUnifiedFlat.summary && scUnifiedFlat.summary.total_pairs"
                          class="sc-card"
                          style="background:#fafafa; border:1px solid #e5e7eb; border-radius:6px; padding:10px 12px; margin-bottom:10px; font-size:12px">
                         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:6px 12px">
@@ -5816,29 +6344,15 @@
                         </div>
                     </div>
 
-                    <!-- Filters -->
-                    <div v-if="scUnifiedFlat && (scUnifiedFlat.items || []).length"
-                         class="sc-filters" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:10px; font-size:12px">
-                        <!-- Pair-фильтр имеет смысл только в режиме «все пары»;
-                             в pair-scope backend уже отфильтровал по активной паре. -->
+                    <!-- Filters: основные сверху, source/type/category — в "Дополнительно" -->
+                    <div v-if="scUnifiedViewMode === 'raw' && scUnifiedFlat && (scUnifiedFlat.items || []).length"
+                         class="sc-filters" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:6px; font-size:12px">
                         <select v-model="scUnifiedFilterPair"
                                 :disabled="!scUnifiedShowAllPairs"
                                 :title="scUnifiedShowAllPairs ? '' : 'Доступно в режиме «Показать все PDF-пары»'"
                                 style="font-size:12px; padding:4px 6px">
                             <option value="">Все PDF-пары</option>
                             <option v-for="p in scUnifiedPairOptions" :key="p" :value="p">{{ p }}</option>
-                        </select>
-                        <select v-model="scUnifiedFilterSourceLayer" style="font-size:12px; padding:4px 6px">
-                            <option value="">Все источники</option>
-                            <option v-for="s in scUnifiedSourceLayerOptions" :key="s" :value="s">{{ scUnifiedSourceLabel(s) }}</option>
-                        </select>
-                        <select v-model="scUnifiedFilterType" style="font-size:12px; padding:4px 6px">
-                            <option value="">Все типы</option>
-                            <option v-for="t in scUnifiedTypeOptions" :key="t" :value="t">{{ t }}</option>
-                        </select>
-                        <select v-model="scUnifiedFilterCategory" style="font-size:12px; padding:4px 6px">
-                            <option value="">Все категории</option>
-                            <option v-for="c in scUnifiedCategoryOptions" :key="c" :value="c">{{ c }}</option>
                         </select>
                         <select v-model="scUnifiedFilterSeverity" style="font-size:12px; padding:4px 6px">
                             <option value="">Любая важность</option>
@@ -5853,74 +6367,139 @@
                         <input v-model="scUnifiedSearch" type="text" placeholder="Поиск по тексту…"
                                style="flex:1; min-width:200px; padding:4px 8px; font-size:12px">
                     </div>
+                    <details v-if="scUnifiedViewMode === 'raw' && scUnifiedFlat && (scUnifiedFlat.items || []).length"
+                             style="margin-bottom:10px; font-size:12px">
+                        <summary style="cursor:pointer; opacity:.75">Дополнительно: фильтры по источнику / типу / категории</summary>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-top:6px">
+                            <select v-model="scUnifiedFilterSourceLayer" style="font-size:12px; padding:4px 6px">
+                                <option value="">Все источники</option>
+                                <option v-for="s in scUnifiedSourceLayerOptions" :key="s" :value="s">{{ scUnifiedSourceLabel(s) }}</option>
+                            </select>
+                            <select v-model="scUnifiedFilterType" style="font-size:12px; padding:4px 6px">
+                                <option value="">Все типы</option>
+                                <option v-for="t in scUnifiedTypeOptions" :key="t" :value="t">{{ t }}</option>
+                            </select>
+                            <select v-model="scUnifiedFilterCategory" style="font-size:12px; padding:4px 6px">
+                                <option value="">Все категории</option>
+                                <option v-for="c in scUnifiedCategoryOptions" :key="c" :value="c">{{ c }}</option>
+                            </select>
+                        </div>
+                    </details>
 
                     <!-- Empty state (для всей сессии — фолбэк) -->
-                    <div v-if="scUnifiedShowAllPairs && scUnifiedFlat && (!scUnifiedFlat.items || !scUnifiedFlat.items.length)"
+                    <div v-if="scUnifiedViewMode === 'raw' && scUnifiedShowAllPairs && scUnifiedFlat && (!scUnifiedFlat.items || !scUnifiedFlat.items.length)"
                          class="empty-state" style="padding:14px 0; font-size:13px">
-                        Расхождений пока нет ни по одной PDF-паре. Нажмите «Проанализировать всю сессию».
+                        Расхождений пока нет. Запустите анализ через «Проанализировать и сравнить» на каждой PDF-паре.
                     </div>
 
-                    <!-- Unified table -->
-                    <table v-if="scUnifiedItemsFiltered && scUnifiedItemsFiltered.length"
-                           class="sc-unified-table" style="width:100%; border-collapse:collapse; font-size:12px">
-                        <thead>
-                            <tr style="background:#f3f4f6">
-                                <th style="text-align:left; padding:6px 6px">PDF-пара</th>
-                                <th style="text-align:left; padding:6px 6px">Лист</th>
-                                <th style="text-align:left; padding:6px 6px">Источник</th>
-                                <th style="text-align:left; padding:6px 6px">Тип</th>
-                                <th style="text-align:left; padding:6px 6px">Категория</th>
-                                <th style="text-align:left; padding:6px 6px">Важность</th>
-                                <th style="text-align:left; padding:6px 6px">Суть</th>
-                                <th style="text-align:left; padding:6px 6px">Было</th>
-                                <th style="text-align:left; padding:6px 6px">Стало</th>
-                                <th style="text-align:left; padding:6px 6px">Влияние</th>
-                                <th style="text-align:left; padding:6px 6px">Действия</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="it in scUnifiedItemsFiltered" :key="it.id"
-                                :class="'sc-unified-row sc-unified-row--' + (it.severity||'unknown')"
-                                style="border-top:1px solid #e5e7eb; vertical-align:top">
-                                <td style="padding:6px 6px; max-width:220px; word-wrap:break-word">
-                                    {{ it.pair_label }}
-                                    <span v-if="it.analysis_mode === 'concept_no_block_links'"
-                                          class="sc-mode-badge sc-mode-badge--concept"
-                                          style="display:inline-block; margin-left:4px; padding:1px 6px; border-radius:999px; font-size:10px; background:#fef3c7; color:#92400e; border:1px solid #fde68a"
-                                          title="Эта пара в режиме «Блоки без связей»: концептуальное сравнение enriched MD без связей блоков.">
-                                        Без связей
-                                    </span>
-                                    <span v-else
-                                          class="sc-mode-badge sc-mode-badge--links"
-                                          style="display:inline-block; margin-left:4px; padding:1px 6px; border-radius:999px; font-size:10px; background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0"
-                                          title="Эта пара использует block-to-block связи.">
-                                        Связи блоков
-                                    </span>
-                                </td>
-                                <td style="padding:6px 6px; white-space:nowrap">{{ it.sheet }}</td>
-                                <td style="padding:6px 6px">{{ scUnifiedSourceLabel(it.source_layer) }}</td>
-                                <td style="padding:6px 6px">{{ it.type }}</td>
-                                <td style="padding:6px 6px">{{ it.category }}</td>
-                                <td style="padding:6px 6px">
-                                    <span :class="'sc-severity sc-severity--' + (it.severity||'unknown')"
-                                          style="padding:1px 6px; border-radius:999px; font-size:11px">{{ it.severity || '—' }}</span>
-                                </td>
-                                <td style="padding:6px 6px">
-                                    <div style="font-weight:600">{{ it.title }}</div>
-                                    <div v-if="it.summary" style="opacity:.85">{{ it.summary }}</div>
-                                </td>
-                                <td style="padding:6px 6px; max-width:200px; word-wrap:break-word; opacity:.85">{{ it.old_value || '—' }}</td>
-                                <td style="padding:6px 6px; max-width:200px; word-wrap:break-word; opacity:.85">{{ it.new_value || '—' }}</td>
-                                <td style="padding:6px 6px; max-width:200px; word-wrap:break-word">
-                                    <div>{{ it.construction_impact || '—' }}</div>
-                                    <div v-if="it.cost_impact && it.cost_impact!=='none'" style="opacity:.7">Стоимость: {{ it.cost_impact }}</div>
-                                </td>
-                                <td style="padding:6px 6px; white-space:nowrap">
-                                    <button class="btn btn-sm btn-secondary" @click="scGotoUnifiedChange(it)">Перейти</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <!-- Unified Excel-style table (номер / место / изменение / было / стало / влияние) -->
+                    <div v-if="scUnifiedViewMode === 'raw' && scUnifiedItemsSorted && scUnifiedItemsSorted.length"
+                         class="table-container sc-unified-table-wrap">
+                        <table class="findings-table sc-unified-table">
+                            <thead>
+                                <tr>
+                                    <th class="sc-th-sortable" style="width:60px; text-align:center"
+                                        @click="scUnifiedToggleSort('no')"
+                                        :class="{ 'sc-th-active': scUnifiedSortField === 'no' }"
+                                        title="Кликните для сортировки по №">
+                                        № <span class="sc-sort-ind">{{ scUnifiedSortIndicator('no') }}</span>
+                                    </th>
+                                    <th class="sc-th-sortable" style="width:130px"
+                                        @click="scUnifiedToggleSort('sheet')"
+                                        :class="{ 'sc-th-active': scUnifiedSortField === 'sheet' }"
+                                        title="Кликните для сортировки по листу/странице">
+                                        Место <span class="sc-sort-ind">{{ scUnifiedSortIndicator('sheet') }}</span>
+                                    </th>
+                                    <th style="width:28%">Изменение</th>
+                                    <th class="sc-col-was" style="width:18%">Было</th>
+                                    <th class="sc-col-became" style="width:18%">Стало</th>
+                                    <th class="sc-th-sortable sc-col-impact" style="width:16%"
+                                        @click="scUnifiedToggleSort('impact')"
+                                        :class="{ 'sc-th-active': scUnifiedSortField === 'impact' }"
+                                        title="Кликните для сортировки по влиянию (важность × стоимость)">
+                                        Влияние <span class="sc-sort-ind">{{ scUnifiedSortIndicator('impact') }}</span>
+                                    </th>
+                                    <th style="width:36px"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="it in scUnifiedItemsSorted" :key="it.id"
+                                    :class="'sc-row sc-row--' + (it.severity || 'unknown')">
+                                    <!-- № + severity -->
+                                    <td class="sc-cell-no">
+                                        <div class="sc-cell-no__num">№{{ it._displayNo }}</div>
+                                        <span :class="'sc-sev-chip sc-sev-chip--' + (it.severity || 'unknown')"
+                                              :title="'Важность: ' + (it.severity || '—')">{{ it.severity || '—' }}</span>
+                                    </td>
+                                    <!-- Место (лист / страница / pair) -->
+                                    <td class="sc-cell-place">
+                                        <div v-if="it.sheet" class="sc-place-sheet">Лист: <strong>{{ it.sheet }}</strong></div>
+                                        <div v-if="it.page" class="sc-place-page">стр. PDF: {{ Array.isArray(it.page) ? it.page.join(', ') : it.page }}</div>
+                                        <div v-if="it.pair_label" class="sc-place-pair" :title="it.pair_label">{{ it.pair_label }}</div>
+                                    </td>
+                                    <!-- Изменение: title + summary + бейджи источника/ручной -->
+                                    <td class="sc-cell-change">
+                                        <div class="sc-change-badges">
+                                            <span v-if="it.requires_human_review"
+                                                  class="sc-chip sc-chip--manual"
+                                                  title="Требует ручной проверки эксперта">⚑ ручная</span>
+                                            <span v-if="it.source_layer"
+                                                  class="sc-chip sc-chip--source"
+                                                  :title="'Источник: ' + scUnifiedSourceLabel(it.source_layer)">{{ scUnifiedSourceLabel(it.source_layer) }}</span>
+                                            <span v-if="it.analysis_mode === 'concept_no_block_links'"
+                                                  class="sc-chip sc-chip--nolinks"
+                                                  title="Сравнение по enriched MD целиком, без block-to-block связей">без связей</span>
+                                        </div>
+                                        <div class="sc-change-title">{{ it.title || '—' }}</div>
+                                        <div v-if="it.summary" class="sc-change-summary">{{ it.summary }}</div>
+                                        <details v-if="it.type || it.category || (it.evidence_left && it.evidence_left.section) || (it.evidence_right && it.evidence_right.section)"
+                                                 class="sc-change-details">
+                                            <summary>Технические детали</summary>
+                                            <div class="sc-change-details__grid">
+                                                <span class="muted">Тип:</span><span>{{ it.type || '—' }}</span>
+                                                <span class="muted">Категория:</span><span>{{ it.category || '—' }}</span>
+                                                <template v-if="it.evidence_left && it.evidence_left.section">
+                                                    <span class="muted">Раздел (было):</span><span>{{ it.evidence_left.section }}</span>
+                                                </template>
+                                                <template v-if="it.evidence_right && it.evidence_right.section">
+                                                    <span class="muted">Раздел (стало):</span><span>{{ it.evidence_right.section }}</span>
+                                                </template>
+                                            </div>
+                                        </details>
+                                    </td>
+                                    <!-- Было -->
+                                    <td class="sc-cell-was">
+                                        {{ it.old_value || (it.evidence_left && it.evidence_left.quote) || '—' }}
+                                    </td>
+                                    <!-- Стало -->
+                                    <td class="sc-cell-became">
+                                        {{ it.new_value || (it.evidence_right && it.evidence_right.quote) || '—' }}
+                                    </td>
+                                    <!-- Влияние -->
+                                    <td class="sc-cell-impact">
+                                        <div v-if="it.construction_impact" class="sc-impact-text">{{ it.construction_impact }}</div>
+                                        <div v-else class="sc-impact-text muted">—</div>
+                                        <div v-if="it.cost_impact && it.cost_impact !== 'none'" class="sc-impact-cost">
+                                            Стоимость: <strong>{{ it.cost_impact }}</strong>
+                                        </div>
+                                    </td>
+                                    <!-- Перейти к месту (иконка) -->
+                                    <td class="sc-cell-goto">
+                                        <button class="sc-goto-btn"
+                                                @click="scGotoUnifiedChange(it)"
+                                                title="Открыть PDF-пару и перейти к листу/странице расхождения">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2"
+                                                 stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M5 12h14"></path>
+                                                <path d="M13 6l6 6-6 6"></path>
+                                            </svg>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <!-- Unified preflight modal -->
