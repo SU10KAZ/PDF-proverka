@@ -8806,6 +8806,12 @@ const app = createApp({
         const scGroupedExpanded           = ref({});       // {group_id: true}
         // Регроуп: POST /regroup (только по кнопке, не auto).
         const scGroupedRegrouping         = ref(false);
+        // Экспертная оценка расхождений: ключ хранения — стабильный raw `id`
+        // (chg_…/uf_…). Решения по группам агрегируются из source_finding_ids.
+        const scExpertReviewMode      = ref(false);
+        const scExpertDecisions       = ref({});   // {raw_id: {decision, rejection_reason}}
+        const scExpertReviewSaving    = ref(false);
+        const scExpertReviewLoaded    = ref(false);
         // Sync scroll/zoom (sync zoom toggle убран — масштаб всегда общий)
         const scZoom           = ref(1.0);
         const scSyncScroll     = ref(true);
@@ -11414,6 +11420,145 @@ const app = createApp({
                 scLoadUnifiedFlat();
             }
         }
+
+        // ─── Stage Comparison: Экспертная оценка расхождений ───
+        // Хранение per-session по raw `id`. Группа агрегирует через source_finding_ids.
+        function _scExpertRawIds(itemOrGroup) {
+            if (!itemOrGroup || typeof itemOrGroup !== 'object') return [];
+            const sf = itemOrGroup.source_finding_ids;
+            if (Array.isArray(sf) && sf.length) return sf.filter(Boolean);
+            if (itemOrGroup.id) return [itemOrGroup.id];
+            return [];
+        }
+        function scGetExpertDecision(itemOrGroup) {
+            // Возвращает 'accepted' | 'rejected' | 'mixed' | null
+            const ids = _scExpertRawIds(itemOrGroup);
+            if (!ids.length) return null;
+            const decisions = new Set();
+            for (const rid of ids) {
+                const d = (scExpertDecisions.value[rid] || {}).decision;
+                if (d) decisions.add(d);
+            }
+            if (decisions.size === 0) return null;
+            if (decisions.size > 1) return 'mixed';
+            return [...decisions][0];
+        }
+        function scGetExpertReason(itemOrGroup) {
+            const ids = _scExpertRawIds(itemOrGroup);
+            const reasons = [];
+            const seen = new Set();
+            for (const rid of ids) {
+                const r = (scExpertDecisions.value[rid] || {}).rejection_reason || '';
+                if (r && !seen.has(r)) { reasons.push(r); seen.add(r); }
+            }
+            return reasons.join(' / ');
+        }
+        function scSetExpertDecision(itemOrGroup, decision) {
+            const ids = _scExpertRawIds(itemOrGroup);
+            if (!ids.length) return;
+            const map = { ...scExpertDecisions.value };
+            const current = scGetExpertDecision(itemOrGroup);
+            // Toggle off если повторный клик по уже активному решению.
+            const toggleOff = (current === decision);
+            // Сохраняем общую причину при переключении вердикта.
+            const sharedReason = scGetExpertReason(itemOrGroup);
+            for (const rid of ids) {
+                if (toggleOff) {
+                    // Оставляем ключ с decision=null — submit зафиксирует removed.
+                    map[rid] = { decision: null, rejection_reason: '' };
+                } else {
+                    map[rid] = {
+                        decision,
+                        rejection_reason: sharedReason || ((map[rid] || {}).rejection_reason || ''),
+                    };
+                }
+            }
+            scExpertDecisions.value = map;
+        }
+        function scSetExpertReason(itemOrGroup, reason) {
+            const ids = _scExpertRawIds(itemOrGroup);
+            if (!ids.length) return;
+            const map = { ...scExpertDecisions.value };
+            for (const rid of ids) {
+                const existing = map[rid] || { decision: 'rejected', rejection_reason: '' };
+                map[rid] = { ...existing, rejection_reason: reason };
+            }
+            scExpertDecisions.value = map;
+        }
+        function scExpertReviewSummary() {
+            const vals = Object.values(scExpertDecisions.value);
+            return {
+                accepted: vals.filter(d => d.decision === 'accepted').length,
+                rejected: vals.filter(d => d.decision === 'rejected').length,
+                total: vals.filter(d => d.decision).length,
+            };
+        }
+        async function scLoadExpertDecisions() {
+            if (!scSession.value) return;
+            try {
+                const sid = encodeURIComponent(scSession.value.id);
+                const r = await fetch(`/api/stage-comparison/sessions/${sid}/expert-review`);
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const data = await r.json();
+                const decisions = data.decisions || {};
+                const map = {};
+                for (const [rid, entry] of Object.entries(decisions)) {
+                    if (entry && entry.decision) {
+                        map[rid] = {
+                            decision: entry.decision,
+                            rejection_reason: entry.rejection_reason || '',
+                        };
+                    }
+                }
+                scExpertDecisions.value = map;
+                scExpertReviewLoaded.value = true;
+            } catch (e) {
+                console.warn('Failed to load SC expert review:', e);
+            }
+        }
+        async function scToggleExpertReview() {
+            scExpertReviewMode.value = !scExpertReviewMode.value;
+            if (scExpertReviewMode.value && !scExpertReviewLoaded.value && scSession.value) {
+                await scLoadExpertDecisions();
+            }
+        }
+        async function scSubmitExpertReview() {
+            if (!scSession.value) return;
+            scExpertReviewSaving.value = true;
+            try {
+                const decisions = [];
+                const removedIds = [];
+                for (const [rid, d] of Object.entries(scExpertDecisions.value)) {
+                    if (d && d.decision) {
+                        decisions.push({
+                            item_id: rid,
+                            decision: d.decision,
+                            rejection_reason: d.rejection_reason || '',
+                        });
+                    } else if (d) {
+                        // Ключ есть, decision=null — пользователь снял решение.
+                        removedIds.push(rid);
+                    }
+                }
+                const sid = encodeURIComponent(scSession.value.id);
+                const r = await fetch(`/api/stage-comparison/sessions/${sid}/expert-review`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ decisions, removed_ids: removedIds, reviewer: '' }),
+                });
+                if (!r.ok) {
+                    const err = await r.json().catch(() => ({}));
+                    throw new Error(err.detail || ('HTTP ' + r.status));
+                }
+                const result = await r.json();
+                alert(`Сохранено: ${result.summary?.accepted ?? 0} принято, ${result.summary?.rejected ?? 0} отклонено`);
+            } catch (e) {
+                console.error('SC expert review submit error:', e);
+                alert('Ошибка сохранения: ' + (e.message || e));
+            } finally {
+                scExpertReviewSaving.value = false;
+            }
+        }
         function scToggleGroupExpand(gid) {
             if (!gid) return;
             const cur = scGroupedExpanded.value[gid];
@@ -12586,6 +12731,12 @@ const app = createApp({
             scGroupedHasVariants, scGroupedEvidencePreview, scGotoGroupEvidence,
             scToggleGroupExpand, scIsGroupExpanded,
             scLoadUnifiedGrouped, scRegroupUnifiedFindings, scGroupedRegrouping,
+            // Expert review для расхождений (per-session)
+            scExpertReviewMode, scExpertDecisions, scExpertReviewSaving,
+            scToggleExpertReview, scLoadExpertDecisions,
+            scSetExpertDecision, scSetExpertReason,
+            scGetExpertDecision, scGetExpertReason, scExpertReviewSummary,
+            scSubmitExpertReview,
             scLoadUnifiedConfig, scLoadUnifiedPairStatus, scLoadUnifiedFlat,
             scOpenUnifiedPairPreflight, scOpenUnifiedSessionPreflight, scCloseUnifiedPreflight,
             scRunUnifiedPair, scRunUnifiedSession, scPollUnifiedJob, scCancelUnifiedJob,

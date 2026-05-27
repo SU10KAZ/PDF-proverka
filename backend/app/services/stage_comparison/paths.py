@@ -242,6 +242,14 @@ def unified_findings_grouped_path(session_id: str) -> Path:
     return session_dir(session_id) / "unified_findings_grouped.json"
 
 
+def expert_review_path(session_id: str) -> Path:
+    """`comparison/sessions/<sid>/expert_review.json` — решения эксперта
+    по raw-расхождениям (accepted/rejected + причина). Ключ хранения —
+    стабильный raw `id` (chg_…); группированный вид агрегирует на лету.
+    """
+    return session_dir(session_id) / "expert_review.json"
+
+
 def pages_dir(session_id: str, pair_id: str, side: str) -> Path:
     if side not in ("left", "right"):
         raise ValueError("side must be 'left' or 'right'")

@@ -45,6 +45,7 @@ from backend.app.services.stage_comparison import unified_analysis as unified_an
 from backend.app.services.stage_comparison import unified_analysis_jobs as unified_jobs_mod
 from backend.app.services.stage_comparison import unified_findings as unified_findings_mod
 from backend.app.services.stage_comparison import unified_grouping as unified_grouping_mod
+from backend.app.services.stage_comparison import expert_review as expert_review_mod
 from backend.app.services.stage_comparison import paths as sc_paths_mod
 from backend.app.services.stage_comparison import saved_config as saved_config_mod
 
@@ -1509,6 +1510,40 @@ async def unified_grouped_endpoint(
         )
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
+
+
+class ExpertDecisionItem(BaseModel):
+    item_id: str
+    decision: str = Field(..., pattern="^(accepted|rejected)$")
+    rejection_reason: Optional[str] = None
+
+
+class ExpertReviewSubmission(BaseModel):
+    decisions: list[ExpertDecisionItem] = []
+    removed_ids: list[str] = []
+    reviewer: str = ""
+
+
+@router.get("/sessions/{session_id}/expert-review")
+async def get_expert_review_endpoint(session_id: str):
+    """Решения эксперта по расхождениям сессии.
+
+    Ключ хранения — стабильный raw `id` расхождения из `unified_findings.json`.
+    Группированный вид агрегирует решения по `source_finding_ids` на фронте,
+    поэтому регруппировка ничего не теряет.
+    """
+    return expert_review_mod.get_with_summary(session_id)
+
+
+@router.post("/sessions/{session_id}/expert-review")
+async def post_expert_review_endpoint(session_id: str, req: ExpertReviewSubmission):
+    """Применить пачку решений эксперта (apply + removed)."""
+    return expert_review_mod.apply_batch(
+        session_id,
+        decisions=[d.model_dump() for d in req.decisions],
+        removed_ids=req.removed_ids,
+        reviewer=req.reviewer or "",
+    )
 
 
 @router.post("/sessions/{session_id}/regroup")

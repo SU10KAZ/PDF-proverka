@@ -1940,6 +1940,10 @@ th.cv2-sort-active {
 tr.row-accepted { border-left: 3px solid #22c55e; }
 tr.row-accepted td { background: rgba(34,197,94,.04) !important; }
 
+/* Row states: mixed (grouped view aggregates конфликтующие raw-решения) */
+tr.sc-row-mixed { border-left: 3px solid #f59e0b; }
+tr.sc-row-mixed td { background: rgba(245,158,11,.06) !important; }
+
 /* Row states: rejected (strikethrough, dimmed, pushed down) */
 tr.row-rejected { border-left: 3px solid #ef4444; opacity: 0.45; }
 tr.row-rejected .desc-cell,
