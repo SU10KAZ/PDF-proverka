@@ -61,11 +61,11 @@
    ```bash
    python -c "import secrets; print(secrets.token_urlsafe(48))"
    ```
-3. Прописать в `.env` (значение `PORTAL_AUTH_USERS` — в **одинарных кавычках**,
-   т.к. хеш содержит `$`):
+3. Прописать в `.env` (значение `PORTAL_AUTH_USERS` — **без кавычек**, одной
+   строкой; см. раздел «Кавычки и `$` в .env» ниже):
    ```env
    PORTAL_AUTH_ENABLED=true
-   PORTAL_AUTH_USERS='ivan:$pbkdf2-sha256$29000$...,petr:$pbkdf2-sha256$29000$...,olga:$pbkdf2-sha256$29000$...'
+   PORTAL_AUTH_USERS=ivan:$pbkdf2-sha256$29000$...,petr:$pbkdf2-sha256$29000$...,olga:$pbkdf2-sha256$29000$...
    PORTAL_SESSION_SECRET=<вывод token_urlsafe>
    PORTAL_SESSION_TTL_HOURS=24
    PORTAL_COOKIE_SECURE=auto
@@ -96,11 +96,21 @@ PORTAL_AUTH_ENABLED=false
 
 ## Кавычки и `$` в .env
 
-Значение `PORTAL_AUTH_USERS` обязательно оборачивайте в **одинарные** кавычки:
-pbkdf2-хеш содержит `$`, а `python-dotenv` интерполирует `$VAR` в значениях без
-одинарных кавычек. Точка входа `backend/app/main.py` грузит `.env` своим
-загрузчиком (без интерполяции) раньше `load_dotenv()`, так что raw-значение
-сохраняется, но одинарные кавычки — самый надёжный вариант.
+Значение `PORTAL_AUTH_USERS` пишите **без кавычек**, одной строкой:
+
+```env
+PORTAL_AUTH_USERS=igor:$pbkdf2-sha256$...,alexey:$pbkdf2-sha256$...,andrey:$pbkdf2-sha256$...
+```
+
+Причина — кастомный загрузчик `.env` в `backend/app/main.py`: он делает
+`os.environ.setdefault(k.strip(), v.strip())`, то есть **не снимает обрамляющие
+кавычки** и **не интерполирует `$`**, и срабатывает раньше `load_dotenv()`
+(а тот с `override=False` уже не перезаписывает значение). Поэтому:
+
+* `$` в pbkdf2-хеше безопасен и без кавычек — интерполяции `$VAR` не происходит;
+* одинарные кавычки **сломают** парсинг: ведущая `'` прилипнет к первому логину
+  (`'igor` вместо `igor`), а хвостовая `'` — к хешу последнего пользователя,
+  и такие входы будут молча отклоняться.
 
 ## Безопасность — что покрыто
 
