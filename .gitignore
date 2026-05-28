@@ -106,6 +106,12 @@ backend/app/data/paid_api_blocked_events.jsonl
 webapp/data/paid_cost_events.jsonl
 webapp/data/paid_api_blocked_events.jsonl
 
+# === Runtime usage / paid-cost state (локальные данные) ===
+# Агрегированные счётчики usage и платной стоимости пишутся pipeline'ом
+# в рантайме; держим их вне git, чтобы не было постоянного dirty-хвоста.
+backend/app/data/usage_data.json
+backend/app/data/paid_cost.json
+
 # === Stage Comparison runtime (раздел «Сравнение стадий») ===
 # Сессии, рендеренные страницы PDF, crop'ы блоков, alignment-карты, diff'ы
 # и т.п. — всё runtime; в git идёт только .gitkeep.
