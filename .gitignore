@@ -15,9 +15,14 @@ projects/**/images/
 projects/**/crops/
 projects/**/debug/
 projects/**/logs/
+projects/**/_versions/
+projects/**/project_versions.json
 
 # === Runtime data ===
 webapp/data/usage_data.json
+# Локальные runtime-очереди и сохранённый local state (не сидируем в git)
+backend/app/data/batch_queue.json
+backend/app/data/stage_comparison_saved_config.json
 *.log
 *.tmp
 *.cache
@@ -31,6 +36,7 @@ webapp/data/usage_data.json
 # === Runtime PID / locks ===
 *.pid
 webapp/server.pid
+.claude/*.lock
 
 # === Excel reports (generated) ===
 audit_report_*.xlsx
