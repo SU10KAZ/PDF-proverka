@@ -128,6 +128,11 @@ class MovePageSideRequest(BaseModel):
     direction: str = Field(..., pattern="^(up|down)$")
 
 
+class DeletePageSideRequest(BaseModel):
+    slot: int = Field(..., ge=1)
+    side: str = Field(..., pattern="^(left|right)$")
+
+
 class UpdatePairMatchRequest(BaseModel):
     right_pdf: Optional[str] = None
     right_md: Optional[str] = None
@@ -789,6 +794,19 @@ async def move_page_alignment_side(session_id: str, pair_id: str, req: MovePageS
         raise HTTPException(400, str(exc)) from exc
 
 
+@router.post("/sessions/{session_id}/pairs/{pair_id}/page-alignment/delete-page-side")
+async def delete_page_alignment_side(session_id: str, pair_id: str, req: DeletePageSideRequest):
+    """Удалить страницу одной стороны в slot'е; другая сторона не меняется."""
+    try:
+        return store.alignment_delete_page_side(
+            session_id, pair_id, req.slot, req.side
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
 # ─── Text diff ───────────────────────────────────────────────────────────
 
 
@@ -1189,6 +1207,17 @@ class CreateUnifiedAnalysisJobRequest(BaseModel):
     force_enrichment: bool = False
     force_compare: bool = False
     confirm: bool = False
+    # Pre-flight фильтр: пропустить пары, у которых enriched MD не готов /
+    # суммарный размер превышает лимит / comparison уже done (если
+    # force_compare=false). Используется session-level Opus batch с этапа
+    # «Загрузка документации», чтобы не звать Qwen и не запускать too_large.
+    skip_ineligible: bool = False
+
+
+class UnifiedAnalysisBatchPreflightRequest(BaseModel):
+    scope: str = Field(..., pattern="^(session|selected)$")
+    pair_ids: Optional[list[str]] = None
+    force_compare: bool = False
 
 
 @router.get("/sessions/{session_id}/pairs/{pair_id}/unified-analysis")
@@ -1296,6 +1325,7 @@ async def create_unified_job_endpoint(
             force_enrichment=req.force_enrichment,
             force_compare=req.force_compare,
             confirm=req.confirm,
+            skip_ineligible=req.skip_ineligible,
         )
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
@@ -1303,12 +1333,41 @@ async def create_unified_job_endpoint(
         raise HTTPException(400, str(exc)) from exc
     if job.get("status") == "queued":
         unified_jobs_mod.start_job_in_background(session_id, job["id"])
-    return job
+    return unified_jobs_mod.get_job_with_progress(session_id, job["id"]) or job
+
+
+@router.post("/sessions/{session_id}/unified-analysis-jobs/preflight")
+async def unified_batch_preflight_endpoint(
+    session_id: str, req: UnifiedAnalysisBatchPreflightRequest,
+):
+    """Dry-run сводка перед запуском Opus batch (без запуска моделей)."""
+    try:
+        return unified_jobs_mod.preflight_session_for_batch(
+            session_id,
+            scope=req.scope,
+            pair_ids=req.pair_ids,
+            force_compare=bool(req.force_compare),
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+
+@router.get("/sessions/{session_id}/unified-analysis-jobs/active")
+async def get_active_unified_job_endpoint(session_id: str):
+    """Самая релевантная unified-job сессии — для resume в UI.
+
+    Возвращает {"job": <job_with_progress>} или {"job": null}.
+    """
+    session = store.get_session(session_id)
+    if session is None:
+        raise HTTPException(404, "Сессия не найдена")
+    job = unified_jobs_mod.find_active_session_job(session_id)
+    return {"job": job}
 
 
 @router.get("/sessions/{session_id}/unified-analysis-jobs/{job_id}")
 async def get_unified_job_endpoint(session_id: str, job_id: str):
-    job = unified_jobs_mod.get_job(session_id, job_id)
+    job = unified_jobs_mod.get_job_with_progress(session_id, job_id)
     if job is None:
         raise HTTPException(404, "Job не найден")
     return job
@@ -1319,7 +1378,7 @@ async def cancel_unified_job_endpoint(session_id: str, job_id: str):
     job = unified_jobs_mod.cancel_job(session_id, job_id)
     if job is None:
         raise HTTPException(404, "Job не найден")
-    return job
+    return unified_jobs_mod.get_job_with_progress(session_id, job_id) or job
 
 
 @router.get("/sessions/{session_id}/unified-diff-flat")

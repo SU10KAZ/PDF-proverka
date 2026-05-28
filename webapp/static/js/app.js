@@ -8770,6 +8770,17 @@ const app = createApp({
         const scUnifiedJob              = ref(null);     // {id, status, items, progress}
         const scUnifiedJobPolling       = ref(false);
         const scUnifiedError            = ref('');
+        // ── Opus session batch (этап «1. Загрузка документации») ─────────
+        // Запускается кнопкой «🔍 Проанализировать и сравнить» на upload tab.
+        // Не запускает Qwen. Пропускает too_large/not_ready/уже done пары.
+        // Активный job восстанавливается через /unified-analysis-jobs/active.
+        const scOpusJob               = ref(null);   // {id, status, items, aggregate, ...}
+        const scOpusPolling           = ref(false);
+        const scOpusStarting          = ref(false);
+        const scOpusError             = ref('');
+        const scOpusPreflight         = ref(null);   // {total_pairs, will_run, skip_*, items}
+        const scOpusPreflightLoading  = ref(false);
+        const scOpusStartedAtClient   = ref(null);   // fallback elapsed
         // Filters для unified flat-таблицы
         const scUnifiedFilterPair        = ref('');
         const scUnifiedFilterSourceLayer = ref('');
@@ -8806,6 +8817,12 @@ const app = createApp({
         const scGroupedExpanded           = ref({});       // {group_id: true}
         // Регроуп: POST /regroup (только по кнопке, не auto).
         const scGroupedRegrouping         = ref(false);
+        // Экспертная оценка расхождений: ключ хранения — стабильный raw `id`
+        // (chg_…/uf_…). Решения по группам агрегируются из source_finding_ids.
+        const scExpertReviewMode      = ref(false);
+        const scExpertDecisions       = ref({});   // {raw_id: {decision, rejection_reason}}
+        const scExpertReviewSaving    = ref(false);
+        const scExpertReviewLoaded    = ref(false);
         // Sync scroll/zoom (sync zoom toggle убран — масштаб всегда общий)
         const scZoom           = ref(1.0);
         const scSyncScroll     = ref(true);
@@ -11414,6 +11431,145 @@ const app = createApp({
                 scLoadUnifiedFlat();
             }
         }
+
+        // ─── Stage Comparison: Экспертная оценка расхождений ───
+        // Хранение per-session по raw `id`. Группа агрегирует через source_finding_ids.
+        function _scExpertRawIds(itemOrGroup) {
+            if (!itemOrGroup || typeof itemOrGroup !== 'object') return [];
+            const sf = itemOrGroup.source_finding_ids;
+            if (Array.isArray(sf) && sf.length) return sf.filter(Boolean);
+            if (itemOrGroup.id) return [itemOrGroup.id];
+            return [];
+        }
+        function scGetExpertDecision(itemOrGroup) {
+            // Возвращает 'accepted' | 'rejected' | 'mixed' | null
+            const ids = _scExpertRawIds(itemOrGroup);
+            if (!ids.length) return null;
+            const decisions = new Set();
+            for (const rid of ids) {
+                const d = (scExpertDecisions.value[rid] || {}).decision;
+                if (d) decisions.add(d);
+            }
+            if (decisions.size === 0) return null;
+            if (decisions.size > 1) return 'mixed';
+            return [...decisions][0];
+        }
+        function scGetExpertReason(itemOrGroup) {
+            const ids = _scExpertRawIds(itemOrGroup);
+            const reasons = [];
+            const seen = new Set();
+            for (const rid of ids) {
+                const r = (scExpertDecisions.value[rid] || {}).rejection_reason || '';
+                if (r && !seen.has(r)) { reasons.push(r); seen.add(r); }
+            }
+            return reasons.join(' / ');
+        }
+        function scSetExpertDecision(itemOrGroup, decision) {
+            const ids = _scExpertRawIds(itemOrGroup);
+            if (!ids.length) return;
+            const map = { ...scExpertDecisions.value };
+            const current = scGetExpertDecision(itemOrGroup);
+            // Toggle off если повторный клик по уже активному решению.
+            const toggleOff = (current === decision);
+            // Сохраняем общую причину при переключении вердикта.
+            const sharedReason = scGetExpertReason(itemOrGroup);
+            for (const rid of ids) {
+                if (toggleOff) {
+                    // Оставляем ключ с decision=null — submit зафиксирует removed.
+                    map[rid] = { decision: null, rejection_reason: '' };
+                } else {
+                    map[rid] = {
+                        decision,
+                        rejection_reason: sharedReason || ((map[rid] || {}).rejection_reason || ''),
+                    };
+                }
+            }
+            scExpertDecisions.value = map;
+        }
+        function scSetExpertReason(itemOrGroup, reason) {
+            const ids = _scExpertRawIds(itemOrGroup);
+            if (!ids.length) return;
+            const map = { ...scExpertDecisions.value };
+            for (const rid of ids) {
+                const existing = map[rid] || { decision: 'rejected', rejection_reason: '' };
+                map[rid] = { ...existing, rejection_reason: reason };
+            }
+            scExpertDecisions.value = map;
+        }
+        function scExpertReviewSummary() {
+            const vals = Object.values(scExpertDecisions.value);
+            return {
+                accepted: vals.filter(d => d.decision === 'accepted').length,
+                rejected: vals.filter(d => d.decision === 'rejected').length,
+                total: vals.filter(d => d.decision).length,
+            };
+        }
+        async function scLoadExpertDecisions() {
+            if (!scSession.value) return;
+            try {
+                const sid = encodeURIComponent(scSession.value.id);
+                const r = await fetch(`/api/stage-comparison/sessions/${sid}/expert-review`);
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const data = await r.json();
+                const decisions = data.decisions || {};
+                const map = {};
+                for (const [rid, entry] of Object.entries(decisions)) {
+                    if (entry && entry.decision) {
+                        map[rid] = {
+                            decision: entry.decision,
+                            rejection_reason: entry.rejection_reason || '',
+                        };
+                    }
+                }
+                scExpertDecisions.value = map;
+                scExpertReviewLoaded.value = true;
+            } catch (e) {
+                console.warn('Failed to load SC expert review:', e);
+            }
+        }
+        async function scToggleExpertReview() {
+            scExpertReviewMode.value = !scExpertReviewMode.value;
+            if (scExpertReviewMode.value && !scExpertReviewLoaded.value && scSession.value) {
+                await scLoadExpertDecisions();
+            }
+        }
+        async function scSubmitExpertReview() {
+            if (!scSession.value) return;
+            scExpertReviewSaving.value = true;
+            try {
+                const decisions = [];
+                const removedIds = [];
+                for (const [rid, d] of Object.entries(scExpertDecisions.value)) {
+                    if (d && d.decision) {
+                        decisions.push({
+                            item_id: rid,
+                            decision: d.decision,
+                            rejection_reason: d.rejection_reason || '',
+                        });
+                    } else if (d) {
+                        // Ключ есть, decision=null — пользователь снял решение.
+                        removedIds.push(rid);
+                    }
+                }
+                const sid = encodeURIComponent(scSession.value.id);
+                const r = await fetch(`/api/stage-comparison/sessions/${sid}/expert-review`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ decisions, removed_ids: removedIds, reviewer: '' }),
+                });
+                if (!r.ok) {
+                    const err = await r.json().catch(() => ({}));
+                    throw new Error(err.detail || ('HTTP ' + r.status));
+                }
+                const result = await r.json();
+                alert(`Сохранено: ${result.summary?.accepted ?? 0} принято, ${result.summary?.rejected ?? 0} отклонено`);
+            } catch (e) {
+                console.error('SC expert review submit error:', e);
+                alert('Ошибка сохранения: ' + (e.message || e));
+            } finally {
+                scExpertReviewSaving.value = false;
+            }
+        }
         function scToggleGroupExpand(gid) {
             if (!gid) return;
             const cur = scGroupedExpanded.value[gid];
@@ -11615,12 +11771,219 @@ const app = createApp({
                 if (r.ok) scUnifiedJob.value = await r.json();
             } catch (e) { /* silent */ }
         }
+
+        // ── Opus session batch helpers (этап «1. Загрузка документации») ──
+
+        // Preflight (dry-run) — обновляет панель счётчиков перед запуском.
+        async function scOpusLoadPreflight() {
+            if (!scSession.value || !scSession.value.id) { scOpusPreflight.value = null; return; }
+            scOpusPreflightLoading.value = true;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/unified-analysis-jobs/preflight`;
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({scope: 'session', force_compare: false}),
+                });
+                if (!r.ok) { scOpusPreflight.value = null; return; }
+                scOpusPreflight.value = await r.json();
+            } catch (_) {
+                scOpusPreflight.value = null;
+            } finally {
+                scOpusPreflightLoading.value = false;
+            }
+        }
+
+        async function scOpusStart() {
+            if (!scSession.value || !scSession.value.id) return;
+            if (scOpusStarting.value) return;
+            scOpusStarting.value = true;
+            scOpusError.value = '';
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/unified-analysis-jobs`;
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        scope: 'session',
+                        confirm: true,
+                        // Qwen НЕ запускаем — графика уже распознана отдельной
+                        // кнопкой. Если enriched MD нет — пара пропускается.
+                        force_enrichment: false,
+                        // force_compare=true: если ранее уже считали и
+                        // пользователь нажал снова — пересчитываем (canonical
+                        // конфигурация / block_links могли поменяться).
+                        force_compare: true,
+                        // Pre-flight фильтр: пропустить too_large / not_ready.
+                        skip_ineligible: true,
+                    }),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    const msg = (j && j.detail && (j.detail.message || j.detail)) || ('HTTP ' + r.status);
+                    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+                }
+                const job = await r.json();
+                scOpusJob.value = job;
+                scOpusStartedAtClient.value = Date.now();
+                if (job && job.id && (job.status === 'queued' || job.status === 'running')) {
+                    scOpusPoll(job.id);
+                }
+            } catch (e) {
+                scOpusError.value = String(e.message || e);
+            } finally {
+                scOpusStarting.value = false;
+            }
+        }
+
+        async function scOpusRetryErrors() {
+            if (!scSession.value || !scOpusJob.value) return;
+            const items = (scOpusJob.value.items || [])
+                .filter(it => it && it.status === 'failed' && it.pair_id)
+                .map(it => it.pair_id);
+            if (!items.length) return;
+            scOpusStarting.value = true;
+            scOpusError.value = '';
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/unified-analysis-jobs`;
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        scope: 'selected',
+                        pair_ids: items,
+                        confirm: true,
+                        force_enrichment: false,
+                        force_compare: true,
+                        skip_ineligible: true,
+                    }),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    const msg = (j && j.detail && (j.detail.message || j.detail)) || ('HTTP ' + r.status);
+                    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+                }
+                const job = await r.json();
+                scOpusJob.value = job;
+                scOpusStartedAtClient.value = Date.now();
+                if (job && job.id && (job.status === 'queued' || job.status === 'running')) {
+                    scOpusPoll(job.id);
+                }
+            } catch (e) {
+                scOpusError.value = String(e.message || e);
+            } finally {
+                scOpusStarting.value = false;
+            }
+        }
+
+        async function scOpusPoll(jobId) {
+            if (!scSession.value || !jobId) return;
+            if (scOpusPolling.value) return;
+            scOpusPolling.value = true;
+            try {
+                while (true) {
+                    const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/unified-analysis-jobs/${encodeURIComponent(jobId)}`;
+                    let r;
+                    try { r = await fetch(url); } catch (_) {
+                        await new Promise(res => setTimeout(res, 3000));
+                        continue;
+                    }
+                    if (!r.ok) break;
+                    const job = await r.json();
+                    scOpusJob.value = job;
+                    if (['done', 'failed', 'cancelled', 'rejected_no_confirm'].includes(job.status)) break;
+                    await new Promise(res => setTimeout(res, 3000));
+                }
+                // После job — синхронизировать flat/grouped с диска (backend
+                // их уже пересобрал per-pair и финально).
+                try { await scLoadUnifiedFlat(); } catch (_) {}
+                if (scActivePair.value) {
+                    try { await scLoadUnifiedPairStatus(); } catch (_) {}
+                }
+            } finally {
+                scOpusPolling.value = false;
+            }
+        }
+
+        async function scOpusCancel() {
+            const job = scOpusJob.value;
+            if (!job || !job.id || !scSession.value) return;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/unified-analysis-jobs/${encodeURIComponent(job.id)}/cancel`;
+                const r = await fetch(url, {method: 'POST'});
+                if (r.ok) scOpusJob.value = await r.json();
+            } catch (_) { /* silent */ }
+        }
+
+        async function scOpusRestoreActive() {
+            if (!scSession.value || !scSession.value.id) return;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/unified-analysis-jobs/active`;
+                const r = await fetch(url);
+                if (!r.ok) return;
+                const data = await r.json();
+                const job = data && data.job;
+                if (!job) return;
+                scOpusJob.value = job;
+                if (job.id && (job.status === 'queued' || job.status === 'running') && !scOpusPolling.value) {
+                    scOpusStartedAtClient.value = Date.now();
+                    scOpusPoll(job.id);
+                }
+            } catch (_) { /* silent */ }
+        }
+
+        function scOpusElapsedLabel() {
+            const j = scOpusJob.value;
+            if (!j) return '—';
+            const agg = j.aggregate || {};
+            if (agg.duration_sum_sec) return scFormatDuration(agg.duration_sum_sec);
+            if (scOpusStartedAtClient.value) {
+                return scFormatDuration((Date.now() - scOpusStartedAtClient.value) / 1000);
+            }
+            return '—';
+        }
+
+        function scOpusCurrentPairLabel() {
+            const j = scOpusJob.value;
+            if (!j || !j.aggregate || !j.aggregate.current_pair_id) return '—';
+            const pid = j.aggregate.current_pair_id;
+            const pairs = (scSession.value && scSession.value.pairs) || [];
+            const p = pairs.find(x => x.id === pid);
+            if (!p) return pid;
+            const left = (p.left || {}).filename || '—';
+            const right = (p.right || {}).filename || '—';
+            return `${left} ↔ ${right}`;
+        }
+
+        // computed: текст title для кнопки запуска Opus batch (disabled-причины).
+        const scOpusStartTitle = computed(() => {
+            if (!scPairs.value || !scPairs.value.length) return 'Сначала сопоставьте PDF-пары';
+            if (scRecogJob.value && ['queued','running'].includes(scRecogJob.value.status)) {
+                return 'Дождитесь окончания распознавания графики';
+            }
+            if (scOpusPreflight.value && scOpusPreflight.value.will_run === 0) {
+                return 'Нет ни одной готовой к сравнению пары (нет enriched MD или все слишком большие). Запустите «Распознать графику».';
+            }
+            return 'Запустить Opus сравнение всех готовых PDF-пар сессии';
+        });
         // Stage 1: при возврате на вкладку «Загрузка документации» подтягиваем
         // актуальный статус Qwen-job, а если она running — снова запускаем polling.
         watch(() => scTab.value, (newTab) => {
             if (newTab !== 'upload') return;
             if (!scSession.value || !scSession.value.id) return;
             scRecogRestoreActive();
+            scOpusRestoreActive();
+            scOpusLoadPreflight();
+        });
+        // После завершения Qwen-job — обновить Opus preflight, чтобы кнопка
+        // «Проанализировать и сравнить» автоматически разблокировалась.
+        watch(() => scRecogJob.value && scRecogJob.value.status, (newStatus, oldStatus) => {
+            if (!scSession.value || !scSession.value.id) return;
+            if (scTab.value !== 'upload') return;
+            const finished = ['done','failed','cancelled','rejected_no_confirm','failed_interrupted'];
+            if (oldStatus && !finished.includes(oldStatus) && finished.includes(newStatus)) {
+                scOpusLoadPreflight();
+            }
         });
         // Stage 3: при смене активной пары подгрузить per-pair md-enrichment
         // статус, чтобы баннер «Графика распознана/ещё не распознана» был
@@ -12555,6 +12918,12 @@ const app = createApp({
             scRecogStart, scRecogRetryErrors, scRecogCancel,
             scRecogRestoreActive, scRecogPairStatus, scRecogPairBadge,
             scRecogElapsedLabel, scFormatDuration, scRecogPairProgress,
+            // Stage 1: «Проанализировать и сравнить» (session-level Opus batch)
+            scOpusJob, scOpusPolling, scOpusStarting, scOpusError,
+            scOpusPreflight, scOpusPreflightLoading,
+            scOpusStart, scOpusRetryErrors, scOpusCancel,
+            scOpusRestoreActive, scOpusLoadPreflight,
+            scOpusElapsedLabel, scOpusCurrentPairLabel, scOpusStartTitle,
             // Per-pair analysis mode
             scAnalysisMode, scAnalysisModeSaving, scAnalysisModeError,
             scLoadAnalysisMode, scSetAnalysisMode, scToggleAnalysisMode,
@@ -12586,6 +12955,12 @@ const app = createApp({
             scGroupedHasVariants, scGroupedEvidencePreview, scGotoGroupEvidence,
             scToggleGroupExpand, scIsGroupExpanded,
             scLoadUnifiedGrouped, scRegroupUnifiedFindings, scGroupedRegrouping,
+            // Expert review для расхождений (per-session)
+            scExpertReviewMode, scExpertDecisions, scExpertReviewSaving,
+            scToggleExpertReview, scLoadExpertDecisions,
+            scSetExpertDecision, scSetExpertReason,
+            scGetExpertDecision, scGetExpertReason, scExpertReviewSummary,
+            scSubmitExpertReview,
             scLoadUnifiedConfig, scLoadUnifiedPairStatus, scLoadUnifiedFlat,
             scOpenUnifiedPairPreflight, scOpenUnifiedSessionPreflight, scCloseUnifiedPreflight,
             scRunUnifiedPair, scRunUnifiedSession, scPollUnifiedJob, scCancelUnifiedJob,

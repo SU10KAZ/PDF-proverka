@@ -268,6 +268,9 @@ def _list_pair_ids(session_id: str) -> list[str]:
 
 def _aggregate_session(session_id: str) -> dict | None:
     """Собрать сессию из новой папки comparison/ или fallback на legacy."""
+    # Lazy import: pair_template lazy-imports store, чтобы избежать цикла на load.
+    from . import pair_template as pair_template_mod  # noqa: WPS433
+
     meta = _load_session_meta(session_id)
     if meta is not None:
         pairs: list[dict] = []
@@ -277,6 +280,20 @@ def _aggregate_session(session_id: str) -> dict | None:
                 continue
             pair_meta["links"] = _load_links(session_id, pid)
             pair_meta["graphic_diffs"] = _load_graphic_diffs(session_id, pid)
+            # Зелёная галочка в «Загрузке документации»: есть ли сохранённый
+            # шаблон для этой пары PDF (identity ключ по полным путям).
+            left = pair_meta.get("left") or {}
+            right = pair_meta.get("right") or {}
+            tpl_key = pair_template_mod.template_key(
+                left.get("pdf_path"), right.get("pdf_path"),
+            )
+            if tpl_key:
+                try:
+                    pair_meta["has_template"] = paths_mod.pair_template_path(tpl_key).exists()
+                except (ValueError, OSError):
+                    pair_meta["has_template"] = False
+            else:
+                pair_meta["has_template"] = False
             pairs.append(pair_meta)
         # Восстановить порядок из session.json (pair_order), если есть
         order = meta.get("pair_order") or []
@@ -311,7 +328,14 @@ def get_session(session_id: str) -> Optional[dict]:
 
 
 def list_sessions() -> list[dict]:
-    """Все сессии: сначала из comparison/index.json, затем legacy."""
+    """Все сессии: сначала из comparison/index.json, затем legacy.
+
+    Ghost-сессии (запись в index есть, а session.json на диске нет)
+    отфильтровываются: они появляются, если кто-то удалил папку из FS,
+    но забыл почистить index, и засоряют UI как «0/0 пар» сессии. Здесь
+    мы их просто пропускаем — index чистится отдельно при следующей
+    записи.
+    """
     items: list[dict] = []
     seen: set[str] = set()
 
@@ -323,7 +347,13 @@ def list_sessions() -> list[dict]:
         # Перечитаем актуальные размеры
         try:
             meta = _load_session_meta(sid)
-            pair_ids = _list_pair_ids(sid) if meta else []
+            if meta is None:
+                # Ghost: запись в index есть, но session.json на диске нет.
+                # Не показываем в UI; в логе — debug, чтобы оператор мог
+                # вычистить index при необходимости.
+                logger.debug("list_sessions: skipping ghost session %s (no session.json)", sid)
+                continue
+            pair_ids = _list_pair_ids(sid)
             matched = 0
             for pid in pair_ids:
                 pm = _load_pair_meta(sid, pid)
@@ -331,9 +361,9 @@ def list_sessions() -> list[dict]:
                     matched += 1
             items.append({
                 "id": sid,
-                "created_at": (meta or s).get("created_at"),
-                "stage_a_path": (meta or s).get("stage_a_path"),
-                "stage_b_path": (meta or s).get("stage_b_path"),
+                "created_at": meta.get("created_at"),
+                "stage_a_path": meta.get("stage_a_path"),
+                "stage_b_path": meta.get("stage_b_path"),
                 "pairs_total": len(pair_ids),
                 "pairs_matched": matched,
                 "storage": "comparison",
@@ -676,6 +706,23 @@ def alignment_insert_blank_side(session_id: str, pair_id: str, slot: int, side: 
             raise KeyError("pair_not_found")
         current = _ensure_alignment(session_id, pair_id, persist=False)
         new_items = alignment_mod.insert_blank_side(current.get("items") or [], slot, side)
+        return save_alignment(session_id, pair_id, new_items, force=True)
+
+
+def alignment_delete_page_side(
+    session_id: str, pair_id: str, slot: int, side: str
+) -> dict:
+    """Удалить страницу одной стороны в slot'е (см. alignment.delete_page_side)."""
+    if side not in ("left", "right"):
+        raise ValueError("side_must_be_left_or_right")
+    with _lock:
+        pair = _find_pair_meta(session_id, pair_id)
+        if pair is None:
+            raise KeyError("pair_not_found")
+        current = _ensure_alignment(session_id, pair_id, persist=False)
+        new_items = alignment_mod.delete_page_side(
+            current.get("items") or [], slot, side
+        )
         return save_alignment(session_id, pair_id, new_items, force=True)
 
 
@@ -1445,6 +1492,49 @@ def create_manual_pair(
         meta["pair_order"] = order
         _save_session_meta(session_id, meta)
         return pair
+
+
+def set_pair_order(session_id: str, ordered_pair_ids: list[str]) -> list[str]:
+    """Установить новый порядок пар в сессии (drag-and-drop reorder в UI).
+
+    Принимает СПИСОК pair_id'ов в желаемом порядке. Сохраняет в
+    session.json → `pair_order`. Пары, которых нет в новом списке, но
+    есть в текущем порядке, добавляются в конец (защита от потери).
+    Пары, которых нет в текущем списке, игнорируются (защита от
+    «фантомных» id из stale UI cache).
+
+    Возвращает фактический порядок после нормализации.
+
+    Raises:
+        KeyError: если session_id не существует.
+    """
+    with _lock:
+        meta = _load_session_meta(session_id)
+        if meta is None:
+            raise KeyError("session_not_found")
+        current = list(meta.get("pair_order") or [])
+        current_set = set(current)
+        # Берём из нового списка только те id, что реально существуют в сессии.
+        new_order: list[str] = []
+        seen: set[str] = set()
+        for pid in ordered_pair_ids or []:
+            if not isinstance(pid, str) or not pid:
+                continue
+            if pid not in current_set or pid in seen:
+                continue
+            new_order.append(pid)
+            seen.add(pid)
+        # Защита от потери: добавляем хвост из пар, которые не упомянули в
+        # новом списке (UI не передал — возможно был отфильтрован).
+        for pid in current:
+            if pid not in seen:
+                new_order.append(pid)
+                seen.add(pid)
+        if new_order == current:
+            return current  # ничего не изменилось — не пишем
+        meta["pair_order"] = new_order
+        _save_session_meta(session_id, meta)
+        return new_order
 
 
 def delete_pair(session_id: str, pair_id: str, *, hard: bool = False) -> bool:

@@ -1308,3 +1308,305 @@ def test_preflight_replacement_format_does_not_warn(tmp_path):
     assert pre.enrichment_ready is True
     assert pre.enriched_md_outdated_format is False
     assert pre.needs_rebuild is False
+
+
+# ─── Session-level Opus batch (этап «Загрузка документации») ────────────
+
+
+def _write_replacement_enriched(sid: str, pid: str, side: str, content_body: str) -> Path:
+    """Записать enriched MD в свежем replace_image_blocks_v1 формате."""
+    text = (
+        "<!-- ENRICHED_MD_FORMAT: replace_image_blocks_v1 -->\n\n"
+        f"### BLOCK [TEXT]\n{content_body}\n"
+    )
+    return _write_enriched(sid, pid, side, text)
+
+
+def test_preflight_session_for_batch_classifies_not_ready_too_large_done(tmp_path, monkeypatch):
+    """preflight_session_for_batch правильно классифицирует пары:
+    not_ready (нет enriched), too_large (превышен лимит), done (уже посчитано),
+    run (можно запустить).
+    """
+    from backend.app.services.stage_comparison import unified_analysis_jobs as jobs
+    from backend.app.services.stage_comparison import paths as paths_mod
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+
+    sid = "sess_batch_preflight"
+    paths_mod.session_json_path(sid).write_text(json.dumps({
+        "id": sid,
+        "pair_order": ["p_run", "p_not_ready", "p_too_large", "p_done"],
+    }), encoding="utf-8")
+    for pid in ("p_run", "p_not_ready", "p_too_large", "p_done"):
+        l = _write_md(tmp_path / f"{pid}-L.md", "L")
+        r = _write_md(tmp_path / f"{pid}-R.md", "R")
+        paths_mod.pair_json_path(sid, pid).write_text(json.dumps({
+            "id": pid,
+            "status": "matched",
+            "left":  {"filename": f"{pid}-l.pdf", "pdf_path": "/x.pdf", "md_path": str(l)},
+            "right": {"filename": f"{pid}-r.pdf", "pdf_path": "/x.pdf", "md_path": str(r)},
+        }), encoding="utf-8")
+
+    # p_run — enriched есть, не too_large, comparison не done
+    _write_replacement_enriched(sid, "p_run", "left",  "small")
+    _write_replacement_enriched(sid, "p_run", "right", "small")
+
+    # p_not_ready — без enriched MD
+
+    # p_too_large — enriched есть, но размер > limit
+    big = "x" * 200_000
+    _write_replacement_enriched(sid, "p_too_large", "left",  big)
+    _write_replacement_enriched(sid, "p_too_large", "right", big)
+    # Понизим лимит в env, чтобы too_large сработал детерминированно.
+    monkeypatch.setenv("STAGE_COMPARISON_ENRICHED_COMPARE_MAX_CHARS", "50000")
+    # Перечитать config (load_config читает env каждый раз)
+
+    # p_done — enriched есть + готовый comparison_result.json
+    _write_replacement_enriched(sid, "p_done", "left",  "small")
+    _write_replacement_enriched(sid, "p_done", "right", "small")
+    paths_mod.enriched_comparison_result_path(sid, "p_done").write_text(json.dumps({
+        "status": "done",
+        "summary": "",
+        "changes": [],
+    }), encoding="utf-8")
+
+    pre = jobs.preflight_session_for_batch(sid, scope="session", force_compare=False)
+    actions = {it["pair_id"]: it["action"] for it in pre["items"]}
+    assert actions["p_run"] == "run"
+    assert actions["p_not_ready"] == "skip_not_ready"
+    assert actions["p_too_large"] == "skip_too_large"
+    assert actions["p_done"] == "skip_done"
+    assert pre["will_run"] == 1
+    assert pre["skip_not_ready"] == 1
+    assert pre["skip_too_large"] == 1
+    assert pre["skip_done"] == 1
+
+
+def test_create_unified_job_with_skip_ineligible_marks_skipped(tmp_path, monkeypatch):
+    """create_unified_job(skip_ineligible=True) помечает not_ready/too_large/done
+    как status='skipped' и не пытается их выполнять.
+    """
+    from backend.app.services.stage_comparison import unified_analysis_jobs as jobs
+    from backend.app.services.stage_comparison import paths as paths_mod
+
+    sid = "sess_create_skip"
+    paths_mod.session_json_path(sid).write_text(json.dumps({
+        "id": sid, "pair_order": ["p_run", "p_not_ready"],
+    }), encoding="utf-8")
+    for pid in ("p_run", "p_not_ready"):
+        l = _write_md(tmp_path / f"{pid}-L.md", "L")
+        r = _write_md(tmp_path / f"{pid}-R.md", "R")
+        paths_mod.pair_json_path(sid, pid).write_text(json.dumps({
+            "id": pid, "status": "matched",
+            "left":  {"filename": "l.pdf", "pdf_path": "/x.pdf", "md_path": str(l)},
+            "right": {"filename": "r.pdf", "pdf_path": "/x.pdf", "md_path": str(r)},
+        }), encoding="utf-8")
+    _write_replacement_enriched(sid, "p_run", "left",  "small")
+    _write_replacement_enriched(sid, "p_run", "right", "small")
+
+    job = jobs.create_unified_job(
+        sid, scope="session", confirm=True, skip_ineligible=True,
+        force_compare=True,
+    )
+    items_by_pid = {it["pair_id"]: it for it in job["items"]}
+    assert items_by_pid["p_run"]["status"] == "queued"
+    assert items_by_pid["p_not_ready"]["status"] == "skipped"
+    assert items_by_pid["p_not_ready"]["preflight_action"] == "skip_not_ready"
+    assert job["progress"]["skipped"] == 1
+    assert job["progress"]["total"] == 2
+
+
+def test_create_unified_job_all_skipped_finishes_done(tmp_path, monkeypatch):
+    """Если все пары отфильтрованы — job сразу done, без запуска."""
+    from backend.app.services.stage_comparison import unified_analysis_jobs as jobs
+    from backend.app.services.stage_comparison import paths as paths_mod
+
+    sid = "sess_all_skipped"
+    paths_mod.session_json_path(sid).write_text(json.dumps({
+        "id": sid, "pair_order": ["p1"],
+    }), encoding="utf-8")
+    l = _write_md(tmp_path / "L.md", "L")
+    r = _write_md(tmp_path / "R.md", "R")
+    paths_mod.pair_json_path(sid, "p1").write_text(json.dumps({
+        "id": "p1", "status": "matched",
+        "left":  {"filename": "l.pdf", "pdf_path": "/x.pdf", "md_path": str(l)},
+        "right": {"filename": "r.pdf", "pdf_path": "/x.pdf", "md_path": str(r)},
+    }), encoding="utf-8")
+    # Нет enriched — p1 будет skip_not_ready.
+
+    job = jobs.create_unified_job(
+        sid, scope="session", confirm=True, skip_ineligible=True,
+    )
+    assert job["status"] == "done"
+    assert job["progress"]["skipped"] == 1
+
+
+def test_find_active_unified_session_job_prefers_running(tmp_path, monkeypatch):
+    """find_active_session_job отдаёт queued/running, иначе самый свежий done."""
+    from backend.app.services.stage_comparison import unified_analysis_jobs as jobs
+    from backend.app.services.stage_comparison import paths as paths_mod
+
+    sid = "sess_active"
+    paths_mod.session_json_path(sid).write_text(json.dumps({
+        "id": sid, "pair_order": ["p1"],
+    }), encoding="utf-8")
+    paths_mod.pair_json_path(sid, "p1").write_text(json.dumps({
+        "id": "p1", "status": "matched",
+        "left":  {"filename": "l.pdf", "pdf_path": "/x.pdf", "md_path": "/x.md"},
+        "right": {"filename": "r.pdf", "pdf_path": "/x.pdf", "md_path": "/y.md"},
+    }), encoding="utf-8")
+    # Создадим два job: один done, один queued.
+    done_job = jobs.create_unified_job(sid, scope="pair", pair_id="p1", confirm=True)
+    # вручную пометим done.
+    p_done = paths_mod.job_json_path(sid, done_job["id"])
+    d = json.loads(p_done.read_text(encoding="utf-8"))
+    d["status"] = "done"
+    p_done.write_text(json.dumps(d), encoding="utf-8")
+
+    queued_job = jobs.create_unified_job(sid, scope="session", confirm=True)
+    active = jobs.find_active_session_job(sid)
+    assert active is not None
+    assert active["id"] == queued_job["id"]
+    assert "aggregate" in active
+
+
+def test_find_active_unified_returns_none_when_no_jobs(tmp_path):
+    from backend.app.services.stage_comparison import unified_analysis_jobs as jobs
+    from backend.app.services.stage_comparison import paths as paths_mod
+    sid = "sess_no_jobs"
+    paths_mod.session_json_path(sid).write_text(json.dumps({
+        "id": sid, "pair_order": [],
+    }), encoding="utf-8")
+    assert jobs.find_active_session_job(sid) is None
+
+
+def test_aggregate_job_progress_counts_done_failed_skipped():
+    from backend.app.services.stage_comparison import unified_analysis_jobs as jobs
+    job = {
+        "items": [
+            {"pair_id": "a", "status": "done", "changes_count": 5, "duration_sec": 10.0},
+            {"pair_id": "b", "status": "failed", "changes_count": 0, "duration_sec": 4.0},
+            {"pair_id": "c", "status": "skipped", "preflight_action": "skip_too_large",
+             "changes_count": 0, "duration_sec": 0.0},
+            {"pair_id": "d", "status": "skipped", "preflight_action": "skip_not_ready",
+             "changes_count": 0, "duration_sec": 0.0},
+            {"pair_id": "e", "status": "running"},
+            {"pair_id": "f", "status": "queued"},
+        ],
+    }
+    agg = jobs.aggregate_job_progress(job)
+    assert agg["total_pairs"] == 6
+    assert agg["done"] == 1
+    assert agg["failed"] == 1
+    assert agg["skipped"] == 2
+    assert agg["skipped_too_large"] == 1
+    assert agg["skipped_not_ready"] == 1
+    assert agg["total_changes"] == 5
+    # current = first non-terminal (running) → "e"
+    assert agg["current_pair_id"] == "e"
+    assert agg["current_pair_status"] == "running"
+    # avg_duration: для already-finished с duration_sec > 0
+    assert agg["avg_duration_sec"] > 0
+
+
+@pytest.mark.asyncio
+async def test_unified_job_skips_pre_marked_skipped_items(tmp_path, monkeypatch):
+    """run_unified_job не должен запускать пары, помеченные skip_ineligible'ом."""
+    from backend.app.services.stage_comparison import unified_analysis_jobs as jobs
+    from backend.app.services.stage_comparison import unified_analysis as ua
+    from backend.app.services.stage_comparison import paths as paths_mod
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+
+    monkeypatch.setenv("STAGE_COMPARISON_ENRICHED_COMPARE_ENABLED", "true")
+    sid = "sess_skip_run"
+    paths_mod.session_json_path(sid).write_text(json.dumps({
+        "id": sid, "pair_order": ["p_run", "p_skip"],
+    }), encoding="utf-8")
+    for pid in ("p_run", "p_skip"):
+        paths_mod.pair_json_path(sid, pid).write_text(json.dumps({
+            "id": pid, "status": "matched",
+            "left":  {"filename": "l.pdf", "pdf_path": "/x.pdf", "md_path": "/x.md"},
+            "right": {"filename": "r.pdf", "pdf_path": "/x.pdf", "md_path": "/y.md"},
+        }), encoding="utf-8")
+    _write_replacement_enriched(sid, "p_run", "left",  "small")
+    _write_replacement_enriched(sid, "p_run", "right", "small")
+
+    # Mock provider, чтобы tests не звали Claude Code.
+    payload = {"status": "done", "summary": "", "changes": [], "warnings": []}
+    fake_provider = _AvailableProvider(raw_response=json.dumps(payload), status="done")
+    monkeypatch.setattr(ec, "_REGISTRY", {"claude_code": lambda: fake_provider})
+
+    job = jobs.create_unified_job(
+        sid, scope="session", confirm=True, skip_ineligible=True,
+        force_compare=True,
+    )
+    items_by_pid = {it["pair_id"]: it for it in job["items"]}
+    assert items_by_pid["p_skip"]["status"] == "skipped"
+
+    finished = await jobs.run_unified_job(sid, job["id"])
+    # p_skip остался skipped, p_run прошёл.
+    out_by_pid = {it["pair_id"]: it for it in finished["items"]}
+    assert out_by_pid["p_skip"]["status"] == "skipped"
+    assert out_by_pid["p_run"]["status"] == "done"
+    # Provider вызван 1 раз (только для p_run).
+    assert len(fake_provider.invoke_calls) == 1
+
+
+def test_aggregate_job_progress_counts_comparing_enriching_as_running():
+    """comparing/enriching — активные подсостояния running, должны учитываться."""
+    from backend.app.services.stage_comparison import unified_analysis_jobs as jobs
+    job = {
+        "items": [
+            {"pair_id": "a", "status": "done", "duration_sec": 10.0},
+            {"pair_id": "b", "status": "comparing"},
+            {"pair_id": "c", "status": "enriching"},
+            {"pair_id": "d", "status": "queued"},
+        ],
+    }
+    agg = jobs.aggregate_job_progress(job)
+    assert agg["done"] == 1
+    assert agg["running"] == 2  # comparing + enriching
+    assert agg["queued"] == 1
+    # current = первый non-terminal не-queued → b (comparing)
+    assert agg["current_pair_id"] == "b"
+    assert agg["current_pair_status"] == "comparing"
+
+
+def test_read_job_marks_stale_running_as_failed_interrupted(tmp_path, monkeypatch):
+    """_maybe_mark_interrupted: если на диске status=running, но воркера нет,
+    job помечается failed_interrupted и items с активным статусом — тоже."""
+    from backend.app.services.stage_comparison import unified_analysis_jobs as jobs
+    from backend.app.services.stage_comparison import paths as paths_mod
+
+    sid = "sess_stale"
+    job_id = "uajob_stale_test"
+    paths_mod.jobs_root(sid).mkdir(parents=True, exist_ok=True)
+    stale = {
+        "id": job_id,
+        "session_id": sid,
+        "type": "unified_stage_comparison",
+        "status": "running",
+        "created_at": "2026-01-01T00:00:00Z",
+        "updated_at": "2026-01-01T00:00:00Z",
+        "items": [
+            {"pair_id": "a", "status": "done"},
+            {"pair_id": "b", "status": "comparing"},
+            {"pair_id": "c", "status": "queued"},
+        ],
+    }
+    paths_mod.job_json_path(sid, job_id).write_text(
+        json.dumps(stale, ensure_ascii=False), encoding="utf-8",
+    )
+    # Никакого _active_tasks для (sid, job_id) → _is_task_alive=False.
+    jobs._active_tasks.pop(sid, None)
+
+    read = jobs._read_job(sid, job_id)
+    assert read is not None
+    assert read["status"] == "failed_interrupted"
+    item_statuses = {it["pair_id"]: it["status"] for it in read["items"]}
+    assert item_statuses["a"] == "done"           # терминальный — не трогаем
+    assert item_statuses["b"] == "failed_interrupted"
+    assert item_statuses["c"] == "failed_interrupted"
+
+    # Файл на диске тоже обновлён.
+    disk = json.loads(paths_mod.job_json_path(sid, job_id).read_text(encoding="utf-8"))
+    assert disk["status"] == "failed_interrupted"

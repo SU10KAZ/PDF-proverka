@@ -210,6 +210,59 @@ def insert_blank_side(items: list[dict], slot: int, side: Literal["left", "right
     return _strip_trailing_blank_slots(new_items)
 
 
+def delete_page_side(
+    items: list[dict],
+    slot: int,
+    side: Literal["left", "right"],
+) -> list[dict]:
+    """Удалить страницу одной стороны в указанном slot'е.
+
+    Левая/правая «дорожки» страниц независимы — другая сторона не трогается.
+    На выбранной стороне страница в slot'е убирается, а все более поздние
+    страницы этой стороны поднимаются на одну позицию вверх. Пример:
+
+        Было (delete slot=2 left):     Стало:
+        slot 1: L=1 / R=1               slot 1: L=1 / R=1
+        slot 2: L=2 / R=2               slot 2: L=3 / R=2
+        slot 3: L=3 / R=3               slot 3: L=∅ / R=3
+
+    Если страница на этой стороне уже null — операция бессмысленна, ValueError.
+    """
+    if side not in ("left", "right"):
+        raise ValueError("side_must_be_left_or_right")
+    idx = int(slot) - 1
+    src = list(items or [])
+    if idx < 0 or idx >= len(src):
+        raise ValueError("invalid_slot")
+    key = "left_page" if side == "left" else "right_page"
+    if src[idx].get(key) is None:
+        raise ValueError("nothing_to_delete_on_side")
+
+    track = [it.get(key) for it in src]
+    track.pop(idx)
+    track.append(None)
+
+    other_key = "right_page" if side == "left" else "left_page"
+    other_track = [it.get(other_key) for it in src]
+    notes = [str(it.get("note") or "") for it in src]
+
+    new_items: list[dict] = []
+    for i in range(len(src)):
+        if side == "left":
+            lp, rp = track[i], other_track[i]
+        else:
+            lp, rp = other_track[i], track[i]
+        mode = "manual" if (lp is not None or rp is not None) else "blank"
+        new_items.append({
+            "slot": i + 1,
+            "left_page": lp,
+            "right_page": rp,
+            "mode": mode,
+            "note": notes[i],
+        })
+    return _strip_trailing_blank_slots(new_items)
+
+
 def move_page_side(
     items: list[dict],
     slot: int,

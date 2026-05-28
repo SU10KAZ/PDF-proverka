@@ -1220,3 +1220,732 @@ def test_batch_graphic_job_runs_cleanup_with_warnings(_local_env, monkeypatch, t
     assert cu["warnings"] == ["restore:chandra-ocr-2:http_500:OOM"]
     # Warnings также проброшены в job.warnings (с prefix cleanup:)
     assert any(w.startswith("cleanup:") for w in finished.get("warnings") or [])
+
+
+# ─── Parse error classification + diagnostics propagation ─────────────────
+
+
+def test_classify_parse_error_markdown_reasoning():
+    """mtp-style chain-of-thought ('1. **Analyze the Request:**') без `{`
+    должен классифицироваться как markdown_reasoning, чтобы оператор сразу
+    видел: модель ушла в reasoning вместо JSON.
+    """
+    from backend.app.services.stage_comparison.graphic_llm_local import _classify_parse_error
+    text = (
+        "1.  **Analyze the Request:**\n"
+        "    *   **Task:** Analyze a construction drawing.\n"
+        "    *   **Output Format:** Strict JSON only.\n"
+    )
+    assert _classify_parse_error(text) == "markdown_reasoning"
+
+
+def test_classify_parse_error_truncated_json_ellipsis():
+    """JSON, который начинается корректно, но обрывается многоточием
+    (или не закрывается `}`) — это самый частый случай max_tokens cap.
+    """
+    from backend.app.services.stage_comparison.graphic_llm_local import _classify_parse_error
+    text = '{"status": "done", "summary": "Принципиальная схема…"'
+    assert _classify_parse_error(text) == "truncated_json"
+
+
+def test_classify_parse_error_truncated_json_no_closing_brace():
+    from backend.app.services.stage_comparison.graphic_llm_local import _classify_parse_error
+    text = '{"status": "done", "items": [{"name": "X"}, {"name": "Y'
+    assert _classify_parse_error(text) == "truncated_json"
+
+
+def test_classify_parse_error_empty_content():
+    from backend.app.services.stage_comparison.graphic_llm_local import _classify_parse_error
+    assert _classify_parse_error("") == "empty_content"
+    assert _classify_parse_error("   \n  ") == "empty_content"
+
+
+def test_classify_parse_error_no_opening_brace_plain():
+    from backend.app.services.stage_comparison.graphic_llm_local import _classify_parse_error
+    assert _classify_parse_error("just some plain text") == "no_opening_brace"
+
+
+def test_classify_parse_error_malformed_with_braces():
+    from backend.app.services.stage_comparison.graphic_llm_local import _classify_parse_error
+    # Закрытый JSON, но parse_diff_json вернул бы None из-за синтаксиса —
+    # классификатор должен сказать "malformed_json", а не truncated.
+    text = '{"status": "done", , "x": 1}'
+    assert _classify_parse_error(text) == "malformed_json"
+
+
+def test_extract_usage_and_finish_reason_from_lm_studio_response():
+    """LM Studio возвращает usage + finish_reason в OpenAI-совместимом формате."""
+    from backend.app.services.stage_comparison.graphic_llm_local import (
+        _extract_usage, _extract_finish_reason,
+    )
+    data = {
+        "choices": [
+            {"message": {"content": "{}"}, "finish_reason": "length"},
+        ],
+        "usage": {"prompt_tokens": 1200, "completion_tokens": 4000, "total_tokens": 5200},
+    }
+    assert _extract_finish_reason(data) == "length"
+    assert _extract_usage(data) == {
+        "prompt_tokens": 1200, "completion_tokens": 4000, "total_tokens": 5200,
+    }
+
+
+def test_extract_usage_missing_fields_safe():
+    from backend.app.services.stage_comparison.graphic_llm_local import (
+        _extract_usage, _extract_finish_reason,
+    )
+    assert _extract_usage({}) == {}
+    assert _extract_usage(None) == {}
+    assert _extract_finish_reason(None) is None
+    assert _extract_finish_reason({"choices": []}) is None
+
+
+# ─── Salvage of truncated JSON ────────────────────────────────────────────
+
+
+def test_salvage_partial_json_truncated_in_string():
+    """Самый частый паттерн V1/V2: max_tokens обрезает посреди строки.
+    Salvage должен откатиться до последней безопасной пары key:value и
+    закрыть скобки.
+    """
+    from backend.app.services.stage_comparison.graphic_llm_local import salvage_partial_json
+    truncated = (
+        '{"status": "done", "image_kind": "scheme", '
+        '"summary": "Принципиальная схема отопления", '
+        '"materials": ["сталь", "медь", "не дочитанн'
+    )
+    salvaged = salvage_partial_json(truncated)
+    assert isinstance(salvaged, dict)
+    assert salvaged["_salvaged"] is True
+    assert salvaged["status"] == "done"
+    assert salvaged["image_kind"] == "scheme"
+    assert salvaged["summary"] == "Принципиальная схема отопления"
+    # materials ДО оборванного элемента сохранился
+    assert "сталь" in salvaged.get("materials", [])
+    assert "медь" in salvaged.get("materials", [])
+
+
+def test_salvage_partial_json_after_ellipsis():
+    """Модель сама закончила многоточием — salvage режет по нему."""
+    from backend.app.services.stage_comparison.graphic_llm_local import salvage_partial_json
+    truncated = (
+        '{"status": "done", "summary": "Схема", '
+        '"items": ["a", "b", "c"], '
+        '"todo": "ещё многое надо описать…"'
+    )
+    salvaged = salvage_partial_json(truncated)
+    assert isinstance(salvaged, dict)
+    assert salvaged["_salvaged"] is True
+    assert salvaged["status"] == "done"
+    assert "a" in salvaged.get("items", [])
+    # todo с многоточием не должен остаться (всё после `…` отрезается)
+    assert "todo" not in salvaged or "многое" not in salvaged.get("todo", "")
+
+
+def test_salvage_partial_json_returns_none_on_markdown():
+    """mtp-style markdown reasoning без `{` — salvage не должен фальшивить."""
+    from backend.app.services.stage_comparison.graphic_llm_local import salvage_partial_json
+    md = "1.  **Analyze the Request:**\n    *   **Task:** Analyze drawing."
+    assert salvage_partial_json(md) is None
+
+
+def test_salvage_partial_json_returns_none_on_empty():
+    from backend.app.services.stage_comparison.graphic_llm_local import salvage_partial_json
+    assert salvage_partial_json("") is None
+    assert salvage_partial_json("   ") is None
+
+
+def test_salvage_partial_json_nested_array_of_objects():
+    """Salvage должен корректно закрывать вложенные `[` и `{`."""
+    from backend.app.services.stage_comparison.graphic_llm_local import salvage_partial_json
+    truncated = (
+        '{"status": "done", '
+        '"scheme_analysis": {'
+        '  "is_scheme": true,'
+        '  "nodes": ['
+        '    {"id": "n1", "label": "ВРУ"},'
+        '    {"id": "n2", "label": "ГРЩ"},'
+        '    {"id": "n3", "label": "обор'
+    )
+    salvaged = salvage_partial_json(truncated)
+    assert isinstance(salvaged, dict)
+    sc = salvaged.get("scheme_analysis") or {}
+    nodes = sc.get("nodes") or []
+    # Минимум первые 2 узла должны сохраниться
+    assert len(nodes) >= 2
+    labels = {n.get("label") for n in nodes if isinstance(n, dict)}
+    assert "ВРУ" in labels and "ГРЩ" in labels
+
+
+# ─── _describe_image_once: новые диагностические поля ─────────────────────
+
+
+def test_describe_image_once_populates_finish_reason_and_usage(_local_env, tmp_path):
+    """primary возвращает done — finish_reason/usage/response_char_count
+    должны попасть в DescribeResult без потерь.
+    """
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+
+    png = _write_png(tmp_path / "img.png")
+
+    class _OkClient(_MockAsyncClient):
+        _response_override = _MockHTTPResponse(200, {
+            "choices": [
+                {
+                    "message": {"content": '{"status":"done","summary":"S","confidence":0.9}'},
+                    "finish_reason": "stop",
+                },
+            ],
+            "usage": {"prompt_tokens": 1100, "completion_tokens": 250, "total_tokens": 1350},
+        })
+
+    with patch.object(g.httpx, "AsyncClient", _OkClient):
+        cfg = g.load_local_graphic_llm_config()
+        res = asyncio.run(g.describe_image_local(png, "PROMPT", cfg=cfg))
+
+    assert res.status == "done"
+    assert res.finish_reason == "stop"
+    assert res.usage == {"prompt_tokens": 1100, "completion_tokens": 250, "total_tokens": 1350}
+    assert res.response_char_count > 0
+    assert res.parse_error_detail is None
+    assert res.full_raw_response.startswith("{")
+
+
+def test_describe_image_once_invalid_json_records_parse_error_detail(_local_env, tmp_path):
+    """primary возвращает markdown — invalid_json + parse_error_detail=markdown_reasoning.
+    Fallback по умолчанию также вернёт markdown (тест мокает оба) → итог invalid_json
+    с понятной диагностикой, а не silent error.
+    """
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+    monkey_png = _write_png(tmp_path / "img.png")
+
+    md_text = "1.  **Analyze the Request:**\n    *   **Task:** Analyze drawing."
+
+    class _MarkdownClient(_MockAsyncClient):
+        _response_override = _MockHTTPResponse(200, {
+            "choices": [
+                {"message": {"content": md_text}, "finish_reason": "length"},
+            ],
+            "usage": {"prompt_tokens": 1000, "completion_tokens": 1800, "total_tokens": 2800},
+        })
+
+    with patch.object(g.httpx, "AsyncClient", _MarkdownClient):
+        cfg = g.load_local_graphic_llm_config()
+        res = asyncio.run(g.describe_image_local(monkey_png, "PROMPT", cfg=cfg))
+
+    # Оба кандидата (primary+fallback) вернули markdown → salvage тоже None → invalid_json.
+    assert res.status == "invalid_json"
+    assert res.finish_reason == "length"
+    assert res.usage == {"prompt_tokens": 1000, "completion_tokens": 1800, "total_tokens": 2800}
+    # Классификация должна указать на markdown reasoning — это сигнал чинить prompt/модель.
+    assert res.parse_error_detail in ("markdown_reasoning", "salvage_no_safe_boundary")
+
+
+# ─── Forced continuation when salvaged dict has no `continues` ─────────────
+
+
+def test_describe_image_local_forces_continuation_when_salvaged_dict_has_no_continues(
+    _local_env, tmp_path, monkeypatch,
+):
+    """Если первый chunk обрезался → salvage вернул dict БЕЗ `continues` поля,
+    describe_image_local должен синтезировать continues=true + generic hint
+    и дёрнуть continuation хотя бы один раз.
+    """
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+    monkeypatch.setenv("STAGE_COMPARISON_GRAPHIC_LLM_MAX_CONTINUATIONS", "2")
+
+    png = _write_png(tmp_path / "img.png")
+
+    calls = {"n": 0}
+
+    # 1-й chunk: truncated JSON (без continues) → salvage сделает dict.
+    # 2-й chunk (continuation): валидный JSON c continues=false → конец.
+    chunk1_text = (
+        '{"status": "done", "image_kind": "scheme", '
+        '"summary": "Описание", '
+        '"materials": ["сталь", "медь", "не дочитан'
+    )
+    chunk2_text = (
+        '{"status": "done", '
+        '"materials": ["алюминий"], '
+        '"continues": false, "next_chunk_hint": "", "coverage_notes": "финал"}'
+    )
+
+    class _SeqClient(_MockAsyncClient):
+        async def post(self, url, headers=None, json=None):
+            calls["n"] += 1
+            if calls["n"] == 1:
+                return _MockHTTPResponse(200, {
+                    "choices": [{"message": {"content": chunk1_text}, "finish_reason": "length"}],
+                    "usage": {"prompt_tokens": 1000, "completion_tokens": 4000, "total_tokens": 5000},
+                })
+            return _MockHTTPResponse(200, {
+                "choices": [{"message": {"content": chunk2_text}, "finish_reason": "stop"}],
+                "usage": {"prompt_tokens": 500, "completion_tokens": 80, "total_tokens": 580},
+            })
+
+    with patch.object(g.httpx, "AsyncClient", _SeqClient):
+        cfg = g.load_local_graphic_llm_config()
+        # Отключаем fallback, чтобы код не сходил в mtp на первом invalid_json.
+        cfg.fallback_model = ""
+        res = asyncio.run(g.describe_image_local(png, "PROMPT", cfg=cfg))
+
+    # Был salvage + хотя бы одна continuation.
+    assert calls["n"] >= 2, f"expected at least 2 calls, got {calls['n']}"
+    # parsed должен содержать данные ОБОИХ chunk'ов после merge.
+    parsed = res.parsed or {}
+    materials = parsed.get("materials") or []
+    assert "сталь" in materials, "первый chunk данные потерялись"
+    assert "алюминий" in materials, "continuation данные не вмержились"
+    # chunks_count + continued должны быть отмечены
+    assert parsed.get("chunks_count", 1) >= 2
+    assert parsed.get("continued") is True
+    # _salvaged true потому что первый chunk был salvaged
+    assert parsed.get("_salvaged") is True
+
+
+# ─── No-fallback path: invalid_json без mtp → salvage сразу ──────────────
+
+
+def test_describe_image_local_no_fallback_runs_salvage_directly(_local_env, tmp_path):
+    """Если fallback_model отключён, invalid_json от primary не должен
+    приводить к второму HTTP-запросу. Salvage берётся прямо с content
+    primary'а.
+    """
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+    png = _write_png(tmp_path / "img.png")
+
+    calls = {"n": 0}
+
+    truncated = (
+        '{"status": "done", "image_kind": "scheme", '
+        '"summary": "schema", '
+        '"materials": ["сталь", "не дочи'
+    )
+
+    class _TruncClient(_MockAsyncClient):
+        async def post(self, url, headers=None, json=None):
+            calls["n"] += 1
+            return _MockHTTPResponse(200, {
+                "choices": [{"message": {"content": truncated}, "finish_reason": "length"}],
+                "usage": {"prompt_tokens": 900, "completion_tokens": 4000, "total_tokens": 4900},
+            })
+
+    with patch.object(g.httpx, "AsyncClient", _TruncClient):
+        cfg = g.load_local_graphic_llm_config()
+        cfg.fallback_model = ""
+        cfg.max_continuations = 0  # без continuation чтобы упростить assert
+        res = asyncio.run(g.describe_image_local(png, "PROMPT", cfg=cfg))
+
+    # Только 1 HTTP-запрос (нет fallback и нет continuation).
+    assert calls["n"] == 1
+    assert res.status == "partial"
+    assert res.parsed is not None
+    assert res.parsed["_salvaged"] is True
+    assert "сталь" in (res.parsed.get("materials") or [])
+
+
+# ─── Merge of multi-chunk continuation ────────────────────────────────────
+
+
+def test_merge_image_descriptions_dedups_nodes_by_id_label():
+    """Если оба chunk'а упомянули один и тот же node — он должен слиться
+    в один (по id+label+visible_mark), а не дублироваться.
+    """
+    from backend.app.services.stage_comparison.graphic_llm_local import _merge_image_descriptions
+    a = {
+        "status": "done",
+        "scheme_analysis": {
+            "is_scheme": True,
+            "nodes": [
+                {"id": "n1", "label": "ВРУ", "type": "panel"},
+                {"id": "n2", "label": "ГРЩ", "type": "panel"},
+            ],
+        },
+    }
+    b = {
+        "status": "done",
+        "scheme_analysis": {
+            "is_scheme": True,
+            "nodes": [
+                {"id": "n2", "label": "ГРЩ", "type": "panel"},  # duplicate
+                {"id": "n3", "label": "Автомат", "type": "breaker"},
+            ],
+        },
+    }
+    merged = _merge_image_descriptions(a, b)
+    nodes = (merged.get("scheme_analysis") or {}).get("nodes") or []
+    labels = [n.get("label") for n in nodes]
+    assert labels.count("ГРЩ") == 1, f"duplicate node not deduped: {labels}"
+    assert "Автомат" in labels
+
+
+def test_merge_image_descriptions_addition_continues_false_wins():
+    """addition.continues=false должен ПЕРЕЗАПИСАТЬ base.continues=true.
+    Это важно: continuation цикл смотрит на финальный continues и
+    останавливается на false.
+    """
+    from backend.app.services.stage_comparison.graphic_llm_local import _merge_image_descriptions
+    a = {"status": "done", "continues": True, "next_chunk_hint": "ещё"}
+    b = {"status": "done", "continues": False, "next_chunk_hint": ""}
+    merged = _merge_image_descriptions(a, b)
+    assert merged["continues"] is False
+    assert merged["next_chunk_hint"] == ""
+
+
+def test_merge_image_descriptions_dedups_numeric_parameters():
+    """numeric_parameters дедупятся по (name, unit, context)."""
+    from backend.app.services.stage_comparison.graphic_llm_local import _merge_image_descriptions
+    a = {
+        "status": "done",
+        "numeric_parameters": [
+            {"name": "Q", "value": "100", "unit": "м3/ч", "context": "приток"},
+        ],
+    }
+    b = {
+        "status": "done",
+        "numeric_parameters": [
+            {"name": "Q", "value": "100", "unit": "м3/ч", "context": "приток"},  # dup
+            {"name": "P", "value": "5", "unit": "кВт", "context": "вытяжка"},
+        ],
+    }
+    merged = _merge_image_descriptions(a, b)
+    nums = merged.get("numeric_parameters") or []
+    keys = [(n.get("name"), n.get("unit"), n.get("context")) for n in nums]
+    assert keys.count(("Q", "м3/ч", "приток")) == 1
+    assert ("P", "кВт", "вытяжка") in keys
+
+
+# ─── Conditional fallback policy (2026-05-26 fix) ─────────────────────────
+
+
+def test_should_try_fallback_after_invalid_json_truncated_skips():
+    """Truncated JSON salvage-friendly → fallback пропускается."""
+    from backend.app.services.stage_comparison.graphic_llm_local import (
+        _should_try_fallback_after_invalid_json,
+    )
+    assert _should_try_fallback_after_invalid_json("truncated_json") is False
+    assert _should_try_fallback_after_invalid_json("malformed_json") is False
+    assert _should_try_fallback_after_invalid_json("salvaged_from_invalid_json") is False
+
+
+def test_should_try_fallback_after_invalid_json_other_kinds_call():
+    """Empty content, markdown reasoning, no opening brace → нужен fallback."""
+    from backend.app.services.stage_comparison.graphic_llm_local import (
+        _should_try_fallback_after_invalid_json,
+    )
+    assert _should_try_fallback_after_invalid_json("empty_content") is True
+    assert _should_try_fallback_after_invalid_json("markdown_reasoning") is True
+    assert _should_try_fallback_after_invalid_json("no_opening_brace") is True
+    assert _should_try_fallback_after_invalid_json(None) is True
+
+
+def test_pick_salvage_candidate_prefers_content_with_brace():
+    """Главный fix: длинное markdown reasoning без `{` НЕ должно
+    перебить более короткий truncated JSON с `{`.
+    """
+    from backend.app.services.stage_comparison.graphic_llm_local import _pick_salvage_candidate
+    truncated_json = '{"status": "done", "summary": "корот'
+    long_markdown = (
+        "1.  **Analyze the Request:**\n"
+        "    *   **Task:** Analyze a construction drawing.\n"
+        "    *   **Output Format:** Strict JSON only.\n"
+        + "    *   detail " * 200  # сделаем заведомо длиннее
+    )
+    label, chosen = _pick_salvage_candidate([
+        ("primary", truncated_json),
+        ("fallback_mtp", long_markdown),
+    ])
+    assert label == "primary"
+    assert chosen == truncated_json
+    assert len(long_markdown) > len(truncated_json), "fixture sanity: markdown is longer"
+
+
+def test_pick_salvage_candidate_falls_back_to_longest_when_none_have_brace():
+    from backend.app.services.stage_comparison.graphic_llm_local import _pick_salvage_candidate
+    a = "short md"
+    b = "longer md without json"
+    label, chosen = _pick_salvage_candidate([("a", a), ("b", b)])
+    assert label == "b"
+
+
+def test_describe_image_local_skips_fallback_when_primary_truncated(_local_env, tmp_path):
+    """Если primary вернул truncated_json, mtp fallback НЕ должен вызываться,
+    salvage идёт прямо на truncated content.
+
+    Был bug: fallback зовётся ВСЕГДА при invalid_json, тратит 30s и
+    забивает salvage pool длинной markdown-простынёй mtp.
+    """
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+    png = _write_png(tmp_path / "img.png")
+
+    calls = {"models": []}
+
+    class _Client(_MockAsyncClient):
+        async def post(self, url, headers=None, json=None):
+            calls["models"].append(json.get("model"))
+            # Возвращаем truncated JSON для primary; должен быть только один call.
+            return _MockHTTPResponse(200, {
+                "choices": [{
+                    "message": {"content": '{"status": "done", "summary": "Принципиальная схема отоплен'},
+                    "finish_reason": "length",
+                }],
+                "usage": {"prompt_tokens": 900, "completion_tokens": 4000, "total_tokens": 4900},
+            })
+
+    with patch.object(g.httpx, "AsyncClient", _Client):
+        cfg = g.load_local_graphic_llm_config()
+        cfg.max_continuations = 0  # не зовём continuation, чтобы упростить assert
+        res = asyncio.run(g.describe_image_local(png, "PROMPT", cfg=cfg))
+
+    # Был один вызов primary, fallback не звался.
+    assert calls["models"] == ["qwen/qwen3.6-35b-a3b"], \
+        f"expected single primary call, got models: {calls['models']}"
+    # salvage сработал на truncated JSON.
+    assert res.status == "partial"
+    assert res.parsed is not None
+    assert res.parsed.get("_salvaged") is True
+
+
+def test_describe_image_local_calls_fallback_when_primary_markdown(_local_env, tmp_path):
+    """Если primary вернул markdown_reasoning (бывает на overloaded prompt),
+    fallback всё-таки должен быть вызван — primary's content для salvage
+    бесполезен (нет `{`).
+    """
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+    png = _write_png(tmp_path / "img.png")
+
+    calls = {"models": []}
+
+    md_text = "1.  **Analyze the Request:**\n    *   **Task:** Analyze drawing."
+    ok_json = '{"status": "done", "summary": "OK from fallback", "confidence": 0.9}'
+
+    class _Client(_MockAsyncClient):
+        async def post(self, url, headers=None, json=None):
+            model = json.get("model")
+            calls["models"].append(model)
+            if model == "qwen3.6-35b-a3b-mtp":  # fallback model
+                return _MockHTTPResponse(200, {
+                    "choices": [{"message": {"content": ok_json}, "finish_reason": "stop"}],
+                    "usage": {"prompt_tokens": 900, "completion_tokens": 100, "total_tokens": 1000},
+                })
+            # primary returns markdown reasoning
+            return _MockHTTPResponse(200, {
+                "choices": [{"message": {"content": md_text}, "finish_reason": "length"}],
+                "usage": {"prompt_tokens": 900, "completion_tokens": 1800, "total_tokens": 2700},
+            })
+
+    with patch.object(g.httpx, "AsyncClient", _Client):
+        cfg = g.load_local_graphic_llm_config()
+        res = asyncio.run(g.describe_image_local(png, "PROMPT", cfg=cfg))
+
+    # Оба candidate'а вызваны: primary, потом fallback.
+    assert calls["models"] == ["qwen/qwen3.6-35b-a3b", "qwen3.6-35b-a3b-mtp"], \
+        f"expected primary→fallback, got: {calls['models']}"
+    # Fallback восстановил → status=done.
+    assert res.status == "done"
+    assert res.fallback_used is True
+    assert (res.parsed or {}).get("summary") == "OK from fallback"
+
+
+# ─── Hardening: continuation stuck-hint / no-progress detection ────────────
+
+
+def test_content_signature_changes_on_node_added():
+    """Подпись должна меняться, когда добавлен новый node — иначе
+    no-progress detection ложно сработает на валидной continuation.
+    """
+    from backend.app.services.stage_comparison.graphic_llm_local import _content_signature
+    base = {"scheme_analysis": {"nodes": [{"id": "n1"}]}}
+    after = {"scheme_analysis": {"nodes": [{"id": "n1"}, {"id": "n2"}]}}
+    assert _content_signature(base) != _content_signature(after)
+
+
+def test_content_signature_stable_when_only_status_changes():
+    """Если меняется только статус/coverage_notes — подпись та же
+    (это не считается «новыми данными»).
+    """
+    from backend.app.services.stage_comparison.graphic_llm_local import _content_signature
+    a = {"status": "done", "summary": "X", "scheme_analysis": {"nodes": [{"id": "n1"}]}}
+    b = {"status": "salvaged_partial", "summary": "X", "scheme_analysis": {"nodes": [{"id": "n1"}]}}
+    assert _content_signature(a) == _content_signature(b)
+
+
+def test_describe_image_local_stops_on_stuck_continuation_hint(_local_env, tmp_path):
+    """Если модель в continuation возвращает тот же `next_chunk_hint`
+    что и в предыдущем chunk'е — мы должны остановить цикл, а не
+    тратить ещё запросы. Это анти-stuck защита.
+    """
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+    png = _write_png(tmp_path / "img.png")
+
+    truncated_with_hint = (
+        '{"status": "done", "image_kind": "scheme", '
+        '"summary": "Описание начато", '
+        '"materials": ["сталь"], '
+        '"coverage_notes": "охвачены 5/30", '
+        '"continues": true, '
+        '"next_chunk_hint": "продолжи описание узлов"}'
+    )
+    # Continuation возвращает ТОТ ЖЕ hint, делая прогресс на 1 материал
+    cont_same_hint = (
+        '{"status": "done", '
+        '"materials": ["медь"], '
+        '"continues": true, '
+        '"next_chunk_hint": "продолжи описание узлов"}'
+    )
+    cont_same_hint_again = (
+        '{"status": "done", '
+        '"materials": ["бронза"], '
+        '"continues": true, '
+        '"next_chunk_hint": "продолжи описание узлов"}'
+    )
+
+    calls = {"n": 0, "models": []}
+
+    class _StuckClient(_MockAsyncClient):
+        async def post(self, url, headers=None, json=None):
+            calls["n"] += 1
+            calls["models"].append(json.get("model"))
+            if calls["n"] == 1:
+                return _MockHTTPResponse(200, {
+                    "choices": [{"message": {"content": truncated_with_hint},
+                                  "finish_reason": "stop"}],
+                    "usage": {"prompt_tokens": 800, "completion_tokens": 200, "total_tokens": 1000},
+                })
+            if calls["n"] == 2:
+                return _MockHTTPResponse(200, {
+                    "choices": [{"message": {"content": cont_same_hint},
+                                  "finish_reason": "stop"}],
+                    "usage": {"prompt_tokens": 400, "completion_tokens": 80, "total_tokens": 480},
+                })
+            # 3-й call НЕ должен случиться — stuck detection остановит цикл.
+            return _MockHTTPResponse(200, {
+                "choices": [{"message": {"content": cont_same_hint_again},
+                              "finish_reason": "stop"}],
+                "usage": {"prompt_tokens": 400, "completion_tokens": 80, "total_tokens": 480},
+            })
+
+    with patch.object(g.httpx, "AsyncClient", _StuckClient):
+        cfg = g.load_local_graphic_llm_config()
+        cfg.fallback_model = ""
+        cfg.max_continuations = 5  # запас, чтобы убедиться что stuck-защита, а не cap, оборвала
+        res = asyncio.run(g.describe_image_local(png, "PROMPT", cfg=cfg))
+
+    # Ровно 2 calls: primary + 1 continuation; 2-я continuation отсеяна.
+    assert calls["n"] == 2, f"expected 2 calls (primary + 1 cont), got {calls['n']}"
+    parsed = res.parsed or {}
+    cws = parsed.get("continuation_warnings") or []
+    assert any("hint_repeated" in w for w in cws), f"missing stuck-hint warning: {cws}"
+    # И данные обоих chunk'ов сохранены
+    materials = parsed.get("materials") or []
+    assert "сталь" in materials and "медь" in materials
+
+
+def test_describe_image_local_stops_on_no_progress_continuation(_local_env, tmp_path):
+    """Если continuation вернул валидный JSON, но merge ничего не
+    добавил (всё уже было) — продолжать цикл нельзя.
+    """
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+    png = _write_png(tmp_path / "img.png")
+
+    base = (
+        '{"status": "done", "image_kind": "scheme", "summary": "S",'
+        ' "materials": ["сталь", "медь"],'
+        ' "coverage_notes": "ok", "continues": true,'
+        ' "next_chunk_hint": "продолжи"}'
+    )
+    cont_noop = (
+        '{"status": "done", "materials": ["сталь", "медь"],'
+        ' "continues": true, "next_chunk_hint": "другой hint"}'
+    )
+
+    calls = {"n": 0}
+
+    class _NoopClient(_MockAsyncClient):
+        async def post(self, url, headers=None, json=None):
+            calls["n"] += 1
+            return _MockHTTPResponse(200, {
+                "choices": [{"message": {
+                    "content": base if calls["n"] == 1 else cont_noop,
+                }, "finish_reason": "stop"}],
+                "usage": {"prompt_tokens": 800, "completion_tokens": 200,
+                            "total_tokens": 1000},
+            })
+
+    with patch.object(g.httpx, "AsyncClient", _NoopClient):
+        cfg = g.load_local_graphic_llm_config()
+        cfg.fallback_model = ""
+        cfg.max_continuations = 5
+        res = asyncio.run(g.describe_image_local(png, "PROMPT", cfg=cfg))
+
+    # primary + 1 noop continuation = 2 calls (3-я не должна случиться).
+    assert calls["n"] == 2
+    parsed = res.parsed or {}
+    cws = parsed.get("continuation_warnings") or []
+    assert any("no_progress" in w for w in cws), f"missing no_progress warning: {cws}"
+
+
+# ─── Merge: non-None addition overrides None base ──────────────────────────
+
+
+def test_merge_scheme_is_scheme_non_none_overrides_none():
+    """Если truncated chunk1 сохранил `is_scheme: null` (модель не успела
+    дописать значение), а continuation вернул is_scheme=True — финальный
+    результат должен быть True.
+    """
+    from backend.app.services.stage_comparison.graphic_llm_local import _merge_image_descriptions
+    a = {"status": "done", "scheme_analysis": {"is_scheme": None, "nodes": []}}
+    b = {"status": "done", "scheme_analysis": {"is_scheme": True, "scheme_type": "hvac_air_flow"}}
+    merged = _merge_image_descriptions(a, b)
+    sc = merged.get("scheme_analysis") or {}
+    assert sc["is_scheme"] is True
+    assert sc["scheme_type"] == "hvac_air_flow"
+
+
+def test_merge_top_level_image_kind_non_none_overrides_none():
+    """Аналогично top-level image_kind."""
+    from backend.app.services.stage_comparison.graphic_llm_local import _merge_image_descriptions
+    a = {"status": "done", "image_kind": None}
+    b = {"status": "done", "image_kind": "scheme"}
+    merged = _merge_image_descriptions(a, b)
+    assert merged["image_kind"] == "scheme"
+
+
+# ─── config_info_for_endpoint exposes new fields ───────────────────────────
+
+
+def test_config_info_for_endpoint_exposes_prompt_version_and_max_continuations(_local_env, monkeypatch):
+    """UI должен видеть РЕАЛЬНУЮ production-конфигурацию:
+    prompt_version, max_continuations, salvage-first-enabled,
+    compact_prompt_limits. Иначе оператор гадает по .env.example.
+    """
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+    monkeypatch.setenv("STAGE_COMPARISON_GRAPHIC_LLM_MAX_CONTINUATIONS", "3")
+    cfg = g.load_local_graphic_llm_config()
+    info = g.config_info_for_endpoint(cfg)
+    assert info.get("prompt_version") == "v4_compact"
+    assert info.get("max_continuations") == 3
+    assert info.get("salvage_first_enabled") is True
+    assert info.get("conditional_fallback_enabled") is True
+    assert info.get("ctx_preload_mandatory") is True
+    cpl = info.get("compact_prompt_limits") or {}
+    assert cpl.get("nodes") == 30
+    assert cpl.get("connections") == 30
+
+
+# ─── Dead-code cleanup verification ────────────────────────────────────────
+
+
+def test_desc_list_fields_dropped_legacy_keys():
+    """`elements`, `relationships`, `labels` — legacy schema из старого
+    prompt'а. Они не упоминаются ни в v4_compact, ни в caller'ах. Поле
+    должно содержать ТОЛЬКО актуальный набор.
+    """
+    from backend.app.services.stage_comparison.graphic_llm_local import _DESC_LIST_FIELDS
+    assert "elements" not in _DESC_LIST_FIELDS
+    assert "relationships" not in _DESC_LIST_FIELDS
+    assert "labels" not in _DESC_LIST_FIELDS
+    # Sanity: знакомые поля на месте
+    assert "design_solutions" in _DESC_LIST_FIELDS
+    assert "comparison_relevant_facts" in _DESC_LIST_FIELDS

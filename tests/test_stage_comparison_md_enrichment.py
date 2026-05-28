@@ -2513,3 +2513,774 @@ async def test_read_summary_only_reports_replacement_mode(_local_env, tmp_path):
     assert s["original_image_blocks"] == 2
     assert s["replaced_image_blocks"] == 2
     assert s["qwen_description_blocks"] == 2
+
+
+# ─── Phase 1: block_type classifier ───────────────────────────────────────
+
+
+def _mk_md_block(text, page=None, block_id=None, order=0):
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    return m.MdBlock(
+        kind="image", text=text, page=page, block_id=block_id, order=order,
+    )
+
+
+def test_classify_image_block_scheme_markers():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    mb = _mk_md_block("### BLOCK [IMAGE]: blk1\n[IMAGE]\n")
+    surrounding = "Однолинейная схема ВРУ-2 с.ш.1 ЩР-1а с автоматом QF3"
+    assert m.classify_image_block(mb, surrounding_context=surrounding) == m.BLOCK_TYPE_SCHEME
+
+
+def test_classify_image_block_dense_scheme_by_marker_count():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    mb = _mk_md_block("### BLOCK [IMAGE]: blk1\n[IMAGE]\n")
+    surrounding = (
+        "Однолинейная схема ВРУ ЩР ЩО QF QS кабель автомат линия "
+        "QF1 QF2 кабельная линия ВВГнг ЩР-1а ЩР-2 ЩР-3 ВРУ-2 с.ш."
+    )
+    assert m.classify_image_block(mb, surrounding_context=surrounding) == m.BLOCK_TYPE_DENSE_SCHEME
+
+
+def test_classify_image_block_dense_scheme_by_area_ratio():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    mb = _mk_md_block("### BLOCK [IMAGE]: blk1\n[IMAGE]\n")
+    surrounding = "Схема электроснабжения ЩР"
+    side_block = {"area_ratio": 0.55}
+    assert m.classify_image_block(mb, side_block=side_block, surrounding_context=surrounding) == m.BLOCK_TYPE_DENSE_SCHEME
+
+
+def test_classify_image_block_table_legend():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    mb = _mk_md_block("### BLOCK [IMAGE]: t\n[IMAGE]\n")
+    surrounding = "Спецификация оборудования. Таблица 2. Условные обозначения"
+    assert m.classify_image_block(mb, surrounding_context=surrounding) == m.BLOCK_TYPE_TABLE_LEGEND
+
+
+def test_classify_image_block_stamp():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    mb = _mk_md_block("### BLOCK [IMAGE]: st\n[IMAGE]\n")
+    surrounding = "Стадия Лист Изм. Подп. Дата Шифр"
+    assert m.classify_image_block(mb, surrounding_context=surrounding) == m.BLOCK_TYPE_STAMP
+
+
+def test_classify_image_block_plan():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    mb = _mk_md_block("### BLOCK [IMAGE]: p\n[IMAGE]\n")
+    surrounding = "План этажа. Помещение по оси А-Б. Трасса кабеля."
+    assert m.classify_image_block(mb, surrounding_context=surrounding) == m.BLOCK_TYPE_PLAN
+
+
+def test_classify_image_block_general():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    mb = _mk_md_block("### BLOCK [IMAGE]: g\n[IMAGE]\n")
+    surrounding = "Какое-то фото с объекта."
+    assert m.classify_image_block(mb, surrounding_context=surrounding) == m.BLOCK_TYPE_GENERAL
+
+
+def test_block_type_config_has_higher_sizing_for_scheme():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    gen = m.get_block_type_config(m.BLOCK_TYPE_GENERAL)
+    sch = m.get_block_type_config(m.BLOCK_TYPE_SCHEME)
+    dense = m.get_block_type_config(m.BLOCK_TYPE_DENSE_SCHEME)
+
+    # Scheme/dense должны иметь БОЛЬШЕ render/image, чем general
+    # (нужно читать мелкие маркировки).
+    assert sch["render_target_long_side"] > gen["render_target_long_side"]
+    assert sch["image_input_long_side"] > gen["image_input_long_side"]
+    assert dense["render_target_long_side"] >= sch["render_target_long_side"]
+    assert dense["image_input_long_side"] >= sch["image_input_long_side"]
+    # Tokens override is set for scheme/dense — но в production-safe пределах.
+    # После v5 validation report (2026-05-27): worst-case generation
+    # не должен превышать ~10k tokens на блок (max_tokens × (cont+1)).
+    assert sch["max_tokens"] is not None and sch["max_tokens"] > 0
+    assert dense["max_tokens"] is not None and dense["max_tokens"] >= sch["max_tokens"]
+    # Worst-case generation per block = max_tokens × (max_continuations + 1).
+    # Должно быть <= 10000 чтобы Qwen не висел на одном блоке часами.
+    sch_worst = sch["max_tokens"] * (sch["max_continuations"] + 1)
+    dense_worst = dense["max_tokens"] * (dense["max_continuations"] + 1)
+    assert sch_worst <= 10000, f"scheme worst-case {sch_worst} > 10000"
+    assert dense_worst <= 10000, f"dense_scheme worst-case {dense_worst} > 10000"
+    # dense_scheme max_continuations не должен быть выше 1 по дефолту
+    # (после 245s/block validation report).
+    assert dense["max_continuations"] <= 1
+
+
+def test_block_type_config_env_overrides(monkeypatch):
+    """Env override должен подменять default render/max_tokens per-type."""
+    import importlib
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    monkeypatch.setenv("STAGE_COMPARISON_DENSE_SCHEME_MAX_TOKENS", "1234")
+    monkeypatch.setenv("STAGE_COMPARISON_DENSE_SCHEME_IMAGE_LONG_SIDE", "999")
+    importlib.reload(m)
+    dense = m.get_block_type_config(m.BLOCK_TYPE_DENSE_SCHEME)
+    assert dense["max_tokens"] == 1234
+    assert dense["image_input_long_side"] == 999
+    # cleanup
+    monkeypatch.delenv("STAGE_COMPARISON_DENSE_SCHEME_MAX_TOKENS", raising=False)
+    monkeypatch.delenv("STAGE_COMPARISON_DENSE_SCHEME_IMAGE_LONG_SIDE", raising=False)
+    importlib.reload(m)
+
+
+def test_get_prompt_for_block_type_returns_v5_for_scheme():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    p_gen, v_gen = m.get_prompt_for_block_type(m.BLOCK_TYPE_GENERAL)
+    p_sch, v_sch = m.get_prompt_for_block_type(m.BLOCK_TYPE_SCHEME)
+    p_dense, v_dense = m.get_prompt_for_block_type(m.BLOCK_TYPE_DENSE_SCHEME)
+    assert v_gen == m.PROMPT_VERSION_GENERAL
+    assert v_sch == m.PROMPT_VERSION_SCHEME
+    assert v_dense == m.PROMPT_VERSION_SCHEME
+    assert p_sch is not p_gen
+    assert p_dense is p_sch  # тот же prompt
+
+
+# ─── Phase 2: v5 scheme prompt content ────────────────────────────────────
+
+
+def test_v5_scheme_prompt_requires_literal_raw_text():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    p = m.QWEN_SCHEME_DIFF_ANCHORS_PROMPT
+    # raw_text должен быть буквальной видимой надписью
+    assert "raw_text" in p
+    # Запреты на нормализацию маркировки
+    assert "ЩР-1а" in p
+    assert "Щит 1" in p
+    # explicit forbidden normalization (ВРУ → вводное)
+    assert ("ВРУ-2" in p) or ("ВРУ" in p)
+    # generic катологи запрещены
+    assert ("100А" in p or "каталог" in p.lower() or "номиналы" in p.lower())
+
+
+def test_v5_scheme_prompt_has_diff_anchors_schema():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    p = m.QWEN_SCHEME_DIFF_ANCHORS_PROMPT
+    assert "diff_anchors" in p
+    assert "labels" in p and "ratings" in p and "connections" in p
+    assert "uncertain_text" in p
+    # Поля внутри labels
+    assert "normalized_type" in p
+    # Категории connections
+    assert "from_raw" in p and "to_raw" in p
+
+
+def test_v5_scheme_prompt_forbids_artificial_sequences():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    p = m.QWEN_SCHEME_DIFF_ANCHORS_PROMPT
+    low = p.lower()
+    assert "искусственн" in low or "не перечисляй" in low
+
+
+def test_format_qwen_description_md_renders_diff_anchors_before_summary():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    payload = {
+        "status": "done",
+        "summary": "Однолинейная схема ВРУ → ЩР",
+        "confidence": 0.7,
+        "diff_anchors": {
+            "labels": [
+                {"raw_text": "ЩР-1а", "normalized_type": "panel", "confidence": 0.9},
+                {"raw_text": "ВРУ-2 с.ш.1", "normalized_type": "switchgear", "confidence": 0.85},
+                {"raw_text": "QF3", "normalized_type": "breaker", "confidence": 0.7},
+            ],
+            "ratings": [
+                {"raw_text": "1000А", "value_type": "current_rating", "related_to": "ВРУ-2 с.ш.1"},
+                {"raw_text": "4х185", "value_type": "cable_section"},
+            ],
+            "connections": [
+                {"from_raw": "ВРУ-2 с.ш.1", "to_raw": "ЩР-1а", "relation": "питает"},
+            ],
+            "uncertain_text": [
+                {"possible_text": "ЩР-1?", "alternatives": ["ЩО-1?"], "confidence": 0.4,
+                 "why_uncertain": "мелкий шрифт"},
+            ],
+        },
+        "visible_text": ["ЩР-1а", "1000А"],
+    }
+    body = m._format_qwen_description_md(payload, model="qwen", page=24, block_id="b1")
+    # DIFF_ANCHORS секции присутствуют ДО «Краткое описание»
+    pos_anchors = body.find("DIFF_ANCHORS")
+    pos_summary = body.find("Краткое описание")
+    assert pos_anchors >= 0
+    assert pos_summary >= 0
+    assert pos_anchors < pos_summary
+    # raw маркировки сохранены БУКВАЛЬНО
+    assert "ЩР-1а" in body
+    assert "ВРУ-2 с.ш.1" in body
+    assert "QF3" in body
+    assert "1000А" in body
+    assert "4х185" in body
+    # Секция связи
+    assert "ВРУ-2 с.ш.1 → ЩР-1а" in body
+    # uncertain text
+    assert "ЩР-1?" in body
+
+
+# ─── Phase 3: IMAGE_DIFF_INDEX ────────────────────────────────────────────
+
+
+def test_build_image_diff_index_includes_anchors():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    descriptions = [
+        {
+            "order": 1, "page": 24, "md_block_id": "blk-A",
+            "block_type": "scheme", "usable_for_diff": True, "warnings": [],
+            "status": "done",
+            "description": {
+                "status": "done", "confidence": 0.74,
+                "diff_anchors": {
+                    "labels": [
+                        {"raw_text": "ЩР-1а"},
+                        {"raw_text": "ЩР-2"},
+                        {"raw_text": "ВРУ-2 с.ш.1"},
+                        {"raw_text": "QF3"},
+                    ],
+                    "ratings": [
+                        {"raw_text": "1000А"},
+                        {"raw_text": "4х185"},
+                    ],
+                    "connections": [
+                        {"from_raw": "ВРУ-2 с.ш.1", "to_raw": "ЩР-1а"},
+                        {"from_raw": "ВРУ-2 с.ш.1", "to_raw": "ЩР-2"},
+                    ],
+                },
+            },
+        },
+        {
+            "order": 2, "page": 26, "md_block_id": "blk-B",
+            "block_type": "dense_scheme", "usable_for_diff": False,
+            "warnings": ["hallucination_suspected", "continuation_salvaged",
+                         "repeated_pattern_detected"],
+            "status": "partial",
+            "description": {
+                "status": "salvaged_partial", "confidence": 0.41,
+                "diff_anchors": {"labels": [{"raw_text": "ВРП-1?"}, {"raw_text": "ВРП-2?"}]},
+            },
+        },
+    ]
+    idx = m.build_image_diff_index(descriptions)
+    assert "<!-- IMAGE_DIFF_INDEX_START -->" in idx
+    assert "<!-- IMAGE_DIFF_INDEX_END -->" in idx
+    assert "scheme" in idx and "dense_scheme" in idx
+    assert "usable_for_diff=true" in idx
+    assert "usable_for_diff=false" in idx
+    assert "ЩР-1а" in idx
+    assert "1000А" in idx
+    assert "ВРУ-2 с.ш.1 -> ЩР-1а" in idx
+    assert "hallucination_suspected" in idx
+
+
+def test_build_image_diff_index_fallback_for_v4_blocks():
+    """v4 блоки без diff_anchors всё равно дают что-то в индекс через
+    visible_text / scheme_analysis.nodes."""
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    descriptions = [
+        {
+            "order": 1, "page": 5, "md_block_id": "blk-v4",
+            "block_type": "scheme", "usable_for_diff": True, "warnings": [],
+            "status": "done",
+            "description": {
+                "status": "done", "confidence": 0.6,
+                "visible_text": ["ЩР-1а", "1000А"],
+                "scheme_analysis": {
+                    "is_scheme": True,
+                    "nodes": [
+                        {"visible_mark": "ВРУ-2", "label": "ВРУ"},
+                        {"visible_mark": "ЩР-1а"},
+                    ],
+                    "connections": [
+                        {"from": "ВРУ-2", "to": "ЩР-1а"},
+                    ],
+                },
+            },
+        },
+    ]
+    idx = m.build_image_diff_index(descriptions)
+    assert "ЩР-1а" in idx
+    assert "ВРУ-2 -> ЩР-1а" in idx
+
+
+def test_build_enriched_md_inserts_diff_index_near_top():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    text = "### СТРАНИЦА 1\nfoo\n\n### BLOCK [IMAGE]: b1\n[IMAGE]\n"
+    blocks = m.parse_md_blocks(text)
+    descriptions = [{
+        "order": 1, "page": 1, "md_block_id": "b1",
+        "block_type": "scheme", "usable_for_diff": True, "warnings": [],
+        "status": "done",
+        "description": {
+            "status": "done", "confidence": 0.8,
+            "diff_anchors": {"labels": [{"raw_text": "ЩР-1а"}]},
+            "summary": "x",
+        },
+    }]
+    enriched = m.build_enriched_md(blocks, descriptions)
+    pos_header = enriched.find("ENRICHED_MD_FORMAT")
+    pos_index_start = enriched.find("IMAGE_DIFF_INDEX_START")
+    pos_first_qwen = enriched.find("QWEN_IMAGE_DESCRIPTION_START")
+    assert 0 <= pos_header < pos_index_start < pos_first_qwen
+
+
+# ─── Phase 4: hallucination heuristics ────────────────────────────────────
+
+
+def test_analyze_quality_flags_artificial_sequence_alone_is_not_fatal():
+    """После v5 production tuning: simple repeated series ≥6 (без других
+    сигналов) — это repeated_pattern_detected (suspicious, info-level),
+    НО не hallucination_suspected и НЕ выключает usable_for_diff.
+
+    В МКД проекте 6-8 квартирных щитов или групповых линий могут быть
+    реальными. Эскалация до hallucination только при суперпозиции сигналов.
+    """
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    payload = {
+        "status": "done",
+        "diff_anchors": {
+            "labels": [{"raw_text": f"ВРП-{i}"} for i in range(1, 9)],
+        },
+        "confidence": 0.6,
+    }
+    res = m.analyze_qwen_description_quality(payload, {"block_type": "scheme"})
+    assert "repeated_pattern_detected" in res["warnings"]
+    # alone-flag не должен убить usable_for_diff
+    assert "hallucination_suspected" not in res["warnings"]
+    assert res["usable_for_diff"] is True
+
+
+def test_analyze_quality_flags_artificial_sequence_with_truncation_is_fatal():
+    """repeated_pattern + truncated_output → hallucination_suspected → usable=False."""
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    payload = {
+        "status": "salvaged_partial",
+        "diff_anchors": {
+            "labels": [{"raw_text": f"ВРП-{i}"} for i in range(1, 9)],
+        },
+        "confidence": 0.6,
+    }
+    ctx = {"block_type": "scheme", "salvaged": True, "parse_error_detail": "truncated_json"}
+    res = m.analyze_qwen_description_quality(payload, ctx)
+    assert "repeated_pattern_detected" in res["warnings"]
+    assert "hallucination_suspected" in res["warnings"]
+    assert "truncated_output" in res["warnings"]
+    assert res["usable_for_diff"] is False
+
+
+def test_analyze_quality_flags_generic_rating_list_without_labels():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    payload = {
+        "status": "done",
+        "confidence": 0.6,
+        "diff_anchors": {
+            "labels": [],
+            "ratings": [
+                {"raw_text": "4x16"}, {"raw_text": "4x25"},
+                {"raw_text": "4x35"}, {"raw_text": "4x50"},
+                {"raw_text": "4x70"}, {"raw_text": "4x95"},
+                {"raw_text": "4x120"},
+            ],
+        },
+    }
+    res = m.analyze_qwen_description_quality(payload, {"block_type": "scheme"})
+    assert "generic_rating_list_without_labels" in res["warnings"]
+
+
+def test_analyze_quality_propagates_continuation_warnings():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    payload = {
+        "status": "done",
+        "confidence": 0.7,
+        "diff_anchors": {"labels": [{"raw_text": "ЩР-1а"}]},
+    }
+    ctx = {
+        "block_type": "scheme",
+        "continuation_warnings": ["hint_repeated", "cap_reached_chunk_3"],
+        "salvaged": True,
+        "parse_error_detail": "truncated_json",
+    }
+    res = m.analyze_qwen_description_quality(payload, ctx)
+    assert "continuation_salvaged" in res["warnings"]
+    assert "continuation_repeated" in res["warnings"]
+    assert "truncated_output" in res["warnings"]
+
+
+def test_analyze_quality_truncated_alone_with_valid_anchors_stays_usable():
+    """Smoke validation 2026-05-28: dense_scheme штатно truncates на
+    prompt cap=25/20/15 + max_tokens=4000. truncated_output БЕЗ других
+    hallucination-сигналов (нет ряда, нет chain, нет identical comments,
+    нет generic ratings) НЕ должен делать блок usable_for_diff=False.
+
+    Это покрывает реальный случай smoke 2 (right o4): 28 различных labels
+    ВРУ2-ПП1-N (mixed series, не один длинный ряд), truncated_json.
+    Раньше len(labels)>=23 + truncated → 2 signals → hallucination →
+    usable=False. После fix: truncated alone → 1 signal → usable=True.
+    """
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    # 25 различных labels — mixed series, не single long-range ряд.
+    # Имитирует cap-bound вывод модели с разнообразными panel marks.
+    labels = (
+        [{"raw_text": f"ВРУ2-ПП1-{i}"} for i in range(1, 9)]
+        + [{"raw_text": f"ВРУ2-ПП2-{i}"} for i in range(1, 9)]
+        + [{"raw_text": f"ВРУ2-ПП3-{i}"} for i in range(1, 10)]
+    )
+    payload = {
+        "status": "salvaged_partial",
+        "diff_anchors": {"labels": labels},
+        "confidence": 0.5,
+    }
+    ctx = {
+        "block_type": "dense_scheme",
+        "salvaged": True,
+        "parse_error_detail": "truncated_json",
+    }
+    res = m.analyze_qwen_description_quality(payload, ctx)
+    assert "truncated_output" in res["warnings"]
+    # Эти НЕ должны быть установлены на mixed-series без catalog-fill.
+    assert "hallucination_suspected" not in res["warnings"], res["warnings"]
+    assert "repeated_pattern_detected" not in res["warnings"], res["warnings"]
+    assert "serial_chain_connection_detected" not in res["warnings"], res["warnings"]
+    # Главное: truncated alone не убивает usable_for_diff.
+    assert res["usable_for_diff"] is True, res["warnings"]
+
+
+def test_analyze_quality_low_label_recall_for_scheme():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    payload = {
+        "status": "done",
+        "confidence": 0.5,
+        "diff_anchors": {
+            "labels": [
+                {"raw_text": "[маркировка не читается]"},
+                {"raw_text": "Щит 1"},
+            ],
+        },
+    }
+    res = m.analyze_qwen_description_quality(payload, {"block_type": "scheme"})
+    assert "low_literal_label_recall" in res["warnings"]
+    assert res["usable_for_diff"] is False
+
+
+# ─── Phase 5: enriched_comparison evidence handling ────────────────────────
+
+
+def test_normalize_change_preserves_evidence_array():
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+    raw = {
+        "title": "Замена кабеля",
+        "summary": "Сечение изменилось с 4х95 на 4х185",
+        "source": "mixed",
+        "evidence": [
+            {"origin": "text", "side": "left", "page": 12, "quote": "ВВГнг 4х95"},
+            {"origin": "image_enrichment", "side": "right", "page": 12, "quote": "4х185",
+             "block_id": "blk-22"},
+        ],
+    }
+    out = ec._normalize_change(raw)
+    assert out is not None
+    assert "evidence" in out
+    assert len(out["evidence"]) == 2
+    assert out["evidence"][1]["origin"] == "image_enrichment"
+    assert out["evidence"][1]["block_id"] == "blk-22"
+
+
+def test_normalize_change_forces_mixed_when_visual_and_nonvisual_evidence():
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+    raw = {
+        "title": "Замена ЩР",
+        "summary": "видно и в тексте и на схеме",
+        "source": "text",  # Opus может ошибочно поставить text
+        "evidence": [
+            {"origin": "text", "side": "left", "page": 5, "quote": "ЩР-1"},
+            {"origin": "scheme_analysis", "side": "right", "page": 5, "quote": "ЩР-1а"},
+        ],
+    }
+    out = ec._normalize_change(raw)
+    # Принуждение source → mixed
+    assert out is not None
+    assert out["source"] == "mixed"
+
+
+def test_normalize_change_forces_visual_when_text_with_visual_evidence_only():
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+    raw = {
+        "title": "Новая позиция QF",
+        "summary": "появилась только на схеме",
+        "source": "text",
+        "evidence": [
+            {"origin": "image_enrichment", "side": "right", "page": 8, "quote": "QF3"},
+        ],
+    }
+    out = ec._normalize_change(raw)
+    assert out is not None
+    assert out["source"] == "image_enrichment"
+
+
+def test_normalize_change_old_changes_without_evidence_still_work():
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+    raw = {
+        "title": "Текстовое изменение",
+        "summary": "что-то",
+        "source": "text",
+    }
+    out = ec._normalize_change(raw)
+    assert out is not None
+    assert "evidence" not in out  # не плодим пустых массивов
+    assert out["source"] == "text"
+
+
+def test_enriched_comparison_prompt_mentions_image_diff_index_and_mixed_rule():
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+    sp = ec.SYSTEM_PROMPT
+    # IMAGE_DIFF_INDEX упоминается явно
+    assert "IMAGE_DIFF_INDEX" in sp
+    # Запрет text для визуальных evidence
+    assert "source=text" in sp or "`text`" in sp
+    # Mixed rule обязателен
+    assert "mixed" in sp.lower()
+    # Пояснение про textual sheet lists
+    assert "scheme_analysis" in sp
+
+
+# ─── Phase 6: unified_findings metrics ────────────────────────────────────
+
+
+def test_unified_findings_empty_summary_has_visual_evidence_counters():
+    from backend.app.services.stage_comparison import unified_findings as uf
+    s = uf._empty_summary()
+    assert "visual_evidence_changes" in s
+    assert "mixed_evidence_changes" in s
+    assert "image_enrichment_evidence_changes" in s
+    assert "scheme_analysis_evidence_changes" in s
+    assert "image_diff_index_evidence_changes" in s
+
+
+def test_change_has_visual_evidence_by_source_and_evidence_array():
+    from backend.app.services.stage_comparison import unified_findings as uf
+    # source=text + no evidence → не visual
+    assert uf._change_has_visual_evidence({"source": "text"}) is False
+    # source=mixed → visual
+    assert uf._change_has_visual_evidence({"source": "mixed"}) is True
+    # source=image_enrichment → visual
+    assert uf._change_has_visual_evidence({"source": "image_enrichment"}) is True
+    # source=text + evidence содержит image_diff_index → visual
+    assert uf._change_has_visual_evidence({
+        "source": "text",
+        "evidence": [{"origin": "image_diff_index", "quote": "ЩР-1а"}],
+    }) is True
+
+
+# ─── v5 production tuning (2026-05-27 follow-up): bounded caps ────────────
+
+
+def test_v5_prompt_has_bounded_caps():
+    """v5 prompt должен явно ограничивать массивы 25/20/15/10 и запрещать
+    extrapolated series + chain connections."""
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    p = m.QWEN_SCHEME_DIFF_ANCHORS_PROMPT
+    # Жёсткие лимиты
+    assert "labels` ≤ **25**" in p or "labels ≤ 25" in p or "labels` ≤ 25" in p, "labels cap missing"
+    assert "ratings` ≤ **20**" in p or "ratings ≤ 20" in p, "ratings cap missing"
+    assert "connections` ≤ **15**" in p or "connections ≤ 15" in p, "connections cap missing"
+    assert "uncertain_text` ≤ **10**" in p or "uncertain_text ≤ 10" in p, "uncertain cap missing"
+    # Анти-экстраполяция и анти-цепочка явно прописаны
+    assert "АНТИ-ЭКСТРАПОЛЯЦИЯ" in p or "ЭКСТРАПОЛЯЦИИ" in p or "не достраивай" in p.lower()
+    assert "АНТИ-ЦЕПОЧКА" in p or "ЦЕПОЧКА" in p or "цепочк" in p.lower()
+    # Анти-дубликатные комментарии
+    assert "comment" in p.lower() and ("одинаков" in p.lower() or "идентичн" in p.lower() or "повтор" in p.lower())
+
+
+def test_block_type_config_worst_case_is_bounded():
+    """После v5 tuning: worst-case generation = max_tokens × (cont+1)
+    должно быть <= 10000 для scheme/dense_scheme, чтобы один блок не
+    тянулся часами."""
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    for bt in (m.BLOCK_TYPE_SCHEME, m.BLOCK_TYPE_DENSE_SCHEME):
+        cfg = m.get_block_type_config(bt)
+        worst = cfg["max_tokens"] * (cfg["max_continuations"] + 1)
+        assert worst <= 10000, f"{bt}: worst-case {worst} > 10000"
+    dense = m.get_block_type_config(m.BLOCK_TYPE_DENSE_SCHEME)
+    assert dense["max_continuations"] <= 1
+    # image_input_long_side не должен быть 2800 по дефолту (validation
+    # report показал что 2800 + 10k tokens — это ~4 мин/блок)
+    assert dense["image_input_long_side"] < 2800
+
+
+# ─── Subindex artificial sequence detection ───────────────────────────────
+
+
+def test_parse_anchor_series_key_top_level():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    assert m.parse_anchor_series_key("ЩР-1") == ("ЩР", 1)
+    assert m.parse_anchor_series_key("ЩР-10") == ("ЩР", 10)
+    assert m.parse_anchor_series_key("ВРУ-2") == ("ВРУ", 2)
+    assert m.parse_anchor_series_key("QF12") == ("QF", 12)
+    assert m.parse_anchor_series_key("QF-3") == ("QF", 3)
+
+
+def test_parse_anchor_series_key_subindex():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    assert m.parse_anchor_series_key("ЩА-1.5") == ("ЩА-1", 5)
+    assert m.parse_anchor_series_key("ЩР-2.10") == ("ЩР-2", 10)
+    assert m.parse_anchor_series_key("ЩО-1-12") == ("ЩО-1", 12)
+    assert m.parse_anchor_series_key("QF-3.7") == ("QF-3", 7)
+
+
+def test_parse_anchor_series_key_non_series():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    # Не маркировка серии — None
+    assert m.parse_anchor_series_key("") is None
+    assert m.parse_anchor_series_key("просто текст") is None
+    assert m.parse_anchor_series_key("[маркировка не читается]") is None
+
+
+def test_detect_artificial_sequences_top_level():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    labels = [{"raw_text": f"ЩР-{i}"} for i in range(1, 9)]  # 8 подряд
+    res = m._detect_artificial_sequences(labels)
+    assert "ЩР" in res
+
+
+def test_detect_artificial_sequences_subindex_ЩА():
+    """ЩА-1.1 ... ЩА-1.8 теперь ловится (после v5 production tuning)."""
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    labels = [{"raw_text": f"ЩА-1.{i}"} for i in range(1, 9)]
+    res = m._detect_artificial_sequences(labels)
+    assert "ЩА-1" in res, f"expected ЩА-1 series detected, got {res}"
+
+
+def test_detect_artificial_sequences_subindex_ЩР_2():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    labels = [{"raw_text": f"ЩР-2.{i}"} for i in range(1, 11)]  # 10 номеров
+    res = m._detect_artificial_sequences(labels)
+    assert "ЩР-2" in res
+
+
+def test_detect_artificial_sequences_subindex_QF_3():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    labels = [{"raw_text": f"QF-3.{i}"} for i in range(1, 9)]
+    res = m._detect_artificial_sequences(labels)
+    assert "QF-3" in res
+
+
+def test_detect_artificial_sequences_short_sparse():
+    """Короткие/разреженные серии (3-4 элемента) — не считаются hallucination."""
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    labels = [{"raw_text": "ЩА-1.1"}, {"raw_text": "ЩА-1.2"}, {"raw_text": "ЩА-1.7"}]
+    res = m._detect_artificial_sequences(labels)
+    assert res == [], f"short sparse list should not flag, got {res}"
+
+
+# ─── Serial chain connection detector ─────────────────────────────────────
+
+
+def test_detect_serial_chain_connections_subindex_chain():
+    """ЩА-1.1 → ЩА-1.2 → ЩА-1.3 → ... → ЩА-1.6 (5+ шагов) — это галлюцинация."""
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    connections = [
+        {"from_raw": f"ЩА-1.{i}", "to_raw": f"ЩА-1.{i+1}", "relation": "питает"}
+        for i in range(1, 7)
+    ]
+    res = m._detect_serial_chain_connections(connections)
+    assert "ЩА-1" in res
+
+
+def test_detect_serial_chain_connections_star_topology():
+    """Звезда: ВРУ-2 → ЩА-1.1, ВРУ-2 → ЩА-1.2, ... — нормальная топология,
+    не должна флагаться."""
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    connections = [
+        {"from_raw": "ВРУ-2", "to_raw": f"ЩА-1.{i}", "relation": "питает"}
+        for i in range(1, 8)
+    ]
+    res = m._detect_serial_chain_connections(connections)
+    assert res == []
+
+
+def test_detect_serial_chain_connections_short_chain():
+    """3 шага цепочки — слишком мало для уверенного флага."""
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    connections = [
+        {"from_raw": f"ЩА-1.{i}", "to_raw": f"ЩА-1.{i+1}", "relation": "питает"}
+        for i in range(1, 4)
+    ]
+    res = m._detect_serial_chain_connections(connections)
+    assert res == []
+
+
+# ─── Composite hallucination detection ────────────────────────────────────
+
+
+def test_analyze_quality_subindex_alone_is_repeated_but_usable():
+    """ЩА-1.1 ... ЩА-1.8 без других сигналов: repeated_pattern_detected,
+    но НЕ hallucination_suspected (МКД проект может реально иметь 8 квартир).
+    usable_for_diff остаётся True."""
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    payload = {
+        "status": "done",
+        "diff_anchors": {
+            "labels": [{"raw_text": f"ЩА-1.{i}"} for i in range(1, 9)],
+        },
+        "confidence": 0.7,
+    }
+    res = m.analyze_qwen_description_quality(payload, {"block_type": "scheme"})
+    assert "repeated_pattern_detected" in res["warnings"]
+    assert "hallucination_suspected" not in res["warnings"]
+    assert res["usable_for_diff"] is True
+    # confidence чуть снижается даже для repeated-alone
+    assert res["adjusted_confidence"] is not None
+    assert res["adjusted_confidence"] < 0.7
+
+
+def test_analyze_quality_subindex_plus_identical_comments_is_hallucination():
+    """ЩА-1.1 ... ЩА-1.20 + одинаковые comments → hallucination_suspected → usable=False."""
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    payload = {
+        "status": "done",
+        "diff_anchors": {
+            "labels": [
+                {"raw_text": f"ЩА-1.{i}", "comment": "читается в левой части схемы"}
+                for i in range(1, 21)
+            ],
+        },
+        "confidence": 0.6,
+    }
+    res = m.analyze_qwen_description_quality(payload, {"block_type": "scheme"})
+    assert "repeated_pattern_detected" in res["warnings"]
+    assert "identical_comments_detected" in res["warnings"]
+    assert "hallucination_suspected" in res["warnings"]
+    assert res["usable_for_diff"] is False
+
+
+def test_analyze_quality_subindex_plus_serial_chain_is_hallucination():
+    """ЩА-1.1 ... ЩА-1.10 labels + chain connections → hallucination_suspected.
+    Это в точности тот паттерн, что вернул Qwen в validation report 2026-05-27.
+    """
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    payload = {
+        "status": "done",
+        "diff_anchors": {
+            "labels": [{"raw_text": f"ЩА-1.{i}"} for i in range(1, 11)],
+            "connections": [
+                {"from_raw": f"ЩА-1.{i}", "to_raw": f"ЩА-1.{i+1}", "relation": "питает"}
+                for i in range(1, 7)
+            ],
+        },
+        "confidence": 0.5,
+    }
+    res = m.analyze_qwen_description_quality(payload, {"block_type": "dense_scheme"})
+    assert "repeated_pattern_detected" in res["warnings"]
+    assert "serial_chain_connection_detected" in res["warnings"]
+    assert "hallucination_suspected" in res["warnings"]
+    assert res["usable_for_diff"] is False
+
+
+def test_comments_mostly_identical_helper():
+    from backend.app.services.stage_comparison import md_image_enrichment as m
+    # 12 одинаковых comments
+    labels = [{"raw_text": f"X-{i}", "comment": "одно и то же"} for i in range(1, 13)]
+    assert m._comments_mostly_identical(labels) is True
+    # Все разные
+    labels2 = [{"raw_text": f"X-{i}", "comment": f"уникальный коммент {i}"} for i in range(1, 13)]
+    assert m._comments_mostly_identical(labels2) is False
+    # Слишком мало labels
+    labels3 = [{"raw_text": f"X-{i}", "comment": "одинаково"} for i in range(1, 5)]
+    assert m._comments_mostly_identical(labels3) is False
+

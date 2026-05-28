@@ -105,6 +105,11 @@ def _write_unified(session_id: str, payload: dict) -> dict:
 # ─── Core: build flat items ──────────────────────────────────────────────
 
 
+_VISUAL_EVIDENCE_ORIGINS_LOCAL = {
+    "image_enrichment", "scheme_analysis", "image_diff_index",
+}
+
+
 def _empty_summary() -> dict:
     return {
         "total_pairs": 0,
@@ -119,7 +124,36 @@ def _empty_summary() -> dict:
         },
         "by_severity": {"high": 0, "medium": 0, "low": 0, "unknown": 0},
         "requires_human_review": 0,
+        # Phase 6 metrics: считаем visual-evidence changes отдельно. mixed
+        # включается в visual_evidence_changes, потому что в mixed-change
+        # как минимум один visual origin есть; image_enrichment_evidence_changes
+        # и scheme_analysis_evidence_changes — точечные счётчики по origin'ам.
+        "visual_evidence_changes": 0,
+        "mixed_evidence_changes": 0,
+        "image_enrichment_evidence_changes": 0,
+        "scheme_analysis_evidence_changes": 0,
+        "image_diff_index_evidence_changes": 0,
     }
+
+
+def _change_has_visual_evidence(ch: dict) -> bool:
+    """True, если change опирается на визуальный источник.
+
+    Учитываем И source (mixed/image_enrichment/scheme_analysis), И evidence[]
+    origin'ы. Это нужно потому, что Opus может поставить source=text,
+    но в evidence[] перечислить image_enrichment — тогда change всё равно
+    visual (логика принуждения через _coerce_source_from_evidence
+    срабатывает на нормализации, но это safety net).
+    """
+    src = str(ch.get("source") or "").lower()
+    if src in ("image_enrichment", "scheme_analysis", "mixed"):
+        return True
+    evidence = ch.get("evidence")
+    if isinstance(evidence, list):
+        for e in evidence:
+            if isinstance(e, dict) and str(e.get("origin") or "").lower() in _VISUAL_EVIDENCE_ORIGINS_LOCAL:
+                return True
+    return False
 
 
 def build_unified_flat(session_id: str, pair_id: Optional[str] = None) -> dict:
@@ -222,6 +256,27 @@ def build_unified_flat(session_id: str, pair_id: Optional[str] = None) -> dict:
                 summary["requires_human_review"] += 1
             summary["total_changes"] += 1
 
+            # Visual evidence metrics — суммируем по source + evidence[].
+            # Считаем visual_evidence_changes только один раз на change.
+            if _change_has_visual_evidence(ch):
+                summary["visual_evidence_changes"] += 1
+            if source_layer == "mixed":
+                summary["mixed_evidence_changes"] += 1
+            # Per-origin счётчики по evidence[]; если evidence нет —
+            # mapping на source.
+            evidence = ch.get("evidence") if isinstance(ch.get("evidence"), list) else []
+            evidence_origins = {
+                str(e.get("origin") or "").lower()
+                for e in evidence
+                if isinstance(e, dict)
+            }
+            if "image_enrichment" in evidence_origins or source_layer == "image_enrichment":
+                summary["image_enrichment_evidence_changes"] += 1
+            if "scheme_analysis" in evidence_origins or source_layer == "scheme_analysis":
+                summary["scheme_analysis_evidence_changes"] += 1
+            if "image_diff_index" in evidence_origins:
+                summary["image_diff_index_evidence_changes"] += 1
+
             left_page = loc.get("left_page")
             right_page = loc.get("right_page")
             page_for_sort = left_page if left_page is not None else right_page
@@ -254,6 +309,12 @@ def build_unified_flat(session_id: str, pair_id: Optional[str] = None) -> dict:
                 "confidence": float(ch.get("confidence") or 0.0),
                 "evidence_left": ch.get("evidence_left") or {},
                 "evidence_right": ch.get("evidence_right") or {},
+                # optional evidence[] — пробрасываем, если есть, чтобы UI мог
+                # показать, на каком именно источнике (text/table/image_*) каждое
+                # изменение основано. Старые findings без evidence[] не получают
+                # пустого массива — поле просто отсутствует.
+                **({"evidence": ch["evidence"]}
+                   if isinstance(ch.get("evidence"), list) and ch.get("evidence") else {}),
                 "status": "new",
             })
 

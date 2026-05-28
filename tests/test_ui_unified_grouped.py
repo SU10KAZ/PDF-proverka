@@ -264,3 +264,126 @@ def test_css_has_grouped_classes():
     assert ".sc-chip--rollup" in CSS
     assert ".sc-row-evidence" in CSS
     assert ".sc-sev-chip--formal" in CSS
+
+
+# ─── 14. Upload-tab Opus batch button ───────────────────────────────────
+
+
+def test_html_upload_tab_has_compare_button():
+    """На этапе «1. Загрузка документации» рядом с «🖼 Распознать графику»
+    должна быть кнопка «🔍 Проанализировать и сравнить»."""
+    assert "🔍 Проанализировать и сравнить" in HTML
+    # Кнопка под scTab==='upload', рядом с Qwen-кнопкой (в одной шапке или
+    # сразу после Qwen-карточки).
+    idx_qwen = HTML.find("Подготовка графики (Qwen)")
+    idx_opus_btn = HTML.find("🔍 Проанализировать и сравнить")
+    assert idx_qwen >= 0
+    assert idx_opus_btn >= 0
+    assert idx_opus_btn > idx_qwen, "Opus кнопка должна идти ПОСЛЕ Qwen card на upload tab"
+
+
+def test_html_upload_tab_compare_button_disabled_when_qwen_running():
+    """Compare button disabled когда Qwen-job в процессе."""
+    idx = HTML.find("🔍 Проанализировать и сравнить")
+    assert idx >= 0
+    window = HTML[max(0, idx - 1500): idx + 200]
+    # Должна быть проверка на running Qwen.
+    assert "scRecogJob" in window
+    assert "running" in window
+
+
+def test_js_opus_start_calls_unified_analysis_jobs_not_md_enrichment():
+    """scOpusStart() должен POST'ить /unified-analysis-jobs (а не md-enrichment-jobs)."""
+    start = JS.index("async function scOpusStart")
+    end = start + 3000
+    snippet = JS[start:end]
+    assert "/unified-analysis-jobs" in snippet
+    assert "/md-enrichment-jobs" not in snippet
+    # force_enrichment должен быть false (не запускать Qwen)
+    assert "force_enrichment: false" in snippet
+    # force_compare=true (пересчитать с актуальной канон.конфигурацией)
+    assert "force_compare: true" in snippet
+    # skip_ineligible=true (пропустить too_large/not_ready)
+    assert "skip_ineligible: true" in snippet
+    # scope: session
+    assert "scope: 'session'" in snippet
+
+
+def test_js_opus_start_does_not_call_qwen():
+    """scOpusStart() не должен ходить в md-enrichment-jobs или ssE.run_model."""
+    start = JS.index("async function scOpusStart")
+    end = start + 3000
+    snippet = JS[start:end]
+    assert "run_model" not in snippet
+    assert "md-enrichment-jobs" not in snippet
+
+
+def test_js_has_opus_active_restore():
+    """UI восстанавливает активный unified-analysis job при возврате на upload."""
+    assert "async function scOpusRestoreActive" in JS
+    # GET /unified-analysis-jobs/active
+    start = JS.index("async function scOpusRestoreActive")
+    snippet = JS[start: start + 1000]
+    assert "/unified-analysis-jobs/active" in snippet
+
+
+def test_js_has_opus_state_and_methods():
+    expected = [
+        "scOpusJob", "scOpusPolling", "scOpusStarting", "scOpusError",
+        "scOpusPreflight", "scOpusPreflightLoading",
+        "scOpusStart", "scOpusCancel", "scOpusRestoreActive",
+        "scOpusLoadPreflight", "scOpusElapsedLabel",
+        "scOpusCurrentPairLabel", "scOpusStartTitle",
+    ]
+    for name in expected:
+        assert name in JS, f"symbol {name!r} not in app.js"
+
+
+def test_html_opus_progress_panel_fields():
+    """Progress panel должен отображать done/failed/skipped/current/changes
+    где-то на upload-tab после Qwen-карточки."""
+    idx_qwen = HTML.find("Подготовка графики (Qwen)")
+    assert idx_qwen >= 0
+    # Ищем секцию после Qwen-карточки до следующей table-секции — там
+    # живёт Opus progress в новом layout (кнопка перенесена в Qwen-шапку,
+    # progress остаётся отдельным блоком ниже).
+    block = HTML[idx_qwen: idx_qwen + 40000]
+    for field in [
+        "scOpusJob.aggregate.total_pairs",
+        "scOpusJob.aggregate.done",
+        "scOpusJob.aggregate.failed",
+        "scOpusJob.aggregate.skipped",
+        "scOpusJob.aggregate.total_changes",
+        "scOpusJob.aggregate.current_pair_id",
+    ]:
+        assert field in block, f"progress field {field} missing in Opus panel"
+
+
+def test_html_opus_panel_warns_about_too_large_and_not_ready():
+    """Warning-блоки про too_large / not_ready должны быть в upload-tab Opus
+    секции (после Qwen-карточки)."""
+    idx_qwen = HTML.find("Подготовка графики (Qwen)")
+    assert idx_qwen >= 0
+    block = HTML[idx_qwen: idx_qwen + 40000]
+    assert "skip_too_large" in block
+    assert "skip_not_ready" in block
+
+
+def test_html_diffs_tab_no_main_session_button():
+    """На вкладке «Расхождения» НЕ должно быть основной кнопки
+    «Проанализировать и сравнить» (она перенесена на upload tab).
+    Допустимо только secondary действие «Пересчитать текущую пару».
+    Empty-state помощник может упоминать лейбл текстом — это
+    документация для пользователя, не кнопка."""
+    import re
+    # Считаем только кнопки <button> ... 🔍 Проанализировать и сравнить ...
+    # — это реальная UI-кнопка-инициатор. Остальные вхождения текста
+    # лейбла внутри empty-state — допустимы.
+    button_blocks = re.findall(r"<button[^>]*>.*?</button>", HTML, flags=re.DOTALL)
+    btn_with_label = [b for b in button_blocks if "🔍 Проанализировать и сравнить" in b]
+    assert len(btn_with_label) == 1, (
+        f"Главная кнопка должна быть только на upload tab "
+        f"(нашли {len(btn_with_label)} button(s) с этим лейблом)"
+    )
+    # Secondary действие во вкладке «Расхождения» переименовано.
+    assert "Пересчитать текущую пару" in HTML
