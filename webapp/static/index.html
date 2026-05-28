@@ -6,6 +6,7 @@
     <title>Audit Manager</title>
     <script src="/static/js/vue.global.prod.js"></script>
     <script src="/static/js/marked.min.js"></script>
+    <script src="/static/js/portal_auth.js?v={{js_version}}"></script>
     <script src="/static/js/version_api.js?v={{js_version}}"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -120,6 +121,17 @@
                     </svg>
                     Critic v2
                     <span class="nav-badge" style="background:#b45309;font-size:9px;padding:1px 5px">EXP</span>
+                </div>
+            </div>
+
+            <!-- Кнопка выхода: видна только когда portal auth включён (показывается portal_auth.js) -->
+            <div class="sidebar-group" id="portal-logout-item" style="display:none;margin-top:auto">
+                <div class="nav-item" onclick="portalLogout()" title="Завершить сессию и выйти из портала">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M6 14H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h3"/>
+                        <path d="M10.5 11l3-3-3-3M13.5 8H6"/>
+                    </svg>
+                    Выйти
                 </div>
             </div>
         </div>
@@ -1462,6 +1474,17 @@
                             <option value="audit+optimization">Оба</option>
                         </select>
                         <span v-else class="queue-item__action-label">{{ batchActionLabel(item.action) }}</span>
+
+                        <!-- Pre-Gemma badge: показывает что Gemma OCR готов заранее (или идёт фоном) -->
+                        <span v-if="item.gemma_prefetched && (item.gemma_prefetch_status === 'done' || item.gemma_prefetch_status === 'skipped')"
+                              class="prefetch-badge prefetch-done"
+                              title="Gemma OCR готов заранее — этап будет пропущен">⚡</span>
+                        <span v-else-if="item.gemma_prefetch_status === 'running'"
+                              class="prefetch-badge prefetch-running"
+                              title="Pre-Gemma выполняется">↻</span>
+                        <span v-else-if="item.gemma_prefetch_status === 'failed'"
+                              class="prefetch-badge prefetch-failed"
+                              :title="'Pre-Gemma не удался — Gemma запустится штатно: ' + (item.gemma_prefetch_error || '')">⚠</span>
 
                         <!-- Статус -->
                         <span class="queue-item__status">
@@ -5329,7 +5352,15 @@
                                         title="Отменить выполнение задачи">Отменить</button>
                             </template>
                             <template v-if="!(scOpusJob && ['queued','running'].includes(scOpusJob.status))">
-                                <button class="btn btn-sm btn-primary"
+                                <button v-if="scOpusJob && scOpusJob.status === 'failed_interrupted'"
+                                        class="btn btn-sm btn-primary"
+                                        :disabled="scOpusStarting || !scPairs.length || (scRecogJob && ['queued','running'].includes(scRecogJob.status))"
+                                        @click="scOpusContinue()"
+                                        title="Продолжить прерванный батч: пропустить пары с готовым сравнением, доделать остальные">
+                                    {{ scOpusStarting ? 'Запуск…' : '▶ Продолжить (пропустить готовые)' }}
+                                </button>
+                                <button v-else
+                                        class="btn btn-sm btn-primary"
                                         :disabled="scOpusStarting || !scPairs.length || (scRecogJob && ['queued','running'].includes(scRecogJob.status)) || (scOpusPreflight && scOpusPreflight.will_run === 0)"
                                         @click="scOpusStart()"
                                         :title="scOpusStartTitle">
@@ -5344,7 +5375,12 @@
                                 </button>
                             </template>
                             <template v-else>
-                                <span style="color:#15803d">Обработка…</span>
+                                <span style="color:#15803d">
+                                    Обработка…
+                                    <template v-if="scOpusJob && scOpusJob.aggregate && scOpusJob.aggregate.current_pair_index">
+                                        пара {{ scOpusJob.aggregate.current_pair_index }} / {{ scOpusJob.aggregate.total_pairs }}
+                                    </template>
+                                </span>
                                 <button class="btn btn-sm btn-secondary"
                                         @click="scOpusCancel()"
                                         title="Отменить выполнение задачи">Отменить</button>
@@ -5487,6 +5523,17 @@
                     <!-- ── Opus session batch — статус (кнопка перенесена в шапку Qwen-карточки выше) ── -->
                     <div class="sc-card"
                          style="background:#f0fdf4; border-bottom:1px solid #bbf7d0; border-radius:0; padding:10px 14px; font-size:12px">
+                        <!-- Banner: batch был прерван (uvicorn restart / crash) -->
+                        <div v-if="scOpusJob && scOpusJob.status === 'failed_interrupted'"
+                             style="margin-top:6px; background:#fff7ed; color:#9a3412; padding:8px 10px; border:1px solid #fed7aa; border-radius:6px; font-size:12px; display:flex; gap:8px; align-items:flex-start">
+                            <span style="font-size:16px; line-height:1">⚡</span>
+                            <div>
+                                <strong>Сравнение было прервано.</strong>
+                                {{ scOpusJob.error || 'Backend перезапустился во время выполнения, воркер был потерян.' }}
+                                Готовые пары сохранены — нажмите «▶ Продолжить (пропустить готовые)», чтобы доделать остальные.
+                            </div>
+                        </div>
+
                         <!-- Warning: Qwen ещё идёт -->
                         <div v-if="scRecogJob && ['queued','running'].includes(scRecogJob.status)"
                              style="margin-top:6px; background:#fef3c7; color:#92400e; padding:6px 8px; border-radius:6px; font-size:12px">
@@ -5531,6 +5578,8 @@
                              style="margin-top:8px; display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:6px 14px; font-size:12px">
                             <div>всего пар: <strong>{{ scOpusJob.aggregate.total_pairs }}</strong></div>
                             <div style="color:#065f46">готово: <strong>{{ scOpusJob.aggregate.done }}</strong></div>
+                            <div v-if="scOpusJob.aggregate.running" style="color:#1d4ed8">обрабатывается: <strong>{{ scOpusJob.aggregate.running }}</strong></div>
+                            <div v-if="scOpusJob.aggregate.queued" style="color:#3730a3">в очереди: <strong>{{ scOpusJob.aggregate.queued }}</strong></div>
                             <div style="color:#991b1b">ошибок: <strong>{{ scOpusJob.aggregate.failed }}</strong></div>
                             <div style="opacity:.75">пропущено: <strong>{{ scOpusJob.aggregate.skipped }}</strong>
                                 <span v-if="scOpusJob.aggregate.skipped_too_large" style="opacity:.7" :title="'too_large: ' + scOpusJob.aggregate.skipped_too_large + ', not_ready: ' + scOpusJob.aggregate.skipped_not_ready">

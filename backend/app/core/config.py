@@ -773,5 +773,21 @@ STAGE01_COMPLETENESS_DISCIPLINE_ALLOWLIST  = _env_csv(
     "STAGE01_COMPLETENESS_DISCIPLINE_ALLOWLIST", []
 )
 
+# ─── Portal auth (простая защита веб-портала логином/паролем) ────────────────
+# Лёгкая session-cookie аутентификация для 3-4 сотрудников. Без БД, ролей,
+# регистрации. По умолчанию ВЫКЛЮЧЕНА (поведение портала не меняется).
+#   PORTAL_AUTH_ENABLED=true                  → включить защиту
+#   PORTAL_AUTH_USERS='ivan:HASH,petr:HASH'   → логин:pbkdf2-хеш, через запятую
+#                                               (одинарные кавычки обязательны: хеш содержит $)
+#   PORTAL_SESSION_SECRET=<длинная случайная строка>  → подпись session-cookie
+#   PORTAL_SESSION_TTL_HOURS=24               → срок жизни сессии (часы)
+#   PORTAL_COOKIE_SECURE=auto|true|false      → Secure-флаг cookie (auto = по схеме запроса)
+PORTAL_AUTH_ENABLED        = _env_bool("PORTAL_AUTH_ENABLED", False)
+PORTAL_AUTH_USERS_RAW      = os.environ.get("PORTAL_AUTH_USERS", "")
+PORTAL_SESSION_SECRET      = os.environ.get("PORTAL_SESSION_SECRET", "")
+PORTAL_SESSION_TTL_HOURS   = _env_int("PORTAL_SESSION_TTL_HOURS", 24)
+PORTAL_COOKIE_SECURE       = (os.environ.get("PORTAL_COOKIE_SECURE", "auto").strip().lower() or "auto")
+PORTAL_SESSION_COOKIE_NAME = os.environ.get("PORTAL_SESSION_COOKIE_NAME", "portal_session").strip() or "portal_session"
+
 # Обратная совместимость: BASE_DIR → ROOT_DIR
 BASE_DIR = ROOT_DIR

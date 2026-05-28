@@ -6,6 +6,7 @@
     <title>Audit Manager</title>
     <script src="/static/js/vue.global.prod.js"></script>
     <script src="/static/js/marked.min.js"></script>
+    <script src="/static/js/portal_auth.js?v={{js_version}}"></script>
     <script src="/static/js/version_api.js?v={{js_version}}"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -120,6 +121,17 @@
                     </svg>
                     Critic v2
                     <span class="nav-badge" style="background:#b45309;font-size:9px;padding:1px 5px">EXP</span>
+                </div>
+            </div>
+
+            <!-- Кнопка выхода: видна только когда portal auth включён (показывается portal_auth.js) -->
+            <div class="sidebar-group" id="portal-logout-item" style="display:none;margin-top:auto">
+                <div class="nav-item" onclick="portalLogout()" title="Завершить сессию и выйти из портала">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M6 14H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h3"/>
+                        <path d="M10.5 11l3-3-3-3M13.5 8H6"/>
+                    </svg>
+                    Выйти
                 </div>
             </div>
         </div>

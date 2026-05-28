@@ -27,11 +27,12 @@ if _env_file.exists():
 
 import uvicorn
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 
 from backend.app.core.config import APP_HOST, APP_PORT
+from backend.app.core import portal_auth
 from backend.app.api.routers import (
     projects,
     findings,
@@ -51,6 +52,7 @@ from backend.app.api.routers import (
     migrated_findings,
     external_register,
     stage_comparison,
+    auth,
 )
 from backend.app.ws.manager import ws_manager
 
@@ -76,6 +78,11 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# ─── Portal auth ────────────────────────────────────────────
+# Простая защита портала логином/паролем. Включается через PORTAL_AUTH_ENABLED.
+# При выключенном auth middleware — no-op (поведение портала не меняется).
+app.add_middleware(portal_auth.PortalAuthMiddleware)
+
 # ─── REST Routers ───────────────────────────────────────────
 # migrated_findings регистрируется ДО projects.router, потому что в projects
 # зарегистрирован catch-all `GET /api/projects/{project_id:path}`, который
@@ -99,12 +106,25 @@ app.include_router(critic_v2_ui.router)
 app.include_router(critic_v2_assisted_round1.router)
 app.include_router(external_register.router)
 app.include_router(stage_comparison.router)
+app.include_router(auth.router)
 # migrated_findings уже подключён выше — повторно не подключаем.
 
 # ─── WebSocket Endpoints ────────────────────────────────────
+def _ws_authorized(websocket: WebSocket) -> bool:
+    """Проверить session-cookie на WebSocket (middleware ws не перехватывает)."""
+    settings = portal_auth.get_settings()
+    if not settings.enabled:
+        return True
+    token = websocket.cookies.get(settings.cookie_name)
+    return bool(token and portal_auth.verify_token(token, settings))
+
+
 @app.websocket("/ws/audit/{project_id}")
 async def ws_audit(websocket: WebSocket, project_id: str):
     """WebSocket для live-лога аудита конкретного проекта."""
+    if not _ws_authorized(websocket):
+        await websocket.close(code=1008)
+        return
     await ws_manager.connect_project(websocket, project_id)
     try:
         while True:
@@ -116,6 +136,9 @@ async def ws_audit(websocket: WebSocket, project_id: str):
 @app.websocket("/ws/global")
 async def ws_global(websocket: WebSocket):
     """WebSocket для глобальных событий (все проекты)."""
+    if not _ws_authorized(websocket):
+        await websocket.close(code=1008)
+        return
     await ws_manager.connect_global(websocket)
     try:
         while True:
@@ -160,6 +183,28 @@ if _static_mount_dir is not None:
 _html_dir = _frontend_dir if _frontend_dir.exists() else _webapp_static_dir
 
 
+@app.get("/login")
+async def serve_login(request: Request):
+    """Отдать self-contained страницу входа.
+
+    Когда auth выключен — вход не нужен, редирект на `/`. Если пользователь
+    уже залогинен — тоже на `/`.
+    """
+    settings = portal_auth.get_settings()
+    if not settings.enabled:
+        return RedirectResponse("/", status_code=302)
+    if portal_auth.request_username(request, settings):
+        return RedirectResponse("/", status_code=302)
+    login_path = _html_dir / "login.html"
+    if login_path.exists():
+        return HTMLResponse(login_path.read_text(encoding="utf-8"))
+    return HTMLResponse(
+        "<!doctype html><meta charset=utf-8><title>Вход</title>"
+        "<p>Страница входа не найдена (login.html).</p>",
+        status_code=200,
+    )
+
+
 @app.get("/")
 async def serve_spa():
     """Отдать SPA index.html.
@@ -174,8 +219,9 @@ async def serve_spa():
     css_path = (_static_mount_dir / "css" / "styles.css") if _static_mount_dir else None
     js_path = (_static_mount_dir / "js" / "app.js") if _static_mount_dir else None
     vapi_path = (_static_mount_dir / "js" / "version_api.js") if _static_mount_dir else None
+    pauth_path = (_static_mount_dir / "js" / "portal_auth.js") if _static_mount_dir else None
     css_ver = int(css_path.stat().st_mtime) if css_path and css_path.exists() else 0
-    js_mtimes = [int(p.stat().st_mtime) for p in (js_path, vapi_path) if p and p.exists()]
+    js_mtimes = [int(p.stat().st_mtime) for p in (js_path, vapi_path, pauth_path) if p and p.exists()]
     js_ver = max(js_mtimes) if js_mtimes else 0
     html = index_path.read_text(encoding="utf-8")
     html = html.replace("{{css_version}}", str(css_ver)).replace("{{js_version}}", str(js_ver))
