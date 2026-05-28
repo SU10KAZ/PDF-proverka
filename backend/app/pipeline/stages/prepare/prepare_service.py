@@ -21,7 +21,7 @@ from typing import Optional
 from backend.app.models.audit import PrepareQueueItem, PrepareQueueStatus
 from backend.app.models.websocket import WSMessage
 from backend.app.core.config import BLOCKS_SCRIPT, GEMMA_ENRICH_SCRIPT, PREPARE_QUEUE_FILE
-from backend.app.services.common.project_service import resolve_project_dir
+from backend.app.services.common.project_service import resolve_project_dir, resolve_active_project_dir
 from backend.app.services.common.audit_logger import persist_log, update_pipeline_log
 from backend.app.services.llm.lmstudio_lifecycle_service import (
     note_activity as _lmstudio_note_activity,
@@ -328,7 +328,7 @@ async def _crop_for_project(project_id: str) -> None:
     item = _find_item(project_id)
     if item is None:
         return
-    project_dir = resolve_project_dir(project_id)
+    project_dir = resolve_active_project_dir(project_id)
     sem = prepare_state.get_crop_semaphore()
     async with sem:
         # Cancel — пользователь остановил очередь до старта crop'а: пропускаем.
@@ -548,7 +548,7 @@ async def _run_prepare(
     model: Optional[str],
     timeout: Optional[int],
 ) -> dict:
-    project_dir = resolve_project_dir(project_id)
+    project_dir = resolve_active_project_dir(project_id)
     out_dir = project_dir / "_output"
     item = _find_item(project_id)
     assert item is not None
@@ -891,7 +891,7 @@ async def start_retry_failed(project_id: str) -> dict:
     if existing_task is not None and not existing_task.done():
         return {"status": "already_running"}
 
-    project_dir = resolve_project_dir(project_id)
+    project_dir = resolve_active_project_dir(project_id)
     summary_path = project_dir / "_output" / "gemma_enrichment_summary.json"
     if not summary_path.exists():
         return {"status": "error", "error": "summary не найден — сначала надо сделать обычный prepare-data"}

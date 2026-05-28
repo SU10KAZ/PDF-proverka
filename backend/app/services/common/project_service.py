@@ -358,6 +358,31 @@ def resolve_project_dir(
     return direct  # fallback
 
 
+def resolve_active_project_dir(
+    project_id: str,
+    *,
+    object_id: Optional[str] = None,
+    strict: bool = False,
+) -> Path:
+    """Папка АКТИВНОЙ версии проекта.
+
+    В отличие от `resolve_project_dir`, который всегда возвращает корень,
+    эта функция учитывает `project_versions.json`:
+      - bound через `version_service.bind_version(...)` → этот version_id;
+      - иначе — `latest_version_id` из манифеста;
+      - legacy без манифеста → корень (V1 эквивалент).
+
+    Pipeline-стейджи и subprocess'ы должны видеть source-файлы и `_output/`
+    активной версии, а не v1, лежащую в корне.
+    """
+    root = resolve_project_dir(project_id, object_id=object_id, strict=strict)
+    vid = version_service.get_bound_version_id()
+    try:
+        return version_service.get_version_dir(root, project_id, vid)
+    except version_service.VersionNotFoundError:
+        return root
+
+
 def _load_hidden_projects() -> set[str]:
     """Прочитать множество скрытых project_id из hidden_projects.json."""
     if not HIDDEN_PROJECTS_FILE.exists():
