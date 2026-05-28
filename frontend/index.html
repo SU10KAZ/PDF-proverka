@@ -5340,7 +5340,15 @@
                                         title="Отменить выполнение задачи">Отменить</button>
                             </template>
                             <template v-if="!(scOpusJob && ['queued','running'].includes(scOpusJob.status))">
-                                <button class="btn btn-sm btn-primary"
+                                <button v-if="scOpusJob && scOpusJob.status === 'failed_interrupted'"
+                                        class="btn btn-sm btn-primary"
+                                        :disabled="scOpusStarting || !scPairs.length || (scRecogJob && ['queued','running'].includes(scRecogJob.status))"
+                                        @click="scOpusContinue()"
+                                        title="Продолжить прерванный батч: пропустить пары с готовым сравнением, доделать остальные">
+                                    {{ scOpusStarting ? 'Запуск…' : '▶ Продолжить (пропустить готовые)' }}
+                                </button>
+                                <button v-else
+                                        class="btn btn-sm btn-primary"
                                         :disabled="scOpusStarting || !scPairs.length || (scRecogJob && ['queued','running'].includes(scRecogJob.status)) || (scOpusPreflight && scOpusPreflight.will_run === 0)"
                                         @click="scOpusStart()"
                                         :title="scOpusStartTitle">
@@ -5355,7 +5363,12 @@
                                 </button>
                             </template>
                             <template v-else>
-                                <span style="color:#15803d">Обработка…</span>
+                                <span style="color:#15803d">
+                                    Обработка…
+                                    <template v-if="scOpusJob && scOpusJob.aggregate && scOpusJob.aggregate.current_pair_index">
+                                        пара {{ scOpusJob.aggregate.current_pair_index }} / {{ scOpusJob.aggregate.total_pairs }}
+                                    </template>
+                                </span>
                                 <button class="btn btn-sm btn-secondary"
                                         @click="scOpusCancel()"
                                         title="Отменить выполнение задачи">Отменить</button>
@@ -5498,6 +5511,17 @@
                     <!-- ── Opus session batch — статус (кнопка перенесена в шапку Qwen-карточки выше) ── -->
                     <div class="sc-card"
                          style="background:#f0fdf4; border-bottom:1px solid #bbf7d0; border-radius:0; padding:10px 14px; font-size:12px">
+                        <!-- Banner: batch был прерван (uvicorn restart / crash) -->
+                        <div v-if="scOpusJob && scOpusJob.status === 'failed_interrupted'"
+                             style="margin-top:6px; background:#fff7ed; color:#9a3412; padding:8px 10px; border:1px solid #fed7aa; border-radius:6px; font-size:12px; display:flex; gap:8px; align-items:flex-start">
+                            <span style="font-size:16px; line-height:1">⚡</span>
+                            <div>
+                                <strong>Сравнение было прервано.</strong>
+                                {{ scOpusJob.error || 'Backend перезапустился во время выполнения, воркер был потерян.' }}
+                                Готовые пары сохранены — нажмите «▶ Продолжить (пропустить готовые)», чтобы доделать остальные.
+                            </div>
+                        </div>
+
                         <!-- Warning: Qwen ещё идёт -->
                         <div v-if="scRecogJob && ['queued','running'].includes(scRecogJob.status)"
                              style="margin-top:6px; background:#fef3c7; color:#92400e; padding:6px 8px; border-radius:6px; font-size:12px">
@@ -5542,6 +5566,8 @@
                              style="margin-top:8px; display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:6px 14px; font-size:12px">
                             <div>всего пар: <strong>{{ scOpusJob.aggregate.total_pairs }}</strong></div>
                             <div style="color:#065f46">готово: <strong>{{ scOpusJob.aggregate.done }}</strong></div>
+                            <div v-if="scOpusJob.aggregate.running" style="color:#1d4ed8">обрабатывается: <strong>{{ scOpusJob.aggregate.running }}</strong></div>
+                            <div v-if="scOpusJob.aggregate.queued" style="color:#3730a3">в очереди: <strong>{{ scOpusJob.aggregate.queued }}</strong></div>
                             <div style="color:#991b1b">ошибок: <strong>{{ scOpusJob.aggregate.failed }}</strong></div>
                             <div style="opacity:.75">пропущено: <strong>{{ scOpusJob.aggregate.skipped }}</strong>
                                 <span v-if="scOpusJob.aggregate.skipped_too_large" style="opacity:.7" :title="'too_large: ' + scOpusJob.aggregate.skipped_too_large + ', not_ready: ' + scOpusJob.aggregate.skipped_not_ready">

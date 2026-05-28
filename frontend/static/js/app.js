@@ -9172,6 +9172,8 @@ const app = createApp({
                 // Баннер автоподгрузки старой модели не показываем — он про историю сессий.
                 scAutoLoadInfo.value = null;
                 try { await scRecogRestoreActive(); } catch (_) {}
+                try { await scOpusRestoreActive(); } catch (_) {}
+                try { await scOpusLoadPreflight(); } catch (_) {}
                 return true;
             } catch (_) { return false; }
         }
@@ -9258,6 +9260,8 @@ const app = createApp({
                                 pairs_matched: match.pairs_matched,
                             };
                             try { await scRecogRestoreActive(); } catch (_) {}
+                            try { await scOpusRestoreActive(); } catch (_) {}
+                            try { await scOpusLoadPreflight(); } catch (_) {}
                             return;
                         }
                     }
@@ -9409,6 +9413,11 @@ const app = createApp({
                 // Restore last/active session-scope Qwen recognition job, чтобы
                 // на этапе 1 сразу показать актуальный прогресс/последний прогон.
                 try { await scRecogRestoreActive(); } catch (_) {}
+                // То же самое для Opus session batch + preflight, иначе после
+                // F5 на вкладке «Загрузка документации» UI не знает, что job
+                // активен (watch(scTab) срабатывает только при смене вкладки).
+                try { await scOpusRestoreActive(); } catch (_) {}
+                try { await scOpusLoadPreflight(); } catch (_) {}
             } catch (e) {
                 scError.value = 'Не удалось загрузить сессию: ' + e;
             }
@@ -11876,6 +11885,45 @@ const app = createApp({
             }
         }
 
+        // Продолжить прерванный батч: пропустить пары с готовым comparison
+        // (force_compare=false → skip_done сработает), повторить остальные.
+        // Та же семантика, что и Qwen «▶ Продолжить (пропустить готовые)».
+        async function scOpusContinue() {
+            if (!scSession.value || !scSession.value.id) return;
+            if (scOpusStarting.value) return;
+            scOpusStarting.value = true;
+            scOpusError.value = '';
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/unified-analysis-jobs`;
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        scope: 'session',
+                        confirm: true,
+                        force_enrichment: false,
+                        force_compare: false,
+                        skip_ineligible: true,
+                    }),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    const msg = (j && j.detail && (j.detail.message || j.detail)) || ('HTTP ' + r.status);
+                    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+                }
+                const job = await r.json();
+                scOpusJob.value = job;
+                scOpusStartedAtClient.value = Date.now();
+                if (job && job.id && (job.status === 'queued' || job.status === 'running')) {
+                    scOpusPoll(job.id);
+                }
+            } catch (e) {
+                scOpusError.value = String(e.message || e);
+            } finally {
+                scOpusStarting.value = false;
+            }
+        }
+
         async function scOpusPoll(jobId) {
             if (!scSession.value || !jobId) return;
             if (scOpusPolling.value) return;
@@ -11891,7 +11939,7 @@ const app = createApp({
                     if (!r.ok) break;
                     const job = await r.json();
                     scOpusJob.value = job;
-                    if (['done', 'failed', 'cancelled', 'rejected_no_confirm'].includes(job.status)) break;
+                    if (['done', 'failed', 'cancelled', 'rejected_no_confirm', 'failed_interrupted'].includes(job.status)) break;
                     await new Promise(res => setTimeout(res, 3000));
                 }
                 // После job — синхронизировать flat/grouped с диска (backend
@@ -12921,7 +12969,7 @@ const app = createApp({
             // Stage 1: «Проанализировать и сравнить» (session-level Opus batch)
             scOpusJob, scOpusPolling, scOpusStarting, scOpusError,
             scOpusPreflight, scOpusPreflightLoading,
-            scOpusStart, scOpusRetryErrors, scOpusCancel,
+            scOpusStart, scOpusRetryErrors, scOpusCancel, scOpusContinue,
             scOpusRestoreActive, scOpusLoadPreflight,
             scOpusElapsedLabel, scOpusCurrentPairLabel, scOpusStartTitle,
             // Per-pair analysis mode
