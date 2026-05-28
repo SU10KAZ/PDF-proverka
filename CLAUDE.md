@@ -281,3 +281,4 @@ resume/skip больше не считаются валидными. Нужно 
 - @docs/critic_corrector.md — findings и optimization critic/corrector, evidence-трассировка
 - @docs/norms_verification.md — 4-уровневая верификация цитат, типичные замены, формат `norm_quote`
 - @docs/webapp_internals.md — два трекера токенов, batch queue, пауза, гибридные модели, фронтенд
+- @docs/stage_comparison_md_enrichment.md — Qwen MD image enrichment: prompt v4_compact, salvage-first, conditional fallback, continuation, diagnostics
