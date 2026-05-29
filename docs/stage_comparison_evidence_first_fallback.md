@@ -208,8 +208,14 @@ Downstream (`unified_findings`, UI) видит обычный `status=done` со
    снизить `FUZZY_THRESHOLD` до 0.5.
 5. Откат — снять флаг, перезапустить backend.
 
+## Приёмка и rollout
+
+- Acceptance-артефакты (КР2, real Opus shadow run): [experiments/stage_comparison_evidence_first_s2/results/kr2_acceptance/](../experiments/stage_comparison_evidence_first_s2/results/kr2_acceptance/)
+- Controlled rollout plan + риски: [experiments/stage_comparison_evidence_first_s2/ROLLOUT.md](../experiments/stage_comparison_evidence_first_s2/ROLLOUT.md)
+
 ## Связанные файлы
 
 - [backend/app/services/stage_comparison/evidence_first_fallback.py](../backend/app/services/stage_comparison/evidence_first_fallback.py)
 - [backend/app/services/stage_comparison/enriched_comparison.py](../backend/app/services/stage_comparison/enriched_comparison.py) — too_large-ветка
+- [backend/app/services/stage_comparison/unified_analysis_jobs.py](../backend/app/services/stage_comparison/unified_analysis_jobs.py) — batch preflight (too_large→run при флаге)
 - [tests/test_stage_comparison_evidence_first_fallback.py](../tests/test_stage_comparison_evidence_first_fallback.py)

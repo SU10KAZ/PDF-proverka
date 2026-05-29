@@ -1,0 +1,55 @@
+{
+  "feature": "evidence_first_s2_fallback",
+  "commits": [
+    "d4e0c34 (feature)",
+    "8d4c295 (acceptance fixes)"
+  ],
+  "acceptance_date": "2026-05-29",
+  "project": {
+    "name": "АА_БЭ-03-ДС3-КР2",
+    "session": "ba413a93c5754f6c",
+    "pair": "p2ef68719",
+    "left_chars": 586081,
+    "right_chars": 279072,
+    "total_chars": 865153,
+    "enriched_compare_max_chars": 600000,
+    "too_large": true
+  },
+  "strategy_comparison_confirmed_unique": {
+    "S1_naive_full": 7,
+    "S3_compact": 8,
+    "S2_section_split": 13,
+    "metric_note": "confirmed_unique_changes (manual adjudication, research 2026-05-29); raw counts were 7/9/38"
+  },
+  "shadow_run": {
+    "provider": "claude_code (claude -p, model=opus)",
+    "duration_sec": 831,
+    "chunks_total": 5,
+    "chunks_done": 5,
+    "status": "done",
+    "strategy": "evidence_first_s2_fallback",
+    "raw_changes": 63,
+    "deterministic": 9,
+    "llm_raw": 54,
+    "dropped_ungrounded": 0,
+    "all_grounded": true
+  },
+  "after_acceptance_fixes": {
+    "deterministic": 5,
+    "llm_kept_grounded": 54,
+    "duplicates_removed": 4,
+    "final_changes": 55,
+    "stamp_changed_collapsed": "5 -> 1",
+    "stage_3_3_within_scope_dups_removed": 4,
+    "cross_section_material_change_found": "W8/F150 -> W6/F200 (via shared global header)"
+  },
+  "batch_preflight": {
+    "fallback_disabled": "too_large -> skip_too_large",
+    "fallback_enabled": "too_large -> run + analysis_strategy=evidence_first_s2_fallback"
+  },
+  "tests": {
+    "suite": "tests/test_stage_comparison_evidence_first_fallback.py",
+    "passed": 20
+  },
+  "production_state": "comparison_result.json restored to too_large (shadow non-destructive); fallback flag default OFF"
+}
