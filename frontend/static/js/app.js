@@ -8836,6 +8836,9 @@ const app = createApp({
         const scExpertDecisions       = ref({});   // {raw_id: {decision, rejection_reason}}
         const scExpertReviewSaving    = ref(false);
         const scExpertReviewLoaded    = ref(false);
+        // Per-pair статус разметки для колонки «Проверено экспертом» на этапе
+        // «1. Загрузка документации»: {pair_id: {total, decided, fully_verified}}.
+        const scExpertPerPair         = ref({});
         // Sync scroll/zoom (sync zoom toggle убран — масштаб всегда общий)
         const scZoom           = ref(1.0);
         const scSyncScroll     = ref(true);
@@ -8874,56 +8877,14 @@ const app = createApp({
         const scCreatePairRight = ref('');
         const scCreatePairError = ref('');
         const scCreatePairSaving = ref(false);
-        // ── Findings / Report tab ───────────────────────────────────────
-        const scFindingsItems   = ref([]);
-        const scFindingsSummary = ref(null);
-        const scFindingsTotal   = ref(null);
-        const scFindingsLoading = ref(false);
-        const scFindingsRebuilding = ref(false);
-        const scFindingsError   = ref('');
-        const scFindingsFilter  = reactive({pair_id:'', category:'', status:'', severity:'', type:'', q:''});
-        let _scFindingsDebounceT = null;
-        const scFindingsSelectedIds = ref(new Set());
-        const scActiveFinding   = ref(null);
-        const scActiveFindingDraftNote = ref('');
-        const scActiveFindingDraftSeverity = ref('medium');
-        // Группировка (Задача 7): кэш child findings и развёрнутые parent_id
-        const scExpandedParents = ref(new Set());
-        const scChildFindingsCache = reactive({});  // parent_id -> [children]
-        // Bulk actions (Задача 8)
-        const scBulkSeverity = ref('medium');
-        const scBulkNote = ref('');
-        const scBulkActionRunning = ref(false);
-        // Warnings (Задача 9)
-        const scWarningsItems = ref([]);
-        const scWarningsSummary = ref(null);
-        const scWarningsLoading = ref(false);
-        // Batch LLM
-        const scBatchLLMConfirmOpen = ref(false);
-        const scBatchLLMScope = ref('selected');
-        const scBatchLLMCount = ref(0);
-        const scBatchLLMModel = ref('google/gemini-3.1-pro-preview');
-        const scBatchLLMRunning = ref(false);
-        const scBatchLLMError = ref('');
-        const scBatchLLMLastJob = ref(null);
-        // Прогресс активного job + polling-таймер
-        const scBatchLLMProgressOpen = ref(false);
-        let _scBatchLLMPollT = null;
-        const scBatchLLMCancelling = ref(false);
-        // Reports
-        const scReportForm = reactive({
-            format: 'md',
-            include_images: true,
-            include_llm_summary: true,
-            include_user_notes: true,
-            include_rejected: false,
-            include_ignored: false,
-            include_child_findings: false,
-            severity_filter: '',
-        });
-        const scReportCreating = ref(false);
-        const scLastReport     = ref(null);
-        const scReportsList    = ref([]);
+        // ── Report tab (read-only сводка согласованных расхождений) ──────
+        // Вкладка «4. Отчёт»: собирает по всем парам проектов только те
+        // расхождения, что эксперт согласовал на этапе «3. Расхождения».
+        // Ничего не верифицируется здесь — только просмотр + один XLSX-экспорт.
+        const scReportLoading       = ref(false);
+        const scReportError         = ref('');
+        const scReportFlatItems     = ref([]);          // unified flat по ВСЕМ парам
+        const scReportExpandedPairs = ref(new Set());   // pair_id, развёрнутые в аккордеоне
 
         const scPairs = computed(() => scSession.value ? (scSession.value.pairs || []) : []);
         const scPairsCounts = computed(() => {
@@ -9431,6 +9392,8 @@ const app = createApp({
                 // активен (watch(scTab) срабатывает только при смене вкладки).
                 try { await scOpusRestoreActive(); } catch (_) {}
                 try { await scOpusLoadPreflight(); } catch (_) {}
+                // Per-pair статус «Проверено экспертом» для таблицы загрузки.
+                try { await scLoadExpertPerPair(); } catch (_) {}
             } catch (e) {
                 scError.value = 'Не удалось загрузить сессию: ' + e;
             }
@@ -10198,11 +10161,8 @@ const app = createApp({
             if (scGraphicSummary.value) {
                 try { await scLoadGraphicSummary(); } catch (_) {}
             }
-            if (scFindingsItems.value && scFindingsItems.value.length) {
-                try { await scLoadFindings(); } catch (_) {}
-            }
-            if (scWarningsItems.value && scWarningsItems.value.length) {
-                try { await scLoadWarnings(); } catch (_) {}
+            if (scTab.value === 'report' && scReportFlatItems.value && scReportFlatItems.value.length) {
+                try { await scReportLoad(); } catch (_) {}
             }
             await nextTick();
             _scUpdateVisibleSlot();
@@ -10600,465 +10560,98 @@ const app = createApp({
             scPairDragOverIdx.value = -1;
         }
 
-        // ── Findings ───────────────────────────────────────────────────
-        const scAllSelected = computed(() => {
-            return scFindingsItems.value.length > 0 &&
-                   scFindingsItems.value.every(f => scFindingsSelectedIds.value.has(f.id));
-        });
-        const scFindingsSelectedLLM = computed(() => {
-            return scFindingsItems.value.filter(f =>
-                scFindingsSelectedIds.value.has(f.id) &&
-                f.category === 'graphic' &&
-                (f.left?.block_id || f.left?.block_id === '') &&
-                f.left?.block_id && f.right?.block_id
-            );
-        });
+        // ── Report tab: read-only сводка согласованных расхождений ──────
+        // Источник — unified flat по ВСЕМ парам (build_unified_flat без pair_id)
+        // + решения эксперта (expert_review.json, ключ `<pair_id>::<raw_id>`).
+        // Показываем только decision=accepted, сгруппировано по парам проектов.
 
-        async function scOpenReportTab() {
-            if (!scSession.value) return;
-            scTab.value = 'report';
-            scLoadWarnings();  // в фоне
-            // Если findings пуст — попросим пересобрать
-            if (scFindingsItems.value.length === 0 && scFindingsTotal.value == null) {
-                await scLoadFindings();
-                if ((scFindingsSummary.value?.total_all || 0) === 0) {
-                    await scRebuildFindings();
-                }
-            } else {
-                await scLoadFindings();
+        // accepted, считаем по составному ключу напрямую (не через
+        // scGetExpertDecision — там scope-хелпер переклеивает pair_id на
+        // активную пару, что ломает поэкранную группировку отчёта).
+        function _scReportItemAccepted(it) {
+            if (!it) return false;
+            const pid = String(it.pair_id || '');
+            if (!pid) return false;
+            const raws = (Array.isArray(it.source_finding_ids) && it.source_finding_ids.length)
+                ? it.source_finding_ids.filter(Boolean).map(String)
+                : (it.id ? [String(it.id)] : []);
+            return raws.some(r => ((scExpertDecisions.value[`${pid}::${r}`] || {}).decision) === 'accepted');
+        }
+
+        const _SC_REPORT_SEV_RANK = { high: 0, medium: 1, low: 2, unknown: 3 };
+        // Все согласованные расхождения, сгруппированные по pair_id.
+        const scReportApprovedByPair = computed(() => {
+            const byPair = {};
+            for (const it of (scReportFlatItems.value || [])) {
+                if (!_scReportItemAccepted(it)) continue;
+                const pid = String(it.pair_id || '');
+                (byPair[pid] = byPair[pid] || []).push(it);
             }
-        }
-
-        async function scRebuildFindings() {
-            if (!scSession.value) return;
-            scFindingsRebuilding.value = true;
-            scFindingsError.value = '';
-            try {
-                const r = await fetch(`/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/findings/rebuild`, {method: 'POST'});
-                if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.detail || ('HTTP ' + r.status)); }
-                const data = await r.json();
-                console.log('[stage-comparison] rebuild findings:', data);
-                // Сбросим кэш children/expanded — структура могла измениться
-                scExpandedParents.value = new Set();
-                for (const k of Object.keys(scChildFindingsCache)) delete scChildFindingsCache[k];
-                await scLoadFindings();
-                scLoadWarnings();
-            } catch (e) {
-                scFindingsError.value = String(e.message || e);
-            } finally {
-                scFindingsRebuilding.value = false;
-            }
-        }
-
-        async function scLoadFindings() {
-            if (!scSession.value) return;
-            scFindingsLoading.value = true;
-            scFindingsError.value = '';
-            try {
-                const params = new URLSearchParams();
-                for (const k of ['pair_id', 'category', 'status', 'severity', 'type', 'q']) {
-                    if (scFindingsFilter[k]) params.set(k, scFindingsFilter[k]);
-                }
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/findings?` + params.toString();
-                const r = await fetch(url);
-                if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.detail || ('HTTP ' + r.status)); }
-                const data = await r.json();
-                scFindingsItems.value = data.items || [];
-                scFindingsSummary.value = data.summary;
-                scFindingsTotal.value = data.summary?.total_all ?? 0;
-            } catch (e) {
-                scFindingsError.value = String(e.message || e);
-            } finally {
-                scFindingsLoading.value = false;
-            }
-        }
-
-        function scDebouncedLoadFindings() {
-            if (_scFindingsDebounceT) clearTimeout(_scFindingsDebounceT);
-            _scFindingsDebounceT = setTimeout(() => scLoadFindings(), 300);
-        }
-
-        function scToggleFindingSelect(id) {
-            const s = new Set(scFindingsSelectedIds.value);
-            if (s.has(id)) s.delete(id); else s.add(id);
-            scFindingsSelectedIds.value = s;
-        }
-        function scToggleSelectAll(checked) {
-            if (!checked) {
-                scFindingsSelectedIds.value = new Set();
-            } else {
-                scFindingsSelectedIds.value = new Set(scFindingsItems.value.map(f => f.id));
-            }
-        }
-
-        function scOpenFinding(f) {
-            scActiveFinding.value = f;
-            scActiveFindingDraftNote.value = f.user_note || '';
-            scActiveFindingDraftSeverity.value = f.severity || 'medium';
-        }
-
-        async function scPatchFinding(newStatus) {
-            if (!scActiveFinding.value || !scSession.value) return;
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/findings/${encodeURIComponent(scActiveFinding.value.id)}`;
-                const body = {
-                    status: newStatus,
-                    severity: scActiveFindingDraftSeverity.value,
-                    user_note: scActiveFindingDraftNote.value,
-                };
-                const r = await fetch(url, {
-                    method: 'PATCH',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(body),
+            for (const pid of Object.keys(byPair)) {
+                byPair[pid].sort((a, b) => {
+                    const ra = _SC_REPORT_SEV_RANK[a.severity] ?? 3;
+                    const rb = _SC_REPORT_SEV_RANK[b.severity] ?? 3;
+                    if (ra !== rb) return ra - rb;
+                    const pa = Array.isArray(a.page) ? (a.page[0] || 0) : (a.page || 0);
+                    const pb = Array.isArray(b.page) ? (b.page[0] || 0) : (b.page || 0);
+                    return pa - pb;
                 });
-                if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.detail || ('HTTP ' + r.status)); }
-                const updated = await r.json();
-                // Обновим строку в списке
-                const idx = scFindingsItems.value.findIndex(f => f.id === updated.id);
-                if (idx >= 0) scFindingsItems.value.splice(idx, 1, updated);
-                scActiveFinding.value = updated;
-            } catch (e) {
-                scFindingsError.value = String(e.message || e);
             }
+            return byPair;
+        });
+        const scReportTotalApproved = computed(() => {
+            const byPair = scReportApprovedByPair.value;
+            return Object.values(byPair).reduce((n, arr) => n + arr.length, 0);
+        });
+        const scReportPairsWithApprovedCount = computed(() =>
+            Object.values(scReportApprovedByPair.value).filter(arr => arr.length > 0).length
+        );
+        function scReportApprovedFor(pairId) {
+            return scReportApprovedByPair.value[String(pairId)] || [];
         }
-        async function scSaveFindingNote() {
-            if (!scActiveFinding.value) return;
-            await scPatchFinding(scActiveFinding.value.status || 'new');
+        function scReportIsPairExpanded(pairId) {
+            return scReportExpandedPairs.value.has(String(pairId));
+        }
+        function scReportTogglePair(pairId) {
+            const s = new Set(scReportExpandedPairs.value);
+            const key = String(pairId);
+            if (s.has(key)) s.delete(key); else s.add(key);
+            scReportExpandedPairs.value = s;
+        }
+        function scReportExportUrl() {
+            if (!scSession.value) return '';
+            const sid = encodeURIComponent(scSession.value.id);
+            return `/api/stage-comparison/sessions/${sid}/unified-diff-flat/export.xlsx?accepted_only=true`;
         }
 
-        // ── Группировка: load children для parent finding (Задача 7) ──
-        async function scLoadChildren(parentId) {
-            if (!scSession.value || !parentId) return [];
-            if (scChildFindingsCache[parentId]) return scChildFindingsCache[parentId];
+        async function scReportLoad() {
+            if (!scSession.value) return;
+            scReportLoading.value = true;
+            scReportError.value = '';
             try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/findings/${encodeURIComponent(parentId)}/children`;
-                const r = await fetch(url);
-                if (!r.ok) return [];
-                const data = await r.json();
-                scChildFindingsCache[parentId] = data.items || [];
-                return scChildFindingsCache[parentId];
-            } catch (e) {
-                return [];
-            }
-        }
-        async function scToggleParentExpand(parentId) {
-            const s = new Set(scExpandedParents.value);
-            if (s.has(parentId)) {
-                s.delete(parentId);
-            } else {
-                s.add(parentId);
-                await scLoadChildren(parentId);
-            }
-            scExpandedParents.value = s;
-        }
-
-        // ── Bulk actions (Задача 8) ───────────────────────────────────
-        async function scBulkPatchFindings(patch) {
-            if (!scSession.value || !scFindingsSelectedIds.value.size) return;
-            scBulkActionRunning.value = true;
-            try {
-                const ids = Array.from(scFindingsSelectedIds.value);
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/findings`;
-                const r = await fetch(url, {
-                    method: 'PATCH',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ids, patch: patch || {}}),
-                });
+                const sid = encodeURIComponent(scSession.value.id);
+                // Решения эксперта (составные ключи pair_id::raw_id).
+                await scLoadExpertDecisions();
+                // Unified flat по всем парам (без pair_id).
+                const r = await fetch(`/api/stage-comparison/sessions/${sid}/unified-diff-flat`);
                 if (!r.ok) {
                     const j = await r.json().catch(() => ({}));
                     throw new Error(j.detail || ('HTTP ' + r.status));
                 }
-                await scLoadFindings();
-            } catch (e) {
-                scFindingsError.value = 'Ошибка bulk-обновления: ' + (e.message || e);
-            } finally {
-                scBulkActionRunning.value = false;
-            }
-        }
-        function scBulkAccept()      { return scBulkPatchFindings({status: 'accepted'}); }
-        function scBulkReject()      { return scBulkPatchFindings({status: 'rejected'}); }
-        function scBulkNeedsReview() { return scBulkPatchFindings({status: 'needs_review'}); }
-        function scBulkIgnore()      { return scBulkPatchFindings({status: 'ignored'}); }
-        function scBulkSetSeverity() { return scBulkPatchFindings({severity: scBulkSeverity.value}); }
-        function scBulkAppendNote()  {
-            if (!scBulkNote.value || !scBulkNote.value.trim()) return;
-            return scBulkPatchFindings({append_user_note: scBulkNote.value.trim()})
-                .then(() => { scBulkNote.value = ''; });
-        }
-
-        // ── Warnings (Задача 9) ───────────────────────────────────────
-        async function scLoadWarnings() {
-            if (!scSession.value) return;
-            scWarningsLoading.value = true;
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/warnings`;
-                const r = await fetch(url);
-                if (!r.ok) return;
                 const data = await r.json();
-                scWarningsItems.value = data.items || [];
-                scWarningsSummary.value = data.summary || null;
+                scReportFlatItems.value = (data && data.items) || [];
             } catch (e) {
-                /* silent */
+                scReportError.value = String(e.message || e);
+                scReportFlatItems.value = [];
             } finally {
-                scWarningsLoading.value = false;
+                scReportLoading.value = false;
             }
         }
 
-        // ── Переход из finding в просмотрщик ──────────────────────────
-        function _scFlashElement(el, durationMs) {
-            if (!el) return;
-            try { el.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'nearest'}); } catch (_) {}
-            el.classList.add('sc-flash-highlight');
-            setTimeout(() => el.classList.remove('sc-flash-highlight'),
-                       durationMs || 2500);
-        }
-
-        function _scFlashById(elId, durationMs) {
-            const el = document.getElementById(elId);
-            _scFlashElement(el, durationMs);
-        }
-
-        async function scGoToFindingPlace(f) {
-            if (!f || !scSession.value) return;
-            // Найти пару
-            const pid = f.pair_id;
-            const pair = (scSession.value.pairs || []).find(p => p.id === pid);
-            if (!pair) {
-                scFindingsError.value = 'Пара не найдена';
-                return;
-            }
-            // Открыть пару (если ещё не активна)
-            if (!scActivePair.value || scActivePair.value.id !== pid) {
-                await scOpenPair(pair);
-            }
-            const category = f.category || '';
-            const ftype = f.type || '';
-            const slot = (f.source && f.source.alignment_slot) || null;
-            const leftBlockId = f.left?.block_id;
-            const rightBlockId = f.right?.block_id;
-
-            // Text finding → вкладка «Расхождения → Текст»
-            if (category === 'text') {
-                scTab.value = 'diffs';
-                scDiffSubtab.value = 'text';
-                await nextTick();
-                const idx = f.source && f.source.text_diff_idx;
-                if (idx != null) {
-                    _scFlashById('sc-text-diff-' + idx, 3000);
-                }
-                return;
-            }
-
-            // Stale link → вкладка «Связь блоков» + подсветка stale link
-            if (ftype === 'stale_link' || category === 'link') {
-                scTab.value = 'links';
-                if (!scGraphicSummary.value) {
-                    try { await scLoadGraphicSummary(); } catch (_) {}
-                }
-                await nextTick();
-                if (slot) scAlignmentGoToSlot(slot);
-                if (leftBlockId && rightBlockId) {
-                    _scFlashById('sc-stale-link-' + leftBlockId + '-' + rightBlockId, 3000);
-                }
-                if (leftBlockId) { scSelectedLeft.value = leftBlockId; _scFlashById('sc-block-left-' + leftBlockId, 2500); }
-                if (rightBlockId) { scSelectedRight.value = rightBlockId; _scFlashById('sc-block-right-' + rightBlockId, 2500); }
-                return;
-            }
-
-            // Graphic / page → вкладка «Связь блоков»
-            scTab.value = 'links';
-            await nextTick();
-            if (slot) scAlignmentGoToSlot(slot);
-            // Для page-level подсвечиваем slot целиком, для graphic — конкретные блоки
-            if (category === 'page' || ftype === 'page_added' || ftype === 'page_removed' || ftype === 'page_reordered') {
-                if (slot) {
-                    _scFlashById('sc-slot-left-' + slot, 2500);
-                    _scFlashById('sc-slot-right-' + slot, 2500);
-                }
-            } else {
-                if (leftBlockId) { scSelectedLeft.value = leftBlockId; _scFlashById('sc-block-left-' + leftBlockId, 2500); }
-                if (rightBlockId) { scSelectedRight.value = rightBlockId; _scFlashById('sc-block-right-' + rightBlockId, 2500); }
-            }
-        }
-
-        // ── Batch LLM ─────────────────────────────────────────────────
-        function scOpenBatchLLMConfirm(scope) {
-            scBatchLLMScope.value = scope;
-            scBatchLLMError.value = '';
-            scBatchLLMLastJob.value = null;
-            // Оценка количества
-            if (scope === 'selected') {
-                scBatchLLMCount.value = scFindingsSelectedLLM.value.length;
-            } else if (scope === 'pair') {
-                const pid = scFindingsFilter.pair_id;
-                scBatchLLMCount.value = scFindingsItems.value.filter(f =>
-                    f.category === 'graphic' && f.pair_id === pid &&
-                    f.left?.block_id && f.right?.block_id
-                ).length;
-            } else {  // session
-                scBatchLLMCount.value = scFindingsItems.value.filter(f =>
-                    f.category === 'graphic' && f.left?.block_id && f.right?.block_id
-                ).length;
-            }
-            scBatchLLMConfirmOpen.value = true;
-        }
-
-        async function scRunBatchLLM() {
+        async function scOpenReportTab() {
             if (!scSession.value) return;
-            scBatchLLMRunning.value = true;
-            scBatchLLMError.value = '';
-            try {
-                const body = {
-                    scope: scBatchLLMScope.value,
-                    run_paid: true,
-                    confirm_paid: true,
-                    model: scBatchLLMModel.value,
-                };
-                if (scBatchLLMScope.value === 'pair') {
-                    body.pair_id = scFindingsFilter.pair_id;
-                }
-                if (scBatchLLMScope.value === 'selected') {
-                    body.items = scFindingsSelectedLLM.value.map(f => ({
-                        pair_id: f.pair_id,
-                        left_block_id: f.left.block_id,
-                        right_block_id: f.right.block_id,
-                    }));
-                }
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/graphic-diff-jobs`;
-                const r = await fetch(url, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(body),
-                });
-                const job = await r.json().catch(() => ({}));
-                if (!r.ok) {
-                    throw new Error(job.detail || ('HTTP ' + r.status));
-                }
-                // Backend сразу вернул {ok, job_id, status, progress}.
-                scBatchLLMLastJob.value = job;
-                // Закрываем confirm-модалку и открываем прогресс
-                scBatchLLMConfirmOpen.value = false;
-                if (job.job_id && (job.status === 'queued' || job.status === 'running')) {
-                    scBatchLLMProgressOpen.value = true;
-                    scStartBatchLLMPolling(job.job_id);
-                } else if (job.status === 'rejected_no_confirm') {
-                    scBatchLLMError.value = 'Запуск отклонён: не подтверждена платная операция.';
-                    scBatchLLMConfirmOpen.value = true;
-                } else {
-                    // Уже завершён сразу (skipped/total=0) — обновим findings
-                    await scLoadFindings();
-                }
-            } catch (e) {
-                scBatchLLMError.value = String(e.message || e);
-            } finally {
-                scBatchLLMRunning.value = false;
-            }
-        }
-
-        async function scRefreshBatchLLMJob() {
-            if (!scSession.value || !scBatchLLMLastJob.value || !scBatchLLMLastJob.value.job_id) return null;
-            const jobId = scBatchLLMLastJob.value.job_id;
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/graphic-diff-jobs/${encodeURIComponent(jobId)}`;
-                const r = await fetch(url);
-                if (!r.ok) return null;
-                const job = await r.json();
-                // Прокидываем top-level поля прогресса в last_job (сохраняя job_id)
-                scBatchLLMLastJob.value = {
-                    ...scBatchLLMLastJob.value,
-                    status: job.status,
-                    progress: job.progress,
-                    items: job.items,
-                    warnings: job.warnings,
-                    model: job.model,
-                };
-                return job;
-            } catch (e) {
-                return null;
-            }
-        }
-
-        function scStartBatchLLMPolling(jobId) {
-            if (_scBatchLLMPollT) clearInterval(_scBatchLLMPollT);
-            _scBatchLLMPollT = setInterval(async () => {
-                const job = await scRefreshBatchLLMJob();
-                if (!job) return;
-                const st = job.status;
-                if (st !== 'queued' && st !== 'running') {
-                    // Завершён (done/failed/cancelled/rejected/interrupted)
-                    clearInterval(_scBatchLLMPollT);
-                    _scBatchLLMPollT = null;
-                    // Перегружаем findings — job сам триггерит rebuild на бекенде
-                    await scLoadFindings();
-                }
-            }, 2500);
-        }
-
-        function scStopBatchLLMPolling() {
-            if (_scBatchLLMPollT) { clearInterval(_scBatchLLMPollT); _scBatchLLMPollT = null; }
-        }
-
-        async function scCancelBatchLLMJob() {
-            if (!scSession.value || !scBatchLLMLastJob.value || !scBatchLLMLastJob.value.job_id) return;
-            scBatchLLMCancelling.value = true;
-            try {
-                const jobId = scBatchLLMLastJob.value.job_id;
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/graphic-diff-jobs/${encodeURIComponent(jobId)}/cancel`;
-                await fetch(url, {method: 'POST'});
-                await scRefreshBatchLLMJob();
-            } catch (e) {
-                scBatchLLMError.value = String(e.message || e);
-            } finally {
-                scBatchLLMCancelling.value = false;
-            }
-        }
-
-        function scCloseBatchLLMProgress() {
-            scBatchLLMProgressOpen.value = false;
-            scStopBatchLLMPolling();
-        }
-
-        // ── Reports ───────────────────────────────────────────────────
-        async function scCreateReport() {
-            if (!scSession.value) return;
-            scReportCreating.value = true;
-            try {
-                const filters = {};
-                if (scReportForm.severity_filter) {
-                    filters.severity = scReportForm.severity_filter.split(',');
-                }
-                const body = {
-                    format: scReportForm.format,
-                    filters,
-                    include_images: scReportForm.include_images,
-                    include_llm_summary: scReportForm.include_llm_summary,
-                    include_user_notes: scReportForm.include_user_notes,
-                    include_rejected: scReportForm.include_rejected,
-                    include_ignored: scReportForm.include_ignored,
-                    include_child_findings: scReportForm.include_child_findings,
-                };
-                const r = await fetch(`/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/reports`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(body),
-                });
-                if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.detail || ('HTTP ' + r.status)); }
-                scLastReport.value = await r.json();
-                await scLoadReports();
-            } catch (e) {
-                scFindingsError.value = 'Ошибка создания отчёта: ' + (e.message || e);
-            } finally {
-                scReportCreating.value = false;
-            }
-        }
-        async function scLoadReports() {
-            if (!scSession.value) return;
-            try {
-                const r = await fetch(`/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/reports`);
-                if (r.ok) scReportsList.value = (await r.json()).reports || [];
-            } catch (e) {
-                /* silent */
-            }
+            scTab.value = 'report';
+            await scReportLoad();
         }
 
         async function scCreateLink() {
@@ -11813,12 +11406,45 @@ const app = createApp({
 
         // ─── Stage Comparison: Экспертная оценка расхождений ───
         // Хранение per-session по raw `id`. Группа агрегирует через source_finding_ids.
-        function _scExpertRawIds(itemOrGroup) {
+        // Активная пара, в контексте которой эксперт размечает. Вкладка
+        // «Расхождения» привязана к scActivePair, кроме режима «показать все».
+        function _scExpertScopePairId() {
+            if (!scUnifiedShowAllPairs.value && scActivePair.value && scActivePair.value.id) {
+                return String(scActivePair.value.id);
+            }
+            return null;
+        }
+        // Голые raw change id (chg_…/uf_…) строки или группы.
+        function _scRawChangeIds(itemOrGroup) {
             if (!itemOrGroup || typeof itemOrGroup !== 'object') return [];
             const sf = itemOrGroup.source_finding_ids;
-            if (Array.isArray(sf) && sf.length) return sf.filter(Boolean);
-            if (itemOrGroup.id) return [itemOrGroup.id];
+            if (Array.isArray(sf) && sf.length) return sf.filter(Boolean).map(String);
+            if (itemOrGroup.id) return [String(itemOrGroup.id)];
             return [];
+        }
+        // Пары, к которым относится строка/группа: в скоупе активной пары — она;
+        // в режиме «показать все» — own pair_id (flat) либо affected_pair_ids (группа).
+        function _scPairIdsFor(itemOrGroup) {
+            const scope = _scExpertScopePairId();
+            if (scope) return [scope];
+            if (itemOrGroup && itemOrGroup.pair_id) return [String(itemOrGroup.pair_id)];
+            const ap = itemOrGroup && itemOrGroup.affected_pair_ids;
+            if (Array.isArray(ap) && ap.length) return ap.filter(Boolean).map(String);
+            return [];
+        }
+        // СОСТАВНЫЕ ключи решений `<pair_id>::<raw_id>`. Скоуп по паре — поэтому
+        // одинаковые штамповые id (chg_customer, chg_stamp_org …) в разных
+        // парах больше не делят один вердикт.
+        function _scExpertRawIds(itemOrGroup) {
+            const raws = _scRawChangeIds(itemOrGroup);
+            if (!raws.length) return [];
+            const pids = _scPairIdsFor(itemOrGroup);
+            if (!pids.length) return raws;   // нет контекста пары — legacy fallback
+            const keys = [];
+            for (const pid of pids) {
+                for (const r of raws) keys.push(`${pid}::${r}`);
+            }
+            return keys;
         }
         function scGetExpertDecision(itemOrGroup) {
             // Возвращает 'accepted' | 'rejected' | 'mixed' | null
@@ -11832,6 +11458,14 @@ const app = createApp({
             if (decisions.size === 0) return null;
             if (decisions.size > 1) return 'mixed';
             return [...decisions][0];
+        }
+        // Приоритет в очереди: принятые сверху (0), нерешённые/смешанные в
+        // середине (1), отклонённые внизу (2).
+        function _scDecisionRank(itemOrGroup) {
+            const d = scGetExpertDecision(itemOrGroup);
+            if (d === 'accepted') return 0;
+            if (d === 'rejected') return 2;
+            return 1;
         }
         function scGetExpertReason(itemOrGroup) {
             const ids = _scExpertRawIds(itemOrGroup);
@@ -11912,6 +11546,33 @@ const app = createApp({
                 await scLoadExpertDecisions();
             }
         }
+        // Per-pair статус разметки для колонки «Проверено экспертом».
+        async function scLoadExpertPerPair() {
+            if (!scSession.value) return;
+            try {
+                const sid = encodeURIComponent(scSession.value.id);
+                const r = await fetch(`/api/stage-comparison/sessions/${sid}/expert-review?include_pairs=true`);
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const data = await r.json();
+                scExpertPerPair.value = data.per_pair || {};
+            } catch (e) {
+                console.warn('Failed to load SC expert per-pair status:', e);
+            }
+        }
+        // Бейдж колонки «Проверено экспертом». Галочка появляется только когда
+        // у пары есть расхождения и КАЖДОЕ размечено эксперт (accept/reject).
+        function scPairExpertBadge(pairId) {
+            const st = scExpertPerPair.value[pairId];
+            if (!st || !st.total) {
+                return {label: '—', cls: 'sc-status-unmatched', title: 'расхождений нет либо сравнение не выполнено'};
+            }
+            if (st.fully_verified) {
+                return {label: '✓ проверено', cls: 'sc-status-matched',
+                        title: `все ${st.total} расхождений размечены экспертом`};
+            }
+            return {label: `${st.decided}/${st.total}`, cls: 'sc-status-maybe',
+                    title: `размечено ${st.decided} из ${st.total} расхождений — поставьте ✓/✗ против каждого на этапе «3. Расхождения»`};
+        }
         async function scSubmitExpertReview() {
             if (!scSession.value) return;
             scExpertReviewSaving.value = true;
@@ -11942,6 +11603,8 @@ const app = createApp({
                 }
                 const result = await r.json();
                 alert(`Сохранено: ${result.summary?.accepted ?? 0} принято, ${result.summary?.rejected ?? 0} отклонено`);
+                // Обновить per-pair статус для колонки «Проверено экспертом».
+                try { await scLoadExpertPerPair(); } catch (_) {}
             } catch (e) {
                 console.error('SC expert review submit error:', e);
                 alert('Ошибка сохранения: ' + (e.message || e));
@@ -12387,11 +12050,24 @@ const app = createApp({
         // Stage 1: при возврате на вкладку «Загрузка документации» подтягиваем
         // актуальный статус Qwen-job, а если она running — снова запускаем polling.
         watch(() => scTab.value, (newTab) => {
-            if (newTab !== 'upload') return;
-            if (!scSession.value || !scSession.value.id) return;
-            scRecogRestoreActive();
-            scOpusRestoreActive();
-            scOpusLoadPreflight();
+            if (newTab === 'upload') {
+                if (!scSession.value || !scSession.value.id) return;
+                scRecogRestoreActive();
+                scOpusRestoreActive();
+                scOpusLoadPreflight();
+                // Возврат с «3. Расхождения» — обновить колонку «Проверено экспертом».
+                scLoadExpertPerPair();
+                return;
+            }
+            // При входе на «3. Расхождения» нужно явно запустить загрузку
+            // активного subtab'а. Раньше это делала кнопка-переключатель
+            // «Расхождения» (scSwitchDiffSubtab), но она убрана из UI — без
+            // этого триггера таблица не появлялась до клика по «Сгруппировано»
+            // / «Все расхождения».
+            if (newTab === 'diffs') {
+                if (!scActivePair.value) return;
+                scSwitchDiffSubtab(scDiffSubtab.value || 'unified');
+            }
         });
         // После завершения Qwen-job — обновить Opus preflight, чтобы кнопка
         // «Проанализировать и сравнить» автоматически разблокировалась.
@@ -12500,25 +12176,32 @@ const app = createApp({
         const scUnifiedItemsSorted = computed(() => {
             const items = scUnifiedItemsFiltered.value || [];
             const field = scUnifiedSortField.value;
-            if (!field) return items;
             const dir = scUnifiedSortDir.value === 'desc' ? -1 : 1;
-            const arr = items.slice();
-            if (field === 'no') {
-                arr.sort((a, b) => (a._displayNo - b._displayNo) * dir);
-            } else if (field === 'sheet') {
-                arr.sort((a, b) => {
-                    const sa = (a.sheet || '') + '';
-                    const sb = (b.sheet || '') + '';
+            // Вторичный компаратор: выбранный столбец (или исходный порядок).
+            const byField = (a, b) => {
+                if (field === 'no') {
+                    return (a.it._displayNo - b.it._displayNo) * dir;
+                } else if (field === 'sheet') {
+                    const sa = (a.it.sheet || '') + '';
+                    const sb = (b.it.sheet || '') + '';
                     const c = sa.localeCompare(sb, 'ru', { numeric: true, sensitivity: 'base' });
                     if (c !== 0) return c * dir;
-                    const pa = Array.isArray(a.page) ? (a.page[0] || 0) : (a.page || 0);
-                    const pb = Array.isArray(b.page) ? (b.page[0] || 0) : (b.page || 0);
+                    const pa = Array.isArray(a.it.page) ? (a.it.page[0] || 0) : (a.it.page || 0);
+                    const pb = Array.isArray(b.it.page) ? (b.it.page[0] || 0) : (b.it.page || 0);
                     return (pa - pb) * dir;
-                });
-            } else if (field === 'impact') {
-                arr.sort((a, b) => (_scImpactRank(a) - _scImpactRank(b)) * dir);
-            }
-            return arr;
+                } else if (field === 'impact') {
+                    return (_scImpactRank(a.it) - _scImpactRank(b.it)) * dir;
+                }
+                return a.idx - b.idx; // исходный порядок
+            };
+            // Первичный ключ — экспертное решение: принятые сверху, отклонённые внизу.
+            const arr = items.map((it, idx) => ({ it, idx }));
+            arr.sort((a, b) => {
+                const r = _scDecisionRank(a.it) - _scDecisionRank(b.it);
+                if (r !== 0) return r;
+                return byField(a, b);
+            });
+            return arr.map(x => x.it);
         });
         function scUnifiedToggleSort(field) {
             if (scUnifiedSortField.value === field) {
@@ -12591,6 +12274,10 @@ const app = createApp({
         const scGroupedItemsSorted = computed(() => {
             const items = (scGroupedItemsFiltered.value || []).slice();
             items.sort((a, b) => {
+                // Первичный ключ — экспертное решение: принятые сверху, отклонённые внизу.
+                const da = _scDecisionRank(a);
+                const db = _scDecisionRank(b);
+                if (da !== db) return da - db;
                 const sa = _SC_GROUPED_SIG_RANK[a.significance] ?? 9;
                 const sb = _SC_GROUPED_SIG_RANK[b.significance] ?? 9;
                 if (sa !== sb) return sa - sb;
@@ -12692,6 +12379,18 @@ const app = createApp({
             mixed: 'Текст + изобр.',
         };
         function scUnifiedSourceLabel(s) { return _SC_UNIFIED_SOURCE_LABELS[s] || s || '—'; }
+        // Разбивает значение расхождения на строки по ';' — каждый пункт
+        // (напр. «Корпус 1 — 4 эт.») рендерится с новой строки. Точка с запятой
+        // сохраняется в конце каждого пункта, кроме последнего.
+        function scUnifiedLines(val) {
+            if (val === null || val === undefined) return [];
+            const text = String(val).trim();
+            if (!text) return [];
+            if (!text.includes(';')) return [text];
+            const parts = text.split(';').map(s => s.trim()).filter(s => s.length);
+            if (!parts.length) return [text];
+            return parts.map((s, i) => (i < parts.length - 1 ? s + ';' : s));
+        }
         // Go-to-place для unified finding (по сути то же, что для текстового)
         async function scGotoUnifiedChange(item) {
             // Делегируем существующий go-to (он обрабатывает alignment_slot).
@@ -13336,6 +13035,7 @@ const app = createApp({
             scRecogStart, scRecogRetryErrors, scRecogCancel,
             scRecogRestoreActive, scRecogPairStatus, scRecogPairBadge,
             scRecogPairBlocks, scOpusPairBadge,
+            scExpertPerPair, scPairExpertBadge, scLoadExpertPerPair,
             scRecogElapsedLabel, scFormatDuration, scRecogPairProgress,
             // Stage 1: «Проанализировать и сравнить» (session-level Opus batch)
             scOpusJob, scOpusPolling, scOpusStarting, scOpusError,
@@ -13383,7 +13083,7 @@ const app = createApp({
             scLoadUnifiedConfig, scLoadUnifiedPairStatus, scLoadUnifiedFlat,
             scOpenUnifiedPairPreflight, scOpenUnifiedSessionPreflight, scCloseUnifiedPreflight,
             scRunUnifiedPair, scRunUnifiedSession, scPollUnifiedJob, scCancelUnifiedJob,
-            scUnifiedSourceLabel, scGotoUnifiedChange,
+            scUnifiedSourceLabel, scUnifiedLines, scGotoUnifiedChange,
             scSwitchDiffSubtab, scGotoTextChange,
             scHumanizeDuration,
             scTextLLMTypeLabel, scTextLLMCategoryLabel, scTextLLMSeverityLabel, scTextLLMStatusLabel,
@@ -13433,34 +13133,13 @@ const app = createApp({
             scSavePairTemplate,
             scLoadGraphicSummary,
             scFindGraphicDiff, scPrepareGraphicDiff, scRunGraphicDiff,
-            // ─── Findings/Reports v4 ───
-            scFindingsItems, scFindingsSummary, scFindingsTotal,
-            scFindingsLoading, scFindingsRebuilding, scFindingsError,
-            scFindingsFilter, scFindingsSelectedIds, scActiveFinding,
-            scActiveFindingDraftNote, scActiveFindingDraftSeverity,
-            scAllSelected, scFindingsSelectedLLM,
-            scOpenReportTab, scRebuildFindings, scLoadFindings,
-            scDebouncedLoadFindings,
-            scToggleFindingSelect, scToggleSelectAll,
-            scOpenFinding, scPatchFinding, scSaveFindingNote,
-            scGoToFindingPlace,
-            // Grouping (Task 7)
-            scExpandedParents, scChildFindingsCache,
-            scToggleParentExpand, scLoadChildren,
-            // Bulk actions (Task 8)
-            scBulkSeverity, scBulkNote, scBulkActionRunning,
-            scBulkAccept, scBulkReject, scBulkNeedsReview, scBulkIgnore,
-            scBulkSetSeverity, scBulkAppendNote, scBulkPatchFindings,
-            // Warnings (Task 9)
-            scWarningsItems, scWarningsSummary, scWarningsLoading, scLoadWarnings,
-            scBatchLLMConfirmOpen, scBatchLLMScope, scBatchLLMCount,
-            scBatchLLMModel, scBatchLLMRunning, scBatchLLMError, scBatchLLMLastJob,
-            scBatchLLMProgressOpen, scBatchLLMCancelling,
-            scRefreshBatchLLMJob, scCancelBatchLLMJob, scCloseBatchLLMProgress,
-            scOpenBatchLLMConfirm, scRunBatchLLM,
-            scBatchLLMConfirmCount: scBatchLLMCount,
-            scReportForm, scReportCreating, scLastReport, scReportsList,
-            scCreateReport, scLoadReports,
+            // ─── Report tab (read-only сводка согласованных) ───
+            scOpenReportTab, scReportLoad,
+            scReportLoading, scReportError,
+            scReportApprovedByPair, scReportApprovedFor,
+            scReportTotalApproved, scReportPairsWithApprovedCount,
+            scReportExpandedPairs, scReportIsPairExpanded, scReportTogglePair,
+            scReportExportUrl,
         };
     }
 });

@@ -31,7 +31,7 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
-from backend.app.services.stage_comparison import diff_text, store, findings as findings_mod, jobs as jobs_mod, reports as reports_mod, warnings as warnings_mod, objects as objects_mod
+from backend.app.services.stage_comparison import diff_text, store, jobs as jobs_mod, objects as objects_mod
 from backend.app.services.stage_comparison import text_llm as text_llm_mod, text_llm_jobs as text_llm_jobs_mod
 from backend.app.services.stage_comparison import text_llm_provider as text_llm_provider_mod
 from backend.app.services.stage_comparison import text_llm_preflight as text_llm_preflight_mod
@@ -153,18 +153,6 @@ class DeletePairRequest(BaseModel):
     hard: bool = False
 
 
-class PatchFindingRequest(BaseModel):
-    status: Optional[str] = None
-    severity: Optional[str] = None
-    user_note: Optional[str] = None
-
-
-class BulkPatchFindingsRequest(BaseModel):
-    ids: list[str]
-    patch: dict = Field(default_factory=dict)
-    include_deleted: bool = False
-
-
 class GraphicDiffJobItem(BaseModel):
     pair_id: str
     left_block_id: str
@@ -178,17 +166,6 @@ class CreateGraphicDiffJobRequest(BaseModel):
     run_paid: bool = False
     confirm_paid: bool = False
     model: Optional[str] = None
-
-
-class CreateReportRequest(BaseModel):
-    format: str = Field("md", pattern="^(md|html|json|pdf|docx)$")
-    filters: Optional[dict] = None
-    include_rejected: bool = False
-    include_ignored: bool = False
-    include_images: bool = True
-    include_llm_summary: bool = True
-    include_user_notes: bool = True
-    include_child_findings: bool = True
 
 
 # ─── Sessions ────────────────────────────────────────────────────────────
@@ -1502,6 +1479,7 @@ _SC_UNIFIED_SOURCE_LABELS = {
 async def unified_diff_flat_export_xlsx(
     session_id: str,
     pair_id: Optional[str] = None,
+    accepted_only: bool = False,
 ):
     """Экспорт таблицы расхождений в Excel (xlsx).
 
@@ -1511,6 +1489,10 @@ async def unified_diff_flat_export_xlsx(
 
     Если задан `pair_id` — выгружаем только эту PDF-пару (соответствует
     текущему scope в UI). Без параметра — все пары сессии.
+
+    `accepted_only=true` — оставить только расхождения, согласованные экспертом
+    (`expert_review.json`, decision=accepted). Используется вкладкой «Отчёт»:
+    один XLSX со всеми согласованными изменениями по всем парам сразу.
     """
     try:
         from openpyxl import Workbook
@@ -1524,6 +1506,20 @@ async def unified_diff_flat_export_xlsx(
         raise HTTPException(404, str(exc)) from exc
 
     items = flat.get("items") or []
+
+    if accepted_only:
+        from backend.app.services.stage_comparison import expert_review as expert_review_mod
+        decisions = (expert_review_mod.load(session_id) or {}).get("decisions") or {}
+        accepted_keys = {
+            str(key)
+            for key, entry in decisions.items()
+            if isinstance(entry, dict) and (entry.get("decision") or "").lower() == "accepted"
+        }
+        items = [
+            it for it in items
+            if isinstance(it, dict)
+            and expert_review_mod.make_key(str(it.get("pair_id") or ""), str(it.get("id") or "")) in accepted_keys
+        ]
 
     wb = Workbook()
     ws = wb.active
@@ -1610,6 +1606,8 @@ async def unified_diff_flat_export_xlsx(
 
     safe_sid = re.sub(r"[^A-Za-z0-9_.-]", "_", session_id)[:64] or "session"
     scope = "pair" if pair_id else "all"
+    if accepted_only:
+        scope += "_accepted"
     fname = f"stage_comparison_{safe_sid}_{scope}.xlsx"
     return StreamingResponse(
         buf,
@@ -1673,14 +1671,18 @@ class ExpertReviewSubmission(BaseModel):
 
 
 @router.get("/sessions/{session_id}/expert-review")
-async def get_expert_review_endpoint(session_id: str):
+async def get_expert_review_endpoint(session_id: str, include_pairs: bool = False):
     """Решения эксперта по расхождениям сессии.
 
     Ключ хранения — стабильный raw `id` расхождения из `unified_findings.json`.
     Группированный вид агрегирует решения по `source_finding_ids` на фронте,
     поэтому регруппировка ничего не теряет.
+
+    `include_pairs=true` добавляет `per_pair` — для каждой PDF-пары количество
+    расхождений и сколько из них размечено, плюс флаг `fully_verified`. Это
+    питает колонку «Проверено экспертом» на этапе «Загрузка документации».
     """
-    return expert_review_mod.get_with_summary(session_id)
+    return expert_review_mod.get_with_summary(session_id, include_pairs=include_pairs)
 
 
 @router.post("/sessions/{session_id}/expert-review")
@@ -2134,71 +2136,6 @@ async def graphic_diff_endpoint(
     }
 
 
-# ─── Findings ────────────────────────────────────────────────────────────
-
-
-@router.post("/sessions/{session_id}/findings/rebuild")
-async def rebuild_findings_endpoint(session_id: str):
-    try:
-        return findings_mod.rebuild_findings(session_id)
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
-
-
-@router.get("/sessions/{session_id}/findings")
-async def list_findings_endpoint(
-    session_id: str,
-    pair_id: Optional[str] = Query(None),
-    type: Optional[str] = Query(None),
-    category: Optional[str] = Query(None),
-    status: Optional[str] = Query(None),
-    severity: Optional[str] = Query(None),
-    q: Optional[str] = Query(None),
-    include_children: bool = Query(False, description="Включать ли child findings (по умолчанию скрыты)"),
-):
-    filters = {
-        "pair_id": pair_id, "type": type, "category": category,
-        "status": status, "severity": severity, "q": q,
-        "include_children": include_children,
-    }
-    try:
-        return findings_mod.list_findings(session_id, filters=filters)
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
-
-
-@router.get("/sessions/{session_id}/findings/{finding_id}/children")
-async def list_children_endpoint(session_id: str, finding_id: str):
-    """Все child findings конкретного parent_id (для разворачивания grouped view)."""
-    return {"items": findings_mod.list_child_findings(session_id, finding_id)}
-
-
-@router.patch("/sessions/{session_id}/findings/{finding_id}")
-async def patch_finding_endpoint(session_id: str, finding_id: str, req: PatchFindingRequest):
-    patch = {k: v for k, v in req.model_dump().items() if v is not None}
-    try:
-        return findings_mod.patch_finding(session_id, finding_id, patch)
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
-
-
-@router.patch("/sessions/{session_id}/findings")
-async def bulk_patch_findings_endpoint(session_id: str, req: BulkPatchFindingsRequest):
-    """Массово обновить несколько findings: status/severity/user_note/append_user_note."""
-    return findings_mod.bulk_patch_findings(
-        session_id, req.ids, dict(req.patch or {}), include_deleted=req.include_deleted,
-    )
-
-
-@router.delete("/sessions/{session_id}/findings/{finding_id}")
-async def delete_finding_endpoint(session_id: str, finding_id: str):
-    """Soft-delete: помечает status='ignored', deleted=true. Физически не удаляет."""
-    ok = findings_mod.soft_delete_finding(session_id, finding_id)
-    if not ok:
-        raise HTTPException(404, "finding_not_found")
-    return {"ok": True, "deleted": True}
-
-
 # ─── Graphic LLM config endpoint ─────────────────────────────────────────
 
 
@@ -2308,60 +2245,7 @@ async def cancel_graphic_diff_job(session_id: str, job_id: str):
     return job
 
 
-# ─── Warnings (Задача 9) ─────────────────────────────────────────────────
-
-
-@router.get("/sessions/{session_id}/warnings")
-async def list_warnings_endpoint(session_id: str):
-    """Сводка предупреждений по качеству исходных данных сессии."""
-    try:
-        return warnings_mod.compute_warnings(session_id)
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
-
-
-# ─── Reports ─────────────────────────────────────────────────────────────
-
-
-@router.post("/sessions/{session_id}/reports")
-async def create_report_endpoint(session_id: str, req: CreateReportRequest):
-    try:
-        return reports_mod.create_report(
-            session_id, req.format,
-            filters=req.filters,
-            include_rejected=req.include_rejected,
-            include_ignored=req.include_ignored,
-            include_images=req.include_images,
-            include_llm_summary=req.include_llm_summary,
-            include_user_notes=req.include_user_notes,
-            include_child_findings=req.include_child_findings,
-        )
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-
-
-@router.get("/sessions/{session_id}/reports")
-async def list_reports_endpoint(session_id: str):
-    try:
-        return {"reports": reports_mod.list_reports(session_id)}
-    except Exception as exc:  # noqa: BLE001
-        raise HTTPException(500, str(exc)) from exc
-
-
-@router.get("/sessions/{session_id}/reports/{report_id}/download")
-async def download_report_endpoint(session_id: str, report_id: str):
-    try:
-        p = reports_mod.resolve_report_file(session_id, report_id)
-    except (FileNotFoundError, ValueError) as exc:
-        raise HTTPException(404, str(exc)) from exc
-    media_by_ext = {
-        ".md": "text/markdown; charset=utf-8",
-        ".html": "text/html; charset=utf-8",
-        ".json": "application/json; charset=utf-8",
-        ".pdf": "application/pdf",
-        ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    }
-    media = media_by_ext.get(p.suffix.lower(), "application/octet-stream")
-    return FileResponse(str(p), media_type=media, filename=p.name)
+# ─── Graphic LLM batch jobs остаются выше; findings/warnings/reports
+#     эндпоинты удалены вместе с переездом вкладки «Отчёт» на read-only
+#     сводку согласованных расхождений (см. unified-diff-flat/export.xlsx
+#     ?accepted_only=true). ───────────────────────────────────────────────
