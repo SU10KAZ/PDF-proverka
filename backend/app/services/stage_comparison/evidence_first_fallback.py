@@ -429,43 +429,13 @@ def deterministic_fact_diff(scope_map: ScopeMap) -> list[dict]:
             },
         ))
 
-    # 3.3 — изменение состава листов внутри общего scope
-    for key in scope_map.common:
-        lnames = {_norm_text(p.sheet_name) for p in li.pages_for(key) if p.sheet_name}
-        rnames = {_norm_text(p.sheet_name) for p in ri.pages_for(key) if p.sheet_name}
-        removed = lnames - rnames
-        added = rnames - lnames
-        # Только если разница существенная (>=1 лист) и не «весь scope».
-        if removed and len(removed) < len(lnames or {1}):
-            sample = next((p for p in li.pages_for(key) if _norm_text(p.sheet_name) in removed), None)
-            changes.append(_mk_change(
-                type_="section_changed", source="text", severity="medium",
-                title=f"Изъяты листы из раздела {_scope_human(key)}",
-                summary=f"В разделе «{_scope_human(key)}» в новой стадии отсутствуют {len(removed)} листов, бывших в старой.",
-                old_value="; ".join(sorted({p.sheet_name for p in li.pages_for(key) if _norm_text(p.sheet_name) in removed}))[:800],
-                new_value="(листы отсутствуют)",
-                confidence=0.6,
-                evidence_left={
-                    "quote": (sample.sheet_name if sample else "")[:240],
-                    "section": _scope_human(key),
-                    "approx_location": f"стр. {sample.page}" if sample else "",
-                },
-            ))
-        if added and len(added) < len(rnames or {1}):
-            sample = next((p for p in ri.pages_for(key) if _norm_text(p.sheet_name) in added), None)
-            changes.append(_mk_change(
-                type_="section_changed", source="text", severity="medium",
-                title=f"Добавлены листы в раздел {_scope_human(key)}",
-                summary=f"В разделе «{_scope_human(key)}» в новой стадии появились {len(added)} листов, которых не было в старой.",
-                old_value="(листы отсутствуют)",
-                new_value="; ".join(sorted({p.sheet_name for p in ri.pages_for(key) if _norm_text(p.sheet_name) in added}))[:800],
-                confidence=0.6,
-                evidence_right={
-                    "quote": (sample.sheet_name if sample else "")[:240],
-                    "section": _scope_human(key),
-                    "approx_location": f"стр. {sample.page}" if sample else "",
-                },
-            ))
+    # NB: изменение состава листов ВНУТРИ общего scope намеренно НЕ выносится в
+    # детерминированный diff — эти scope_keys попадают в section split, и LLM
+    # сообщает per-sheet added/removed точнее (с отметками/толщинами). Группировка
+    # здесь дала бы дубли к LLM-выводу (acceptance review КР2: 4 лишних
+    # section_changed). Детерминированно фиксируем только штамп (3.1) и
+    # scope-only разделы целиком (3.2) — их LLM не видит, т.к. их нет ни в одном
+    # чанке.
     return changes
 
 
@@ -609,6 +579,11 @@ def build_chunk_user_prompt(chunk: Chunk, shared_header: str) -> str:
         "схеме из системного промпта. Это ЧАСТЬ большого документа — сравнивай "
         "только в пределах этого раздела, но используй SHARED_GLOBAL_HEADER как "
         "общий контекст (штамп, классы бетона/арматуры из ПЗ/легенды).\n\n"
+        "ВАЖНО: смена штампа и состав комплекта (какие разделы/листы добавлены "
+        "или удалены ЦЕЛИКОМ) фиксируются ОТДЕЛЬНО — НЕ дублируй их здесь. "
+        "Штамп в SHARED_GLOBAL_HEADER дан только как контекст. Сообщай только "
+        "содержательные изменения ВНУТРИ листов этого раздела: отметки, толщины, "
+        "классы бетона/арматуры, схемы, узлы, нумерацию, состав элементов.\n\n"
         f"Раздел: {chunk.title}\n"
         f"OLD страницы: {chunk.left_pages}\nNEW страницы: {chunk.right_pages}\n\n"
         + shared_header
@@ -754,12 +729,32 @@ def _change_signature(c: dict) -> str:
     return f"{c.get('type')}|{title_key}|{','.join(sheet[:3])}"
 
 
+# Типы, которые описывают ОДИН глобальный факт всего комплекта и должны
+# появиться максимум один раз. Из-за shared global header (штамп в каждом чанке)
+# Opus повторяет смену штампа в каждом per-chunk ответе, формулируя по-разному —
+# обычная сигнатурная дедупликация их не ловит. Схлопываем по типу.
+_GLOBAL_SINGLETON_TYPES = {"stamp_changed"}
+
+
 def merge_and_dedup(deterministic: list[dict], llm_changes: list[dict]) -> tuple[list[dict], int]:
     """Stage 8: объединить и дедупнуть. Детерминированные имеют приоритет."""
     out: list[dict] = []
     seen: dict[str, int] = {}
+    singleton_seen: dict[str, int] = {}
     duplicates = 0
     for c in deterministic + llm_changes:
+        ctype = c.get("type")
+        # Глобальные singleton-типы (штамп) — не более одного на весь комплект.
+        if ctype in _GLOBAL_SINGLETON_TYPES:
+            if ctype in singleton_seen:
+                duplicates += 1
+                idx = singleton_seen[ctype]
+                if c.get("provenance") == "deterministic" and out[idx].get("provenance") != "deterministic":
+                    out[idx] = c
+                continue
+            singleton_seen[ctype] = len(out)
+            out.append(c)
+            continue
         sig = _change_signature(c)
         if sig in seen:
             duplicates += 1

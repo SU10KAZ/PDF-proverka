@@ -184,6 +184,37 @@ def test_merge_dedup_collapses_cross_chunk_duplicates():
     assert dups == 1
 
 
+def test_merge_dedup_collapses_global_stamp_singletons():
+    # shared header заставляет Opus повторять смену штампа в каждом чанке,
+    # формулируя по-разному → сигнатурная дедупликация не ловит. Singleton-collapse
+    # схлопывает их в один, отдавая приоритет детерминированному.
+    det = ef._mk_change(type_="stamp_changed", source="stamp", severity="high",
+                        title="Изменён штамп комплекта", summary="d", provenance="deterministic")
+    llm1 = ef._mk_change(type_="stamp_changed", source="stamp", severity="high",
+                         title="Сменился штамп: шифр и организация", summary="l1", provenance="llm_chunk")
+    llm2 = ef._mk_change(type_="stamp_changed", source="stamp", severity="high",
+                         title="Изменён разработчик в штампе", summary="l2", provenance="llm_chunk")
+    merged, dups = ef.merge_and_dedup([det], [llm1, llm2])
+    stamps = [c for c in merged if c["type"] == "stamp_changed"]
+    assert len(stamps) == 1
+    assert stamps[0]["provenance"] == "deterministic"
+    assert dups == 2
+
+
+def test_deterministic_diff_no_within_scope_sheet_dups():
+    # Стейдж 3.3 (added/removed листов внутри ОБЩЕГО scope) убран — эти изменения
+    # сообщает LLM per-sheet. Детерминированно остаются только штамп (3.1) и
+    # scope-only разделы целиком (3.2).
+    sm = ef.build_scope_map(ef.build_fact_index("left", LEFT_MD),
+                            ef.build_fact_index("right", RIGHT_MD))
+    det = ef.deterministic_fact_diff(sm)
+    titles = [c["title"] for c in det]
+    # нет "Изъяты/Добавлены листы из раздела ..." (это 3.3)
+    assert not any("листы из раздел" in t.lower() or "листы в раздел" in t.lower() for t in titles)
+    # но scope-only разделы остаются
+    assert any("Пояснительная записка" in t for t in titles)
+
+
 def test_merge_dedup_deterministic_wins():
     det = ef._mk_change(type_="stamp_changed", source="stamp", severity="high",
                         title="Изменён штамп комплекта", summary="d",
@@ -279,3 +310,70 @@ def test_orchestrator_never_raises_on_provider_error():
 def test_fallback_disabled_by_default(monkeypatch):
     monkeypatch.delenv("STAGE_COMPARISON_EVIDENCE_FIRST_FALLBACK_ENABLED", raising=False)
     assert ef.load_fallback_config().enabled is False
+
+
+# ── 12. batch preflight behavior (acceptance) ───────────────────────────────
+#
+# Требование:
+#   fallback disabled: too_large → skip_too_large
+#   fallback enabled:  too_large → run + analysis_strategy=evidence_first_s2_fallback
+
+from backend.app.services.stage_comparison import unified_analysis_jobs as uaj_mod
+
+
+def _make_large_pair(tmp_path, monkeypatch, *, total_over_limit: bool):
+    """Создать на диске пару с enriched MD обеих сторон под tmp COMPARISON_ROOT."""
+    monkeypatch.setenv("COMPARISON_ROOT", str(tmp_path / "cmp"))
+    from backend.app.services.stage_comparison import paths as paths_mod
+    sid, pid = "sess_test", "pair_test"
+    # лимит 1000; over → 600 на сторону (1200>1000), under → 100 на сторону (200<1000)
+    monkeypatch.setenv("STAGE_COMPARISON_ENRICHED_COMPARE_MAX_CHARS", "1000")
+    body = "## СТРАНИЦА 1\n" + ("x" * (600 if total_over_limit else 100))
+    for side in ("left", "right"):
+        p = paths_mod.text_enrichment_md_path(sid, pid, side)
+        p.write_text(body, encoding="utf-8")
+    return sid, pid
+
+
+def test_batch_preflight_too_large_skips_when_fallback_disabled(tmp_path, monkeypatch):
+    monkeypatch.setenv("STAGE_COMPARISON_EVIDENCE_FIRST_FALLBACK_ENABLED", "false")
+    sid, pid = _make_large_pair(tmp_path, monkeypatch, total_over_limit=True)
+    info = uaj_mod._classify_pair_for_batch(sid, pid, force_compare=False)
+    assert info["too_large"] is True
+    assert info["action"] == "skip_too_large"
+    assert "analysis_strategy" not in info
+
+
+def test_batch_preflight_too_large_runs_when_fallback_enabled(tmp_path, monkeypatch):
+    monkeypatch.setenv("STAGE_COMPARISON_EVIDENCE_FIRST_FALLBACK_ENABLED", "true")
+    sid, pid = _make_large_pair(tmp_path, monkeypatch, total_over_limit=True)
+    info = uaj_mod._classify_pair_for_batch(sid, pid, force_compare=False)
+    assert info["too_large"] is True
+    assert info["fallback_enabled"] is True
+    assert info["action"] == "run"
+    assert info["analysis_strategy"] == ef.STRATEGY
+
+
+def test_batch_preflight_small_pair_runs_without_strategy(tmp_path, monkeypatch):
+    monkeypatch.setenv("STAGE_COMPARISON_EVIDENCE_FIRST_FALLBACK_ENABLED", "true")
+    sid, pid = _make_large_pair(tmp_path, monkeypatch, total_over_limit=False)
+    info = uaj_mod._classify_pair_for_batch(sid, pid, force_compare=False)
+    assert info["too_large"] is False
+    assert info["action"] == "run"
+    assert "analysis_strategy" not in info
+
+
+def test_batch_preflight_summary_counts_fallback_runs(tmp_path, monkeypatch):
+    monkeypatch.setenv("STAGE_COMPARISON_EVIDENCE_FIRST_FALLBACK_ENABLED", "true")
+    sid, pid = _make_large_pair(tmp_path, monkeypatch, total_over_limit=True)
+    # get_session агрегирует пары из pairs/-папок; для unit-теста счётчика
+    # достаточно вернуть session dict с нужной парой.
+    monkeypatch.setattr(
+        uaj_mod.store_mod, "get_session",
+        lambda _sid: {"id": sid, "pairs": [{"id": pid, "status": "matched"}]},
+    )
+    summary = uaj_mod.preflight_session_for_batch(sid, scope="session")
+    assert summary["total_pairs"] == 1
+    assert summary["skip_too_large"] == 0
+    assert summary["will_run"] == 1
+    assert summary["will_run_fallback"] == 1

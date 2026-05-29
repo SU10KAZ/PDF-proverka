@@ -33,6 +33,7 @@ from datetime import datetime, timezone
 from typing import Any, Optional
 
 from . import enriched_comparison as ec_mod
+from . import evidence_first_fallback as ef_mod
 from . import md_image_enrichment as md_mod
 from . import paths as paths_mod
 from . import store as store_mod
@@ -195,6 +196,11 @@ def _classify_pair_for_batch(
     too_large = bool(
         cfg.max_chars and cfg.max_chars > 0 and enriched_total_chars > cfg.max_chars
     )
+    # evidence_first_s2_fallback: при включённом флаге too_large НЕ блокирует —
+    # пара запускается через fallback-стратегию в run_enriched_comparison.
+    # При выключенном флаге поведение прежнее (skip_too_large).
+    fallback_enabled = bool(ef_mod.load_fallback_config().enabled)
+    too_large_blocks = too_large and not fallback_enabled
 
     existing = ec_mod.get_comparison_result(session_id, pair_id)
     comparison_status = str((existing or {}).get("status") or "not_run")
@@ -205,15 +211,18 @@ def _classify_pair_for_batch(
         "enriched_total_chars": enriched_total_chars,
         "enriched_limit_chars": int(cfg.max_chars or 0),
         "too_large": too_large,
+        "fallback_enabled": fallback_enabled,
         "comparison_status": comparison_status,
         "outdated_format": bool(enriched_status.get("outdated_format")),
     }
+    if too_large and fallback_enabled:
+        info["analysis_strategy"] = ef_mod.STRATEGY
 
     if not ready:
         info["action"] = "skip_not_ready"
         info["reason"] = "enriched_md_missing"
         return info
-    if too_large:
+    if too_large_blocks:
         info["action"] = "skip_too_large"
         info["reason"] = "enriched_total_chars_exceeds_limit"
         return info
@@ -253,6 +262,7 @@ def preflight_session_for_batch(
         "skip_too_large": 0,
         "skip_done": 0,
     }
+    will_run_fallback = 0
     for pid in ids:
         try:
             info = _classify_pair_for_batch(
@@ -263,6 +273,8 @@ def preflight_session_for_batch(
             info = {"action": "skip_not_ready", "reason": f"preflight_exception:{exc}"}
         action = info.get("action") or "skip_not_ready"
         counts[action] = counts.get(action, 0) + 1
+        if action == "run" and info.get("analysis_strategy") == ef_mod.STRATEGY:
+            will_run_fallback += 1
         items.append({"pair_id": pid, **info})
     return {
         "session_id": session_id,
@@ -270,6 +282,7 @@ def preflight_session_for_batch(
         "force_compare": bool(force_compare),
         "total_pairs": len(ids),
         "will_run": counts["run"],
+        "will_run_fallback": will_run_fallback,
         "skip_not_ready": counts["skip_not_ready"],
         "skip_too_large": counts["skip_too_large"],
         "skip_done": counts["skip_done"],
@@ -333,6 +346,8 @@ def create_unified_job(
                 action = info.get("action") or "run"
                 base["preflight_action"] = action
                 base["preflight_reason"] = info.get("reason") or ""
+                if info.get("analysis_strategy"):
+                    base["analysis_strategy"] = info["analysis_strategy"]
                 if action != "run":
                     base["status"] = "skipped"
                     base["enrichment_status"] = "skipped"
