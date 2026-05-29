@@ -8808,28 +8808,8 @@ const app = createApp({
         const scUnifiedSortField         = ref('');
         const scUnifiedSortDir           = ref('asc');
 
-        // ─── Grouped / high-value findings (deterministic post-processing) ────
-        // Backend: GET /api/stage-comparison/sessions/{sid}/unified-grouped
-        // Это второй режим вкладки «Расхождения»: пользователь видит
-        // сгруппированный реестр значимых отличий вместо сырых 346 findings.
-        // По умолчанию вкладка открывается в режиме 'grouped'.
-        const scUnifiedViewMode          = ref('grouped'); // 'grouped' | 'raw'
-        const scUnifiedGrouped           = ref(null);      // {summary, groups, hidden_formal_groups, pair_modes?}
-        const scUnifiedGroupedLoading    = ref(false);
-        const scUnifiedGroupedError      = ref('');
-        const scUnifiedGroupedScopePairId = ref(null);
-        // Filters / toggles for grouped view.
-        const scGroupedShowFormal        = ref(false);     // include_formal toggle
-        const scGroupedFilterSignificance = ref('');       // '' | high | medium | low
-        const scGroupedFilterTheme        = ref('');
-        const scGroupedFilterDirection    = ref('');       // '' | complication | simplification | neutral | unknown
-        const scGroupedFilterCostDir      = ref('');       // '' | increase | decrease | unknown
-        const scGroupedFilterHumanReview  = ref(false);
-        const scGroupedSearch             = ref('');
-        // Раскрытые группы (для evidence drill-down).
-        const scGroupedExpanded           = ref({});       // {group_id: true}
-        // Регроуп: POST /regroup (только по кнопке, не auto).
-        const scGroupedRegrouping         = ref(false);
+        // Grouped-режим вкладки «Расхождения» удалён по запросу: вкладка всегда
+        // показывает плоский список всех расхождений (unified-diff-flat).
         // Экспертная оценка расхождений: ключ хранения — стабильный raw `id`
         // (chg_…/uf_…). Решения по группам агрегируются из source_finding_ids.
         const scExpertReviewMode      = ref(false);
@@ -8884,8 +8864,13 @@ const app = createApp({
         const scReportLoading        = ref(false);
         const scReportError          = ref('');
         const scReportExpandedPairs  = ref(new Set());   // pair_id, развёрнутые в аккордеоне
-        const scReportPairItems      = reactive({});     // pair_id -> [согласованные расхождения] (lazy)
+        const scReportPairItems      = reactive({});     // pair_id -> [согласованные расхождения]
         const scReportPairLoadingMap = reactive({});     // pair_id -> bool (идёт загрузка пары)
+        // Фоновая предзагрузка всех пар после открытия вкладки.
+        const scReportPrefetching    = ref(false);
+        const scReportPrefetchDone   = ref(0);
+        const scReportPrefetchTotal  = ref(0);
+        let   _scReportPrefetchGen   = 0;                // токен отмены устаревшей предзагрузки
 
         const scPairs = computed(() => scSession.value ? (scSession.value.pairs || []) : []);
         const scPairsCounts = computed(() => {
@@ -10661,23 +10646,47 @@ const app = createApp({
             return `/api/stage-comparison/sessions/${sid}/unified-diff-flat/export.xlsx?accepted_only=true`;
         }
 
+        // Фоновая предзагрузка расхождений всех пар (только тех, где есть
+        // согласованное) — чтобы разворачивание было мгновенным. Пары без
+        // согласованного не грузим: они и так показывают «нет согласованных».
+        async function scReportPrefetchAll(gen) {
+            const targets = (scPairs.value || [])
+                .filter(p => scReportApprovedCountFor(p.id) > 0 && !scReportPairLoaded(p.id));
+            scReportPrefetchTotal.value = targets.length;
+            scReportPrefetchDone.value = 0;
+            if (!targets.length) { scReportPrefetching.value = false; return; }
+            scReportPrefetching.value = true;
+            try {
+                for (const p of targets) {
+                    if (gen !== _scReportPrefetchGen) return;   // началась новая загрузка — отменяемся
+                    await scReportLoadPair(p.id);
+                    scReportPrefetchDone.value++;
+                }
+            } finally {
+                if (gen === _scReportPrefetchGen) scReportPrefetching.value = false;
+            }
+        }
+
         async function scReportLoad() {
             if (!scSession.value) return;
             scReportLoading.value = true;
             scReportError.value = '';
-            // Сброс кэшей: при перезагрузке развёрнутые пары перечитаются.
+            const gen = ++_scReportPrefetchGen;             // отменяет прошлую предзагрузку
+            scReportPrefetching.value = false;
+            // Сброс кэшей: при перезагрузке всё перечитается.
             for (const k of Object.keys(scReportPairItems)) delete scReportPairItems[k];
             for (const k of Object.keys(scReportPairLoadingMap)) delete scReportPairLoadingMap[k];
             try {
-                // Грузим только решения эксперта — этого хватает для счётчиков.
+                // Грузим только решения эксперта — этого хватает для счётчиков,
+                // вкладка открывается мгновенно.
                 await scLoadExpertDecisions();
-                // Перечитываем уже раскрытые пары (если есть).
-                for (const pid of scReportExpandedPairs.value) scReportLoadPair(pid);
             } catch (e) {
                 scReportError.value = String(e.message || e);
             } finally {
                 scReportLoading.value = false;
             }
+            // А расхождения всех пар догружаем в фоне (не блокируя открытие).
+            scReportPrefetchAll(gen);
         }
 
         async function scOpenReportTab() {
@@ -11368,73 +11377,6 @@ const app = createApp({
                 scUnifiedFlatLoading.value = false;
             }
         }
-        // ─── Grouped loader / regroup ──────────────────────────────────────
-        async function scLoadUnifiedGrouped() {
-            if (!scSession.value) return;
-            scUnifiedGroupedLoading.value = true;
-            scUnifiedGroupedError.value = '';
-            try {
-                const sid = encodeURIComponent(scSession.value.id);
-                let url = `/api/stage-comparison/sessions/${sid}/unified-grouped`;
-                const qs = [];
-                // pair-scope: тот же контракт, что и raw flat (active pair vs all).
-                let scopePid = null;
-                if (!scUnifiedShowAllPairs.value && scActivePair.value && scActivePair.value.id) {
-                    scopePid = scActivePair.value.id;
-                    qs.push(`pair_id=${encodeURIComponent(scopePid)}`);
-                }
-                // include_formal: backend сам считает hidden_formal_count, и при
-                // include_formal=false возвращает groups + пустой hidden_formal_groups.
-                // Чтобы UI мог переключаться без повторного fetch'а, грузим
-                // ВСЕГДА include_formal=true; UI сам отфильтрует визуально.
-                qs.push('include_formal=true');
-                if (qs.length) url += '?' + qs.join('&');
-                const r = await fetch(url);
-                if (!r.ok) {
-                    const j = await r.json().catch(() => ({}));
-                    throw new Error(j.detail || ('HTTP ' + r.status));
-                }
-                scUnifiedGrouped.value = await r.json();
-                scUnifiedGroupedScopePairId.value = scopePid;
-            } catch (e) {
-                scUnifiedGroupedError.value = String(e.message || e);
-                scUnifiedGrouped.value = null;
-            } finally {
-                scUnifiedGroupedLoading.value = false;
-            }
-        }
-        async function scRegroupUnifiedFindings() {
-            if (!scSession.value) return;
-            scGroupedRegrouping.value = true;
-            try {
-                const sid = encodeURIComponent(scSession.value.id);
-                const r = await fetch(`/api/stage-comparison/sessions/${sid}/regroup`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({force: true}),
-                });
-                if (!r.ok) {
-                    const j = await r.json().catch(() => ({}));
-                    throw new Error(j.detail || ('HTTP ' + r.status));
-                }
-                await scLoadUnifiedGrouped();
-            } catch (e) {
-                scUnifiedGroupedError.value = 'Не удалось пересобрать группировку: ' + e;
-            } finally {
-                scGroupedRegrouping.value = false;
-            }
-        }
-        function scSetUnifiedViewMode(mode) {
-            // 'grouped' | 'raw'. Переключение не сбрасывает activePairId.
-            if (mode !== 'grouped' && mode !== 'raw') return;
-            scUnifiedViewMode.value = mode;
-            if (mode === 'grouped' && !scUnifiedGrouped.value && !scUnifiedGroupedLoading.value) {
-                scLoadUnifiedGrouped();
-            }
-            if (mode === 'raw' && !scUnifiedFlat.value && !scUnifiedFlatLoading.value) {
-                scLoadUnifiedFlat();
-            }
-        }
 
         // ─── Stage Comparison: Экспертная оценка расхождений ───
         // Хранение per-session по raw `id`. Группа агрегирует через source_finding_ids.
@@ -11541,8 +11483,22 @@ const app = createApp({
             }
             scExpertDecisions.value = map;
         }
+        // Решения, относящиеся к текущей PDF-паре. Ключи составные
+        // `<pair_id>::<raw_id>`, поэтому фильтруем по префиксу активной пары.
+        // Без активной пары (теоретически) — возвращаем все.
+        function _scExpertDecisionsForActivePair() {
+            const pid = _scExpertScopePairId();
+            const prefix = pid ? pid + '::' : null;
+            const out = [];
+            for (const [k, d] of Object.entries(scExpertDecisions.value)) {
+                if (prefix && !k.startsWith(prefix)) continue;
+                out.push([k, d]);
+            }
+            return out;
+        }
         function scExpertReviewSummary() {
-            const vals = Object.values(scExpertDecisions.value);
+            // Счётчики «Принято/Отклонено» — только по текущей паре, а не по всей сессии.
+            const vals = _scExpertDecisionsForActivePair().map(([, d]) => d);
             return {
                 accepted: vals.filter(d => d.decision === 'accepted').length,
                 rejected: vals.filter(d => d.decision === 'rejected').length,
@@ -11609,9 +11565,12 @@ const app = createApp({
             if (!scSession.value) return;
             scExpertReviewSaving.value = true;
             try {
+                // Сохраняем решения ТОЛЬКО текущей пары — чужие пары backend не
+                // трогает (apply_batch обновляет лишь присланные ключи). Это
+                // исключает кросс-парное «сохранилось всё».
                 const decisions = [];
                 const removedIds = [];
-                for (const [rid, d] of Object.entries(scExpertDecisions.value)) {
+                for (const [rid, d] of _scExpertDecisionsForActivePair()) {
                     if (d && d.decision) {
                         decisions.push({
                             item_id: rid,
@@ -11633,8 +11592,10 @@ const app = createApp({
                     const err = await r.json().catch(() => ({}));
                     throw new Error(err.detail || ('HTTP ' + r.status));
                 }
-                const result = await r.json();
-                alert(`Сохранено: ${result.summary?.accepted ?? 0} принято, ${result.summary?.rejected ?? 0} отклонено`);
+                await r.json();
+                // Сводка по текущей паре (а не по всей сессии).
+                const sum = scExpertReviewSummary();
+                alert(`Сохранено по текущей паре: ${sum.accepted} принято, ${sum.rejected} отклонено`);
                 // Обновить per-pair статус для колонки «Проверено экспертом».
                 try { await scLoadExpertPerPair(); } catch (_) {}
             } catch (e) {
@@ -11643,15 +11604,6 @@ const app = createApp({
             } finally {
                 scExpertReviewSaving.value = false;
             }
-        }
-        function scToggleGroupExpand(gid) {
-            if (!gid) return;
-            const cur = scGroupedExpanded.value[gid];
-            // Vue 3 ref<Object> reactivity: пересоздаём объект.
-            scGroupedExpanded.value = { ...scGroupedExpanded.value, [gid]: !cur };
-        }
-        function scIsGroupExpanded(gid) {
-            return !!scGroupedExpanded.value[gid];
         }
         async function scUnifiedToggleShowAllPairs() {
             // Toggle между «текущая пара» и «вся сессия». В режиме «вся сессия»
@@ -11665,12 +11617,7 @@ const app = createApp({
             }
             // Сбросить локальный pair-фильтр, чтобы он не дублировал backend-фильтр.
             scUnifiedFilterPair.value = '';
-            // Перезагрузить оба источника: raw (всегда), grouped (если данные уже
-            // были или мы сейчас в grouped-режиме — иначе lazy при переключении).
             await scLoadUnifiedFlat();
-            if (scUnifiedViewMode.value === 'grouped' || scUnifiedGrouped.value) {
-                await scLoadUnifiedGrouped();
-            }
         }
         async function scOpenUnifiedPairPreflight() {
             if (!scSession.value || !scActivePair.value) return;
@@ -11767,12 +11714,6 @@ const app = createApp({
                 scUnifiedPairStatus.value = null; // force reload
                 await scLoadUnifiedPairStatus();
                 await scLoadUnifiedFlat();
-                // После Opus comparison grouped кеш на диске устарел. Backend
-                // на следующем GET увидит файл и вернёт его, но он отражает
-                // прежнее состояние flat. Перегенерируем безопасно (без LLM).
-                if (scUnifiedViewMode.value === 'grouped' || scUnifiedGrouped.value) {
-                    try { await scRegroupUnifiedFindings(); } catch (_) {}
-                }
                 scCloseUnifiedPreflight();
                 return data;
             } catch (e) {
@@ -11825,10 +11766,6 @@ const app = createApp({
                     await new Promise(res => setTimeout(res, 3000));
                 }
                 try { await scLoadUnifiedFlat(); } catch (_) {}
-                // grouped cache на диске мог устареть после batch'а — пересоберём.
-                if (scUnifiedViewMode.value === 'grouped' || scUnifiedGrouped.value) {
-                    try { await scRegroupUnifiedFindings(); } catch (_) {}
-                }
                 if (scActivePair.value) {
                     try { await scLoadUnifiedPairStatus(); } catch (_) {}
                 }
@@ -12132,11 +12069,6 @@ const app = createApp({
             if (scUnifiedShowAllPairs.value) return;
             scUnifiedFilterPair.value = '';
             scLoadUnifiedFlat();
-            // Перезагрузить grouped, если он уже используется (открыт grouped view
-            // или данные уже загружены).
-            if (scUnifiedViewMode.value === 'grouped' || scUnifiedGrouped.value) {
-                scLoadUnifiedGrouped();
-            }
             if (newPid) scLoadUnifiedPairStatus();
         });
         // ── Computed filters для unified flat ─────────────────────────────
@@ -12254,142 +12186,6 @@ const app = createApp({
             return scUnifiedSortDir.value === 'desc' ? '▼' : '▲';
         }
 
-        // ─── Grouped view: computed + helpers ──────────────────────────────
-        // Все groups (visible + optional formal) после backend lazy-build.
-        const scGroupedAllItems = computed(() => {
-            const g = scUnifiedGrouped.value;
-            if (!g) return [];
-            const visible = g.groups || [];
-            if (!scGroupedShowFormal.value) return visible;
-            const hidden = g.hidden_formal_groups || [];
-            return visible.concat(hidden);
-        });
-        // Опции тем для select'ов — только реально присутствующие.
-        const scGroupedThemeOptions = computed(() => {
-            const items = scGroupedAllItems.value || [];
-            const set = new Set();
-            items.forEach(g => { if (g.theme) set.add(g.theme); });
-            return Array.from(set).sort();
-        });
-        // Фильтрация группированных items.
-        const scGroupedItemsFiltered = computed(() => {
-            const items = scGroupedAllItems.value || [];
-            const fsig = scGroupedFilterSignificance.value;
-            const fth = scGroupedFilterTheme.value;
-            const fdir = scGroupedFilterDirection.value;
-            const fcost = scGroupedFilterCostDir.value;
-            const fhr = scGroupedFilterHumanReview.value;
-            const q = (scGroupedSearch.value || '').toLowerCase().trim();
-            const out = [];
-            for (let i = 0; i < items.length; i++) {
-                const g = items[i];
-                if (fsig && g.significance !== fsig) continue;
-                if (fth && g.theme !== fth) continue;
-                if (fdir && (g.change_direction || 'unknown') !== fdir) continue;
-                if (fcost && (g.cost_impact_direction || 'unknown') !== fcost) continue;
-                if (fhr && !g.requires_human_review) continue;
-                if (q) {
-                    const hay = [
-                        g.title, g.old_value, g.new_value, g.construction_impact,
-                        g.theme, g.semantic_subject, g.semantic_action, g.discipline,
-                    ].filter(Boolean).join(' ').toLowerCase();
-                    if (!hay.includes(q)) continue;
-                }
-                out.push({ ...g, _displayNo: i + 1 });
-            }
-            return out;
-        });
-        // Сортировка: significance high→low→formal, затем cost_impact_direction
-        // (increase сверху, decrease ниже), затем affected_count desc.
-        const _SC_GROUPED_SIG_RANK = { high: 0, medium: 1, low: 2, formal: 3 };
-        const _SC_GROUPED_COSTDIR_RANK = { increase: 0, decrease: 1, unknown: 2 };
-        const scGroupedItemsSorted = computed(() => {
-            const items = (scGroupedItemsFiltered.value || []).slice();
-            items.sort((a, b) => {
-                // Первичный ключ — экспертное решение: принятые сверху, отклонённые внизу.
-                const da = _scDecisionRank(a);
-                const db = _scDecisionRank(b);
-                if (da !== db) return da - db;
-                const sa = _SC_GROUPED_SIG_RANK[a.significance] ?? 9;
-                const sb = _SC_GROUPED_SIG_RANK[b.significance] ?? 9;
-                if (sa !== sb) return sa - sb;
-                const ca = _SC_GROUPED_COSTDIR_RANK[a.cost_impact_direction || 'unknown'] ?? 9;
-                const cb = _SC_GROUPED_COSTDIR_RANK[b.cost_impact_direction || 'unknown'] ?? 9;
-                if (ca !== cb) return ca - cb;
-                return (b.affected_count || 0) - (a.affected_count || 0);
-            });
-            return items;
-        });
-        // Human-readable labels.
-        const _SC_GROUPED_SIG_LABELS = {
-            high: 'высокая', medium: 'средняя', low: 'низкая', formal: 'формальное',
-        };
-        const _SC_GROUPED_DIR_LABELS = {
-            complication: 'усложнение', simplification: 'упрощение',
-            neutral: 'нейтрально', unknown: '—',
-        };
-        const _SC_GROUPED_COSTDIR_LABELS = {
-            increase: '↑ стоимость', decrease: '↓ стоимость', unknown: '—',
-        };
-        const _SC_GROUPED_THEME_LABELS = {
-            equipment: 'Оборудование', materials: 'Материалы',
-            geometry: 'Геометрия', quantities: 'Количества',
-            system_topology: 'Топология систем', routes_lengths: 'Трассы/длины',
-            power_load_perf: 'Нагрузки/мощность', construction_scope: 'Объём работ',
-            finishing_scope: 'Отделка', fire_safety: 'Пожарная безопасность',
-            commissioning_tests: 'ПНР / испытания',
-            exclusions_additions: 'Исключения / Добавления',
-            simplifications: 'Упрощения', documentation_formal: 'Документация (формальное)',
-            norms: 'Нормы', other: 'Прочее',
-        };
-        function scGroupedSigLabel(sig) { return _SC_GROUPED_SIG_LABELS[sig] || sig || '—'; }
-        function scGroupedDirLabel(d) { return _SC_GROUPED_DIR_LABELS[d || 'unknown']; }
-        function scGroupedCostDirLabel(d) { return _SC_GROUPED_COSTDIR_LABELS[d || 'unknown']; }
-        function scGroupedThemeLabel(t) { return _SC_GROUPED_THEME_LABELS[t] || (t || 'other'); }
-        function scGroupedHasVariants(g) {
-            const v = g && g.value_variants;
-            return Array.isArray(v) && v.length > 1;
-        }
-        function scGroupedEvidencePreview(g, limit) {
-            const ev = (g && g.evidence) || [];
-            const n = Number(limit) > 0 ? Number(limit) : 3;
-            return ev.slice(0, n);
-        }
-        // «К месту»: для одного evidence — сразу переход; для нескольких —
-        // раскрываем строку. Передаём конкретный evidence-item.
-        //
-        // Если ev не передан и группа session_rollup (cross-pair), выбираем
-        // preferred evidence по правилам:
-        //   1) evidence с pair_id === scActivePair.value.id (current pair);
-        //   2) fallback — первый evidence группы.
-        // Без этого UX путал пользователя: «К месту» из pair-scoped view
-        // мог увести в другую PDF-пару, если evidence[0] был оттуда.
-        function scGotoGroupEvidence(g, ev) {
-            if (!g) return;
-            let pickedEv = ev || null;
-            if (!pickedEv) {
-                const all = (g && g.evidence) || [];
-                const activePid = scActivePair.value && scActivePair.value.id;
-                if (activePid) {
-                    pickedEv = all.find(e => e && e.pair_id === activePid) || null;
-                }
-                if (!pickedEv) {
-                    pickedEv = all[0] || null;
-                }
-            }
-            const pid = (pickedEv && pickedEv.pair_id) || (g.affected_pair_ids && g.affected_pair_ids[0]);
-            if (!pid) return;
-            // Подсветить нужную PDF-пару + перейти к листу/странице.
-            try {
-                const fake = {
-                    pair_id: pid,
-                    sheet: (pickedEv && pickedEv.sheet) || (g.affected_locations && g.affected_locations[0] && g.affected_locations[0].sheet),
-                    page: (pickedEv && pickedEv.page) || (g.affected_pages && g.affected_pages[0]),
-                };
-                scGotoUnifiedChange(fake);
-            } catch (_) { /* no-op */ }
-        }
-
         // URL для экспорта таблицы расхождений в Excel (учитывает scope по паре).
         function scUnifiedExportXlsxUrl() {
             if (!scSession.value) return '';
@@ -12439,11 +12235,6 @@ const app = createApp({
                 // пары при переходе из вкладки «Связь блоков».
                 scUnifiedShowAllPairs.value = false;
                 scUnifiedFilterPair.value = '';
-                // По умолчанию пользователь сразу видит grouped findings;
-                // raw flat грузим параллельно (для быстрого переключения).
-                if (scUnifiedViewMode.value === 'grouped') {
-                    scLoadUnifiedGrouped();
-                }
                 scLoadUnifiedFlat();
                 if (scActivePair.value) {
                     scLoadUnifiedPairStatus();
@@ -13093,19 +12884,6 @@ const app = createApp({
             scUnifiedExportXlsxUrl,
             scUnifiedPairOptions, scUnifiedSourceLayerOptions, scUnifiedTypeOptions,
             scUnifiedCategoryOptions, scUnifiedItemsFiltered, scUnifiedItemsSorted,
-            // Grouped/high-value findings (UI mode 'grouped')
-            scUnifiedViewMode, scSetUnifiedViewMode,
-            scUnifiedGrouped, scUnifiedGroupedLoading, scUnifiedGroupedError,
-            scUnifiedGroupedScopePairId,
-            scGroupedShowFormal, scGroupedFilterSignificance, scGroupedFilterTheme,
-            scGroupedFilterDirection, scGroupedFilterCostDir,
-            scGroupedFilterHumanReview, scGroupedSearch,
-            scGroupedAllItems, scGroupedThemeOptions,
-            scGroupedItemsFiltered, scGroupedItemsSorted,
-            scGroupedSigLabel, scGroupedDirLabel, scGroupedCostDirLabel, scGroupedThemeLabel,
-            scGroupedHasVariants, scGroupedEvidencePreview, scGotoGroupEvidence,
-            scToggleGroupExpand, scIsGroupExpanded,
-            scLoadUnifiedGrouped, scRegroupUnifiedFindings, scGroupedRegrouping,
             // Expert review для расхождений (per-session)
             scExpertReviewMode, scExpertDecisions, scExpertReviewSaving,
             scToggleExpertReview, scLoadExpertDecisions,
@@ -13172,6 +12950,7 @@ const app = createApp({
             scReportTotalApproved, scReportPairsWithApprovedCount,
             scReportExpandedPairs, scReportIsPairExpanded, scReportTogglePair,
             scReportPairLoading, scReportPairLoaded, scReportExportUrl,
+            scReportPrefetching, scReportPrefetchDone, scReportPrefetchTotal,
         };
     }
 });

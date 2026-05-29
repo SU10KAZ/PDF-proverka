@@ -6139,29 +6139,49 @@
                         {{ scUnifiedError }}
                     </div>
 
-                    <!-- Панель действий: только экспертная оценка. Переключатель вида
-                         (grouped/raw) убран — всегда плоский список всех расхождений. -->
-                    <div class="sc-unified-mode" style="display:flex; gap:6px; align-items:center; margin-bottom:8px; font-size:12px">
-                        <div style="flex:1"></div>
-                        <button class="btn btn-sm"
-                                :class="scExpertReviewMode ? 'btn-primary' : 'btn-secondary'"
-                                @click="scToggleExpertReview()"
-                                title="Подтверждать или опровергать расхождения. Решения хранятся на стороне сервера и переживают регруппировку.">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px; margin-right:3px"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-                            {{ scExpertReviewMode ? 'Скрыть оценку' : 'Экспертная оценка' }}
-                        </button>
-                        <template v-if="scExpertReviewMode">
-                            <span style="font-size:12px; opacity:.85">
-                                Принято: <b style="color:#22c55e">{{ scExpertReviewSummary().accepted }}</b>
-                                · Отклонено: <b style="color:#ef4444">{{ scExpertReviewSummary().rejected }}</b>
-                            </span>
-                            <button class="btn btn-sm btn-primary"
-                                    @click="scSubmitExpertReview()"
-                                    :disabled="scExpertReviewSaving || scExpertReviewSummary().total === 0">
-                                {{ scExpertReviewSaving ? 'Сохранение…' : 'Сохранить решения' }}
+                    <!-- Панель действий: «Экспертная оценка» (выпадающее меню) +
+                         «Экспорт в Excel» в одном ряду, на одной высоте. -->
+                    <div class="sc-unified-mode" style="display:flex; gap:6px; align-items:center; justify-content:flex-end; margin-bottom:8px; font-size:12px">
+                        <!-- Экспертная оценка: кнопка-триггер + dropdown -->
+                        <div class="sc-expert-menu">
+                            <button class="btn btn-sm"
+                                    :class="scExpertReviewMode ? 'btn-primary' : 'btn-secondary'"
+                                    @click="scToggleExpertReview()"
+                                    title="Подтверждать или опровергать расхождения текущей пары. Решения хранятся на сервере.">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px; margin-right:3px"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                                Экспертная оценка
+                                <span style="margin-left:4px">{{ scExpertReviewMode ? '▴' : '▾' }}</span>
                             </button>
-                        </template>
-                        <!-- Кнопка «⟳ Обновить группировку» убрана из UI по запросу. -->
+                            <div v-if="scExpertReviewMode" class="sc-expert-menu__dropdown">
+                                <button class="btn btn-sm btn-primary sc-expert-menu__item"
+                                        @click="scSubmitExpertReview()"
+                                        :disabled="scExpertReviewSaving || scExpertReviewSummary().total === 0">
+                                    {{ scExpertReviewSaving ? 'Сохранение…' : '💾 Сохранить решение' }}
+                                </button>
+                                <div class="sc-expert-menu__counts">
+                                    Принято: <b style="color:#22c55e">{{ scExpertReviewSummary().accepted }}</b>
+                                    · Отклонено: <b style="color:#ef4444">{{ scExpertReviewSummary().rejected }}</b>
+                                </div>
+                                <button class="btn btn-sm btn-secondary sc-expert-menu__item"
+                                        @click="scToggleExpertReview()">
+                                    ✕ Скрыть оценку
+                                </button>
+                                <a v-if="scUnifiedFlat && (scUnifiedFlat.items || []).length"
+                                   class="btn btn-sm btn-secondary sc-expert-menu__item"
+                                   :href="scUnifiedExportXlsxUrl()"
+                                   target="_blank" rel="noopener">
+                                    ⬇ Экспорт в Excel
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Экспорт в Excel — всегда в верхнем ряду -->
+                        <a v-if="scUnifiedFlat && (scUnifiedFlat.items || []).length"
+                           class="btn btn-sm btn-secondary"
+                           :href="scUnifiedExportXlsxUrl()"
+                           target="_blank" rel="noopener"
+                           title="Скачать таблицу расхождений в формате Excel (текущая пара)">
+                            ⬇ Экспорт в Excel
+                        </a>
                     </div>
 
                     <!-- Loading flat list -->
@@ -6183,16 +6203,9 @@
                             <code>{{ (scActivePair.left && scActivePair.left.filename) || scActivePair.id }}</code>
                             ↔ <code>{{ (scActivePair.right && scActivePair.right.filename) || '' }}</code>
                         </span>
-                        <div style="flex:1"></div>
                         <!-- Кнопка «Показать все PDF-пары» и переключение scope убраны
-                             из UI по запросу: всегда показывается только текущая пара. -->
-                        <a v-if="scUnifiedFlat && (scUnifiedFlat.items || []).length"
-                           class="btn btn-sm btn-secondary"
-                           :href="scUnifiedExportXlsxUrl()"
-                           target="_blank" rel="noopener"
-                           title="Скачать таблицу расхождений в формате Excel (текущий scope)">
-                            ⬇ Экспорт в Excel
-                        </a>
+                             из UI по запросу: всегда показывается только текущая пара.
+                             «Экспорт в Excel» перенесён в верхний ряд действий. -->
                     </div>
 
                     <!-- Analysis-mode hint убран из UI по запросу. -->
@@ -6982,6 +6995,9 @@
                         <strong>Согласовано расхождений:</strong> {{ scReportTotalApproved }}
                         <span style="opacity:.6">· пар с согласованными: {{ scReportPairsWithApprovedCount }} / {{ scPairs.length }}</span>
                     </div>
+                    <span v-if="scReportPrefetching" style="font-size:12px; opacity:.7; white-space:nowrap">
+                        Подгружаю расхождения… {{ scReportPrefetchDone }}/{{ scReportPrefetchTotal }}
+                    </span>
                     <div style="flex:1"></div>
                     <button class="btn btn-secondary" @click="scReportLoad()" :disabled="scReportLoading">
                         {{ scReportLoading ? 'Загрузка…' : 'Обновить' }}
