@@ -419,6 +419,7 @@ async def run_pair(
     *,
     force_enrichment: bool = False,
     force_compare: bool = False,
+    force_fallback: bool = False,
     progress_cb: Optional[Any] = None,
 ) -> PairRunResult:
     """Цепочка enrichment (если нужно) + enriched_comparison для одной пары.
@@ -553,6 +554,7 @@ async def run_pair(
         comp = await asyncio.to_thread(
             enriched_mod.run_enriched_comparison,
             session_id, pair_id, force=bool(force_compare),
+            force_fallback=bool(force_fallback),
         )
     except Exception as exc:  # noqa: BLE001
         logger.exception("unified_analysis: enriched_comparison failed")

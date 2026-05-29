@@ -189,6 +189,34 @@ Qwen-блоков), `VERIFY_ENABLED=true`, `DEDUP_ENABLED=true`.
 Срабатывает только в too_large-ветке `run_enriched_comparison`, только если
 флаг включён И provider (Claude Code) доступен. Иначе — обычный `too_large`.
 
+## Per-pair запуск из UI (без глобального флага)
+
+Помимо глобального флага есть **явный per-pair override** — кнопка в UI на
+этапе «Сравнение стадий → 1. Загрузка документации». Когда session-level Opus
+batch пропустил большую пару, в колонке «Сравнение» появляется кликабельный
+бейдж **«⚠ файл большой ▸ fallback»**. Клик запускает fallback **только для
+этой пары** на уже готовых enriched MD — без повторного Qwen, без поднятия
+общего лимита, без изменения самого алгоритма.
+
+Механика:
+
+- фронт шлёт обычный `POST /unified-analysis-jobs` со `scope=selected`,
+  `pair_ids=[pid]`, `force_compare=true`, `force_enrichment=false`,
+  `skip_ineligible=false` и новым флагом **`force_fallback=true`**;
+- `force_fallback` протянут через `create_unified_job` → job →
+  `run_unified_job` → `run_pair` → `run_enriched_comparison(force_fallback=...)`;
+- в too_large-ветке gate становится `(fb_cfg.enabled OR force_fallback)` —
+  то есть пара прогоняется через fallback даже при глобальном флаге OFF;
+- single-pair job трекается на фронте отдельно (`scOpusFallbackByPair`), чтобы
+  не затирать бейджи остальных пар; по завершении бейдж показывает
+  «✓ сравнено (fallback)»;
+- если provider (Claude Code) недоступен — graceful: пара остаётся `too_large`,
+  бейдж снова кликабельный.
+
+`force_fallback` меняет **только верхний gate включения**, kill-switches
+(`VERIFY_ENABLED`, `DEDUP_ENABLED`, `LOW_CONF_*`) и сам алгоритм fallback
+остаются под env-управлением.
+
 ## Контракт результата
 
 `comparison_result.json` пишется как обычно, но с дополнительными полями:

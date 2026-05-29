@@ -8794,6 +8794,13 @@ const app = createApp({
         const scOpusPreflight         = ref(null);   // {total_pairs, will_run, skip_*, items}
         const scOpusPreflightLoading  = ref(false);
         const scOpusStartedAtClient   = ref(null);   // fallback elapsed
+        // Per-pair Opus fallback (evidence_first_s2_fallback) для too_large пар.
+        // Запускается кликом по бейджу «⚠ файл большой» в колонке «Сравнение».
+        // Трекается отдельно от session job, чтобы не затирать бейджи остальных
+        // пар (single-pair job содержит только одну пару).
+        const scOpusFallbackByPair    = ref({});     // pairId → последний job item
+        const scOpusFallbackPolling   = ref({});     // pairId → bool (идёт poll)
+        const scOpusFallbackStarting  = ref({});     // pairId → bool (создаём job)
         // Filters для unified flat-таблицы
         const scUnifiedFilterPair        = ref('');
         const scUnifiedFilterSourceLayer = ref('');
@@ -11238,6 +11245,10 @@ const app = createApp({
         // Per-pair статус Opus-сравнения для колонки «Сравнение». Источник —
         // активный/последний unified-job (scOpusJob.items), как у бейджа графики.
         function scOpusPairItem(pairId) {
+            // Per-pair fallback job имеет приоритет: его статус свежее и относится
+            // именно к этой паре (single-pair job). Иначе — session job.
+            const fb = scOpusFallbackByPair.value[pairId];
+            if (fb) return fb;
             const job = scOpusJob.value;
             if (!job || !Array.isArray(job.items)) return null;
             let found = null;
@@ -11248,6 +11259,11 @@ const app = createApp({
         }
 
         function scOpusPairBadge(pairId) {
+            // Пара прямо сейчас гоняется через fallback?
+            if (scOpusFallbackStarting.value[pairId]) {
+                return {label: '… запуск fallback', cls: 'sc-status-maybe',
+                        title: 'Запускаю сравнение через Opus fallback (evidence_first)…'};
+            }
             const it = scOpusPairItem(pairId);
             if (!it) return {label: '—', cls: 'sc-status-unmatched', title: 'сравнение не запускалось'};
             const st = String(it.status || '').toLowerCase();
@@ -11256,19 +11272,27 @@ const app = createApp({
             const reason = String(it.preflight_reason || it.error || '').toLowerCase();
             const tooLarge = action === 'skip_too_large' || cmp === 'too_large' || reason.indexOf('exceeds_limit') >= 0;
             if (tooLarge) {
-                return {label: '⚠ файл большой', cls: 'sc-status-maybe',
-                        title: 'enriched MD превышает лимит — пара пропущена; нужен section split / compact compare'};
+                // Кликабельно: запускает evidence_first_s2_fallback на готовых
+                // enriched MD (без повторного Qwen, без поднятия общего лимита).
+                return {label: '⚠ файл большой ▸ fallback', cls: 'sc-status-maybe', canFallback: true,
+                        title: 'enriched MD превышает лимит. Нажмите, чтобы сравнить эту пару через Opus fallback '
+                             + '(evidence_first: section split + verification) на уже готовых enriched MD — '
+                             + 'без повторного Qwen и без изменения общего лимита.'};
             }
+            const viaFb = !!it._via_fallback;
             if (st === 'running' || st === 'comparing' || st === 'enriching') {
-                return {label: '… идёт', cls: 'sc-status-maybe', title: 'идёт сравнение'};
+                return {label: viaFb ? '… fallback' : '… идёт', cls: 'sc-status-maybe',
+                        title: viaFb ? 'идёт сравнение через Opus fallback (evidence_first)' : 'идёт сравнение'};
             }
             if (st === 'queued') {
-                return {label: '⏱ в очереди', cls: 'sc-status-unmatched', title: 'ждёт сравнения'};
+                return {label: viaFb ? '⏱ fallback в очереди' : '⏱ в очереди', cls: 'sc-status-unmatched', title: 'ждёт сравнения'};
             }
             if (st === 'done' || cmp === 'done') {
                 const n = Number(it.changes_count || 0);
-                return {label: '✓ сравнено', cls: 'sc-status-matched',
-                        title: n ? `сравнено · расхождений: ${n}` : 'сравнено'};
+                const suffix = viaFb ? ' (fallback)' : '';
+                return {label: '✓ сравнено' + suffix, cls: 'sc-status-matched',
+                        title: (n ? `сравнено · расхождений: ${n}` : 'сравнено')
+                             + (viaFb ? ' · через Opus fallback (evidence_first)' : '')};
             }
             if (st === 'failed' || st === 'failed_interrupted' || st === 'error') {
                 return {label: '✗ ошибка', cls: 'sc-status-unmatched', title: it.error || 'ошибка сравнения'};
@@ -11810,6 +11834,8 @@ const app = createApp({
             if (scOpusStarting.value) return;
             scOpusStarting.value = true;
             scOpusError.value = '';
+            // Session-wide rerun перекрывает per-pair fallback-оверрайды.
+            scOpusFallbackByPair.value = {};
             try {
                 const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/unified-analysis-jobs`;
                 const r = await fetch(url, {
@@ -11895,6 +11921,8 @@ const app = createApp({
             if (scOpusStarting.value) return;
             scOpusStarting.value = true;
             scOpusError.value = '';
+            // Session-wide rerun перекрывает per-pair fallback-оверрайды.
+            scOpusFallbackByPair.value = {};
             try {
                 const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/unified-analysis-jobs`;
                 const r = await fetch(url, {
@@ -11952,6 +11980,101 @@ const app = createApp({
                 }
             } finally {
                 scOpusPolling.value = false;
+            }
+        }
+
+        // Сохранить/обновить item конкретной пары из single-pair fallback job.
+        // Тегаем _via_fallback, чтобы бейдж показал «(fallback)».
+        function scOpusSetFallbackItem(pairId, job) {
+            const items = (job && Array.isArray(job.items)) ? job.items : [];
+            let it = null;
+            for (const x of items) { if (x && x.pair_id === pairId) it = x; }
+            if (!it) {
+                // job ещё без items для пары — отразим общий статус job.
+                it = {pair_id: pairId, status: (job && job.status) || 'queued'};
+            }
+            scOpusFallbackByPair.value = {
+                ...scOpusFallbackByPair.value,
+                [pairId]: {...it, _via_fallback: true},
+            };
+        }
+
+        // Клик по бейджу «⚠ файл большой ▸ fallback»: запустить
+        // evidence_first_s2_fallback для одной пары на готовых enriched MD.
+        // НЕ запускает Qwen, НЕ поднимает общий лимит, НЕ меняет алгоритм —
+        // только явный per-pair gate (force_fallback). Single-pair job, чтобы
+        // не затирать бейджи остальных пар.
+        async function scOpusRunFallbackForPair(pairId) {
+            if (!scSession.value || !scSession.value.id || !pairId) return;
+            if (scOpusFallbackStarting.value[pairId]) return;
+            // Не стартуем, если по этой паре уже идёт fallback.
+            const existing = scOpusFallbackByPair.value[pairId];
+            if (existing && ['queued', 'running', 'comparing', 'enriching'].includes(String(existing.status || '').toLowerCase())) return;
+            scOpusFallbackStarting.value = {...scOpusFallbackStarting.value, [pairId]: true};
+            scOpusError.value = '';
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/unified-analysis-jobs`;
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        scope: 'selected',
+                        pair_ids: [pairId],
+                        confirm: true,
+                        // Qwen НЕ запускаем — enriched MD уже готов.
+                        force_enrichment: false,
+                        // Пересчитываем сравнение этой пары.
+                        force_compare: true,
+                        // Не фильтруем по too_large — наоборот, гоним fallback.
+                        skip_ineligible: false,
+                        // Явный per-pair override: fallback даже при флаге OFF.
+                        force_fallback: true,
+                    }),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    const msg = (j && j.detail && (j.detail.message || j.detail)) || ('HTTP ' + r.status);
+                    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+                }
+                const job = await r.json();
+                scOpusSetFallbackItem(pairId, job);
+                if (job && job.id && (job.status === 'queued' || job.status === 'running')) {
+                    scOpusPollFallback(job.id, pairId);
+                }
+            } catch (e) {
+                scOpusError.value = String(e.message || e);
+            } finally {
+                scOpusFallbackStarting.value = {...scOpusFallbackStarting.value, [pairId]: false};
+            }
+        }
+
+        // Polling single-pair fallback job. Пишет в scOpusFallbackByPair, не
+        // трогает scOpusJob (бейджи остальных пар не страдают).
+        async function scOpusPollFallback(jobId, pairId) {
+            if (!scSession.value || !jobId || !pairId) return;
+            if (scOpusFallbackPolling.value[pairId]) return;
+            scOpusFallbackPolling.value = {...scOpusFallbackPolling.value, [pairId]: true};
+            try {
+                while (true) {
+                    const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/unified-analysis-jobs/${encodeURIComponent(jobId)}`;
+                    let r;
+                    try { r = await fetch(url); } catch (_) {
+                        await new Promise(res => setTimeout(res, 3000));
+                        continue;
+                    }
+                    if (!r.ok) break;
+                    const job = await r.json();
+                    scOpusSetFallbackItem(pairId, job);
+                    if (['done', 'failed', 'cancelled', 'rejected_no_confirm', 'failed_interrupted'].includes(job.status)) break;
+                    await new Promise(res => setTimeout(res, 3000));
+                }
+                // Подтянуть свежие расхождения с диска (backend пересобрал).
+                try { await scLoadUnifiedFlat(); } catch (_) {}
+                if (scActivePair.value) {
+                    try { await scLoadUnifiedPairStatus(); } catch (_) {}
+                }
+            } finally {
+                scOpusFallbackPolling.value = {...scOpusFallbackPolling.value, [pairId]: false};
             }
         }
 
@@ -12866,6 +12989,8 @@ const app = createApp({
             scOpusStart, scOpusRetryErrors, scOpusCancel, scOpusContinue,
             scOpusRestoreActive, scOpusLoadPreflight,
             scOpusElapsedLabel, scOpusCurrentPairLabel, scOpusStartTitle,
+            // Per-pair Opus fallback (evidence_first_s2_fallback) для too_large
+            scOpusFallbackByPair, scOpusFallbackStarting, scOpusRunFallbackForPair,
             // Per-pair analysis mode
             scAnalysisMode, scAnalysisModeSaving, scAnalysisModeError,
             scLoadAnalysisMode, scSetAnalysisMode, scToggleAnalysisMode,

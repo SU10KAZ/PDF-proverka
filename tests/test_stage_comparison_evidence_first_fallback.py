@@ -435,3 +435,54 @@ def test_batch_preflight_summary_counts_fallback_runs(tmp_path, monkeypatch):
     assert summary["skip_too_large"] == 0
     assert summary["will_run"] == 1
     assert summary["will_run_fallback"] == 1
+
+
+# ── 12. per-pair force_fallback override (UI badge click) ───────────────────
+
+def test_classify_force_fallback_overrides_disabled_flag(tmp_path, monkeypatch):
+    """Глобальный флаг OFF, но force_fallback=True → too_large не блокирует."""
+    monkeypatch.setenv("STAGE_COMPARISON_EVIDENCE_FIRST_FALLBACK_ENABLED", "false")
+    sid, pid = _make_large_pair(tmp_path, monkeypatch, total_over_limit=True)
+    info = uaj_mod._classify_pair_for_batch(
+        sid, pid, force_compare=True, force_fallback=True,
+    )
+    assert info["too_large"] is True
+    assert info["fallback_enabled"] is False
+    assert info["fallback_forced"] is True
+    assert info["action"] == "run"
+    assert info["analysis_strategy"] == ef.STRATEGY
+
+
+def test_classify_without_force_fallback_still_skips_when_disabled(tmp_path, monkeypatch):
+    """Контроль: без force_fallback и при флаге OFF too_large по-прежнему skip."""
+    monkeypatch.setenv("STAGE_COMPARISON_EVIDENCE_FIRST_FALLBACK_ENABLED", "false")
+    sid, pid = _make_large_pair(tmp_path, monkeypatch, total_over_limit=True)
+    info = uaj_mod._classify_pair_for_batch(sid, pid, force_compare=True)
+    assert info["action"] == "skip_too_large"
+    assert info["fallback_forced"] is False
+    assert "analysis_strategy" not in info
+
+
+def test_run_enriched_comparison_force_fallback_runs_when_flag_off(tmp_path, monkeypatch):
+    """run_enriched_comparison(force_fallback=True) гоняет fallback при флаге OFF.
+
+    Сам алгоритм fallback не меняется — меняется только верхний gate включения.
+    """
+    monkeypatch.setenv("STAGE_COMPARISON_EVIDENCE_FIRST_FALLBACK_ENABLED", "false")
+    sid, pid = _make_large_pair(tmp_path, monkeypatch, total_over_limit=True)
+    cfg = ec.EnrichedCompareConfig(
+        enabled=True, provider="fake", model="opus", timeout_sec=10, max_chars=1000,
+    )
+    # без force_fallback: при флаге OFF too_large не прогоняется
+    base = ec.run_enriched_comparison(
+        sid, pid, force=True, provider=_FakeProvider(), config=cfg,
+    )
+    assert base["status"] == "too_large"
+    assert base.get("strategy") != ef.STRATEGY
+    # с force_fallback: прогоняется fallback несмотря на выключенный флаг
+    forced = ec.run_enriched_comparison(
+        sid, pid, force=True, force_fallback=True, provider=_FakeProvider(), config=cfg,
+    )
+    assert forced["status"] == "done"
+    assert forced["strategy"] == ef.STRATEGY
+    assert forced["fallback"] is True

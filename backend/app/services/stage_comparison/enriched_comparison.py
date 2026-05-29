@@ -771,6 +771,7 @@ def run_enriched_comparison(
     pair_id: str,
     *,
     force: bool = False,
+    force_fallback: bool = False,
     provider: Optional[BaseTextLLMProvider] = None,
     config: Optional[EnrichedCompareConfig] = None,
 ) -> dict:
@@ -781,6 +782,12 @@ def run_enriched_comparison(
 
     Если provider / config переданы — используются как есть (для тестов).
     Реальный платный API НЕ вызывается: только Claude Code subscription.
+
+    `force_fallback=True` — явный per-pair override: too_large прогоняется
+    через evidence_first_s2_fallback ДАЖЕ если глобальный флаг
+    STAGE_COMPARISON_EVIDENCE_FIRST_FALLBACK_ENABLED выключен. Алгоритм
+    fallback при этом не меняется; меняется только верхний gate включения.
+    Используется UI-кнопкой «запустить fallback» на большой паре.
     """
     with _lock:
         existing = _read_existing_result(session_id, pair_id)
@@ -867,12 +874,14 @@ def run_enriched_comparison(
             # флагом STAGE_COMPARISON_EVIDENCE_FIRST_FALLBACK_ENABLED.
             from . import evidence_first_fallback as _ef_mod
             fb_cfg = _ef_mod.load_fallback_config()
-            if fb_cfg.enabled and prov is not None:
+            if (fb_cfg.enabled or force_fallback) and prov is not None:
                 fb_avail, fb_reason = prov.check_availability()
                 if fb_avail:
                     logger.info(
                         "enriched_comparison: too_large (%d > %d) → evidence_first_s2_fallback "
-                        "session=%s pair=%s", total, cfg.max_chars, session_id, pair_id,
+                        "session=%s pair=%s (flag=%s force=%s)",
+                        total, cfg.max_chars, session_id, pair_id,
+                        fb_cfg.enabled, force_fallback,
                     )
                     work_dir = paths_mod.pair_dir(session_id, pair_id)
                     fb_payload = _ef_mod.run_evidence_first_fallback(

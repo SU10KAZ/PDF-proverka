@@ -3143,6 +3143,9 @@ tr.row-rejected:hover { opacity: 0.7; }
 .sc-status-matched   { background: #dcfce7; color: #15803d; }
 .sc-status-maybe     { background: #fef3c7; color: #92400e; }
 .sc-status-unmatched { background: #f3f4f6; color: #6b7280; }
+/* Кликабельный бейдж (например «⚠ файл большой ▸ fallback») */
+.sc-status--clickable { text-decoration: underline dotted; transition: filter .12s ease, box-shadow .12s ease; }
+.sc-status--clickable:hover { filter: brightness(.96); box-shadow: 0 0 0 1px rgba(146,64,14,.35); }
 
 .sc-diff-added    { color: #15803d; font-weight: 600; }
 .sc-diff-removed  { color: #b91c1c; font-weight: 600; }

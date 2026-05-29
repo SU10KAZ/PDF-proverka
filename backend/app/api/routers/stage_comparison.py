@@ -1278,6 +1278,9 @@ class CreateUnifiedAnalysisJobRequest(BaseModel):
     # force_compare=false). Используется session-level Opus batch с этапа
     # «Загрузка документации», чтобы не звать Qwen и не запускать too_large.
     skip_ineligible: bool = False
+    # Явный per-pair override: too_large прогнать через evidence_first_s2_fallback
+    # даже при выключенном глобальном флаге. UI-кнопка «запустить fallback».
+    force_fallback: bool = False
 
 
 class UnifiedAnalysisBatchPreflightRequest(BaseModel):
@@ -1390,6 +1393,7 @@ async def create_unified_job_endpoint(
             scope=req.scope, pair_id=req.pair_id, pair_ids=req.pair_ids,
             force_enrichment=req.force_enrichment,
             force_compare=req.force_compare,
+            force_fallback=req.force_fallback,
             confirm=req.confirm,
             skip_ineligible=req.skip_ineligible,
         )

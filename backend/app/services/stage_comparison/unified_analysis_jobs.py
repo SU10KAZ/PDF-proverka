@@ -174,6 +174,7 @@ def _classify_pair_for_batch(
     pair_id: str,
     *,
     force_compare: bool,
+    force_fallback: bool = False,
 ) -> dict:
     """Pre-flight per-pair: подходит ли пара для Opus batch.
 
@@ -199,8 +200,11 @@ def _classify_pair_for_batch(
     # evidence_first_s2_fallback: при включённом флаге too_large НЕ блокирует —
     # пара запускается через fallback-стратегию в run_enriched_comparison.
     # При выключенном флаге поведение прежнее (skip_too_large).
+    # force_fallback — явный per-pair override из UI: too_large прогоняется
+    # через fallback даже если глобальный флаг выключен.
     fallback_enabled = bool(ef_mod.load_fallback_config().enabled)
-    too_large_blocks = too_large and not fallback_enabled
+    fallback_active = fallback_enabled or bool(force_fallback)
+    too_large_blocks = too_large and not fallback_active
 
     existing = ec_mod.get_comparison_result(session_id, pair_id)
     comparison_status = str((existing or {}).get("status") or "not_run")
@@ -212,10 +216,11 @@ def _classify_pair_for_batch(
         "enriched_limit_chars": int(cfg.max_chars or 0),
         "too_large": too_large,
         "fallback_enabled": fallback_enabled,
+        "fallback_forced": bool(force_fallback),
         "comparison_status": comparison_status,
         "outdated_format": bool(enriched_status.get("outdated_format")),
     }
-    if too_large and fallback_enabled:
+    if too_large and fallback_active:
         info["analysis_strategy"] = ef_mod.STRATEGY
 
     if not ready:
@@ -298,6 +303,7 @@ def create_unified_job(
     pair_ids: Optional[list[str]] = None,
     force_enrichment: bool = False,
     force_compare: bool = False,
+    force_fallback: bool = False,
     confirm: bool = False,
     skip_ineligible: bool = False,
 ) -> dict:
@@ -311,6 +317,11 @@ def create_unified_job(
     отфильтрованные — со status='skipped' и filled-in reason. Это
     предотвращает запуск Qwen / Opus по неготовым / слишком большим парам
     в session-level batch.
+
+    `force_fallback` — явный per-pair override: too_large прогоняется через
+    evidence_first_s2_fallback даже при выключенном глобальном флаге. Не
+    меняет алгоритм fallback, только gate включения. Применяется UI-кнопкой
+    «запустить fallback» на большой паре (обычно scope=selected с одной парой).
     """
     if scope not in ("pair", "session", "selected"):
         raise ValueError("scope must be pair|session|selected")
@@ -338,6 +349,7 @@ def create_unified_job(
                 try:
                     info = _classify_pair_for_batch(
                         session_id, pid, force_compare=bool(force_compare),
+                        force_fallback=bool(force_fallback),
                     )
                 except Exception as exc:  # noqa: BLE001
                     logger.warning("create_unified_job: classify %s failed: %s", pid, exc)
@@ -364,6 +376,7 @@ def create_unified_job(
             "pair_id": pair_id,
             "force_enrichment": bool(force_enrichment),
             "force_compare": bool(force_compare),
+            "force_fallback": bool(force_fallback),
             "skip_ineligible": bool(skip_ineligible),
             "status": "queued",
             "created_at": now,
@@ -446,6 +459,7 @@ async def run_unified_job(session_id: str, job_id: str) -> dict:
 
     force_e = bool(job.get("force_enrichment"))
     force_c = bool(job.get("force_compare"))
+    force_fb = bool(job.get("force_fallback"))
     items = list(job.get("items") or [])
     for idx, item in enumerate(items):
         latest = _read_job(session_id, job_id)
@@ -486,6 +500,7 @@ async def run_unified_job(session_id: str, job_id: str) -> dict:
                 session_id, pid,
                 force_enrichment=force_e,
                 force_compare=force_c,
+                force_fallback=force_fb,
                 progress_cb=_on_progress,
             )
         except Exception as exc:  # noqa: BLE001

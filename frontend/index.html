@@ -5724,9 +5724,10 @@
                                     </div>
                                 </td>
                                 <td style="padding:8px; text-align:center">
-                                    <span :class="'sc-status ' + scOpusPairBadge(p.id).cls"
+                                    <span :class="'sc-status ' + scOpusPairBadge(p.id).cls + (scOpusPairBadge(p.id).canFallback ? ' sc-status--clickable' : '')"
                                           :title="scOpusPairBadge(p.id).title"
-                                          style="font-size:11px; white-space:nowrap">{{ scOpusPairBadge(p.id).label }}</span>
+                                          :style="{fontSize:'11px', whiteSpace:'nowrap', cursor: scOpusPairBadge(p.id).canFallback ? 'pointer' : 'default'}"
+                                          @click="scOpusPairBadge(p.id).canFallback && scOpusRunFallbackForPair(p.id)">{{ scOpusPairBadge(p.id).label }}</span>
                                 </td>
                                 <td style="padding:8px; text-align:center">
                                     <span :class="'sc-status ' + scPairExpertBadge(p.id).cls"
