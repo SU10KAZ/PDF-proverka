@@ -8684,6 +8684,11 @@ const app = createApp({
         const scSelectedRight  = ref(null);
         const scSelectedSlotLeft  = ref(null);
         const scSelectedSlotRight = ref(null);
+        // Поповер «упавшие блоки» на цифре «упало» в таблице пар.
+        const scFailedPopoverPairId = ref(null);   // id пары с открытым поповером (null = закрыт)
+        const scFailedBlocks        = ref([]);
+        const scFailedBlocksLoading = ref(false);
+        const scFailedBlocksError   = ref('');
         // Pair config template (Save button + auto-apply banner)
         const scTemplateSaving       = ref(false);
         const scTemplateLastSaveMsg  = ref('');   // короткое подтверждение «сохранён шаблон …»
@@ -8726,6 +8731,14 @@ const app = createApp({
         const scMdEnrichmentJob         = ref(null);     // {id,status,items[],progress,...}
         const scMdEnrichmentJobPolling  = ref(false);
         const scMdEnrichmentJobTimedOut = ref(false);    // true если стартовый POST упал по таймауту/524 — job мог продолжаться
+        // Переключатель «PDF ↔ MD» в двухпанельном вьювере: показывает
+        // left_enriched.md / right_enriched.md вместо рендеренных страниц PDF.
+        const scShowMd                  = ref(false);
+        const scMdView                  = reactive({left: null, right: null}); // {side,filename,exists,content,char_count}
+        const scMdViewLoading           = ref(false);
+        const scMdViewError             = ref('');
+        const scMdRenderMode            = ref('html');   // 'html' (отрендеренный markdown) | 'highlight' (подсветка строк)
+        const scMdPaneRefs              = reactive({});   // {left,right: scrollable MD container}
         // ── Stage 1: «Распознать графику» (session-level Qwen enrichment job) ──
         // Используется отдельно от per-pair job (scMdEnrichmentJob): запускается
         // одной кнопкой на этапе «1. Загрузка документации», обрабатывает все
@@ -9449,7 +9462,79 @@ const app = createApp({
             // Загружаем analysis_mode чтобы кнопка «Блоки без связей» сразу
             // отражала текущее состояние.
             try { await scLoadAnalysisMode(); } catch (_) {}
+            // Если открыт MD-вьювер — подтянуть enriched MD новой пары.
+            if (scShowMd.value) scLoadEnrichedMd();
             scTab.value = 'links';
+        }
+
+        // ─── Поповер «упавшие блоки» ────────────────────────────────────────
+        function scToggleFailedPopover(pair) {
+            if (!pair || !pair.id) return;
+            if (scFailedPopoverPairId.value === pair.id) {
+                scFailedPopoverPairId.value = null;
+                return;
+            }
+            scFailedPopoverPairId.value = pair.id;
+            scLoadFailedBlocks(pair.id);
+        }
+
+        async function scLoadFailedBlocks(pairId) {
+            if (!scSession.value || !pairId) return;
+            scFailedBlocks.value = [];
+            scFailedBlocksError.value = '';
+            scFailedBlocksLoading.value = true;
+            const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(pairId)}/failed-blocks`;
+            try {
+                const r = await fetch(url);
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const data = await r.json();
+                // Если поповер за время запроса переключили на другую пару — не перетираем.
+                if (scFailedPopoverPairId.value !== pairId) return;
+                scFailedBlocks.value = Array.isArray(data.blocks) ? data.blocks : [];
+            } catch (e) {
+                if (scFailedPopoverPairId.value === pairId) {
+                    scFailedBlocksError.value = 'Не удалось загрузить список: ' + e;
+                }
+            } finally {
+                if (scFailedPopoverPairId.value === pairId) scFailedBlocksLoading.value = false;
+            }
+        }
+
+        async function scGotoFailedBlock(pair, fb) {
+            if (!pair || !fb) return;
+            scFailedPopoverPairId.value = null;
+            // Если пара ещё не открыта (или открыта другая) — открыть и дождаться загрузки.
+            if (!scActivePair.value || scActivePair.value.id !== pair.id) {
+                await scOpenPair(pair);
+            } else if (scTab.value !== 'links') {
+                scTab.value = 'links';
+            }
+            // На MD-вьювере подсветка блока-оверлея не сработает — переключимся на PDF.
+            if (scShowMd.value) {
+                try { await scToggleMdView(); } catch (_) {}
+            }
+            scFocusBlock(fb.side, fb.page, fb.side_block_id);
+        }
+
+        function scFocusBlock(side, page, blockId) {
+            if (!side) return;
+            // Сделать слот страницы видимым и проскроллить к нему (reuse существующей навигации).
+            _scScrollPdfToPage(side, page);
+            if (!blockId) return;  // нет side_block_id — ограничиваемся прокруткой к странице
+            const elId = 'sc-block-' + side + '-' + blockId;
+            let attempts = 0;
+            const tryFocus = () => {
+                const el = document.getElementById(elId);
+                if (!el) {
+                    if (attempts++ < 8) { setTimeout(tryFocus, 150); }
+                    return;
+                }
+                el.scrollIntoView({behavior: 'smooth', block: 'center'});
+                el.classList.add('sc-block-focus-flash');
+                setTimeout(() => el.classList.remove('sc-block-focus-flash'), 2200);
+            };
+            // nextTick + задержка: слот/картинки рендерятся асинхронно после смены видимого слота.
+            nextTick(() => setTimeout(tryFocus, 200));
         }
 
         async function scLoadPairData() {
@@ -9493,6 +9578,215 @@ const app = createApp({
             if (!scSession.value || !scActivePair.value) return '';
             if (!page) return '';
             return `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/page-image?side=${side}&page=${page}&target_long_side=1400`;
+        }
+
+        // Загрузка содержимого left_enriched.md / right_enriched.md для MD-вьювера.
+        async function scLoadEnrichedMd() {
+            if (!scSession.value || !scActivePair.value) return;
+            scMdViewLoading.value = true;
+            scMdViewError.value = '';
+            scMdView.left = null;
+            scMdView.right = null;
+            const sid = encodeURIComponent(scSession.value.id);
+            const pid = encodeURIComponent(scActivePair.value.id);
+            try {
+                const [left, right] = await Promise.all(['left', 'right'].map(async (side) => {
+                    const r = await fetch(`/api/stage-comparison/sessions/${sid}/pairs/${pid}/enriched-md?side=${side}`);
+                    if (!r.ok) throw new Error('HTTP ' + r.status);
+                    return await r.json();
+                }));
+                scMdView.left = left;
+                scMdView.right = right;
+            } catch (e) {
+                scMdViewError.value = 'Не удалось загрузить enriched MD: ' + e;
+            } finally {
+                scMdViewLoading.value = false;
+            }
+        }
+
+        // ── Якорение позиции при переключении PDF ↔ MD ──────────────────────
+        // PDF-страница N стороны ↔ заголовок `## СТРАНИЦА N` в enriched MD.
+        // Узлы страниц в MD: `.sc-md-h-page` (HTML-режим) / `.sc-md-page` (подсветка).
+        function _scPdfTopPageBySide() {
+            const res = {left: null, right: null};
+            const items = scAlignmentItems.value || [];
+            for (const side of ['left', 'right']) {
+                const info = _scTopSlotInfo(side);
+                if (!info) continue;
+                const it = items.find(x => x.slot === info.slot);
+                if (!it) continue;
+                res[side] = side === 'left' ? it.left_page : it.right_page;
+            }
+            return res;
+        }
+        function _scMdPageNodes(side) {
+            const pane = scMdPaneRefs[side];
+            if (!pane) return [];
+            const out = [];
+            pane.querySelectorAll('.sc-md-h-page, .sc-md-page').forEach((n) => {
+                const m = (n.textContent || '').match(/СТРАНИЦА\s+(\d+)/);
+                if (m) out.push({page: parseInt(m[1], 10), node: n});
+            });
+            return out;
+        }
+        function _scScrollMdPaneToPage(side, page) {
+            const pane = scMdPaneRefs[side];
+            if (!pane || page == null) return;
+            const nodes = _scMdPageNodes(side);
+            if (!nodes.length) return;
+            let hit = nodes.find(x => x.page === page);
+            if (!hit) hit = nodes.filter(x => x.page <= page).pop() || nodes[0];
+            const paneRect = pane.getBoundingClientRect();
+            const nodeRect = hit.node.getBoundingClientRect();
+            const sticky = pane.firstElementChild ? pane.firstElementChild.offsetHeight : 0;
+            pane.scrollTop = Math.max(0, pane.scrollTop + (nodeRect.top - paneRect.top) - sticky);
+        }
+        function _scMdTopPage(side) {
+            const pane = scMdPaneRefs[side];
+            if (!pane) return null;
+            const nodes = _scMdPageNodes(side);
+            if (!nodes.length) return null;
+            const probe = pane.getBoundingClientRect().top + 60;
+            let best = null;
+            for (const x of nodes) {
+                const top = x.node.getBoundingClientRect().top;
+                if (top <= probe) best = x.page;
+                else if (best == null) best = x.page;  // все ниже probe → первая
+            }
+            return best;
+        }
+        function _scScrollPdfToPage(side, page) {
+            if (page == null) return;
+            const items = scAlignmentItems.value || [];
+            let slot = items.find(it => (side === 'left' ? it.left_page : it.right_page) === page);
+            if (!slot) slot = items.find(it => it.left_page === page || it.right_page === page);
+            if (!slot) return;
+            // Сделать целевой slot видимым для виртуализации, затем проскроллить к его верху.
+            scVisibleSlot.value = slot.slot;
+            scVisibleSlotLeft.value = slot.slot;
+            scVisibleSlotRight.value = slot.slot;
+            nextTick(() => {
+                requestAnimationFrame(() => {
+                    for (const s of ['left', 'right']) {
+                        const pane = scPaneRefs[s];
+                        const node = scSlotRefs[s + ':' + slot.slot];
+                        if (pane && node) pane.scrollTop = Math.max(0, node.offsetTop);
+                    }
+                    _scUpdateVisibleSlot();
+                });
+            });
+        }
+
+        // Переключение режима PDF ↔ MD в двухпанельном вьювере с сохранением
+        // позиции: на стр. N PDF → к `## СТРАНИЦА N` в MD, и обратно.
+        async function scToggleMdView() {
+            if (!scShowMd.value) {
+                // PDF → MD
+                const anchor = _scPdfTopPageBySide();
+                scShowMd.value = true;
+                await scLoadEnrichedMd();
+                await nextTick();
+                requestAnimationFrame(() => {
+                    _scScrollMdPaneToPage('left', anchor.left);
+                    _scScrollMdPaneToPage('right', anchor.right);
+                });
+            } else {
+                // MD → PDF
+                const page = _scMdTopPage('left');
+                const side = page != null ? 'left' : 'right';
+                const targetPage = page != null ? page : _scMdTopPage('right');
+                scShowMd.value = false;
+                await nextTick();
+                _scScrollPdfToPage(side, targetPage);
+            }
+        }
+
+        // Синхронная прокрутка MD-панелей (как в PDF, но пропорционально —
+        // у двух enriched MD разная длина, поэтому синхронизируем по доле
+        // прокрутки). Управляется тем же чекбоксом «Синхронизировать прокрутку».
+        let _scMdSyncing = false;
+        function scOnMdPaneScroll(side, ev) {
+            if (!scSyncScroll.value || _scMdSyncing) return;
+            const other = side === 'left' ? 'right' : 'left';
+            const pane = ev.target;
+            const otherPane = scMdPaneRefs[other];
+            if (!pane || !otherPane) return;
+            const denom = pane.scrollHeight - pane.clientHeight;
+            const ratio = denom > 0 ? pane.scrollTop / denom : 0;
+            const otherDenom = otherPane.scrollHeight - otherPane.clientHeight;
+            _scMdSyncing = true;
+            otherPane.scrollTop = ratio * otherDenom;
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => { _scMdSyncing = false; });
+            });
+        }
+
+        // Подсветка enriched MD по типу строки:
+        //   ## СТРАНИЦА …            → жёлтый
+        //   ### BLOCK [TEXT] …       → зелёный
+        //   ### Графический блок … / ### BLOCK [IMAGE] … → красный (image-блоки)
+        // Возвращает безопасный HTML (контент экранируется), по одной <div> на строку.
+        function scMdHighlightHtml(text) {
+            if (!text) return '';
+            const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return text.split('\n').map((line) => {
+                let cls = 'sc-md-line';
+                if (/^##\s+СТРАНИЦА(?:\s|$)/.test(line)) cls += ' sc-md-page';
+                else if (/^###\s+BLOCK\s+\[TEXT\]/.test(line)) cls += ' sc-md-text';
+                else if (/^###\s+BLOCK\s+\[IMAGE\]/.test(line) || /^###\s+Графический блок/.test(line)) cls += ' sc-md-image';
+                const safe = esc(line);
+                return `<div class="${cls}">${safe === '' ? '&nbsp;' : safe}</div>`;
+            }).join('');
+        }
+
+        // Чинит GFM-таблицы, у которых подпись/текст приклеены к строке
+        // заголовка на одной строке (артефакт OCR): число ячеек заголовка
+        // получается больше, чем у строки-разделителя `|---|---|`, и marked
+        // не распознаёт таблицу. Отделяем лишний префикс в отдельный абзац.
+        function _scRepairGluedTables(md) {
+            const isDelim = (l) => /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/.test(l);
+            const cells = (l) => {
+                let s = l.trim();
+                if (s.startsWith('|')) s = s.slice(1);
+                if (s.endsWith('|')) s = s.slice(0, -1);
+                return s.split('|');
+            };
+            const lines = md.split('\n');
+            const out = [];
+            for (let i = 0; i < lines.length; i++) {
+                const cur = lines[i], nxt = lines[i + 1];
+                if (nxt !== undefined && isDelim(nxt) && cur.includes('|')) {
+                    const dcols = cells(nxt).length;
+                    const parts = cells(cur);
+                    if (parts.length > dcols) {
+                        const header = '| ' + parts.slice(parts.length - dcols).map(c => c.trim()).join(' | ') + ' |';
+                        const caption = parts.slice(0, parts.length - dcols).join('|').trim();
+                        if (caption) { out.push(caption); out.push(''); }
+                        out.push(header);
+                        continue;
+                    }
+                }
+                out.push(cur);
+            }
+            return out.join('\n');
+        }
+
+        // Красивый рендер enriched MD как HTML (через marked) + цветовая
+        // подсветка заголовков по типу блока (## СТРАНИЦА / BLOCK [TEXT] / image).
+        function scMdRenderHtml(text) {
+            if (!text) return '';
+            text = _scRepairGluedTables(text);
+            let html;
+            if (typeof marked !== 'undefined') {
+                try { html = marked.parse(text, { breaks: true, gfm: true }); }
+                catch (e) { html = '<pre>' + text.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</pre>'; }
+            } else {
+                html = '<pre>' + text.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</pre>';
+            }
+            return html
+                .replace(/<h2([^>]*)>(\s*СТРАНИЦА)/g, '<h2$1 class="sc-md-h-page">$2')
+                .replace(/<h3([^>]*)>(\s*BLOCK\s*\[TEXT\])/g, '<h3$1 class="sc-md-h-text">$2')
+                .replace(/<h3([^>]*)>(\s*(?:BLOCK\s*\[IMAGE\]|Графический блок))/g, '<h3$1 class="sc-md-h-image">$2');
         }
 
         let _scSlotRO = null;
@@ -11259,8 +11553,8 @@ const app = createApp({
             const rSalv = ((ps.block_metrics || {}).right || {}).blocks_salvaged || 0;
             const salvSum = lSalv + rSalv;
             const m = {
-                done:               {label: '✓ готово',           cls: 'sc-status-matched',   title: 'enriched MD готов'},
-                done_with_salvage:  {label: '✓ готово (salvage)', cls: 'sc-status-matched',   title: salvSum ? `enriched MD готов · восстановлено блоков: ${salvSum}` : 'enriched MD готов · использовался salvage'},
+                done:               {label: '✓ распознано',           cls: 'sc-status-matched',   title: 'enriched MD готов'},
+                done_with_salvage:  {label: '✓ распознано (salvage)', cls: 'sc-status-matched',   title: salvSum ? `enriched MD готов · восстановлено блоков: ${salvSum}` : 'enriched MD готов · использовался salvage'},
                 partial:            {label: '⚠ частично',         cls: 'sc-status-maybe',     title: 'есть нераспознанные блоки'},
                 error:              {label: '✗ ошибка',           cls: 'sc-status-unmatched', title: 'есть failed-блоки'},
                 running:            {label: '… идёт',             cls: 'sc-status-maybe',     title: 'обработка'},
@@ -11279,6 +11573,82 @@ const app = createApp({
                 return {...base, title: `${base.title} · ${ps.problem_hint}`};
             }
             return base;
+        }
+
+        // Блок-уровневые счётчики графики для колонок таблицы пар:
+        // всего блоков / готово / упало (сумма left+right). Данные те же,
+        // что и у бейджа «Графика» — из aggregate.pair_statuses.block_metrics.
+        function scRecogPairBlocks(pairId) {
+            const ps = scRecogPairStatus(pairId);
+            const bm = ps && ps.block_metrics;
+            if (!bm) return {available: false, total: 0, done: 0, failed: 0, partial: 0};
+            let available = false, totalField = 0, bDone = 0, bPartial = 0, bError = 0;
+            for (const side of ['left', 'right']) {
+                const m = bm[side] || {};
+                if (m.block_metrics_available) available = true;
+                totalField += Number(m.blocks_total   || 0);
+                bDone      += Number(m.blocks_done     || 0);
+                bPartial   += Number(m.blocks_partial  || 0);
+                bError     += Number(m.blocks_error    || 0);
+            }
+            // «Готово» = распознанные блоки, включая salvage/partial — так же,
+            // как глобальный индикатор «38 / 43 · failed N» (described/total).
+            const done = bDone + bPartial;
+            const failed = bError;
+            // blocks_total приходит из backend (включает pending во время прогона).
+            // Если backend ещё без этого поля — fallback на described+failed.
+            const total = totalField > 0 ? totalField : (done + failed);
+            return {available, total, done, failed, partial: bPartial};
+        }
+
+        // Per-pair статус Opus-сравнения для колонки «Сравнение». Источник —
+        // активный/последний unified-job (scOpusJob.items), как у бейджа графики.
+        function scOpusPairItem(pairId) {
+            const job = scOpusJob.value;
+            if (!job || !Array.isArray(job.items)) return null;
+            let found = null;
+            for (const it of job.items) {
+                if (it && it.pair_id === pairId) found = it;  // последний item пары
+            }
+            return found;
+        }
+
+        function scOpusPairBadge(pairId) {
+            const it = scOpusPairItem(pairId);
+            if (!it) return {label: '—', cls: 'sc-status-unmatched', title: 'сравнение не запускалось'};
+            const st = String(it.status || '').toLowerCase();
+            const cmp = String(it.comparison_status || '').toLowerCase();
+            const action = String(it.preflight_action || '').toLowerCase();
+            const reason = String(it.preflight_reason || it.error || '').toLowerCase();
+            const tooLarge = action === 'skip_too_large' || cmp === 'too_large' || reason.indexOf('exceeds_limit') >= 0;
+            if (tooLarge) {
+                return {label: '⚠ файл большой', cls: 'sc-status-maybe',
+                        title: 'enriched MD превышает лимит — пара пропущена; нужен section split / compact compare'};
+            }
+            if (st === 'running' || st === 'comparing' || st === 'enriching') {
+                return {label: '… идёт', cls: 'sc-status-maybe', title: 'идёт сравнение'};
+            }
+            if (st === 'queued') {
+                return {label: '⏱ в очереди', cls: 'sc-status-unmatched', title: 'ждёт сравнения'};
+            }
+            if (st === 'done' || cmp === 'done') {
+                const n = Number(it.changes_count || 0);
+                return {label: '✓ сравнено', cls: 'sc-status-matched',
+                        title: n ? `сравнено · расхождений: ${n}` : 'сравнено'};
+            }
+            if (st === 'failed' || st === 'failed_interrupted' || st === 'error') {
+                return {label: '✗ ошибка', cls: 'sc-status-unmatched', title: it.error || 'ошибка сравнения'};
+            }
+            if (st === 'cancelled') {
+                return {label: '⊘ отменено', cls: 'sc-status-unmatched', title: 'отменено'};
+            }
+            if (st === 'skipped') {
+                if (action === 'skip_not_ready' || reason.indexOf('missing') >= 0 || reason.indexOf('not_ready') >= 0) {
+                    return {label: 'не готово', cls: 'sc-status-unmatched', title: 'графика ещё не распознана для пары'};
+                }
+                return {label: '✓ сравнено', cls: 'sc-status-matched', title: 'сравнение уже выполнено ранее'};
+            }
+            return {label: st || '—', cls: 'sc-status-unmatched', title: st || ''};
         }
 
         function scRecogElapsedLabel() {
@@ -12965,6 +13335,7 @@ const app = createApp({
             scRecogJob, scRecogPolling, scRecogStarting, scRecogError,
             scRecogStart, scRecogRetryErrors, scRecogCancel,
             scRecogRestoreActive, scRecogPairStatus, scRecogPairBadge,
+            scRecogPairBlocks, scOpusPairBadge,
             scRecogElapsedLabel, scFormatDuration, scRecogPairProgress,
             // Stage 1: «Проанализировать и сравнить» (session-level Opus batch)
             scOpusJob, scOpusPolling, scOpusStarting, scOpusError,
@@ -13044,7 +13415,11 @@ const app = createApp({
             scStatusLabel, scDiffTypeLabel,
             scScanFolders, scOpenProject, scLoadSessionsList, scFetchSessionsList, scLoadSession,
             scOpenPair, scLoadPairData, scLoadAlignment,
+            scFailedPopoverPairId, scFailedBlocks, scFailedBlocksLoading, scFailedBlocksError,
+            scToggleFailedPopover, scLoadFailedBlocks, scGotoFailedBlock, scFocusBlock,
             scPageImageUrl, scOnImageLoad, scOnPageImageLoad,
+            scShowMd, scMdView, scMdViewLoading, scMdViewError, scMdRenderMode, scMdPaneRefs,
+            scToggleMdView, scLoadEnrichedMd, scMdHighlightHtml, scMdRenderHtml, scOnMdPaneScroll,
             scSlotBlocks, scBlankPageStyle,
             scBlockOverlayStyle, scBlockOverlayClass, scIsBlockLinked, scSelectBlock,
             scBlockLinkInfo, scLinkColor, scLinkVisualIndex, scSelectLinkedBlock,

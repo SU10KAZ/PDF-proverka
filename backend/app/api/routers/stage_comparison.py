@@ -1040,6 +1040,95 @@ async def get_md_enrichment_endpoint(session_id: str, pair_id: str):
     return _md_enrichment_pair_payload(session_id, pair_id, pair)
 
 
+_FAILED_BLOCK_STATUSES = {"error", "no_image", "render_failed"}
+
+
+@router.get("/sessions/{session_id}/pairs/{pair_id}/failed-blocks")
+async def get_failed_blocks_endpoint(session_id: str, pair_id: str):
+    """Список упавших image-блоков пары (status ∈ error/no_image/render_failed).
+
+    Используется поповером на цифре «упало» в таблице пар: оператор кликает по
+    числу, видит какие именно блоки не распознались, и может перейти к блоку на
+    вкладке «Связь блоков». Агрегаты (block_metrics) этот endpoint не меняет —
+    только читает per-block items[] из <side>_image_descriptions.json.
+    """
+    session = store.get_session(session_id)
+    if session is None:
+        raise HTTPException(404, "Сессия не найдена")
+    pair = next((p for p in session.get("pairs") or [] if p.get("id") == pair_id), None)
+    if pair is None:
+        raise HTTPException(404, "Пара не найдена")
+
+    blocks: list[dict] = []
+    for side in ("left", "right"):
+        p = sc_paths_mod.text_enrichment_descriptions_path(session_id, pair_id, side)
+        if not p.exists():
+            continue
+        try:
+            data = json.loads(p.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError, ValueError):
+            continue
+        for it in data.get("items") or []:
+            if not isinstance(it, dict):
+                continue
+            if (it.get("status") or "").lower() not in _FAILED_BLOCK_STATUSES:
+                continue
+            blocks.append({
+                "side": side,
+                "order": it.get("order"),
+                "page": it.get("page"),
+                "image_order_on_page": it.get("image_order_on_page"),
+                "md_block_id": it.get("md_block_id"),
+                "side_block_id": it.get("side_block_id"),
+                "status": it.get("status"),
+                "error": it.get("error"),
+                "parse_error_detail": it.get("parse_error_detail"),
+                "block_type": it.get("block_type"),
+            })
+
+    blocks.sort(key=lambda b: (
+        0 if b["side"] == "left" else 1,
+        b.get("page") or 0,
+        b.get("order") or 0,
+    ))
+    return {"pair_id": pair_id, "blocks": blocks, "count": len(blocks)}
+
+
+@router.get("/sessions/{session_id}/pairs/{pair_id}/enriched-md")
+async def get_enriched_md_content_endpoint(
+    session_id: str, pair_id: str,
+    side: str = Query(..., pattern="^(left|right)$"),
+):
+    """Содержимое `<side>_enriched.md` для просмотра в UI.
+
+    Используется переключателем PDF ↔ MD в двухпанельном вьюере: вместо
+    рендеренных страниц PDF показывается текст enriched MD соответствующей
+    стороны. Если enrichment ещё не запускался — `exists=false`, content пуст.
+    """
+    session = store.get_session(session_id)
+    if session is None:
+        raise HTTPException(404, "Сессия не найдена")
+    pair = next((p for p in session.get("pairs") or [] if p.get("id") == pair_id), None)
+    if pair is None:
+        raise HTTPException(404, "Пара не найдена")
+    md_path = sc_paths_mod.text_enrichment_md_path(session_id, pair_id, side)
+    exists = md_path.exists()
+    content = ""
+    if exists:
+        try:
+            content = md_path.read_text(encoding="utf-8", errors="replace")
+        except Exception as exc:  # noqa: BLE001
+            raise HTTPException(500, f"Не удалось прочитать enriched MD: {exc}") from exc
+    return {
+        "side": side,
+        "path": str(md_path),
+        "filename": md_path.name,
+        "exists": exists,
+        "char_count": len(content),
+        "content": content,
+    }
+
+
 @router.post("/sessions/{session_id}/pairs/{pair_id}/md-enrichment")
 async def run_md_enrichment_endpoint(
     session_id: str, pair_id: str, req: MdEnrichmentRequest,
