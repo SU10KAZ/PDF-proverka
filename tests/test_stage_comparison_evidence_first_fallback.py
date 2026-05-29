@@ -312,6 +312,64 @@ def test_fallback_disabled_by_default(monkeypatch):
     assert ef.load_fallback_config().enabled is False
 
 
+# ── 11b. controlled rollout flags ───────────────────────────────────────────
+
+def test_rollout_flags_defaults_preserve_behavior(monkeypatch):
+    for v in ("STAGE_COMPARISON_EVIDENCE_S2_VERIFY_ENABLED",
+              "STAGE_COMPARISON_EVIDENCE_S2_DEDUP_ENABLED",
+              "STAGE_COMPARISON_EVIDENCE_S2_LOW_CONF_IMAGE_CAN_CONFIRM"):
+        monkeypatch.delenv(v, raising=False)
+    cfg = ef.load_fallback_config()
+    assert cfg.verify_enabled is True
+    assert cfg.dedup_enabled is True
+    assert cfg.low_conf_image_can_confirm is True  # дефолт сохраняет поведение
+
+
+def test_rollout_flags_parsed_from_env(monkeypatch):
+    monkeypatch.setenv("STAGE_COMPARISON_EVIDENCE_S2_VERIFY_ENABLED", "false")
+    monkeypatch.setenv("STAGE_COMPARISON_EVIDENCE_S2_DEDUP_ENABLED", "false")
+    monkeypatch.setenv("STAGE_COMPARISON_EVIDENCE_S2_LOW_CONF_IMAGE_CAN_CONFIRM", "false")
+    cfg = ef.load_fallback_config()
+    assert cfg.verify_enabled is False
+    assert cfg.dedup_enabled is False
+    assert cfg.low_conf_image_can_confirm is False
+
+
+def test_low_conf_image_gate_blocks_when_disabled():
+    ln, rn = ef._norm_text(LEFT_MD), ef._norm_text(RIGHT_MD)
+    # low-confidence чисто визуальное изменение с grounded quote
+    base = dict(provenance="llm_chunk", title="z", source="image_enrichment",
+                confidence=0.3,
+                evidence_left={"quote": "Класс бетона фундаментной плиты по прочности В30, W8, F150"},
+                evidence_right={"quote": ""})
+    # can_confirm=True (дефолт) → проходит
+    c1 = dict(base)
+    ef.verify_change_evidence(c1, ln, rn, ef.FallbackConfig(low_conf_image_can_confirm=True))
+    assert c1["evidence_verified"] is True
+    # can_confirm=False → блокируется (нет non-visual evidence)
+    c2 = dict(base)
+    ef.verify_change_evidence(c2, ln, rn, ef.FallbackConfig(low_conf_image_can_confirm=False))
+    assert c2["evidence_verified"] is False
+    assert c2.get("low_conf_image_blocked") is True
+
+
+def test_low_conf_gate_allows_high_conf_and_nonvisual(monkeypatch):
+    ln, rn = ef._norm_text(LEFT_MD), ef._norm_text(RIGHT_MD)
+    cfg = ef.FallbackConfig(low_conf_image_can_confirm=False)
+    # высокая уверенность → не блокируется даже визуальное
+    hi = dict(provenance="llm_chunk", title="h", source="image_enrichment", confidence=0.9,
+              evidence_left={"quote": "Класс бетона фундаментной плиты по прочности В30, W8, F150"},
+              evidence_right={"quote": ""})
+    ef.verify_change_evidence(hi, ln, rn, cfg)
+    assert hi["evidence_verified"] is True
+    # текстовый source с низкой уверенностью → не визуальный, не блокируется
+    txt = dict(provenance="llm_chunk", title="t", source="text", confidence=0.2,
+               evidence_left={"quote": "Класс бетона фундаментной плиты по прочности В30, W8, F150"},
+               evidence_right={"quote": ""})
+    ef.verify_change_evidence(txt, ln, rn, cfg)
+    assert txt["evidence_verified"] is True
+
+
 # ── 12. batch preflight behavior (acceptance) ───────────────────────────────
 #
 # Требование:

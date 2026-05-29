@@ -31,6 +31,20 @@
 STAGE_COMPARISON_EVIDENCE_FIRST_FALLBACK_ENABLED=true
 ```
 
+Рекомендуемый conservative controlled-enable набор:
+
+```env
+STAGE_COMPARISON_EVIDENCE_FIRST_FALLBACK_ENABLED=true
+STAGE_COMPARISON_EVIDENCE_S2_VERIFY_ENABLED=true
+STAGE_COMPARISON_EVIDENCE_S2_DEDUP_ENABLED=true
+STAGE_COMPARISON_EVIDENCE_S2_LOW_CONF_IMAGE_CAN_CONFIRM=false
+```
+
+`LOW_CONF_IMAGE_CAN_CONFIRM=false` — строже к галлюцинациям low-confidence
+Qwen-блоков: визуальное изменение с `confidence < 0.5` не подтверждается само
+по себе без non-visual evidence. Дефолт (true) сохраняет поведение приёмки;
+для первого production enable рекомендуется false.
+
 Дополнительные параметры (defaults безопасны, менять только при необходимости):
 
 ```env
@@ -40,6 +54,10 @@ STAGE_COMPARISON_EVIDENCE_FIRST_HEADER_MAX_CHARS=12000   # cap shared global hea
 STAGE_COMPARISON_EVIDENCE_FIRST_MIN_QUOTE_LEN=8
 STAGE_COMPARISON_EVIDENCE_FIRST_FUZZY_THRESHOLD=0.6      # порог grounding (token-overlap)
 STAGE_COMPARISON_EVIDENCE_FIRST_DROP_UNGROUNDED=true     # выкидывать changes без evidence
+STAGE_COMPARISON_EVIDENCE_S2_VERIFY_ENABLED=true         # kill-switch stage 7
+STAGE_COMPARISON_EVIDENCE_S2_DEDUP_ENABLED=true          # kill-switch stage 8
+STAGE_COMPARISON_EVIDENCE_S2_LOW_CONF_IMAGE_CAN_CONFIRM=true  # строгость к low-conf визуалу
+STAGE_COMPARISON_EVIDENCE_S2_LOW_CONF_THRESHOLD=0.5
 ```
 
 Срабатывает ТОЛЬКО в too_large-ветке `run_enriched_comparison` и ТОЛЬКО при

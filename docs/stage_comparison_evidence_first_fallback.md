@@ -165,6 +165,27 @@ STAGE_COMPARISON_EVIDENCE_FIRST_FUZZY_THRESHOLD=0.6
 STAGE_COMPARISON_EVIDENCE_FIRST_DROP_UNGROUNDED=true
 ```
 
+### Controlled-rollout переключатели (kill-switches)
+
+Дефолты сохраняют поведение приёмочного прогона — менять только осознанно.
+
+```env
+# stage 7 (evidence verification) on/off. false → ничего не дропается.
+STAGE_COMPARISON_EVIDENCE_S2_VERIFY_ENABLED=true
+# stage 8 (merge+dedup) on/off. false → конкатенация без схлопывания.
+STAGE_COMPARISON_EVIDENCE_S2_DEDUP_ENABLED=true
+# может ли low-confidence ВИЗУАЛЬНОЕ изменение (source=image_enrichment/
+# scheme_analysis, confidence < LOW_CONF_THRESHOLD) подтверждаться само по
+# себе. false = строже: такое изменение не проходит верификацию без non-visual
+# evidence origin. Дефолт true сохраняет поведение приёмки.
+STAGE_COMPARISON_EVIDENCE_S2_LOW_CONF_IMAGE_CAN_CONFIRM=true
+STAGE_COMPARISON_EVIDENCE_S2_LOW_CONF_THRESHOLD=0.5
+```
+
+Для conservative controlled enable рекомендуется
+`LOW_CONF_IMAGE_CAN_CONFIRM=false` (строже к галлюцинациям low-confidence
+Qwen-блоков), `VERIFY_ENABLED=true`, `DEDUP_ENABLED=true`.
+
 Срабатывает только в too_large-ветке `run_enriched_comparison`, только если
 флаг включён И provider (Claude Code) доступен. Иначе — обычный `too_large`.
 

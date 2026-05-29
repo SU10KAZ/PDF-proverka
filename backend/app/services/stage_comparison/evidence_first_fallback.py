@@ -62,6 +62,14 @@ class FallbackConfig:
     min_quote_len: int = 8              # минимальная длина quote для верификации
     fuzzy_threshold: float = 0.6        # token-overlap для «нашлось»
     drop_ungrounded: bool = True        # выкидывать LLM-changes без evidence в raw MD
+    # Контролируемые переключатели для rollout (дефолты сохраняют поведение).
+    verify_enabled: bool = True         # stage 7: сверять evidence с raw MD
+    dedup_enabled: bool = True          # stage 8: merge+dedup
+    # Может ли low-confidence ВИЗУАЛЬНОЕ изменение (source=image_enrichment/
+    # scheme_analysis, confidence < low_conf_threshold) подтверждаться само по
+    # себе. False = строже (такое изменение не проходит верификацию в одиночку).
+    low_conf_image_can_confirm: bool = True
+    low_conf_threshold: float = 0.5
 
 
 def _env_bool(name: str, default: bool = False) -> bool:
@@ -100,6 +108,12 @@ def load_fallback_config() -> FallbackConfig:
         min_quote_len=_env_int("STAGE_COMPARISON_EVIDENCE_FIRST_MIN_QUOTE_LEN", 8),
         fuzzy_threshold=_env_float("STAGE_COMPARISON_EVIDENCE_FIRST_FUZZY_THRESHOLD", 0.6),
         drop_ungrounded=_env_bool("STAGE_COMPARISON_EVIDENCE_FIRST_DROP_UNGROUNDED", True),
+        verify_enabled=_env_bool("STAGE_COMPARISON_EVIDENCE_S2_VERIFY_ENABLED", True),
+        dedup_enabled=_env_bool("STAGE_COMPARISON_EVIDENCE_S2_DEDUP_ENABLED", True),
+        low_conf_image_can_confirm=_env_bool(
+            "STAGE_COMPARISON_EVIDENCE_S2_LOW_CONF_IMAGE_CAN_CONFIRM", True),
+        low_conf_threshold=_env_float(
+            "STAGE_COMPARISON_EVIDENCE_S2_LOW_CONF_THRESHOLD", 0.5),
     )
 
 
@@ -655,6 +669,12 @@ def compare_chunk(
 # ─── Stage 7: original MD evidence verification ────────────────────────────
 
 
+# Визуальные source'ы (изменение видно только из image-описания / схемы) и
+# невизуальные evidence origin'ы (текст/таблица/штамп) — для low-conf gate.
+_VISUAL_SOURCES = {"image_enrichment", "scheme_analysis"}
+_NONVISUAL_EVIDENCE_ORIGINS = {"text", "table", "stamp"}
+
+
 def _norm_text(s: str) -> str:
     s = unicodedata.normalize("NFKC", s or "")
     s = s.replace("ё", "е").replace("Ё", "Е")
@@ -709,8 +729,25 @@ def verify_change_evidence(
     # Изменение grounded, если хотя бы одна сторона/якорь подтверждены.
     # Для added/removed допустима только одна сторона.
     grounded = gl or gr or arr_grounded
+    # Контролируемый строгий режим: low-confidence ВИЗУАЛЬНОЕ изменение
+    # (source=image_enrichment/scheme_analysis, confidence < порога) не может
+    # подтверждаться само по себе, если нет non-visual evidence origin'а.
+    low_conf_blocked = False
+    if grounded and not cfg.low_conf_image_can_confirm:
+        src = change.get("source")
+        try:
+            conf = float(change.get("confidence") or 0.0)
+        except (TypeError, ValueError):
+            conf = 0.0
+        if src in _VISUAL_SOURCES and conf < cfg.low_conf_threshold:
+            has_nonvisual = any(e.get("origin") in _NONVISUAL_EVIDENCE_ORIGINS for e in arr)
+            if not has_nonvisual:
+                grounded = False
+                low_conf_blocked = True
     change["evidence_verified"] = bool(grounded)
     change["evidence_scores"] = {"left": sl, "right": sr, "evidence_array": arr_score}
+    if low_conf_blocked:
+        change["low_conf_image_blocked"] = True
     return change
 
 
@@ -834,26 +871,40 @@ def run_evidence_first_fallback(
         if oversize:
             warnings_list.append(f"{oversize} чанков превышают chunk budget в 1.5×.")
 
-        # Stage 7 — evidence verification (детерминированные проходят по построению)
+        # Stage 7 — evidence verification (детерминированные проходят по построению).
+        # Контролируемый kill-switch: verify_enabled=false — пропускаем верификацию
+        # (changes остаются как есть, ничего не дропается).
         left_norm = _norm_text(left_md)
         right_norm = _norm_text(right_md)
         verified_llm: list[dict] = []
         dropped_ungrounded = 0
-        for c in llm_changes:
-            verify_change_evidence(c, left_norm, right_norm, cfg)
-            if not c.get("evidence_verified"):
-                if cfg.drop_ungrounded:
-                    dropped_ungrounded += 1
-                    continue
-                c["requires_human_review"] = True
-            verified_llm.append(c)
-        for c in det_changes:
-            verify_change_evidence(c, left_norm, right_norm, cfg)
+        if cfg.verify_enabled:
+            for c in llm_changes:
+                verify_change_evidence(c, left_norm, right_norm, cfg)
+                if not c.get("evidence_verified"):
+                    if cfg.drop_ungrounded:
+                        dropped_ungrounded += 1
+                        continue
+                    c["requires_human_review"] = True
+                verified_llm.append(c)
+            for c in det_changes:
+                verify_change_evidence(c, left_norm, right_norm, cfg)
+        else:
+            verified_llm = list(llm_changes)
+            warnings_list.append("evidence verification отключена (VERIFY_ENABLED=false).")
+        diagnostics["verify_enabled"] = cfg.verify_enabled
+        diagnostics["low_conf_image_can_confirm"] = cfg.low_conf_image_can_confirm
         diagnostics["llm_changes_raw"] = len(llm_changes)
         diagnostics["llm_changes_dropped_ungrounded"] = dropped_ungrounded
 
-        # Stage 8 — merge + dedup
-        merged, dup = merge_and_dedup(det_changes, verified_llm)
+        # Stage 8 — merge + dedup. Kill-switch: dedup_enabled=false — просто
+        # конкатенация (детерминированные + проверенные LLM), без схлопывания.
+        if cfg.dedup_enabled:
+            merged, dup = merge_and_dedup(det_changes, verified_llm)
+        else:
+            merged, dup = (det_changes + verified_llm), 0
+            warnings_list.append("dedup отключён (DEDUP_ENABLED=false).")
+        diagnostics["dedup_enabled"] = cfg.dedup_enabled
         diagnostics["duplicates_removed"] = dup
         diagnostics["final_changes"] = len(merged)
 
