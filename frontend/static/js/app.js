@@ -8881,10 +8881,11 @@ const app = createApp({
         // Вкладка «4. Отчёт»: собирает по всем парам проектов только те
         // расхождения, что эксперт согласовал на этапе «3. Расхождения».
         // Ничего не верифицируется здесь — только просмотр + один XLSX-экспорт.
-        const scReportLoading       = ref(false);
-        const scReportError         = ref('');
-        const scReportFlatItems     = ref([]);          // unified flat по ВСЕМ парам
-        const scReportExpandedPairs = ref(new Set());   // pair_id, развёрнутые в аккордеоне
+        const scReportLoading        = ref(false);
+        const scReportError          = ref('');
+        const scReportExpandedPairs  = ref(new Set());   // pair_id, развёрнутые в аккордеоне
+        const scReportPairItems      = reactive({});     // pair_id -> [согласованные расхождения] (lazy)
+        const scReportPairLoadingMap = reactive({});     // pair_id -> bool (идёт загрузка пары)
 
         const scPairs = computed(() => scSession.value ? (scSession.value.pairs || []) : []);
         const scPairsCounts = computed(() => {
@@ -10161,7 +10162,7 @@ const app = createApp({
             if (scGraphicSummary.value) {
                 try { await scLoadGraphicSummary(); } catch (_) {}
             }
-            if (scTab.value === 'report' && scReportFlatItems.value && scReportFlatItems.value.length) {
+            if (scTab.value === 'report') {
                 try { await scReportLoad(); } catch (_) {}
             }
             await nextTick();
@@ -10561,13 +10562,36 @@ const app = createApp({
         }
 
         // ── Report tab: read-only сводка согласованных расхождений ──────
-        // Источник — unified flat по ВСЕМ парам (build_unified_flat без pair_id)
-        // + решения эксперта (expert_review.json, ключ `<pair_id>::<raw_id>`).
-        // Показываем только decision=accepted, сгруппировано по парам проектов.
+        // Открытие быстрое: грузим только решения эксперта (один JSON) —
+        // из них сразу считаем число согласованного по каждой паре. Сами
+        // расхождения пары (unified flat) грузим лениво, по разворачиванию,
+        // и только для нужной пары (?pair_id=…), не всю сессию разом.
+        const _SC_REPORT_SEV_RANK = { high: 0, medium: 1, low: 2, unknown: 3 };
 
-        // accepted, считаем по составному ключу напрямую (не через
-        // scGetExpertDecision — там scope-хелпер переклеивает pair_id на
-        // активную пару, что ломает поэкранную группировку отчёта).
+        // Число accepted по каждой паре — прямо из ключей `<pair_id>::<raw_id>`.
+        const scReportApprovedCountByPair = computed(() => {
+            const counts = {};
+            for (const [key, entry] of Object.entries(scExpertDecisions.value || {})) {
+                if (!entry || entry.decision !== 'accepted') continue;
+                const sep = String(key).indexOf('::');
+                if (sep < 0) continue;
+                const pid = String(key).slice(0, sep);
+                counts[pid] = (counts[pid] || 0) + 1;
+            }
+            return counts;
+        });
+        function scReportApprovedCountFor(pairId) {
+            return scReportApprovedCountByPair.value[String(pairId)] || 0;
+        }
+        const scReportTotalApproved = computed(() =>
+            Object.values(scReportApprovedCountByPair.value).reduce((n, c) => n + c, 0)
+        );
+        const scReportPairsWithApprovedCount = computed(() =>
+            Object.values(scReportApprovedCountByPair.value).filter(c => c > 0).length
+        );
+
+        // accepted по составному ключу напрямую (не через scGetExpertDecision —
+        // там scope-хелпер переклеивает pair_id на активную пару).
         function _scReportItemAccepted(it) {
             if (!it) return false;
             const pid = String(it.pair_id || '');
@@ -10577,18 +10601,31 @@ const app = createApp({
                 : (it.id ? [String(it.id)] : []);
             return raws.some(r => ((scExpertDecisions.value[`${pid}::${r}`] || {}).decision) === 'accepted');
         }
-
-        const _SC_REPORT_SEV_RANK = { high: 0, medium: 1, low: 2, unknown: 3 };
-        // Все согласованные расхождения, сгруппированные по pair_id.
-        const scReportApprovedByPair = computed(() => {
-            const byPair = {};
-            for (const it of (scReportFlatItems.value || [])) {
-                if (!_scReportItemAccepted(it)) continue;
-                const pid = String(it.pair_id || '');
-                (byPair[pid] = byPair[pid] || []).push(it);
-            }
-            for (const pid of Object.keys(byPair)) {
-                byPair[pid].sort((a, b) => {
+        // Кэш лениво загруженных согласованных расхождений по паре.
+        function scReportApprovedFor(pairId) {
+            return scReportPairItems[String(pairId)] || [];
+        }
+        function scReportPairLoading(pairId) {
+            return !!scReportPairLoadingMap[String(pairId)];
+        }
+        function scReportPairLoaded(pairId) {
+            return Object.prototype.hasOwnProperty.call(scReportPairItems, String(pairId));
+        }
+        async function scReportLoadPair(pairId) {
+            if (!scSession.value) return;
+            const pid = String(pairId);
+            if (scReportPairLoadingMap[pid]) return;
+            scReportPairLoadingMap[pid] = true;
+            try {
+                const sid = encodeURIComponent(scSession.value.id);
+                const r = await fetch(`/api/stage-comparison/sessions/${sid}/unified-diff-flat?pair_id=${encodeURIComponent(pid)}`);
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                const data = await r.json();
+                const items = ((data && data.items) || []).filter(_scReportItemAccepted);
+                items.sort((a, b) => {
                     const ra = _SC_REPORT_SEV_RANK[a.severity] ?? 3;
                     const rb = _SC_REPORT_SEV_RANK[b.severity] ?? 3;
                     if (ra !== rb) return ra - rb;
@@ -10596,26 +10633,26 @@ const app = createApp({
                     const pb = Array.isArray(b.page) ? (b.page[0] || 0) : (b.page || 0);
                     return pa - pb;
                 });
+                scReportPairItems[pid] = items;
+            } catch (e) {
+                scReportError.value = String(e.message || e);
+                scReportPairItems[pid] = [];
+            } finally {
+                scReportPairLoadingMap[pid] = false;
             }
-            return byPair;
-        });
-        const scReportTotalApproved = computed(() => {
-            const byPair = scReportApprovedByPair.value;
-            return Object.values(byPair).reduce((n, arr) => n + arr.length, 0);
-        });
-        const scReportPairsWithApprovedCount = computed(() =>
-            Object.values(scReportApprovedByPair.value).filter(arr => arr.length > 0).length
-        );
-        function scReportApprovedFor(pairId) {
-            return scReportApprovedByPair.value[String(pairId)] || [];
         }
         function scReportIsPairExpanded(pairId) {
             return scReportExpandedPairs.value.has(String(pairId));
         }
         function scReportTogglePair(pairId) {
+            const pid = String(pairId);
             const s = new Set(scReportExpandedPairs.value);
-            const key = String(pairId);
-            if (s.has(key)) s.delete(key); else s.add(key);
+            if (s.has(pid)) {
+                s.delete(pid);
+            } else {
+                s.add(pid);
+                if (!scReportPairLoaded(pid)) scReportLoadPair(pid);   // ленивая загрузка
+            }
             scReportExpandedPairs.value = s;
         }
         function scReportExportUrl() {
@@ -10628,21 +10665,16 @@ const app = createApp({
             if (!scSession.value) return;
             scReportLoading.value = true;
             scReportError.value = '';
+            // Сброс кэшей: при перезагрузке развёрнутые пары перечитаются.
+            for (const k of Object.keys(scReportPairItems)) delete scReportPairItems[k];
+            for (const k of Object.keys(scReportPairLoadingMap)) delete scReportPairLoadingMap[k];
             try {
-                const sid = encodeURIComponent(scSession.value.id);
-                // Решения эксперта (составные ключи pair_id::raw_id).
+                // Грузим только решения эксперта — этого хватает для счётчиков.
                 await scLoadExpertDecisions();
-                // Unified flat по всем парам (без pair_id).
-                const r = await fetch(`/api/stage-comparison/sessions/${sid}/unified-diff-flat`);
-                if (!r.ok) {
-                    const j = await r.json().catch(() => ({}));
-                    throw new Error(j.detail || ('HTTP ' + r.status));
-                }
-                const data = await r.json();
-                scReportFlatItems.value = (data && data.items) || [];
+                // Перечитываем уже раскрытые пары (если есть).
+                for (const pid of scReportExpandedPairs.value) scReportLoadPair(pid);
             } catch (e) {
                 scReportError.value = String(e.message || e);
-                scReportFlatItems.value = [];
             } finally {
                 scReportLoading.value = false;
             }
@@ -13136,10 +13168,10 @@ const app = createApp({
             // ─── Report tab (read-only сводка согласованных) ───
             scOpenReportTab, scReportLoad,
             scReportLoading, scReportError,
-            scReportApprovedByPair, scReportApprovedFor,
+            scReportApprovedCountFor, scReportApprovedFor,
             scReportTotalApproved, scReportPairsWithApprovedCount,
             scReportExpandedPairs, scReportIsPairExpanded, scReportTogglePair,
-            scReportExportUrl,
+            scReportPairLoading, scReportPairLoaded, scReportExportUrl,
         };
     }
 });
