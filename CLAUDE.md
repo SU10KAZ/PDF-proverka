@@ -282,4 +282,5 @@ resume/skip больше не считаются валидными. Нужно 
 - @docs/norms_verification.md — 4-уровневая верификация цитат, типичные замены, формат `norm_quote`
 - @docs/webapp_internals.md — два трекера токенов, batch queue, пауза, гибридные модели, фронтенд
 - @docs/stage_comparison_md_enrichment.md — Qwen MD image enrichment: prompt v4_compact, salvage-first, conditional fallback, continuation, diagnostics
+- @docs/stage_comparison_evidence_first_fallback.md — evidence_first_s2_fallback для больших enriched MD пар (too_large): fact index → scope map → deterministic diff → scope-aware section split → shared header → per-chunk Opus → evidence verification → merge/dedup; shadow за флагом STAGE_COMPARISON_EVIDENCE_FIRST_FALLBACK_ENABLED
 - @docs/portal_auth.md — простая защита портала логином/паролем (session-cookie, PORTAL_AUTH_*, helper-скрипт)

@@ -862,6 +862,44 @@ def run_enriched_comparison(
 
         # Размерные ограничения
         if cfg.max_chars > 0 and total > cfg.max_chars:
+            # evidence_first_s2_fallback (shadow/controlled): вместо пустого
+            # too_large прогоняем scope-aware section split. Включается только
+            # флагом STAGE_COMPARISON_EVIDENCE_FIRST_FALLBACK_ENABLED.
+            from . import evidence_first_fallback as _ef_mod
+            fb_cfg = _ef_mod.load_fallback_config()
+            if fb_cfg.enabled and prov is not None:
+                fb_avail, fb_reason = prov.check_availability()
+                if fb_avail:
+                    logger.info(
+                        "enriched_comparison: too_large (%d > %d) → evidence_first_s2_fallback "
+                        "session=%s pair=%s", total, cfg.max_chars, session_id, pair_id,
+                    )
+                    work_dir = paths_mod.pair_dir(session_id, pair_id)
+                    fb_payload = _ef_mod.run_evidence_first_fallback(
+                        left_md=left_md, right_md=right_md,
+                        provider=prov, system_prompt=SYSTEM_PROMPT,
+                        model=cfg.model, timeout_sec=cfg.timeout_sec,
+                        parse_extract_fn=_extract_model_payload,
+                        parse_json_fn=_parse_model_json,
+                        normalize_change_fn=_normalize_change,
+                        config=fb_cfg, work_dir=work_dir,
+                        base_input_stats=input_stats,
+                    )
+                    fb_payload.setdefault("provider", cfg.provider)
+                    fb_payload.setdefault("model", cfg.model)
+                    fb_payload.setdefault("raw_response_excerpt", "")
+                    _save_job_meta(session_id, pair_id, {
+                        "status": fb_payload.get("status"), "provider": cfg.provider,
+                        "model": cfg.model, "strategy": _ef_mod.STRATEGY,
+                        "changes_count": len(fb_payload.get("changes") or []),
+                        "duration_sec": fb_payload.get("duration_sec"),
+                        "created_at": _utc_now(),
+                    })
+                    return _write_result(session_id, pair_id, fb_payload)
+                logger.warning(
+                    "enriched_comparison: fallback enabled but provider unavailable (%s) — "
+                    "returning too_large", fb_reason,
+                )
             payload = {
                 "status": "too_large",
                 "provider": cfg.provider,
@@ -872,7 +910,8 @@ def run_enriched_comparison(
                 "warnings": [
                     f"Суммарный объём enriched MD ({total}) превышает лимит ({cfg.max_chars}). "
                     "Полное сравнение не выполнено. Увеличьте "
-                    "STAGE_COMPARISON_ENRICHED_COMPARE_MAX_CHARS или сократите MD.",
+                    "STAGE_COMPARISON_ENRICHED_COMPARE_MAX_CHARS, включите "
+                    "STAGE_COMPARISON_EVIDENCE_FIRST_FALLBACK_ENABLED или сократите MD.",
                 ],
                 "raw_response_excerpt": "",
                 "duration_sec": 0.0,
