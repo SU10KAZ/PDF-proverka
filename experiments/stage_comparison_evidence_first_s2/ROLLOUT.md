@@ -13,6 +13,14 @@
       831s. См. [results/kr2_acceptance/](results/kr2_acceptance/).
 - [x] Batch preflight: `too_large → run` при флаге ON (а не `skip_too_large`).
 - [x] Claude Code provider доступен (`claude --version` ok), модель `opus`.
+- [x] **Internal/staging smoke пройден** (2026-05-29) — enable-машинерия проверена
+      через реальные entry points на живой паре КР2 с mock-провайдером (без Opus,
+      non-destructive). Скрипт: [scripts/staging_smoke.py](scripts/staging_smoke.py).
+      Покрыто: flag OFF → skip_too_large + too_large (rollback semantics); flag ON
+      → preflight `run` + `analysis_strategy`; `run_enriched_comparison` →
+      orchestrator → `status=done`, 5/5 чанков, stamp-singleton collapse 5→1,
+      0 ungrounded; monitoring jq-поля присутствуют; production result восстановлен
+      в `too_large`.
 - [ ] Оператор подтвердил бюджет времени: ~**170 s на чанк** Opus
       (КР2: 831s / 5). Большие пары = несколько чанков последовательно.
 
@@ -39,12 +47,20 @@ STAGE_COMPARISON_EVIDENCE_FIRST_DROP_UNGROUNDED=true     # выкидывать 
 
 ## Этапы rollout
 
-### Этап 0 — staging smoke (1 пара)
+### Этап 0 — internal smoke (детерминированно, без Opus) ✅ пройден
+
+Проверяет enable-машинерию через реальные entry points с mock-провайдером —
+быстро и non-destructive (production result бэкапится и восстанавливается):
 
 ```bash
-pkill -f "uvicorn backend.app.main"; uvicorn backend.app.main:app --host 0.0.0.0 --port 8081 --reload &
-# Запустить unified-analysis на ИЗВЕСТНОЙ too_large паре с force_compare=true.
-python experiments/stage_comparison_evidence_first_s2/scripts/verify_shadow.py  # проверить контракт+grounding
+python experiments/stage_comparison_evidence_first_s2/scripts/staging_smoke.py
+# ожидаемо: [SMOKE RESULT] ✅ ALL PASS; production result restored to status=too_large
+```
+
+Опционально, после реального Opus-прогона на паре — проверка контракта:
+
+```bash
+python experiments/stage_comparison_evidence_first_s2/scripts/verify_shadow.py
 ```
 Acceptance: `status=done`, `strategy=evidence_first_s2_fallback`, `final_changes>0`,
 все changes `evidence_verified=true`.
