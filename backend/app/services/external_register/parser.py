@@ -61,6 +61,13 @@ def normalize_section_code(raw: str) -> str:
     if not t:
         return ""
 
+    # Снять хвостовую дату/ревизию ДО прочих преобразований:
+    #   "133/23-ГК-АР1 (от 10.03.26)" / "АСКУВТ (30.12.2025)" / "087-РД-АР (МАФ) (12.25)".
+    # Скобку режем только если внутри есть цифра (дата) — иначе теряем
+    # значимые суффиксы вроде "(МАФ)". Дату вне скобок ("… от 10.03.26") тоже режем.
+    t = re.sub(r"\s*\([^)]*\d[^)]*\)\s*$", "", t).strip()
+    t = re.sub(r"\s+от\s+.*$", "", t, flags=re.IGNORECASE).strip()
+
     # Транслитерация
     t = t.replace("GK", "ГК").replace("Gk", "Гк").replace("gK", "гК")
     t = t.replace("RD", "РД").replace("Rd", "Рд")
@@ -453,3 +460,172 @@ def _dedup_entries(entries: Iterable[RegisterEntry]) -> list[RegisterEntry]:
 def parse_file(path: str | Path) -> list[RegisterEntry]:
     md = Path(path).read_text(encoding="utf-8")
     return parse(md)
+
+
+# ─── Парсинг .xlsx-реестра заказчика (King&Sons 2026-05-27) ──────────────────
+#
+# В отличие от markdown-реестра (письмо через Chandra OCR), заказчик прислал
+# структурированный .xlsx. Лист «Замечания к отправ.» содержит:
+#   - строку-шапку сторон (СУ-10 | ОЛИМПРОЕКТ | СЕВЕРИН | ЗАСТРОЙЩИК);
+#   - строку-шапку полей: № | Лист/Раздел | Проблема | Описание | Решение |
+#       Категория(СУ-10) | Чем грозит | Категория(ОЛИМП) | Комментарий | … |
+#       Категория(ЗАСТРОЙЩИК) | Комментарий(ЗАСТРОЙЩИК);
+#   - заголовки разделов (код документа лежит в колонке «№»), под ними —
+#     work-type подзаголовки (Кладка/Двери/…) и нумерованные строки замечаний.
+#
+# Вердикт заказчика берём из ПОСЛЕДНЕЙ колонки «Категория» (ЗАСТРОЙЩИК),
+# комментарий — из последней «Комментарий». Категория СУ-10 — из ПЕРВОЙ
+# «Категория».
+
+
+def _is_int_like(val: object) -> Optional[int]:
+    """Вернуть int, если ячейка — целое число (1, 1.0, '1', '1 '), иначе None."""
+    if val is None:
+        return None
+    if isinstance(val, bool):
+        return None
+    if isinstance(val, int):
+        return val
+    if isinstance(val, float):
+        return int(val) if val == int(val) else None
+    s = str(val).strip()
+    if re.fullmatch(r"\d+", s):
+        return int(s)
+    return None
+
+
+def entry_key_to_finding_id(key: str) -> str:
+    """Стабильный finding-id для замечания, созданного из реестра.
+
+    "133/23-ГК-АР1#3"      → "REG-133-23-ГК-АР1-3"
+    "133/23-ГК-АР1~2#3"    → "REG-133-23-ГК-АР1-2-3"
+    """
+    cleaned = key.replace("/", "-").replace("#", "-").replace("~", "-")
+    cleaned = re.sub(r"-{2,}", "-", cleaned).strip("-")
+    return f"REG-{cleaned}"
+
+
+def parse_kingsons_xlsx(
+    path: str | Path,
+    sheet_name: str = "Замечания к отправ.",
+) -> list[RegisterEntry]:
+    """Распарсить .xlsx-реестр заказчика → список RegisterEntry.
+
+    Вердикт/комментарий — из колонки ЗАСТРОЙЩИК. Лист «Кульдяев» игнорируется.
+    """
+    import openpyxl
+
+    wb = openpyxl.load_workbook(path, data_only=True, read_only=True)
+    ws = None
+    for cand in wb.worksheets:
+        title = (cand.title or "").strip()
+        if title == sheet_name or "замечани" in title.lower():
+            ws = cand
+            break
+    if ws is None:
+        wb.close()
+        raise ValueError(f"Лист «{sheet_name}» не найден в {path}")
+
+    rows = [list(r) for r in ws.iter_rows(values_only=True)]
+    wb.close()
+
+    # 1. Найти строку-шапку полей (есть «№» и «Проблема») и сопоставить колонки.
+    cols: dict[str, int] = {}
+    cat_cols: list[int] = []
+    comment_cols: list[int] = []
+    field_row_idx: Optional[int] = None
+    for i, row in enumerate(rows[:25]):
+        vals = ["" if c is None else str(c).strip() for c in row]
+        has_num = any(v == "№" for v in vals)
+        has_problem = any(v == "Проблема" for v in vals)
+        if has_num and has_problem:
+            field_row_idx = i
+            for j, v in enumerate(vals):
+                if v == "№":
+                    cols["num"] = j
+                elif "Лист" in v:
+                    cols.setdefault("sheet", j)
+                elif v == "Проблема":
+                    cols["problem"] = j
+                elif v == "Описание":
+                    cols["description"] = j
+                elif v == "Решение":
+                    cols["solution"] = j
+                elif "Чем грозит" in v:
+                    cols["risk"] = j
+                elif v == "Категория":
+                    cat_cols.append(j)
+                elif v.startswith("Комментарий"):
+                    comment_cols.append(j)
+            break
+
+    if field_row_idx is None or "num" not in cols:
+        raise ValueError(f"Не нашёл строку-шапку (№/Проблема) в листе {ws.title}")
+
+    num_col = cols["num"]
+    catsu10_col = cat_cols[0] if cat_cols else None          # первая «Категория» = СУ-10
+    zastr_cat_col = cat_cols[-1] if cat_cols else None       # последняя = ЗАСТРОЙЩИК
+    zastr_comment_col = comment_cols[-1] if comment_cols else None
+
+    def cell(row: list, idx: Optional[int]) -> str:
+        if idx is None or idx >= len(row) or row[idx] is None:
+            return ""
+        return str(row[idx]).strip()
+
+    # 2. Идти по строкам данных, отслеживая текущий раздел и его блок-occurrence.
+    entries: list[RegisterEntry] = []
+    current_code: str = ""
+    current_qual: str = ""           # суффикс ключа для повторяющихся блоков
+    block_occ: dict[str, int] = {}
+
+    for row in rows[field_row_idx + 1:]:
+        if not row:
+            continue
+        val0 = cell(row, num_col)
+        local_no = _is_int_like(row[num_col] if num_col < len(row) else None)
+
+        if local_no is None:
+            # Возможно заголовок раздела (код документа в колонке «№»).
+            code = looks_like_section_header(val0) if val0 else None
+            if code:
+                block_occ[code] = block_occ.get(code, 0) + 1
+                occ = block_occ[code]
+                current_code = code
+                current_qual = "" if occ == 1 else f"~{occ}"
+            # work-type / discipline подзаголовки и пустые строки — пропускаем
+            continue
+
+        # Строка с данными
+        sheet_ref = cell(row, cols.get("sheet"))
+        problem = cell(row, cols.get("problem"))
+        description = cell(row, cols.get("description"))
+        solution = cell(row, cols.get("solution"))
+        cat_su10 = cell(row, catsu10_col)
+        risk = cell(row, cols.get("risk"))
+        zastr_raw = cell(row, zastr_cat_col)
+        zastr_comment = cell(row, zastr_comment_col)
+
+        # Пустые строки-разделители с номером, но без содержимого — пропустить.
+        if not any((sheet_ref, problem, description, zastr_raw)):
+            continue
+
+        key = f"{current_code or 'UNKNOWN'}{current_qual}#{local_no}"
+        entries.append(
+            RegisterEntry(
+                key=key,
+                section_code=current_code,
+                local_no=local_no,
+                sheet_ref=sheet_ref,
+                problem=problem,
+                description=description,
+                proposed_solution=solution,
+                cat_su10=_normalize_cat_su10(cat_su10),
+                risk=risk,
+                customer_response_raw=zastr_raw,
+                customer_response=CustomerResponse.from_raw(zastr_raw),
+                customer_comment=zastr_comment,
+                source_page=None,
+            )
+        )
+
+    return _dedup_entries(entries)

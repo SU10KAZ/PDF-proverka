@@ -12,6 +12,7 @@ class CustomerResponse(str, Enum):
     UCHTENO = "Учтено"               # передадим Генпроектировщику
     OTKLONENO = "Отклонено"          # не принимается
     VNESENO = "Внесено"              # уже внесено в РД
+    TREBUET_VNESENIYA = "Требует внесения"  # замечание обосновано, надо внести
     PO_SOGLASOVANIYU = "По согласованию Заказчика"
     UNKNOWN = "Не определено"
 
@@ -25,6 +26,8 @@ class CustomerResponse(str, Enum):
             return cls.UNKNOWN
         if t.startswith("отклон"):
             return cls.OTKLONENO
+        if t.startswith("требует") or t.startswith("треб."):
+            return cls.TREBUET_VNESENIYA
         if t.startswith("внес") or t.startswith("уже внес"):
             return cls.VNESENO
         if t.startswith("по соглас"):

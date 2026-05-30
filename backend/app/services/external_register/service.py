@@ -92,7 +92,17 @@ def import_register(
         raise FileNotFoundError(f"Source not found: {src}")
 
     entries = parser.parse_file(src)
+    return import_register_entries(object_id, register_id, entries, source=str(src))
 
+
+def import_register_entries(
+    object_id: str,
+    register_id: str,
+    entries: list[RegisterEntry],
+    source: str = "",
+) -> RegisterFile:
+    """Сохранить готовый список RegisterEntry как реестр (для не-markdown источников,
+    например .xlsx). Сохраняет ранее-проставленные подтверждения по key."""
     unmapped: set[str] = set()
     for e in entries:
         if not section_map.lookup(e.section_code):
@@ -101,7 +111,7 @@ def import_register(
     new_register = RegisterFile(
         register_id=register_id,
         object_id=object_id,
-        source_md=str(src),
+        source_md=source,
         imported_at=datetime.utcnow().isoformat(),
         entries=entries,
         unmapped_sections=sorted(unmapped),
