@@ -1,9 +1,0 @@
-{
-  "stage": "05c_optimization_corrector",
-  "model": "claude-sonnet-4-6",
-  "timestamp": "2026-04-18T15:45:20.310896",
-  "input_tokens": 0,
-  "output_tokens": 0,
-  "duration_ms": 355045,
-  "result": "```json\n{\n  \"meta\": {\n    \"project_id\": \"13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf\",\n    \"review_applied\": true,\n    \"review_stats\": {\n      \"total_reviewed\": 8,\n      \"passed\": 6,\n      \"fixed\": 1,\n      \"removed\": 1\n    }\n  },\n  \"corrections\": {\n    \"OPT-006\": {\n      \"action\": \"removed\",\n      \"verdict\": \"technical_issue\",\n      \"reason\": \"Предложение заменить A500C на A500СП нарушает требования к пластичности (класс С → В) для несущих конструкций МКД класса КС-3. Противоречит СП 385.1325800.2018 п. 4 в контексте незакрытого КРИТИЧЕСКОГО замечания F-003 по прогрессирующему обрушению.\"\n    },\n    \"OPT-008\": {\n      \"action\": \"fixed\",\n      \"verdict\": \"conflicts_with_finding\",\n      \"conflicting_finding\": \"F-006 (ЭКСПЛУАТАЦИОННОЕ)\",\n      \"changes\": \"Убрана часть о снижении з.с. до 25 мм на внутренних гранях (конфликт с F-006). Переориентировано на явную документацию обоснования з.с. = 30 мм по двум условиям (долговечность + REI 120). Статус изменён на 'обязательное исправление'.\"\n    }\n  }\n}\n```"
-}
