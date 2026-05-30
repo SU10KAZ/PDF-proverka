@@ -1,0 +1,41 @@
+{
+  "block_id": "7UGJ-M7DG-7KA",
+  "page": 12,
+  "sheet_no": "7",
+  "file": "block_7UGJ-M7DG-7KA.png",
+  "size_kb": 17.0,
+  "ocr_text_len": 621,
+  "ocr_label": "Представлена схема отгиба арматурного стержня с указанием геометрических парамет",
+  "ok": true,
+  "elapsed_ms": 3192,
+  "input_tokens": 1455,
+  "output_tokens": 160,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 462,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3192,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "схема_расположения",
+    "subject": "Схема отгиба стержня с указанием геометрических параметров изгиба",
+    "marks": [],
+    "rebar_specs": [],
+    "dimensions": [
+      "≥6d",
+      "a"
+    ],
+    "references_on_block": [],
+    "axes": [],
+    "level_marks": [],
+    "concrete_class": null,
+    "notes": "Детализация узла отгиба арматуры: длина прямого участка отгиба должна быть не менее 6 диаметров стержня (≥6d), параметр 'a' обозначает отступ от края изгиба."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

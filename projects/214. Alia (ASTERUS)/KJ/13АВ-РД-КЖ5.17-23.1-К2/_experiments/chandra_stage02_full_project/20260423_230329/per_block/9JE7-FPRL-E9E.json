@@ -1,0 +1,113 @@
+{
+  "baseline": {
+    "block_id": "9JE7-FPRL-E9E",
+    "page": 18,
+    "sheet": "13",
+    "label": "Ведомость деталей колонны Км-400-1000-2800-3",
+    "sheet_type": "specification",
+    "unreadable_text": false,
+    "unreadable_details": null,
+    "summary": "Ведомость деталей для армирования колонны Км-400-1000-2800-3. Указаны эскизы и размеры гнутых стержней, хомутов и шпилек.",
+    "key_values_read": [
+      "Поз. 16-Г-1: a=1000, b=195, c=3110, d=20, e=190, dоп=80",
+      "Поз. 12-Х-1: a=925, b=315, c=180, dоп=60",
+      "Поз. 6-Ш-1: a=345, b=50, dоп=40"
+    ],
+    "evidence_text_refs": [
+      {
+        "text_block_id": "4APV-CLU9-JY4",
+        "role": "table",
+        "used_for": "value_extraction"
+      }
+    ],
+    "findings": [],
+    "selected_text_block_ids": [
+      "4APV-CLU9-JY4",
+      "6CHT-Q7AT-D6J",
+      "6CNL-J6MK-6KU",
+      "C79L-M93F-7WR",
+      "6K9J-V6UM-KFF"
+    ]
+  },
+  "candidate_raw": {
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_stage02_full_project/20260423_230329/prepared/native_crops/block_9JE7-FPRL-E9E_native.png",
+    "image_size_bytes": 70723,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 4.707,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-35b-a3b",
+      "output": [
+        {
+          "type": "message",
+          "content": "{\n  \"block_id\": \"9JE7-FPRL-E9E\",\n  \"page\": 18,\n  \"label\": \"Ведомость деталей арматурных элементов\",\n  \"sheet_type\": \"table\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлена таблица с эскизами и геометрическими параметрами арматурных элементов. Приведены размеры для трех позиций: 16-Г-1, 12-Х-1 и 6-Ш-1. Размеры указаны в миллиметрах, включая диаметры отверстий.\",\n  \"key_values_read\": [\n    \"Позиция 16-Г-1: a=1000, b=195, c=3110, d=20, e=190, don=80\",\n    \"Позиция 12-Х-1: a=925, b=315, c=180, don=60\",\n    \"Позиция 6-Ш-1: a=345, b=50, don=40\",\n    \"Заголовок таблицы: Ведомость деталей\",\n    \"Столбец 1: Поз.\",\n    \"Столбец 2: Эскиз\"\n  ],\n  \"findings\": [\n    {\n      \"severity\": \"ПРОВЕРИТЬ ПО СМЕЖНЫМ\",\n      \"category\": \"Армирование\",\n      \"finding\": \"Необходимо проверить соответствие указанных размеров и форм элементов (особенно 16-Г-1 и 12-Х-1) общим чертежам конструкций.\",\n      \"block_evidence\": \"В таблице приведены специфические размеры для конкретных позиций арматуры.\",\n      \"value_found\": null\n    }\n  ]\n}"
+        }
+      ],
+      "stats": {
+        "input_tokens": 1963,
+        "total_output_tokens": 428,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 226.59170081424776,
+        "time_to_first_token_seconds": 0.548
+      }
+    },
+    "content": "{\n  \"block_id\": \"9JE7-FPRL-E9E\",\n  \"page\": 18,\n  \"label\": \"Ведомость деталей арматурных элементов\",\n  \"sheet_type\": \"table\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлена таблица с эскизами и геометрическими параметрами арматурных элементов. Приведены размеры для трех позиций: 16-Г-1, 12-Х-1 и 6-Ш-1. Размеры указаны в миллиметрах, включая диаметры отверстий.\",\n  \"key_values_read\": [\n    \"Позиция 16-Г-1: a=1000, b=195, c=3110, d=20, e=190, don=80\",\n    \"Позиция 12-Х-1: a=925, b=315, c=180, don=60\",\n    \"Позиция 6-Ш-1: a=345, b=50, don=40\",\n    \"Заголовок таблицы: Ведомость деталей\",\n    \"Столбец 1: Поз.\",\n    \"Столбец 2: Эскиз\"\n  ],\n  \"findings\": [\n    {\n      \"severity\": \"ПРОВЕРИТЬ ПО СМЕЖНЫМ\",\n      \"category\": \"Армирование\",\n      \"finding\": \"Необходимо проверить соответствие указанных размеров и форм элементов (особенно 16-Г-1 и 12-Х-1) общим чертежам конструкций.\",\n      \"block_evidence\": \"В таблице приведены специфические размеры для конкретных позиций арматуры.\",\n      \"value_found\": null\n    }\n  ]\n}",
+    "reasoning": "",
+    "parsed": {
+      "block_id": "9JE7-FPRL-E9E",
+      "page": 18,
+      "label": "Ведомость деталей арматурных элементов",
+      "sheet_type": "table",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "На чертеже представлена таблица с эскизами и геометрическими параметрами арматурных элементов. Приведены размеры для трех позиций: 16-Г-1, 12-Х-1 и 6-Ш-1. Размеры указаны в миллиметрах, включая диаметры отверстий.",
+      "key_values_read": [
+        "Позиция 16-Г-1: a=1000, b=195, c=3110, d=20, e=190, don=80",
+        "Позиция 12-Х-1: a=925, b=315, c=180, don=60",
+        "Позиция 6-Ш-1: a=345, b=50, don=40",
+        "Заголовок таблицы: Ведомость деталей",
+        "Столбец 1: Поз.",
+        "Столбец 2: Эскиз"
+      ],
+      "findings": [
+        {
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+          "category": "Армирование",
+          "finding": "Необходимо проверить соответствие указанных размеров и форм элементов (особенно 16-Г-1 и 12-Х-1) общим чертежам конструкций.",
+          "block_evidence": "В таблице приведены специфические размеры для конкретных позиций арматуры.",
+          "value_found": null
+        }
+      ]
+    },
+    "parse_error": null,
+    "model": "qwen/qwen3.6-35b-a3b",
+    "block_id": "9JE7-FPRL-E9E",
+    "width": 988,
+    "height": 872,
+    "run_index": 196
+  },
+  "compare": {
+    "block_id": "9JE7-FPRL-E9E",
+    "page": 18,
+    "label_source": "Таблица ведомости деталей арматурных элементов с эскизами и геометрическими пара",
+    "baseline_present": true,
+    "baseline_label": "Ведомость деталей колонны Км-400-1000-2800-3",
+    "candidate_label": "Ведомость деталей арматурных элементов",
+    "baseline_findings": 0,
+    "candidate_findings": 1,
+    "baseline_kv": 3,
+    "candidate_kv": 6,
+    "elapsed_s": 4.707,
+    "parse_ok": true,
+    "verdict": "uncertain",
+    "notes": [
+      "candidate found issues where stage-02 baseline had none"
+    ],
+    "baseline_summary": "Ведомость деталей для армирования колонны Км-400-1000-2800-3. Указаны эскизы и размеры гнутых стержней, хомутов и шпилек.",
+    "candidate_summary": "На чертеже представлена таблица с эскизами и геометрическими параметрами арматурных элементов. Приведены размеры для трех позиций: 16-Г-1, 12-Х-1 и 6-Ш-1. Размеры указаны в миллиметрах, включая диаметры отверстий.",
+    "candidate_sheet_type": "table",
+    "candidate_unreadable_text": false
+  }
+}

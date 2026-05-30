@@ -1,0 +1,33 @@
+{
+  "model": "qwen/qwen3.6-35b-a3b",
+  "image_name": "97AH-VUFP-LJJ",
+  "block_id": "97AH-VUFP-LJJ",
+  "width": 1024,
+  "height": 604,
+  "request": "image_smoke",
+  "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_200236/audit_images/native_crops/block_97AH-VUFP-LJJ_native.png",
+  "image_size_bytes": 75585,
+  "ok": true,
+  "status_code": 200,
+  "elapsed_s": 1.918,
+  "error": null,
+  "response": {
+    "model_instance_id": "qwen/qwen3.6-35b-a3b",
+    "output": [
+      {
+        "type": "message",
+        "content": "Схема разреза 2-2 (3). Основные элементы: колонны, балки, перекрытия, армирование. Читаемые детали: размеры 890, 1100, 3810; маркировка 8-Г-2; толщина слоя 200 мм."
+      }
+    ],
+    "stats": {
+      "input_tokens": 701,
+      "total_output_tokens": 67,
+      "reasoning_output_tokens": 0,
+      "tokens_per_second": 228.69235757927433,
+      "time_to_first_token_seconds": 0.312
+    }
+  },
+  "content": "Схема разреза 2-2 (3). Основные элементы: колонны, балки, перекрытия, армирование. Читаемые детали: размеры 890, 1100, 3810; маркировка 8-Г-2; толщина слоя 200 мм.",
+  "reasoning": "",
+  "verdict": "pass"
+}

@@ -1,0 +1,33 @@
+{
+  "model": "google/gemma-4-31b",
+  "image_name": "9PPJ-YP6U-HV6",
+  "block_id": "9PPJ-YP6U-HV6",
+  "width": 213,
+  "height": 1024,
+  "request": "image_smoke",
+  "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_200236/audit_images/native_crops/block_9PPJ-YP6U-HV6_native.png",
+  "image_size_bytes": 40079,
+  "ok": true,
+  "status_code": 200,
+  "elapsed_s": 4.27,
+  "error": null,
+  "response": {
+    "model_instance_id": "google/gemma-4-31b",
+    "output": [
+      {
+        "type": "message",
+        "content": "Ведомость деталей. Таблица с эскизами Г-образных и сложных профилей металлопроката. Основные элементы: позиция (Поз.), эскиз детали и её размерные характеристики. Читаемые детали: поз. 8-Г-1 (a=500; b=140), поз. 10-Г-5 (a=640; b=120)."
+      }
+    ],
+    "stats": {
+      "input_tokens": 374,
+      "total_output_tokens": 93,
+      "reasoning_output_tokens": 0,
+      "tokens_per_second": 64.82855635169979,
+      "time_to_first_token_seconds": 0.497
+    }
+  },
+  "content": "Ведомость деталей. Таблица с эскизами Г-образных и сложных профилей металлопроката. Основные элементы: позиция (Поз.), эскиз детали и её размерные характеристики. Читаемые детали: поз. 8-Г-1 (a=500; b=140), поз. 10-Г-5 (a=640; b=120).",
+  "reasoning": "",
+  "verdict": "weak"
+}

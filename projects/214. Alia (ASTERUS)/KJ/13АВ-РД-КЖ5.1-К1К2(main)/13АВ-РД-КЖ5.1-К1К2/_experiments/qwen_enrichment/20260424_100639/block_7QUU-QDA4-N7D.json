@@ -1,0 +1,44 @@
+{
+  "block_id": "7QUU-QDA4-N7D",
+  "page": 12,
+  "sheet_no": "7",
+  "file": "block_7QUU-QDA4-N7D.png",
+  "size_kb": 88.6,
+  "ocr_text_len": 764,
+  "ocr_label": "На чертеже представлено сечение 5-5 армирования вертикальной конструкции с выпус",
+  "ok": true,
+  "elapsed_ms": 6924,
+  "input_tokens": 2985,
+  "output_tokens": 264,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 624,
+  "enrichment": {
+    "block_type": "сечение",
+    "subject": "Сечение 5-5 вертикальной конструкции с выпусками арматуры и хомутами",
+    "marks": [
+      "12-X-1"
+    ],
+    "rebar_specs": [
+      "шаг 400"
+    ],
+    "dimensions": [
+      "1370",
+      "400",
+      "100"
+    ],
+    "references_on_block": [
+      "см. лист 5 (опалубка)",
+      "Схема стыковки арматуры внахлест"
+    ],
+    "axes": [],
+    "level_marks": [
+      "-0,430",
+      "-1,800"
+    ],
+    "concrete_class": null,
+    "notes": "Изображен узел сопряжения стены с фундаментом/плитой. Арматурные стержни имеют U-образные выпуски, заходящие в нижележащую конструкцию. Хомуты (12-X-1) установлены с шагом 400 мм."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

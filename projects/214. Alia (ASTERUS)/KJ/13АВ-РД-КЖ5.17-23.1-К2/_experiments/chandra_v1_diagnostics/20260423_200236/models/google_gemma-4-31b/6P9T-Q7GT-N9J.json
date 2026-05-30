@@ -1,0 +1,33 @@
+{
+  "model": "google/gemma-4-31b",
+  "image_name": "6P9T-Q7GT-N9J",
+  "block_id": "6P9T-Q7GT-N9J",
+  "width": 1024,
+  "height": 558,
+  "request": "image_smoke",
+  "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_200236/audit_images/native_crops/block_6P9T-Q7GT-N9J_native.png",
+  "image_size_bytes": 60569,
+  "ok": true,
+  "status_code": 200,
+  "elapsed_s": 3.213,
+  "error": null,
+  "response": {
+    "model_instance_id": "google/gemma-4-31b",
+    "output": [
+      {
+        "type": "message",
+        "content": "Разрез (сечение) 17-17.\nОсновные элементы: вертикальные панели/перегородки с маркировкой, размерные линии, осевые отметки.\nДетали: маркировка панелей (П-2, П-3, П-8), высотные отметки (отм. А, Б, К) и общая ширина участка 5600 мм."
+      }
+    ],
+    "stats": {
+      "input_tokens": 346,
+      "total_output_tokens": 87,
+      "reasoning_output_tokens": 0,
+      "tokens_per_second": 64.92154567006871,
+      "time_to_first_token_seconds": 0.458
+    }
+  },
+  "content": "Разрез (сечение) 17-17.\nОсновные элементы: вертикальные панели/перегородки с маркировкой, размерные линии, осевые отметки.\nДетали: маркировка панелей (П-2, П-3, П-8), высотные отметки (отм. А, Б, К) и общая ширина участка 5600 мм.",
+  "reasoning": "",
+  "verdict": "weak"
+}

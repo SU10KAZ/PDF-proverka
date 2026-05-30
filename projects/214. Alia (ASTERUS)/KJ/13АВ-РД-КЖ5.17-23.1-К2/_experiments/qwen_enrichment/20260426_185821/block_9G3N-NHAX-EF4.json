@@ -1,0 +1,54 @@
+{
+  "block_id": "9G3N-NHAX-EF4",
+  "page": 10,
+  "sheet_no": "5",
+  "file": "block_9G3N-NHAX-EF4.png",
+  "size_kb": 13.2,
+  "ocr_text_len": 703,
+  "ocr_label": "Схема сечения Я-Я, иллюстрирующая установку горизонтальных П-образных элементов ",
+  "ok": true,
+  "elapsed_ms": 3434,
+  "input_tokens": 1234,
+  "output_tokens": 290,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 709,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3434,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "сечение",
+    "subject": "Сечение Я-Я стены с П-образными элементами и вертикальной арматурой",
+    "marks": [
+      "16-Г-1",
+      "16-5850"
+    ],
+    "rebar_specs": [
+      "Ø16 А500С шаг 200 (29 шт.)",
+      "Ø16 длина 5850 мм"
+    ],
+    "dimensions": [
+      "t=200",
+      "5850"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 2",
+      "см. лист 3",
+      "см. лист 11"
+    ],
+    "axes": [],
+    "level_marks": [
+      "+4,200"
+    ],
+    "concrete_class": null,
+    "notes": "Изображено сечение стены с указанием расположения вертикальной арматуры и П-образных элементов. Приведены параметры арматуры (диаметр, шаг, длина) и толщина элемента. Указаны ссылки на общие указания, опалубку и спецификации."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

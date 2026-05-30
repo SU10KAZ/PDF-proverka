@@ -1,0 +1,105 @@
+{
+  "meta": {
+    "project_id": "13АВ-РД-КЖ5.1-К1К2 (2).pdf",
+    "generated_at": "2026-04-18T15:16:26.928175",
+    "source": "norms_main_status_index"
+  },
+  "queue": [
+    {
+      "norm": "ГОСТ 8105-2018",
+      "norm_key": "ГОСТ 8105-2018",
+      "cited_as": "ГОСТ 18105-2018 (ДЕЙСТВУЕТ), п. 1 (Область применения)",
+      "detected_family": "ГОСТ",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-002"
+      ]
+    },
+    {
+      "norm": "СП 2.13130.2020",
+      "norm_key": "СП 2.13130.2020",
+      "cited_as": "СП 468.1325800.2019 (ДЕЙСТВУЕТ); СП 2.13130.2020 (ДЕЙСТВУЕТ), табл. 6.8",
+      "detected_family": "СП",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-007",
+        "F-009",
+        "F-013"
+      ]
+    },
+    {
+      "norm": "СП 468.1325800.2019",
+      "norm_key": "СП 468.1325800.2019",
+      "cited_as": "СП 468.1325800.2019 (ДЕЙСТВУЕТ); СП 2.13130.2020 (ДЕЙСТВУЕТ), табл. 6.8",
+      "detected_family": "СП",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-007",
+        "F-009",
+        "F-013"
+      ]
+    },
+    {
+      "norm": "СНиП 12-04-2002",
+      "norm_key": "СНиП 12-04-2002",
+      "cited_as": "Приказ Минтруда России от 11.12.2020 № 883н; Приказ Минтруда России от 16.11.2020 № 782н",
+      "detected_family": "СНиП",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-008"
+      ]
+    },
+    {
+      "norm": "СП 385.1325800.2018",
+      "norm_key": "СП 385.1325800.2018",
+      "cited_as": "СП 385.1325800.2018 (ДЕЙСТВУЕТ); СП 468.1325800.2019 (ДЕЙСТВУЕТ); СП 2.13130.2020 (ДЕЙСТВУЕТ)",
+      "detected_family": "СП",
+      "supported_family": true,
+      "resolution_reason": "not_in_index",
+      "action": "add_document_to_vault",
+      "affected_findings": [
+        "F-009",
+        "F-014"
+      ]
+    },
+    {
+      "norm": "ФЗ-384",
+      "norm_key": "ФЗ-384",
+      "cited_as": "ФЗ-384 от 30.12.2009 (ДЕЙСТВУЕТ)",
+      "detected_family": null,
+      "supported_family": false,
+      "resolution_reason": "unsupported_family",
+      "action": "review_family_support",
+      "affected_findings": [
+        "F-001"
+      ]
+    },
+    {
+      "norm": "ФЗ-123",
+      "norm_key": "ФЗ-123",
+      "cited_as": "СП 2.13130.2020 (ДЕЙСТВУЕТ), табл. 6.8; ФЗ-123, ст. 87",
+      "detected_family": null,
+      "supported_family": false,
+      "resolution_reason": "unsupported_family",
+      "action": "review_family_support",
+      "affected_findings": [
+        "F-013"
+      ]
+    }
+  ],
+  "report": {
+    "total_checked": 13,
+    "authoritative": 6,
+    "missing": 5,
+    "unsupported": 2,
+    "queue_size": 7
+  }
+}

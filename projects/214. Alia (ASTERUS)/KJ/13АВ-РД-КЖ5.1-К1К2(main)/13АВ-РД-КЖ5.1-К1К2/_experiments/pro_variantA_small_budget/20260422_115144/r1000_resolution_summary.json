@@ -1,0 +1,212 @@
+{
+  "summary": {
+    "label": "Resolution screening r1000",
+    "mode": "single_block",
+    "reasoning_effort": "high",
+    "parallelism": 2,
+    "resolution": "r1000",
+    "total_blocks": 6,
+    "total_calls": 6,
+    "coverage_pct": 100.0,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0,
+    "strict_success_count": 6,
+    "strict_failure_count": 0,
+    "missing_block_ids": [],
+    "duplicate_block_ids": [],
+    "extra_block_ids": [],
+    "retry_triggered_count": 0,
+    "retry_recovered_count": 0,
+    "fail_mode_distribution": {},
+    "fail_mode_distribution_before_retry": {},
+    "blocks_with_findings": 6,
+    "total_findings": 12,
+    "total_key_values": 93,
+    "median_key_values": 15.5,
+    "empty_summary_count": 0,
+    "empty_key_values_count": 0,
+    "elapsed_s": 120.92368837003596,
+    "avg_duration_s": 38.69,
+    "median_duration_s": 38.98,
+    "p95_duration_s": 50.63,
+    "total_prompt_tokens": 13057,
+    "total_output_tokens": 22986,
+    "total_reasoning_tokens": 17761,
+    "total_cached_tokens": 0,
+    "total_cost_usd": 0.301946,
+    "cost_sources_actual": 6,
+    "cost_sources_estimated": 0,
+    "response_ids_available": 6
+  },
+  "quality": {
+    "quality_gate_passed": false,
+    "hard_fail_reasons": [
+      "kv_collapse"
+    ],
+    "likely_equivalent_count": 1,
+    "likely_improved_count": 3,
+    "likely_degraded_count": 2,
+    "findings_presence_collapse_count": 0,
+    "kv_collapse_count": 2,
+    "generic_summary_count": 0,
+    "noisy_kv_inflation_count": 0,
+    "summary_specificity_improved_count": 1,
+    "kv_adequacy_improved_count": 2,
+    "manual_review_block_ids": [
+      "46LP-7CN7-GG6",
+      "4UTW-PPGP-VEN",
+      "4WTD-JFKA-JLE",
+      "6DRC-7KQL-9TJ",
+      "RELE-MX3A-MEN"
+    ]
+  },
+  "row": {
+    "resolution": "r1000",
+    "completeness_ok": true,
+    "candidate": false,
+    "likely_improved_count": 3,
+    "likely_equivalent_count": 1,
+    "likely_degraded_count": 2,
+    "summary_specificity_improved_count": 1,
+    "total_findings_delta": 2,
+    "total_kv_delta": -78,
+    "actual_cost_usd": 0.301946,
+    "elapsed_s": 120.92368837003596,
+    "note": "no clear technical benefit"
+  },
+  "crop_result": {
+    "total_blocks": 6,
+    "cropped": 6,
+    "skipped": 0,
+    "errors": 0,
+    "blocks": [
+      {
+        "block_id": "4UTW-PPGP-VEN",
+        "page": 7,
+        "file": "block_4UTW-PPGP-VEN.png",
+        "size_kb": 271.2,
+        "crop_px": [
+          197,
+          45,
+          6199,
+          4601
+        ],
+        "render_size": [
+          2007,
+          1524
+        ],
+        "block_type": "image",
+        "ocr_label": "План опалубки вертикальных конструкций 1 этажа пристройки корпуса 1-2 на отм. -0",
+        "ocr_text_len": 1101,
+        "source": "cloud"
+      },
+      {
+        "block_id": "6DRC-7KQL-9TJ",
+        "page": 8,
+        "file": "block_6DRC-7KQL-9TJ.png",
+        "size_kb": 229.4,
+        "crop_px": [
+          177,
+          69,
+          6159,
+          4235
+        ],
+        "render_size": [
+          2000,
+          1394
+        ],
+        "block_type": "image",
+        "ocr_label": "Схема армирования вертикальных конструкций 1 этажа пристройки корпуса 1-2 на отм",
+        "ocr_text_len": 1129,
+        "source": "cloud"
+      },
+      {
+        "block_id": "4WTD-JFKA-JLE",
+        "page": 10,
+        "file": "block_4WTD-JFKA-JLE.png",
+        "size_kb": 480.5,
+        "crop_px": [
+          161,
+          0,
+          6928,
+          6917
+        ],
+        "render_size": [
+          2262,
+          2309
+        ],
+        "block_type": "image",
+        "ocr_label": "Опалубочный план вертикальных конструкций пристройки на отметке -1,800 в осях П.",
+        "ocr_text_len": 1115,
+        "source": "cloud"
+      },
+      {
+        "block_id": "4JYF-HEKU-VVV",
+        "page": 10,
+        "file": "block_4JYF-HEKU-VVV.png",
+        "size_kb": 90.8,
+        "crop_px": [
+          6774,
+          63,
+          9860,
+          2145
+        ],
+        "render_size": [
+          1035,
+          700
+        ],
+        "block_type": "image",
+        "ocr_label": "Схема расположения точек центра радиуса для вертикальных конструкций в осях П.3-",
+        "ocr_text_len": 1125,
+        "source": "cloud"
+      },
+      {
+        "block_id": "RELE-MX3A-MEN",
+        "page": 11,
+        "file": "block_RELE-MX3A-MEN.png",
+        "size_kb": 624.7,
+        "crop_px": [
+          161,
+          61,
+          7442,
+          6177
+        ],
+        "render_size": [
+          2433,
+          2045
+        ],
+        "block_type": "image",
+        "ocr_label": "План армирования вертикальных конструкций пристройки на отметке -1,800 в осях П.",
+        "ocr_text_len": 1389,
+        "source": "cloud"
+      },
+      {
+        "block_id": "46LP-7CN7-GG6",
+        "page": 13,
+        "file": "block_46LP-7CN7-GG6.png",
+        "size_kb": 82.8,
+        "crop_px": [
+          4865,
+          65,
+          5807,
+          3809
+        ],
+        "render_size": [
+          320,
+          1254
+        ],
+        "block_type": "image",
+        "ocr_label": "Ведомость деталей с геометрическими параметрами для позиций 16-Г-2 – 16-Г-19.",
+        "ocr_text_len": 1663,
+        "source": "cloud"
+      }
+    ],
+    "render_profile": {
+      "name": "r1000",
+      "target_dpi": 100,
+      "min_long_side_px": 1000
+    },
+    "cache_hit": false
+  }
+}

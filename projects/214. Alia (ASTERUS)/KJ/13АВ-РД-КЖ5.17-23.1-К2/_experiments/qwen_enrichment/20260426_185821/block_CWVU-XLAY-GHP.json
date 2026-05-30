@@ -1,0 +1,56 @@
+{
+  "block_id": "CWVU-XLAY-GHP",
+  "page": 7,
+  "sheet_no": "2",
+  "file": "block_CWVU-XLAY-GHP.png",
+  "size_kb": 28.0,
+  "ocr_text_len": 799,
+  "ocr_label": "Фрагмент плана стены с отверстием для этажей 17-21, 23.",
+  "ok": true,
+  "elapsed_ms": 3403,
+  "input_tokens": 2060,
+  "output_tokens": 300,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 659,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3403,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "сечение",
+    "subject": "Фрагмент Г: сечение стены с отверстием Омв.1 для этажей 17-21, 23",
+    "marks": [
+      "Омв.1",
+      "2.Г",
+      "2.4"
+    ],
+    "rebar_specs": [],
+    "dimensions": [
+      "200",
+      "2250",
+      "100",
+      "300",
+      "250",
+      "1050"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 4",
+      "см. лист 3"
+    ],
+    "axes": [
+      "2.Г",
+      "2.4"
+    ],
+    "level_marks": [],
+    "concrete_class": null,
+    "notes": "Изображено сечение стены с проемом Омв.1. Размеры проема и стен указаны в миллиметрах. Высота проема 2250 мм, ширина 1050 мм. Стена имеет выступы шириной 100 мм. Сечение относится к этажам 17-21 и 23."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

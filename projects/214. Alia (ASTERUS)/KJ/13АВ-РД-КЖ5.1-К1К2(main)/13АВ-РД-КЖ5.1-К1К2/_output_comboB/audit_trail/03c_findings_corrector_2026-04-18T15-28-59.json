@@ -1,0 +1,9 @@
+{
+  "stage": "03c_findings_corrector",
+  "model": "claude-sonnet-4-6",
+  "timestamp": "2026-04-18T15:28:59.985893",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "duration_ms": 496493,
+  "result": "```json\n{\n  \"meta\": {\n    \"review_applied\": true,\n    \"review_stats\": {\n      \"total_reviewed\": 17,\n      \"passed\": 13,\n      \"fixed\": 0,\n      \"removed\": 4,\n      \"downgraded\": 0\n    }\n  },\n  \"findings\": \"13 замечаний сохранено (F-003–F-010, F-012–F-015, F-017)\"\n}\n```"
+}

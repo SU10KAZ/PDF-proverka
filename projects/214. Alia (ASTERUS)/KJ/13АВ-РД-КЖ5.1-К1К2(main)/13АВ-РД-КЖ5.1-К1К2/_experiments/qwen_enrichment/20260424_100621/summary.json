@@ -1,0 +1,28 @@
+{
+  "project": "projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf",
+  "timestamp": "20260424_100621",
+  "model": "qwen/qwen3.6-35b-a3b",
+  "parallelism": 1,
+  "blocks_total": 1,
+  "blocks_ok": 1,
+  "blocks_failed": 0,
+  "wall_clock_s": 4.4,
+  "avg_per_block_s": 4.4,
+  "total_input_tokens": 2376,
+  "total_output_tokens": 237,
+  "total_reasoning_tokens": 0,
+  "per_block": [
+    {
+      "block_id": "VGGJ-3ULF-TLV",
+      "page": 7,
+      "ok": true,
+      "elapsed_ms": 4396,
+      "input_tokens": 2376,
+      "output_tokens": 237,
+      "reasoning_tokens": 0,
+      "block_type": "разрез",
+      "subject": "Разрез 1-1 вертикальной строительной конструкции (стены/колонны) с указанием высотных отметок и габаритов.",
+      "error": null
+    }
+  ]
+}

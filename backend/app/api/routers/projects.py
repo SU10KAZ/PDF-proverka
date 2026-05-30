@@ -401,6 +401,8 @@ async def create_project_version(project_id: str, req: CreateVersionRequest):
     except FileNotFoundError as e:
         raise HTTPException(404, str(e))
 
+    # Промоут в контейнер мог переместить папку V1 → перерезолвим её.
+    proj_dir = project_service.resolve_project_dir(project_id)
     summary = version_service.get_versions_summary(proj_dir, project_id)
     return {
         "status": "ok",

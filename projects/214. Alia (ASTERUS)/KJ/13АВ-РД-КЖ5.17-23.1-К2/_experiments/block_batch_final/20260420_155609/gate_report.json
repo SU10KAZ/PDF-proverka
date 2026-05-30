@@ -1,0 +1,99 @@
+{
+  "baseline_full": "baseline_p3",
+  "aggressive_full": "aggressive_p3",
+  "gates": {
+    "full_run": {
+      "baseline_pass": true,
+      "baseline_reasons": [],
+      "aggressive_pass": true,
+      "aggressive_reasons": []
+    },
+    "stability": {
+      "metrics": {
+        "unreadable_pct": {
+          "baseline": 0.0,
+          "aggressive": 0.0
+        },
+        "parse_errors": {
+          "baseline": 0,
+          "aggressive": 0
+        },
+        "p95_batch_sec": {
+          "baseline": 244.94,
+          "aggressive": 279.97
+        },
+        "failed_batches": {
+          "baseline": 0,
+          "aggressive": 0
+        }
+      },
+      "concerns": []
+    },
+    "quality_subset": {
+      "applied": false,
+      "passed": null,
+      "invalidation_reason": "RATE_LIMITED — оба subset-рана (baseline_p3_subset, aggressive_p3_subset) упали из-за исчерпания лимита Claude API ('You've hit your limit, resets 8pm Asia/Almaty'). Данные subset-сравнения невалидны и не применяются к решению.",
+      "evidence": {
+        "baseline_p3_subset_coverage": "30% (только 3/10 батчей успели запуститься до rate-limit)",
+        "aggressive_p3_subset_coverage": "0% (все 9 батчей завершились за 2.4s с rate-limit)"
+      },
+      "criteria": {
+        "unreadable_aggr_<=_baseline": {
+          "baseline": null,
+          "aggressive": null,
+          "pass": null,
+          "note": "invalid — rate limited"
+        },
+        "total_findings_aggr_>=_95%_baseline": {
+          "baseline": null,
+          "aggressive": null,
+          "pass": null,
+          "note": "invalid — rate limited"
+        },
+        "blocks_with_findings_aggr_>=_95%_baseline": {
+          "baseline": null,
+          "aggressive": null,
+          "pass": null,
+          "note": "invalid — rate limited"
+        },
+        "median_kv_aggr_>=_90%_baseline": {
+          "baseline": null,
+          "aggressive": null,
+          "pass": null,
+          "note": "invalid — rate limited"
+        }
+      }
+    },
+    "speed": {
+      "baseline_elapsed": 1979.25,
+      "aggressive_elapsed": 1790.01,
+      "aggressive_faster": true,
+      "delta_sec": 189.24
+    },
+    "full_run_quality": {
+      "note": "Качественное сравнение на полных прогонах (валидные данные)",
+      "total_findings": {
+        "baseline": 168,
+        "aggressive": 186,
+        "aggressive_vs_baseline_pct": 110.7
+      },
+      "blocks_with_findings_pct": {
+        "baseline": 61.4,
+        "aggressive": 66.5,
+        "delta": 5.1
+      },
+      "findings_per_100_blocks": {
+        "baseline": 78.14,
+        "aggressive": 86.51,
+        "delta": 8.37
+      }
+    }
+  },
+  "decision": {
+    "winner": "aggressive_p3",
+    "reason": "Gate 1 (full-run coverage/failures): оба прошли. Gate 2 (stability): нет расхождений. Gate 3 (quality subset): ИНВАЛИДИРОВАН из-за rate-limit — применено full-run quality сравнение: aggressive нашёл на 10.7% больше замечаний (186 vs 168) при той же надёжности. Gate 4 (speed): aggressive на 189s быстрее. По всем валидным метрикам aggressive_p3 превосходит baseline_p3.",
+    "original_gate3_decision": "ОТМЕНЕНО — subset-ранны были прерваны rate-limit, вывод о 'quality gate failed' неверен",
+    "fallback": "baseline_p3 (если rate-limit является регулярной проблемой и subset-сравнение необходимо перепроверить)",
+    "rerun_subset": "Рекомендуется повторить subset-сравнение после 20:00 (Asia/Almaty) когда лимит сбросится"
+  }
+}

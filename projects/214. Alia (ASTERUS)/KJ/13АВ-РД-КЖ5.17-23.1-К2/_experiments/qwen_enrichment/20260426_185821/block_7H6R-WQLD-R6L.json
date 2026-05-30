@@ -1,0 +1,50 @@
+{
+  "block_id": "7H6R-WQLD-R6L",
+  "page": 7,
+  "sheet_no": "2",
+  "file": "block_7H6R-WQLD-R6L.png",
+  "size_kb": 24.7,
+  "ocr_text_len": 833,
+  "ocr_label": "На чертеже представлен разрез 4-4, отображающий вертикальную конструкцию стены с",
+  "ok": true,
+  "elapsed_ms": 3470,
+  "input_tokens": 1961,
+  "output_tokens": 230,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 573,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3470,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "разрез",
+    "subject": "Разрез 4-4 вертикальной конструкции стены с указанием высотных отметок и габаритов",
+    "marks": [],
+    "rebar_specs": [],
+    "dimensions": [
+      "2800",
+      "500",
+      "300"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 4",
+      "см. лист 3"
+    ],
+    "axes": [],
+    "level_marks": [
+      "отм. А",
+      "отм. Б",
+      "отм. В"
+    ],
+    "concrete_class": null,
+    "notes": "На чертеже показан разрез стены с указанием отметок отм. А, Б, В и размеров 2800, 500, 300. В тексте указаны общие указания и ссылки на другие листы."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

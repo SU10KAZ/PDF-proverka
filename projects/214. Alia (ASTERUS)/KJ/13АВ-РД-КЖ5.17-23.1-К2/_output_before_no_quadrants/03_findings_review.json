@@ -1,0 +1,16 @@
+{
+  "meta": {
+    "project_id": "13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+    "review_date": "2026-04-19T00:00:00Z",
+    "total_reviewed": 18,
+    "verdicts": {
+      "pass": 8,
+      "no_evidence": 0,
+      "phantom_block": 0,
+      "weak_evidence": 0,
+      "page_mismatch": 10,
+      "contradicts_text": 0,
+      "not_practical": 0
+    }
+  }
+}

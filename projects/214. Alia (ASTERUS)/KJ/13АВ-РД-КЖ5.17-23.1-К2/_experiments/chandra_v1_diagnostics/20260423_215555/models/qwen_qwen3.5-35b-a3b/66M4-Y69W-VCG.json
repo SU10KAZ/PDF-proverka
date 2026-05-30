@@ -1,0 +1,33 @@
+{
+  "model": "qwen/qwen3.5-35b-a3b",
+  "image_name": "66M4-Y69W-VCG",
+  "block_id": "66M4-Y69W-VCG",
+  "width": 1024,
+  "height": 968,
+  "request": "image_smoke",
+  "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_215555/audit_images/native_crops/block_66M4-Y69W-VCG_native.png",
+  "image_size_bytes": 101136,
+  "ok": true,
+  "status_code": 200,
+  "elapsed_s": 6.404,
+  "error": null,
+  "response": {
+    "model_instance_id": "qwen/qwen3.5-35b-a3b",
+    "output": [
+      {
+        "type": "message",
+        "content": "Тип схемы: Узел армирования колонны (развертка стены).  \nОсновные элементы: Вертикальные стержни, хомуты, выпуски из фундамента.  \nДетали:  \n1) Шаг хомутов — 200 мм и 250 мм в разных зонах;  \n2) Диаметр вертикальных стержней — 8X-19 (диаметр 19 мм);  \n3) Выпуски арматуры из нижестоящей конструкции с загибом."
+      }
+    ],
+    "stats": {
+      "input_tokens": 1053,
+      "total_output_tokens": 112,
+      "reasoning_output_tokens": 0,
+      "tokens_per_second": 207.3494263641093,
+      "time_to_first_token_seconds": 0.446
+    }
+  },
+  "content": "Тип схемы: Узел армирования колонны (развертка стены).  \nОсновные элементы: Вертикальные стержни, хомуты, выпуски из фундамента.  \nДетали:  \n1) Шаг хомутов — 200 мм и 250 мм в разных зонах;  \n2) Диаметр вертикальных стержней — 8X-19 (диаметр 19 мм);  \n3) Выпуски арматуры из нижестоящей конструкции с загибом.",
+  "reasoning": "",
+  "verdict": "pass"
+}

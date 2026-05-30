@@ -1,0 +1,40 @@
+{
+  "project": "projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+  "timestamp": "20260426_190649",
+  "model": "qwen/qwen3.6-35b-a3b",
+  "parallelism": 1,
+  "blocks_total": 2,
+  "blocks_ok": 1,
+  "blocks_failed": 1,
+  "wall_clock_s": 34.0,
+  "avg_per_block_s": 17.0,
+  "total_input_tokens": 11832,
+  "total_output_tokens": 5490,
+  "total_reasoning_tokens": 0,
+  "per_block": [
+    {
+      "block_id": "66NE-7DYY-GQN",
+      "page": 7,
+      "ok": true,
+      "elapsed_ms": 10969,
+      "input_tokens": 5690,
+      "output_tokens": 1394,
+      "reasoning_tokens": 0,
+      "block_type": "план_опалубки",
+      "subject": "План опалубки вертикальных конструкций этажей 17-23 с указанием размеров стен и проёмов.",
+      "error": null
+    },
+    {
+      "block_id": "3TFL-TNRF-7G6",
+      "page": 8,
+      "ok": false,
+      "elapsed_ms": 22966,
+      "input_tokens": 6142,
+      "output_tokens": 4096,
+      "reasoning_tokens": 0,
+      "block_type": null,
+      "subject": null,
+      "error": null
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "baseline_full": "baseline_p3",
+  "aggressive_full": "aggressive_p3",
+  "gates": {
+    "full_run": {
+      "baseline_pass": true,
+      "baseline_reasons": [],
+      "aggressive_pass": true,
+      "aggressive_reasons": []
+    },
+    "stability": {
+      "metrics": {
+        "unreadable_pct": {
+          "baseline": 0.0,
+          "aggressive": 0.0
+        },
+        "parse_errors": {
+          "baseline": 0,
+          "aggressive": 0
+        },
+        "p95_batch_sec": {
+          "baseline": 244.94,
+          "aggressive": 279.97
+        },
+        "failed_batches": {
+          "baseline": 0,
+          "aggressive": 0
+        }
+      },
+      "concerns": []
+    },
+    "quality_subset": {
+      "applied": true,
+      "passed": false,
+      "criteria": {
+        "unreadable_aggr_<=_baseline": {
+          "baseline": 0,
+          "aggressive": 0,
+          "pass": true
+        },
+        "total_findings_aggr_>=_95%_baseline": {
+          "baseline": 61,
+          "aggressive": 58,
+          "pass": true
+        },
+        "blocks_with_findings_aggr_>=_95%_baseline": {
+          "baseline": 45,
+          "aggressive": 41,
+          "pass": false
+        },
+        "median_kv_aggr_>=_90%_baseline": {
+          "baseline": 7.5,
+          "aggressive": 9.0,
+          "pass": true
+        }
+      }
+    },
+    "speed": {
+      "baseline_elapsed": 1979.25,
+      "aggressive_elapsed": 1790.01,
+      "aggressive_faster": true,
+      "delta_sec": 189.24
+    }
+  },
+  "decision": {
+    "winner": "baseline_p3",
+    "reason": "quality gate subset не пройден: ['blocks_with_findings_aggr_>=_95%_baseline']",
+    "fallback": "baseline_p2 (более консервативный параллелизм)"
+  }
+}

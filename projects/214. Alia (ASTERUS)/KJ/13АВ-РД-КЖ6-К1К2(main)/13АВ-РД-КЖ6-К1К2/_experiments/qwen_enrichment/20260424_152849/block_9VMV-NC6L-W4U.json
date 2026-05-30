@@ -1,0 +1,49 @@
+{
+  "block_id": "9VMV-NC6L-W4U",
+  "page": 12,
+  "sheet_no": "7",
+  "file": "block_9VMV-NC6L-W4U.png",
+  "size_kb": 27.4,
+  "ocr_text_len": 749,
+  "ocr_label": "На чертеже представлен разрез 3-3 (3) узла сопряжения железобетонной плиты со ст",
+  "ok": true,
+  "elapsed_ms": 3554,
+  "input_tokens": 1592,
+  "output_tokens": 247,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 540,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3554,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "разрез",
+    "subject": "Разрез 3-3 узла сопряжения железобетонной плиты покрытия со стеной",
+    "marks": [
+      "10-Г-2"
+    ],
+    "rebar_specs": [
+      "Ø10 шаг 250"
+    ],
+    "dimensions": [
+      "250",
+      "з.с.30",
+      "з.с.40"
+    ],
+    "references_on_block": [],
+    "axes": [],
+    "level_marks": [
+      "-0,180",
+      "-0,430"
+    ],
+    "concrete_class": "В40",
+    "notes": "Изображен узел сопряжения плиты со стеной с указанием отметок верха (-0,180) и низа (-0,430), толщины защитного слоя (30-40 мм) и марки гнутой арматуры 10-Г-2."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

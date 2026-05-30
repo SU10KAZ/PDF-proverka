@@ -1,0 +1,50 @@
+{
+  "block_id": "66EP-XQPR-7AA",
+  "page": 10,
+  "sheet_no": "5",
+  "file": "block_66EP-XQPR-7AA.png",
+  "size_kb": 15.4,
+  "ocr_text_len": 724,
+  "ocr_label": "На чертеже представлено сечение Ю-Ю железобетонного элемента с армированием.",
+  "ok": true,
+  "elapsed_ms": 3445,
+  "input_tokens": 1331,
+  "output_tokens": 243,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 637,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3445,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "сечение",
+    "subject": "Сечение Ю-Ю железобетонного элемента с указанием расположения вертикальной арматуры и хомутов",
+    "marks": [
+      "Хомут",
+      "Вертикальная арматура"
+    ],
+    "rebar_specs": [],
+    "dimensions": [
+      "t=200"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 2",
+      "см. лист 3",
+      "см. лист 11"
+    ],
+    "axes": [],
+    "level_marks": [
+      "+4,200"
+    ],
+    "concrete_class": null,
+    "notes": "На чертеже показано сечение Ю-Ю с указанием толщины плиты 200 мм и отметки верха +4,200. Приведены ссылки на общие указания, опалубку, маркировочную схему и спецификацию на других листах."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

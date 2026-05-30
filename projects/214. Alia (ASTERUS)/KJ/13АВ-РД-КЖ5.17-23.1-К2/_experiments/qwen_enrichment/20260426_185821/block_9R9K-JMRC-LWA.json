@@ -1,0 +1,42 @@
+{
+  "block_id": "9R9K-JMRC-LWA",
+  "page": 19,
+  "sheet_no": "14",
+  "file": "block_9R9K-JMRC-LWA.png",
+  "size_kb": 24.7,
+  "ocr_text_len": 890,
+  "ocr_label": "Легенда условных обозначений для чертежей армирования.",
+  "ok": true,
+  "elapsed_ms": 4571,
+  "input_tokens": 2482,
+  "output_tokens": 230,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 620,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 4571,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "таблица_условных_обозначений",
+    "subject": "Легенда условных обозначений для чертежей армирования вертикальных конструкций.",
+    "marks": [],
+    "rebar_specs": [],
+    "dimensions": [],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 2",
+      "см. лист 3"
+    ],
+    "axes": [],
+    "level_marks": [],
+    "concrete_class": "B40",
+    "notes": "Блок содержит расшифровку графических обозначений (з.с., рабочий шов, конструкции вышележащего уровня, указатель армирования). Также содержит спецификации для колонн Км-400-1200-2800-1 и -2 с указанием классов арматуры (А500С, А240) и бетона (В40 F100 W4)."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

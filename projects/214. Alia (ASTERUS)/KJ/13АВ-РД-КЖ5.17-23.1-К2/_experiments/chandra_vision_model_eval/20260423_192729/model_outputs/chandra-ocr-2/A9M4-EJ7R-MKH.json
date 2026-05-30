@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "model": "chandra-ocr-2",
+  "block_id": "A9M4-EJ7R-MKH",
+  "elapsed_s": 80.1,
+  "raw_text": "",
+  "parsed": null,
+  "parse_error": "empty",
+  "usage": {
+    "completion_tokens": 300,
+    "prompt_tokens": 439,
+    "total_tokens": 739,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": null,
+      "audio_tokens": null,
+      "reasoning_tokens": 299,
+      "rejected_prediction_tokens": null
+    },
+    "prompt_tokens_details": null
+  }
+}

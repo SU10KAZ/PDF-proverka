@@ -1,0 +1,582 @@
+{
+  "runs": [
+    {
+      "run_id": "baseline_p3",
+      "profile": "baseline",
+      "risk_targets": {
+        "heavy": {
+          "target": 5,
+          "max": 6
+        },
+        "normal": {
+          "target": 8,
+          "max": 8
+        },
+        "light": {
+          "target": 10,
+          "max": 10
+        }
+      },
+      "parallelism": 3,
+      "model": "claude-opus-4-7",
+      "project_pdf": "13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+      "project_id": "214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+      "project_dir": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+      "timestamp": "2026-04-20T15:56:09",
+      "mode": "real",
+      "is_subset": false,
+      "subset_size": null,
+      "plan_stats": {
+        "total_batches": 33,
+        "total_blocks": 215,
+        "avg_batch_size": 6.52,
+        "median_batch_size": 7,
+        "max_batch_size": 8,
+        "min_batch_size": 1,
+        "avg_batch_kb": 290.2,
+        "median_batch_kb": 271.6,
+        "max_heavy_in_batch": 2,
+        "risk_counts": {
+          "heavy": 11,
+          "normal": 151,
+          "light": 53
+        },
+        "dominant_type_counts": {
+          "heavy": 1,
+          "normal": 26,
+          "light": 6
+        },
+        "size_histogram": {
+          "1": 1,
+          "2": 1,
+          "4": 1,
+          "5": 2,
+          "6": 11,
+          "7": 4,
+          "8": 13
+        }
+      },
+      "runtime": {
+        "total_elapsed_sec": 1979.25,
+        "successful_batches": 33,
+        "failed_batches": 0,
+        "failures": [],
+        "avg_batch_sec": 176.64,
+        "median_batch_sec": 173.81,
+        "p95_batch_sec": 244.94,
+        "max_batch_sec": 430.25,
+        "min_batch_sec": 31.72
+      },
+      "quality": {
+        "returned_block_analyses": 215,
+        "unique_block_ids": 215,
+        "expected_block_ids": 215,
+        "coverage_pct": 100.0,
+        "missing_block_ids": [],
+        "missing_count": 0,
+        "duplicate_block_ids": [],
+        "duplicate_count": 0,
+        "extra_block_ids": [],
+        "extra_count": 0,
+        "unreadable_count": 0,
+        "unreadable_pct": 0.0,
+        "empty_summary_count": 0,
+        "empty_key_values_count": 0,
+        "blocks_with_findings_count": 132,
+        "blocks_with_findings_pct": 61.4,
+        "total_findings": 168,
+        "findings_per_100_blocks": 78.14,
+        "parse_errors": 0
+      }
+    },
+    {
+      "run_id": "aggressive_p3",
+      "profile": "aggressive",
+      "risk_targets": {
+        "heavy": {
+          "target": 6,
+          "max": 6
+        },
+        "normal": {
+          "target": 10,
+          "max": 10
+        },
+        "light": {
+          "target": 12,
+          "max": 12
+        }
+      },
+      "parallelism": 3,
+      "model": "claude-opus-4-7",
+      "project_pdf": "13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+      "project_id": "214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+      "project_dir": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+      "timestamp": "2026-04-20T16:29:08",
+      "mode": "real",
+      "is_subset": false,
+      "subset_size": null,
+      "plan_stats": {
+        "total_batches": 31,
+        "total_blocks": 215,
+        "avg_batch_size": 6.94,
+        "median_batch_size": 6,
+        "max_batch_size": 10,
+        "min_batch_size": 1,
+        "avg_batch_kb": 308.9,
+        "median_batch_kb": 295.2,
+        "max_heavy_in_batch": 2,
+        "risk_counts": {
+          "heavy": 11,
+          "normal": 151,
+          "light": 53
+        },
+        "dominant_type_counts": {
+          "heavy": 1,
+          "normal": 24,
+          "light": 6
+        },
+        "size_histogram": {
+          "1": 3,
+          "2": 1,
+          "5": 1,
+          "6": 11,
+          "7": 3,
+          "8": 1,
+          "10": 11
+        }
+      },
+      "runtime": {
+        "total_elapsed_sec": 1790.01,
+        "successful_batches": 31,
+        "failed_batches": 0,
+        "failures": [],
+        "avg_batch_sec": 172.91,
+        "median_batch_sec": 164.28,
+        "p95_batch_sec": 279.97,
+        "max_batch_sec": 389.24,
+        "min_batch_sec": 40.89
+      },
+      "quality": {
+        "returned_block_analyses": 215,
+        "unique_block_ids": 215,
+        "expected_block_ids": 215,
+        "coverage_pct": 100.0,
+        "missing_block_ids": [],
+        "missing_count": 0,
+        "duplicate_block_ids": [],
+        "duplicate_count": 0,
+        "extra_block_ids": [],
+        "extra_count": 0,
+        "unreadable_count": 0,
+        "unreadable_pct": 0.0,
+        "empty_summary_count": 0,
+        "empty_key_values_count": 0,
+        "blocks_with_findings_count": 143,
+        "blocks_with_findings_pct": 66.51,
+        "total_findings": 186,
+        "findings_per_100_blocks": 86.51,
+        "parse_errors": 0
+      }
+    },
+    {
+      "run_id": "baseline_p3_subset",
+      "profile": "baseline",
+      "risk_targets": {
+        "heavy": {
+          "target": 5,
+          "max": 6
+        },
+        "normal": {
+          "target": 8,
+          "max": 8
+        },
+        "light": {
+          "target": 10,
+          "max": 10
+        }
+      },
+      "parallelism": 3,
+      "model": "claude-opus-4-7",
+      "project_pdf": "13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+      "project_id": "214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+      "project_dir": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+      "timestamp": "2026-04-20T16:58:58",
+      "mode": "real",
+      "is_subset": true,
+      "subset_size": 60,
+      "plan_stats": {
+        "total_batches": 10,
+        "total_blocks": 60,
+        "avg_batch_size": 6,
+        "median_batch_size": 6,
+        "max_batch_size": 8,
+        "min_batch_size": 2,
+        "avg_batch_kb": 350.2,
+        "median_batch_kb": 312.1,
+        "max_heavy_in_batch": 3,
+        "risk_counts": {
+          "heavy": 11,
+          "normal": 36,
+          "light": 13
+        },
+        "dominant_type_counts": {
+          "heavy": 2,
+          "normal": 8,
+          "light": 0
+        },
+        "size_histogram": {
+          "2": 1,
+          "6": 7,
+          "8": 2
+        }
+      },
+      "runtime": {
+        "total_elapsed_sec": 180.83,
+        "successful_batches": 0,
+        "failed_batches": 10,
+        "failures": [
+          {
+            "batch_id": 3,
+            "exit_code": 1,
+            "elapsed": 149.8,
+            "error": "unknown"
+          },
+          {
+            "batch_id": 4,
+            "exit_code": 1,
+            "elapsed": 2.0,
+            "error": "unknown"
+          },
+          {
+            "batch_id": 5,
+            "exit_code": 1,
+            "elapsed": 2.1,
+            "error": "unknown"
+          },
+          {
+            "batch_id": 6,
+            "exit_code": 1,
+            "elapsed": 2.1,
+            "error": "unknown"
+          },
+          {
+            "batch_id": 7,
+            "exit_code": 1,
+            "elapsed": 2.1,
+            "error": "unknown"
+          },
+          {
+            "batch_id": 8,
+            "exit_code": 1,
+            "elapsed": 2.0,
+            "error": "unknown"
+          },
+          {
+            "batch_id": 9,
+            "exit_code": 1,
+            "elapsed": 2.1,
+            "error": "unknown"
+          },
+          {
+            "batch_id": 10,
+            "exit_code": 1,
+            "elapsed": 2.7,
+            "error": "unknown"
+          },
+          {
+            "batch_id": 2,
+            "exit_code": 1,
+            "elapsed": 166.7,
+            "error": "unknown"
+          },
+          {
+            "batch_id": 1,
+            "exit_code": 1,
+            "elapsed": 180.8,
+            "error": "unknown"
+          }
+        ],
+        "avg_batch_sec": 51.25,
+        "median_batch_sec": 2.12,
+        "p95_batch_sec": 174.47,
+        "max_batch_sec": 180.83,
+        "min_batch_sec": 2.03
+      },
+      "quality": {
+        "returned_block_analyses": 18,
+        "unique_block_ids": 18,
+        "expected_block_ids": 60,
+        "coverage_pct": 30.0,
+        "missing_block_ids": [
+          "47XG-3PPW-PJ6",
+          "4ARK-6ENX-GEV",
+          "4FT3-Y3CW-C3L",
+          "4HYQ-JHE6-GX9",
+          "4RRP-APLY-KPA",
+          "4U4Y-DKT4-HKU",
+          "4YKN-EJLX-F6E",
+          "63YA-YJCM-JJX",
+          "6CJL-W6NL-HHR",
+          "6LQP-AGTR-4H7",
+          "6MV3-YUME-9CN",
+          "6PPA-4DDX-6FR",
+          "6Q9N-FFCG-VMH",
+          "6XVN-CGJH-YXL",
+          "6XXG-CYEA-3V6",
+          "73YG-7DGA-HUH",
+          "77FD-FM7F-CQN",
+          "7CHG-7U6R-WYP",
+          "7D9Q-GLVQ-QWH",
+          "7MKF-CY7E-9PD",
+          "7PQJ-YWYD-3FP",
+          "7TUE-6AJK-CLE",
+          "7XUQ-KJVR-6FP",
+          "7YPU-7R7J-YNE",
+          "947C-9UJT-RYU",
+          "9CPA-XUE4-EWF",
+          "9GQD-LF9N-999",
+          "9MKJ-RAFV-UDM",
+          "9PPJ-YP6U-HV6",
+          "9U74-KT9W-HGN",
+          "9VHU-GJRC-466",
+          "9XMG-3LNL-RMW",
+          "9XQM-D6XA-UUK",
+          "AAHY-LAPW-4DF",
+          "AWEW-KHGF-XTX",
+          "HNNQ-FTUC-K7W",
+          "JHYV-DLMK-MFW",
+          "JTUC-HHUY-W7K",
+          "KEMF-D3Y4-3NJ",
+          "TAXK-LEUR-TKK",
+          "VNVR-PXFJ-HEJ",
+          "XCJC-ULVE-F4K"
+        ],
+        "missing_count": 42,
+        "duplicate_block_ids": [],
+        "duplicate_count": 0,
+        "extra_block_ids": [],
+        "extra_count": 0,
+        "unreadable_count": 0,
+        "unreadable_pct": 0.0,
+        "empty_summary_count": 0,
+        "empty_key_values_count": 0,
+        "blocks_with_findings_count": 15,
+        "blocks_with_findings_pct": 83.33,
+        "total_findings": 24,
+        "findings_per_100_blocks": 133.33,
+        "parse_errors": 0
+      }
+    },
+    {
+      "run_id": "aggressive_p3_subset",
+      "profile": "aggressive",
+      "risk_targets": {
+        "heavy": {
+          "target": 6,
+          "max": 6
+        },
+        "normal": {
+          "target": 10,
+          "max": 10
+        },
+        "light": {
+          "target": 12,
+          "max": 12
+        }
+      },
+      "parallelism": 3,
+      "model": "claude-opus-4-7",
+      "project_pdf": "13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+      "project_id": "214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+      "project_dir": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+      "timestamp": "2026-04-20T17:01:59",
+      "mode": "real",
+      "is_subset": true,
+      "subset_size": 60,
+      "plan_stats": {
+        "total_batches": 9,
+        "total_blocks": 60,
+        "avg_batch_size": 6.67,
+        "median_batch_size": 6,
+        "max_batch_size": 10,
+        "min_batch_size": 5,
+        "avg_batch_kb": 389.1,
+        "median_batch_kb": 334.4,
+        "max_heavy_in_batch": 3,
+        "risk_counts": {
+          "heavy": 11,
+          "normal": 36,
+          "light": 13
+        },
+        "dominant_type_counts": {
+          "heavy": 1,
+          "normal": 7,
+          "light": 1
+        },
+        "size_histogram": {
+          "5": 1,
+          "6": 6,
+          "9": 1,
+          "10": 1
+        }
+      },
+      "runtime": {
+        "total_elapsed_sec": 7.63,
+        "successful_batches": 0,
+        "failed_batches": 9,
+        "failures": [
+          {
+            "batch_id": 1,
+            "exit_code": 1,
+            "elapsed": 2.4,
+            "error": "unknown"
+          },
+          {
+            "batch_id": 2,
+            "exit_code": 1,
+            "elapsed": 2.6,
+            "error": "unknown"
+          },
+          {
+            "batch_id": 3,
+            "exit_code": 1,
+            "elapsed": 2.6,
+            "error": "unknown"
+          },
+          {
+            "batch_id": 4,
+            "exit_code": 1,
+            "elapsed": 2.4,
+            "error": "unknown"
+          },
+          {
+            "batch_id": 5,
+            "exit_code": 1,
+            "elapsed": 2.4,
+            "error": "unknown"
+          },
+          {
+            "batch_id": 6,
+            "exit_code": 1,
+            "elapsed": 2.4,
+            "error": "unknown"
+          },
+          {
+            "batch_id": 8,
+            "exit_code": 1,
+            "elapsed": 2.4,
+            "error": "unknown"
+          },
+          {
+            "batch_id": 9,
+            "exit_code": 1,
+            "elapsed": 2.3,
+            "error": "unknown"
+          },
+          {
+            "batch_id": 7,
+            "exit_code": 1,
+            "elapsed": 2.7,
+            "error": "unknown"
+          }
+        ],
+        "avg_batch_sec": 2.48,
+        "median_batch_sec": 2.44,
+        "p95_batch_sec": 2.7,
+        "max_batch_sec": 2.74,
+        "min_batch_sec": 2.33
+      },
+      "quality": {
+        "returned_block_analyses": 0,
+        "unique_block_ids": 0,
+        "expected_block_ids": 60,
+        "coverage_pct": 0.0,
+        "missing_block_ids": [
+          "33N9-7JYR-4JQ",
+          "3TFL-TNRF-7G6",
+          "47XG-3PPW-PJ6",
+          "4ARK-6ENX-GEV",
+          "4CRW-7WEW-6KA",
+          "4FT3-Y3CW-C3L",
+          "4HYQ-JHE6-GX9",
+          "4LMQ-4R7M-EC3",
+          "4LVY-33DN-DVN",
+          "4RRP-APLY-KPA",
+          "4U4Y-DKT4-HKU",
+          "4WPW-9MXF-JQC",
+          "4YKN-EJLX-F6E",
+          "63YA-YJCM-JJX",
+          "66NE-7DYY-GQN",
+          "6CJL-W6NL-HHR",
+          "6KFL-Y3YM-YFH",
+          "6LQP-AGTR-4H7",
+          "6MV3-YUME-9CN",
+          "6P9T-Q7GT-N9J",
+          "6PPA-4DDX-6FR",
+          "6Q9N-FFCG-VMH",
+          "6XVN-CGJH-YXL",
+          "6XXG-CYEA-3V6",
+          "73YG-7DGA-HUH",
+          "77FD-FM7F-CQN",
+          "7CHG-7U6R-WYP",
+          "7D9Q-GLVQ-QWH",
+          "7DJ9-EQQ3-QMK",
+          "7MKF-CY7E-9PD",
+          "7PQJ-YWYD-3FP",
+          "7TUE-6AJK-CLE",
+          "7WLT-66U6-FG9",
+          "7XUQ-KJVR-6FP",
+          "7YPU-7R7J-YNE",
+          "947C-9UJT-RYU",
+          "97AH-VUFP-LJJ",
+          "9CPA-XUE4-EWF",
+          "9DH3-MEUR-DR4",
+          "9GQD-LF9N-999",
+          "9MKJ-RAFV-UDM",
+          "9PPJ-YP6U-HV6",
+          "9U74-KT9W-HGN",
+          "9VHU-GJRC-466",
+          "9XMG-3LNL-RMW",
+          "9XQM-D6XA-UUK",
+          "A9M4-EJ7R-MKH",
+          "AAHY-LAPW-4DF",
+          "AC3T-RYW4-UD4",
+          "AWEW-KHGF-XTX",
+          "GC4D-PCGH-N39",
+          "H3VM-7JM6-6HM",
+          "HNNQ-FTUC-K7W",
+          "HP4W-KDLX-C77",
+          "JHYV-DLMK-MFW",
+          "JTUC-HHUY-W7K",
+          "KEMF-D3Y4-3NJ",
+          "TAXK-LEUR-TKK",
+          "VNVR-PXFJ-HEJ",
+          "XCJC-ULVE-F4K"
+        ],
+        "missing_count": 60,
+        "duplicate_block_ids": [],
+        "duplicate_count": 0,
+        "extra_block_ids": [],
+        "extra_count": 0,
+        "unreadable_count": 0,
+        "unreadable_pct": 0.0,
+        "empty_summary_count": 0,
+        "empty_key_values_count": 0,
+        "blocks_with_findings_count": 0,
+        "blocks_with_findings_pct": 0.0,
+        "total_findings": 0,
+        "findings_per_100_blocks": 0.0,
+        "parse_errors": 0
+      }
+    }
+  ],
+  "winner": {
+    "winner": "baseline_p3",
+    "winner_profile": "baseline",
+    "winner_parallelism": 3,
+    "fastest": "aggressive_p3",
+    "best_quality": "aggressive_p3",
+    "excluded_for_coverage": [],
+    "reason": "quality gate subset не пройден: ['total_findings_aggr_>=_95%_baseline', 'blocks_with_findings_aggr_>=_95%_baseline']"
+  }
+}

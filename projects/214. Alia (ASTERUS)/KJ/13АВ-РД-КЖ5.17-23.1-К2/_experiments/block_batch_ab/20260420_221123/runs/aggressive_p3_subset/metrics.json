@@ -1,0 +1,99 @@
+{
+  "run_id": "aggressive_p3_subset",
+  "profile": "aggressive",
+  "risk_targets": {
+    "heavy": {
+      "target": 6,
+      "max": 6
+    },
+    "normal": {
+      "target": 10,
+      "max": 10
+    },
+    "light": {
+      "target": 12,
+      "max": 12
+    }
+  },
+  "parallelism": 3,
+  "model": "claude-opus-4-7",
+  "project_pdf": "13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+  "project_id": "214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+  "project_dir": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+  "timestamp": "2026-04-20T22:23:43",
+  "mode": "real",
+  "is_subset": true,
+  "subset_size": 60,
+  "plan_stats": {
+    "total_batches": 9,
+    "total_blocks": 60,
+    "avg_batch_size": 6.67,
+    "median_batch_size": 6,
+    "max_batch_size": 10,
+    "min_batch_size": 5,
+    "avg_batch_kb": 389.1,
+    "median_batch_kb": 334.4,
+    "max_heavy_in_batch": 3,
+    "risk_counts": {
+      "heavy": 11,
+      "normal": 36,
+      "light": 13
+    },
+    "dominant_type_counts": {
+      "heavy": 1,
+      "normal": 7,
+      "light": 1
+    },
+    "size_histogram": {
+      "5": 1,
+      "6": 6,
+      "9": 1,
+      "10": 1
+    }
+  },
+  "runtime": {
+    "total_elapsed_sec": 607.28,
+    "successful_batches": 7,
+    "failed_batches": 2,
+    "failures": [
+      {
+        "batch_id": 8,
+        "exit_code": 1,
+        "elapsed": 144.7,
+        "error": "unknown"
+      },
+      {
+        "batch_id": 9,
+        "exit_code": 1,
+        "elapsed": 125.5,
+        "error": "unknown"
+      }
+    ],
+    "avg_batch_sec": 192.22,
+    "median_batch_sec": 185.05,
+    "p95_batch_sec": 242.74,
+    "max_batch_sec": 244.4,
+    "min_batch_sec": 125.52
+  },
+  "quality": {
+    "returned_block_analyses": 60,
+    "unique_block_ids": 60,
+    "expected_block_ids": 60,
+    "coverage_pct": 100.0,
+    "missing_block_ids": [],
+    "missing_count": 0,
+    "duplicate_block_ids": [],
+    "duplicate_count": 0,
+    "extra_block_ids": [],
+    "extra_count": 0,
+    "unreadable_count": 0,
+    "unreadable_pct": 0.0,
+    "empty_summary_count": 0,
+    "empty_key_values_count": 0,
+    "blocks_with_findings_count": 41,
+    "blocks_with_findings_pct": 68.33,
+    "total_findings": 58,
+    "findings_per_100_blocks": 96.67,
+    "parse_errors": 0
+  }
+}

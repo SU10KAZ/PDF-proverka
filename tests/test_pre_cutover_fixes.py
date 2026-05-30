@@ -77,7 +77,11 @@ def v1_v2_with_logs(tmp_path, monkeypatch):
     version_service.create_next_version(
         pdir, "M31A", source="manual", status="new", comment="V2",
     )
-    v2_dir = pdir / "_versions" / "v2"
+    # Промоут в контейнер переместил V1: пересчитываем пути.
+    container = projects_dir / "M31A(main)"
+    pdir = container / "M31A"
+    v1_log = pdir / "_output" / "audit_log.jsonl"
+    v2_dir = container / "M31A V2"
     _write_pdf(v2_dir / "v2.pdf")
     _write_md(v2_dir / "v2_document.md", "V2 MD content")
     v2_info_path = v2_dir / "project_info.json"

@@ -1,0 +1,56 @@
+{
+  "block_id": "C3EQ-CLF7-JMK",
+  "page": 7,
+  "sheet_no": "2",
+  "file": "block_C3EQ-CLF7-JMK.png",
+  "size_kb": 33.5,
+  "ocr_text_len": 812,
+  "ocr_label": "Фрагмент разреза 22-22 для 22 этажа с указанием отметок высот и отверстий.",
+  "ok": true,
+  "elapsed_ms": 4050,
+  "input_tokens": 2141,
+  "output_tokens": 279,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 607,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 4050,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "разрез",
+    "subject": "Фрагмент разреза 22-22 для 22 этажа с указанием высотных отметок и отверстий",
+    "marks": [
+      "Омв.1",
+      "Омв.6"
+    ],
+    "rebar_specs": [],
+    "dimensions": [
+      "1265",
+      "650",
+      "600",
+      "970"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 4",
+      "см. лист 3"
+    ],
+    "axes": [
+      "2.4"
+    ],
+    "level_marks": [
+      "+78,580",
+      "+76,850",
+      "+76,250"
+    ],
+    "concrete_class": null,
+    "notes": "Изображен фрагмент стены с двумя отверстиями (Омв.1, Омв.6). Привязки размеров даны от оси 2.4. Указаны высотные отметки для 22 этажа."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

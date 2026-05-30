@@ -1,0 +1,63 @@
+# Subset divergence report — baseline_p3 vs aggressive_p3
+
+## Где aggressive дал больше findings (0)
+
+(нет)
+
+## Где baseline дал больше findings (15)
+
+- `6P9T-Q7GT-N9J` (risk=heavy, page=7): baseline 3f/14kv vs aggressive 0f/0kv (Δfind=-3, Δkv=-14)
+- `H3VM-7JM6-6HM` (risk=normal, page=7): baseline 2f/9kv vs aggressive 0f/0kv (Δfind=-2, Δkv=-9)
+- `4CRW-7WEW-6KA` (risk=normal, page=8): baseline 2f/7kv vs aggressive 0f/0kv (Δfind=-2, Δkv=-7)
+- `HP4W-KDLX-C77` (risk=light, page=8): baseline 2f/5kv vs aggressive 0f/0kv (Δfind=-2, Δkv=-5)
+- `6KFL-Y3YM-YFH` (risk=normal, page=9): baseline 2f/11kv vs aggressive 0f/0kv (Δfind=-2, Δkv=-11)
+- `7DJ9-EQQ3-QMK` (risk=heavy, page=9): baseline 2f/10kv vs aggressive 0f/0kv (Δfind=-2, Δkv=-10)
+- `9DH3-MEUR-DR4` (risk=heavy, page=9): baseline 2f/10kv vs aggressive 0f/0kv (Δfind=-2, Δkv=-10)
+- `GC4D-PCGH-N39` (risk=normal, page=9): baseline 2f/10kv vs aggressive 0f/0kv (Δfind=-2, Δkv=-10)
+- `33N9-7JYR-4JQ` (risk=normal, page=7): baseline 1f/7kv vs aggressive 0f/0kv (Δfind=-1, Δkv=-7)
+- `4LVY-33DN-DVN` (risk=normal, page=7): baseline 1f/3kv vs aggressive 0f/0kv (Δfind=-1, Δkv=-3)
+- `66NE-7DYY-GQN` (risk=heavy, page=7): baseline 1f/6kv vs aggressive 0f/0kv (Δfind=-1, Δkv=-6)
+- `4WPW-9MXF-JQC` (risk=normal, page=8): baseline 1f/6kv vs aggressive 0f/0kv (Δfind=-1, Δkv=-6)
+- `7WLT-66U6-FG9` (risk=light, page=8): baseline 1f/3kv vs aggressive 0f/0kv (Δfind=-1, Δkv=-3)
+- `4LMQ-4R7M-EC3` (risk=normal, page=9): baseline 1f/10kv vs aggressive 0f/0kv (Δfind=-1, Δkv=-10)
+- `97AH-VUFP-LJJ` (risk=heavy, page=9): baseline 1f/10kv vs aggressive 0f/0kv (Δfind=-1, Δkv=-10)
+
+## Разница в unreadable flag (0)
+
+(нет расхождений)
+
+## Разница в key_values (|Δkv| >= 2, 18)
+
+- `6P9T-Q7GT-N9J` (risk=heavy, page=7): baseline 3f/14kv vs aggressive 0f/0kv (Δfind=-3, Δkv=-14)
+- `6KFL-Y3YM-YFH` (risk=normal, page=9): baseline 2f/11kv vs aggressive 0f/0kv (Δfind=-2, Δkv=-11)
+- `4LMQ-4R7M-EC3` (risk=normal, page=9): baseline 1f/10kv vs aggressive 0f/0kv (Δfind=-1, Δkv=-10)
+- `7DJ9-EQQ3-QMK` (risk=heavy, page=9): baseline 2f/10kv vs aggressive 0f/0kv (Δfind=-2, Δkv=-10)
+- `97AH-VUFP-LJJ` (risk=heavy, page=9): baseline 1f/10kv vs aggressive 0f/0kv (Δfind=-1, Δkv=-10)
+- `9DH3-MEUR-DR4` (risk=heavy, page=9): baseline 2f/10kv vs aggressive 0f/0kv (Δfind=-2, Δkv=-10)
+- `GC4D-PCGH-N39` (risk=normal, page=9): baseline 2f/10kv vs aggressive 0f/0kv (Δfind=-2, Δkv=-10)
+- `A9M4-EJ7R-MKH` (risk=normal, page=6): baseline 0f/9kv vs aggressive 0f/0kv (Δfind=+0, Δkv=-9)
+- `H3VM-7JM6-6HM` (risk=normal, page=7): baseline 2f/9kv vs aggressive 0f/0kv (Δfind=-2, Δkv=-9)
+- `33N9-7JYR-4JQ` (risk=normal, page=7): baseline 1f/7kv vs aggressive 0f/0kv (Δfind=-1, Δkv=-7)
+- `4CRW-7WEW-6KA` (risk=normal, page=8): baseline 2f/7kv vs aggressive 0f/0kv (Δfind=-2, Δkv=-7)
+- `66NE-7DYY-GQN` (risk=heavy, page=7): baseline 1f/6kv vs aggressive 0f/0kv (Δfind=-1, Δkv=-6)
+- `4WPW-9MXF-JQC` (risk=normal, page=8): baseline 1f/6kv vs aggressive 0f/0kv (Δfind=-1, Δkv=-6)
+- `3TFL-TNRF-7G6` (risk=heavy, page=8): baseline 0f/5kv vs aggressive 0f/0kv (Δfind=+0, Δkv=-5)
+- `HP4W-KDLX-C77` (risk=light, page=8): baseline 2f/5kv vs aggressive 0f/0kv (Δfind=-2, Δkv=-5)
+
+## Топ-15 самых спорных блоков (по |Δfindings| + unread mismatch)
+
+- `6P9T-Q7GT-N9J` (risk=heavy, page=7): baseline 3f/14kv vs aggressive 0f/0kv (Δfind=-3, Δkv=-14)
+- `H3VM-7JM6-6HM` (risk=normal, page=7): baseline 2f/9kv vs aggressive 0f/0kv (Δfind=-2, Δkv=-9)
+- `4CRW-7WEW-6KA` (risk=normal, page=8): baseline 2f/7kv vs aggressive 0f/0kv (Δfind=-2, Δkv=-7)
+- `HP4W-KDLX-C77` (risk=light, page=8): baseline 2f/5kv vs aggressive 0f/0kv (Δfind=-2, Δkv=-5)
+- `6KFL-Y3YM-YFH` (risk=normal, page=9): baseline 2f/11kv vs aggressive 0f/0kv (Δfind=-2, Δkv=-11)
+- `7DJ9-EQQ3-QMK` (risk=heavy, page=9): baseline 2f/10kv vs aggressive 0f/0kv (Δfind=-2, Δkv=-10)
+- `9DH3-MEUR-DR4` (risk=heavy, page=9): baseline 2f/10kv vs aggressive 0f/0kv (Δfind=-2, Δkv=-10)
+- `GC4D-PCGH-N39` (risk=normal, page=9): baseline 2f/10kv vs aggressive 0f/0kv (Δfind=-2, Δkv=-10)
+- `33N9-7JYR-4JQ` (risk=normal, page=7): baseline 1f/7kv vs aggressive 0f/0kv (Δfind=-1, Δkv=-7)
+- `4LVY-33DN-DVN` (risk=normal, page=7): baseline 1f/3kv vs aggressive 0f/0kv (Δfind=-1, Δkv=-3)
+- `66NE-7DYY-GQN` (risk=heavy, page=7): baseline 1f/6kv vs aggressive 0f/0kv (Δfind=-1, Δkv=-6)
+- `4WPW-9MXF-JQC` (risk=normal, page=8): baseline 1f/6kv vs aggressive 0f/0kv (Δfind=-1, Δkv=-6)
+- `7WLT-66U6-FG9` (risk=light, page=8): baseline 1f/3kv vs aggressive 0f/0kv (Δfind=-1, Δkv=-3)
+- `4LMQ-4R7M-EC3` (risk=normal, page=9): baseline 1f/10kv vs aggressive 0f/0kv (Δfind=-1, Δkv=-10)
+- `97AH-VUFP-LJJ` (risk=heavy, page=9): baseline 1f/10kv vs aggressive 0f/0kv (Δfind=-1, Δkv=-10)

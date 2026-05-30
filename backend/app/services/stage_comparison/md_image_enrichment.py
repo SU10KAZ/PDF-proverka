@@ -47,6 +47,7 @@ from typing import Any, Awaitable, Callable, Optional
 
 from . import graphic_llm_local as graphic_local_mod
 from . import paths as paths_mod
+from . import problem_block_retry as problem_block_retry_mod
 
 logger = logging.getLogger(__name__)
 
@@ -2440,6 +2441,7 @@ async def enrich_side(
         raise ValueError("side must be 'left' or 'right'")
 
     cfg = cfg or graphic_local_mod.load_local_graphic_llm_config()
+    _retry_cfg = problem_block_retry_mod.ProblemBlockRetryConfig.from_env()
     user_supplied_describe_fn = describe_fn  # сохранить, чтобы не делать override на тестовых fake'ах
 
     async def _call_describe(
@@ -2804,6 +2806,48 @@ async def enrich_side(
             )
             summary.errors += 1
 
+        # ── Problem-block tiled high-res retry (feature-flagged, default OFF) ──
+        # Runs only AFTER the baseline pass, only for problem blocks; preserves
+        # baseline output; never raises into the pipeline.
+        if run_model and _retry_cfg.enabled and _retry_cfg.after_main:
+            try:
+                import dataclasses as _dc_retry
+
+                _tile_cfg = _dc_retry.replace(
+                    cfg,
+                    timeout_sec=int(_retry_cfg.tile_timeout_sec),
+                    max_continuations=1,
+                    image_long_side=int(max(_retry_cfg.tile_width, _retry_cfg.tile_height)),
+                )
+
+                async def _tile_describe(_img, _prompt, __cfg=_tile_cfg):
+                    return await _call_describe(_img, _prompt, cfg_override=__cfg)
+
+                _side_block = side_block_by_id.get(item.get("side_block_id") or "")
+                _pre_status = item.get("status")
+                item = await problem_block_retry_mod.maybe_run_problem_block_retry(
+                    item=item,
+                    side_block=_side_block,
+                    error=None,
+                    render_crop=render_crop,
+                    describe_fn=_tile_describe,
+                    cfg=_retry_cfg,
+                    session_id=session_id,
+                    pair_id=pair_id,
+                    side=side,
+                    model=cfg.model,
+                    cache_read=lambda k: read_cache(session_id, pair_id, k),
+                    cache_write=lambda k, v: write_cache(session_id, pair_id, k, v),
+                )
+                if (item.get("method_used") == "tiled_retry"
+                        and _pre_status in ("error", "partial", "no_image")
+                        and item.get("status") == "done"):
+                    summary.described += 1
+                    if _pre_status == "error":
+                        summary.errors = max(0, summary.errors - 1)
+            except Exception:  # noqa: BLE001 — retry must never break enrichment
+                logger.debug("problem_block_retry hook failed (ignored)", exc_info=True)
+
         descriptions.append(item)
         await _notify_progress(_block_idx, mb, item)
 
@@ -2914,6 +2958,9 @@ async def enrich_side(
         "replaced_image_blocks": replaced_image_blocks,
         "qwen_description_blocks": qwen_description_blocks,
         "enrichment_metrics": enrichment_metrics,
+        "problem_block_retry": problem_block_retry_mod.summarize_problem_block_retry(
+            descriptions, _retry_cfg
+        ),
         "updated_at": _now_iso(),
         "items": descriptions,
         "run_model": bool(run_model),

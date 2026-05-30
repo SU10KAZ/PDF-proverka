@@ -1,0 +1,64 @@
+{
+  "project": "projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf",
+  "timestamp": "20260424_101350",
+  "model": "qwen/qwen3.6-35b-a3b",
+  "parallelism": 2,
+  "blocks_total": 4,
+  "blocks_ok": 3,
+  "blocks_failed": 1,
+  "wall_clock_s": 119.3,
+  "avg_per_block_s": 56.4,
+  "total_input_tokens": 15454,
+  "total_output_tokens": 3800,
+  "total_reasoning_tokens": 0,
+  "per_block": [
+    {
+      "block_id": "4WTD-JFKA-JLE",
+      "page": 10,
+      "ok": false,
+      "elapsed_ms": 108509,
+      "input_tokens": 4912,
+      "output_tokens": 2048,
+      "reasoning_tokens": 0,
+      "block_type": null,
+      "subject": null,
+      "error": null
+    },
+    {
+      "block_id": "43L7-P9UL-VYD",
+      "page": 10,
+      "ok": true,
+      "elapsed_ms": 15465,
+      "input_tokens": 2916,
+      "output_tokens": 574,
+      "reasoning_tokens": 0,
+      "block_type": "схема_расположения",
+      "subject": "План расположения подземных автостоянок и пристроек на участке в осях П.3-П.9/П.Л-П.Т",
+      "error": null
+    },
+    {
+      "block_id": "HJ7G-VWTF-CGV",
+      "page": 10,
+      "ok": true,
+      "elapsed_ms": 7773,
+      "input_tokens": 2643,
+      "output_tokens": 276,
+      "reasoning_tokens": 0,
+      "block_type": "разрез",
+      "subject": "Разрез 1-1 стены пристройки с засыпкой керамзитом между осями П.Т и П.С",
+      "error": null
+    },
+    {
+      "block_id": "RELE-MX3A-MEN",
+      "page": 11,
+      "ok": true,
+      "elapsed_ms": 93939,
+      "input_tokens": 4983,
+      "output_tokens": 902,
+      "reasoning_tokens": 0,
+      "block_type": "план_армирования",
+      "subject": "План армирования вертикальных конструкций пристройки на отметке -1,800 в осях П.3-П.9/П.Л-П.Т.",
+      "error": null
+    }
+  ]
+}

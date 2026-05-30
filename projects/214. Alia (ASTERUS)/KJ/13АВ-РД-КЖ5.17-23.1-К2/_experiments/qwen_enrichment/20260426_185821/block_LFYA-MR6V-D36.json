@@ -1,0 +1,59 @@
+{
+  "block_id": "LFYA-MR6V-D36",
+  "page": 7,
+  "sheet_no": "2",
+  "file": "block_LFYA-MR6V-D36.png",
+  "size_kb": 26.8,
+  "ocr_text_len": 878,
+  "ocr_label": "Фрагмент плана для 17 и 22 этажей с указанием размеров и маркировкой элементов.",
+  "ok": true,
+  "elapsed_ms": 3254,
+  "input_tokens": 2012,
+  "output_tokens": 305,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 705,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3254,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "сечение",
+    "subject": "Фрагмент сечения вертикальной конструкции для 17 и 22 этажей с указанием проёмов и размеров",
+    "marks": [
+      "2.Д",
+      "2.6",
+      "2.7",
+      "27",
+      "Омв.3",
+      "П-2"
+    ],
+    "rebar_specs": [],
+    "dimensions": [
+      "200",
+      "450",
+      "500",
+      "1100",
+      "50",
+      "150",
+      "100"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 4",
+      "см. лист 3"
+    ],
+    "axes": [
+      "27"
+    ],
+    "level_marks": [],
+    "concrete_class": null,
+    "notes": "Изображен фрагмент сечения стены/колонны для этажей 17 и 22. Указаны размеры проёмов (Омв.3, П-2) и расстояния между осями. Ссылки на общие указания и разрезы находятся в тексте под чертежом."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

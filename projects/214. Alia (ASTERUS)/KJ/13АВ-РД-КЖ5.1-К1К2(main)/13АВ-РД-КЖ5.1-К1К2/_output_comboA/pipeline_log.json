@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "stages": {
+    "text_analysis": {
+      "status": "done",
+      "started_at": "2026-04-19T16:53:22.846698",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-opus-4-7",
+      "completed_at": "2026-04-19T16:59:43.296322",
+      "message": "OK"
+    },
+    "block_analysis": {
+      "status": "done",
+      "started_at": "2026-04-19T16:59:43.421177",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-opus-4-7",
+      "completed_at": "2026-04-19T17:05:10.428135",
+      "message": "OK (2 пакетов)"
+    },
+    "block_retry": {
+      "status": "done",
+      "started_at": "2026-04-19T17:10:58.710759",
+      "message": "Осталось 4 нечитаемых (макс разрешение)",
+      "completed_at": "2026-04-19T17:10:58.715900"
+    },
+    "findings_merge": {
+      "status": "done",
+      "started_at": "2026-04-19T17:10:58.716429",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-opus-4-7",
+      "completed_at": "2026-04-19T17:18:45.672350",
+      "message": "OK"
+    },
+    "findings_critic": {
+      "status": "done",
+      "started_at": "2026-04-19T17:18:49.757668",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-sonnet-4-6",
+      "completed_at": "2026-04-19T17:23:35.759414",
+      "message": "OK"
+    },
+    "norm_verify": {
+      "status": "done",
+      "started_at": "2026-04-19T17:18:49.764989",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-sonnet-4-6",
+      "completed_at": "2026-04-19T17:24:18.172465",
+      "message": "OK"
+    },
+    "optimization": {
+      "status": "done",
+      "started_at": "2026-04-19T17:18:49.776239",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-opus-4-7",
+      "completed_at": "2026-04-19T17:22:14.669931",
+      "message": "OK"
+    },
+    "findings_corrector": {
+      "status": "running",
+      "started_at": "2026-04-19T17:23:41.179320"
+    }
+  },
+  "last_updated": "2026-04-19T17:24:18.172465"
+}

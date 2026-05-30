@@ -1,0 +1,31 @@
+{
+  "timestamp": "20260422_135033",
+  "pdf": "13АВ-РД-КЖ5.1-К1К2 (2).pdf",
+  "project_dir": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf",
+  "block_source": "_output",
+  "blocks_index": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf/_output/blocks/index.json",
+  "total_blocks": 25,
+  "model_id": "google/gemini-3.1-pro-preview",
+  "provider": "OpenRouter",
+  "reasoning_effort": "high",
+  "response_healing_initial": true,
+  "parallelism": 2,
+  "resolution": "r800",
+  "strict_success_checks": true,
+  "retry_on_non_success": true,
+  "reuse_variant_a_dir": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf/_experiments/pro_variantA_small_budget/20260422_115144",
+  "reuse_reference_dir": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf/_experiments/pro_second_pass_reeval_small_project/20260422_103031",
+  "budget_cap_usd": 2.0,
+  "stress_set_size": 8,
+  "profiles": [
+    "b6",
+    "b8",
+    "b10"
+  ],
+  "recrop_performed": false,
+  "rebuild_blocks_performed": false,
+  "full_document_run_performed": false,
+  "claude_compared": false,
+  "flash_touched": false,
+  "production_defaults_changed": false
+}

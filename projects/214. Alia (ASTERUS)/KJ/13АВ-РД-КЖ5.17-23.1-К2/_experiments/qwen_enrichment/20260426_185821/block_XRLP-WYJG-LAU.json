@@ -1,0 +1,48 @@
+{
+  "block_id": "XRLP-WYJG-LAU",
+  "page": 15,
+  "sheet_no": "10",
+  "file": "block_XRLP-WYJG-LAU.png",
+  "size_kb": 18.2,
+  "ocr_text_len": 624,
+  "ocr_label": "На чертеже представлена схема отгиба арматурного стержня с указанием геометричес",
+  "ok": true,
+  "elapsed_ms": 3571,
+  "input_tokens": 1510,
+  "output_tokens": 238,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 660,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3571,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "схема_расположения",
+    "subject": "Схема отгиба арматурного стержня с указанием длины прямого участка и угла изгиба",
+    "marks": [],
+    "rebar_specs": [],
+    "dimensions": [
+      "≥6d",
+      "a"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 2",
+      "см. лист 3",
+      "см. лист 11"
+    ],
+    "axes": [],
+    "level_marks": [
+      "+4,200"
+    ],
+    "concrete_class": "B40",
+    "notes": "Диаграмма поясняет геометрические требования к отгибу стержня: длина прямого участка до отгиба обозначена как 'a', а длина прямого участка после отгиба должна быть не менее 6 диаметров стержня (≥6d). Указаны ссылки на общие указания и спецификацию."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

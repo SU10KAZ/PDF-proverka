@@ -1,0 +1,58 @@
+{
+  "block_id": "69E6-U9HN-NQE",
+  "page": 7,
+  "sheet_no": "2",
+  "file": "block_69E6-U9HN-NQE.png",
+  "size_kb": 26.1,
+  "ocr_text_len": 879,
+  "ocr_label": "Фрагмент Г для 22 этажа, отображающий сечение стены с отверстиями и привязкой к ",
+  "ok": true,
+  "elapsed_ms": 4094,
+  "input_tokens": 2017,
+  "output_tokens": 292,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 656,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 4094,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "сечение",
+    "subject": "Фрагмент Г для 22 этажа: сечение стены с отверстиями и привязкой к осям",
+    "marks": [
+      "Омв.1",
+      "Омв.6"
+    ],
+    "rebar_specs": [],
+    "dimensions": [
+      "2250",
+      "200",
+      "100",
+      "100",
+      "300",
+      "250",
+      "300",
+      "315",
+      "650"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 4",
+      "см. лист 3"
+    ],
+    "axes": [
+      "2.Г",
+      "2.4"
+    ],
+    "level_marks": [],
+    "concrete_class": null,
+    "notes": "Детализированное сечение стены для 22 этажа с указанием размеров отверстий (Омв.1, Омв.6) и габаритных размеров. Ссылается на общие указания и разрезы на других листах."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

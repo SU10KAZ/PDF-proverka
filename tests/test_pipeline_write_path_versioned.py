@@ -90,7 +90,8 @@ def v2_created(client):
     c, projects_dir = client
     r = c.post("/api/projects/M31A/versions", json={"comment": "V2"})
     assert r.status_code == 200, r.text
-    v2_output = projects_dir / "M31A" / "_versions" / "v2" / "_output"
+    # Контейнерная модель: V1 переезжает в `M31A(main)/M31A`, V2 — `M31A(main)/M31A V2`.
+    v2_output = projects_dir / "M31A(main)" / "M31A V2" / "_output"
     assert v2_output.exists()
     return c, projects_dir, v2_output
 
@@ -138,7 +139,7 @@ def test_dispatch_v2_uses_versions_subdir(v2_created):
     assert ctx.output_dir == v2_output
     assert ctx.version_id == "v2"
     # ctx.project_dir теперь = V2 dir (раньше ошибочно отдавал V1 root).
-    assert ctx.project_dir == projects_dir / "M31A" / "_versions" / "v2"
+    assert ctx.project_dir == projects_dir / "M31A(main)" / "M31A V2"
     assert PipelineManager.job_key("M31A", "v2") == "M31A:v2"
 
 
@@ -154,7 +155,8 @@ def test_dispatch_v1_explicit_returns_root(v2_created):
         stage=AuditStage.PREPARE, status=JobStatus.RUNNING,
     )
     ctx = pm._make_stage_context(job)
-    assert ctx.output_dir == projects_dir / "M31A" / "_output"
+    # V1 после промоута живёт в контейнере `M31A(main)/M31A`.
+    assert ctx.output_dir == projects_dir / "M31A(main)" / "M31A" / "_output"
 
 
 # ─── 3. unknown version → endpoint 404 + manager не создаёт файлы ─────────
@@ -182,19 +184,19 @@ def test_pinned_version_overrides_resolve(projects_dir, v2_created):
 
     # Без pinning — latest=v2 → _versions/v2/_output
     out_latest = version_service.resolve_version_output_dir("M31A")
-    assert out_latest == projects_dir / "M31A" / "_versions" / "v2" / "_output"
+    assert out_latest == projects_dir / "M31A(main)" / "M31A V2" / "_output"
 
     # С pinned_version("v1") — корень
     with version_service.pinned_version("v1"):
         out_pinned = version_service.resolve_version_output_dir("M31A")
-        assert out_pinned == projects_dir / "M31A" / "_output"
+        assert out_pinned == projects_dir / "M31A(main)" / "M31A" / "_output"
         # внутри: bind_version вернёт "v1"
         assert version_service.get_bound_version_id() == "v1"
 
     # После — снова latest
     assert version_service.get_bound_version_id() is None
     out_after = version_service.resolve_version_output_dir("M31A")
-    assert out_after == projects_dir / "M31A" / "_versions" / "v2" / "_output"
+    assert out_after == projects_dir / "M31A(main)" / "M31A V2" / "_output"
 
 
 # ─── 5. latest freeze: job хранит зафиксированный version_id ──────────────
@@ -218,7 +220,7 @@ def test_latest_freeze_via_job_version_id(projects_dir, v2_created):
     # Создаём v3 параллельно
     r = c.post("/api/projects/M31A/versions", json={"comment": "V3"})
     assert r.status_code == 200
-    assert (projects_dir / "M31A" / "_versions" / "v3").exists()
+    assert (projects_dir / "M31A(main)" / "M31A V3").exists()
 
     # Manifest теперь latest=v3, но job всё ещё про v2:
     proj_dir = version_service.resolve_project_dir = None  # not used
@@ -227,7 +229,7 @@ def test_latest_freeze_via_job_version_id(projects_dir, v2_created):
     assert version_service.get_latest_version_id(pd, "M31A") == "v3"
 
     ctx = pm._make_stage_context(job)
-    assert ctx.output_dir == projects_dir / "M31A" / "_versions" / "v2" / "_output"
+    assert ctx.output_dir == projects_dir / "M31A(main)" / "M31A V2" / "_output"
     assert ctx.version_id == "v2"
 
 
@@ -265,7 +267,7 @@ def test_resume_detector_v2_does_not_see_v1_findings(projects_dir, v2_created):
     # Также убедимся: detect_resume_stage("M31A", version_id="v2") НЕ заглянуло
     # в _output корня. Проверка через файловые маркеры: создадим в V1
     # ещё один файл-индикатор и убедимся, что info_v2 не изменился.
-    v1_out = projects_dir / "M31A" / "_output"
+    v1_out = projects_dir / "M31A(main)" / "M31A" / "_output"
     (v1_out / "norm_checks.json").write_text("{}", encoding="utf-8")
     info_v2_again = detect_resume_stage("M31A", version_id="v2")
     assert info_v2_again["stage"] == info_v2["stage"]
@@ -286,7 +288,7 @@ def test_audit_logger_writes_to_pinned_version(projects_dir, v2_created):
     from backend.app.services.common import audit_logger, version_service
     _, projects_dir_, v2_output = v2_created
 
-    v1_log = projects_dir_ / "M31A" / "_output" / "pipeline_log.json"
+    v1_log = projects_dir_ / "M31A(main)" / "M31A" / "_output" / "pipeline_log.json"
     v2_log = v2_output / "pipeline_log.json"
     v1_before = v1_log.read_text(encoding="utf-8")
     assert not v2_log.exists()
@@ -308,7 +310,7 @@ def test_audit_logger_persist_log_writes_to_version(projects_dir, v2_created):
     from backend.app.services.common import audit_logger, version_service
     _, projects_dir_, v2_output = v2_created
 
-    v1_log = projects_dir_ / "M31A" / "_output" / "audit_log.jsonl"
+    v1_log = projects_dir_ / "M31A(main)" / "M31A" / "_output" / "audit_log.jsonl"
     v2_log = v2_output / "audit_log.jsonl"
     v1_before = v1_log.read_text(encoding="utf-8")
     assert not v2_log.exists()
@@ -401,7 +403,7 @@ def test_pipeline_modules_use_version_helper(projects_dir, v2_created):
     """
     from backend.app.services.common import version_service
     _, projects_dir_, v2_output = v2_created
-    v1_out = projects_dir_ / "M31A" / "_output"
+    v1_out = projects_dir_ / "M31A(main)" / "M31A" / "_output"
     v1_listing_before = sorted(p.name for p in v1_out.iterdir())
 
     # 1. audit_logger

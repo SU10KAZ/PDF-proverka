@@ -1,0 +1,27 @@
+{
+  "model": "qwen/qwen3.6-27b",
+  "request": "text_smoke",
+  "ok": true,
+  "status_code": 200,
+  "elapsed_s": 1.107,
+  "error": null,
+  "response": {
+    "model_instance_id": "qwen/qwen3.6-27b",
+    "output": [
+      {
+        "type": "message",
+        "content": "OK"
+      }
+    ],
+    "stats": {
+      "input_tokens": 42,
+      "total_output_tokens": 2,
+      "reasoning_output_tokens": 0,
+      "tokens_per_second": 70.62645667066883,
+      "time_to_first_token_seconds": 0.119
+    }
+  },
+  "content": "OK",
+  "reasoning": "",
+  "verdict": "pass"
+}

@@ -1,0 +1,33 @@
+{
+  "model": "qwen/qwen3.5-35b-a3b",
+  "image_name": "6P9T-Q7GT-N9J",
+  "block_id": "6P9T-Q7GT-N9J",
+  "width": 1024,
+  "height": 558,
+  "request": "image_smoke",
+  "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_215555/audit_images/native_crops/block_6P9T-Q7GT-N9J_native.png",
+  "image_size_bytes": 60569,
+  "ok": true,
+  "status_code": 200,
+  "elapsed_s": 4.123,
+  "error": null,
+  "response": {
+    "model_instance_id": "qwen/qwen3.5-35b-a3b",
+    "output": [
+      {
+        "type": "message",
+        "content": "Фрагмент — это разрез по оси 17–17 (вертикальный).  \nОсновные элементы: стены, перекрытия, проемы с обозначениями П-2, П-3, П-7, П-8, Омв.З.  \nЧитаемые детали: отметки уровней (отм. А, Г, К, Б), размеры проемов и стен в мм, номера осей 2.2, 2.4, 2.5."
+      }
+    ],
+    "stats": {
+      "input_tokens": 637,
+      "total_output_tokens": 107,
+      "reasoning_output_tokens": 0,
+      "tokens_per_second": 208.4867757033019,
+      "time_to_first_token_seconds": 0.312
+    }
+  },
+  "content": "Фрагмент — это разрез по оси 17–17 (вертикальный).  \nОсновные элементы: стены, перекрытия, проемы с обозначениями П-2, П-3, П-7, П-8, Омв.З.  \nЧитаемые детали: отметки уровней (отм. А, Г, К, Б), размеры проемов и стен в мм, номера осей 2.2, 2.4, 2.5.",
+  "reasoning": "",
+  "verdict": "weak"
+}

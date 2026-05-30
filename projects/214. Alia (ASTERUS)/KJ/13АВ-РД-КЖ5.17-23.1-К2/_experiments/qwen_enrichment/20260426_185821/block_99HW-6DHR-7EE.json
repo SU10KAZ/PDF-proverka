@@ -1,0 +1,58 @@
+{
+  "block_id": "99HW-6DHR-7EE",
+  "page": 9,
+  "sheet_no": "4",
+  "file": "block_99HW-6DHR-7EE.png",
+  "size_kb": 53.4,
+  "ocr_text_len": 960,
+  "ocr_label": "Фрагмент разреза 9-9 (3) с указанием армирования и геометрических размеров.",
+  "ok": true,
+  "elapsed_ms": 3874,
+  "input_tokens": 1290,
+  "output_tokens": 301,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 697,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3874,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "разрез",
+    "subject": "Фрагмент разреза 9-9 (3) с указанием армирования и геометрических размеров",
+    "marks": [
+      "12-2300",
+      "8-Г-2",
+      "16-Г-22"
+    ],
+    "rebar_specs": [
+      "8-Г-2 шаг 200 (3 шт.)",
+      "16-Г-22 (2 шт.)",
+      "8-Г-2 шаг 200 (12 шт.)"
+    ],
+    "dimensions": [
+      "545",
+      "55",
+      "1100",
+      "200",
+      "600",
+      "100",
+      "50"
+    ],
+    "references_on_block": [],
+    "axes": [
+      "2.2",
+      "2.3",
+      "2.4"
+    ],
+    "level_marks": [],
+    "concrete_class": null,
+    "notes": "Изображен фрагмент вертикальной конструкции (стены) с указанием расположения и количества стержней арматуры. Арматура усиления стен устанавливается симметрично у каждой грани."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

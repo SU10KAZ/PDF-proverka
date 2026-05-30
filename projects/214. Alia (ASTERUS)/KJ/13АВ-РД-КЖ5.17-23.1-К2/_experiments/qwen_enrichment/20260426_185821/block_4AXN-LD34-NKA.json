@@ -1,0 +1,38 @@
+{
+  "block_id": "4AXN-LD34-NKA",
+  "page": 13,
+  "sheet_no": "8",
+  "file": "block_4AXN-LD34-NKA.png",
+  "size_kb": 28.6,
+  "ocr_text_len": 945,
+  "ocr_label": "Представлены три типовых узла сопряжения рабочего стержня с гнутыми арматурными ",
+  "ok": true,
+  "elapsed_ms": 3344,
+  "input_tokens": 1339,
+  "output_tokens": 158,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 488,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3344,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "узел",
+    "subject": "Типовые узлы сопряжения рабочего стержня с гнутыми арматурными элементами",
+    "marks": [],
+    "rebar_specs": [],
+    "dimensions": [],
+    "references_on_block": [],
+    "axes": [],
+    "level_marks": [],
+    "concrete_class": null,
+    "notes": "Графическое изображение трех вариантов узлов сопряжения (хомут, выпуск, шпилька) с указанием элементов (рабочий стержень, шпилька, хомут). Детальные параметры (марки, размеры, классы) в данном блоке отсутствуют."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

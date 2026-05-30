@@ -1,0 +1,8 @@
+{
+  "total_blocks": 25,
+  "escalation_blocks": 8,
+  "used_pro": 8,
+  "flash_fallback_after_pro_failure": 0,
+  "missing_final": 0,
+  "coverage_pct": 100.0
+}

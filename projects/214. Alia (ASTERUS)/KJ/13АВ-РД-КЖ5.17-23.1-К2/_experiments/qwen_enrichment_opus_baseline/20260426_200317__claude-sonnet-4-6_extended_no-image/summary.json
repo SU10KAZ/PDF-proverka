@@ -1,0 +1,88 @@
+{
+  "timestamp": "20260426_200317",
+  "model": "claude-sonnet-4-6",
+  "extended_prompt": true,
+  "parallelism": 2,
+  "blocks_total": 7,
+  "blocks_ok": 7,
+  "wall_clock_s": 728.0,
+  "totals": {
+    "input_tokens": 21,
+    "output_tokens": 77076,
+    "findings": 29,
+    "estimated_cost_usd_or_parity": 1.927,
+    "cli_reported_cost_usd_sum": 2.1961
+  },
+  "blocks": [
+    {
+      "block_id": "A9M4-EJ7R-MKH",
+      "page": 6,
+      "ok": true,
+      "findings_count": 3,
+      "input_tokens": 3,
+      "output_tokens": 7463,
+      "elapsed_ms": 148652,
+      "error": null
+    },
+    {
+      "block_id": "9RD7-EPAA-NJQ",
+      "page": 7,
+      "ok": true,
+      "findings_count": 5,
+      "input_tokens": 3,
+      "output_tokens": 4630,
+      "elapsed_ms": 76755,
+      "error": null
+    },
+    {
+      "block_id": "6P9T-Q7GT-N9J",
+      "page": 7,
+      "ok": true,
+      "findings_count": 6,
+      "input_tokens": 3,
+      "output_tokens": 9043,
+      "elapsed_ms": 152679,
+      "error": null
+    },
+    {
+      "block_id": "9DH3-MEUR-DR4",
+      "page": 9,
+      "ok": true,
+      "findings_count": 5,
+      "input_tokens": 3,
+      "output_tokens": 6229,
+      "elapsed_ms": 108470,
+      "error": null
+    },
+    {
+      "block_id": "947C-9UJT-RYU",
+      "page": 16,
+      "ok": true,
+      "findings_count": 2,
+      "input_tokens": 3,
+      "output_tokens": 13289,
+      "elapsed_ms": 215474,
+      "error": null
+    },
+    {
+      "block_id": "4HDD-UUVX-GR4",
+      "page": 17,
+      "ok": true,
+      "findings_count": 4,
+      "input_tokens": 3,
+      "output_tokens": 18329,
+      "elapsed_ms": 282073,
+      "error": null
+    },
+    {
+      "block_id": "6XVN-CGJH-YXL",
+      "page": 17,
+      "ok": true,
+      "findings_count": 4,
+      "input_tokens": 3,
+      "output_tokens": 18093,
+      "elapsed_ms": 283092,
+      "error": null
+    }
+  ]
+}

@@ -247,12 +247,38 @@ def invalidate_project_cache() -> None:
     _PROJECT_DIRS_CACHE_TIME = 0.0
 
 
+def _container_primary(container: Path) -> Optional[tuple[str, Path]]:
+    """Для папки-контейнера `(main)` вернуть (project_id, primary_version_dir).
+
+    project_id = basename папки primary-версии (= исходное имя V1), поэтому при
+    промоуте проекта в контейнер его `project_id` не меняется. Возвращает None,
+    если папка не контейнер или манифест пуст.
+    """
+    if not version_service.is_version_container(container):
+        return None
+    raw = version_service._read_group_manifest_raw(container) or {}
+    primary_id = raw.get("primary_version_id") or "v1"
+    versions = raw.get("versions") or []
+    entry = next((v for v in versions if v.get("version_id") == primary_id), None)
+    if entry is None and versions:
+        entry = versions[0]
+    if entry is None:
+        return None
+    folder = entry.get("folder") or "."
+    pdir = container if folder in (".", "") else container / folder
+    return (pdir.name, pdir)
+
+
 def iter_project_dirs(force: bool = False) -> list[tuple[str, Path]]:
     """Рекурсивно найти все папки проектов (включая подпапки-группы).
 
     Возвращает [(project_id, path), ...] где project_id = имя папки.
     Проект = папка с project_info.json или PDF-файлами.
     Подпапка-группа (OV/, EOM/ и т.д.) = папка без project_info.json и без PDF.
+
+    Папка-контейнер версий `<база>(main)/` проектом НЕ считается: вместо неё в
+    список попадает ровно одна запись — primary-версия (V1) с её basename как
+    project_id. Остальные версии доступны через versions_summary.
 
     Кеш обновляется раз в 30 секунд (или force=True).
     """
@@ -268,6 +294,11 @@ def iter_project_dirs(force: bool = False) -> list[tuple[str, Path]]:
         return results
     for entry in sorted(projects_dir.iterdir()):
         if not entry.is_dir() or entry.name.startswith("_"):
+            continue
+        # Контейнер версий на верхнем уровне → отдаём primary-версию, не контейнер.
+        primary = _container_primary(entry)
+        if primary is not None:
+            results.append(primary)
             continue
         # glob("*.pdf") матчит и папки с таким именем (UI/OCR иногда создают
         # `<name>.pdf/`). Фильтруем по is_file(), иначе группа-папка ошибочно
@@ -287,7 +318,13 @@ def iter_project_dirs(force: bool = False) -> list[tuple[str, Path]]:
         else:
             # Подпапка-группа — заходим внутрь (1 уровень)
             for sub in sorted(entry.iterdir()):
-                if sub.is_dir() and not sub.name.startswith("_"):
+                if not sub.is_dir() or sub.name.startswith("_"):
+                    continue
+                # Контейнер версий внутри дисциплины → primary-версия.
+                primary = _container_primary(sub)
+                if primary is not None:
+                    results.append(primary)
+                else:
                     results.append((sub.name, sub))
 
     _PROJECT_DIRS_CACHE = results
@@ -349,12 +386,39 @@ def resolve_project_dir(
     # Если projects_dir не существует — не падаем, возвращаем direct path
     if not projects_dir.exists():
         return direct
-    # Поиск в подпапках (1 уровень)
+    # Контейнерная раскладка: <parent>/<база>(main)/<база>. Покрывает и
+    # project_id со слешем (например "KJ/TGT2" → KJ/TGT2(main)/TGT2).
+    base = Path(project_id).name
+    parent_rel = Path(project_id).parent
+    container_loc = (
+        projects_dir / parent_rel
+        / f"{base}{version_service.CONTAINER_SUFFIX}" / base
+    )
+    if container_loc.exists():
+        return container_loc
+    # Поиск в подпапках (дисциплина) + внутри контейнеров версий `(main)`.
     for subdir in projects_dir.iterdir():
-        if subdir.is_dir() and not subdir.name.startswith("_"):
-            candidate = subdir / project_id
-            if candidate.exists():
-                return candidate
+        if not subdir.is_dir() or subdir.name.startswith("_"):
+            continue
+        candidate = subdir / project_id
+        if candidate.exists():
+            return candidate
+        if subdir.name.endswith(version_service.CONTAINER_SUFFIX):
+            # Контейнер версий на верхнем уровне: projects_dir/<база>(main)/<id>
+            inner = subdir / project_id
+            if inner.exists():
+                return inner
+        else:
+            # Дисциплина может содержать контейнеры:
+            # projects_dir/<дисциплина>/<база>(main)/<id>
+            for child in subdir.iterdir():
+                if (
+                    child.is_dir()
+                    and child.name.endswith(version_service.CONTAINER_SUFFIX)
+                ):
+                    inner = child / project_id
+                    if inner.exists():
+                        return inner
     return direct  # fallback
 
 

@@ -1,0 +1,33 @@
+{
+  "model": "google/gemma-4-31b",
+  "image_name": "947C-9UJT-RYU",
+  "block_id": "947C-9UJT-RYU",
+  "width": 212,
+  "height": 1024,
+  "request": "image_smoke",
+  "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_200236/audit_images/native_crops/block_947C-9UJT-RYU_native.png",
+  "image_size_bytes": 41565,
+  "ok": true,
+  "status_code": 200,
+  "elapsed_s": 6.453,
+  "error": null,
+  "response": {
+    "model_instance_id": "google/gemma-4-31b",
+    "output": [
+      {
+        "type": "message",
+        "content": "Ведомость деталей. Таблица с эскизами элементов конструкций и их размерными характеристиками.\n\nОсновные элементы: колонки «Поз.» (позиция), «Эскиз» и текстовые данные с размерами.\n\nДетали:\n1. Позиция 16-Г-23: a=600, b=125.\n2. Позиция 8-X-1: a=220, b=105.\n3. Позиция 10-X-13: a=420, b=155."
+      }
+    ],
+    "stats": {
+      "input_tokens": 374,
+      "total_output_tokens": 132,
+      "reasoning_output_tokens": 0,
+      "tokens_per_second": 65.00330433463701,
+      "time_to_first_token_seconds": 0.616
+    }
+  },
+  "content": "Ведомость деталей. Таблица с эскизами элементов конструкций и их размерными характеристиками.\n\nОсновные элементы: колонки «Поз.» (позиция), «Эскиз» и текстовые данные с размерами.\n\nДетали:\n1. Позиция 16-Г-23: a=600, b=125.\n2. Позиция 8-X-1: a=220, b=105.\n3. Позиция 10-X-13: a=420, b=155.",
+  "reasoning": "",
+  "verdict": "pass"
+}

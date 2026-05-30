@@ -1,0 +1,27 @@
+{
+  "block_id": "66NE-7DYY-GQN",
+  "page": 7,
+  "sheet_no": "2",
+  "file": "block_66NE-7DYY-GQN.png",
+  "size_kb": 476.2,
+  "ocr_text_len": 1108,
+  "ocr_label": "План опалубки вертикальных конструкций 17-23 этажей.",
+  "ok": false,
+  "elapsed_ms": 32163,
+  "input_tokens": 5690,
+  "output_tokens": 4096,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 6363,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 32163,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": null,
+  "raw_text_preview": "{\n  \"block_type\": \"план_опалубки\",\n  \"subject\": \"План опалубки вертикальных конструкций 17-23 этажа с указанием размеров стен и проёмов.\",\n  \"marks\": [\n    \"П-2\",\n    \"П-3\",\n    \"П-4\",\n    \"П-5\",\n    \"П-6\",\n    \"П-7\",\n    \"П-8\",\n    \"П-9\",\n    \"П-10\",\n    \"П-11\",\n    \"П-12\",\n    \"Омв.1\",\n    \"Омв.2\",\n    \"Омв.3\",\n    \"Омв.4\",\n    \"Омв.5\",\n    \"Омв.8\",\n    \"Омв.А\"\n  ],\n  \"rebar_specs\": [],\n  \"dimen",
+  "parse_error": "Expecting value: line 543 column 12 (char 6363)"
+}

@@ -89,14 +89,6 @@
                     База знаний
                     <span v-if="kbStats.total" class="nav-badge">{{ kbStats.total }}</span>
                 </div>
-                <div class="nav-item" :class="{active: currentView === 'external-register'}" @click="navigate('/external-register')">
-                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M3 2h8l2 2v10H3z"/>
-                        <path d="M5 6h6M5 9h6M5 12h4"/>
-                    </svg>
-                    Реестр СУ-10
-                    <span v-if="extRegCoverage && extRegCoverage.matched" class="nav-badge" style="background:#16a34a">{{ extRegCoverage.matched }}/{{ extRegCoverage.total }}</span>
-                </div>
                 <div class="nav-item" :class="{active: currentView === 'model-control'}" @click="navigate('/model-control')">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <rect x="2" y="2" width="12" height="12" rx="2"/>
@@ -335,30 +327,6 @@
                         </div>
                     </div>
 
-                    <!-- Последние платные вызовы -->
-                    <div class="paid-cost-panel__hint" style="margin-top:8px;font-weight:600">Последние платные вызовы:</div>
-                    <div v-if="paidEvents.length === 0" class="paid-cost-panel__hint" style="opacity:.7">— нет</div>
-                    <div v-for="ev in paidEvents.slice(-5).reverse()" :key="'p-' + ev.ts + ev.response_id"
-                         class="paid-cost-panel__row"
-                         style="font-size:11px;font-family:monospace;border-bottom:1px dashed #e5e5e5;padding:2px 0">
-                        <span :title="ev.ts + ' • ' + (ev.model || '?') + ' • ' + (ev.project_id || '?') + ' • ' + (ev.stage || '?') + ' • job=' + (ev.job_id || '?')">
-                            {{ ev.ts.slice(11, 19) }} {{ (ev.stage || '?').slice(0, 10) }} ${{ Number(ev.cost_usd || 0).toFixed(4) }}
-                        </span>
-                    </div>
-
-                    <!-- Последние заблокированные -->
-                    <div class="paid-cost-panel__hint" style="margin-top:8px;font-weight:600">Последние блокировки:</div>
-                    <div v-if="paidBlockedEvents.length === 0" class="paid-cost-panel__hint" style="opacity:.7">— нет</div>
-                    <div v-for="ev in paidBlockedEvents.slice(-5).reverse()" :key="'b-' + ev.ts + ev.reason"
-                         class="paid-cost-panel__row"
-                         style="font-size:11px;font-family:monospace;border-bottom:1px dashed #fdd;padding:2px 0;color:#b03030">
-                        <span :title="ev.ts + ' • reason=' + ev.reason + ' • source=' + (ev.source || '?') + ' • project=' + (ev.project_id || '?') + ' • stage=' + (ev.stage || '?') + ' • model=' + (ev.model || '?')">
-                            {{ ev.ts.slice(11, 19) }} {{ ev.reason }} • {{ (ev.source || '?').slice(0, 18) }}
-                        </span>
-                    </div>
-
-                    <div class="paid-cost-panel__hint" style="margin-top:8px">Gemini, GPT и другие платные модели через OpenRouter</div>
-
                     <div class="paid-cost-panel__footer">
                         <button class="btn btn--small btn--danger" @click.stop="resetPaidCost" :disabled="!paidCost.display_usd">
                             Обнулить счётчик
@@ -375,103 +343,6 @@
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                     </svg>
                 </button>
-                <!-- Usage icon button -->
-                <button class="usage-toggle-btn" @click="showUsageDetails = !showUsageDetails"
-                        :class="{'usage-toggle-btn--warning': globalUsage.session_5h_percent > 70 || globalUsage.weekly_all_percent > 70,
-                                 'usage-toggle-btn--danger': globalUsage.session_5h_percent > 90 || globalUsage.weekly_all_percent > 90}"
-                        title="Статистика токенов">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="12" y="1" width="4" height="22" rx="1"/><rect x="4" y="8" width="4" height="15" rx="1"/><rect x="20" y="5" width="4" height="18" rx="1" transform="translate(-4,0)"/>
-                    </svg>
-                    <span class="usage-toggle-btn__pct">{{ Math.round(globalUsage.weekly_all_percent || 0) }}%</span>
-                </button>
-
-                <!-- Выпадающая панель с деталями -->
-                <div class="usage-details-panel" v-if="showUsageDetails">
-                    <div class="usage-details__header">
-                        <strong>Потребление токенов</strong>
-                        <span class="usage-details__scan">
-                            {{ globalUsage.scanned_files }} файлов за {{ globalUsage.scan_duration_ms }}мс
-                        </span>
-                    </div>
-
-                    <!-- Мини-бары в панели -->
-                    <div class="usage-details__bars">
-                        <div class="usage-row"
-                             :class="{'usage-row--warning': globalUsage.session_5h_percent > 70,
-                                      'usage-row--danger': globalUsage.session_5h_percent > 90}">
-                            <span class="usage-row__label">Сессия</span>
-                            <div class="usage-row__bar">
-                                <div class="usage-row__bar-fill"
-                                     :style="{width: Math.min(100, globalUsage.session_5h_percent || 0) + '%'}"></div>
-                            </div>
-                            <span class="usage-row__pct usage-row__pct--editable"
-                                  title="Кликни, чтобы поправить процент"
-                                  @click.stop="editUsagePercent('session_5h', globalUsage.session_5h_percent)">{{ Math.round(globalUsage.session_5h_percent || 0) }}%</span>
-                        </div>
-                        <div class="usage-row"
-                             :class="{'usage-row--warning': globalUsage.weekly_all_percent > 70,
-                                      'usage-row--danger': globalUsage.weekly_all_percent > 90}">
-                            <span class="usage-row__label">Все</span>
-                            <div class="usage-row__bar">
-                                <div class="usage-row__bar-fill"
-                                     :style="{width: Math.min(100, globalUsage.weekly_all_percent || 0) + '%'}"></div>
-                            </div>
-                            <span class="usage-row__pct usage-row__pct--editable"
-                                  title="Кликни, чтобы поправить процент"
-                                  @click.stop="editUsagePercent('weekly_all', globalUsage.weekly_all_percent)">{{ Math.round(globalUsage.weekly_all_percent || 0) }}%</span>
-                        </div>
-                        <div class="usage-row" v-if="sonnetPercent > 0"
-                             :class="{'usage-row--warning': sonnetPercent > 70,
-                                      'usage-row--danger': sonnetPercent > 90}">
-                            <span class="usage-row__label">Sonnet</span>
-                            <div class="usage-row__bar">
-                                <div class="usage-row__bar-fill usage-row__bar-fill--sonnet"
-                                     :style="{width: Math.min(100, sonnetPercent) + '%'}"></div>
-                            </div>
-                            <span class="usage-row__pct usage-row__pct--editable"
-                                  title="Кликни, чтобы поправить процент"
-                                  @click.stop="editUsagePercent('weekly_sonnet', sonnetPercent)">{{ Math.round(sonnetPercent) }}%</span>
-                        </div>
-                    </div>
-
-                    <div class="usage-details__section">
-                        <div class="usage-details__title">Текущая сессия (5ч окно)</div>
-                        <div class="usage-details__row">
-                            <span>Output: {{ formatTokens(globalUsage.session_5h_output_tokens) }}</span>
-                            <span>Input: {{ formatTokens(globalUsage.session_5h_input_tokens) }}</span>
-                        </div>
-                        <div class="usage-details__row">
-                            <span>Cache read: {{ formatTokens(globalUsage.session_5h_cache_read_tokens) }}</span>
-                            <span>Cache create: {{ formatTokens(globalUsage.session_5h_cache_create_tokens) }}</span>
-                        </div>
-                        <div class="usage-details__row usage-details__row--highlight">
-                            <span>{{ formatTokens(globalUsage.session_5h_total_tokens) }} / {{ formatTokens(globalUsage.session_5h_limit) }}</span>
-                            <span>Сброс через {{ globalUsage.session_5h_resets_in_text || '—' }}</span>
-                        </div>
-                    </div>
-
-                    <div class="usage-details__section">
-                        <div class="usage-details__title">Еженедельные лимиты</div>
-                        <div class="usage-details__row usage-details__row--highlight">
-                            <span>Все модели: {{ formatTokens(globalUsage.weekly_all_total_tokens) }} / {{ formatTokens(globalUsage.weekly_all_limit) }}</span>
-                            <span>Сброс: {{ globalUsage.weekly_resets_at }}</span>
-                        </div>
-                        <template v-for="(data, model) in globalUsage.weekly_by_model" :key="model">
-                            <div class="usage-details__row" v-if="data.total_tokens > 0">
-                                <span>{{ model }}: {{ formatTokens(data.total_tokens) }} ({{ data.percent }}%)</span>
-                                <span>out: {{ formatTokens(data.output_tokens) }}</span>
-                            </div>
-                        </template>
-                    </div>
-
-                    <div class="usage-details__footer">
-                        <button class="btn btn--small" @click.stop="refreshGlobalUsage">Обновить</button>
-                        <button class="btn btn--small btn--danger" @click.stop="clearUsageCounter">Очистить счётчик</button>
-                        <button class="btn btn--small" @click.stop="resetUsageOffsets" title="Показывать «как есть», убрать ручные правки">Как есть</button>
-                        <span class="usage-details__note">Claude Code сессии (legacy)</span>
-                    </div>
-                </div>
 
                 <!-- Account info button -->
                 <button class="account-btn" @click="showAccountInfo = !showAccountInfo"
@@ -5121,121 +4992,6 @@
             </div>
         </div>
 
-        <!-- ──────────── External Register (СУ-10) ──────────── -->
-        <div v-if="currentView === 'external-register'" class="container">
-            <div class="page-header">
-                <h2>Реестр замечаний СУ-10</h2>
-                <p class="page-subtitle">Замечания, отправленные заказчику, и их сопоставление с findings'ами на платформе. Принято = мы отправили finding заказчику.</p>
-            </div>
-
-            <div v-if="extRegError" class="alert alert-warning" style="margin-bottom: 12px">
-                {{ extRegError }}
-            </div>
-
-            <div class="extreg-toolbar" style="display:flex; gap:8px; align-items:center; margin-bottom:12px; flex-wrap:wrap">
-                <select v-model="extRegRegisterId" @change="loadExternalRegister()" class="form-control" style="width:auto" title="Реестр">
-                    <option v-for="r in extRegRegisters" :key="r" :value="r">{{ r }}</option>
-                </select>
-                <button class="btn btn-secondary" @click="loadExternalRegister()" :disabled="extRegLoading">
-                    {{ extRegLoading ? 'Загрузка...' : 'Обновить' }}
-                </button>
-                <button class="btn btn-secondary" @click="importExternalRegister()">Импортировать реестр</button>
-                <button class="btn btn-primary" @click="runExternalRegisterMatch()" :disabled="extRegMatchRunning || !extRegEntries.length">
-                    {{ extRegMatchRunning ? 'Сопоставление…' : 'Запустить LLM-сопоставление' }}
-                </button>
-                <button class="btn btn-secondary" @click="downloadExternalRegisterXlsx()" :disabled="!extRegEntries.length">Excel</button>
-                <div style="flex:1"></div>
-                <div v-if="extRegCoverage" class="extreg-stats" style="display:flex; gap:18px; font-size:13px">
-                    <span><strong>{{ extRegCoverage.matched }}</strong> / {{ extRegCoverage.total }} принято</span>
-                    <span style="color:#f59e0b">⚠️ {{ extRegCoverage.needs_review }} на проверку</span>
-                    <span style="opacity:.7">{{ extRegCoverage.unmatched }} не принято</span>
-                </div>
-            </div>
-
-            <div class="extreg-filters" style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap">
-                <select v-model="extRegFilterStatus" class="form-control" style="width:auto">
-                    <option value="all">Все статусы</option>
-                    <option value="unmatched">Не принято</option>
-                    <option value="needs_review">На проверку</option>
-                    <option value="auto_matched">Авто-сопоставлено</option>
-                    <option value="confirmed">Подтверждено</option>
-                    <option value="rejected">Отклонено</option>
-                </select>
-                <select v-model="extRegFilterSection" class="form-control" style="width:auto">
-                    <option value="">Все разделы</option>
-                    <option v-for="s in extRegSectionOptions" :key="s" :value="s">{{ s }}</option>
-                </select>
-                <select v-model="extRegFilterResponse" class="form-control" style="width:auto">
-                    <option value="">Любой ответ</option>
-                    <option value="Учтено">Учтено</option>
-                    <option value="Отклонено">Отклонено</option>
-                    <option value="Требует внесения">Требует внесения</option>
-                    <option value="Внесено">Внесено</option>
-                    <option value="По согласованию Заказчика">По согласованию</option>
-                </select>
-            </div>
-
-            <table class="extreg-table" v-if="extRegEntries.length">
-                <thead>
-                    <tr>
-                        <th style="width:5%">#</th>
-                        <th style="width:14%">Раздел</th>
-                        <th style="width:14%">Лист/Раздел</th>
-                        <th style="width:9%">Категория</th>
-                        <th style="width:24%">Проблема</th>
-                        <th style="width:9%">Ответ заказчика</th>
-                        <th style="width:15%">Наш finding</th>
-                        <th style="width:10%">Статус</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(e, idx) in extRegFilteredEntries" :key="e.key">
-                        <td>{{ idx + 1 }}</td>
-                        <td><code style="font-size:11px">{{ e.section_code || '—' }}</code></td>
-                        <td style="font-size:12px">{{ e.sheet_ref }}</td>
-                        <td><span class="sev-badge sev-badge--sm">{{ e.cat_su10 }}</span></td>
-                        <td style="font-size:12px">{{ e.problem }}</td>
-                        <td>
-                            <span class="extreg-resp" :class="'extreg-resp--' + (e.customer_response === 'Отклонено' ? 'red' : (e.customer_response === 'По согласованию Заказчика' ? 'amber' : 'green'))">
-                                {{ e.customer_response }}
-                            </span>
-                        </td>
-                        <td style="font-size:12px">
-                            <template v-if="e.match">
-                                <div>
-                                    <code>{{ e.match.finding_id }}</code>
-                                    <span style="opacity:.6">({{ Math.round(e.match.confidence*100) }}%)</span>
-                                    <button class="btn btn-sm btn-secondary" style="padding:0 6px; margin-left:4px" @click="extRegShowFinding(e)" title="Показать текст нашего finding">текст</button>
-                                </div>
-                                <div style="font-size:11px; opacity:.7">{{ e.match.project_id }}</div>
-                                <div v-if="e.match.rationale" style="font-size:11px; font-style:italic; opacity:.85; margin-top:3px; color:#2563eb">💡 {{ e.match.rationale }}</div>
-                                <div v-if="extRegGetFinding(e)" style="margin-top:5px; padding:6px; background:#f1f5f9; border-radius:5px; font-size:11px">
-                                    <template v-if="extRegGetFinding(e).loading">Загрузка…</template>
-                                    <template v-else-if="extRegGetFinding(e).error">⚠️ не удалось загрузить: {{ extRegGetFinding(e).error }}</template>
-                                    <template v-else>
-                                        <div><b>{{ extRegGetFinding(e).severity }}</b> · {{ extRegGetFinding(e).sheet }}</div>
-                                        <div style="margin-top:2px"><b>Проблема:</b> {{ extRegGetFinding(e).problem }}</div>
-                                        <div v-if="extRegGetFinding(e).description" style="margin-top:2px; opacity:.85">{{ extRegGetFinding(e).description }}</div>
-                                    </template>
-                                </div>
-                            </template>
-                            <template v-else>—</template>
-                        </td>
-                        <td>
-                            <span :class="'extreg-status extreg-status--' + e.match_status">{{ e.match_status }}</span>
-                            <div v-if="e.match && e.match_status !== 'confirmed'" style="margin-top:4px; display:flex; gap:4px">
-                                <button class="btn btn-sm btn-success" @click="confirmExternalEntry(e.key)" title="Подтвердить">✓</button>
-                                <button class="btn btn-sm btn-danger" @click="rejectExternalEntry(e.key)" title="Отклонить">✗</button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div v-else-if="!extRegLoading && !extRegError" class="empty-state">
-                <p>Реестр пока пуст. Нажмите «Импортировать реестр», чтобы загрузить markdown СУ-10.</p>
-            </div>
-        </div>
 
         <!-- ─── Stage Comparison ───────────────────────────────────────── -->
         <div v-if="currentView === 'stage-comparison'" class="container">

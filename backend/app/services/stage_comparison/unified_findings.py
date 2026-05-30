@@ -60,12 +60,14 @@ def _sheet_label(left_page: Optional[int], right_page: Optional[int]) -> str:
         return "Не определён"
     if left_page is not None and right_page is not None and left_page == right_page:
         return f"Лист {left_page}"
+    # Стороны расходятся: подписываем стадиями, а не A/B.
+    # left = старая стадия (PDF stage 1), right = новая стадия (PDF stage 2).
     parts = []
     if left_page is not None:
-        parts.append(f"A={left_page}")
+        parts.append(f"Лист PDF stage 1: {left_page}")
     if right_page is not None:
-        parts.append(f"B={right_page}")
-    return "Лист " + " / ".join(parts)
+        parts.append(f"Лист PDF stage 2: {right_page}")
+    return " / ".join(parts)
 
 
 _SEVERITY_RANK = {"high": 0, "medium": 1, "low": 2}
@@ -170,6 +172,11 @@ def build_unified_flat(session_id: str, pair_id: Optional[str] = None) -> dict:
     session = store_mod.get_session(session_id)
     if session is None:
         raise KeyError(f"session not found: {session_id}")
+
+    # Lazy import — unified_grouping импортирует этот модуль на уровне модуля,
+    # поэтому прямой top-level import создал бы цикл. Нужна только чистая
+    # эвристика направления изменения (усложнение/упрощение/нейтрально).
+    from .unified_grouping import infer_change_direction
 
     pairs = session.get("pairs") or []
     summary = _empty_summary()
@@ -298,6 +305,9 @@ def build_unified_flat(session_id: str, pair_id: Optional[str] = None) -> dict:
                 "source_layer": source_layer,
                 "type": str(ch.get("type") or "changed"),
                 "category": str(ch.get("category") or "general"),
+                # Направление изменения для индикатора в колонке «№»:
+                # complication / simplification / neutral / unknown.
+                "change_direction": infer_change_direction(ch),
                 "severity": sev or "unknown",
                 "title": str(ch.get("title") or "").strip(),
                 "summary": str(ch.get("summary") or "").strip(),

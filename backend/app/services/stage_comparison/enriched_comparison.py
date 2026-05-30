@@ -698,6 +698,42 @@ def _write_result(session_id: str, pair_id: str, payload: dict) -> dict:
     return payload
 
 
+def _write_fallback_progress(session_id: str, pair_id: str, progress: dict) -> None:
+    """Записать live-прогресс evidence_first_s2_fallback (per-chunk + ETA).
+
+    Вызывается как progress_cb из run_evidence_first_fallback на границах
+    чанков. Атомарная запись; ошибки проглатываются (прогресс — best-effort,
+    не должен валить сравнение).
+    """
+    try:
+        p = paths_mod.enriched_comparison_fallback_progress_path(session_id, pair_id)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        payload = dict(progress or {})
+        payload["session_id"] = session_id
+        payload["pair_id"] = pair_id
+        payload["strategy"] = "evidence_first_s2_fallback"
+        payload["updated_at"] = _utc_now()
+        tmp = p.with_suffix(p.suffix + ".tmp")
+        tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+        tmp.replace(p)
+    except OSError:
+        pass
+
+
+def read_fallback_progress(session_id: str, pair_id: str) -> Optional[dict]:
+    """Прочитать live-прогресс fallback (или None). Read-only, без LLM."""
+    try:
+        p = paths_mod.enriched_comparison_fallback_progress_path(session_id, pair_id)
+    except (ValueError, OSError):
+        return None
+    if not p.exists():
+        return None
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
 def _save_prompt(session_id: str, pair_id: str, system_prompt: str, user_prompt: str) -> Path:
     """Записать prompt.md (system + user) для отладки и ручного запуска."""
     p = paths_mod.enriched_comparison_prompt_path(session_id, pair_id)
@@ -884,6 +920,9 @@ def run_enriched_comparison(
                         fb_cfg.enabled, force_fallback,
                     )
                     work_dir = paths_mod.pair_dir(session_id, pair_id)
+                    _write_fallback_progress(session_id, pair_id, {
+                        "phase": "starting", "total_chunks": 0, "done_chunks": 0,
+                    })
                     fb_payload = _ef_mod.run_evidence_first_fallback(
                         left_md=left_md, right_md=right_md,
                         provider=prov, system_prompt=SYSTEM_PROMPT,
@@ -893,6 +932,8 @@ def run_enriched_comparison(
                         normalize_change_fn=_normalize_change,
                         config=fb_cfg, work_dir=work_dir,
                         base_input_stats=input_stats,
+                        progress_cb=lambda pr: _write_fallback_progress(
+                            session_id, pair_id, pr),
                     )
                     fb_payload.setdefault("provider", cfg.provider)
                     fb_payload.setdefault("model", cfg.model)
@@ -1107,6 +1148,69 @@ def run_enriched_comparison(
         return _write_result(session_id, pair_id, payload)
 
 
+def get_session_comparison_statuses(session_id: str) -> dict[str, dict]:
+    """Лёгкая read-only сводка статусов сравнения по всем парам сессии.
+
+    Читает только сохранённые `comparison_result.json` каждой пары — без LLM,
+    без location-резолва, без alignment (как `_iter_session_pair_changes` в
+    expert_review). Это источник истины для колонки «Сравнение» в UI: она
+    должна отражать то, что реально лежит на диске, а не зависеть от того,
+    какой unified-job сейчас «активен» (одно-парный fallback / retry-errors
+    раньше затеняли полный результат сессии — см.
+    docs про колонку «Сравнение»).
+
+    Возвращает map `pair_id -> {status, changes_count, strategy, via_fallback}`.
+    Пары без сохранённого результата в map не попадают (UI трактует их как
+    «не запускалось»).
+    """
+    from . import store as store_mod
+
+    out: dict[str, dict] = {}
+    session = store_mod.get_session(session_id)
+    if not session:
+        return out
+    cfg = None  # lazy: грузим только если встретилась пара без результата
+    for pair in session.get("pairs") or []:
+        if not isinstance(pair, dict):
+            continue
+        pid = str(pair.get("id") or "")
+        if not pid:
+            continue
+        result = get_comparison_result(session_id, pid)
+        if result is not None:
+            out[pid] = {
+                "status": str(result.get("status") or "not_run"),
+                "changes_count": len(result.get("changes") or []),
+                "strategy": (result.get("strategy") or None),
+                "via_fallback": bool(result.get("fallback")),
+            }
+            continue
+        # Нет сохранённого результата. Если обе enriched MD готовы, но суммарный
+        # объём превышает лимит — это too_large пара, которую session-batch
+        # пропустил на preflight (skip_too_large) и НЕ записал result.json.
+        # Знание о too_large раньше жило только в job items, поэтому такие пары
+        # показывались как «—» без кнопки. Синтезируем статус too_large, чтобы
+        # UI отрисовал кликабельный бейдж «⚠ файл большой ▸ fallback» и пару
+        # можно было прогнать через evidence_first fallback.
+        if cfg is None:
+            cfg = load_config()
+        if cfg.max_chars and cfg.max_chars > 0:
+            md = enriched_md_status(session_id, pid)
+            left_ok = bool((md.get("left") or {}).get("exists"))
+            right_ok = bool((md.get("right") or {}).get("exists"))
+            total_chars = int(md.get("total_chars") or 0)
+            if left_ok and right_ok and total_chars > cfg.max_chars:
+                out[pid] = {
+                    "status": "too_large",
+                    "changes_count": 0,
+                    "strategy": None,
+                    "via_fallback": False,
+                    "total_chars": total_chars,
+                    "limit_chars": cfg.max_chars,
+                }
+    return out
+
+
 __all__ = [
     "VERSION",
     "SYSTEM_PROMPT",
@@ -1117,6 +1221,7 @@ __all__ = [
     "build_user_prompt",
     "build_block_links_context",
     "get_comparison_result",
+    "get_session_comparison_statuses",
     "enriched_md_status",
     "run_enriched_comparison",
 ]

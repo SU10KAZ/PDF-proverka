@@ -1,0 +1,56 @@
+{
+  "block_id": "9NNC-JU9N-PNC",
+  "page": 18,
+  "sheet_no": "13",
+  "file": "block_9NNC-JU9N-PNC.png",
+  "size_kb": 15.1,
+  "ocr_text_len": 765,
+  "ocr_label": "Графическая схема стыковки арматурных стержней внахлест.",
+  "ok": true,
+  "elapsed_ms": 3780,
+  "input_tokens": 1491,
+  "output_tokens": 334,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 729,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3780,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "схема_стыковки",
+    "subject": "Схема стыковки арматурных стержней внахлест для плиты покрытия Пм-2",
+    "marks": [],
+    "rebar_specs": [
+      "Ø10 А500С",
+      "Ø12 А500С",
+      "Ø16 А500С"
+    ],
+    "dimensions": [
+      "t=200",
+      "≥2d",
+      "≥30мм"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 9",
+      "см. листы 10, 11",
+      "Схема установки дополнительного армирования",
+      "Схема стыковки арматуры внахлест"
+    ],
+    "axes": [
+      "1.2-1.7/1.К-1.Щ"
+    ],
+    "level_marks": [
+      "+4,200"
+    ],
+    "concrete_class": "B30",
+    "notes": "Привязка к плите Пм-2 на отм. +7,970. Указаны длины нахлеста и анкеровки для классов бетона В30 и арматуры А500С. Требуется укладка стержней длиной не менее 7 м."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

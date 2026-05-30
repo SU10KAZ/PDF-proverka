@@ -1,0 +1,58 @@
+{
+  "block_id": "4WPW-9MXF-JQC",
+  "page": 8,
+  "sheet_no": "3",
+  "file": "block_4WPW-9MXF-JQC.png",
+  "size_kb": 40.4,
+  "ocr_text_len": 1008,
+  "ocr_label": "Фрагмент А для 22 этажа с указанием армирования и размеров конструктивного элеме",
+  "ok": true,
+  "elapsed_ms": 3385,
+  "input_tokens": 2715,
+  "output_tokens": 287,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 587,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3385,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "сечение",
+    "subject": "Сечение монолитной стены для 22 этажа с указанием армирования и размеров",
+    "marks": [
+      "42-Смм200",
+      "47-Смм200"
+    ],
+    "rebar_specs": [
+      "Ø10 А500С шаг 200"
+    ],
+    "dimensions": [
+      "h=2250",
+      "b=200",
+      "1165",
+      "650",
+      "100"
+    ],
+    "references_on_block": [
+      "сечение 2.Г",
+      "сечение 2.4"
+    ],
+    "axes": [
+      "2.Г",
+      "2.4"
+    ],
+    "level_marks": [
+      "+76,850",
+      "+78,580"
+    ],
+    "concrete_class": null,
+    "notes": "Фрагмент для 22 этажа. Указаны отметки верха бетонирования. Привязка к осям 2.Г и 2.4."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

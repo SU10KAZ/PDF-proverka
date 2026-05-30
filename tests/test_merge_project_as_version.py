@@ -94,18 +94,18 @@ def test_merge_creates_v2_and_removes_source(client):
     assert "src.pdf" in body["saved"]
     assert "src.md" in body["saved"]
 
-    # PDF/MD скопированы в _versions/v2
-    v2 = projects_dir / "TARGET" / "_versions" / "v2"
+    # PDF/MD скопированы в братскую папку версии (имя = имя source-папки)
+    v2 = projects_dir / "TARGET(main)" / "SOURCE"
     assert (v2 / "src.pdf").read_bytes() == _PDF_SRC
     assert (v2 / "src.md").read_bytes() == _MD_SRC
 
     # Source-папка удалена
     assert not (projects_dir / "SOURCE").exists()
 
-    # V1 target не тронут
-    assert (projects_dir / "TARGET" / "document.pdf").read_bytes() == _PDF_BYTES
+    # V1 target не тронут (живёт в контейнере TARGET(main)/TARGET)
+    assert (projects_dir / "TARGET(main)" / "TARGET" / "document.pdf").read_bytes() == _PDF_BYTES
     v1_findings = json.loads(
-        (projects_dir / "TARGET" / "_output" / "03_findings.json").read_text(encoding="utf-8")
+        (projects_dir / "TARGET(main)" / "TARGET" / "_output" / "03_findings.json").read_text(encoding="utf-8")
     )
     assert v1_findings["findings"][0]["id"] == "F-V1-TARGET"
 
@@ -129,7 +129,7 @@ def test_merge_keeps_source_when_delete_source_false(client):
     # Source-папка осталась
     assert (projects_dir / "SOURCE").exists()
     # А V2 у target всё равно создана
-    assert (projects_dir / "TARGET" / "_versions" / "v2" / "src.pdf").exists()
+    assert (projects_dir / "TARGET(main)" / "SOURCE" / "src.pdf").exists()
 
 
 def test_merge_same_project_rejected(client):
@@ -151,7 +151,7 @@ def test_merge_cross_section_rejected(client):
     # AR_PROJ не удалён
     assert (projects_dir / "AR_PROJ").exists()
     # V2 у target не создана
-    assert not (projects_dir / "TARGET" / "_versions" / "v2").exists()
+    assert not (projects_dir / "TARGET(main)").exists()
 
 
 def test_merge_unknown_source_404(client):
@@ -198,7 +198,7 @@ def test_merge_v3_after_v2(client):
     body = r2.json()
     assert body["version_id"] == "v3"
     assert body["versions_summary"]["latest_version_id"] == "v3"
-    assert (projects_dir / "TARGET" / "_versions" / "v3" / "src2.pdf").exists()
+    assert (projects_dir / "TARGET(main)" / "SRC2" / "src2.pdf").exists()
 
 
 def test_merge_source_without_pdf_rejected(client, projects_dir):
@@ -225,8 +225,8 @@ def test_merge_reuses_empty_v2_instead_of_creating_v3(client, projects_dir):
     r0 = c.post("/api/projects/TARGET/versions", json={"comment": "manual V2"})
     assert r0.status_code == 200
     assert r0.json()["latest_version_id"] == "v2"
-    # V2 пуста
-    v2 = projects_dir / "TARGET" / "_versions" / "v2"
+    # V2 пуста (создана через POST → имя "TARGET V2")
+    v2 = projects_dir / "TARGET(main)" / "TARGET V2"
     assert v2.exists()
     assert not (v2 / "src.pdf").exists()
 
@@ -247,8 +247,8 @@ def test_merge_reuses_empty_v2_instead_of_creating_v3(client, projects_dir):
     assert (v2 / "src.pdf").read_bytes() == _PDF_SRC
     assert (v2 / "src.md").read_bytes() == _MD_SRC
 
-    # V3 НЕ создана
-    assert not (projects_dir / "TARGET" / "_versions" / "v3").exists()
+    # Третья версия НЕ создана (SOURCE влит в существующую V2)
+    assert not (projects_dir / "TARGET(main)" / "SOURCE").exists()
 
     # Source удалён
     assert not (projects_dir / "SOURCE").exists()
@@ -294,7 +294,7 @@ def test_flat_endpoint_merge_with_slash_project_id(client, projects_dir):
     body = r.json()
     assert body["version_id"] == "v2"
     assert "src2.pdf" in body["saved"]
-    assert (tgt2 / "_versions" / "v2" / "src2.pdf").exists()
+    assert (kj / "TGT2(main)" / "SRC2" / "src2.pdf").exists()
     # Source удалён
     assert not src2.exists()
 
@@ -329,7 +329,7 @@ def test_flat_endpoint_from_candidate_with_slash(client, projects_dir):
     )
     assert r.status_code == 200, r.text
     assert r.json()["version_id"] == "v2"
-    assert (tgt3 / "_versions" / "v2" / "candidate3.pdf").exists()
+    assert (kj / "TGT3(main)" / "TGT3 V2" / "candidate3.pdf").exists()
 
 
 def test_merge_creates_new_version_when_latest_not_empty(client, projects_dir):
@@ -355,7 +355,7 @@ def test_merge_creates_new_version_when_latest_not_empty(client, projects_dir):
     assert body["version_id"] == "v3"
     assert body["reused_empty_latest"] is False
     # V2 не тронута — там по-прежнему doc.pdf, а не src.pdf
-    v2_files = sorted(p.name for p in (projects_dir / "TARGET" / "_versions" / "v2").iterdir() if p.is_file())
+    v2_files = sorted(p.name for p in (projects_dir / "TARGET(main)" / "TARGET V2").iterdir() if p.is_file())
     assert "doc.pdf" in v2_files
     assert "src.pdf" not in v2_files
 
@@ -381,7 +381,7 @@ def test_merge_rejects_source_with_audit_artifacts_without_flag(client, projects
     assert detail["needs_flag"] == "discard_source_output"
     # Source не удалён, V2 не создана
     assert (projects_dir / "SOURCE").exists()
-    assert not (projects_dir / "TARGET" / "_versions" / "v2").exists()
+    assert not (projects_dir / "TARGET(main)").exists()
 
 
 def test_merge_allows_source_with_artifacts_when_discard_flag_set(client, projects_dir):
@@ -399,7 +399,7 @@ def test_merge_allows_source_with_artifacts_when_discard_flag_set(client, projec
     assert body["version_id"] == "v2"
     # Source удалён, V2 _output пуст
     assert not (projects_dir / "SOURCE").exists()
-    v2 = projects_dir / "TARGET" / "_versions" / "v2"
+    v2 = projects_dir / "TARGET(main)" / "SOURCE"
     assert (v2 / "src.pdf").exists()
     assert not (v2 / "_output" / "03_findings.json").exists()
 
@@ -450,7 +450,7 @@ def test_merge_rejects_when_target_audit_running(client, projects_dir, monkeypat
 
     # Никакой merge не произошёл
     assert (projects_dir / "SOURCE").exists()
-    assert not (projects_dir / "TARGET" / "_versions" / "v2").exists()
+    assert not (projects_dir / "TARGET(main)").exists()
 
 
 def test_merge_rejects_when_source_audit_running_still_works(client, projects_dir, monkeypatch):

@@ -1,0 +1,54 @@
+{
+  "block_id": "JTUC-HHUY-W7K",
+  "page": 18,
+  "sheet_no": "13",
+  "file": "block_JTUC-HHUY-W7K.png",
+  "size_kb": 28.9,
+  "ocr_text_len": 907,
+  "ocr_label": "На чертеже представлены типовые узлы сопряжения рабочего стержня с гнутыми армат",
+  "ok": true,
+  "elapsed_ms": 4547,
+  "input_tokens": 1802,
+  "output_tokens": 346,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 747,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 4547,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "схема_расположения",
+    "subject": "Типовые узлы сопряжения рабочего стержня с гнутыми арматурными элементами (хомут, выпуск, шпилька)",
+    "marks": [
+      "16-Г-1",
+      "12-Х-1",
+      "6-Ш-1"
+    ],
+    "rebar_specs": [
+      "Ø16 А500С",
+      "Ø12 А500С",
+      "Ø6 А240"
+    ],
+    "dimensions": [
+      "a=1000; b=195; c=3110; d=20; e=190; don=80",
+      "a=925; b=315; c=180; don=60",
+      "a=345; b=50; don=40"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 2",
+      "см. лист 3"
+    ],
+    "axes": [],
+    "level_marks": [],
+    "concrete_class": "B40",
+    "notes": "Ведомость деталей и общая ведомость расхода стали подсчитаны на одну колонну. Размеры для элементов типа 'Х', 'Ш' указаны по внутренним граням, для 'Г' – по наружным."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

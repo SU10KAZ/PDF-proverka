@@ -1,0 +1,27 @@
+{
+  "block_id": "3TFL-TNRF-7G6",
+  "page": 8,
+  "sheet_no": "3",
+  "file": "block_3TFL-TNRF-7G6.png",
+  "size_kb": 605.6,
+  "ocr_text_len": 1227,
+  "ocr_label": "Маркировочная схема вертикальных конструкций 17-23 этажей жилого здания.",
+  "ok": false,
+  "elapsed_ms": 22966,
+  "input_tokens": 6142,
+  "output_tokens": 4096,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 6073,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 22966,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": null,
+  "raw_text_preview": "{\n  \"block_type\": \"схема_расположения\",\n  \"subject\": \"План расположения вертикальных монолитных конструкций (колонн и стен) этажей 17-23.\",\n  \"marks\": [\n    \"Кн-400-1000-2800-1\",\n    \"Кн-400-1000-2800-2\",\n    \"Кн-400-1000-2800-3\",\n    \"Кн-400-1200-2800-1\",\n    \"Кн-400-1200-2800-2\",\n    \"46-Смх300\",\n    \"1-Смх250\",\n    \"2-Смх250\",\n    \"5-Смх200\",\n    \"12-Смх200\",\n    \"14-Смх200\",\n    \"16-Смх200\",\n ",
+  "parse_error": "Unterminated string starting at: line 467 column 5 (char 6068)"
+}

@@ -1,0 +1,51 @@
+{
+  "block_id": "6PGJ-TPDQ-YKD",
+  "page": 7,
+  "sheet_no": "2",
+  "file": "block_6PGJ-TPDQ-YKD.png",
+  "size_kb": 25.5,
+  "ocr_text_len": 667,
+  "ocr_label": "Фрагмент разреза 3-3 с указанием высотной отметки и конструктивного размера.",
+  "ok": true,
+  "elapsed_ms": 2554,
+  "input_tokens": 1451,
+  "output_tokens": 255,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 616,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 2554,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "разрез",
+    "subject": "Фрагмент разреза 3-3, показывающий сопряжение плиты перекрытия с колонной и высотные отметки.",
+    "marks": [
+      "1.И"
+    ],
+    "rebar_specs": [],
+    "dimensions": [
+      "t=200",
+      "250"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. листы 3... 7"
+    ],
+    "axes": [
+      "1.2-1.7/1.К-1.Щ"
+    ],
+    "level_marks": [
+      "+4,200",
+      "-0,180"
+    ],
+    "concrete_class": null,
+    "notes": "Изображен узел сопряжения плиты перекрытия (толщина 200 мм) с колонной. Отмечено расположение рабочего шва бетонирования. Высота сечения колонны в зоне сопряжения указана как 250."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

@@ -126,3 +126,6 @@ comparison_sources/**/*
 !comparison_sources/**/
 !comparison_sources/**/README.md
 !comparison_sources/**/.gitkeep
+
+# heavy local experiment workspace (renders, ~1.2G) — not for git
+experiments/qwen_problem_block_recognition/

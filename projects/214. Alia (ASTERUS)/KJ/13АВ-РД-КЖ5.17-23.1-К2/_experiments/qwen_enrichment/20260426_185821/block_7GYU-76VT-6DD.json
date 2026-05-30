@@ -1,0 +1,70 @@
+{
+  "block_id": "7GYU-76VT-6DD",
+  "page": 7,
+  "sheet_no": "2",
+  "file": "block_7GYU-76VT-6DD.png",
+  "size_kb": 37.1,
+  "ocr_text_len": 1003,
+  "ocr_label": "Фрагмент разреза 11-11 с изображением вертикальных конструкций и проемов.",
+  "ok": true,
+  "elapsed_ms": 4080,
+  "input_tokens": 2233,
+  "output_tokens": 368,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 773,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 4080,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "разрез",
+    "subject": "Фрагмент разреза 11-11 с изображением вертикальных конструкций и проемов.",
+    "marks": [
+      "Омв.3",
+      "П-2"
+    ],
+    "rebar_specs": [],
+    "dimensions": [
+      "200",
+      "400",
+      "500",
+      "3100",
+      "2200",
+      "90",
+      "890",
+      "1100",
+      "2100",
+      "3810",
+      "6950",
+      "1100",
+      "2240",
+      "100",
+      "9240"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 4",
+      "см. лист 3"
+    ],
+    "axes": [
+      "2.В",
+      "2.Г",
+      "2.Д"
+    ],
+    "level_marks": [
+      "отм. Б",
+      "отм. К",
+      "отм. Г",
+      "отм. А"
+    ],
+    "concrete_class": null,
+    "notes": "На чертеже показаны габариты проема П-2 и отверстия Омв.3, а также их привязки к осям и отметкам. Внизу указаны общие указания по бетонированию."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

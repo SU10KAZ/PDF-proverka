@@ -1,0 +1,107 @@
+{
+  "baseline": {
+    "block_id": "7EN4-ATAF-MM7",
+    "page": 7,
+    "sheet": "2",
+    "label": "Фрагмент А для 23 этажа",
+    "sheet_type": "formwork_vertical",
+    "unreadable_text": false,
+    "unreadable_details": null,
+    "summary": "Фрагмент плана опалубки (Фрагмент А) для 23 этажа. Показан участок стены с проемами и привязками к осям 2.2 и 2.3.",
+    "key_values_read": [
+      "Толщина стены — 200 мм (100+100 от оси)",
+      "Проем — ширина 610 мм",
+      "Проем — ширина 1200 мм",
+      "Простенок — 590 мм",
+      "Простенок — 2610 мм"
+    ],
+    "evidence_text_refs": [],
+    "findings": [],
+    "selected_text_block_ids": []
+  },
+  "candidate_raw": {
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_stage02_full_project/20260423_230329/prepared/native_crops/block_7EN4-ATAF-MM7_native.png",
+    "image_size_bytes": 28124,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 3.539,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-35b-a3b",
+      "output": [
+        {
+          "type": "message",
+          "content": "{\n  \"block_id\": \"7EN4-ATAF-MM7\",\n  \"page\": 7,\n  \"label\": \"Фрагмент А для 23 этажа\",\n  \"sheet_type\": \"section\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"Чертеж представляет собой вертикальный разрез конструкции для 23 этажа. На схеме показаны габаритные размеры элементов и их расположение относительно осей. Отсутствуют детали армирования и спецификации материалов.\",\n  \"key_values_read\": [\n    \"Название: Фрагмент А для 23 этажа\",\n    \"Размер 1: 610\",\n    \"Размер 2: 590\",\n    \"Размер 3: 2610\",\n    \"Размер 4: 1200\",\n    \"Размер 5: 100\",\n    \"Ось 1: 2.5\",\n    \"Ось 2: 2.2\",\n    \"Ось 3: 2.3\",\n    \"Условное обозначение: 21\"\n  ],\n  \"findings\": [\n    {\n      \"severity\": \"ПРОВЕРИТЬ ПО СМЕЖНЫМ\",\n      \"category\": \"Архитектурно-строительные решения\",\n      \"finding\": \"Недостаточная детализация узла для 23 этажа\",\n      \"block_evidence\": \"На чертеже показаны только габаритные размеры и оси, отсутствуют спецификации материалов и армирования\",\n      \"value_found\": null\n    }\n  ]\n}"
+        }
+      ],
+      "stats": {
+        "input_tokens": 1481,
+        "total_output_tokens": 387,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 226.91040088090486,
+        "time_to_first_token_seconds": 0.424
+      }
+    },
+    "content": "{\n  \"block_id\": \"7EN4-ATAF-MM7\",\n  \"page\": 7,\n  \"label\": \"Фрагмент А для 23 этажа\",\n  \"sheet_type\": \"section\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"Чертеж представляет собой вертикальный разрез конструкции для 23 этажа. На схеме показаны габаритные размеры элементов и их расположение относительно осей. Отсутствуют детали армирования и спецификации материалов.\",\n  \"key_values_read\": [\n    \"Название: Фрагмент А для 23 этажа\",\n    \"Размер 1: 610\",\n    \"Размер 2: 590\",\n    \"Размер 3: 2610\",\n    \"Размер 4: 1200\",\n    \"Размер 5: 100\",\n    \"Ось 1: 2.5\",\n    \"Ось 2: 2.2\",\n    \"Ось 3: 2.3\",\n    \"Условное обозначение: 21\"\n  ],\n  \"findings\": [\n    {\n      \"severity\": \"ПРОВЕРИТЬ ПО СМЕЖНЫМ\",\n      \"category\": \"Архитектурно-строительные решения\",\n      \"finding\": \"Недостаточная детализация узла для 23 этажа\",\n      \"block_evidence\": \"На чертеже показаны только габаритные размеры и оси, отсутствуют спецификации материалов и армирования\",\n      \"value_found\": null\n    }\n  ]\n}",
+    "reasoning": "",
+    "parsed": {
+      "block_id": "7EN4-ATAF-MM7",
+      "page": 7,
+      "label": "Фрагмент А для 23 этажа",
+      "sheet_type": "section",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "Чертеж представляет собой вертикальный разрез конструкции для 23 этажа. На схеме показаны габаритные размеры элементов и их расположение относительно осей. Отсутствуют детали армирования и спецификации материалов.",
+      "key_values_read": [
+        "Название: Фрагмент А для 23 этажа",
+        "Размер 1: 610",
+        "Размер 2: 590",
+        "Размер 3: 2610",
+        "Размер 4: 1200",
+        "Размер 5: 100",
+        "Ось 1: 2.5",
+        "Ось 2: 2.2",
+        "Ось 3: 2.3",
+        "Условное обозначение: 21"
+      ],
+      "findings": [
+        {
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+          "category": "Архитектурно-строительные решения",
+          "finding": "Недостаточная детализация узла для 23 этажа",
+          "block_evidence": "На чертеже показаны только габаритные размеры и оси, отсутствуют спецификации материалов и армирования",
+          "value_found": null
+        }
+      ]
+    },
+    "parse_error": null,
+    "model": "qwen/qwen3.6-35b-a3b",
+    "block_id": "7EN4-ATAF-MM7",
+    "width": 364,
+    "height": 1024,
+    "run_index": 4
+  },
+  "compare": {
+    "block_id": "7EN4-ATAF-MM7",
+    "page": 7,
+    "label_source": "Фрагмент А для 23 этажа, отображающий вертикальный разрез конструкций с указание",
+    "baseline_present": true,
+    "baseline_label": "Фрагмент А для 23 этажа",
+    "candidate_label": "Фрагмент А для 23 этажа",
+    "baseline_findings": 0,
+    "candidate_findings": 1,
+    "baseline_kv": 5,
+    "candidate_kv": 10,
+    "elapsed_s": 3.539,
+    "parse_ok": true,
+    "verdict": "uncertain",
+    "notes": [
+      "candidate found issues where stage-02 baseline had none"
+    ],
+    "baseline_summary": "Фрагмент плана опалубки (Фрагмент А) для 23 этажа. Показан участок стены с проемами и привязками к осям 2.2 и 2.3.",
+    "candidate_summary": "Чертеж представляет собой вертикальный разрез конструкции для 23 этажа. На схеме показаны габаритные размеры элементов и их расположение относительно осей. Отсутствуют детали армирования и спецификации материалов.",
+    "candidate_sheet_type": "section",
+    "candidate_unreadable_text": false
+  }
+}

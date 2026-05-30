@@ -1,0 +1,2082 @@
+{
+  "total_batches": 33,
+  "total_blocks": 215,
+  "risk_targets": {
+    "heavy": {
+      "target": 5,
+      "max": 6
+    },
+    "normal": {
+      "target": 8,
+      "max": 8
+    },
+    "light": {
+      "target": 10,
+      "max": 10
+    }
+  },
+  "dense_pages": [
+    7,
+    10,
+    15
+  ],
+  "batches": [
+    {
+      "batch_id": 1,
+      "block_count": 1,
+      "total_size_kb": 48.9,
+      "pages_included": [
+        6
+      ],
+      "blocks": [
+        {
+          "block_id": "A9M4-EJ7R-MKH",
+          "page": 6,
+          "file": "block_A9M4-EJ7R-MKH.png",
+          "size_kb": 48.9,
+          "ocr_label": "Схема расположения конструктивных элементов (колонн, пристроек и зон автостоянки",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 2,
+      "block_count": 6,
+      "total_size_kb": 582.2,
+      "pages_included": [
+        7
+      ],
+      "blocks": [
+        {
+          "block_id": "66NE-7DYY-GQN",
+          "page": 7,
+          "file": "block_66NE-7DYY-GQN.png",
+          "size_kb": 476.2,
+          "ocr_label": "План опалубки вертикальных конструкций 17-23 этажей.",
+          "risk": "heavy"
+        },
+        {
+          "block_id": "9RD7-EPAA-NJQ",
+          "page": 7,
+          "file": "block_9RD7-EPAA-NJQ.png",
+          "size_kb": 22.2,
+          "ocr_label": "Фрагмент А для 17-22 этажа с указанием осей и размеров конструктивных элементов.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7EN4-ATAF-MM7",
+          "page": 7,
+          "file": "block_7EN4-ATAF-MM7.png",
+          "size_kb": 19.4,
+          "ocr_label": "Фрагмент А для 23 этажа, отображающий вертикальный разрез конструкций с указание",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7VFQ-CGWK-3DD",
+          "page": 7,
+          "file": "block_7VFQ-CGWK-3DD.png",
+          "size_kb": 17.6,
+          "ocr_label": "Фрагмент Б для 17 и 22 этажей с указанием размеров и отверстий.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4PJJ-YHH6-KK7",
+          "page": 7,
+          "file": "block_4PJJ-YHH6-KK7.png",
+          "size_kb": 20.0,
+          "ocr_label": "Фрагмент опалубочного плана стены для 18-21 и 23 этажей с указанием размеров и о",
+          "risk": "normal"
+        },
+        {
+          "block_id": "LFYA-MR6V-D36",
+          "page": 7,
+          "file": "block_LFYA-MR6V-D36.png",
+          "size_kb": 26.8,
+          "ocr_label": "Фрагмент плана для 17 и 22 этажей с указанием размеров и маркировкой элементов.",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 3,
+      "block_count": 8,
+      "total_size_kb": 261.9,
+      "pages_included": [
+        7
+      ],
+      "blocks": [
+        {
+          "block_id": "H3VM-7JM6-6HM",
+          "page": 7,
+          "file": "block_H3VM-7JM6-6HM.png",
+          "size_kb": 27.8,
+          "ocr_label": "Фрагмент В для 23 этажа с указанием размеров проемов и конструктивных элементов.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "CWVU-XLAY-GHP",
+          "page": 7,
+          "file": "block_CWVU-XLAY-GHP.png",
+          "size_kb": 28.0,
+          "ocr_label": "Фрагмент плана стены с отверстием для этажей 17-21, 23.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "69E6-U9HN-NQE",
+          "page": 7,
+          "file": "block_69E6-U9HN-NQE.png",
+          "size_kb": 26.1,
+          "ocr_label": "Фрагмент Г для 22 этажа, отображающий сечение стены с отверстиями и привязкой к ",
+          "risk": "normal"
+        },
+        {
+          "block_id": "C3EQ-CLF7-JMK",
+          "page": 7,
+          "file": "block_C3EQ-CLF7-JMK.png",
+          "size_kb": 33.5,
+          "ocr_label": "Фрагмент разреза 22-22 для 22 этажа с указанием отметок высот и отверстий.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "33N9-7JYR-4JQ",
+          "page": 7,
+          "file": "block_33N9-7JYR-4JQ.png",
+          "size_kb": 35.0,
+          "ocr_label": "Фрагмент разреза 25-25 с изображением проема П-2 и отверстия Отв.3 в вертикально",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7NF9-HNQ3-YMR",
+          "page": 7,
+          "file": "block_7NF9-HNQ3-YMR.png",
+          "size_kb": 34.8,
+          "ocr_label": "Представлен разрез 24-24 для 21 этажа с указанием высотных отметок и размеров пр",
+          "risk": "normal"
+        },
+        {
+          "block_id": "6D4Q-KK4M-QDA",
+          "page": 7,
+          "file": "block_6D4Q-KK4M-QDA.png",
+          "size_kb": 48.1,
+          "ocr_label": "Фрагмент разреза 23-23 для 23 этажа с указанием отметок уровней и проемов.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "AC3T-RYW4-UD4",
+          "page": 7,
+          "file": "block_AC3T-RYW4-UD4.png",
+          "size_kb": 28.6,
+          "ocr_label": "Фрагмент разреза 26-26 с указанием размеров и отметок уровней.",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 4,
+      "block_count": 6,
+      "total_size_kb": 248.6,
+      "pages_included": [
+        7
+      ],
+      "blocks": [
+        {
+          "block_id": "6WQH-PM9T-C4Y",
+          "page": 7,
+          "file": "block_6WQH-PM9T-C4Y.png",
+          "size_kb": 40.4,
+          "ocr_label": "Фрагмент разреза 27-27 с указанием конструктивных элементов и отметок.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "74WW-EAML-LKD",
+          "page": 7,
+          "file": "block_74WW-EAML-LKD.png",
+          "size_kb": 35.4,
+          "ocr_label": "На чертеже представлен разрез 28-28 с указанием конструктивных элементов и отвер",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4LY3-Y3PU-YTQ",
+          "page": 7,
+          "file": "block_4LY3-Y3PU-YTQ.png",
+          "size_kb": 37.5,
+          "ocr_label": "Представлен разрез 21-21 для 23 этажа с указанием высотных отметок и горизонталь",
+          "risk": "normal"
+        },
+        {
+          "block_id": "TGNP-L334-33C",
+          "page": 7,
+          "file": "block_TGNP-L334-33C.png",
+          "size_kb": 51.1,
+          "ocr_label": "На чертеже представлен разрез 20-20 строительной конструкции с указанием размеро",
+          "risk": "normal"
+        },
+        {
+          "block_id": "6EXK-YA6J-KPU",
+          "page": 7,
+          "file": "block_6EXK-YA6J-KPU.png",
+          "size_kb": 38.8,
+          "ocr_label": "На чертеже представлен разрез 18-18 с указанием высотных отметок и размеров прое",
+          "risk": "normal"
+        },
+        {
+          "block_id": "6HAF-43VX-V6V",
+          "page": 7,
+          "file": "block_6HAF-43VX-V6V.png",
+          "size_kb": 45.4,
+          "ocr_label": "Разрез 19-19 с указанием габаритов проемов и отметок уровней.",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 5,
+      "block_count": 6,
+      "total_size_kb": 263.8,
+      "pages_included": [
+        7
+      ],
+      "blocks": [
+        {
+          "block_id": "6P9T-Q7GT-N9J",
+          "page": 7,
+          "file": "block_6P9T-Q7GT-N9J.png",
+          "size_kb": 53.3,
+          "ocr_label": "Фрагмент разреза 17-17 с указанием вертикальных конструкций, проемов и отметок у",
+          "risk": "heavy"
+        },
+        {
+          "block_id": "9C4E-9M37-MD4",
+          "page": 7,
+          "file": "block_9C4E-9M37-MD4.png",
+          "size_kb": 28.8,
+          "ocr_label": "Фрагмент разреза 12-12 с указанием расположения отверстий в стене.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4MJP-RPV6-4G3",
+          "page": 7,
+          "file": "block_4MJP-RPV6-4G3.png",
+          "size_kb": 41.3,
+          "ocr_label": "На чертеже представлен разрез 13-13 с указанием проемов, отметок уровней и габар",
+          "risk": "normal"
+        },
+        {
+          "block_id": "D9RG-VETQ-9NQ",
+          "page": 7,
+          "file": "block_D9RG-VETQ-9NQ.png",
+          "size_kb": 46.5,
+          "ocr_label": "Фрагмент разреза 14-14 с изображением проема П-10 в стене между осями 2.В и 2.Г.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "63C3-DYDW-QCG",
+          "page": 7,
+          "file": "block_63C3-DYDW-QCG.png",
+          "size_kb": 51.5,
+          "ocr_label": "На чертеже представлен разрез 15-15 с указанием геометрических параметров констр",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4WM4-F47J-K9L",
+          "page": 7,
+          "file": "block_4WM4-F47J-K9L.png",
+          "size_kb": 42.4,
+          "ocr_label": "На чертеже представлен разрез 16-16 с указанием высотных отметок, проемов и разм",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 6,
+      "block_count": 8,
+      "total_size_kb": 217.9,
+      "pages_included": [
+        7
+      ],
+      "blocks": [
+        {
+          "block_id": "7GYU-76VT-6DD",
+          "page": 7,
+          "file": "block_7GYU-76VT-6DD.png",
+          "size_kb": 37.1,
+          "ocr_label": "Фрагмент разреза 11-11 с изображением вертикальных конструкций и проемов.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7H93-RKCQ-VXJ",
+          "page": 7,
+          "file": "block_7H93-RKCQ-VXJ.png",
+          "size_kb": 40.5,
+          "ocr_label": "Разрез 10-10, отображающий конструктивные элементы стен, проемы и высотные отмет",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7K6R-D36M-FJL",
+          "page": 7,
+          "file": "block_7K6R-D36M-FJL.png",
+          "size_kb": 31.4,
+          "ocr_label": "На чертеже представлен разрез 9-9, отображающий проем П-5 в стене между осями 2.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4LVY-33DN-DVN",
+          "page": 7,
+          "file": "block_4LVY-33DN-DVN.png",
+          "size_kb": 13.0,
+          "ocr_label": "На фрагменте представлен разрез 1-1 вертикальной железобетонной конструкции.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "699T-VQWX-KWA",
+          "page": 7,
+          "file": "block_699T-VQWX-KWA.png",
+          "size_kb": 23.2,
+          "ocr_label": "Фрагмент разреза 2-2 вертикальной конструкции с указанием высотных отметок и раз",
+          "risk": "normal"
+        },
+        {
+          "block_id": "JDM3-R73E-JJ6",
+          "page": 7,
+          "file": "block_JDM3-R73E-JJ6.png",
+          "size_kb": 24.0,
+          "ocr_label": "Фрагмент разреза 3-3 вертикальной конструкции по оси 2.Ж.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7H6R-WQLD-R6L",
+          "page": 7,
+          "file": "block_7H6R-WQLD-R6L.png",
+          "size_kb": 24.7,
+          "ocr_label": "На чертеже представлен разрез 4-4, отображающий вертикальную конструкцию стены с",
+          "risk": "light"
+        },
+        {
+          "block_id": "73YC-AGH3-ETT",
+          "page": 7,
+          "file": "block_73YC-AGH3-ETT.png",
+          "size_kb": 24.0,
+          "ocr_label": "Вертикальный разрез 5-5 строительной конструкции между осями 2.2 и 2.3.",
+          "risk": "light"
+        }
+      ]
+    },
+    {
+      "batch_id": 7,
+      "block_count": 4,
+      "total_size_kb": 104.7,
+      "pages_included": [
+        7
+      ],
+      "blocks": [
+        {
+          "block_id": "46XN-XKRV-PC6",
+          "page": 7,
+          "file": "block_46XN-XKRV-PC6.png",
+          "size_kb": 20.7,
+          "ocr_label": "На фрагменте представлен разрез 6-6 вертикальной конструкции с указанием высотны",
+          "risk": "normal"
+        },
+        {
+          "block_id": "9UWG-XC4V-DLX",
+          "page": 7,
+          "file": "block_9UWG-XC4V-DLX.png",
+          "size_kb": 19.9,
+          "ocr_label": "Фрагмент разреза 7-7 по оси 2.В с указанием высотных отметок и размеров конструк",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7NC6-TG6X-AUF",
+          "page": 7,
+          "file": "block_7NC6-TG6X-AUF.png",
+          "size_kb": 16.8,
+          "ocr_label": "На чертеже представлен разрез 8-8 с указанием высотных отметок и размеров констр",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4PG4-XVHC-LCQ",
+          "page": 7,
+          "file": "block_4PG4-XVHC-LCQ.png",
+          "size_kb": 47.3,
+          "ocr_label": "Схема расположения вертикальных конструкций и подземной автостоянки с указанием ",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 8,
+      "block_count": 6,
+      "total_size_kb": 772.9,
+      "pages_included": [
+        8
+      ],
+      "blocks": [
+        {
+          "block_id": "3TFL-TNRF-7G6",
+          "page": 8,
+          "file": "block_3TFL-TNRF-7G6.png",
+          "size_kb": 605.6,
+          "ocr_label": "Маркировочная схема вертикальных конструкций 17-23 этажей жилого здания.",
+          "risk": "heavy"
+        },
+        {
+          "block_id": "94RC-JFUD-4NN",
+          "page": 8,
+          "file": "block_94RC-JFUD-4NN.png",
+          "size_kb": 34.8,
+          "ocr_label": "Фрагмент А с армированием монолитной стены для 17-21 и 23 этажей.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4WPW-9MXF-JQC",
+          "page": 8,
+          "file": "block_4WPW-9MXF-JQC.png",
+          "size_kb": 40.4,
+          "ocr_label": "Фрагмент А для 22 этажа с указанием армирования и размеров конструктивного элеме",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4PTP-H6MY-9WP",
+          "page": 8,
+          "file": "block_4PTP-H6MY-9WP.png",
+          "size_kb": 31.4,
+          "ocr_label": "Фрагмент Б для 17-22 этажа с указанием армирования и размеров конструктивных эле",
+          "risk": "normal"
+        },
+        {
+          "block_id": "6CTR-YY79-3G6",
+          "page": 8,
+          "file": "block_6CTR-YY79-3G6.png",
+          "size_kb": 37.2,
+          "ocr_label": "Фрагмент Б для 23 этажа с маркировкой монолитных стен и указанием размеров.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "A9UL-KCKR-PNN",
+          "page": 8,
+          "file": "block_A9UL-KCKR-PNN.png",
+          "size_kb": 23.5,
+          "ocr_label": "Фрагмент В для 21 этажа с указанием маркировки элементов и размеров.",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 9,
+      "block_count": 7,
+      "total_size_kb": 212.5,
+      "pages_included": [
+        8,
+        9
+      ],
+      "blocks": [
+        {
+          "block_id": "4YUU-AJ3K-TWM",
+          "page": 8,
+          "file": "block_4YUU-AJ3K-TWM.png",
+          "size_kb": 23.7,
+          "ocr_label": "Фрагмент В для 17 и 22 этажей с маркировкой монолитных стен и их армирования.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "74TH-VMV6-QUU",
+          "page": 8,
+          "file": "block_74TH-VMV6-QUU.png",
+          "size_kb": 20.3,
+          "ocr_label": "Фрагмент В маркировочной схемы для 18-20 и 23 этажей с указанием параметров моно",
+          "risk": "normal"
+        },
+        {
+          "block_id": "HP4W-KDLX-C77",
+          "page": 8,
+          "file": "block_HP4W-KDLX-C77.png",
+          "size_kb": 28.6,
+          "ocr_label": "Фрагмент Г для 17-22 этажей с маркировкой монолитной стены.",
+          "risk": "light"
+        },
+        {
+          "block_id": "4CRW-7WEW-6KA",
+          "page": 8,
+          "file": "block_4CRW-7WEW-6KA.png",
+          "size_kb": 29.4,
+          "ocr_label": "Фрагмент Г армирования монолитного элемента для 23 этажа.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "6T6C-F4W9-MEQ",
+          "page": 8,
+          "file": "block_6T6C-F4W9-MEQ.png",
+          "size_kb": 34.9,
+          "ocr_label": "Представлена схема установки горизонтальной арматуры в стенах с различными типам",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7WLT-66U6-FG9",
+          "page": 8,
+          "file": "block_7WLT-66U6-FG9.png",
+          "size_kb": 16.4,
+          "ocr_label": "На чертеже представлена схема отгиба арматурного стержня с указанием геометричес",
+          "risk": "light"
+        },
+        {
+          "block_id": "67FG-77WL-MUM",
+          "page": 9,
+          "file": "block_67FG-77WL-MUM.png",
+          "size_kb": 59.2,
+          "ocr_label": "Фрагмент разреза 1-1 (3) с указанием армирования вертикальной конструкции.",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 10,
+      "block_count": 6,
+      "total_size_kb": 399.5,
+      "pages_included": [
+        9
+      ],
+      "blocks": [
+        {
+          "block_id": "97AH-VUFP-LJJ",
+          "page": 9,
+          "file": "block_97AH-VUFP-LJJ.png",
+          "size_kb": 71.1,
+          "ocr_label": "Разрез 2-2 (3) с указанием армирования и высотных отметок.",
+          "risk": "heavy"
+        },
+        {
+          "block_id": "6R7N-7LRD-AUR",
+          "page": 9,
+          "file": "block_6R7N-7LRD-AUR.png",
+          "size_kb": 70.1,
+          "ocr_label": "Фрагмент разреза 5-5 (3) с указанием армирования вертикальных конструкций.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "9DH3-MEUR-DR4",
+          "page": 9,
+          "file": "block_9DH3-MEUR-DR4.png",
+          "size_kb": 105.8,
+          "ocr_label": "Фрагмент разреза 6-6 (3) с указанием армирования и высотных отметок.",
+          "risk": "heavy"
+        },
+        {
+          "block_id": "4LMQ-4R7M-EC3",
+          "page": 9,
+          "file": "block_4LMQ-4R7M-EC3.png",
+          "size_kb": 40.7,
+          "ocr_label": "Фрагмент разреза 8-8 (3) с указанием армирования и геометрических размеров конст",
+          "risk": "normal"
+        },
+        {
+          "block_id": "99HW-6DHR-7EE",
+          "page": 9,
+          "file": "block_99HW-6DHR-7EE.png",
+          "size_kb": 53.4,
+          "ocr_label": "Фрагмент разреза 9-9 (3) с указанием армирования и геометрических размеров.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "93TQ-CQ4L-7FW",
+          "page": 9,
+          "file": "block_93TQ-CQ4L-7FW.png",
+          "size_kb": 58.4,
+          "ocr_label": "Фрагмент разреза 10-10 (3) для 22 этажа с указанием армирования и высотных отмет",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 11,
+      "block_count": 6,
+      "total_size_kb": 349.3,
+      "pages_included": [
+        9
+      ],
+      "blocks": [
+        {
+          "block_id": "4CFG-LM4Y-7H4",
+          "page": 9,
+          "file": "block_4CFG-LM4Y-7H4.png",
+          "size_kb": 77.7,
+          "ocr_label": "Чертеж армирования вертикального элемента (стены или колонны) для 23 этажа в раз",
+          "risk": "normal"
+        },
+        {
+          "block_id": "6KFL-Y3YM-YFH",
+          "page": 9,
+          "file": "block_6KFL-Y3YM-YFH.png",
+          "size_kb": 51.9,
+          "ocr_label": "Фрагмент разреза 12-12 (3) для 23 этажа с указанием армирования и высотных отмет",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4NGP-Q4UK-RV3",
+          "page": 9,
+          "file": "block_4NGP-Q4UK-RV3.png",
+          "size_kb": 47.9,
+          "ocr_label": "На фрагменте представлен разрез 13-13 (3) для 21 этажа с указанием армирования.",
+          "risk": "light"
+        },
+        {
+          "block_id": "A9QU-33GC-JDP",
+          "page": 9,
+          "file": "block_A9QU-33GC-JDP.png",
+          "size_kb": 49.4,
+          "ocr_label": "Фрагмент разреза 3-3 (3) с указанием армирования вертикальной конструкции.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "GC4D-PCGH-N39",
+          "page": 9,
+          "file": "block_GC4D-PCGH-N39.png",
+          "size_kb": 59.1,
+          "ocr_label": "На чертеже представлен разрез 4-4 (3) с указанием армирования и высотных отметок",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7DJ9-EQQ3-QMK",
+          "page": 9,
+          "file": "block_7DJ9-EQQ3-QMK.png",
+          "size_kb": 63.3,
+          "ocr_label": "На чертеже представлен разрез 7-7 (3) с указанием армирования и геометрических р",
+          "risk": "heavy"
+        }
+      ]
+    },
+    {
+      "batch_id": 12,
+      "block_count": 5,
+      "total_size_kb": 165.5,
+      "pages_included": [
+        9
+      ],
+      "blocks": [
+        {
+          "block_id": "7UWW-X9YT-KFK",
+          "page": 9,
+          "file": "block_7UWW-X9YT-KFK.png",
+          "size_kb": 45.6,
+          "ocr_label": "Фрагмент разреза 14-14 (3) с указанием армирования вертикальной конструкции.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4ARK-6ENX-GEV",
+          "page": 9,
+          "file": "block_4ARK-6ENX-GEV.png",
+          "size_kb": 18.8,
+          "ocr_label": "На фрагменте представлен разрез А-А узла армирования стены.",
+          "risk": "light"
+        },
+        {
+          "block_id": "4CW4-47XP-XR4",
+          "page": 9,
+          "file": "block_4CW4-47XP-XR4.png",
+          "size_kb": 20.0,
+          "ocr_label": "На чертеже представлен разрез Б-Б с указанием армирования углового соединения ст",
+          "risk": "light"
+        },
+        {
+          "block_id": "64YX-AX6P-VQE",
+          "page": 9,
+          "file": "block_64YX-AX6P-VQE.png",
+          "size_kb": 38.9,
+          "ocr_label": "Фрагмент легенды армирования стен с указанием расположения фоновой и дополнитель",
+          "risk": "light"
+        },
+        {
+          "block_id": "6KLA-6TKM-C4K",
+          "page": 9,
+          "file": "block_6KLA-6TKM-C4K.png",
+          "size_kb": 42.2,
+          "ocr_label": "Схема армирования проема в железобетонной стене.",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 13,
+      "block_count": 8,
+      "total_size_kb": 376.2,
+      "pages_included": [
+        10
+      ],
+      "blocks": [
+        {
+          "block_id": "9XQM-D6XA-UUK",
+          "page": 10,
+          "file": "block_9XQM-D6XA-UUK.png",
+          "size_kb": 50.7,
+          "ocr_label": "На фрагменте представлено сечение железобетонной стены 1-Стм250 с указанием арми",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7G7K-NGVM-LCC",
+          "page": 10,
+          "file": "block_7G7K-NGVM-LCC.png",
+          "size_kb": 51.0,
+          "ocr_label": "На чертеже представлено сечение железобетонной стены 2-Стм250 с указанием армиро",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7HAG-WPJG-KRY",
+          "page": 10,
+          "file": "block_7HAG-WPJG-KRY.png",
+          "size_kb": 48.3,
+          "ocr_label": "Фрагмент чертежа армирования стены 2.1-Стм250 с указанием защитных слоев и типов",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4AF4-3LXR-UTV",
+          "page": 10,
+          "file": "block_4AF4-3LXR-UTV.png",
+          "size_kb": 46.2,
+          "ocr_label": "Чертеж армирования железобетонного элемента 3-Стм200 сечением 500х200 мм.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7CF7-NXLW-T6V",
+          "page": 10,
+          "file": "block_7CF7-NXLW-T6V.png",
+          "size_kb": 47.1,
+          "ocr_label": "Фрагмент армирования стены с указанием отметок и параметров арматурных стержней.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "77FD-FM7F-CQN",
+          "page": 10,
+          "file": "block_77FD-FM7F-CQN.png",
+          "size_kb": 41.2,
+          "ocr_label": "Чертеж узла армирования железобетонного элемента с указанием размеров и специфик",
+          "risk": "normal"
+        },
+        {
+          "block_id": "6TFY-Y6VQ-RQN",
+          "page": 10,
+          "file": "block_6TFY-Y6VQ-RQN.png",
+          "size_kb": 56.5,
+          "ocr_label": "Фрагмент чертежа армирования стены с указанием сечения 6-Стм200.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "6MVG-W3LL-VKY",
+          "page": 10,
+          "file": "block_6MVG-W3LL-VKY.png",
+          "size_kb": 35.2,
+          "ocr_label": "Фрагмент чертежа армирования стены 5-Стм200 с указанием параметров арматурных ст",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 14,
+      "block_count": 6,
+      "total_size_kb": 245.5,
+      "pages_included": [
+        10
+      ],
+      "blocks": [
+        {
+          "block_id": "63YA-YJCM-JJX",
+          "page": 10,
+          "file": "block_63YA-YJCM-JJX.png",
+          "size_kb": 45.7,
+          "ocr_label": "{\n  \"location\": {\n    \"grid_lines\": \"Не определены\",\n    \"zone_name\": \"Узел\"\n  }",
+          "risk": "heavy"
+        },
+        {
+          "block_id": "47XG-3PPW-PJ6",
+          "page": 10,
+          "file": "block_47XG-3PPW-PJ6.png",
+          "size_kb": 46.2,
+          "ocr_label": "Представлен чертеж сечения железобетонного элемента с армированием.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "E7QW-Y7R9-YX3",
+          "page": 10,
+          "file": "block_E7QW-Y7R9-YX3.png",
+          "size_kb": 49.9,
+          "ocr_label": "Представлены две схемы установки поперечной арматуры (шпилек) в стенах с различн",
+          "risk": "normal"
+        },
+        {
+          "block_id": "3VGQ-9979-KFW",
+          "page": 10,
+          "file": "block_3VGQ-9979-KFW.png",
+          "size_kb": 50.2,
+          "ocr_label": "Представлены две схемы армирования (Вар 3 и Вар 4) с указанием шага установки шп",
+          "risk": "normal"
+        },
+        {
+          "block_id": "6CJL-W6NL-HHR",
+          "page": 10,
+          "file": "block_6CJL-W6NL-HHR.png",
+          "size_kb": 28.4,
+          "ocr_label": "На чертеже представлены три типовых узла сопряжения рабочего стержня с гнутыми а",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7RGR-7UKN-3K4",
+          "page": 10,
+          "file": "block_7RGR-7UKN-3K4.png",
+          "size_kb": 25.1,
+          "ocr_label": "Схема установки горизонтальных П-образных элементов в стенах.",
+          "risk": "light"
+        }
+      ]
+    },
+    {
+      "batch_id": 15,
+      "block_count": 6,
+      "total_size_kb": 141.1,
+      "pages_included": [
+        10
+      ],
+      "blocks": [
+        {
+          "block_id": "6QGA-YF97-X7H",
+          "page": 10,
+          "file": "block_6QGA-YF97-X7H.png",
+          "size_kb": 16.0,
+          "ocr_label": "Графическая схема стыковки арматурных стержней внахлест с указанием параметров д",
+          "risk": "light"
+        },
+        {
+          "block_id": "9LEP-4T9M-APD",
+          "page": 10,
+          "file": "block_9LEP-4T9M-APD.png",
+          "size_kb": 17.7,
+          "ocr_label": "Графическая схема отгиба арматурного стержня с указанием геометрических параметр",
+          "risk": "light"
+        },
+        {
+          "block_id": "9AVR-YFEC-THW",
+          "page": 10,
+          "file": "block_9AVR-YFEC-THW.png",
+          "size_kb": 26.1,
+          "ocr_label": "Схема установки горизонтальных хомутов в арматурном каркасе стены.",
+          "risk": "light"
+        },
+        {
+          "block_id": "7AK6-PCKD-LQQ",
+          "page": 10,
+          "file": "block_7AK6-PCKD-LQQ.png",
+          "size_kb": 52.7,
+          "ocr_label": "Представлен чертеж сечения железобетонного элемента 5.1-Стм200 с армированием.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "66EP-XQPR-7AA",
+          "page": 10,
+          "file": "block_66EP-XQPR-7AA.png",
+          "size_kb": 15.4,
+          "ocr_label": "На чертеже представлено сечение Ю-Ю железобетонного элемента с армированием.",
+          "risk": "light"
+        },
+        {
+          "block_id": "9G3N-NHAX-EF4",
+          "page": 10,
+          "file": "block_9G3N-NHAX-EF4.png",
+          "size_kb": 13.2,
+          "ocr_label": "Схема сечения Я-Я, иллюстрирующая установку горизонтальных П-образных элементов ",
+          "risk": "light"
+        }
+      ]
+    },
+    {
+      "batch_id": 16,
+      "block_count": 8,
+      "total_size_kb": 424.8,
+      "pages_included": [
+        11
+      ],
+      "blocks": [
+        {
+          "block_id": "4HYQ-JHE6-GX9",
+          "page": 11,
+          "file": "block_4HYQ-JHE6-GX9.png",
+          "size_kb": 45.1,
+          "ocr_label": "Чертеж армирования железобетонного элемента с указанием размеров и марок арматур",
+          "risk": "normal"
+        },
+        {
+          "block_id": "6MV3-YUME-9CN",
+          "page": 11,
+          "file": "block_6MV3-YUME-9CN.png",
+          "size_kb": 52.1,
+          "ocr_label": "Фрагмент сечения армирования стены 9-Стм200 с указанием размеров и типов арматур",
+          "risk": "normal"
+        },
+        {
+          "block_id": "47KV-YVXG-NUF",
+          "page": 11,
+          "file": "block_47KV-YVXG-NUF.png",
+          "size_kb": 49.2,
+          "ocr_label": "Фрагмент чертежа армирования стены с указанием параметров поперечного армировани",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7G6X-4XXW-DNN",
+          "page": 11,
+          "file": "block_7G6X-4XXW-DNN.png",
+          "size_kb": 50.7,
+          "ocr_label": "Фрагмент армирования стены 11-Стм200 с указанием размеров и типов арматурных эле",
+          "risk": "normal"
+        },
+        {
+          "block_id": "AQUH-VLE6-WQ6",
+          "page": 11,
+          "file": "block_AQUH-VLE6-WQ6.png",
+          "size_kb": 67.5,
+          "ocr_label": "Чертеж армирования железобетонного элемента 12-Стм200 с сечениями 12а-12а.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "WJ34-MLFT-NWD",
+          "page": 11,
+          "file": "block_WJ34-MLFT-NWD.png",
+          "size_kb": 56.0,
+          "ocr_label": "На фрагменте чертежа представлено армирование стены 16-Стм200 в сечении 16а-16а.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7LYU-N7KH-67R",
+          "page": 11,
+          "file": "block_7LYU-N7KH-67R.png",
+          "size_kb": 47.4,
+          "ocr_label": "Фрагмент армирования стены 15-Стм200 с указанием параметров вертикальных и гориз",
+          "risk": "normal"
+        },
+        {
+          "block_id": "6DNQ-LQFH-PAK",
+          "page": 11,
+          "file": "block_6DNQ-LQFH-PAK.png",
+          "size_kb": 56.8,
+          "ocr_label": "Фрагмент чертежа армирования стены 14-Стм200 с сечением и вертикальным разрезом.",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 17,
+      "block_count": 8,
+      "total_size_kb": 273.3,
+      "pages_included": [
+        11
+      ],
+      "blocks": [
+        {
+          "block_id": "6DJ4-EEPT-W4M",
+          "page": 11,
+          "file": "block_6DJ4-EEPT-W4M.png",
+          "size_kb": 59.9,
+          "ocr_label": "Представлен узел армирования стены 13-Стм200 с указанием выпусков арматуры и поп",
+          "risk": "normal"
+        },
+        {
+          "block_id": "YVX3-LTRL-ET3",
+          "page": 11,
+          "file": "block_YVX3-LTRL-ET3.png",
+          "size_kb": 55.7,
+          "ocr_label": "Представлены две схемы установки поперечной арматуры (шпилек) в стенах при разли",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4FT3-JE3Y-WPU",
+          "page": 11,
+          "file": "block_4FT3-JE3Y-WPU.png",
+          "size_kb": 14.9,
+          "ocr_label": "На чертеже представлена схема отгиба арматурного стержня с указанием геометричес",
+          "risk": "light"
+        },
+        {
+          "block_id": "YTXG-HQTF-DTC",
+          "page": 11,
+          "file": "block_YTXG-HQTF-DTC.png",
+          "size_kb": 49.6,
+          "ocr_label": "На схеме представлены варианты (Вар 3 и Вар 4) установки поперечного армирования",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7CHG-7U6R-WYP",
+          "page": 11,
+          "file": "block_7CHG-7U6R-WYP.png",
+          "size_kb": 29.3,
+          "ocr_label": "Представлены типовые узлы сопряжения рабочего стержня с гнутыми арматурными элем",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7TUE-6AJK-CLE",
+          "page": 11,
+          "file": "block_7TUE-6AJK-CLE.png",
+          "size_kb": 14.9,
+          "ocr_label": "Представлена схема стыковки арматурных стержней внахлест с указанием геометричес",
+          "risk": "light"
+        },
+        {
+          "block_id": "4FPK-WYU6-DQJ",
+          "page": 11,
+          "file": "block_4FPK-WYU6-DQJ.png",
+          "size_kb": 24.6,
+          "ocr_label": "Схема установки горизонтальных П-образных элементов в арматурном каркасе стены.",
+          "risk": "light"
+        },
+        {
+          "block_id": "7RET-QFQK-9DM",
+          "page": 11,
+          "file": "block_7RET-QFQK-9DM.png",
+          "size_kb": 24.4,
+          "ocr_label": "Схема армирования стены с установкой горизонтальных хомутов.",
+          "risk": "light"
+        }
+      ]
+    },
+    {
+      "batch_id": 18,
+      "block_count": 8,
+      "total_size_kb": 342.9,
+      "pages_included": [
+        11,
+        12
+      ],
+      "blocks": [
+        {
+          "block_id": "A7YN-4V6Q-LAF",
+          "page": 11,
+          "file": "block_A7YN-4V6Q-LAF.png",
+          "size_kb": 16.0,
+          "ocr_label": "На фрагменте чертежа представлено сечение Ю-Ю, иллюстрирующее схему установки го",
+          "risk": "light"
+        },
+        {
+          "block_id": "FJRE-A3G4-JMR",
+          "page": 11,
+          "file": "block_FJRE-A3G4-JMR.png",
+          "size_kb": 14.7,
+          "ocr_label": "На чертеже представлено сечение Я-Я с указанием армирования.",
+          "risk": "light"
+        },
+        {
+          "block_id": "7XUQ-KJVR-6FP",
+          "page": 12,
+          "file": "block_7XUQ-KJVR-6FP.png",
+          "size_kb": 55.5,
+          "ocr_label": "Чертеж армирования железобетонной конструкции 17-Стм200 с указанием выпусков арм",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7VUH-QXNE-R96",
+          "page": 12,
+          "file": "block_7VUH-QXNE-R96.png",
+          "size_kb": 51.3,
+          "ocr_label": "Фрагмент чертежа армирования стены 18-Стм200 с указанием вертикальных и горизонт",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7MKF-CY7E-9PD",
+          "page": 12,
+          "file": "block_7MKF-CY7E-9PD.png",
+          "size_kb": 55.4,
+          "ocr_label": "Чертеж армирования вертикальной конструкции (колонны) с сечением 19а-19а.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "6Q6L-TPNW-ENQ",
+          "page": 12,
+          "file": "block_6Q6L-TPNW-ENQ.png",
+          "size_kb": 53.5,
+          "ocr_label": "На чертеже представлено армирование железобетонной конструкции с указанием разме",
+          "risk": "normal"
+        },
+        {
+          "block_id": "349W-4CGG-7PY",
+          "page": 12,
+          "file": "block_349W-4CGG-7PY.png",
+          "size_kb": 61.9,
+          "ocr_label": "На чертеже представлено армирование стены 25-Стм200 с указанием размеров и специ",
+          "risk": "normal"
+        },
+        {
+          "block_id": "AAJW-Q7RA-JCQ",
+          "page": 12,
+          "file": "block_AAJW-Q7RA-JCQ.png",
+          "size_kb": 34.6,
+          "ocr_label": "Фрагмент армирования вертикальной конструкции (стены) с указанием размеров и мар",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 19,
+      "block_count": 8,
+      "total_size_kb": 323.6,
+      "pages_included": [
+        12
+      ],
+      "blocks": [
+        {
+          "block_id": "9TQ3-P3FY-MEC",
+          "page": 12,
+          "file": "block_9TQ3-P3FY-MEC.png",
+          "size_kb": 60.8,
+          "ocr_label": "Фрагмент чертежа армирования стены 23-Стм200 с указанием параметров арматурных э",
+          "risk": "normal"
+        },
+        {
+          "block_id": "A9WA-RDTJ-PMP",
+          "page": 12,
+          "file": "block_A9WA-RDTJ-PMP.png",
+          "size_kb": 39.0,
+          "ocr_label": "Схема армирования вертикальной конструкции с указанием размеров и шага стержней.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4N6W-CNGV-QRF",
+          "page": 12,
+          "file": "block_4N6W-CNGV-QRF.png",
+          "size_kb": 57.5,
+          "ocr_label": "Чертеж армирования вертикальной конструкции (колонны или стены) с сечением 21а-2",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7UGJ-M7DG-7KA",
+          "page": 12,
+          "file": "block_7UGJ-M7DG-7KA.png",
+          "size_kb": 17.0,
+          "ocr_label": "Представлена схема отгиба арматурного стержня с указанием геометрических парамет",
+          "risk": "light"
+        },
+        {
+          "block_id": "4LPW-GGUY-PKY",
+          "page": 12,
+          "file": "block_4LPW-GGUY-PKY.png",
+          "size_kb": 54.9,
+          "ocr_label": "Представлены две схемы установки поперечной арматуры (шпилек) в стенах с различн",
+          "risk": "normal"
+        },
+        {
+          "block_id": "6LQP-AGTR-4H7",
+          "page": 12,
+          "file": "block_6LQP-AGTR-4H7.png",
+          "size_kb": 50.7,
+          "ocr_label": "Схемы армирования конструкций (Вар 3 и Вар 4) с указанием шага установки шпилек.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4FT3-Y3CW-C3L",
+          "page": 12,
+          "file": "block_4FT3-Y3CW-C3L.png",
+          "size_kb": 28.2,
+          "ocr_label": "Представлены типовые узлы сопряжения рабочего стержня с гнутыми арматурными элем",
+          "risk": "normal"
+        },
+        {
+          "block_id": "6LA7-DVP9-V7H",
+          "page": 12,
+          "file": "block_6LA7-DVP9-V7H.png",
+          "size_kb": 15.5,
+          "ocr_label": "Представлена схема стыковки арматурных стержней внахлест с указанием геометричес",
+          "risk": "light"
+        }
+      ]
+    },
+    {
+      "batch_id": 20,
+      "block_count": 8,
+      "total_size_kb": 354.1,
+      "pages_included": [
+        12,
+        13
+      ],
+      "blocks": [
+        {
+          "block_id": "6PTF-MY33-GKM",
+          "page": 12,
+          "file": "block_6PTF-MY33-GKM.png",
+          "size_kb": 25.5,
+          "ocr_label": "Представлена схема установки горизонтальных хомутов в арматурном каркасе стены.",
+          "risk": "light"
+        },
+        {
+          "block_id": "7CF7-HPQT-FUY",
+          "page": 12,
+          "file": "block_7CF7-HPQT-FUY.png",
+          "size_kb": 25.0,
+          "ocr_label": "На схеме показан принцип установки горизонтальных П-образных арматурных элементо",
+          "risk": "light"
+        },
+        {
+          "block_id": "7HMV-MMPQ-JJE",
+          "page": 12,
+          "file": "block_7HMV-MMPQ-JJE.png",
+          "size_kb": 14.2,
+          "ocr_label": "На чертеже представлен разрез Я-Я железобетонного элемента с армированием.",
+          "risk": "light"
+        },
+        {
+          "block_id": "9RWF-HTJA-Y6Q",
+          "page": 12,
+          "file": "block_9RWF-HTJA-Y6Q.png",
+          "size_kb": 15.4,
+          "ocr_label": "На схеме Ю-Ю показан принцип установки горизонтальных хомутов в сечении стены.",
+          "risk": "light"
+        },
+        {
+          "block_id": "6PPA-4DDX-6FR",
+          "page": 13,
+          "file": "block_6PPA-4DDX-6FR.png",
+          "size_kb": 70.9,
+          "ocr_label": "Чертеж узла армирования вертикальной конструкции с сечениями 26а-26а.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4MUX-7DPE-QXX",
+          "page": 13,
+          "file": "block_4MUX-7DPE-QXX.png",
+          "size_kb": 69.1,
+          "ocr_label": "Чертеж армирования колонны 27-Стм250 с сечением 27а-27а.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "9XMG-3LNL-RMW",
+          "page": 13,
+          "file": "block_9XMG-3LNL-RMW.png",
+          "size_kb": 70.0,
+          "ocr_label": "На чертеже представлен разрез 28а-28а армирования железобетонной конструкции с у",
+          "risk": "normal"
+        },
+        {
+          "block_id": "JHYV-DLMK-MFW",
+          "page": 13,
+          "file": "block_JHYV-DLMK-MFW.png",
+          "size_kb": 64.0,
+          "ocr_label": "Чертеж армирования стены 29-Стм250 с указанием параметров арматурных стержней и ",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 21,
+      "block_count": 8,
+      "total_size_kb": 390.9,
+      "pages_included": [
+        13
+      ],
+      "blocks": [
+        {
+          "block_id": "4DP9-G999-YCV",
+          "page": 13,
+          "file": "block_4DP9-G999-YCV.png",
+          "size_kb": 57.1,
+          "ocr_label": "Чертеж армирования вертикальной конструкции 33-Стм200 с сечением 33а-33а.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4YTF-P6Y3-URD",
+          "page": 13,
+          "file": "block_4YTF-P6Y3-URD.png",
+          "size_kb": 64.3,
+          "ocr_label": "Чертеж армирования железобетонной конструкции 32-Стм250 с сечениями 32а-32а.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "KD3V-NKTR-CAF",
+          "page": 13,
+          "file": "block_KD3V-NKTR-CAF.png",
+          "size_kb": 64.5,
+          "ocr_label": "Чертеж армирования железобетонной конструкции (колонны) с указанием сечений и сп",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7EYW-CALN-VVL",
+          "page": 13,
+          "file": "block_7EYW-CALN-VVL.png",
+          "size_kb": 55.4,
+          "ocr_label": "Чертеж армирования вертикальной конструкции с сечением 30а-30а.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "9ULT-Y9WF-NGL",
+          "page": 13,
+          "file": "block_9ULT-Y9WF-NGL.png",
+          "size_kb": 55.4,
+          "ocr_label": "Представлены схемы установки поперечной арматуры (шпилек) в стенах для двух вари",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7T79-F3KV-VEQ",
+          "page": 13,
+          "file": "block_7T79-F3KV-VEQ.png",
+          "size_kb": 50.5,
+          "ocr_label": "Схемы армирования стен (варианты 3 и 4) с указанием расположения вертикальной, г",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4AXN-LD34-NKA",
+          "page": 13,
+          "file": "block_4AXN-LD34-NKA.png",
+          "size_kb": 28.6,
+          "ocr_label": "Представлены три типовых узла сопряжения рабочего стержня с гнутыми арматурными ",
+          "risk": "normal"
+        },
+        {
+          "block_id": "PHFN-MJAR-3VN",
+          "page": 13,
+          "file": "block_PHFN-MJAR-3VN.png",
+          "size_kb": 15.1,
+          "ocr_label": "Представлена схема стыковки арматурных стержней внахлест с указанием геометричес",
+          "risk": "light"
+        }
+      ]
+    },
+    {
+      "batch_id": 22,
+      "block_count": 8,
+      "total_size_kb": 271.6,
+      "pages_included": [
+        13,
+        14
+      ],
+      "blocks": [
+        {
+          "block_id": "97VK-ACQF-64R",
+          "page": 13,
+          "file": "block_97VK-ACQF-64R.png",
+          "size_kb": 25.4,
+          "ocr_label": "Представлена схема установки горизонтальных П-образных элементов в арматурном ка",
+          "risk": "light"
+        },
+        {
+          "block_id": "73KK-HTRH-JTV",
+          "page": 13,
+          "file": "block_73KK-HTRH-JTV.png",
+          "size_kb": 14.2,
+          "ocr_label": "На чертеже представлено сечение Я-Я с указанием армирования элемента.",
+          "risk": "light"
+        },
+        {
+          "block_id": "GAAA-QLPN-JCX",
+          "page": 13,
+          "file": "block_GAAA-QLPN-JCX.png",
+          "size_kb": 25.2,
+          "ocr_label": "Представлена схема установки горизонтальных хомутов в армировании стен.",
+          "risk": "light"
+        },
+        {
+          "block_id": "XCJC-ULVE-F4K",
+          "page": 13,
+          "file": "block_XCJC-ULVE-F4K.png",
+          "size_kb": 15.8,
+          "ocr_label": "На чертеже представлено сечение железобетонного элемента с указанием армирования",
+          "risk": "light"
+        },
+        {
+          "block_id": "7QYC-DEC9-YDD",
+          "page": 13,
+          "file": "block_7QYC-DEC9-YDD.png",
+          "size_kb": 15.5,
+          "ocr_label": "Графическая схема отгиба арматурного стержня с указанием геометрических параметр",
+          "risk": "light"
+        },
+        {
+          "block_id": "HNNQ-FTUC-K7W",
+          "page": 14,
+          "file": "block_HNNQ-FTUC-K7W.png",
+          "size_kb": 54.6,
+          "ocr_label": "Представлена схема армирования вертикальной конструкции 34-Стм200 с указанием па",
+          "risk": "normal"
+        },
+        {
+          "block_id": "79UV-9Q7R-N4M",
+          "page": 14,
+          "file": "block_79UV-9Q7R-N4M.png",
+          "size_kb": 61.0,
+          "ocr_label": "Чертеж армирования вертикальной конструкции с сечением 35а-35а.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "6UDX-E96P-DYW",
+          "page": 14,
+          "file": "block_6UDX-E96P-DYW.png",
+          "size_kb": 59.9,
+          "ocr_label": "Фрагмент армирования вертикальной конструкции 36-Стм200 с указанием размеров и т",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 23,
+      "block_count": 8,
+      "total_size_kb": 473.0,
+      "pages_included": [
+        14
+      ],
+      "blocks": [
+        {
+          "block_id": "66M4-Y69W-VCG",
+          "page": 14,
+          "file": "block_66M4-Y69W-VCG.png",
+          "size_kb": 71.8,
+          "ocr_label": "Схема армирования стены 37-Стм200 с указанием параметров вертикальных и горизонт",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4AEL-DEEK-JT9",
+          "page": 14,
+          "file": "block_4AEL-DEEK-JT9.png",
+          "size_kb": 63.1,
+          "ocr_label": "Чертеж армирования конструкции 42-Стм200 с сечением 42а-42а.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "9DYL-TRNE-FHD",
+          "page": 14,
+          "file": "block_9DYL-TRNE-FHD.png",
+          "size_kb": 68.4,
+          "ocr_label": "Представлено сечение армирования стены 41-Стм200 с указанием параметров арматурн",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7WA4-CMJR-CTT",
+          "page": 14,
+          "file": "block_7WA4-CMJR-CTT.png",
+          "size_kb": 68.7,
+          "ocr_label": "Фрагмент чертежа армирования стены 40-Стм200 с указанием параметров арматурных с",
+          "risk": "normal"
+        },
+        {
+          "block_id": "6EUN-3DDR-66N",
+          "page": 14,
+          "file": "block_6EUN-3DDR-66N.png",
+          "size_kb": 52.8,
+          "ocr_label": "Чертеж армирования вертикальной конструкции (стены) с указанием марок арматуры и",
+          "risk": "normal"
+        },
+        {
+          "block_id": "AC7K-CGN7-GJJ",
+          "page": 14,
+          "file": "block_AC7K-CGN7-GJJ.png",
+          "size_kb": 52.4,
+          "ocr_label": "Чертеж армирования вертикальной стены с указанием защитных слоев и шага арматуры",
+          "risk": "normal"
+        },
+        {
+          "block_id": "9PCA-GQGT-JTN",
+          "page": 14,
+          "file": "block_9PCA-GQGT-JTN.png",
+          "size_kb": 49.3,
+          "ocr_label": "Схемы установки поперечной арматуры в стенах для различных вариантов армирования",
+          "risk": "normal"
+        },
+        {
+          "block_id": "R6TU-94GX-WD4",
+          "page": 14,
+          "file": "block_R6TU-94GX-WD4.png",
+          "size_kb": 46.5,
+          "ocr_label": "Схемы армирования (Вар 3 и Вар 4) с указанием шага установки шпилек.",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 24,
+      "block_count": 7,
+      "total_size_kb": 142.0,
+      "pages_included": [
+        14
+      ],
+      "blocks": [
+        {
+          "block_id": "96QF-AXTF-KHP",
+          "page": 14,
+          "file": "block_96QF-AXTF-KHP.png",
+          "size_kb": 17.5,
+          "ocr_label": "Графическая схема отгиба арматурного стержня с указанием геометрических параметр",
+          "risk": "light"
+        },
+        {
+          "block_id": "4UHT-NTXR-69J",
+          "page": 14,
+          "file": "block_4UHT-NTXR-69J.png",
+          "size_kb": 30.0,
+          "ocr_label": "Представлены типовые узлы сопряжения рабочего стержня с гнутыми арматурными элем",
+          "risk": "normal"
+        },
+        {
+          "block_id": "9CPA-XUE4-EWF",
+          "page": 14,
+          "file": "block_9CPA-XUE4-EWF.png",
+          "size_kb": 15.1,
+          "ocr_label": "На схеме представлены правила стыковки арматурных стержней внахлест.",
+          "risk": "light"
+        },
+        {
+          "block_id": "6R74-W6N6-N6Q",
+          "page": 14,
+          "file": "block_6R74-W6N6-N6Q.png",
+          "size_kb": 24.6,
+          "ocr_label": "Схема установки горизонтальных П-образных элементов в армировании стен.",
+          "risk": "light"
+        },
+        {
+          "block_id": "7D9Q-GLVQ-QWH",
+          "page": 14,
+          "file": "block_7D9Q-GLVQ-QWH.png",
+          "size_kb": 14.1,
+          "ocr_label": "На чертеже представлено сечение Я-Я, показывающее схему установки горизонтальных",
+          "risk": "light"
+        },
+        {
+          "block_id": "4PJY-HUAR-DDH",
+          "page": 14,
+          "file": "block_4PJY-HUAR-DDH.png",
+          "size_kb": 25.4,
+          "ocr_label": "На чертеже представлена схема установки горизонтальных хомутов в армировании сте",
+          "risk": "light"
+        },
+        {
+          "block_id": "9GQD-LF9N-999",
+          "page": 14,
+          "file": "block_9GQD-LF9N-999.png",
+          "size_kb": 15.3,
+          "ocr_label": "На чертеже представлено сечение железобетонного элемента с армированием.",
+          "risk": "light"
+        }
+      ]
+    },
+    {
+      "batch_id": 25,
+      "block_count": 8,
+      "total_size_kb": 426.2,
+      "pages_included": [
+        15
+      ],
+      "blocks": [
+        {
+          "block_id": "WMFU-R4RY-69C",
+          "page": 15,
+          "file": "block_WMFU-R4RY-69C.png",
+          "size_kb": 62.8,
+          "ocr_label": "Чертеж армирования стойки 43-Стм200 с сечениями 43а-43а.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "779N-R9FA-HPR",
+          "page": 15,
+          "file": "block_779N-R9FA-HPR.png",
+          "size_kb": 61.8,
+          "ocr_label": "Чертеж армирования железобетонной конструкции (колонны) с сечениями и спецификац",
+          "risk": "normal"
+        },
+        {
+          "block_id": "74XL-AQCG-79G",
+          "page": 15,
+          "file": "block_74XL-AQCG-79G.png",
+          "size_kb": 35.4,
+          "ocr_label": "Фрагмент чертежа армирования стены 45-Стм200 с указанием размеров и выпусков арм",
+          "risk": "normal"
+        },
+        {
+          "block_id": "9XYR-QUH3-QJT",
+          "page": 15,
+          "file": "block_9XYR-QUH3-QJT.png",
+          "size_kb": 53.5,
+          "ocr_label": "Чертеж армирования вертикальной конструкции (колонны или стены) с указанием шага",
+          "risk": "normal"
+        },
+        {
+          "block_id": "94T3-JQLA-V3C",
+          "page": 15,
+          "file": "block_94T3-JQLA-V3C.png",
+          "size_kb": 53.8,
+          "ocr_label": "Фрагмент армирования вертикальной конструкции (стены или колонны) с указанием вы",
+          "risk": "normal"
+        },
+        {
+          "block_id": "9J4V-UPUX-QYR",
+          "page": 15,
+          "file": "block_9J4V-UPUX-QYR.png",
+          "size_kb": 35.5,
+          "ocr_label": "На чертеже представлено сечение железобетонного элемента с указанием армирования",
+          "risk": "normal"
+        },
+        {
+          "block_id": "6MMM-XNAK-433",
+          "page": 15,
+          "file": "block_6MMM-XNAK-433.png",
+          "size_kb": 55.7,
+          "ocr_label": "Чертеж армирования вертикальной конструкции 51-Стм200 с сечением 51а-51а.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "9EHH-K9MW-H7K",
+          "page": 15,
+          "file": "block_9EHH-K9MW-H7K.png",
+          "size_kb": 67.7,
+          "ocr_label": "Фрагмент чертежа армирования стены 50-Стм200 с указанием параметров арматурных к",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 26,
+      "block_count": 8,
+      "total_size_kb": 304.1,
+      "pages_included": [
+        15
+      ],
+      "blocks": [
+        {
+          "block_id": "7XDE-4E6V-W7A",
+          "page": 15,
+          "file": "block_7XDE-4E6V-W7A.png",
+          "size_kb": 50.5,
+          "ocr_label": "Чертеж армирования вертикальной железобетонной конструкции (стены или колонны) с",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7CXU-7KJ3-9Q6",
+          "page": 15,
+          "file": "block_7CXU-7KJ3-9Q6.png",
+          "size_kb": 51.8,
+          "ocr_label": "Фрагмент армирования стены 48-Стм200 с указанием высотных отметок и параметров а",
+          "risk": "normal"
+        },
+        {
+          "block_id": "A6YK-G7A9-MMR",
+          "page": 15,
+          "file": "block_A6YK-G7A9-MMR.png",
+          "size_kb": 43.7,
+          "ocr_label": "Фрагмент армирования стены 47-Стм200 с указанием высотных отметок и параметров а",
+          "risk": "normal"
+        },
+        {
+          "block_id": "6X93-UP47-T6G",
+          "page": 15,
+          "file": "block_6X93-UP47-T6G.png",
+          "size_kb": 42.6,
+          "ocr_label": "Представлены две схемы установки поперечной арматуры (шпилек) в стенах с различн",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4RRP-APLY-KPA",
+          "page": 15,
+          "file": "block_4RRP-APLY-KPA.png",
+          "size_kb": 49.4,
+          "ocr_label": "На схеме представлены варианты (Вар 3 и Вар 4) армирования стен с указанием расп",
+          "risk": "normal"
+        },
+        {
+          "block_id": "6EVE-NNFK-NWD",
+          "page": 15,
+          "file": "block_6EVE-NNFK-NWD.png",
+          "size_kb": 17.1,
+          "ocr_label": "Представлена схема стыковки арматурных стержней внахлест с указанием геометричес",
+          "risk": "light"
+        },
+        {
+          "block_id": "XRLP-WYJG-LAU",
+          "page": 15,
+          "file": "block_XRLP-WYJG-LAU.png",
+          "size_kb": 18.2,
+          "ocr_label": "На чертеже представлена схема отгиба арматурного стержня с указанием геометричес",
+          "risk": "light"
+        },
+        {
+          "block_id": "7RYF-G6EJ-GVQ",
+          "page": 15,
+          "file": "block_7RYF-G6EJ-GVQ.png",
+          "size_kb": 30.8,
+          "ocr_label": "На чертеже представлены типовые узлы сопряжения рабочего стержня с гнутыми армат",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 27,
+      "block_count": 5,
+      "total_size_kb": 121.2,
+      "pages_included": [
+        15
+      ],
+      "blocks": [
+        {
+          "block_id": "LT66-UCJY-XUY",
+          "page": 15,
+          "file": "block_LT66-UCJY-XUY.png",
+          "size_kb": 24.8,
+          "ocr_label": "Схема установки горизонтальных П-образных элементов в арматурном каркасе стены.",
+          "risk": "light"
+        },
+        {
+          "block_id": "7YPU-7R7J-YNE",
+          "page": 15,
+          "file": "block_7YPU-7R7J-YNE.png",
+          "size_kb": 13.6,
+          "ocr_label": "На чертеже представлен разрез Я-Я железобетонного элемента с указанием армирован",
+          "risk": "light"
+        },
+        {
+          "block_id": "4YCC-GJX3-CAK",
+          "page": 15,
+          "file": "block_4YCC-GJX3-CAK.png",
+          "size_kb": 24.4,
+          "ocr_label": "Схема установки горизонтальных хомутов в арматурном каркасе стены.",
+          "risk": "light"
+        },
+        {
+          "block_id": "4U4Y-DKT4-HKU",
+          "page": 15,
+          "file": "block_4U4Y-DKT4-HKU.png",
+          "size_kb": 12.4,
+          "ocr_label": "На фрагменте представлено сечение Ю-Ю, иллюстрирующее схему установки горизонтал",
+          "risk": "light"
+        },
+        {
+          "block_id": "6Y4G-FDQE-6JC",
+          "page": 15,
+          "file": "block_6Y4G-FDQE-6JC.png",
+          "size_kb": 46.0,
+          "ocr_label": "Чертеж армирования железобетонного элемента с сечением 500х200(h) и разрезом 52а",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 28,
+      "block_count": 6,
+      "total_size_kb": 323.0,
+      "pages_included": [
+        16,
+        17
+      ],
+      "blocks": [
+        {
+          "block_id": "9PPJ-YP6U-HV6",
+          "page": 16,
+          "file": "block_9PPJ-YP6U-HV6.png",
+          "size_kb": 92.3,
+          "ocr_label": "Таблица ведомости деталей армирования с указанием геометрических параметров (a, ",
+          "risk": "heavy"
+        },
+        {
+          "block_id": "947C-9UJT-RYU",
+          "page": 16,
+          "file": "block_947C-9UJT-RYU.png",
+          "size_kb": 93.3,
+          "ocr_label": "Фрагмент ведомости деталей арматурных элементов с указанием геометрических парам",
+          "risk": "heavy"
+        },
+        {
+          "block_id": "73YG-7DGA-HUH",
+          "page": 16,
+          "file": "block_73YG-7DGA-HUH.png",
+          "size_kb": 43.4,
+          "ocr_label": "Таблица ведомости деталей с указанием позиций, эскизов арматурных элементов и их",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4AV4-PPXG-REV",
+          "page": 17,
+          "file": "block_4AV4-PPXG-REV.png",
+          "size_kb": 52.8,
+          "ocr_label": "Таблица ведомости деталей арматурных элементов с эскизами и геометрическими пара",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4HDD-UUVX-GR4",
+          "page": 17,
+          "file": "block_4HDD-UUVX-GR4.png",
+          "size_kb": 24.6,
+          "ocr_label": "Представлена легенда условных обозначений для строительных чертежей.",
+          "risk": "light"
+        },
+        {
+          "block_id": "6AFF-3MAM-EXJ",
+          "page": 17,
+          "file": "block_6AFF-3MAM-EXJ.png",
+          "size_kb": 16.6,
+          "ocr_label": "Графическая схема отгиба арматурного стержня с указанием геометрических параметр",
+          "risk": "light"
+        }
+      ]
+    },
+    {
+      "batch_id": 29,
+      "block_count": 7,
+      "total_size_kb": 252.7,
+      "pages_included": [
+        17,
+        18
+      ],
+      "blocks": [
+        {
+          "block_id": "AAHY-LAPW-4DF",
+          "page": 17,
+          "file": "block_AAHY-LAPW-4DF.png",
+          "size_kb": 45.2,
+          "ocr_label": "Армирование колонны в разрезе 1-1 с указанием позиций арматурных стержней и разм",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7GHY-73UY-TJG",
+          "page": 17,
+          "file": "block_7GHY-73UY-TJG.png",
+          "size_kb": 45.2,
+          "ocr_label": "На чертеже представлен разрез 2-2 армирования колонны с указанием шага хомутов и",
+          "risk": "normal"
+        },
+        {
+          "block_id": "6XVN-CGJH-YXL",
+          "page": 17,
+          "file": "block_6XVN-CGJH-YXL.png",
+          "size_kb": 27.5,
+          "ocr_label": "Представлены типовые узлы сопряжения рабочего стержня с гнутыми арматурными элем",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4R4K-HXGY-3PH",
+          "page": 17,
+          "file": "block_4R4K-HXGY-3PH.png",
+          "size_kb": 39.2,
+          "ocr_label": "Представлено сечение колонны Км-400-1000-2800-1 с указанием армирования и защитн",
+          "risk": "normal"
+        },
+        {
+          "block_id": "9U74-KT9W-HGN",
+          "page": 17,
+          "file": "block_9U74-KT9W-HGN.png",
+          "size_kb": 32.7,
+          "ocr_label": "Чертеж сечения железобетонной колонны Км-400-1000-2800-2 с указанием армирования",
+          "risk": "normal"
+        },
+        {
+          "block_id": "79NT-KCUP-VUK",
+          "page": 18,
+          "file": "block_79NT-KCUP-VUK.png",
+          "size_kb": 34.0,
+          "ocr_label": "Представлено сечение колонны Км-400-1000-2800-3 с указанием размеров и армирован",
+          "risk": "normal"
+        },
+        {
+          "block_id": "JTUC-HHUY-W7K",
+          "page": 18,
+          "file": "block_JTUC-HHUY-W7K.png",
+          "size_kb": 28.9,
+          "ocr_label": "На чертеже представлены типовые узлы сопряжения рабочего стержня с гнутыми армат",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 30,
+      "block_count": 6,
+      "total_size_kb": 208.3,
+      "pages_included": [
+        18,
+        19
+      ],
+      "blocks": [
+        {
+          "block_id": "9VHU-GJRC-466",
+          "page": 18,
+          "file": "block_9VHU-GJRC-466.png",
+          "size_kb": 47.2,
+          "ocr_label": "Чертеж армирования вертикальной несущей конструкции в разрезе 1-1.",
+          "risk": "heavy"
+        },
+        {
+          "block_id": "9JE7-FPRL-E9E",
+          "page": 18,
+          "file": "block_9JE7-FPRL-E9E.png",
+          "size_kb": 51.6,
+          "ocr_label": "Таблица ведомости деталей арматурных элементов с эскизами и геометрическими пара",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7PQJ-YWYD-3FP",
+          "page": 18,
+          "file": "block_7PQJ-YWYD-3FP.png",
+          "size_kb": 17.1,
+          "ocr_label": "Графическая схема отгиба арматурного стержня с указанием геометрических параметр",
+          "risk": "light"
+        },
+        {
+          "block_id": "VNVR-PXFJ-HEJ",
+          "page": 18,
+          "file": "block_VNVR-PXFJ-HEJ.png",
+          "size_kb": 22.4,
+          "ocr_label": "На фрагменте представлена легенда условных обозначений для чертежей армирования.",
+          "risk": "light"
+        },
+        {
+          "block_id": "9PMF-NARW-9EC",
+          "page": 19,
+          "file": "block_9PMF-NARW-9EC.png",
+          "size_kb": 35.9,
+          "ocr_label": "Представлено сечение колонны Км-400-1200-2800-1 с указанием армирования и защитн",
+          "risk": "light"
+        },
+        {
+          "block_id": "4KH9-FRYR-WGV",
+          "page": 19,
+          "file": "block_4KH9-FRYR-WGV.png",
+          "size_kb": 34.1,
+          "ocr_label": "Сечение колонны Км-400-1200-2800-2 с указанием армирования и защитных слоев.",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 31,
+      "block_count": 7,
+      "total_size_kb": 286.9,
+      "pages_included": [
+        19
+      ],
+      "blocks": [
+        {
+          "block_id": "AWEW-KHGF-XTX",
+          "page": 19,
+          "file": "block_AWEW-KHGF-XTX.png",
+          "size_kb": 58.8,
+          "ocr_label": "На чертеже представлен разрез 1-1 армирования колонны с указанием высотных отмет",
+          "risk": "normal"
+        },
+        {
+          "block_id": "TAXK-LEUR-TKK",
+          "page": 19,
+          "file": "block_TAXK-LEUR-TKK.png",
+          "size_kb": 55.8,
+          "ocr_label": "На чертеже представлен разрез 2-2 армирования железобетонной колонны с указанием",
+          "risk": "normal"
+        },
+        {
+          "block_id": "KFML-N7WG-Y4W",
+          "page": 19,
+          "file": "block_KFML-N7WG-Y4W.png",
+          "size_kb": 48.9,
+          "ocr_label": "Таблица ведомости деталей с эскизами арматурных элементов и их геометрическими п",
+          "risk": "normal"
+        },
+        {
+          "block_id": "KEMF-D3Y4-3NJ",
+          "page": 19,
+          "file": "block_KEMF-D3Y4-3NJ.png",
+          "size_kb": 52.8,
+          "ocr_label": "Таблица ведомости деталей арматурных элементов с указанием их эскизов и геометри",
+          "risk": "light"
+        },
+        {
+          "block_id": "9R9K-JMRC-LWA",
+          "page": 19,
+          "file": "block_9R9K-JMRC-LWA.png",
+          "size_kb": 24.7,
+          "ocr_label": "Легенда условных обозначений для чертежей армирования.",
+          "risk": "light"
+        },
+        {
+          "block_id": "9993-RW34-7HW",
+          "page": 19,
+          "file": "block_9993-RW34-7HW.png",
+          "size_kb": 16.2,
+          "ocr_label": "Графическая схема отгиба арматурного стержня с указанием геометрических параметр",
+          "risk": "light"
+        },
+        {
+          "block_id": "6QPC-LPRT-FXV",
+          "page": 19,
+          "file": "block_6QPC-LPRT-FXV.png",
+          "size_kb": 29.7,
+          "ocr_label": "На схеме представлены три типовых узла сопряжения рабочего стержня арматуры с гн",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 32,
+      "block_count": 6,
+      "total_size_kb": 190.1,
+      "pages_included": [
+        20
+      ],
+      "blocks": [
+        {
+          "block_id": "6XXG-CYEA-3V6",
+          "page": 20,
+          "file": "block_6XXG-CYEA-3V6.png",
+          "size_kb": 27.9,
+          "ocr_label": "Фрагмент схемы расположения закладных деталей ЭОМ с указанием осей и размеров.",
+          "risk": "heavy"
+        },
+        {
+          "block_id": "9MKJ-RAFV-UDM",
+          "page": 20,
+          "file": "block_9MKJ-RAFV-UDM.png",
+          "size_kb": 27.4,
+          "ocr_label": "Фрагмент строительного плана с указанием осей, размеров и направлений разрезов.",
+          "risk": "normal"
+        },
+        {
+          "block_id": "7W4D-7H6Q-NK7",
+          "page": 20,
+          "file": "block_7W4D-7H6Q-NK7.png",
+          "size_kb": 36.0,
+          "ocr_label": "Фрагмент разреза 1-1 с указанием расположения закладных деталей ЭОМ в монолитной",
+          "risk": "normal"
+        },
+        {
+          "block_id": "6Q9N-FFCG-VMH",
+          "page": 20,
+          "file": "block_6Q9N-FFCG-VMH.png",
+          "size_kb": 38.8,
+          "ocr_label": "Фрагмент разреза 2-2 с указанием расположения закладных деталей ЭОМ в монолитной",
+          "risk": "normal"
+        },
+        {
+          "block_id": "A64J-CYTJ-AQQ",
+          "page": 20,
+          "file": "block_A64J-CYTJ-AQQ.png",
+          "size_kb": 27.7,
+          "ocr_label": "На чертеже представлен разрез Б-Б с указанием расположения ниши ЭОМ, коробки КУ ",
+          "risk": "light"
+        },
+        {
+          "block_id": "7AG9-4FTL-LET",
+          "page": 20,
+          "file": "block_7AG9-4FTL-LET.png",
+          "size_kb": 32.3,
+          "ocr_label": "Фрагмент разреза А-А с указанием высотных отметок и элементов инженерных коммуни",
+          "risk": "normal"
+        }
+      ]
+    },
+    {
+      "batch_id": 33,
+      "block_count": 2,
+      "total_size_kb": 77.5,
+      "pages_included": [
+        20
+      ],
+      "blocks": [
+        {
+          "block_id": "4YKN-EJLX-F6E",
+          "page": 20,
+          "file": "block_4YKN-EJLX-F6E.png",
+          "size_kb": 38.0,
+          "ocr_label": "Фрагмент разреза 3-3 с указанием расположения закладных деталей ЭОМ в монолитной",
+          "risk": "normal"
+        },
+        {
+          "block_id": "4JJP-W7D6-YKF",
+          "page": 20,
+          "file": "block_4JJP-W7D6-YKF.png",
+          "size_kb": 39.5,
+          "ocr_label": "Фрагмент разреза 4-4 с указанием расположения трубы ПНД и коробки КУ 1301 в нише",
+          "risk": "normal"
+        }
+      ]
+    }
+  ]
+}

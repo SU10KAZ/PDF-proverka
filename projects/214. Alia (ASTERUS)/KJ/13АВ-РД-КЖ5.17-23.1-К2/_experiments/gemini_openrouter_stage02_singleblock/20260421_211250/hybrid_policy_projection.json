@@ -1,0 +1,17 @@
+{
+  "trigger_rule": "Pro escalation: (analysis missing) OR (findings=0 AND kv<=2) OR (empty_summary)",
+  "policy_triggered_count": 215,
+  "total_blocks": 215,
+  "triggered_pct": 100.0,
+  "flash_cost_per_block": 0.0,
+  "pro_cost_per_block_sample": 0.0,
+  "projected_flash_full_cost": 0.0,
+  "projected_pro_escalation_cost": 0.0,
+  "projected_hybrid_total_cost": 0.0,
+  "projected_improved_blocks": 0,
+  "projected_added_findings": 0,
+  "projected_extra_cost_per_improved": null,
+  "sample_improved": 0,
+  "sample_unchanged": 20,
+  "sample_degraded": 0
+}

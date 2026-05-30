@@ -1,0 +1,53 @@
+{
+  "block_id": "A7YN-4V6Q-LAF",
+  "page": 11,
+  "sheet_no": "6",
+  "file": "block_A7YN-4V6Q-LAF.png",
+  "size_kb": 16.0,
+  "ocr_text_len": 742,
+  "ocr_label": "На фрагменте чертежа представлено сечение Ю-Ю, иллюстрирующее схему установки го",
+  "ok": true,
+  "elapsed_ms": 3332,
+  "input_tokens": 1358,
+  "output_tokens": 272,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 641,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3332,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "сечение",
+    "subject": "Сечение Ю-Ю стены с указанием расположения вертикальной арматуры и хомутов",
+    "marks": [
+      "16-Г-1"
+    ],
+    "rebar_specs": [
+      "Ø16 А500С шаг 200 (29 шт.)",
+      "Ø16 А500С длина 5850"
+    ],
+    "dimensions": [
+      "t=200",
+      "16-5850"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 2",
+      "см. лист 3",
+      "см. лист 11"
+    ],
+    "axes": [],
+    "level_marks": [
+      "+4,200"
+    ],
+    "concrete_class": "B40",
+    "notes": "Изображено сечение стены с указанием шага и количества вертикальной арматуры, а также типа хомутов. Указаны ссылки на общие указания, опалубку и спецификации."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

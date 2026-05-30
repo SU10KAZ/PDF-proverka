@@ -100,7 +100,10 @@ def v1_v2_with_artefacts(tmp_path, monkeypatch):
     version_service.create_next_version(
         pdir, "M31A", source="manual", status="new", comment="V2",
     )
-    v2_dir = pdir / "_versions" / "v2"
+    # Промоут в контейнер переместил V1: пересчитываем пути.
+    container = projects_dir / "M31A(main)"
+    pdir = container / "M31A"
+    v2_dir = container / "M31A V2"
     (v2_dir / "v2.pdf").write_bytes(b"%PDF-1.4\nfake-v2\n%%EOF\n")
     (v2_dir / "v2_document.md").write_text("V2 MD content", encoding="utf-8")
     v2_info_path = v2_dir / "project_info.json"
@@ -302,7 +305,7 @@ def test_get_md_file_path_v2_via_bind(v1_v2_with_artefacts):
     project_info = {"md_file": "v2_document.md"}
     with version_service.pinned_version("v2"):
         md_path = _get_md_file_path(project_info, "M31A")
-    assert "_versions/v2/v2_document.md" in md_path
+    assert "M31A V2/v2_document.md" in md_path
 
 
 def test_get_project_paths_v2_via_bind(v1_v2_with_artefacts):
@@ -312,8 +315,8 @@ def test_get_project_paths_v2_via_bind(v1_v2_with_artefacts):
 
     with version_service.pinned_version("v2"):
         proj, out = _get_project_paths("M31A")
-    assert "_versions/v2" in proj
-    assert "_versions/v2/_output" in out
+    assert "M31A V2" in proj
+    assert "M31A V2/_output" in out
 
 
 def test_load_document_graph_v2_via_bind(v1_v2_with_artefacts):

@@ -1,0 +1,33 @@
+{
+  "model": "google/gemma-4-31b",
+  "image_name": "6PPA-4DDX-6FR",
+  "block_id": "6PPA-4DDX-6FR",
+  "width": 1003,
+  "height": 1024,
+  "request": "image_smoke",
+  "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_200236/audit_images/native_crops/block_6PPA-4DDX-6FR_native.png",
+  "image_size_bytes": 99586,
+  "ok": true,
+  "status_code": 200,
+  "elapsed_s": 6.012,
+  "error": null,
+  "response": {
+    "model_instance_id": "google/gemma-4-31b",
+    "output": [
+      {
+        "type": "message",
+        "content": "Тип: Схема армирования железобетонной колонны (разрез и сечения).\n\nОсновные элементы: Вертикальное армирование, поперечные хомуты, сечения 26а и 26.\n\nДетали:\n1. Арматура 8-Г-3 с шагом 200 мм.\n2. Защитный слой бетона (з.с.) 30 мм.\n3. Сечение колонны 200х200 мм."
+      }
+    ],
+    "stats": {
+      "input_tokens": 350,
+      "total_output_tokens": 112,
+      "reasoning_output_tokens": 0,
+      "tokens_per_second": 64.9115435327528,
+      "time_to_first_token_seconds": 0.663
+    }
+  },
+  "content": "Тип: Схема армирования железобетонной колонны (разрез и сечения).\n\nОсновные элементы: Вертикальное армирование, поперечные хомуты, сечения 26а и 26.\n\nДетали:\n1. Арматура 8-Г-3 с шагом 200 мм.\n2. Защитный слой бетона (з.с.) 30 мм.\n3. Сечение колонны 200х200 мм.",
+  "reasoning": "",
+  "verdict": "pass"
+}

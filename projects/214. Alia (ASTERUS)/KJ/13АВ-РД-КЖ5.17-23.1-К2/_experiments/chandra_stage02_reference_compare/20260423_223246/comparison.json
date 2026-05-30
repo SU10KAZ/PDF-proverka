@@ -1,0 +1,19 @@
+[
+  {
+    "block_id": "3TFL-TNRF-7G6",
+    "reference_label": "Вертикальные конструкции 17-23 этажа. Маркировочная схема",
+    "candidate_label": null,
+    "reference_findings": 1,
+    "candidate_findings": 0,
+    "reference_kv": 55,
+    "candidate_kv": 0,
+    "elapsed_s": 11.251,
+    "parse_ok": false,
+    "verdict": "fail_parse",
+    "notes": [
+      "candidate JSON parse failed"
+    ],
+    "reference_summary": "Маркировочная схема вертикальных конструкций (стен и колонн) для 17-23 этажей с указанием марок, армирования и привязок к осям.",
+    "candidate_summary": null
+  }
+]

@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "stages": {
+    "crop_blocks": {
+      "status": "done",
+      "completed_at": "2026-04-18T14:58:29.311108",
+      "message": "Pre-cropped"
+    },
+    "text_analysis": {
+      "status": "done",
+      "started_at": "2026-04-18T14:58:29.320421",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-opus-4-6",
+      "completed_at": "2026-04-18T15:04:14.879167",
+      "message": "OK"
+    },
+    "block_analysis": {
+      "status": "done",
+      "started_at": "2026-04-18T15:04:15.006742",
+      "input_tokens": 95808,
+      "output_tokens": 12254,
+      "model": "google/gemini-3.1-pro-preview",
+      "completed_at": "2026-04-18T15:05:33.356939",
+      "message": "Все 2 пакетов OK"
+    },
+    "block_retry": {
+      "status": "skipped",
+      "completed_at": "2026-04-18T15:05:33.532851",
+      "message": "Все блоки читаемы"
+    },
+    "findings_merge": {
+      "status": "done",
+      "started_at": "2026-04-18T15:10:13.903576",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-opus-4-7",
+      "completed_at": "2026-04-18T15:16:24.332914",
+      "message": "OK"
+    },
+    "findings_critic": {
+      "status": "done",
+      "started_at": "2026-04-18T15:16:26.913801",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-sonnet-4-6",
+      "completed_at": "2026-04-18T15:20:38.563147",
+      "message": "OK"
+    },
+    "norm_verify": {
+      "status": "done",
+      "started_at": "2026-04-18T15:16:26.920014",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-opus-4-7",
+      "completed_at": "2026-04-18T15:19:58.355881",
+      "message": "OK"
+    },
+    "optimization": {
+      "status": "done",
+      "started_at": "2026-04-18T15:16:26.935260",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-opus-4-7",
+      "completed_at": "2026-04-18T15:18:54.961282",
+      "message": "OK"
+    },
+    "findings_corrector": {
+      "status": "done",
+      "started_at": "2026-04-18T15:20:41.969305",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-sonnet-4-6",
+      "completed_at": "2026-04-18T15:28:59.997336",
+      "message": "OK"
+    },
+    "optimization_critic": {
+      "status": "done",
+      "started_at": "2026-04-18T15:29:00.001871",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model": "claude-sonnet-4-6",
+      "completed_at": "2026-04-18T15:30:43.064184",
+      "message": "OK"
+    },
+    "excel": {
+      "status": "done",
+      "started_at": "2026-04-18T15:30:43.065747",
+      "completed_at": "2026-04-18T15:30:43.249950",
+      "message": "OK"
+    }
+  },
+  "last_updated": "2026-04-18T15:30:43.249950"
+}

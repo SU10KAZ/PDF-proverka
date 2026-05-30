@@ -1,0 +1,43 @@
+{
+  "block_id": "9LPD-VX9H-YHK",
+  "page": 12,
+  "sheet_no": "7",
+  "file": "block_9LPD-VX9H-YHK.png",
+  "size_kb": 108.7,
+  "ocr_text_len": 938,
+  "ocr_label": "Фрагмент чертежа узла армирования вертикальной конструкции с указанием параметро",
+  "ok": true,
+  "elapsed_ms": 6926,
+  "input_tokens": 2675,
+  "output_tokens": 233,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 579,
+  "enrichment": {
+    "block_type": "сечение",
+    "subject": "Сечение круглой колонны с армированием и указанием размеров защитного слоя и шага хомутов",
+    "marks": [
+      "12-Х-1"
+    ],
+    "rebar_specs": [
+      "шаг 400"
+    ],
+    "dimensions": [
+      "155",
+      "25",
+      "190",
+      "300",
+      "45°"
+    ],
+    "references_on_block": [
+      "см. комплект КЖ3.1-ПА Книга 3",
+      "5"
+    ],
+    "axes": [],
+    "level_marks": [],
+    "concrete_class": null,
+    "notes": "Изображено сечение круглой колонны с указанием защитного слоя 25 мм и шага хомутов 400 мм. Выпуски арматуры отсылают к другому комплекту чертежей."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

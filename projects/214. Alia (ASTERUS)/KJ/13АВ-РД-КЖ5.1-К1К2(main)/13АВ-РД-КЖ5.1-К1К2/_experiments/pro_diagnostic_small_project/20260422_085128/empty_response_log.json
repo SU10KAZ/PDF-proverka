@@ -1,0 +1,12 @@
+[
+  {
+    "variant": "v2_thinking_low_heal_on",
+    "empty_response_block_ids": [],
+    "empty_after_retry_block_ids": []
+  },
+  {
+    "variant": "v3_thinking_low_heal_off",
+    "empty_response_block_ids": [],
+    "empty_after_retry_block_ids": []
+  }
+]

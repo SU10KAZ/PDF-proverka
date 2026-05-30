@@ -1,0 +1,915 @@
+{
+  "stage": "02_blocks_analysis",
+  "meta": {
+    "blocks_reviewed": 25,
+    "total_blocks_expected": 25,
+    "coverage_pct": 100.0,
+    "batches_merged": 2,
+    "sources": [
+      "block_batch_001.json",
+      "block_batch_002.json"
+    ]
+  },
+  "block_analyses": [
+    {
+      "block_id": "A9M4-EJ7R-MKH",
+      "page": 6,
+      "sheet": "1",
+      "label": "Схема расположения конструктивных элементов",
+      "sheet_type": "marking_scheme",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "Схема расположения конструктивных элементов (колонн, пристроек и зон автостоянки) с указанием этажности. Показаны контуры колонн К1-К7, пристроек и зон подземной автостоянки.",
+      "key_values_read": [
+        "Колонны: К1, К2, К3, К4, К5, К6, К7",
+        "Пристройки: К3-К4, К4-К5, К5-К6",
+        "Зоны подземной автостоянки: П.1-П.24, П.25-П.48",
+        "Этажность: 15эт., 18эт., 28эт., 30эт., 39эт., 42эт."
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4FYM-T77L-JKD",
+          "role": "note",
+          "used_for": "summary"
+        }
+      ],
+      "findings": [],
+      "selected_text_block_ids": [
+        "4FYM-T77L-JKD",
+        "GQCE-W943-QQL",
+        "63LJ-H9M6-EV3",
+        "9CRM-4HXR-UT3",
+        "JLP9-464A-9WF"
+      ]
+    },
+    {
+      "block_id": "66NE-7DYY-GQN",
+      "page": 7,
+      "sheet": "2",
+      "label": "План опалубки вертикальных конструкций 17-23 этажей",
+      "sheet_type": "formwork_vertical",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "План опалубки вертикальных конструкций 17-23 этажей. Показаны несущие стены, колонны, проемы и отверстия с привязками к осям.",
+      "key_values_read": [
+        "Толщина стен — 200 мм",
+        "Проемы: П-2, П-3, П-4, П-5, П-6, П-7, П-8, П-9, П-10, П-11, П-12",
+        "Отверстия: Отв.1, Отв.2, Отв.3, Отв.4, Отв.5, Отв.8",
+        "Углы: 38°, 36,5°, 35°"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4KLA-VHYN-76X",
+          "role": "table",
+          "used_for": "cross_check"
+        }
+      ],
+      "findings": [],
+      "selected_text_block_ids": []
+    },
+    {
+      "block_id": "page_007",
+      "page": 7,
+      "sheet": "2",
+      "label": "Полный лист 2: Опалубка",
+      "sheet_type": "formwork_vertical",
+      "unreadable_text": true,
+      "unreadable_details": "Мелкий текст на фрагментах и разрезах нечитаем из-за низкого разрешения.",
+      "summary": "Полный лист с планом опалубки вертикальных конструкций 17-23 этажей, фрагментами, разрезами и спецификацией отверстий и проемов.",
+      "key_values_read": [
+        "План опалубки",
+        "Разрезы 1-1...28-28",
+        "Фрагменты А, Б, В, Г"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4KLA-VHYN-76X",
+          "role": "table",
+          "used_for": "summary"
+        },
+        {
+          "text_block_id": "EEFW-CLY3-MTT",
+          "role": "note",
+          "used_for": "summary"
+        }
+      ],
+      "findings": [],
+      "selected_text_block_ids": []
+    },
+    {
+      "block_id": "3TFL-TNRF-7G6",
+      "page": 8,
+      "sheet": "3",
+      "label": "Маркировочная схема вертикальных конструкций",
+      "sheet_type": "marking_scheme",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "Маркировочная схема вертикальных конструкций 17-23 этажей. Указаны марки монолитных стен (Стм) и колонн (Км) с привязками к осям.",
+      "key_values_read": [
+        "Стены: 21-Стм200, 35-Стм200, 44-Стм200, 26-Стм200, 6-Стм200, 43-Стм200, 10-Стм200, 34-Стм200, 40-Стм200, 50-Стм200, 51-Стм200, 17-Стм200, 18-Стм200, 4-Стм200, 27-Стм250, 31-Стм250, 12-Стм200, 32-Стм250, 20-Стм200, 38-Стм200, 41-Стм200, 30-Стм200, 25-Стм200, 42-Стм200, 19-Стм200"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4U3W-66VN-FMD",
+          "role": "legend",
+          "used_for": "cross_check"
+        }
+      ],
+      "findings": [],
+      "selected_text_block_ids": [
+        "7WRR-K3AT-XV6",
+        "4U3W-66VN-FMD",
+        "9CHP-K3VG-AGX"
+      ]
+    },
+    {
+      "block_id": "page_008",
+      "page": 8,
+      "sheet": "3",
+      "label": "Полный лист 3: Маркировочная схема",
+      "sheet_type": "marking_scheme",
+      "unreadable_text": true,
+      "unreadable_details": "Мелкий текст в таблицах и на фрагментах нечитаем из-за низкого разрешения.",
+      "summary": "Полный лист с маркировочной схемой вертикальных конструкций 17-23 этажей, фрагментами, таблицей параметров арматурных деталей и спецификацией колонн.",
+      "key_values_read": [
+        "Маркировочная схема",
+        "Фрагменты А, Б, В, Г",
+        "Таблица 1. Параметры арматурных деталей",
+        "Спецификация колонн монолитных"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "9PGT-G3UK-PMF",
+          "role": "table",
+          "used_for": "summary"
+        },
+        {
+          "text_block_id": "9CHP-K3VG-AGX",
+          "role": "table",
+          "used_for": "summary"
+        }
+      ],
+      "findings": [],
+      "selected_text_block_ids": []
+    },
+    {
+      "block_id": "9DH3-MEUR-DR4",
+      "page": 9,
+      "sheet": "4",
+      "label": "Фрагмент разреза 6-6 (3)",
+      "sheet_type": "sections_cuts",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "Фрагмент разреза 6-6 (3) с указанием армирования и высотных отметок. Показаны вертикальные и горизонтальные арматурные стержни, их шаг и количество.",
+      "key_values_read": [
+        "Арматура: 8-Х-4 шаг 200, 8-Х-6 шаг 200, 12-4600, 8-Г-2 шаг 200, 8-Х-1 шаг 200, 16-2300, 12-Г-17, 16-Г-22, 8-Х-7 шаг 200, 8-Х-8 шаг 200, 12-9750, 12-3750",
+        "Отметки: отм. А, отм. Б, отм. Г, отм. К, отм. Е"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4RPK-YMJV-TDU",
+          "role": "note",
+          "used_for": "summary"
+        }
+      ],
+      "findings": [],
+      "selected_text_block_ids": []
+    },
+    {
+      "block_id": "page_009",
+      "page": 9,
+      "sheet": "4",
+      "label": "Полный лист 4: Разрезы",
+      "sheet_type": "sections_cuts",
+      "unreadable_text": true,
+      "unreadable_details": "Мелкий текст на разрезах нечитаем из-за низкого разрешения.",
+      "summary": "Полный лист с разрезами 1-1...14-14 вертикальных конструкций 17-23 этажей. Показано армирование стен и узлы сопряжения.",
+      "key_values_read": [
+        "Разрезы 1-1...14-14",
+        "Узлы А-А, Б-Б"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4RPK-YMJV-TDU",
+          "role": "note",
+          "used_for": "summary"
+        }
+      ],
+      "findings": [],
+      "selected_text_block_ids": []
+    },
+    {
+      "block_id": "page_010",
+      "page": 10,
+      "sheet": "5",
+      "label": "Полный лист 5: Сечения армирования стен 1-Стм...7-Стм",
+      "sheet_type": "wall_sections",
+      "unreadable_text": true,
+      "unreadable_details": "Мелкий текст на сечениях и схемах нечитаем из-за низкого разрешения.",
+      "summary": "Полный лист с сечениями армирования стен 1-Стм...7-Стм. Приведены схемы установки поперечной арматуры, стыковки внахлест и установки П-образных элементов.",
+      "key_values_read": [
+        "Сечения стен: 1-Стм250, 2-Стм250, 2.1-Стм250, 3-Стм200, 3.1-Стм200, 4-Стм200, 4.1-Стм200, 5-Стм200, 5.1-Стм200, 6-Стм200, 7-Стм200",
+        "Схемы установки арматуры: Вар 1, Вар 2, Вар 3, Вар 4"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "J3AQ-TAQ7-7UA",
+          "role": "note",
+          "used_for": "summary"
+        }
+      ],
+      "findings": [],
+      "selected_text_block_ids": []
+    },
+    {
+      "block_id": "page_011",
+      "page": 11,
+      "sheet": "6",
+      "label": "Полный лист 6: Сечения армирования стен 8-Стм...16-Стм",
+      "sheet_type": "wall_sections",
+      "unreadable_text": true,
+      "unreadable_details": "Мелкий текст на сечениях и схемах нечитаем из-за низкого разрешения.",
+      "summary": "Полный лист с сечениями армирования стен 8-Стм...16-Стм. Приведены схемы установки поперечной арматуры, стыковки внахлест и установки П-образных элементов.",
+      "key_values_read": [
+        "Сечения стен: 8-Стм200, 9-Стм200, 10-Стм200, 11-Стм200, 12-Стм200, 13-Стм200, 14-Стм200, 15-Стм200, 16-Стм200"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4DDL-LPPE-DR4",
+          "role": "note",
+          "used_for": "summary"
+        }
+      ],
+      "findings": [],
+      "selected_text_block_ids": []
+    },
+    {
+      "block_id": "page_012",
+      "page": 12,
+      "sheet": "7",
+      "label": "Полный лист 7: Сечения армирования стен 17-Стм...25-Стм",
+      "sheet_type": "wall_sections",
+      "unreadable_text": true,
+      "unreadable_details": "Мелкий текст на сечениях и схемах нечитаем из-за низкого разрешения.",
+      "summary": "Полный лист с сечениями армирования стен 17-Стм...25-Стм. Приведены схемы установки поперечной арматуры, стыковки внахлест и установки П-образных элементов.",
+      "key_values_read": [
+        "Сечения стен: 17-Стм200, 18-Стм200, 19-Стм200, 20-Стм200, 21-Стм200, 22-Стм200, 23-Стм200, 24-Стм200, 25-Стм200"
+      ],
+      "evidence_text_refs": [],
+      "findings": [],
+      "selected_text_block_ids": []
+    },
+    {
+      "block_id": "page_013",
+      "page": 13,
+      "sheet": "8",
+      "label": "Полный лист 8: Сечения армирования стен 26-Стм...33-Стм",
+      "sheet_type": "wall_sections",
+      "unreadable_text": true,
+      "unreadable_details": "Мелкий текст на сечениях и схемах нечитаем из-за низкого разрешения.",
+      "summary": "Полный лист с сечениями армирования стен 26-Стм...33-Стм. Приведены схемы установки поперечной арматуры, стыковки внахлест и установки П-образных элементов.",
+      "key_values_read": [
+        "Сечения стен: 26-Стм200, 27-Стм250, 28-Стм250, 29-Стм250, 30-Стм200, 31-Стм250, 32-Стм250, 33-Стм200"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4JE3-7FT9-ALJ",
+          "role": "note",
+          "used_for": "summary"
+        }
+      ],
+      "findings": [],
+      "selected_text_block_ids": []
+    },
+    {
+      "block_id": "page_014",
+      "page": 14,
+      "sheet": "9",
+      "label": "Полный лист 9: Сечения армирования стен 34-Стм...42-Стм",
+      "sheet_type": "wall_sections",
+      "unreadable_text": true,
+      "unreadable_details": "Мелкий текст на сечениях и схемах нечитаем из-за низкого разрешения.",
+      "summary": "Полный лист с сечениями армирования стен 34-Стм...42-Стм. Приведены схемы установки поперечной арматуры, стыковки внахлест и установки П-образных элементов.",
+      "key_values_read": [
+        "Сечения стен: 34-Стм200, 35-Стм200, 36-Стм200, 37-Стм200, 38-Стм200, 39-Стм200, 40-Стм200, 41-Стм200, 42-Стм200"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4RDA-QTRG-UYY",
+          "role": "note",
+          "used_for": "summary"
+        }
+      ],
+      "findings": [],
+      "selected_text_block_ids": []
+    },
+    {
+      "block_id": "page_015",
+      "page": 15,
+      "sheet": "10",
+      "label": "Полный лист 10: Сечения армирования стен 43-Стм...52-Стм",
+      "sheet_type": "wall_sections",
+      "unreadable_text": true,
+      "unreadable_details": "Мелкий текст на сечениях и схемах нечитаем из-за низкого разрешения.",
+      "summary": "Полный лист с сечениями армирования стен 43-Стм...52-Стм. Приведены схемы установки поперечной арматуры, стыковки внахлест и установки П-образных элементов.",
+      "key_values_read": [
+        "Сечения стен: 43-Стм200, 44-Стм200, 45-Стм200, 45.1-Стм200, 46-Стм300, 47-Стм200, 48-Стм200, 49-Стм200, 50-Стм200, 51-Стм200, 52-Стм200"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "7XX6-VKH6-WNC",
+          "role": "note",
+          "used_for": "summary"
+        }
+      ],
+      "findings": [],
+      "selected_text_block_ids": []
+    },
+    {
+      "block_id": "9PPJ-YP6U-HV6",
+      "page": 16,
+      "sheet": "11",
+      "label": "Ведомость деталей армирования (часть 1)",
+      "sheet_type": "specification",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "Таблица ведомости деталей армирования с указанием геометрических параметров (a, b, c, d, e, dоп) для различных позиций арматурных стержней типа 'Г'.",
+      "key_values_read": [
+        "Деталь 8-Г-1: a=500, b=140, c=500, dоп=40",
+        "Деталь 8-Г-2: a=500, b=120, c=500, dоп=40",
+        "Деталь 10-Г-5: a=640, b=120, c=640, dоп=50",
+        "Деталь 12-Г-14: a=960, b=100, c=960, dоп=60",
+        "Деталь 16-Г-20: a=1000, b=120, c=1000, dоп=80",
+        "Деталь 25-Г-12: a=1560, b=305, c=3000, d=50, e=300, dоп=200"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4JG4-FEW3-JYD",
+          "role": "table",
+          "used_for": "value_extraction"
+        }
+      ],
+      "findings": [],
+      "selected_text_block_ids": [
+        "4JG4-FEW3-JYD",
+        "C7QJ-PFEY-T7A",
+        "6EXY-YJQC-NUU",
+        "7YD4-K99K-QWM",
+        "6K6Y-X4CP-JTV"
+      ]
+    },
+    {
+      "block_id": "947C-9UJT-RYU",
+      "page": 16,
+      "sheet": "11",
+      "label": "Ведомость деталей армирования (часть 2)",
+      "sheet_type": "specification",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "Фрагмент ведомости деталей арматурных элементов с указанием геометрических параметров для позиций типа 'Г' и 'Х'.",
+      "key_values_read": [
+        "Деталь 16-Г-23: a=600, b=125, c=3180, d=20, e=120, dоп=80",
+        "Деталь 25-Г-24: a=1560, b=250, c=1560, dоп=200",
+        "Деталь 8-Х-1: a=220, b=105, c=100, dоп=40",
+        "Деталь 10-Х-1: a=1410, b=115, c=100, dоп=50",
+        "Деталь 12-Х-1: a=1410, b=115, c=100, dоп=60"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "C7QJ-PFEY-T7A",
+          "role": "table",
+          "used_for": "value_extraction"
+        }
+      ],
+      "findings": [],
+      "selected_text_block_ids": [
+        "C7QJ-PFEY-T7A",
+        "6K6Y-X4CP-JTV",
+        "6EXY-YJQC-NUU",
+        "4JG4-FEW3-JYD",
+        "7YD4-K99K-QWM"
+      ]
+    },
+    {
+      "block_id": "73YG-7DGA-HUH",
+      "page": 16,
+      "sheet": "11",
+      "label": "Ведомость деталей",
+      "sheet_type": "specification",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "Таблица ведомости деталей с эскизами гнутых арматурных элементов. Указаны позиции, эскизы и геометрические размеры (a, b, c, dоп).",
+      "key_values_read": [
+        "Поз. 10-Х-14: a=720; b=105; c=140; dоп=50",
+        "Поз. 10-Х-15: a=1020; b=105; c=140; dоп=50",
+        "Поз. 10-Х-16: a=420; b=100; c=140; dоп=50",
+        "Поз. 12-Х-16: a=415; b=95; c=180; dоп=60",
+        "Поз. 6-Х-18: a=220; b=50; dоп=25",
+        "Поз. 8-Х-19: a=140; b=70; dоп=25",
+        "Поз. 8-Х-20: a=190; b=70; dоп=25",
+        "Поз. 8-Х-21: a=140; b=70; dоп=25",
+        "Поз. 12-Х-21: a=140; b=100; dоп=25",
+        "Поз. 8-Ш-1: a=145; b=50; dоп=40"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "6EXY-YJQC-NUU",
+          "role": "table",
+          "used_for": "value_extraction"
+        }
+      ],
+      "findings": [],
+      "selected_text_block_ids": [
+        "6EXY-YJQC-NUU",
+        "C7QJ-PFEY-T7A",
+        "4JG4-FEW3-JYD",
+        "6K6Y-X4CP-JTV",
+        "7YD4-K99K-QWM"
+      ]
+    },
+    {
+      "block_id": "page_017",
+      "page": 17,
+      "sheet": "12",
+      "label": "Колонна Км-400-1000-2800-1, Км-400-1000-2800-2",
+      "sheet_type": "column_reinforcement",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "Чертежи армирования колонн Км-400-1000-2800-1 и Км-400-1000-2800-2. Представлены сечения 1-1 и 2-2, разрезы по высоте, ведомости деталей, спецификации и общая ведомость расхода стали.",
+      "key_values_read": [
+        "Колонна Км-400-1000-2800-1: сечение 400х1000 мм",
+        "Колонна Км-400-1000-2800-2: сечение 400х1000 мм",
+        "Защитный слой з.с. 30 мм, з.с. 35 мм",
+        "Бетон В40 F100 W4 — 1,12 м³ на колонну",
+        "Арматура 16-Г-1: шаг 250 мм",
+        "Арматура 10-Х-1: шаг 250 мм",
+        "Арматура 6-Ш-1: шаг 200 мм, 150 мм, 400 мм"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "6PV7-YXJF-GKM",
+          "role": "table",
+          "used_for": "value_extraction"
+        },
+        {
+          "text_block_id": "9T4R-3XYY-LTE",
+          "role": "table",
+          "used_for": "value_extraction"
+        }
+      ],
+      "findings": [
+        {
+          "id": "G-001",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "cover_thickness",
+          "finding": "На сечениях 1-1 и 2-2 указан защитный слой 30 мм и 35 мм. В общих указаниях (см. T-007) защитный слой не зафиксирован. Необходимо подтвердить достаточность защитного слоя 30 мм для обеспечения требуемого предела огнестойкости REI 120 (см. T-005).",
+          "norm": "СП 468.1325800.2019",
+          "norm_quote": "Толщина защитного слоя бетона должна обеспечивать требуемый предел огнестойкости конструкции.",
+          "block_evidence": "page_017",
+          "value_found": "з.с. 30, з.с. 35",
+          "highlight_regions": [
+            {
+              "x": 0.08,
+              "y": 0.08,
+              "w": 0.15,
+              "h": 0.1,
+              "label": "Сечение 1-1, з.с. 30, 35"
+            },
+            {
+              "x": 0.35,
+              "y": 0.08,
+              "w": 0.15,
+              "h": 0.1,
+              "label": "Сечение 2-2, з.с. 30, 35"
+            }
+          ]
+        },
+        {
+          "id": "G-002",
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "lap_length",
+          "finding": "На разрезах колонн показаны выпуски арматуры (нахлесточные стыки), но не указана длина нахлеста. В общих указаниях (см. T-014) также нет четких требований к разнесению стыков.",
+          "norm": "СП 63.13330.2018, п. 10.3.31",
+          "norm_quote": "Стыки следует размещать вразбежку.",
+          "block_evidence": "page_017",
+          "value_found": "Выпуски см. 13АВ-РД-КЖ5.16.1-К2",
+          "highlight_regions": [
+            {
+              "x": 0.15,
+              "y": 0.7,
+              "w": 0.1,
+              "h": 0.05,
+              "label": "Выпуски арматуры"
+            }
+          ]
+        }
+      ],
+      "selected_text_block_ids": []
+    },
+    {
+      "block_id": "79NT-KCUP-VUK",
+      "page": 18,
+      "sheet": "13",
+      "label": "Сечение колонны Км-400-1000-2800-3",
+      "sheet_type": "column_reinforcement",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "Поперечное сечение колонны Км-400-1000-2800-3. Указаны габаритные размеры 400х1000 мм, защитные слои бетона и расположение арматурных стержней.",
+      "key_values_read": [
+        "Колонна Км-400-1000-2800-3: сечение 400х1000 мм",
+        "Защитный слой: з.с. 30 мм, з.с. 25 мм",
+        "Арматура 16-Г-1: шаг 250 мм (12 шт.)",
+        "Арматура 12-Х-1: шаг 200 мм (18 шт.)",
+        "Арматура 6-Ш-1"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "6K9J-V6UM-KFF",
+          "role": "other",
+          "used_for": "cross_check",
+          "confidence": 0.28,
+          "source": "graph_backfill"
+        },
+        {
+          "text_block_id": "C79L-M93F-7WR",
+          "role": "other",
+          "used_for": "cross_check",
+          "confidence": 0.13,
+          "source": "graph_backfill"
+        },
+        {
+          "text_block_id": "6CNL-J6MK-6KU",
+          "role": "other",
+          "used_for": "cross_check",
+          "confidence": 0.13,
+          "source": "graph_backfill"
+        }
+      ],
+      "findings": [
+        {
+          "id": "G-003",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "cover_thickness",
+          "finding": "На сечении указан защитный слой 25 мм и 30 мм. Необходимо подтвердить достаточность защитного слоя 25 мм для обеспечения требуемого предела огнестойкости REI 120 (см. T-005).",
+          "norm": "СП 468.1325800.2019",
+          "norm_quote": "Толщина защитного слоя бетона должна обеспечивать требуемый предел огнестойкости конструкции.",
+          "block_evidence": "79NT-KCUP-VUK",
+          "value_found": "з.с. 25, з.с. 30",
+          "highlight_regions": [
+            {
+              "x": 0.3,
+              "y": 0.1,
+              "w": 0.4,
+              "h": 0.8,
+              "label": "Указания защитного слоя"
+            }
+          ]
+        }
+      ],
+      "selected_text_block_ids": [
+        "6K9J-V6UM-KFF",
+        "C79L-M93F-7WR",
+        "6CNL-J6MK-6KU"
+      ]
+    },
+    {
+      "block_id": "JTUC-HHUY-W7K",
+      "page": 18,
+      "sheet": "13",
+      "label": "Типовые узлы сопряжения",
+      "sheet_type": "sections_cuts",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "Типовые узлы сопряжения рабочего стержня с гнутыми арматурными элементами (хомутами и шпильками). Показаны варианты охвата рабочих стержней.",
+      "key_values_read": [
+        "Хомут охватывает рабочий стержень",
+        "Шпильки огибают все стержни",
+        "Шпилька охватывает рабочие стержни и выпуск"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "6CNL-J6MK-6KU",
+          "role": "other",
+          "used_for": "cross_check",
+          "confidence": 0.57,
+          "source": "graph_backfill"
+        },
+        {
+          "text_block_id": "6K9J-V6UM-KFF",
+          "role": "other",
+          "used_for": "cross_check",
+          "confidence": 0.48,
+          "source": "graph_backfill"
+        },
+        {
+          "text_block_id": "C79L-M93F-7WR",
+          "role": "other",
+          "used_for": "cross_check",
+          "confidence": 0.24,
+          "source": "graph_backfill"
+        },
+        {
+          "text_block_id": "4APV-CLU9-JY4",
+          "role": "other",
+          "used_for": "cross_check",
+          "confidence": 0.22,
+          "source": "graph_backfill"
+        },
+        {
+          "text_block_id": "6CHT-Q7AT-D6J",
+          "role": "other",
+          "used_for": "cross_check",
+          "confidence": 0.13,
+          "source": "graph_backfill"
+        }
+      ],
+      "findings": [],
+      "selected_text_block_ids": [
+        "6CNL-J6MK-6KU",
+        "6K9J-V6UM-KFF",
+        "C79L-M93F-7WR",
+        "4APV-CLU9-JY4",
+        "6CHT-Q7AT-D6J"
+      ]
+    },
+    {
+      "block_id": "9VHU-GJRC-466",
+      "page": 18,
+      "sheet": "13",
+      "label": "Разрез 1-1",
+      "sheet_type": "column_reinforcement",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "Разрез 1-1 вертикальной несущей конструкции (колонны). Показано продольное и поперечное армирование, шаги хомутов и высотные отметки.",
+      "key_values_read": [
+        "Высота колонны: 2800 мм",
+        "Арматура 12-Х-1: 18 шт.",
+        "Арматура 16-Г-1: 12 шт.",
+        "Хомуты 6-Ш-1: шаг 200 мм (11х200=2200 мм)",
+        "Хомуты 6-Ш-1: шаг 150 мм (6х150=900 мм) в приопорной зоне",
+        "Выпуски арматуры: см. 13АВ-РД-КЖ5.16.1-К2"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "779K-JRFG-UNG",
+          "role": "other",
+          "used_for": "cross_check",
+          "confidence": 0.61,
+          "source": "graph_backfill"
+        },
+        {
+          "text_block_id": "6K9J-V6UM-KFF",
+          "role": "other",
+          "used_for": "cross_check",
+          "confidence": 0.14,
+          "source": "graph_backfill"
+        }
+      ],
+      "findings": [
+        {
+          "id": "G-004",
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "lap_length",
+          "finding": "На разрезе показаны выпуски арматуры, но не указана длина нахлеста. В общих указаниях (см. T-014) также нет четких требований к разнесению стыков.",
+          "norm": "СП 63.13330.2018, п. 10.3.31",
+          "norm_quote": "Стыки следует размещать вразбежку.",
+          "block_evidence": "9VHU-GJRC-466",
+          "value_found": "Выпуски см. 13АВ-РД-КЖ5.16.1-К2",
+          "highlight_regions": [
+            {
+              "x": 0.7,
+              "y": 0.8,
+              "w": 0.25,
+              "h": 0.1,
+              "label": "Выпуски арматуры"
+            }
+          ]
+        }
+      ],
+      "selected_text_block_ids": [
+        "779K-JRFG-UNG",
+        "6K9J-V6UM-KFF",
+        "6CHT-Q7AT-D6J"
+      ]
+    },
+    {
+      "block_id": "9JE7-FPRL-E9E",
+      "page": 18,
+      "sheet": "13",
+      "label": "Ведомость деталей",
+      "sheet_type": "specification",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "Таблица ведомости деталей с эскизами гнутых арматурных элементов для колонны Км-400-1000-2800-3.",
+      "key_values_read": [
+        "Поз. 16-Г-1: a=1000; b=195; c=3110; d=20; e=190; dоп=80",
+        "Поз. 12-Х-1: a=925; b=315; c=180; dоп=60",
+        "Поз. 6-Ш-1: a=345; b=50; dоп=40"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4APV-CLU9-JY4",
+          "role": "table",
+          "used_for": "value_extraction"
+        }
+      ],
+      "findings": [],
+      "selected_text_block_ids": [
+        "4APV-CLU9-JY4",
+        "6CHT-Q7AT-D6J",
+        "6CNL-J6MK-6KU",
+        "C79L-M93F-7WR",
+        "6K9J-V6UM-KFF"
+      ]
+    },
+    {
+      "block_id": "7PQJ-YWYD-3FP",
+      "page": 18,
+      "sheet": "13",
+      "label": "Схема отгиба стержня",
+      "sheet_type": "sections_cuts",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "Схема отгиба продольного арматурного стержня. Указан уклон отгиба не более 1:6 (≥6a).",
+      "key_values_read": [
+        "Величина отгиба: a",
+        "Длина наклонного участка: ≥6a"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "C79L-M93F-7WR",
+          "role": "note",
+          "used_for": "value_extraction"
+        }
+      ],
+      "findings": [],
+      "selected_text_block_ids": [
+        "C79L-M93F-7WR",
+        "4APV-CLU9-JY4",
+        "6CNL-J6MK-6KU",
+        "6CHT-Q7AT-D6J",
+        "6K9J-V6UM-KFF"
+      ]
+    },
+    {
+      "block_id": "VNVR-PXFJ-HEJ",
+      "page": 18,
+      "sheet": "13",
+      "label": "Условные обозначения",
+      "sheet_type": "general_notes",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "Легенда условных обозначений, применяемых на чертежах армирования.",
+      "key_values_read": [
+        "з.с. — Защитный слой",
+        "Волнистая линия — Рабочий шов бетонирования",
+        "Пунктирный прямоугольник — Конструкции вышележащего уровня",
+        "Черный треугольник — Указатель армирования"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "9KTH-FQDV-3QX",
+          "role": "legend",
+          "used_for": "value_extraction"
+        }
+      ],
+      "findings": [],
+      "selected_text_block_ids": [
+        "9KTH-FQDV-3QX",
+        "6CHT-Q7AT-D6J",
+        "4APV-CLU9-JY4",
+        "6CNL-J6MK-6KU",
+        "C79L-M93F-7WR"
+      ]
+    },
+    {
+      "block_id": "page_019",
+      "page": 19,
+      "sheet": "14",
+      "label": "Колонна Км-400-1200-2800-1, Км-400-1200-2800-2",
+      "sheet_type": "column_reinforcement",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "Чертежи армирования колонн Км-400-1200-2800-1 и Км-400-1200-2800-2. Представлены сечения 1-1 и 2-2, разрезы по высоте, ведомости деталей, спецификации и общая ведомость расхода стали.",
+      "key_values_read": [
+        "Колонна Км-400-1200-2800-1: сечение 400х1200 мм",
+        "Колонна Км-400-1200-2800-2: сечение 400х1200 мм",
+        "Защитный слой з.с. 30 мм, з.с. 35 мм",
+        "Бетон В40 F100 W4 — 1,34 м³ на колонну",
+        "Арматура 16-Г-1: 14 шт. (для Км-400-1200-2800-1), 12 шт. (для Км-400-1200-2800-2)",
+        "Арматура 8-Х-2: 18 шт.",
+        "Хомуты 6-Ш-1: шаг 200 мм, 150 мм"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "9K33-47YP-HVC",
+          "role": "table",
+          "used_for": "value_extraction"
+        },
+        {
+          "text_block_id": "7Q6C-JCUP-DTX",
+          "role": "table",
+          "used_for": "value_extraction"
+        }
+      ],
+      "findings": [
+        {
+          "id": "G-005",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "cover_thickness",
+          "finding": "На сечениях 1-1 и 2-2 указан защитный слой 30 мм и 35 мм. В общих указаниях (см. T-007) защитный слой не зафиксирован. Необходимо подтвердить достаточность защитного слоя 30 мм для обеспечения требуемого предела огнестойкости REI 120 (см. T-005).",
+          "norm": "СП 468.1325800.2019",
+          "norm_quote": "Толщина защитного слоя бетона должна обеспечивать требуемый предел огнестойкости конструкции.",
+          "block_evidence": "page_019",
+          "value_found": "з.с. 30, з.с. 35",
+          "highlight_regions": [
+            {
+              "x": 0.08,
+              "y": 0.08,
+              "w": 0.15,
+              "h": 0.1,
+              "label": "Сечение 1-1, з.с. 30, 35"
+            },
+            {
+              "x": 0.35,
+              "y": 0.08,
+              "w": 0.15,
+              "h": 0.1,
+              "label": "Сечение 2-2, з.с. 30, 35"
+            }
+          ]
+        },
+        {
+          "id": "G-006",
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "lap_length",
+          "finding": "На разрезах колонн показаны выпуски арматуры, но не указана длина нахлеста. В общих указаниях (см. T-014) также нет четких требований к разнесению стыков.",
+          "norm": "СП 63.13330.2018, п. 10.3.31",
+          "norm_quote": "Стыки следует размещать вразбежку.",
+          "block_evidence": "page_019",
+          "value_found": "Выпуски см. 13АВ-РД-КЖ5.16.1-К2",
+          "highlight_regions": [
+            {
+              "x": 0.15,
+              "y": 0.7,
+              "w": 0.1,
+              "h": 0.05,
+              "label": "Выпуски арматуры"
+            }
+          ]
+        }
+      ],
+      "selected_text_block_ids": []
+    },
+    {
+      "block_id": "page_020",
+      "page": 20,
+      "sheet": "15",
+      "label": "Схема расположения закладных деталей ЭОМ",
+      "sheet_type": "other",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "Схема расположения закладных деталей для раздела ЭОМ в монолитных конструкциях. Показаны планы, разрезы, спецификация закладных деталей и примечания по монтажу.",
+      "key_values_read": [
+        "Коробка КУ1301: 4 шт.",
+        "Труба ПНД гладкая Ø32: 12,5 м.п.",
+        "Пенополистирол: 0,003 м³",
+        "Ниши ЭОМ заполнить пенополистиролом на время бетонирования"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4D9J-AFCN-E6N",
+          "role": "table",
+          "used_for": "value_extraction"
+        },
+        {
+          "text_block_id": "4MLT-YF7T-7YD",
+          "role": "note",
+          "used_for": "value_extraction"
+        }
+      ],
+      "findings": [
+        {
+          "id": "G-007",
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+          "category": "mep_coordination",
+          "finding": "На схеме показана прокладка труб ПНД Ø32 мм в монолитных стенах. Согласно примечанию 5, при установке закладных деталей не допускается повреждение рабочей арматуры. Необходимо убедиться, что толщина стен (200-250 мм) и шаг арматуры позволяют проложить трубы Ø32 мм с коробками без нарушения защитного слоя и проектного положения арматуры.",
+          "norm": "СП 63.13330.2018",
+          "norm_quote": "При прокладке коммуникаций внутри монолитных конструкций не допускается снижение их несущей способности и нарушение защитного слоя арматуры.",
+          "block_evidence": "page_020",
+          "value_found": "Труба ПНД Ø32 мм",
+          "highlight_regions": [
+            {
+              "x": 0.4,
+              "y": 0.1,
+              "w": 0.2,
+              "h": 0.2,
+              "label": "Разрезы с трубами ПНД"
+            }
+          ]
+        }
+      ],
+      "selected_text_block_ids": []
+    }
+  ]
+}

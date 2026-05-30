@@ -1,0 +1,49 @@
+{
+  "block_id": "964M-PAV4-MLL",
+  "page": 14,
+  "sheet_no": "9",
+  "file": "block_964M-PAV4-MLL.png",
+  "size_kb": 21.1,
+  "ocr_text_len": 837,
+  "ocr_label": "Представлена легенда условных обозначений для строительных чертежей.",
+  "ok": true,
+  "elapsed_ms": 2783,
+  "input_tokens": 1278,
+  "output_tokens": 245,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 617,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 2783,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "таблица_условных_обозначений",
+    "subject": "Легенда условных обозначений для плиты покрытия Пм-2 на отметке +7,970",
+    "marks": [],
+    "rebar_specs": [],
+    "dimensions": [
+      "t=200"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. листы 3... 7"
+    ],
+    "axes": [
+      "1.2-1.7",
+      "1.К-1.Щ"
+    ],
+    "level_marks": [
+      "+4,200",
+      "+7,970"
+    ],
+    "concrete_class": null,
+    "notes": "Блок содержит расшифровку графических обозначений для плиты покрытия Пм-2. Указаны требования к расположению рабочих швов (на расстоянии 1/3 пролета) и общие указания по армированию и бетонированию."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

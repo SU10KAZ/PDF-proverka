@@ -1,0 +1,57 @@
+{
+  "block_id": "7NF9-HNQ3-YMR",
+  "page": 7,
+  "sheet_no": "2",
+  "file": "block_7NF9-HNQ3-YMR.png",
+  "size_kb": 34.8,
+  "ocr_text_len": 878,
+  "ocr_label": "Представлен разрез 24-24 для 21 этажа с указанием высотных отметок и размеров пр",
+  "ok": true,
+  "elapsed_ms": 3898,
+  "input_tokens": 2116,
+  "output_tokens": 276,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 609,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3898,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "разрез",
+    "subject": "Разрез 24-24 для 21 этажа с указанием высотных отметок и размеров проёмов",
+    "marks": [
+      "Om8.9"
+    ],
+    "rebar_specs": [],
+    "dimensions": [
+      "2960",
+      "550",
+      "1200",
+      "140",
+      "200",
+      "360"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 4",
+      "см. лист 3"
+    ],
+    "axes": [
+      "2.5"
+    ],
+    "level_marks": [
+      "+75,640",
+      "+74,940",
+      "+71,980"
+    ],
+    "concrete_class": null,
+    "notes": "Детализация проёма Om8.9 на 21 этаже. Привязка к осям и высотным отметкам. Ссылки на общие указания и ведомости на других листах."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

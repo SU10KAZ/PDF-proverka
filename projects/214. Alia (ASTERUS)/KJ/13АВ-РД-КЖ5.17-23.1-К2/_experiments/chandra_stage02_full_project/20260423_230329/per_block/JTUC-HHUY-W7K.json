@@ -1,0 +1,135 @@
+{
+  "baseline": {
+    "block_id": "JTUC-HHUY-W7K",
+    "page": 18,
+    "sheet": "13",
+    "label": "Типовые узлы сопряжения",
+    "sheet_type": "sections_cuts",
+    "unreadable_text": false,
+    "unreadable_details": null,
+    "summary": "Схемы типовых узлов сопряжения рабочих стержней с гнутыми арматурными элементами (хомутами и шпильками). Дублирует схему с предыдущего листа.",
+    "key_values_read": [
+      "Узел 1 — рабочий стержень в углу хомута",
+      "Узел 2 — шпильки огибают рабочий стержень и выпуск",
+      "Узел 3 — шпилька охватывает рабочие стержни"
+    ],
+    "evidence_text_refs": [
+      {
+        "text_block_id": "6CNL-J6MK-6KU",
+        "role": "other",
+        "used_for": "cross_check",
+        "confidence": 0.57,
+        "source": "graph_backfill"
+      },
+      {
+        "text_block_id": "6K9J-V6UM-KFF",
+        "role": "other",
+        "used_for": "cross_check",
+        "confidence": 0.48,
+        "source": "graph_backfill"
+      },
+      {
+        "text_block_id": "C79L-M93F-7WR",
+        "role": "other",
+        "used_for": "cross_check",
+        "confidence": 0.24,
+        "source": "graph_backfill"
+      },
+      {
+        "text_block_id": "4APV-CLU9-JY4",
+        "role": "other",
+        "used_for": "cross_check",
+        "confidence": 0.22,
+        "source": "graph_backfill"
+      },
+      {
+        "text_block_id": "6CHT-Q7AT-D6J",
+        "role": "other",
+        "used_for": "cross_check",
+        "confidence": 0.13,
+        "source": "graph_backfill"
+      }
+    ],
+    "findings": [],
+    "selected_text_block_ids": [
+      "6CNL-J6MK-6KU",
+      "6K9J-V6UM-KFF",
+      "C79L-M93F-7WR",
+      "4APV-CLU9-JY4",
+      "6CHT-Q7AT-D6J"
+    ]
+  },
+  "candidate_raw": {
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_stage02_full_project/20260423_230329/prepared/native_crops/block_JTUC-HHUY-W7K_native.png",
+    "image_size_bytes": 39737,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 3.189,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-35b-a3b",
+      "output": [
+        {
+          "type": "message",
+          "content": "{\n  \"block_id\": \"JTUC-HHUY-W7K\",\n  \"page\": 18,\n  \"label\": \"Типовые узлы сопряжения рабочего стержня с гнутыми арматурными элементами\",\n  \"sheet_type\": \"detail\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлены три типовых узла сопряжения, иллюстрирующие различные варианты взаимодействия рабочего стержня с гнутыми элементами и шпильками. Схема служит справочным материалом для понимания геометрии стыковки арматуры. Основные элементы обозначены текстовыми выносками.\",\n  \"key_values_read\": [\n    \"рабочий стержень\",\n    \"шпильки огибают все стержни\",\n    \"рабочий стержень выпуск\",\n    \"шпилька\",\n    \"рабочие стержни\",\n    \"хомут\"\n  ],\n  \"findings\": []\n}"
+        }
+      ],
+      "stats": {
+        "input_tokens": 1608,
+        "total_output_tokens": 231,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 226.5774350453498,
+        "time_to_first_token_seconds": 0.461
+      }
+    },
+    "content": "{\n  \"block_id\": \"JTUC-HHUY-W7K\",\n  \"page\": 18,\n  \"label\": \"Типовые узлы сопряжения рабочего стержня с гнутыми арматурными элементами\",\n  \"sheet_type\": \"detail\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлены три типовых узла сопряжения, иллюстрирующие различные варианты взаимодействия рабочего стержня с гнутыми элементами и шпильками. Схема служит справочным материалом для понимания геометрии стыковки арматуры. Основные элементы обозначены текстовыми выносками.\",\n  \"key_values_read\": [\n    \"рабочий стержень\",\n    \"шпильки огибают все стержни\",\n    \"рабочий стержень выпуск\",\n    \"шпилька\",\n    \"рабочие стержни\",\n    \"хомут\"\n  ],\n  \"findings\": []\n}",
+    "reasoning": "",
+    "parsed": {
+      "block_id": "JTUC-HHUY-W7K",
+      "page": 18,
+      "label": "Типовые узлы сопряжения рабочего стержня с гнутыми арматурными элементами",
+      "sheet_type": "detail",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "На чертеже представлены три типовых узла сопряжения, иллюстрирующие различные варианты взаимодействия рабочего стержня с гнутыми элементами и шпильками. Схема служит справочным материалом для понимания геометрии стыковки арматуры. Основные элементы обозначены текстовыми выносками.",
+      "key_values_read": [
+        "рабочий стержень",
+        "шпильки огибают все стержни",
+        "рабочий стержень выпуск",
+        "шпилька",
+        "рабочие стержни",
+        "хомут"
+      ],
+      "findings": []
+    },
+    "parse_error": null,
+    "model": "qwen/qwen3.6-35b-a3b",
+    "block_id": "JTUC-HHUY-W7K",
+    "width": 1024,
+    "height": 491,
+    "run_index": 194
+  },
+  "compare": {
+    "block_id": "JTUC-HHUY-W7K",
+    "page": 18,
+    "label_source": "На чертеже представлены типовые узлы сопряжения рабочего стержня с гнутыми армат",
+    "baseline_present": true,
+    "baseline_label": "Типовые узлы сопряжения",
+    "candidate_label": "Типовые узлы сопряжения рабочего стержня с гнутыми арматурными элементами",
+    "baseline_findings": 0,
+    "candidate_findings": 0,
+    "baseline_kv": 3,
+    "candidate_kv": 6,
+    "elapsed_s": 3.189,
+    "parse_ok": true,
+    "verdict": "likely_improved",
+    "notes": [
+      "candidate preserved findings presence and captured more key values"
+    ],
+    "baseline_summary": "Схемы типовых узлов сопряжения рабочих стержней с гнутыми арматурными элементами (хомутами и шпильками). Дублирует схему с предыдущего листа.",
+    "candidate_summary": "На чертеже представлены три типовых узла сопряжения, иллюстрирующие различные варианты взаимодействия рабочего стержня с гнутыми элементами и шпильками. Схема служит справочным материалом для понимания геометрии стыковки арматуры. Основные элементы обозначены текстовыми выносками.",
+    "candidate_sheet_type": "detail",
+    "candidate_unreadable_text": false
+  }
+}

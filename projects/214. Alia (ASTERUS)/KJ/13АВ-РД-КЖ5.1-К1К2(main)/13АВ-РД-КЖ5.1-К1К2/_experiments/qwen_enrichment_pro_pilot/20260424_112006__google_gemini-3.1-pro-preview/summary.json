@@ -1,0 +1,47 @@
+{
+  "timestamp": "20260424_112006",
+  "model": "google/gemini-3.1-pro-preview",
+  "reasoning_effort": null,
+  "blocks_total": 2,
+  "blocks_ok": 2,
+  "blocks_with_baseline_findings": 2,
+  "blocks_new_zero_where_baseline_had": 1,
+  "totals": {
+    "baseline_json_chars_total": 5668,
+    "baseline_findings_total": 4,
+    "new_findings_total": 2,
+    "new_input_tokens_total": 4191,
+    "new_output_tokens_total": 2637,
+    "new_reasoning_tokens_total": 2300,
+    "estimated_cost_usd_in": 0.0105,
+    "estimated_cost_usd_out": 0.0396,
+    "estimated_cost_usd_total": 0.05,
+    "estimated_cost_per_block_usd": 0.025
+  },
+  "blocks": [
+    {
+      "block_id": "VGGJ-3ULF-TLV",
+      "page": 7,
+      "baseline_json_chars": 2750,
+      "baseline_findings": 2,
+      "new_output_tokens": 2627,
+      "new_input_tokens": 1848,
+      "new_reasoning_tokens": 2300,
+      "new_findings": 2,
+      "new_elapsed_ms": 26569,
+      "ok": true
+    },
+    {
+      "block_id": "4UTW-PPGP-VEN",
+      "page": 7,
+      "baseline_json_chars": 2918,
+      "baseline_findings": 2,
+      "new_output_tokens": 10,
+      "new_input_tokens": 2343,
+      "new_reasoning_tokens": 0,
+      "new_findings": 0,
+      "new_elapsed_ms": 6202,
+      "ok": true
+    }
+  ]
+}

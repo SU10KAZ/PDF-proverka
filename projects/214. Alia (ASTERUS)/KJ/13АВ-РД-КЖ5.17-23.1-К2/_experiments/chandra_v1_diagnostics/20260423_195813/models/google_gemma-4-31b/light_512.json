@@ -1,0 +1,30 @@
+{
+  "model": "google/gemma-4-31b",
+  "image_name": "light_512",
+  "block_id": "A9M4-EJ7R-MKH",
+  "width": 512,
+  "height": 267,
+  "request": "image_smoke",
+  "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_195813/prepared_images/light_512/native_crops/block_A9M4-EJ7R-MKH_native.png",
+  "image_size_bytes": 26625,
+  "ok": false,
+  "status_code": 400,
+  "elapsed_s": 1.441,
+  "error": {
+    "message": "'input.0.content' is required, Unrecognized key(s) in object: 'text'",
+    "type": "invalid_request",
+    "code": "invalid_union",
+    "param": "input"
+  },
+  "response": {
+    "error": {
+      "message": "'input.0.content' is required, Unrecognized key(s) in object: 'text'",
+      "type": "invalid_request",
+      "code": "invalid_union",
+      "param": "input"
+    }
+  },
+  "content": "",
+  "reasoning": "",
+  "verdict": "fail"
+}

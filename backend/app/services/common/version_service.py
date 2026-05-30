@@ -40,11 +40,47 @@ from pathlib import Path
 from typing import Any, Optional
 
 
-VERSIONS_MANIFEST_FILENAME = "project_versions.json"
-VERSIONS_DIR_NAME = "_versions"
+VERSIONS_MANIFEST_FILENAME = "project_versions.json"  # legacy _versions-модель
+VERSIONS_DIR_NAME = "_versions"  # legacy, только для чтения/миграции
 SCHEMA_VERSION = 1
 
+# ─── Контейнерная модель (новая) ───────────────────────────────────────────
+# Версии проекта живут братскими папками внутри папки-контейнера `<база>(main)/`.
+# Манифест версий хранится в контейнере (а не в папке V1) в `version_group.json`.
+# `folder` каждой записи — имя братской папки относительно контейнера; для V1
+# это исходное имя папки проекта, поэтому `project_id` (basename) не меняется.
+CONTAINER_SUFFIX = "(main)"
+GROUP_MANIFEST_FILENAME = "version_group.json"
+
 _VERSION_ID_RE = re.compile(r"^v(\d+)$")
+
+
+def container_name_for(project_basename: str) -> str:
+    """Имя папки-контейнера для базового проекта: `<база>(main)`."""
+    return f"{project_basename}{CONTAINER_SUFFIX}"
+
+
+def is_version_container(path: Path) -> bool:
+    """Папка — контейнер версий: имя оканчивается на `(main)` и есть манифест."""
+    try:
+        return (
+            path.is_dir()
+            and path.name.endswith(CONTAINER_SUFFIX)
+            and (path / GROUP_MANIFEST_FILENAME).exists()
+        )
+    except OSError:
+        return False
+
+
+def container_dir_for(project_dir: Path) -> Optional[Path]:
+    """Если `project_dir` лежит внутри контейнера `(main)` — вернуть контейнер.
+
+    Иначе None (legacy-проект, ещё не промоутнутый в контейнер).
+    """
+    parent = project_dir.parent
+    if parent.name.endswith(CONTAINER_SUFFIX) and (parent / GROUP_MANIFEST_FILENAME).exists():
+        return parent
+    return None
 
 
 class VersionNotFoundError(KeyError):
@@ -202,8 +238,7 @@ def _normalize_manifest(raw: dict[str, Any], project_id: str) -> dict[str, Any]:
     }
 
 
-def _read_manifest_raw(project_dir: Path) -> Optional[dict[str, Any]]:
-    path = _manifest_path(project_dir)
+def _read_json_dict(path: Path) -> Optional[dict[str, Any]]:
     if not path.exists():
         return None
     try:
@@ -212,6 +247,16 @@ def _read_manifest_raw(project_dir: Path) -> Optional[dict[str, Any]]:
         return data if isinstance(data, dict) else None
     except (OSError, json.JSONDecodeError, UnicodeDecodeError):
         return None
+
+
+def _read_manifest_raw(project_dir: Path) -> Optional[dict[str, Any]]:
+    """Legacy `project_versions.json` в корне папки проекта (_versions-модель)."""
+    return _read_json_dict(_manifest_path(project_dir))
+
+
+def _read_group_manifest_raw(container: Path) -> Optional[dict[str, Any]]:
+    """Новый `version_group.json` в папке-контейнере."""
+    return _read_json_dict(container / GROUP_MANIFEST_FILENAME)
 
 
 def _write_manifest(project_dir: Path, manifest: dict[str, Any]) -> bool:
@@ -225,12 +270,48 @@ def _write_manifest(project_dir: Path, manifest: dict[str, Any]) -> bool:
         return False
 
 
+def _write_group_manifest(container: Path, manifest: dict[str, Any]) -> bool:
+    """Записать `version_group.json` в контейнер (рантайм-поля под `_` отбрасываем)."""
+    payload = {k: v for k, v in manifest.items() if not k.startswith("_")}
+    try:
+        container.mkdir(parents=True, exist_ok=True)
+        with open(container / GROUP_MANIFEST_FILENAME, "w", encoding="utf-8") as f:
+            json.dump(payload, f, ensure_ascii=False, indent=2)
+        return True
+    except OSError:
+        return False
+
+
+def _read_versions_and_base(
+    project_dir: Path, project_id: str,
+) -> tuple[dict[str, Any], Path]:
+    """Прочитать манифест версий + БАЗОВУЮ директорию, относительно которой
+    резолвятся `folder` записей.
+
+    Три модели (в порядке приоритета):
+      1. Контейнер `(main)`: база = контейнер, `version_group.json`, folders —
+         имена братских папок.
+      2. Legacy `_versions`: база = `project_dir`, `project_versions.json`,
+         folders вида "." и "_versions/v2".
+      3. Legacy single: база = `project_dir`, единственная V1 (folder=".").
+    """
+    container = container_dir_for(project_dir)
+    if container is not None:
+        raw = _read_group_manifest_raw(container)
+        if raw is not None:
+            return _normalize_manifest(raw, project_id), container
+
+    raw = _read_manifest_raw(project_dir)
+    if raw is not None:
+        return _normalize_manifest(raw, project_id), project_dir
+
+    return _legacy_manifest(project_id), project_dir
+
+
 def read_project_versions(project_dir: Path, project_id: str) -> dict[str, Any]:
     """Прочитать манифест версий (или вернуть legacy-манифест в памяти)."""
-    raw = _read_manifest_raw(project_dir)
-    if raw is None:
-        return _legacy_manifest(project_id)
-    return _normalize_manifest(raw, project_id)
+    manifest, _base = _read_versions_and_base(project_dir, project_id)
+    return manifest
 
 
 def ensure_project_versions_manifest(project_dir: Path, project_id: str) -> dict[str, Any]:
@@ -242,13 +323,10 @@ def ensure_project_versions_manifest(project_dir: Path, project_id: str) -> dict
     if not project_dir.exists() or not project_dir.is_dir():
         return _legacy_manifest(project_id)
 
-    raw = _read_manifest_raw(project_dir)
-    if raw is not None:
-        return _normalize_manifest(raw, project_id)
-
-    manifest = _legacy_manifest(project_id)
-    _write_manifest(project_dir, manifest)
-    return manifest
+    # Манифест рождается только при промоуте в контейнер. Для одиночного
+    # legacy-проекта возвращаем in-memory V1 без записи файла на диск (старая
+    # _versions-модель файлы больше не создаёт).
+    return read_project_versions(project_dir, project_id)
 
 
 def get_latest_version_id(project_dir: Path, project_id: str) -> str:
@@ -277,7 +355,7 @@ def get_version_dir(
 
     Бросает `VersionNotFoundError`, если указанный version_id отсутствует.
     """
-    manifest = read_project_versions(project_dir, project_id)
+    manifest, base = _read_versions_and_base(project_dir, project_id)
     vid = version_id or manifest.get("latest_version_id") or "v1"
     entry = _find_version(manifest, vid)
     if entry is None:
@@ -287,8 +365,8 @@ def get_version_dir(
 
     folder = entry.get("folder") or "."
     if folder in (".", ""):
-        return project_dir
-    return project_dir / folder
+        return base
+    return base / folder
 
 
 def get_versions_summary(project_dir: Path, project_id: str) -> dict[str, Any]:
@@ -298,7 +376,7 @@ def get_versions_summary(project_dir: Path, project_id: str) -> dict[str, Any]:
     и `can_run_audit`). Подсчёт идёт по содержимому version_dir на ФС,
     манифест используется только для путей.
     """
-    manifest = read_project_versions(project_dir, project_id)
+    manifest, base = _read_versions_and_base(project_dir, project_id)
     latest_id = manifest.get("latest_version_id") or "v1"
     versions = manifest.get("versions", [])
 
@@ -306,7 +384,7 @@ def get_versions_summary(project_dir: Path, project_id: str) -> dict[str, Any]:
     for v in versions:
         vid = v["version_id"]
         folder = v.get("folder") or "."
-        version_dir = project_dir if folder in (".", "") else project_dir / folder
+        version_dir = base if folder in (".", "") else base / folder
         pdf_count = md_count = source_count = 0
         if version_dir.exists():
             for p in version_dir.iterdir():
@@ -383,6 +461,74 @@ def get_version_entry(
     return dict(entry)
 
 
+def _invalidate_project_cache() -> None:
+    """Сбросить кеш списка проектов после перемещения/создания папок."""
+    try:
+        from backend.app.services.common.project_service import invalidate_project_cache
+        invalidate_project_cache()
+    except Exception:
+        pass
+
+
+def _v1_entry(folder_name: str, *, status: str = "active",
+              source: str = "promoted") -> dict[str, Any]:
+    return {
+        "version_id": "v1",
+        "version_no": 1,
+        "label": "V1",
+        "folder": folder_name,
+        "created_at": _now_iso(),
+        "status": status,
+        "source": source,
+    }
+
+
+def promote_to_container(
+    project_dir: Path, project_id: str,
+) -> tuple[Path, Path, dict[str, Any]]:
+    """Гарантировать, что проект лежит в контейнере версий `<база>(main)/`.
+
+    Возвращает `(container, primary_dir, manifest)`:
+      - если проект уже в контейнере — читает group-манифест, primary_dir =
+        переданный project_dir;
+      - иначе СОЗДАЁТ `<база>(main)/`, ПЕРЕМЕЩАЕТ папку проекта внутрь под её
+        родным именем (basename сохраняется → `project_id` не меняется) и пишет
+        свежий group-манифест с записью V1.
+
+    После перемещения старый путь `project_dir` больше не существует — вызывающий
+    код должен использовать возвращённый `primary_dir`/`container`.
+    """
+    import shutil
+
+    container = container_dir_for(project_dir)
+    if container is not None:
+        raw = _read_group_manifest_raw(container) or {}
+        manifest = _normalize_manifest(raw, project_id)
+        return container, project_dir, manifest
+
+    base_name = project_dir.name
+    container = project_dir.parent / container_name_for(base_name)
+    if container.exists():
+        raise VersionFileError(
+            f"Папка-контейнер уже существует, промоут невозможен: {container}"
+        )
+    container.mkdir(parents=True, exist_ok=False)
+    primary_dir = container / base_name
+    shutil.move(str(project_dir), str(primary_dir))
+
+    manifest: dict[str, Any] = {
+        "schema_version": SCHEMA_VERSION,
+        "logical_project_id": project_id,
+        "container": container.name,
+        "primary_version_id": "v1",
+        "latest_version_id": "v1",
+        "versions": [_v1_entry(base_name)],
+    }
+    _write_group_manifest(container, manifest)
+    _invalidate_project_cache()
+    return container, primary_dir, manifest
+
+
 def create_next_version(
     project_dir: Path,
     project_id: str,
@@ -393,12 +539,14 @@ def create_next_version(
     comment: Optional[str] = None,
     create_folder: bool = True,
     seed_project_info: bool = True,
+    folder_name: Optional[str] = None,
 ) -> dict[str, Any]:
-    """Зарегистрировать новую версию (V{N+1}) в манифесте.
+    """Зарегистрировать новую версию (V{N+1}) проекта.
 
-    Создаёт `<project_dir>/_versions/v{N+1}/_output/`, если `create_folder=True`,
-    и (опционально) минимальный `project_info.json` внутри новой версии, чтобы
-    пайплайн/сервисы могли находить версию как самостоятельную единицу.
+    Контейнерная модель: при первой версии проект промоутится в `<база>(main)/`
+    (папка V1 перемещается внутрь, basename сохраняется). Новая версия —
+    БРАТСКАЯ папка внутри контейнера (`<база> V{N}` по умолчанию или
+    `folder_name`), c собственным `_output/` и минимальным `project_info.json`.
 
     Существующие данные V1 не копируются и не переносятся.
 
@@ -409,24 +557,30 @@ def create_next_version(
         comment: необязательное описание новой редакции.
         create_folder: создавать ли папку версии физически.
         seed_project_info: создавать ли пустой `project_info.json` в папке версии.
+        folder_name: явное имя братской папки версии (например имя source-папки
+            при merge); по умолчанию `<база> V{N}`.
 
     Возвращает запись добавленной версии.
     """
     if not project_dir.exists() or not project_dir.is_dir():
         raise FileNotFoundError(f"Папка проекта не найдена: {project_dir}")
 
-    manifest = ensure_project_versions_manifest(project_dir, project_id)
+    container, primary_dir, manifest = promote_to_container(project_dir, project_id)
     versions = list(manifest.get("versions", []))
 
     next_no = max((v["version_no"] for v in versions), default=0) + 1
     next_id = f"v{next_no}"
-    folder = f"{VERSIONS_DIR_NAME}/{next_id}"
+    base_name = primary_dir.name
+    new_folder = (folder_name or f"{base_name} V{next_no}").strip() or f"{base_name} V{next_no}"
+    # Коллизия имени братской папки → суффикс version_id.
+    if (container / new_folder).exists():
+        new_folder = f"{new_folder} ({next_id})"
 
     new_entry: dict[str, Any] = {
         "version_id": next_id,
         "version_no": next_no,
         "label": (label or f"V{next_no}").strip() or f"V{next_no}",
-        "folder": folder,
+        "folder": new_folder,
         "created_at": _now_iso(),
         "status": status,
         "source": source,
@@ -435,13 +589,13 @@ def create_next_version(
         new_entry["comment"] = comment
 
     if create_folder:
-        version_dir = project_dir / folder
+        version_dir = container / new_folder
         (version_dir / "_output").mkdir(parents=True, exist_ok=True)
 
         if seed_project_info:
             info_path = version_dir / "project_info.json"
             if not info_path.exists():
-                root_info_path = project_dir / "project_info.json"
+                root_info_path = primary_dir / "project_info.json"
                 base_info: dict[str, Any] = {}
                 if root_info_path.exists():
                     try:
@@ -471,7 +625,8 @@ def create_next_version(
     versions.append(new_entry)
     manifest["versions"] = versions
     manifest["latest_version_id"] = next_id
-    _write_manifest(project_dir, manifest)
+    _write_group_manifest(container, manifest)
+    _invalidate_project_cache()
 
     return new_entry
 
@@ -1065,7 +1220,7 @@ def create_version_from_existing_files(
                     "version_id": v["version_id"],
                     "version_no": v["version_no"],
                     "label": v.get("label") or f"V{v['version_no']}",
-                    "folder": v.get("folder") or f"{VERSIONS_DIR_NAME}/{v['version_id']}",
+                    "folder": v.get("folder") or v["version_id"],
                     "status": v.get("status", "new"),
                     "source": source,
                 }
@@ -1106,9 +1261,12 @@ def create_version_from_existing_files(
         resolve_project_dir_fn=resolve_project_dir_fn,
     )
 
+    # Промоут в контейнер мог переместить V1 → перерезолвим папку версии.
+    fresh_proj_dir = resolve_project_dir_fn(target_project_id)
+
     # Подмешаем section/version_source/version_comment в project_info новой
     # версии, если их seed-вариант не содержал.
-    version_dir = proj_dir / new_entry["folder"]
+    version_dir = get_version_dir(fresh_proj_dir, target_project_id, new_version_id)
     info_path = version_dir / "project_info.json"
     try:
         info = json.loads(info_path.read_text(encoding="utf-8")) if info_path.exists() else {}
@@ -1127,7 +1285,7 @@ def create_version_from_existing_files(
     except OSError:
         pass
 
-    summary = get_versions_summary(proj_dir, target_project_id)
+    summary = get_versions_summary(fresh_proj_dir, target_project_id)
 
     return {
         "status": "ok",
@@ -1279,7 +1437,7 @@ def merge_project_as_version(
                     "version_id": v["version_id"],
                     "version_no": v["version_no"],
                     "label": v.get("label") or f"V{v['version_no']}",
-                    "folder": v.get("folder") or f"{VERSIONS_DIR_NAME}/{v['version_id']}",
+                    "folder": v.get("folder") or v["version_id"],
                     "status": v.get("status", "new"),
                     "source": source,
                 }
@@ -1289,7 +1447,8 @@ def merge_project_as_version(
             break
 
     if not reused_empty_latest:
-        # Создаём новую версию у target.
+        # Создаём новую версию у target. Имя братской папки версии = имя
+        # source-папки (по требованию: версия видна как `<...> V2`).
         new_entry = create_next_version(
             target_dir,
             target_project_id,
@@ -1298,6 +1457,7 @@ def merge_project_as_version(
             comment=comment,
             create_folder=True,
             seed_project_info=True,
+            folder_name=source_dir.name,
         )
     new_version_id = new_entry["version_id"]
 
@@ -1312,8 +1472,11 @@ def merge_project_as_version(
         resolve_project_dir_fn=resolve_project_dir_fn,
     )
 
+    # Промоут в контейнер мог переместить V1 target'а → перерезолвим.
+    fresh_target_dir = resolve_project_dir_fn(target_project_id)
+
     # Обогатим project_info новой версии
-    version_dir = target_dir / new_entry["folder"]
+    version_dir = get_version_dir(fresh_target_dir, target_project_id, new_version_id)
     info_path = version_dir / "project_info.json"
     try:
         info = json.loads(info_path.read_text(encoding="utf-8")) if info_path.exists() else {}
@@ -1349,15 +1512,11 @@ def merge_project_as_version(
                 "version_id": new_version_id,
                 "saved": saved_result["saved"],
                 "warnings": [f"Не удалось удалить source папку: {e}"],
-                "versions_summary": get_versions_summary(target_dir, target_project_id),
+                "versions_summary": get_versions_summary(fresh_target_dir, target_project_id),
             }
         # Инвалидируем кеш списка проектов, иначе удалённый source ещё ~30 сек
         # будет висеть в `/api/projects` из-за TTL.
-        try:
-            from backend.app.services.common.project_service import invalidate_project_cache
-            invalidate_project_cache()
-        except ImportError:
-            pass
+        _invalidate_project_cache()
 
     return {
         "status": "ok",
@@ -1368,5 +1527,5 @@ def merge_project_as_version(
         "reused_empty_latest": reused_empty_latest,
         "saved": saved_result["saved"],
         "warnings": [],
-        "versions_summary": get_versions_summary(target_dir, target_project_id),
+        "versions_summary": get_versions_summary(fresh_target_dir, target_project_id),
     }

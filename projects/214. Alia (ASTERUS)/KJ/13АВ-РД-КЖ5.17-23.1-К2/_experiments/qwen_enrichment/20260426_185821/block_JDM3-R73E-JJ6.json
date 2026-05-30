@@ -1,0 +1,53 @@
+{
+  "block_id": "JDM3-R73E-JJ6",
+  "page": 7,
+  "sheet_no": "2",
+  "file": "block_JDM3-R73E-JJ6.png",
+  "size_kb": 24.0,
+  "ocr_text_len": 752,
+  "ocr_label": "Фрагмент разреза 3-3 вертикальной конструкции по оси 2.Ж.",
+  "ok": true,
+  "elapsed_ms": 3525,
+  "input_tokens": 1885,
+  "output_tokens": 245,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 619,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3525,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "разрез",
+    "subject": "Фрагмент разреза 3-3 вертикальной конструкции по оси 2.Ж с высотными отметками и размерами",
+    "marks": [],
+    "rebar_specs": [],
+    "dimensions": [
+      "2800",
+      "500",
+      "400",
+      "200"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 4",
+      "см. лист 3"
+    ],
+    "axes": [
+      "2.Ж"
+    ],
+    "level_marks": [
+      "отм. А",
+      "отм. Б",
+      "отм. В"
+    ],
+    "concrete_class": null,
+    "notes": "Блок содержит спецификацию отверстий и проёмов для вертикальных конструкций 17-23 этажа, а также общие указания по бетонированию и ссылкам на другие листы проекта."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

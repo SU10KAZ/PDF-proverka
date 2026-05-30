@@ -1,0 +1,27 @@
+{
+  "timestamp": "20260422_073520",
+  "pdf": "13АВ-РД-КЖ5.1-К1К2 (2).pdf",
+  "project_dir": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf",
+  "block_source": "_output",
+  "blocks_index": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf/_output/blocks/index.json",
+  "total_blocks": 25,
+  "parallelism_flash": 3,
+  "parallelism_second": 2,
+  "include_tier2": true,
+  "max_second_pass": null,
+  "dry_run": false,
+  "models": {
+    "flash": "google/gemini-2.5-flash",
+    "pro": "google/gemini-3.1-pro-preview",
+    "claude": "anthropic/claude-sonnet-4-6"
+  },
+  "tier_thresholds": {
+    "tier1_score": 8,
+    "tier2_score": 3
+  },
+  "recall_thresholds": {
+    "short_summary": 60,
+    "low_kv": 2,
+    "high_ocr_len": 800
+  }
+}

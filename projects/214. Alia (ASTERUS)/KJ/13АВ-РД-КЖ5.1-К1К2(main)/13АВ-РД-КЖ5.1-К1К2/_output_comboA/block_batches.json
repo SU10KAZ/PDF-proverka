@@ -1,0 +1,56 @@
+{
+  "total_batches": 1,
+  "total_blocks": 4,
+  "strategy": "adaptive",
+  "batch_size": null,
+  "adaptive_params": {
+    "max_size_kb": 5120,
+    "max_blocks": 15,
+    "min_blocks": 3,
+    "solo_threshold_kb": 3072,
+    "model_profile": "claude-opus-4-7"
+  },
+  "batches": [
+    {
+      "batch_id": 1,
+      "blocks": [
+        {
+          "block_id": "4UTW-PPGP-VEN",
+          "page": 7,
+          "file": "block_4UTW-PPGP-VEN.png",
+          "size_kb": 1109.0,
+          "ocr_label": "План опалубки вертикальных конструкций 1 этажа пристройки корпуса 1-2 на отм. -0"
+        },
+        {
+          "block_id": "6DRC-7KQL-9TJ",
+          "page": 8,
+          "file": "block_6DRC-7KQL-9TJ.png",
+          "size_kb": 949.5,
+          "ocr_label": "Схема армирования вертикальных конструкций 1 этажа пристройки корпуса 1-2 на отм"
+        },
+        {
+          "block_id": "4WTD-JFKA-JLE",
+          "page": 10,
+          "file": "block_4WTD-JFKA-JLE.png",
+          "size_kb": 1740.7,
+          "ocr_label": "Опалубочный план вертикальных конструкций пристройки на отметке -1,800 в осях П."
+        },
+        {
+          "block_id": "RELE-MX3A-MEN",
+          "page": 11,
+          "file": "block_RELE-MX3A-MEN.png",
+          "size_kb": 2063.8,
+          "ocr_label": "План армирования вертикальных конструкций пристройки на отметке -1,800 в осях П."
+        }
+      ],
+      "pages_included": [
+        7,
+        8,
+        10,
+        11
+      ],
+      "block_count": 4,
+      "total_size_kb": 5863.0
+    }
+  ]
+}

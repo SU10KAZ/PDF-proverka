@@ -1,0 +1,59 @@
+{
+  "block_id": "9U74-KT9W-HGN",
+  "page": 17,
+  "sheet_no": "12",
+  "file": "block_9U74-KT9W-HGN.png",
+  "size_kb": 32.7,
+  "ocr_text_len": 1007,
+  "ocr_label": "Чертеж сечения железобетонной колонны Км-400-1000-2800-2 с указанием армирования",
+  "ok": true,
+  "elapsed_ms": 4973,
+  "input_tokens": 2415,
+  "output_tokens": 333,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 688,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 4973,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "сечение",
+    "subject": "Сечение железобетонной колонны Км-400-1000-2800-2 с указанием армирования и размеров",
+    "marks": [
+      "Км-400-1000-2800-2",
+      "6-Ш-1",
+      "16-Г-1",
+      "8-Х-1"
+    ],
+    "rebar_specs": [
+      "6-Ш-1 (замкнутый хомут)",
+      "16-Г-1 (12 шт.)",
+      "8-Х-1 (18 шт.)"
+    ],
+    "dimensions": [
+      "400",
+      "1000",
+      "55",
+      "150",
+      "170",
+      "250",
+      "з.с.30",
+      "з.с.35"
+    ],
+    "references_on_block": [
+      "2.А",
+      "2"
+    ],
+    "axes": [],
+    "level_marks": [],
+    "concrete_class": "B40",
+    "notes": "Изображено сечение колонны с указанием защитных слоев (30 и 35 мм) и количества стержней основных марок. Размеры даны в миллиметрах."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

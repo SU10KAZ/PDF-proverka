@@ -1,0 +1,3204 @@
+[
+  {
+    "block_id": "3TFL-TNRF-7G6",
+    "score": 6,
+    "reasons": [
+      "no_findings",
+      "heavy_weak"
+    ],
+    "page": 8,
+    "size_kb": 605.6,
+    "risk": "heavy",
+    "findings_count": 0,
+    "kv_count": 179,
+    "summary_len": 284,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9DH3-MEUR-DR4",
+    "score": 6,
+    "reasons": [
+      "no_findings",
+      "heavy_weak"
+    ],
+    "page": 9,
+    "size_kb": 105.8,
+    "risk": "heavy",
+    "findings_count": 0,
+    "kv_count": 60,
+    "summary_len": 158,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "947C-9UJT-RYU",
+    "score": 6,
+    "reasons": [
+      "no_findings",
+      "heavy_weak"
+    ],
+    "page": 16,
+    "size_kb": 93.3,
+    "risk": "heavy",
+    "findings_count": 0,
+    "kv_count": 128,
+    "summary_len": 538,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9PPJ-YP6U-HV6",
+    "score": 6,
+    "reasons": [
+      "no_findings",
+      "heavy_weak"
+    ],
+    "page": 16,
+    "size_kb": 92.3,
+    "risk": "heavy",
+    "findings_count": 0,
+    "kv_count": 129,
+    "summary_len": 334,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "97AH-VUFP-LJJ",
+    "score": 6,
+    "reasons": [
+      "no_findings",
+      "heavy_weak"
+    ],
+    "page": 9,
+    "size_kb": 71.1,
+    "risk": "heavy",
+    "findings_count": 0,
+    "kv_count": 29,
+    "summary_len": 370,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7DJ9-EQQ3-QMK",
+    "score": 6,
+    "reasons": [
+      "no_findings",
+      "heavy_weak"
+    ],
+    "page": 9,
+    "size_kb": 63.3,
+    "risk": "heavy",
+    "findings_count": 0,
+    "kv_count": 34,
+    "summary_len": 207,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6P9T-Q7GT-N9J",
+    "score": 6,
+    "reasons": [
+      "no_findings",
+      "heavy_weak"
+    ],
+    "page": 7,
+    "size_kb": 53.3,
+    "risk": "heavy",
+    "findings_count": 0,
+    "kv_count": 42,
+    "summary_len": 211,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9VHU-GJRC-466",
+    "score": 6,
+    "reasons": [
+      "no_findings",
+      "heavy_weak"
+    ],
+    "page": 18,
+    "size_kb": 47.2,
+    "risk": "heavy",
+    "findings_count": 0,
+    "kv_count": 23,
+    "summary_len": 157,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "63YA-YJCM-JJX",
+    "score": 6,
+    "reasons": [
+      "no_findings",
+      "heavy_weak"
+    ],
+    "page": 10,
+    "size_kb": 45.7,
+    "risk": "heavy",
+    "findings_count": 0,
+    "kv_count": 27,
+    "summary_len": 310,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6XXG-CYEA-3V6",
+    "score": 6,
+    "reasons": [
+      "no_findings",
+      "heavy_weak"
+    ],
+    "page": 20,
+    "size_kb": 27.9,
+    "risk": "heavy",
+    "findings_count": 0,
+    "kv_count": 7,
+    "summary_len": 172,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9LEP-4T9M-APD",
+    "score": 6,
+    "reasons": [
+      "no_findings",
+      "low_kv"
+    ],
+    "page": 10,
+    "size_kb": 17.7,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 2,
+    "summary_len": 98,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4CFG-LM4Y-7H4",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 9,
+    "size_kb": 77.7,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 23,
+    "summary_len": 138,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "66M4-Y69W-VCG",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 14,
+    "size_kb": 71.8,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 29,
+    "summary_len": 143,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6PPA-4DDX-6FR",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 13,
+    "size_kb": 70.9,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 72,
+    "summary_len": 239,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6R7N-7LRD-AUR",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 9,
+    "size_kb": 70.1,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 35,
+    "summary_len": 116,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9XMG-3LNL-RMW",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 13,
+    "size_kb": 70.0,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 27,
+    "summary_len": 258,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7WA4-CMJR-CTT",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 14,
+    "size_kb": 68.7,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 20,
+    "summary_len": 221,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9DYL-TRNE-FHD",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 14,
+    "size_kb": 68.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 57,
+    "summary_len": 157,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9EHH-K9MW-H7K",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 15,
+    "size_kb": 67.7,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 28,
+    "summary_len": 251,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "AQUH-VLE6-WQ6",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 11,
+    "size_kb": 67.5,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 26,
+    "summary_len": 232,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "KD3V-NKTR-CAF",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 13,
+    "size_kb": 64.5,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 21,
+    "summary_len": 162,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4YTF-P6Y3-URD",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 13,
+    "size_kb": 64.3,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 21,
+    "summary_len": 164,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "JHYV-DLMK-MFW",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 13,
+    "size_kb": 64.0,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 25,
+    "summary_len": 130,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4AEL-DEEK-JT9",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 14,
+    "size_kb": 63.1,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 27,
+    "summary_len": 231,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "WMFU-R4RY-69C",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 15,
+    "size_kb": 62.8,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 22,
+    "summary_len": 179,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "349W-4CGG-7PY",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 12,
+    "size_kb": 61.9,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 40,
+    "summary_len": 220,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "79UV-9Q7R-N4M",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 14,
+    "size_kb": 61.0,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 33,
+    "summary_len": 167,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9TQ3-P3FY-MEC",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 12,
+    "size_kb": 60.8,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 21,
+    "summary_len": 234,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6DJ4-EEPT-W4M",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 11,
+    "size_kb": 59.9,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 26,
+    "summary_len": 159,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6UDX-E96P-DYW",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 14,
+    "size_kb": 59.9,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 19,
+    "summary_len": 208,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "67FG-77WL-MUM",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 9,
+    "size_kb": 59.2,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 22,
+    "summary_len": 333,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "GC4D-PCGH-N39",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 9,
+    "size_kb": 59.1,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 33,
+    "summary_len": 328,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "AWEW-KHGF-XTX",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 19,
+    "size_kb": 58.8,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 36,
+    "summary_len": 173,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "93TQ-CQ4L-7FW",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 9,
+    "size_kb": 58.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 19,
+    "summary_len": 330,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4N6W-CNGV-QRF",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 12,
+    "size_kb": 57.5,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 26,
+    "summary_len": 233,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6DNQ-LQFH-PAK",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 11,
+    "size_kb": 56.8,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 35,
+    "summary_len": 349,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6TFY-Y6VQ-RQN",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 10,
+    "size_kb": 56.5,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 24,
+    "summary_len": 213,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "WJ34-MLFT-NWD",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 11,
+    "size_kb": 56.0,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 24,
+    "summary_len": 194,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "YVX3-LTRL-ET3",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 11,
+    "size_kb": 55.7,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 18,
+    "summary_len": 471,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6MMM-XNAK-433",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 15,
+    "size_kb": 55.7,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 24,
+    "summary_len": 162,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7XUQ-KJVR-6FP",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 12,
+    "size_kb": 55.5,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 26,
+    "summary_len": 277,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7MKF-CY7E-9PD",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 12,
+    "size_kb": 55.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 34,
+    "summary_len": 190,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7EYW-CALN-VVL",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 13,
+    "size_kb": 55.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 45,
+    "summary_len": 164,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9ULT-Y9WF-NGL",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 13,
+    "size_kb": 55.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 18,
+    "summary_len": 580,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4LPW-GGUY-PKY",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 12,
+    "size_kb": 54.9,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 18,
+    "summary_len": 311,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "HNNQ-FTUC-K7W",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 14,
+    "size_kb": 54.6,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 28,
+    "summary_len": 217,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "94T3-JQLA-V3C",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 15,
+    "size_kb": 53.8,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 26,
+    "summary_len": 185,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6Q6L-TPNW-ENQ",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 12,
+    "size_kb": 53.5,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 30,
+    "summary_len": 192,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "99HW-6DHR-7EE",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 9,
+    "size_kb": 53.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 29,
+    "summary_len": 273,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6EUN-3DDR-66N",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 14,
+    "size_kb": 52.8,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 19,
+    "summary_len": 245,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4AV4-PPXG-REV",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 17,
+    "size_kb": 52.8,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 18,
+    "summary_len": 184,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "KEMF-D3Y4-3NJ",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 19,
+    "size_kb": 52.8,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 18,
+    "summary_len": 215,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7AK6-PCKD-LQQ",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 10,
+    "size_kb": 52.7,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 17,
+    "summary_len": 369,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "AC7K-CGN7-GJJ",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 14,
+    "size_kb": 52.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 20,
+    "summary_len": 180,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6KFL-Y3YM-YFH",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 9,
+    "size_kb": 51.9,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 22,
+    "summary_len": 402,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9JE7-FPRL-E9E",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 18,
+    "size_kb": 51.6,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 18,
+    "summary_len": 225,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "63C3-DYDW-QCG",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 51.5,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 28,
+    "summary_len": 131,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7VUH-QXNE-R96",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 12,
+    "size_kb": 51.3,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 24,
+    "summary_len": 181,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "TGNP-L334-33C",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 51.1,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 18,
+    "summary_len": 170,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7G7K-NGVM-LCC",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 10,
+    "size_kb": 51.0,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 19,
+    "summary_len": 212,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9XQM-D6XA-UUK",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 10,
+    "size_kb": 50.7,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 24,
+    "summary_len": 200,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7G6X-4XXW-DNN",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 11,
+    "size_kb": 50.7,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 17,
+    "summary_len": 330,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6LQP-AGTR-4H7",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 12,
+    "size_kb": 50.7,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 15,
+    "summary_len": 208,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7T79-F3KV-VEQ",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 13,
+    "size_kb": 50.5,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 15,
+    "summary_len": 307,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7XDE-4E6V-W7A",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 15,
+    "size_kb": 50.5,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 23,
+    "summary_len": 206,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "3VGQ-9979-KFW",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 10,
+    "size_kb": 50.2,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 15,
+    "summary_len": 322,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "E7QW-Y7R9-YX3",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 10,
+    "size_kb": 49.9,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 18,
+    "summary_len": 213,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "YTXG-HQTF-DTC",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 11,
+    "size_kb": 49.6,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 15,
+    "summary_len": 335,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "A9QU-33GC-JDP",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 9,
+    "size_kb": 49.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 24,
+    "summary_len": 189,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4RRP-APLY-KPA",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 15,
+    "size_kb": 49.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 15,
+    "summary_len": 333,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9PCA-GQGT-JTN",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 14,
+    "size_kb": 49.3,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 18,
+    "summary_len": 179,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "A9M4-EJ7R-MKH",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 6,
+    "size_kb": 48.9,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 48,
+    "summary_len": 576,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "KFML-N7WG-Y4W",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 19,
+    "size_kb": 48.9,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 18,
+    "summary_len": 177,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6D4Q-KK4M-QDA",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 48.1,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 16,
+    "summary_len": 108,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4NGP-Q4UK-RV3",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 9,
+    "size_kb": 47.9,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 21,
+    "summary_len": 115,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7LYU-N7KH-67R",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 11,
+    "size_kb": 47.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 30,
+    "summary_len": 170,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4PG4-XVHC-LCQ",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 47.3,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 49,
+    "summary_len": 332,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "D9RG-VETQ-9NQ",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 46.5,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 14,
+    "summary_len": 345,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "R6TU-94GX-WD4",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 14,
+    "size_kb": 46.5,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 15,
+    "summary_len": 196,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4AF4-3LXR-UTV",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 10,
+    "size_kb": 46.2,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 17,
+    "summary_len": 329,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "47XG-3PPW-PJ6",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 10,
+    "size_kb": 46.2,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 15,
+    "summary_len": 274,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6Y4G-FDQE-6JC",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 15,
+    "size_kb": 46.0,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 28,
+    "summary_len": 321,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7UWW-X9YT-KFK",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 9,
+    "size_kb": 45.6,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 15,
+    "summary_len": 126,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6HAF-43VX-V6V",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 45.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 21,
+    "summary_len": 162,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "AAHY-LAPW-4DF",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 17,
+    "size_kb": 45.2,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 26,
+    "summary_len": 358,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7GHY-73UY-TJG",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 17,
+    "size_kb": 45.2,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 23,
+    "summary_len": 332,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4HYQ-JHE6-GX9",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 11,
+    "size_kb": 45.1,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 23,
+    "summary_len": 296,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "A6YK-G7A9-MMR",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 15,
+    "size_kb": 43.7,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 29,
+    "summary_len": 212,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "73YG-7DGA-HUH",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 16,
+    "size_kb": 43.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 47,
+    "summary_len": 273,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6X93-UP47-T6G",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 15,
+    "size_kb": 42.6,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 18,
+    "summary_len": 356,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4WM4-F47J-K9L",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 42.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 24,
+    "summary_len": 188,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6KLA-6TKM-C4K",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 9,
+    "size_kb": 42.2,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 9,
+    "summary_len": 233,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4MJP-RPV6-4G3",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 41.3,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 34,
+    "summary_len": 140,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4LMQ-4R7M-EC3",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 9,
+    "size_kb": 40.7,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 24,
+    "summary_len": 387,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7H93-RKCQ-VXJ",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 40.5,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 28,
+    "summary_len": 180,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6WQH-PM9T-C4Y",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 40.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 19,
+    "summary_len": 335,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4WPW-9MXF-JQC",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 8,
+    "size_kb": 40.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 16,
+    "summary_len": 179,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4R4K-HXGY-3PH",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 17,
+    "size_kb": 39.2,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 24,
+    "summary_len": 212,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "A9WA-RDTJ-PMP",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 12,
+    "size_kb": 39.0,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 19,
+    "summary_len": 194,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "64YX-AX6P-VQE",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 9,
+    "size_kb": 38.9,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 8,
+    "summary_len": 333,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6EXK-YA6J-KPU",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 38.8,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 19,
+    "summary_len": 369,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6Q9N-FFCG-VMH",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 20,
+    "size_kb": 38.8,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 12,
+    "summary_len": 262,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4YKN-EJLX-F6E",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 20,
+    "size_kb": 38.0,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 13,
+    "summary_len": 233,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4LY3-Y3PU-YTQ",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 37.5,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 12,
+    "summary_len": 93,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6CTR-YY79-3G6",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 8,
+    "size_kb": 37.2,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 20,
+    "summary_len": 268,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7GYU-76VT-6DD",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 37.1,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 31,
+    "summary_len": 295,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7W4D-7H6Q-NK7",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 20,
+    "size_kb": 36.0,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 12,
+    "summary_len": 250,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9PMF-NARW-9EC",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 19,
+    "size_kb": 35.9,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 19,
+    "summary_len": 205,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9J4V-UPUX-QYR",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 15,
+    "size_kb": 35.5,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 17,
+    "summary_len": 308,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "74WW-EAML-LKD",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 35.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 18,
+    "summary_len": 174,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "74XL-AQCG-79G",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 15,
+    "size_kb": 35.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 16,
+    "summary_len": 115,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6MVG-W3LL-VKY",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 10,
+    "size_kb": 35.2,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 22,
+    "summary_len": 241,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "33N9-7JYR-4JQ",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 35.0,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 15,
+    "summary_len": 196,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6T6C-F4W9-MEQ",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 8,
+    "size_kb": 34.9,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 10,
+    "summary_len": 373,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7NF9-HNQ3-YMR",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 34.8,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 13,
+    "summary_len": 79,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "94RC-JFUD-4NN",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 8,
+    "size_kb": 34.8,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 13,
+    "summary_len": 154,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "AAJW-Q7RA-JCQ",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 12,
+    "size_kb": 34.6,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 20,
+    "summary_len": 215,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4KH9-FRYR-WGV",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 19,
+    "size_kb": 34.1,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 13,
+    "summary_len": 296,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "C3EQ-CLF7-JMK",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 33.5,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 12,
+    "summary_len": 209,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9U74-KT9W-HGN",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 17,
+    "size_kb": 32.7,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 20,
+    "summary_len": 343,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7AG9-4FTL-LET",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 20,
+    "size_kb": 32.3,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 11,
+    "summary_len": 137,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7K6R-D36M-FJL",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 31.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 16,
+    "summary_len": 150,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4PTP-H6MY-9WP",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 8,
+    "size_kb": 31.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 14,
+    "summary_len": 254,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7RYF-G6EJ-GVQ",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 15,
+    "size_kb": 30.8,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 7,
+    "summary_len": 196,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4UHT-NTXR-69J",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 14,
+    "size_kb": 30.0,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 6,
+    "summary_len": 171,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6QPC-LPRT-FXV",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 19,
+    "size_kb": 29.7,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 7,
+    "summary_len": 240,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4CRW-7WEW-6KA",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 8,
+    "size_kb": 29.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 16,
+    "summary_len": 550,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7CHG-7U6R-WYP",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 11,
+    "size_kb": 29.3,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 7,
+    "summary_len": 249,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "JTUC-HHUY-W7K",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 18,
+    "size_kb": 28.9,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 7,
+    "summary_len": 261,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9C4E-9M37-MD4",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 28.8,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 26,
+    "summary_len": 131,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "AC3T-RYW4-UD4",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 28.6,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 10,
+    "summary_len": 133,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4AXN-LD34-NKA",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 13,
+    "size_kb": 28.6,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 7,
+    "summary_len": 295,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6CJL-W6NL-HHR",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 10,
+    "size_kb": 28.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 7,
+    "summary_len": 249,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4FT3-Y3CW-C3L",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 12,
+    "size_kb": 28.2,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 7,
+    "summary_len": 181,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "CWVU-XLAY-GHP",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 28.0,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 13,
+    "summary_len": 153,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "H3VM-7JM6-6HM",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 27.8,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 19,
+    "summary_len": 228,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "A64J-CYTJ-AQQ",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 20,
+    "size_kb": 27.7,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 9,
+    "summary_len": 138,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6XVN-CGJH-YXL",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 17,
+    "size_kb": 27.5,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 7,
+    "summary_len": 187,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9MKJ-RAFV-UDM",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 20,
+    "size_kb": 27.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 13,
+    "summary_len": 240,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "LFYA-MR6V-D36",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 26.8,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 17,
+    "summary_len": 261,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "69E6-U9HN-NQE",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 26.1,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 17,
+    "summary_len": 263,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9AVR-YFEC-THW",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 10,
+    "size_kb": 26.1,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 172,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6PTF-MY33-GKM",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 12,
+    "size_kb": 25.5,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 192,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "97VK-ACQF-64R",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 13,
+    "size_kb": 25.4,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 5,
+    "summary_len": 197,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4PJY-HUAR-DDH",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 14,
+    "size_kb": 25.4,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 4,
+    "summary_len": 148,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "GAAA-QLPN-JCX",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 13,
+    "size_kb": 25.2,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 4,
+    "summary_len": 162,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7RGR-7UKN-3K4",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 10,
+    "size_kb": 25.1,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 5,
+    "summary_len": 153,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7CF7-HPQT-FUY",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 12,
+    "size_kb": 25.0,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 5,
+    "summary_len": 174,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "LT66-UCJY-XUY",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 15,
+    "size_kb": 24.8,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 5,
+    "summary_len": 171,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7H6R-WQLD-R6L",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 24.7,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 7,
+    "summary_len": 138,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9R9K-JMRC-LWA",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 19,
+    "size_kb": 24.7,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 5,
+    "summary_len": 297,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4FPK-WYU6-DQJ",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 11,
+    "size_kb": 24.6,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 5,
+    "summary_len": 196,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6R74-W6N6-N6Q",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 14,
+    "size_kb": 24.6,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 5,
+    "summary_len": 175,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4HDD-UUVX-GR4",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 17,
+    "size_kb": 24.6,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 5,
+    "summary_len": 202,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7RET-QFQK-9DM",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 11,
+    "size_kb": 24.4,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 189,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4YCC-GJX3-CAK",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 15,
+    "size_kb": 24.4,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 4,
+    "summary_len": 207,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "JDM3-R73E-JJ6",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 24.0,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 9,
+    "summary_len": 119,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "73YC-AGH3-ETT",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 24.0,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 9,
+    "summary_len": 199,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "699T-VQWX-KWA",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 23.2,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 9,
+    "summary_len": 310,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "VNVR-PXFJ-HEJ",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 18,
+    "size_kb": 22.4,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 5,
+    "summary_len": 292,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9RD7-EPAA-NJQ",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 22.2,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 13,
+    "summary_len": 70,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "46XN-XKRV-PC6",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 20.7,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 9,
+    "summary_len": 194,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "74TH-VMV6-QUU",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 8,
+    "size_kb": 20.3,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 11,
+    "summary_len": 350,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4PJJ-YHH6-KK7",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 20.0,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 19,
+    "summary_len": 215,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4CW4-47XP-XR4",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 9,
+    "size_kb": 20.0,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 8,
+    "summary_len": 177,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9UWG-XC4V-DLX",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 19.9,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 9,
+    "summary_len": 222,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7EN4-ATAF-MM7",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 19.4,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 12,
+    "summary_len": 167,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4ARK-6ENX-GEV",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 9,
+    "size_kb": 18.8,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 6,
+    "summary_len": 153,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "XRLP-WYJG-LAU",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 15,
+    "size_kb": 18.2,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 80,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7VFQ-CGWK-3DD",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 17.6,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 19,
+    "summary_len": 186,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "96QF-AXTF-KHP",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 14,
+    "size_kb": 17.5,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 108,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6EVE-NNFK-NWD",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 15,
+    "size_kb": 17.1,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 4,
+    "summary_len": 154,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7PQJ-YWYD-3FP",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 18,
+    "size_kb": 17.1,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 159,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7UGJ-M7DG-7KA",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 12,
+    "size_kb": 17.0,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 82,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7NC6-TG6X-AUF",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 16.8,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 6,
+    "summary_len": 239,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6AFF-3MAM-EXJ",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 17,
+    "size_kb": 16.6,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 108,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7WLT-66U6-FG9",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 8,
+    "size_kb": 16.4,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 82,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9993-RW34-7HW",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 19,
+    "size_kb": 16.2,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 141,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6QGA-YF97-X7H",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 10,
+    "size_kb": 16.0,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 4,
+    "summary_len": 229,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "A7YN-4V6Q-LAF",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 11,
+    "size_kb": 16.0,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 156,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "XCJC-ULVE-F4K",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 13,
+    "size_kb": 15.8,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 138,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6LA7-DVP9-V7H",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 12,
+    "size_kb": 15.5,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 5,
+    "summary_len": 233,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7QYC-DEC9-YDD",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 13,
+    "size_kb": 15.5,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 97,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "66EP-XQPR-7AA",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 10,
+    "size_kb": 15.4,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 172,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9RWF-HTJA-Y6Q",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 12,
+    "size_kb": 15.4,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 192,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9GQD-LF9N-999",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 14,
+    "size_kb": 15.3,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 168,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "PHFN-MJAR-3VN",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 13,
+    "size_kb": 15.1,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 5,
+    "summary_len": 101,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9CPA-XUE4-EWF",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 14,
+    "size_kb": 15.1,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 4,
+    "summary_len": 240,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4FT3-JE3Y-WPU",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 11,
+    "size_kb": 14.9,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 172,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7TUE-6AJK-CLE",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 11,
+    "size_kb": 14.9,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 5,
+    "summary_len": 227,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "FJRE-A3G4-JMR",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 11,
+    "size_kb": 14.7,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 129,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7HMV-MMPQ-JJE",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 12,
+    "size_kb": 14.2,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 174,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "73KK-HTRH-JTV",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 13,
+    "size_kb": 14.2,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 111,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7D9Q-GLVQ-QWH",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 14,
+    "size_kb": 14.1,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 139,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7YPU-7R7J-YNE",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 15,
+    "size_kb": 13.6,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 178,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9G3N-NHAX-EF4",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 10,
+    "size_kb": 13.2,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 135,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4LVY-33DN-DVN",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 7,
+    "size_kb": 13.0,
+    "risk": "normal",
+    "findings_count": 0,
+    "kv_count": 5,
+    "summary_len": 182,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4U4Y-DKT4-HKU",
+    "score": 4,
+    "reasons": [
+      "no_findings"
+    ],
+    "page": 15,
+    "size_kb": 12.4,
+    "risk": "light",
+    "findings_count": 0,
+    "kv_count": 3,
+    "summary_len": 134,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "66NE-7DYY-GQN",
+    "score": 0,
+    "reasons": [],
+    "page": 7,
+    "size_kb": 476.2,
+    "risk": "heavy",
+    "findings_count": 2,
+    "kv_count": 499,
+    "summary_len": 209,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4MUX-7DPE-QXX",
+    "score": 0,
+    "reasons": [],
+    "page": 13,
+    "size_kb": 69.1,
+    "risk": "normal",
+    "findings_count": 3,
+    "kv_count": 64,
+    "summary_len": 208,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "779N-R9FA-HPR",
+    "score": 0,
+    "reasons": [],
+    "page": 15,
+    "size_kb": 61.8,
+    "risk": "normal",
+    "findings_count": 3,
+    "kv_count": 71,
+    "summary_len": 177,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4DP9-G999-YCV",
+    "score": 0,
+    "reasons": [],
+    "page": 13,
+    "size_kb": 57.1,
+    "risk": "normal",
+    "findings_count": 6,
+    "kv_count": 64,
+    "summary_len": 305,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "TAXK-LEUR-TKK",
+    "score": 0,
+    "reasons": [],
+    "page": 19,
+    "size_kb": 55.8,
+    "risk": "normal",
+    "findings_count": 4,
+    "kv_count": 140,
+    "summary_len": 478,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "9XYR-QUH3-QJT",
+    "score": 0,
+    "reasons": [],
+    "page": 15,
+    "size_kb": 53.5,
+    "risk": "normal",
+    "findings_count": 3,
+    "kv_count": 70,
+    "summary_len": 212,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "6MV3-YUME-9CN",
+    "score": 0,
+    "reasons": [],
+    "page": 11,
+    "size_kb": 52.1,
+    "risk": "normal",
+    "findings_count": 2,
+    "kv_count": 62,
+    "summary_len": 174,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7CXU-7KJ3-9Q6",
+    "score": 0,
+    "reasons": [],
+    "page": 15,
+    "size_kb": 51.8,
+    "risk": "normal",
+    "findings_count": 4,
+    "kv_count": 57,
+    "summary_len": 170,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "47KV-YVXG-NUF",
+    "score": 0,
+    "reasons": [],
+    "page": 11,
+    "size_kb": 49.2,
+    "risk": "normal",
+    "findings_count": 2,
+    "kv_count": 60,
+    "summary_len": 229,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7HAG-WPJG-KRY",
+    "score": 0,
+    "reasons": [],
+    "page": 10,
+    "size_kb": 48.3,
+    "risk": "normal",
+    "findings_count": 3,
+    "kv_count": 17,
+    "summary_len": 152,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "7CF7-NXLW-T6V",
+    "score": 0,
+    "reasons": [],
+    "page": 10,
+    "size_kb": 47.1,
+    "risk": "normal",
+    "findings_count": 2,
+    "kv_count": 25,
+    "summary_len": 504,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "77FD-FM7F-CQN",
+    "score": 0,
+    "reasons": [],
+    "page": 10,
+    "size_kb": 41.2,
+    "risk": "normal",
+    "findings_count": 3,
+    "kv_count": 18,
+    "summary_len": 200,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4JJP-W7D6-YKF",
+    "score": 0,
+    "reasons": [],
+    "page": 20,
+    "size_kb": 39.5,
+    "risk": "normal",
+    "findings_count": 1,
+    "kv_count": 13,
+    "summary_len": 190,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "79NT-KCUP-VUK",
+    "score": 0,
+    "reasons": [],
+    "page": 18,
+    "size_kb": 34.0,
+    "risk": "normal",
+    "findings_count": 2,
+    "kv_count": 19,
+    "summary_len": 298,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "HP4W-KDLX-C77",
+    "score": 0,
+    "reasons": [],
+    "page": 8,
+    "size_kb": 28.6,
+    "risk": "light",
+    "findings_count": 2,
+    "kv_count": 11,
+    "summary_len": 367,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "4YUU-AJ3K-TWM",
+    "score": 0,
+    "reasons": [],
+    "page": 8,
+    "size_kb": 23.7,
+    "risk": "normal",
+    "findings_count": 2,
+    "kv_count": 20,
+    "summary_len": 227,
+    "inferred": false,
+    "analysis_present": true
+  },
+  {
+    "block_id": "A9UL-KCKR-PNN",
+    "score": 0,
+    "reasons": [],
+    "page": 8,
+    "size_kb": 23.5,
+    "risk": "normal",
+    "findings_count": 2,
+    "kv_count": 19,
+    "summary_len": 240,
+    "inferred": false,
+    "analysis_present": true
+  }
+]

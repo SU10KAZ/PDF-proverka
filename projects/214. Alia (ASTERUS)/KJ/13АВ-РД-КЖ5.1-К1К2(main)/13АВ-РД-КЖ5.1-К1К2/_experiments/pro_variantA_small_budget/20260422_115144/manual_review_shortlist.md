@@ -1,0 +1,21 @@
+# Manual Review Shortlist
+
+- `6DRC-7KQL-9TJ` [batch_screening/b2] -> likely_improved: useful_findings_improved
+- `RELE-MX3A-MEN` [batch_screening/b2] -> likely_degraded: noisy_kv_inflation
+- `DTGF-MYHX-PPD` [batch_screening/b2] -> likely_improved: kv_adequacy_improved
+- `4WTD-JFKA-JLE` [batch_screening/b2] -> likely_improved: useful_findings_improved, kv_adequacy_improved
+- `9GNP-D7CE-RYM` [batch_screening/b2] -> likely_improved: summary_specificity_improved
+- `4UTW-PPGP-VEN` [batch_screening/b2] -> likely_improved: summary_specificity_improved
+- `6DRC-7KQL-9TJ` [batch_screening/b4] -> likely_improved: useful_findings_improved, kv_adequacy_improved
+- `4MQJ-6NXP-4YH` [batch_screening/b4] -> likely_improved: summary_specificity_improved
+- `DTGF-MYHX-PPD` [batch_screening/b4] -> likely_degraded: kv_collapse
+- `TULW-YCYU-YVQ` [batch_screening/b4] -> likely_improved: kv_adequacy_improved
+- `6DRC-7KQL-9TJ` [batch_screening/b6] -> likely_improved: kv_adequacy_improved
+- `RELE-MX3A-MEN` [batch_screening/b6] -> likely_improved: useful_findings_improved
+- `4WTD-JFKA-JLE` [batch_screening/b6] -> likely_improved: useful_findings_improved, kv_adequacy_improved
+- `4UTW-PPGP-VEN` [batch_screening/b6] -> likely_degraded: kv_collapse
+- `RELE-MX3A-MEN` [resolution_screening/r1000] -> likely_improved: useful_findings_improved
+- `4WTD-JFKA-JLE` [resolution_screening/r1000] -> likely_improved: useful_findings_improved, kv_adequacy_improved
+- `4UTW-PPGP-VEN` [resolution_screening/r1000] -> likely_degraded: kv_collapse
+- `6DRC-7KQL-9TJ` [resolution_screening/r1000] -> likely_improved: useful_findings_improved, kv_adequacy_improved
+- `46LP-7CN7-GG6` [resolution_screening/r1000] -> likely_degraded: kv_collapse

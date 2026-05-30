@@ -1,0 +1,27 @@
+{
+  "project_id": "13АВ-РД-КЖ6-К1К2",
+  "name": "13АВ-РД-КЖ6-К1К2",
+  "section": "KJ",
+  "description": "",
+  "pdf_file": "13АВ-РД-КЖ6-К1К2 (3).pdf",
+  "pdf_files": [
+    "13АВ-РД-КЖ6-К1К2 (3).pdf"
+  ],
+  "version_id": "v2",
+  "version_label": "V2",
+  "version_source": "edit_projects_modal",
+  "version_comment": "Привязано из окна Изменить выбранные проекты",
+  "md_files": [
+    "13АВ-РД-КЖ6-К1К2 (3)_document.md"
+  ],
+  "md_file": "13АВ-РД-КЖ6-К1К2 (3)_document.md",
+  "updated_at": "2026-05-16T14:41:37",
+  "last_uploaded_files": [
+    "13АВ-РД-КЖ6-К1К2 (3).pdf",
+    "13АВ-РД-КЖ6-К1К2 (3)_document.md",
+    "13АВ-РД-КЖ6-К1К2 (3)_ocr.html",
+    "13АВ-РД-КЖ6-К1К2 (3)_result.json"
+  ],
+  "last_upload_comment": "Привязано из окна Изменить выбранные проекты",
+  "merged_from_project_id": "13АВ-РД-КЖ6-К1К2 (3).pdf"
+}

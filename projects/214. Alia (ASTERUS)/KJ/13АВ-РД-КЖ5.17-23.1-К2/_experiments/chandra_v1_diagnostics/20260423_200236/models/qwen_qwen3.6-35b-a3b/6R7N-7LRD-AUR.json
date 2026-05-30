@@ -1,0 +1,33 @@
+{
+  "model": "qwen/qwen3.6-35b-a3b",
+  "image_name": "6R7N-7LRD-AUR",
+  "block_id": "6R7N-7LRD-AUR",
+  "width": 1024,
+  "height": 1023,
+  "request": "image_smoke",
+  "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_200236/audit_images/native_crops/block_6R7N-7LRD-AUR_native.png",
+  "image_size_bytes": 97280,
+  "ok": true,
+  "status_code": 200,
+  "elapsed_s": 2.396,
+  "error": null,
+  "response": {
+    "model_instance_id": "qwen/qwen3.6-35b-a3b",
+    "output": [
+      {
+        "type": "message",
+        "content": "Тип схемы: Разрез 5-5 (3)  \nОсновные элементы: Стена с проемом, армирование, отметки высот (А, Б, В, Г), размеры по вертикали и горизонтали.  \nЧитаемые детали:  \n- Арматура 12-Г-17 шаг 100 (2 шт.)  \n- Арматура 8-Г-2 шаг 200 (3 шт.)  \n- Отм. Б на высоте 200 мм от уровня Б"
+      }
+    ],
+    "stats": {
+      "input_tokens": 1117,
+      "total_output_tokens": 108,
+      "reasoning_output_tokens": 0,
+      "tokens_per_second": 231.14063623600316,
+      "time_to_first_token_seconds": 0.407
+    }
+  },
+  "content": "Тип схемы: Разрез 5-5 (3)  \nОсновные элементы: Стена с проемом, армирование, отметки высот (А, Б, В, Г), размеры по вертикали и горизонтали.  \nЧитаемые детали:  \n- Арматура 12-Г-17 шаг 100 (2 шт.)  \n- Арматура 8-Г-2 шаг 200 (3 шт.)  \n- Отм. Б на высоте 200 мм от уровня Б",
+  "reasoning": "",
+  "verdict": "pass"
+}

@@ -1,0 +1,48 @@
+{
+  "block_id": "7UDT-EGK9-EU7",
+  "page": 12,
+  "sheet_no": "7",
+  "file": "block_7UDT-EGK9-EU7.png",
+  "size_kb": 14.0,
+  "ocr_text_len": 801,
+  "ocr_label": "Графическая схема стыковки арматурных стержней внахлест.",
+  "ok": true,
+  "elapsed_ms": 3376,
+  "input_tokens": 1460,
+  "output_tokens": 285,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 698,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3376,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "схема_стыковки",
+    "subject": "Схема стыковки арматурных стержней внахлест с указанием длин анкеровки и нахлеста",
+    "marks": [],
+    "rebar_specs": [],
+    "dimensions": [
+      "≥ 2d1, ≥ 30мм",
+      "≥ Длина 1",
+      "Lр.н."
+    ],
+    "references_on_block": [
+      "Таблица 1. Параметры арматурных деталей (Арматура А500С)",
+      "см. лист 1",
+      "см. лист 2",
+      "см. л. 3... 6",
+      "см. лист 8"
+    ],
+    "axes": [],
+    "level_marks": [],
+    "concrete_class": "В40",
+    "notes": "Схема иллюстрирует правила стыковки арматуры внахлест. Длины нахлеста (Lр.н.) и анкеровки зависят от диаметра арматуры и указаны в Таблице 1 для бетона В40. Требуется привязка стержней к фоновому армированию."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

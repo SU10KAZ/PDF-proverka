@@ -1,0 +1,56 @@
+{
+  "block_id": "4JJP-W7D6-YKF",
+  "page": 20,
+  "sheet_no": "15",
+  "file": "block_4JJP-W7D6-YKF.png",
+  "size_kb": 39.5,
+  "ocr_text_len": 1010,
+  "ocr_label": "Фрагмент разреза 4-4 с указанием расположения трубы ПНД и коробки КУ 1301 в нише",
+  "ok": true,
+  "elapsed_ms": 2620,
+  "input_tokens": 1496,
+  "output_tokens": 277,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 611,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 2620,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "разрез",
+    "subject": "Фрагмент разреза 4-4 с расположением коробки КУ 1301 и трубы ПНД в нише 30М",
+    "marks": [
+      "КУ 1301",
+      "Ниша 30М"
+    ],
+    "rebar_specs": [],
+    "dimensions": [
+      "d=32 мм",
+      "710",
+      "1230",
+      "300",
+      "1570"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "раздел ЭОМ"
+    ],
+    "axes": [
+      "2.Е"
+    ],
+    "level_marks": [
+      "+84,980",
+      "+83,110",
+      "+81,880"
+    ],
+    "concrete_class": null,
+    "notes": "Необходимо уточнить все привязки и отметки по чертежам раздела ЭОМ. При монтаже закладных деталей запрещено повреждать рабочую арматуру."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

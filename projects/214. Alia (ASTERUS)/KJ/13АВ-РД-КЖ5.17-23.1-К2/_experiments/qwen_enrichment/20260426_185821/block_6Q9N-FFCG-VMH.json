@@ -1,0 +1,55 @@
+{
+  "block_id": "6Q9N-FFCG-VMH",
+  "page": 20,
+  "sheet_no": "15",
+  "file": "block_6Q9N-FFCG-VMH.png",
+  "size_kb": 38.8,
+  "ocr_text_len": 988,
+  "ocr_label": "Фрагмент разреза 2-2 с указанием расположения закладных деталей ЭОМ в монолитной",
+  "ok": true,
+  "elapsed_ms": 3597,
+  "input_tokens": 1568,
+  "output_tokens": 257,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 586,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3597,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "разрез",
+    "subject": "Фрагмент разреза 2-2 с расположением закладных деталей ЭОМ в монолитной конструкции",
+    "marks": [
+      "КУ1301",
+      "ПНД d=32 мм"
+    ],
+    "rebar_specs": [],
+    "dimensions": [
+      "525",
+      "1230",
+      "300",
+      "1570"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "раздел ЭОМ"
+    ],
+    "axes": [
+      "Б"
+    ],
+    "level_marks": [
+      "+84,980",
+      "+83,110",
+      "+81,880"
+    ],
+    "concrete_class": null,
+    "notes": "Изображена ниша ЭОМ, подлежащая заполнению пенополистиролом. Требуется согласование привязок и отметок с разделом ЭОМ."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

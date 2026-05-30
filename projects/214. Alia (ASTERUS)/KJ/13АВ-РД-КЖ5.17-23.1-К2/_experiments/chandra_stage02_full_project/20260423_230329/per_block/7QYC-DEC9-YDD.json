@@ -1,0 +1,106 @@
+{
+  "baseline": {
+    "block_id": "7QYC-DEC9-YDD",
+    "page": 13,
+    "sheet": "8",
+    "label": "Схема отгиба стержня",
+    "sheet_type": "sections_cuts",
+    "unreadable_text": false,
+    "unreadable_details": null,
+    "summary": "Графическая схема отгиба арматурного стержня с указанием геометрических параметров уклона.",
+    "key_values_read": [
+      "Уклон отгиба: 1:6 (a / ≥6a)"
+    ],
+    "evidence_text_refs": [
+      {
+        "text_block_id": "9HGD-ADC3-XDY",
+        "role": "other",
+        "used_for": "cross_check",
+        "confidence": 0.39,
+        "source": "graph_backfill"
+      }
+    ],
+    "findings": [],
+    "selected_text_block_ids": [
+      "9HGD-ADC3-XDY"
+    ]
+  },
+  "candidate_raw": {
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_stage02_full_project/20260423_230329/prepared/native_crops/block_7QYC-DEC9-YDD_native.png",
+    "image_size_bytes": 16039,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 3.503,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-35b-a3b",
+      "output": [
+        {
+          "type": "message",
+          "content": "{\n  \"block_id\": \"7QYC-DEC9-YDD\",\n  \"page\": 13,\n  \"label\": \"Графическая схема отгиба арматурного стержня\",\n  \"sheet_type\": \"detail\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлена типовая схема отгиба арматурного стержня. Изображение содержит графическое отображение изгиба и основные геометрические параметры, определяющие форму и размеры отгиба. Текст на чертеже читаем и содержит обозначения параметров.\",\n  \"key_values_read\": [\n    \"Надпись: Схема отгиба стержня\",\n    \"Параметр: a\",\n    \"Параметр: ≥6a\"\n  ],\n  \"findings\": [\n    {\n      \"severity\": \"ПРОВЕРИТЬ ПО СМЕЖНЫМ\",\n      \"category\": \"арматура\",\n      \"finding\": \"Отсутствует указание диаметра арматурного стержня (d), который является критическим для определения длины отгиба.\",\n      \"block_evidence\": \"На схеме указан параметр 'a' и условие '≥6a', но нет значения диаметра стержня.\",\n      \"value_found\": null\n    }\n  ]\n}"
+        }
+      ],
+      "stats": {
+        "input_tokens": 1552,
+        "total_output_tokens": 303,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 227.52513476921968,
+        "time_to_first_token_seconds": 0.453
+      }
+    },
+    "content": "{\n  \"block_id\": \"7QYC-DEC9-YDD\",\n  \"page\": 13,\n  \"label\": \"Графическая схема отгиба арматурного стержня\",\n  \"sheet_type\": \"detail\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлена типовая схема отгиба арматурного стержня. Изображение содержит графическое отображение изгиба и основные геометрические параметры, определяющие форму и размеры отгиба. Текст на чертеже читаем и содержит обозначения параметров.\",\n  \"key_values_read\": [\n    \"Надпись: Схема отгиба стержня\",\n    \"Параметр: a\",\n    \"Параметр: ≥6a\"\n  ],\n  \"findings\": [\n    {\n      \"severity\": \"ПРОВЕРИТЬ ПО СМЕЖНЫМ\",\n      \"category\": \"арматура\",\n      \"finding\": \"Отсутствует указание диаметра арматурного стержня (d), который является критическим для определения длины отгиба.\",\n      \"block_evidence\": \"На схеме указан параметр 'a' и условие '≥6a', но нет значения диаметра стержня.\",\n      \"value_found\": null\n    }\n  ]\n}",
+    "reasoning": "",
+    "parsed": {
+      "block_id": "7QYC-DEC9-YDD",
+      "page": 13,
+      "label": "Графическая схема отгиба арматурного стержня",
+      "sheet_type": "detail",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "На чертеже представлена типовая схема отгиба арматурного стержня. Изображение содержит графическое отображение изгиба и основные геометрические параметры, определяющие форму и размеры отгиба. Текст на чертеже читаем и содержит обозначения параметров.",
+      "key_values_read": [
+        "Надпись: Схема отгиба стержня",
+        "Параметр: a",
+        "Параметр: ≥6a"
+      ],
+      "findings": [
+        {
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+          "category": "арматура",
+          "finding": "Отсутствует указание диаметра арматурного стержня (d), который является критическим для определения длины отгиба.",
+          "block_evidence": "На схеме указан параметр 'a' и условие '≥6a', но нет значения диаметра стержня.",
+          "value_found": null
+        }
+      ]
+    },
+    "parse_error": null,
+    "model": "qwen/qwen3.6-35b-a3b",
+    "block_id": "7QYC-DEC9-YDD",
+    "width": 546,
+    "height": 808,
+    "run_index": 142
+  },
+  "compare": {
+    "block_id": "7QYC-DEC9-YDD",
+    "page": 13,
+    "label_source": "Графическая схема отгиба арматурного стержня с указанием геометрических параметр",
+    "baseline_present": true,
+    "baseline_label": "Схема отгиба стержня",
+    "candidate_label": "Графическая схема отгиба арматурного стержня",
+    "baseline_findings": 0,
+    "candidate_findings": 1,
+    "baseline_kv": 1,
+    "candidate_kv": 3,
+    "elapsed_s": 3.503,
+    "parse_ok": true,
+    "verdict": "uncertain",
+    "notes": [
+      "candidate found issues where stage-02 baseline had none"
+    ],
+    "baseline_summary": "Графическая схема отгиба арматурного стержня с указанием геометрических параметров уклона.",
+    "candidate_summary": "На чертеже представлена типовая схема отгиба арматурного стержня. Изображение содержит графическое отображение изгиба и основные геометрические параметры, определяющие форму и размеры отгиба. Текст на чертеже читаем и содержит обозначения параметров.",
+    "candidate_sheet_type": "detail",
+    "candidate_unreadable_text": false
+  }
+}

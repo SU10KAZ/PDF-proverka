@@ -1,0 +1,123 @@
+{
+  "baseline": {
+    "block_id": "6AFF-3MAM-EXJ",
+    "page": 17,
+    "sheet": "12",
+    "label": "Схема отгиба стержня",
+    "sheet_type": "slab_bent_bars",
+    "unreadable_text": false,
+    "unreadable_details": null,
+    "summary": "Схема отгиба вертикального арматурного стержня. Показано соотношение величины отгиба и длины наклонного участка.",
+    "key_values_read": [
+      "Величина отгиба — a",
+      "Длина наклонного участка — ≥6a"
+    ],
+    "evidence_text_refs": [
+      {
+        "text_block_id": "9XAE-K9DH-XFU",
+        "role": "other",
+        "used_for": "cross_check",
+        "confidence": 0.63,
+        "source": "graph_backfill"
+      },
+      {
+        "text_block_id": "VJAK-FVU3-3UY",
+        "role": "other",
+        "used_for": "cross_check",
+        "confidence": 0.42,
+        "source": "graph_backfill"
+      },
+      {
+        "text_block_id": "7WDK-JPQV-HGJ",
+        "role": "other",
+        "used_for": "cross_check",
+        "confidence": 0.22,
+        "source": "graph_backfill"
+      },
+      {
+        "text_block_id": "97TD-6FUT-EPD",
+        "role": "other",
+        "used_for": "cross_check",
+        "confidence": 0.18,
+        "source": "graph_backfill"
+      }
+    ],
+    "findings": [],
+    "selected_text_block_ids": [
+      "9XAE-K9DH-XFU",
+      "VJAK-FVU3-3UY",
+      "7WDK-JPQV-HGJ",
+      "97TD-6FUT-EPD"
+    ]
+  },
+  "candidate_raw": {
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_stage02_full_project/20260423_230329/prepared/native_crops/block_6AFF-3MAM-EXJ_native.png",
+    "image_size_bytes": 15771,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 3.056,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-35b-a3b",
+      "output": [
+        {
+          "type": "message",
+          "content": "{\n  \"block_id\": \"6AFF-3MAM-EXJ\",\n  \"page\": 17,\n  \"label\": \"Графическая схема отгиба арматурного стержня с указанием геометрических параметров\",\n  \"sheet_type\": \"detail\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлена типовая графическая схема отгиба арматурного стержня. Изображение содержит основные геометрические параметры, определяющие форму и размеры изгиба.\",\n  \"key_values_read\": [\n    \"Надпись: Схема отгиба стержня\",\n    \"Параметр: a\",\n    \"Параметр: ≥6a\"\n  ],\n  \"findings\": []\n}"
+        }
+      ],
+      "stats": {
+        "input_tokens": 1542,
+        "total_output_tokens": 181,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 228.76787644006848,
+        "time_to_first_token_seconds": 0.449
+      }
+    },
+    "content": "{\n  \"block_id\": \"6AFF-3MAM-EXJ\",\n  \"page\": 17,\n  \"label\": \"Графическая схема отгиба арматурного стержня с указанием геометрических параметров\",\n  \"sheet_type\": \"detail\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлена типовая графическая схема отгиба арматурного стержня. Изображение содержит основные геометрические параметры, определяющие форму и размеры изгиба.\",\n  \"key_values_read\": [\n    \"Надпись: Схема отгиба стержня\",\n    \"Параметр: a\",\n    \"Параметр: ≥6a\"\n  ],\n  \"findings\": []\n}",
+    "reasoning": "",
+    "parsed": {
+      "block_id": "6AFF-3MAM-EXJ",
+      "page": 17,
+      "label": "Графическая схема отгиба арматурного стержня с указанием геометрических параметров",
+      "sheet_type": "detail",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "На чертеже представлена типовая графическая схема отгиба арматурного стержня. Изображение содержит основные геометрические параметры, определяющие форму и размеры изгиба.",
+      "key_values_read": [
+        "Надпись: Схема отгиба стержня",
+        "Параметр: a",
+        "Параметр: ≥6a"
+      ],
+      "findings": []
+    },
+    "parse_error": null,
+    "model": "qwen/qwen3.6-35b-a3b",
+    "block_id": "6AFF-3MAM-EXJ",
+    "width": 580,
+    "height": 746,
+    "run_index": 187
+  },
+  "compare": {
+    "block_id": "6AFF-3MAM-EXJ",
+    "page": 17,
+    "label_source": "Графическая схема отгиба арматурного стержня с указанием геометрических параметр",
+    "baseline_present": true,
+    "baseline_label": "Схема отгиба стержня",
+    "candidate_label": "Графическая схема отгиба арматурного стержня с указанием геометрических параметров",
+    "baseline_findings": 0,
+    "candidate_findings": 0,
+    "baseline_kv": 2,
+    "candidate_kv": 3,
+    "elapsed_s": 3.056,
+    "parse_ok": true,
+    "verdict": "likely_improved",
+    "notes": [
+      "candidate preserved findings presence and captured more key values"
+    ],
+    "baseline_summary": "Схема отгиба вертикального арматурного стержня. Показано соотношение величины отгиба и длины наклонного участка.",
+    "candidate_summary": "На чертеже представлена типовая графическая схема отгиба арматурного стержня. Изображение содержит основные геометрические параметры, определяющие форму и размеры изгиба.",
+    "candidate_sheet_type": "detail",
+    "candidate_unreadable_text": false
+  }
+}

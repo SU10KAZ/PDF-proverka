@@ -1,0 +1,61 @@
+{
+  "block_id": "AAJW-Q7RA-JCQ",
+  "page": 12,
+  "sheet_no": "7",
+  "file": "block_AAJW-Q7RA-JCQ.png",
+  "size_kb": 34.6,
+  "ocr_text_len": 1022,
+  "ocr_label": "Фрагмент армирования вертикальной конструкции (стены) с указанием размеров и мар",
+  "ok": true,
+  "elapsed_ms": 4250,
+  "input_tokens": 1429,
+  "output_tokens": 355,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 737,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 4250,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "сечение",
+    "subject": "Сечение стены 24-Стм200 с армированием и размерами",
+    "marks": [
+      "24-Стм200",
+      "16-Г-1",
+      "8-Х-19"
+    ],
+    "rebar_specs": [
+      "Ø16 А500С шаг 200 (29 шт.)",
+      "Ø8 А500С шаг 250 (20 шт.)",
+      "Ø8 А500С шаг 200 (8 шт.)"
+    ],
+    "dimensions": [
+      "3100",
+      "15x200=3000",
+      "750",
+      "200",
+      "50",
+      "500x200(h)Вар 1",
+      "t=200"
+    ],
+    "references_on_block": [
+      "Выпуски из нижестоящей конструкции"
+    ],
+    "axes": [
+      "Омм. Б",
+      "Омм. А"
+    ],
+    "level_marks": [
+      "+4,200"
+    ],
+    "concrete_class": "B40",
+    "notes": "Изображено сечение стены с указанием продольной и поперечной арматуры, а также размеров элементов. Указаны высотные отметки и толщина стены."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

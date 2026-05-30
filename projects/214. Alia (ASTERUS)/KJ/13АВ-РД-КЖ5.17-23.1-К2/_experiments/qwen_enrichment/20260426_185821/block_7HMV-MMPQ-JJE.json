@@ -1,0 +1,46 @@
+{
+  "block_id": "7HMV-MMPQ-JJE",
+  "page": 12,
+  "sheet_no": "7",
+  "file": "block_7HMV-MMPQ-JJE.png",
+  "size_kb": 14.2,
+  "ocr_text_len": 650,
+  "ocr_label": "На чертеже представлен разрез Я-Я железобетонного элемента с армированием.",
+  "ok": true,
+  "elapsed_ms": 3182,
+  "input_tokens": 1204,
+  "output_tokens": 212,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 578,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3182,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "сечение",
+    "subject": "Сечение Я-Я П-образного железобетонного элемента с указанием расположения вертикальной арматуры",
+    "marks": [
+      "Я-Я"
+    ],
+    "rebar_specs": [
+      "Вертикальная арматура"
+    ],
+    "dimensions": [
+      "t=200"
+    ],
+    "references_on_block": [],
+    "axes": [],
+    "level_marks": [
+      "+4,200"
+    ],
+    "concrete_class": "В40",
+    "notes": "Изображено сечение П-образного элемента. Указана толщина стенки 200 мм и высотная отметка +4,200. Детальные параметры арматуры (марки, диаметры, шаги) находятся в таблице на этой же странице (лист 7)."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

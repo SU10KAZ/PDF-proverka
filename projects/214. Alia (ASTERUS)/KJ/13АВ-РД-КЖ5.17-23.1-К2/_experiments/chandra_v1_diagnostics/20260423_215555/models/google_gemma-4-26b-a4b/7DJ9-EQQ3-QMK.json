@@ -1,0 +1,33 @@
+{
+  "model": "google/gemma-4-26b-a4b",
+  "image_name": "7DJ9-EQQ3-QMK",
+  "block_id": "7DJ9-EQQ3-QMK",
+  "width": 1024,
+  "height": 525,
+  "request": "image_smoke",
+  "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_215555/audit_images/native_crops/block_7DJ9-EQQ3-QMK_native.png",
+  "image_size_bytes": 69463,
+  "ok": true,
+  "status_code": 200,
+  "elapsed_s": 4.818,
+  "error": null,
+  "response": {
+    "model_instance_id": "google/gemma-4-26b-a4b",
+    "output": [
+      {
+        "type": "message",
+        "content": "Тип схемы: Вертикальный разрез (разрез 7-7).\n\nОсновные элементы: Конструкция перекрытия/стены с указанием армирования, габаритных размеров и высотных отметок.\n\nЧитаемые детали:\n1. Армирование: стержни типа 8-Г-2 с шагом 200 мм.\n2. Размеры: общая ширина конструкции 8500 мм, высота сегментов 2800 мм.\n3. Отметки: уровни осей (отм. А, отм. Б, отм. В)."
+      }
+    ],
+    "stats": {
+      "input_tokens": 370,
+      "total_output_tokens": 133,
+      "reasoning_output_tokens": 0,
+      "tokens_per_second": 189.38881523768296,
+      "time_to_first_token_seconds": 0.306
+    }
+  },
+  "content": "Тип схемы: Вертикальный разрез (разрез 7-7).\n\nОсновные элементы: Конструкция перекрытия/стены с указанием армирования, габаритных размеров и высотных отметок.\n\nЧитаемые детали:\n1. Армирование: стержни типа 8-Г-2 с шагом 200 мм.\n2. Размеры: общая ширина конструкции 8500 мм, высота сегментов 2800 мм.\n3. Отметки: уровни осей (отм. А, отм. Б, отм. В).",
+  "reasoning": "",
+  "verdict": "pass"
+}

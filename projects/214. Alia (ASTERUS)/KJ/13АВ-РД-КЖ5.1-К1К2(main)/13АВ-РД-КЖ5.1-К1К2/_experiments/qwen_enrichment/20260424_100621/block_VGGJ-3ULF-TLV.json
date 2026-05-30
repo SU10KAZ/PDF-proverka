@@ -1,0 +1,39 @@
+{
+  "block_id": "VGGJ-3ULF-TLV",
+  "page": 7,
+  "sheet_no": "2",
+  "file": "block_VGGJ-3ULF-TLV.png",
+  "size_kb": 42.7,
+  "ocr_text_len": 629,
+  "ocr_label": "На чертеже представлен разрез 1-1 вертикальной строительной конструкции.",
+  "ok": true,
+  "elapsed_ms": 4396,
+  "input_tokens": 2376,
+  "output_tokens": 237,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 600,
+  "enrichment": {
+    "block_type": "разрез",
+    "subject": "Разрез 1-1 вертикальной строительной конструкции (стены/колонны) с указанием высотных отметок и габаритов.",
+    "marks": [],
+    "rebar_specs": [],
+    "dimensions": [
+      "7850",
+      "600"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 3"
+    ],
+    "axes": [],
+    "level_marks": [
+      "+7,670",
+      "-0,180"
+    ],
+    "concrete_class": null,
+    "notes": "Изображен разрез 1-1 вертикальной конструкции. Высота элемента 7850 мм, ширина 600 мм. Верхняя отметка +7,670, нижняя -0,180. Детали армирования находятся на листе 3, общие указания — на листе 1."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

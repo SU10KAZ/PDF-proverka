@@ -1,0 +1,444 @@
+[
+  {
+    "model": "google/gemma-4-31b",
+    "request": "load",
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 8.995,
+    "error": null,
+    "response": {
+      "type": "llm",
+      "instance_id": "google/gemma-4-31b",
+      "load_time_seconds": 7.976,
+      "status": "loaded",
+      "load_config": {
+        "context_length": 8192,
+        "eval_batch_size": 512,
+        "parallel": 4,
+        "flash_attention": true,
+        "offload_kv_cache_to_gpu": true
+      }
+    }
+  },
+  {
+    "model": "google/gemma-4-31b",
+    "request": "text_smoke",
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 1.176,
+    "error": null,
+    "response": {
+      "model_instance_id": "google/gemma-4-31b",
+      "output": [
+        {
+          "type": "message",
+          "content": "OK"
+        }
+      ],
+      "stats": {
+        "input_tokens": 43,
+        "total_output_tokens": 2,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 77.83009689847064,
+        "time_to_first_token_seconds": 0.122
+      }
+    },
+    "content": "OK",
+    "reasoning": "",
+    "verdict": "pass"
+  },
+  {
+    "model": "google/gemma-4-31b",
+    "image_name": "light_512",
+    "block_id": "A9M4-EJ7R-MKH",
+    "width": 512,
+    "height": 267,
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_195953/prepared_images/light_512/native_crops/block_A9M4-EJ7R-MKH_native.png",
+    "image_size_bytes": 26625,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 4.911,
+    "error": null,
+    "response": {
+      "model_instance_id": "google/gemma-4-31b",
+      "output": [
+        {
+          "type": "message",
+          "content": "План подземной автостоянки. Основные элементы: парковочные зоны (П.1-П.24, П.25-П.48), помещения/блоки (К1, К2, К3, К4, К5, К6) и пристройки между ними. Детали: указаны осевые линии с маркировкой (например, 2.1, 3.7, 4.11) и размеры некоторых помещений (например, 30 zm, 18 zm)."
+        }
+      ],
+      "stats": {
+        "input_tokens": 358,
+        "total_output_tokens": 113,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 57.68290329793066,
+        "time_to_first_token_seconds": 0.667
+      }
+    },
+    "content": "План подземной автостоянки. Основные элементы: парковочные зоны (П.1-П.24, П.25-П.48), помещения/блоки (К1, К2, К3, К4, К5, К6) и пристройки между ними. Детали: указаны осевые линии с маркировкой (например, 2.1, 3.7, 4.11) и размеры некоторых помещений (например, 30 zm, 18 zm).",
+    "reasoning": "",
+    "verdict": "pass"
+  },
+  {
+    "model": "google/gemma-4-31b",
+    "image_name": "light_1024",
+    "block_id": "A9M4-EJ7R-MKH",
+    "width": 1024,
+    "height": 534,
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_195953/prepared_images/light_1024/native_crops/block_A9M4-EJ7R-MKH_native.png",
+    "image_size_bytes": 69454,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 5.735,
+    "error": null,
+    "response": {
+      "model_instance_id": "google/gemma-4-31b",
+      "output": [
+        {
+          "type": "message",
+          "content": "План подземной автостоянки. Основные элементы: зонирование парковочных мест (K1–K7), пристройки (К3-К4, К4-К5, К5-К6) и осевые линии с маркировкой. Детали: разделение на две зоны (П.1-П.24 и П.25-П.48), указание площадей помещений (например, K2 — 42 кв.м)."
+        }
+      ],
+      "stats": {
+        "input_tokens": 358,
+        "total_output_tokens": 103,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 57.22575114354275,
+        "time_to_first_token_seconds": 0.633
+      }
+    },
+    "content": "План подземной автостоянки. Основные элементы: зонирование парковочных мест (K1–K7), пристройки (К3-К4, К4-К5, К5-К6) и осевые линии с маркировкой. Детали: разделение на две зоны (П.1-П.24 и П.25-П.48), указание площадей помещений (например, K2 — 42 кв.м).",
+    "reasoning": "",
+    "verdict": "pass"
+  },
+  {
+    "model": "google/gemma-4-31b",
+    "image_name": "heavy_512",
+    "block_id": "3TFL-TNRF-7G6",
+    "width": 512,
+    "height": 487,
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_195953/prepared_images/heavy_512/native_crops/block_3TFL-TNRF-7G6_native.png",
+    "image_size_bytes": 68560,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 6.216,
+    "error": null,
+    "response": {
+      "model_instance_id": "google/gemma-4-31b",
+      "output": [
+        {
+          "type": "message",
+          "content": "Тип: Армировочная схема (чертеж армирования) перекрытий 1-го и 2-го этажей.\n\nОсновные элементы: Контур здания с закругленными углами, сетка колонн/опоров, плиты перекрытия, арматурные стержни.\n\nДетали:\n1. Осевые линии (цифры в кругах по периметру).\n2. Маркировки арматуры (например, «$\\phi$» с числовыми значениями).\n3. Размеры пролетов и вылеты плит."
+        }
+      ],
+      "stats": {
+        "input_tokens": 366,
+        "total_output_tokens": 128,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 57.6322683070251,
+        "time_to_first_token_seconds": 0.57
+      }
+    },
+    "content": "Тип: Армировочная схема (чертеж армирования) перекрытий 1-го и 2-го этажей.\n\nОсновные элементы: Контур здания с закругленными углами, сетка колонн/опоров, плиты перекрытия, арматурные стержни.\n\nДетали:\n1. Осевые линии (цифры в кругах по периметру).\n2. Маркировки арматуры (например, «$\\phi$» с числовыми значениями).\n3. Размеры пролетов и вылеты плит.",
+    "reasoning": "",
+    "verdict": "pass"
+  },
+  {
+    "model": "qwen/qwen3.6-35b-a3b",
+    "request": "load",
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 10.726,
+    "error": null,
+    "response": {
+      "type": "llm",
+      "instance_id": "qwen/qwen3.6-35b-a3b",
+      "load_time_seconds": 9.592,
+      "status": "loaded",
+      "load_config": {
+        "context_length": 8192,
+        "eval_batch_size": 512,
+        "parallel": 4,
+        "flash_attention": true,
+        "num_experts": 8,
+        "offload_kv_cache_to_gpu": true
+      }
+    }
+  },
+  {
+    "model": "qwen/qwen3.6-35b-a3b",
+    "request": "text_smoke",
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 1.14,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-35b-a3b",
+      "output": [
+        {
+          "type": "message",
+          "content": "OK"
+        }
+      ],
+      "stats": {
+        "input_tokens": 42,
+        "total_output_tokens": 2,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 115.90843233845263,
+        "time_to_first_token_seconds": 0.162
+      }
+    },
+    "content": "OK",
+    "reasoning": "",
+    "verdict": "pass"
+  },
+  {
+    "model": "qwen/qwen3.6-35b-a3b",
+    "image_name": "light_512",
+    "block_id": "A9M4-EJ7R-MKH",
+    "width": 512,
+    "height": 267,
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_195953/prepared_images/light_512/native_crops/block_A9M4-EJ7R-MKH_native.png",
+    "image_size_bytes": 26625,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 3.123,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-35b-a3b",
+      "output": [
+        {
+          "type": "message",
+          "content": "Тип схемы: план подвальных помещений.\n\nОсновные элементы:\n- Подвальные опалубки (П.1–П.124, П.25–П.148)\n- Пространства К3–К6\n- Обозначения П.1–П.11, П.148 и др.\n\nЧитаемые детали:\n- \"Подвальная опалубка П.1–П.124\"\n- \"Пространство К3–К4\"\n- \"Подвальная опалубка П.25–П.148\""
+        }
+      ],
+      "stats": {
+        "input_tokens": 221,
+        "total_output_tokens": 139,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 197.85857240057962,
+        "time_to_first_token_seconds": 0.262
+      }
+    },
+    "content": "Тип схемы: план подвальных помещений.\n\nОсновные элементы:\n- Подвальные опалубки (П.1–П.124, П.25–П.148)\n- Пространства К3–К6\n- Обозначения П.1–П.11, П.148 и др.\n\nЧитаемые детали:\n- \"Подвальная опалубка П.1–П.124\"\n- \"Пространство К3–К4\"\n- \"Подвальная опалубка П.25–П.148\"",
+    "reasoning": "",
+    "verdict": "pass"
+  },
+  {
+    "model": "qwen/qwen3.6-35b-a3b",
+    "image_name": "light_1024",
+    "block_id": "A9M4-EJ7R-MKH",
+    "width": 1024,
+    "height": 534,
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_195953/prepared_images/light_1024/native_crops/block_A9M4-EJ7R-MKH_native.png",
+    "image_size_bytes": 69454,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 3.737,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-35b-a3b",
+      "output": [
+        {
+          "type": "message",
+          "content": "План подземной автостоянки. Основные элементы: зоны К1–К6, пристройки, обозначения П.1–П.48, размеры (например, 42эт, 39эт, 30эт, 28эт, 18эт, 15эт). Читаемые детали: «Подземная автостоянка П.1–П.24», «Пристройка К3–К4», «Пристройка К5–К6»."
+        }
+      ],
+      "stats": {
+        "input_tokens": 637,
+        "total_output_tokens": 110,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 209.8563819233528,
+        "time_to_first_token_seconds": 0.327
+      }
+    },
+    "content": "План подземной автостоянки. Основные элементы: зоны К1–К6, пристройки, обозначения П.1–П.48, размеры (например, 42эт, 39эт, 30эт, 28эт, 18эт, 15эт). Читаемые детали: «Подземная автостоянка П.1–П.24», «Пристройка К3–К4», «Пристройка К5–К6».",
+    "reasoning": "",
+    "verdict": "pass"
+  },
+  {
+    "model": "qwen/qwen3.6-35b-a3b",
+    "image_name": "heavy_512",
+    "block_id": "3TFL-TNRF-7G6",
+    "width": 512,
+    "height": 487,
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_195953/prepared_images/heavy_512/native_crops/block_3TFL-TNRF-7G6_native.png",
+    "image_size_bytes": 68560,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 4.173,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-35b-a3b",
+      "output": [
+        {
+          "type": "message",
+          "content": "Тип схемы: план этажа (вероятно, 1-й этаж) здания с симметричной планировкой.\n\nОсновные элементы:\n- Центральное ядро (лестничная клетка/лифтовый холл)\n- Периметральные помещения по бокам\n- Круглые/полукруглые зоны в углах (возможно, вестибюли или лобби)\n- Оси обозначены буквами (A–H) и цифрами (1–8)\n\nЧитаемые детали:\n- Надпись: «Верхняя площадка 1-12 этаж. Планировка плана»\n- Размеры: например, «3600», «2400», «1200» — указывают габариты помещений и осей\n- Обозначения осей: A, B, C, D, E, F, G, H (горизонтальные); 1, 2, 3, 4, 5, 6, 7, 8 (вертикальные)\n\nТекст частично читаем, но мелкий и размыт — основные надписи и размеры можно выделить."
+        }
+      ],
+      "stats": {
+        "input_tokens": 333,
+        "total_output_tokens": 257,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 210.0090132272992,
+        "time_to_first_token_seconds": 0.229
+      }
+    },
+    "content": "Тип схемы: план этажа (вероятно, 1-й этаж) здания с симметричной планировкой.\n\nОсновные элементы:\n- Центральное ядро (лестничная клетка/лифтовый холл)\n- Периметральные помещения по бокам\n- Круглые/полукруглые зоны в углах (возможно, вестибюли или лобби)\n- Оси обозначены буквами (A–H) и цифрами (1–8)\n\nЧитаемые детали:\n- Надпись: «Верхняя площадка 1-12 этаж. Планировка плана»\n- Размеры: например, «3600», «2400», «1200» — указывают габариты помещений и осей\n- Обозначения осей: A, B, C, D, E, F, G, H (горизонтальные); 1, 2, 3, 4, 5, 6, 7, 8 (вертикальные)\n\nТекст частично читаем, но мелкий и размыт — основные надписи и размеры можно выделить.",
+    "reasoning": "",
+    "verdict": "pass"
+  },
+  {
+    "model": "qwen/qwen3.6-27b",
+    "request": "load",
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 10.495,
+    "error": null,
+    "response": {
+      "type": "llm",
+      "instance_id": "qwen/qwen3.6-27b",
+      "load_time_seconds": 9.461,
+      "status": "loaded",
+      "load_config": {
+        "context_length": 8192,
+        "eval_batch_size": 512,
+        "parallel": 4,
+        "flash_attention": true,
+        "offload_kv_cache_to_gpu": true
+      }
+    }
+  },
+  {
+    "model": "qwen/qwen3.6-27b",
+    "request": "text_smoke",
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 1.214,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-27b",
+      "output": [
+        {
+          "type": "message",
+          "content": "OK"
+        }
+      ],
+      "stats": {
+        "input_tokens": 42,
+        "total_output_tokens": 2,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 71.25552230297848,
+        "time_to_first_token_seconds": 0.123
+      }
+    },
+    "content": "OK",
+    "reasoning": "",
+    "verdict": "pass"
+  },
+  {
+    "model": "qwen/qwen3.6-27b",
+    "image_name": "light_512",
+    "block_id": "A9M4-EJ7R-MKH",
+    "width": 512,
+    "height": 267,
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_195953/prepared_images/light_512/native_crops/block_A9M4-EJ7R-MKH_native.png",
+    "image_size_bytes": 26625,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 7.17,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-27b",
+      "output": [
+        {
+          "type": "message",
+          "content": "Тип схемы: план этажа (вероятно, первого или цокольного) с указанием помещений, проемов и конструктивных элементов.\n\nОсновные элементы:\n- Помещения K1–K6 (возможно, комнаты или зоны)\n- Подземные откосники (П.1–П.24, П.25–П.48)\n- Постройки КЗ–К4, К5–К6\n- Стены, дверные/оконные проемы (обозначены цифрами в кружках: 1.1, 2.1, 3.1 и т.д.)\n- Размеры (например, 30 см, 28 см, 15 см)\n\nЧитаемые детали:\n1. «Подземная откосника П.1–П.24» — обозначение подземной конструкции или уклона.\n2. «Постройка КЗ–К4» — название или номер строительного блока.\n3. Размеры проемов: «30 см», «28 см», «15 см» — вероятно, ширина дверей или ниш.\n\nТекст частично читается, но некоторые надписи (например, «КТ») могут быть сокращениями или ошибками распознавания."
+        }
+      ],
+      "stats": {
+        "input_tokens": 221,
+        "total_output_tokens": 279,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 52.25514671053851,
+        "time_to_first_token_seconds": 0.372
+      }
+    },
+    "content": "Тип схемы: план этажа (вероятно, первого или цокольного) с указанием помещений, проемов и конструктивных элементов.\n\nОсновные элементы:\n- Помещения K1–K6 (возможно, комнаты или зоны)\n- Подземные откосники (П.1–П.24, П.25–П.48)\n- Постройки КЗ–К4, К5–К6\n- Стены, дверные/оконные проемы (обозначены цифрами в кружках: 1.1, 2.1, 3.1 и т.д.)\n- Размеры (например, 30 см, 28 см, 15 см)\n\nЧитаемые детали:\n1. «Подземная откосника П.1–П.24» — обозначение подземной конструкции или уклона.\n2. «Постройка КЗ–К4» — название или номер строительного блока.\n3. Размеры проемов: «30 см», «28 см», «15 см» — вероятно, ширина дверей или ниш.\n\nТекст частично читается, но некоторые надписи (например, «КТ») могут быть сокращениями или ошибками распознавания.",
+    "reasoning": "",
+    "verdict": "pass"
+  },
+  {
+    "model": "qwen/qwen3.6-27b",
+    "image_name": "light_1024",
+    "block_id": "A9M4-EJ7R-MKH",
+    "width": 1024,
+    "height": 534,
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_195953/prepared_images/light_1024/native_crops/block_A9M4-EJ7R-MKH_native.png",
+    "image_size_bytes": 69454,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 8.275,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-27b",
+      "output": [
+        {
+          "type": "message",
+          "content": "Тип схемы: план подземной автостоянки с пристройками.  \nОсновные элементы: помещения K1–K7, подъездные пути, пристройки (K3–K4, K4–K5, K5–K6), обозначения этажей (П.1–П.24, П.25–П.48).  \nЧитаемые детали:  \n- «Подземная автостоянка П.1–П.24» и «П.25–П.48»  \n- Размеры помещений: K1 — 39 м², K2 — 42 м², K3 — 30 м², K4 — 18 м², K5 — 15 м², K6 — 28 м²  \n- Обозначения точек/узлов: 1.И, 1.А, 2.Ж, 3.Л, 4.М, 5.Т, 6.М и др."
+        }
+      ],
+      "stats": {
+        "input_tokens": 637,
+        "total_output_tokens": 222,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 52.24683759541226,
+        "time_to_first_token_seconds": 0.516
+      }
+    },
+    "content": "Тип схемы: план подземной автостоянки с пристройками.  \nОсновные элементы: помещения K1–K7, подъездные пути, пристройки (K3–K4, K4–K5, K5–K6), обозначения этажей (П.1–П.24, П.25–П.48).  \nЧитаемые детали:  \n- «Подземная автостоянка П.1–П.24» и «П.25–П.48»  \n- Размеры помещений: K1 — 39 м², K2 — 42 м², K3 — 30 м², K4 — 18 м², K5 — 15 м², K6 — 28 м²  \n- Обозначения точек/узлов: 1.И, 1.А, 2.Ж, 3.Л, 4.М, 5.Т, 6.М и др.",
+    "reasoning": "",
+    "verdict": "pass"
+  },
+  {
+    "model": "qwen/qwen3.6-27b",
+    "image_name": "heavy_512",
+    "block_id": "3TFL-TNRF-7G6",
+    "width": 512,
+    "height": 487,
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_195953/prepared_images/heavy_512/native_crops/block_3TFL-TNRF-7G6_native.png",
+    "image_size_bytes": 68560,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 6.678,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-27b",
+      "output": [
+        {
+          "type": "message",
+          "content": "Тип схемы: План этажа (вероятно, 7-й этаж, судя по надписи вверху).\n\nОсновные элементы:\n— Центральная зона с лестничными клетками и лифтами.\n— Четыре угловые зоны с радиальными окнами или балконами.\n— Коридоры и помещения, расположенные симметрично вокруг центра.\n\nЧитаемые детали:\n1. Надпись вверху: «Вертикальные конструкции 7-12 этажей. Перегородки стены».\n2. Обозначения осей: A–H по горизонтали, 1–10 по вертикали.\n3. Размеры и отметки высот (например, «+18.600», «+19.200») — указывают на уровни перекрытий или пола.\n\nТекст частично читается, но мелкие надписи (например, внутри помещений) неразборчивы."
+        }
+      ],
+      "stats": {
+        "input_tokens": 333,
+        "total_output_tokens": 206,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 52.2235176696751,
+        "time_to_first_token_seconds": 0.369
+      }
+    },
+    "content": "Тип схемы: План этажа (вероятно, 7-й этаж, судя по надписи вверху).\n\nОсновные элементы:\n— Центральная зона с лестничными клетками и лифтами.\n— Четыре угловые зоны с радиальными окнами или балконами.\n— Коридоры и помещения, расположенные симметрично вокруг центра.\n\nЧитаемые детали:\n1. Надпись вверху: «Вертикальные конструкции 7-12 этажей. Перегородки стены».\n2. Обозначения осей: A–H по горизонтали, 1–10 по вертикали.\n3. Размеры и отметки высот (например, «+18.600», «+19.200») — указывают на уровни перекрытий или пола.\n\nТекст частично читается, но мелкие надписи (например, внутри помещений) неразборчивы.",
+    "reasoning": "",
+    "verdict": "pass"
+  }
+]

@@ -1,0 +1,49 @@
+{
+  "block_id": "7TUE-6AJK-CLE",
+  "page": 11,
+  "sheet_no": "6",
+  "file": "block_7TUE-6AJK-CLE.png",
+  "size_kb": 14.9,
+  "ocr_text_len": 687,
+  "ocr_label": "Представлена схема стыковки арматурных стержней внахлест с указанием геометричес",
+  "ok": true,
+  "elapsed_ms": 2915,
+  "input_tokens": 1310,
+  "output_tokens": 269,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 637,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 2915,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "схема_стыковки",
+    "subject": "Схема стыковки арматуры внахлест с указанием длин нахлеста и расстояний между стыками",
+    "marks": [],
+    "rebar_specs": [],
+    "dimensions": [
+      "ln",
+      "≥0,3ln",
+      "≥2d≥30мм",
+      "d",
+      "≥1,3ln"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 2",
+      "см. лист 3",
+      "см. лист 11"
+    ],
+    "axes": [],
+    "level_marks": [],
+    "concrete_class": "В40",
+    "notes": "Приведены общие требования к длине нахлеста (ln) в зависимости от диаметра арматуры (d). Для d=10 мм ln=380 мм, для d=12 мм ln=450 мм. Указаны минимальные расстояния между стыками: ≥0,3ln и ≥1,3ln."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

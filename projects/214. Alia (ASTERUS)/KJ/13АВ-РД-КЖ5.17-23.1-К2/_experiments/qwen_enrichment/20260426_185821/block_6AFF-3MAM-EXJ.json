@@ -1,0 +1,45 @@
+{
+  "block_id": "6AFF-3MAM-EXJ",
+  "page": 17,
+  "sheet_no": "12",
+  "file": "block_6AFF-3MAM-EXJ.png",
+  "size_kb": 16.6,
+  "ocr_text_len": 648,
+  "ocr_label": "Графическая схема отгиба арматурного стержня с указанием геометрических параметр",
+  "ok": true,
+  "elapsed_ms": 3978,
+  "input_tokens": 2475,
+  "output_tokens": 223,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 589,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3978,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "схема",
+    "subject": "Графическая схема отгиба арматурного стержня с указанием геометрических параметров",
+    "marks": [],
+    "rebar_specs": [],
+    "dimensions": [
+      "a",
+      "≥6a"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 2",
+      "см. лист 3"
+    ],
+    "axes": [],
+    "level_marks": [],
+    "concrete_class": "B40",
+    "notes": "Приведена общая схема отгиба стержня с параметром 'a' и условием длины отгиба '≥6a'. Детальные размеры для конкретных марок арматуры (16-Г-1, 10-Х-1, 6-Ш-1) указаны в соседней таблице 'Ведомость деталей' на той же странице."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

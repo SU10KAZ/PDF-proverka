@@ -1,0 +1,14 @@
+{
+  "timestamp": "20260421_120000",
+  "pdf": "13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+  "project_id": "214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+  "project_dir": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+  "total_blocks": 215,
+  "subset_size": 60,
+  "subset_source": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/block_batch_ab/20260420_221123/fixed_subset_block_ids.json",
+  "dry_run": false,
+  "use_cache": true,
+  "phase": "a",
+  "api_key_present": true,
+  "parallelism": 3
+}

@@ -1,0 +1,41 @@
+{
+  "block_id": "7QYC-DEC9-YDD",
+  "page": 13,
+  "sheet_no": "8",
+  "file": "block_7QYC-DEC9-YDD.png",
+  "size_kb": 15.5,
+  "ocr_text_len": 637,
+  "ocr_label": "Графическая схема отгиба арматурного стержня с указанием геометрических параметр",
+  "ok": true,
+  "elapsed_ms": 2741,
+  "input_tokens": 1485,
+  "output_tokens": 182,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 550,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 2741,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "схема_расположения",
+    "subject": "Графическая схема отгиба арматурного стержня с указанием геометрических параметров",
+    "marks": [],
+    "rebar_specs": [],
+    "dimensions": [
+      "≥6d",
+      "a"
+    ],
+    "references_on_block": [],
+    "axes": [],
+    "level_marks": [],
+    "concrete_class": null,
+    "notes": "Детализирующий узел, определяющий минимальную длину прямолинейного участка отгиба арматуры (не менее 6 диаметров стержня) и параметр 'a' (обычно шаг или зазор). Служит общим техническим требованием к изготовлению гнутых деталей."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

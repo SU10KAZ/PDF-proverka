@@ -1,0 +1,1129 @@
+{
+  "meta": {
+    "project_id": "13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+    "audit_completed": "2026-04-18T00:00:00Z",
+    "total_findings": 13,
+    "blocks_analyzed": 25,
+    "by_severity": {
+      "РЕКОМЕНДАТЕЛЬНОЕ": 4,
+      "КРИТИЧЕСКОЕ": 3,
+      "ЭКСПЛУАТАЦИОННОЕ": 3,
+      "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 3
+    },
+    "pre_merge_total": 19,
+    "merged_groups": 1,
+    "quality_summary": {
+      "total": 13,
+      "high_relevance": 3,
+      "medium_relevance": 6,
+      "low_relevance": 4,
+      "likely_formal_only": 1,
+      "high_severity_formal_only": 0
+    },
+    "review_applied": true,
+    "review_stats": {
+      "total_reviewed": 18,
+      "passed": 13,
+      "fixed": 0,
+      "removed": 5,
+      "downgraded": 0
+    },
+    "removed_findings": [
+      {
+        "id": "F-009",
+        "reason": "Формальное замечание, не влияет на строительство: ГОСТ 26633-2016 и ГОСТ 34028-2016 присутствуют в ведомости ссылочных документов того же листа, замечание сводится к отсутствию дублирования в п.3 перечня общих указаний"
+      },
+      {
+        "id": "F-011",
+        "reason": "Формальное замечание, не влияет на строительство: обозначение А240С однозначно идентифицирует тот же материал, что А240 по ГОСТ 34028-2016, строительные работы не зависят от архаичного суффикса"
+      },
+      {
+        "id": "F-015",
+        "reason": "Формальное замечание, не влияет на строительство: данные по бетону и стали присутствуют и арифметически корректны, замечание касается только форматирования (разнесения по нескольким таблицам вместо одной сводной ведомости)"
+      },
+      {
+        "id": "F-016",
+        "reason": "Формальное замечание, не влияет на строительство: разночтения в наименованиях разработчика/заказчика на титульных листах и опечатка в шифре на стр. 4 не влияют на выполнение строительных работ"
+      },
+      {
+        "id": "F-017",
+        "reason": "Формальное замечание, не влияет на строительство: СП 48 уже упомянут в п.8 того же документа, СП 14 формально ниже порога обязательного применения для Москвы, отсутствие СП 54 в перечне п.3 не меняет состав чертежей или армирования"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "normative_refs",
+      "sheet": "Лист 1",
+      "page": 6,
+      "problem": "В ведомости ссылочных документов указан отменённый ГОСТ 5781-82*",
+      "description": "В ведомости ссылочных и прилагаемых документов (стр. 6, блок T4T7-MWWM-NVX) указан ГОСТ 5781-82* «Сталь горячекатаная для армирования железобетонных конструкций». Документ отменён: действующий стандарт — ГОСТ 34028-2016 (переход с 2016 г.). В той же ведомости присутствует актуальный ГОСТ 34028-2016, и в ведомости расхода стали и спецификациях арматура фактически применяется по ГОСТ 34028-2016. Ссылка на ГОСТ 5781-82* создаёт двусмысленность в применяемом стандарте.",
+      "norm": "ГОСТ 34028-2016 (ДЕЙСТВУЕТ)",
+      "norm_quote": "Настоящий стандарт распространяется на прокат арматурный горячекатаный периодического и гладкого профилей, а также на прокат арматурный термомеханически упрочненный периодического профиля... Взамен ГОСТ 5781-82 и ГОСТ 10884-94.",
+      "solution": "Исключить из ведомости ссылочных документов ГОСТ 5781-82*. В общих указаниях и спецификациях оставить единственную действующую ссылку на ГОСТ 34028-2016.",
+      "risk": "Ошибка применения устаревшего стандарта при закупке и входном контроле арматуры; замечания экспертизы и инспекции строительного надзора.",
+      "source_block_ids": [
+        "T4T7-MWWM-NVX"
+      ],
+      "related_block_ids": [
+        "T4T7-MWWM-NVX",
+        "4FYM-T77L-JKD"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "T4T7-MWWM-NVX",
+          "role": "table",
+          "used_for": "value_extraction"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "T4T7-MWWM-NVX",
+          "page": 6
+        }
+      ],
+      "highlight_regions": [],
+      "quality": {
+        "practicality_score": 3,
+        "engineering_relevance": "low",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [
+          "formal_reference_category",
+          "expertise_formality",
+          "reference_register",
+          "reference_maintenance",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "ГОСТ 34028-2016",
+        "replacement_doc": null,
+        "paragraph_verified": true
+      },
+      "norm_status": "exact_quote",
+      "norm_quote_status": "exact",
+      "norm_policy_class": "optional"
+    },
+    {
+      "id": "F-002",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "normative_refs",
+      "sheet": "Лист 1",
+      "page": [
+        6
+      ],
+      "problem": "[Объединено 2 замечаний] В п. 11 общих указаний ссылка на отменённый ГОСТ 18105-2010",
+      "description": "1) В п. 11 общих указаний ссылка на отменённый ГОСТ 18105-2010\n2) В п. 11 общих указаний ссылка на отменённый ГОСТ 17624-2012",
+      "norm": "ГОСТ 18105-2018 (ДЕЙСТВУЕТ)",
+      "norm_quote": "Настоящий стандарт распространяется на все виды бетонов, применяемых при возведении монолитных, сборно-монолитных и сборных бетонных и железобетонных конструкций... Взамен ГОСТ 18105-2010.",
+      "solution": "Заменить в п. 11 общих указаний ссылку ГОСТ 18105-2010 на ГОСТ 18105-2018 с сохранением выбранных схем контроля (В/Г).",
+      "risk": "Применение отменённых правил контроля прочности; замечания строительной лаборатории и экспертизы.",
+      "source_block_ids": [
+        "4FYM-T77L-JKD"
+      ],
+      "related_block_ids": [
+        "4FYM-T77L-JKD"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4FYM-T77L-JKD",
+          "role": "note",
+          "used_for": "value_extraction"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "4FYM-T77L-JKD",
+          "page": 6
+        },
+        {
+          "type": "text",
+          "block_id": "4FYM-T77L-JKD",
+          "page": 6
+        }
+      ],
+      "highlight_regions": [],
+      "sub_findings": [
+        {
+          "original_id": "F-002",
+          "problem": "В п. 11 общих указаний ссылка на отменённый ГОСТ 18105-2010",
+          "sheet": "Лист 1",
+          "page": 6
+        },
+        {
+          "original_id": "F-003",
+          "problem": "В п. 11 общих указаний ссылка на отменённый ГОСТ 17624-2012",
+          "sheet": "Лист 1",
+          "page": 6
+        }
+      ],
+      "quality": {
+        "practicality_score": 9,
+        "engineering_relevance": "low",
+        "impact_axes": [],
+        "formalism_flags": [
+          "formal_reference_category",
+          "expertise_formality",
+          "reference_maintenance"
+        ],
+        "likely_formal_only": true,
+        "severity_mismatch": false,
+        "review_priority": "normal"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "ГОСТ 18105-2018",
+        "replacement_doc": null,
+        "paragraph_verified": true
+      },
+      "norm_status": "exact_quote",
+      "norm_quote_status": "exact",
+      "norm_policy_class": "optional"
+    },
+    {
+      "id": "F-003",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "progressive_collapse",
+      "sheet": "Лист 1",
+      "page": 6,
+      "problem": "Отсутствуют ссылки и мероприятия по защите от прогрессирующего обрушения (СП 385.1325800.2018)",
+      "description": "В общих указаниях раздела КЖ (стр. 6, блок 4FYM-T77L-JKD) отсутствует ссылка на СП 385.1325800.2018 «Защита зданий и сооружений от прогрессирующего обрушения» и отсутствуют мероприятия/требования по защите от прогрессирующего обрушения (неразрывность продольной арматуры через колонны и стены, связность верхней и нижней арматуры плит, требования к соединениям). Для МКД высотой 42 этажа (класс КС-3, повышенный уровень ответственности) требования СП 385.1325800.2018 обязательны.",
+      "norm": "СП 385.1325800.2018 (ДЕЙСТВУЕТ, изм. 1), раздел 4",
+      "norm_quote": "Расчёт на устойчивость против прогрессирующего обрушения проводят для зданий и сооружений повышенного уровня ответственности... Конструктивная схема здания должна обеспечивать неразрывность конструкций при локальном разрушении несущих элементов.",
+      "solution": "Внести в общие указания ссылку на СП 385.1325800.2018 и явно зафиксировать мероприятия по защите от прогрессирующего обрушения: неразрывность продольной арматуры колонн и стен, требования к длинам анкеровки/нахлёста с учётом аварийной комбинации, связность контурных и верхних/нижних сеток плит, сварные или механические соединения, обеспечивающие передачу растяжения. Подтвердить расчётом (отдельная записка или ссылка на общий том КЖ).",
+      "risk": "Недостаточность расчётного и конструктивного обоснования устойчивости здания к прогрессирующему обрушению; риск локального разрушения с каскадным эффектом и отказ экспертизы.",
+      "source_block_ids": [
+        "4FYM-T77L-JKD"
+      ],
+      "related_block_ids": [
+        "4FYM-T77L-JKD",
+        "page_010",
+        "page_011",
+        "page_012",
+        "page_013",
+        "page_014",
+        "page_015",
+        "page_017",
+        "page_019"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4FYM-T77L-JKD",
+          "role": "note",
+          "used_for": "value_extraction"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "4FYM-T77L-JKD",
+          "page": 6
+        }
+      ],
+      "highlight_regions": [
+        {
+          "x": 0.08,
+          "y": 0.08,
+          "w": 0.15,
+          "h": 0.1,
+          "label": "Сечение 1-1, з.с. 30, 35"
+        },
+        {
+          "x": 0.35,
+          "y": 0.08,
+          "w": 0.15,
+          "h": 0.1,
+          "label": "Сечение 2-2, з.с. 30, 35"
+        }
+      ],
+      "quality": {
+        "practicality_score": 67,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "safety",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "expertise_formality",
+          "reference_maintenance"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "not_found",
+        "edition_status": "unknown",
+        "verified_via": "norms_missing",
+        "needs_revision": false,
+        "current_version": null,
+        "replacement_doc": null
+      },
+      "norm_status": "not_found",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "required"
+    },
+    {
+      "id": "F-004",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "fire_rating",
+      "sheet": "Лист 1",
+      "page": 6,
+      "problem": "Не указан требуемый предел огнестойкости REI несущих вертикальных конструкций",
+      "description": "В общих указаниях (стр. 6, блок 4FYM-T77L-JKD) не указан требуемый предел огнестойкости REI несущих стен и колонн 17-23 этажей и отсутствуют ссылки на СП 2.13130.2020 и СП 468.1325800.2019. Для жилого МКД класса Ф1.3 высотой более 28 м степень огнестойкости — не ниже I, предел огнестойкости несущих элементов — R 120 (REI 120). Отсутствие указания REI не позволяет подтвердить достаточность защитного слоя бетона и геометрии сечений требованиям огнестойкости.",
+      "norm": "ФЗ-123, ст. 87; СП 2.13130.2020 (ДЕЙСТВУЕТ), табл. 21; СП 468.1325800.2019 (ДЕЙСТВУЕТ)",
+      "norm_quote": "Пределы огнестойкости конструкций следует назначать по таблице 21 в зависимости от степени огнестойкости здания... Для зданий класса функциональной пожарной опасности Ф1.3 высотой более 28 м степень огнестойкости — не ниже I, предел огнестойкости несущих элементов — R 120.",
+      "solution": "В общих указаниях зафиксировать степень огнестойкости здания (I) и требуемые пределы огнестойкости несущих вертикальных конструкций (R/REI 120). Добавить ссылки на СП 2.13130.2020 и СП 468.1325800.2019. Выполнить проверку толщины стен (200/250 мм) и защитного слоя по СП 468.1325800.2019 (таблицы по минимальным размерам сечений и расстояниям до оси арматуры).",
+      "risk": "Невозможность подтверждения огнестойкости несущих конструкций; отказ экспертизы по пожарной безопасности; риск жизнеобеспечения при пожаре.",
+      "source_block_ids": [
+        "4FYM-T77L-JKD"
+      ],
+      "related_block_ids": [
+        "4FYM-T77L-JKD",
+        "page_017",
+        "79NT-KCUP-VUK",
+        "page_019"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4FYM-T77L-JKD",
+          "role": "note",
+          "used_for": "value_extraction"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "4FYM-T77L-JKD",
+          "page": 6
+        }
+      ],
+      "highlight_regions": [
+        {
+          "x": 0.3,
+          "y": 0.1,
+          "w": 0.4,
+          "h": 0.8,
+          "label": "Указания защитного слоя"
+        }
+      ],
+      "quality": {
+        "practicality_score": 73,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "safety"
+        ],
+        "formalism_flags": [
+          "expertise_formality"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "not_found",
+        "edition_status": "unknown",
+        "verified_via": "norms_missing",
+        "needs_revision": false,
+        "current_version": null,
+        "replacement_doc": null
+      },
+      "norm_status": "not_found",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "required"
+    },
+    {
+      "id": "F-005",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "documentation",
+      "sheet": "Лист 1",
+      "page": 6,
+      "problem": "Не указан класс ответственности здания и коэффициент γn",
+      "description": "В общих указаниях (стр. 6, блок 4FYM-T77L-JKD) не указан уровень ответственности здания по ГОСТ 27751-2014 и соответствующий коэффициент надёжности по ответственности γn. Для 42-этажного МКД требуется класс КС-3 (повышенный уровень ответственности) с γn = 1,1. Отсутствие этих данных делает невозможной проверку корректности учёта γn при расчёте нагрузок.",
+      "norm": "ГОСТ 27751-2014 (ДЕЙСТВУЕТ), п. 5, таблица 1; ФЗ-384, ст. 16",
+      "norm_quote": "Классификация сооружений по уровням ответственности осуществляется в зависимости от возможного ущерба вследствие отказа... Зданиям выше 75 м соответствует повышенный уровень ответственности (КС-3), коэффициент надёжности по ответственности γn = 1,1.",
+      "solution": "В общих указаниях явно зафиксировать: уровень ответственности КС-3, коэффициент γn = 1,1 со ссылкой на ГОСТ 27751-2014 и ФЗ-384 (ст. 16). Показать учёт γn в предпосылках расчёта в пояснительной записке КЖ.",
+      "risk": "Недооценка нагрузок и расчётных усилий, несоответствие требованиям ФЗ-384; отказ экспертизы.",
+      "source_block_ids": [
+        "4FYM-T77L-JKD"
+      ],
+      "related_block_ids": [
+        "4FYM-T77L-JKD"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4FYM-T77L-JKD",
+          "role": "note",
+          "used_for": "value_extraction"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "4FYM-T77L-JKD",
+          "page": 6
+        }
+      ],
+      "highlight_regions": [],
+      "quality": {
+        "practicality_score": 35,
+        "engineering_relevance": "low",
+        "impact_axes": [],
+        "formalism_flags": [
+          "expertise_formality"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": true,
+        "review_priority": "high"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "not_found",
+        "edition_status": "unknown",
+        "verified_via": "norms_missing",
+        "needs_revision": false,
+        "current_version": null,
+        "replacement_doc": null
+      },
+      "norm_status": "not_found",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "required"
+    },
+    {
+      "id": "F-006",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "cover_thickness",
+      "sheet": "Листы 1, 12, 13, 14",
+      "page": [
+        6,
+        17,
+        18,
+        19
+      ],
+      "problem": "Защитный слой бетона (25/30/35 мм) не зафиксирован в общих указаниях и не обоснован по огнестойкости",
+      "description": "В п. 16 общих указаний (стр. 6, блок 4FYM-T77L-JKD) указано только, что толщину защитного слоя обеспечивать фиксаторами, но конкретные значения не приведены. На чертежах армирования колонн (лист 12: page_017 — з.с. 30 и 35 мм; лист 13: 79NT-KCUP-VUK — з.с. 25 и 30 мм; лист 14: page_019 — з.с. 30 и 35 мм) защитный слой указан выборочно и составляет 25–35 мм. Для монолитных стен и колонн жилого здания при классе бетона B40 и нормальных условиях эксплуатации 25–30 мм отвечает СП 63.13330.2018, однако с учётом требования REI 120 (см. F-005) защитный слой должен быть обоснован по СП 468.1325800.2019 (минимальное расстояние до оси арматуры от 30 мм, в том числе для колонн). Значение з.с. 25 мм для колонны Км-400-1000-2800-3 вызывает особые сомнения по огнестойкости.",
+      "norm": "СП 63.13330.2018 (ДЕЙСТВУЕТ, изм. 1-3), п. 10.3.2; СП 468.1325800.2019 (ДЕЙСТВУЕТ), таблицы 5.2, 5.4, 5.5",
+      "norm_quote": "Толщина защитного слоя бетона для рабочей арматуры должна быть не менее её диаметра и не менее значений, приведенных в таблице 10.1, — в зависимости от условий эксплуатации и типа конструкции. Толщина защитного слоя бетона должна обеспечивать требуемый предел огнестойкости конструкции.",
+      "solution": "В общих указаниях явно зафиксировать проектные значения защитного слоя для стен и колонн и раздельно подтвердить их достаточность по двум условиям: (1) долговечность/коррозионная защита по СП 63.13330.2018, таблица 10.1; (2) огнестойкость REI 120 по СП 468.1325800.2019 (минимальные расстояния до оси арматуры). Пересмотреть значение з.с. 25 мм на колонне Км-400-1000-2800-3 (лист 13) — увеличить до 30 мм или обосновать расчётом на огнестойкость.",
+      "risk": "Недостаточная огнестойкость и коррозионная защита арматуры; потеря несущей способности при пожаре; отказ экспертизы.",
+      "source_block_ids": [
+        "4FYM-T77L-JKD",
+        "page_017",
+        "79NT-KCUP-VUK",
+        "page_019"
+      ],
+      "related_block_ids": [
+        "4FYM-T77L-JKD",
+        "page_017",
+        "79NT-KCUP-VUK",
+        "page_019",
+        "page_010",
+        "page_011",
+        "page_012",
+        "page_013",
+        "page_014",
+        "page_015"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4FYM-T77L-JKD",
+          "role": "note",
+          "used_for": "value_extraction"
+        },
+        {
+          "text_block_id": "6PV7-YXJF-GKM",
+          "role": "table",
+          "used_for": "value_extraction"
+        },
+        {
+          "text_block_id": "9T4R-3XYY-LTE",
+          "role": "table",
+          "used_for": "value_extraction"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "4FYM-T77L-JKD",
+          "page": 6
+        },
+        {
+          "type": "image",
+          "block_id": "page_017",
+          "page": 17
+        },
+        {
+          "type": "image",
+          "block_id": "79NT-KCUP-VUK",
+          "page": 18
+        },
+        {
+          "type": "image",
+          "block_id": "page_019",
+          "page": 19
+        }
+      ],
+      "highlight_regions": [
+        {
+          "block_id": "page_017",
+          "x": 0.08,
+          "y": 0.08,
+          "w": 0.15,
+          "h": 0.1,
+          "label": "Сечение 1-1, з.с. 30, 35"
+        },
+        {
+          "block_id": "page_017",
+          "x": 0.35,
+          "y": 0.08,
+          "w": 0.15,
+          "h": 0.1,
+          "label": "Сечение 2-2, з.с. 30, 35"
+        },
+        {
+          "block_id": "79NT-KCUP-VUK",
+          "x": 0.3,
+          "y": 0.1,
+          "w": 0.4,
+          "h": 0.8,
+          "label": "з.с. 25 и 30"
+        },
+        {
+          "block_id": "page_019",
+          "x": 0.08,
+          "y": 0.08,
+          "w": 0.15,
+          "h": 0.1,
+          "label": "Сечение 1-1, з.с. 30, 35"
+        },
+        {
+          "block_id": "page_019",
+          "x": 0.35,
+          "y": 0.08,
+          "w": 0.15,
+          "h": 0.1,
+          "label": "Сечение 2-2, з.с. 30, 35"
+        }
+      ],
+      "selected_text_block_ids": [
+        "6K9J-V6UM-KFF",
+        "C79L-M93F-7WR",
+        "6CNL-J6MK-6KU"
+      ],
+      "quality": {
+        "practicality_score": 85,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "safety",
+          "operations"
+        ],
+        "formalism_flags": [
+          "expertise_formality"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "not_found",
+        "edition_status": "unknown",
+        "verified_via": "norms_missing",
+        "needs_revision": false,
+        "current_version": null,
+        "replacement_doc": null,
+        "paragraph_verified": true
+      },
+      "norm_status": "not_found",
+      "norm_quote_status": "exact",
+      "norm_policy_class": "recommended"
+    },
+    {
+      "id": "F-007",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "corrosion_protection",
+      "sheet": "Лист 1",
+      "page": 6,
+      "problem": "Не определён класс агрессивности среды эксплуатации",
+      "description": "В общих указаниях (стр. 6, блок 4FYM-T77L-JKD, п. 3, п. 10) присутствует ссылка на СП 28.13330.2017, но не определён класс агрессивности среды эксплуатации для монолитных вертикальных конструкций 17-23 этажа. Без указания класса агрессивности невозможно проверить достаточность принятых марок бетона по морозостойкости (F100) и водонепроницаемости (W4) и толщины защитного слоя. Для внутренних конструкций жилого здания на отметках выше 0,000 среда в норме неагрессивная, однако это должно быть явно зафиксировано.",
+      "norm": "СП 28.13330.2017 (ДЕЙСТВУЕТ, изм. 1-2), раздел 5",
+      "norm_quote": "Степень агрессивного воздействия среды на строительные конструкции следует определять в соответствии с настоящим сводом правил с учётом характеристик среды, материалов конструкций и условий эксплуатации.",
+      "solution": "В общих указаниях явно зафиксировать класс агрессивности среды эксплуатации для вертикальных конструкций 17-23 этажей (в норме — неагрессивная/слабоагрессивная) со ссылкой на СП 28.13330.2017. Согласовать с разделами АР/ОВиК/ВК (уровни влажности помещений, наличие мокрых процессов).",
+      "risk": "Невозможность обосновать назначенные марки бетона по F и W и защитный слой; замечания экспертизы по долговечности.",
+      "source_block_ids": [
+        "4FYM-T77L-JKD"
+      ],
+      "related_block_ids": [
+        "4FYM-T77L-JKD",
+        "4JCC-7UTQ-FN9"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4FYM-T77L-JKD",
+          "role": "note",
+          "used_for": "value_extraction"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "4FYM-T77L-JKD",
+          "page": 6
+        }
+      ],
+      "highlight_regions": [],
+      "quality": {
+        "practicality_score": 51,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "operations",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "expertise_formality",
+          "reference_maintenance"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "СП 28.13330.2017",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "optional"
+    },
+    {
+      "id": "F-008",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "concrete_class",
+      "sheet": "Лист 1",
+      "page": 6,
+      "problem": "Бетон B40 F100 W4 — марка по морозостойкости F100 для внутренних стен/колонн избыточна",
+      "description": "По п. 22 общих указаний и ведомости материалов (блоки 4FYM-T77L-JKD, 4JCC-7UTQ-FN9) все вертикальные конструкции 17-23 этажей запроектированы из бетона B40 F100 W4. Для внутренних монолитных стен и колонн жилого здания, эксплуатируемых внутри тёплого контура, морозостойкость F100 обычно избыточна. W4 приемлемо. Допустимость F100 необходимо обосновать (например, зимнее бетонирование, работа конструкций в переменном тепловлажностном режиме на период строительства) либо снизить до F50/F75.",
+      "norm": "СП 28.13330.2017 (ДЕЙСТВУЕТ), таблицы Х.1, Х.2; ГОСТ 26633-2015 (ДЕЙСТВУЕТ)",
+      "norm_quote": "Марки бетона по морозостойкости F и водонепроницаемости W назначают в зависимости от условий эксплуатации конструкции и степени агрессивности среды.",
+      "solution": "Обосновать в общих указаниях принятую марку F100 (условия строительного периода, переменный тепловлажностный режим) со ссылкой на СП 28.13330.2017 или снизить до F50/F75 с пересмотром ведомости материалов и расхода вяжущих.",
+      "risk": "Избыточный расход цемента/добавок и стоимости смеси; отсутствие обоснования при экспертизе.",
+      "source_block_ids": [
+        "4FYM-T77L-JKD",
+        "4JCC-7UTQ-FN9"
+      ],
+      "related_block_ids": [
+        "4FYM-T77L-JKD",
+        "4JCC-7UTQ-FN9"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4FYM-T77L-JKD",
+          "role": "note",
+          "used_for": "value_extraction"
+        },
+        {
+          "text_block_id": "4JCC-7UTQ-FN9",
+          "role": "table",
+          "used_for": "value_extraction"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "4FYM-T77L-JKD",
+          "page": 6
+        },
+        {
+          "type": "text",
+          "block_id": "4JCC-7UTQ-FN9",
+          "page": 6
+        }
+      ],
+      "highlight_regions": [],
+      "quality": {
+        "practicality_score": 55,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "cost",
+          "operations"
+        ],
+        "formalism_flags": [
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "СП 28.13330.2017",
+        "replacement_doc": null,
+        "paragraph_verified": true
+      },
+      "norm_status": "exact_quote",
+      "norm_quote_status": "exact",
+      "norm_policy_class": "optional"
+    },
+    {
+      "id": "F-010",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "construction_sequence",
+      "sheet": "Лист 1",
+      "page": 6,
+      "problem": "Нет указания распалубочной прочности и температурного режима выдерживания бетона",
+      "description": "В общих указаниях (блок 4FYM-T77L-JKD) отсутствует значение распалубочной (критической) прочности бетона вертикальных конструкций, требования по температурному режиму укладки и выдерживания (кроме общей отсылки к ППР в п. 20), а также объёмы контроля прочности по критическим этапам возведения. Это критично, поскольку конструкции 17-23 этажей передают нагрузку от вышележащих 19 этажей каркаса.",
+      "norm": "СП 70.13330.2012 (ДЕЙСТВУЕТ, изм. 1-5), п. 5.11.17, табл. 5.3",
+      "norm_quote": "Распалубливание монолитных конструкций допускается при достижении бетоном распалубочной прочности в соответствии с проектом, но не менее значений, указанных в таблице 5.3 СП 70.13330.2012.",
+      "solution": "В общих указаниях задать распалубочную прочность для стен и колонн (в % от R28 по СП 70.13330.2012), требования к уходу за бетоном, температурному режиму зимнего бетонирования и объёмам неразрушающего/разрушающего контроля на критических этапах.",
+      "risk": "Ранее распалубливание, трещинообразование, снижение несущей способности; потенциальная авария на стадии строительства.",
+      "source_block_ids": [
+        "4FYM-T77L-JKD"
+      ],
+      "related_block_ids": [
+        "4FYM-T77L-JKD"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4FYM-T77L-JKD",
+          "role": "note",
+          "used_for": "value_extraction"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "4FYM-T77L-JKD",
+          "page": 6
+        }
+      ],
+      "highlight_regions": [],
+      "quality": {
+        "practicality_score": 65,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "safety"
+        ],
+        "formalism_flags": [
+          "reference_maintenance"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "СП 70.13330.2012",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "recommended"
+    },
+    {
+      "id": "F-012",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "sheet": "Лист 1",
+      "page": 5,
+      "problem": "Неполный реестр отклонений РД от ПД",
+      "description": "В реестре отклонений РД от ПД (стр. 5, блок 4LNG-MXYQ-RP7) содержится одно отклонение: «Изменено расположение и количество инженерных отверстий, предусмотрены отверстия для устройства скрытых балок промежуточных лестничных площадок». Отсутствуют: (а) обоснование отклонения; (б) ссылки на исходный и изменённый листы/марки; (в) оценка влияния отклонения на прочностные характеристики конструкций; (г) отметка о согласовании с разработчиком ПД (ООО «СУ-10») и, при необходимости, Мосгосэкспертизой (экспертиза № 77-1-1-3-062675-2025).",
+      "norm": "ГОСТ Р 21.101-2020 (ДЕЙСТВУЕТ), п. 7.4.11; ПП РФ №87, п. 12",
+      "norm_quote": "При отклонении рабочей документации от проектной документации в состав рабочей документации включают реестр отклонений с указанием оснований и последствий для несущих и ограждающих конструкций.",
+      "solution": "Дополнить реестр отклонений обоснованием, ссылками на исходные/изменённые листы, оценкой влияния на прочность и отметками о согласовании с разработчиком ПД и (при необходимости) с экспертизой.",
+      "risk": "Замечания строительного контроля и экспертизы; отсутствие прослеживаемости изменений.",
+      "source_block_ids": [
+        "4LNG-MXYQ-RP7"
+      ],
+      "related_block_ids": [
+        "4LNG-MXYQ-RP7"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4LNG-MXYQ-RP7",
+          "role": "table",
+          "used_for": "value_extraction"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "4LNG-MXYQ-RP7",
+          "page": 5
+        }
+      ],
+      "highlight_regions": [],
+      "quality": {
+        "practicality_score": 65,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "schedule",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "expertise_formality"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "not_found",
+        "edition_status": "unknown",
+        "verified_via": "norms_missing",
+        "needs_revision": false,
+        "current_version": null,
+        "replacement_doc": null
+      },
+      "norm_status": "not_found",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "optional"
+    },
+    {
+      "id": "F-013",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "lap_length",
+      "sheet": "Листы 1, 3, 12, 13, 14",
+      "page": [
+        6,
+        8,
+        17,
+        18,
+        19
+      ],
+      "problem": "Отсутствуют требования по доле стыкуемых в одном сечении стержней (≤50%) и разнесению стыков вразбежку; на чертежах выпусков не приведена длина нахлёста",
+      "description": "В общих указаниях и таблице 1 «Параметры арматурных деталей» (блоки 4FYM-T77L-JKD, 9CHP-K3VG-AGX) для бетона B40 и арматуры A500C даны базовые длины анкеровки и нахлёста (Лр.а, Лсж.а, Лр.н, Лсж.н, 1,3·Лр.н, 2·Лр.а), но отсутствует явное ограничение на долю стыкуемых в одном сечении стержней в растянутой зоне (не более 50%) и требование к разнесению стыков по длине (не менее 1,3·Лр.н между соседними сечениями стыков). На чертежах армирования колонн (листы 12-14: page_017, 9VHU-GJRC-466, page_019) выпуски арматуры показаны с отсылкой «см. 13АВ-РД-КЖ5.16.1-К2», но конкретная длина нахлёста в пределах листа не указана, что затрудняет контроль на стройплощадке.",
+      "norm": "СП 63.13330.2018 (ДЕЙСТВУЕТ, изм. 1-3), п. 10.3.31",
+      "norm_quote": "При выполнении стыков арматуры внахлестку количество стыкуемых в одном расчётном сечении стержней периодического профиля растянутой или растянутой наиболее напряженной части сечения элемента должно быть не более 50%... Стыки следует размещать вразбежку.",
+      "solution": "В общих указаниях явно зафиксировать: (1) доля стыкуемых в одном сечении стержней в растянутой зоне — не более 50%; (2) минимальное смещение между соседними сечениями стыков — не менее 1,3·Лр.н. На листах колонн (12-14) добавить либо прямое указание длины нахлёста (от табл. 1), либо явную ссылку с конкретным значением в миллиметрах для применяемых диаметров.",
+      "risk": "Нарушение требований СП 63.13330.2018 по нахлёсточным стыкам; снижение несущей способности колонн и стен; замечания экспертизы и стройнадзора.",
+      "source_block_ids": [
+        "4FYM-T77L-JKD",
+        "9CHP-K3VG-AGX",
+        "page_017",
+        "9VHU-GJRC-466",
+        "page_019"
+      ],
+      "related_block_ids": [
+        "4FYM-T77L-JKD",
+        "9CHP-K3VG-AGX",
+        "page_017",
+        "9VHU-GJRC-466",
+        "page_019",
+        "page_008"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4FYM-T77L-JKD",
+          "role": "note",
+          "used_for": "value_extraction"
+        },
+        {
+          "text_block_id": "9CHP-K3VG-AGX",
+          "role": "table",
+          "used_for": "value_extraction"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "4FYM-T77L-JKD",
+          "page": 6
+        },
+        {
+          "type": "text",
+          "block_id": "9CHP-K3VG-AGX",
+          "page": 8
+        },
+        {
+          "type": "image",
+          "block_id": "page_017",
+          "page": 17
+        },
+        {
+          "type": "image",
+          "block_id": "9VHU-GJRC-466",
+          "page": 18
+        },
+        {
+          "type": "image",
+          "block_id": "page_019",
+          "page": 19
+        }
+      ],
+      "highlight_regions": [
+        {
+          "block_id": "page_017",
+          "x": 0.15,
+          "y": 0.7,
+          "w": 0.1,
+          "h": 0.05,
+          "label": "Выпуски арматуры"
+        },
+        {
+          "block_id": "9VHU-GJRC-466",
+          "x": 0.7,
+          "y": 0.8,
+          "w": 0.25,
+          "h": 0.1,
+          "label": "Выпуски арматуры"
+        },
+        {
+          "block_id": "page_019",
+          "x": 0.15,
+          "y": 0.7,
+          "w": 0.1,
+          "h": 0.05,
+          "label": "Выпуски арматуры"
+        }
+      ],
+      "selected_text_block_ids": [
+        "779K-JRFG-UNG",
+        "6K9J-V6UM-KFF",
+        "6CHT-Q7AT-D6J"
+      ],
+      "quality": {
+        "practicality_score": 39,
+        "engineering_relevance": "low",
+        "impact_axes": [
+          "coordination"
+        ],
+        "formalism_flags": [
+          "expertise_formality",
+          "reference_maintenance"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": true,
+        "review_priority": "high"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "СП 63.13330.2018",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "recommended"
+    },
+    {
+      "id": "F-014",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "km_kj_coordination",
+      "sheet": "Листы 1, 15",
+      "page": [
+        6,
+        20
+      ],
+      "problem": "Отсутствует координация КМ-КЖ и спецификация закладных деталей ЭОМ",
+      "description": "Лист 15 (блок page_020) обозначен как «Схема расположения закладных деталей ЭОМ», и в ведомости основных комплектов (блок JLP9-464A-9WF) присутствует раздел 13АВ-РД-КМ-К2 «Конструкции металлические. Корпус 2». В общих указаниях раздела КЖ (блок 4FYM-T77L-JKD) отсутствуют ссылки на конкретные листы КМ-К2 и требования по сверке положений закладных/анкерных групп с разделом КМ. В ведомости листов (блок 4NRH-TX3M-6E9) отсутствует отдельная спецификация закладных деталей ЭОМ (только упоминание схемы).",
+      "norm": "ГОСТ 21.502-2016 (ДЕЙСТВУЕТ), п. 4; ГОСТ Р 21.101-2020 (ДЕЙСТВУЕТ), п. 7.4",
+      "norm_quote": "Рабочая документация на металлические конструкции должна содержать чертежи и спецификации закладных деталей, согласованные с разделами железобетонных конструкций.",
+      "solution": "В общих указаниях КЖ привести перечень смежных листов КМ-К2 и требования по сверке положения/проектных меток закладных. На листе 15 или в общих указаниях добавить полную спецификацию закладных деталей ЭОМ (с шифрами, количеством, массой). Получить подписанные листы сверки с разделами КМ и ЭОМ.",
+      "risk": "Коллизии закладных деталей с рабочей арматурой; невозможность выполнения КМ-монтажа по проекту; замечания экспертизы и строительного контроля.",
+      "source_block_ids": [
+        "4NRH-TX3M-6E9",
+        "JLP9-464A-9WF",
+        "page_020"
+      ],
+      "related_block_ids": [
+        "4NRH-TX3M-6E9",
+        "JLP9-464A-9WF",
+        "page_020",
+        "4FYM-T77L-JKD"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4NRH-TX3M-6E9",
+          "role": "table",
+          "used_for": "value_extraction"
+        },
+        {
+          "text_block_id": "JLP9-464A-9WF",
+          "role": "table",
+          "used_for": "value_extraction"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "4NRH-TX3M-6E9",
+          "page": 6
+        },
+        {
+          "type": "text",
+          "block_id": "JLP9-464A-9WF",
+          "page": 6
+        },
+        {
+          "type": "image",
+          "block_id": "page_020",
+          "page": 20
+        }
+      ],
+      "highlight_regions": [
+        {
+          "x": 0.4,
+          "y": 0.1,
+          "w": 0.2,
+          "h": 0.2,
+          "label": "Разрезы с трубами ПНД"
+        }
+      ],
+      "quality": {
+        "practicality_score": 59,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "schedule",
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "expertise_formality",
+          "reference_register",
+          "reference_maintenance"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "not_found",
+        "edition_status": "unknown",
+        "verified_via": "norms_missing",
+        "needs_revision": false,
+        "current_version": null,
+        "replacement_doc": null
+      },
+      "norm_status": "not_found",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "optional"
+    },
+    {
+      "id": "F-018",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "mep_coordination",
+      "sheet": "Лист 15",
+      "page": 20,
+      "problem": "Прокладка труб ПНД Ø32 мм в монолитных стенах 200-250 мм — проверка совместимости с арматурой",
+      "description": "На листе 15 (блок page_020) показана прокладка труб ПНД гладкая Ø32 мм (12,5 м.п.) и установка коробок КУ1301 (4 шт.) в монолитных стенах. Согласно примечанию 5 листа, при установке закладных деталей не допускается повреждение рабочей арматуры. При толщине стен 200-250 мм и защитном слое 30 мм чистая внутренняя зона стены составляет 140-190 мм; при диаметре трубы 32 мм и двухрядной арматуре проход трубы возможен только по центральной оси стены без пересечения рабочих сеток. Необходимо проверить геометрическую совместимость трубы и коробок с шагом и положением рабочей арматуры на всех разрезах листов 5-10 (page_010…page_015) и при необходимости скорректировать шаг арматуры локально или изменить трассировку трубы.",
+      "norm": "СП 63.13330.2018 (ДЕЙСТВУЕТ, изм. 1-3), п. 10.3.2; СП 76.13330.2016 (для ЭОМ-КЖ)",
+      "norm_quote": "При прокладке коммуникаций внутри монолитных конструкций не допускается снижение их несущей способности и нарушение защитного слоя арматуры.",
+      "solution": "Выполнить совмещённую проверку листа 15 с сечениями армирования листов 5-10 (стены 200 и 250 мм): показать трассу труб ПНД Ø32 и коробок КУ1301 на фоне рабочих сеток, подтвердить сохранение защитного слоя и отсутствие пересечений с рабочими стержнями. Согласовать с разделом ЭОМ; при необходимости выдать локальные узлы усиления проёмов/пробивок.",
+      "risk": "Повреждение рабочей арматуры при пробивке/монтаже коробок; снижение несущей способности стен; замечания ЭОМ и строительного контроля.",
+      "source_block_ids": [
+        "page_020"
+      ],
+      "related_block_ids": [
+        "page_020",
+        "page_010",
+        "page_011",
+        "page_012",
+        "page_013",
+        "page_014",
+        "page_015"
+      ],
+      "evidence_text_refs": [
+        {
+          "text_block_id": "4D9J-AFCN-E6N",
+          "role": "table",
+          "used_for": "value_extraction"
+        },
+        {
+          "text_block_id": "4MLT-YF7T-7YD",
+          "role": "note",
+          "used_for": "value_extraction"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "page_020",
+          "page": 20
+        },
+        {
+          "type": "text",
+          "block_id": "4D9J-AFCN-E6N",
+          "page": 20
+        },
+        {
+          "type": "text",
+          "block_id": "4MLT-YF7T-7YD",
+          "page": 20
+        }
+      ],
+      "highlight_regions": [
+        {
+          "block_id": "page_020",
+          "x": 0.4,
+          "y": 0.1,
+          "w": 0.2,
+          "h": 0.2,
+          "label": "Разрезы с трубами ПНД Ø32"
+        }
+      ],
+      "quality": {
+        "practicality_score": 81,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "grounding_level": "grounded_strong",
+      "norm_verification": {
+        "status": "active",
+        "edition_status": "active",
+        "verified_via": "norms_authoritative",
+        "needs_revision": false,
+        "current_version": "СП 63.13330.2018",
+        "replacement_doc": null
+      },
+      "norm_status": "paraphrased",
+      "norm_quote_status": "approximate",
+      "norm_policy_class": "optional"
+    }
+  ]
+}

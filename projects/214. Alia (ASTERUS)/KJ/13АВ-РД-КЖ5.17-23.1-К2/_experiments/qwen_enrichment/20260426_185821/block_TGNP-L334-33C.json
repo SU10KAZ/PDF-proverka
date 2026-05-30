@@ -1,0 +1,61 @@
+{
+  "block_id": "TGNP-L334-33C",
+  "page": 7,
+  "sheet_no": "2",
+  "file": "block_TGNP-L334-33C.png",
+  "size_kb": 51.1,
+  "ocr_text_len": 892,
+  "ocr_label": "На чертеже представлен разрез 20-20 строительной конструкции с указанием размеро",
+  "ok": true,
+  "elapsed_ms": 4153,
+  "input_tokens": 2236,
+  "output_tokens": 315,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 720,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 4153,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "разрез",
+    "subject": "Разрез 20-20 вертикальной конструкции с указанием отметок и размеров проёма П-5",
+    "marks": [
+      "П-5"
+    ],
+    "rebar_specs": [],
+    "dimensions": [
+      "3450",
+      "2800",
+      "2300",
+      "800",
+      "50",
+      "150",
+      "200",
+      "300",
+      "100"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 4",
+      "см. лист 3"
+    ],
+    "axes": [
+      "2.Д",
+      "2.Е"
+    ],
+    "level_marks": [
+      "отм. А",
+      "отм. В",
+      "отм. Б"
+    ],
+    "concrete_class": null,
+    "notes": "На чертеже показан разрез стены с проёмом П-5. Привязки к осям 2.Д и 2.Е. Указаны высотные отметки низа и верха проёма относительно отметок этажа. Внизу приведены общие указания по бетонированию."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

@@ -1,0 +1,28 @@
+{
+  "project": "projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf",
+  "timestamp": "20260424_101616",
+  "model": "qwen/qwen3.6-35b-a3b",
+  "parallelism": 1,
+  "blocks_total": 1,
+  "blocks_ok": 1,
+  "blocks_failed": 0,
+  "wall_clock_s": 40.2,
+  "avg_per_block_s": 38.3,
+  "total_input_tokens": 4912,
+  "total_output_tokens": 1100,
+  "total_reasoning_tokens": 0,
+  "per_block": [
+    {
+      "block_id": "4WTD-JFKA-JLE",
+      "page": 10,
+      "ok": true,
+      "elapsed_ms": 38321,
+      "input_tokens": 4912,
+      "output_tokens": 1100,
+      "reasoning_tokens": 0,
+      "block_type": "план_опалубки",
+      "subject": "План опалубки вертикальных конструкций пристройки на отметке -1,800 в осях П.3-П.9/П.Л-П.Т",
+      "error": null
+    }
+  ]
+}

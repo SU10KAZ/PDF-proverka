@@ -1,0 +1,47 @@
+{
+  "block_id": "7EEY-RGYC-34R",
+  "page": 8,
+  "sheet_no": "3",
+  "file": "block_7EEY-RGYC-34R.png",
+  "size_kb": 14.3,
+  "ocr_text_len": 693,
+  "ocr_label": "Представлена графическая схема стыковки арматурных стержней внахлест.",
+  "ok": true,
+  "elapsed_ms": 2948,
+  "input_tokens": 1306,
+  "output_tokens": 243,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 654,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 2948,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "схема_стыковки",
+    "subject": "Схема стыковки арматурных стержней внахлест с указанием длины нахлеста и зазора.",
+    "marks": [],
+    "rebar_specs": [],
+    "dimensions": [
+      "≥ 2d",
+      "≥ 30 мм",
+      "Lp.h.",
+      "L",
+      "≥ Длина 1"
+    ],
+    "references_on_block": [
+      "Схема установки дополнительного армирования",
+      "Схема стыковки арматуры внахлест"
+    ],
+    "axes": [],
+    "level_marks": [],
+    "concrete_class": null,
+    "notes": "Схема определяет требования к длине нахлеста (Lp.h.) и минимальному зазору между стержнями (≥ 30 мм). Длина нахлеста зависит от диаметра стержня (≥ 2d). Указана минимальная длина стержня (≥ Длина 1)."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

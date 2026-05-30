@@ -1,0 +1,56 @@
+{
+  "block_id": "4CRW-7WEW-6KA",
+  "page": 8,
+  "sheet_no": "3",
+  "file": "block_4CRW-7WEW-6KA.png",
+  "size_kb": 29.4,
+  "ocr_text_len": 864,
+  "ocr_label": "Фрагмент Г армирования монолитного элемента для 23 этажа.",
+  "ok": true,
+  "elapsed_ms": 3764,
+  "input_tokens": 2636,
+  "output_tokens": 285,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 622,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3764,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "схема_расположения",
+    "subject": "Схема расположения арматуры в фрагменте Г монолитного элемента для 23 этажа",
+    "marks": [
+      "2.Г",
+      "2.Д",
+      "11(4)"
+    ],
+    "rebar_specs": [
+      "Ø12 А500С шаг 125"
+    ],
+    "dimensions": [
+      "2000",
+      "2600",
+      "130",
+      "60",
+      "60",
+      "60",
+      "80",
+      "200"
+    ],
+    "references_on_block": [],
+    "axes": [
+      "2.Г",
+      "2.Д"
+    ],
+    "level_marks": [],
+    "concrete_class": null,
+    "notes": "Детализированная схема армирования для 23 этажа. Привязка к осям 2.Г и 2.Д. Указаны габаритные размеры элемента (2000 и 2600) и параметры сетки арматуры."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

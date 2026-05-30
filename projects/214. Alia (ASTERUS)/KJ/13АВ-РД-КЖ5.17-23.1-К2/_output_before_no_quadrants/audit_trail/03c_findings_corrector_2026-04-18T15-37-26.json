@@ -1,0 +1,9 @@
+{
+  "stage": "03c_findings_corrector",
+  "model": "claude-sonnet-4-6",
+  "timestamp": "2026-04-18T15:37:26.567856",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "duration_ms": 544799,
+  "result": "```json\n{\n  \"meta\": {\n    \"project_id\": \"13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf\",\n    \"total_findings\": 13,\n    \"by_severity\": {\n      \"РЕКОМЕНДАТЕЛЬНОЕ\": 4,\n      \"КРИТИЧЕСКОЕ\": 3,\n      \"ЭКСПЛУАТАЦИОННОЕ\": 3,\n      \"ПРОВЕРИТЬ ПО СМЕЖНЫМ\": 3\n    },\n    \"review_applied\": true,\n    \"review_stats\": {\n      \"total_reviewed\": 18,\n      \"passed\": 13,\n      \"fixed\": 0,\n      \"removed\": 5,\n      \"downgraded\": 0\n    }\n  },\n  \"findings\": \"13 замечаний (F-001..F-008, F-010, F-012..F-014, F-018)\"\n}\n```"
+}

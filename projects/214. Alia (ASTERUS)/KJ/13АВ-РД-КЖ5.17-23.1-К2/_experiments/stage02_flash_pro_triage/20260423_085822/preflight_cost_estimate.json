@@ -1,0 +1,12 @@
+{
+  "total_blocks": 215,
+  "pro_blocks": 0,
+  "flash_cost_per_block": 0.0015,
+  "pro_cost_per_block": 0.1,
+  "flash_cost_usd": 0.3225,
+  "pro_cost_usd": 0.0,
+  "total_cost_usd": 0.3225,
+  "pro_budget_ok": true,
+  "max_pro_cost_usd": 8.0,
+  "stop_reason": null
+}

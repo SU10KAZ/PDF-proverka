@@ -1,0 +1,122 @@
+{
+  "baseline": {
+    "block_id": "GAAA-QLPN-JCX",
+    "page": 13,
+    "sheet": "8",
+    "label": "Схема установки горизонтальных хомутов в стенах",
+    "sheet_type": "wall_reinforcement",
+    "unreadable_text": false,
+    "unreadable_details": null,
+    "summary": "Представлена схема установки горизонтальных хомутов в армировании стен. Хомуты установлены с чередованием направления.",
+    "key_values_read": [
+      "Хомут: установка с чередованием направления"
+    ],
+    "evidence_text_refs": [
+      {
+        "text_block_id": "9HGD-ADC3-XDY",
+        "role": "other",
+        "used_for": "cross_check",
+        "confidence": 0.39,
+        "source": "graph_backfill"
+      },
+      {
+        "text_block_id": "4JE3-7FT9-ALJ",
+        "role": "other",
+        "used_for": "cross_check",
+        "confidence": 0.23,
+        "source": "graph_backfill"
+      }
+    ],
+    "findings": [],
+    "selected_text_block_ids": [
+      "9HGD-ADC3-XDY",
+      "4JE3-7FT9-ALJ"
+    ]
+  },
+  "candidate_raw": {
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_stage02_full_project/20260423_230329/prepared/native_crops/block_GAAA-QLPN-JCX_native.png",
+    "image_size_bytes": 35687,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 3.705,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-35b-a3b",
+      "output": [
+        {
+          "type": "message",
+          "content": "{\n  \"block_id\": \"GAAA-QLPN-JCX\",\n  \"page\": 13,\n  \"label\": \"Схема установки горизонтальных хомутов\",\n  \"sheet_type\": \"detail\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлена схема армирования стен, показывающая взаимное расположение вертикальной арматуры и горизонтальных хомутов. Изображение демонстрирует принцип стыковки элементов сетки. Основные элементы обозначены выносками с указанием их назначения.\",\n  \"key_values_read\": [\n    \"Заголовок: Схема установки горизонтальных хомутов в стенах\",\n    \"Элемент: Вертикальная арматура\",\n    \"Элемент: Хомут\",\n    \"Условное обозначение направления: 1\"\n  ],\n  \"findings\": [\n    {\n      \"severity\": \"ПРОВЕРИТЬ ПО СМЕЖНЫМ\",\n      \"category\": \"армирование\",\n      \"finding\": \"Отсутствуют параметры арматуры (диаметр, шаг, класс стали)\",\n      \"block_evidence\": \"На схеме указаны только названия элементов без числовых значений\",\n      \"value_found\": null\n    },\n    {\n      \"severity\": \"ПРОВЕРИТЬ ПО СМЕЖНЫМ\",\n      \"category\": \"армирование\",\n      \"finding\": \"Не определено количество сеток или слоев армирования\",\n      \"block_evidence\": \"Показана плоская проекция без указания толщины стены или количества рядов\",\n      \"value_found\": null\n    }\n  ]\n}"
+        }
+      ],
+      "stats": {
+        "input_tokens": 1825,
+        "total_output_tokens": 375,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 227.94772885040186,
+        "time_to_first_token_seconds": 0.503
+      }
+    },
+    "content": "{\n  \"block_id\": \"GAAA-QLPN-JCX\",\n  \"page\": 13,\n  \"label\": \"Схема установки горизонтальных хомутов\",\n  \"sheet_type\": \"detail\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлена схема армирования стен, показывающая взаимное расположение вертикальной арматуры и горизонтальных хомутов. Изображение демонстрирует принцип стыковки элементов сетки. Основные элементы обозначены выносками с указанием их назначения.\",\n  \"key_values_read\": [\n    \"Заголовок: Схема установки горизонтальных хомутов в стенах\",\n    \"Элемент: Вертикальная арматура\",\n    \"Элемент: Хомут\",\n    \"Условное обозначение направления: 1\"\n  ],\n  \"findings\": [\n    {\n      \"severity\": \"ПРОВЕРИТЬ ПО СМЕЖНЫМ\",\n      \"category\": \"армирование\",\n      \"finding\": \"Отсутствуют параметры арматуры (диаметр, шаг, класс стали)\",\n      \"block_evidence\": \"На схеме указаны только названия элементов без числовых значений\",\n      \"value_found\": null\n    },\n    {\n      \"severity\": \"ПРОВЕРИТЬ ПО СМЕЖНЫМ\",\n      \"category\": \"армирование\",\n      \"finding\": \"Не определено количество сеток или слоев армирования\",\n      \"block_evidence\": \"Показана плоская проекция без указания толщины стены или количества рядов\",\n      \"value_found\": null\n    }\n  ]\n}",
+    "reasoning": "",
+    "parsed": {
+      "block_id": "GAAA-QLPN-JCX",
+      "page": 13,
+      "label": "Схема установки горизонтальных хомутов",
+      "sheet_type": "detail",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "На чертеже представлена схема армирования стен, показывающая взаимное расположение вертикальной арматуры и горизонтальных хомутов. Изображение демонстрирует принцип стыковки элементов сетки. Основные элементы обозначены выносками с указанием их назначения.",
+      "key_values_read": [
+        "Заголовок: Схема установки горизонтальных хомутов в стенах",
+        "Элемент: Вертикальная арматура",
+        "Элемент: Хомут",
+        "Условное обозначение направления: 1"
+      ],
+      "findings": [
+        {
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+          "category": "армирование",
+          "finding": "Отсутствуют параметры арматуры (диаметр, шаг, класс стали)",
+          "block_evidence": "На схеме указаны только названия элементов без числовых значений",
+          "value_found": null
+        },
+        {
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+          "category": "армирование",
+          "finding": "Не определено количество сеток или слоев армирования",
+          "block_evidence": "Показана плоская проекция без указания толщины стены или количества рядов",
+          "value_found": null
+        }
+      ]
+    },
+    "parse_error": null,
+    "model": "qwen/qwen3.6-35b-a3b",
+    "block_id": "GAAA-QLPN-JCX",
+    "width": 1024,
+    "height": 691,
+    "run_index": 140
+  },
+  "compare": {
+    "block_id": "GAAA-QLPN-JCX",
+    "page": 13,
+    "label_source": "Представлена схема установки горизонтальных хомутов в армировании стен.",
+    "baseline_present": true,
+    "baseline_label": "Схема установки горизонтальных хомутов в стенах",
+    "candidate_label": "Схема установки горизонтальных хомутов",
+    "baseline_findings": 0,
+    "candidate_findings": 2,
+    "baseline_kv": 1,
+    "candidate_kv": 4,
+    "elapsed_s": 3.705,
+    "parse_ok": true,
+    "verdict": "uncertain",
+    "notes": [
+      "candidate found issues where stage-02 baseline had none"
+    ],
+    "baseline_summary": "Представлена схема установки горизонтальных хомутов в армировании стен. Хомуты установлены с чередованием направления.",
+    "candidate_summary": "На чертеже представлена схема армирования стен, показывающая взаимное расположение вертикальной арматуры и горизонтальных хомутов. Изображение демонстрирует принцип стыковки элементов сетки. Основные элементы обозначены выносками с указанием их назначения.",
+    "candidate_sheet_type": "detail",
+    "candidate_unreadable_text": false
+  }
+}

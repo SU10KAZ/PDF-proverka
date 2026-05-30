@@ -1,0 +1,237 @@
+[
+  {
+    "model": "google/gemma-4-31b",
+    "request": "load",
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 8.998,
+    "error": null,
+    "response": {
+      "type": "llm",
+      "instance_id": "google/gemma-4-31b",
+      "load_time_seconds": 7.967,
+      "status": "loaded",
+      "load_config": {
+        "context_length": 8192,
+        "eval_batch_size": 512,
+        "parallel": 4,
+        "flash_attention": true,
+        "offload_kv_cache_to_gpu": true
+      }
+    }
+  },
+  {
+    "model": "google/gemma-4-31b",
+    "request": "text_smoke",
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 1.204,
+    "error": null,
+    "response": {
+      "model_instance_id": "google/gemma-4-31b",
+      "output": [
+        {
+          "type": "message",
+          "content": "OK"
+        }
+      ],
+      "stats": {
+        "input_tokens": 43,
+        "total_output_tokens": 2,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 52.30399079449762,
+        "time_to_first_token_seconds": 0.148
+      }
+    },
+    "content": "OK",
+    "reasoning": "",
+    "verdict": "pass"
+  },
+  {
+    "model": "google/gemma-4-31b",
+    "image_name": "light_512",
+    "block_id": "A9M4-EJ7R-MKH",
+    "width": 512,
+    "height": 267,
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_195533/prepared_images/light_512/native_crops/block_A9M4-EJ7R-MKH_native.png",
+    "image_size_bytes": 26625,
+    "ok": false,
+    "status_code": 400,
+    "elapsed_s": 1.856,
+    "error": {
+      "message": "Invalid discriminator value. Expected 'text' | 'image'",
+      "type": "invalid_request",
+      "code": "invalid_union",
+      "param": "input"
+    },
+    "response": {
+      "error": {
+        "message": "Invalid discriminator value. Expected 'text' | 'image'",
+        "type": "invalid_request",
+        "code": "invalid_union",
+        "param": "input"
+      }
+    },
+    "content": "",
+    "reasoning": "",
+    "verdict": "fail"
+  },
+  {
+    "model": "qwen/qwen3.6-35b-a3b",
+    "request": "load",
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 12.893,
+    "error": null,
+    "response": {
+      "type": "llm",
+      "instance_id": "qwen/qwen3.6-35b-a3b",
+      "load_time_seconds": 11.871,
+      "status": "loaded",
+      "load_config": {
+        "context_length": 8192,
+        "eval_batch_size": 512,
+        "parallel": 4,
+        "flash_attention": true,
+        "num_experts": 8,
+        "offload_kv_cache_to_gpu": true
+      }
+    }
+  },
+  {
+    "model": "qwen/qwen3.6-35b-a3b",
+    "request": "text_smoke",
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 1.189,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-35b-a3b",
+      "output": [
+        {
+          "type": "message",
+          "content": "OK"
+        }
+      ],
+      "stats": {
+        "input_tokens": 42,
+        "total_output_tokens": 2,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 72.1370604147881,
+        "time_to_first_token_seconds": 0.206
+      }
+    },
+    "content": "OK",
+    "reasoning": "",
+    "verdict": "pass"
+  },
+  {
+    "model": "qwen/qwen3.6-35b-a3b",
+    "image_name": "light_512",
+    "block_id": "A9M4-EJ7R-MKH",
+    "width": 512,
+    "height": 267,
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_195533/prepared_images/light_512/native_crops/block_A9M4-EJ7R-MKH_native.png",
+    "image_size_bytes": 26625,
+    "ok": false,
+    "status_code": 400,
+    "elapsed_s": 2.182,
+    "error": {
+      "message": "Invalid discriminator value. Expected 'text' | 'image'",
+      "type": "invalid_request",
+      "code": "invalid_union",
+      "param": "input"
+    },
+    "response": {
+      "error": {
+        "message": "Invalid discriminator value. Expected 'text' | 'image'",
+        "type": "invalid_request",
+        "code": "invalid_union",
+        "param": "input"
+      }
+    },
+    "content": "",
+    "reasoning": "",
+    "verdict": "fail"
+  },
+  {
+    "model": "qwen/qwen3.6-27b",
+    "request": "load",
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 18.064,
+    "error": null,
+    "response": {
+      "type": "llm",
+      "instance_id": "qwen/qwen3.6-27b",
+      "load_time_seconds": 17.033,
+      "status": "loaded",
+      "load_config": {
+        "context_length": 8192,
+        "eval_batch_size": 512,
+        "parallel": 4,
+        "flash_attention": true,
+        "offload_kv_cache_to_gpu": true
+      }
+    }
+  },
+  {
+    "model": "qwen/qwen3.6-27b",
+    "request": "text_smoke",
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 1.107,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-27b",
+      "output": [
+        {
+          "type": "message",
+          "content": "OK"
+        }
+      ],
+      "stats": {
+        "input_tokens": 42,
+        "total_output_tokens": 2,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 70.62645667066883,
+        "time_to_first_token_seconds": 0.119
+      }
+    },
+    "content": "OK",
+    "reasoning": "",
+    "verdict": "pass"
+  },
+  {
+    "model": "qwen/qwen3.6-27b",
+    "image_name": "light_512",
+    "block_id": "A9M4-EJ7R-MKH",
+    "width": 512,
+    "height": 267,
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_195533/prepared_images/light_512/native_crops/block_A9M4-EJ7R-MKH_native.png",
+    "image_size_bytes": 26625,
+    "ok": false,
+    "status_code": 400,
+    "elapsed_s": 1.707,
+    "error": {
+      "message": "Invalid discriminator value. Expected 'text' | 'image'",
+      "type": "invalid_request",
+      "code": "invalid_union",
+      "param": "input"
+    },
+    "response": {
+      "error": {
+        "message": "Invalid discriminator value. Expected 'text' | 'image'",
+        "type": "invalid_request",
+        "code": "invalid_union",
+        "param": "input"
+      }
+    },
+    "content": "",
+    "reasoning": "",
+    "verdict": "fail"
+  }
+]

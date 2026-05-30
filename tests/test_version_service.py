@@ -95,18 +95,21 @@ def test_get_version_dir_missing_version_raises(legacy_project_dir):
 # ─── ensure_project_versions_manifest ───────────────────────────────────────
 
 
-def test_ensure_manifest_creates_file_for_legacy(legacy_project_dir):
+def test_ensure_manifest_no_file_for_legacy_single(legacy_project_dir):
+    """Контейнерная модель: манифест рождается только при промоуте в контейнер.
+
+    Для одиночного legacy-проекта ensure_* НЕ создаёт файла на диске, а
+    возвращает in-memory V1.
+    """
     manifest_path = legacy_project_dir / VERSIONS_MANIFEST_FILENAME
     assert not manifest_path.exists()
 
     manifest = ensure_project_versions_manifest(legacy_project_dir, "M31A")
 
-    assert manifest_path.exists()
-    on_disk = json.loads(manifest_path.read_text(encoding="utf-8"))
-    assert on_disk["schema_version"] == 1
-    assert on_disk["latest_version_id"] == "v1"
-    assert on_disk["versions"][0]["version_id"] == "v1"
-    assert manifest == on_disk
+    assert not manifest_path.exists()
+    assert manifest["schema_version"] == 1
+    assert manifest["latest_version_id"] == "v1"
+    assert manifest["versions"][0]["version_id"] == "v1"
 
 
 def test_ensure_manifest_idempotent(legacy_project_dir):
@@ -224,14 +227,17 @@ def test_create_next_version_writes_v2(legacy_project_dir):
 
     assert new_entry["version_id"] == "v2"
     assert new_entry["version_no"] == 2
-    assert new_entry["folder"] == "_versions/v2"
-    assert (legacy_project_dir / "_versions" / "v2" / "_output").is_dir()
+    # Контейнерная модель: V1 переезжает в `<база>(main)/`, V2 — братская папка.
+    assert new_entry["folder"] == "M31A V2"
+    container = legacy_project_dir.parent / "M31A(main)"
+    primary = container / "M31A"
+    assert (container / "M31A V2" / "_output").is_dir()
+    assert (primary / "project_info.json").exists()  # V1 переехал с данными
 
-    manifest = read_project_versions(legacy_project_dir, "M31A")
+    manifest = read_project_versions(primary, "M31A")
     assert manifest["latest_version_id"] == "v2"
-    assert get_version_dir(legacy_project_dir, "M31A") == (
-        legacy_project_dir / "_versions" / "v2"
-    )
+    assert get_version_dir(primary, "M31A") == container / "M31A V2"
+    assert get_version_dir(primary, "M31A", "v1") == primary
 
 
 def test_create_next_version_stores_comment_and_seeds_info(legacy_project_dir):
@@ -243,8 +249,11 @@ def test_create_next_version_stores_comment_and_seeds_info(legacy_project_dir):
     assert new_entry["comment"] == "Новая редакция документации"
     assert new_entry["status"] == "new"
 
-    # Seed project_info.json создан в папке V2
-    seed_path = legacy_project_dir / "_versions" / "v2" / "project_info.json"
+    container = legacy_project_dir.parent / "M31A(main)"
+    primary = container / "M31A"
+
+    # Seed project_info.json создан в братской папке V2
+    seed_path = container / "M31A V2" / "project_info.json"
     assert seed_path.exists()
     seed = json.loads(seed_path.read_text(encoding="utf-8"))
     assert seed["project_id"] == "M31A"
@@ -252,20 +261,23 @@ def test_create_next_version_stores_comment_and_seeds_info(legacy_project_dir):
     assert seed["version_comment"] == "Новая редакция документации"
     assert seed["pdf_files"] == []  # V1 НЕ копируется
 
-    # Манифест на диске тоже содержит comment
-    manifest = read_project_versions(legacy_project_dir, "M31A")
+    # Манифест контейнера тоже содержит comment
+    manifest = read_project_versions(primary, "M31A")
     v2 = next(v for v in manifest["versions"] if v["version_id"] == "v2")
     assert v2["comment"] == "Новая редакция документации"
 
 
 def test_create_v3_after_v2(legacy_project_dir):
     create_next_version(legacy_project_dir, "M31A", source="manual")
-    create_next_version(legacy_project_dir, "M31A", source="manual")
+    # После промоута папка V1 переехала в контейнер → берём новый primary.
+    container = legacy_project_dir.parent / "M31A(main)"
+    primary = container / "M31A"
+    create_next_version(primary, "M31A", source="manual")
 
-    manifest = read_project_versions(legacy_project_dir, "M31A")
+    manifest = read_project_versions(primary, "M31A")
     assert manifest["latest_version_id"] == "v3"
     assert len(manifest["versions"]) == 3
-    assert (legacy_project_dir / "_versions" / "v3" / "_output").is_dir()
+    assert (container / "M31A V3" / "_output").is_dir()
 
 
 # ─── API endpoint ──────────────────────────────────────────────────────────
@@ -330,10 +342,10 @@ def test_api_ensure_manifest_endpoint(api_client):
     resp = client.post("/api/projects/M31A/versions/ensure-manifest")
     assert resp.status_code == 200
 
+    # Контейнерная модель: для одиночного legacy файл не создаётся.
     manifest_path = projects_dir / "M31A" / VERSIONS_MANIFEST_FILENAME
-    assert manifest_path.exists()
-    on_disk = json.loads(manifest_path.read_text(encoding="utf-8"))
-    assert on_disk["latest_version_id"] == "v1"
+    assert not manifest_path.exists()
+    assert resp.json()["manifest"]["latest_version_id"] == "v1"
 
 
 def test_api_get_project_includes_version_fields(api_client):
@@ -402,10 +414,12 @@ def test_api_create_v2(api_client):
     assert body["latest_version_id"] == "v2"
     assert body["version_count"] == 2
 
-    # ФС: появилась папка V2 с пустым _output
-    v2_dir = projects_dir / "M31A" / "_versions" / "v2"
+    # ФС: контейнер `<база>(main)/` с V1 и братской папкой V2.
+    container = projects_dir / "M31A(main)"
+    v2_dir = container / "M31A V2"
     assert (v2_dir / "_output").is_dir()
     assert (v2_dir / "project_info.json").exists()
+    assert (container / "M31A").is_dir()  # V1 переехал в контейнер
 
     # Манифест содержит обе версии и V2 — latest
     versions_resp = client.get("/api/projects/M31A/versions")

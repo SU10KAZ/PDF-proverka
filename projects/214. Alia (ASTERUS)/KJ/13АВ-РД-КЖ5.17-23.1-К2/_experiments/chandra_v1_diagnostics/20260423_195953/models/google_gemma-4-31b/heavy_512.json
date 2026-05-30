@@ -1,0 +1,33 @@
+{
+  "model": "google/gemma-4-31b",
+  "image_name": "heavy_512",
+  "block_id": "3TFL-TNRF-7G6",
+  "width": 512,
+  "height": 487,
+  "request": "image_smoke",
+  "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_195953/prepared_images/heavy_512/native_crops/block_3TFL-TNRF-7G6_native.png",
+  "image_size_bytes": 68560,
+  "ok": true,
+  "status_code": 200,
+  "elapsed_s": 6.216,
+  "error": null,
+  "response": {
+    "model_instance_id": "google/gemma-4-31b",
+    "output": [
+      {
+        "type": "message",
+        "content": "Тип: Армировочная схема (чертеж армирования) перекрытий 1-го и 2-го этажей.\n\nОсновные элементы: Контур здания с закругленными углами, сетка колонн/опоров, плиты перекрытия, арматурные стержни.\n\nДетали:\n1. Осевые линии (цифры в кругах по периметру).\n2. Маркировки арматуры (например, «$\\phi$» с числовыми значениями).\n3. Размеры пролетов и вылеты плит."
+      }
+    ],
+    "stats": {
+      "input_tokens": 366,
+      "total_output_tokens": 128,
+      "reasoning_output_tokens": 0,
+      "tokens_per_second": 57.6322683070251,
+      "time_to_first_token_seconds": 0.57
+    }
+  },
+  "content": "Тип: Армировочная схема (чертеж армирования) перекрытий 1-го и 2-го этажей.\n\nОсновные элементы: Контур здания с закругленными углами, сетка колонн/опоров, плиты перекрытия, арматурные стержни.\n\nДетали:\n1. Осевые линии (цифры в кругах по периметру).\n2. Маркировки арматуры (например, «$\\phi$» с числовыми значениями).\n3. Размеры пролетов и вылеты плит.",
+  "reasoning": "",
+  "verdict": "pass"
+}

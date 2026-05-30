@@ -1,0 +1,60 @@
+{
+  "block_id": "9XQM-D6XA-UUK",
+  "page": 10,
+  "sheet_no": "5",
+  "file": "block_9XQM-D6XA-UUK.png",
+  "size_kb": 50.7,
+  "ocr_text_len": 1175,
+  "ocr_label": "На фрагменте представлено сечение железобетонной стены 1-Стм250 с указанием арми",
+  "ok": true,
+  "elapsed_ms": 3585,
+  "input_tokens": 1610,
+  "output_tokens": 326,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 717,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3585,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "сечение",
+    "subject": "Сечение железобетонной стены 1-Стм250 с указанием армирования и высотных отметок",
+    "marks": [
+      "1-Стм250",
+      "10-X-13",
+      "8-X-20",
+      "8-пог.м"
+    ],
+    "rebar_specs": [
+      "шаг 250",
+      "шаг 200",
+      "500x200(h)Вар 1"
+    ],
+    "dimensions": [
+      "500",
+      "2x200=400",
+      "50",
+      "30",
+      "250",
+      "з.с. 30"
+    ],
+    "references_on_block": [
+      "см. развертку стены"
+    ],
+    "axes": [],
+    "level_marks": [
+      "Отм. К",
+      "Отм. Г",
+      "Отм. верха плиты"
+    ],
+    "concrete_class": null,
+    "notes": "Изображено сечение стены с указанием высотных отметок (Отм. К, Отм. Г, Отм. верха плиты) и размеров. Горизонтальное усиление ссылается на развертку стены."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

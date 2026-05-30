@@ -1,0 +1,8 @@
+{
+  "ok": false,
+  "model": "qwen/qwen3.6-35b-a3b",
+  "block_id": "A9M4-EJ7R-MKH",
+  "elapsed_s": 137.789,
+  "error_type": "APITimeoutError",
+  "error": "Request timed out."
+}

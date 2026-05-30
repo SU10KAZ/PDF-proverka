@@ -1,0 +1,33 @@
+{
+  "model": "google/gemma-4-26b-a4b",
+  "image_name": "6R7N-7LRD-AUR",
+  "block_id": "6R7N-7LRD-AUR",
+  "width": 1024,
+  "height": 1023,
+  "request": "image_smoke",
+  "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_215555/audit_images/native_crops/block_6R7N-7LRD-AUR_native.png",
+  "image_size_bytes": 97280,
+  "ok": true,
+  "status_code": 200,
+  "elapsed_s": 5.667,
+  "error": null,
+  "response": {
+    "model_instance_id": "google/gemma-4-26b-a4b",
+    "output": [
+      {
+        "type": "message",
+        "content": "Тип схемы: Строительный разрез (сечение 5-5).\n\nОсновные элементы: Вертикальные несущие конструкции (колонны/стойки), горизонтальные перекрытия/балки, фундаментная часть, осевые линии (мм. А, Б, В, Г).\n\nЧитаемые детали:\n1. Габаритные размеры элементов (например, высота 2800 мм, ширина пролета 2450 мм).\n2. Спецификации арматуры/проката (например, 12-Г-17 шаг 100, 8-Х-1 шаг 200)."
+      }
+    ],
+    "stats": {
+      "input_tokens": 350,
+      "total_output_tokens": 141,
+      "reasoning_output_tokens": 0,
+      "tokens_per_second": 188.8746153856458,
+      "time_to_first_token_seconds": 0.28
+    }
+  },
+  "content": "Тип схемы: Строительный разрез (сечение 5-5).\n\nОсновные элементы: Вертикальные несущие конструкции (колонны/стойки), горизонтальные перекрытия/балки, фундаментная часть, осевые линии (мм. А, Б, В, Г).\n\nЧитаемые детали:\n1. Габаритные размеры элементов (например, высота 2800 мм, ширина пролета 2450 мм).\n2. Спецификации арматуры/проката (например, 12-Г-17 шаг 100, 8-Х-1 шаг 200).",
+  "reasoning": "",
+  "verdict": "pass"
+}

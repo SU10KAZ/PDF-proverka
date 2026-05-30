@@ -1,0 +1,15 @@
+# Chandra Vision Model Eval
+
+- Project: `/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf`
+- Blocks: 12
+- Models: `qwen/qwen3.6-35b-a3b`, `qwen/qwen3.6-27b`, `google/gemma-4-31b`
+- Block id source: `/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/pro_b6_r800_big_project_validation/20260422_210243/audit_set_block_ids.json`
+- Native crops: `True`
+
+## Per Model Summary
+
+| Model | OK | JSON OK | Avg KV | Avg relationships | Avg issues | Total elapsed s |
+|---|---:|---:|---:|---:|---:|---:|
+| `qwen/qwen3.6-35b-a3b` | 0/12 | 0/12 | 0.0 | 0.0 | 0.0 | 0.0 |
+| `qwen/qwen3.6-27b` | 0/12 | 0/12 | 0.0 | 0.0 | 0.0 | 0.0 |
+| `google/gemma-4-31b` | 0/12 | 0/12 | 0.0 | 0.0 | 0.0 | 0.0 |

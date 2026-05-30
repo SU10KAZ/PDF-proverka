@@ -527,6 +527,7 @@ def _read_side_descriptions_metrics(session_id: str, pair_id: str, side: str) ->
     """
     out = {
         "block_metrics_available": False,
+        "blocks_total": 0,
         "blocks_done": 0,
         "blocks_partial": 0,
         "blocks_error": 0,
@@ -571,6 +572,7 @@ def _read_side_descriptions_metrics(session_id: str, pair_id: str, side: str) ->
     if not items:
         return out
     out["block_metrics_available"] = True
+    out["blocks_total"] = sum(1 for it in items if isinstance(it, dict))
 
     # Phase 6: подтянуть enrichment_metrics, если они есть в файле.
     enrichment_metrics = data.get("enrichment_metrics") or {}

@@ -1,0 +1,47 @@
+{
+  "block_id": "6PCX-NFHU-6KW",
+  "page": 12,
+  "sheet_no": "7",
+  "file": "block_6PCX-NFHU-6KW.png",
+  "size_kb": 69.2,
+  "ocr_text_len": 948,
+  "ocr_label": "На чертеже представлено сечение 4-4 (6) армирования вертикальной конструкции (ст",
+  "ok": true,
+  "elapsed_ms": 6471,
+  "input_tokens": 2744,
+  "output_tokens": 308,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 677,
+  "enrichment": {
+    "block_type": "сечение",
+    "subject": "Сечение 4-4 (6) армирования вертикальной конструкции (стены) с отметками и размерами",
+    "marks": [
+      "8-Ш-1",
+      "16-Г-3"
+    ],
+    "rebar_specs": [
+      "Ø16 А500С шаг 250",
+      "Ø16 А500С шаг 500x400(h)"
+    ],
+    "dimensions": [
+      "1370",
+      "з.с.30"
+    ],
+    "references_on_block": [
+      "см. лист 5 (опалубка)",
+      "Схема стыковки арматуры внахлест"
+    ],
+    "axes": [
+      "П.3-П.9/П.Л-П.Т"
+    ],
+    "level_marks": [
+      "-0,430",
+      "-1,800"
+    ],
+    "concrete_class": null,
+    "notes": "Изображено сечение стены с указанием шага хомутов и рабочей арматуры. Отмечено, что выпуски показаны условно. Указан защитный слой бетона 30 мм."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

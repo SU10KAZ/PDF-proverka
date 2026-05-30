@@ -1,0 +1,29 @@
+{
+  "cap_usd": 1.0,
+  "spent_usd": 1.51407,
+  "remaining_usd": 0.0,
+  "stopped": false,
+  "stop_reason": "",
+  "events": [
+    {
+      "step_id": "b4",
+      "label": "Audit smoke b4",
+      "predicted_usd": 0.3036,
+      "actual_usd": 0.413526,
+      "approved": true,
+      "remaining_before": 1.0,
+      "remaining_after": 0.586474,
+      "note": "calls=5 elapsed=291.6s"
+    },
+    {
+      "step_id": "b2",
+      "label": "Audit smoke b2",
+      "predicted_usd": 0.3886,
+      "actual_usd": 1.100544,
+      "approved": true,
+      "remaining_before": 0.5865,
+      "remaining_after": 0.0,
+      "note": "calls=10 elapsed=466.9s"
+    }
+  ]
+}

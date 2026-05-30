@@ -1,0 +1,60 @@
+{
+  "block_id": "6MVG-W3LL-VKY",
+  "page": 10,
+  "sheet_no": "5",
+  "file": "block_6MVG-W3LL-VKY.png",
+  "size_kb": 35.2,
+  "ocr_text_len": 1125,
+  "ocr_label": "Фрагмент чертежа армирования стены 5-Стм200 с указанием параметров арматурных ст",
+  "ok": true,
+  "elapsed_ms": 4353,
+  "input_tokens": 1565,
+  "output_tokens": 373,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 769,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 4353,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "сечение",
+    "subject": "Сечение стены 5-Стм200 с армированием и привязками",
+    "marks": [
+      "5-Стм200",
+      "12-X-16",
+      "8-X-21",
+      "12-пог.м"
+    ],
+    "rebar_specs": [
+      "Ø12 шаг 100",
+      "Ø8 шаг 200 (24 шт.)",
+      "Ø12 погонная арматура шаг 100"
+    ],
+    "dimensions": [
+      "500",
+      "24*100",
+      "200",
+      "55",
+      "30",
+      "95",
+      "400x200(h)Вар 1"
+    ],
+    "references_on_block": [
+      "см. развертку стены"
+    ],
+    "axes": [],
+    "level_marks": [
+      "Отм. Г",
+      "Отм. верха плиты"
+    ],
+    "concrete_class": null,
+    "notes": "Изображено сечение стены 5-Стм200 толщиной 200 мм. Указаны вертикальные стержни (Ø12-X-16) и поперечные хомуты/стержни (Ø8-X-21). Привязки арматуры от краев сечения: 30 мм и 55 мм. Высота элемента 500 мм."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

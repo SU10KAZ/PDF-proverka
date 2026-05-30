@@ -1,0 +1,394 @@
+{
+  "stage": "02_block_batch_002",
+  "model": "google/gemini-3.1-pro-preview",
+  "timestamp": "2026-04-18T15:05:14.942512",
+  "input_tokens": 47380,
+  "output_tokens": 5041,
+  "duration_ms": 59747,
+  "result": {
+    "batch_id": 2,
+    "project_id": "13АВ-РД-КЖ5.1-К1К2 (2).pdf",
+    "timestamp": "2023-10-24T12:00:00Z",
+    "block_analyses": [
+      {
+        "block_id": "9J9X-DXHT-6GJ",
+        "page": 11,
+        "sheet": "6",
+        "label": "Условные обозначения",
+        "sheet_type": "general_notes",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "Таблица условных обозначений для строительных чертежей.",
+        "key_values_read": [
+          "Отметка верха плиты: +4,200",
+          "Толщина плиты: t=200",
+          "Защитный слой: з.с.",
+          "Отметка: 0,000"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "G3CG-KTJH-9PM",
+            "role": "legend",
+            "used_for": "summary"
+          }
+        ],
+        "findings": []
+      },
+      {
+        "block_id": "4MQJ-6NXP-4YH",
+        "page": 12,
+        "sheet": "7",
+        "label": "Сечение 1-1 (6)",
+        "sheet_type": "wall_sections",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "Сечение 1-1 (6) армирования железобетонной стены. Показано примыкание к существующей конструкции ЖБ.",
+        "key_values_read": [
+          "Отметки: -1,800, -0,430",
+          "Высота элемента: 1370 мм",
+          "Защитный слой: з.с.30",
+          "Горизонтальная арматура: 16-пог.м шаг 250",
+          "Шпильки: 8-Ш-2 шаг 500х400(h)",
+          "Гнутые детали: 16-Г-2 шаг 250",
+          "Толщина стены: 380 мм, 600 мм"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "97XP-GKMR-4PK",
+            "role": "note",
+            "used_for": "cross_check"
+          }
+        ],
+        "findings": [
+          {
+            "id": "G-001",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "cover_thickness",
+            "finding": "Защитный слой бетона стен на отм. -1,800 составляет 30 мм. Стены расположены ниже уровня земли. Если стены контактируют с грунтом или находятся в условиях повышенной влажности, СП 63.13330.2018 требует защитный слой не менее 40 мм (без дополнительной защиты).",
+            "norm": "СП 63.13330.2018, п. 10.3.2, табл. 10.1",
+            "norm_quote": "Для конструкций, эксплуатируемых в грунте (при отсутствии дополнительных защитных мероприятий), толщина защитного слоя бетона должна быть не менее 40 мм.",
+            "block_evidence": "4MQJ-6NXP-4YH",
+            "value_found": "з.с.30",
+            "highlight_regions": [
+              {
+                "x": 0.35,
+                "y": 0.38,
+                "w": 0.1,
+                "h": 0.05,
+                "label": "Защитный слой з.с.30"
+              },
+              {
+                "x": 0.48,
+                "y": 0.48,
+                "w": 0.1,
+                "h": 0.05,
+                "label": "Защитный слой з.с.30"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "block_id": "7NAU-TNME-3AR",
+        "page": 12,
+        "sheet": "7",
+        "label": "Разрез 2-2 (6)",
+        "sheet_type": "wall_sections",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "Разрез 2-2 (6) железобетонной стены с указанием армирования и выпусков.",
+        "key_values_read": [
+          "Отметки: -1,800, -0,430",
+          "Высота элемента: 1370 мм",
+          "Горизонтальная арматура: 16-пог.м шаг 250",
+          "Шпильки: 8-Ш-2 шаг 500х400(h)",
+          "Гнутые детали: 16-Г-2 шаг 250"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "97XP-GKMR-4PK",
+            "role": "note",
+            "used_for": "cross_check"
+          }
+        ],
+        "findings": []
+      },
+      {
+        "block_id": "MANG-C46A-EH7",
+        "page": 12,
+        "sheet": "7",
+        "label": "Сечение 3-3 (6)",
+        "sheet_type": "wall_sections",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "Сечение 3-3 (6) армирования железобетонной стены с опиранием на фундаментную плиту.",
+        "key_values_read": [
+          "Отметки: -1,800, -0,430",
+          "Высота элемента: 1370 мм",
+          "Горизонтальная арматура: 16-пог.м шаг 250",
+          "Шпильки: 8-Ш-2 шаг 500х400(h)",
+          "Гнутые детали: 16-Г-2 шаг 250"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "97XP-GKMR-4PK",
+            "role": "note",
+            "used_for": "cross_check"
+          }
+        ],
+        "findings": []
+      },
+      {
+        "block_id": "DTGF-MYHX-PPD",
+        "page": 12,
+        "sheet": "7",
+        "label": "Схема армирования криволинейного участка",
+        "sheet_type": "wall_reinforcement",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "Схема армирования криволинейного участка стены с указанием радиусов.",
+        "key_values_read": [
+          "Радиусы: R1000, R1200",
+          "Шпильки: 8-Ш-1 шаг 500х400(h)",
+          "Гнутые детали: 16-Г-30 шаг 200 (6 шт.)",
+          "Гнутые детали: 16-П-2 шаг 200 (6 шт.)",
+          "Горизонтальная арматура: 12-пог.м. (шаг 250) гнуть по месту"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "97XP-GKMR-4PK",
+            "role": "note",
+            "used_for": "cross_check"
+          }
+        ],
+        "findings": []
+      },
+      {
+        "block_id": "7QUU-QDA4-N7D",
+        "page": 12,
+        "sheet": "7",
+        "label": "Сечение 5-5",
+        "sheet_type": "wall_sections",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "Сечение 5-5 армирования вертикальной конструкции с выпусками арматуры.",
+        "key_values_read": [
+          "Отметки: -1,800, -0,430",
+          "Высота элемента: 1370 мм",
+          "Хомуты: 12-Х-1 шаг 400",
+          "Шаг хомутов: 400 мм, 400 мм, 400 мм, 100 мм"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "97XP-GKMR-4PK",
+            "role": "note",
+            "used_for": "cross_check"
+          }
+        ],
+        "findings": []
+      },
+      {
+        "block_id": "9LPD-VX9H-YHK",
+        "page": 12,
+        "sheet": "7",
+        "label": "Узел А/6",
+        "sheet_type": "sections_cuts",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "Узел армирования круглой колонны (выпуски арматурные) с указанием защитного слоя.",
+        "key_values_read": [
+          "Хомуты: 12-Х-1 шаг 400",
+          "Защитный слой: 25 мм",
+          "Размеры: 155 мм, 190 мм, 300 мм",
+          "Угол: 45°"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "97XP-GKMR-4PK",
+            "role": "note",
+            "used_for": "cross_check"
+          }
+        ],
+        "findings": [
+          {
+            "id": "G-002",
+            "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+            "category": "cover_thickness",
+            "finding": "На узле А/6 показан защитный слой 25 мм для кольцевого арматурного каркаса. Для колонн, расположенных в пристройке между высотными корпусами, необходимо проверить требуемый предел огнестойкости. При REI 120 минимальный защитный слой может составлять 35-40 мм.",
+            "norm": "СП 468.1325800.2019; СП 2.13130.2020, табл. 6.8",
+            "norm_quote": null,
+            "block_evidence": "9LPD-VX9H-YHK",
+            "value_found": "25",
+            "highlight_regions": [
+              {
+                "x": 0.4,
+                "y": 0.45,
+                "w": 0.05,
+                "h": 0.05,
+                "label": "Защитный слой 25 мм"
+              },
+              {
+                "x": 0.6,
+                "y": 0.4,
+                "w": 0.05,
+                "h": 0.05,
+                "label": "Защитный слой 25 мм"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "block_id": "6PCX-NFHU-6KW",
+        "page": 12,
+        "sheet": "7",
+        "label": "Сечение 4-4 (6)",
+        "sheet_type": "wall_sections",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "Сечение 4-4 (6) армирования вертикальной конструкции (стены).",
+        "key_values_read": [
+          "Отметки: -1,800, -0,430",
+          "Высота элемента: 1370 мм",
+          "Защитный слой: з.с.30",
+          "Горизонтальная арматура: 16-пог.м шаг 250",
+          "Шпильки: 8-Ш-1 шаг 500х400(h)",
+          "Гнутые детали: 16-Г-3 шаг 250"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "97XP-GKMR-4PK",
+            "role": "note",
+            "used_for": "cross_check"
+          }
+        ],
+        "findings": [
+          {
+            "id": "G-003",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "cover_thickness",
+            "finding": "Защитный слой бетона стен на отм. -1,800 составляет 30 мм. Стены расположены ниже уровня земли. Если стены контактируют с грунтом или находятся в условиях повышенной влажности, СП 63.13330.2018 требует защитный слой не менее 40 мм (без дополнительной защиты).",
+            "norm": "СП 63.13330.2018, п. 10.3.2, табл. 10.1",
+            "norm_quote": "Для конструкций, эксплуатируемых в грунте (при отсутствии дополнительных защитных мероприятий), толщина защитного слоя бетона должна быть не менее 40 мм.",
+            "block_evidence": "6PCX-NFHU-6KW",
+            "value_found": "з.с.30",
+            "highlight_regions": [
+              {
+                "x": 0.48,
+                "y": 0.55,
+                "w": 0.08,
+                "h": 0.05,
+                "label": "Защитный слой з.с.30"
+              },
+              {
+                "x": 0.6,
+                "y": 0.55,
+                "w": 0.08,
+                "h": 0.05,
+                "label": "Защитный слой з.с.30"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "block_id": "46LP-7CN7-GG6",
+        "page": 13,
+        "sheet": "8",
+        "label": "Ведомость деталей (часть 1)",
+        "sheet_type": "specification",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "Ведомость деталей с геометрическими параметрами для позиций 16-Г-2 – 16-Г-19.",
+        "key_values_read": [
+          "Поз. 16-Г-2: a=900; b=1540; dоп=80",
+          "Поз. 16-Г-3: a=600; b=1540; dоп=80",
+          "Поз. 16-Г-4: a=1045; b=250; α=55°; dоп=80",
+          "Поз. 16-Г-19: a=230; b=1100; c=80; d=220; α=110°; dоп=80"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "7U9F-NVLC-PPF",
+            "role": "table",
+            "used_for": "value_extraction"
+          }
+        ],
+        "findings": []
+      },
+      {
+        "block_id": "TULW-YCYU-YVQ",
+        "page": 13,
+        "sheet": "8",
+        "label": "Ведомость деталей (часть 2)",
+        "sheet_type": "specification",
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "summary": "Ведомость деталей с геометрическими параметрами для позиций 16-Г-20 – 8-Ш-2.",
+        "key_values_read": [
+          "Поз. 16-Г-20: a=1065; b=245; α=70°; dоп=80",
+          "Поз. 16-Г-27: a=580; b=825; α=26°; dоп=80",
+          "Поз. 16-Г-30: a=725; b=240; α=80°; dоп=80",
+          "Поз. 16-П-1: a=800; b=240; c=800; dоп=80",
+          "Поз. 16-П-2: a=830; b=225; c=830; d=245; e=65; dоп=80",
+          "Поз. 12-Х-1: a=500; dоп=515",
+          "Поз. 8-Ш-1: a=240; b=50; dоп=20",
+          "Поз. 8-Ш-2: a=540; b=50; dоп=20"
+        ],
+        "evidence_text_refs": [
+          {
+            "text_block_id": "QUDJ-QRT6-KUU",
+            "role": "table",
+            "used_for": "value_extraction"
+          }
+        ],
+        "findings": [
+          {
+            "id": "G-004",
+            "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+            "category": "documentation",
+            "finding": "В ведомости деталей нумерация позиций гнутых деталей имеет пропуск: после 16-Г-27 следует 16-Г-30 (позиции 16-Г-28, 16-Г-29 отсутствуют).",
+            "norm": "ГОСТ 21.501-2018, п. 5.7.6",
+            "norm_quote": null,
+            "block_evidence": "TULW-YCYU-YVQ",
+            "value_found": "16-Г-27, 16-Г-30",
+            "highlight_regions": [
+              {
+                "x": 0.05,
+                "y": 0.55,
+                "w": 0.2,
+                "h": 0.1,
+                "label": "Пропуск позиций между 16-Г-27 и 16-Г-30"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "items_verified_from_stage_01": [
+      {
+        "finding_id": "T-006",
+        "block_id": "4MQJ-6NXP-4YH",
+        "confirmed": true,
+        "evidence": "На сечении 1-1 указан защитный слой з.с.30"
+      },
+      {
+        "finding_id": "T-006",
+        "block_id": "6PCX-NFHU-6KW",
+        "confirmed": true,
+        "evidence": "На сечении 4-4 указан защитный слой з.с.30"
+      },
+      {
+        "finding_id": "T-007",
+        "block_id": "9LPD-VX9H-YHK",
+        "confirmed": true,
+        "evidence": "На узле А/6 указан защитный слой 25 мм"
+      },
+      {
+        "finding_id": "T-012",
+        "block_id": "TULW-YCYU-YVQ",
+        "confirmed": true,
+        "evidence": "В ведомости деталей после позиции 16-Г-27 идет 16-Г-30"
+      }
+    ]
+  }
+}

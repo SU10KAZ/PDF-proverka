@@ -634,6 +634,20 @@ def aggregate_job_progress(job: dict) -> dict:
     remaining_pairs = total - finished_with_progress
     eta_sec = int(avg * remaining_pairs) if avg and remaining_pairs > 0 else 0
 
+    # Live per-chunk прогресс fallback'а для текущей пары (если она прямо
+    # сейчас сравнивается через evidence_first_s2_fallback). Даёт UI «чанк
+    # k / N · осталось ~m мин» вместо статичного `comparing`. Read-only.
+    current_pair_fallback = None
+    if current_pair_id and (current_status or "") in ("running", "comparing", "enriching"):
+        sid = (job or {}).get("session_id")
+        if sid:
+            try:
+                fb = ec_mod.read_fallback_progress(sid, current_pair_id)
+            except Exception:  # noqa: BLE001
+                fb = None
+            if fb and fb.get("total_chunks"):
+                current_pair_fallback = fb
+
     return {
         "total_pairs": total,
         "done": counts["done"],
@@ -650,6 +664,7 @@ def aggregate_job_progress(job: dict) -> dict:
         "current_pair_id": current_pair_id,
         "current_pair_status": current_status,
         "current_pair_index": current_idx_human,
+        "current_pair_fallback": current_pair_fallback,
         "eta_sec": eta_sec,
     }
 

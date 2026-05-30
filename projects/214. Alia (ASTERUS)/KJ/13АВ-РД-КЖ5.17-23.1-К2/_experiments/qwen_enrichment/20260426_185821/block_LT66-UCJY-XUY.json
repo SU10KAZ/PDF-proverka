@@ -1,0 +1,55 @@
+{
+  "block_id": "LT66-UCJY-XUY",
+  "page": 15,
+  "sheet_no": "10",
+  "file": "block_LT66-UCJY-XUY.png",
+  "size_kb": 24.8,
+  "ocr_text_len": 934,
+  "ocr_label": "Схема установки горизонтальных П-образных элементов в арматурном каркасе стены.",
+  "ok": true,
+  "elapsed_ms": 3826,
+  "input_tokens": 1386,
+  "output_tokens": 306,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 669,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3826,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "схема_расположения",
+    "subject": "Схема установки горизонтальных П-образных элементов в арматурном каркасе стен 17-23 этажа",
+    "marks": [
+      "16-Г-1",
+      "16-пог.м"
+    ],
+    "rebar_specs": [
+      "Ø16 А500С шаг 200",
+      "Ø10 А500С",
+      "Ø12 А500С"
+    ],
+    "dimensions": [
+      "16-5850",
+      "t=200"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 2",
+      "см. лист 3",
+      "см. лист 11"
+    ],
+    "axes": [],
+    "level_marks": [
+      "+4,200"
+    ],
+    "concrete_class": "B40",
+    "notes": "Блок содержит общие указания по армированию стен 43-Стм...52-Стм и таблицу длин нахлеста для арматуры A500C. Приведена маркировка позиций арматуры."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

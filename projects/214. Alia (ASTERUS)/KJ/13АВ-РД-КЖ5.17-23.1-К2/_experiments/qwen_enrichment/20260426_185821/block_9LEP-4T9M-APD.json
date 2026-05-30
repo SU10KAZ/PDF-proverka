@@ -1,0 +1,48 @@
+{
+  "block_id": "9LEP-4T9M-APD",
+  "page": 10,
+  "sheet_no": "5",
+  "file": "block_9LEP-4T9M-APD.png",
+  "size_kb": 17.7,
+  "ocr_text_len": 641,
+  "ocr_label": "Графическая схема отгиба арматурного стержня с указанием геометрических параметр",
+  "ok": true,
+  "elapsed_ms": 3298,
+  "input_tokens": 1584,
+  "output_tokens": 221,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 616,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3298,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "схема",
+    "subject": "Графическая схема отгиба арматурного стержня с указанием геометрических параметров",
+    "marks": [],
+    "rebar_specs": [],
+    "dimensions": [
+      "≥6d",
+      "a"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 2",
+      "см. лист 3",
+      "см. лист 11"
+    ],
+    "axes": [],
+    "level_marks": [
+      "+4,200"
+    ],
+    "concrete_class": null,
+    "notes": "Схема иллюстрирует геометрические параметры отгиба арматурного стержня (длина прямого участка ≥6d, параметр a). В блоке указаны высотные отметки и толщина плиты t=200, а также ссылки на общие указания и спецификации."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

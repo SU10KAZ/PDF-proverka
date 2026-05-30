@@ -1,0 +1,8 @@
+{
+  "ok": false,
+  "model": "qwen/qwen3.6-27b",
+  "block_id": "3TFL-TNRF-7G6",
+  "elapsed_s": 81.904,
+  "error_type": "BadRequestError",
+  "error": "Error code: 400 - {'error': 'Invalid image detected at index 0 '}"
+}

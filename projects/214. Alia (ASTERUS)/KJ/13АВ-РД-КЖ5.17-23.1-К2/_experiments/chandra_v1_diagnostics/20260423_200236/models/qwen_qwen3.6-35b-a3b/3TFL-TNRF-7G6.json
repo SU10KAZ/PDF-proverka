@@ -1,0 +1,33 @@
+{
+  "model": "qwen/qwen3.6-35b-a3b",
+  "image_name": "3TFL-TNRF-7G6",
+  "block_id": "3TFL-TNRF-7G6",
+  "width": 1024,
+  "height": 974,
+  "request": "image_smoke",
+  "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_200236/audit_images/native_crops/block_3TFL-TNRF-7G6_native.png",
+  "image_size_bytes": 183434,
+  "ok": true,
+  "status_code": 200,
+  "elapsed_s": 2.909,
+  "error": null,
+  "response": {
+    "model_instance_id": "qwen/qwen3.6-35b-a3b",
+    "output": [
+      {
+        "type": "message",
+        "content": "Тип схемы: Маркировочная схема вертикальных конструкций 17–23 этажа.\n\nОсновные элементы: Вертикальные конструкции (колонны, стены, пилоны) с указанием их марок и высотных отметок.\n\nЧитаемые детали:\n- Марки колонн/стен: «44-См200», «27-См200», «12-См200» и др.\n- Высотные отметки: «+8.700», «+11.500», «+14.300» и т.д.\n- Оси здания: обозначены цифрами (11, 12, 13…28) и буквами (A, B, C…)."
+      }
+    ],
+    "stats": {
+      "input_tokens": 1053,
+      "total_output_tokens": 174,
+      "reasoning_output_tokens": 0,
+      "tokens_per_second": 229.5914328088796,
+      "time_to_first_token_seconds": 0.429
+    }
+  },
+  "content": "Тип схемы: Маркировочная схема вертикальных конструкций 17–23 этажа.\n\nОсновные элементы: Вертикальные конструкции (колонны, стены, пилоны) с указанием их марок и высотных отметок.\n\nЧитаемые детали:\n- Марки колонн/стен: «44-См200», «27-См200», «12-См200» и др.\n- Высотные отметки: «+8.700», «+11.500», «+14.300» и т.д.\n- Оси здания: обозначены цифрами (11, 12, 13…28) и буквами (A, B, C…).",
+  "reasoning": "",
+  "verdict": "pass"
+}

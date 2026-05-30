@@ -1,0 +1,47 @@
+{
+  "block_id": "6XXG-CYEA-3V6",
+  "page": 20,
+  "sheet_no": "15",
+  "file": "block_6XXG-CYEA-3V6.png",
+  "size_kb": 27.9,
+  "ocr_text_len": 789,
+  "ocr_label": "Фрагмент схемы расположения закладных деталей ЭОМ с указанием осей и размеров.",
+  "ok": true,
+  "elapsed_ms": 3736,
+  "input_tokens": 1774,
+  "output_tokens": 210,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 529,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3736,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "схема_расположения",
+    "subject": "Схема расположения закладных деталей ЭОМ в вертикальных конструкциях 17-23 этажа",
+    "marks": [],
+    "rebar_specs": [],
+    "dimensions": [
+      "3450",
+      "710"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "раздел ЭОМ"
+    ],
+    "axes": [
+      "2Д",
+      "2Е"
+    ],
+    "level_marks": [],
+    "concrete_class": null,
+    "notes": "Схема показывает привязку закладных деталей (коробки, трубы ПНД) к осям 2Д и 2Е. Требуется сверка с разделом ЭОМ для уточнения отметок и привязок."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

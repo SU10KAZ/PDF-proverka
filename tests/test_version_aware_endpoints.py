@@ -256,19 +256,19 @@ def test_output_dir_v1_is_project_root(client, projects_dir_v1_with_data):
 
 
 def test_output_dir_v2_is_versions_subdir(client, projects_dir_v1_with_data):
-    """output_dir для V2 = project_dir/_versions/v2/_output."""
+    """output_dir для V2 = контейнер/<база> V2/_output."""
     c, projects_dir = client
     c.post("/api/projects/M31A/versions", json={"comment": "V2"})
 
     from backend.app.services.common import version_service
     ctx = version_service.resolve_project_version_context("M31A")  # latest=v2
-    expected = projects_dir_v1_with_data / "M31A" / "_versions" / "v2" / "_output"
+    expected = projects_dir_v1_with_data / "M31A(main)" / "M31A V2" / "_output"
     assert ctx["output_dir"] == expected
     assert ctx["version_id"] == "v2"
 
-    # явный v1 даёт корень
+    # явный v1 даёт папку V1 внутри контейнера
     ctx_v1 = version_service.resolve_project_version_context("M31A", "v1")
-    assert ctx_v1["output_dir"] == projects_dir_v1_with_data / "M31A" / "_output"
+    assert ctx_v1["output_dir"] == projects_dir_v1_with_data / "M31A(main)" / "M31A" / "_output"
 
 
 def test_output_dir_unknown_raises(client):

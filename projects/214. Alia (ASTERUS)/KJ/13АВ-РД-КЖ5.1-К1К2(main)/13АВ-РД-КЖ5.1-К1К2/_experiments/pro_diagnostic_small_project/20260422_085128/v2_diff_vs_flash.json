@@ -1,0 +1,226 @@
+{
+  "summary": {
+    "engine": "Pro (gemini-3.1-pro-preview)",
+    "escalation_set_size": 17,
+    "improved": 9,
+    "unchanged": 2,
+    "degraded": 6,
+    "missing_in_engine": 0,
+    "flash_total_findings_on_set": 21,
+    "engine_total_findings": 14,
+    "added_findings_vs_flash": -7,
+    "improved_block_ids": [
+      "4WTD-JFKA-JLE",
+      "RELE-MX3A-MEN",
+      "9GNP-D7CE-RYM",
+      "43L7-P9UL-VYD",
+      "4MQJ-6NXP-4YH",
+      "DTGF-MYHX-PPD",
+      "TULW-YCYU-YVQ",
+      "VGGJ-3ULF-TLV",
+      "7QUU-QDA4-N7D"
+    ],
+    "degraded_block_ids": [
+      "4UTW-PPGP-VEN",
+      "6DRC-7KQL-9TJ",
+      "9J9X-DXHT-6GJ",
+      "7NAU-TNME-3AR",
+      "9LPD-VX9H-YHK",
+      "6PCX-NFHU-6KW"
+    ],
+    "missing_block_ids": [],
+    "unchanged_block_ids": [
+      "4JYF-HEKU-VVV",
+      "46LP-7CN7-GG6"
+    ]
+  },
+  "per_block_diff": [
+    {
+      "block_id": "4UTW-PPGP-VEN",
+      "status": "degraded",
+      "flash_findings": 3,
+      "engine_findings": 1,
+      "delta_findings": -2,
+      "flash_kv": 28,
+      "engine_kv": 20,
+      "empty_response_detected": false,
+      "retry_recovered": false
+    },
+    {
+      "block_id": "6DRC-7KQL-9TJ",
+      "status": "degraded",
+      "flash_findings": 2,
+      "engine_findings": 1,
+      "delta_findings": -1,
+      "flash_kv": 30,
+      "engine_kv": 8,
+      "empty_response_detected": false,
+      "retry_recovered": false
+    },
+    {
+      "block_id": "4WTD-JFKA-JLE",
+      "status": "improved",
+      "flash_findings": 0,
+      "engine_findings": 1,
+      "delta_findings": 1,
+      "flash_kv": 4638,
+      "engine_kv": 18,
+      "empty_response_detected": false,
+      "retry_recovered": false
+    },
+    {
+      "block_id": "4JYF-HEKU-VVV",
+      "status": "unchanged",
+      "flash_findings": 0,
+      "engine_findings": 0,
+      "delta_findings": 0,
+      "flash_kv": 18,
+      "engine_kv": 18,
+      "empty_response_detected": false,
+      "retry_recovered": false
+    },
+    {
+      "block_id": "RELE-MX3A-MEN",
+      "status": "improved",
+      "flash_findings": 0,
+      "engine_findings": 1,
+      "delta_findings": 1,
+      "flash_kv": 185,
+      "engine_kv": 14,
+      "empty_response_detected": false,
+      "retry_recovered": false
+    },
+    {
+      "block_id": "46LP-7CN7-GG6",
+      "status": "unchanged",
+      "flash_findings": 0,
+      "engine_findings": 0,
+      "delta_findings": 0,
+      "flash_kv": 108,
+      "engine_kv": 106,
+      "empty_response_detected": false,
+      "retry_recovered": false
+    },
+    {
+      "block_id": "9J9X-DXHT-6GJ",
+      "status": "degraded",
+      "flash_findings": 6,
+      "engine_findings": 0,
+      "delta_findings": -6,
+      "flash_kv": 44,
+      "engine_kv": 4,
+      "empty_response_detected": false,
+      "retry_recovered": false
+    },
+    {
+      "block_id": "7NAU-TNME-3AR",
+      "status": "degraded",
+      "flash_findings": 3,
+      "engine_findings": 1,
+      "delta_findings": -2,
+      "flash_kv": 11,
+      "engine_kv": 10,
+      "empty_response_detected": false,
+      "retry_recovered": false
+    },
+    {
+      "block_id": "9LPD-VX9H-YHK",
+      "status": "degraded",
+      "flash_findings": 3,
+      "engine_findings": 1,
+      "delta_findings": -2,
+      "flash_kv": 13,
+      "engine_kv": 9,
+      "empty_response_detected": false,
+      "retry_recovered": false
+    },
+    {
+      "block_id": "6PCX-NFHU-6KW",
+      "status": "degraded",
+      "flash_findings": 4,
+      "engine_findings": 1,
+      "delta_findings": -3,
+      "flash_kv": 19,
+      "engine_kv": 11,
+      "empty_response_detected": false,
+      "retry_recovered": false
+    },
+    {
+      "block_id": "9GNP-D7CE-RYM",
+      "status": "improved",
+      "flash_findings": 0,
+      "engine_findings": 1,
+      "delta_findings": 1,
+      "flash_kv": 12,
+      "engine_kv": 12,
+      "empty_response_detected": false,
+      "retry_recovered": false
+    },
+    {
+      "block_id": "43L7-P9UL-VYD",
+      "status": "improved",
+      "flash_findings": 0,
+      "engine_findings": 1,
+      "delta_findings": 1,
+      "flash_kv": 19,
+      "engine_kv": 12,
+      "empty_response_detected": false,
+      "retry_recovered": false
+    },
+    {
+      "block_id": "4MQJ-6NXP-4YH",
+      "status": "improved",
+      "flash_findings": 0,
+      "engine_findings": 1,
+      "delta_findings": 1,
+      "flash_kv": 17,
+      "engine_kv": 13,
+      "empty_response_detected": false,
+      "retry_recovered": false
+    },
+    {
+      "block_id": "DTGF-MYHX-PPD",
+      "status": "improved",
+      "flash_findings": 0,
+      "engine_findings": 1,
+      "delta_findings": 1,
+      "flash_kv": 19,
+      "engine_kv": 10,
+      "empty_response_detected": false,
+      "retry_recovered": false
+    },
+    {
+      "block_id": "TULW-YCYU-YVQ",
+      "status": "improved",
+      "flash_findings": 0,
+      "engine_findings": 1,
+      "delta_findings": 1,
+      "flash_kv": 31,
+      "engine_kv": 28,
+      "empty_response_detected": false,
+      "retry_recovered": false
+    },
+    {
+      "block_id": "VGGJ-3ULF-TLV",
+      "status": "improved",
+      "flash_findings": 0,
+      "engine_findings": 1,
+      "delta_findings": 1,
+      "flash_kv": 5,
+      "engine_kv": 7,
+      "empty_response_detected": false,
+      "retry_recovered": false
+    },
+    {
+      "block_id": "7QUU-QDA4-N7D",
+      "status": "improved",
+      "flash_findings": 0,
+      "engine_findings": 1,
+      "delta_findings": 1,
+      "flash_kv": 10,
+      "engine_kv": 9,
+      "empty_response_detected": false,
+      "retry_recovered": false
+    }
+  ]
+}

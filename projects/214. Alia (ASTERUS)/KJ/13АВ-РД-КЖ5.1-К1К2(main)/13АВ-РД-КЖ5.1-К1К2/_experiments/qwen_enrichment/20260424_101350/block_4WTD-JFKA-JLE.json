@@ -1,0 +1,33 @@
+{
+  "block_id": "4WTD-JFKA-JLE",
+  "page": 10,
+  "sheet_no": "5",
+  "file": "block_4WTD-JFKA-JLE.png",
+  "size_kb": 1949.3,
+  "ocr_text_len": 1115,
+  "ocr_label": "Опалубочный план вертикальных конструкций пристройки на отметке -1,800 в осях П.",
+  "ok": false,
+  "elapsed_ms": 108509,
+  "input_tokens": 4912,
+  "output_tokens": 2048,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 3249,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 500,
+      "elapsed_ms": 68958,
+      "raw_preview": null
+    },
+    {
+      "scale": 0.6,
+      "status": 200,
+      "elapsed_ms": 39551,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": null,
+  "raw_text_preview": "{\n  \"block_type\": \"план_опалубки\",\n  \"subject\": \"План опалубки вертикальных конструкций пристройки на отметке -1,800 в осях П.3-П.9/П.Л-П.Т\",\n  \"marks\": [\n    \"no 2\",\n    \"no 3\",\n    \"1\"\n  ],\n  \"rebar_specs\": [],\n  \"dimensions\": [\n    \"t=200\",\n    \"t=400\",\n    \"R18070\",\n    \"R17770\",\n    \"R17450\",\n    \"R17750\",\n    \"R17950\",\n    \"R18250\",\n    \"R17980\",\n    \"R18280\",\n    \"R1250\",\n    \"R950\",\n    \"R",
+  "parse_error": "Expecting value: line 279 column 11 (char 3249)"
+}

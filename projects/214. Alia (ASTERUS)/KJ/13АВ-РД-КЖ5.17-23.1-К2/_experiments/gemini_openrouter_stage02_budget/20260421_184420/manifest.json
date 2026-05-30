@@ -1,0 +1,28 @@
+{
+  "timestamp": "20260421_184420",
+  "pdf": "13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+  "project_id": "214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+  "project_dir": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+  "total_blocks": 215,
+  "subset_file": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/block_batch_ab/20260420_221123/fixed_subset_block_ids.json",
+  "subset_size": 60,
+  "budget_cap_usd": 6.0,
+  "batch_profiles": [
+    "b8",
+    "b10",
+    "b12"
+  ],
+  "parallelism_values": [
+    2,
+    3
+  ],
+  "fallback_sample_size": 15,
+  "byte_cap_kb": 9000,
+  "no_pro_full": true,
+  "skip_model_phase": true,
+  "dry_run": false,
+  "models": {
+    "mainline_under_test": "google/gemini-2.5-flash",
+    "fallback_reference": "google/gemini-3.1-pro-preview"
+  }
+}

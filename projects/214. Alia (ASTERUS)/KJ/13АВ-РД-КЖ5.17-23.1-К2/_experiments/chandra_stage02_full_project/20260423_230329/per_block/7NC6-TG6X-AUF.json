@@ -1,0 +1,100 @@
+{
+  "baseline": {
+    "block_id": "7NC6-TG6X-AUF",
+    "page": 7,
+    "sheet": "2",
+    "label": "Разрез 8-8",
+    "sheet_type": "sections_cuts",
+    "unreadable_text": false,
+    "unreadable_details": null,
+    "summary": "Вертикальный разрез 8-8 стены. Показаны высотные отметки (А, Б) и толщины элементов.",
+    "key_values_read": [
+      "Высота стены между отм. А и отм. Б — 3100 мм",
+      "Толщина перекрытия над отм. Б — 200 мм",
+      "Толщина перекрытия под отм. А — 200 мм"
+    ],
+    "evidence_text_refs": [
+      {
+        "text_block_id": "9YVR-UXHK-FTX",
+        "role": "table",
+        "used_for": "cross_check"
+      }
+    ],
+    "findings": [],
+    "selected_text_block_ids": [
+      "4KLA-VHYN-76X"
+    ]
+  },
+  "candidate_raw": {
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_stage02_full_project/20260423_230329/prepared/native_crops/block_7NC6-TG6X-AUF_native.png",
+    "image_size_bytes": 23395,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 2.746,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-35b-a3b",
+      "output": [
+        {
+          "type": "message",
+          "content": "{\n  \"block_id\": \"7NC6-TG6X-AUF\",\n  \"page\": 7,\n  \"label\": \"Разрез 8-8\",\n  \"sheet_type\": \"section\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлен вертикальный разрез 8-8, иллюстрирующий конструкцию стены или колонны. Основные размеры включают общую высоту 3100 мм и толщину элемента 200 мм. Приведены выноски на отметки уровня А и Б.\",\n  \"key_values_read\": [\n    \"Разрез 8-8\",\n    \"Высота 3100\",\n    \"Толщина 200\",\n    \"Отм. Б\",\n    \"Отм. А\"\n  ],\n  \"findings\": []\n}"
+        }
+      ],
+      "stats": {
+        "input_tokens": 1511,
+        "total_output_tokens": 199,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 221.86001190685894,
+        "time_to_first_token_seconds": 0.441
+      }
+    },
+    "content": "{\n  \"block_id\": \"7NC6-TG6X-AUF\",\n  \"page\": 7,\n  \"label\": \"Разрез 8-8\",\n  \"sheet_type\": \"section\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлен вертикальный разрез 8-8, иллюстрирующий конструкцию стены или колонны. Основные размеры включают общую высоту 3100 мм и толщину элемента 200 мм. Приведены выноски на отметки уровня А и Б.\",\n  \"key_values_read\": [\n    \"Разрез 8-8\",\n    \"Высота 3100\",\n    \"Толщина 200\",\n    \"Отм. Б\",\n    \"Отм. А\"\n  ],\n  \"findings\": []\n}",
+    "reasoning": "",
+    "parsed": {
+      "block_id": "7NC6-TG6X-AUF",
+      "page": 7,
+      "label": "Разрез 8-8",
+      "sheet_type": "section",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "На чертеже представлен вертикальный разрез 8-8, иллюстрирующий конструкцию стены или колонны. Основные размеры включают общую высоту 3100 мм и толщину элемента 200 мм. Приведены выноски на отметки уровня А и Б.",
+      "key_values_read": [
+        "Разрез 8-8",
+        "Высота 3100",
+        "Толщина 200",
+        "Отм. Б",
+        "Отм. А"
+      ],
+      "findings": []
+    },
+    "parse_error": null,
+    "model": "qwen/qwen3.6-35b-a3b",
+    "block_id": "7NC6-TG6X-AUF",
+    "width": 381,
+    "height": 1024,
+    "run_index": 38
+  },
+  "compare": {
+    "block_id": "7NC6-TG6X-AUF",
+    "page": 7,
+    "label_source": "На чертеже представлен разрез 8-8 с указанием высотных отметок и размеров констр",
+    "baseline_present": true,
+    "baseline_label": "Разрез 8-8",
+    "candidate_label": "Разрез 8-8",
+    "baseline_findings": 0,
+    "candidate_findings": 0,
+    "baseline_kv": 3,
+    "candidate_kv": 5,
+    "elapsed_s": 2.746,
+    "parse_ok": true,
+    "verdict": "likely_improved",
+    "notes": [
+      "candidate preserved findings presence and captured more key values"
+    ],
+    "baseline_summary": "Вертикальный разрез 8-8 стены. Показаны высотные отметки (А, Б) и толщины элементов.",
+    "candidate_summary": "На чертеже представлен вертикальный разрез 8-8, иллюстрирующий конструкцию стены или колонны. Основные размеры включают общую высоту 3100 мм и толщину элемента 200 мм. Приведены выноски на отметки уровня А и Б.",
+    "candidate_sheet_type": "section",
+    "candidate_unreadable_text": false
+  }
+}

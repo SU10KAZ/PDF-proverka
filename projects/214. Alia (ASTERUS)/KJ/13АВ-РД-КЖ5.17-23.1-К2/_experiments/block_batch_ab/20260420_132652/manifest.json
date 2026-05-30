@@ -1,0 +1,20 @@
+{
+  "timestamp": "20260420_132652",
+  "pdf": "13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+  "project_id": "214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+  "project_dir": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+  "model": "claude-opus-4-7",
+  "mode": "dry_run",
+  "profiles": [
+    "conservative",
+    "baseline",
+    "aggressive"
+  ],
+  "parallelism_levels": [
+    1,
+    2,
+    3
+  ],
+  "hard_cap": 12,
+  "reference_block_count": 15
+}

@@ -1,0 +1,268 @@
+{
+  "timestamp": "20260425_062739",
+  "model": "claude-sonnet-4-6",
+  "extended_prompt": true,
+  "parallelism": 2,
+  "blocks_total": 25,
+  "blocks_ok": 24,
+  "wall_clock_s": 1719.5,
+  "totals": {
+    "input_tokens": 102,
+    "output_tokens": 184228,
+    "findings": 91,
+    "estimated_cost_usd_or_parity": 4.6062,
+    "cli_reported_cost_usd_sum": 6.3628
+  },
+  "blocks": [
+    {
+      "block_id": "VGGJ-3ULF-TLV",
+      "page": 7,
+      "ok": true,
+      "findings_count": 4,
+      "input_tokens": 6,
+      "output_tokens": 5166,
+      "elapsed_ms": 90089,
+      "error": null
+    },
+    {
+      "block_id": "4UTW-PPGP-VEN",
+      "page": 7,
+      "ok": true,
+      "findings_count": 4,
+      "input_tokens": 4,
+      "output_tokens": 5027,
+      "elapsed_ms": 88842,
+      "error": null
+    },
+    {
+      "block_id": "6DRC-7KQL-9TJ",
+      "page": 8,
+      "ok": false,
+      "findings_count": 0,
+      "input_tokens": 4,
+      "output_tokens": 4503,
+      "elapsed_ms": 72630,
+      "error": null
+    },
+    {
+      "block_id": "9GNP-D7CE-RYM",
+      "page": 8,
+      "ok": true,
+      "findings_count": 4,
+      "input_tokens": 4,
+      "output_tokens": 6883,
+      "elapsed_ms": 129786,
+      "error": null
+    },
+    {
+      "block_id": "7KCK-7PJC-U3E",
+      "page": 8,
+      "ok": true,
+      "findings_count": 4,
+      "input_tokens": 4,
+      "output_tokens": 5147,
+      "elapsed_ms": 95427,
+      "error": null
+    },
+    {
+      "block_id": "4MAU-AT9Y-QRP",
+      "page": 8,
+      "ok": true,
+      "findings_count": 3,
+      "input_tokens": 4,
+      "output_tokens": 11410,
+      "elapsed_ms": 212585,
+      "error": null
+    },
+    {
+      "block_id": "7MAJ-EMC4-KNJ",
+      "page": 9,
+      "ok": true,
+      "findings_count": 3,
+      "input_tokens": 4,
+      "output_tokens": 10098,
+      "elapsed_ms": 192160,
+      "error": null
+    },
+    {
+      "block_id": "4WTD-JFKA-JLE",
+      "page": 10,
+      "ok": true,
+      "findings_count": 4,
+      "input_tokens": 4,
+      "output_tokens": 7706,
+      "elapsed_ms": 147439,
+      "error": null
+    },
+    {
+      "block_id": "43L7-P9UL-VYD",
+      "page": 10,
+      "ok": true,
+      "findings_count": 3,
+      "input_tokens": 4,
+      "output_tokens": 6334,
+      "elapsed_ms": 102608,
+      "error": null
+    },
+    {
+      "block_id": "7RD6-7GYX-MVT",
+      "page": 10,
+      "ok": true,
+      "findings_count": 4,
+      "input_tokens": 4,
+      "output_tokens": 7332,
+      "elapsed_ms": 117803,
+      "error": null
+    },
+    {
+      "block_id": "HJ7G-VWTF-CGV",
+      "page": 10,
+      "ok": true,
+      "findings_count": 4,
+      "input_tokens": 4,
+      "output_tokens": 5009,
+      "elapsed_ms": 96398,
+      "error": null
+    },
+    {
+      "block_id": "D9MX-LMX7-6QX",
+      "page": 10,
+      "ok": true,
+      "findings_count": 4,
+      "input_tokens": 4,
+      "output_tokens": 5181,
+      "elapsed_ms": 108616,
+      "error": null
+    },
+    {
+      "block_id": "4JYF-HEKU-VVV",
+      "page": 10,
+      "ok": true,
+      "findings_count": 3,
+      "input_tokens": 4,
+      "output_tokens": 6767,
+      "elapsed_ms": 122176,
+      "error": null
+    },
+    {
+      "block_id": "RELE-MX3A-MEN",
+      "page": 11,
+      "ok": true,
+      "findings_count": 5,
+      "input_tokens": 4,
+      "output_tokens": 10775,
+      "elapsed_ms": 205290,
+      "error": null
+    },
+    {
+      "block_id": "9XLH-7CNM-MFW",
+      "page": 11,
+      "ok": true,
+      "findings_count": 3,
+      "input_tokens": 4,
+      "output_tokens": 13402,
+      "elapsed_ms": 238310,
+      "error": null
+    },
+    {
+      "block_id": "9J9X-DXHT-6GJ",
+      "page": 11,
+      "ok": true,
+      "findings_count": 3,
+      "input_tokens": 4,
+      "output_tokens": 5496,
+      "elapsed_ms": 92449,
+      "error": null
+    },
+    {
+      "block_id": "4MQJ-6NXP-4YH",
+      "page": 12,
+      "ok": true,
+      "findings_count": 3,
+      "input_tokens": 4,
+      "output_tokens": 6647,
+      "elapsed_ms": 116504,
+      "error": null
+    },
+    {
+      "block_id": "7NAU-TNME-3AR",
+      "page": 12,
+      "ok": true,
+      "findings_count": 4,
+      "input_tokens": 4,
+      "output_tokens": 6598,
+      "elapsed_ms": 128165,
+      "error": null
+    },
+    {
+      "block_id": "MANG-C46A-EH7",
+      "page": 12,
+      "ok": true,
+      "findings_count": 5,
+      "input_tokens": 4,
+      "output_tokens": 5334,
+      "elapsed_ms": 104694,
+      "error": null
+    },
+    {
+      "block_id": "DTGF-MYHX-PPD",
+      "page": 12,
+      "ok": true,
+      "findings_count": 4,
+      "input_tokens": 4,
+      "output_tokens": 5981,
+      "elapsed_ms": 119126,
+      "error": null
+    },
+    {
+      "block_id": "7QUU-QDA4-N7D",
+      "page": 12,
+      "ok": true,
+      "findings_count": 6,
+      "input_tokens": 4,
+      "output_tokens": 6690,
+      "elapsed_ms": 111011,
+      "error": null
+    },
+    {
+      "block_id": "9LPD-VX9H-YHK",
+      "page": 12,
+      "ok": true,
+      "findings_count": 4,
+      "input_tokens": 4,
+      "output_tokens": 6665,
+      "elapsed_ms": 114679,
+      "error": null
+    },
+    {
+      "block_id": "6PCX-NFHU-6KW",
+      "page": 12,
+      "ok": true,
+      "findings_count": 3,
+      "input_tokens": 4,
+      "output_tokens": 5188,
+      "elapsed_ms": 103965,
+      "error": null
+    },
+    {
+      "block_id": "46LP-7CN7-GG6",
+      "page": 13,
+      "ok": true,
+      "findings_count": 4,
+      "input_tokens": 4,
+      "output_tokens": 10934,
+      "elapsed_ms": 188207,
+      "error": null
+    },
+    {
+      "block_id": "TULW-YCYU-YVQ",
+      "page": 13,
+      "ok": true,
+      "findings_count": 3,
+      "input_tokens": 4,
+      "output_tokens": 13955,
+      "elapsed_ms": 246542,
+      "error": null
+    }
+  ]
+}

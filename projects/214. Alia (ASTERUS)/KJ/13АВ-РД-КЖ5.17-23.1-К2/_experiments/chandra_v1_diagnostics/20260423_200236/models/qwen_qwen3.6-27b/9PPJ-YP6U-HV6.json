@@ -1,0 +1,33 @@
+{
+  "model": "qwen/qwen3.6-27b",
+  "image_name": "9PPJ-YP6U-HV6",
+  "block_id": "9PPJ-YP6U-HV6",
+  "width": 213,
+  "height": 1024,
+  "request": "image_smoke",
+  "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_200236/audit_images/native_crops/block_9PPJ-YP6U-HV6_native.png",
+  "image_size_bytes": 40079,
+  "ok": true,
+  "status_code": 200,
+  "elapsed_s": 4.687,
+  "error": null,
+  "response": {
+    "model_instance_id": "qwen/qwen3.6-27b",
+    "output": [
+      {
+        "type": "message",
+        "content": "Тип: Ведомость деталей (таблица с чертежами металлических элементов).  \nОсновные элементы: позиции, эскизы деталей, размеры (a, b, c), тип и диаметр болтов (d=40, d=50, d=60, d=80).  \nЧитаемые детали:  \n- Позиция 8-Г-1: a=500, b=144, c=500, d=40  \n- Позиция 10-Г-5: a=644, b=128, c=644, d=50  \n- Позиция 25-Г-12: a=540, b=305, c=300, d=50; a=300, d=50"
+      }
+    ],
+    "stats": {
+      "input_tokens": 317,
+      "total_output_tokens": 183,
+      "reasoning_output_tokens": 0,
+      "tokens_per_second": 58.879077496770506,
+      "time_to_first_token_seconds": 0.331
+    }
+  },
+  "content": "Тип: Ведомость деталей (таблица с чертежами металлических элементов).  \nОсновные элементы: позиции, эскизы деталей, размеры (a, b, c), тип и диаметр болтов (d=40, d=50, d=60, d=80).  \nЧитаемые детали:  \n- Позиция 8-Г-1: a=500, b=144, c=500, d=40  \n- Позиция 10-Г-5: a=644, b=128, c=644, d=50  \n- Позиция 25-Г-12: a=540, b=305, c=300, d=50; a=300, d=50",
+  "reasoning": "",
+  "verdict": "pass"
+}

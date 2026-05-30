@@ -1,0 +1,45 @@
+{
+  "block_id": "4ARK-6ENX-GEV",
+  "page": 9,
+  "sheet_no": "4",
+  "file": "block_4ARK-6ENX-GEV.png",
+  "size_kb": 18.8,
+  "ocr_text_len": 663,
+  "ocr_label": "На фрагменте представлен разрез А-А узла армирования стены.",
+  "ok": true,
+  "elapsed_ms": 2313,
+  "input_tokens": 1282,
+  "output_tokens": 177,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 484,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 2313,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "разрез",
+    "subject": "Разрез А-А узла армирования стены с указанием марки арматуры и размеров",
+    "marks": [
+      "12-Г-21"
+    ],
+    "rebar_specs": [],
+    "dimensions": [
+      "40",
+      "70",
+      "60",
+      "70"
+    ],
+    "references_on_block": [],
+    "axes": [],
+    "level_marks": [],
+    "concrete_class": null,
+    "notes": "На разрезе показан узел армирования стены с указанием марки арматуры 12-Г-21 и размеров расположения. Основное армирование стен условно не показано."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

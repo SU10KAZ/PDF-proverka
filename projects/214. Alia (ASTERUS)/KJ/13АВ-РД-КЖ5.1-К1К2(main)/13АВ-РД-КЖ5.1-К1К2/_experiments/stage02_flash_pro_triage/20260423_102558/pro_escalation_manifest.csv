@@ -1,0 +1,9 @@
+block_id,decision,priority,reasons,risk,page,size_kb,findings_count,kv_count,summary_len,unreadable,analysis_present
+9GNP-D7CE-RYM,pro_single_block,90,"['complex_block_with_flash_findings', 'high_value_flash_finding']",normal,8,27.3,5,18,390,False,True
+RELE-MX3A-MEN,pro_single_block,90,"['complex_block_with_flash_findings', 'high_value_flash_finding']",heavy,11,2063.8,4,185,327,False,True
+4MQJ-6NXP-4YH,pro_single_block,90,"['complex_block_with_flash_findings', 'high_value_flash_finding']",normal,12,40.6,4,18,207,False,True
+4UTW-PPGP-VEN,pro_single_block,90,"['complex_block_with_flash_findings', 'high_value_flash_finding']",heavy,7,1109.0,3,29,285,False,True
+6DRC-7KQL-9TJ,pro_single_block,90,['complex_block_with_flash_findings'],heavy,8,949.5,3,34,338,False,True
+4MAU-AT9Y-QRP,pro_single_block,90,"['complex_block_with_flash_findings', 'high_value_flash_finding']",light,8,57.9,3,8,215,False,True
+7QUU-QDA4-N7D,pro_single_block,90,"['complex_block_with_flash_findings', 'high_value_flash_finding']",normal,12,28.4,3,17,227,False,True
+4WTD-JFKA-JLE,pro_single_block,90,"['complex_block_with_flash_findings', 'high_value_flash_finding']",heavy,10,1740.7,1,131,211,False,True

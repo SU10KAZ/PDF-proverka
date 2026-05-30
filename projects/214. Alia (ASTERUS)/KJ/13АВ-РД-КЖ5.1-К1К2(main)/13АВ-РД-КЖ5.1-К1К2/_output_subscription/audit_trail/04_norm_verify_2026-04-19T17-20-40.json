@@ -1,0 +1,9 @@
+{
+  "stage": "04_norm_verify",
+  "model": "claude-opus-4-7",
+  "timestamp": "2026-04-19T17:20:40.727312",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "duration_ms": 108087,
+  "result": "Created `norm_checks_llm_3.json` with 5 paragraph checks. All five claimed quotes (F-014, F-018, F-019, F-020, F-023) did not match the authoritative MCP text — `paragraph_verified: false` with details noted for each."
+}

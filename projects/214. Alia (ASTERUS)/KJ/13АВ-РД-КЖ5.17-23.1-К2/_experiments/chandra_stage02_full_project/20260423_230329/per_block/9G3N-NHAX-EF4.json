@@ -1,0 +1,99 @@
+{
+  "baseline": {
+    "block_id": "9G3N-NHAX-EF4",
+    "page": 10,
+    "sheet": "5",
+    "label": "Сечение Я-Я",
+    "sheet_type": "sections_cuts",
+    "unreadable_text": false,
+    "unreadable_details": null,
+    "summary": "Поперечное сечение Я-Я торца стены. Показана установка П-образного элемента, охватывающего крайние вертикальные стержни для анкеровки горизонтальной арматуры.",
+    "key_values_read": [
+      "Вертикальная арматура",
+      "П-образный элемент"
+    ],
+    "evidence_text_refs": [
+      {
+        "text_block_id": "6JKC-43YA-JUU",
+        "role": "other",
+        "used_for": "cross_check",
+        "confidence": 0.41,
+        "source": "graph_backfill"
+      }
+    ],
+    "findings": [],
+    "selected_text_block_ids": [
+      "6JKC-43YA-JUU"
+    ]
+  },
+  "candidate_raw": {
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_stage02_full_project/20260423_230329/prepared/native_crops/block_9G3N-NHAX-EF4_native.png",
+    "image_size_bytes": 17804,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 2.567,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-35b-a3b",
+      "output": [
+        {
+          "type": "message",
+          "content": "{\n  \"block_id\": \"9G3N-NHAX-EF4\",\n  \"page\": 10,\n  \"label\": \"Схема сечения Я-Я\",\n  \"sheet_type\": \"section\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлен поперечный разрез Я-Я П-образного элемента. Конструкция состоит из наружного контура и внутренней вертикальной арматуры. Основные элементы обозначены выносками.\",\n  \"key_values_read\": [\n    \"Я-Я\",\n    \"П-образный элемент\",\n    \"Вертикальная арматура\"\n  ],\n  \"findings\": []\n}"
+        }
+      ],
+      "stats": {
+        "input_tokens": 1417,
+        "total_output_tokens": 168,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 224.92007304547138,
+        "time_to_first_token_seconds": 0.402
+      }
+    },
+    "content": "{\n  \"block_id\": \"9G3N-NHAX-EF4\",\n  \"page\": 10,\n  \"label\": \"Схема сечения Я-Я\",\n  \"sheet_type\": \"section\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлен поперечный разрез Я-Я П-образного элемента. Конструкция состоит из наружного контура и внутренней вертикальной арматуры. Основные элементы обозначены выносками.\",\n  \"key_values_read\": [\n    \"Я-Я\",\n    \"П-образный элемент\",\n    \"Вертикальная арматура\"\n  ],\n  \"findings\": []\n}",
+    "reasoning": "",
+    "parsed": {
+      "block_id": "9G3N-NHAX-EF4",
+      "page": 10,
+      "label": "Схема сечения Я-Я",
+      "sheet_type": "section",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "На чертеже представлен поперечный разрез Я-Я П-образного элемента. Конструкция состоит из наружного контура и внутренней вертикальной арматуры. Основные элементы обозначены выносками.",
+      "key_values_read": [
+        "Я-Я",
+        "П-образный элемент",
+        "Вертикальная арматура"
+      ],
+      "findings": []
+    },
+    "parse_error": null,
+    "model": "qwen/qwen3.6-35b-a3b",
+    "block_id": "9G3N-NHAX-EF4",
+    "width": 1024,
+    "height": 298,
+    "run_index": 89
+  },
+  "compare": {
+    "block_id": "9G3N-NHAX-EF4",
+    "page": 10,
+    "label_source": "Схема сечения Я-Я, иллюстрирующая установку горизонтальных П-образных элементов ",
+    "baseline_present": true,
+    "baseline_label": "Сечение Я-Я",
+    "candidate_label": "Схема сечения Я-Я",
+    "baseline_findings": 0,
+    "candidate_findings": 0,
+    "baseline_kv": 2,
+    "candidate_kv": 3,
+    "elapsed_s": 2.567,
+    "parse_ok": true,
+    "verdict": "likely_improved",
+    "notes": [
+      "candidate preserved findings presence and captured more key values"
+    ],
+    "baseline_summary": "Поперечное сечение Я-Я торца стены. Показана установка П-образного элемента, охватывающего крайние вертикальные стержни для анкеровки горизонтальной арматуры.",
+    "candidate_summary": "На чертеже представлен поперечный разрез Я-Я П-образного элемента. Конструкция состоит из наружного контура и внутренней вертикальной арматуры. Основные элементы обозначены выносками.",
+    "candidate_sheet_type": "section",
+    "candidate_unreadable_text": false
+  }
+}

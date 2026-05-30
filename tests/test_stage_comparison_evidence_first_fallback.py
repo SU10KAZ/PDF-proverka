@@ -486,3 +486,104 @@ def test_run_enriched_comparison_force_fallback_runs_when_flag_off(tmp_path, mon
     assert forced["status"] == "done"
     assert forced["strategy"] == ef.STRATEGY
     assert forced["fallback"] is True
+
+
+# ── 13. live per-chunk progress + ETA ───────────────────────────────────────
+
+def test_estimate_chunk_seconds_monotonic():
+    """Оценка длительности растёт с размером чанка и положительна."""
+    assert ef.estimate_chunk_seconds(0) > 0
+    assert ef.estimate_chunk_seconds(200_000) > ef.estimate_chunk_seconds(50_000)
+    # около калибровочной точки КР2 (179K → ~211s) — в разумном коридоре
+    assert 120 <= ef.estimate_chunk_seconds(179_000) <= 320
+
+
+def test_progress_cb_emits_per_chunk_and_eta():
+    """progress_cb вызывается на каждой границе чанка + финально (phase=done)."""
+    events: list[dict] = []
+    res = ef.run_evidence_first_fallback(
+        left_md=LEFT_MD, right_md=RIGHT_MD, provider=_FakeProvider(),
+        system_prompt=ec.SYSTEM_PROMPT, model="opus", timeout_sec=10,
+        parse_extract_fn=ec._extract_model_payload,
+        parse_json_fn=ec._parse_model_json,
+        normalize_change_fn=ec._normalize_change,
+        config=ef.FallbackConfig(enabled=True),
+        base_input_stats={"total_chars": len(LEFT_MD) + len(RIGHT_MD)},
+        progress_cb=events.append,
+    )
+    assert res["status"] == "done"
+    n_chunks = res["input_stats"]["chunks"]
+    assert n_chunks >= 1
+    # одно событие перед каждым чанком + одно финальное
+    assert len(events) == n_chunks + 1
+    # total_chunks стабилен, done_chunks монотонно растёт 0..n
+    assert [e["done_chunks"] for e in events] == list(range(n_chunks + 1))
+    assert all(e["total_chunks"] == n_chunks for e in events)
+    # первое событие — старт первого чанка, ETA > 0
+    assert events[0]["phase"] == "comparing_chunks"
+    assert events[0]["current_chunk_index"] == 1
+    assert events[0]["eta_sec"] > 0
+    # последнее — done, ETA 0, все чанки с длительностью
+    last = events[-1]
+    assert last["phase"] == "done"
+    assert last["done_chunks"] == n_chunks
+    assert last["eta_sec"] == 0
+    assert all(c["duration_sec"] is not None for c in last["per_chunk"])
+    assert all(c["status"] == "done" for c in last["per_chunk"])
+
+
+def test_progress_cb_failure_does_not_break_pipeline():
+    """Исключение в progress_cb не валит сравнение."""
+    def _boom(_pr):
+        raise RuntimeError("ui exploded")
+    res = ef.run_evidence_first_fallback(
+        left_md=LEFT_MD, right_md=RIGHT_MD, provider=_FakeProvider(),
+        system_prompt=ec.SYSTEM_PROMPT, model="opus", timeout_sec=10,
+        parse_extract_fn=ec._extract_model_payload,
+        parse_json_fn=ec._parse_model_json,
+        normalize_change_fn=ec._normalize_change,
+        config=ef.FallbackConfig(enabled=True),
+        base_input_stats={"total_chars": len(LEFT_MD) + len(RIGHT_MD)},
+        progress_cb=_boom,
+    )
+    assert res["status"] == "done"
+
+
+def test_write_and_read_fallback_progress_roundtrip(tmp_path, monkeypatch):
+    """_write_fallback_progress + read_fallback_progress + попадание в aggregate."""
+    monkeypatch.setenv("COMPARISON_ROOT", str(tmp_path / "cmp"))
+    sid, pid = "sess_prog", "pair_prog"
+    ec._write_fallback_progress(sid, pid, {
+        "phase": "comparing_chunks", "total_chunks": 5, "done_chunks": 2,
+        "current_chunk_index": 3, "eta_sec": 430.0,
+    })
+    got = ec.read_fallback_progress(sid, pid)
+    assert got is not None
+    assert got["total_chunks"] == 5 and got["done_chunks"] == 2
+    assert got["strategy"] == ef.STRATEGY
+    assert got["session_id"] == sid and got["pair_id"] == pid
+    # aggregate подцепляет прогресс для активной (comparing) пары
+    job = {
+        "session_id": sid,
+        "items": [{"pair_id": pid, "status": "comparing", "comparison_status": "running"}],
+    }
+    agg = uaj_mod.aggregate_job_progress(job)
+    assert agg["current_pair_id"] == pid
+    assert agg["current_pair_fallback"] is not None
+    assert agg["current_pair_fallback"]["current_chunk_index"] == 3
+
+
+def test_aggregate_no_fallback_progress_for_done_pair(tmp_path, monkeypatch):
+    """Завершённая пара не тащит прогресс в aggregate (current_pair_fallback=None)."""
+    monkeypatch.setenv("COMPARISON_ROOT", str(tmp_path / "cmp"))
+    sid, pid = "sess_done", "pair_done"
+    ec._write_fallback_progress(sid, pid, {
+        "phase": "done", "total_chunks": 5, "done_chunks": 5,
+    })
+    job = {
+        "session_id": sid,
+        "items": [{"pair_id": pid, "status": "done", "changes_count": 7,
+                   "duration_sec": 12.0}],
+    }
+    agg = uaj_mod.aggregate_job_progress(job)
+    assert agg["current_pair_fallback"] is None

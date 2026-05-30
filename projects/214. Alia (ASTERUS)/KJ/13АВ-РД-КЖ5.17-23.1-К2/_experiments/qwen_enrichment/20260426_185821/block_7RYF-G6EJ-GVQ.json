@@ -1,0 +1,54 @@
+{
+  "block_id": "7RYF-G6EJ-GVQ",
+  "page": 15,
+  "sheet_no": "10",
+  "file": "block_7RYF-G6EJ-GVQ.png",
+  "size_kb": 30.8,
+  "ocr_text_len": 875,
+  "ocr_label": "На чертеже представлены типовые узлы сопряжения рабочего стержня с гнутыми армат",
+  "ok": true,
+  "elapsed_ms": 3585,
+  "input_tokens": 1391,
+  "output_tokens": 278,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 637,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3585,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "узел",
+    "subject": "Типовые узлы сопряжения рабочего стержня с гнутыми арматурными элементами",
+    "marks": [
+      "16-Г-1",
+      "16-5850"
+    ],
+    "rebar_specs": [
+      "Ø16 А500С",
+      "шаг 200 (29 шт.)"
+    ],
+    "dimensions": [
+      "t=200",
+      "5850"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 2",
+      "см. лист 3",
+      "см. лист 11"
+    ],
+    "axes": [],
+    "level_marks": [
+      "+4,200"
+    ],
+    "concrete_class": "В40",
+    "notes": "На листе приведены схемы узлов сопряжения с указанием элементов (хомут, шпилька, выпуск). Приведена таблица длин нахлеста для арматуры A500C в зависимости от диаметра."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

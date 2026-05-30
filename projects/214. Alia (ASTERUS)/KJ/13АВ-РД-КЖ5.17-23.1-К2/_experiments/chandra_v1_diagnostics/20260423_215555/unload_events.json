@@ -1,0 +1,14 @@
+[
+  {
+    "reason": "final_cleanup",
+    "model": "qwen3.5-27b",
+    "instance_id": "qwen3.5-27b",
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 1.501,
+    "error": null,
+    "response": {
+      "instance_id": "qwen3.5-27b"
+    }
+  }
+]

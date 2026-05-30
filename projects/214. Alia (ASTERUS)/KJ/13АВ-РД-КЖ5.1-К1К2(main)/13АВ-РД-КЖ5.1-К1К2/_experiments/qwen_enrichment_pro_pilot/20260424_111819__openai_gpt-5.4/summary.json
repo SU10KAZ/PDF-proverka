@@ -1,0 +1,71 @@
+{
+  "timestamp": "20260424_111819",
+  "model": "openai/gpt-5.4",
+  "reasoning_effort": "medium",
+  "blocks_total": 4,
+  "blocks_ok": 4,
+  "blocks_with_baseline_findings": 4,
+  "blocks_new_zero_where_baseline_had": 2,
+  "totals": {
+    "baseline_json_chars_total": 11287,
+    "baseline_findings_total": 8,
+    "new_findings_total": 4,
+    "new_input_tokens_total": 12731,
+    "new_output_tokens_total": 9367,
+    "new_reasoning_tokens_total": 8678,
+    "estimated_cost_usd_in": 0.0318,
+    "estimated_cost_usd_out": 0.1405,
+    "estimated_cost_usd_total": 0.1723,
+    "estimated_cost_per_block_usd": 0.0431
+  },
+  "blocks": [
+    {
+      "block_id": "VGGJ-3ULF-TLV",
+      "page": 7,
+      "baseline_json_chars": 2750,
+      "baseline_findings": 2,
+      "new_output_tokens": 276,
+      "new_input_tokens": 2725,
+      "new_reasoning_tokens": 260,
+      "new_findings": 0,
+      "new_elapsed_ms": 8229,
+      "ok": true
+    },
+    {
+      "block_id": "4UTW-PPGP-VEN",
+      "page": 7,
+      "baseline_json_chars": 2918,
+      "baseline_findings": 2,
+      "new_output_tokens": 4352,
+      "new_input_tokens": 4089,
+      "new_reasoning_tokens": 4336,
+      "new_findings": 0,
+      "new_elapsed_ms": 79780,
+      "ok": true
+    },
+    {
+      "block_id": "9J9X-DXHT-6GJ",
+      "page": 11,
+      "baseline_json_chars": 3029,
+      "baseline_findings": 2,
+      "new_output_tokens": 1651,
+      "new_input_tokens": 2490,
+      "new_reasoning_tokens": 1356,
+      "new_findings": 2,
+      "new_elapsed_ms": 27481,
+      "ok": true
+    },
+    {
+      "block_id": "MANG-C46A-EH7",
+      "page": 12,
+      "baseline_json_chars": 2590,
+      "baseline_findings": 2,
+      "new_output_tokens": 3088,
+      "new_input_tokens": 3427,
+      "new_reasoning_tokens": 2726,
+      "new_findings": 2,
+      "new_elapsed_ms": 51485,
+      "ok": true
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "model": "google/gemma-4-26b-a4b",
+  "image_name": "947C-9UJT-RYU",
+  "block_id": "947C-9UJT-RYU",
+  "width": 212,
+  "height": 1024,
+  "request": "image_smoke",
+  "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_215555/audit_images/native_crops/block_947C-9UJT-RYU_native.png",
+  "image_size_bytes": 41565,
+  "ok": true,
+  "status_code": 200,
+  "elapsed_s": 3.511,
+  "error": null,
+  "response": {
+    "model_instance_id": "google/gemma-4-26b-a4b",
+    "output": [
+      {
+        "type": "message",
+        "content": "Тип документа: Ведомость деталей.\n\nОсновные элементы: Таблица с колонками «Поз.» (позиция), «Эскиз» (графическое изображение) и размерными данными.\n\nЧитаемые детали:\n1. Позиция 16-Г-23: размеры a=600; b=125; c=3180; d=20; e=120; dnn=80.\n2. Позиция 25-Г-24: размеры a=1560; b=250; c=1560; dnn=200."
+      }
+    ],
+    "stats": {
+      "input_tokens": 374,
+      "total_output_tokens": 142,
+      "reasoning_output_tokens": 0,
+      "tokens_per_second": 189.37019739842688,
+      "time_to_first_token_seconds": 0.278
+    }
+  },
+  "content": "Тип документа: Ведомость деталей.\n\nОсновные элементы: Таблица с колонками «Поз.» (позиция), «Эскиз» (графическое изображение) и размерными данными.\n\nЧитаемые детали:\n1. Позиция 16-Г-23: размеры a=600; b=125; c=3180; d=20; e=120; dnn=80.\n2. Позиция 25-Г-24: размеры a=1560; b=250; c=1560; dnn=200.",
+  "reasoning": "",
+  "verdict": "weak"
+}

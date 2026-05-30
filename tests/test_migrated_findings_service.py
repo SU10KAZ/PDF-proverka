@@ -157,7 +157,7 @@ def test_load_accepted_only(v2_created):
 
 def test_load_accepted_handles_synonyms(v2_created):
     # «agreed» / «approved» / «confirmed» считаются accepted.
-    out = v2_created / "M31A" / "_output"
+    out = v2_created / "M31A(main)" / "M31A" / "_output"
     review = json.loads((out / "expert_review.json").read_text(encoding="utf-8"))
     review["decisions"].append({"item_id": "F-003", "item_type": "finding", "decision": "approved"})
     (out / "expert_review.json").write_text(json.dumps(review), encoding="utf-8")
@@ -166,7 +166,7 @@ def test_load_accepted_handles_synonyms(v2_created):
 
 
 def test_load_accepted_ignores_optimization_decisions(v2_created):
-    out = v2_created / "M31A" / "_output"
+    out = v2_created / "M31A(main)" / "M31A" / "_output"
     review = json.loads((out / "expert_review.json").read_text(encoding="utf-8"))
     # Оптимизации в migrated findings не участвуют
     review["decisions"].append({"item_id": "OPT-001", "item_type": "optimization", "decision": "accepted"})
@@ -189,7 +189,7 @@ def test_candidates_only_from_accepted(v2_created):
 
 def _v2_findings_with(items: list[dict], projects_dir: Path):
     """Помощник: положить 03_findings.json в V2."""
-    out = projects_dir / "M31A" / "_versions" / "v2" / "_output"
+    out = projects_dir / "M31A(main)" / "M31A V2" / "_output"
     out.mkdir(parents=True, exist_ok=True)
     (out / "03_findings.json").write_text(
         json.dumps({"meta": {"total_findings": len(items)}, "findings": items}, ensure_ascii=False),
@@ -220,7 +220,7 @@ def test_duplicate_of_new_finding(v2_created):
     assert report["items"][0]["linked_finding_id"] == "F-V2-009"
 
     # 03_findings V2: F-V2-009 получил origin metadata, новый migrated не появился
-    findings_path = v2_created / "M31A" / "_versions" / "v2" / "_output" / "03_findings.json"
+    findings_path = v2_created / "M31A(main)" / "M31A V2" / "_output" / "03_findings.json"
     items = json.loads(findings_path.read_text(encoding="utf-8"))["findings"]
     assert len(items) == 1
     enriched = items[0]
@@ -253,7 +253,7 @@ def test_still_relevant_via_evidence_block_match(v2_created):
     assert report["duplicate_of_new_finding"] == 0
 
     # В 03_findings V2 появился MIG-V1-F-001
-    findings_path = v2_created / "M31A" / "_versions" / "v2" / "_output" / "03_findings.json"
+    findings_path = v2_created / "M31A(main)" / "M31A V2" / "_output" / "03_findings.json"
     items = json.loads(findings_path.read_text(encoding="utf-8"))["findings"]
     migrated = [f for f in items if f.get("is_migrated")]
     assert len(migrated) == 1
@@ -295,7 +295,7 @@ def test_resolved_when_no_match_and_v2_has_findings(v2_created):
     # В 03_findings V2 ДОЛЖЕН появиться virtual migrated finding со статусом
     # possibly_resolved, чтобы пользователь увидел: critical-замечание из v1
     # потерялось в новой версии.
-    findings_path = v2_created / "M31A" / "_versions" / "v2" / "_output" / "03_findings.json"
+    findings_path = v2_created / "M31A(main)" / "M31A V2" / "_output" / "03_findings.json"
     items = json.loads(findings_path.read_text(encoding="utf-8"))["findings"]
     migrated = [f for f in items if f.get("is_migrated")]
     assert len(migrated) == 1
@@ -306,7 +306,7 @@ def test_resolved_when_no_match_and_v2_has_findings_non_critical(v2_created):
     """Non-critical v1 finding, не нашедшее матча → `not_found_in_new_version`
     (НЕ `resolved_in_new_version` — автомат не вправе ставить «устранено»)."""
     # Понизим severity F-001 на РЕКОМЕНДАТЕЛЬНОЕ перед сравнением.
-    out = v2_created / "M31A" / "_output"
+    out = v2_created / "M31A(main)" / "M31A" / "_output"
     fd = json.loads((out / "03_findings.json").read_text(encoding="utf-8"))
     for f in fd["findings"]:
         if f["id"] == "F-001":
@@ -328,7 +328,7 @@ def test_resolved_when_no_match_and_v2_has_findings_non_critical(v2_created):
     report = res["report"]
     assert report["not_found_in_new_version"] == 1
     # Для non-critical not_found — migrated finding не добавляется в 03_findings.
-    findings_path = v2_created / "M31A" / "_versions" / "v2" / "_output" / "03_findings.json"
+    findings_path = v2_created / "M31A(main)" / "M31A V2" / "_output" / "03_findings.json"
     items = json.loads(findings_path.read_text(encoding="utf-8"))["findings"]
     assert all(not f.get("is_migrated") for f in items)
 
@@ -372,7 +372,7 @@ def test_idempotent_double_run(v2_created):
     svc.run_migrated_findings_check("M31A", "v2")
     svc.run_migrated_findings_check("M31A", "v2")
 
-    findings_path = v2_created / "M31A" / "_versions" / "v2" / "_output" / "03_findings.json"
+    findings_path = v2_created / "M31A(main)" / "M31A V2" / "_output" / "03_findings.json"
     items = json.loads(findings_path.read_text(encoding="utf-8"))["findings"]
     migrated = [f for f in items if f.get("is_migrated")]
     assert len(migrated) == 1  # не задублировано
@@ -385,8 +385,8 @@ def test_isolation_report_only_in_v2(v2_created):
     _v2_findings_with([], v2_created)
     svc.run_migrated_findings_check("M31A", "v2")
 
-    v1_dir = v2_created / "M31A" / "_output"
-    v2_dir = v2_created / "M31A" / "_versions" / "v2" / "_output"
+    v1_dir = v2_created / "M31A(main)" / "M31A" / "_output"
+    v2_dir = v2_created / "M31A(main)" / "M31A V2" / "_output"
     assert (v2_dir / "migrated_findings_report.json").exists()
     assert not (v1_dir / "migrated_findings_report.json").exists()
     # V1's 03_findings.json не модифицирован
@@ -591,7 +591,8 @@ def test_fallback_does_not_write_to_v1_output(v1_pre_enrichment_backup_only):
     """Read-only fallback не должен модифицировать `_output/` v1."""
     from backend.app.services.common import version_service
     version_service.create_next_version(v1_pre_enrichment_backup_only / "M31A", "M31A")
-    v1_out = v1_pre_enrichment_backup_only / "M31A" / "_output"
+    # Промоут переместил V1 в контейнер.
+    v1_out = v1_pre_enrichment_backup_only / "M31A(main)" / "M31A" / "_output"
     v1_files_before = sorted(p.name for p in v1_out.iterdir())
 
     svc.run_migrated_findings_check("M31A", "v2")
@@ -1170,7 +1171,7 @@ def test_llm_runner_respects_max_pairs(monkeypatch, projects_dir):
     }), encoding="utf-8")
     from backend.app.services.common import version_service
     version_service.create_next_version(projects_dir / "M31A", "M31A")
-    v2_out = projects_dir / "M31A" / "_versions" / "v2" / "_output"
+    v2_out = projects_dir / "M31A(main)" / "M31A V2" / "_output"
     v2_out.mkdir(parents=True, exist_ok=True)
     v2_out.joinpath("03_findings.json").write_text(json.dumps({"findings": [
         # Каждый v2-finding делит с v1 нормы и blocks, чтобы попасть в borderline.
@@ -1234,7 +1235,7 @@ def test_virtual_finding_has_full_marker_set(v2_created):
         },
     ], v2_created)
     svc.run_migrated_findings_check("M31A", "v2")
-    findings_path = v2_created / "M31A" / "_versions" / "v2" / "_output" / "03_findings.json"
+    findings_path = v2_created / "M31A(main)" / "M31A V2" / "_output" / "03_findings.json"
     items = json.loads(findings_path.read_text(encoding="utf-8"))["findings"]
     virtual = [f for f in items if f.get("is_virtual")]
     assert len(virtual) == 1

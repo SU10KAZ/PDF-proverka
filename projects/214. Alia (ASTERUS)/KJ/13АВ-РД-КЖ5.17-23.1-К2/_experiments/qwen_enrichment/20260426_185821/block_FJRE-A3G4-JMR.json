@@ -1,0 +1,52 @@
+{
+  "block_id": "FJRE-A3G4-JMR",
+  "page": 11,
+  "sheet_no": "6",
+  "file": "block_FJRE-A3G4-JMR.png",
+  "size_kb": 14.7,
+  "ocr_text_len": 671,
+  "ocr_label": "На чертеже представлено сечение Я-Я с указанием армирования.",
+  "ok": true,
+  "elapsed_ms": 3041,
+  "input_tokens": 1301,
+  "output_tokens": 267,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 594,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3041,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "сечение",
+    "subject": "Сечение Я-Я стены с указанием П-образного элемента и вертикальной арматуры",
+    "marks": [
+      "16-Г-1",
+      "16-5850"
+    ],
+    "rebar_specs": [
+      "Ø16 А500С шаг 200 (29 шт.)"
+    ],
+    "dimensions": [
+      "t=200"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 2",
+      "см. лист 3",
+      "см. лист 11"
+    ],
+    "axes": [],
+    "level_marks": [
+      "+4,200"
+    ],
+    "concrete_class": "B40",
+    "notes": "Изображено сечение стены с П-образным замкнутым хомутом. Арматура марки 16-Г-1 (Ø16, шаг 200). Высота сечения указана через отметку +4,200."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

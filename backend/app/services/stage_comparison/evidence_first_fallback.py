@@ -49,6 +49,21 @@ logger = logging.getLogger(__name__)
 STRATEGY = "evidence_first_s2_fallback"
 STRATEGY_VERSION = 1
 
+# ETA-модель для per-chunk Opus. Калибрована на приёмочном прогоне КР2
+# (5 чанков 44K–179K симв. → 120–211 s): линейная `base + rate·chars`.
+# Во время прогона модель самокалибруется scale-фактором по фактическим
+# длительностям завершённых чанков, поэтому константы — только стартовая точка.
+ETA_BASE_SEC = 90.0
+ETA_RATE_PER_CHAR = 0.00067
+# Границы scale-фактора, чтобы один аномальный чанк не разносил ETA.
+_ETA_SCALE_MIN = 0.3
+_ETA_SCALE_MAX = 5.0
+
+
+def estimate_chunk_seconds(total_chars: int) -> float:
+    """Стартовая оценка длительности одного чанка по его размеру."""
+    return ETA_BASE_SEC + ETA_RATE_PER_CHAR * max(0, int(total_chars or 0))
+
 
 # ─── Config ──────────────────────────────────────────────────────────────
 
@@ -822,10 +837,17 @@ def run_evidence_first_fallback(
     config: Optional[FallbackConfig] = None,
     work_dir: Optional[Any] = None,
     base_input_stats: Optional[dict] = None,
+    progress_cb: Optional[Any] = None,
 ) -> dict:
     """Полный pipeline evidence_first_s2_fallback. Возвращает comparison_result payload.
 
     Никогда не бросает наружу: ошибки оборачиваются в warnings/status.
+
+    `progress_cb(progress: dict)` (опционально) вызывается на границах чанков:
+    один раз перед запуском каждого чанка (с `done_chunks` уже завершённых) и
+    один раз после цикла. Это даёт UI «чанк k / N · осталось ~m мин» вместо
+    статичного `comparing`. ETA самокалибруется scale-фактором по фактическим
+    длительностям. Исключение в callback'е не валит pipeline.
     """
     cfg = config or load_fallback_config()
     t0 = time.monotonic()
@@ -854,7 +876,49 @@ def run_evidence_first_fallback(
         chunk_results: list[dict] = []
         llm_changes: list[dict] = []
         oversize = 0
-        for ch in chunks:
+
+        # ── live-прогресс по чанкам (для UI) ───────────────────────────────
+        n_chunks = len(chunks)
+        est = [estimate_chunk_seconds(c.total_chars) for c in chunks]
+        predicted_total = round(sum(est), 1)
+        durations: list[Optional[float]] = [None] * n_chunks
+        statuses: list[str] = ["pending"] * n_chunks
+
+        def _emit_progress(done_idx: int) -> None:
+            """done_idx = число полностью завершённых чанков (чанк done_idx — текущий)."""
+            if progress_cb is None:
+                return
+            done_est = sum(est[:done_idx])
+            done_actual = sum(d for d in durations[:done_idx] if d) or 0.0
+            scale = (done_actual / done_est) if (done_idx and done_est > 0) else 1.0
+            scale = max(_ETA_SCALE_MIN, min(scale, _ETA_SCALE_MAX))
+            eta = max(0.0, scale * sum(est[done_idx:]))
+            cur = chunks[done_idx] if done_idx < n_chunks else None
+            payload = {
+                "phase": "comparing_chunks" if done_idx < n_chunks else "done",
+                "total_chunks": n_chunks,
+                "done_chunks": done_idx,
+                "current_chunk_index": (done_idx + 1) if done_idx < n_chunks else n_chunks,
+                "current_chunk_id": cur.chunk_id if cur else None,
+                "current_chunk_title": cur.title if cur else None,
+                "elapsed_sec": round(time.monotonic() - t0, 1),
+                "eta_sec": round(eta, 1),
+                "predicted_total_sec": predicted_total,
+                "scale": round(scale, 3),
+                "per_chunk": [
+                    {"chunk_id": chunks[i].chunk_id, "title": chunks[i].title,
+                     "total_chars": chunks[i].total_chars, "est_sec": round(est[i], 1),
+                     "duration_sec": durations[i], "status": statuses[i]}
+                    for i in range(n_chunks)
+                ],
+            }
+            try:
+                progress_cb(payload)
+            except Exception:  # noqa: BLE001
+                logger.exception("evidence_first_fallback: progress_cb failed")
+
+        for i, ch in enumerate(chunks):
+            _emit_progress(i)  # i завершено, чанк i+1 стартует
             if ch.total_chars > cfg.chunk_max_chars * 1.5:
                 oversize += 1
             cr = compare_chunk(
@@ -862,12 +926,16 @@ def run_evidence_first_fallback(
                 model=model, timeout_sec=timeout_sec, work_dir=work_dir,
                 parse_fn=parse_fn, normalize_fn=normalize_change_fn,
             )
+            durations[i] = cr.get("duration_sec")
+            statuses[i] = str(cr.get("status") or "error")
             chunk_results.append({k: v for k, v in cr.items() if k != "changes"} | {"changes_count": len(cr.get("changes") or [])})
             if cr.get("status") == "done":
                 llm_changes.extend(cr.get("changes") or [])
             else:
                 warnings_list.append(f"Чанк {ch.chunk_id}: status={cr.get('status')} ({cr.get('error') or '—'})")
+        _emit_progress(n_chunks)  # все чанки завершены
         diagnostics["chunk_results"] = chunk_results
+        diagnostics["predicted_total_sec"] = predicted_total
         if oversize:
             warnings_list.append(f"{oversize} чанков превышают chunk budget в 1.5×.")
 
@@ -952,6 +1020,7 @@ def run_evidence_first_fallback(
 __all__ = [
     "STRATEGY",
     "STRATEGY_VERSION",
+    "estimate_chunk_seconds",
     "FallbackConfig",
     "load_fallback_config",
     "build_fact_index",

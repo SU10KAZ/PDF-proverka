@@ -525,6 +525,22 @@ async def get_session_endpoint(session_id: str):
     return session
 
 
+@router.get("/sessions/{session_id}/comparison-statuses")
+async def get_comparison_statuses_endpoint(session_id: str):
+    """Персистентные статусы сравнения по всем парам сессии (read-only).
+
+    Колонка «Сравнение» в UI берёт статус отсюда (источник истины —
+    `comparison_result.json` на диске), а не из «активного» unified-job'а.
+    Это чинит баг, когда одно-парный fallback/retry затенял полный
+    результат сессии и пары показывались как «—» (не запускалось), хотя
+    сравнение было выполнено.
+    """
+    session = store.get_session(session_id)
+    if session is None:
+        raise HTTPException(404, "Сессия не найдена")
+    return {"statuses": enriched_compare_mod.get_session_comparison_statuses(session_id)}
+
+
 # ─── Pair view ───────────────────────────────────────────────────────────
 
 

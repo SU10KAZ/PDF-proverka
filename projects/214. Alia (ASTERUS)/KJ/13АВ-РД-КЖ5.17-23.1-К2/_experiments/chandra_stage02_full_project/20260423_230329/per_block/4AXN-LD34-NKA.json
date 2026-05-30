@@ -1,0 +1,104 @@
+{
+  "baseline": {
+    "block_id": "4AXN-LD34-NKA",
+    "page": 13,
+    "sheet": "8",
+    "label": "Типовые узлы сопряжения рабочего стержня с гнутыми арматурными элементами",
+    "sheet_type": "sections_cuts",
+    "unreadable_text": false,
+    "unreadable_details": null,
+    "summary": "Представлены три типовых узла сопряжения рабочего стержня с гнутыми арматурными элементами (хомутами и шпильками). Показано огибание стержней.",
+    "key_values_read": [
+      "Узел 1: хомут огибает рабочий стержень",
+      "Узел 2: шпильки огибают все стержни (рабочий стержень и выпуск)",
+      "Узел 3: шпилька огибает рабочие стержни"
+    ],
+    "evidence_text_refs": [
+      {
+        "text_block_id": "9HGD-ADC3-XDY",
+        "role": "other",
+        "used_for": "cross_check",
+        "confidence": 0.53,
+        "source": "graph_backfill"
+      }
+    ],
+    "findings": [],
+    "selected_text_block_ids": [
+      "9HGD-ADC3-XDY"
+    ]
+  },
+  "candidate_raw": {
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_stage02_full_project/20260423_230329/prepared/native_crops/block_4AXN-LD34-NKA_native.png",
+    "image_size_bytes": 40706,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 3.186,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-35b-a3b",
+      "output": [
+        {
+          "type": "message",
+          "content": "{\n  \"block_id\": \"4AXN-LD34-NKA\",\n  \"page\": 13,\n  \"label\": \"Типовые узлы сопряжения\",\n  \"sheet_type\": \"detail\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлены три типовых узла сопряжения рабочего стержня с гнутыми арматурными элементами. Изображены схемы расположения хомутов, рабочих стержней и шпилек. Приведены поясняющие надписи для каждого варианта узла.\",\n  \"key_values_read\": [\n    \"Типовые узлы сопряжения рабочего стержня с гнутыми арматурными элементами\",\n    \"хомут\",\n    \"рабочий стержень\",\n    \"шпильки огибают все стержни\",\n    \"рабочий стержень выпуск\",\n    \"шпилька\",\n    \"рабочие стержни\"\n  ],\n  \"findings\": []\n}"
+        }
+      ],
+      "stats": {
+        "input_tokens": 1611,
+        "total_output_tokens": 240,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 227.03021772197883,
+        "time_to_first_token_seconds": 0.478
+      }
+    },
+    "content": "{\n  \"block_id\": \"4AXN-LD34-NKA\",\n  \"page\": 13,\n  \"label\": \"Типовые узлы сопряжения\",\n  \"sheet_type\": \"detail\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлены три типовых узла сопряжения рабочего стержня с гнутыми арматурными элементами. Изображены схемы расположения хомутов, рабочих стержней и шпилек. Приведены поясняющие надписи для каждого варианта узла.\",\n  \"key_values_read\": [\n    \"Типовые узлы сопряжения рабочего стержня с гнутыми арматурными элементами\",\n    \"хомут\",\n    \"рабочий стержень\",\n    \"шпильки огибают все стержни\",\n    \"рабочий стержень выпуск\",\n    \"шпилька\",\n    \"рабочие стержни\"\n  ],\n  \"findings\": []\n}",
+    "reasoning": "",
+    "parsed": {
+      "block_id": "4AXN-LD34-NKA",
+      "page": 13,
+      "label": "Типовые узлы сопряжения",
+      "sheet_type": "detail",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "На чертеже представлены три типовых узла сопряжения рабочего стержня с гнутыми арматурными элементами. Изображены схемы расположения хомутов, рабочих стержней и шпилек. Приведены поясняющие надписи для каждого варианта узла.",
+      "key_values_read": [
+        "Типовые узлы сопряжения рабочего стержня с гнутыми арматурными элементами",
+        "хомут",
+        "рабочий стержень",
+        "шпильки огибают все стержни",
+        "рабочий стержень выпуск",
+        "шпилька",
+        "рабочие стержни"
+      ],
+      "findings": []
+    },
+    "parse_error": null,
+    "model": "qwen/qwen3.6-35b-a3b",
+    "block_id": "4AXN-LD34-NKA",
+    "width": 1024,
+    "height": 467,
+    "run_index": 136
+  },
+  "compare": {
+    "block_id": "4AXN-LD34-NKA",
+    "page": 13,
+    "label_source": "Представлены три типовых узла сопряжения рабочего стержня с гнутыми арматурными ",
+    "baseline_present": true,
+    "baseline_label": "Типовые узлы сопряжения рабочего стержня с гнутыми арматурными элементами",
+    "candidate_label": "Типовые узлы сопряжения",
+    "baseline_findings": 0,
+    "candidate_findings": 0,
+    "baseline_kv": 3,
+    "candidate_kv": 7,
+    "elapsed_s": 3.186,
+    "parse_ok": true,
+    "verdict": "likely_improved",
+    "notes": [
+      "candidate preserved findings presence and captured more key values"
+    ],
+    "baseline_summary": "Представлены три типовых узла сопряжения рабочего стержня с гнутыми арматурными элементами (хомутами и шпильками). Показано огибание стержней.",
+    "candidate_summary": "На чертеже представлены три типовых узла сопряжения рабочего стержня с гнутыми арматурными элементами. Изображены схемы расположения хомутов, рабочих стержней и шпилек. Приведены поясняющие надписи для каждого варианта узла.",
+    "candidate_sheet_type": "detail",
+    "candidate_unreadable_text": false
+  }
+}

@@ -99,12 +99,12 @@ def test_upload_pdf_to_v2(v2_created):
     assert body["saved"] == ["document.pdf"]
 
     # Файл на диске в V2
-    v2_dir = projects_dir / "M31A" / "_versions" / "v2"
+    v2_dir = projects_dir / "M31A(main)" / "M31A V2"
     assert (v2_dir / "document.pdf").read_bytes() == _PDF_BYTES
 
     # В КОРНЕ V1 файл существовал и до этого, но не должен был дублироваться
     # (то есть: V1 контент не тронут — там был свой document.pdf).
-    v1_pdf = projects_dir / "M31A" / "document.pdf"
+    v1_pdf = projects_dir / "M31A(main)" / "M31A" / "document.pdf"
     assert v1_pdf.read_bytes() == _PDF_BYTES  # тот же исходный V1, не перезаписан
 
     # project_info.json V2 обновился
@@ -120,7 +120,7 @@ def test_upload_md_updates_info(v2_created):
     r = _upload(c, "v2", [("document.md", _MD_BYTES)])
     assert r.status_code == 200, r.text
 
-    v2_dir = projects_dir / "M31A" / "_versions" / "v2"
+    v2_dir = projects_dir / "M31A(main)" / "M31A V2"
     info = json.loads((v2_dir / "project_info.json").read_text(encoding="utf-8"))
     assert info["md_files"] == ["document.md"]
     assert info["md_file"] == "document.md"
@@ -148,14 +148,14 @@ def test_upload_to_v1_forbidden_by_default(v2_created):
     r = _upload(c, "v1", [("new.pdf", _PDF_BYTES)])
     assert r.status_code == 403
     # Файл в корне V1 не появился
-    assert not (projects_dir / "M31A" / "new.pdf").exists()
+    assert not (projects_dir / "M31A(main)" / "M31A" / "new.pdf").exists()
 
 
 def test_upload_to_v1_allowed_with_flag(v2_created):
     c, projects_dir = v2_created
     r = _upload(c, "v1", [("extra.pdf", _PDF_BYTES)], allow_v1_upload="true")
     assert r.status_code == 200, r.text
-    assert (projects_dir / "M31A" / "extra.pdf").read_bytes() == _PDF_BYTES
+    assert (projects_dir / "M31A(main)" / "M31A" / "extra.pdf").read_bytes() == _PDF_BYTES
 
 
 def test_duplicate_filename_conflict(v2_created):
@@ -172,7 +172,7 @@ def test_duplicate_filename_with_replace(v2_created):
     new_bytes = _PDF_BYTES + b"REPLACED"
     r = _upload(c, "v2", [("a.pdf", new_bytes)], replace_existing="true")
     assert r.status_code == 200, r.text
-    v2_dir = projects_dir / "M31A" / "_versions" / "v2"
+    v2_dir = projects_dir / "M31A(main)" / "M31A V2"
     assert (v2_dir / "a.pdf").read_bytes() == new_bytes
     # pdf_files не дублируется
     info = json.loads((v2_dir / "project_info.json").read_text(encoding="utf-8"))
@@ -184,7 +184,7 @@ def test_path_traversal_filename_rejected(v2_created):
     r = _upload(c, "v2", [("../evil.pdf", _PDF_BYTES)])
     assert r.status_code == 400
     # Файл вне версии не создан
-    v2_dir = projects_dir / "M31A" / "_versions" / "v2"
+    v2_dir = projects_dir / "M31A(main)" / "M31A V2"
     assert not (v2_dir / "evil.pdf").exists()
     assert not (projects_dir / "evil.pdf").exists()
     assert not (projects_dir.parent / "evil.pdf").exists()
@@ -212,7 +212,7 @@ def test_batch_atomic_on_conflict(v2_created):
         ("a.pdf", _PDF_BYTES),
     ])
     assert r.status_code == 409
-    v2_dir = projects_dir / "M31A" / "_versions" / "v2"
+    v2_dir = projects_dir / "M31A(main)" / "M31A V2"
     assert not (v2_dir / "b.pdf").exists()  # batch атомарен
 
 
@@ -266,7 +266,7 @@ def test_audit_start_v2_without_files_returns_409(v2_created):
     assert "PDF" in r.json()["detail"] or "MD" in r.json()["detail"]
 
     # ничего не записано в V2 _output
-    v2_out = projects_dir / "M31A" / "_versions" / "v2" / "_output"
+    v2_out = projects_dir / "M31A(main)" / "M31A V2" / "_output"
     assert sorted(v2_out.iterdir()) == []
 
 
@@ -330,7 +330,7 @@ def test_v3_after_upload_isolated_from_v2(v2_created):
     _upload(c, "v2", [("a.pdf", _PDF_BYTES)])
     c.post("/api/projects/M31A/versions", json={"comment": "V3"})
 
-    v3_dir = projects_dir / "M31A" / "_versions" / "v3"
+    v3_dir = projects_dir / "M31A(main)" / "M31A V3"
     # В V3 нет PDF (мы их явно не загружали)
     assert not (v3_dir / "a.pdf").exists()
     info = json.loads((v3_dir / "project_info.json").read_text(encoding="utf-8"))

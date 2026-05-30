@@ -1,0 +1,39 @@
+{
+  "cap_usd": 2.0,
+  "spent_usd": 0.177526,
+  "remaining_usd": 1.822474,
+  "stopped": false,
+  "stop_reason": "",
+  "events": [
+    {
+      "step_id": "control_b6",
+      "label": "Reuse b6 control",
+      "predicted_usd": 0.0,
+      "actual_usd": 0.0,
+      "approved": false,
+      "remaining_before": 2.0,
+      "remaining_after": 2.0,
+      "note": "reused from /home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf/_experiments/pro_variantA_small_budget/20260422_115144"
+    },
+    {
+      "step_id": "b8",
+      "label": "Run b8",
+      "predicted_usd": 0.4,
+      "actual_usd": 0.177526,
+      "approved": true,
+      "remaining_before": 2.0,
+      "remaining_after": 1.822474,
+      "note": "calls=2 elapsed=70.8s"
+    },
+    {
+      "step_id": "b10",
+      "label": "Run b10",
+      "predicted_usd": 0.0,
+      "actual_usd": 0.0,
+      "approved": false,
+      "remaining_before": 1.8225,
+      "remaining_after": 1.8225,
+      "note": "early_stop: b8 did not survive"
+    }
+  ]
+}

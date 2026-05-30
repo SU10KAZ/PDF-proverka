@@ -1,0 +1,108 @@
+{
+  "baseline": {
+    "block_id": "6R74-W6N6-N6Q",
+    "page": 14,
+    "sheet": "9",
+    "label": "Схема установки П-образных элементов",
+    "sheet_type": "wall_reinforcement",
+    "unreadable_text": false,
+    "unreadable_details": null,
+    "summary": "Схема армирования торцов стен горизонтальными П-образными элементами. Показана установка элементов в шахматном порядке.",
+    "key_values_read": [
+      "П-образные элементы устанавливаются на торцах стен"
+    ],
+    "evidence_text_refs": [
+      {
+        "text_block_id": "6LCP-G6DC-JKM",
+        "role": "other",
+        "used_for": "cross_check",
+        "confidence": 0.4,
+        "source": "graph_backfill"
+      },
+      {
+        "text_block_id": "4RDA-QTRG-UYY",
+        "role": "other",
+        "used_for": "cross_check",
+        "confidence": 0.17,
+        "source": "graph_backfill"
+      }
+    ],
+    "findings": [],
+    "selected_text_block_ids": [
+      "6LCP-G6DC-JKM",
+      "4RDA-QTRG-UYY"
+    ]
+  },
+  "candidate_raw": {
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_stage02_full_project/20260423_230329/prepared/native_crops/block_6R74-W6N6-N6Q_native.png",
+    "image_size_bytes": 32733,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 3.708,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-35b-a3b",
+      "output": [
+        {
+          "type": "message",
+          "content": "{\n  \"block_id\": \"6R74-W6N6-N6Q\",\n  \"page\": 14,\n  \"label\": \"Схема установки горизонтальных П-образных элементов\",\n  \"sheet_type\": \"detail\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"Детальная схема армирования стен, показывающая взаимное расположение вертикальной арматуры и горизонтальных П-образных элементов. Изображение содержит выносные подписи и указатели направления просмотра. Размеры и конкретные марки арматуры на данном фрагменте отсутствуют.\",\n  \"key_values_read\": [\n    \"Заголовок: Схема установки горизонтальных П-образных элементов в стенах\",\n    \"Подпись: Вертикальная арматура\",\n    \"Подпись: П-образный элемент\",\n    \"Указатель: по 1\",\n    \"Указатель: 1\"\n  ],\n  \"findings\": []\n}"
+        }
+      ],
+      "stats": {
+        "input_tokens": 1669,
+        "total_output_tokens": 228,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 225.105147799301,
+        "time_to_first_token_seconds": 0.475
+      }
+    },
+    "content": "{\n  \"block_id\": \"6R74-W6N6-N6Q\",\n  \"page\": 14,\n  \"label\": \"Схема установки горизонтальных П-образных элементов\",\n  \"sheet_type\": \"detail\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"Детальная схема армирования стен, показывающая взаимное расположение вертикальной арматуры и горизонтальных П-образных элементов. Изображение содержит выносные подписи и указатели направления просмотра. Размеры и конкретные марки арматуры на данном фрагменте отсутствуют.\",\n  \"key_values_read\": [\n    \"Заголовок: Схема установки горизонтальных П-образных элементов в стенах\",\n    \"Подпись: Вертикальная арматура\",\n    \"Подпись: П-образный элемент\",\n    \"Указатель: по 1\",\n    \"Указатель: 1\"\n  ],\n  \"findings\": []\n}",
+    "reasoning": "",
+    "parsed": {
+      "block_id": "6R74-W6N6-N6Q",
+      "page": 14,
+      "label": "Схема установки горизонтальных П-образных элементов",
+      "sheet_type": "detail",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "Детальная схема армирования стен, показывающая взаимное расположение вертикальной арматуры и горизонтальных П-образных элементов. Изображение содержит выносные подписи и указатели направления просмотра. Размеры и конкретные марки арматуры на данном фрагменте отсутствуют.",
+      "key_values_read": [
+        "Заголовок: Схема установки горизонтальных П-образных элементов в стенах",
+        "Подпись: Вертикальная арматура",
+        "Подпись: П-образный элемент",
+        "Указатель: по 1",
+        "Указатель: 1"
+      ],
+      "findings": []
+    },
+    "parse_error": null,
+    "model": "qwen/qwen3.6-35b-a3b",
+    "block_id": "6R74-W6N6-N6Q",
+    "width": 1024,
+    "height": 541,
+    "run_index": 157
+  },
+  "compare": {
+    "block_id": "6R74-W6N6-N6Q",
+    "page": 14,
+    "label_source": "Схема установки горизонтальных П-образных элементов в армировании стен.",
+    "baseline_present": true,
+    "baseline_label": "Схема установки П-образных элементов",
+    "candidate_label": "Схема установки горизонтальных П-образных элементов",
+    "baseline_findings": 0,
+    "candidate_findings": 0,
+    "baseline_kv": 1,
+    "candidate_kv": 5,
+    "elapsed_s": 3.708,
+    "parse_ok": true,
+    "verdict": "likely_improved",
+    "notes": [
+      "candidate preserved findings presence and captured more key values"
+    ],
+    "baseline_summary": "Схема армирования торцов стен горизонтальными П-образными элементами. Показана установка элементов в шахматном порядке.",
+    "candidate_summary": "Детальная схема армирования стен, показывающая взаимное расположение вертикальной арматуры и горизонтальных П-образных элементов. Изображение содержит выносные подписи и указатели направления просмотра. Размеры и конкретные марки арматуры на данном фрагменте отсутствуют.",
+    "candidate_sheet_type": "detail",
+    "candidate_unreadable_text": false
+  }
+}

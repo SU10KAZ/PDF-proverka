@@ -1,0 +1,103 @@
+{
+  "baseline": {
+    "block_id": "7HMV-MMPQ-JJE",
+    "page": 12,
+    "sheet": "7",
+    "label": "Разрез Я-Я (установка П-образных элементов)",
+    "sheet_type": "sections_cuts",
+    "unreadable_text": false,
+    "unreadable_details": null,
+    "summary": "Горизонтальное сечение стены (разрез Я-Я), демонстрирующее установку П-образного элемента на торце стены. П-образный элемент охватывает крайние вертикальные стержни и заводится вглубь стены.",
+    "key_values_read": [
+      "П-образный элемент",
+      "Вертикальная арматура"
+    ],
+    "evidence_text_refs": [
+      {
+        "text_block_id": "KRVG-PGVT-7XC",
+        "role": "other",
+        "used_for": "cross_check",
+        "confidence": 0.26,
+        "source": "graph_backfill"
+      }
+    ],
+    "findings": [],
+    "selected_text_block_ids": [
+      "KRVG-PGVT-7XC"
+    ]
+  },
+  "candidate_raw": {
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_stage02_full_project/20260423_230329/prepared/native_crops/block_7HMV-MMPQ-JJE_native.png",
+    "image_size_bytes": 18694,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 2.818,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-35b-a3b",
+      "output": [
+        {
+          "type": "message",
+          "content": "{\n  \"block_id\": \"7HMV-MMPQ-JJE\",\n  \"page\": 12,\n  \"label\": \"Разрез Я-Я железобетонного элемента\",\n  \"sheet_type\": \"section\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлен поперечный разрез Я-Я железобетонного элемента. Конструкция выполнена в виде П-образного профиля с внутренним армированием. Основные элементы включают вертикальную арматуру и контурный каркас.\",\n  \"key_values_read\": [\n    \"Разрез Я-Я\",\n    \"П-образный элемент\",\n    \"Вертикальная арматура\",\n    \"Нижний ряд стержней (6 шт.)\",\n    \"Верхний ряд стержней (6 шт.)\",\n    \"Поперечные хомуты\",\n    \"Боковые стойки каркаса\"\n  ],\n  \"findings\": []\n}"
+        }
+      ],
+      "stats": {
+        "input_tokens": 1478,
+        "total_output_tokens": 231,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 225.72459059324527,
+        "time_to_first_token_seconds": 0.39
+      }
+    },
+    "content": "{\n  \"block_id\": \"7HMV-MMPQ-JJE\",\n  \"page\": 12,\n  \"label\": \"Разрез Я-Я железобетонного элемента\",\n  \"sheet_type\": \"section\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлен поперечный разрез Я-Я железобетонного элемента. Конструкция выполнена в виде П-образного профиля с внутренним армированием. Основные элементы включают вертикальную арматуру и контурный каркас.\",\n  \"key_values_read\": [\n    \"Разрез Я-Я\",\n    \"П-образный элемент\",\n    \"Вертикальная арматура\",\n    \"Нижний ряд стержней (6 шт.)\",\n    \"Верхний ряд стержней (6 шт.)\",\n    \"Поперечные хомуты\",\n    \"Боковые стойки каркаса\"\n  ],\n  \"findings\": []\n}",
+    "reasoning": "",
+    "parsed": {
+      "block_id": "7HMV-MMPQ-JJE",
+      "page": 12,
+      "label": "Разрез Я-Я железобетонного элемента",
+      "sheet_type": "section",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "На чертеже представлен поперечный разрез Я-Я железобетонного элемента. Конструкция выполнена в виде П-образного профиля с внутренним армированием. Основные элементы включают вертикальную арматуру и контурный каркас.",
+      "key_values_read": [
+        "Разрез Я-Я",
+        "П-образный элемент",
+        "Вертикальная арматура",
+        "Нижний ряд стержней (6 шт.)",
+        "Верхний ряд стержней (6 шт.)",
+        "Поперечные хомуты",
+        "Боковые стойки каркаса"
+      ],
+      "findings": []
+    },
+    "parse_error": null,
+    "model": "qwen/qwen3.6-35b-a3b",
+    "block_id": "7HMV-MMPQ-JJE",
+    "width": 1024,
+    "height": 345,
+    "run_index": 124
+  },
+  "compare": {
+    "block_id": "7HMV-MMPQ-JJE",
+    "page": 12,
+    "label_source": "На чертеже представлен разрез Я-Я железобетонного элемента с армированием.",
+    "baseline_present": true,
+    "baseline_label": "Разрез Я-Я (установка П-образных элементов)",
+    "candidate_label": "Разрез Я-Я железобетонного элемента",
+    "baseline_findings": 0,
+    "candidate_findings": 0,
+    "baseline_kv": 2,
+    "candidate_kv": 7,
+    "elapsed_s": 2.818,
+    "parse_ok": true,
+    "verdict": "likely_improved",
+    "notes": [
+      "candidate preserved findings presence and captured more key values"
+    ],
+    "baseline_summary": "Горизонтальное сечение стены (разрез Я-Я), демонстрирующее установку П-образного элемента на торце стены. П-образный элемент охватывает крайние вертикальные стержни и заводится вглубь стены.",
+    "candidate_summary": "На чертеже представлен поперечный разрез Я-Я железобетонного элемента. Конструкция выполнена в виде П-образного профиля с внутренним армированием. Основные элементы включают вертикальную арматуру и контурный каркас.",
+    "candidate_sheet_type": "section",
+    "candidate_unreadable_text": false
+  }
+}

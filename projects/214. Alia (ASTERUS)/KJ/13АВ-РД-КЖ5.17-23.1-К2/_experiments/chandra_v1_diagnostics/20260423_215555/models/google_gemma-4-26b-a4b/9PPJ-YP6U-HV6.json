@@ -1,0 +1,33 @@
+{
+  "model": "google/gemma-4-26b-a4b",
+  "image_name": "9PPJ-YP6U-HV6",
+  "block_id": "9PPJ-YP6U-HV6",
+  "width": 213,
+  "height": 1024,
+  "request": "image_smoke",
+  "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_215555/audit_images/native_crops/block_9PPJ-YP6U-HV6_native.png",
+  "image_size_bytes": 40079,
+  "ok": true,
+  "status_code": 200,
+  "elapsed_s": 3.35,
+  "error": null,
+  "response": {
+    "model_instance_id": "google/gemma-4-26b-a4b",
+    "output": [
+      {
+        "type": "message",
+        "content": "Тип схемы: Ведомость деталей (спецификация).\n\nОсновные элементы: Таблица с колонками «Поз.» (позиция), «Эскиз» (графическое изображение) и размерными данными; графические изображения деталей в разрезе/проекции; текстовые параметры размеров.\n\nЧитаемые детали:\n1. Позиция 8-Г-1: размеры a=500, b=140, c=500, d=40.\n2. Позиция 10-Г-5: размеры a=640, b=120, c=640, d=50.\n3. Позиция 12-Г-14: размеры a=960, b=180, c=960, d=60."
+      }
+    ],
+    "stats": {
+      "input_tokens": 374,
+      "total_output_tokens": 181,
+      "reasoning_output_tokens": 0,
+      "tokens_per_second": 189.14476262332292,
+      "time_to_first_token_seconds": 0.291
+    }
+  },
+  "content": "Тип схемы: Ведомость деталей (спецификация).\n\nОсновные элементы: Таблица с колонками «Поз.» (позиция), «Эскиз» (графическое изображение) и размерными данными; графические изображения деталей в разрезе/проекции; текстовые параметры размеров.\n\nЧитаемые детали:\n1. Позиция 8-Г-1: размеры a=500, b=140, c=500, d=40.\n2. Позиция 10-Г-5: размеры a=640, b=120, c=640, d=50.\n3. Позиция 12-Г-14: размеры a=960, b=180, c=960, d=60.",
+  "reasoning": "",
+  "verdict": "pass"
+}

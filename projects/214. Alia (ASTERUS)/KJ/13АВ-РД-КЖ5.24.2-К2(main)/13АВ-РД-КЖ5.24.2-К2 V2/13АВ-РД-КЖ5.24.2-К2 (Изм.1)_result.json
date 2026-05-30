@@ -1,0 +1,3364 @@
+{
+  "pdf_path": "АЛИЯ / Рабочая документация / КЖ / 13АВ-РД-КЖ5.24.2-К2 / 13АВ-РД-КЖ5.24.2-К2 (Изм.1).pdf",
+  "pages": [
+    {
+      "page_number": 1,
+      "width": 2480,
+      "height": 3507,
+      "blocks": [
+        {
+          "id": "964A-4FLX-ECJ",
+          "page_index": 1,
+          "coords_px": [
+            13,
+            23,
+            2480,
+            3507
+          ],
+          "coords_norm": [
+            0.0056406124093473006,
+            0.0068415051311288486,
+            1.0,
+            1.0
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": "<div data-bbox=\"14 5 178 14\" data-label=\"Page-Header\"><p></p></div><div data-bbox=\"523 60 924 102\" data-label=\"Text\"><p>ООО «СУ-10»<br/>117335, город Москва, улица Вавилова, дом 69/75,<br/>пом I, ком 7, оф 806</p></div><div data-bbox=\"304 277 733 300\" data-label=\"Section-Header\"><h1>РАБОЧАЯ ДОКУМЕНТАЦИЯ</h1></div><div data-bbox=\"469 315 572 333\" data-label=\"Text\"><p>Корпус 2.</p></div><div data-bbox=\"338 349 699 367\" data-label=\"Text\"><p>Плита перекрытия над 24 этажом</p></div><div data-bbox=\"401 383 639 400\" data-label=\"Text\"><p>13АВ-РД-КЖ5.24.2-К2</p></div><div data-bbox=\"453 450 585 467\" data-label=\"Section-Header\"><h2>Изменение 1</h2></div><div data-bbox=\"114 481 924 604\" data-label=\"Table\"><table><tr><td>ОБЪЕКТ:</td><td>Многоквартирные жилые дома со встроенными нежилыми помещениями и подземной автостоянкой, Блоки 13А и 13В</td></tr><tr><td>АДРЕС:</td><td>г. Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная</td></tr><tr><td>ЗАКАЗЧИК:</td><td>ООО «АСТЕРУС ДЕВЕЛОПМЕНТ»</td></tr></table></div><div data-bbox=\"441 932 598 947\" data-label=\"Page-Footer\"><p>Москва, 2026 г.</p></div>",
+          "created_at": "2026-05-12 14:51:08",
+          "ocr_html": "<div data-bbox=\"14 5 178 14\" data-label=\"Page-Header\"></div><div data-bbox=\"523 60 924 102\" data-label=\"Text\"><p>ООО «СУ-10»<br/>117335, город Москва, улица Вавилова, дом 69/75,<br/>пом I, ком 7, оф 806</p></div><div data-bbox=\"304 277 733 300\" data-label=\"Section-Header\"><h1>РАБОЧАЯ ДОКУМЕНТАЦИЯ</h1></div><div data-bbox=\"469 315 572 333\" data-label=\"Text\"><p>Корпус 2.</p></div><div data-bbox=\"338 349 699 367\" data-label=\"Text\"><p>Плита перекрытия над 24 этажом</p></div><div data-bbox=\"401 383 639 400\" data-label=\"Text\"><p>13АВ-РД-КЖ5.24.2-К2</p></div><div data-bbox=\"453 450 585 467\" data-label=\"Section-Header\"><h2>Изменение 1</h2></div><div data-bbox=\"114 481 924 604\" data-label=\"Table\"><table><tr><td>ОБЪЕКТ:</td><td>Многоквартирные жилые дома со встроенными нежилыми помещениями и подземной автостоянкой, Блоки 13А и 13В</td></tr><tr><td>АДРЕС:</td><td>г. Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная</td></tr><tr><td>ЗАКАЗЧИК:</td><td>ООО «АСТЕРУС ДЕВЕЛОПМЕНТ»</td></tr></table></div><div data-bbox=\"441 932 598 947\" data-label=\"Page-Footer\"><p>Москва, 2026 г.</p></div>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 964A-4FLX-ECJ"
+          }
+        }
+      ]
+    },
+    {
+      "page_number": 2,
+      "width": 2480,
+      "height": 3507,
+      "blocks": [
+        {
+          "id": "7JDC-REHM-769",
+          "page_index": 2,
+          "coords_px": [
+            13,
+            23,
+            2480,
+            3507
+          ],
+          "coords_norm": [
+            0.0056406124093473006,
+            0.0068415051311288486,
+            1.0,
+            1.0
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": "<div data-bbox=\"15 4 187 15\" data-label=\"Page-Header\"><p></p></div><div data-bbox=\"523 61 924 103\" data-label=\"Text\"><p>ООО «СУ-10»<br/>117335, город Москва, улица Вавилова, дом 69/75,<br/>пом I, ком 7, оф 806</p></div><div data-bbox=\"304 255 732 276\" data-label=\"Section-Header\"><h1>РАБОЧАЯ ДОКУМЕНТАЦИЯ</h1></div><div data-bbox=\"469 294 571 311\" data-label=\"Text\"><p>Корпус 2.</p></div><div data-bbox=\"338 326 699 344\" data-label=\"Text\"><p>Плита перекрытия над 24 этажом</p></div><div data-bbox=\"401 359 638 376\" data-label=\"Text\"><p>13АВ-РД-КЖ5.24.2-К2</p></div><div data-bbox=\"453 427 585 443\" data-label=\"Section-Header\"><h2>Изменение 1</h2></div><div data-bbox=\"166 459 870 571\" data-label=\"Table\"><table><tr><td>ОБЪЕКТ:</td><td>Многоквартирные жилые дома со встроенными нежилыми помещениями и подземной автостоянкой, Блоки 13А и 13В</td></tr><tr><td>АДРЕС:</td><td>г. Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная</td></tr><tr><td>ЗАКАЗЧИК:</td><td>ООО «АСТЕРУС ДЕВЕЛОПМЕНТ»</td></tr></table></div><div data-bbox=\"160 723 428 739\" data-label=\"Text\"><p>Главный инженер проекта</p></div><div data-bbox=\"502 696 655 764\" data-label=\"Text\"></div><div data-bbox=\"691 723 848 739\" data-label=\"Text\"><p>С.С. Баранский</p></div><div data-bbox=\"440 927 598 942\" data-label=\"Page-Footer\"><p>Москва, 2026 г.</p></div>",
+          "created_at": "2026-05-12 14:51:08",
+          "ocr_html": "<div data-bbox=\"15 4 187 15\" data-label=\"Page-Header\"></div><div data-bbox=\"523 61 924 103\" data-label=\"Text\"><p>ООО «СУ-10»<br/>117335, город Москва, улица Вавилова, дом 69/75,<br/>пом I, ком 7, оф 806</p></div><div data-bbox=\"304 255 732 276\" data-label=\"Section-Header\"><h1>РАБОЧАЯ ДОКУМЕНТАЦИЯ</h1></div><div data-bbox=\"469 294 571 311\" data-label=\"Text\"><p>Корпус 2.</p></div><div data-bbox=\"338 326 699 344\" data-label=\"Text\"><p>Плита перекрытия над 24 этажом</p></div><div data-bbox=\"401 359 638 376\" data-label=\"Text\"><p>13АВ-РД-КЖ5.24.2-К2</p></div><div data-bbox=\"453 427 585 443\" data-label=\"Section-Header\"><h2>Изменение 1</h2></div><div data-bbox=\"166 459 870 571\" data-label=\"Table\"><table><tr><td>ОБЪЕКТ:</td><td>Многоквартирные жилые дома со встроенными нежилыми помещениями и подземной автостоянкой, Блоки 13А и 13В</td></tr><tr><td>АДРЕС:</td><td>г. Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная</td></tr><tr><td>ЗАКАЗЧИК:</td><td>ООО «АСТЕРУС ДЕВЕЛОПМЕНТ»</td></tr></table></div><div data-bbox=\"160 723 428 739\" data-label=\"Text\"><p>Главный инженер проекта</p></div><div data-bbox=\"502 696 655 764\" data-label=\"Text\"></div><div data-bbox=\"691 723 848 739\" data-label=\"Text\"><p>С.С. Баранский</p></div><div data-bbox=\"440 927 598 942\" data-label=\"Page-Footer\"><p>Москва, 2026 г.</p></div>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 7JDC-REHM-769"
+          }
+        }
+      ]
+    },
+    {
+      "page_number": 3,
+      "width": 2482,
+      "height": 3510,
+      "blocks": [
+        {
+          "id": "4K9G-LXFE-ALV",
+          "page_index": 3,
+          "coords_px": [
+            13,
+            426,
+            2482,
+            3424
+          ],
+          "coords_norm": [
+            0.005636070853462158,
+            0.12136752136752137,
+            1.0,
+            0.9754985754985755
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": "<div data-bbox=\"18 3 183 17\" data-label=\"Page-Header\"><p></p></div><div data-bbox=\"213 45 794 99\" data-label=\"Section-Header\"><p>ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ<br/>«ГРУППА КОМПАНИЙ «ОЛИМППРОЕКТ»</p></div><div data-bbox=\"260 145 754 208\" data-label=\"Section-Header\"><p>РАБОЧАЯ ДОКУМЕНТАЦИЯ<br/><b>Корпус 2. Плита перекрытия над 24 этажом</b></p></div><div data-bbox=\"362 244 641 268\" data-label=\"Text\"><p><b>13АВ-РД-КЖ5.24.2-К2</b></p></div><div data-bbox=\"429 310 573 331\" data-label=\"Section-Header\"><p><b>Изменение 1</b></p></div><div data-bbox=\"175 338 876 468\" data-label=\"Text\"><hr/><p><b>ОБЪЕКТ:</b> Многоквартирные жилые дома со встроенными нежилыми помещениями и подземной автостоянкой, Блоки 13А и 13В» на земельном участке с кадастровым номером 77:08:0015001:18981, расположенном по адресу: г. Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная</p></div><div data-bbox=\"147 493 688 515\" data-label=\"Text\"><hr/><p><b>ЗАКАЗЧИК:</b> ООО «Строительное управление - 10»</p><hr/></div><div data-bbox=\"436 957 587 976\" data-label=\"Page-Footer\"><p>Москва, 2026 г.</p></div>",
+          "created_at": "2026-05-12 14:51:13",
+          "ocr_html": "<div data-bbox=\"18 3 183 17\" data-label=\"Page-Header\"></div><div data-bbox=\"213 45 794 99\" data-label=\"Section-Header\"><p>ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ<br/>«ГРУППА КОМПАНИЙ «ОЛИМППРОЕКТ»</p></div><div data-bbox=\"260 145 754 208\" data-label=\"Section-Header\"><p>РАБОЧАЯ ДОКУМЕНТАЦИЯ<br/><b>Корпус 2. Плита перекрытия над 24 этажом</b></p></div><div data-bbox=\"362 244 641 268\" data-label=\"Text\"><p><b>13АВ-РД-КЖ5.24.2-К2</b></p></div><div data-bbox=\"429 310 573 331\" data-label=\"Section-Header\"><p><b>Изменение 1</b></p></div><div data-bbox=\"175 338 876 468\" data-label=\"Text\"><hr/><p><b>ОБЪЕКТ:</b> Многоквартирные жилые дома со встроенными нежилыми помещениями и подземной автостоянкой, Блоки 13А и 13В» на земельном участке с кадастровым номером 77:08:0015001:18981, расположенном по адресу: г. Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная</p></div><div data-bbox=\"147 493 688 515\" data-label=\"Text\"><hr/><p><b>ЗАКАЗЧИК:</b> ООО «Строительное управление - 10»</p><hr/></div><div data-bbox=\"436 957 587 976\" data-label=\"Page-Footer\"><p>Москва, 2026 г.</p></div>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 4K9G-LXFE-ALV"
+          }
+        }
+      ]
+    },
+    {
+      "page_number": 4,
+      "width": 2482,
+      "height": 3510,
+      "blocks": [
+        {
+          "id": "9CT4-AHGJ-PDU",
+          "page_index": 4,
+          "coords_px": [
+            13,
+            426,
+            2482,
+            3424
+          ],
+          "coords_norm": [
+            0.005636070853462158,
+            0.12136752136752137,
+            1.0,
+            0.9754985754985755
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": "[Ошибка: Chandra: ConnectionError: HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Max retries exceeded with url: /v1/chat/completions (Caused by ReadTimeoutError(\"HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Read timed out. (read timeout=120)\")) после 1 попыток]",
+          "created_at": "2026-05-12 14:51:13",
+          "ocr_html": "<pre>[Ошибка: Chandra: ConnectionError: HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Max retries exceeded with url: /v1/chat/completions (Caused by ReadTimeoutError(&quot;HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Read timed out. (read timeout=120)&quot;)) после 1 попыток]</pre>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 9CT4-AHGJ-PDU"
+          }
+        }
+      ]
+    },
+    {
+      "page_number": 5,
+      "width": 2480,
+      "height": 3508,
+      "blocks": [
+        {
+          "id": "AC73-9GDN-YUR",
+          "page_index": 5,
+          "coords_px": [
+            283,
+            63,
+            2434,
+            1121
+          ],
+          "coords_norm": [
+            0.11442385173247381,
+            0.018233618233618232,
+            0.9814665592264303,
+            0.31965811965811963
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": "<div data-bbox=\"23 16 217 48\" data-label=\"Page-Header\"></div><div data-bbox=\"10 250 978 563\" data-label=\"Table\"><table border=\"1\"><thead><tr><th>№ п/п</th><th>Обозначение раздела</th><th>Перечень отклонений проектных решений РД от ПД</th><th>Примечание</th></tr></thead><tbody><tr><td>1</td><td>13АВ-РД-КЖ5.24.2-К2</td><td>Изменено расположение и размеры отверстий для внутренних инженерных систем в том числе предусмотрены новые отверстия</td><td></td></tr></tbody></table></div>",
+          "created_at": "2026-05-12 14:51:19",
+          "ocr_html": "<div data-bbox=\"23 16 217 48\" data-label=\"Page-Header\"></div><div data-bbox=\"10 250 978 563\" data-label=\"Table\"><table border=\"1\"><thead><tr><th>№ п/п</th><th>Обозначение раздела</th><th>Перечень отклонений проектных решений РД от ПД</th><th>Примечание</th></tr></thead><tbody><tr><td>1</td><td>13АВ-РД-КЖ5.24.2-К2</td><td>Изменено расположение и размеры отверстий для внутренних инженерных систем в том числе предусмотрены новые отверстия</td><td></td></tr></tbody></table></div>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: AC73-9GDN-YUR"
+          }
+        },
+        {
+          "id": "94V4-4XTU-NR7",
+          "page_index": 5,
+          "coords_px": [
+            293,
+            2936,
+            2428,
+            3402
+          ],
+          "coords_norm": [
+            0.11845286059629331,
+            0.837037037037037,
+            0.9790491539081386,
+            0.9698005698005698
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops/images/94V4-4XTU-NR7.pdf",
+          "ocr_text": null,
+          "category_code": "stamp",
+          "created_at": "2026-05-12 15:02:45",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [],
+            "match_score": 0.0,
+            "marker_text_sample": ""
+          }
+        }
+      ]
+    },
+    {
+      "page_number": 6,
+      "width": 2480,
+      "height": 3507,
+      "blocks": [
+        {
+          "id": "73AM-R7LV-77F",
+          "page_index": 6,
+          "coords_px": [
+            229,
+            69,
+            2438,
+            1511
+          ],
+          "coords_norm": [
+            0.0926672038678485,
+            0.019954389965792473,
+            0.9830781627719581,
+            0.43101482326111745
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": "[Ошибка: Chandra: ConnectionError: HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Max retries exceeded with url: /v1/chat/completions (Caused by ReadTimeoutError(\"HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Read timed out. (read timeout=120)\")) после 1 попыток]",
+          "created_at": "2026-05-12 14:51:23",
+          "ocr_html": "<pre>[Ошибка: Chandra: ConnectionError: HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Max retries exceeded with url: /v1/chat/completions (Caused by ReadTimeoutError(&quot;HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Read timed out. (read timeout=120)&quot;)) после 1 попыток]</pre>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 73AM-R7LV-77F"
+          }
+        },
+        {
+          "id": "7LG4-L966-X7P",
+          "page_index": 6,
+          "coords_px": [
+            233,
+            3169,
+            2416,
+            3429
+          ],
+          "coords_norm": [
+            0.09427880741337631,
+            0.9036488027366021,
+            0.9742143432715552,
+            0.9777651083238312
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops/images/7LG4-L966-X7P.pdf",
+          "ocr_text": null,
+          "category_code": "stamp",
+          "created_at": "2026-05-12 15:02:41",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [],
+            "match_score": 0.0,
+            "marker_text_sample": ""
+          }
+        }
+      ]
+    },
+    {
+      "page_number": 7,
+      "width": 9932,
+      "height": 7015,
+      "blocks": [
+        {
+          "id": "6N7H-MDD3-FH4",
+          "page_index": 7,
+          "coords_px": [
+            149,
+            123,
+            2501,
+            3901
+          ],
+          "coords_norm": [
+            0.015099657741091201,
+            0.01767388825541619,
+            0.25186229112140124,
+            0.556157354618016
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": "[Ошибка: Chandra: ConnectionError: HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Max retries exceeded with url: /v1/chat/completions (Caused by ReadTimeoutError(\"HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Read timed out. (read timeout=120)\")) после 1 попыток]",
+          "created_at": "2026-05-12 14:51:31",
+          "ocr_html": "<pre>[Ошибка: Chandra: ConnectionError: HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Max retries exceeded with url: /v1/chat/completions (Caused by ReadTimeoutError(&quot;HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Read timed out. (read timeout=120)&quot;)) после 1 попыток]</pre>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 6N7H-MDD3-FH4"
+          }
+        },
+        {
+          "id": "9F6M-XQUW-JUY",
+          "page_index": 7,
+          "coords_px": [
+            137,
+            4765,
+            3501,
+            6991
+          ],
+          "coords_norm": [
+            0.013891685121803906,
+            0.6793044469783353,
+            0.35252667606200927,
+            0.9965792474344356
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "polygon",
+          "image_file": null,
+          "ocr_text": "[Ошибка: Chandra: ConnectionError: HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Max retries exceeded with url: /v1/chat/completions (Caused by ReadTimeoutError(\"HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Read timed out. (read timeout=120)\")) после 1 попыток]",
+          "polygon_points": [
+            [
+              155,
+              4793
+            ],
+            [
+              2437,
+              4765
+            ],
+            [
+              2437,
+              5365
+            ],
+            [
+              3501,
+              5465
+            ],
+            [
+              3427,
+              6241
+            ],
+            [
+              2251,
+              6317
+            ],
+            [
+              2263,
+              6991
+            ],
+            [
+              137,
+              6965
+            ]
+          ],
+          "created_at": "2026-05-12 14:51:40",
+          "ocr_html": "<pre>[Ошибка: Chandra: ConnectionError: HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Max retries exceeded with url: /v1/chat/completions (Caused by ReadTimeoutError(&quot;HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Read timed out. (read timeout=120)&quot;)) после 1 попыток]</pre>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 9F6M-XQUW-JUY"
+          }
+        },
+        {
+          "id": "7KKG-UK7T-QLT",
+          "page_index": 7,
+          "coords_px": [
+            2773,
+            31,
+            5034,
+            4861
+          ],
+          "coords_norm": [
+            0.27924300382524664,
+            0.004561003420752566,
+            0.5069458425609019,
+            0.692987457240593
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": "[Ошибка: suspicious OCR output: JSON layout-dump (bbox без HTML content)]",
+          "created_at": "2026-05-12 14:51:51",
+          "ocr_html": "<pre>[Ошибка: suspicious OCR output: JSON layout-dump (bbox без HTML content)]</pre>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 7KKG-UK7T-QLT"
+          }
+        },
+        {
+          "id": "7RGD-NYAN-WQ9",
+          "page_index": 7,
+          "coords_px": [
+            5214,
+            11,
+            9932,
+            5815
+          ],
+          "coords_norm": [
+            0.5250654318502114,
+            0.0017103762827822121,
+            1.0,
+            0.8289623717217788
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "polygon",
+          "image_file": null,
+          "ocr_text": "[Ошибка: Chandra: ConnectionError: HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Max retries exceeded with url: /v1/chat/completions (Caused by ReadTimeoutError(\"HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Read timed out. (read timeout=120)\")) после 1 попыток]",
+          "polygon_points": [
+            [
+              5214,
+              11
+            ],
+            [
+              5226,
+              5815
+            ],
+            [
+              7642,
+              5779
+            ],
+            [
+              7652,
+              3851
+            ],
+            [
+              9932,
+              3812
+            ],
+            [
+              9918,
+              11
+            ]
+          ],
+          "created_at": "2026-05-12 14:52:03",
+          "ocr_html": "<pre>[Ошибка: Chandra: ConnectionError: HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Max retries exceeded with url: /v1/chat/completions (Caused by ReadTimeoutError(&quot;HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Read timed out. (read timeout=120)&quot;)) после 1 попыток]</pre>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 7RGD-NYAN-WQ9"
+          }
+        },
+        {
+          "id": "933F-HMH9-6JJ",
+          "page_index": 7,
+          "coords_px": [
+            7678,
+            6285,
+            9894,
+            6951
+          ],
+          "coords_norm": [
+            0.7731024763438695,
+            0.8959521094640821,
+            0.9961747533722569,
+            0.9908779931584949
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops/images/933F-HMH9-6JJ.pdf",
+          "ocr_text": null,
+          "category_code": "stamp",
+          "created_at": "2026-05-12 15:02:26",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [],
+            "match_score": 0.0,
+            "marker_text_sample": ""
+          }
+        },
+        {
+          "id": "QQTA-HAWL-GQE",
+          "page_index": 7,
+          "coords_px": [
+            5816,
+            6343,
+            7202,
+            6951
+          ],
+          "coords_norm": [
+            0.5856653915844574,
+            0.9042189281641961,
+            0.7251862291121401,
+            0.9908779931584949
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": "[Ошибка: Chandra: ConnectionError: HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Max retries exceeded with url: /v1/chat/completions (Caused by ReadTimeoutError(\"HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Read timed out. (read timeout=120)\")) после 1 попыток]",
+          "created_at": "2026-05-12 15:02:31",
+          "ocr_html": "<pre>[Ошибка: Chandra: ConnectionError: HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Max retries exceeded with url: /v1/chat/completions (Caused by ReadTimeoutError(&quot;HTTPSConnectionPool(host='louvred-madie-gigglier.ngrok-free.dev', port=443): Read timed out. (read timeout=120)&quot;)) после 1 попыток]</pre>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: QQTA-HAWL-GQE"
+          }
+        }
+      ]
+    },
+    {
+      "page_number": 8,
+      "width": 14894,
+      "height": 7015,
+      "blocks": [
+        {
+          "id": "63PK-4RF3-FRH",
+          "page_index": 8,
+          "coords_px": [
+            241,
+            0,
+            7522,
+            7015
+          ],
+          "coords_norm": [
+            0.01624815361890694,
+            0.0,
+            0.505035584799248,
+            1.0
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/63PK-4RF3-FRH.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:52:24",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/63PK-4RF3-FRH.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 63PK-4RF3-FRH"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/63PK-4RF3-FRH.pdf"
+        },
+        {
+          "id": "6QFP-3PJR-NF4",
+          "page_index": 8,
+          "coords_px": [
+            7550,
+            277,
+            12194,
+            3173
+          ],
+          "coords_norm": [
+            0.506915536457634,
+            0.039623717217787915,
+            0.8187189472270713,
+            0.4523945267958951
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "polygon",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/6QFP-3PJR-NF4.pdf",
+          "ocr_text": null,
+          "polygon_points": [
+            [
+              12194,
+              299
+            ],
+            [
+              12150,
+              1403
+            ],
+            [
+              10800,
+              1489
+            ],
+            [
+              10928,
+              2905
+            ],
+            [
+              10166,
+              3055
+            ],
+            [
+              9254,
+              3129
+            ],
+            [
+              7592,
+              3173
+            ],
+            [
+              7550,
+              277
+            ]
+          ],
+          "created_at": "2026-05-12 14:52:42",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/6QFP-3PJR-NF4.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 6QFP-3PJR-NF4"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/6QFP-3PJR-NF4.pdf"
+        },
+        {
+          "id": "TAVT-JWDG-MKR",
+          "page_index": 8,
+          "coords_px": [
+            7560,
+            2931,
+            12754,
+            5939
+          ],
+          "coords_norm": [
+            0.5075869477642003,
+            0.41790193842645385,
+            0.8563179803947899,
+            0.8466362599771949
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "polygon",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/TAVT-JWDG-MKR.pdf",
+          "ocr_text": null,
+          "polygon_points": [
+            [
+              12454,
+              2931
+            ],
+            [
+              12754,
+              4337
+            ],
+            [
+              12568,
+              4771
+            ],
+            [
+              11100,
+              4899
+            ],
+            [
+              11088,
+              5833
+            ],
+            [
+              7592,
+              5939
+            ],
+            [
+              7560,
+              3183
+            ]
+          ],
+          "created_at": "2026-05-12 14:52:53",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/TAVT-JWDG-MKR.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: TAVT-JWDG-MKR"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/TAVT-JWDG-MKR.pdf"
+        },
+        {
+          "id": "76GY-GTDL-K3C",
+          "page_index": 8,
+          "coords_px": [
+            12714,
+            3611,
+            14886,
+            4327
+          ],
+          "coords_norm": [
+            0.8536323351685242,
+            0.5148232611174458,
+            0.9994628709547468,
+            0.6168757126567845
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": "<div data-bbox=\"20 24 209 65\" data-label=\"Page-Header\"><p></p></div><div data-bbox=\"58 268 944 960\" data-label=\"List-Group\"><ol style=\"list-style-type: none;\"><li>1. Общие указания см. лист 1.</li><li>2. Армирование см. листы 3-10.</li><li>3. Объём захватки бетонирования следует назначить исходя из гарантированной обеспеченности поставки бетонной смеси.</li><li>4. Рабочие швы бетонирования следует располагать на расстоянии <math>\\frac{1}{3}</math> пролёта между вертикальными несущими конструкциями.</li><li>5. Укладка следующего слоя бетонной смеси должна быть произведена до начала схватывания бетона предыдущего слоя.</li><li>6. Толщина укладываемого слоя не должна быть более 1,25 длины рабочей части глубинного вибратора.</li><li>7. Перед бетонирование поверхности рабочих швов должны быть очищены от мусора, грязи, отслаивающихся кусков бетона, масел, снега и льда, цементной пленки и др. Непосредственно перед укладкой бетонной смеси очищенные поверхности должны быть промыты водой и просушены струёй воздуха.</li><li>8. Вертикальные конструкции 24 этажа см. 13АВ-РД-КЖ5.24.1-К2.</li></ol></div>",
+          "created_at": "2026-05-12 14:53:05",
+          "ocr_html": "<div data-bbox=\"20 24 209 65\" data-label=\"Page-Header\"></div><div data-bbox=\"58 268 944 960\" data-label=\"List-Group\"><ol style=\"list-style-type: none;\"><li>1. Общие указания см. лист 1.</li><li>2. Армирование см. листы 3-10.</li><li>3. Объём захватки бетонирования следует назначить исходя из гарантированной обеспеченности поставки бетонной смеси.</li><li>4. Рабочие швы бетонирования следует располагать на расстоянии <math>\\frac{1}{3}</math> пролёта между вертикальными несущими конструкциями.</li><li>5. Укладка следующего слоя бетонной смеси должна быть произведена до начала схватывания бетона предыдущего слоя.</li><li>6. Толщина укладываемого слоя не должна быть более 1,25 длины рабочей части глубинного вибратора.</li><li>7. Перед бетонирование поверхности рабочих швов должны быть очищены от мусора, грязи, отслаивающихся кусков бетона, масел, снега и льда, цементной пленки и др. Непосредственно перед укладкой бетонной смеси очищенные поверхности должны быть промыты водой и просушены струёй воздуха.</li><li>8. Вертикальные конструкции 24 этажа см. 13АВ-РД-КЖ5.24.1-К2.</li></ol></div>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 76GY-GTDL-K3C"
+          }
+        },
+        {
+          "id": "6YJT-CVGH-969",
+          "page_index": 8,
+          "coords_px": [
+            12604,
+            23,
+            14886,
+            1453
+          ],
+          "coords_norm": [
+            0.8462468107962938,
+            0.0034207525655644243,
+            0.9994628709547468,
+            0.2072405929304447
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": "[Ошибка: Chandra: time budget exhausted перед запросом (attempt 0)]",
+          "created_at": "2026-05-12 14:53:07",
+          "ocr_html": "<pre>[Ошибка: Chandra: time budget exhausted перед запросом (attempt 0)]</pre>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 6YJT-CVGH-969"
+          }
+        },
+        {
+          "id": "6JCJ-9NCP-WNN",
+          "page_index": 8,
+          "coords_px": [
+            11642,
+            6251,
+            12530,
+            6881
+          ],
+          "coords_norm": [
+            0.7816570431046059,
+            0.8911060433295325,
+            0.8412783671277024,
+            0.9809007981755986
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/6JCJ-9NCP-WNN.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:53:13",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/6JCJ-9NCP-WNN.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 6JCJ-9NCP-WNN"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/6JCJ-9NCP-WNN.pdf"
+        },
+        {
+          "id": "64JW-NJG6-3CQ",
+          "page_index": 8,
+          "coords_px": [
+            12646,
+            6295,
+            14840,
+            6967
+          ],
+          "coords_norm": [
+            0.8490667382838727,
+            0.8973774230330672,
+            0.9963743789445414,
+            0.9931584948688712
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops/images/64JW-NJG6-3CQ.pdf",
+          "ocr_text": null,
+          "category_code": "stamp",
+          "created_at": "2026-05-12 15:02:23",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [],
+            "match_score": 0.0,
+            "marker_text_sample": ""
+          }
+        }
+      ]
+    },
+    {
+      "page_number": 9,
+      "width": 14894,
+      "height": 7015,
+      "blocks": [
+        {
+          "id": "VXRK-KM36-9T6",
+          "page_index": 9,
+          "coords_px": [
+            312,
+            41,
+            5388,
+            4933
+          ],
+          "coords_norm": [
+            0.02094803276487176,
+            0.0059863169897377425,
+            0.3617564119779777,
+            0.7032497149372862
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/VXRK-KM36-9T6.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:53:22",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/VXRK-KM36-9T6.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: VXRK-KM36-9T6"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/VXRK-KM36-9T6.pdf"
+        },
+        {
+          "id": "X7QD-T3NK-WC6",
+          "page_index": 9,
+          "coords_px": [
+            5418,
+            69,
+            10708,
+            4835
+          ],
+          "coords_norm": [
+            0.36377064589767694,
+            0.009977194982896237,
+            0.7189472270713039,
+            0.6892816419612314
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/X7QD-T3NK-WC6.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:53:26",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/X7QD-T3NK-WC6.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: X7QD-T3NK-WC6"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/X7QD-T3NK-WC6.pdf"
+        },
+        {
+          "id": "7URY-TRTF-CNN",
+          "page_index": 9,
+          "coords_px": [
+            241,
+            6311,
+            3114,
+            6965
+          ],
+          "coords_norm": [
+            0.01624815361890694,
+            0.8996579247434435,
+            0.20907748086477776,
+            0.9928734321550741
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": "[Ошибка: Chandra: time budget exhausted перед запросом (attempt 0)]",
+          "created_at": "2026-05-12 14:53:35",
+          "ocr_html": "<pre>[Ошибка: Chandra: time budget exhausted перед запросом (attempt 0)]</pre>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 7URY-TRTF-CNN"
+          }
+        },
+        {
+          "id": "9DWC-U9QE-KLJ",
+          "page_index": 9,
+          "coords_px": [
+            3486,
+            5071,
+            7566,
+            6973
+          ],
+          "coords_norm": [
+            0.23405398146904793,
+            0.7229190421892816,
+            0.5079897945481402,
+            0.9940136830102623
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/9DWC-U9QE-KLJ.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:53:38",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/9DWC-U9QE-KLJ.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 9DWC-U9QE-KLJ"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/9DWC-U9QE-KLJ.pdf"
+        },
+        {
+          "id": "4M36-H3TD-9J3",
+          "page_index": 9,
+          "coords_px": [
+            7695,
+            5165,
+            9976,
+            6473
+          ],
+          "coords_norm": [
+            0.5167181415335034,
+            0.7363169897377423,
+            0.6697999194306432,
+            0.9227480045610034
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/4M36-H3TD-9J3.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:53:45",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/4M36-H3TD-9J3.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 4M36-H3TD-9J3"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/4M36-H3TD-9J3.pdf"
+        },
+        {
+          "id": "93TC-GFYW-RPR",
+          "page_index": 9,
+          "coords_px": [
+            10286,
+            4907,
+            12554,
+            6843
+          ],
+          "coords_norm": [
+            0.6906136699342017,
+            0.6995438996579247,
+            0.8428897542634618,
+            0.9754846066134549
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "polygon",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/93TC-GFYW-RPR.pdf",
+          "ocr_text": null,
+          "polygon_points": [
+            [
+              10286,
+              5055
+            ],
+            [
+              10334,
+              6843
+            ],
+            [
+              12554,
+              6819
+            ],
+            [
+              12444,
+              6141
+            ],
+            [
+              11272,
+              6053
+            ],
+            [
+              11222,
+              4907
+            ]
+          ],
+          "created_at": "2026-05-12 14:53:54",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/93TC-GFYW-RPR.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 93TC-GFYW-RPR"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/93TC-GFYW-RPR.pdf"
+        },
+        {
+          "id": "6WVV-YHLD-VRW",
+          "page_index": 9,
+          "coords_px": [
+            10912,
+            227,
+            14206,
+            4027
+          ],
+          "coords_norm": [
+            0.7326440177252584,
+            0.03249714937286203,
+            0.9538069021082315,
+            0.5741163055872291
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/6WVV-YHLD-VRW.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:53:59",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/6WVV-YHLD-VRW.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 6WVV-YHLD-VRW"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/6WVV-YHLD-VRW.pdf"
+        },
+        {
+          "id": "4RA7-DT9D-LU7",
+          "page_index": 9,
+          "coords_px": [
+            12346,
+            4385,
+            14858,
+            5707
+          ],
+          "coords_norm": [
+            0.8289243990868806,
+            0.6251425313568986,
+            0.997582919296361,
+            0.8135689851767389
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": "[Ошибка: Chandra: time budget exhausted перед запросом (attempt 0)]",
+          "created_at": "2026-05-12 14:54:01",
+          "ocr_html": "<pre>[Ошибка: Chandra: time budget exhausted перед запросом (attempt 0)]</pre>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 4RA7-DT9D-LU7"
+          }
+        },
+        {
+          "id": "A4P3-UNKK-E6V",
+          "page_index": 9,
+          "coords_px": [
+            12656,
+            6289,
+            14840,
+            6963
+          ],
+          "coords_norm": [
+            0.8497381495904391,
+            0.8965222348916762,
+            0.9963743789445414,
+            0.992588369441277
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops/images/A4P3-UNKK-E6V.pdf",
+          "ocr_text": null,
+          "category_code": "stamp",
+          "created_at": "2026-05-12 15:02:19",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [],
+            "match_score": 0.0,
+            "marker_text_sample": ""
+          }
+        }
+      ]
+    },
+    {
+      "page_number": 10,
+      "width": 14894,
+      "height": 7015,
+      "blocks": [
+        {
+          "id": "LW74-HEAR-CHF",
+          "page_index": 10,
+          "coords_px": [
+            11930,
+            35,
+            14894,
+            843
+          ],
+          "coords_norm": [
+            0.8009936887337182,
+            0.005131128848346636,
+            1.0,
+            0.12029646522234892
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": "[Ошибка: Chandra: time budget exhausted перед запросом (attempt 0)]",
+          "created_at": "2026-05-12 14:54:11",
+          "ocr_html": "<pre>[Ошибка: Chandra: time budget exhausted перед запросом (attempt 0)]</pre>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: LW74-HEAR-CHF"
+          }
+        },
+        {
+          "id": "4WFR-X7GY-GCT",
+          "page_index": 10,
+          "coords_px": [
+            12590,
+            3925,
+            14772,
+            4969
+          ],
+          "coords_norm": [
+            0.8453068349671008,
+            0.5595781071835804,
+            0.9918087820598899,
+            0.7083808437856328
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": "[Ошибка: Chandra: time budget exhausted перед запросом (attempt 0)]",
+          "created_at": "2026-05-12 14:54:16",
+          "ocr_html": "<pre>[Ошибка: Chandra: time budget exhausted перед запросом (attempt 0)]</pre>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 4WFR-X7GY-GCT"
+          }
+        },
+        {
+          "id": "6CXN-9UA7-7WU",
+          "page_index": 10,
+          "coords_px": [
+            11414,
+            3123,
+            12412,
+            4951
+          ],
+          "coords_norm": [
+            0.7663488653148919,
+            0.4452679589509692,
+            0.8333557137102189,
+            0.7058152793614595
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/6CXN-9UA7-7WU.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:54:18",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/6CXN-9UA7-7WU.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 6CXN-9UA7-7WU"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/6CXN-9UA7-7WU.pdf"
+        },
+        {
+          "id": "4D96-AHTA-73G",
+          "page_index": 10,
+          "coords_px": [
+            12514,
+            1005,
+            14706,
+            2237
+          ],
+          "coords_norm": [
+            0.8402041090371962,
+            0.14338654503990877,
+            0.9873774674365516,
+            0.31898517673888255
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/4D96-AHTA-73G.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:54:21",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/4D96-AHTA-73G.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 4D96-AHTA-73G"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/4D96-AHTA-73G.pdf"
+        },
+        {
+          "id": "64UN-7Q7T-CAH",
+          "page_index": 10,
+          "coords_px": [
+            2070,
+            5267,
+            4382,
+            6983
+          ],
+          "coords_norm": [
+            0.13898214045924534,
+            0.7508551881413911,
+            0.2942124345373976,
+            0.9954389965792474
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/64UN-7Q7T-CAH.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:54:26",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/64UN-7Q7T-CAH.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 64UN-7Q7T-CAH"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/64UN-7Q7T-CAH.pdf"
+        },
+        {
+          "id": "ENUL-L34G-CNL",
+          "page_index": 10,
+          "coords_px": [
+            4858,
+            5509,
+            8552,
+            6535
+          ],
+          "coords_norm": [
+            0.32617161272995837,
+            0.7853477765108324,
+            0.5741909493755875,
+            0.9315849486887116
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/ENUL-L34G-CNL.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:54:30",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/ENUL-L34G-CNL.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: ENUL-L34G-CNL"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/ENUL-L34G-CNL.pdf"
+        },
+        {
+          "id": "7Y7J-AGEP-ADD",
+          "page_index": 10,
+          "coords_px": [
+            566,
+            55,
+            5828,
+            5119
+          ],
+          "coords_norm": [
+            0.038001879951658386,
+            0.00798175598631699,
+            0.3912985094668994,
+            0.7297605473204105
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/7Y7J-AGEP-ADD.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:54:39",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/7Y7J-AGEP-ADD.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 7Y7J-AGEP-ADD"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/7Y7J-AGEP-ADD.pdf"
+        },
+        {
+          "id": "9GMG-6GWH-D33",
+          "page_index": 10,
+          "coords_px": [
+            5854,
+            31,
+            11336,
+            5135
+          ],
+          "coords_norm": [
+            0.3930441788639721,
+            0.004561003420752566,
+            0.7611118571236739,
+            0.7320410490307868
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/9GMG-6GWH-D33.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:54:43",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/9GMG-6GWH-D33.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 9GMG-6GWH-D33"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/9GMG-6GWH-D33.pdf"
+        },
+        {
+          "id": "94JK-FJCP-VPP",
+          "page_index": 10,
+          "coords_px": [
+            12626,
+            6293,
+            14830,
+            6969
+          ],
+          "coords_norm": [
+            0.8477239156707399,
+            0.8970923603192702,
+            0.9957029676379751,
+            0.9934435575826682
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops/images/94JK-FJCP-VPP.pdf",
+          "ocr_text": null,
+          "category_code": "stamp",
+          "created_at": "2026-05-12 15:02:07",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [],
+            "match_score": 0.0,
+            "marker_text_sample": ""
+          }
+        },
+        {
+          "id": "PQWG-TRJV-HEN",
+          "page_index": 10,
+          "coords_px": [
+            11568,
+            6119,
+            12544,
+            6643
+          ],
+          "coords_norm": [
+            0.7766885994360145,
+            0.8722919042189282,
+            0.8422183429568953,
+            0.9469783352337514
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/PQWG-TRJV-HEN.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 15:02:13",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/PQWG-TRJV-HEN.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: PQWG-TRJV-HEN"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/PQWG-TRJV-HEN.pdf"
+        }
+      ]
+    },
+    {
+      "page_number": 11,
+      "width": 14894,
+      "height": 7015,
+      "blocks": [
+        {
+          "id": "74LX-UKWY-TYK",
+          "page_index": 11,
+          "coords_px": [
+            240,
+            55,
+            4538,
+            4041
+          ],
+          "coords_norm": [
+            0.01611387135759366,
+            0.00798175598631699,
+            0.3046864509198335,
+            0.5761117445838084
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/74LX-UKWY-TYK.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:54:52",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/74LX-UKWY-TYK.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 74LX-UKWY-TYK"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/74LX-UKWY-TYK.pdf"
+        },
+        {
+          "id": "6KFV-GXHN-76T",
+          "page_index": 11,
+          "coords_px": [
+            4566,
+            55,
+            8934,
+            3983
+          ],
+          "coords_norm": [
+            0.30656640257821943,
+            0.00798175598631699,
+            0.599838861286424,
+            0.5678449258836944
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/6KFV-GXHN-76T.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:54:55",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/6KFV-GXHN-76T.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 6KFV-GXHN-76T"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/6KFV-GXHN-76T.pdf"
+        },
+        {
+          "id": "4YFK-WTLG-HR7",
+          "page_index": 11,
+          "coords_px": [
+            8922,
+            783,
+            10792,
+            3359
+          ],
+          "coords_norm": [
+            0.5990331677185444,
+            0.11174458380843785,
+            0.7245870820464617,
+            0.4789053591790194
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "polygon",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/4YFK-WTLG-HR7.pdf",
+          "ocr_text": null,
+          "polygon_points": [
+            [
+              11956,
+              3359
+            ],
+            [
+              12200,
+              2331
+            ],
+            [
+              11368,
+              63
+            ],
+            [
+              9020,
+              31
+            ],
+            [
+              8922,
+              2445
+            ],
+            [
+              9020,
+              3359
+            ]
+          ],
+          "created_at": "2026-05-12 14:55:04",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/4YFK-WTLG-HR7.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 4YFK-WTLG-HR7"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/4YFK-WTLG-HR7.pdf"
+        },
+        {
+          "id": "7XA6-TW6X-YVC",
+          "page_index": 11,
+          "coords_px": [
+            11888,
+            97,
+            14848,
+            923
+          ],
+          "coords_norm": [
+            0.7981737612461394,
+            0.013968072976054732,
+            0.9969115079897946,
+            0.13169897377423034
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": "[Ошибка: Chandra: time budget exhausted перед запросом (attempt 0)]",
+          "created_at": "2026-05-12 14:55:15",
+          "ocr_html": "<pre>[Ошибка: Chandra: time budget exhausted перед запросом (attempt 0)]</pre>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 7XA6-TW6X-YVC"
+          }
+        },
+        {
+          "id": "77FM-FNFM-4CL",
+          "page_index": 11,
+          "coords_px": [
+            12320,
+            1047,
+            14578,
+            3167
+          ],
+          "coords_norm": [
+            0.827178729689808,
+            0.14937286202964653,
+            0.9787834027125016,
+            0.45153933865450396
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/77FM-FNFM-4CL.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:55:18",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/77FM-FNFM-4CL.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 77FM-FNFM-4CL"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/77FM-FNFM-4CL.pdf"
+        },
+        {
+          "id": "4RKD-CKWF-KAA",
+          "page_index": 11,
+          "coords_px": [
+            9188,
+            3365,
+            12148,
+            6227
+          ],
+          "coords_norm": [
+            0.6168927084732106,
+            0.4797605473204105,
+            0.8156304552168658,
+            0.8876852907639681
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/4RKD-CKWF-KAA.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:55:23",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/4RKD-CKWF-KAA.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 4RKD-CKWF-KAA"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/4RKD-CKWF-KAA.pdf"
+        },
+        {
+          "id": "4YHV-A6AN-F3J",
+          "page_index": 11,
+          "coords_px": [
+            12568,
+            4241,
+            14862,
+            5437
+          ],
+          "coords_norm": [
+            0.8438297300926547,
+            0.604618015963512,
+            0.9978514838189875,
+            0.7750855188141391
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": "[Ошибка: Chandra: time budget exhausted перед запросом (attempt 0)]",
+          "created_at": "2026-05-12 14:55:26",
+          "ocr_html": "<pre>[Ошибка: Chandra: time budget exhausted перед запросом (attempt 0)]</pre>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 4YHV-A6AN-F3J"
+          }
+        },
+        {
+          "id": "9YXQ-6Q66-PNT",
+          "page_index": 11,
+          "coords_px": [
+            11432,
+            6251,
+            12480,
+            6855
+          ],
+          "coords_norm": [
+            0.7675574056667114,
+            0.8911060433295325,
+            0.8379213105948704,
+            0.9771949828962372
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/9YXQ-6Q66-PNT.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:55:29",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/9YXQ-6Q66-PNT.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 9YXQ-6Q66-PNT"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/9YXQ-6Q66-PNT.pdf"
+        },
+        {
+          "id": "9VLF-RF7G-JGQ",
+          "page_index": 11,
+          "coords_px": [
+            222,
+            4041,
+            8872,
+            6845
+          ],
+          "coords_norm": [
+            0.014905331005774137,
+            0.5761117445838084,
+            0.5956761111857124,
+            0.975769669327252
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/9VLF-RF7G-JGQ.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:55:37",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/9VLF-RF7G-JGQ.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 9VLF-RF7G-JGQ"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/9VLF-RF7G-JGQ.pdf"
+        },
+        {
+          "id": "6TEL-4YCW-UY7",
+          "page_index": 11,
+          "coords_px": [
+            12646,
+            6295,
+            14840,
+            6963
+          ],
+          "coords_norm": [
+            0.8490667382838727,
+            0.8973774230330672,
+            0.9963743789445414,
+            0.992588369441277
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops/images/6TEL-4YCW-UY7.pdf",
+          "ocr_text": null,
+          "category_code": "stamp",
+          "created_at": "2026-05-12 15:02:03",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [],
+            "match_score": 0.0,
+            "marker_text_sample": ""
+          }
+        }
+      ]
+    },
+    {
+      "page_number": 12,
+      "width": 7015,
+      "height": 4961,
+      "blocks": [
+        {
+          "id": "MQKA-9XE9-KXJ",
+          "page_index": 12,
+          "coords_px": [
+            183,
+            33,
+            4107,
+            3611
+          ],
+          "coords_norm": [
+            0.026225769669327253,
+            0.0068520757758968156,
+            0.5855188141391106,
+            0.727932285368803
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/MQKA-9XE9-KXJ.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:55:54",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/MQKA-9XE9-KXJ.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: MQKA-9XE9-KXJ"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/MQKA-9XE9-KXJ.pdf"
+        },
+        {
+          "id": "7QXN-XPKA-NLE",
+          "page_index": 12,
+          "coords_px": [
+            149,
+            3613,
+            3285,
+            4611
+          ],
+          "coords_norm": [
+            0.021379703534777653,
+            0.728335348649738,
+            0.46835803876852905,
+            0.9294639258363563
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/7QXN-XPKA-NLE.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:55:58",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/7QXN-XPKA-NLE.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 7QXN-XPKA-NLE"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/7QXN-XPKA-NLE.pdf"
+        },
+        {
+          "id": "99LF-D7YJ-3XC",
+          "page_index": 12,
+          "coords_px": [
+            3771,
+            4231,
+            4725,
+            4813
+          ],
+          "coords_norm": [
+            0.5376282782212086,
+            0.852881902458686,
+            0.6736031927023945,
+            0.9701733172108021
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/99LF-D7YJ-3XC.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:56:00",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/99LF-D7YJ-3XC.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 99LF-D7YJ-3XC"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/99LF-D7YJ-3XC.pdf"
+        },
+        {
+          "id": "4EYJ-9MMK-MU7",
+          "page_index": 12,
+          "coords_px": [
+            4125,
+            811,
+            6953,
+            1915
+          ],
+          "coords_norm": [
+            0.5880843785632839,
+            0.16364369205965337,
+            0.9911630558722919,
+            0.3861346231358323
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/4EYJ-9MMK-MU7.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:56:07",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/4EYJ-9MMK-MU7.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 4EYJ-9MMK-MU7"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/4EYJ-9MMK-MU7.pdf"
+        },
+        {
+          "id": "7P3M-FYUJ-XHU",
+          "page_index": 12,
+          "coords_px": [
+            4725,
+            49,
+            6961,
+            661
+          ],
+          "coords_norm": [
+            0.6736031927023945,
+            0.01007658202337767,
+            0.99230330672748,
+            0.13341394598952036
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": "[Ошибка: Chandra: time budget exhausted перед запросом (attempt 0)]",
+          "created_at": "2026-05-12 14:56:11",
+          "ocr_html": "<pre>[Ошибка: Chandra: time budget exhausted перед запросом (attempt 0)]</pre>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 7P3M-FYUJ-XHU"
+          }
+        },
+        {
+          "id": "7JJR-G7FY-MCL",
+          "page_index": 12,
+          "coords_px": [
+            4699,
+            2013,
+            6953,
+            2535
+          ],
+          "coords_norm": [
+            0.669897377423033,
+            0.40588472390165253,
+            0.9911630558722919,
+            0.5110842402257154
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:56:17",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [
+              "div_structure"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 7JJR-G7FY-MCL"
+          }
+        },
+        {
+          "id": "9WT9-K6MG-KXT",
+          "page_index": 12,
+          "coords_px": [
+            4663,
+            2693,
+            6519,
+            3365
+          ],
+          "coords_norm": [
+            0.6647662485746865,
+            0.5429262394195888,
+            0.9293044469783353,
+            0.6783555018137848
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:56:19",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [
+              "div_structure"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 9WT9-K6MG-KXT"
+          }
+        },
+        {
+          "id": "ATFQ-RN6H-VKM",
+          "page_index": 12,
+          "coords_px": [
+            4753,
+            4263,
+            6959,
+            4895
+          ],
+          "coords_norm": [
+            0.677594070695553,
+            0.8593309149536478,
+            0.992018244013683,
+            0.9866989117291415
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops/images/ATFQ-RN6H-VKM.pdf",
+          "ocr_text": null,
+          "category_code": "stamp",
+          "created_at": "2026-05-12 15:01:58",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [],
+            "match_score": 0.0,
+            "marker_text_sample": ""
+          }
+        }
+      ]
+    },
+    {
+      "page_number": 13,
+      "width": 9932,
+      "height": 7015,
+      "blocks": [
+        {
+          "id": "9P7X-QCC3-3YD",
+          "page_index": 13,
+          "coords_px": [
+            7372,
+            55,
+            8932,
+            4497
+          ],
+          "coords_norm": [
+            0.7422991745520435,
+            0.00798175598631699,
+            0.899335615059392,
+            0.6411060433295325
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/9P7X-QCC3-3YD.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:56:37",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/9P7X-QCC3-3YD.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 9P7X-QCC3-3YD"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/9P7X-QCC3-3YD.pdf"
+        },
+        {
+          "id": "7WYY-YMUT-4TJ",
+          "page_index": 13,
+          "coords_px": [
+            8946,
+            69,
+            9876,
+            2345
+          ],
+          "coords_norm": [
+            0.9007449164485605,
+            0.009977194982896237,
+            0.994362794443326,
+            0.33437856328392246
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/7WYY-YMUT-4TJ.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:56:42",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/7WYY-YMUT-4TJ.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 7WYY-YMUT-4TJ"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/7WYY-YMUT-4TJ.pdf"
+        },
+        {
+          "id": "7KRM-RNTN-PM4",
+          "page_index": 13,
+          "coords_px": [
+            7566,
+            4639,
+            9206,
+            5365
+          ],
+          "coords_norm": [
+            0.7618280652305215,
+            0.661345496009122,
+            0.9269176565331185,
+            0.7648232611174458
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:56:46",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [
+              "div_structure"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 7KRM-RNTN-PM4"
+          }
+        },
+        {
+          "id": "94VV-EK9K-FJE",
+          "page_index": 13,
+          "coords_px": [
+            211,
+            0,
+            7516,
+            6999
+          ],
+          "coords_norm": [
+            0.0213408496074089,
+            0.0,
+            0.756794845983491,
+            0.9977194982896237
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "polygon",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/94VV-EK9K-FJE.pdf",
+          "ocr_text": null,
+          "polygon_points": [
+            [
+              6654,
+              49
+            ],
+            [
+              7366,
+              1325
+            ],
+            [
+              7404,
+              4489
+            ],
+            [
+              7516,
+              5291
+            ],
+            [
+              7466,
+              6641
+            ],
+            [
+              7104,
+              6955
+            ],
+            [
+              211,
+              6999
+            ],
+            [
+              246,
+              4309
+            ],
+            [
+              211,
+              0
+            ]
+          ],
+          "created_at": "2026-05-12 14:56:59",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/94VV-EK9K-FJE.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 94VV-EK9K-FJE"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/94VV-EK9K-FJE.pdf"
+        },
+        {
+          "id": "4R6H-CG9K-L4F",
+          "page_index": 13,
+          "coords_px": [
+            7682,
+            6297,
+            9876,
+            6967
+          ],
+          "coords_norm": [
+            0.773505133883632,
+            0.8976624857468644,
+            0.994362794443326,
+            0.9931584948688712
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops/images/4R6H-CG9K-L4F.pdf",
+          "ocr_text": null,
+          "category_code": "stamp",
+          "created_at": "2026-05-12 15:01:53",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [],
+            "match_score": 0.0,
+            "marker_text_sample": ""
+          }
+        }
+      ]
+    },
+    {
+      "page_number": 14,
+      "width": 9932,
+      "height": 7015,
+      "blocks": [
+        {
+          "id": "WXEH-96U4-NT3",
+          "page_index": 14,
+          "coords_px": [
+            219,
+            11,
+            7654,
+            6967
+          ],
+          "coords_norm": [
+            0.022146164686933763,
+            0.0017103762827822121,
+            0.770686531105295,
+            0.9931584948688712
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "polygon",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/WXEH-96U4-NT3.pdf",
+          "ocr_text": null,
+          "polygon_points": [
+            [
+              6804,
+              11
+            ],
+            [
+              7654,
+              1073
+            ],
+            [
+              7642,
+              4026
+            ],
+            [
+              7492,
+              6217
+            ],
+            [
+              7328,
+              6917
+            ],
+            [
+              334,
+              6967
+            ],
+            [
+              219,
+              5835
+            ],
+            [
+              268,
+              55
+            ]
+          ],
+          "created_at": "2026-05-12 14:57:19",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/WXEH-96U4-NT3.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: WXEH-96U4-NT3"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/WXEH-96U4-NT3.pdf"
+        },
+        {
+          "id": "9H3X-36K7-AYR",
+          "page_index": 14,
+          "coords_px": [
+            8746,
+            155,
+            9854,
+            2487
+          ],
+          "coords_norm": [
+            0.8806120394604389,
+            0.022234891676168756,
+            0.9921481779746326,
+            0.35461801596351195
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/9H3X-36K7-AYR.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:57:32",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/9H3X-36K7-AYR.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 9H3X-36K7-AYR"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/9H3X-36K7-AYR.pdf"
+        },
+        {
+          "id": "QT4T-NCLQ-FWY",
+          "page_index": 14,
+          "coords_px": [
+            7578,
+            4627,
+            9218,
+            5403
+          ],
+          "coords_norm": [
+            0.7630360378498088,
+            0.6596351197263398,
+            0.9281256291524059,
+            0.7702394526795895
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:57:35",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [
+              "div_structure"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: QT4T-NCLQ-FWY"
+          }
+        },
+        {
+          "id": "7C7N-7KHP-TQE",
+          "page_index": 14,
+          "coords_px": [
+            7682,
+            6309,
+            9880,
+            6951
+          ],
+          "coords_norm": [
+            0.773505133883632,
+            0.8993728620296465,
+            0.9947654519830884,
+            0.9908779931584949
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops/images/7C7N-7KHP-TQE.pdf",
+          "ocr_text": null,
+          "category_code": "stamp",
+          "created_at": "2026-05-12 15:01:48",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [],
+            "match_score": 0.0,
+            "marker_text_sample": ""
+          }
+        }
+      ]
+    },
+    {
+      "page_number": 15,
+      "width": 9932,
+      "height": 7015,
+      "blocks": [
+        {
+          "id": "4HVQ-3XVH-AHH",
+          "page_index": 15,
+          "coords_px": [
+            7578,
+            4665,
+            9306,
+            5415
+          ],
+          "coords_norm": [
+            0.7630360378498088,
+            0.6650513112884835,
+            0.9369840950271794,
+            0.7719498289623717
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:57:41",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [
+              "div_structure"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 4HVQ-3XVH-AHH"
+          }
+        },
+        {
+          "id": "997X-EJVW-VKU",
+          "page_index": 15,
+          "coords_px": [
+            8754,
+            85,
+            9868,
+            2563
+          ],
+          "coords_norm": [
+            0.8814173545399637,
+            0.01225769669327252,
+            0.9935574793638011,
+            0.3654503990877993
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/997X-EJVW-VKU.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:57:46",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/997X-EJVW-VKU.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 997X-EJVW-VKU"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/997X-EJVW-VKU.pdf"
+        },
+        {
+          "id": "N3D4-QFVQ-KMP",
+          "page_index": 15,
+          "coords_px": [
+            223,
+            11,
+            7604,
+            6967
+          ],
+          "coords_norm": [
+            0.022548822226696196,
+            0.0017103762827822121,
+            0.7656533118582646,
+            0.9931584948688712
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "polygon",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/N3D4-QFVQ-KMP.pdf",
+          "ocr_text": null,
+          "polygon_points": [
+            [
+              6716,
+              11
+            ],
+            [
+              7604,
+              1249
+            ],
+            [
+              7554,
+              5841
+            ],
+            [
+              7354,
+              6967
+            ],
+            [
+              284,
+              6929
+            ],
+            [
+              223,
+              61
+            ]
+          ],
+          "created_at": "2026-05-12 14:57:57",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/N3D4-QFVQ-KMP.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: N3D4-QFVQ-KMP"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/N3D4-QFVQ-KMP.pdf"
+        },
+        {
+          "id": "6P9W-7L79-QNG",
+          "page_index": 15,
+          "coords_px": [
+            7672,
+            6297,
+            9886,
+            6969
+          ],
+          "coords_norm": [
+            0.7724984900342259,
+            0.8976624857468644,
+            0.9953694382927321,
+            0.9934435575826682
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops/images/6P9W-7L79-QNG.pdf",
+          "ocr_text": null,
+          "category_code": "stamp",
+          "created_at": "2026-05-12 15:01:41",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [],
+            "match_score": 0.0,
+            "marker_text_sample": ""
+          }
+        }
+      ]
+    },
+    {
+      "page_number": 16,
+      "width": 9932,
+      "height": 7015,
+      "blocks": [
+        {
+          "id": "4NKV-4QCE-D7W",
+          "page_index": 16,
+          "coords_px": [
+            229,
+            23,
+            7754,
+            6941
+          ],
+          "coords_norm": [
+            0.023152808536339844,
+            0.0034207525655644243,
+            0.7807529695993557,
+            0.9894526795895097
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "polygon",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/4NKV-4QCE-D7W.pdf",
+          "ocr_text": null,
+          "polygon_points": [
+            [
+              6628,
+              23
+            ],
+            [
+              7754,
+              1061
+            ],
+            [
+              7604,
+              4001
+            ],
+            [
+              7466,
+              5553
+            ],
+            [
+              7516,
+              6817
+            ],
+            [
+              7104,
+              6941
+            ],
+            [
+              248,
+              6917
+            ],
+            [
+              229,
+              3938
+            ],
+            [
+              248,
+              61
+            ]
+          ],
+          "created_at": "2026-05-12 14:58:11",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/4NKV-4QCE-D7W.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 4NKV-4QCE-D7W"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/4NKV-4QCE-D7W.pdf"
+        },
+        {
+          "id": "6MM7-X934-JA7",
+          "page_index": 16,
+          "coords_px": [
+            8808,
+            85,
+            9832,
+            2599
+          ],
+          "coords_norm": [
+            0.8868532313267566,
+            0.01225769669327252,
+            0.9899335615059393,
+            0.37058152793614596
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/6MM7-X934-JA7.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:58:19",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/6MM7-X934-JA7.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 6MM7-X934-JA7"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/6MM7-X934-JA7.pdf"
+        },
+        {
+          "id": "9N3F-XY7F-JP4",
+          "page_index": 16,
+          "coords_px": [
+            7624,
+            4643,
+            9288,
+            5351
+          ],
+          "coords_norm": [
+            0.7676665995570767,
+            0.6619156214367161,
+            0.9351721360982485,
+            0.7628278221208666
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:58:22",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [
+              "div_structure"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 9N3F-XY7F-JP4"
+          }
+        },
+        {
+          "id": "79PU-399X-YXQ",
+          "page_index": 16,
+          "coords_px": [
+            7680,
+            6297,
+            9878,
+            6967
+          ],
+          "coords_norm": [
+            0.7733038051137507,
+            0.8976624857468644,
+            0.9945641232132072,
+            0.9931584948688712
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops/images/79PU-399X-YXQ.pdf",
+          "ocr_text": null,
+          "category_code": "stamp",
+          "created_at": "2026-05-12 15:01:33",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [],
+            "match_score": 0.0,
+            "marker_text_sample": ""
+          }
+        }
+      ]
+    },
+    {
+      "page_number": 17,
+      "width": 14894,
+      "height": 7015,
+      "blocks": [
+        {
+          "id": "ACQ3-ANEC-JEJ",
+          "page_index": 17,
+          "coords_px": [
+            12454,
+            4931,
+            14836,
+            5663
+          ],
+          "coords_norm": [
+            0.8361756411977977,
+            0.7029646522234891,
+            0.9961058144219148,
+            0.8072976054732041
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/ACQ3-ANEC-JEJ.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:58:26",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/ACQ3-ANEC-JEJ.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: ACQ3-ANEC-JEJ"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/ACQ3-ANEC-JEJ.pdf"
+        },
+        {
+          "id": "A4VJ-3X3R-AHM",
+          "page_index": 17,
+          "coords_px": [
+            234,
+            6089,
+            3506,
+            7015
+          ],
+          "coords_norm": [
+            0.01571102457365382,
+            0.8680159635119726,
+            0.23539680408218075,
+            1.0
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:58:34",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [
+              "div_structure"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: A4VJ-3X3R-AHM"
+          }
+        },
+        {
+          "id": "6NMW-FNDY-FDW",
+          "page_index": 17,
+          "coords_px": [
+            122,
+            0,
+            7276,
+            5153
+          ],
+          "coords_norm": [
+            0.008191217940110112,
+            0.0,
+            0.4885188666577145,
+            0.7346066134549601
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "polygon",
+          "image_file": null,
+          "ocr_text": null,
+          "polygon_points": [
+            [
+              122,
+              0
+            ],
+            [
+              160,
+              5153
+            ],
+            [
+              2442,
+              5141
+            ],
+            [
+              2428,
+              4303
+            ],
+            [
+              4834,
+              4315
+            ],
+            [
+              4810,
+              3957
+            ],
+            [
+              7276,
+              3933
+            ],
+            [
+              7264,
+              97
+            ]
+          ],
+          "created_at": "2026-05-12 14:58:48",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [
+              "div_structure"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 6NMW-FNDY-FDW"
+          }
+        },
+        {
+          "id": "6KGT-CYHH-T7K",
+          "page_index": 17,
+          "coords_px": [
+            9652,
+            17,
+            12720,
+            4699
+          ],
+          "coords_norm": [
+            0.6480461930978918,
+            0.002565564424173318,
+            0.8540351819524641,
+            0.669897377423033
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "polygon",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/6KGT-CYHH-T7K.pdf",
+          "ocr_text": null,
+          "polygon_points": [
+            [
+              9688,
+              63
+            ],
+            [
+              9652,
+              4689
+            ],
+            [
+              10622,
+              4699
+            ],
+            [
+              10714,
+              4531
+            ],
+            [
+              11676,
+              4531
+            ],
+            [
+              11676,
+              2983
+            ],
+            [
+              12720,
+              2983
+            ],
+            [
+              12692,
+              17
+            ]
+          ],
+          "created_at": "2026-05-12 14:59:37",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/6KGT-CYHH-T7K.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 6KGT-CYHH-T7K"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/6KGT-CYHH-T7K.pdf"
+        },
+        {
+          "id": "93LT-7H7P-TLX",
+          "page_index": 17,
+          "coords_px": [
+            12748,
+            25,
+            14842,
+            4073
+          ],
+          "coords_norm": [
+            0.85591513361085,
+            0.0037058152793614596,
+            0.9965086612058547,
+            0.580672748004561
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "polygon",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/93LT-7H7P-TLX.pdf",
+          "ocr_text": null,
+          "polygon_points": [
+            [
+              13838,
+              1975
+            ],
+            [
+              13848,
+              4027
+            ],
+            [
+              12794,
+              4073
+            ],
+            [
+              12748,
+              25
+            ],
+            [
+              14842,
+              83
+            ],
+            [
+              14842,
+              1949
+            ]
+          ],
+          "created_at": "2026-05-12 14:59:46",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/93LT-7H7P-TLX.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 93LT-7H7P-TLX"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/93LT-7H7P-TLX.pdf"
+        },
+        {
+          "id": "6PCN-3DUL-AK4",
+          "page_index": 17,
+          "coords_px": [
+            12634,
+            6303,
+            14850,
+            6957
+          ],
+          "coords_norm": [
+            0.8482610447159931,
+            0.8985176738882554,
+            0.9970457902511078,
+            0.991733181299886
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops/images/6PCN-3DUL-AK4.pdf",
+          "ocr_text": null,
+          "category_code": "stamp",
+          "created_at": "2026-05-12 15:01:26",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [],
+            "match_score": 0.0,
+            "marker_text_sample": ""
+          }
+        }
+      ]
+    },
+    {
+      "page_number": 18,
+      "width": 4961,
+      "height": 3507,
+      "blocks": [
+        {
+          "id": "7LP7-7ETR-FY4",
+          "page_index": 18,
+          "coords_px": [
+            297,
+            41,
+            2735,
+            1479
+          ],
+          "coords_norm": [
+            0.060056428859330914,
+            0.011972633979475485,
+            0.5513905683192262,
+            0.4218928164196123
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/7LP7-7ETR-FY4.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:59:53",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/7LP7-7ETR-FY4.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 7LP7-7ETR-FY4"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/7LP7-7ETR-FY4.pdf"
+        },
+        {
+          "id": "VXWN-37EC-XFF",
+          "page_index": 18,
+          "coords_px": [
+            447,
+            2347,
+            2423,
+            3317
+          ],
+          "coords_norm": [
+            0.09028617492946392,
+            0.669327251995439,
+            0.48851269649334944,
+            0.9458380843785633
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/VXWN-37EC-XFF.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 14:59:56",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/VXWN-37EC-XFF.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: VXWN-37EC-XFF"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/VXWN-37EC-XFF.pdf"
+        },
+        {
+          "id": "7K7J-6EJH-J69",
+          "page_index": 18,
+          "coords_px": [
+            3229,
+            55,
+            4897,
+            697
+          ],
+          "coords_norm": [
+            0.6509471987101975,
+            0.01596351197263398,
+            0.9871019750100766,
+            0.19897377423033066
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-05-12 15:00:00",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [
+              "div_structure"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 7K7J-6EJH-J69"
+          }
+        },
+        {
+          "id": "9G9J-RYTL-9PM",
+          "page_index": 18,
+          "coords_px": [
+            3961,
+            741,
+            4897,
+            1317
+          ],
+          "coords_norm": [
+            0.7984683595324465,
+            0.21151653363740022,
+            0.9871019750100766,
+            0.3757126567844926
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/9G9J-RYTL-9PM.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 15:00:03",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/9G9J-RYTL-9PM.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 9G9J-RYTL-9PM"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/9G9J-RYTL-9PM.pdf"
+        },
+        {
+          "id": "7VMF-GRK9-PDD",
+          "page_index": 18,
+          "coords_px": [
+            3935,
+            1295,
+            4825,
+            1691
+          ],
+          "coords_norm": [
+            0.7932285368802902,
+            0.3694412770809578,
+            0.9725916968964128,
+            0.4823261117445838
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-05-12 15:00:08",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [
+              "div_structure"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 7VMF-GRK9-PDD"
+          }
+        },
+        {
+          "id": "MH7J-MDEV-MAD",
+          "page_index": 18,
+          "coords_px": [
+            2753,
+            1703,
+            4883,
+            2245
+          ],
+          "coords_norm": [
+            0.5550181378476421,
+            0.48574686431014824,
+            0.9842805320435308,
+            0.6402508551881414
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-05-12 15:00:11",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [
+              "div_structure"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: MH7J-MDEV-MAD"
+          }
+        },
+        {
+          "id": "A6K3-QEHG-MFW",
+          "page_index": 18,
+          "coords_px": [
+            2709,
+            2797,
+            4891,
+            3459
+          ],
+          "coords_norm": [
+            0.5461507456670698,
+            0.7976054732041049,
+            0.9858927851672713,
+            0.9863169897377423
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops/images/A6K3-QEHG-MFW.pdf",
+          "ocr_text": null,
+          "category_code": "stamp",
+          "created_at": "2026-05-12 15:01:18",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [],
+            "match_score": 0.0,
+            "marker_text_sample": ""
+          }
+        }
+      ]
+    },
+    {
+      "page_number": 19,
+      "width": 4961,
+      "height": 3507,
+      "blocks": [
+        {
+          "id": "67VX-YAE4-JWA",
+          "page_index": 19,
+          "coords_px": [
+            2685,
+            1361,
+            4885,
+            1897
+          ],
+          "coords_norm": [
+            0.5413139862958485,
+            0.3882554161915621,
+            0.9846835953244659,
+            0.5410490307867731
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-05-12 15:00:17",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [
+              "div_structure"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 67VX-YAE4-JWA"
+          }
+        },
+        {
+          "id": "6WCR-KV6R-6MH",
+          "page_index": 19,
+          "coords_px": [
+            3211,
+            67,
+            4917,
+            729
+          ],
+          "coords_norm": [
+            0.6473196291817815,
+            0.019384264538198404,
+            0.9911326078194277,
+            0.2080957810718358
+          ],
+          "block_type": "text",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": null,
+          "ocr_text": null,
+          "created_at": "2026-05-12 15:00:19",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [
+              "div_structure"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 6WCR-KV6R-6MH"
+          }
+        },
+        {
+          "id": "97J6-69KQ-CWU",
+          "page_index": 19,
+          "coords_px": [
+            291,
+            79,
+            2523,
+            1561
+          ],
+          "coords_norm": [
+            0.058847239016525596,
+            0.02280501710376283,
+            0.5086658605401048,
+            0.4452679589509692
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/97J6-69KQ-CWU.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 15:00:22",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/97J6-69KQ-CWU.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 97J6-69KQ-CWU"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/97J6-69KQ-CWU.pdf"
+        },
+        {
+          "id": "6AWX-RKWD-JRD",
+          "page_index": 19,
+          "coords_px": [
+            341,
+            2347,
+            2455,
+            3341
+          ],
+          "coords_norm": [
+            0.06892382103990327,
+            0.669327251995439,
+            0.49496170898831116,
+            0.9526795895096921
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops_final/6AWX-RKWD-JRD.pdf",
+          "ocr_text": null,
+          "created_at": "2026-05-12 15:00:59",
+          "ocr_html": "<p><a href=\"https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/6AWX-RKWD-JRD.pdf\" target=\"_blank\"><b>🖼️ Открыть кроп изображения</b></a></p>",
+          "ocr_meta": {
+            "method": [
+              "marker"
+            ],
+            "match_score": 100.0,
+            "marker_text_sample": "BLOCK: 6AWX-RKWD-JRD"
+          },
+          "crop_url": "https://pub-9530315f35b34246a04e8ad8144e46d5.r2.dev/tree_docs/ff552dc0-c482-43f5-b98c-ea043e452d32/crops/6AWX-RKWD-JRD.pdf"
+        },
+        {
+          "id": "4DRA-JUAU-KKK",
+          "page_index": 19,
+          "coords_px": [
+            2711,
+            2785,
+            4911,
+            3465
+          ],
+          "coords_norm": [
+            0.5465538089480049,
+            0.7941847206385405,
+            0.9899234179766223,
+            0.9880273660205245
+          ],
+          "block_type": "image",
+          "source": "user",
+          "shape_type": "rectangle",
+          "image_file": "/tmp/ocr_job_3bad1235-9060-431a-a2b1-544862e683ea_8e42raxs/crops/images/4DRA-JUAU-KKK.pdf",
+          "ocr_text": null,
+          "category_code": "stamp",
+          "created_at": "2026-05-12 15:01:11",
+          "ocr_html": "",
+          "ocr_meta": {
+            "method": [],
+            "match_score": 0.0,
+            "marker_text_sample": ""
+          }
+        }
+      ]
+    }
+  ]
+}

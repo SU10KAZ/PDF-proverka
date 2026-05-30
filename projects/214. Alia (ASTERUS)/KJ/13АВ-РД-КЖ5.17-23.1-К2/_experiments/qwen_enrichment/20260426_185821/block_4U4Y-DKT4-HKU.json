@@ -1,0 +1,54 @@
+{
+  "block_id": "4U4Y-DKT4-HKU",
+  "page": 15,
+  "sheet_no": "10",
+  "file": "block_4U4Y-DKT4-HKU.png",
+  "size_kb": 12.4,
+  "ocr_text_len": 819,
+  "ocr_label": "На фрагменте представлено сечение Ю-Ю, иллюстрирующее схему установки горизонтал",
+  "ok": true,
+  "elapsed_ms": 3736,
+  "input_tokens": 1288,
+  "output_tokens": 286,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 691,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3736,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "сечение",
+    "subject": "Сечение Ю-Ю стены с указанием расположения вертикальной арматуры и хомутов",
+    "marks": [
+      "16-Г-1",
+      "16-пог.м"
+    ],
+    "rebar_specs": [
+      "Ø16 А500С шаг 200 (29 шт.)",
+      "Ø16 А500С длина 5850"
+    ],
+    "dimensions": [
+      "t=200",
+      "5850"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 2",
+      "см. лист 3",
+      "см. лист 11"
+    ],
+    "axes": [],
+    "level_marks": [
+      "+4,200"
+    ],
+    "concrete_class": "B40",
+    "notes": "Изображено сечение стены с указанием шага и количества вертикальной арматуры, а также маркировки гнутой детали (хомута). Приведены данные для определения длины нахлеста в зависимости от диаметра."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

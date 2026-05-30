@@ -1,0 +1,33 @@
+{
+  "model": "qwen/qwen3.6-35b-a3b",
+  "image_name": "6PPA-4DDX-6FR",
+  "block_id": "6PPA-4DDX-6FR",
+  "width": 1003,
+  "height": 1024,
+  "request": "image_smoke",
+  "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_200236/audit_images/native_crops/block_6PPA-4DDX-6FR_native.png",
+  "image_size_bytes": 99586,
+  "ok": true,
+  "status_code": 200,
+  "elapsed_s": 2.374,
+  "error": null,
+  "response": {
+    "model_instance_id": "qwen/qwen3.6-35b-a3b",
+    "output": [
+      {
+        "type": "message",
+        "content": "Схема армирования колонны (разрез 26а–26а).  \nОсновные элементы: продольная арматура 10-3680, поперечная арматура 8-Г-3 и 8-Х-19, выпуски из нижестоящей конструкции.  \nЧитаемые детали: шаг поперечной арматуры 200 мм, высота сечения 500 мм, защитный слой 30 мм."
+      }
+    ],
+    "stats": {
+      "input_tokens": 1085,
+      "total_output_tokens": 107,
+      "reasoning_output_tokens": 0,
+      "tokens_per_second": 230.52197068277593,
+      "time_to_first_token_seconds": 0.397
+    }
+  },
+  "content": "Схема армирования колонны (разрез 26а–26а).  \nОсновные элементы: продольная арматура 10-3680, поперечная арматура 8-Г-3 и 8-Х-19, выпуски из нижестоящей конструкции.  \nЧитаемые детали: шаг поперечной арматуры 200 мм, высота сечения 500 мм, защитный слой 30 мм.",
+  "reasoning": "",
+  "verdict": "pass"
+}

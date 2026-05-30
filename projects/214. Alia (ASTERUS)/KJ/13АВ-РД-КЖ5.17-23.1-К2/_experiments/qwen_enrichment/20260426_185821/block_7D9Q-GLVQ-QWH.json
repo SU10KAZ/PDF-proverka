@@ -1,0 +1,53 @@
+{
+  "block_id": "7D9Q-GLVQ-QWH",
+  "page": 14,
+  "sheet_no": "9",
+  "file": "block_7D9Q-GLVQ-QWH.png",
+  "size_kb": 14.1,
+  "ocr_text_len": 774,
+  "ocr_label": "На чертеже представлено сечение Я-Я, показывающее схему установки горизонтальных",
+  "ok": true,
+  "elapsed_ms": 2992,
+  "input_tokens": 1265,
+  "output_tokens": 302,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 706,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 2992,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "сечение",
+    "subject": "Сечение Я-Я: схема армирования горизонтального элемента с вертикальной арматурой и П-образным хомутом",
+    "marks": [
+      "Я-Я",
+      "16-Г-1"
+    ],
+    "rebar_specs": [
+      "Ø16 А500С",
+      "шаг 200 (29 шт.)"
+    ],
+    "dimensions": [
+      "t=200"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 2",
+      "см. лист 3",
+      "см. лист 11"
+    ],
+    "axes": [],
+    "level_marks": [
+      "+4,200"
+    ],
+    "concrete_class": "B40",
+    "notes": "Изображено сечение Я-Я горизонтального элемента (вероятно, ригеля или балки) с толщиной t=200 мм. Арматура класса А500С, диаметр 16 мм, шаг 200 мм. Указана высотная отметка +4,200. Ссылки на общие указания и спецификацию."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

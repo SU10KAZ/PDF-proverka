@@ -87,7 +87,7 @@ def test_post_versions_creates_v2(legacy_client):
     assert body["latest_version_id"] == "v2"
     assert body["version_count"] == 2
     # Физическая папка _versions/v2 создана.
-    assert (projects_dir / "M31A" / "_versions" / "v2").is_dir()
+    assert (projects_dir / "M31A(main)" / "M31A V2").is_dir()
 
 
 # ─── 2. GET /versions после POST показывает latest=v2 ────────────────────
@@ -113,10 +113,10 @@ def test_upload_pdf_to_v2(legacy_client):
     r = _upload(c, "v2", [("new.pdf", _PDF_BYTES)])
     assert r.status_code == 200, r.text
     # Файл лёг внутрь V2.
-    v2_dir = projects_dir / "M31A" / "_versions" / "v2"
+    v2_dir = projects_dir / "M31A(main)" / "M31A V2"
     assert (v2_dir / "new.pdf").exists()
     # V1 не тронут.
-    assert (projects_dir / "M31A" / "document.pdf").exists()
+    assert (projects_dir / "M31A(main)" / "M31A" / "document.pdf").exists()
 
 
 # ─── 4. GET /versions/v2/files показывает загруженный файл ───────────────
@@ -145,7 +145,7 @@ def test_post_versions_updates_manifest_on_disk(legacy_client):
     """
     c, projects_dir = legacy_client
     c.post("/api/projects/M31A/versions", json={"comment": ""})
-    manifest_path = projects_dir / "M31A" / "project_versions.json"
+    manifest_path = projects_dir / "M31A(main)" / "version_group.json"
     assert manifest_path.exists()
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     assert manifest["latest_version_id"] == "v2"

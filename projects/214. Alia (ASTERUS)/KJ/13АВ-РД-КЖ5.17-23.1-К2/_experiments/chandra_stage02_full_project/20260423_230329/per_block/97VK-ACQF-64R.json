@@ -1,0 +1,108 @@
+{
+  "baseline": {
+    "block_id": "97VK-ACQF-64R",
+    "page": 13,
+    "sheet": "8",
+    "label": "Схема установки горизонтальных П-образных элементов в стенах",
+    "sheet_type": "wall_reinforcement",
+    "unreadable_text": false,
+    "unreadable_details": null,
+    "summary": "Представлена схема установки горизонтальных П-образных элементов в арматурном каркасе стены. Элементы установлены в шахматном порядке.",
+    "key_values_read": [
+      "П-образный элемент: установка в шахматном порядке"
+    ],
+    "evidence_text_refs": [
+      {
+        "text_block_id": "9HGD-ADC3-XDY",
+        "role": "other",
+        "used_for": "cross_check",
+        "confidence": 0.41,
+        "source": "graph_backfill"
+      },
+      {
+        "text_block_id": "4JE3-7FT9-ALJ",
+        "role": "other",
+        "used_for": "cross_check",
+        "confidence": 0.18,
+        "source": "graph_backfill"
+      }
+    ],
+    "findings": [],
+    "selected_text_block_ids": [
+      "9HGD-ADC3-XDY",
+      "4JE3-7FT9-ALJ"
+    ]
+  },
+  "candidate_raw": {
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_stage02_full_project/20260423_230329/prepared/native_crops/block_97VK-ACQF-64R_native.png",
+    "image_size_bytes": 34508,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 3.546,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-35b-a3b",
+      "output": [
+        {
+          "type": "message",
+          "content": "{\n  \"block_id\": \"97VK-ACQF-64R\",\n  \"page\": 13,\n  \"label\": \"Схема установки горизонтальных П-образных элементов\",\n  \"sheet_type\": \"detail\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлена схема установки горизонтальных П-образных элементов в стенах. Изображен фрагмент арматурного каркаса с указанием расположения вертикальной и горизонтальной арматуры. Приведены выносные элементы с пояснениями.\",\n  \"key_values_read\": [\n    \"Схема установки горизонтальных П-образных элементов в стенах\",\n    \"Вертикальная арматура\",\n    \"П-образный элемент\",\n    \"по 1\",\n    \"1\"\n  ],\n  \"findings\": []\n}"
+        }
+      ],
+      "stats": {
+        "input_tokens": 1705,
+        "total_output_tokens": 203,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 224.8064505054823,
+        "time_to_first_token_seconds": 0.497
+      }
+    },
+    "content": "{\n  \"block_id\": \"97VK-ACQF-64R\",\n  \"page\": 13,\n  \"label\": \"Схема установки горизонтальных П-образных элементов\",\n  \"sheet_type\": \"detail\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлена схема установки горизонтальных П-образных элементов в стенах. Изображен фрагмент арматурного каркаса с указанием расположения вертикальной и горизонтальной арматуры. Приведены выносные элементы с пояснениями.\",\n  \"key_values_read\": [\n    \"Схема установки горизонтальных П-образных элементов в стенах\",\n    \"Вертикальная арматура\",\n    \"П-образный элемент\",\n    \"по 1\",\n    \"1\"\n  ],\n  \"findings\": []\n}",
+    "reasoning": "",
+    "parsed": {
+      "block_id": "97VK-ACQF-64R",
+      "page": 13,
+      "label": "Схема установки горизонтальных П-образных элементов",
+      "sheet_type": "detail",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "На чертеже представлена схема установки горизонтальных П-образных элементов в стенах. Изображен фрагмент арматурного каркаса с указанием расположения вертикальной и горизонтальной арматуры. Приведены выносные элементы с пояснениями.",
+      "key_values_read": [
+        "Схема установки горизонтальных П-образных элементов в стенах",
+        "Вертикальная арматура",
+        "П-образный элемент",
+        "по 1",
+        "1"
+      ],
+      "findings": []
+    },
+    "parse_error": null,
+    "model": "qwen/qwen3.6-35b-a3b",
+    "block_id": "97VK-ACQF-64R",
+    "width": 1024,
+    "height": 575,
+    "run_index": 138
+  },
+  "compare": {
+    "block_id": "97VK-ACQF-64R",
+    "page": 13,
+    "label_source": "Представлена схема установки горизонтальных П-образных элементов в арматурном ка",
+    "baseline_present": true,
+    "baseline_label": "Схема установки горизонтальных П-образных элементов в стенах",
+    "candidate_label": "Схема установки горизонтальных П-образных элементов",
+    "baseline_findings": 0,
+    "candidate_findings": 0,
+    "baseline_kv": 1,
+    "candidate_kv": 5,
+    "elapsed_s": 3.546,
+    "parse_ok": true,
+    "verdict": "likely_improved",
+    "notes": [
+      "candidate preserved findings presence and captured more key values"
+    ],
+    "baseline_summary": "Представлена схема установки горизонтальных П-образных элементов в арматурном каркасе стены. Элементы установлены в шахматном порядке.",
+    "candidate_summary": "На чертеже представлена схема установки горизонтальных П-образных элементов в стенах. Изображен фрагмент арматурного каркаса с указанием расположения вертикальной и горизонтальной арматуры. Приведены выносные элементы с пояснениями.",
+    "candidate_sheet_type": "detail",
+    "candidate_unreadable_text": false
+  }
+}

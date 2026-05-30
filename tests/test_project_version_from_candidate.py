@@ -120,12 +120,12 @@ def test_candidate_added_as_v2_to_existing_project(client):
     assert "13АВ-РД-КЖ5.22_document.md" in body["saved"]
 
     # 2. Файлы скопированы в _versions/v2
-    v2_dir = projects_dir / "M31A" / "_versions" / "v2"
+    v2_dir = projects_dir / "M31A(main)" / "M31A V2"
     assert (v2_dir / "13АВ-РД-КЖ5.22.pdf").read_bytes() == _PDF_BYTES + b"NEW"
     assert (v2_dir / "13АВ-РД-КЖ5.22_document.md").read_bytes() == _MD_BYTES
 
     # 3. latest_version_id == v2
-    manifest = json.loads((projects_dir / "M31A" / "project_versions.json").read_text(encoding="utf-8"))
+    manifest = json.loads((projects_dir / "M31A(main)" / "version_group.json").read_text(encoding="utf-8"))
     assert manifest["latest_version_id"] == "v2"
 
     # 4. project_info.json V2 содержит pdf_files/md_files
@@ -138,12 +138,12 @@ def test_candidate_added_as_v2_to_existing_project(client):
 
     # 5. V1 _output не изменён
     v1_findings = json.loads(
-        (projects_dir / "M31A" / "_output" / "03_findings.json").read_text(encoding="utf-8")
+        (projects_dir / "M31A(main)" / "M31A" / "_output" / "03_findings.json").read_text(encoding="utf-8")
     )
     assert v1_findings["findings"][0]["id"] == "F-V1"
 
     # 6. V1 PDF в корне проекта не тронут (своё содержимое)
-    assert (projects_dir / "M31A" / "document.pdf").read_bytes() == _PDF_BYTES
+    assert (projects_dir / "M31A(main)" / "M31A" / "document.pdf").read_bytes() == _PDF_BYTES
 
     # 7. Версий стало 2
     assert body["versions_summary"]["version_count"] == 2
@@ -178,7 +178,7 @@ def test_cross_section_rejected(client):
     )
     assert r.status_code == 400
     # Версия v2 не создана
-    assert not (projects_dir / "M31A" / "_versions" / "v2").exists()
+    assert not (projects_dir / "M31A(main)" / "M31A V2").exists()
 
 
 # ─── 3. security: path traversal ───────────────────────────────────────────
@@ -197,7 +197,7 @@ def test_path_traversal_rejected(client, tmp_path):
         json={"candidate_pdf_path": str(evil_pdf)},
     )
     assert r.status_code == 400
-    assert not (projects_dir / "M31A" / "_versions" / "v2").exists()
+    assert not (projects_dir / "M31A(main)" / "M31A V2").exists()
 
 
 def test_external_root_allowlist(client, tmp_path):
@@ -265,7 +265,7 @@ def test_v3_created_after_v2(client):
     assert r2.json()["versions_summary"]["latest_version_id"] == "v3"
 
     # Файлы V3 лежат в _versions/v3
-    v3_dir = projects_dir / "M31A" / "_versions" / "v3"
+    v3_dir = projects_dir / "M31A(main)" / "M31A V3"
     assert (v3_dir / "13АВ-РД-КЖ5.22.pdf").exists()
 
 

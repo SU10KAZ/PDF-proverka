@@ -1,0 +1,1764 @@
+{
+  "per_block": [
+    {
+      "block_id": "A9M4-EJ7R-MKH",
+      "risk": "normal",
+      "page": 6,
+      "size_kb": 48.9,
+      "baseline": {
+        "batch_id": 1,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "Общая схема расположения корпусов К1–К7 (башен) и подземной автостоянки (П.1–П.48) с указанием этажности каждого корпуса и пристроек. Корпус К2 (42 эт., заштрихован) и К6 (28 эт., заштрихован) — относятся к рассматриваемому комплекту К2 (вертикальные конструкции 17–23 этажей корпуса К2). Также показаны пристройки К3–К4, К4–К5, К5–К6 и зона лобби.",
+        "kv_count": 9,
+        "findings_count": 0,
+        "returned": true
+      },
+      "aggressive": {
+        "batch_id": 1,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": -9,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "33N9-7JYR-4JQ",
+      "risk": "normal",
+      "page": 7,
+      "size_kb": 35.0,
+      "baseline": {
+        "batch_id": 1,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "Вертикальный разрез 25-25 по стене между осями 2.3 и 2.4. Показаны проём П-2 (1100×2200(h)) и расположенное выше отверстие Отв.3 (высота 400 мм) с зазором 500 мм между ними (соответствует положению отметок Б, К, Г, А). Толщина стены 200 мм, нижняя плита перекрытия с отметкой А — толщина обозначена штриховкой, верхняя плита с отметкой Б. Контур проёма заштрихован.",
+        "kv_count": 7,
+        "findings_count": 1,
+        "returned": true
+      },
+      "aggressive": {
+        "batch_id": 1,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": -1,
+        "kv": -7,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "4LVY-33DN-DVN",
+      "risk": "normal",
+      "page": 7,
+      "size_kb": 13.0,
+      "baseline": {
+        "batch_id": 2,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "Вертикальный разрез 1-1 монолитной железобетонной стены толщиной 200 мм между отметками А и Б. Высота участка стены — 3100 мм. Сечение бетона показано штриховкой. Разрез без указания марки стены, класса бетона и защитного слоя — данные сведения предполагаются в общих указаниях (Лист 1).",
+        "kv_count": 3,
+        "findings_count": 1,
+        "returned": true
+      },
+      "aggressive": {
+        "batch_id": 2,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": -1,
+        "kv": -3,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "66NE-7DYY-GQN",
+      "risk": "heavy",
+      "page": 7,
+      "size_kb": 476.2,
+      "baseline": {
+        "batch_id": 1,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "План опалубки этажа корпуса К2 (вертикальные конструкции 17–23 этажа). Криволинейный наружный периметр со скруглениями и углами 38°, 36,5°, 35°. Показаны несущие монолитные железобетонные стены с чёрной заливкой, проёмы дверные (П-2…П-12) и технологические отверстия (Отв.1–Отв.8). Габариты этажа в плане 25800×24200 мм. Толщина стен из общих указаний — 200 мм, бетон В40 F100 W4 ГОСТ 26633-2015.",
+        "kv_count": 6,
+        "findings_count": 1,
+        "returned": true
+      },
+      "aggressive": {
+        "batch_id": 1,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": -1,
+        "kv": -6,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "6P9T-Q7GT-N9J",
+      "risk": "heavy",
+      "page": 7,
+      "size_kb": 53.3,
+      "baseline": {
+        "batch_id": 1,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "Развёрнутый продольный разрез 17-17 по стене между осями 2.2 и 2.5. Показано пять проёмов: П-2 (1100×2200(h)), П-11 (1000×3100(h)), П-7 (1200×3100(h)), П-8 (1100×2500(h)), П-3 (1400×2500(h)) и отверстие Отв.3 (1100×400(h)) над проёмом П-2. Высота стены 3100 мм, толщина — 200 мм (по плану). Размеры простенков по разрезу: 250, 150, 1100, 400, 100, 1000, 1200, 850, 1100, 1175, 1400. Отметки А (низ), Б (верх), Е (верх некоторых проёмов 600 мм от Б), К (низ Отв.3 — 500 мм от Б), Г (верх П-2 — 2200+500+400=3100 от А). Заштрихованы низ и верх стены — плиты перекрытия.",
+        "kv_count": 14,
+        "findings_count": 3,
+        "returned": true
+      },
+      "aggressive": {
+        "batch_id": 1,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": -3,
+        "kv": -14,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "AC3T-RYW4-UD4",
+      "risk": "normal",
+      "page": 7,
+      "size_kb": 28.6,
+      "baseline": {
+        "batch_id": 1,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "Вертикальный разрез 26-26 по стене на оси 2.Б. Показана глухая стена высотой 3100 мм между отметкой А (низ) и отметкой Б (верх), с верхней плитой перекрытия толщиной 200 мм. По длине разреза показаны размеры: 1200, 2610, 590, 610 мм (предположительно — простенки/привязки к выходящим из плана колоннам/стенам или швы бетонирования). Маркировки проёмов отсутствуют.",
+        "kv_count": 4,
+        "findings_count": 0,
+        "returned": true
+      },
+      "aggressive": {
+        "batch_id": 1,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": -4,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "H3VM-7JM6-6HM",
+      "risk": "normal",
+      "page": 7,
+      "size_kb": 27.8,
+      "baseline": {
+        "batch_id": 1,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "Фрагмент В плана опалубки на отметке 23 этажа в осях 2.6–2.Д–2.7. Показан участок монолитной стены толщиной 200 мм с проёмом П-2 (1100 мм) и двумя технологическими отверстиями Отв.7 (450 мм) и Отв.3 (1100 мм). Между отверстиями обозначены простенки шириной 105 мм, 395 мм, 50 мм и 150 мм. Привязки от осей: 100/100 мм по вертикали к оси 2.Д.",
+        "kv_count": 9,
+        "findings_count": 2,
+        "returned": true
+      },
+      "aggressive": {
+        "batch_id": 1,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": -2,
+        "kv": -9,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "3TFL-TNRF-7G6",
+      "risk": "heavy",
+      "page": 8,
+      "size_kb": 605.6,
+      "baseline": {
+        "batch_id": 2,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "Маркировочная схема вертикальных конструкций (стен и колонн) 17-23 этажа жилого здания. На схеме показаны монолитные стены типа 'Стм' (преимущественно толщиной 200 мм, частично 250 мм) и колонны 'Км' по периферии плана. Здание имеет криволинейный (овальный) внешний контур с радиальными колоннами по периметру и центральным ядром жёсткости с лестнично-лифтовыми клетками. Координационные оси 2.А-2.Ж по вертикали и 2.1-2.16 по горизонтали.",
+        "kv_count": 5,
+        "findings_count": 0,
+        "returned": true
+      },
+      "aggressive": {
+        "batch_id": 2,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": -5,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "4CRW-7WEW-6KA",
+      "risk": "normal",
+      "page": 8,
+      "size_kb": 29.4,
+      "baseline": {
+        "batch_id": 2,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "Фрагмент Г для 23 этажа: горизонтальное сечение стены толщиной 200 мм длиной 2000 мм с детальной раскладкой армирования. Показаны продольные стержни с шагом 7×125=875 мм с двух сторон от центрального стержня (130 мм). Защитный слой по торцам — 60 мм, по боковым граням — 60 мм/80 мм/60 мм (общая толщина 200 мм). Поперечные хомуты обозначены позицией 11(4) — пос. 11, по 4 стержня. Привязка к осям 2.Д и 2.Г.",
+        "kv_count": 7,
+        "findings_count": 2,
+        "returned": true
+      },
+      "aggressive": {
+        "batch_id": 2,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": -2,
+        "kv": -7,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "4WPW-9MXF-JQC",
+      "risk": "normal",
+      "page": 8,
+      "size_kb": 40.4,
+      "baseline": {
+        "batch_id": 2,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "Фрагмент А для 22 этажа: показано сопряжение монолитных стен 42-Стм200 и 47-Стм200 толщиной 200 мм с прерыванием стены по середине и опиранием на нижерасположенную консоль. Армирование стен — 10-250/8-200 (горизонтальная Ø10 мм с шагом 250 мм / вертикальная Ø8 мм с шагом 200 мм). Привязка к осям 2.Г и 2.4. Высотные отметки бетонирования +76,850/+78,580.",
+        "kv_count": 6,
+        "findings_count": 1,
+        "returned": true
+      },
+      "aggressive": {
+        "batch_id": 2,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": -1,
+        "kv": -6,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "7WLT-66U6-FG9",
+      "risk": "light",
+      "page": 8,
+      "size_kb": 16.4,
+      "baseline": {
+        "batch_id": 2,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "Типовая схема отгиба (перепуска) вертикального арматурного стержня с указанием геометрических параметров. Параметр 'a' — величина смещения оси стержня; длина участка отгиба ограничена условием L ≥ 6a (тангенс угла отгиба ≤ 1/6, т.е. угол отгиба не более ~9,5°). Схема соответствует требованиям СП 63.13330.2018 для перепусков рабочей арматуры между этажами.",
+        "kv_count": 3,
+        "findings_count": 1,
+        "returned": true
+      },
+      "aggressive": {
+        "batch_id": 2,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": -1,
+        "kv": -3,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "HP4W-KDLX-C77",
+      "risk": "light",
+      "page": 8,
+      "size_kb": 28.6,
+      "baseline": {
+        "batch_id": 2,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "Фрагмент Г для 17-22 этажа: горизонтальный разрез монолитной стены 12-Стм200 толщиной 200 мм длиной 2000 мм между осями 2.Д и 2.Г. Армирование указано маркировкой 25-125/10-250 (вертикальная Ø25 мм с шагом 125 мм у внутренней грани / горизонтальная Ø10 мм с шагом 250 мм). Привязка к осям: 100 мм с обеих сторон от оси 2.Д; ось 2.Г на расстоянии 2600 мм от оси 2.Д. Отметки А/Б — высотные отметки бетонирования.",
+        "kv_count": 5,
+        "findings_count": 2,
+        "returned": true
+      },
+      "aggressive": {
+        "batch_id": 2,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": -2,
+        "kv": -5,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "4ARK-6ENX-GEV",
+      "risk": "light",
+      "page": 9,
+      "size_kb": 18.8,
+      "baseline": {
+        "batch_id": 4,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 4,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "4LMQ-4R7M-EC3",
+      "risk": "normal",
+      "page": 9,
+      "size_kb": 40.7,
+      "baseline": {
+        "batch_id": 3,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "Разрез 8-8 (3) показывает узел армирования участка вертикальной конструкции (стены/пилона) шириной 800 мм по оси 2.Е. Видны хомуты 8-Г-2 шаг 200 мм (15 шт.) по высоте, дополнительное армирование 12-Г-17 шаг 100 мм по 2 шт. в опорной зоне (у отм. Б и отм. В). Высота от отм. А до отм. Б — 2800 мм, толщина опорного выступа 300 мм. Указано сечение А-А.",
+        "kv_count": 10,
+        "findings_count": 1,
+        "returned": true
+      },
+      "aggressive": {
+        "batch_id": 3,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": -1,
+        "kv": -10,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "6KFL-Y3YM-YFH",
+      "risk": "normal",
+      "page": 9,
+      "size_kb": 51.9,
+      "baseline": {
+        "batch_id": 3,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "Разрез 12-12 (3) (для 23 этажа) показывает узел сопряжения стены с плитой покрытия по оси 2.6. Высотные отметки: верх плиты +81,680, низ плиты +81,280 (толщина плиты 400 мм), низ участка стены +78,580 (высота стены 2700 мм). Армирование плиты: верхние стержни 16-Г-21 шаг 125 (4 шт.), нижние 8-Г-2 шаг 200 (3 шт.) и 8-Х-3 шаг 200 (3 шт.). Прямой стержень 16-1650. Защитные слои сверху и снизу — 40 мм, в узле 50/100 мм.",
+        "kv_count": 11,
+        "findings_count": 2,
+        "returned": true
+      },
+      "aggressive": {
+        "batch_id": 3,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": -2,
+        "kv": -11,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "7DJ9-EQQ3-QMK",
+      "risk": "heavy",
+      "page": 9,
+      "size_kb": 63.3,
+      "baseline": {
+        "batch_id": 3,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "Разрез 7-7 (3) показывает армирование монолитной стены 17–23 этажа между осями 2.4, 2.5, 2.6 общей длиной 8500 мм. Видны: верхние стержни 16-1350 (2 и 4 шт.), 16-3300 (4 шт.), 16-2900 (4 шт.); поперечная арматура 8-Г-2 шаг 200 (14, 15, 3 шт.) и 12-Г-14 шаг 250 (3 шт.). Высоты: отм. А–отм. Б — 2800 мм, отм. В дополнительно 300 мм. Защитный слой сверху — 50 и 100 мм.",
+        "kv_count": 10,
+        "findings_count": 2,
+        "returned": true
+      },
+      "aggressive": {
+        "batch_id": 3,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": -2,
+        "kv": -10,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "97AH-VUFP-LJJ",
+      "risk": "heavy",
+      "page": 9,
+      "size_kb": 71.1,
+      "baseline": {
+        "batch_id": 3,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "Разрез 2-2 (3) показывает армирование монолитной стены 17–23 этажа на участке между осями 2.В–2.Д. Чертёж содержит вертикальную и поперечную арматуру: продольные стержни 16-Г-22 (по 2 шт.), 12-2300 (по 4 шт.), хомуты 8-Г-2 шагом 200 мм, отметки А, Б, Г, К с привязками. Общая длина участка по верху — 9240 мм, общая высота — 3100 мм между отм. А и отм. Б.",
+        "kv_count": 10,
+        "findings_count": 1,
+        "returned": true
+      },
+      "aggressive": {
+        "batch_id": 3,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": -1,
+        "kv": -10,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "9DH3-MEUR-DR4",
+      "risk": "heavy",
+      "page": 9,
+      "size_kb": 105.8,
+      "baseline": {
+        "batch_id": 3,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "Разрез 6-6 (3) показывает армирование монолитной стены 17–23 этажа на протяжённом участке между осями 2.2 и 2.7. Чертёж содержит большое разнообразие арматурных позиций: продольные 16-2300, 12-4600, 12-9750, 12-3750, 16-Г-22, поперечные 8-Г-2, 8-Х-1, 8-Х-4, 8-Х-6, 8-Х-7, 8-Х-8 различными шагами (100/200 мм), а также 12-Г-17 шаг 100 (по 2 шт.) в опорной зоне. Видно усиление арматурных каркасов по двум граням стены, отметки А, Б, Г, К, Е с высотными привязками.",
+        "kv_count": 10,
+        "findings_count": 2,
+        "returned": true
+      },
+      "aggressive": {
+        "batch_id": 3,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": -2,
+        "kv": -10,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "GC4D-PCGH-N39",
+      "risk": "normal",
+      "page": 9,
+      "size_kb": 59.1,
+      "baseline": {
+        "batch_id": 3,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "Разрез 4-4 (3) показывает армирование монолитной стены 17–23 этажа между осями 2.5 и 2.6 с выраженной опорной зоной (выступом). Видны продольные стержни 16-2230, 16-1370, 16-3430 (по 4 шт.); поперечные 8-Г-2 шаг 200 (14, 3, 2 шт.) и 8-Х-2 шаг 200 (3 шт.). Указаны отметки А, Б, В, Е, Л. Общая длина участка по низу — 2700 мм, высота от отм. А до отм. Б — 2500 мм, до отм. В — дополнительно 700 мм. Сечение Б-Б обозначено по бокам.",
+        "kv_count": 10,
+        "findings_count": 2,
+        "returned": true
+      },
+      "aggressive": {
+        "batch_id": 3,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": -2,
+        "kv": -10,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "47XG-3PPW-PJ6",
+      "risk": "normal",
+      "page": 10,
+      "size_kb": 46.2,
+      "baseline": {
+        "batch_id": 4,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 4,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "63YA-YJCM-JJX",
+      "risk": "heavy",
+      "page": 10,
+      "size_kb": 45.7,
+      "baseline": {
+        "batch_id": 4,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 4,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "6CJL-W6NL-HHR",
+      "risk": "normal",
+      "page": 10,
+      "size_kb": 28.4,
+      "baseline": {
+        "batch_id": 4,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 4,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "77FD-FM7F-CQN",
+      "risk": "normal",
+      "page": 10,
+      "size_kb": 41.2,
+      "baseline": {
+        "batch_id": 4,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 4,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "9XQM-D6XA-UUK",
+      "risk": "normal",
+      "page": 10,
+      "size_kb": 50.7,
+      "baseline": {
+        "batch_id": 4,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 4,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "4HYQ-JHE6-GX9",
+      "risk": "normal",
+      "page": 11,
+      "size_kb": 45.1,
+      "baseline": {
+        "batch_id": 5,
+        "batch_size": 8,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 5,
+        "batch_size": 10,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "6MV3-YUME-9CN",
+      "risk": "normal",
+      "page": 11,
+      "size_kb": 52.1,
+      "baseline": {
+        "batch_id": 5,
+        "batch_size": 8,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 5,
+        "batch_size": 10,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "7CHG-7U6R-WYP",
+      "risk": "normal",
+      "page": 11,
+      "size_kb": 29.3,
+      "baseline": {
+        "batch_id": 5,
+        "batch_size": 8,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 5,
+        "batch_size": 10,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "7TUE-6AJK-CLE",
+      "risk": "light",
+      "page": 11,
+      "size_kb": 14.9,
+      "baseline": {
+        "batch_id": 5,
+        "batch_size": 8,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 5,
+        "batch_size": 10,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "4FT3-Y3CW-C3L",
+      "risk": "normal",
+      "page": 12,
+      "size_kb": 28.2,
+      "baseline": {
+        "batch_id": 5,
+        "batch_size": 8,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 5,
+        "batch_size": 10,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "6LQP-AGTR-4H7",
+      "risk": "normal",
+      "page": 12,
+      "size_kb": 50.7,
+      "baseline": {
+        "batch_id": 5,
+        "batch_size": 8,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 5,
+        "batch_size": 10,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "7MKF-CY7E-9PD",
+      "risk": "normal",
+      "page": 12,
+      "size_kb": 55.4,
+      "baseline": {
+        "batch_id": 5,
+        "batch_size": 8,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 5,
+        "batch_size": 10,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "7XUQ-KJVR-6FP",
+      "risk": "normal",
+      "page": 12,
+      "size_kb": 55.5,
+      "baseline": {
+        "batch_id": 5,
+        "batch_size": 8,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 5,
+        "batch_size": 10,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "6PPA-4DDX-6FR",
+      "risk": "normal",
+      "page": 13,
+      "size_kb": 70.9,
+      "baseline": {
+        "batch_id": 6,
+        "batch_size": 8,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 5,
+        "batch_size": 10,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "9XMG-3LNL-RMW",
+      "risk": "normal",
+      "page": 13,
+      "size_kb": 70.0,
+      "baseline": {
+        "batch_id": 6,
+        "batch_size": 8,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 5,
+        "batch_size": 10,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "JHYV-DLMK-MFW",
+      "risk": "normal",
+      "page": 13,
+      "size_kb": 64.0,
+      "baseline": {
+        "batch_id": 6,
+        "batch_size": 8,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 6,
+        "batch_size": 9,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "XCJC-ULVE-F4K",
+      "risk": "light",
+      "page": 13,
+      "size_kb": 15.8,
+      "baseline": {
+        "batch_id": 6,
+        "batch_size": 8,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 6,
+        "batch_size": 9,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "7D9Q-GLVQ-QWH",
+      "risk": "light",
+      "page": 14,
+      "size_kb": 14.1,
+      "baseline": {
+        "batch_id": 6,
+        "batch_size": 8,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 6,
+        "batch_size": 9,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "9CPA-XUE4-EWF",
+      "risk": "light",
+      "page": 14,
+      "size_kb": 15.1,
+      "baseline": {
+        "batch_id": 6,
+        "batch_size": 8,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 6,
+        "batch_size": 9,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "9GQD-LF9N-999",
+      "risk": "light",
+      "page": 14,
+      "size_kb": 15.3,
+      "baseline": {
+        "batch_id": 6,
+        "batch_size": 8,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 6,
+        "batch_size": 9,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "HNNQ-FTUC-K7W",
+      "risk": "normal",
+      "page": 14,
+      "size_kb": 54.6,
+      "baseline": {
+        "batch_id": 6,
+        "batch_size": 8,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 6,
+        "batch_size": 9,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "4RRP-APLY-KPA",
+      "risk": "normal",
+      "page": 15,
+      "size_kb": 49.4,
+      "baseline": {
+        "batch_id": 7,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 6,
+        "batch_size": 9,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "4U4Y-DKT4-HKU",
+      "risk": "light",
+      "page": 15,
+      "size_kb": 12.4,
+      "baseline": {
+        "batch_id": 7,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 6,
+        "batch_size": 9,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "7YPU-7R7J-YNE",
+      "risk": "light",
+      "page": 15,
+      "size_kb": 13.6,
+      "baseline": {
+        "batch_id": 7,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 6,
+        "batch_size": 9,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "73YG-7DGA-HUH",
+      "risk": "normal",
+      "page": 16,
+      "size_kb": 43.4,
+      "baseline": {
+        "batch_id": 7,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 7,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "947C-9UJT-RYU",
+      "risk": "heavy",
+      "page": 16,
+      "size_kb": 93.3,
+      "baseline": {
+        "batch_id": 7,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 7,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "9PPJ-YP6U-HV6",
+      "risk": "heavy",
+      "page": 16,
+      "size_kb": 92.3,
+      "baseline": {
+        "batch_id": 7,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 7,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "6XVN-CGJH-YXL",
+      "risk": "normal",
+      "page": 17,
+      "size_kb": 27.5,
+      "baseline": {
+        "batch_id": 8,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 7,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "9U74-KT9W-HGN",
+      "risk": "normal",
+      "page": 17,
+      "size_kb": 32.7,
+      "baseline": {
+        "batch_id": 8,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 7,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "AAHY-LAPW-4DF",
+      "risk": "normal",
+      "page": 17,
+      "size_kb": 45.2,
+      "baseline": {
+        "batch_id": 8,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 7,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "7PQJ-YWYD-3FP",
+      "risk": "light",
+      "page": 18,
+      "size_kb": 17.1,
+      "baseline": {
+        "batch_id": 8,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 8,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "9VHU-GJRC-466",
+      "risk": "heavy",
+      "page": 18,
+      "size_kb": 47.2,
+      "baseline": {
+        "batch_id": 8,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 8,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "JTUC-HHUY-W7K",
+      "risk": "normal",
+      "page": 18,
+      "size_kb": 28.9,
+      "baseline": {
+        "batch_id": 8,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 8,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "VNVR-PXFJ-HEJ",
+      "risk": "light",
+      "page": 18,
+      "size_kb": 22.4,
+      "baseline": {
+        "batch_id": 9,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 8,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "AWEW-KHGF-XTX",
+      "risk": "normal",
+      "page": 19,
+      "size_kb": 58.8,
+      "baseline": {
+        "batch_id": 9,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 8,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "KEMF-D3Y4-3NJ",
+      "risk": "light",
+      "page": 19,
+      "size_kb": 52.8,
+      "baseline": {
+        "batch_id": 9,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 9,
+        "batch_size": 5,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "TAXK-LEUR-TKK",
+      "risk": "normal",
+      "page": 19,
+      "size_kb": 55.8,
+      "baseline": {
+        "batch_id": 9,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 8,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "4YKN-EJLX-F6E",
+      "risk": "normal",
+      "page": 20,
+      "size_kb": 38.0,
+      "baseline": {
+        "batch_id": 10,
+        "batch_size": 2,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 9,
+        "batch_size": 5,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "6Q9N-FFCG-VMH",
+      "risk": "normal",
+      "page": 20,
+      "size_kb": 38.8,
+      "baseline": {
+        "batch_id": 10,
+        "batch_size": 2,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 9,
+        "batch_size": 5,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "6XXG-CYEA-3V6",
+      "risk": "heavy",
+      "page": 20,
+      "size_kb": 27.9,
+      "baseline": {
+        "batch_id": 9,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 9,
+        "batch_size": 5,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    },
+    {
+      "block_id": "9MKJ-RAFV-UDM",
+      "risk": "normal",
+      "page": 20,
+      "size_kb": 27.4,
+      "baseline": {
+        "batch_id": 9,
+        "batch_size": 6,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "aggressive": {
+        "batch_id": 9,
+        "batch_size": 5,
+        "unreadable": false,
+        "summary": "",
+        "kv_count": 0,
+        "findings_count": 0,
+        "returned": false
+      },
+      "delta": {
+        "findings": 0,
+        "kv": 0,
+        "unreadable_mismatch": false
+      }
+    }
+  ],
+  "aggregates": {
+    "subset_size": 60,
+    "baseline": {
+      "total_findings": 24,
+      "unreadable_count": 0,
+      "blocks_with_findings": 15,
+      "median_kv": 0.0
+    },
+    "aggressive": {
+      "total_findings": 0,
+      "unreadable_count": 0,
+      "blocks_with_findings": 0,
+      "median_kv": 0.0
+    },
+    "ratios": {
+      "findings_aggr_over_base": 0.0,
+      "bwf_aggr_over_base": 0.0,
+      "kv_aggr_over_base": null
+    }
+  }
+}

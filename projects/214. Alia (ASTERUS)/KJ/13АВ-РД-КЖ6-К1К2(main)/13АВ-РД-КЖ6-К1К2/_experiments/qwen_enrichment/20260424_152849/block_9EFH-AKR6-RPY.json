@@ -1,0 +1,51 @@
+{
+  "block_id": "9EFH-AKR6-RPY",
+  "page": 14,
+  "sheet_no": "9",
+  "file": "block_9EFH-AKR6-RPY.png",
+  "size_kb": 23.3,
+  "ocr_text_len": 744,
+  "ocr_label": "Фрагмент разреза 3-3, показывающий сопряжение перекрытия с колонной.",
+  "ok": true,
+  "elapsed_ms": 3312,
+  "input_tokens": 1234,
+  "output_tokens": 266,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 685,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3312,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "разрез",
+    "subject": "Фрагмент разреза 3-3, показывающий сопряжение плиты покрытия с колонной и конструкциями корпуса.",
+    "marks": [
+      "К2"
+    ],
+    "rebar_specs": [],
+    "dimensions": [
+      "t=200",
+      "300"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. листы 3... 7",
+      "см. отдельные чертежи"
+    ],
+    "axes": [],
+    "level_marks": [
+      "+7,970",
+      "+7,670",
+      "+4,200"
+    ],
+    "concrete_class": null,
+    "notes": "Изображен узел сопряжения плиты покрытия (толщина 200 мм) с колонной и конструкциями корпуса К2. Отмечены высотные отметки верха плиты (+7,970) и нижней точки сопряжения (+7,670). Указано расположение рабочих швов бетонирования."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

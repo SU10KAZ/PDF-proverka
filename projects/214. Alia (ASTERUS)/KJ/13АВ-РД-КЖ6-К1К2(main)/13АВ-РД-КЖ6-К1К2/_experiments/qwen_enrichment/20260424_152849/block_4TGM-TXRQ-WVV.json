@@ -1,0 +1,51 @@
+{
+  "block_id": "4TGM-TXRQ-WVV",
+  "page": 17,
+  "sheet_no": "12",
+  "file": "block_4TGM-TXRQ-WVV.png",
+  "size_kb": 21.0,
+  "ocr_text_len": 763,
+  "ocr_label": "На фрагменте представлена легенда условных обозначений для строительного чертежа",
+  "ok": true,
+  "elapsed_ms": 2779,
+  "input_tokens": 1526,
+  "output_tokens": 283,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 638,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 2779,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "таблица_условных_обозначений",
+    "subject": "Легенда условных обозначений для плиты покрытия Пм-2 и таблица параметров арматуры А500С",
+    "marks": [],
+    "rebar_specs": [
+      "Ø10 А500С",
+      "Ø12 А500С",
+      "Ø16 А500С"
+    ],
+    "dimensions": [
+      "+4,200",
+      "t=200"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 9",
+      "см. листы 10...14"
+    ],
+    "axes": [],
+    "level_marks": [
+      "+4,200"
+    ],
+    "concrete_class": "B30",
+    "notes": "Блок содержит расшифровку графических обозначений (отметка верха, толщина, шов) и справочную таблицу длин нахлестов и анкеровки для арматуры А500С в бетоне B30."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

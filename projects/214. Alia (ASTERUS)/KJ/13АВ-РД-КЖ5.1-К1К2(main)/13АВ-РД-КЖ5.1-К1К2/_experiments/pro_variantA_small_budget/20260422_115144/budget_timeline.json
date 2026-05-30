@@ -1,0 +1,69 @@
+{
+  "cap_usd": 5.0,
+  "spent_usd": 1.91771,
+  "remaining_usd": 3.08229,
+  "stopped": false,
+  "stop_reason": "",
+  "events": [
+    {
+      "step_id": "reference_fill",
+      "label": "Missing Pro single-block reference fill (r800)",
+      "predicted_usd": 0.0,
+      "actual_usd": 0.0,
+      "approved": false,
+      "remaining_before": 5.0,
+      "remaining_after": 5.0,
+      "note": "all requested reference outputs reused"
+    },
+    {
+      "step_id": "phaseA_b2",
+      "label": "Batch screening b2",
+      "predicted_usd": 0.4,
+      "actual_usd": 0.42125,
+      "approved": true,
+      "remaining_before": 5.0,
+      "remaining_after": 4.57875,
+      "note": "calls=8 elapsed=154.7s"
+    },
+    {
+      "step_id": "phaseA_b4",
+      "label": "Batch screening b4",
+      "predicted_usd": 0.4,
+      "actual_usd": 0.306682,
+      "approved": true,
+      "remaining_before": 4.5788,
+      "remaining_after": 4.272068,
+      "note": "calls=4 elapsed=119.7s"
+    },
+    {
+      "step_id": "phaseA_b6",
+      "label": "Batch screening b6",
+      "predicted_usd": 0.4,
+      "actual_usd": 0.229294,
+      "approved": true,
+      "remaining_before": 4.2721,
+      "remaining_after": 4.042774,
+      "note": "calls=3 elapsed=91.6s"
+    },
+    {
+      "step_id": "phaseB_r1000",
+      "label": "Resolution screening r1000 vs r800 reference",
+      "predicted_usd": 0.468,
+      "actual_usd": 0.301946,
+      "approved": true,
+      "remaining_before": 4.0428,
+      "remaining_after": 3.740828,
+      "note": "crop_cache=False elapsed=120.9s"
+    },
+    {
+      "step_id": "phaseC_confirmatory",
+      "label": "Confirmatory full run batch b6 r800",
+      "predicted_usd": 1.25,
+      "actual_usd": 0.658538,
+      "approved": true,
+      "remaining_before": 3.7408,
+      "remaining_after": 3.08229,
+      "note": "calls=7 elapsed=367.1s"
+    }
+  ]
+}

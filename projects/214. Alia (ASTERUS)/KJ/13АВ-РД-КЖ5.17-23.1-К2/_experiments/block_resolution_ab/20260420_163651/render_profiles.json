@@ -1,0 +1,17 @@
+{
+  "r800": {
+    "name": "r800",
+    "target_dpi": 100,
+    "min_long_side_px": 800
+  },
+  "r1000": {
+    "name": "r1000",
+    "target_dpi": 100,
+    "min_long_side_px": 1000
+  },
+  "r1200": {
+    "name": "r1200",
+    "target_dpi": 100,
+    "min_long_side_px": 1200
+  }
+}

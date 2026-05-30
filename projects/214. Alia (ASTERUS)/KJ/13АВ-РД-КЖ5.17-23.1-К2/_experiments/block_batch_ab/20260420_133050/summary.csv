@@ -1,0 +1,10 @@
+run_id,profile,parallelism,mode,total_batches,total_blocks,avg_batch_size,max_batch_size,max_heavy_in_batch,heavy_count,normal_count,light_count,elapsed_sec,avg_batch_sec,median_batch_sec,p95_batch_sec,success,failed,coverage_pct,missing_count,duplicate_count,extra_count,unreadable_pct,empty_summary,empty_kv,blocks_with_findings_pct,total_findings,findings_per_100_blocks
+conservative_p1,conservative,1,real,41,215,5.24,6,2,11,151,53,1054.74,175.79,202.86,240.01,6,0,13.49,186,0,0,0.0,0,0,72.41,27,93.1
+conservative_p2,conservative,2,real,41,215,5.24,6,2,11,151,53,622.77,175.08,210.98,223.21,6,0,13.49,186,0,0,0.0,0,0,51.72,18,62.07
+conservative_p3,conservative,3,real,41,215,5.24,6,2,11,151,53,375.22,163.73,169.35,221.68,6,0,13.49,186,0,0,0.0,0,0,62.07,26,89.66
+baseline_p1,baseline,1,real,33,215,6.52,8,2,11,151,53,1003.47,167.25,185.53,240.4,6,0,16.28,180,0,0,0.0,0,0,48.57,20,57.14
+baseline_p2,baseline,2,real,33,215,6.52,8,2,11,151,53,542.29,158.7,180.04,222.29,6,0,16.28,180,0,0,0.0,0,0,65.71,28,80.0
+baseline_p3,baseline,3,real,33,215,6.52,8,2,11,151,53,433.73,186.59,192.89,270.93,6,0,16.28,180,0,0,0.0,0,0,68.57,30,85.71
+aggressive_p1,aggressive,1,real,31,215,6.94,10,2,11,151,53,1126.77,187.8,195.36,311.52,6,0,18.14,176,0,0,0.0,0,0,76.92,43,110.26
+aggressive_p2,aggressive,2,real,31,215,6.94,10,2,11,151,53,545.79,169.71,188.67,238.17,6,0,18.14,176,0,0,0.0,0,0,58.97,33,84.62
+aggressive_p3,aggressive,3,real,31,215,6.94,10,2,11,151,53,389.23,156.46,164.41,227.14,6,0,18.14,176,0,0,0.0,0,0,76.92,38,97.44

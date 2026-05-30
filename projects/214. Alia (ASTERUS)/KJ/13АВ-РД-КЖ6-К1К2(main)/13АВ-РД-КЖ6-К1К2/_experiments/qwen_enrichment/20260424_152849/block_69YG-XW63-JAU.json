@@ -1,0 +1,47 @@
+{
+  "block_id": "69YG-XW63-JAU",
+  "page": 14,
+  "sheet_no": "9",
+  "file": "block_69YG-XW63-JAU.png",
+  "size_kb": 23.0,
+  "ocr_text_len": 691,
+  "ocr_label": "На чертеже представлен разрез 2-2, показывающий сопряжение плиты перекрытия с ко",
+  "ok": true,
+  "elapsed_ms": 2186,
+  "input_tokens": 1360,
+  "output_tokens": 218,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 555,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 2186,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "разрез",
+    "subject": "Разрез 2-2 сопряжения плиты покрытия Пм-2 с колонной",
+    "marks": [],
+    "rebar_specs": [],
+    "dimensions": [
+      "t=200",
+      "300"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. листы 3... 7"
+    ],
+    "axes": [],
+    "level_marks": [
+      "+7,970",
+      "+7,670"
+    ],
+    "concrete_class": null,
+    "notes": "Изображен узел сопряжения плиты покрытия с колонной. Высота сечения плиты в зоне опирания составляет 300 мм, общая толщина плиты — 200 мм. Рабочие швы бетонирования показаны зигзагообразной линией."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

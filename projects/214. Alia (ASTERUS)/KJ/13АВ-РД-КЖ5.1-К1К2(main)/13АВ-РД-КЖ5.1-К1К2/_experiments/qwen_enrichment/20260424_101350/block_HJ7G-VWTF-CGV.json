@@ -1,0 +1,52 @@
+{
+  "block_id": "HJ7G-VWTF-CGV",
+  "page": 10,
+  "sheet_no": "5",
+  "file": "block_HJ7G-VWTF-CGV.png",
+  "size_kb": 91.4,
+  "ocr_text_len": 912,
+  "ocr_label": "Фрагмент разреза 1-1, показывающий конструкцию стены с засыпкой керамзитом между",
+  "ok": true,
+  "elapsed_ms": 7773,
+  "input_tokens": 2643,
+  "output_tokens": 276,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 603,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 7773,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "разрез",
+    "subject": "Разрез 1-1 стены пристройки с засыпкой керамзитом между осями П.Т и П.С",
+    "marks": [],
+    "rebar_specs": [],
+    "dimensions": [
+      "600",
+      "2650",
+      "1370",
+      "400"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. листы 6, 7"
+    ],
+    "axes": [
+      "П.Т",
+      "П.С"
+    ],
+    "level_marks": [
+      "-0,430",
+      "-1,800"
+    ],
+    "concrete_class": null,
+    "notes": "Изображен разрез стены с засыпкой керамзитом фракции 20-40. Высота засыпки 1370 мм от отм. -1,800. Толщина элемента 400 мм. Арматура на этом листе не показана, ссылки на листы 6 и 7."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

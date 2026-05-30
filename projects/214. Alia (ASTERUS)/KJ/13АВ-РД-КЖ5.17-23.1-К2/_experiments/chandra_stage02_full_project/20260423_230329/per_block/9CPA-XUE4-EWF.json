@@ -1,0 +1,102 @@
+{
+  "baseline": {
+    "block_id": "9CPA-XUE4-EWF",
+    "page": 14,
+    "sheet": "9",
+    "label": "Схема стыковки арматуры внахлест",
+    "sheet_type": "sections_cuts",
+    "unreadable_text": false,
+    "unreadable_details": null,
+    "summary": "Схема расположения нахлесточных стыков арматуры вразбежку. Указаны минимальные расстояния между стыками в продольном и поперечном направлениях.",
+    "key_values_read": [
+      "Смещение стыков по длине: ≥1,3 lн",
+      "Расстояние между соседними стыками по ширине: ≥2d и ≥30 мм",
+      "Чистое расстояние между нахлестами по длине: ≥0,3 lн"
+    ],
+    "evidence_text_refs": [
+      {
+        "text_block_id": "6LCP-G6DC-JKM",
+        "role": "other",
+        "used_for": "cross_check",
+        "confidence": 0.59,
+        "source": "graph_backfill"
+      }
+    ],
+    "findings": [],
+    "selected_text_block_ids": [
+      "6LCP-G6DC-JKM"
+    ]
+  },
+  "candidate_raw": {
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_stage02_full_project/20260423_230329/prepared/native_crops/block_9CPA-XUE4-EWF_native.png",
+    "image_size_bytes": 21468,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 3.451,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-35b-a3b",
+      "output": [
+        {
+          "type": "message",
+          "content": "{\n  \"block_id\": \"9CPA-XUE4-EWF\",\n  \"page\": 14,\n  \"label\": \"Схема стыковки арматуры внахлест\",\n  \"sheet_type\": \"detail\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлена схема стыковки арматурных стержней внахлест. Основные параметры стыковки включают длину нахлеста lн, расстояние между стыками и минимальный зазор между стержнями. Схема содержит размерные линии и обозначения, определяющие требования к стыковке.\",\n  \"key_values_read\": [\n    \"lн - длина нахлеста\",\n    \"≥0,3lн - минимальное расстояние между стыками\",\n    \"≥1,3lн - расстояние между стыками\",\n    \"≥2d ≥30мм - минимальный зазор между стержнями\",\n    \"Схема стыковки арматуры внахлест\"\n  ],\n  \"findings\": []\n}"
+        }
+      ],
+      "stats": {
+        "input_tokens": 1606,
+        "total_output_tokens": 249,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 226.3928616239551,
+        "time_to_first_token_seconds": 0.459
+      }
+    },
+    "content": "{\n  \"block_id\": \"9CPA-XUE4-EWF\",\n  \"page\": 14,\n  \"label\": \"Схема стыковки арматуры внахлест\",\n  \"sheet_type\": \"detail\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлена схема стыковки арматурных стержней внахлест. Основные параметры стыковки включают длину нахлеста lн, расстояние между стыками и минимальный зазор между стержнями. Схема содержит размерные линии и обозначения, определяющие требования к стыковке.\",\n  \"key_values_read\": [\n    \"lн - длина нахлеста\",\n    \"≥0,3lн - минимальное расстояние между стыками\",\n    \"≥1,3lн - расстояние между стыками\",\n    \"≥2d ≥30мм - минимальный зазор между стержнями\",\n    \"Схема стыковки арматуры внахлест\"\n  ],\n  \"findings\": []\n}",
+    "reasoning": "",
+    "parsed": {
+      "block_id": "9CPA-XUE4-EWF",
+      "page": 14,
+      "label": "Схема стыковки арматуры внахлест",
+      "sheet_type": "detail",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "На чертеже представлена схема стыковки арматурных стержней внахлест. Основные параметры стыковки включают длину нахлеста lн, расстояние между стыками и минимальный зазор между стержнями. Схема содержит размерные линии и обозначения, определяющие требования к стыковке.",
+      "key_values_read": [
+        "lн - длина нахлеста",
+        "≥0,3lн - минимальное расстояние между стыками",
+        "≥1,3lн - расстояние между стыками",
+        "≥2d ≥30мм - минимальный зазор между стержнями",
+        "Схема стыковки арматуры внахлест"
+      ],
+      "findings": []
+    },
+    "parse_error": null,
+    "model": "qwen/qwen3.6-35b-a3b",
+    "block_id": "9CPA-XUE4-EWF",
+    "width": 1024,
+    "height": 473,
+    "run_index": 156
+  },
+  "compare": {
+    "block_id": "9CPA-XUE4-EWF",
+    "page": 14,
+    "label_source": "На схеме представлены правила стыковки арматурных стержней внахлест.",
+    "baseline_present": true,
+    "baseline_label": "Схема стыковки арматуры внахлест",
+    "candidate_label": "Схема стыковки арматуры внахлест",
+    "baseline_findings": 0,
+    "candidate_findings": 0,
+    "baseline_kv": 3,
+    "candidate_kv": 5,
+    "elapsed_s": 3.451,
+    "parse_ok": true,
+    "verdict": "likely_improved",
+    "notes": [
+      "candidate preserved findings presence and captured more key values"
+    ],
+    "baseline_summary": "Схема расположения нахлесточных стыков арматуры вразбежку. Указаны минимальные расстояния между стыками в продольном и поперечном направлениях.",
+    "candidate_summary": "На чертеже представлена схема стыковки арматурных стержней внахлест. Основные параметры стыковки включают длину нахлеста lн, расстояние между стыками и минимальный зазор между стержнями. Схема содержит размерные линии и обозначения, определяющие требования к стыковке.",
+    "candidate_sheet_type": "detail",
+    "candidate_unreadable_text": false
+  }
+}

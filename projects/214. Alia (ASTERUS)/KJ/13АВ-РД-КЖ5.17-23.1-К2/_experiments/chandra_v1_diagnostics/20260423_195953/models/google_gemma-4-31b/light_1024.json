@@ -1,0 +1,33 @@
+{
+  "model": "google/gemma-4-31b",
+  "image_name": "light_1024",
+  "block_id": "A9M4-EJ7R-MKH",
+  "width": 1024,
+  "height": 534,
+  "request": "image_smoke",
+  "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_195953/prepared_images/light_1024/native_crops/block_A9M4-EJ7R-MKH_native.png",
+  "image_size_bytes": 69454,
+  "ok": true,
+  "status_code": 200,
+  "elapsed_s": 5.735,
+  "error": null,
+  "response": {
+    "model_instance_id": "google/gemma-4-31b",
+    "output": [
+      {
+        "type": "message",
+        "content": "План подземной автостоянки. Основные элементы: зонирование парковочных мест (K1–K7), пристройки (К3-К4, К4-К5, К5-К6) и осевые линии с маркировкой. Детали: разделение на две зоны (П.1-П.24 и П.25-П.48), указание площадей помещений (например, K2 — 42 кв.м)."
+      }
+    ],
+    "stats": {
+      "input_tokens": 358,
+      "total_output_tokens": 103,
+      "reasoning_output_tokens": 0,
+      "tokens_per_second": 57.22575114354275,
+      "time_to_first_token_seconds": 0.633
+    }
+  },
+  "content": "План подземной автостоянки. Основные элементы: зонирование парковочных мест (K1–K7), пристройки (К3-К4, К4-К5, К5-К6) и осевые линии с маркировкой. Детали: разделение на две зоны (П.1-П.24 и П.25-П.48), указание площадей помещений (например, K2 — 42 кв.м).",
+  "reasoning": "",
+  "verdict": "pass"
+}

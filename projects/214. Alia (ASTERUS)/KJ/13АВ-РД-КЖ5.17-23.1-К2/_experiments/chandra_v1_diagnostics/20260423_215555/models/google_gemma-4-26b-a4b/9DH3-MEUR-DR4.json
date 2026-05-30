@@ -1,0 +1,33 @@
+{
+  "model": "google/gemma-4-26b-a4b",
+  "image_name": "9DH3-MEUR-DR4",
+  "block_id": "9DH3-MEUR-DR4",
+  "width": 1024,
+  "height": 449,
+  "request": "image_smoke",
+  "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_215555/audit_images/native_crops/block_9DH3-MEUR-DR4_native.png",
+  "image_size_bytes": 88503,
+  "ok": true,
+  "status_code": 200,
+  "elapsed_s": 4.112,
+  "error": null,
+  "response": {
+    "model_instance_id": "google/gemma-4-26b-a4b",
+    "output": [
+      {
+        "type": "message",
+        "content": "Тип схемы: План (разрез) конструкции.\n\nОсновные элементы: Секции перекрытий/перегородок с обозначенными марками элементов, осевые линии и габаритные размеры.\n\nЧитаемые детали:\n1. Маркировка элементов: 8-Г-2, 8-Х-4, 16-Г-22.\n2. Размеры: 5600, 2700, 1750."
+      }
+    ],
+    "stats": {
+      "input_tokens": 358,
+      "total_output_tokens": 106,
+      "reasoning_output_tokens": 0,
+      "tokens_per_second": 195.10758526753668,
+      "time_to_first_token_seconds": 0.264
+    }
+  },
+  "content": "Тип схемы: План (разрез) конструкции.\n\nОсновные элементы: Секции перекрытий/перегородок с обозначенными марками элементов, осевые линии и габаритные размеры.\n\nЧитаемые детали:\n1. Маркировка элементов: 8-Г-2, 8-Х-4, 16-Г-22.\n2. Размеры: 5600, 2700, 1750.",
+  "reasoning": "",
+  "verdict": "pass"
+}

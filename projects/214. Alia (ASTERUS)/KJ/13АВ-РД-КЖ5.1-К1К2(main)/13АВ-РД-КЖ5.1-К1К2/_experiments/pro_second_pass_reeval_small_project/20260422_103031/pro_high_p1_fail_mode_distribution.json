@@ -1,0 +1,24 @@
+{
+  "config_id": "pro_high_p1",
+  "primary_status_distribution": {
+    "success": 15,
+    "no_block_analyses_field": 2
+  },
+  "final_status_distribution": {
+    "success": 17
+  },
+  "fail_mode_distribution_before_retry": {
+    "no_block_analyses_field": 2
+  },
+  "fail_mode_distribution": {},
+  "retry_triggered_count": 2,
+  "retry_recovered_count": 2,
+  "retry_triggered_block_ids": [
+    "6DRC-7KQL-9TJ",
+    "9GNP-D7CE-RYM"
+  ],
+  "retry_recovered_block_ids": [
+    "6DRC-7KQL-9TJ",
+    "9GNP-D7CE-RYM"
+  ]
+}

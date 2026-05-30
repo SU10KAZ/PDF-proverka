@@ -1,0 +1,33 @@
+{
+  "model": "google/gemma-4-26b-a4b",
+  "image_name": "3TFL-TNRF-7G6",
+  "block_id": "3TFL-TNRF-7G6",
+  "width": 1024,
+  "height": 974,
+  "request": "image_smoke",
+  "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_215555/audit_images/native_crops/block_3TFL-TNRF-7G6_native.png",
+  "image_size_bytes": 183434,
+  "ok": true,
+  "status_code": 200,
+  "elapsed_s": 7.504,
+  "error": null,
+  "response": {
+    "model_instance_id": "google/gemma-4-26b-a4b",
+    "output": [
+      {
+        "type": "message",
+        "content": "Тип схемы: Маркировочная схема вертикальной конструкции (17–23 этажи).\n\nОсновные элементы: Сетка осей, контуры несущих конструкций здания, обозначения элементов (колонны, стены), проектные отметки.\n\nЧитаемые детали: \n1. Диапазон этажности: 17–23 этажи.\n2. Обозначение осей: 2А, 2Б, 2В, 2Г, 2Д, 2Е, 2Ж, 2З, 2И, 2К, 2Л, 2М, 2Н, 2О, 2П.\n3. Примеры маркировки элементов: 14см2, 15см2, 16см2."
+      }
+    ],
+    "stats": {
+      "input_tokens": 366,
+      "total_output_tokens": 176,
+      "reasoning_output_tokens": 0,
+      "tokens_per_second": 193.78927398390007,
+      "time_to_first_token_seconds": 0.503
+    }
+  },
+  "content": "Тип схемы: Маркировочная схема вертикальной конструкции (17–23 этажи).\n\nОсновные элементы: Сетка осей, контуры несущих конструкций здания, обозначения элементов (колонны, стены), проектные отметки.\n\nЧитаемые детали: \n1. Диапазон этажности: 17–23 этажи.\n2. Обозначение осей: 2А, 2Б, 2В, 2Г, 2Д, 2Е, 2Ж, 2З, 2И, 2К, 2Л, 2М, 2Н, 2О, 2П.\n3. Примеры маркировки элементов: 14см2, 15см2, 16см2.",
+  "reasoning": "",
+  "verdict": "pass"
+}

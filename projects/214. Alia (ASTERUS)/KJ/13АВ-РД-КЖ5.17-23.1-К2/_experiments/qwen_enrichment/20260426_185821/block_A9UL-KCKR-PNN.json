@@ -1,0 +1,60 @@
+{
+  "block_id": "A9UL-KCKR-PNN",
+  "page": 8,
+  "sheet_no": "3",
+  "file": "block_A9UL-KCKR-PNN.png",
+  "size_kb": 23.5,
+  "ocr_text_len": 1069,
+  "ocr_label": "Фрагмент В для 21 этажа с указанием маркировки элементов и размеров.",
+  "ok": true,
+  "elapsed_ms": 3655,
+  "input_tokens": 2546,
+  "output_tokens": 328,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 671,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3655,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "сечение",
+    "subject": "Сечение монолитной стены для 21 этажа с указанием арматуры и высотных отметок",
+    "marks": [
+      "42-Смм200",
+      "49-Смм200",
+      "4.1-Смм200"
+    ],
+    "rebar_specs": [
+      "10-250/8-200",
+      "25-125/8-200"
+    ],
+    "dimensions": [
+      "1350",
+      "550",
+      "1200",
+      "1051",
+      "50",
+      "150"
+    ],
+    "references_on_block": [
+      "Оп. А/Оп. Б"
+    ],
+    "axes": [
+      "2.Е",
+      "2.5"
+    ],
+    "level_marks": [
+      "+71,980",
+      "+74,940"
+    ],
+    "concrete_class": null,
+    "notes": "Детализация армирования стены на 21 этаже. Привязка к осям 2.Е и 2.5. Указаны высотные отметки низа и верха бетонирования для данного фрагмента."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

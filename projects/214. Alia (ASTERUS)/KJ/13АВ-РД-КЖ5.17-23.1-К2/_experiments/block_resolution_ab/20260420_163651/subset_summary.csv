@@ -1,0 +1,4 @@
+profile,elapsed_sec,avg_batch_sec,p95_batch_sec,success,failed,coverage_pct,missing,duplicate,extra,unreadable_count,empty_kv,empty_summary,median_kv,total_findings,blocks_with_findings_count,findings_per_100_blocks
+r800,1069.53,53.31,91.33,59,1,98.33,1,0,0,5,0,0,10.0,97,47,164.41
+r1000,1411.94,73.41,108.34,60,0,76.67,14,0,0,2,0,0,10.5,82,38,178.26
+r1200,1506.31,74.79,107.92,60,0,81.67,11,0,0,2,0,0,10.0,102,41,208.16

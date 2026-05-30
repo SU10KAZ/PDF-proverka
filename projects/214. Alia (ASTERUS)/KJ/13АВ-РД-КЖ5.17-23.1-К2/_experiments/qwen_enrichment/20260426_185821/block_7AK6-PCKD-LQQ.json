@@ -1,0 +1,61 @@
+{
+  "block_id": "7AK6-PCKD-LQQ",
+  "page": 10,
+  "sheet_no": "5",
+  "file": "block_7AK6-PCKD-LQQ.png",
+  "size_kb": 52.7,
+  "ocr_text_len": 1090,
+  "ocr_label": "Представлен чертеж сечения железобетонного элемента 5.1-Стм200 с армированием.",
+  "ok": true,
+  "elapsed_ms": 3269,
+  "input_tokens": 1637,
+  "output_tokens": 339,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 751,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3269,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "сечение",
+    "subject": "Сечение железобетонной стены 5.1-Стм200 с армированием и привязками к отметкам",
+    "marks": [
+      "10-X-16",
+      "8-X-21",
+      "12-пог.м"
+    ],
+    "rebar_specs": [
+      "Ø10 шаг 100",
+      "Ø8 шаг 100",
+      "Ø12 погонный метр"
+    ],
+    "dimensions": [
+      "500",
+      "200",
+      "400x200(h)Вар 1",
+      "2x100=200",
+      "95",
+      "55",
+      "30",
+      "з.с. 30"
+    ],
+    "references_on_block": [
+      "см. развертку стены"
+    ],
+    "axes": [],
+    "level_marks": [
+      "0мм. К",
+      "0мм. Г",
+      "Отм. верха плиты"
+    ],
+    "concrete_class": null,
+    "notes": "Изображено сечение стены с указанием размеров, шага и диаметра арматуры, а также привязок к нулевым отметкам. Горизонтальное усиление ссылается на развертку стены."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

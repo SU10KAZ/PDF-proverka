@@ -1,0 +1,158 @@
+[
+  {
+    "started_at": "2026-05-30T19:31:14",
+    "dry_run": false
+  },
+  {
+    "move": [
+      "/home/coder/projects/PDF-proverka/projects/213. Мосфильмовская 31А \"King&Sons\"/AR/133_23-ГК-АР3_изм.8/_versions/v2",
+      "/home/coder/projects/PDF-proverka/projects/213. Мосфильмовская 31А \"King&Sons\"/AR/133_23-ГК-АР3_изм.8(main)/133_23-ГК-АР3_изм.8 V2"
+    ]
+  },
+  {
+    "rmdir": "/home/coder/projects/PDF-proverka/projects/213. Мосфильмовская 31А \"King&Sons\"/AR/133_23-ГК-АР3_изм.8/_versions"
+  },
+  {
+    "unlink": "/home/coder/projects/PDF-proverka/projects/213. Мосфильмовская 31А \"King&Sons\"/AR/133_23-ГК-АР3_изм.8/project_versions.json"
+  },
+  {
+    "move_v1": [
+      "/home/coder/projects/PDF-proverka/projects/213. Мосфильмовская 31А \"King&Sons\"/AR/133_23-ГК-АР3_изм.8",
+      "/home/coder/projects/PDF-proverka/projects/213. Мосфильмовская 31А \"King&Sons\"/AR/133_23-ГК-АР3_изм.8(main)/133_23-ГК-АР3_изм.8"
+    ]
+  },
+  {
+    "write_manifest": "/home/coder/projects/PDF-proverka/projects/213. Мосфильмовская 31А \"King&Sons\"/AR/133_23-ГК-АР3_изм.8(main)/version_group.json"
+  },
+  {
+    "move": [
+      "/home/coder/projects/PDF-proverka/projects/213. Мосфильмовская 31А \"King&Sons\"/AR/133_23-ГК-АР5 от 19.01.2026/_versions/v2",
+      "/home/coder/projects/PDF-proverka/projects/213. Мосфильмовская 31А \"King&Sons\"/AR/133_23-ГК-АР5 от 19.01.2026(main)/133_23-ГК-АР5 от 19.01.2026 V2"
+    ]
+  },
+  {
+    "rmdir": "/home/coder/projects/PDF-proverka/projects/213. Мосфильмовская 31А \"King&Sons\"/AR/133_23-ГК-АР5 от 19.01.2026/_versions"
+  },
+  {
+    "unlink": "/home/coder/projects/PDF-proverka/projects/213. Мосфильмовская 31А \"King&Sons\"/AR/133_23-ГК-АР5 от 19.01.2026/project_versions.json"
+  },
+  {
+    "move_v1": [
+      "/home/coder/projects/PDF-proverka/projects/213. Мосфильмовская 31А \"King&Sons\"/AR/133_23-ГК-АР5 от 19.01.2026",
+      "/home/coder/projects/PDF-proverka/projects/213. Мосфильмовская 31А \"King&Sons\"/AR/133_23-ГК-АР5 от 19.01.2026(main)/133_23-ГК-АР5 от 19.01.2026"
+    ]
+  },
+  {
+    "write_manifest": "/home/coder/projects/PDF-proverka/projects/213. Мосфильмовская 31А \"King&Sons\"/AR/133_23-ГК-АР5 от 19.01.2026(main)/version_group.json"
+  },
+  {
+    "move": [
+      "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/EOM/13АВ-РД-ЭО-К6 (согл от 09.04.2026).pdf/_versions/v2",
+      "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/EOM/13АВ-РД-ЭО-К6 (согл от 09.04.2026).pdf(main)/13АВ-РД-ЭО-К6 (согл от 09.04.2026).pdf V2"
+    ]
+  },
+  {
+    "rmdir": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/EOM/13АВ-РД-ЭО-К6 (согл от 09.04.2026).pdf/_versions"
+  },
+  {
+    "unlink": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/EOM/13АВ-РД-ЭО-К6 (согл от 09.04.2026).pdf/project_versions.json"
+  },
+  {
+    "move_v1": [
+      "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/EOM/13АВ-РД-ЭО-К6 (согл от 09.04.2026).pdf",
+      "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/EOM/13АВ-РД-ЭО-К6 (согл от 09.04.2026).pdf(main)/13АВ-РД-ЭО-К6 (согл от 09.04.2026).pdf"
+    ]
+  },
+  {
+    "write_manifest": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/EOM/13АВ-РД-ЭО-К6 (согл от 09.04.2026).pdf(main)/version_group.json"
+  },
+  {
+    "move": [
+      "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf/_versions/v2",
+      "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf(main)/13АВ-РД-КЖ5.1-К1К2 (2).pdf V2"
+    ]
+  },
+  {
+    "rmdir": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf/_versions"
+  },
+  {
+    "unlink": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf/project_versions.json"
+  },
+  {
+    "move_v1": [
+      "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf",
+      "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf(main)/13АВ-РД-КЖ5.1-К1К2 (2).pdf"
+    ]
+  },
+  {
+    "write_manifest": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf(main)/version_group.json"
+  },
+  {
+    "move": [
+      "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.24.2-К2.pdf/_versions/v2",
+      "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.24.2-К2.pdf(main)/13АВ-РД-КЖ5.24.2-К2.pdf V2"
+    ]
+  },
+  {
+    "rmdir": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.24.2-К2.pdf/_versions"
+  },
+  {
+    "unlink": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.24.2-К2.pdf/project_versions.json"
+  },
+  {
+    "move_v1": [
+      "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.24.2-К2.pdf",
+      "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.24.2-К2.pdf(main)/13АВ-РД-КЖ5.24.2-К2.pdf"
+    ]
+  },
+  {
+    "write_manifest": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.24.2-К2.pdf(main)/version_group.json"
+  },
+  {
+    "move": [
+      "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.25-29.2-К2.pdf/_versions/v2",
+      "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.25-29.2-К2.pdf(main)/13АВ-РД-КЖ5.25-29.2-К2.pdf V2"
+    ]
+  },
+  {
+    "rmdir": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.25-29.2-К2.pdf/_versions"
+  },
+  {
+    "unlink": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.25-29.2-К2.pdf/project_versions.json"
+  },
+  {
+    "move_v1": [
+      "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.25-29.2-К2.pdf",
+      "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.25-29.2-К2.pdf(main)/13АВ-РД-КЖ5.25-29.2-К2.pdf"
+    ]
+  },
+  {
+    "write_manifest": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.25-29.2-К2.pdf(main)/version_group.json"
+  },
+  {
+    "move": [
+      "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ6-К1К2 (1).pdf/_versions/v2",
+      "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ6-К1К2 (1).pdf(main)/13АВ-РД-КЖ6-К1К2 (1).pdf V2"
+    ]
+  },
+  {
+    "rmdir": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ6-К1К2 (1).pdf/_versions"
+  },
+  {
+    "unlink": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ6-К1К2 (1).pdf/project_versions.json"
+  },
+  {
+    "move_v1": [
+      "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ6-К1К2 (1).pdf",
+      "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ6-К1К2 (1).pdf(main)/13АВ-РД-КЖ6-К1К2 (1).pdf"
+    ]
+  },
+  {
+    "write_manifest": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ6-К1К2 (1).pdf(main)/version_group.json"
+  },
+  {
+    "finished_at": "2026-05-30T19:31:14",
+    "migrated": 7,
+    "skipped": 0
+  }
+]

@@ -1,0 +1,109 @@
+{
+  "baseline": {
+    "block_id": "7D9Q-GLVQ-QWH",
+    "page": 14,
+    "sheet": "9",
+    "label": "Сечение Я-Я (П-образный элемент)",
+    "sheet_type": "sections_cuts",
+    "unreadable_text": false,
+    "unreadable_details": null,
+    "summary": "Горизонтальное сечение торца стены. Показан П-образный элемент, охватывающий крайние вертикальные стержни и заведенный вглубь стены.",
+    "key_values_read": [
+      "П-образный элемент охватывает вертикальную арматуру"
+    ],
+    "evidence_text_refs": [
+      {
+        "text_block_id": "6LCP-G6DC-JKM",
+        "role": "other",
+        "used_for": "cross_check",
+        "confidence": 0.26,
+        "source": "graph_backfill"
+      },
+      {
+        "text_block_id": "4RDA-QTRG-UYY",
+        "role": "other",
+        "used_for": "cross_check",
+        "confidence": 0.13,
+        "source": "graph_backfill"
+      }
+    ],
+    "findings": [],
+    "selected_text_block_ids": [
+      "6LCP-G6DC-JKM",
+      "4RDA-QTRG-UYY"
+    ]
+  },
+  "candidate_raw": {
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_stage02_full_project/20260423_230329/prepared/native_crops/block_7D9Q-GLVQ-QWH_native.png",
+    "image_size_bytes": 18802,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 2.915,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-35b-a3b",
+      "output": [
+        {
+          "type": "message",
+          "content": "{\n  \"block_id\": \"7D9Q-GLVQ-QWH\",\n  \"page\": 14,\n  \"label\": \"Сечение Я-Я\",\n  \"sheet_type\": \"section\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлено сечение Я-Я, показывающее схему установки горизонтальных элементов. Основным объектом является П-образный элемент, внутри которого размещена вертикальная арматура. Схема иллюстрирует пространственное расположение стержней и хомутов.\",\n  \"key_values_read\": [\n    \"Надпись сечения: Я-Я\",\n    \"Надпись элемента: П-образный элемент\",\n    \"Надпись арматуры: Вертикальная арматура\",\n    \"Тип сечения: продольное\",\n    \"Конфигурация: прямоугольная\",\n    \"Наличие хомутов: да\"\n  ],\n  \"findings\": []\n}"
+        }
+      ],
+      "stats": {
+        "input_tokens": 1449,
+        "total_output_tokens": 233,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 226.73861319657655,
+        "time_to_first_token_seconds": 0.391
+      }
+    },
+    "content": "{\n  \"block_id\": \"7D9Q-GLVQ-QWH\",\n  \"page\": 14,\n  \"label\": \"Сечение Я-Я\",\n  \"sheet_type\": \"section\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На чертеже представлено сечение Я-Я, показывающее схему установки горизонтальных элементов. Основным объектом является П-образный элемент, внутри которого размещена вертикальная арматура. Схема иллюстрирует пространственное расположение стержней и хомутов.\",\n  \"key_values_read\": [\n    \"Надпись сечения: Я-Я\",\n    \"Надпись элемента: П-образный элемент\",\n    \"Надпись арматуры: Вертикальная арматура\",\n    \"Тип сечения: продольное\",\n    \"Конфигурация: прямоугольная\",\n    \"Наличие хомутов: да\"\n  ],\n  \"findings\": []\n}",
+    "reasoning": "",
+    "parsed": {
+      "block_id": "7D9Q-GLVQ-QWH",
+      "page": 14,
+      "label": "Сечение Я-Я",
+      "sheet_type": "section",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "На чертеже представлено сечение Я-Я, показывающее схему установки горизонтальных элементов. Основным объектом является П-образный элемент, внутри которого размещена вертикальная арматура. Схема иллюстрирует пространственное расположение стержней и хомутов.",
+      "key_values_read": [
+        "Надпись сечения: Я-Я",
+        "Надпись элемента: П-образный элемент",
+        "Надпись арматуры: Вертикальная арматура",
+        "Тип сечения: продольное",
+        "Конфигурация: прямоугольная",
+        "Наличие хомутов: да"
+      ],
+      "findings": []
+    },
+    "parse_error": null,
+    "model": "qwen/qwen3.6-35b-a3b",
+    "block_id": "7D9Q-GLVQ-QWH",
+    "width": 1024,
+    "height": 334,
+    "run_index": 158
+  },
+  "compare": {
+    "block_id": "7D9Q-GLVQ-QWH",
+    "page": 14,
+    "label_source": "На чертеже представлено сечение Я-Я, показывающее схему установки горизонтальных",
+    "baseline_present": true,
+    "baseline_label": "Сечение Я-Я (П-образный элемент)",
+    "candidate_label": "Сечение Я-Я",
+    "baseline_findings": 0,
+    "candidate_findings": 0,
+    "baseline_kv": 1,
+    "candidate_kv": 6,
+    "elapsed_s": 2.915,
+    "parse_ok": true,
+    "verdict": "likely_improved",
+    "notes": [
+      "candidate preserved findings presence and captured more key values"
+    ],
+    "baseline_summary": "Горизонтальное сечение торца стены. Показан П-образный элемент, охватывающий крайние вертикальные стержни и заведенный вглубь стены.",
+    "candidate_summary": "На чертеже представлено сечение Я-Я, показывающее схему установки горизонтальных элементов. Основным объектом является П-образный элемент, внутри которого размещена вертикальная арматура. Схема иллюстрирует пространственное расположение стержней и хомутов.",
+    "candidate_sheet_type": "section",
+    "candidate_unreadable_text": false
+  }
+}

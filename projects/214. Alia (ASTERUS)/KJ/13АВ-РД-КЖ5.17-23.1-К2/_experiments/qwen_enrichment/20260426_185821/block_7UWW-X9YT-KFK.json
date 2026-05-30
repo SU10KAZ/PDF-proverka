@@ -1,0 +1,63 @@
+{
+  "block_id": "7UWW-X9YT-KFK",
+  "page": 9,
+  "sheet_no": "4",
+  "file": "block_7UWW-X9YT-KFK.png",
+  "size_kb": 45.6,
+  "ocr_text_len": 861,
+  "ocr_label": "Фрагмент разреза 14-14 (3) с указанием армирования вертикальной конструкции.",
+  "ok": true,
+  "elapsed_ms": 3983,
+  "input_tokens": 1339,
+  "output_tokens": 333,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 751,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 3983,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "разрез",
+    "subject": "Разрез 14-14 (3) вертикальной конструкции с указанием армирования и высотных отметок",
+    "marks": [
+      "8-X-5",
+      "16-2400",
+      "10-X-10"
+    ],
+    "rebar_specs": [
+      "шаг 200 (17 шт.)",
+      "шаг 125 (10 шт.)"
+    ],
+    "dimensions": [
+      "1100",
+      "650",
+      "3100",
+      "80",
+      "60",
+      "2.5"
+    ],
+    "references_on_block": [
+      "см. лист 1",
+      "см. лист 2",
+      "см. лист 3",
+      "см. лист 12"
+    ],
+    "axes": [
+      "П.3-П.5",
+      "А-Б"
+    ],
+    "level_marks": [
+      "отм. Б",
+      "отм. А"
+    ],
+    "concrete_class": null,
+    "notes": "Изображен разрез стены с указанием шага и количества арматурных стержней. Высота элемента 3100 мм. Арматура усиления стен устанавливается симметрично у каждой грани."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

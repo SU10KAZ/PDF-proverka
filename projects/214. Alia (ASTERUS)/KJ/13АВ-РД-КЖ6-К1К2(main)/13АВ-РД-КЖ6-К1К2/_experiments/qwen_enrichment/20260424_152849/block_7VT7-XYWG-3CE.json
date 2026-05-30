@@ -1,0 +1,46 @@
+{
+  "block_id": "7VT7-XYWG-3CE",
+  "page": 7,
+  "sheet_no": "2",
+  "file": "block_7VT7-XYWG-3CE.png",
+  "size_kb": 22.8,
+  "ocr_text_len": 990,
+  "ocr_label": "Представлена легенда условных обозначений для строительного чертежа.",
+  "ok": true,
+  "elapsed_ms": 2986,
+  "input_tokens": 1246,
+  "output_tokens": 225,
+  "reasoning_tokens": 0,
+  "model_instance_id": "qwen/qwen3.6-35b-a3b",
+  "raw_text_len": 584,
+  "attempts": [
+    {
+      "scale": 1.0,
+      "status": 200,
+      "elapsed_ms": 2986,
+      "raw_preview": null
+    }
+  ],
+  "enrichment": {
+    "block_type": "таблица_условных_обозначений",
+    "subject": "Легенда условных обозначений для плиты покрытия пристройки (отметки, толщина, швы, колонны)",
+    "marks": [],
+    "rebar_specs": [],
+    "dimensions": [
+      "+4,200",
+      "t=200"
+    ],
+    "references_on_block": [
+      "см лист 1",
+      "см. листы 3... 7"
+    ],
+    "axes": [],
+    "level_marks": [
+      "+4,200"
+    ],
+    "concrete_class": null,
+    "notes": "Блок содержит расшифровку графических символов и числовых значений, используемых на чертежах плиты перекрытия Пм-1. Ключевые данные: отметка верха +4,200 и толщина плиты 200 мм."
+  },
+  "raw_text_preview": null,
+  "parse_error": null
+}

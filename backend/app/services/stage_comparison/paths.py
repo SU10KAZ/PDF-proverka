@@ -222,6 +222,16 @@ def enriched_comparison_job_path(session_id: str, pair_id: str) -> Path:
     return enriched_comparison_dir(session_id, pair_id) / "job.json"
 
 
+def enriched_comparison_fallback_progress_path(session_id: str, pair_id: str) -> Path:
+    """Live-прогресс evidence_first_s2_fallback: per-chunk Opus + ETA.
+
+    Пишется на границах чанков во время прогона fallback (см.
+    `run_evidence_first_fallback`), читается UI/aggregate чтобы показывать
+    «чанк k / N · осталось ~m мин» вместо статичного `comparing`.
+    """
+    return enriched_comparison_dir(session_id, pair_id) / "fallback_progress.json"
+
+
 # ─── Unified findings (отдельный файл, не смешивается с findings.json) ───
 
 

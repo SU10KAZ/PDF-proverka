@@ -1,0 +1,33 @@
+{
+  "model": "qwen/qwen3.5-35b-a3b",
+  "image_name": "97AH-VUFP-LJJ",
+  "block_id": "97AH-VUFP-LJJ",
+  "width": 1024,
+  "height": 604,
+  "request": "image_smoke",
+  "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_v1_diagnostics/20260423_215555/audit_images/native_crops/block_97AH-VUFP-LJJ_native.png",
+  "image_size_bytes": 75585,
+  "ok": true,
+  "status_code": 200,
+  "elapsed_s": 5.295,
+  "error": null,
+  "response": {
+    "model_instance_id": "qwen/qwen3.5-35b-a3b",
+    "output": [
+      {
+        "type": "message",
+        "content": "Фрагмент — это разрез 2–2(3) железобетонной конструкции (вероятно, стены или опоры). Основные элементы: вертикальные колонны/опоры с армированием, горизонтальные связи, отметки высот. Читаемые детали: шаг арматуры 8-Г-2 по 200 мм, размеры проёмов и ниш (например, 600×1100), отметки A, Г, К, Б; текст в целом читаем, но некоторые обозначения типа «(3 шт.)» могут быть нечёткими."
+      }
+    ],
+    "stats": {
+      "input_tokens": 701,
+      "total_output_tokens": 133,
+      "reasoning_output_tokens": 0,
+      "tokens_per_second": 203.7059160486566,
+      "time_to_first_token_seconds": 0.335
+    }
+  },
+  "content": "Фрагмент — это разрез 2–2(3) железобетонной конструкции (вероятно, стены или опоры). Основные элементы: вертикальные колонны/опоры с армированием, горизонтальные связи, отметки высот. Читаемые детали: шаг арматуры 8-Г-2 по 200 мм, размеры проёмов и ниш (например, 600×1100), отметки A, Г, К, Б; текст в целом читаем, но некоторые обозначения типа «(3 шт.)» могут быть нечёткими.",
+  "reasoning": "",
+  "verdict": "pass"
+}

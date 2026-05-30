@@ -1,0 +1,41 @@
+{
+  "label": "audit_reference_single_block",
+  "model_id": "google/gemini-3.1-pro-preview",
+  "mode": "single_block",
+  "reasoning_effort": "high",
+  "parallelism": 2,
+  "response_healing_initial": true,
+  "resolution": "r800",
+  "requested_block_ids": [
+    "3TFL-TNRF-7G6",
+    "66NE-7DYY-GQN",
+    "9DH3-MEUR-DR4",
+    "947C-9UJT-RYU",
+    "9PPJ-YP6U-HV6",
+    "97AH-VUFP-LJJ",
+    "4CFG-LM4Y-7H4",
+    "66M4-Y69W-VCG",
+    "6PPA-4DDX-6FR",
+    "6R7N-7LRD-AUR",
+    "7DJ9-EQQ3-QMK",
+    "6P9T-Q7GT-N9J"
+  ],
+  "reused_block_ids": [],
+  "newly_run_block_ids": [
+    "3TFL-TNRF-7G6",
+    "4CFG-LM4Y-7H4",
+    "66M4-Y69W-VCG",
+    "66NE-7DYY-GQN",
+    "6P9T-Q7GT-N9J",
+    "6PPA-4DDX-6FR",
+    "6R7N-7LRD-AUR",
+    "7DJ9-EQQ3-QMK",
+    "947C-9UJT-RYU",
+    "97AH-VUFP-LJJ",
+    "9DH3-MEUR-DR4",
+    "9PPJ-YP6U-HV6"
+  ],
+  "missing_block_ids": [],
+  "elapsed_s": 445.434771,
+  "coverage_pct": 100.0
+}

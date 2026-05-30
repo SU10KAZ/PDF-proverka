@@ -284,3 +284,4 @@ resume/skip больше не считаются валидными. Нужно 
 - @docs/stage_comparison_md_enrichment.md — Qwen MD image enrichment: prompt v4_compact, salvage-first, conditional fallback, continuation, diagnostics
 - @docs/stage_comparison_evidence_first_fallback.md — evidence_first_s2_fallback для больших enriched MD пар (too_large): fact index → scope map → deterministic diff → scope-aware section split → shared header → per-chunk Opus → evidence verification → merge/dedup; shadow за флагом STAGE_COMPARISON_EVIDENCE_FIRST_FALLBACK_ENABLED
 - @docs/portal_auth.md — простая защита портала логином/паролем (session-cookie, PORTAL_AUTH_*, helper-скрипт)
+- @docs/project_versions.md — версионность проектов: контейнерная раскладка `<база>(main)/` с братскими папками версий, `version_group.json`, promote-on-first-version, стабильный basename `project_id`, мигратор `_versions/v{N}`→`(main)/`

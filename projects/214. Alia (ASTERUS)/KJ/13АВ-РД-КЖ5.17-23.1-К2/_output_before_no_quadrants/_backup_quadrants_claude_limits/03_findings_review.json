@@ -1,0 +1,178 @@
+{
+  "meta": {
+    "project_id": "13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+    "review_date": "2026-04-18T00:00:00Z",
+    "total_reviewed": 20,
+    "verdicts": {
+      "pass": 14,
+      "no_evidence": 0,
+      "phantom_block": 0,
+      "weak_evidence": 0,
+      "page_mismatch": 0,
+      "contradicts_text": 0,
+      "not_practical": 6
+    }
+  },
+  "reviews": [
+    {
+      "finding_id": "F-001",
+      "verdict": "not_practical",
+      "details": "ГОСТ 5781-82* присутствует в ведомости ссылочных документов рядом с действующим ГОСТ 34028-2016. Все спецификации арматуры корректно ссылаются на ГОСТ 34028-2016. Строительство не пострадает: применяемый материал однозначно определён по актуальному стандарту. Наличие отменённого ГОСТа в ведомости ссылочных — редакционный пропуск, не влияющий на производство работ.",
+      "suggested_action": "remove",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-002",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-003",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-004",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-005",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-006",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-007",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-008",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-009",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-010",
+      "verdict": "not_practical",
+      "details": "ГОСТ 26633-2015 и ГОСТ 34028-2016 присутствуют в ведомости ссылочных документов (блок T4T7-MWWM-NVX) и корректно применяются в спецификациях. Отсутствие этих ГОСТов именно в п. 3 общих указаний (отдельный перечень) — вопрос внутренней структуры общих данных, но не влияет на проектные решения или производство работ. Ссылка на ГОСТ 14098-2014 носит условный характер («при применении сварных стыков»). Устранение формально, конструктив корректен.",
+      "suggested_action": "remove",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-011",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-012",
+      "verdict": "not_practical",
+      "details": "Обозначение «А240С» — устаревший индекс из ГОСТ 5781-82 (где «С» означало «свариваемая»). В контексте п. 18 общих указаний (требования к гибке стержней) армирование однозначно идентифицируется как низкопрочная гладкая арматура Ø≤10 мм. Ни один специалист не ошибётся при производстве работ или закупке. По аналогии с принципом «опечатка в наименовании производителя при однозначной идентификации продукта» — замечание не повлияет на строительство.",
+      "suggested_action": "remove",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-013",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-014",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-015",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-016",
+      "verdict": "not_practical",
+      "details": "Данные о расходе стали присутствуют в двух отдельных таблицах «Общая ведомость расхода стали» (блоки 9CRM-4HXR-UT3, GQCE-W943-QQL). Итог 121 559 кг проверяем и арифметически верен. Отсутствие сводной строки в ведомости материалов — вопрос компоновки документа, а не ошибка проектирования. Сметчик и строитель получат полную информацию из имеющихся таблиц. Требование ГОСТ 21.110-2013 носит формальный характер компоновки, реальное строительство не пострадает.",
+      "suggested_action": "remove",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-017",
+      "verdict": "not_practical",
+      "details": "Разночтение наименований разработчика/заказчика на титульных листах и неполный шифр на стр. 4 («13АВ-РД-5.17-23.1-К2» вместо «13АВ-РД-КЖ5.17-23.1-К2») — редакционные ошибки в идентификационных реквизитах комплекта. Несоответствие кода документа аналогично категории «Inconsistent document set codes» — не влияет на технические решения и производство работ. Корректный шифр комплекта указан на всех основных листах.",
+      "suggested_action": "remove",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-018",
+      "verdict": "not_practical",
+      "details": "СП 48.13330.2019 упомянут в п. 8 общих указаний — то есть фактически применяется. СП 14.13330.2018 к площадке г. Москвы (5 баллов по ОСР-97) не применяется по существу, его включение в перечень носит формально-декларативный характер. СП 54.13330.2022 является нормой для АР-раздела, не для КЖ. Отсутствие этих ссылок в п. 3 — неполнота перечня без влияния на строительство. Аналогично F-010.",
+      "suggested_action": "remove",
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-019",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    },
+    {
+      "finding_id": "F-020",
+      "verdict": "pass",
+      "details": null,
+      "suggested_action": null,
+      "correct_page": null,
+      "correct_sheet": null
+    }
+  ]
+}

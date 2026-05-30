@@ -1,0 +1,99 @@
+{
+  "meta": {
+    "project_id": "13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf",
+    "audit_completed": "2026-04-19T00:00:00Z",
+    "total_findings": 18,
+    "blocks_analyzed": 49,
+    "by_severity": {
+      "КРИТИЧЕСКОЕ": 4,
+      "ЭКОНОМИЧЕСКОЕ": 1,
+      "ЭКСПЛУАТАЦИОННОЕ": 3,
+      "РЕКОМЕНДАТЕЛЬНОЕ": 8,
+      "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 2
+    },
+    "pre_merge_total": 19,
+    "merged_groups": 1,
+    "review_applied": true,
+    "review_stats": {
+      "total_reviewed": 5,
+      "passed": 0,
+      "fixed": 5,
+      "removed": 0,
+      "downgraded": 0
+    }
+  },
+  "findings": [
+    {
+      "id": "F-001",
+      "status": "unchanged (pass)"
+    },
+    {
+      "id": "F-002",
+      "status": "unchanged (pass)"
+    },
+    {
+      "id": "F-003",
+      "status": "unchanged (pass)"
+    },
+    {
+      "id": "F-004",
+      "status": "unchanged (pass)"
+    },
+    {
+      "id": "F-005",
+      "status": "unchanged (pass)"
+    },
+    {
+      "id": "F-006",
+      "status": "unchanged (pass)"
+    },
+    {
+      "id": "F-007",
+      "status": "unchanged (pass)"
+    },
+    {
+      "id": "F-008",
+      "status": "unchanged (pass)"
+    },
+    {
+      "id": "F-009",
+      "status": "unchanged (pass)"
+    },
+    {
+      "id": "F-010",
+      "status": "unchanged (pass)"
+    },
+    {
+      "id": "F-011",
+      "fixed": "page [5]→[6], evidence T-002/T-003 page 5→6, sub_findings pages 5→6"
+    },
+    {
+      "id": "F-012",
+      "fixed": "page [5]→[6], evidence T-004 page 5→6"
+    },
+    {
+      "id": "F-013",
+      "fixed": "page [5]→[6], evidence T-013 page 5→6"
+    },
+    {
+      "id": "F-014",
+      "fixed": "sheet null→Лист 1, page [3,4]→[6], evidence T-014 collapsed to single entry page 6, removed sheet_unavailable flags"
+    },
+    {
+      "id": "F-015",
+      "fixed": "sheet null→Лист 1, page [3,4]→[6], evidence T-016 collapsed to single entry page 6, removed sheet_unavailable flags"
+    },
+    {
+      "id": "F-016",
+      "status": "unchanged (pass)"
+    },
+    {
+      "id": "F-017",
+      "status": "unchanged (pass)"
+    },
+    {
+      "id": "F-018",
+      "status": "unchanged (pass)"
+    }
+  ]
+}

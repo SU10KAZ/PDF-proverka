@@ -1,0 +1,93 @@
+{
+  "baseline": {
+    "block_id": "4LVY-33DN-DVN",
+    "page": 7,
+    "sheet": "2",
+    "label": "Разрез 1-1",
+    "sheet_type": "sections_cuts",
+    "unreadable_text": false,
+    "unreadable_details": null,
+    "summary": "Разрез 1-1, показывающий глухой участок стены. Указана высота этажа и толщина стены.",
+    "key_values_read": [
+      "Высота этажа (от отм. А до отм. Б) — 3100 мм",
+      "Толщина стены — 200 мм"
+    ],
+    "evidence_text_refs": [],
+    "findings": [],
+    "selected_text_block_ids": [
+      "4KLA-VHYN-76X"
+    ]
+  },
+  "candidate_raw": {
+    "request": "image_smoke",
+    "image": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.17-23.1-К2 (1) (1).pdf/_experiments/chandra_stage02_full_project/20260423_230329/prepared/native_crops/block_4LVY-33DN-DVN_native.png",
+    "image_size_bytes": 18087,
+    "ok": true,
+    "status_code": 200,
+    "elapsed_s": 2.721,
+    "error": null,
+    "response": {
+      "model_instance_id": "qwen/qwen3.6-35b-a3b",
+      "output": [
+        {
+          "type": "message",
+          "content": "{\n  \"block_id\": \"4LVY-33DN-DVN\",\n  \"page\": 7,\n  \"label\": \"Разрез 1-1\",\n  \"sheet_type\": \"section\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На фрагменте изображен разрез 1-1 вертикальной железобетонной конструкции. Указаны габаритные размеры элемента и отметки его верхней и нижней границ. Конструкция показана с применением штриховки, характерной для бетона.\",\n  \"key_values_read\": [\n    \"Надпись заголовка: 1-1\",\n    \"Высота элемента: 3100\",\n    \"Толщина элемента: 200\",\n    \"Отметка верхней границы: отм. Б\",\n    \"Отметка нижней границы: отм. А\"\n  ],\n  \"findings\": []\n}"
+        }
+      ],
+      "stats": {
+        "input_tokens": 1382,
+        "total_output_tokens": 215,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 225.97777429760325,
+        "time_to_first_token_seconds": 0.418
+      }
+    },
+    "content": "{\n  \"block_id\": \"4LVY-33DN-DVN\",\n  \"page\": 7,\n  \"label\": \"Разрез 1-1\",\n  \"sheet_type\": \"section\",\n  \"unreadable_text\": false,\n  \"unreadable_details\": null,\n  \"summary\": \"На фрагменте изображен разрез 1-1 вертикальной железобетонной конструкции. Указаны габаритные размеры элемента и отметки его верхней и нижней границ. Конструкция показана с применением штриховки, характерной для бетона.\",\n  \"key_values_read\": [\n    \"Надпись заголовка: 1-1\",\n    \"Высота элемента: 3100\",\n    \"Толщина элемента: 200\",\n    \"Отметка верхней границы: отм. Б\",\n    \"Отметка нижней границы: отм. А\"\n  ],\n  \"findings\": []\n}",
+    "reasoning": "",
+    "parsed": {
+      "block_id": "4LVY-33DN-DVN",
+      "page": 7,
+      "label": "Разрез 1-1",
+      "sheet_type": "section",
+      "unreadable_text": false,
+      "unreadable_details": null,
+      "summary": "На фрагменте изображен разрез 1-1 вертикальной железобетонной конструкции. Указаны габаритные размеры элемента и отметки его верхней и нижней границ. Конструкция показана с применением штриховки, характерной для бетона.",
+      "key_values_read": [
+        "Надпись заголовка: 1-1",
+        "Высота элемента: 3100",
+        "Толщина элемента: 200",
+        "Отметка верхней границы: отм. Б",
+        "Отметка нижней границы: отм. А"
+      ],
+      "findings": []
+    },
+    "parse_error": null,
+    "model": "qwen/qwen3.6-35b-a3b",
+    "block_id": "4LVY-33DN-DVN",
+    "width": 271,
+    "height": 1024,
+    "run_index": 31
+  },
+  "compare": {
+    "block_id": "4LVY-33DN-DVN",
+    "page": 7,
+    "label_source": "На фрагменте представлен разрез 1-1 вертикальной железобетонной конструкции.",
+    "baseline_present": true,
+    "baseline_label": "Разрез 1-1",
+    "candidate_label": "Разрез 1-1",
+    "baseline_findings": 0,
+    "candidate_findings": 0,
+    "baseline_kv": 2,
+    "candidate_kv": 5,
+    "elapsed_s": 2.721,
+    "parse_ok": true,
+    "verdict": "likely_improved",
+    "notes": [
+      "candidate preserved findings presence and captured more key values"
+    ],
+    "baseline_summary": "Разрез 1-1, показывающий глухой участок стены. Указана высота этажа и толщина стены.",
+    "candidate_summary": "На фрагменте изображен разрез 1-1 вертикальной железобетонной конструкции. Указаны габаритные размеры элемента и отметки его верхней и нижней границ. Конструкция показана с применением штриховки, характерной для бетона.",
+    "candidate_sheet_type": "section",
+    "candidate_unreadable_text": false
+  }
+}

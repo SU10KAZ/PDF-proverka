@@ -1,0 +1,27 @@
+{
+  "model": "google/gemma-4-31b",
+  "request": "text_smoke",
+  "ok": true,
+  "status_code": 200,
+  "elapsed_s": 1.107,
+  "error": null,
+  "response": {
+    "model_instance_id": "google/gemma-4-31b",
+    "output": [
+      {
+        "type": "message",
+        "content": "OK"
+      }
+    ],
+    "stats": {
+      "input_tokens": 43,
+      "total_output_tokens": 2,
+      "reasoning_output_tokens": 0,
+      "tokens_per_second": 74.46848121532561,
+      "time_to_first_token_seconds": 0.126
+    }
+  },
+  "content": "OK",
+  "reasoning": "",
+  "verdict": "pass"
+}

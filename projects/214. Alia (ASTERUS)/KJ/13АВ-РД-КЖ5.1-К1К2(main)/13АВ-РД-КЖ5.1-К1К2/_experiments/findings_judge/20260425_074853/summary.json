@@ -1,0 +1,41 @@
+{
+  "timestamp": "20260425_074853",
+  "judge_model": "claude-opus-4-7",
+  "sources_map": {
+    "A": {
+      "kind": "opus_baseline",
+      "path": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf/_experiments/qwen_enrichment_opus_baseline/20260425_072020__claude-sonnet-4-6_no-enrichment"
+    },
+    "B": {
+      "kind": "opus_baseline",
+      "path": "/home/coder/projects/PDF-proverka/projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf/_experiments/qwen_enrichment_opus_baseline/20260425_062739__claude-sonnet-4-6_extended"
+    }
+  },
+  "total_blocks": 25,
+  "wall_clock_s": 424.5,
+  "aggregate": {
+    "total_blocks": 25,
+    "judged_blocks": 25,
+    "skipped_blocks": 0,
+    "total_matches": 36,
+    "total_uniques": 103,
+    "per_source": {
+      "A": {
+        "matched": 36,
+        "valuable_unique": 28,
+        "questionable_unique": 17,
+        "noise_unique": 1,
+        "total_findings": 82,
+        "wins": 2
+      },
+      "B": {
+        "matched": 37,
+        "valuable_unique": 45,
+        "questionable_unique": 12,
+        "noise_unique": 0,
+        "total_findings": 94,
+        "wins": 22
+      }
+    }
+  }
+}
