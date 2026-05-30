@@ -45,6 +45,7 @@ from backend.app.api.routers import (
     discussions,
     knowledge_base,
     objects,
+    users,
     model_control,
     lms,
     critic_v2_ui,
@@ -100,6 +101,7 @@ app.include_router(document.router)
 app.include_router(discussions.router)
 app.include_router(knowledge_base.router)
 app.include_router(objects.router)
+app.include_router(users.router)
 app.include_router(model_control.router)
 app.include_router(lms.router)
 app.include_router(critic_v2_ui.router)

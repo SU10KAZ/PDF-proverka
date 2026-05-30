@@ -12,6 +12,22 @@ const app = createApp({
 
         const currentView = ref('dashboard');
         const blockBackRoute = ref(null);  // куда вернуться из просмотра блока
+
+        // ─── Пользователи (сотрудники-эксперты) ────────────────────────────
+        // Список сотрудников + текущий активный (от его имени сохраняются
+        // решения эксперта — пишется в expert_reviewer). Активность каждого
+        // агрегируется из knowledge_base/decisions_log.json.
+        const usersList = ref([]);
+        const usersCurrentId = ref(null);
+        const usersLoading = ref(false);
+        const usersAuthEnabled = ref(false);       // включена ли портальная авторизация
+        const usersLoggedInUsername = ref(null);   // логин активной сессии
+        const usersLoggedInMatched = ref(false);   // сопоставлен ли логин с сотрудником
+        const newUserSurname = ref('');
+        const newUserInitials = ref('');
+        const expandedUserId = ref(null);   // раскрытая карточка в списке
+        const userActivity = ref(null);     // {user, projects, totals}
+        const userActivityLoading = ref(false);
         const currentProjectId = ref(null);
         const currentProject = ref(null);
         const projects = ref([]);
@@ -2576,14 +2592,20 @@ const app = createApp({
             } else if (hash === '/model-control') {
                 currentView.value = 'model-control';
                 connectGlobalWS();
+            } else if (hash === '/users') {
+                currentView.value = 'users';
+                connectGlobalWS();
+                loadUsers();
+            } else if (hash.match(/^\/users\/(.+)$/)) {
+                const uid = decodeURIComponent(hash.match(/^\/users\/(.+)$/)[1]);
+                currentView.value = 'user-activity';
+                connectGlobalWS();
+                loadUsers();
+                loadUserActivity(uid);
             } else if (hash === '/critic-v2-ui') {
                 // Experimental offline view. Does NOT touch production pipeline.
                 currentView.value = 'critic-v2-ui';
                 connectGlobalWS();
-            } else if (hash === '/external-register') {
-                currentView.value = 'external-register';
-                connectGlobalWS();
-                loadExternalRegister();
             } else if (hash === '/stage-comparison') {
                 currentView.value = 'stage-comparison';
                 connectGlobalWS();
@@ -8027,6 +8049,95 @@ const app = createApp({
             }
         }
 
+        // ─── Пользователи (сотрудники) ───
+        async function loadUsers() {
+            usersLoading.value = true;
+            try {
+                const resp = await fetch('/api/users');
+                const data = await resp.json();
+                usersList.value = data.users || [];
+                usersCurrentId.value = data.current_id || null;
+                usersAuthEnabled.value = !!data.auth_enabled;
+                usersLoggedInUsername.value = data.logged_in_username || null;
+                usersLoggedInMatched.value = !!data.logged_in_matched;
+            } catch (e) {
+                console.error('Load users error:', e);
+            } finally {
+                usersLoading.value = false;
+            }
+        }
+
+        function currentUserName() {
+            const u = usersList.value.find(x => x.id === usersCurrentId.value);
+            return u ? u.name : '';
+        }
+
+        async function switchUser(userId) {
+            try {
+                await fetch('/api/users/switch', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: userId }),
+                });
+                usersCurrentId.value = userId;
+            } catch (e) {
+                console.error('Switch user error:', e);
+            }
+        }
+
+        async function addUser() {
+            const surname = (newUserSurname.value || '').trim();
+            if (!surname) { alert('Введите фамилию'); return; }
+            try {
+                const resp = await fetch('/api/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        surname,
+                        initials: (newUserInitials.value || '').trim(),
+                    }),
+                });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || resp.statusText);
+                }
+                newUserSurname.value = '';
+                newUserInitials.value = '';
+                await loadUsers();
+            } catch (e) {
+                alert('Ошибка добавления: ' + (e.message || e));
+            }
+        }
+
+        async function deleteUser(userId) {
+            const u = usersList.value.find(x => x.id === userId);
+            if (!confirm(`Удалить пользователя «${u ? u.name : userId}»? Его решения в истории сохранятся.`)) return;
+            try {
+                await fetch(`/api/users/${encodeURIComponent(userId)}`, { method: 'DELETE' });
+                await loadUsers();
+            } catch (e) {
+                alert('Ошибка удаления: ' + (e.message || e));
+            }
+        }
+
+        function toggleUserExpand(userId) {
+            expandedUserId.value = expandedUserId.value === userId ? null : userId;
+        }
+
+        async function loadUserActivity(userId) {
+            userActivityLoading.value = true;
+            userActivity.value = null;
+            try {
+                const resp = await fetch(`/api/users/${encodeURIComponent(userId)}/activity`);
+                if (!resp.ok) throw new Error(resp.statusText);
+                userActivity.value = await resp.json();
+            } catch (e) {
+                console.error('Load user activity error:', e);
+            } finally {
+                userActivityLoading.value = false;
+            }
+        }
+
         async function loadExpertDecisions() {
             if (!currentProjectId.value) return;
             const map = {};
@@ -8109,7 +8220,7 @@ const app = createApp({
                 const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}${vqPost}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ decisions, removed_ids: removedIds, reviewer: '' }),
+                    body: JSON.stringify({ decisions, removed_ids: removedIds, reviewer: currentUserName() }),
                 });
                 if (!resp.ok) {
                     const err = await resp.json().catch(() => ({}));
@@ -8414,6 +8525,7 @@ const app = createApp({
             Promise.all([
                 loadDisciplines(),
                 loadObjects().then(() => loadProjectGroups()),
+                loadUsers(),
                 pollGlobalUsage(),
                 fetchAccountInfo(),
                 fetchPaidCost(),
@@ -11710,7 +11822,7 @@ const app = createApp({
                 const r = await fetch(`/api/stage-comparison/sessions/${sid}/expert-review`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ decisions, removed_ids: removedIds, reviewer: '' }),
+                    body: JSON.stringify({ decisions, removed_ids: removedIds, reviewer: currentUserName() }),
                 });
                 if (!r.ok) {
                     const err = await r.json().catch(() => ({}));
@@ -12828,6 +12940,12 @@ const app = createApp({
         return {
             // Theme
             theme, toggleTheme,
+            // Пользователи (сотрудники)
+            usersList, usersCurrentId, usersLoading, newUserSurname, newUserInitials,
+            usersAuthEnabled, usersLoggedInUsername, usersLoggedInMatched,
+            expandedUserId, userActivity, userActivityLoading,
+            loadUsers, switchUser, addUser, deleteUser, toggleUserExpand,
+            loadUserActivity, currentUserName,
             // State
             currentView, currentProject, currentProjectId, projects, loading, isProjectView,
             findingsData, filterSeverity, filterSearch, severityOptions,

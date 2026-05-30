@@ -1,0 +1,50 @@
+{
+  "users": [
+    {
+      "id": "uzun",
+      "login": "andrey",
+      "surname": "Узун",
+      "initials": "А. И.",
+      "name": "Узун А. И.",
+      "role": "admin",
+      "created_at": "2026-05-30T00:00:00"
+    },
+    {
+      "id": "grivapsh",
+      "login": "alexey",
+      "surname": "Гривапш",
+      "initials": "А. А.",
+      "name": "Гривапш А. А.",
+      "role": "expert",
+      "created_at": "2026-05-30T00:00:00"
+    },
+    {
+      "id": "kuldyaev",
+      "login": "filipp",
+      "surname": "Кульдяев",
+      "initials": "Ф. С.",
+      "name": "Кульдяев Ф. С.",
+      "role": "expert",
+      "created_at": "2026-05-30T00:00:00"
+    },
+    {
+      "id": "olar",
+      "login": "marina",
+      "surname": "Оларь",
+      "initials": "М. И.",
+      "name": "Оларь М. И.",
+      "role": "expert",
+      "created_at": "2026-05-30T00:00:00"
+    },
+    {
+      "id": "repnikov",
+      "login": "igor",
+      "surname": "Репников",
+      "initials": "И. А.",
+      "name": "Репников И. А.",
+      "role": "expert",
+      "created_at": "2026-05-30T00:00:00"
+    }
+  ],
+  "current_id": "uzun"
+}
