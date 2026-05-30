@@ -140,6 +140,14 @@ def _enrich_decisions(project_id: str, decisions: list[ExpertDecision], reviewer
     info = _load_json(info_path) or {}
     section = info.get("section", "")
 
+    # Объект (здание/комплекс): из bound-контекста, иначе текущий выбранный.
+    object_id = ""
+    try:
+        from backend.app.services.common import object_service, project_service
+        object_id = project_service._get_bound_object_id() or object_service.get_current_id() or ""
+    except Exception:
+        object_id = ""
+
     # Следующий ID
     existing_log = _load_decisions_log()
     next_num = len(existing_log) + 1
@@ -156,6 +164,7 @@ def _enrich_decisions(project_id: str, decisions: list[ExpertDecision], reviewer
 
         entry = KnowledgeBaseEntry(
             id=f"DEC-{next_num:04d}",
+            object_id=object_id,
             source_project=project_id,
             section=section,
             item_id=dec.item_id,
@@ -170,6 +179,7 @@ def _enrich_decisions(project_id: str, decisions: list[ExpertDecision], reviewer
             expert_reason=dec.rejection_reason or "",
             expert_reviewer=dec.reviewer or reviewer,
             expert_date=dec.timestamp or _now_iso(),
+            customer_response=(source.get("external_register") or {}).get("customer_response", ""),
         )
         entries.append(entry)
         next_num += 1
@@ -213,6 +223,7 @@ def get_knowledge_base(
     section: Optional[str] = None,
     item_type: Optional[str] = None,
     search: Optional[str] = None,
+    object_id: Optional[str] = None,
     limit: int = 100,
     offset: int = 0,
 ) -> dict:
@@ -221,12 +232,11 @@ def get_knowledge_base(
 
     # Вычислить status для каждой записи
     for e in entries:
-        if e.get("customer_confirmed"):
-            e["status"] = "customer_confirmed"
-        else:
-            e["status"] = e.get("expert_decision", "")
+        e["status"] = _entry_status(e)
 
     # Фильтрация
+    if object_id:
+        entries = [e for e in entries if e.get("object_id") == object_id]
     if status:
         entries = [e for e in entries if e.get("status") == status]
     if section:
@@ -253,17 +263,29 @@ def get_knowledge_base(
     }
 
 
-def get_kb_stats() -> dict:
-    """Счётчики по вкладкам."""
+def _entry_status(e: dict) -> str:
+    """Статус записи для вкладок KB.
+
+    customer_confirmed + ответ заказчика «Внесено» → fixed_by_customer
+    (заказчик внёс изменения в РД); остальные согласованные → customer_confirmed.
+    """
+    if e.get("customer_confirmed"):
+        if (e.get("customer_response") or "").strip() == "Внесено":
+            return "fixed_by_customer"
+        return "customer_confirmed"
+    return e.get("expert_decision", "")
+
+
+def get_kb_stats(object_id: Optional[str] = None) -> dict:
+    """Счётчики по вкладкам (опционально в рамках одного объекта)."""
     entries = _load_decisions_log()
-    stats = {"rejected": 0, "accepted": 0, "customer_confirmed": 0}
+    if object_id:
+        entries = [e for e in entries if e.get("object_id") == object_id]
+    stats = {"rejected": 0, "accepted": 0, "customer_confirmed": 0, "fixed_by_customer": 0}
     for e in entries:
-        if e.get("customer_confirmed"):
-            stats["customer_confirmed"] += 1
-        elif e.get("expert_decision") == "rejected":
-            stats["rejected"] += 1
-        elif e.get("expert_decision") == "accepted":
-            stats["accepted"] += 1
+        st = _entry_status(e)
+        if st in stats:
+            stats[st] += 1
     stats["total"] = sum(stats.values())
     return stats
 

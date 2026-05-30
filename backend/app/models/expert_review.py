@@ -26,6 +26,7 @@ class ExpertReviewSubmission(BaseModel):
 class KnowledgeBaseEntry(BaseModel):
     """Запись в глобальной базе знаний."""
     id: str                               # DEC-0001
+    object_id: str = ""                   # 0b540226 (объект — здание/комплекс)
     source_project: str                   # EOM/133_23-ГК-ГРЩ
     section: str                          # EOM
     item_id: str                          # F-003
@@ -44,6 +45,10 @@ class KnowledgeBaseEntry(BaseModel):
     expert_reason: str = ""
     expert_reviewer: str = ""
     expert_date: str = ""
+
+    # Дословный ответ заказчика из реестра (Внесено / Требует внесения /
+    # По согласованию / Отклонено), если замечание пришло из external_register.
+    customer_response: str = ""
 
     # Согласование заказчиком (только для accepted)
     customer_confirmed: bool = False

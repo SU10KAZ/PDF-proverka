@@ -62,20 +62,21 @@ async def get_kb_entries(
     section: Optional[str] = Query(None),
     item_type: Optional[str] = Query(None, description="finding | optimization"),
     search: Optional[str] = Query(None),
+    object_id: Optional[str] = Query(None, description="id объекта (здание/комплекс)"),
     limit: int = Query(100, ge=1, le=1000),
     offset: int = Query(0, ge=0),
 ):
     """Получить записи базы знаний с фильтрацией."""
     return kb_svc.get_knowledge_base(
         status=status, section=section, item_type=item_type,
-        search=search, limit=limit, offset=offset,
+        search=search, object_id=object_id, limit=limit, offset=offset,
     )
 
 
 @router.get("/stats")
-async def get_kb_stats():
-    """Счётчики по вкладкам (rejected, accepted, customer_confirmed)."""
-    return kb_svc.get_kb_stats()
+async def get_kb_stats(object_id: Optional[str] = Query(None)):
+    """Счётчики по вкладкам (rejected, accepted, customer_confirmed, fixed_by_customer)."""
+    return kb_svc.get_kb_stats(object_id=object_id)
 
 
 @router.post("/customer-confirm")
