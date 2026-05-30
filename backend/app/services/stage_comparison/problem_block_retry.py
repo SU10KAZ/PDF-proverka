@@ -701,6 +701,8 @@ async def maybe_run_problem_block_retry(
         return item
 
     side_block_id = item.get("side_block_id") or item.get("md_block_id") or ""
+    # All diagnostic fields are always present (defaults below) so downstream
+    # consumers never have to guard against missing keys.
     diag_block = {
         "block_id": side_block_id,
         "retry_enabled": True,
@@ -710,9 +712,15 @@ async def maybe_run_problem_block_retry(
         "baseline_status": item.get("status"),
         "baseline_confidence": item.get("confidence_adjusted"),
         "baseline_usable_for_diff": item.get("usable_for_diff"),
+        "tiles_count": 0,
+        "tiles_done": 0,
+        "tiles_failed": 0,
         "retry_status": "skipped",
         "retry_improved": False,
         "final_method_used": "baseline",
+        "final_confidence": item.get("confidence_adjusted"),
+        "final_usable_for_diff": item.get("usable_for_diff"),
+        "cache_hit": False,
         "errors": [],
     }
 
