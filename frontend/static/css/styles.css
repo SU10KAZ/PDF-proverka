@@ -12,6 +12,7 @@
   --topbar-bg:   #ffffff;
   --border:      rgba(0,0,0,0.07);
   --border2:     rgba(0,0,0,0.13);
+  --grid-line:   rgba(0,0,0,0.28);
   --teal:        #008f7e;
   --teal-light:  #d0f0ec;
   --teal-mid:    rgba(0,143,126,0.2);
@@ -44,6 +45,7 @@
   --topbar-bg:   #111720;
   --border:      rgba(255,255,255,0.07);
   --border2:     rgba(255,255,255,0.13);
+  --grid-line:   rgba(255,255,255,0.30);
   --teal:        #00c2b8;
   --teal-light:  rgba(0,194,184,0.12);
   --teal-mid:    rgba(0,194,184,0.18);
@@ -554,6 +556,7 @@ body {
 .project-tab__count--teal { background: var(--teal-light); color: var(--teal); border-color: var(--teal-border); }
 .project-tab__count--amber { background: var(--amber-light); color: var(--amber); border-color: rgba(196,115,0,0.25); }
 .project-tab__count--purple { background: var(--purple-light); color: var(--purple); border-color: rgba(109,63,212,0.25); }
+.project-tab__count--red { background: var(--red-light); color: var(--red); border-color: rgba(212,24,58,0.25); }
 .project-tab__count--exp {
   background: #b45309; color: #fff; font-size: 9px; font-weight: 700;
   border-color: #92400e;
@@ -1924,23 +1927,51 @@ th.cv2-sort-active {
     background: var(--bg3); cursor: pointer; display: inline-flex;
     align-items: center; justify-content: center; transition: all .15s;
 }
-.btn-decision svg { opacity: .5; transition: opacity .15s; }
+.btn-decision svg { opacity: .9; transition: opacity .15s; }
 .btn-decision:hover svg { opacity: 1; }
+/* Глифы галочки/крестика — крупные, жирные, контрастные */
+.btn-decision .decision-glyph {
+    font-size: 16px; font-weight: 900; line-height: 1;
+    display: inline-block; transition: transform .1s;
+}
+.btn-decision.btn-sm .decision-glyph { font-size: 14px; }
+/* Галочка всегда зелёная, крестик всегда красный (видны до выбора) */
+.btn-accept svg, .btn-accept .decision-glyph { stroke: #22c55e; color: #22c55e; }
+.btn-reject svg, .btn-reject .decision-glyph { stroke: #ef4444; color: #ef4444; }
 .btn-accept:hover, .btn-accept.active { background: rgba(34,197,94,.15); border-color: #22c55e; }
-.btn-accept.active svg { opacity: 1; stroke: #22c55e; }
+.btn-accept.active { border-color: #22c55e; }
+.btn-accept.active svg { opacity: 1; stroke: #16a34a; }
+.btn-accept.active .decision-glyph { color: #15803d; }
 .btn-reject:hover, .btn-reject.active { background: rgba(239,68,68,.15); border-color: #ef4444; }
-.btn-reject.active svg { opacity: 1; stroke: #ef4444; }
+.btn-reject.active svg { opacity: 1; stroke: #dc2626; }
+.btn-reject.active .decision-glyph { color: #b91c1c; }
 .btn-decision.btn-sm { width: 26px; height: 26px; }
 
 .rejection-reason-input {
-    width: 100%; min-height: 40px; max-height: 80px;
+    width: 100%; min-height: 48px; max-height: 80px;
     padding: 4px 8px; font-size: 11px; line-height: 1.4;
-    background: var(--bg1); color: var(--text); border: 1px solid var(--border2);
+    background: var(--card-bg); color: var(--text); border: 1px solid var(--border2);
     border-radius: 4px; resize: vertical; font-family: inherit;
+    transition: box-shadow .12s ease, border-color .12s ease;
 }
 .rejection-reason-input:focus { border-color: var(--teal-border); outline: none; }
+/* На hover/focus поле разворачивается во всплывающий блок поверх соседних
+   ячеек, чтобы целиком показать введённый текст, если он не поместился. */
+.rejection-reason-input:hover,
+.rejection-reason-input:focus {
+    position: absolute;
+    z-index: 60;
+    /* Растём влево (колонка причины у правого края таблицы — рост вправо
+       обрезала бы overflow-x:auto обёртки), вниз и поверх соседних ячеек. */
+    right: 4px; left: auto; top: 6px;
+    width: 440px; max-width: 70vw;
+    min-height: 150px; max-height: 48vh; height: auto;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, .22);
+    border-color: var(--teal-border);
+}
 .decision-cell { vertical-align: middle; }
-.reason-cell { vertical-align: top; padding: 6px 4px !important; }
+/* position:relative — якорь для всплывающего .rejection-reason-input */
+.reason-cell { vertical-align: top; padding: 6px 4px !important; position: relative; }
 
 /* Row states: accepted (green left border, subtle bg) */
 tr.row-accepted { border-left: 3px solid #22c55e; }
@@ -1950,25 +1981,51 @@ tr.row-accepted td { background: rgba(34,197,94,.04) !important; }
 tr.sc-row-mixed { border-left: 3px solid #f59e0b; }
 tr.sc-row-mixed td { background: rgba(245,158,11,.06) !important; }
 
-/* Row states: rejected (strikethrough, dimmed, pushed down) */
-tr.row-rejected { border-left: 3px solid #ef4444; opacity: 0.45; }
-tr.row-rejected .desc-cell,
-tr.row-rejected .rec-cell,
-tr.row-rejected .norm-cell,
-tr.row-rejected .opt-proposed,
-tr.row-rejected .opt-risks,
-tr.row-rejected .opt-norm {
+/* Row states: rejected — зачёркиваем весь текст строки, без прозрачности.
+   Линия ставится ТОЛЬКО на td: она пробрасывается на обычный текст (div/span/
+   strong), но НЕ на atomic inline-боксы (display:inline-block/inline-flex) —
+   поэтому кнопки решения и глифы ✓/✗ остаются нетронутыми без отдельных
+   text-decoration:none (их линию ancestor-а всё равно нельзя было бы убрать). */
+tr.row-rejected { border-left: 3px solid #ef4444; }
+tr.row-rejected td {
     text-decoration: line-through;
-    text-decoration-color: rgba(239,68,68,.5);
+    text-decoration-color: #000;
 }
-tr.row-rejected .finding-id-link { text-decoration: line-through; }
-tr.row-rejected:hover { opacity: 0.7; }
+/* Ячейки с управлением (кнопки решения, причина, «к месту») НЕ зачёркиваем.
+   Линию надо снимать на самом td-источнике: text-decoration:none на вложенной
+   кнопке не убирает линию, пробрасываемую от td через flex-цепочку. */
+tr.row-rejected td.decision-cell,
+tr.row-rejected td.reason-cell,
+tr.row-rejected td.sc-cell-goto {
+    text-decoration: none;
+}
+/* В тёмной теме чёрная линия не видна — делаем её белой */
+[data-theme="dark"] tr.row-rejected td {
+    text-decoration-color: #fff;
+}
 
 /* ═══════════════════════════════════════════════════════════════
    KNOWLEDGE BASE — Page, Tabs, Table, Patterns
    ═══════════════════════════════════════════════════════════════ */
 .kb-page { padding: 0; }
 .kb-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+/* Шапка БЗ в одну строку — 1:1 со стилем проектного таб-бара (.breadcrumb) */
+.kb-header--inline {
+  /* full-bleed: гасим gutter .container (padding 20px 24px 40px),
+     чтобы ряд приклеился к хедеру (сверху) и краям (слева/справа) как .breadcrumb */
+  margin: -20px -24px 16px;
+  padding: 0 24px;
+  background: var(--topbar-bg);
+  border-bottom: 1px solid var(--border);
+  min-height: 40px;
+}
+/* Заголовок слева — как breadcrumb-ссылка: мелкий, лёгкий, не чёрный-жирный */
+.kb-header--inline .kb-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+}
+
 .kb-title { font-size: 18px; font-weight: 700; color: var(--text); margin: 0; }
 .kb-header-actions { display: flex; gap: 8px; align-items: center; }
 .btn-upload {
@@ -2026,6 +2083,8 @@ tr.row-rejected:hover { opacity: 0.7; }
 .kb-table .mn-col-projects { font-size: 11px; color: #94a3b8; }
 .kb-table .kb-section-badge { white-space: nowrap; }
 .kb-item-id { font-weight: 600; font-size: 12px; color: var(--text); }
+.kb-item-id--link { cursor: pointer; color: var(--teal); }
+.kb-item-id--link:hover { text-decoration: underline; }
 .kb-type-badge {
     display: inline-block; padding: 2px 8px; border-radius: 4px;
     font-size: 10px; font-weight: 600;
@@ -3420,6 +3479,10 @@ tr.row-rejected:hover { opacity: 0.7; }
 .sc-pair-row { transition: background-color 0.12s, transform 0.12s; }
 .sc-pair-row.sc-pair-dragging  { opacity: .45; }
 .sc-pair-row.sc-pair-drag-over { background-color: #eef2ff; box-shadow: inset 0 2px 0 #4f46e5; }
+/* Компактные строки таблицы пар — та же плотность, что у строк-карточек на
+   вкладке «Отчёт» (там вертикальный padding 5px). Inline padding:8px на ячейках
+   перебивается через !important. */
+.sc-pair-row > td { padding-top: 4px !important; padding-bottom: 4px !important; }
 /* Live-pulse точка для индикатора «идёт обработка» */
 @keyframes sc-pulse-kf {
     0%   { transform: scale(1);   opacity: 1;   box-shadow: 0 0 0 0 rgba(79,70,229,.45); }
@@ -3564,6 +3627,9 @@ tr.row-rejected:hover { opacity: 0.7; }
 .sc-unified-table { font-size: 12px; }
 .sc-unified-table td { padding: 8px 10px; vertical-align: top; }
 .sc-unified-table th { padding: 6px 10px; }
+/* Более контрастная сетка таблицы расхождений */
+.sc-unified-table th,
+.sc-unified-table td { border: 1px solid var(--grid-line); }
 
 /* Sortable column headers */
 .sc-unified-table th.sc-th-sortable { cursor: pointer; user-select: none; }
@@ -3580,7 +3646,7 @@ tr.row-rejected:hover { opacity: 0.7; }
 /* №-cell: номер + severity-чип под ним */
 .sc-cell-no { text-align: center; }
 .sc-cell-no__num { font-weight: 700; opacity: 0.7; margin-bottom: 4px; font-size: 11px; }
-.sc-sev-chip { display: inline-block; padding: 1px 7px; border-radius: 999px; font-size: 9px; font-weight: 700; letter-spacing: 0.02em; text-transform: lowercase; }
+.sc-sev-chip { display: inline-block; max-width: 100%; box-sizing: border-box; padding: 1px 7px; border-radius: 999px; font-size: 9px; font-weight: 700; letter-spacing: 0.02em; text-transform: lowercase; white-space: nowrap; line-height: 1.25; text-align: center; }
 .sc-sev-chip--high    { background: var(--red-light);   color: var(--red);    border: 1px solid rgba(212,24,58,0.2); }
 .sc-sev-chip--medium  { background: var(--amber-light); color: var(--amber);  border: 1px solid rgba(196,115,0,0.2); }
 .sc-sev-chip--low     { background: var(--blue-light);  color: var(--blue);   border: 1px solid rgba(20,96,212,0.2); }
@@ -3608,6 +3674,8 @@ tr.row-rejected:hover { opacity: 0.7; }
 .sc-chip--manual  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 .sc-chip--source  { background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; }
 .sc-chip--nolinks { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+/* Источник изменения, перенесённый в колонку «№» — компактный, может переноситься */
+.sc-chip--source-in-no { margin-top: 4px; max-width: 100%; white-space: normal; font-size: 9px; padding: 1px 6px; text-align: center; }
 .sc-change-title { font-weight: 600; font-size: 13px; line-height: 1.35; color: var(--text); }
 .sc-change-summary { opacity: 0.85; margin-top: 4px; line-height: 1.45; }
 .sc-change-details { margin-top: 6px; font-size: 11px; opacity: 0.85; }

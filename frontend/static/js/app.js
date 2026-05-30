@@ -86,7 +86,7 @@ const app = createApp({
         }
 
         // Sidebar
-        const sidebarSectionsOpen = ref(true);
+        const sidebarSectionsOpen = ref(false);  // по умолчанию «Разделы» свёрнуты
         const sidebarFilterSection = ref(null);  // null = все разделы
 
         // Findings
@@ -1496,15 +1496,14 @@ const app = createApp({
         // Knowledge Base (база знаний)
         const kbTab = ref('rejected');  // 'rejected' | 'accepted' | 'customer_confirmed' | 'missing_norms'
         const kbEntries = ref([]);
-        const kbStats = ref({ rejected: 0, accepted: 0, customer_confirmed: 0, total: 0 });
+        const kbStats = ref({ rejected: 0, accepted: 0, customer_confirmed: 0, fixed_by_customer: 0, total: 0 });
         const kbLoading = ref(false);
         const kbSearch = ref('');
         const kbSectionFilter = ref('');
+        const kbObjectFilter = ref('');   // id выбранного объекта (БЗ только по нему)
         const missingNorms = ref([]);
         const missingNormsStats = ref({ pending: 0, added: 0, dismissed: 0, total: 0 });
         const missingNormsFilter = ref('pending'); // 'pending' | 'added' | 'dismissed' | ''
-        const kbPatterns = ref([]);
-        const kbPatternsLoading = ref(false);
         const kbUploadLoading = ref(false);
 
         // Document viewer (MD)
@@ -2560,6 +2559,8 @@ const app = createApp({
             if (hash === '/knowledge-base') {
                 currentView.value = 'knowledge-base';
                 connectGlobalWS();
+                // По умолчанию — «Все проекты» (kbObjectFilter=''); выбор объекта
+                // в селекторе сужает БЗ до него.
                 loadKnowledgeBase();
                 loadKBStats();
             } else if (hash === '/queue') {
@@ -8168,6 +8169,7 @@ const app = createApp({
                 const params = new URLSearchParams({ status: kbTab.value, limit: '200', offset: '0' });
                 if (kbSearch.value) params.set('search', kbSearch.value);
                 if (kbSectionFilter.value) params.set('section', kbSectionFilter.value);
+                if (kbObjectFilter.value) params.set('object_id', kbObjectFilter.value);
                 const resp = await fetch(`/api/knowledge-base/entries?${params}`);
                 const data = await resp.json();
                 kbEntries.value = data.entries || [];
@@ -8180,9 +8182,25 @@ const app = createApp({
 
         async function loadKBStats() {
             try {
-                const resp = await fetch('/api/knowledge-base/stats');
+                const q = kbObjectFilter.value ? `?object_id=${encodeURIComponent(kbObjectFilter.value)}` : '';
+                const resp = await fetch(`/api/knowledge-base/stats${q}`);
                 kbStats.value = await resp.json();
             } catch (e) { console.warn('KB stats error:', e); }
+        }
+
+        function onKbObjectChange() {
+            loadKBStats();
+            if (kbTab.value !== 'missing_norms') loadKnowledgeBase();
+        }
+
+        // Провалиться из БЗ в раздел Замечания/Оптимизация соответствующего проекта.
+        async function openKBItem(entry) {
+            if (!entry || !entry.source_project) return;
+            if (entry.object_id && entry.object_id !== currentObjectId.value) {
+                await switchObject(entry.object_id);
+            }
+            const tab = entry.item_type === 'optimization' ? 'optimization' : 'findings';
+            navigate('/project/' + entry.source_project + '/' + tab);
         }
 
         function switchKBTab(tab) {
@@ -8271,36 +8289,6 @@ const app = createApp({
                 loadKnowledgeBase();
                 loadKBStats();
             } catch (e) { console.error('Revoke error:', e); }
-        }
-
-        async function loadKBPatterns() {
-            kbPatternsLoading.value = true;
-            try {
-                const resp = await fetch('/api/knowledge-base/patterns');
-                const data = await resp.json();
-                kbPatterns.value = data.patterns || [];
-            } catch (e) { console.error('Load patterns error:', e); }
-            finally { kbPatternsLoading.value = false; }
-        }
-
-        async function detectPatterns() {
-            kbPatternsLoading.value = true;
-            try {
-                const resp = await fetch('/api/knowledge-base/patterns/detect', { method: 'POST' });
-                const data = await resp.json();
-                kbPatterns.value = data.patterns || [];
-            } catch (e) { console.error('Detect patterns error:', e); }
-            finally { kbPatternsLoading.value = false; }
-        }
-
-        async function approvePattern(patternId) {
-            await fetch(`/api/knowledge-base/patterns/${patternId}/approve`, { method: 'POST' });
-            loadKBPatterns();
-        }
-
-        async function dismissPattern(patternId) {
-            await fetch(`/api/knowledge-base/patterns/${patternId}/dismiss`, { method: 'POST' });
-            loadKBPatterns();
         }
 
         async function _postExcelDecisions(file) {
@@ -8461,7 +8449,9 @@ const app = createApp({
         const extRegMatchRunning = ref(false);
         const extRegEntries = ref([]);
         const extRegCoverage = ref(null);
-        const extRegRegisterId = ref('su10_2026-05-13');
+        const extRegRegisterId = ref('su10_2026-05-27');
+        const extRegRegisters = ref([]);
+        const extRegFindingCache = ref({});   // "project_id::finding_id" → {loading, error, problem, ...}
         const extRegFilterStatus = ref('all');
         const extRegFilterSection = ref('');
         const extRegFilterResponse = ref('');
@@ -8473,10 +8463,25 @@ const app = createApp({
             return '/api/external-register' + (path.startsWith('/') ? path : '/' + path);
         }
 
+        async function loadExternalRegisterList() {
+            try {
+                const resp = await fetch(_extRegUrl(`/${EXTREG_OBJECT_ID}/registers`));
+                if (!resp.ok) return;
+                const data = await resp.json();
+                extRegRegisters.value = data.registers || [];
+                // Если текущий выбор отсутствует — взять новейший по имени.
+                if (extRegRegisters.value.length &&
+                    !extRegRegisters.value.includes(extRegRegisterId.value)) {
+                    extRegRegisterId.value = [...extRegRegisters.value].sort().slice(-1)[0];
+                }
+            } catch (_) { /* swallow */ }
+        }
+
         async function loadExternalRegister() {
             extRegLoading.value = true;
             extRegError.value = '';
             try {
+                await loadExternalRegisterList();
                 const url = _extRegUrl(`/${EXTREG_OBJECT_ID}?register_id=${encodeURIComponent(extRegRegisterId.value)}`);
                 const resp = await fetch(url);
                 if (resp.status === 404) {
@@ -8493,6 +8498,44 @@ const app = createApp({
                 extRegError.value = String(e);
             } finally {
                 extRegLoading.value = false;
+            }
+        }
+
+        function extRegFindingKey(e) {
+            return e && e.match ? `${e.match.project_id}::${e.match.finding_id}` : '';
+        }
+
+        function extRegGetFinding(e) {
+            return extRegFindingCache.value[extRegFindingKey(e)] || null;
+        }
+
+        async function extRegShowFinding(e) {
+            if (!e || !e.match) return;
+            const key = extRegFindingKey(e);
+            const cur = extRegFindingCache.value[key];
+            if (cur) {  // повторный клик — свернуть
+                const m = { ...extRegFindingCache.value };
+                delete m[key];
+                extRegFindingCache.value = m;
+                return;
+            }
+            extRegFindingCache.value = { ...extRegFindingCache.value, [key]: { loading: true } };
+            try {
+                const pid = e.match.project_id.split('/').map(encodeURIComponent).join('/');
+                const fid = encodeURIComponent(e.match.finding_id);
+                const resp = await fetch(`/api/findings/${pid}/finding/${fid}`);
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const f = await resp.json();
+                extRegFindingCache.value = { ...extRegFindingCache.value, [key]: {
+                    loading: false,
+                    severity: f.severity || '',
+                    sheet: f.sheet || '',
+                    problem: f.problem || f.description || '',
+                    description: f.description || '',
+                    solution: f.solution || '',
+                } };
+            } catch (err) {
+                extRegFindingCache.value = { ...extRegFindingCache.value, [key]: { loading: false, error: String(err) } };
             }
         }
 
@@ -8801,6 +8844,12 @@ const app = createApp({
         const scOpusFallbackByPair    = ref({});     // pairId → последний job item
         const scOpusFallbackPolling   = ref({});     // pairId → bool (идёт poll)
         const scOpusFallbackStarting  = ref({});     // pairId → bool (создаём job)
+        // Персистентные статусы сравнения с диска (comparison_result.json по
+        // парам). Источник истины для колонки «Сравнение» — чтобы она не
+        // зависела от того, какой unified-job сейчас «активен» (одно-парный
+        // fallback/retry раньше затеняли полный результат сессии → «—»).
+        // pairId → {status, changes_count, strategy, via_fallback}.
+        const scPairCompareStatus     = ref({});
         // Filters для unified flat-таблицы
         const scUnifiedFilterPair        = ref('');
         const scUnifiedFilterSourceLayer = ref('');
@@ -9140,6 +9189,7 @@ const app = createApp({
                 scAutoLoadInfo.value = null;
                 try { await scRecogRestoreActive(); } catch (_) {}
                 try { await scOpusRestoreActive(); } catch (_) {}
+                try { await scLoadPairCompareStatuses(); } catch (_) {}
                 try { await scOpusLoadPreflight(); } catch (_) {}
                 return true;
             } catch (_) { return false; }
@@ -9228,6 +9278,7 @@ const app = createApp({
                             };
                             try { await scRecogRestoreActive(); } catch (_) {}
                             try { await scOpusRestoreActive(); } catch (_) {}
+                            try { await scLoadPairCompareStatuses(); } catch (_) {}
                             try { await scOpusLoadPreflight(); } catch (_) {}
                             return;
                         }
@@ -9384,6 +9435,7 @@ const app = createApp({
                 // F5 на вкладке «Загрузка документации» UI не знает, что job
                 // активен (watch(scTab) срабатывает только при смене вкладки).
                 try { await scOpusRestoreActive(); } catch (_) {}
+                try { await scLoadPairCompareStatuses(); } catch (_) {}
                 try { await scOpusLoadPreflight(); } catch (_) {}
                 // Per-pair статус «Проверено экспертом» для таблицы загрузки.
                 try { await scLoadExpertPerPair(); } catch (_) {}
@@ -11258,19 +11310,46 @@ const app = createApp({
             return found;
         }
 
+        // Приоритет источников для бейджа колонки «Сравнение»:
+        //   1. идёт запуск fallback (scOpusFallbackStarting);
+        //   2. живой job В ПРОЦЕССЕ (running/queued) — показываем активность,
+        //      в т.ч. running fallback (не теряем его при reload);
+        //   3. персистентный comparison_result.json с диска (источник истины
+        //      для завершённых) — чинит «—» у уже сравнённых пар, когда
+        //      активен лишь одно-парный fallback/retry-job;
+        //   4. завершённый живой item (если persistent ещё не подгружен);
+        //   5. «—» (реально не запускалось).
         function scOpusPairBadge(pairId) {
-            // Пара прямо сейчас гоняется через fallback?
             if (scOpusFallbackStarting.value[pairId]) {
                 return {label: '… запуск fallback', cls: 'sc-status-maybe',
                         title: 'Запускаю сравнение через Opus fallback (evidence_first)…'};
             }
-            const it = scOpusPairItem(pairId);
-            if (!it) return {label: '—', cls: 'sc-status-unmatched', title: 'сравнение не запускалось'};
+            const live = scOpusPairItem(pairId);
+            const liveSt = live ? String(live.status || '').toLowerCase() : '';
+            if (live && ['running', 'comparing', 'enriching', 'queued'].includes(liveSt)) {
+                return scOpusBadgeFromRecord(live);
+            }
+            const persisted = scPairCompareStatus.value[pairId];
+            if (persisted && persisted.status && persisted.status !== 'not_run') {
+                return scOpusBadgeFromRecord({
+                    status: persisted.status,
+                    comparison_status: persisted.status,
+                    changes_count: persisted.changes_count,
+                    _via_fallback: !!persisted.via_fallback,
+                });
+            }
+            if (live) return scOpusBadgeFromRecord(live);
+            return {label: '—', cls: 'sc-status-unmatched', title: 'сравнение не запускалось'};
+        }
+
+        // Интерпретирует «запись о сравнении» (живой job item ИЛИ персистентный
+        // comparison_result.json) в бейдж. Едина для обоих источников.
+        function scOpusBadgeFromRecord(it) {
             const st = String(it.status || '').toLowerCase();
             const cmp = String(it.comparison_status || '').toLowerCase();
             const action = String(it.preflight_action || '').toLowerCase();
             const reason = String(it.preflight_reason || it.error || '').toLowerCase();
-            const tooLarge = action === 'skip_too_large' || cmp === 'too_large' || reason.indexOf('exceeds_limit') >= 0;
+            const tooLarge = action === 'skip_too_large' || cmp === 'too_large' || st === 'too_large' || reason.indexOf('exceeds_limit') >= 0;
             if (tooLarge) {
                 // Кликабельно: запускает evidence_first_s2_fallback на готовых
                 // enriched MD (без повторного Qwen, без поднятия общего лимита).
@@ -11281,6 +11360,17 @@ const app = createApp({
             }
             const viaFb = !!it._via_fallback;
             if (st === 'running' || st === 'comparing' || st === 'enriching') {
+                const fp = it._fallback_progress;
+                if (viaFb && fp && Number(fp.total_chunks) > 0) {
+                    const idx = Number(fp.current_chunk_index || 0);
+                    const total = Number(fp.total_chunks || 0);
+                    const eta = Number(fp.eta_sec || 0);
+                    const etaTxt = eta ? ' · ~' + scFormatDuration(eta) : '';
+                    return {label: `… fallback ${idx}/${total}`, cls: 'sc-status-maybe',
+                            title: `Opus fallback (evidence_first): чанк ${idx} из ${total}`
+                                 + (eta ? ` · осталось ~${scFormatDuration(eta)}` : '')
+                                 + (fp.current_chunk_title ? ` · ${fp.current_chunk_title}` : '')};
+                }
                 return {label: viaFb ? '… fallback' : '… идёт', cls: 'sc-status-maybe',
                         title: viaFb ? 'идёт сравнение через Opus fallback (evidence_first)' : 'идёт сравнение'};
             }
@@ -11376,6 +11466,16 @@ const app = createApp({
                 scUnifiedPairStatus.value = await r.json();
             } catch (e) { /* silent */ }
             finally { scUnifiedPairLoading.value = false; }
+        }
+        // Подпись для чипа направления изменения в колонке «№».
+        const _SC_DIRECTION_LABELS = {
+            complication: 'усложнение',
+            simplification: 'упрощение',
+            neutral: 'нейтрально',
+            unknown: '—',
+        };
+        function scDirectionLabel(d) {
+            return _SC_DIRECTION_LABELS[d || 'unknown'] || '—';
         }
         async function scLoadUnifiedFlat() {
             if (!scSession.value) return;
@@ -11790,6 +11890,7 @@ const app = createApp({
                     await new Promise(res => setTimeout(res, 3000));
                 }
                 try { await scLoadUnifiedFlat(); } catch (_) {}
+                try { await scLoadPairCompareStatuses(); } catch (_) {}
                 if (scActivePair.value) {
                     try { await scLoadUnifiedPairStatus(); } catch (_) {}
                 }
@@ -11975,6 +12076,7 @@ const app = createApp({
                 // После job — синхронизировать flat/grouped с диска (backend
                 // их уже пересобрал per-pair и финально).
                 try { await scLoadUnifiedFlat(); } catch (_) {}
+                try { await scLoadPairCompareStatuses(); } catch (_) {}
                 if (scActivePair.value) {
                     try { await scLoadUnifiedPairStatus(); } catch (_) {}
                 }
@@ -11993,9 +12095,12 @@ const app = createApp({
                 // job ещё без items для пары — отразим общий статус job.
                 it = {pair_id: pairId, status: (job && job.status) || 'queued'};
             }
+            // Live per-chunk прогресс из aggregate (single-pair job его несёт).
+            const agg = job && job.aggregate;
+            const fbProg = (agg && agg.current_pair_id === pairId) ? agg.current_pair_fallback : null;
             scOpusFallbackByPair.value = {
                 ...scOpusFallbackByPair.value,
-                [pairId]: {...it, _via_fallback: true},
+                [pairId]: {...it, _via_fallback: true, _fallback_progress: fbProg || null},
             };
         }
 
@@ -12070,6 +12175,7 @@ const app = createApp({
                 }
                 // Подтянуть свежие расхождения с диска (backend пересобрал).
                 try { await scLoadUnifiedFlat(); } catch (_) {}
+                try { await scLoadPairCompareStatuses(); } catch (_) {}
                 if (scActivePair.value) {
                     try { await scLoadUnifiedPairStatus(); } catch (_) {}
                 }
@@ -12103,6 +12209,42 @@ const app = createApp({
                     scOpusPoll(job.id);
                 }
             } catch (_) { /* silent */ }
+        }
+
+        // Подтянуть персистентные статусы сравнения с диска (источник истины
+        // для колонки «Сравнение»). Read-only, без LLM. Вызывается при открытии
+        // сессии и после завершения любого сравнения (session/fallback).
+        async function scLoadPairCompareStatuses() {
+            if (!scSession.value || !scSession.value.id) return;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/comparison-statuses`;
+                const r = await fetch(url);
+                if (!r.ok) return;
+                const data = await r.json();
+                scPairCompareStatus.value = (data && data.statuses) || {};
+            } catch (_) { /* silent */ }
+        }
+
+        // Live per-chunk прогресс fallback'а текущей пары (evidence_first_s2).
+        // Источник — aggregate.current_pair_fallback. Возвращает null, если
+        // пара сравнивается обычным (не-fallback) путём.
+        function scOpusFallbackLabel() {
+            const j = scOpusJob.value;
+            const fb = j && j.aggregate && j.aggregate.current_pair_fallback;
+            if (!fb) return null;
+            const total = Number(fb.total_chunks || 0);
+            const idx = Number(fb.current_chunk_index || 0);
+            const done = Number(fb.done_chunks || 0);
+            const phase = String(fb.phase || '');
+            if (phase === 'starting' || !total) {
+                return {text: 'fallback · готовлю разбиение…', eta: '', pct: 0, title: ''};
+            }
+            const eta = fb.eta_sec ? scFormatDuration(fb.eta_sec) : '';
+            const pct = total ? Math.min(100, Math.round(done / total * 100)) : 0;
+            const head = (phase === 'done')
+                ? `fallback · чанк ${total} / ${total} · финализация…`
+                : `fallback · чанк ${idx} / ${total}`;
+            return {text: head, eta, pct, title: String(fb.current_chunk_title || '')};
         }
 
         function scOpusElapsedLabel() {
@@ -12321,13 +12463,16 @@ const app = createApp({
             return `/api/stage-comparison/sessions/${sid}/unified-diff-flat/export.xlsx${qs ? '?' + qs : ''}`;
         }
         // Source-layer labels (UI)
+        // Источник изменения схлопнут до двух значений: «текст» (текстовый слой,
+        // таблицы, штампы) и «изображение» (Qwen-описание картинки, схема,
+        // смешанный визуальный+текстовый источник).
         const _SC_UNIFIED_SOURCE_LABELS = {
-            text: 'Текст',
-            image_enrichment: 'Описание изобр.',
-            scheme_analysis: 'Схема',
-            table: 'Таблица',
-            stamp: 'Штамп',
-            mixed: 'Текст + изобр.',
+            text: 'текст',
+            image_enrichment: 'изображение',
+            scheme_analysis: 'изображение',
+            table: 'текст',
+            stamp: 'текст',
+            mixed: 'изображение',
         };
         function scUnifiedSourceLabel(s) { return _SC_UNIFIED_SOURCE_LABELS[s] || s || '—'; }
         // Разбивает значение расхождения на строки по ';' — каждый пункт
@@ -12871,12 +13016,12 @@ const app = createApp({
             getExpertDecision, getExpertReason, expertReviewSummary,
             // Knowledge Base
             kbTab, kbEntries, kbStats, kbLoading, kbSearch, kbSectionFilter,
-            kbPatterns, kbPatternsLoading, kbUploadLoading,
+            kbObjectFilter, onKbObjectChange, openKBItem,
+            kbUploadLoading,
             loadKnowledgeBase, loadKBStats, switchKBTab,
             missingNorms, missingNormsStats, missingNormsFilter,
             loadMissingNorms, markNormAdded, dismissNorm, restoreNorm,
             confirmCustomer, unconfirmCustomer, revokeKBDecision,
-            loadKBPatterns, detectPatterns, approvePattern, dismissPattern,
             uploadDecisionsExcel, uploadAndApplyDecisions,
             // Critic v2 UI Triage View (experimental, offline)
             cv2Export, cv2LoadError, cv2ActiveTab, cv2Filter,
@@ -12930,9 +13075,10 @@ const app = createApp({
             migratedStatusLabel, migratedStatusTone, findingMigratedBadge,
             // ─── External register (СУ-10) ───
             extRegLoading, extRegMatchRunning, extRegEntries, extRegCoverage,
-            extRegRegisterId, extRegFilterStatus, extRegFilterSection, extRegFilterResponse,
+            extRegRegisterId, extRegRegisters, extRegFilterStatus, extRegFilterSection, extRegFilterResponse,
             extRegError, extRegFilteredEntries, extRegSectionOptions,
-            loadExternalRegister, importExternalRegister, runExternalRegisterMatch,
+            extRegFindingCache, extRegGetFinding, extRegShowFinding,
+            loadExternalRegister, loadExternalRegisterList, importExternalRegister, runExternalRegisterMatch,
             confirmExternalEntry, rejectExternalEntry, downloadExternalRegisterXlsx,
             findingExtRegBadge,
             // ─── Stage Comparison ───
@@ -12981,6 +13127,7 @@ const app = createApp({
             scRecogStart, scRecogRetryErrors, scRecogCancel,
             scRecogRestoreActive, scRecogPairStatus, scRecogPairBadge,
             scRecogPairBlocks, scOpusPairBadge,
+            scPairCompareStatus, scLoadPairCompareStatuses,
             scExpertPerPair, scPairExpertBadge, scLoadExpertPerPair,
             scRecogElapsedLabel, scFormatDuration, scRecogPairProgress,
             // Stage 1: «Проанализировать и сравнить» (session-level Opus batch)
@@ -12989,6 +13136,7 @@ const app = createApp({
             scOpusStart, scOpusRetryErrors, scOpusCancel, scOpusContinue,
             scOpusRestoreActive, scOpusLoadPreflight,
             scOpusElapsedLabel, scOpusCurrentPairLabel, scOpusStartTitle,
+            scOpusFallbackLabel,
             // Per-pair Opus fallback (evidence_first_s2_fallback) для too_large
             scOpusFallbackByPair, scOpusFallbackStarting, scOpusRunFallbackForPair,
             // Per-pair analysis mode
@@ -13019,6 +13167,7 @@ const app = createApp({
             scOpenUnifiedPairPreflight, scOpenUnifiedSessionPreflight, scCloseUnifiedPreflight,
             scRunUnifiedPair, scRunUnifiedSession, scPollUnifiedJob, scCancelUnifiedJob,
             scUnifiedSourceLabel, scUnifiedLines, scGotoUnifiedChange,
+            scDirectionLabel,
             scSwitchDiffSubtab, scGotoTextChange,
             scHumanizeDuration,
             scTextLLMTypeLabel, scTextLLMCategoryLabel, scTextLLMSeverityLabel, scTextLLMStatusLabel,

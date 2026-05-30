@@ -2173,24 +2173,24 @@
                     <span class="findings-total">Всего: {{ findingsData.total }}</span>
 
                     <div class="expert-review-inline">
+                        <template v-if="expertReviewMode">
+                            <button class="btn-expert-save" @click="submitExpertReview()" :disabled="expertReviewSaving || expertReviewSummary().total === 0">
+                                {{ expertReviewSaving ? 'Сохранение...' : 'Сохранить решения' }}
+                            </button>
+                            <span class="expert-review-counter">
+                                Принято: <b style="color:#22c55e">{{ expertReviewSummary().accepted }}</b>
+                                Отклонено: <b style="color:#ef4444">{{ expertReviewSummary().rejected }}</b>
+                            </span>
+                        </template>
+                        <button class="btn-expert-toggle" :class="{ active: expertReviewMode }" @click="toggleExpertReview()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                            {{ expertReviewMode ? 'Скрыть оценку' : 'Экспертная оценка' }}
+                        </button>
                         <label class="btn-expert-toggle" :class="{ disabled: kbUploadLoading }" title="Загрузить решения из Excel">
                             <input type="file" accept=".xlsx" @change="uploadAndApplyDecisions" style="display:none">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                             {{ kbUploadLoading ? 'Загрузка...' : 'Загрузить решения' }}
                         </label>
-                        <button class="btn-expert-toggle" :class="{ active: expertReviewMode }" @click="toggleExpertReview()">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-                            {{ expertReviewMode ? 'Скрыть оценку' : 'Экспертная оценка' }}
-                        </button>
-                        <template v-if="expertReviewMode">
-                            <span class="expert-review-counter">
-                                Принято: <b style="color:#22c55e">{{ expertReviewSummary().accepted }}</b>
-                                Отклонено: <b style="color:#ef4444">{{ expertReviewSummary().rejected }}</b>
-                            </span>
-                            <button class="btn-expert-save" @click="submitExpertReview()" :disabled="expertReviewSaving || expertReviewSummary().total === 0">
-                                {{ expertReviewSaving ? 'Сохранение...' : 'Сохранить решения' }}
-                            </button>
-                        </template>
                     </div>
                 </div>
 
@@ -2399,24 +2399,24 @@
                         <span class="findings-total" style="color: var(--green)">Всего: {{ optimizationData.total }}</span>
 
                         <div class="expert-review-inline" v-if="filteredOptimization.length > 0">
+                            <template v-if="expertReviewMode">
+                                <button class="btn-expert-save" @click="submitExpertReview()" :disabled="expertReviewSaving || expertReviewSummary().total === 0">
+                                    {{ expertReviewSaving ? 'Сохранение...' : 'Сохранить решения' }}
+                                </button>
+                                <span class="expert-review-counter">
+                                    Принято: <b style="color:#22c55e">{{ expertReviewSummary().accepted }}</b>
+                                    Отклонено: <b style="color:#ef4444">{{ expertReviewSummary().rejected }}</b>
+                                </span>
+                            </template>
+                            <button class="btn-expert-toggle" :class="{ active: expertReviewMode }" @click="toggleExpertReview()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                                {{ expertReviewMode ? 'Скрыть оценку' : 'Экспертная оценка' }}
+                            </button>
                             <label class="btn-expert-toggle" :class="{ disabled: kbUploadLoading }" title="Загрузить решения из Excel">
                                 <input type="file" accept=".xlsx" @change="uploadAndApplyDecisions" style="display:none">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                                 {{ kbUploadLoading ? 'Загрузка...' : 'Загрузить решения' }}
                             </label>
-                            <button class="btn-expert-toggle" :class="{ active: expertReviewMode }" @click="toggleExpertReview()">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-                                {{ expertReviewMode ? 'Скрыть оценку' : 'Экспертная оценка' }}
-                            </button>
-                            <template v-if="expertReviewMode">
-                                <span class="expert-review-counter">
-                                    Принято: <b style="color:#22c55e">{{ expertReviewSummary().accepted }}</b>
-                                    Отклонено: <b style="color:#ef4444">{{ expertReviewSummary().rejected }}</b>
-                                </span>
-                                <button class="btn-expert-save" @click="submitExpertReview()" :disabled="expertReviewSaving || expertReviewSummary().total === 0">
-                                    {{ expertReviewSaving ? 'Сохранение...' : 'Сохранить решения' }}
-                                </button>
-                            </template>
                         </div>
                     </div>
 
@@ -2548,9 +2548,26 @@
         <!-- ═══ Knowledge Base (База знаний) ═══ -->
         <div v-if="currentView === 'knowledge-base'" class="container">
             <div class="kb-page">
-                <div class="kb-header">
-                    <h2 class="kb-title">База знаний</h2>
-                    <div class="kb-header-actions">
+                <div class="kb-header kb-header--inline" style="justify-content:flex-start; gap:18px; flex-wrap:nowrap;">
+                    <h2 class="kb-title" style="white-space:nowrap;">База знаний</h2>
+                    <div class="project-tabs kb-tabs" style="margin-bottom:0; border-bottom:none;">
+                        <button class="project-tab" :class="{ 'project-tab--active': kbTab === 'rejected' }" @click="switchKBTab('rejected')">
+                            Отклонённые<span class="project-tab__count project-tab__count--red">{{ kbStats.rejected }}</span>
+                        </button>
+                        <button class="project-tab" :class="{ 'project-tab--active': kbTab === 'accepted' }" @click="switchKBTab('accepted')">
+                            Принятые<span class="project-tab__count project-tab__count--teal">{{ kbStats.accepted }}</span>
+                        </button>
+                        <button class="project-tab" :class="{ 'project-tab--active': kbTab === 'customer_confirmed' }" @click="switchKBTab('customer_confirmed')">
+                            Согласованные заказчиком<span class="project-tab__count project-tab__count--amber">{{ kbStats.customer_confirmed }}</span>
+                        </button>
+                        <button class="project-tab" :class="{ 'project-tab--active': kbTab === 'fixed_by_customer' }" @click="switchKBTab('fixed_by_customer')">
+                            Исправлено заказчиком<span class="project-tab__count project-tab__count--teal">{{ kbStats.fixed_by_customer }}</span>
+                        </button>
+                        <button class="project-tab" :class="{ 'project-tab--active': kbTab === 'missing_norms' }" @click="switchKBTab('missing_norms')">
+                            Нормы для добавления<span class="project-tab__count project-tab__count--purple">{{ missingNormsStats.pending }}</span>
+                        </button>
+                    </div>
+                    <div class="kb-header-actions" style="margin-left:auto;">
                         <label class="btn btn-sm btn-upload" :class="{ disabled: kbUploadLoading }">
                             <input type="file" accept=".xlsx" @change="uploadDecisionsExcel" style="display:none">
                             {{ kbUploadLoading ? 'Загрузка...' : 'Загрузить Excel' }}
@@ -2558,34 +2575,12 @@
                     </div>
                 </div>
 
-                <!-- Tabs -->
-                <div class="kb-tabs">
-                    <button class="kb-tab" :class="{ active: kbTab === 'rejected' }" @click="switchKBTab('rejected')">
-                        <span class="kb-tab-icon" style="color:#ef4444">&#10005;</span>
-                        Отклонённые
-                        <span class="kb-tab-count">{{ kbStats.rejected }}</span>
-                    </button>
-                    <button class="kb-tab" :class="{ active: kbTab === 'accepted' }" @click="switchKBTab('accepted')">
-                        <span class="kb-tab-icon" style="color:#22c55e">&#10003;</span>
-                        Принятые
-                        <span class="kb-tab-count">{{ kbStats.accepted }}</span>
-                    </button>
-                    <button class="kb-tab" :class="{ active: kbTab === 'customer_confirmed' }" @click="switchKBTab('customer_confirmed')">
-                        <span class="kb-tab-icon" style="color:#f59e0b">&#9733;</span>
-                        Согласованные заказчиком
-                        <span class="kb-tab-count">{{ kbStats.customer_confirmed }}</span>
-                    </button>
-                    <button class="kb-tab" :class="{ active: kbTab === 'missing_norms' }" @click="switchKBTab('missing_norms')">
-                        <span class="kb-tab-icon" style="color:#f97316">&#8681;</span>
-                        Нормы для добавления
-                        <span class="kb-tab-count" :class="{ 'kb-tab-count--alert': missingNormsStats.pending > 0 }">{{ missingNormsStats.pending }}</span>
-                    </button>
-                </div>
-
                 <!-- Filters (скрыть для missing_norms) -->
                 <div class="kb-filters" v-if="kbTab !== 'missing_norms'">
-                    <input v-model="kbSearch" class="filter-input" placeholder="Поиск..."
-                           @input="loadKnowledgeBase()" style="max-width:300px">
+                    <select v-model="kbObjectFilter" class="filter-select" @change="onKbObjectChange()" style="max-width:300px">
+                        <option value="">Все проекты</option>
+                        <option v-for="o in objectsList" :key="'kbo-'+o.id" :value="o.id">{{ o.name }}</option>
+                    </select>
                     <select v-model="kbSectionFilter" class="filter-select" @change="loadKnowledgeBase()" style="max-width:180px">
                         <option value="">Все дисциплины</option>
                         <option v-for="[code] in projectsBySection" :key="'kb-'+code" :value="code">{{ code }}</option>
@@ -2681,7 +2676,7 @@
                                 <th style="width:25%">Причина решения</th>
                                 <th style="width:90px">Дата</th>
                                 <th v-if="kbTab === 'accepted'" style="width:60px; text-align:center">Заказчик</th>
-                                <th v-if="kbTab === 'customer_confirmed'" style="width:60px; text-align:center">Снять</th>
+                                <th v-if="kbTab === 'customer_confirmed' || kbTab === 'fixed_by_customer'" style="width:60px; text-align:center">Снять</th>
                                 <th style="width:45px"></th>
                             </tr>
                         </thead>
@@ -2689,7 +2684,10 @@
                             <tr v-for="entry in kbEntries" :key="entry.id" class="kb-row"
                                 :class="{ 'kb-row--rejected': entry.expert_decision === 'rejected', 'kb-row--accepted': entry.expert_decision === 'accepted' }">
                                 <td>
-                                    <span class="kb-item-id">{{ entry.item_id }}</span>
+                                    <span class="kb-item-id kb-item-id--link" @click="openKBItem(entry)"
+                                          :title="'Открыть ' + (entry.item_type === 'optimization' ? 'оптимизацию' : 'замечание') + ' в проекте ' + entry.source_project">
+                                        {{ entry.item_id }}
+                                    </span>
                                     <div style="font-size:10px; opacity:0.5">{{ entry.id }}</div>
                                 </td>
                                 <td>
@@ -2711,6 +2709,9 @@
                                     <template v-if="entry.expert_decision === 'rejected'">
                                         {{ entry.expert_reason }}
                                     </template>
+                                    <template v-else-if="entry.customer_response">
+                                        {{ entry.customer_response }}
+                                    </template>
                                     <template v-else>
                                         <span style="opacity:0.4">Принято</span>
                                     </template>
@@ -2721,7 +2722,7 @@
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
                                     </button>
                                 </td>
-                                <td v-if="kbTab === 'customer_confirmed'" style="text-align:center">
+                                <td v-if="kbTab === 'customer_confirmed' || kbTab === 'fixed_by_customer'" style="text-align:center">
                                     <button class="btn-decision btn-reject btn-sm" @click="unconfirmCustomer([entry.id])" title="Снять согласование">
                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M6 18L18 6"/></svg>
                                     </button>
@@ -2737,40 +2738,6 @@
                 </div>
                 <div v-else class="empty-state">
                     Нет записей для выбранной вкладки.
-                </div>
-
-                <!-- Patterns Section (только для вкладки Отклонённые) -->
-                <div v-if="kbTab === 'rejected' && kbEntries.length > 0" class="kb-patterns-section">
-                    <div class="kb-patterns-header">
-                        <h3>Обнаруженные паттерны</h3>
-                        <button class="btn btn-sm" @click="detectPatterns()" :disabled="kbPatternsLoading">
-                            {{ kbPatternsLoading ? 'Анализ...' : 'Найти паттерны' }}
-                        </button>
-                    </div>
-                    <div v-if="kbPatterns.length > 0" class="kb-patterns-list">
-                        <div v-for="p in kbPatterns" :key="p.pattern_id" class="kb-pattern-card"
-                             :class="{ 'kb-pattern--applied': p.status === 'applied', 'kb-pattern--dismissed': p.status === 'dismissed' }">
-                            <div class="kb-pattern-header">
-                                <span class="kb-pattern-id">{{ p.pattern_id }}</span>
-                                <span class="kb-pattern-freq">{{ p.frequency }} повторений</span>
-                                <span class="kb-pattern-status" :class="'kb-ps--' + p.status">{{ p.status }}</span>
-                            </div>
-                            <div class="kb-pattern-desc">{{ p.description }}</div>
-                            <div class="kb-pattern-fix">
-                                <strong>Предложение:</strong> {{ p.suggested_fix }}
-                            </div>
-                            <div v-if="p.target_file" class="kb-pattern-target">
-                                Файл: {{ p.target_file }}
-                            </div>
-                            <div v-if="p.status === 'pending'" class="kb-pattern-actions">
-                                <button class="btn btn-sm btn-accept-pattern" @click="approvePattern(p.pattern_id)">Применить</button>
-                                <button class="btn btn-sm btn-dismiss-pattern" @click="dismissPattern(p.pattern_id)">Отклонить</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div v-else-if="!kbPatternsLoading" class="empty-state" style="padding:16px; font-size:13px">
-                        Нажмите «Найти паттерны» для анализа отклонённых решений.
-                    </div>
                 </div>
             </div>
         </div>
@@ -5026,6 +4993,9 @@
             </div>
 
             <div class="extreg-toolbar" style="display:flex; gap:8px; align-items:center; margin-bottom:12px; flex-wrap:wrap">
+                <select v-model="extRegRegisterId" @change="loadExternalRegister()" class="form-control" style="width:auto" title="Реестр">
+                    <option v-for="r in extRegRegisters" :key="r" :value="r">{{ r }}</option>
+                </select>
                 <button class="btn btn-secondary" @click="loadExternalRegister()" :disabled="extRegLoading">
                     {{ extRegLoading ? 'Загрузка...' : 'Обновить' }}
                 </button>
@@ -5059,6 +5029,7 @@
                     <option value="">Любой ответ</option>
                     <option value="Учтено">Учтено</option>
                     <option value="Отклонено">Отклонено</option>
+                    <option value="Требует внесения">Требует внесения</option>
                     <option value="Внесено">Внесено</option>
                     <option value="По согласованию Заказчика">По согласованию</option>
                 </select>
@@ -5091,8 +5062,22 @@
                         </td>
                         <td style="font-size:12px">
                             <template v-if="e.match">
-                                <div><code>{{ e.match.finding_id }}</code> <span style="opacity:.6">({{ Math.round(e.match.confidence*100) }}%)</span></div>
+                                <div>
+                                    <code>{{ e.match.finding_id }}</code>
+                                    <span style="opacity:.6">({{ Math.round(e.match.confidence*100) }}%)</span>
+                                    <button class="btn btn-sm btn-secondary" style="padding:0 6px; margin-left:4px" @click="extRegShowFinding(e)" title="Показать текст нашего finding">текст</button>
+                                </div>
                                 <div style="font-size:11px; opacity:.7">{{ e.match.project_id }}</div>
+                                <div v-if="e.match.rationale" style="font-size:11px; font-style:italic; opacity:.85; margin-top:3px; color:#2563eb">💡 {{ e.match.rationale }}</div>
+                                <div v-if="extRegGetFinding(e)" style="margin-top:5px; padding:6px; background:#f1f5f9; border-radius:5px; font-size:11px">
+                                    <template v-if="extRegGetFinding(e).loading">Загрузка…</template>
+                                    <template v-else-if="extRegGetFinding(e).error">⚠️ не удалось загрузить: {{ extRegGetFinding(e).error }}</template>
+                                    <template v-else>
+                                        <div><b>{{ extRegGetFinding(e).severity }}</b> · {{ extRegGetFinding(e).sheet }}</div>
+                                        <div style="margin-top:2px"><b>Проблема:</b> {{ extRegGetFinding(e).problem }}</div>
+                                        <div v-if="extRegGetFinding(e).description" style="margin-top:2px; opacity:.85">{{ extRegGetFinding(e).description }}</div>
+                                    </template>
+                                </div>
                             </template>
                             <template v-else>—</template>
                         </td>
@@ -5141,10 +5126,10 @@
 
             <!-- Tab 1: Upload -->
             <div v-if="scTab==='upload'">
-                <div class="sc-card" style="background:var(--card-bg,#fff); border:1px solid var(--border,#e5e7eb); border-radius:8px; padding:10px 12px; margin-bottom:8px">
+                <div class="sc-card" style="background:var(--card-bg,#fff); border:1px solid var(--border,#e5e7eb); border-radius:8px; padding:6px 12px; margin-bottom:8px">
                     <!-- Автовыбор объекта (Задача: автоматические пути) -->
                     <div v-if="scObjects.length || scObjectsLoading || scObjectsError"
-                         style="margin-bottom:8px; padding:8px 10px; background:#f8fafc; border:1px solid #e5e7eb; border-radius:6px">
+                         style="margin-bottom:6px; padding:6px 10px; background:#f8fafc; border:1px solid #e5e7eb; border-radius:6px">
                         <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap">
                             <div style="flex:1; min-width:240px">
                                 <label style="display:block; font-size:12px; font-weight:600; margin-bottom:2px">
@@ -5184,12 +5169,9 @@
                             <code v-for="r in scObjectsRoots" :key="r" style="margin-right:4px">{{ r }}</code>
                             и нажмите ⟳.
                         </div>
-                        <div v-if="scObjectsRoots.length" style="font-size:11px; opacity:.55; margin-top:6px">
-                            Источник: {{ scObjectsRoots.join(', ') }}
-                        </div>
                     </div>
 
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:6px">
                         <div>
                             <label style="display:block; font-size:12px; font-weight:600; margin-bottom:2px">
                                 Папка первой стадии
@@ -5233,19 +5215,6 @@
                         <span v-if="scAutoLoading" style="font-size:12px; opacity:.7">Подгружаю сохранённое сопоставление…</span>
                         <div v-if="scError" style="color:#b91c1c; font-size:13px">{{ scError }}</div>
                         <div v-if="scSavedConfigMsg" style="color:#065f46; font-size:12px">{{ scSavedConfigMsg }}</div>
-                    </div>
-                    <div v-if="scAutoLoadInfo"
-                         style="margin-top:10px; background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; padding:8px 12px; border-radius:6px; font-size:12px; display:flex; gap:10px; align-items:center; flex-wrap:wrap">
-                        <span>
-                            Подгружено сохранённое сопоставление от
-                            <span style="opacity:.85">{{ scAutoLoadInfo.created_at }}</span>:
-                            {{ scAutoLoadInfo.pairs_matched }}/{{ scAutoLoadInfo.pairs_total }} пар сопоставлено.
-                        </span>
-                        <code style="background:#fff; padding:1px 6px; border:1px solid #a7f3d0; border-radius:3px">{{ scAutoLoadInfo.session_id }}</code>
-                        <button class="btn btn-sm btn-secondary" @click="scScanFolders()" :disabled="scScanning"
-                                title="Перезапустить сканирование папок и создать новую сессию">
-                            Сканировать заново
-                        </button>
                     </div>
                     <div v-if="scWarnings && scWarnings.length" style="margin-top:10px">
                         <div v-for="(w, idx) in scWarnings" :key="'scw'+idx"
@@ -5294,8 +5263,6 @@
                     <div class="sc-card"
                          style="background:#eef2ff; border-bottom:1px solid #c7d2fe; border-radius:0; padding:8px 12px; font-size:12px">
                         <div style="display:flex; gap:10px; align-items:baseline; flex-wrap:wrap">
-                            <strong style="font-size:13px">Подготовка графики (Qwen)</strong>
-                            <div style="flex:1"></div>
                             <template v-if="!(scRecogJob && ['queued','running'].includes(scRecogJob.status))">
                                 <button class="btn btn-sm btn-primary"
                                         :disabled="scRecogStarting || !scPairs.length"
@@ -5351,12 +5318,10 @@
                                         @click="scOpusCancel()"
                                         title="Отменить выполнение задачи">Отменить</button>
                             </template>
-                            <button v-if="scOpusJob && ['done','cancelled','failed'].includes(scOpusJob.status) && (scOpusJob.aggregate && scOpusJob.aggregate.done > 0)"
-                                    class="btn btn-sm btn-secondary"
-                                    @click="scTab='diffs'"
-                                    title="Перейти к таблице расхождений">
-                                Открыть расхождения
-                            </button>
+                            <span v-if="scRecogJob && scRecogJob.aggregate"
+                                  style="margin-left:auto; color:#475569; white-space:nowrap; font-size:12px">
+                                Прошло: <strong>{{ scRecogElapsedLabel() }}</strong>
+                            </span>
                         </div>
                         <div v-if="scRecogError"
                              style="margin-top:6px; background:#fee2e2; color:#991b1b; padding:6px 8px; border-radius:6px">
@@ -5370,42 +5335,6 @@
                                 <strong>Распознавание было прервано.</strong>
                                 {{ scRecogJob.error || 'Backend перезапустился во время выполнения, воркер был потерян.' }}
                                 Готовые стороны сохранены в кеше — нажмите «▶ Продолжить (пропустить готовые)», чтобы дописать остальные.
-                            </div>
-                        </div>
-
-                        <!-- Общий статус по сессии -->
-                        <div v-if="scRecogJob && scRecogJob.aggregate"
-                             style="margin-top:6px; display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:4px 14px; font-size:12px">
-                            <div>всего пар: <strong>{{ scRecogJob.aggregate.total_pairs }}</strong></div>
-                            <div style="color:#065f46">готово: <strong>{{ scRecogJob.aggregate.done_pairs }}</strong></div>
-                            <div v-if="scRecogJob.aggregate.done_with_salvage_pairs"
-                                 style="color:#065f46"
-                                 title="Пары полностью описаны, но часть блоков восстановлена salvage'ом / continuation'ом. Pipeline-смысл — готово.">
-                                готово (salvage): <strong>{{ scRecogJob.aggregate.done_with_salvage_pairs }}</strong>
-                            </div>
-                            <div style="color:#92400e">частично: <strong>{{ scRecogJob.aggregate.partial_pairs }}</strong></div>
-                            <div style="color:#991b1b">ошибок: <strong>{{ scRecogJob.aggregate.error_pairs }}</strong></div>
-                            <div style="opacity:.75">ещё не запускалось: <strong>{{ scRecogJob.aggregate.not_run_pairs }}</strong></div>
-                            <div>cache hits: <strong>{{ scRecogJob.aggregate.cache_hits }}</strong></div>
-                            <div>elapsed: <strong>{{ scRecogElapsedLabel() }}</strong></div>
-                        </div>
-
-                        <!-- Прогресс по image-блокам -->
-                        <div v-if="scRecogJob && scRecogJob.aggregate && scRecogJob.aggregate.total_image_blocks"
-                             style="margin-top:6px">
-                            <div style="display:flex; justify-content:space-between; font-size:11px; opacity:.75">
-                                <span>image/imagine-блоки</span>
-                                <span>{{ scRecogJob.aggregate.done_image_blocks }} / {{ scRecogJob.aggregate.total_image_blocks }}
-                                    <span v-if="scRecogJob.aggregate.failed_image_blocks" style="color:#991b1b">· failed {{ scRecogJob.aggregate.failed_image_blocks }}</span>
-                                </span>
-                            </div>
-                            <div style="height:6px; background:#e0e7ff; border-radius:3px; overflow:hidden">
-                                <div :style="{
-                                        width: Math.min(100, Math.round(100 * (scRecogJob.aggregate.done_image_blocks / Math.max(1, scRecogJob.aggregate.total_image_blocks))) ) + '%',
-                                        height: '100%',
-                                        background: '#4f46e5',
-                                        transition: 'width 0.5s'
-                                     }"></div>
                             </div>
                         </div>
 
@@ -5457,33 +5386,6 @@
                             </div>
                         </div>
 
-                        <!-- Проблемные пары -->
-                        <div v-if="scRecogJob && scRecogJob.aggregate && (scRecogJob.aggregate.error_pairs > 0 || scRecogJob.aggregate.partial_pairs > 0)"
-                             style="margin-top:8px; padding:6px 8px; background:#fef3c7; border:1px solid #fde68a; border-radius:6px; font-size:12px">
-                            <strong style="color:#92400e">Проблемные пары:</strong>
-                            <ul style="margin:4px 0 0 16px; padding:0">
-                                <template v-for="p in scPairs" :key="'rerr-'+p.id">
-                                    <li v-if="scRecogPairStatus(p.id) && ['error','partial'].includes(scRecogPairStatus(p.id).status)"
-                                        style="font-size:12px">
-                                        <code>{{ p.id }}</code>
-                                        — <span style="font-family:monospace">{{ (p.left||{}).filename || '—' }} ↔ {{ (p.right||{}).filename || '—' }}</span>
-                                        <span style="opacity:.7">·
-                                            L: {{ (scRecogPairStatus(p.id).left||{}).status || '—' }}
-                                            ({{ (scRecogPairStatus(p.id).left||{}).errors || 0 }} err)
-                                            · R: {{ (scRecogPairStatus(p.id).right||{}).status || '—' }}
-                                            ({{ (scRecogPairStatus(p.id).right||{}).errors || 0 }} err)
-                                        </span>
-                                    </li>
-                                </template>
-                            </ul>
-                        </div>
-
-                        <!-- Финальные статусы job -->
-                        <div v-if="scRecogJob && ['done','cancelled','rejected_no_confirm','failed'].includes(scRecogJob.status)"
-                             style="margin-top:6px; font-size:11px; opacity:.75">
-                            Последний прогон: <code>{{ scRecogJob.id }}</code> · status: <code>{{ scRecogJob.status }}</code>
-                            <span v-if="scRecogJob.created_at"> · создан: {{ scRecogJob.created_at }}</span>
-                        </div>
                     </div>
 
                     <!-- ── Opus session batch — статус (кнопка перенесена в шапку Qwen-карточки выше) ── -->
@@ -5512,12 +5414,6 @@
                             Не готово к сравнению: <strong>{{ scOpusPreflight.skip_not_ready }}</strong> пар без enriched MD. Будут пропущены.
                         </div>
 
-                        <!-- Warning: too_large пары -->
-                        <div v-if="scOpusPreflight && scOpusPreflight.skip_too_large > 0"
-                             style="margin-top:6px; background:#fef3c7; color:#92400e; padding:6px 8px; border-radius:6px; font-size:12px">
-                            Слишком большие пары: <strong>{{ scOpusPreflight.skip_too_large }}</strong>. Превышают лимит enriched MD; будут пропущены. Рассмотрите section split или compact compare.
-                        </div>
-
                         <!-- Warning: canonical конфигурация -->
                         <div v-if="scSavedConfig && scSavedConfig.saved && scSavedConfig.canonical_session_id && scSession && scSavedConfig.canonical_session_id !== scSession.id"
                              style="margin-top:6px; background:#fef3c7; color:#92400e; padding:6px 8px; border-radius:6px; font-size:12px">
@@ -5536,25 +5432,11 @@
                             <div style="color:#15803d">будет запущено: <strong>{{ scOpusPreflight.will_run }}</strong></div>
                             <div v-if="scOpusPreflight.skip_done" style="color:#1d4ed8" title="Comparison уже сделан, force_compare=false">уже готово: <strong>{{ scOpusPreflight.skip_done }}</strong></div>
                             <div v-if="scOpusPreflight.skip_not_ready" style="color:#92400e">не готовы: <strong>{{ scOpusPreflight.skip_not_ready }}</strong></div>
-                            <div v-if="scOpusPreflight.skip_too_large" style="color:#991b1b">too_large: <strong>{{ scOpusPreflight.skip_too_large }}</strong></div>
-                        </div>
-
-                        <!-- Общий статус job -->
-                        <div v-if="scOpusJob && scOpusJob.aggregate"
-                             style="margin-top:8px; display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:6px 14px; font-size:12px">
-                            <div>всего пар: <strong>{{ scOpusJob.aggregate.total_pairs }}</strong></div>
-                            <div style="color:#065f46">готово: <strong>{{ scOpusJob.aggregate.done }}</strong></div>
-                            <div v-if="scOpusJob.aggregate.running" style="color:#1d4ed8">обрабатывается: <strong>{{ scOpusJob.aggregate.running }}</strong></div>
-                            <div v-if="scOpusJob.aggregate.queued" style="color:#3730a3">в очереди: <strong>{{ scOpusJob.aggregate.queued }}</strong></div>
-                            <div style="color:#991b1b">ошибок: <strong>{{ scOpusJob.aggregate.failed }}</strong></div>
-                            <div style="opacity:.75">пропущено: <strong>{{ scOpusJob.aggregate.skipped }}</strong>
-                                <span v-if="scOpusJob.aggregate.skipped_too_large" style="opacity:.7" :title="'too_large: ' + scOpusJob.aggregate.skipped_too_large + ', not_ready: ' + scOpusJob.aggregate.skipped_not_ready">
-                                    (too_large: {{ scOpusJob.aggregate.skipped_too_large }}, not_ready: {{ scOpusJob.aggregate.skipped_not_ready }})
-                                </span>
+                            <div v-if="scOpusPreflight.skip_too_large" style="color:#991b1b"
+                                 title="Большие пары пропускаются в общем сравнении. В таблице ниже нажмите бейдж «⚠ файл большой ▸ fallback» в колонке «Сравнение», чтобы прогнать пару через Opus fallback (evidence_first) на готовых enriched MD.">
+                                too_large: <strong>{{ scOpusPreflight.skip_too_large }}</strong>
+                                <span style="opacity:.7; font-weight:400"> — запускайте по бейджу ниже</span>
                             </div>
-                            <div>расхождений: <strong>{{ scOpusJob.aggregate.total_changes }}</strong></div>
-                            <div>elapsed: <strong>{{ scOpusElapsedLabel() }}</strong></div>
-                            <div v-if="scOpusJob.aggregate.eta_sec">ETA: <strong>{{ scFormatDuration(scOpusJob.aggregate.eta_sec) }}</strong></div>
                         </div>
 
                         <!-- Текущая пара (live) -->
@@ -5568,21 +5450,30 @@
                                 <span style="font-size:13px; color:#374151">
                                     пара <strong>{{ scOpusJob.aggregate.current_pair_index }}</strong> / {{ scOpusJob.aggregate.total_pairs }}
                                 </span>
-                                <span style="font-size:12px; opacity:.65; margin-left:auto" v-if="scOpusJob.aggregate.current_pair_status">
+                                <!-- fallback (evidence_first): прогноз времени вместо статичного comparing -->
+                                <span v-if="scOpusFallbackLabel()" style="font-size:12px; margin-left:auto; display:inline-flex; align-items:center; gap:8px"
+                                      :title="scOpusFallbackLabel().title">
+                                    <code style="color:#7c3aed; background:#f5f3ff; padding:1px 6px; border-radius:4px">{{ scOpusFallbackLabel().text }}</code>
+                                    <span v-if="scOpusFallbackLabel().eta" style="color:#6d28d9; font-weight:600">осталось ~{{ scOpusFallbackLabel().eta }}</span>
+                                </span>
+                                <span v-else style="font-size:12px; opacity:.65; margin-left:auto" v-show="scOpusJob.aggregate.current_pair_status">
                                     status: <code>{{ scOpusJob.aggregate.current_pair_status }}</code>
                                 </span>
                             </div>
                             <div style="font-family:monospace; font-size:13px; color:#1f2937; word-break:break-all">
                                 {{ scOpusCurrentPairLabel() }}
                             </div>
+                            <!-- прогресс-бар по чанкам fallback -->
+                            <div v-if="scOpusFallbackLabel()" style="margin-top:8px">
+                                <div style="height:6px; background:#ede9fe; border-radius:3px; overflow:hidden">
+                                    <div :style="{width: scOpusFallbackLabel().pct + '%', height:'100%', background:'#7c3aed', transition:'width .4s'}"></div>
+                                </div>
+                                <div v-if="scOpusFallbackLabel().title" style="font-size:11px; color:#6b7280; margin-top:3px">
+                                    текущий раздел: {{ scOpusFallbackLabel().title }}
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Финальный статус -->
-                        <div v-if="scOpusJob && ['done','cancelled','rejected_no_confirm','failed'].includes(scOpusJob.status)"
-                             style="margin-top:6px; font-size:11px; opacity:.75">
-                            Последний прогон: <code>{{ scOpusJob.id }}</code> · status: <code>{{ scOpusJob.status }}</code>
-                            <span v-if="scOpusJob.created_at"> · создан: {{ scOpusJob.created_at }}</span>
-                        </div>
                     </div>
 
                     <table style="width:100%; border-collapse:collapse; font-size:13px">
@@ -5736,7 +5627,6 @@
                                 </td>
                                 <td style="padding:8px; text-align:right; white-space:nowrap">
                                     <button class="btn btn-sm" :disabled="!p.left || !p.right" @click="scOpenPair(p)">Открыть</button>
-                                    <button class="btn btn-sm btn-danger" @click="scDeletePair(p)" title="Скрыть/удалить пару">✕</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -6140,42 +6030,30 @@
                         {{ scUnifiedError }}
                     </div>
 
-                    <!-- Панель действий: «Экспертная оценка» (выпадающее меню) +
-                         «Экспорт в Excel» в одном ряду, на одной высоте. -->
-                    <div class="sc-unified-mode" style="display:flex; gap:6px; align-items:center; justify-content:flex-end; margin-bottom:8px; font-size:12px">
-                        <!-- Экспертная оценка: кнопка-триггер + dropdown -->
-                        <div class="sc-expert-menu">
-                            <button class="btn btn-sm"
-                                    :class="scExpertReviewMode ? 'btn-primary' : 'btn-secondary'"
-                                    @click="scToggleExpertReview()"
-                                    title="Подтверждать или опровергать расхождения текущей пары. Решения хранятся на сервере.">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px; margin-right:3px"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-                                Экспертная оценка
-                                <span style="margin-left:4px">{{ scExpertReviewMode ? '▴' : '▾' }}</span>
+                    <!-- Панель действий: все кнопки в одном ряду, на одной высоте.
+                         При включённой оценке слева от триггера по очереди появляются:
+                         Сохранить решение · Принято/Отклонено. Повторный клик по
+                         «Экспертная оценка» выключает режим. -->
+                    <div class="sc-unified-mode" style="display:flex; gap:6px; align-items:center; justify-content:flex-end; flex-wrap:wrap; margin-bottom:8px; font-size:12px">
+                        <template v-if="scExpertReviewMode">
+                            <button class="btn btn-sm btn-primary"
+                                    @click="scSubmitExpertReview()"
+                                    :disabled="scExpertReviewSaving || scExpertReviewSummary().total === 0">
+                                {{ scExpertReviewSaving ? 'Сохранение…' : '💾 Сохранить решение' }}
                             </button>
-                            <div v-if="scExpertReviewMode" class="sc-expert-menu__dropdown">
-                                <button class="btn btn-sm btn-primary sc-expert-menu__item"
-                                        @click="scSubmitExpertReview()"
-                                        :disabled="scExpertReviewSaving || scExpertReviewSummary().total === 0">
-                                    {{ scExpertReviewSaving ? 'Сохранение…' : '💾 Сохранить решение' }}
-                                </button>
-                                <div class="sc-expert-menu__counts">
-                                    Принято: <b style="color:#22c55e">{{ scExpertReviewSummary().accepted }}</b>
-                                    · Отклонено: <b style="color:#ef4444">{{ scExpertReviewSummary().rejected }}</b>
-                                </div>
-                                <button class="btn btn-sm btn-secondary sc-expert-menu__item"
-                                        @click="scToggleExpertReview()">
-                                    ✕ Скрыть оценку
-                                </button>
-                                <a v-if="scUnifiedFlat && (scUnifiedFlat.items || []).length"
-                                   class="btn btn-sm btn-secondary sc-expert-menu__item"
-                                   :href="scUnifiedExportXlsxUrl()"
-                                   target="_blank" rel="noopener">
-                                    ⬇ Экспорт в Excel
-                                </a>
-                            </div>
-                        </div>
-                        <!-- Экспорт в Excel — всегда в верхнем ряду -->
+                            <span style="font-size:12px; opacity:.85; white-space:nowrap">
+                                Принято: <b style="color:#22c55e">{{ scExpertReviewSummary().accepted }}</b>
+                                · Отклонено: <b style="color:#ef4444">{{ scExpertReviewSummary().rejected }}</b>
+                            </span>
+                        </template>
+                        <!-- Триггер экспертной оценки -->
+                        <button class="btn btn-sm btn-primary"
+                                @click="scToggleExpertReview()"
+                                title="Подтверждать или опровергать расхождения текущей пары. Повторный клик скрывает оценку. Решения хранятся на сервере.">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px; margin-right:3px"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                            Экспертная оценка
+                        </button>
+                        <!-- Экспорт в Excel — правый край ряда -->
                         <a v-if="scUnifiedFlat && (scUnifiedFlat.items || []).length"
                            class="btn btn-sm btn-secondary"
                            :href="scUnifiedExportXlsxUrl()"
@@ -6270,29 +6148,28 @@
                             <tbody>
                                 <tr v-for="it in scUnifiedItemsSorted" :key="it.id"
                                     :class="['sc-row', 'sc-row--' + (it.severity || 'unknown'), { 'row-accepted': scGetExpertDecision(it) === 'accepted', 'row-rejected': scGetExpertDecision(it) === 'rejected' }]">
-                                    <!-- № + severity -->
+                                    <!-- № + severity + направление изменения -->
                                     <td class="sc-cell-no">
                                         <div class="sc-cell-no__num">№{{ it._displayNo }}</div>
                                         <span :class="'sc-sev-chip sc-sev-chip--' + (it.severity || 'unknown')"
                                               :title="'Важность: ' + (it.severity || '—')">{{ it.severity || '—' }}</span>
+                                        <span v-if="it.change_direction && it.change_direction !== 'unknown'"
+                                              :class="'sc-grouped-dir-chip sc-grouped-dir-chip--' + it.change_direction"
+                                              :title="'Характер изменения: ' + scDirectionLabel(it.change_direction)">{{ scDirectionLabel(it.change_direction) }}</span>
+                                        <span v-if="it.source_layer"
+                                              class="sc-chip sc-chip--source sc-chip--source-in-no"
+                                              :title="'Источник: ' + scUnifiedSourceLabel(it.source_layer)">{{ scUnifiedSourceLabel(it.source_layer) }}</span>
                                     </td>
                                     <!-- Место (лист / страница / pair) -->
                                     <td class="sc-cell-place">
-                                        <div v-if="it.sheet" class="sc-place-sheet">Лист: <strong>{{ it.sheet }}</strong></div>
+                                        <div v-if="it.sheet" class="sc-place-sheet"><strong>{{ it.sheet }}</strong></div>
                                         <div v-if="it.page" class="sc-place-page">стр. PDF: {{ Array.isArray(it.page) ? it.page.join(', ') : it.page }}</div>
                                         <div v-if="it.pair_label" class="sc-place-pair" :title="it.pair_label">{{ it.pair_label }}</div>
                                     </td>
-                                    <!-- Изменение: title + summary + бейджи источника/ручной -->
+                                    <!-- Изменение: title + summary (источник перенесён в колонку «№») -->
                                     <td class="sc-cell-change">
-                                        <div class="sc-change-badges">
-                                            <span v-if="it.requires_human_review"
-                                                  class="sc-chip sc-chip--manual"
-                                                  title="Требует ручной проверки эксперта">⚑ ручная</span>
-                                            <span v-if="it.source_layer"
-                                                  class="sc-chip sc-chip--source"
-                                                  :title="'Источник: ' + scUnifiedSourceLabel(it.source_layer)">{{ scUnifiedSourceLabel(it.source_layer) }}</span>
-                                            <span v-if="it.analysis_mode === 'concept_no_block_links'"
-                                                  class="sc-chip sc-chip--nolinks"
+                                        <div v-if="it.analysis_mode === 'concept_no_block_links'" class="sc-change-badges">
+                                            <span class="sc-chip sc-chip--nolinks"
                                                   title="Сравнение по enriched MD целиком, без block-to-block связей">без связей</span>
                                         </div>
                                         <div class="sc-change-title">{{ it.title || '—' }}</div>
@@ -6330,9 +6207,6 @@
                                     <td class="sc-cell-impact">
                                         <div v-if="it.construction_impact" class="sc-impact-text">{{ it.construction_impact }}</div>
                                         <div v-else class="sc-impact-text muted">—</div>
-                                        <div v-if="it.cost_impact && it.cost_impact !== 'none'" class="sc-impact-cost">
-                                            Стоимость: <strong>{{ it.cost_impact }}</strong>
-                                        </div>
                                     </td>
                                     <!-- Экспертное решение -->
                                     <td v-if="scExpertReviewMode" class="decision-cell" style="text-align:center">
@@ -7075,20 +6949,18 @@
                                                 <div class="sc-cell-no__num">№{{ i + 1 }}</div>
                                                 <span :class="'sc-sev-chip sc-sev-chip--' + (it.severity || 'unknown')"
                                                       :title="'Важность: ' + (it.severity || '—')">{{ it.severity || '—' }}</span>
+                                                <span v-if="it.change_direction && it.change_direction !== 'unknown'"
+                                                      :class="'sc-grouped-dir-chip sc-grouped-dir-chip--' + it.change_direction"
+                                                      :title="'Характер изменения: ' + scDirectionLabel(it.change_direction)">{{ scDirectionLabel(it.change_direction) }}</span>
+                                                <span v-if="it.source_layer"
+                                                      class="sc-chip sc-chip--source sc-chip--source-in-no"
+                                                      :title="'Источник: ' + scUnifiedSourceLabel(it.source_layer)">{{ scUnifiedSourceLabel(it.source_layer) }}</span>
                                             </td>
                                             <td class="sc-cell-place">
-                                                <div v-if="it.sheet" class="sc-place-sheet">Лист: <strong>{{ it.sheet }}</strong></div>
+                                                <div v-if="it.sheet" class="sc-place-sheet"><strong>{{ it.sheet }}</strong></div>
                                                 <div v-if="it.page" class="sc-place-page">стр. PDF: {{ Array.isArray(it.page) ? it.page.join(', ') : it.page }}</div>
                                             </td>
                                             <td class="sc-cell-change">
-                                                <div class="sc-change-badges">
-                                                    <span v-if="it.requires_human_review"
-                                                          class="sc-chip sc-chip--manual"
-                                                          title="Требует ручной проверки эксперта">⚑ ручная</span>
-                                                    <span v-if="it.source_layer"
-                                                          class="sc-chip sc-chip--source"
-                                                          :title="'Источник: ' + scUnifiedSourceLabel(it.source_layer)">{{ scUnifiedSourceLabel(it.source_layer) }}</span>
-                                                </div>
                                                 <div class="sc-change-title">{{ it.title || '—' }}</div>
                                                 <div v-if="it.summary" class="sc-change-summary">{{ it.summary }}</div>
                                             </td>
@@ -7107,9 +6979,6 @@
                                             <td class="sc-cell-impact">
                                                 <div v-if="it.construction_impact" class="sc-impact-text">{{ it.construction_impact }}</div>
                                                 <div v-else class="sc-impact-text muted">—</div>
-                                                <div v-if="it.cost_impact && it.cost_impact !== 'none'" class="sc-impact-cost">
-                                                    Стоимость: <strong>{{ it.cost_impact }}</strong>
-                                                </div>
                                             </td>
                                         </tr>
                                     </tbody>
