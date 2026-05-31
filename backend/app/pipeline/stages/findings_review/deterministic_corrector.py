@@ -135,11 +135,18 @@ def _fix_page_sheet(finding: dict, idx: _Index) -> bool:
     for b in image_refs:
         if b in idx.image_block_ids and b in idx.block_page:
             pages.add(idx.block_page[b])
-    pages = sorted(p for p in pages if p is not None)
-    if not pages:
+    pages_sorted = sorted(p for p in pages if p is not None)
+    if not pages_sorted:
         return False
-    finding["page"] = pages[0] if len(pages) == 1 else pages
-    sheet = idx.page_to_sheet.get(pages[0])
+    first = pages_sorted[0]
+    finding["page"] = first if len(pages_sorted) == 1 else pages_sorted
+    # sheet: сначала document_graph (page→sheet), затем sheet самого evidence-блока
+    sheet = idx.page_to_sheet.get(first)
+    if not sheet:
+        for b in image_refs:
+            if idx.block_page.get(b) == first and idx.block_sheet.get(b):
+                sheet = idx.block_sheet[b]
+                break
     if sheet:
         finding["sheet"] = sheet
     return True
