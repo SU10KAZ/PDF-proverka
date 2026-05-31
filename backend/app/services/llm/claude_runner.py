@@ -683,6 +683,110 @@ async def run_block_batch(
 
 # ─── Critic — проверка замечаний (OpenRouter, GPT) ────────────────────
 
+def _findings_critic_deterministic_enabled() -> bool:
+    """Детерминированный critic включён по умолчанию. Kill-switch:
+    FINDINGS_CRITIC_DETERMINISTIC=false → старый агентный/OpenRouter путь."""
+    return os.getenv("FINDINGS_CRITIC_DETERMINISTIC", "true").strip().lower() not in (
+        "0", "false", "no", "off",
+    )
+
+
+def _findings_critic_semantic_enabled() -> bool:
+    """Точечный LLM-проход (проверки 3/5). По умолчанию ON; можно выключить
+    FINDINGS_CRITIC_SEMANTIC_LLM=false (останутся только структурные проверки)."""
+    return os.getenv("FINDINGS_CRITIC_SEMANTIC_LLM", "true").strip().lower() not in (
+        "0", "false", "no", "off",
+    )
+
+
+async def _run_bounded_critic_llm(
+    prompt: str, model: str, timeout: int, project_id: str,
+) -> str:
+    """Один НЕ агентный `claude -p --max-turns 1` вызов для семантической
+    проверки замечания. Все данные inline → файловые инструменты не нужны,
+    агентный Read-цикл (причина старых падений критика) исключён. Возвращает
+    текст ответа; бросает исключение на ошибке (fail-soft ловит выше)."""
+    from backend.app.services.common.process_runner import run_command
+
+    cmd = [
+        get_claude_cli(), "-p",
+        "--model", model,
+        "--max-turns", "1",
+        "--output-format", "json",
+    ]
+    env_overrides = {k: None for k in os.environ if k.startswith("CLAUDE")}
+    exit_code, stdout, _stderr = await run_command(
+        cmd, input_text=prompt, timeout=timeout,
+        env_overrides=env_overrides, project_id=project_id,
+    )
+    cli = parse_cli_json_output(stdout or "")
+    if exit_code != 0 or cli.is_error:
+        raise RuntimeError(cli.error_message or f"bounded critic llm exit {exit_code}")
+    return cli.result_text or ""
+
+
+async def _run_deterministic_findings_critic(
+    project_info: dict,
+    project_id: str,
+    output_dir,
+    on_output: Optional[Callable[[str], Awaitable[None]]],
+    chunk_suffix: str,
+) -> tuple[int, str, CLIResult]:
+    """Детерминированный critic: проверки 1/2/4 в Python + точечный LLM 3/5
+    (best-effort). Review-файл пишется из Python, поэтому этап больше не зависит
+    от того, «дожила ли агентная сессия до записи файла»."""
+    import time
+    from backend.app.pipeline.stages.findings_review import deterministic_critic as dc
+
+    model = get_stage_model("findings_critic")
+    findings_filename = (
+        f"03_findings_review_input{chunk_suffix}.json"
+        if chunk_suffix else "03_findings.json"
+    )
+    review_filename = f"03_findings_review{chunk_suffix}.json"
+
+    llm_call = None
+    if _findings_critic_semantic_enabled():
+        timeout = int(os.getenv("FINDINGS_CRITIC_LLM_TIMEOUT", "180"))
+
+        async def llm_call(prompt: str) -> str:  # noqa: E306
+            return await _run_bounded_critic_llm(prompt, model, timeout, project_id)
+
+    started = time.monotonic()
+    try:
+        result = await dc.run_deterministic_critic(
+            output_dir,
+            project_id=project_id,
+            findings_filename=findings_filename,
+            review_filename=review_filename,
+            llm_call=llm_call,
+            on_log=on_output,
+        )
+    except Exception as exc:  # noqa: BLE001
+        msg = f"deterministic critic failed: {exc}"
+        if on_output:
+            await on_output(msg)
+        return 1, msg, CLIResult(is_error=True, result_text=msg)
+
+    duration_ms = int((time.monotonic() - started) * 1000)
+    if result.error:
+        return 1, result.error, CLIResult(is_error=True, result_text=result.error)
+
+    summary = (
+        f"deterministic critic: {result.findings_total} reviewed, "
+        f"{result.passed} pass, {result.deterministic_issues} structural + "
+        f"{result.semantic_issues} semantic issues"
+        + (" [LLM fail-soft]" if result.llm_failed else "")
+    )
+    _save_audit_trail(
+        project_id, f"03b_findings_critic{chunk_suffix}", model,
+        0, 0, duration_ms, result.to_review_dict(project_id),
+    )
+    return 0, summary, CLIResult(
+        result_text=summary, duration_ms=duration_ms, num_turns=0,
+    )
+
+
 async def run_findings_critic(
     project_info: dict,
     project_id: str,
@@ -698,6 +802,13 @@ async def run_findings_critic(
     from backend.app.core.config import CLAUDE_FINDINGS_CRITIC_TIMEOUT, FINDINGS_REVIEW_TOOLS
 
     output_dir = _resolve_output_dir(project_id)
+
+    # Детерминированный critic (default ON). Заменяет агентный Read-цикл по
+    # многомегабайтным JSON, который падал по таймауту/лимиту ходов.
+    if _findings_critic_deterministic_enabled():
+        return await _run_deterministic_findings_critic(
+            project_info, project_id, output_dir, on_output, chunk_suffix,
+        )
 
     if is_claude_stage("findings_critic"):
         model = get_stage_model("findings_critic")
@@ -750,6 +861,46 @@ async def run_findings_critic(
     return exit_code, result.text, result
 
 
+async def _run_deterministic_findings_corrector(
+    project_id: str,
+    output_dir,
+    on_output: Optional[Callable[[str], Awaitable[None]]],
+) -> tuple[int, str, CLIResult]:
+    """Детерминированная корректировка findings по вердиктам critic. Никогда не
+    удаляет замечания: phantom-блоки чистятся, page/sheet чинятся, no_evidence/
+    contradicts_text понижаются в ПРОВЕРИТЬ_ПО_СМЕЖНЫМ. Файл пишет Python."""
+    import time
+    from backend.app.pipeline.stages.findings_review import deterministic_corrector as dcorr
+
+    model = get_stage_model("findings_corrector")
+    started = time.monotonic()
+    try:
+        result = await dcorr.run_deterministic_corrector(
+            output_dir, project_id=project_id, on_log=on_output,
+        )
+    except Exception as exc:  # noqa: BLE001
+        msg = f"deterministic corrector failed: {exc}"
+        if on_output:
+            await on_output(msg)
+        return 1, msg, CLIResult(is_error=True, result_text=msg)
+
+    duration_ms = int((time.monotonic() - started) * 1000)
+    if result.error:
+        return 1, result.error, CLIResult(is_error=True, result_text=result.error)
+
+    summary = (
+        f"deterministic corrector: {result.corrected}/{result.findings_total} corrected "
+        f"(phantom={result.phantom_cleaned}, page={result.page_fixed}, "
+        f"downgraded={result.downgraded})"
+    )
+    _save_audit_trail(
+        project_id, "03c_findings_corrector", model, 0, 0, duration_ms, summary,
+    )
+    return 0, summary, CLIResult(
+        result_text=summary, duration_ms=duration_ms, num_turns=0,
+    )
+
+
 # ─── Corrector — корректировка замечаний (OpenRouter, GPT) ────────────
 
 async def run_findings_corrector(
@@ -771,6 +922,14 @@ async def run_findings_corrector(
     pre_review_path = output_dir / "03_findings_pre_review.json"
     if findings_path.exists():
         shutil.copy2(findings_path, pre_review_path)
+
+    # Детерминированный corrector (default ON, тот же флаг, что и critic).
+    # Консервативно правит findings по вердиктам critic вместо агентного
+    # переписывания всего файла.
+    if _findings_critic_deterministic_enabled():
+        return await _run_deterministic_findings_corrector(
+            project_id, output_dir, on_output,
+        )
 
     if is_claude_stage("findings_corrector"):
         model = get_stage_model("findings_corrector")

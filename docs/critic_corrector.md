@@ -2,6 +2,73 @@
 
 Схема «генератор → критик → корректор» для grounding-валидации. Corrector запускается **условно** (только если critic нашёл issues).
 
+## Детерминированный critic + corrector (2026-05-31)
+
+**Было:** `findings_critic` и `findings_corrector` запускались агентным
+`claude -p --allowedTools Read,Write` и читали многомегабайтные `03_findings.json`
++ `02_blocks_analysis.json` + `document_graph.json` инструментом Read (по ~2000
+строк за вызов). На крупных проектах прогон не доживал до записи
+`03_findings_review.json` (таймаут 1200 c / лимит ходов → `is_error`, пустой
+результат) → этап падал с «critic produced no review artifact», независимо от
+размера блоков. Из 142 проектов критик падал на ~6 самых тяжёлых.
+
+**Стало:**
+[deterministic_critic.py](../backend/app/pipeline/stages/findings_review/deterministic_critic.py)
++ [deterministic_corrector.py](../backend/app/pipeline/stages/findings_review/deterministic_corrector.py).
+
+### Critic — 5 проверок разделены
+
+| # | Проверка | Кто |
+|---|---|---|
+| 1 | evidence_presence | Python (детерминированно) |
+| 2 | block_exists | Python |
+| 3 | evidence_relevance | bounded LLM (best-effort) |
+| 4 | page_sheet_correct | Python |
+| 5 | text_consistency | bounded LLM (best-effort) |
+
+- Структурные 1/2/4 — чистый Python по загруженным JSON, всегда дают валидный
+  файл вердиктов.
+- Семантические 3/5 — один **не агентный** `claude -p --max-turns 1` вызов на
+  батч (~12 замечаний) с компактным per-finding срезом (нужные блоки + сниппет
+  страницы), ответ JSON, файл пишет Python. Агентного Read-цикла нет → причина
+  старых падений исключена.
+- **Fail-soft:** любая ошибка/таймаут/непарс ответа LLM → замечания остаются
+  `pass`, файл всё равно записывается. Этап больше не может уронить конвейер.
+- `page_mismatch` ставится консервативно — только при точной привязке evidence
+  (≤2 страниц), чтобы не флагать сводные замечания по многим листам.
+
+Формат вывода совпадает с тем, что читает `findings_review/runner.py`
+(`{"meta":{"total_reviewed","verdicts":{counts}}, "reviews":[…]}`), работает в
+single-shot и chunked-режиме.
+
+### Corrector — детерминированный, без удаления замечаний
+
+Главный инвариант: **ни одно замечание не удаляется** (потеря замечания
+недопустима). Destructive-вариант «удалить» заменён на понижение severity.
+
+| Вердикт | Действие |
+|---|---|
+| `phantom_block` | удалить несуществующие block_id из evidence/related/source |
+| `page_mismatch` | выставить page/sheet по страницам реальных evidence-блоков |
+| `no_evidence` | понизить severity → `ПРОВЕРИТЬ_ПО_СМЕЖНЫМ` + `corrector_note` |
+| `contradicts_text` | понизить severity → `ПРОВЕРИТЬ_ПО_СМЕЖНЫМ` + `corrector_note` |
+| `weak_evidence` | оставить + `corrector_note` |
+
+`norm_quote` и прочие поля сохраняются; правки идемпотентны.
+
+### Флаги (`.env`)
+
+| Переменная | Default | Назначение |
+|---|---|---|
+| `FINDINGS_CRITIC_DETERMINISTIC` | `true` | kill-switch на оба этапа: `false` → старый агентный/OpenRouter путь |
+| `FINDINGS_CRITIC_SEMANTIC_LLM` | `true` | `false` → только структурные проверки 1/2/4 |
+| `FINDINGS_CRITIC_LLM_TIMEOUT` | `180` | таймаут одного bounded LLM-вызова (сек) |
+
+После изменения нужен рестарт backend (uvicorn без `--reload` держит модуль в
+памяти). Тесты:
+[test_findings_deterministic_critic.py](../tests/test_findings_deterministic_critic.py),
+[test_findings_deterministic_corrector.py](../tests/test_findings_deterministic_corrector.py).
+
 ## Findings: Critic → Corrector
 
 **Файлы:**
