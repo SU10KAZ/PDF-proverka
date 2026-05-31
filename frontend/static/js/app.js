@@ -3851,6 +3851,12 @@ const app = createApp({
             try {
                 await fetch(`/api/audit/${encodeURIComponent(projectId)}/cancel`, { method: 'DELETE' });
                 auditRunning.value = false;
+                // Оптимистично снимаем running-метку, чтобы кнопка сразу стала
+                // «Запустить аудит», не дожидаясь следующего polling.
+                if (liveStatus.value.running) delete liveStatus.value.running[projectId];
+                // Обновляем очередь, чтобы «остановлен» отобразился и на
+                // странице «Очередь» (item больше не «Выполняется»).
+                refreshBatchQueue();
             } catch (e) { alert(e.message); }
         }
 

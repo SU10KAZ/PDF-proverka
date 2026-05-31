@@ -874,6 +874,10 @@ class PipelineManager:
             print(f"[PipelineManager] Очистка зомби-задачи: {pid}")
             self._cleanup(pid)
 
+        # Заодно приводим batch-очередь к консистентному виду: мёртвый worker
+        # не должен оставлять фантомные 'running' item'ы (живой спиннер в UI).
+        self._reconcile_stale_queue()
+
     def _recover_stale_pipelines(self):
         """Сканирует все pipeline_log.json и помечает зависшие 'running' как 'interrupted'.
 
@@ -4924,14 +4928,22 @@ class PipelineManager:
                         )
 
                 except Exception as e:
-                    item.status = "failed"
-                    item.error = str(e)
-                    queue.failed += 1
-                    import traceback
-                    traceback.print_exc()
-                    await ws_manager.broadcast_global(
-                        WSMessage.log("__BATCH__", f"  ✗ {pid}: исключение: {e}", "error")
-                    )
+                    if job.status == JobStatus.CANCELLED:
+                        # Остановлено пользователем во время этапа — это не сбой.
+                        item.status = "cancelled"
+                        item.error = "Остановлено пользователем"
+                        await ws_manager.broadcast_global(
+                            WSMessage.log("__BATCH__", f"  ⊘ {pid}: остановлен", "warn")
+                        )
+                    else:
+                        item.status = "failed"
+                        item.error = str(e)
+                        queue.failed += 1
+                        import traceback
+                        traceback.print_exc()
+                        await ws_manager.broadcast_global(
+                            WSMessage.log("__BATCH__", f"  ✗ {pid}: исключение: {e}", "error")
+                        )
                 finally:
                     self._stop_heartbeat(pid)
                     self.active_jobs.pop(pid, None)
@@ -4962,6 +4974,13 @@ class PipelineManager:
         except Exception as e:
             queue.status = "completed"
             meta_job.status = JobStatus.FAILED
+            # Не оставлять текущий item в 'running' — иначе UI вечно покажет
+            # «Выполняется» при мёртвом воркере.
+            for _it in queue.items:
+                if _it.status == "running":
+                    _it.status = "failed"
+                    if not _it.error:
+                        _it.error = f"Сбой воркера очереди: {e}"
             print(f"[BATCH] КРИТИЧЕСКАЯ ОШИБКА: {e}")
             import traceback
             traceback.print_exc()
@@ -5375,8 +5394,42 @@ class PipelineManager:
         )
         return self._batch_queue
 
+    def _reconcile_stale_queue(self) -> bool:
+        """Привести очередь к консистентному виду, если worker уже не жив.
+
+        Batch-worker регистрируется как task под ключом "__BATCH__". Если его
+        нет или он завершён, ни один item не может реально «выполняться».
+        Зависшие 'running' элементы (после отмены, исключения воркера или гонки
+        очистки) демотируются в 'interrupted', а сама очередь — из 'running' в
+        'interrupted'. Иначе UI бесконечно показывает «Выполняется» при
+        простаивающем конвейере.
+        """
+        q = self._batch_queue
+        if q is None:
+            return False
+        worker = self._tasks.get("__BATCH__")
+        if worker is not None and not worker.done():
+            return False  # воркер жив — доверяем его учёту
+        changed = False
+        for it in q.items:
+            if it.status == "running":
+                it.status = "interrupted"
+                if not it.error:
+                    it.error = "Прервано (воркер очереди не активен)"
+                changed = True
+        if q.status == "running":
+            q.status = "interrupted"
+            changed = True
+        if changed:
+            try:
+                self._persist_queue()
+            except Exception:
+                pass
+        return changed
+
     def get_batch_queue(self) -> Optional[BatchQueueStatus]:
         """Получить текущую batch-очередь."""
+        self._reconcile_stale_queue()
         return self._batch_queue
 
     async def reorder_batch(self, new_order: list[str]) -> BatchQueueStatus:
