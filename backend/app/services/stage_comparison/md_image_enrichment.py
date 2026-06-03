@@ -2352,6 +2352,17 @@ def _write_image_descriptions(session_id: str, pair_id: str, side: str, payload:
     return p
 
 
+def _atomic_write_text(path: Path, text: str) -> None:
+    """Атомарно записать текст: сначала во временный файл, затем replace.
+
+    Гарантирует, что читатели enriched MD никогда не видят полузаписанный
+    файл (важно для production left/right_enriched.md, которые читает
+    Opus-сравнение)."""
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(text, encoding="utf-8")
+    tmp.replace(path)
+
+
 def _save_prompt_and_raw(
     session_id: str,
     pair_id: str,
@@ -2989,10 +3000,42 @@ async def enrich_side(
     # ── Записать enriched MD + JSON ─────────────────────────────────
     enriched_md = build_enriched_md(blocks, descriptions)
     md_out = paths_mod.text_enrichment_md_path(session_id, pair_id, side)
-    if force or run_model or not md_out.exists():
+
+    # Large-sheet write-gate: компактная large-sheet сводка собирается из уже
+    # готового page_enriched.json (Qwen НЕ вызывается). При обычном dry-run
+    # (run_model=False, force=False) enriched MD не перезаписывался, поэтому
+    # сводка не попадала в production left/right_enriched.md. Если в этом
+    # прогоне встроен хотя бы один large-sheet item со status=done — считаем,
+    # что содержимое enriched MD могло измениться, и перезаписываем его.
+    large_sheet_embedded = any(
+        (d.get("source") == "large_sheet_enrichment"
+         and (d.get("status") or "").lower() == "done")
+        for d in descriptions
+    )
+    enriched_md_write_reason: Optional[str] = None
+    should_write = force or run_model or not md_out.exists()
+    if should_write:
+        enriched_md_write_reason = (
+            "missing" if not md_out.exists() else ("force" if force else "run_model")
+        )
+    elif large_sheet_embedded:
+        # Idempotency / «не переписывать зря»: пишем только если содержимое
+        # реально отличается от того, что уже на диске. Повторный прогон с тем
+        # же артефактом даст идентичный MD → записи не будет.
         try:
-            md_out.write_text(enriched_md, encoding="utf-8")
+            current_md = md_out.read_text(encoding="utf-8")
+        except OSError:
+            current_md = None
+        if current_md != enriched_md:
+            should_write = True
+            enriched_md_write_reason = "large_sheet_embedded"
+
+    enriched_md_written = False
+    if should_write:
+        try:
+            _atomic_write_text(md_out, enriched_md)
             summary.enriched_md_path = str(md_out)
+            enriched_md_written = True
         except OSError as exc:
             summary.warnings.append(f"enriched_md_write_failed:{type(exc).__name__}:{exc}")
     else:
@@ -3100,6 +3143,9 @@ async def enrich_side(
         "items": descriptions,
         "run_model": bool(run_model),
         "force": bool(force),
+        "large_sheet_embedded": bool(large_sheet_embedded),
+        "enriched_md_written": bool(enriched_md_written),
+        "enriched_md_write_reason": enriched_md_write_reason,
     }
     try:
         _write_image_descriptions(session_id, pair_id, side, payload_json)

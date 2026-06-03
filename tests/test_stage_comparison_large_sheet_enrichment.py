@@ -984,3 +984,201 @@ def test_large_sheet_block_attaches_diff_anchors_for_index(tmp_path, monkeypatch
     upd.setdefault("page", page)
     idx = mi.build_image_diff_index([upd])
     assert "ЯУР" in idx and "УЭРМ-21-50-УХЛ4" in idx
+
+
+# ─── Production embed / write-gate ──────────────────────────────────────────
+
+async def _raise_describe(*a, **k):  # pragma: no cover - must never run in dry-run
+    raise AssertionError("Qwen describe must NOT be called")
+
+
+def _ls_md(tmp_path: Path) -> Path:
+    md = tmp_path / "side.md"
+    md.write_text(
+        "### СТРАНИЦА 24\n\n### BLOCK [IMAGE]: img-024\nВРУ ЩР QF однолинейная схема\n",
+        encoding="utf-8")
+    return md
+
+
+async def _run_enrich(sid, pid, side, md, *, run_model=False, force=False):
+    return await mi.enrich_side(
+        sid, pid, side,
+        md_path=str(md), result_json_path=None,
+        render_crop=lambda *a, **k: None,
+        describe_fn=_raise_describe,
+        run_model=run_model, force=force,
+    )
+
+
+@pytest.mark.asyncio
+async def test_writegate_dryrun_rewrites_existing_md_with_summary(monkeypatch, tmp_path):
+    """1. artifact exists + run_model=False + gate enabled → enriched MD
+    перезаписан со встроенной large-sheet сводкой, хотя файл уже существовал
+    и Qwen не звался."""
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_ENRICHMENT_ENABLED", "true")
+    sid, pid, side = "wg1", "p", "left"
+    md = _ls_md(tmp_path)
+    _write_ls_artifact(sid, pid, side, 24, circuits=5)
+    md_out = sc_paths.text_enrichment_md_path(sid, pid, side)
+    md_out.parent.mkdir(parents=True, exist_ok=True)
+    md_out.write_text("OLD ENRICHED WITHOUT SUMMARY\n", encoding="utf-8")
+
+    await _run_enrich(sid, pid, side, md, run_model=False)
+
+    text = md_out.read_text(encoding="utf-8")
+    assert "Large Sheet Enrichment" in text
+    assert "OLD ENRICHED WITHOUT SUMMARY" not in text
+    data = mi._read_image_descriptions(sid, pid, side)
+    assert data["large_sheet_embedded"] is True
+    assert data["enriched_md_written"] is True
+    assert data["enriched_md_write_reason"] == "large_sheet_embedded"
+
+
+@pytest.mark.asyncio
+async def test_writegate_dryrun_does_not_call_qwen(monkeypatch, tmp_path):
+    """2. artifact exists + run_model=False → Qwen не вызывается (гарантия —
+    _raise_describe + autouse _no_qwen)."""
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_ENRICHMENT_ENABLED", "true")
+    sid, pid, side = "wg2", "p", "left"
+    md = _ls_md(tmp_path)
+    _write_ls_artifact(sid, pid, side, 24, circuits=5)
+    summary = await _run_enrich(sid, pid, side, md, run_model=False)
+    ls = [it for it in summary.items if it.get("source") == "large_sheet_enrichment"]
+    assert ls and ls[0]["status"] == "done"
+
+
+@pytest.mark.asyncio
+async def test_writegate_missing_artifact_not_prepared_for_candidate(monkeypatch, tmp_path):
+    """3. artifact missing → large_sheet_not_prepared item только для candidate;
+    non-candidate идёт обычным путём (нет large_sheet item)."""
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_ENRICHMENT_ENABLED", "true")
+    md = _ls_md(tmp_path)
+
+    # candidate (dense_scheme) без артефакта → not_prepared
+    monkeypatch.setattr(mi, "classify_image_block", lambda *a, **k: "dense_scheme")
+    summary = await _run_enrich("wg3", "p", "left", md, run_model=False)
+    ls = [it for it in summary.items if it.get("source") == "large_sheet_enrichment"]
+    assert ls, "candidate без артефакта → not_prepared item"
+    assert ls[0]["status"] == "large_sheet_not_prepared"
+    assert ls[0]["usable_for_diff"] is False
+    data = mi._read_image_descriptions("wg3", "p", "left")
+    assert data["large_sheet_embedded"] is False  # not_prepared ≠ embedded
+
+    # non-candidate (не dense, нет артефакта) → НЕТ large_sheet item
+    monkeypatch.setattr(mi, "classify_image_block", lambda *a, **k: "photo_or_general")
+    summary2 = await _run_enrich("wg3b", "p", "left", md, run_model=False)
+    assert all(it.get("source") != "large_sheet_enrichment" for it in summary2.items)
+
+
+@pytest.mark.asyncio
+async def test_writegate_disabled_does_not_rewrite(monkeypatch, tmp_path):
+    """4. gate disabled → старое поведение: existing MD НЕ переписывается,
+    сводка не вставляется, даже если артефакт на диске."""
+    monkeypatch.delenv("STAGE_COMPARISON_LARGE_SHEET_ENRICHMENT_ENABLED", raising=False)
+    sid, pid, side = "wg4", "p", "left"
+    md = _ls_md(tmp_path)
+    _write_ls_artifact(sid, pid, side, 24, circuits=5)
+    md_out = sc_paths.text_enrichment_md_path(sid, pid, side)
+    md_out.parent.mkdir(parents=True, exist_ok=True)
+    md_out.write_text("OLD ENRICHED\n", encoding="utf-8")
+
+    await _run_enrich(sid, pid, side, md, run_model=False)
+
+    assert md_out.read_text(encoding="utf-8") == "OLD ENRICHED\n"  # не тронут
+    data = mi._read_image_descriptions(sid, pid, side)
+    assert data["large_sheet_embedded"] is False
+    assert data["enriched_md_written"] is False
+
+
+@pytest.mark.asyncio
+async def test_writegate_ordinary_block_unchanged(monkeypatch, tmp_path):
+    """5. обычный image-блок (не large sheet): write-gate не срабатывает,
+    pre-existing MD не переписывается в dry-run."""
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_ENRICHMENT_ENABLED", "true")
+    monkeypatch.setattr(mi, "classify_image_block", lambda *a, **k: "photo_or_general")
+    sid, pid, side = "wg5", "p", "left"
+    md = _ls_md(tmp_path)  # НЕТ артефакта → ordinary
+    md_out = sc_paths.text_enrichment_md_path(sid, pid, side)
+    md_out.parent.mkdir(parents=True, exist_ok=True)
+    md_out.write_text("ORDINARY OLD\n", encoding="utf-8")
+
+    summary = await _run_enrich(sid, pid, side, md, run_model=False)
+
+    assert all(it.get("source") != "large_sheet_enrichment" for it in summary.items)
+    assert md_out.read_text(encoding="utf-8") == "ORDINARY OLD\n"
+    data = mi._read_image_descriptions(sid, pid, side)
+    assert data["large_sheet_embedded"] is False
+    assert data["enriched_md_written"] is False
+
+
+@pytest.mark.asyncio
+async def test_writegate_idempotent_repeat(monkeypatch, tmp_path):
+    """6. повторный прогон с тем же артефактом идемпотентен: второй раз контент
+    идентичен → enriched MD не переписывается."""
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_ENRICHMENT_ENABLED", "true")
+    sid, pid, side = "wg6", "p", "left"
+    md = _ls_md(tmp_path)
+    _write_ls_artifact(sid, pid, side, 24, circuits=5)
+    md_out = sc_paths.text_enrichment_md_path(sid, pid, side)
+
+    await _run_enrich(sid, pid, side, md, run_model=False)  # run 1 (md отсутствовал)
+    text1 = md_out.read_text(encoding="utf-8")
+    assert "Large Sheet Enrichment" in text1
+    assert mi._read_image_descriptions(sid, pid, side)["enriched_md_written"] is True
+
+    await _run_enrich(sid, pid, side, md, run_model=False)  # run 2
+    data2 = mi._read_image_descriptions(sid, pid, side)
+    assert md_out.read_text(encoding="utf-8") == text1            # контент идентичен
+    assert data2["large_sheet_embedded"] is True
+    assert data2["enriched_md_written"] is False                  # ничего не переписали
+    assert data2["enriched_md_write_reason"] is None
+
+
+@pytest.mark.asyncio
+async def test_writegate_descriptions_json_has_large_sheet_source(monkeypatch, tmp_path):
+    """7. image_descriptions.json содержит item source=large_sheet_enrichment
+    с done/large_sheet/page_enriched paths/diagnostics."""
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_ENRICHMENT_ENABLED", "true")
+    sid, pid, side = "wg7", "p", "left"
+    md = _ls_md(tmp_path)
+    _write_ls_artifact(sid, pid, side, 24, circuits=5)
+
+    await _run_enrich(sid, pid, side, md, run_model=False)
+
+    data = mi._read_image_descriptions(sid, pid, side)
+    ls = [it for it in data["items"] if it.get("source") == "large_sheet_enrichment"]
+    assert ls
+    it = ls[0]
+    assert it["status"] == "done"
+    assert it["large_sheet"] is True
+    assert it["page_enriched_json_path"].endswith("page_enriched.json")
+    assert it["page_enriched_md_path"].endswith("page_enriched.md")
+    assert isinstance(it["diagnostics"], dict)
+
+
+def test_atomic_write_text_replaces_and_leaves_no_tmp(tmp_path):
+    """8a. _atomic_write_text заменяет содержимое и не оставляет .tmp."""
+    p = tmp_path / "x.md"
+    p.write_text("old", encoding="utf-8")
+    mi._atomic_write_text(p, "new content")
+    assert p.read_text(encoding="utf-8") == "new content"
+    assert not p.with_suffix(p.suffix + ".tmp").exists()
+
+
+@pytest.mark.asyncio
+async def test_writegate_enriched_md_written_atomically(monkeypatch, tmp_path):
+    """8b. enriched MD пишется атомарно: после записи нет висящего .tmp,
+    файл целиком содержит сводку."""
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_ENRICHMENT_ENABLED", "true")
+    sid, pid, side = "wg8", "p", "left"
+    md = _ls_md(tmp_path)
+    _write_ls_artifact(sid, pid, side, 24, circuits=5)
+    md_out = sc_paths.text_enrichment_md_path(sid, pid, side)
+    md_out.parent.mkdir(parents=True, exist_ok=True)
+    md_out.write_text("OLD\n", encoding="utf-8")
+
+    await _run_enrich(sid, pid, side, md, run_model=False)
+
+    assert not md_out.with_suffix(md_out.suffix + ".tmp").exists()
+    text = md_out.read_text(encoding="utf-8")
+    assert "Large Sheet Enrichment" in text and text.endswith("\n")
