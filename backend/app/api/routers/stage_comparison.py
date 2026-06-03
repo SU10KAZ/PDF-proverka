@@ -49,6 +49,7 @@ from backend.app.services.stage_comparison import unified_analysis_jobs as unifi
 from backend.app.services.stage_comparison import unified_findings as unified_findings_mod
 from backend.app.services.stage_comparison import unified_grouping as unified_grouping_mod
 from backend.app.services.stage_comparison import expert_review as expert_review_mod
+from backend.app.services.stage_comparison import v2_review as v2_review_mod
 from backend.app.services.stage_comparison import paths as sc_paths_mod
 from backend.app.services.stage_comparison import saved_config as saved_config_mod
 
@@ -118,6 +119,18 @@ class InsertBlankRequest(BaseModel):
 class MoveAlignmentRequest(BaseModel):
     slot: int = Field(..., ge=1)
     direction: str = Field(..., pattern="^(up|down)$")
+
+
+class V2ReviewPatch(BaseModel):
+    """Частичный patch ручного статуса верификации одного V2-изменения."""
+    review_status: Optional[str] = None
+    review_comment: Optional[str] = None
+    reviewed_by: Optional[str] = None
+
+
+class V2ReviewBulkPatch(BaseModel):
+    ids: list[str] = Field(default_factory=list)
+    patch: V2ReviewPatch = Field(default_factory=V2ReviewPatch)
 
 
 class InsertBlankSideRequest(BaseModel):
@@ -1790,6 +1803,220 @@ async def unified_diff_flat_export_xlsx(
     if accepted_only:
         scope += "_accepted"
     fname = f"stage_comparison_{safe_sid}_{scope}.xlsx"
+    return StreamingResponse(
+        buf,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f'attachment; filename="{fname}"'},
+    )
+
+
+# ─── V2 review (pair-scoped manual verification) ─────────────────────────
+
+
+def _v2_require_pair(session_id: str, pair_id: str) -> dict:
+    """Найти пару в сессии или поднять 404. V2 строго pair-scoped."""
+    session = store.get_session(session_id)
+    if session is None:
+        raise HTTPException(404, "Сессия не найдена")
+    pair = next(
+        (p for p in (session.get("pairs") or [])
+         if isinstance(p, dict) and str(p.get("id") or "") == str(pair_id)),
+        None,
+    )
+    if pair is None:
+        raise HTTPException(404, "PDF-пара не найдена")
+    return pair
+
+
+@router.get("/sessions/{session_id}/pairs/{pair_id}/v2/changes")
+async def v2_pair_changes(session_id: str, pair_id: str):
+    """V2-список расхождений ТОЛЬКО текущей PDF-пары.
+
+    Read-only по отношению к comparison_result.json — никаких Qwen/Opus/
+    unified-analysis. Накладывает ручные статусы из v2_review_status.json.
+    """
+    _v2_require_pair(session_id, pair_id)
+    try:
+        return v2_review_mod.build_pair_v2_changes(session_id, pair_id)
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+
+@router.get("/sessions/{session_id}/pairs/{pair_id}/v2/summary")
+async def v2_pair_summary(session_id: str, pair_id: str):
+    """Сводка по V2-расхождениям текущей PDF-пары."""
+    _v2_require_pair(session_id, pair_id)
+    try:
+        built = v2_review_mod.build_pair_v2_changes(session_id, pair_id)
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    return {
+        "session_id": session_id,
+        "pair_id": pair_id,
+        "summary": built.get("summary") or {},
+    }
+
+
+@router.patch("/sessions/{session_id}/pairs/{pair_id}/v2/changes/{change_id}")
+async def v2_patch_change(session_id: str, pair_id: str, change_id: str, body: V2ReviewPatch):
+    """Обновить ручной статус одного V2-изменения текущей пары."""
+    _v2_require_pair(session_id, pair_id)
+    patch = body.model_dump(exclude_none=True)
+    try:
+        entry = v2_review_mod.patch_change(session_id, pair_id, change_id, patch)
+    except KeyError:
+        raise HTTPException(404, "Изменение не найдено в текущей PDF-паре")
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    return {"ok": True, "id": change_id, "entry": entry}
+
+
+@router.patch("/sessions/{session_id}/pairs/{pair_id}/v2/changes")
+async def v2_bulk_patch_changes(session_id: str, pair_id: str, body: V2ReviewBulkPatch):
+    """Пакетное обновление статусов — строго в рамках текущей пары."""
+    _v2_require_pair(session_id, pair_id)
+    patch = body.patch.model_dump(exclude_none=True)
+    try:
+        result = v2_review_mod.bulk_patch(session_id, pair_id, body.ids, patch)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    return {"ok": True, **result}
+
+
+_V2_EXPORT_COLUMNS = [
+    "№", "Лист", "Источник", "Тип", "Категория", "Важность",
+    "Изменение", "Описание", "Было", "Стало", "Влияние", "Стоимость",
+    "Evidence A", "Evidence B", "Quality label",
+    "Статус проверки", "Комментарий",
+]
+
+
+def _v2_fill_sheet(ws, items: list[dict]):
+    """Заполнить лист книги V2-таблицей (общие колонки для всех листов)."""
+    from openpyxl.styles import Alignment, Font, PatternFill, Border, Side
+
+    ws.append(_V2_EXPORT_COLUMNS)
+    thin = Side(border_style="thin", color="D1D5DB")
+    border = Border(left=thin, right=thin, top=thin, bottom=thin)
+    for cell in ws[1]:
+        cell.font = Font(bold=True, size=10)
+        cell.fill = PatternFill("solid", fgColor="E5E7EB")
+        cell.alignment = Alignment(wrap_text=True, vertical="center", horizontal="center")
+        cell.border = border
+
+    sev_fill = {
+        "high":   PatternFill("solid", fgColor="FEE2E2"),
+        "medium": PatternFill("solid", fgColor="FEF3C7"),
+        "low":    PatternFill("solid", fgColor="DBEAFE"),
+    }
+    for i, it in enumerate(items, start=1):
+        cost = str(it.get("cost_impact") or "")
+        cost_str = "" if cost in ("", "none", "unknown") else cost
+        source_layer = it.get("source_layer") or ""
+        source_label = _SC_UNIFIED_SOURCE_LABELS.get(source_layer, source_layer)
+        ws.append([
+            i,
+            it.get("sheet") or "",
+            source_label,
+            it.get("type") or "",
+            it.get("category") or "",
+            it.get("severity") or "",
+            it.get("title") or "",
+            it.get("summary") or "",
+            it.get("old_value") or "",
+            it.get("new_value") or "",
+            it.get("construction_impact") or "",
+            cost_str,
+            it.get("evidence_left") or "",
+            it.get("evidence_right") or "",
+            it.get("quality_label") or "",
+            it.get("review_status") or "not_reviewed",
+            it.get("review_comment") or "",
+        ])
+        row = ws[ws.max_row]
+        sev = (it.get("severity") or "").lower()
+        if sev in sev_fill:
+            row[0].fill = sev_fill[sev]
+            row[5].fill = sev_fill[sev]
+        for cell in row:
+            cell.alignment = Alignment(wrap_text=True, vertical="top")
+            cell.border = border
+            cell.font = Font(size=10)
+
+    widths = [5, 16, 14, 16, 16, 11, 38, 46, 34, 34, 30, 12, 30, 30, 16, 18, 28]
+    for col_idx, w in enumerate(widths, start=1):
+        ws.column_dimensions[ws.cell(row=1, column=col_idx).column_letter].width = w
+    ws.freeze_panes = "A2"
+
+
+@router.get("/sessions/{session_id}/pairs/{pair_id}/v2/export.xlsx")
+async def v2_export_xlsx(session_id: str, pair_id: str):
+    """Экспорт V2-таблицы ТОЛЬКО текущей PDF-пары.
+
+    Листы: Summary · All V2 changes · Confirmed · Needs clarification ·
+    Rejected · Cost impact · Not reviewed. Не смешивается с full-session XLSX.
+    """
+    try:
+        from openpyxl import Workbook
+        from openpyxl.styles import Font
+    except ImportError:
+        raise HTTPException(500, "openpyxl not installed")
+
+    _v2_require_pair(session_id, pair_id)
+    try:
+        built = v2_review_mod.build_pair_v2_changes(session_id, pair_id)
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+    items = built.get("items") or []
+    summary = built.get("summary") or {}
+
+    wb = Workbook()
+    # Summary sheet
+    ws_sum = wb.active
+    ws_sum.title = "Summary"
+    ws_sum.append(["Метрика", "Значение"])
+    for cell in ws_sum[1]:
+        cell.font = Font(bold=True, size=10)
+    _sum_rows = [
+        ("Всего изменений", summary.get("total", 0)),
+        ("Высокая важность", summary.get("high", 0)),
+        ("Средняя важность", summary.get("medium", 0)),
+        ("Низкая важность", summary.get("low", 0)),
+        ("good", summary.get("good", 0)),
+        ("needs_human_review", summary.get("needs_human_review", 0)),
+        ("questionable", summary.get("questionable", 0)),
+        ("Подтверждено", summary.get("confirmed", 0)),
+        ("Отклонено", summary.get("rejected", 0)),
+        ("Не проверено", summary.get("not_reviewed", 0)),
+    ]
+    for name, val in _sum_rows:
+        ws_sum.append([name, val])
+    ws_sum.column_dimensions["A"].width = 26
+    ws_sum.column_dimensions["B"].width = 12
+
+    def _by_status(status: str) -> list[dict]:
+        return [it for it in items if str(it.get("review_status") or "") == status]
+
+    cost_items = [
+        it for it in items
+        if str(it.get("review_status") or "") == "cost_impact"
+        or str(it.get("cost_impact") or "") in ("possible", "likely")
+    ]
+
+    _v2_fill_sheet(wb.create_sheet("All V2 changes"), items)
+    _v2_fill_sheet(wb.create_sheet("Confirmed"), _by_status("confirmed"))
+    _v2_fill_sheet(wb.create_sheet("Needs clarification"), _by_status("needs_clarification"))
+    _v2_fill_sheet(wb.create_sheet("Rejected"), _by_status("rejected"))
+    _v2_fill_sheet(wb.create_sheet("Cost impact"), cost_items)
+    _v2_fill_sheet(wb.create_sheet("Not reviewed"), _by_status("not_reviewed"))
+
+    buf = io.BytesIO()
+    wb.save(buf)
+    buf.seek(0)
+    safe_sid = re.sub(r"[^A-Za-z0-9_.-]", "_", session_id)[:48] or "session"
+    safe_pid = re.sub(r"[^A-Za-z0-9_.-]", "_", pair_id)[:32] or "pair"
+    fname = f"stage_comparison_v2_{safe_sid}_{safe_pid}.xlsx"
     return StreamingResponse(
         buf,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

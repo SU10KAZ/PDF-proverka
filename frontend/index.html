@@ -5855,6 +5855,16 @@
                     <button v-if="scDevTools" class="btn btn-secondary" style="opacity:.85" :class="{'btn-primary': scDiffSubtab==='text'}" @click="scSwitchDiffSubtab('text')" title="Dev: текстовый LLM-анализ отдельно (для отладки)">Текст (debug)</button>
                     <button v-if="scDevTools" class="btn btn-secondary" style="opacity:.85" :class="{'btn-primary': scDiffSubtab==='graphic'}" @click="scDiffSubtab='graphic'; scLoadGraphicSummary()" title="Dev: графическое сравнение блоков (для отладки)">Графика (debug)</button>
                     <template v-if="scDiffSubtab==='unified'">
+                        <!-- Переключатель режима списка: классический unified ↔ V2
+                             (только текущая PDF-пара, ручная верификация инженера). -->
+                        <button class="btn btn-sm"
+                                :class="scV2View!=='v2' ? 'btn-primary' : 'btn-secondary'"
+                                @click="scSetV2View('current')"
+                                title="Классический список расхождений">Расхождения</button>
+                        <button class="btn btn-sm"
+                                :class="scV2View==='v2' ? 'btn-primary' : 'btn-secondary'"
+                                @click="scSetV2View('v2')"
+                                title="V2 — расхождения текущей PDF-пары по новому алгоритму с ручной верификацией инженера">V2</button>
                         <div style="flex:1"></div>
                         <!-- Раздел «Расхождения» — read-only просмотр. Основной
                              запуск Opus batch перенесён на этап «1. Загрузка
@@ -5882,8 +5892,155 @@
                     </template>
                 </div>
 
+                <!-- ════════════════════════════════════════════════════════
+                     V2 режим: расхождения ТОЛЬКО текущей PDF-пары + ручная
+                     верификация инженера. Read-only к comparison_result.json,
+                     статусы — в pairs/<pid>/v2_review_status.json.
+                     ════════════════════════════════════════════════════════ -->
+                <div v-if="scDiffSubtab==='unified' && scV2View==='v2'" class="sc-v2">
+                    <!-- Scope badge: всегда только текущая PDF-пара -->
+                    <div class="sc-card"
+                         style="display:flex; gap:10px; align-items:baseline; flex-wrap:wrap; padding:8px 12px; border-radius:6px; margin-bottom:10px; font-size:12px; background:#eef2ff; border:1px solid #c7d2fe; color:#1e3a8a">
+                        <strong>V2 · текущая PDF-пара</strong>
+                        <span v-if="scActivePair">
+                            <code>{{ (scActivePair.left && scActivePair.left.filename) || scActivePair.id }}</code>
+                            ↔ <code>{{ (scActivePair.right && scActivePair.right.filename) || '' }}</code>
+                        </span>
+                    </div>
+
+                    <div v-if="scV2Error"
+                         style="background:#fee2e2; color:#991b1b; padding:8px 12px; border-radius:6px; margin-bottom:10px; font-size:13px">{{ scV2Error }}</div>
+
+                    <div v-if="scV2Loading" class="empty-state" style="padding:14px 0; font-size:13px">Загрузка V2-расхождений…</div>
+
+                    <!-- Summary cards (только по текущей паре) -->
+                    <div v-if="!scV2Loading && scV2Data" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px">
+                        <div v-for="c in scV2SummaryCards()" :key="c.key"
+                             class="sc-card"
+                             :style="{ padding:'6px 10px', borderRadius:'6px', fontSize:'12px', minWidth:'92px', textAlign:'center', background:c.bg, border:'1px solid '+c.border, color:c.fg }">
+                            <div style="font-size:18px; font-weight:700">{{ c.value }}</div>
+                            <div style="opacity:.85">{{ c.label }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Фильтры -->
+                    <div v-if="!scV2Loading && scV2Data" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:8px; font-size:12px">
+                        <select v-model="scV2Filters.severity" class="sc-input" style="font-size:12px">
+                            <option value="">важность: все</option>
+                            <option value="high">high</option><option value="medium">medium</option>
+                            <option value="low">low</option><option value="unknown">unknown</option>
+                        </select>
+                        <select v-model="scV2Filters.source_layer" class="sc-input" style="font-size:12px">
+                            <option value="">источник: все</option>
+                            <option value="text">текст</option><option value="image_enrichment">описание изобр.</option>
+                            <option value="scheme_analysis">схема</option><option value="table">таблица</option>
+                            <option value="stamp">штамп</option><option value="mixed">текст+изобр.</option>
+                        </select>
+                        <select v-model="scV2Filters.quality_label" class="sc-input" style="font-size:12px">
+                            <option value="">качество: все</option>
+                            <option value="good">good</option>
+                            <option value="needs_human_review">needs_human_review</option>
+                            <option value="questionable">questionable</option>
+                        </select>
+                        <select v-model="scV2Filters.review_status" class="sc-input" style="font-size:12px">
+                            <option value="">статус: все</option>
+                            <option v-for="o in scV2StatusOptions" :key="o.v" :value="o.v">{{ o.l }}</option>
+                        </select>
+                        <select v-model="scV2Filters.cost_impact" class="sc-input" style="font-size:12px">
+                            <option value="">стоимость: все</option>
+                            <option value="likely">likely</option><option value="possible">possible</option>
+                            <option value="none">none</option><option value="unknown">unknown</option>
+                        </select>
+                        <input v-model="scV2Filters.search" class="sc-input" style="font-size:12px; min-width:160px" placeholder="поиск по тексту…">
+                        <span style="opacity:.7">показано {{ scV2FilteredItems.length }} / {{ (scV2Data.items||[]).length }}</span>
+                    </div>
+
+                    <!-- Массовые действия + экспорт -->
+                    <div v-if="!scV2Loading && scV2Data" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:10px; font-size:12px">
+                        <span>Выбрано: <b>{{ scV2SelectedIds.length }}</b></span>
+                        <button class="btn btn-sm btn-secondary" :disabled="!scV2SelectedIds.length || scV2SaveBusy" @click="scV2BulkStatus('confirmed')">✓ Подтвердить</button>
+                        <button class="btn btn-sm btn-secondary" :disabled="!scV2SelectedIds.length || scV2SaveBusy" @click="scV2BulkStatus('rejected')">✗ Отклонить</button>
+                        <button class="btn btn-sm btn-secondary" :disabled="!scV2SelectedIds.length || scV2SaveBusy" @click="scV2BulkStatus('needs_clarification')">? Уточнить</button>
+                        <button class="btn btn-sm btn-secondary" :disabled="!scV2SelectedIds.length || scV2SaveBusy" @click="scV2BulkStatus('cost_impact')">₽ Влияет</button>
+                        <button class="btn btn-sm btn-secondary" :disabled="!scV2SelectedIds.length || scV2SaveBusy" @click="scV2BulkStatus('no_cost_impact')">Не влияет</button>
+                        <button class="btn btn-sm btn-secondary" :disabled="!scV2SelectedIds.length || scV2SaveBusy" @click="scV2BulkStatus('send_to_designer')">→ Проектировщику</button>
+                        <button class="btn btn-sm btn-secondary" :disabled="!scV2SelectedIds.length || scV2SaveBusy" @click="scV2BulkStatus('send_to_estimate')">→ В смету</button>
+                        <div style="flex:1"></div>
+                        <a v-if="scV2Data && (scV2Data.items||[]).length" class="btn btn-sm btn-secondary"
+                           :href="scV2ExportXlsxUrl()" target="_blank" rel="noopener"
+                           title="Скачать V2-таблицу текущей PDF-пары в Excel">⬇ Экспорт V2</a>
+                    </div>
+
+                    <!-- Empty -->
+                    <div v-if="!scV2Loading && scV2Data && !(scV2Data.items||[]).length"
+                         class="empty-state" style="padding:14px 0; font-size:13px; opacity:.85">
+                        Для текущей PDF-пары V2-расхождений нет. Запустите анализ на этапе «1. Загрузка документации».
+                    </div>
+
+                    <!-- Таблица V2 -->
+                    <div v-if="!scV2Loading && scV2FilteredItems.length" class="table-container sc-unified-table-wrap">
+                        <table class="findings-table sc-unified-table sc-v2-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:30px; text-align:center"><input type="checkbox" :checked="scV2AllSelected" @change="scV2ToggleAll($event)"></th>
+                                    <th style="width:40px">№</th>
+                                    <th style="width:90px">Лист</th>
+                                    <th style="width:84px">Источник</th>
+                                    <th style="width:90px">Тип</th>
+                                    <th style="width:90px">Категория</th>
+                                    <th style="width:70px">Важн.</th>
+                                    <th>Изменение</th>
+                                    <th>Было</th>
+                                    <th>Стало</th>
+                                    <th>Влияние</th>
+                                    <th>Evidence A</th>
+                                    <th>Evidence B</th>
+                                    <th style="width:110px">Качество</th>
+                                    <th style="width:150px">Статус проверки</th>
+                                    <th style="width:140px">Комментарий</th>
+                                    <th style="width:90px">Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(it, idx) in scV2FilteredItems" :key="it.id"
+                                    :class="{ 'sc-v2-row-confirmed': it.review_status==='confirmed', 'sc-v2-row-rejected': it.review_status==='rejected' }">
+                                    <td style="text-align:center"><input type="checkbox" :checked="!!scV2Selected[it.id]" @change="scV2ToggleOne(it.id)"></td>
+                                    <td>{{ idx + 1 }}</td>
+                                    <td>{{ it.sheet }}</td>
+                                    <td>{{ scV2SourceLabel(it.source_layer) }}</td>
+                                    <td>{{ it.type }}</td>
+                                    <td>{{ it.category }}</td>
+                                    <td><span class="sc-sev-badge" :class="'sc-sev-' + (it.severity||'unknown')">{{ it.severity }}</span></td>
+                                    <td>
+                                        <div style="font-weight:600">{{ it.title }}</div>
+                                        <div style="opacity:.8; font-size:11px">{{ it.summary }}</div>
+                                    </td>
+                                    <td class="sc-cell-was">{{ it.old_value }}</td>
+                                    <td class="sc-cell-became">{{ it.new_value }}</td>
+                                    <td>{{ it.construction_impact }}</td>
+                                    <td style="font-size:11px; opacity:.85">{{ it.evidence_left }}</td>
+                                    <td style="font-size:11px; opacity:.85">{{ it.evidence_right }}</td>
+                                    <td><span class="sc-v2-quality" :class="'sc-v2-quality-' + it.quality_label">{{ it.quality_label }}</span></td>
+                                    <td>
+                                        <select :value="it.review_status" @change="scV2SetStatus(it, $event.target.value)" class="sc-input" style="font-size:11px; width:100%">
+                                            <option v-for="o in scV2StatusOptions" :key="o.v" :value="o.v">{{ o.l }}</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input :value="it.review_comment" @change="scV2SaveComment(it, $event.target.value)"
+                                               class="sc-input" style="font-size:11px; width:100%" placeholder="комментарий…">
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-secondary" style="font-size:11px" @click="scV2Goto(it)" title="Открыть пару и перейти к листу/слоту (или показать evidence)">Перейти</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <!-- Unified subtab — primary UX -->
-                <div v-if="scDiffSubtab==='unified'">
+                <div v-if="scDiffSubtab==='unified' && scV2View!=='v2'">
 
                     <!-- Provider availability banner -->
                     <div v-if="scUnifiedConfig && (!scUnifiedConfig.enabled || !scUnifiedConfig.available)"

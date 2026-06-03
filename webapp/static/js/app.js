@@ -8628,6 +8628,30 @@ const app = createApp({
         // ──────────────────────────────────────────────────────────────────
         const scTab            = ref('upload');     // upload | links | diffs
         const scDiffSubtab     = ref('unified');    // unified (primary) | text (debug) | graphic (debug)
+        // ─── V2 режим вкладки «Расхождения» (pair-scoped ручная верификация) ───
+        // scV2View: 'current' (классический unified) | 'v2' (новый список текущей пары).
+        const scV2View         = ref('current');
+        const scV2Data         = ref(null);          // {session_id, pair_id, summary, items}
+        const scV2Loading      = ref(false);
+        const scV2Error        = ref('');
+        const scV2SaveBusy      = ref(false);
+        const scV2Selected     = reactive({});       // {[change_id]: true}
+        const scV2Filters      = reactive({
+            severity: '', source_layer: '', quality_label: '',
+            review_status: '', cost_impact: '', search: '',
+        });
+        // Опции ручного статуса (значение + человекочитаемая метка). Покрывают
+        // все действия инженера: подтвердить/отклонить/уточнить/стоимость/маршрут.
+        const scV2StatusOptions = [
+            { v: 'not_reviewed',        l: '— не проверено' },
+            { v: 'confirmed',           l: '✓ Подтверждено' },
+            { v: 'rejected',            l: '✗ Отклонено' },
+            { v: 'needs_clarification', l: '? Требует уточнения' },
+            { v: 'cost_impact',         l: '₽ Влияет на стоимость' },
+            { v: 'no_cost_impact',      l: 'Не влияет на стоимость' },
+            { v: 'send_to_designer',    l: '→ Проектировщику' },
+            { v: 'send_to_estimate',    l: '→ В сметный отдел' },
+        ];
         const scStageAPath     = ref('');
         const scStageBPath     = ref('');
         const scScanning       = ref(false);
@@ -9422,6 +9446,10 @@ const app = createApp({
             scSelectedSlotLeft.value = null;
             scSelectedSlotRight.value = null;
             scTextLLMDiff.value = null;
+            // Сбрасываем V2-данные прошлой пары, чтобы не показать stale-список.
+            scV2Data.value = null;
+            scV2Error.value = '';
+            for (const k of Object.keys(scV2Selected)) delete scV2Selected[k];
             scGraphicSummary.value = null;
             scGraphicPreview.value = null;
             scCanvasNat.left = null;
@@ -11432,6 +11460,150 @@ const app = createApp({
             }
         }
 
+        // ─── Stage Comparison: V2 режим вкладки «Расхождения» ───
+        // Pair-scoped список расхождений текущей PDF-пары + ручная верификация.
+        // Ничего не запускает (read-only к comparison_result.json); статусы
+        // хранятся на сервере в pairs/<pid>/v2_review_status.json.
+        function _scV2Base() {
+            if (!scSession.value || !scActivePair.value) return '';
+            const sid = encodeURIComponent(scSession.value.id);
+            const pid = encodeURIComponent(scActivePair.value.id);
+            return `/api/stage-comparison/sessions/${sid}/pairs/${pid}/v2`;
+        }
+        function scSetV2View(view) {
+            scV2View.value = (view === 'v2') ? 'v2' : 'current';
+            if (scV2View.value === 'v2') {
+                scLoadV2Changes();
+            }
+        }
+        async function scLoadV2Changes() {
+            if (!scSession.value || !scActivePair.value) return;
+            scV2Loading.value = true;
+            scV2Error.value = '';
+            try {
+                const r = await fetch(`${_scV2Base()}/changes`);
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                scV2Data.value = await r.json();
+            } catch (e) {
+                scV2Error.value = 'Не удалось загрузить V2-расхождения: ' + String(e.message || e);
+                scV2Data.value = null;
+            } finally {
+                scV2Loading.value = false;
+            }
+        }
+        const scV2FilteredItems = computed(() => {
+            const data = scV2Data.value;
+            if (!data || !Array.isArray(data.items)) return [];
+            const f = scV2Filters;
+            const q = (f.search || '').trim().toLowerCase();
+            return data.items.filter((it) => {
+                if (f.severity && String(it.severity || '') !== f.severity) return false;
+                if (f.source_layer && String(it.source_layer || '') !== f.source_layer) return false;
+                if (f.quality_label && String(it.quality_label || '') !== f.quality_label) return false;
+                if (f.review_status && String(it.review_status || '') !== f.review_status) return false;
+                if (f.cost_impact && String(it.cost_impact || '') !== f.cost_impact) return false;
+                if (q) {
+                    const hay = [it.title, it.summary, it.old_value, it.new_value,
+                                 it.evidence_left, it.evidence_right, it.sheet]
+                                .map((x) => String(x || '').toLowerCase()).join(' ');
+                    if (!hay.includes(q)) return false;
+                }
+                return true;
+            });
+        });
+        const scV2SelectedIds = computed(() =>
+            Object.keys(scV2Selected).filter((id) => scV2Selected[id]));
+        const scV2AllSelected = computed(() => {
+            const items = scV2FilteredItems.value;
+            return items.length > 0 && items.every((it) => scV2Selected[it.id]);
+        });
+        function scV2ToggleAll(ev) {
+            const on = ev && ev.target ? ev.target.checked : !scV2AllSelected.value;
+            scV2FilteredItems.value.forEach((it) => { scV2Selected[it.id] = on; });
+        }
+        function scV2ToggleOne(id) {
+            scV2Selected[id] = !scV2Selected[id];
+        }
+        function scV2SummaryCards() {
+            const s = (scV2Data.value && scV2Data.value.summary) || {};
+            return [
+                { key: 'total',  label: 'всего',        value: s.total || 0,             bg: '#f8fafc', border: '#e2e8f0', fg: '#0f172a' },
+                { key: 'high',   label: 'high',         value: s.high || 0,              bg: '#fee2e2', border: '#fecaca', fg: '#991b1b' },
+                { key: 'medium', label: 'medium',       value: s.medium || 0,            bg: '#fef3c7', border: '#fde68a', fg: '#92400e' },
+                { key: 'low',    label: 'low',          value: s.low || 0,               bg: '#dbeafe', border: '#bfdbfe', fg: '#1e40af' },
+                { key: 'good',   label: 'good',         value: s.good || 0,              bg: '#dcfce7', border: '#bbf7d0', fg: '#166534' },
+                { key: 'needs',  label: 'на проверку',  value: s.needs_human_review || 0, bg: '#fef9c3', border: '#fde68a', fg: '#854d0e' },
+                { key: 'conf',   label: 'подтв.',       value: s.confirmed || 0,         bg: '#dcfce7', border: '#86efac', fg: '#15803d' },
+                { key: 'rej',    label: 'отклон.',      value: s.rejected || 0,          bg: '#fee2e2', border: '#fca5a5', fg: '#b91c1c' },
+                { key: 'notrev', label: 'не пров.',     value: s.not_reviewed || 0,      bg: '#f1f5f9', border: '#e2e8f0', fg: '#475569' },
+            ];
+        }
+        function scV2SourceLabel(s) { return scUnifiedSourceLabel(s); }
+        function scV2ExportXlsxUrl() {
+            const base = _scV2Base();
+            return base ? `${base}/export.xlsx` : '';
+        }
+        // Локально применяет статус/комментарий к строке (оптимистично), затем
+        // перечитывает список, чтобы summary совпадал с сервером.
+        async function _scV2ApplyPatch(changeId, patch) {
+            const base = _scV2Base();
+            if (!base) return false;
+            scV2SaveBusy.value = true;
+            scV2Error.value = '';
+            try {
+                const r = await fetch(`${base}/changes/${encodeURIComponent(changeId)}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(patch),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                return true;
+            } catch (e) {
+                scV2Error.value = 'Сохранение не удалось: ' + String(e.message || e);
+                return false;
+            } finally {
+                scV2SaveBusy.value = false;
+            }
+        }
+        async function scV2SetStatus(item, status) {
+            const ok = await _scV2ApplyPatch(item.id, { review_status: status });
+            if (ok) { item.review_status = status; await scLoadV2Changes(); }
+        }
+        async function scV2SaveComment(item, value) {
+            const ok = await _scV2ApplyPatch(item.id, { review_comment: String(value || '') });
+            if (ok) { item.review_comment = String(value || ''); await scLoadV2Changes(); }
+        }
+        async function scV2BulkStatus(status) {
+            const base = _scV2Base();
+            const ids = scV2SelectedIds.value;
+            if (!base || !ids.length) return;
+            scV2SaveBusy.value = true;
+            scV2Error.value = '';
+            try {
+                const r = await fetch(`${base}/changes`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids, patch: { review_status: status } }),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                await scLoadV2Changes();
+            } catch (e) {
+                scV2Error.value = 'Массовое сохранение не удалось: ' + String(e.message || e);
+            } finally {
+                scV2SaveBusy.value = false;
+            }
+        }
+        // «Перейти к месту» — открыть пару и перейти к листу/слоту (если есть
+        // location), иначе go-to сам отработает мягко. Делегируем существующему
+        // резолверу (тот же, что у unified-расхождений).
+        function scV2Goto(item) { return scGotoTextChange(item); }
+
         // ─── Stage Comparison: Экспертная оценка расхождений ───
         // Хранение per-session по raw `id`. Группа агрегирует через source_finding_ids.
         function _scExpertRawIds(itemOrGroup) {
@@ -12299,6 +12471,10 @@ const app = createApp({
                 if (scActivePair.value) {
                     scLoadUnifiedPairStatus();
                 }
+                // Если активен V2-подрежим — подгружаем его список текущей пары.
+                if (scV2View.value === 'v2') {
+                    scLoadV2Changes();
+                }
             } else if (name === 'text') {
                 scLoadTextLLMConfig();
                 scLoadTextLLMFlat();
@@ -12942,6 +13118,13 @@ const app = createApp({
             scUnifiedExportXlsxUrl,
             scUnifiedPairOptions, scUnifiedSourceLayerOptions, scUnifiedTypeOptions,
             scUnifiedCategoryOptions, scUnifiedItemsFiltered, scUnifiedItemsSorted,
+            // V2 режим вкладки «Расхождения» (pair-scoped ручная верификация)
+            scV2View, scV2Data, scV2Loading, scV2Error, scV2SaveBusy,
+            scV2Selected, scV2Filters, scV2StatusOptions,
+            scSetV2View, scLoadV2Changes, scV2FilteredItems, scV2SelectedIds,
+            scV2AllSelected, scV2ToggleAll, scV2ToggleOne, scV2SummaryCards,
+            scV2SourceLabel, scV2ExportXlsxUrl, scV2SetStatus, scV2SaveComment,
+            scV2BulkStatus, scV2Goto,
             // Grouped/high-value findings (UI mode 'grouped')
             scUnifiedViewMode, scSetUnifiedViewMode,
             scUnifiedGrouped, scUnifiedGroupedLoading, scUnifiedGroupedError,

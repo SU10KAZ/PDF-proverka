@@ -3875,3 +3875,27 @@ tr.row-rejected td.sc-cell-goto {
 .users-login-banner code {
     font-size: 12px; background: var(--bg2); padding: 1px 5px; border-radius: 4px;
 }
+
+/* ─── V2 режим вкладки «Расхождения» (pair-scoped ручная верификация) ─── */
+.sc-v2 .sc-input {
+    padding: 3px 6px; border: 1px solid var(--border, #d1d5db); border-radius: 5px;
+    background: var(--bg, #fff); color: var(--text, #0f172a);
+}
+.sc-sev-badge {
+    display: inline-block; padding: 1px 7px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .02em;
+}
+.sc-sev-high    { background: #fee2e2; color: #991b1b; }
+.sc-sev-medium  { background: #fef3c7; color: #92400e; }
+.sc-sev-low     { background: #dbeafe; color: #1e40af; }
+.sc-sev-unknown { background: #f1f5f9; color: #475569; }
+.sc-v2-quality {
+    display: inline-block; padding: 1px 6px; border-radius: 5px; font-size: 10px; font-weight: 600;
+}
+.sc-v2-quality-good               { background: #dcfce7; color: #166534; }
+.sc-v2-quality-needs_human_review { background: #fef9c3; color: #854d0e; }
+.sc-v2-quality-questionable       { background: #fee2e2; color: #b91c1c; }
+.sc-v2-row-confirmed > td { background: rgba(34, 197, 94, 0.07); }
+.sc-v2-row-rejected  > td { background: rgba(239, 68, 68, 0.07); }
+.sc-v2-table th { font-size: 11px; white-space: nowrap; }
+.sc-v2-table td { vertical-align: top; }

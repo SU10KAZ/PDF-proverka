@@ -343,6 +343,16 @@ def expert_review_path(session_id: str) -> Path:
     return session_dir(session_id) / "expert_review.json"
 
 
+def v2_review_status_path(session_id: str, pair_id: str) -> Path:
+    """`comparison/sessions/<sid>/pairs/<pid>/v2_review_status.json` —
+    ручные статусы верификации инженера для режима «V2» вкладки
+    «Расхождения». Хранится отдельно от `comparison_result.json`, чтобы
+    production-артефакт сравнения НИКОГДА не мутировался ручной разметкой.
+    Скоупится парой: ключ — стабильный `v2_…` id изменения.
+    """
+    return pair_dir(session_id, pair_id) / "v2_review_status.json"
+
+
 def pages_dir(session_id: str, pair_id: str, side: str) -> Path:
     if side not in ("left", "right"):
         raise ValueError("side must be 'left' or 'right'")
@@ -483,6 +493,8 @@ __all__ = [
     "enriched_comparison_job_path",
     "unified_findings_path",
     "unified_findings_grouped_path",
+    "expert_review_path",
+    "v2_review_status_path",
     "pages_dir",
     "crops_dir",
     "previews_dir",
