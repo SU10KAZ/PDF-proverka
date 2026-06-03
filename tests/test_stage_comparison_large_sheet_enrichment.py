@@ -6,13 +6,36 @@
 """
 from __future__ import annotations
 
+import asyncio
 import json
 from pathlib import Path
 
 import pytest
 
 from backend.app.services.stage_comparison import large_sheet_enrichment as ls
+from backend.app.services.stage_comparison import large_sheet_enrichment_jobs as ls_jobs
 from backend.app.services.stage_comparison import store as store_mod
+
+
+def _fake_describe_factory(calls, *, circuits=None, status="done"):
+    """Фабрика fake describe_fn — НЕ ходит в сеть, возвращает DescribeResult-like
+    dict. Считает вызовы в ``calls``."""
+    circuits = circuits if circuits is not None else [
+        {"circuit_id": "ВРУ1-ОДН-33", "breaker": "QF33",
+         "cable": "ППГнг(А)-HF 5х2,5", "load_name": "Вентиляция П1", "confidence": 0.82},
+    ]
+
+    async def _fake(image_path, prompt, *, model=None):
+        calls.append({"image_path": str(image_path), "model": model})
+        parsed = {"circuits": list(circuits), "visible_text": ["QF33", "ВРУ-1"],
+                  "equipment": [], "notes": [], "title_block": {}}
+        return {"status": status,
+                "parsed": (parsed if status in ("done", "partial") else None),
+                "full_raw_response": json.dumps(parsed, ensure_ascii=False),
+                "error": (None if status in ("done", "partial") else "json_parse_failed"),
+                "duration_sec": 0.01}
+
+    return _fake
 
 
 # ─── Fixtures ───────────────────────────────────────────────────────────────
@@ -237,12 +260,15 @@ def test_run_model_false_does_not_call_qwen(tmp_path, monkeypatch):
     assert all(t["qwen"] is None for t in tr["tiles"])
 
 
-def test_run_model_true_does_not_call_qwen_only_warns(tmp_path, monkeypatch):
+def test_sync_run_model_true_stays_dry_run_no_qwen(tmp_path, monkeypatch):
+    """Sync-путь run_model=True не зовёт Qwen — он остаётся dry-run и
+    подсказывает использовать live job."""
     pdf = _make_large_sheet_pdf(tmp_path / "big.pdf")
     _bind_fake_pair(monkeypatch, pdf)
     res = ls.run_large_sheet_enrichment("s1", "p1", "left", 1, run_model=True)
     assert res["model_ran"] is False
-    assert "live_model_not_implemented_in_this_build" in res["warnings"]
+    assert res["status"] == "dry_run"
+    assert "sync_model_run_not_supported_use_live_job" in res["warnings"]
 
 
 # ─── 7. tile prompt: nearby_text как данные, не как инструкция ───────────────
@@ -410,11 +436,11 @@ def test_endpoint_run_model_requires_confirm(tmp_path, monkeypatch):
     r = client.post("/api/stage-comparison/sessions/s1/pairs/p1/large-sheet-enrichment",
                     json={"side": "left", "page": 1, "run_model": True})
     assert r.status_code == 400
-    # run_model + confirm → rejected (Qwen всё равно не вызывается)
+    # run_model + confirm → направляет на job endpoint (Qwen синхронно не вызывается)
     r2 = client.post("/api/stage-comparison/sessions/s1/pairs/p1/large-sheet-enrichment",
                      json={"side": "left", "page": 1, "run_model": True, "confirm": True})
     assert r2.status_code == 200
-    assert r2.json()["status"] == "rejected"
+    assert r2.json()["status"] == "use_job_endpoint"
     assert r2.json()["ran_model"] is False
 
 
@@ -424,3 +450,202 @@ def test_endpoint_404_for_unknown_pair(tmp_path, monkeypatch):
     r = client.post("/api/stage-comparison/sessions/s1/pairs/NOPE/large-sheet-enrichment",
                     json={"side": "left", "page": 1})
     assert r.status_code == 404
+
+
+def test_endpoint_direct_run_model_points_to_job(tmp_path, monkeypatch):
+    pdf = _make_large_sheet_pdf(tmp_path / "big.pdf")
+    client = _client(monkeypatch, pdf)
+    # без confirm → 400
+    r = client.post("/api/stage-comparison/sessions/s1/pairs/p1/large-sheet-enrichment",
+                    json={"side": "left", "page": 1, "run_model": True})
+    assert r.status_code == 400
+    # с confirm → use_job_endpoint, Qwen НЕ вызывается синхронно
+    r2 = client.post("/api/stage-comparison/sessions/s1/pairs/p1/large-sheet-enrichment",
+                     json={"side": "left", "page": 1, "run_model": True, "confirm": True})
+    assert r2.status_code == 200
+    assert r2.json()["status"] == "use_job_endpoint"
+    assert r2.json()["ran_model"] is False
+
+
+# ─── STAGE 2: live tile runner (injected describe_fn, no network) ────────────
+
+def test_live_runner_calls_model_saves_raw_prompt_and_merges(tmp_path, monkeypatch):
+    pdf = _make_large_sheet_pdf(tmp_path / "big.pdf")
+    _bind_fake_pair(monkeypatch, pdf)
+    calls = []
+    fake = _fake_describe_factory(calls)
+    res = asyncio.run(ls.run_large_sheet_enrichment_live(
+        "s1", "p1", "left", 1, describe_fn=fake, model="qwen-test"))
+    assert res["status"] == "model"
+    assert res["model_ran"] is True
+    assert len(calls) == res["tiles_total"] >= 1   # один вызов на tile
+    assert all(c["model"] == "qwen-test" for c in calls)
+    # circuits смёржены в page_enriched.json
+    pe = json.loads(Path(res["page_enriched_json_path"]).read_text(encoding="utf-8"))
+    assert len(pe["circuits"]) >= 1
+    assert any(c.get("breaker") == "QF33" for c in pe["circuits"])
+    assert pe["mode"] == "model"
+    # raw + prompt сохранены на диск
+    page_dir = Path(res["page_enriched_json_path"]).parent
+    assert any((page_dir / "raw").glob("tile_*.txt"))
+    assert any((page_dir / "prompts").glob("tile_*.txt"))
+    # tile_results.json в режиме model, qwen заполнен
+    tr = json.loads((page_dir / "tile_results.json").read_text(encoding="utf-8"))
+    assert tr["mode"] == "model"
+    assert any(isinstance(t["qwen"], dict) for t in tr["tiles"])
+
+
+def test_live_runner_cache_hit_does_not_call_model(tmp_path, monkeypatch):
+    pdf = _make_large_sheet_pdf(tmp_path / "big.pdf")
+    _bind_fake_pair(monkeypatch, pdf)
+    # prepare один раз → стабильные tile-картинки на диске
+    ctx = ls._prepare_page_artifacts("s1", "p1", "left", 1, tile_size=None, overlap=None)
+    calls = []
+    fake = _fake_describe_factory(calls)
+    r1 = asyncio.run(ls._run_tiles_with_model(ctx, describe_fn=fake, model="m"))
+    n = len(r1)
+    assert len(calls) == n and n >= 1
+    assert all(not t["from_cache"] for t in r1)
+    # повтор с тем же ctx (те же файлы) → всё из кеша, модель не зовётся
+    calls.clear()
+    r2 = asyncio.run(ls._run_tiles_with_model(ctx, describe_fn=fake, model="m"))
+    assert len(calls) == 0
+    assert all(t["from_cache"] for t in r2)
+
+
+def test_live_runner_fail_soft_on_bad_tile(tmp_path, monkeypatch):
+    pdf = _make_large_sheet_pdf(tmp_path / "big.pdf")
+    _bind_fake_pair(monkeypatch, pdf)
+    ctx = ls._prepare_page_artifacts("s1", "p1", "left", 1, tile_size=None, overlap=None)
+    n_tiles = len(ctx["tiles"])
+    assert n_tiles >= 2
+
+    # первый tile падает (invalid_json), остальные ок — page не должен упасть
+    state = {"i": 0}
+
+    async def mixed(image_path, prompt, *, model=None):
+        state["i"] += 1
+        if state["i"] == 1:
+            return {"status": "invalid_json", "parsed": None,
+                    "full_raw_response": "garbage", "error": "json_parse_failed"}
+        return {"status": "done",
+                "parsed": {"circuits": [{"circuit_id": "QF99", "breaker": "QF99"}]},
+                "full_raw_response": "{}", "duration_sec": 0.01}
+
+    res = asyncio.run(ls.run_large_sheet_enrichment_live(
+        "s1", "p1", "left", 1, describe_fn=mixed, model="m"))
+    assert res["status"] == "model"  # не упал
+    assert res["tiles_failed"] >= 1
+    assert res["tiles_done"] >= 1
+    diag = json.loads(Path(res["diagnostics_path"]).read_text(encoding="utf-8"))
+    assert diag["tiles_failed"] >= 1
+
+
+def test_live_runner_on_tile_progress_per_tile(tmp_path, monkeypatch):
+    pdf = _make_large_sheet_pdf(tmp_path / "big.pdf")
+    _bind_fake_pair(monkeypatch, pdf)
+    events = []
+    calls = []
+    fake = _fake_describe_factory(calls)
+    res = asyncio.run(ls.run_large_sheet_enrichment_live(
+        "s1", "p1", "left", 1, describe_fn=fake, model="m",
+        on_tile_progress=lambda ev: events.append(ev)))
+    assert len(events) == res["tiles_total"]
+    for ev in events:
+        assert {"tile_id", "index", "total", "status", "zone_hint", "duration_sec"} <= set(ev)
+    assert [e["index"] for e in events] == list(range(1, len(events) + 1))
+
+
+def test_live_runner_progress_callback_error_does_not_break(tmp_path, monkeypatch):
+    pdf = _make_large_sheet_pdf(tmp_path / "big.pdf")
+    _bind_fake_pair(monkeypatch, pdf)
+    calls = []
+    fake = _fake_describe_factory(calls)
+
+    def boom_cb(ev):
+        raise RuntimeError("callback explode")
+
+    res = asyncio.run(ls.run_large_sheet_enrichment_live(
+        "s1", "p1", "left", 1, describe_fn=fake, model="m", on_tile_progress=boom_cb))
+    assert res["status"] == "model"  # callback-ошибка не уронила runner
+
+
+# ─── STAGE 2: jobs ──────────────────────────────────────────────────────────
+
+def test_job_without_confirm_rejected(tmp_path, monkeypatch):
+    pdf = _make_large_sheet_pdf(tmp_path / "big.pdf")
+    _bind_fake_pair(monkeypatch, pdf)
+    job = ls_jobs.create_job("s1", scope="page", pair_id="p1", side="left",
+                             page=1, confirm=False)
+    assert job["status"] == "rejected_no_confirm"
+    # в фон такой job не уходит — items тоже rejected
+    assert all(it["status"] == "rejected_no_confirm" for it in job["items"])
+
+
+def test_job_runs_and_updates_progress_per_tile(tmp_path, monkeypatch):
+    pdf = _make_large_sheet_pdf(tmp_path / "big.pdf")
+    _bind_fake_pair(monkeypatch, pdf)
+    calls = []
+    fake = _fake_describe_factory(calls)
+    monkeypatch.setattr(ls_jobs, "_build_describe_fn", lambda cfg, model: fake)
+
+    job = ls_jobs.create_job("s1", scope="page", pair_id="p1", side="left",
+                             page=1, confirm=True)
+    assert job["status"] == "queued"
+    done = asyncio.run(ls_jobs.run_job("s1", job["id"]))
+    assert done["status"] == "done"
+    assert done["progress"]["done"] == 1
+    item = done["items"][0]
+    assert item["status"] == "done"
+    assert item["tiles_total"] >= 1
+    assert item["tiles_done"] >= 1
+    assert len(calls) == item["tiles_total"]
+
+
+def test_job_cancel_prevents_model_calls(tmp_path, monkeypatch):
+    pdf = _make_large_sheet_pdf(tmp_path / "big.pdf")
+    _bind_fake_pair(monkeypatch, pdf)
+    calls = []
+    fake = _fake_describe_factory(calls)
+    monkeypatch.setattr(ls_jobs, "_build_describe_fn", lambda cfg, model: fake)
+
+    job = ls_jobs.create_job("s1", scope="page", pair_id="p1", side="left",
+                             page=1, confirm=True)
+    cancelled = ls_jobs.cancel_job("s1", job["id"])
+    assert cancelled["status"] == "cancelled"
+    # run после cancel → возвращает рано, Qwen не зовётся
+    res = asyncio.run(ls_jobs.run_job("s1", job["id"]))
+    assert res["status"] == "cancelled"
+    assert len(calls) == 0
+
+
+def test_job_endpoint_rejects_without_confirm(tmp_path, monkeypatch):
+    pdf = _make_large_sheet_pdf(tmp_path / "big.pdf")
+    client = _client(monkeypatch, pdf)
+    r = client.post("/api/stage-comparison/sessions/s1/large-sheet-enrichment-jobs",
+                    json={"scope": "page", "pair_id": "p1", "side": "left", "page": 1})
+    assert r.status_code == 200
+    assert r.json()["status"] == "rejected_no_confirm"
+
+
+def test_job_endpoint_confirm_creates_job_no_sync_qwen(tmp_path, monkeypatch):
+    pdf = _make_large_sheet_pdf(tmp_path / "big.pdf")
+    client = _client(monkeypatch, pdf)
+    # не запускаем реальный фон-таск (и тем самым реальный Qwen)
+    started = {"n": 0}
+    monkeypatch.setattr(ls_jobs, "start_job_in_background",
+                        lambda sid, jid: started.__setitem__("n", started["n"] + 1) or jid)
+    r = client.post("/api/stage-comparison/sessions/s1/large-sheet-enrichment-jobs",
+                    json={"scope": "page", "pair_id": "p1", "side": "left",
+                          "page": 1, "confirm": True})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["id"].startswith("lsj_")
+    assert body["status"] in ("queued", "running")
+    assert started["n"] == 1
+    # GET job + cancel
+    jid = body["id"]
+    g = client.get(f"/api/stage-comparison/sessions/s1/large-sheet-enrichment-jobs/{jid}")
+    assert g.status_code == 200 and g.json()["id"] == jid
+    c = client.post(f"/api/stage-comparison/sessions/s1/large-sheet-enrichment-jobs/{jid}/cancel")
+    assert c.status_code == 200 and c.json()["status"] == "cancelled"

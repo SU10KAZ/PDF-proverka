@@ -39,22 +39,28 @@ baseline-запрос Qwen на весь лист не годится: мелк�
 from __future__ import annotations
 
 import json
+import hashlib
 import logging
 import os
 import re
+import time
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Awaitable, Callable, Optional
 
 from . import paths as paths_mod
 
 logger = logging.getLogger(__name__)
 
-# В ЭТОЙ итерации live-model путь НЕ реализован. Флаг существует, чтобы будущая
-# итерация могла включить tile→Qwen, не меняя сигнатур. Пока он False — модуль
-# физически не способен вызвать Qwen.
-_LIVE_MODEL_IMPLEMENTED = False
+# Live tile→Qwen путь реализован (этап 2) через async `_run_tiles_with_model` /
+# `run_large_sheet_enrichment_live`, который вызывается ТОЛЬКО из job'а и только
+# с injected describe_fn. Синхронный `run_large_sheet_enrichment` остаётся
+# исключительно dry-run и Qwen не зовёт.
+_LIVE_MODEL_IMPLEMENTED = True
 
-PROMPT_VERSION = "large_sheet_tile_v1"
+# Версия tile-prompt'а — входит в cache key, чтобы смена prompt'а
+# инвалидировала кеш.
+LARGE_SHEET_TILE_PROMPT_VERSION = "v1_large_sheet_tiles"
+PROMPT_VERSION = LARGE_SHEET_TILE_PROMPT_VERSION
 SCHEMA_VERSION = 1
 
 
@@ -1238,6 +1244,135 @@ def _write_json(path: Path, payload: Any) -> None:
     os.replace(tmp, path)
 
 
+def _emit_progress(on_tile_progress, payload: dict) -> None:
+    """Вызвать progress callback fail-soft: ошибка callback'а не валит runner."""
+    if not on_tile_progress:
+        return
+    try:
+        on_tile_progress(payload)
+    except Exception:  # noqa: BLE001
+        logger.debug("on_tile_progress raised, ignored", exc_info=True)
+
+
+def _prepare_page_artifacts(
+    session_id: str, pair_id: str, side: str, page_number: int,
+    *, tile_size: Optional[int], overlap: Optional[float],
+) -> dict:
+    """Sync-этап: detection + render(overview/highres) + words + zones + tiles.
+
+    Пишет overview.png/page_render.png/words.json/zones.json + tiles/*.png.
+    Общий для dry-run и live: live-ветка потом добавляет Qwen-результаты.
+    Возвращает контекст для finalize."""
+    pdf_p, pair, side_data = _resolve_side_pdf(session_id, pair_id, side)
+    warnings: list[str] = []
+
+    result_json = _load_result_json(side_data)
+    detection = detect_large_sheet_candidate(pdf_p, page_number, result_json=result_json)
+
+    overview_path = paths_mod.large_sheet_artifact_path(
+        session_id, pair_id, side, page_number, "overview.png")
+    render_path = paths_mod.large_sheet_artifact_path(
+        session_id, pair_id, side, page_number, "page_render.png")
+    render_large_sheet_page(pdf_p, page_number, overview_path, mode="overview")
+    render_info = render_large_sheet_page(pdf_p, page_number, render_path, mode="highres")
+
+    words = extract_page_words(pdf_p, page_number)
+    if not words:
+        warnings.append("no_pdf_text_layer")
+    _write_json(paths_mod.large_sheet_artifact_path(
+        session_id, pair_id, side, page_number, "words.json"),
+        {"schema_version": SCHEMA_VERSION, "page": page_number, "count": len(words), "words": words})
+
+    zones = detect_page_zones(render_info, words)
+    _write_json(paths_mod.large_sheet_artifact_path(
+        session_id, pair_id, side, page_number, "zones.json"), zones)
+
+    tiles_dir = paths_mod.large_sheet_tiles_dir(session_id, pair_id, side, page_number)
+    tiles = generate_page_tiles(render_info, words, tiles_dir, tile_size=tile_size, overlap=overlap)
+
+    return {
+        "session_id": session_id, "pair_id": pair_id, "side": side, "page": page_number,
+        "detection": detection, "render_info": render_info, "words": words,
+        "zones": zones, "tiles": tiles, "warnings": warnings,
+        "overview_path": str(overview_path), "render_path": str(render_path),
+    }
+
+
+def _finalize_page(
+    ctx: dict, tile_results: list[dict], *,
+    mode: str, tiles_processed: int, tiles_failed: int, extra_warnings: list[str],
+) -> dict:
+    """Sync-этап: merge tile_results → page_enriched.json/md + diagnostics.json +
+    tile_results.json. Общий для dry-run и live."""
+    session_id, pair_id, side, page_number = (
+        ctx["session_id"], ctx["pair_id"], ctx["side"], ctx["page"])
+    tiles = ctx["tiles"]
+    words = ctx["words"]
+    zones = ctx["zones"]
+    render_info = ctx["render_info"]
+    detection = ctx["detection"]
+    warnings = list(ctx.get("warnings") or []) + list(extra_warnings or [])
+    model_ran = mode == "model"
+
+    _write_json(paths_mod.large_sheet_artifact_path(
+        session_id, pair_id, side, page_number, "tile_results.json"),
+        {"schema_version": SCHEMA_VERSION, "mode": mode,
+         "prompt_version": PROMPT_VERSION, "tiles": tile_results})
+
+    page_enriched = merge_tile_results(
+        [tr for tr in tile_results if tr.get("qwen")], words, zones)
+    page_enriched["page"] = page_number
+    page_enriched["side"] = side
+    page_enriched["mode"] = mode
+    page_enriched["prompt_version"] = PROMPT_VERSION
+    page_enriched["detection"] = detection
+    page_enriched["provenance"] = {
+        "tiles_total": len(tiles),
+        "render": {k: render_info[k] for k in
+                   ("width_px", "height_px", "page_width", "page_height", "scale_x", "scale_y")},
+    }
+    page_enriched_path = paths_mod.large_sheet_artifact_path(
+        session_id, pair_id, side, page_number, "page_enriched.json")
+    _write_json(page_enriched_path, page_enriched)
+
+    diagnostics = build_diagnostics(
+        tiles, words, page_enriched,
+        tiles_processed=tiles_processed, tiles_failed=tiles_failed,
+        warnings=warnings, zones=zones,
+    )
+    diagnostics["model_requested"] = mode == "model"
+    diagnostics["model_ran"] = model_ran
+    diagnostics["detection"] = detection
+    diag_path = paths_mod.large_sheet_artifact_path(
+        session_id, pair_id, side, page_number, "diagnostics.json")
+    _write_json(diag_path, diagnostics)
+
+    md = build_page_enriched_md(page_enriched, diagnostics, page_number, side)
+    md_path = paths_mod.large_sheet_artifact_path(
+        session_id, pair_id, side, page_number, "page_enriched.md")
+    md_path.write_text(md, encoding="utf-8")
+
+    return {
+        "status": mode,
+        "session_id": session_id, "pair_id": pair_id, "side": side, "page": page_number,
+        "detection": detection,
+        "tiles_total": len(tiles),
+        "tiles_processed": tiles_processed,
+        "tiles_failed": tiles_failed,
+        "words_total": len(words),
+        "zones_total": len(zones.get("zones") or []),
+        "circuits_detected": diagnostics["circuits_detected"],
+        "model_requested": mode == "model",
+        "model_ran": model_ran,
+        "page_enriched_json_path": str(page_enriched_path),
+        "page_enriched_md_path": str(md_path),
+        "diagnostics_path": str(diag_path),
+        "overview_path": ctx["overview_path"],
+        "page_render_path": ctx["render_path"],
+        "warnings": warnings,
+    }
+
+
 def run_large_sheet_enrichment(
     session_id: str,
     pair_id: str,
@@ -1248,142 +1383,296 @@ def run_large_sheet_enrichment(
     run_model: bool = False,
     tile_size: Optional[int] = None,
     overlap: Optional[float] = None,
-    progress_cb=None,
+    on_tile_progress: Optional[Callable[[dict], None]] = None,
+    progress_cb: Optional[Callable[[dict], None]] = None,  # legacy alias
 ) -> dict:
-    """Сформировать large-sheet артефакты страницы.
+    """Сформировать large-sheet артефакты страницы (DRY-RUN, sync).
 
-    В этой итерации ВСЕГДА dry-run: live Qwen не вызывается
-    (``_LIVE_MODEL_IMPLEMENTED is False``). ``run_model=True`` фиксируется в
-    diagnostics как requested, но физически модель не запускается.
+    Этот sync-путь НИКОГДА не вызывает Qwen. Live tile→Qwen выполняется только
+    асинхронным ``run_large_sheet_enrichment_live`` (через job). Если сюда
+    передан ``run_model=True``, добавляется warning и всё равно делается dry-run
+    — для live используйте job endpoint.
     """
     if side not in ("left", "right"):
         raise ValueError("side must be 'left' or 'right'")
     if page_number < 1:
         raise ValueError("page must be >= 1")
 
-    pdf_p, pair, side_data = _resolve_side_pdf(session_id, pair_id, side)
+    on_tile_progress = on_tile_progress or progress_cb
 
-    page_dir = paths_mod.large_sheet_page_dir(session_id, pair_id, side, page_number)
     page_enriched_path = paths_mod.large_sheet_artifact_path(
         session_id, pair_id, side, page_number, "page_enriched.json")
-
-    # resume: если уже есть и не force — вернуть сводку
     if page_enriched_path.exists() and not force:
         return read_large_sheet_summary(session_id, pair_id, side, page_number)
 
-    warnings: list[str] = []
-    model_requested = bool(run_model)
-    model_ran = False
-    if run_model and not _LIVE_MODEL_IMPLEMENTED:
-        warnings.append("live_model_not_implemented_in_this_build")
+    extra_warnings: list[str] = []
+    if run_model:
+        extra_warnings.append("sync_model_run_not_supported_use_live_job")
 
-    # detection
-    result_json = _load_result_json(side_data)
-    detection = detect_large_sheet_candidate(pdf_p, page_number, result_json=result_json)
+    ctx = _prepare_page_artifacts(
+        session_id, pair_id, side, page_number, tile_size=tile_size, overlap=overlap)
+    tiles = ctx["tiles"]
 
-    # render overview + highres
-    overview_path = paths_mod.large_sheet_artifact_path(
-        session_id, pair_id, side, page_number, "overview.png")
-    render_path = paths_mod.large_sheet_artifact_path(
-        session_id, pair_id, side, page_number, "page_render.png")
-    render_large_sheet_page(pdf_p, page_number, overview_path, mode="overview")
-    render_info = render_large_sheet_page(pdf_p, page_number, render_path, mode="highres")
+    # dry-run: метаданные tile'ов + qwen=null; per-tile progress = skipped
+    tile_results: list[dict] = []
+    total = len(tiles)
+    for i, t in enumerate(tiles, start=1):
+        tile_results.append({
+            "tile_id": t["tile_id"], "bbox_page": t["bbox_page"], "bbox_px": t["bbox_px"],
+            "zone_hint": t["zone_hint"], "word_count": t["word_count"],
+            "image_path": t["image_path"], "qwen": None, "status": "skipped",
+            "from_cache": False, "prompt_version": PROMPT_VERSION,
+        })
+        _emit_progress(on_tile_progress, {
+            "tile_id": t["tile_id"], "index": i, "total": total,
+            "status": "skipped", "zone_hint": t["zone_hint"], "duration_sec": 0.0,
+        })
 
-    # words
-    words = extract_page_words(pdf_p, page_number)
-    if not words:
-        warnings.append("no_pdf_text_layer")
-    _write_json(paths_mod.large_sheet_artifact_path(
-        session_id, pair_id, side, page_number, "words.json"),
-        {"schema_version": SCHEMA_VERSION, "page": page_number, "count": len(words), "words": words})
+    return _finalize_page(
+        ctx, tile_results, mode="dry_run",
+        tiles_processed=0, tiles_failed=0, extra_warnings=extra_warnings)
 
-    # zones
-    zones = detect_page_zones(render_info, words)
-    _write_json(paths_mod.large_sheet_artifact_path(
-        session_id, pair_id, side, page_number, "zones.json"), zones)
 
-    # tiles
-    tiles_dir = paths_mod.large_sheet_tiles_dir(session_id, pair_id, side, page_number)
-    tiles = generate_page_tiles(
-        render_info, words, tiles_dir,
-        tile_size=tile_size, overlap=overlap,
-    )
+# ─── TASK 1/2. Live tile→Qwen runner + cache ────────────────────────────────
 
-    # tile_results: dry-run → метаданные tile'ов + qwen=null
-    tile_results = [{
-        "tile_id": t["tile_id"], "bbox_page": t["bbox_page"], "bbox_px": t["bbox_px"],
-        "zone_hint": t["zone_hint"], "word_count": t["word_count"],
-        "image_path": t["image_path"], "qwen": None,
-        "prompt_version": PROMPT_VERSION,
-    } for t in tiles]
-    tiles_failed = 0
-    tiles_processed = 0  # ни один tile не отдан в модель (dry-run)
+def _nearby_text_for_tile(tile: dict) -> list[str]:
+    return [w.get("text", "") for w in (tile.get("words") or []) if w.get("text")]
 
-    if progress_cb:
+
+def compute_tile_cache_key(
+    image_bytes: bytes, nearby_text: list[str], model: str, zone_hint: str,
+) -> str:
+    """sha256(image bytes + nearby_text + model + prompt_version + zone_hint)."""
+    h = hashlib.sha256()
+    h.update(image_bytes)
+    h.update(b"\x00")
+    h.update(("\n".join(nearby_text)).encode("utf-8", "ignore"))
+    h.update(b"\x00")
+    h.update((model or "").encode("utf-8", "ignore"))
+    h.update(b"\x00")
+    h.update(LARGE_SHEET_TILE_PROMPT_VERSION.encode("utf-8"))
+    h.update(b"\x00")
+    h.update((zone_hint or "").encode("utf-8", "ignore"))
+    return h.hexdigest()
+
+
+def _cache_read(cache_dir: Path, key: str) -> Optional[dict]:
+    p = cache_dir / f"{key}.json"
+    if not p.exists():
+        return None
+    try:
+        with open(p, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
+def _cache_write(cache_dir: Path, key: str, payload: dict) -> None:
+    try:
+        _write_json(cache_dir / f"{key}.json", payload)
+    except OSError:
+        logger.debug("tile cache write failed for %s", key, exc_info=True)
+
+
+def _describe_result_to_parsed(res: Any) -> tuple[str, Optional[dict], str, str, float]:
+    """Привести DescribeResult-подобный объект к (status, parsed, raw, error, dur).
+
+    Принимает либо объект с атрибутами (status/parsed/full_raw_response/...),
+    либо dict (для тестовых fake'ов)."""
+    def g(name, default=None):
+        if isinstance(res, dict):
+            return res.get(name, default)
+        return getattr(res, name, default)
+    status = (g("status") or "error")
+    parsed = g("parsed")
+    raw = g("full_raw_response") or g("raw_response_excerpt") or ""
+    error = g("error") or ""
+    try:
+        dur = float(g("duration_sec") or 0.0)
+    except (TypeError, ValueError):
+        dur = 0.0
+    return status, (parsed if isinstance(parsed, dict) else None), raw, error, dur
+
+
+async def _run_tiles_with_model(
+    ctx: dict, *,
+    describe_fn: Callable[..., Awaitable[Any]],
+    model: str,
+    cache_enabled: bool = True,
+    force: bool = False,
+    on_tile_progress: Optional[Callable[[dict], None]] = None,
+    is_cancelled: Optional[Callable[[], bool]] = None,
+) -> list[dict]:
+    """Прогнать каждый tile через injected ``describe_fn(image_path, prompt,
+    model=...)`` → DescribeResult. Fail-soft по tile, cache, raw/prompt на диск.
+
+    Никогда не импортирует HTTP-клиент: provider инъектится снаружи (как в
+    problem_block_retry). Это и делает «no live Qwen in tests» тривиальным —
+    тесты передают fake describe_fn."""
+    session_id, pair_id, side, page_number = (
+        ctx["session_id"], ctx["pair_id"], ctx["side"], ctx["page"])
+    tiles = ctx["tiles"]
+    sheet_kind = (ctx.get("detection") or {}).get("sheet_kind", "unknown")
+    prompts_dir = paths_mod.large_sheet_prompts_dir(session_id, pair_id, side, page_number)
+    raw_dir = paths_mod.large_sheet_raw_dir(session_id, pair_id, side, page_number)
+    cache_dir = paths_mod.large_sheet_cache_dir(session_id, pair_id, side, page_number)
+    tile_results_path = paths_mod.large_sheet_artifact_path(
+        session_id, pair_id, side, page_number, "tile_results.json")
+
+    results: list[dict] = []
+    total = len(tiles)
+
+    def _persist():
+        # Сохранять tile_results.json после каждого tile (resume/наблюдаемость).
+        _write_json(tile_results_path, {
+            "schema_version": SCHEMA_VERSION, "mode": "model",
+            "prompt_version": PROMPT_VERSION, "tiles": results,
+        })
+
+    for i, t in enumerate(tiles, start=1):
+        tile_id = t["tile_id"]
+        zone_hint = t.get("zone_hint", "unknown")
+        entry: dict = {
+            "tile_id": tile_id, "bbox_page": t["bbox_page"], "bbox_px": t["bbox_px"],
+            "zone_hint": zone_hint, "word_count": t.get("word_count", 0),
+            "image_path": t["image_path"], "qwen": None, "status": "error",
+            "from_cache": False, "duration_sec": 0.0, "error": None,
+            "prompt_version": PROMPT_VERSION,
+        }
+        if is_cancelled and is_cancelled():
+            entry["status"] = "cancelled"
+            results.append(entry)
+            _persist()
+            _emit_progress(on_tile_progress, {
+                "tile_id": tile_id, "index": i, "total": total,
+                "status": "cancelled", "zone_hint": zone_hint, "duration_sec": 0.0})
+            continue
+
+        t0 = time.monotonic()
         try:
-            progress_cb({"phase": "tiles_done", "tiles_total": len(tiles)})
-        except Exception:  # noqa: BLE001
-            pass
+            nearby = _nearby_text_for_tile(t)
+            prompt = build_tile_prompt(zone_hint, nearby, sheet_kind)
+            try:
+                image_bytes = Path(t["image_path"]).read_bytes()
+            except OSError as exc:
+                entry["error"] = f"tile_image_read_failed:{exc}"
+                results.append(entry); _persist()
+                _emit_progress(on_tile_progress, {
+                    "tile_id": tile_id, "index": i, "total": total,
+                    "status": "error", "zone_hint": zone_hint, "duration_sec": 0.0})
+                continue
 
-    _write_json(paths_mod.large_sheet_artifact_path(
-        session_id, pair_id, side, page_number, "tile_results.json"),
-        {"schema_version": SCHEMA_VERSION,
-         "mode": ("model" if model_ran else "dry_run"),
-         "prompt_version": PROMPT_VERSION, "tiles": tile_results})
+            # cache
+            cache_key = ""
+            if cache_enabled:
+                cache_key = compute_tile_cache_key(image_bytes, nearby, model, zone_hint)
+                entry["cache_key"] = cache_key
+                if not force:
+                    cached = _cache_read(cache_dir, cache_key)
+                    if cached and isinstance(cached.get("qwen"), dict):
+                        entry.update({
+                            "qwen": cached["qwen"], "status": cached.get("status", "done"),
+                            "from_cache": True,
+                            "duration_sec": round(time.monotonic() - t0, 3),
+                        })
+                        results.append(entry); _persist()
+                        _emit_progress(on_tile_progress, {
+                            "tile_id": tile_id, "index": i, "total": total,
+                            "status": "cache", "zone_hint": zone_hint,
+                            "duration_sec": entry["duration_sec"]})
+                        continue
 
-    # merge → page_enriched.json (dry-run: пустые сущности)
-    page_enriched = merge_tile_results(
-        [tr for tr in tile_results if tr.get("qwen")], words, zones)
-    page_enriched["page"] = page_number
-    page_enriched["side"] = side
-    page_enriched["mode"] = "model" if model_ran else "dry_run"
-    page_enriched["prompt_version"] = PROMPT_VERSION
-    page_enriched["detection"] = detection
-    page_enriched["provenance"] = {
-        "tiles_total": len(tiles),
-        "render": {k: render_info[k] for k in
-                   ("width_px", "height_px", "page_width", "page_height", "scale_x", "scale_y")},
-    }
-    _write_json(page_enriched_path, page_enriched)
+            # save prompt
+            try:
+                (prompts_dir / f"{tile_id}.txt").write_text(prompt, encoding="utf-8")
+            except OSError:
+                pass
 
-    # diagnostics
-    diagnostics = build_diagnostics(
-        tiles, words, page_enriched,
-        tiles_processed=tiles_processed, tiles_failed=tiles_failed,
-        warnings=warnings, zones=zones,
+            # live call (injected provider)
+            res = await describe_fn(t["image_path"], prompt, model=model)
+            status, parsed, raw, error, dur = _describe_result_to_parsed(res)
+
+            # save raw
+            try:
+                (raw_dir / f"{tile_id}.txt").write_text(raw or "", encoding="utf-8")
+            except OSError:
+                pass
+
+            entry["duration_sec"] = round(dur or (time.monotonic() - t0), 3)
+            if status in ("done", "partial") and isinstance(parsed, dict):
+                entry["qwen"] = parsed
+                entry["status"] = "done" if status == "done" else "partial"
+                if cache_enabled and cache_key:
+                    _cache_write(cache_dir, cache_key, {
+                        "qwen": parsed, "status": entry["status"], "model": model,
+                        "prompt_version": PROMPT_VERSION, "zone_hint": zone_hint,
+                    })
+            else:
+                entry["status"] = "error"
+                entry["error"] = error or f"tile_status:{status}"
+        except Exception as exc:  # noqa: BLE001 — один tile не валит весь page
+            entry["status"] = "error"
+            entry["error"] = f"{type(exc).__name__}:{exc}"
+            entry["duration_sec"] = round(time.monotonic() - t0, 3)
+
+        results.append(entry)
+        _persist()
+        _emit_progress(on_tile_progress, {
+            "tile_id": tile_id, "index": i, "total": total,
+            "status": entry["status"], "zone_hint": zone_hint,
+            "duration_sec": entry["duration_sec"]})
+
+    return results
+
+
+async def run_large_sheet_enrichment_live(
+    session_id: str,
+    pair_id: str,
+    side: str,
+    page_number: int,
+    *,
+    describe_fn: Callable[..., Awaitable[Any]],
+    model: str,
+    force: bool = False,
+    cache_enabled: bool = True,
+    tile_size: Optional[int] = None,
+    overlap: Optional[float] = None,
+    on_tile_progress: Optional[Callable[[dict], None]] = None,
+    is_cancelled: Optional[Callable[[], bool]] = None,
+) -> dict:
+    """LIVE: prepare (sync) → tile→Qwen (async, injected describe_fn) → merge.
+
+    Вызывается ТОЛЬКО из job'а с реальным provider'ом или из тестов с fake
+    describe_fn. Fail-soft: одна упавшая tile не валит страницу."""
+    if side not in ("left", "right"):
+        raise ValueError("side must be 'left' or 'right'")
+    if page_number < 1:
+        raise ValueError("page must be >= 1")
+
+    ctx = _prepare_page_artifacts(
+        session_id, pair_id, side, page_number, tile_size=tile_size, overlap=overlap)
+
+    tile_results = await _run_tiles_with_model(
+        ctx, describe_fn=describe_fn, model=model,
+        cache_enabled=cache_enabled, force=force,
+        on_tile_progress=on_tile_progress, is_cancelled=is_cancelled,
     )
-    diagnostics["model_requested"] = model_requested
-    diagnostics["model_ran"] = model_ran
-    diagnostics["detection"] = detection
-    _write_json(paths_mod.large_sheet_artifact_path(
-        session_id, pair_id, side, page_number, "diagnostics.json"), diagnostics)
+    tiles_failed = sum(1 for tr in tile_results if tr.get("status") == "error")
+    tiles_done = sum(1 for tr in tile_results if tr.get("status") in ("done", "partial"))
+    tiles_cache = sum(1 for tr in tile_results if tr.get("from_cache"))
+    tiles_processed = tiles_done
 
-    # page_enriched.md
-    md = build_page_enriched_md(page_enriched, diagnostics, page_number, side)
-    md_path = paths_mod.large_sheet_artifact_path(
-        session_id, pair_id, side, page_number, "page_enriched.md")
-    md_path.write_text(md, encoding="utf-8")
+    extra_warnings: list[str] = []
+    if tiles_failed:
+        extra_warnings.append(f"tiles_failed:{tiles_failed}")
 
-    status = "dry_run"
-    return {
-        "status": status,
-        "session_id": session_id, "pair_id": pair_id, "side": side, "page": page_number,
-        "detection": detection,
-        "tiles_total": len(tiles),
-        "tiles_processed": tiles_processed,
-        "tiles_failed": tiles_failed,
-        "words_total": len(words),
-        "zones_total": len(zones.get("zones") or []),
-        "model_requested": model_requested,
-        "model_ran": model_ran,
-        "page_enriched_json_path": str(page_enriched_path),
-        "page_enriched_md_path": str(md_path),
-        "diagnostics_path": str(paths_mod.large_sheet_artifact_path(
-            session_id, pair_id, side, page_number, "diagnostics.json")),
-        "overview_path": str(overview_path),
-        "page_render_path": str(render_path),
-        "warnings": warnings,
-    }
+    result = _finalize_page(
+        ctx, tile_results, mode="model",
+        tiles_processed=tiles_processed, tiles_failed=tiles_failed,
+        extra_warnings=extra_warnings)
+    result["tiles_done"] = tiles_done
+    result["tiles_cache_hits"] = tiles_cache
+    return result
 
 
 # ─── Summary readers (для GET endpoint / UI) ────────────────────────────────
@@ -1448,7 +1737,7 @@ def scan_pair_side_for_large_sheets(
 
 
 __all__ = [
-    "PROMPT_VERSION", "SCHEMA_VERSION",
+    "PROMPT_VERSION", "LARGE_SHEET_TILE_PROMPT_VERSION", "SCHEMA_VERSION",
     "large_sheet_enabled", "large_sheet_model_enabled",
     "cfg_tile_size", "cfg_tile_overlap", "cfg_max_tiles",
     "cfg_render_long_side", "cfg_overview_long_side", "cfg_max_pixels",
@@ -1457,5 +1746,6 @@ __all__ = [
     "should_route_to_large_sheet",
     "build_tile_prompt", "merge_tile_results", "build_page_enriched_md",
     "build_diagnostics", "run_large_sheet_enrichment",
+    "run_large_sheet_enrichment_live", "compute_tile_cache_key",
     "read_large_sheet_summary", "scan_pair_side_for_large_sheets",
 ]

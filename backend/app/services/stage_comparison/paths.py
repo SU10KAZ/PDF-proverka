@@ -241,6 +241,14 @@ def large_sheet_prompts_dir(session_id: str, pair_id: str, side: str, page: int)
     return p
 
 
+def large_sheet_cache_dir(session_id: str, pair_id: str, side: str, page: int) -> Path:
+    """`large_sheet_enrichment/<side>/page_NNNN/cache/` — per-tile Qwen cache
+    по `sha256(tile image + nearby_text + model + prompt_version + zone_hint)`."""
+    p = large_sheet_page_dir(session_id, pair_id, side, page) / "cache"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
 def large_sheet_raw_dir(session_id: str, pair_id: str, side: str, page: int) -> Path:
     p = large_sheet_page_dir(session_id, pair_id, side, page) / "raw"
     p.mkdir(parents=True, exist_ok=True)
@@ -465,6 +473,7 @@ __all__ = [
     "large_sheet_page_dir",
     "large_sheet_tiles_dir",
     "large_sheet_prompts_dir",
+    "large_sheet_cache_dir",
     "large_sheet_raw_dir",
     "large_sheet_artifact_path",
     "enriched_comparison_dir",

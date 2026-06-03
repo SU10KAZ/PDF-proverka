@@ -42,6 +42,7 @@ from backend.app.services.stage_comparison import graphic_llm_local as graphic_l
 from backend.app.services.stage_comparison import md_image_enrichment as md_enrichment_mod
 from backend.app.services.stage_comparison import md_enrichment_jobs as md_enrichment_jobs_mod
 from backend.app.services.stage_comparison import large_sheet_enrichment as large_sheet_mod
+from backend.app.services.stage_comparison import large_sheet_enrichment_jobs as large_sheet_jobs_mod
 from backend.app.services.stage_comparison import enriched_comparison as enriched_compare_mod
 from backend.app.services.stage_comparison import unified_analysis as unified_analysis_mod
 from backend.app.services.stage_comparison import unified_analysis_jobs as unified_jobs_mod
@@ -1265,11 +1266,15 @@ async def run_large_sheet_enrichment_endpoint(
                 "code": "confirm_required",
                 "message": "run_model=true требует confirm=true.",
             })
-        # Live-model путь намеренно не реализован в этой итерации — Qwen не зовём.
+        # Live tile→Qwen потенциально долгий → выполняется только через job.
+        # Direct endpoint Qwen не вызывает: возвращает указатель на job endpoint.
         return {
-            "status": "rejected",
-            "reason": "live_model_not_implemented_in_this_build",
+            "status": "use_job_endpoint",
+            "message": ("Live tile→Qwen запускается только через job: "
+                        "POST /api/stage-comparison/sessions/{sid}/large-sheet-enrichment-jobs "
+                        "с confirm=true."),
             "ran_model": False,
+            "job_endpoint": f"/api/stage-comparison/sessions/{session_id}/large-sheet-enrichment-jobs",
             "side": req.side, "page": req.page,
         }
 
@@ -1289,6 +1294,67 @@ async def run_large_sheet_enrichment_endpoint(
         raise HTTPException(500, f"large-sheet ошибка: {exc}") from exc
 
     return {"pair_id": pair_id, "ran_model": False, **result}
+
+
+# ─── Large Sheet Enrichment jobs (live tile→Qwen, фоном) ────────────────────
+
+
+class LargeSheetJobItem(BaseModel):
+    pair_id: str
+    side: str = Field("left", pattern="^(left|right)$")
+    page: int = Field(..., ge=1)
+
+
+class LargeSheetJobRequest(BaseModel):
+    scope: str = Field("page", pattern="^(page|selected)$")
+    pair_id: Optional[str] = None
+    side: Optional[str] = Field(None, pattern="^(left|right)$")
+    page: Optional[int] = Field(None, ge=1)
+    items: Optional[list[LargeSheetJobItem]] = None
+    force: bool = False
+    confirm: bool = False
+
+
+@router.post("/sessions/{session_id}/large-sheet-enrichment-jobs")
+async def create_large_sheet_job_endpoint(session_id: str, req: LargeSheetJobRequest):
+    """Создать live tile→Qwen job. Без confirm=true → rejected_no_confirm.
+
+    Только с confirm=true job уходит в фон (asyncio task) и реально вызывает
+    Qwen. Direct (синхронный) live-прогон не поддерживается.
+    """
+    items = [it.model_dump() for it in (req.items or [])] if req.items else None
+    try:
+        job = large_sheet_jobs_mod.create_job(
+            session_id, scope=req.scope, items=items,
+            pair_id=req.pair_id, side=req.side, page=req.page,
+            force=bool(req.force), confirm=bool(req.confirm),
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+    if job.get("status") == "rejected_no_confirm":
+        return job
+    if job.get("status") == "queued":
+        large_sheet_jobs_mod.start_job_in_background(session_id, job["id"])
+    return large_sheet_jobs_mod.get_job(session_id, job["id"]) or job
+
+
+@router.get("/sessions/{session_id}/large-sheet-enrichment-jobs/{job_id}")
+async def get_large_sheet_job_endpoint(session_id: str, job_id: str):
+    job = large_sheet_jobs_mod.get_job(session_id, job_id)
+    if job is None:
+        raise HTTPException(404, "Job не найден")
+    return job
+
+
+@router.post("/sessions/{session_id}/large-sheet-enrichment-jobs/{job_id}/cancel")
+async def cancel_large_sheet_job_endpoint(session_id: str, job_id: str):
+    job = large_sheet_jobs_mod.cancel_job(session_id, job_id)
+    if job is None:
+        raise HTTPException(404, "Job не найден")
+    return job
 
 
 @router.post("/sessions/{session_id}/md-enrichment-jobs")
