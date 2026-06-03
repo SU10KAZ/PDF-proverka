@@ -228,16 +228,41 @@ generic-значениями, direction="unknown" если связь не ви�
 
 ## Как мёржатся tile results (`merge_tile_results`)
 
-- circuits дедупятся по нормализованному `circuit_id`; неконфликтующие поля
-  объединяются, конфликтующие сохраняются в `conflicts[]` (не выбираются
-  молча);
-- equipment / visible_text / notes дедупятся;
-- nodes/connections/sequences объединяются;
-- title_block мёржится, конфликты → `_conflicts`;
-- provenance: `source_tiles[]`, `bbox_union`, `confidence`.
+Кластеризация цепей — **weak-id-aware** (после controlled live-test: слабые
+`circuit_id` вроде `1`/`2`/`206`/`2Р`/`unknown` давали ложный over-merge).
+`is_weak_circuit_id(value)` помечает слабыми: пусто/`unknown`; 1–2 цифры; чисто
+числовой (`206`/`234`); фрагмент полюса (`2Р`/`3P`); generic-breaker без номера
+(`QS`/`QF`); ≤2 символа.
+
+Алгоритм `_cluster_circuits` (каждая цепь получает `merge_key` + `merge_method`):
+
+1. **strong_id** — `circuit_id` не weak → exact-match по нормализованному id;
+2. **composite** — иначе ключ из `breaker(конкретный)+cable+load_name`
+   (strength ≥ 2 надёжных поля); generic-breaker (`QS`/`QF` без номера) в
+   identity не считается;
+3. **overlap_confirmed** — composite совпал И tile-bbox пересекаются;
+4. **kept_separate_weak_id** — weak id и слабый composite → НЕ объединять,
+   отдельная цепь с provenance.
+
+Guard: расходящиеся strong id не сливаются через composite. Неконфликтующие
+поля объединяются, конфликтующие → `conflicts[]` (не выбираются молча). Цепи с
+одинаковым **конкретным** breaker, но разными load/power/current не сливаются, а
+попадают в `conflict_groups[]` (req 6).
+
+`merge_stats`: `circuits_raw_count`, `circuits_merged_count`, `weak_id_count`,
+`overmerge_prevented_count`, `conflict_groups_count` (проброшены в diagnostics).
+
+Прочее: equipment / visible_text / notes дедупятся; nodes/connections/sequences
+объединяются; title_block мёржится (`_conflicts`); provenance `source_tiles[]` /
+`bbox_union` / `confidence`.
 
 В **dry-run** `tile_results` пуст (qwen=null) → сущности пустые, но структура
 валидна.
+
+**Валидация на live-артефакте ИОС1.1 p.24** (read-only, без Qwen): циклы
+circuit-conflicts **6 → 2**, спорный over-merge QS/ЯК ↔ УЗО-ЭЛТА2-С/ЯУР устранён
+(`overlap_confirmed` для реального cross-tile merge, `composite`/`kept_separate`
+для остальных), `overmerge_prevented_count=1`.
 
 ## Формат `page_enriched.json`
 
@@ -245,13 +270,18 @@ generic-значениями, direction="unknown" если связь не ви�
 {
   "schema_version": 1,
   "page": 24, "side": "left", "mode": "dry_run",
-  "prompt_version": "large_sheet_tile_v1",
+  "prompt_version": "v1_large_sheet_tiles",
   "circuits": [
     {"id": "ВРУ1-ОДН-33", "type": "circuit", "breaker": "QF33",
      "cable": "ППГнг(А)-HF 5х2,5", "load_name": "...",
+     "merge_key": "id:ВРУ1-ОДН-33", "merge_method": "strong_id",
      "source_tiles": ["tile_0012", "tile_0013"], "bbox_union": [...],
      "confidence": 0.86, "conflicts": []}
   ],
+  "conflict_groups": [],
+  "merge_stats": {"circuits_raw_count": 7, "circuits_merged_count": 6,
+                  "weak_id_count": 7, "overmerge_prevented_count": 1,
+                  "conflict_groups_count": 0},
   "equipment": [], "visible_text": [],
   "scheme_graph": {"nodes": [], "connections": [], "sequences": []},
   "tables": [], "notes": [], "title_block": {}, "uncertainties": [],

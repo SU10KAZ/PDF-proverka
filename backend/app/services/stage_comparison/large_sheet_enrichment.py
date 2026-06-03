@@ -919,6 +919,68 @@ def _norm_id(s: Any) -> str:
     return re.sub(r"\s+", "", str(s or "")).upper()
 
 
+def _norm_num(v: Any) -> str:
+    """Нормализовать число (мощность/ток) к сравнимой строке. '18,0'→'18.0'."""
+    if v in (None, ""):
+        return ""
+    try:
+        return str(round(float(str(v).replace(",", ".")), 2))
+    except (TypeError, ValueError):
+        return _norm_id(v)
+
+
+# Generic-breaker токены (тип аппарата без номера) — не идентифицируют цепь.
+_GENERIC_BREAKERS = {
+    "QF", "QFD", "QS", "QSD", "QW", "KM", "ВН", "ВА", "АВ", "QFU", "АВР",
+    "УЗО", "ДИФ", "ВВ", "ВНР",
+}
+
+
+def is_weak_circuit_id(value: Any) -> bool:
+    """True, если ``circuit_id`` слишком общий, чтобы быть надёжным dedup-ключом.
+
+    Weak, если:
+      * пусто / unknown / null / n/a / '-';
+      * только 1–2 цифры ('1', '2');
+      * чисто числовой токен (похоже на номер прибора/счётчика: '206', '234');
+      * фрагмент полюса/номинала ('2Р', '3Р', '1P', '2P', '3P');
+      * generic-breaker без номера ('QS', 'QF');
+      * всего ≤2 символа.
+    """
+    s = str(value or "").strip()
+    if not s:
+        return True
+    if s.lower() in ("unknown", "none", "null", "n/a", "na", "-", "—", "?"):
+        return True
+    norm = _norm_id(s)
+    if not norm:
+        return True
+    if norm in _GENERIC_BREAKERS:
+        return True
+    # фрагмент полюса/номинала: 2Р/3Р/1P/2P/3P (кирилл. Р и латин. P)
+    if re.fullmatch(r"[1-4][PpРр]", norm):
+        return True
+    # чисто числовой id → номер прибора/счётчика, не цепь (1, 2, 206, 234)
+    if re.fullmatch(r"\d+", norm):
+        return True
+    # слишком короткий
+    if len(norm) <= 2:
+        return True
+    return False
+
+
+def _is_generic_breaker(b: Any) -> bool:
+    norm = _norm_id(b)
+    if not norm:
+        return True
+    if norm in _GENERIC_BREAKERS:
+        return True
+    # есть тип, но нет ни одной цифры → не идентифицирует конкретный аппарат
+    if not re.search(r"\d", norm):
+        return True
+    return False
+
+
 def _merge_field(entity: dict, key: str, value: Any, tile_id: str, conflicts: list[dict]) -> None:
     if value in (None, "", [], {}):
         return
@@ -929,12 +991,191 @@ def _merge_field(entity: dict, key: str, value: Any, tile_id: str, conflicts: li
         conflicts.append({"field": key, "values": [cur, value], "tile": tile_id})
 
 
+def _tiles_overlap(b1: Optional[list], b2: Optional[list]) -> bool:
+    """Пересекаются ли tile-bbox двух записей (overlap/соседство)."""
+    if not b1 or not b2 or len(b1) < 4 or len(b2) < 4:
+        return False
+    return _intersects(b1, b2)
+
+
+def _make_circuit_record(c: dict, tile_id: str, bbox_page: Optional[list]) -> dict:
+    return {
+        "raw": c, "tile_id": tile_id, "bbox_page": bbox_page,
+        "circuit_id_raw": c.get("circuit_id"),
+        "nid": _norm_id(c.get("circuit_id")),
+        "weak": is_weak_circuit_id(c.get("circuit_id")),
+        "breaker": _norm_id(c.get("breaker")),
+        "breaker_generic": _is_generic_breaker(c.get("breaker")),
+        "cable": _norm_id(c.get("cable")),
+        "load": _norm_id(c.get("load_name")),
+    }
+
+
+def _composite_sig(rec: dict) -> tuple[str, str, str]:
+    b = "" if rec["breaker_generic"] else rec["breaker"]
+    return (b, rec["cable"], rec["load"])
+
+
+def _composite_strength(rec: dict) -> int:
+    """Сколько надёжных идентифицирующих полей есть: breaker(specific)/cable/load."""
+    return sum(1 for x in _composite_sig(rec) if x)
+
+
+_MERGE_RANK = {
+    "strong_id": 0, "overlap_confirmed": 1, "composite": 2, "kept_separate_weak_id": 3,
+}
+
+
+def _cluster_circuits(records: list[dict]) -> tuple[list[dict], dict, list[dict]]:
+    """Кластеризовать circuit-записи без over-merge на слабых id.
+
+    Возвращает ``(circuits_out, merge_stats, conflict_groups)``.
+    """
+    clusters: list[dict] = []
+    strong_index: dict[str, dict] = {}
+    comp_index: dict[str, dict] = {}
+    weak_counter = 0
+
+    def _apply(cl: dict, rec: dict) -> None:
+        ent = cl["ent"]
+        c = rec["raw"]
+        tile_id = rec["tile_id"]
+        for fld in ("breaker", "breaker_params", "cable", "pipe", "load_name",
+                    "installed_power_kw", "calculated_power_kw",
+                    "calculated_current_a", "phase", "raw_text"):
+            _merge_field(ent, fld, c.get(fld), tile_id, ent["conflicts"])
+        if tile_id not in ent["source_tiles"]:
+            ent["source_tiles"].append(tile_id)
+        ent["bbox_union"] = _bbox_union(ent["bbox_union"], rec["bbox_page"])
+        try:
+            ent["confidence"] = max(ent["confidence"], float(c.get("confidence") or 0.0))
+        except (TypeError, ValueError):
+            pass
+        if c.get("partial"):
+            ent["partial"] = True
+        if rec["bbox_page"]:
+            cl["bboxes"].append(rec["bbox_page"])
+        if rec["nid"] and not rec["weak"]:
+            cl["strong_ids"].add(rec["nid"])
+            if is_weak_circuit_id(ent.get("id")):
+                ent["id"] = rec["circuit_id_raw"] or rec["nid"]
+        if rec["nid"] and rec["weak"]:
+            cl["weak_ids"].add(rec["nid"])
+
+    def _set_method(cl: dict, method: str) -> None:
+        if _MERGE_RANK[method] < cl["rank"]:
+            cl["rank"] = _MERGE_RANK[method]
+            cl["ent"]["merge_method"] = method
+
+    for rec in records:
+        target = None
+        method = None
+        merge_key = None
+
+        # 1) strong id exact match
+        if rec["nid"] and not rec["weak"]:
+            cand = strong_index.get(rec["nid"])
+            if cand is not None:
+                target, method, merge_key = cand, "strong_id", "id:" + rec["nid"]
+
+        # 2) composite match (breaker(specific)+cable+load), strength >= 2
+        if target is None and _composite_strength(rec) >= 2:
+            ck = "comp:" + "|".join(_composite_sig(rec))
+            cand = comp_index.get(ck)
+            if cand is not None:
+                # guard: расходящиеся strong id → это разные цепи, не merge
+                if not (rec["nid"] and not rec["weak"]
+                        and cand["strong_ids"] and rec["nid"] not in cand["strong_ids"]):
+                    overlap = any(_tiles_overlap(rec["bbox_page"], b) for b in cand["bboxes"])
+                    target = cand
+                    merge_key = ck
+                    method = "overlap_confirmed" if overlap else "composite"
+
+        if target is not None:
+            _apply(target, rec)
+            _set_method(target, method)
+            continue
+
+        # 3) новый кластер
+        if rec["nid"] and not rec["weak"]:
+            method, merge_key = "strong_id", "id:" + rec["nid"]
+        elif _composite_strength(rec) >= 2:
+            method, merge_key = "composite", "comp:" + "|".join(_composite_sig(rec))
+        else:
+            weak_counter += 1
+            method, merge_key = "kept_separate_weak_id", f"weak:{weak_counter}"
+
+        ent = {
+            "id": rec["circuit_id_raw"] or (rec["raw"].get("breaker")
+                  or rec["raw"].get("load_name") or "circuit"),
+            "type": "circuit", "source_tiles": [], "bbox_union": None,
+            "confidence": 0.0, "conflicts": [],
+            "merge_key": merge_key, "merge_method": method,
+        }
+        cl = {"ent": ent, "bboxes": [], "strong_ids": set(), "weak_ids": set(),
+              "rank": _MERGE_RANK[method]}
+        _apply(cl, rec)
+        clusters.append(cl)
+        if rec["nid"] and not rec["weak"]:
+            strong_index.setdefault(rec["nid"], cl)
+        if _composite_strength(rec) >= 2 and method != "kept_separate_weak_id":
+            comp_index.setdefault("comp:" + "|".join(_composite_sig(rec)), cl)
+
+    out = [cl["ent"] for cl in clusters]
+
+    # over-merge prevented: слабый id, распределённый по >1 кластеру
+    weak_nid_clusters: dict[str, set] = {}
+    for ci, cl in enumerate(clusters):
+        for wid in cl["weak_ids"]:
+            weak_nid_clusters.setdefault(wid, set()).add(ci)
+    overmerge_prevented = sum(len(s) - 1 for s in weak_nid_clusters.values() if len(s) > 1)
+
+    conflict_groups = _build_conflict_groups(out)
+    stats = {
+        "circuits_raw_count": len(records),
+        "circuits_merged_count": len(out),
+        "weak_id_count": sum(1 for r in records if r["weak"]),
+        "overmerge_prevented_count": overmerge_prevented,
+        "conflict_groups_count": len(conflict_groups),
+    }
+    return out, stats, conflict_groups
+
+
+def _build_conflict_groups(circuits: list[dict]) -> list[dict]:
+    """Цепи с ОДИНАКОВЫМ конкретным breaker, но разными load/power/current →
+    possible_conflict_group (req 6: не молчаливый merge, а явная группа)."""
+    by_breaker: dict[str, list[dict]] = {}
+    for c in circuits:
+        if _is_generic_breaker(c.get("breaker")):
+            continue
+        b = _norm_id(c.get("breaker"))
+        by_breaker.setdefault(b, []).append(c)
+    groups: list[dict] = []
+    for b, members in by_breaker.items():
+        if len(members) < 2:
+            continue
+        loads = {_norm_id(m.get("load_name")) for m in members} - {""}
+        powers = {_norm_num(m.get("calculated_power_kw")) for m in members} - {""}
+        currents = {_norm_num(m.get("calculated_current_a")) for m in members} - {""}
+        if len(loads) > 1 or len(powers) > 1 or len(currents) > 1:
+            groups.append({
+                "breaker": b,
+                "members": [m.get("id") for m in members],
+                "loads": sorted(loads), "powers": sorted(powers),
+                "currents": sorted(currents),
+            })
+    return groups
+
+
 def merge_tile_results(tile_results: list[dict], words: list[dict], zones: dict) -> dict:
     """Слить per-tile JSON в единый page graph с provenance и conflicts.
 
+    Цепи кластеризуются weak-id-aware логикой (см. ``_cluster_circuits``):
+    слабые circuit_id ('1'/'2'/'206'/'2Р'/'unknown') НЕ используются как
+    основной dedup-ключ — вместо них composite breaker+cable+load + overlap.
     В dry-run ``tile_results`` пуст → сущности пустые, но структура валидна.
     """
-    circuits: dict[str, dict] = {}
+    circuit_records: list[dict] = []
     equipment: dict[str, dict] = {}
     visible_text: list[str] = []
     vt_seen: set[str] = set()
@@ -958,27 +1199,7 @@ def merge_tile_results(tile_results: list[dict], words: list[dict], zones: dict)
         for c in payload.get("circuits") or []:
             if not isinstance(c, dict):
                 continue
-            cid = _norm_id(c.get("circuit_id") or c.get("breaker") or c.get("load_name"))
-            if not cid:
-                continue
-            ent = circuits.setdefault(cid, {
-                "id": c.get("circuit_id") or cid, "type": "circuit",
-                "source_tiles": [], "bbox_union": None, "confidence": 0.0,
-                "conflicts": [],
-            })
-            for fld in ("breaker", "breaker_params", "cable", "pipe", "load_name",
-                        "installed_power_kw", "calculated_power_kw",
-                        "calculated_current_a", "phase", "raw_text"):
-                _merge_field(ent, fld, c.get(fld), tile_id, ent["conflicts"])
-            if tile_id not in ent["source_tiles"]:
-                ent["source_tiles"].append(tile_id)
-            ent["bbox_union"] = _bbox_union(ent["bbox_union"], bbox_page)
-            try:
-                ent["confidence"] = max(ent["confidence"], float(c.get("confidence") or 0.0))
-            except (TypeError, ValueError):
-                pass
-            if c.get("partial"):
-                ent["partial"] = True
+            circuit_records.append(_make_circuit_record(c, tile_id, bbox_page))
 
         for e in payload.get("equipment") or []:
             name = e.get("name") if isinstance(e, dict) else e
@@ -1040,9 +1261,13 @@ def merge_tile_results(tile_results: list[dict], words: list[dict], zones: dict)
     if tb_conflicts:
         title_block["_conflicts"] = tb_conflicts
 
+    circuits_out, merge_stats, conflict_groups = _cluster_circuits(circuit_records)
+
     return {
         "schema_version": SCHEMA_VERSION,
-        "circuits": list(circuits.values()),
+        "circuits": circuits_out,
+        "conflict_groups": conflict_groups,
+        "merge_stats": merge_stats,
         "equipment": list(equipment.values()),
         "visible_text": visible_text,
         "scheme_graph": {
@@ -1155,12 +1380,21 @@ def build_page_enriched_md(page_enriched: dict, diagnostics: dict, page: int, si
     for k in ("tiles_total", "tiles_processed", "tiles_failed", "words_total",
               "words_assigned_to_tiles", "words_assigned_percent",
               "circuits_detected", "equipment_detected", "connections_detected",
-              "conflicts_count"):
+              "conflicts_count", "circuits_raw_count", "circuits_merged_count",
+              "weak_id_count", "overmerge_prevented_count", "conflict_groups_count"):
         if k in diagnostics:
             L.append(f"- {k}: {diagnostics[k]}")
     warns = diagnostics.get("warnings") or []
     if warns:
         L.append(f"- warnings: {', '.join(str(w) for w in warns)}")
+
+    cgroups = page_enriched.get("conflict_groups") or []
+    if cgroups:
+        L.append("")
+        L.append("## Possible conflict groups (same breaker, different load/power)")
+        for g in cgroups[:30]:
+            L.append(f"- breaker {g.get('breaker')}: members={g.get('members')} "
+                     f"loads={g.get('loads')} powers={g.get('powers')} currents={g.get('currents')}")
     L.append("")
     return "\n".join(L)
 
@@ -1187,6 +1421,7 @@ def build_diagnostics(
     conflicts += len((page_enriched.get("title_block") or {}).get("_conflicts") or [])
     unresolved = sum(1 for cn in connections if isinstance(cn, dict)
                      and (cn.get("direction") == "unknown" or not cn.get("to")))
+    merge_stats = page_enriched.get("merge_stats") or {}
     return {
         "tiles_total": len(tiles),
         "tiles_processed": tiles_processed,
@@ -1200,6 +1435,13 @@ def build_diagnostics(
         "connections_detected": len(connections),
         "conflicts_count": conflicts,
         "unresolved_connections": unresolved,
+        # merge/dedup diagnostics (weak-id-aware кластеризация)
+        "circuits_raw_count": merge_stats.get("circuits_raw_count", len(circuits)),
+        "circuits_merged_count": merge_stats.get("circuits_merged_count", len(circuits)),
+        "weak_id_count": merge_stats.get("weak_id_count", 0),
+        "overmerge_prevented_count": merge_stats.get("overmerge_prevented_count", 0),
+        "conflict_groups_count": merge_stats.get(
+            "conflict_groups_count", len(page_enriched.get("conflict_groups") or [])),
         "warnings": list(warnings),
     }
 
@@ -1743,7 +1985,7 @@ __all__ = [
     "cfg_render_long_side", "cfg_overview_long_side", "cfg_max_pixels",
     "detect_large_sheet_candidate", "extract_page_words",
     "render_large_sheet_page", "generate_page_tiles", "detect_page_zones",
-    "should_route_to_large_sheet",
+    "should_route_to_large_sheet", "is_weak_circuit_id",
     "build_tile_prompt", "merge_tile_results", "build_page_enriched_md",
     "build_diagnostics", "run_large_sheet_enrichment",
     "run_large_sheet_enrichment_live", "compute_tile_cache_key",

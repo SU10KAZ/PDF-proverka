@@ -326,6 +326,116 @@ def test_merge_preserves_conflicts():
     assert any(cf["field"] == "breaker" for cf in conflicts)
 
 
+# ─── Weak-id-aware merge (после controlled live-test) ───────────────────────
+
+def _tile(tile_id, bbox, circuits):
+    return {"tile_id": tile_id, "bbox_page": bbox, "qwen": {"circuits": circuits}}
+
+
+def test_is_weak_circuit_id_matrix():
+    for v in ("", "unknown", "1", "2", "206", "234", "2Р", "3P", "QS", "QF", "ab", None):
+        assert ls.is_weak_circuit_id(v) is True, v
+    for v in ("ВРУ1-ОДН-33", "QF33", "ЩР-12", "ВРП-7"):
+        assert ls.is_weak_circuit_id(v) is False, v
+
+
+def test_weak_id_1_does_not_merge_distinct_circuits():
+    # одинаковый слабый id "1", но разные breaker/cable/load → НЕ объединять
+    page = ls.merge_tile_results([
+        _tile("t1", [0, 0, 100, 100],
+              [{"circuit_id": "1", "breaker": "QF12", "cable": "ВВГ 3х2.5", "load_name": "Свет"}]),
+        _tile("t2", [500, 500, 600, 600],
+              [{"circuit_id": "1", "breaker": "QF99", "cable": "ВВГ 5х6", "load_name": "Розетки"}]),
+    ], [], {"zones": []})
+    assert len(page["circuits"]) == 2
+    assert all(c["merge_method"] != "strong_id" for c in page["circuits"])
+
+
+def test_weak_id_206_does_not_merge_distinct_meters():
+    # "206" — номер счётчика; только load_name (слабый composite) → kept_separate
+    page = ls.merge_tile_results([
+        _tile("t1", [0, 0, 100, 100], [{"circuit_id": "206", "load_name": "Счётчик А"}]),
+        _tile("t2", [500, 0, 600, 100], [{"circuit_id": "206", "load_name": "Счётчик Б"}]),
+    ], [], {"zones": []})
+    assert len(page["circuits"]) == 2
+    assert all(c["merge_method"] == "kept_separate_weak_id" for c in page["circuits"])
+    assert page["merge_stats"]["overmerge_prevented_count"] == 1
+
+
+def test_strong_id_merges():
+    page = ls.merge_tile_results([
+        _tile("t1", [0, 0, 100, 100],
+              [{"circuit_id": "ВРУ1-ОДН-33", "breaker": "QF33", "cable": "ППГнг 5х2,5"}]),
+        _tile("t2", [9000, 9000, 9100, 9100],  # даже без overlap — strong id рулит
+              [{"circuit_id": "ВРУ1-ОДН-33", "breaker": "QF33", "load_name": "Вентиляция"}]),
+    ], [], {"zones": []})
+    assert len(page["circuits"]) == 1
+    c = page["circuits"][0]
+    assert c["merge_method"] == "strong_id"
+    assert c["cable"] == "ППГнг 5х2,5" and c["load_name"] == "Вентиляция"
+
+
+def test_composite_overlap_merges():
+    # слабый id, но одинаковый breaker+cable+load и пересекающиеся tiles → merge
+    page = ls.merge_tile_results([
+        _tile("t1", [0, 0, 100, 100],
+              [{"circuit_id": "unknown", "breaker": "QF5", "cable": "ВВГ 3х2.5", "load_name": "Насос"}]),
+        _tile("t2", [90, 0, 190, 100],
+              [{"circuit_id": "unknown", "breaker": "QF5", "cable": "ВВГ 3х2.5", "load_name": "Насос"}]),
+    ], [], {"zones": []})
+    assert len(page["circuits"]) == 1
+    assert page["circuits"][0]["merge_method"] == "overlap_confirmed"
+    assert sorted(page["circuits"][0]["source_tiles"]) == ["t1", "t2"]
+
+
+def test_same_breaker_diff_load_not_merged_conflict_group():
+    page = ls.merge_tile_results([
+        _tile("t1", [0, 0, 100, 100],
+              [{"circuit_id": "unknown", "breaker": "QF7", "load_name": "Свет",
+                "calculated_power_kw": 5}]),
+        _tile("t2", [500, 0, 600, 100],
+              [{"circuit_id": "unknown", "breaker": "QF7", "load_name": "Розетки",
+                "calculated_power_kw": 10}]),
+    ], [], {"zones": []})
+    assert len(page["circuits"]) == 2  # не объединены
+    groups = page["conflict_groups"]
+    assert len(groups) == 1
+    assert groups[0]["breaker"] == "QF7"
+    assert set(groups[0]["loads"]) == {"СВЕТ", "РОЗЕТКИ"}
+
+
+def test_merge_stats_and_diagnostics_counts():
+    page = ls.merge_tile_results([
+        _tile("t1", [0, 0, 100, 100],
+              [{"circuit_id": "1", "breaker": "QF1", "cable": "ВВГ 3х2.5", "load_name": "L1"}]),
+        _tile("t2", [9000, 0, 9100, 100],
+              [{"circuit_id": "1", "breaker": "QF2", "cable": "ВВГ 5х6", "load_name": "L2"}]),
+        _tile("t3", [0, 500, 100, 600],
+              [{"circuit_id": "ВРУ1-ОДН-9", "breaker": "QF9", "cable": "ВВГ 3х4", "load_name": "L3"}]),
+    ], [], {"zones": []})
+    ms = page["merge_stats"]
+    assert ms["circuits_raw_count"] == 3
+    assert ms["circuits_merged_count"] == 3   # все разные
+    assert ms["weak_id_count"] == 2           # "1" ×2 слабые, "ВРУ1-ОДН-9" сильный
+    diag = ls.build_diagnostics([], [], page, tiles_processed=0, tiles_failed=0,
+                                warnings=[], zones={"zones": []})
+    assert diag["circuits_raw_count"] == 3
+    assert diag["circuits_merged_count"] == 3
+    assert diag["weak_id_count"] == 2
+    assert "overmerge_prevented_count" in diag
+    assert "conflict_groups_count" in diag
+
+
+def test_page_enriched_has_merge_key_method_and_groups():
+    page = ls.merge_tile_results([
+        _tile("t1", [0, 0, 100, 100],
+              [{"circuit_id": "ВРУ1-ОДН-33", "breaker": "QF33", "cable": "ППГнг 5х2,5"}]),
+    ], [], {"zones": []})
+    c = page["circuits"][0]
+    assert "merge_key" in c and "merge_method" in c and "conflicts" in c
+    assert "conflict_groups" in page and "merge_stats" in page
+
+
 # ─── 9/10. page_enriched.json / .md содержат ожидаемое ──────────────────────
 
 def test_page_enriched_json_and_md_structure(tmp_path, monkeypatch):
