@@ -2458,7 +2458,24 @@ def _maybe_large_sheet_block(
         diag = _read_json_file(diag_path) or (summary.get("diagnostics") or {})
         body = ls_mod.build_large_sheet_embed_summary(
             pe, diag, json_path=str(pe_path), md_path=str(md_art))
-        return {
+        # Синтетический `description` с diff_anchors — чтобы буквальные
+        # large-sheet маркировки попали в IMAGE_DIFF_INDEX через общий
+        # _extract_anchors_from_description (у large-sheet нет Qwen-описания).
+        # build_enriched_md рендерит тело из large_sheet_md (проверка source
+        # идёт раньше description), так что на тело это не влияет.
+        try:
+            anchors = ls_mod.build_large_sheet_diff_anchors(pe)
+        except Exception:  # noqa: BLE001 — anchors не должны валить enrich
+            logger.debug("large-sheet diff_anchors build failed", exc_info=True)
+            anchors = None
+        det = pe.get("detection") if isinstance(pe.get("detection"), dict) else {}
+        description = {"diff_anchors": anchors} if anchors else None
+        if description is not None:
+            try:
+                description["confidence"] = float(det.get("confidence") or 0.0)
+            except (TypeError, ValueError):
+                description["confidence"] = 0.0
+        out = {
             "status": "done",
             "source": "large_sheet_enrichment",
             "large_sheet": True,
@@ -2468,6 +2485,9 @@ def _maybe_large_sheet_block(
             "diagnostics": diag,
             "usable_for_diff": True,
         }
+        if description is not None:
+            out["description"] = description
+        return out
 
     # артефакт отсутствует — НЕ запускаем модель в этой задаче
     auto = _env_bool("STAGE_COMPARISON_LARGE_SHEET_AUTO_RUN_MODEL", False)

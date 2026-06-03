@@ -1498,6 +1498,103 @@ def build_large_sheet_embed_summary(
     return body
 
 
+def build_large_sheet_diff_anchors(
+    page_enriched: dict,
+    *,
+    max_labels: int = 30,
+    max_ratings: int = 25,
+    max_connections: int = 20,
+) -> dict:
+    """Построить ``diff_anchors`` (схема v5) из page_enriched большого листа.
+
+    Возвращает ``{"labels":[{"raw_text":…}], "ratings":[{"raw_text":…}],
+    "connections":[{"from_raw":…,"to_raw":…}]}`` — тот же формат, что у v5
+    Qwen-блоков. Это позволяет встроить large-sheet маркировки в
+    ``IMAGE_DIFF_INDEX`` через существующий ``_extract_anchors_from_description``
+    без спец-ветки: ``_maybe_large_sheet_block`` кладёт результат в
+    ``item["description"]["diff_anchors"]``.
+
+    Источники: ``scheme_graph.nodes`` + equipment + сильные id цепей → labels;
+    цепи (кабель/ток/мощность/уставка автомата) → ratings;
+    ``scheme_graph.connections`` → connections. Буквальные значения, без
+    достройки рядов.
+    """
+    pe = page_enriched or {}
+    sg = pe.get("scheme_graph") or {}
+    circuits = pe.get("circuits") or []
+    equipment = pe.get("equipment") or []
+
+    labels: list[dict] = []
+    seen_l: set[str] = set()
+
+    def _add_label(txt: Any) -> None:
+        t = str(txt or "").strip()
+        if len(t) <= 1:
+            return
+        key = t.lower()
+        if key in seen_l:
+            return
+        seen_l.add(key)
+        labels.append({"raw_text": t})
+
+    for n in (sg.get("nodes") or []):
+        _add_label(n.get("id") or n.get("label") or n.get("visible_mark") if isinstance(n, dict) else n)
+    for e in equipment:
+        _add_label(e.get("name") if isinstance(e, dict) else e)
+    for c in circuits:
+        cid = c.get("id") if isinstance(c, dict) else None
+        if cid and not is_weak_circuit_id(cid):
+            _add_label(cid)
+
+    ratings: list[dict] = []
+    seen_r: set[str] = set()
+
+    def _add_rating(txt: Any) -> None:
+        t = str(txt or "").strip()
+        if not t:
+            return
+        key = t.lower()
+        if key in seen_r:
+            return
+        seen_r.add(key)
+        ratings.append({"raw_text": t})
+
+    for c in circuits:
+        if not isinstance(c, dict):
+            continue
+        if c.get("cable"):
+            _add_rating(c.get("cable"))
+        cur = c.get("calculated_current_a")
+        if cur not in (None, ""):
+            _add_rating(f"{cur}А")
+        pw = c.get("calculated_power_kw", c.get("installed_power_kw"))
+        if pw not in (None, ""):
+            _add_rating(f"{pw}кВт")
+        if c.get("breaker_params"):
+            _add_rating(c.get("breaker_params"))
+
+    connections: list[dict] = []
+    seen_c: set[str] = set()
+    for cn in (sg.get("connections") or []):
+        if not isinstance(cn, dict):
+            continue
+        f = str(cn.get("from") or "").strip()
+        t = str(cn.get("to") or "").strip()
+        if not (f or t):
+            continue
+        key = f"{f}->{t}"
+        if key in seen_c:
+            continue
+        seen_c.add(key)
+        connections.append({"from_raw": f, "to_raw": t})
+
+    return {
+        "labels": labels[:max_labels],
+        "ratings": ratings[:max_ratings],
+        "connections": connections[:max_connections],
+    }
+
+
 # ─── TASK 11. Diagnostics / coverage ────────────────────────────────────────
 
 def build_diagnostics(

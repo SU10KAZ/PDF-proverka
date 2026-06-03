@@ -915,3 +915,72 @@ def test_job_endpoint_confirm_creates_job_no_sync_qwen(tmp_path, monkeypatch):
     assert g.status_code == 200 and g.json()["id"] == jid
     c = client.post(f"/api/stage-comparison/sessions/s1/large-sheet-enrichment-jobs/{jid}/cancel")
     assert c.status_code == 200 and c.json()["status"] == "cancelled"
+
+
+# ─── diff_anchors → IMAGE_DIFF_INDEX integration ────────────────────────────
+
+def _page_enriched_sample() -> dict:
+    return {
+        "schema_version": 1,
+        "circuits": [
+            {"id": "circuit", "cable": "ППГнг(А)-HF-(5х6)пвх.40",
+             "calculated_power_kw": 25.0, "calculated_current_a": 38.6},
+            {"id": "1", "breaker": "QS", "cable": "ППГнг(А)-HF-(5х6)пвх.40",
+             "load_name": "ЯК", "calculated_power_kw": 18.0, "calculated_current_a": 27.9},
+            {"id": "206", "breaker": "PRSNO", "cable": "ППГнг(А)-HF-(3х10)пвх.32",
+             "calculated_current_a": 46.4},
+        ],
+        "scheme_graph": {
+            "nodes": [{"id": "QS"}, {"id": "Wh"}, {"id": "ЯК"}, {"id": "ЯУР"},
+                      {"id": "УЭРМ-21-50-УХЛ4"}],
+            "connections": [{"from": "QS", "to": "Wh"}, {"from": "ЯК", "to": "ЯУР"},
+                            {"from": "УЭРМ-21-50-УХЛ4", "to": "QS"}],
+        },
+        "equipment": [],
+        "title_block": {"doc_code": "ЛЛ213"},
+        "detection": {"confidence": 0.8, "sheet_kind": "electrical_single_line"},
+    }
+
+
+def test_build_large_sheet_diff_anchors_v5_schema():
+    anchors = ls.build_large_sheet_diff_anchors(_page_enriched_sample())
+    labels = [x["raw_text"] for x in anchors["labels"]]
+    ratings = [x["raw_text"] for x in anchors["ratings"]]
+    conns = [(x["from_raw"], x["to_raw"]) for x in anchors["connections"]]
+    # буквальные маркировки узлов попадают в labels
+    assert "ЯК" in labels and "ЯУР" in labels and "УЭРМ-21-50-УХЛ4" in labels
+    # слабые id цепей ('1' / '206' — чисто числовой/однознач.) отфильтрованы
+    assert "1" not in labels and "206" not in labels
+    # номиналы кабель/ток/мощность
+    assert "ППГнг(А)-HF-(5х6)пвх.40" in ratings
+    assert any(r.endswith("А") for r in ratings) and any(r.endswith("кВт") for r in ratings)
+    # связи схемы
+    assert ("ЯК", "ЯУР") in conns and ("QS", "Wh") in conns
+
+
+def test_large_sheet_block_attaches_diff_anchors_for_index(tmp_path, monkeypatch):
+    """_maybe_large_sheet_block кладёт diff_anchors в item['description'], и они
+    проходят в IMAGE_DIFF_INDEX через общий _extract_anchors_from_description."""
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_ENRICHMENT_ENABLED", "true")
+    sid, pid, side, page = "s1", "p1", "left", 24
+    pe_dir = sc_paths.large_sheet_artifact_path(sid, pid, side, page, "page_enriched.json").parent
+    pe_dir.mkdir(parents=True, exist_ok=True)
+    pe = _page_enriched_sample()
+    (pe_dir / "page_enriched.json").write_text(json.dumps(pe, ensure_ascii=False), encoding="utf-8")
+    (pe_dir / "page_enriched.md").write_text("# md", encoding="utf-8")
+    (pe_dir / "diagnostics.json").write_text(json.dumps({"status": "done"}), encoding="utf-8")
+
+    mb = types.SimpleNamespace(page=page)
+    upd = mi._maybe_large_sheet_block(sid, pid, side, mb, "dense_scheme")
+    assert upd is not None and upd["source"] == "large_sheet_enrichment"
+    assert isinstance(upd.get("description"), dict)
+    assert upd["description"]["diff_anchors"]["labels"]
+
+    # extractor видит large-sheet labels
+    anchors = mi._extract_anchors_from_description(upd)
+    assert "ЯК" in anchors["labels"] and "ЯУР" in anchors["labels"]
+
+    # и они попадают в IMAGE_DIFF_INDEX
+    upd.setdefault("page", page)
+    idx = mi.build_image_diff_index([upd])
+    assert "ЯУР" in idx and "УЭРМ-21-50-УХЛ4" in idx
