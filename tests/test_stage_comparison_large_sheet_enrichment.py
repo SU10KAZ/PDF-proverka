@@ -8,12 +8,15 @@ from __future__ import annotations
 
 import asyncio
 import json
+import types
 from pathlib import Path
 
 import pytest
 
 from backend.app.services.stage_comparison import large_sheet_enrichment as ls
 from backend.app.services.stage_comparison import large_sheet_enrichment_jobs as ls_jobs
+from backend.app.services.stage_comparison import md_image_enrichment as mi
+from backend.app.services.stage_comparison import paths as sc_paths
 from backend.app.services.stage_comparison import store as store_mod
 
 
@@ -434,6 +437,159 @@ def test_page_enriched_has_merge_key_method_and_groups():
     c = page["circuits"][0]
     assert "merge_key" in c and "merge_method" in c and "conflicts" in c
     assert "conflict_groups" in page and "merge_stats" in page
+
+
+# ─── md_image_enrichment integration (gated, default OFF) ───────────────────
+
+def _write_ls_artifact(sid, pid, side, page, *, circuits=200):
+    pe = {
+        "detection": {"sheet_kind": "electrical_single_line", "format_hint": "A2x5"},
+        "mode": "model", "page": page, "side": side,
+        "title_block": {"doc_code": "X", "organization": "ООО Y"},
+        "circuits": [{"id": str(i), "breaker": f"QF{i}", "cable": "ППГнг",
+                      "load_name": f"L{i}", "merge_method": "composite",
+                      "conflicts": []} for i in range(circuits)],
+        "conflict_groups": [], "merge_stats": {"circuits_raw_count": circuits},
+    }
+    diag = {"tiles_total": 8, "circuits_detected": circuits, "conflicts_count": 2,
+            "overmerge_prevented_count": 1, "warnings": []}
+    sc_paths.large_sheet_artifact_path(sid, pid, side, page, "page_enriched.json").write_text(
+        json.dumps(pe, ensure_ascii=False), encoding="utf-8")
+    sc_paths.large_sheet_artifact_path(sid, pid, side, page, "diagnostics.json").write_text(
+        json.dumps(diag, ensure_ascii=False), encoding="utf-8")
+
+
+def test_gate_disabled_returns_none(monkeypatch):
+    monkeypatch.delenv("STAGE_COMPARISON_LARGE_SHEET_ENRICHMENT_ENABLED", raising=False)
+    mb = types.SimpleNamespace(page=24, block_id="b1")
+    assert mi._maybe_large_sheet_block("s1", "p1", "left", mb, "dense_scheme") is None
+
+
+def test_gate_enabled_missing_artifact_not_prepared(monkeypatch):
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_ENRICHMENT_ENABLED", "true")
+    mb = types.SimpleNamespace(page=24, block_id="b1")
+    upd = mi._maybe_large_sheet_block("s1", "p1", "left", mb, "dense_scheme")
+    assert upd is not None
+    assert upd["status"] == "large_sheet_not_prepared"
+    assert upd["source"] == "large_sheet_enrichment"
+    assert upd["usable_for_diff"] is False
+    assert "Запустите Large Sheet Enrichment" in upd["large_sheet_md"]
+    assert "large_sheet_not_prepared" in upd["large_sheet_warnings"]
+
+
+def test_gate_enabled_existing_artifact_used_no_qwen(monkeypatch):
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_ENRICHMENT_ENABLED", "true")
+    _write_ls_artifact("s1", "p1", "left", 24, circuits=5)
+    mb = types.SimpleNamespace(page=24, block_id="b1")
+    # candidate via existing artifact даже если block_type обычный
+    upd = mi._maybe_large_sheet_block("s1", "p1", "left", mb, "photo_or_general")
+    assert upd is not None
+    assert upd["status"] == "done"
+    assert upd["source"] == "large_sheet_enrichment"
+    assert upd["large_sheet"] is True
+    assert "Цепи" in upd["large_sheet_md"]
+    assert upd["page_enriched_json_path"].endswith("page_enriched.json")
+    assert isinstance(upd["diagnostics"], dict)
+
+
+def test_gate_ordinary_block_old_path(monkeypatch):
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_ENRICHMENT_ENABLED", "true")
+    mb = types.SimpleNamespace(page=5, block_id="b1")  # нет артефакта, не dense
+    assert mi._maybe_large_sheet_block("s1", "p1", "left", mb, "photo_or_general") is None
+
+
+def test_embed_summary_compact_does_not_exceed_limit(monkeypatch):
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_ENRICHMENT_ENABLED", "true")
+    _write_ls_artifact("s1", "p1", "left", 24, circuits=200)
+    mb = types.SimpleNamespace(page=24, block_id="b1")
+    upd = mi._maybe_large_sheet_block("s1", "p1", "left", mb, "dense_scheme")
+    body = upd["large_sheet_md"]
+    # компактно: показаны первые 12, не все 200; есть указание на остаток
+    assert "показаны первые 12" in body
+    assert "ещё 188 цепей" in body
+    assert len(body) < 6500
+
+
+def test_build_enriched_md_renders_large_sheet_source():
+    md = "### СТРАНИЦА 24\n\n### BLOCK [IMAGE]: img-024\nВРУ ЩР QF схема\n"
+    blocks = mi.parse_md_blocks(md)
+    descs = [{"order": b.order, "source": "large_sheet_enrichment", "status": "done",
+              "large_sheet_md": "### Большой лист\n\nТЕЛО-СВОДКИ-LS\n"}
+             for b in blocks if b.is_image]
+    assert descs, "expected an image block"
+    enriched = mi.build_enriched_md(blocks, descs)
+    assert "QWEN_IMAGE_DESCRIPTION_START" in enriched
+    assert "ТЕЛО-СВОДКИ-LS" in enriched
+
+
+@pytest.mark.asyncio
+async def test_enrich_side_uses_artifact_no_qwen(monkeypatch, tmp_path):
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_ENRICHMENT_ENABLED", "true")
+    monkeypatch.setenv("STAGE_COMPARISON_GRAPHIC_LLM_PROVIDER", "local_openai_compatible")
+    monkeypatch.setenv("STAGE_COMPARISON_GRAPHIC_LLM_BASE_URL", "https://test.example.com")
+    monkeypatch.setenv("STAGE_COMPARISON_GRAPHIC_LLM_AUTH", "basic")
+    monkeypatch.setenv("NGROK_AUTH_USER", "u")
+    monkeypatch.setenv("NGROK_AUTH_PASS", "p")
+
+    md = tmp_path / "left.md"
+    md.write_text("### СТРАНИЦА 24\n\n### BLOCK [IMAGE]: img-024\nВРУ ЩР QF однолинейная схема\n",
+                  encoding="utf-8")
+    _write_ls_artifact("sess", "pair", "left", 24, circuits=5)
+
+    calls = {"n": 0}
+
+    async def fake_describe(image_path, prompt):  # pragma: no cover
+        calls["n"] += 1
+        raise AssertionError("Qwen must NOT be called for large-sheet block")
+
+    summary = await mi.enrich_side(
+        "sess", "pair", "left",
+        md_path=str(md), result_json_path=None,
+        render_crop=lambda *a, **k: None,
+        describe_fn=fake_describe,
+        run_model=True,  # даже с run_model=True — Qwen не зовётся для large sheet
+    )
+    assert calls["n"] == 0
+    ls_items = [it for it in summary.items if it.get("source") == "large_sheet_enrichment"]
+    assert ls_items, "expected a large_sheet_enrichment item"
+    assert ls_items[0]["status"] == "done"
+    assert ls_items[0]["large_sheet"] is True
+    # enriched MD на диске содержит компактную сводку
+    p = sc_paths.text_enrichment_md_path("sess", "pair", "left")
+    assert p.exists()
+    assert "Large Sheet Enrichment" in p.read_text(encoding="utf-8")
+
+
+@pytest.mark.asyncio
+async def test_enrich_side_disabled_keeps_old_flow(monkeypatch, tmp_path):
+    monkeypatch.delenv("STAGE_COMPARISON_LARGE_SHEET_ENRICHMENT_ENABLED", raising=False)
+    monkeypatch.setenv("STAGE_COMPARISON_GRAPHIC_LLM_PROVIDER", "local_openai_compatible")
+    monkeypatch.setenv("STAGE_COMPARISON_GRAPHIC_LLM_BASE_URL", "https://test.example.com")
+    monkeypatch.setenv("STAGE_COMPARISON_GRAPHIC_LLM_AUTH", "basic")
+    monkeypatch.setenv("NGROK_AUTH_USER", "u")
+    monkeypatch.setenv("NGROK_AUTH_PASS", "p")
+
+    md = tmp_path / "left.md"
+    md.write_text("### СТРАНИЦА 24\n\n### BLOCK [IMAGE]: img-024\nВРУ ЩР QF однолинейная схема\n",
+                  encoding="utf-8")
+    _write_ls_artifact("sess2", "pair2", "left", 24, circuits=5)  # есть артефакт, но фича OFF
+
+    calls = {"n": 0}
+
+    async def fake_describe(image_path, prompt):
+        calls["n"] += 1
+        raise AssertionError("dry-run должен пропустить вызов")
+
+    summary = await mi.enrich_side(
+        "sess2", "pair2", "left",
+        md_path=str(md), result_json_path=None,
+        render_crop=lambda *a, **k: None,
+        describe_fn=fake_describe,
+        run_model=False,  # dry-run
+    )
+    # фича выключена → НИ один item не помечен large_sheet_enrichment
+    assert all(it.get("source") != "large_sheet_enrichment" for it in summary.items)
+    assert calls["n"] == 0
 
 
 # ─── 9/10. page_enriched.json / .md содержат ожидаемое ──────────────────────

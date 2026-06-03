@@ -504,6 +504,13 @@ def _env_int(name: str, default: int) -> int:
         return default
 
 
+def _env_bool(name: str, default: bool) -> bool:
+    raw = _os.environ.get(name)
+    if raw is None or raw == "":
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
 BLOCK_TYPE_CONFIG: dict[str, dict[str, Any]] = {
     BLOCK_TYPE_GENERAL: {
         "render_target_long_side": _env_int("STAGE_COMPARISON_GENERAL_RENDER_LONG_SIDE", 1200),
@@ -1405,6 +1412,14 @@ def build_enriched_md(blocks: list[MdBlock], descriptions: list[dict]) -> str:
             continue
 
         item_status = (d.get("status") or "").lower()
+
+        # Large Sheet Enrichment: вставляем готовую компактную сводку вместо
+        # обычного Qwen-описания (тело уже сформировано в large_sheet_md).
+        if d.get("source") == "large_sheet_enrichment":
+            body = d.get("large_sheet_md") or "### Большой лист\n\n(сводка отсутствует)\n"
+            _wrap(body, status=("done" if item_status == "done" else item_status or "pending"))
+            continue
+
         if item_status in ("pending", "no_image"):
             note = (
                 d.get("error")
@@ -2402,6 +2417,80 @@ def discover_image_blocks_for_side(md_text: Optional[str]) -> tuple[list[MdBlock
     return blocks, image_blocks
 
 
+def _read_json_file(path: Path) -> Optional[dict]:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
+def _maybe_large_sheet_block(
+    session_id: str, pair_id: str, side: str, mb: "MdBlock", block_type: str,
+) -> Optional[dict]:
+    """Gated large-sheet path. Возвращает dict item-обновлений, если блок надо
+    обслужить через Large Sheet Enrichment, иначе None (обычный поток).
+
+    НИКОГДА не вызывает Qwen / job / LM Studio. По умолчанию ВЫКЛЮЧЕНО
+    (``STAGE_COMPARISON_LARGE_SHEET_ENRICHMENT_ENABLED=false``) → всегда None.
+    """
+    from . import large_sheet_enrichment as ls_mod
+
+    if not ls_mod.large_sheet_enabled():
+        return None
+    page = getattr(mb, "page", None)
+    if not page or int(page) < 1:
+        return None
+    page = int(page)
+
+    summary = ls_mod.read_large_sheet_summary(session_id, pair_id, side, page)
+    has_artifact = (summary.get("status") not in (None, "not_run"))
+    is_candidate = ls_mod.should_route_to_large_sheet(block_type=block_type) or has_artifact
+    if not is_candidate:
+        return None
+
+    pe_path = paths_mod.large_sheet_artifact_path(session_id, pair_id, side, page, "page_enriched.json")
+    md_art = paths_mod.large_sheet_artifact_path(session_id, pair_id, side, page, "page_enriched.md")
+    diag_path = paths_mod.large_sheet_artifact_path(session_id, pair_id, side, page, "diagnostics.json")
+
+    use_existing = _env_bool("STAGE_COMPARISON_LARGE_SHEET_USE_EXISTING_ARTIFACTS", True)
+    if use_existing and has_artifact and pe_path.exists():
+        pe = _read_json_file(pe_path) or {}
+        diag = _read_json_file(diag_path) or (summary.get("diagnostics") or {})
+        body = ls_mod.build_large_sheet_embed_summary(
+            pe, diag, json_path=str(pe_path), md_path=str(md_art))
+        return {
+            "status": "done",
+            "source": "large_sheet_enrichment",
+            "large_sheet": True,
+            "large_sheet_md": body,
+            "page_enriched_json_path": str(pe_path),
+            "page_enriched_md_path": str(md_art),
+            "diagnostics": diag,
+            "usable_for_diff": True,
+        }
+
+    # артефакт отсутствует — НЕ запускаем модель в этой задаче
+    auto = _env_bool("STAGE_COMPARISON_LARGE_SHEET_AUTO_RUN_MODEL", False)
+    note = (
+        "### Большой лист обнаружен\n\n"
+        "Большой лист обнаружен, но page_enriched.md ещё не сформирован. "
+        "Запустите Large Sheet Enrichment.\n"
+    )
+    warns = ["large_sheet_not_prepared"]
+    if auto:
+        warns.append("auto_run_model_not_implemented_use_job")
+    return {
+        "status": "large_sheet_not_prepared",
+        "source": "large_sheet_enrichment",
+        "large_sheet": True,
+        "large_sheet_md": note,
+        "page_enriched_json_path": str(pe_path),
+        "page_enriched_md_path": str(md_art),
+        "large_sheet_warnings": warns,
+        "usable_for_diff": False,
+    }
+
+
 async def enrich_side(
     session_id: str,
     pair_id: str,
@@ -2601,6 +2690,32 @@ async def enrich_side(
                         resolution.image_path = Path(new_path)
                 except Exception:  # noqa: BLE001
                     logger.debug("re-render after classify refinement failed", exc_info=True)
+
+        # ── Large Sheet Enrichment gated path (default OFF) ───────────
+        # Если включён и блок относится к большому/плотному листу, обслуживаем
+        # его готовым page_enriched.md вместо single-image Qwen. Не зависит от
+        # crop-resolution (большому листу single crop не нужен). Qwen НЕ зовём.
+        try:
+            ls_updates = _maybe_large_sheet_block(session_id, pair_id, side, mb, block_type)
+        except Exception:  # noqa: BLE001 — large-sheet ветка не должна валить enrich
+            logger.debug("large-sheet gated path failed; falling back to normal flow",
+                         exc_info=True)
+            ls_updates = None
+        if ls_updates is not None:
+            item.update(ls_updates)
+            for w in ls_updates.get("large_sheet_warnings", []) or []:
+                if w not in item["warnings"]:
+                    item["warnings"].append(w)
+            descriptions.append(item)
+            st = item.get("status")
+            if st == "done":
+                summary.described += 1
+            elif st == "large_sheet_not_prepared":
+                summary.pending += 1
+            else:
+                summary.errors += 1
+            await _notify_progress(_block_idx, mb, item)
+            continue
 
         if resolution.status != "ok":
             item["status"] = "error" if resolution.status == "render_failed" else "no_image"

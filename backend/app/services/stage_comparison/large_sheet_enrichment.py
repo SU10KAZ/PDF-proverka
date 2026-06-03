@@ -1399,6 +1399,105 @@ def build_page_enriched_md(page_enriched: dict, diagnostics: dict, page: int, si
     return "\n".join(L)
 
 
+# ─── Compact embed summary (для md_image_enrichment integration) ────────────
+
+def build_large_sheet_embed_summary(
+    page_enriched: dict,
+    diagnostics: dict,
+    *,
+    json_path: str = "",
+    md_path: str = "",
+    max_circuits: int = 12,
+    max_chars: int = 6000,
+) -> str:
+    """Компактная markdown-сводка большого листа для вставки в
+    QWEN_IMAGE_DESCRIPTION (НЕ весь page_enriched.md).
+
+    Включает sheet_kind, штамп, первые ``max_circuits`` цепей + total,
+    оборудование, примечания, conflict_groups, диагностику, пути к полным
+    артефактам. Жёстко ограничена ``max_chars``.
+    """
+    pe = page_enriched or {}
+    diag = diagnostics or {}
+    det = pe.get("detection") or {}
+    circuits = pe.get("circuits") or []
+    equipment = pe.get("equipment") or []
+    tb = pe.get("title_block") or {}
+    notes = pe.get("notes") or []
+    cgroups = pe.get("conflict_groups") or []
+
+    L: list[str] = []
+    L.append("### Большой лист (Large Sheet Enrichment)")
+    L.append("")
+    L.append("- source: large_sheet_enrichment")
+    L.append(f"- sheet_kind: {det.get('sheet_kind', 'unknown')} | "
+             f"format: {det.get('format_hint')} | mode: {pe.get('mode', 'unknown')}")
+    if tb:
+        keys = [k for k in ("doc_code", "section_name", "stage", "sheet",
+                            "sheets_total", "sheet_name", "organization", "format")
+                if tb.get(k)]
+        if keys:
+            L.append("- title_block: " + "; ".join(f"{k}={tb.get(k)}" for k in keys))
+
+    L.append("")
+    shown = min(len(circuits), max_circuits)
+    L.append(f"#### Цепи: {len(circuits)} (показаны первые {shown})")
+    if circuits:
+        L.append("| id | breaker | cable | load | P(кВт) | I(А) | method | #conf |")
+        L.append("|---|---|---|---|---|---|---|---|")
+        for c in circuits[:max_circuits]:
+            L.append("| {id} | {b} | {cab} | {ld} | {p} | {i} | {m} | {cf} |".format(
+                id=c.get("id", ""), b=c.get("breaker", ""), cab=c.get("cable", ""),
+                ld=c.get("load_name", ""),
+                p=c.get("calculated_power_kw", c.get("installed_power_kw", "")),
+                i=c.get("calculated_current_a", ""), m=c.get("merge_method", ""),
+                cf=len(c.get("conflicts") or [])))
+        if len(circuits) > max_circuits:
+            L.append(f"… ещё {len(circuits) - max_circuits} цепей — в page_enriched.json")
+
+    if equipment:
+        L.append("")
+        L.append(f"#### Оборудование: {len(equipment)}")
+        for e in equipment[:8]:
+            L.append(f"- {e.get('name') if isinstance(e, dict) else e}")
+
+    if notes:
+        L.append("")
+        L.append(f"#### Примечания: {len(notes)}")
+        for n in notes[:5]:
+            L.append(f"- {n}")
+
+    if cgroups:
+        L.append("")
+        L.append(f"#### Возможные конфликты (same breaker, разные load/power): {len(cgroups)}")
+        for g in cgroups[:5]:
+            L.append(f"- breaker {g.get('breaker')}: loads={g.get('loads')} powers={g.get('powers')}")
+
+    L.append("")
+    L.append("#### Диагностика")
+    for k in ("tiles_total", "tiles_processed", "tiles_failed", "words_assigned_percent",
+              "circuits_detected", "equipment_detected", "connections_detected",
+              "conflicts_count", "circuits_raw_count", "circuits_merged_count",
+              "weak_id_count", "overmerge_prevented_count", "conflict_groups_count"):
+        if k in diag:
+            L.append(f"- {k}: {diag[k]}")
+    warns = diag.get("warnings") or []
+    if warns:
+        L.append(f"- warnings: {', '.join(str(w) for w in warns)}")
+
+    L.append("")
+    if json_path:
+        L.append(f"- page_enriched.json: {json_path}")
+    if md_path:
+        L.append(f"- page_enriched.md: {md_path}")
+
+    body = "\n".join(L)
+    if len(body) > max_chars:
+        body = body[:max_chars] + (
+            f"\n…(обрезано до {max_chars} символов; полная сводка — в page_enriched.json/md)\n")
+    return body
+
+
 # ─── TASK 11. Diagnostics / coverage ────────────────────────────────────────
 
 def build_diagnostics(
@@ -1987,6 +2086,7 @@ __all__ = [
     "render_large_sheet_page", "generate_page_tiles", "detect_page_zones",
     "should_route_to_large_sheet", "is_weak_circuit_id",
     "build_tile_prompt", "merge_tile_results", "build_page_enriched_md",
+    "build_large_sheet_embed_summary",
     "build_diagnostics", "run_large_sheet_enrichment",
     "run_large_sheet_enrichment_live", "compute_tile_cache_key",
     "read_large_sheet_summary", "scan_pair_side_for_large_sheets",

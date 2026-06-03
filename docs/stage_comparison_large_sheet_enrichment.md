@@ -307,21 +307,56 @@ circuit-conflicts **6 → 2**, спорный over-merge QS/ЯК ↔ УЗО-ЭЛ
 В dry-run `circuits_detected=0` (Qwen не запускался), но `tiles`/`words`/`zones`
 заполнены.
 
-## Как режим подключается к `md_image_enrichment`
+## Как режим подключается к `md_image_enrichment` (gated, default OFF)
 
-В этой итерации hot-path `enrich_side` **не изменён** (инвариант «не ломать
-md_image_enrichment»). Вместо врезки добавлена чистая gating-функция
-`should_route_to_large_sheet(detection, md_block, side_block, block_type)`:
+`enrich_side` в каждом image/imagine-блоке вызывает gated-хук
+`_maybe_large_sheet_block(session_id, pair_id, side, mb, block_type)` сразу
+после финальной классификации блока и **до** обычного crop→cache→describe.
+Хук **никогда не вызывает Qwen / job / LM Studio** и обёрнут в try/except
+(ошибка ветки → fallback на обычный поток).
 
-- при выключенном флаге всегда `False` → старый поток без изменений;
-- при включённом флаге → `True`, если блок `dense_scheme` или detector сказал
-  `is_large_sheet`.
+- **Флаг выключен** (`STAGE_COMPARISON_LARGE_SHEET_ENRICHMENT_ENABLED=false`,
+  default) → хук возвращает `None` → старый поток `md_image_enrichment` без
+  изменений. Обычные блоки (stamp/table/small scheme/photo) всегда идут старым
+  путём.
+- **Флаг включён** → блок считается large-sheet-кандидатом, если
+  `should_route_to_large_sheet(block_type)` (т.е. `dense_scheme`) **или** уже
+  есть готовый артефакт `page_enriched.json` для этой страницы.
+  - **Есть артефакт** (и `USE_EXISTING_ARTIFACTS=true`, default): читаем
+    `page_enriched.json`+`diagnostics.json`, строим компактную сводку
+    (`build_large_sheet_embed_summary`) и встраиваем её в
+    QWEN_IMAGE_DESCRIPTION. item: `status=done`, `source=large_sheet_enrichment`,
+    `large_sheet=true`, пути к артефактам, `diagnostics`. Qwen НЕ зовём.
+  - **Нет артефакта**: `AUTO_RUN_MODEL=false` (default) → `status=large_sheet_not_prepared`
+    + блок-заглушка «Большой лист обнаружен, но page_enriched.md ещё не
+    сформирован. Запустите Large Sheet Enrichment.». `AUTO_RUN_MODEL=true` →
+    то же + warning `auto_run_model_not_implemented_use_job` (live auto-run не
+    реализован — только через job).
 
-Фактическая врезка (вызвать large-sheet dry-run/preflight для подходящего
-блока и встроить `page_enriched.md` summary в секцию QWEN_IMAGE_DESCRIPTION +
-сохранить ссылку на `page_enriched.json`) — следующий шаг (см. next live-test
-plan). Это позволяет включать фичу постепенно, не рискуя существующим
-pipeline.
+`build_enriched_md` для item'ов с `source=large_sheet_enrichment` рендерит
+готовый `large_sheet_md` напрямую в обёртке QWEN_IMAGE_DESCRIPTION (не через
+обычный `_format_qwen_description_md`).
+
+### Компактная сводка (`build_large_sheet_embed_summary`)
+
+Не вставляет весь `page_enriched.md`. Включает: sheet_kind/format/штамп; первые
+**N=12** цепей таблицей (id/breaker/cable/load/P/I/merge_method/#conflicts) +
+total; оборудование; примечания; `conflict_groups`; блок диагностики (вкл.
+`circuits_raw_count`/`overmerge_prevented_count`/…); пути к полным
+`page_enriched.json`/`md`. Жёсткий cap `max_chars=6000`.
+
+### item в `<side>_image_descriptions.json`
+
+```json
+{
+  "status": "done",
+  "source": "large_sheet_enrichment",
+  "large_sheet": true,
+  "page_enriched_json_path": "comparison/.../page_0024/page_enriched.json",
+  "page_enriched_md_path": "comparison/.../page_0024/page_enriched.md",
+  "diagnostics": { ... }
+}
+```
 
 ## Endpoints
 
@@ -345,8 +380,10 @@ Job без `confirm=true` → `status="rejected_no_confirm"` (в фон не у�
 
 | Переменная | Default | Назначение |
 |---|---|---|
-| `STAGE_COMPARISON_LARGE_SHEET_ENRICHMENT_ENABLED` | `false` | главный включатель фичи (routing) |
-| `STAGE_COMPARISON_LARGE_SHEET_ENABLE_MODEL` | `false` | разрешение live-model (в этой итерации не активирует Qwen) |
+| `STAGE_COMPARISON_LARGE_SHEET_ENRICHMENT_ENABLED` | `false` | главный включатель фичи + routing в `md_image_enrichment` |
+| `STAGE_COMPARISON_LARGE_SHEET_USE_EXISTING_ARTIFACTS` | `true` | использовать готовый `page_enriched.md`/json вместо Qwen-описания блока |
+| `STAGE_COMPARISON_LARGE_SHEET_AUTO_RUN_MODEL` | `false` | live auto-run при отсутствии артефакта (НЕ реализован — только через job) |
+| `STAGE_COMPARISON_LARGE_SHEET_ENABLE_MODEL` | `false` | разрешение live-model (job-путь) |
 | `STAGE_COMPARISON_LARGE_SHEET_TILE_SIZE` | `1800` | размер tile (px) |
 | `STAGE_COMPARISON_LARGE_SHEET_TILE_OVERLAP` | `0.15` | overlap tiles (доля) |
 | `STAGE_COMPARISON_LARGE_SHEET_MAX_TILES` | `60` | макс. число tiles (иначе downscale) |
@@ -356,11 +393,11 @@ Job без `confirm=true` → `status="rejected_no_confirm"` (в фон не у�
 
 ## Ограничения (этой итерации)
 
-- **Live Qwen ещё не прогонялся** на реальном листе — код готов
-  (`_LIVE_MODEL_IMPLEMENTED = True`), но controlled live-test с реальным
-  provider'ом — следующий шаг (только с явным подтверждением).
+- Controlled live-test пройден (ИОС1.1 p.24): 8/8 tiles, реальные цепи/кабели,
+  0 галлюцинированных рядов; merge/dedup улучшен (weak-id-aware).
 - OCR для сканов без text layer не реализован (`words=[]` + warning).
-- Фактическая врезка в `enrich_side` отложена (есть только gating-helper).
+- Врезка в `enrich_side` сделана (gated, default OFF). Live auto-run при
+  отсутствии артефакта НЕ реализован — только готовые артефакты или job.
 - Zone detection — грубые эвристики, не CV.
 - Job выполняет страницы последовательно (без внутреннего параллелизма tiles).
 - UI debug-вкладка «Большие листы» отложена на следующий этап (backend готов и
@@ -397,10 +434,13 @@ Job без `confirm=true` → `status="rejected_no_confirm"` (в фон не у�
 3. Сверить результат: `circuits_detected > 0`, корректность QF/номиналов/
    кабелей, `words_assigned_percent` высокий, отсутствие галлюцинированных
    рядов (`QF1…QF50`), наличие `conflicts[]` там, где tiles расходятся.
-4. Врезать `should_route_to_large_sheet` в `enrich_side`: для подходящего
-   блока встроить `page_enriched.md` summary в QWEN_IMAGE_DESCRIPTION + ссылку
-   на `page_enriched.json`, не меняя поведение обычных блоков.
-5. Сверить, что `unified` comparison видит page graph как доп. evidence.
+4. ✅ Сделано — `_maybe_large_sheet_block` врезан в `enrich_side` (gated, default
+   OFF): для подходящего блока встраивает компактную сводку `page_enriched.md`
+   в QWEN_IMAGE_DESCRIPTION + ссылку на `page_enriched.json`, не меняя поведение
+   обычных блоков.
+5. Сверить на реальной enriched-MD паре с включённым флагом, что Opus при
+   сравнении стадий видит large-sheet сводку как доп. evidence (без regress
+   обычных блоков).
 6. UI debug-вкладка «Большие листы» (detected list / dry-run / job / ссылки).
 
 ## Связанные файлы
