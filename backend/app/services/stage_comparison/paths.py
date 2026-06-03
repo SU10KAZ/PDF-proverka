@@ -187,6 +187,81 @@ def text_enrichment_raw_dir(session_id: str, pair_id: str) -> Path:
     return p
 
 
+# ─── Large sheet enrichment (page-level tile-first OCR for huge sheets) ───
+
+
+def _page_token(page: int) -> str:
+    try:
+        n = int(page)
+    except (TypeError, ValueError):
+        raise ValueError("page must be an integer")
+    if n < 1:
+        raise ValueError("page must be >= 1")
+    return f"page_{n:04d}"
+
+
+def large_sheet_enrichment_dir(session_id: str, pair_id: str) -> Path:
+    """Корень `large_sheet_enrichment/` для пары.
+
+    Здесь живут page-level артефакты для больших/плотных листов: обзорный и
+    high-res рендеры, words.json с координатами, zones.json, tiles/,
+    tile_results.json, page_enriched.json/md и diagnostics.json. Это
+    независимая ветка от `text_enrichment/` (Qwen image descriptions) — она
+    не перезаписывает существующий pipeline.
+    """
+    p = pair_dir(session_id, pair_id) / "large_sheet_enrichment"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def large_sheet_side_dir(session_id: str, pair_id: str, side: str) -> Path:
+    if side not in ("left", "right"):
+        raise ValueError("side must be 'left' or 'right'")
+    p = large_sheet_enrichment_dir(session_id, pair_id) / side
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def large_sheet_page_dir(session_id: str, pair_id: str, side: str, page: int) -> Path:
+    """`large_sheet_enrichment/<side>/page_NNNN/` — все артефакты одной страницы."""
+    p = large_sheet_side_dir(session_id, pair_id, side) / _page_token(page)
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def large_sheet_tiles_dir(session_id: str, pair_id: str, side: str, page: int) -> Path:
+    p = large_sheet_page_dir(session_id, pair_id, side, page) / "tiles"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def large_sheet_prompts_dir(session_id: str, pair_id: str, side: str, page: int) -> Path:
+    p = large_sheet_page_dir(session_id, pair_id, side, page) / "prompts"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def large_sheet_raw_dir(session_id: str, pair_id: str, side: str, page: int) -> Path:
+    p = large_sheet_page_dir(session_id, pair_id, side, page) / "raw"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def large_sheet_artifact_path(
+    session_id: str, pair_id: str, side: str, page: int, name: str
+) -> Path:
+    """Путь к именованному артефакту страницы (overview.png, words.json, …).
+
+    name санитайзится, чтобы исключить traversal; результат всегда лежит
+    внутри page-папки.
+    """
+    safe = "".join(c for c in (name or "") if c.isalnum() or c in "-_.")
+    safe = safe.replace("..", "_")
+    if not safe:
+        raise ValueError("invalid artifact name")
+    return large_sheet_page_dir(session_id, pair_id, side, page) / safe
+
+
 # ─── Enriched comparison (Opus over enriched MD) ─────────────────────────
 
 
@@ -385,6 +460,13 @@ __all__ = [
     "text_enrichment_cache_dir",
     "text_enrichment_prompts_dir",
     "text_enrichment_raw_dir",
+    "large_sheet_enrichment_dir",
+    "large_sheet_side_dir",
+    "large_sheet_page_dir",
+    "large_sheet_tiles_dir",
+    "large_sheet_prompts_dir",
+    "large_sheet_raw_dir",
+    "large_sheet_artifact_path",
     "enriched_comparison_dir",
     "enriched_comparison_result_path",
     "enriched_comparison_prompt_path",

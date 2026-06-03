@@ -19,6 +19,7 @@ run_paid=true в POST .../graphic-diff и только через paid_api_guard
 """
 from __future__ import annotations
 
+import asyncio
 import base64
 import io
 import json
@@ -40,6 +41,7 @@ from backend.app.services.stage_comparison import pair_template as pair_template
 from backend.app.services.stage_comparison import graphic_llm_local as graphic_local_mod
 from backend.app.services.stage_comparison import md_image_enrichment as md_enrichment_mod
 from backend.app.services.stage_comparison import md_enrichment_jobs as md_enrichment_jobs_mod
+from backend.app.services.stage_comparison import large_sheet_enrichment as large_sheet_mod
 from backend.app.services.stage_comparison import enriched_comparison as enriched_compare_mod
 from backend.app.services.stage_comparison import unified_analysis as unified_analysis_mod
 from backend.app.services.stage_comparison import unified_analysis_jobs as unified_jobs_mod
@@ -1194,6 +1196,99 @@ async def run_md_enrichment_endpoint(
         }
 
     return {"pair_id": pair_id, "ran_model": bool(req.run_model), **results}
+
+
+# ─── Large Sheet Enrichment (page-level tile-first для огромных листов) ─────
+
+
+class LargeSheetRequest(BaseModel):
+    side: str = Field("left", pattern="^(left|right)$")
+    page: int = Field(..., ge=1)
+    force: bool = False
+    run_model: bool = False
+    confirm: bool = False
+    tile_size: Optional[int] = Field(None, ge=256, le=8000)
+    overlap: Optional[float] = Field(None, ge=0.0, le=0.6)
+
+
+def _require_pair(session_id: str, pair_id: str) -> dict:
+    session = store.get_session(session_id)
+    if session is None:
+        raise HTTPException(404, "Сессия не найдена")
+    pair = next((p for p in session.get("pairs") or [] if p.get("id") == pair_id), None)
+    if pair is None:
+        raise HTTPException(404, "Пара не найдена")
+    return pair
+
+
+@router.get("/sessions/{session_id}/pairs/{pair_id}/large-sheet-enrichment")
+async def get_large_sheet_enrichment_endpoint(
+    session_id: str, pair_id: str,
+    side: str = Query("left", pattern="^(left|right)$"),
+    page: Optional[int] = Query(None, ge=1),
+):
+    """Статус/сводка large-sheet enrichment.
+
+    * `page` задан  → сводка по конкретной странице (или `not_run`).
+    * `page` опущен → дешёвый detection-скан стороны (без Qwen, без рендера):
+      список страниц, распознанных как большие/плотные листы.
+    """
+    _require_pair(session_id, pair_id)
+    if page is not None:
+        return large_sheet_mod.read_large_sheet_summary(session_id, pair_id, side, page)
+    try:
+        return await asyncio.to_thread(
+            large_sheet_mod.scan_pair_side_for_large_sheets, session_id, pair_id, side
+        )
+    except (FileNotFoundError, KeyError) as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+
+@router.post("/sessions/{session_id}/pairs/{pair_id}/large-sheet-enrichment")
+async def run_large_sheet_enrichment_endpoint(
+    session_id: str, pair_id: str, req: LargeSheetRequest,
+):
+    """Сформировать large-sheet артефакты страницы.
+
+    `run_model=False` (default) — dry-run: render/words/zones/tiles/diagnostics,
+    Qwen НЕ вызывается.
+
+    `run_model=True` — в этой итерации live-model путь не реализован. Без
+    `confirm=true` → 400 (confirm_required). С `confirm=true` → 200 со
+    `status="rejected"`: Qwen НЕ вызывается ни при каком значении флагов.
+    """
+    _require_pair(session_id, pair_id)
+
+    if req.run_model:
+        if not req.confirm:
+            raise HTTPException(400, {
+                "code": "confirm_required",
+                "message": "run_model=true требует confirm=true.",
+            })
+        # Live-model путь намеренно не реализован в этой итерации — Qwen не зовём.
+        return {
+            "status": "rejected",
+            "reason": "live_model_not_implemented_in_this_build",
+            "ran_model": False,
+            "side": req.side, "page": req.page,
+        }
+
+    try:
+        result = await asyncio.to_thread(
+            large_sheet_mod.run_large_sheet_enrichment,
+            session_id, pair_id, req.side, req.page,
+            force=bool(req.force), run_model=False,
+            tile_size=req.tile_size, overlap=req.overlap,
+        )
+    except (FileNotFoundError, KeyError) as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("large-sheet enrichment failed")
+        raise HTTPException(500, f"large-sheet ошибка: {exc}") from exc
+
+    return {"pair_id": pair_id, "ran_model": False, **result}
 
 
 @router.post("/sessions/{session_id}/md-enrichment-jobs")
