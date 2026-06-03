@@ -427,15 +427,24 @@ def detect_large_sheet_candidate(
 # ─── TASK 2. PDF text words с координатами ──────────────────────────────────
 
 def extract_page_words(pdf_path: str | Path, page_number: int) -> list[dict]:
-    """Извлечь слова PDF text layer с bbox в координатах страницы (points).
+    """Извлечь слова PDF text layer с bbox в координатах рендера страницы.
 
     Возвращает список ``{text, bbox:[x0,y0,x1,y1], page, block_no, line_no,
     word_no, source}``. Если text layer пуст (скан) — пустой список (OCR-ветка
     оставлена на будущее, не реализована в этой итерации).
+
+    **Поворот страницы.** ``page.get_text("words")`` отдаёт координаты в
+    НЕповёрнутом mediabox-пространстве, а ``get_pixmap`` рендерит с учётом
+    ``/Rotate`` (в пространстве ``page.rect``). Без коррекции на повёрнутых
+    листах (270°/90°) слова не попадают на tiles. Поэтому каждый word-rect
+    прогоняется через ``page.rotation_matrix`` → координаты совпадают с
+    рендером. Для невёрнутых страниц матрица единичная (поведение не
+    меняется).
     """
     fitz, doc, page = _open_page(pdf_path, page_number)
     try:
         ox, oy = float(page.rect.x0), float(page.rect.y0)
+        rot = fitz.Matrix(page.rotation_matrix)  # копия: используем после close
         raw = page.get_text("words") or []
     finally:
         doc.close()
@@ -452,10 +461,13 @@ def extract_page_words(pdf_path: str | Path, page_number: int) -> list[dict]:
         txt = (text or "").strip()
         if not txt:
             continue
+        # в пространство рендера (учёт поворота) + нормализация (x0<=x1, y0<=y1)
+        r = (fitz.Rect(float(x0), float(y0), float(x1), float(y1)) * rot)
+        r.normalize()
         out.append({
             "text": txt,
-            "bbox": [round(float(x0) - ox, 2), round(float(y0) - oy, 2),
-                     round(float(x1) - ox, 2), round(float(y1) - oy, 2)],
+            "bbox": [round(r.x0 - ox, 2), round(r.y0 - oy, 2),
+                     round(r.x1 - ox, 2), round(r.y1 - oy, 2)],
             "page": page_number,
             "block_no": block_no,
             "line_no": line_no,

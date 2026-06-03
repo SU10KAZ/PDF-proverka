@@ -125,6 +125,38 @@ def test_extract_page_words_returns_bbox(tmp_path):
     assert any("QF" in x["text"] for x in words)
 
 
+def test_extract_page_words_handles_page_rotation(tmp_path):
+    """Регрессия: на повёрнутой странице (/Rotate 270) слова должны попадать в
+    координаты рендера (page.rect), а не в неповёрнутый mediabox. Иначе они не
+    ложатся на tiles (words_assigned_percent ≈ 1%)."""
+    import fitz
+
+    doc = fitz.open()
+    page = doc.new_page(width=2384, height=3370)  # портрет (mediabox)
+    for i in range(1, 30):
+        page.insert_text((100, 80 + i * 90), f"QF{i} 16A ВРУ ЩР-{i}")
+    page.set_rotation(270)  # лист отображается ландшафтно 3370×2384
+    pdf = tmp_path / "rotated.pdf"
+    doc.save(str(pdf))
+    doc.close()
+
+    words = ls.extract_page_words(pdf, 1)
+    assert len(words) > 10
+    # все слова должны лежать в пределах ПОВЁРНУТОГО rect (3370×2384), не 3370 по Y
+    render = ls.render_large_sheet_page(pdf, 1, tmp_path / "r.png", mode="highres")
+    assert render["width_px"] >= render["height_px"]  # ландшафт
+    pw, ph = render["page_width"], render["page_height"]
+    assert abs(pw - 3370) < 2 and abs(ph - 2384) < 2
+    for w in words:
+        assert w["bbox"][2] <= pw + 1, "word X вне повёрнутого rect — поворот не применён"
+        assert w["bbox"][3] <= ph + 1, "word Y вне повёрнутого rect — поворот не применён"
+    # и они реально назначаются на tiles
+    tiles = ls.generate_page_tiles(render, words, tmp_path / "tiles")
+    assigned = sum(1 for w in words
+                   if any(ls._intersects(w["bbox"], t["bbox_page"]) for t in tiles))
+    assert assigned / len(words) >= 0.9
+
+
 # ─── 3. Tile generation с overlap ───────────────────────────────────────────
 
 def test_generate_page_tiles_overlapping(tmp_path):
