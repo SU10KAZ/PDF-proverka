@@ -115,6 +115,12 @@ class ProblemBlockRetryConfig:
     # Per-block min long side below which tiling is pointless (single tile).
     min_long_side_for_tiling: int = 1400
 
+    # Проактивный тайлинг для плотных схем (scheme/dense_scheme) ДАЖЕ когда
+    # baseline выглядит «ок»: мелочь (коэффициенты ТТ, сечения, 0,5S) часто
+    # смазывается на цельном проходе, но Qwen всё равно возвращает валидный JSON
+    # с нормальным confidence и не попадает ни в один problem-сигнал. Default OFF.
+    proactive_for_dense: bool = False
+
     @classmethod
     def from_env(cls) -> "ProblemBlockRetryConfig":
         return cls(
@@ -137,6 +143,7 @@ class ProblemBlockRetryConfig:
             max_total_sec_per_block=_env_int("STAGE_COMPARISON_QWEN_TILE_MAX_TOTAL_SEC_PER_BLOCK", 1200),
             cache_enabled=_env_bool("STAGE_COMPARISON_QWEN_TILE_CACHE_ENABLED", True),
             min_long_side_for_tiling=_env_int("STAGE_COMPARISON_QWEN_TILE_MIN_LONG_SIDE", 1400),
+            proactive_for_dense=_env_bool("STAGE_COMPARISON_QWEN_TILE_PROACTIVE_FOR_DENSE", False),
         )
 
 
@@ -224,6 +231,16 @@ def should_retry_problem_block(
     if cfg.mode != "tiled":
         return False, f"mode_not_supported:{cfg.mode}"
 
+    # GRSH (плотная однолинейная схема ГРЩ): tile mode РЕинтродуцирует ложные
+    # ряды (controlled experiment attempt_06). Никогда не тайлим такие блоки в
+    # обычном flow — только при явном debug-override. block_type сравнивается
+    # литералом, чтобы не импортировать md_image_enrichment (circular import).
+    block_type = ((result or {}).get("block_type") or "").strip()
+    if block_type == "dense_grsh_singleline" and not _env_bool(
+        "STAGE_COMPARISON_QWEN_TILE_ALLOW_GRSH", False
+    ):
+        return False, "grsh_no_tiling"
+
     status = (result or {}).get("status")
     desc = (result or {}).get("description") if isinstance(result, dict) else None
     warnings = [str(w).lower() for w in (result or {}).get("warnings", []) or []]
@@ -283,6 +300,14 @@ def should_retry_problem_block(
         blob = (str(desc.get("summary") or "") + " " + str(desc.get("error") or "")).lower()
     if any(m in blob for m in _BAD_OUTPUT_MARKERS):
         return True, "bad_output_marker"
+
+    # Проактивный тайлинг (под флагом): блок прошёл все problem-проверки, но это
+    # плотная схема — мелкий текст мог смазаться на цельном проходе. Тайлим, чтобы
+    # добрать детали. Baseline сохраняется; merge не теряет хороший вывод.
+    if cfg.proactive_for_dense:
+        block_type = ((result or {}).get("block_type") or "").strip()
+        if block_type in ("scheme", "dense_scheme"):
+            return True, "large_graphic_proactive"
 
     return False, "ok"
 

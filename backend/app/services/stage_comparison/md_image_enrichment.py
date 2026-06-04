@@ -191,6 +191,26 @@ QWEN_IMAGE_DESCRIPTION_PROMPT = """Ты анализируешь изображ�
 # стадии появились/исчезли позиции вроде «ЩР-1а», «ВРУ-2 с.ш.1», «QF3».
 PROMPT_VERSION_GENERAL = "v4_compact"
 PROMPT_VERSION_SCHEME = "v5_scheme_diff_anchors"
+# r1 (flag-gated): схемный prompt + фиксированные доменные поля (domain_fields)
+# с явным «не указано» для отсутствующих. Отдельная версия → отдельный cache-key,
+# старый v5-кеш не задевается, активируется только при включённом флаге.
+PROMPT_VERSION_SCHEME_DOMAIN = "v6_scheme_domain_fields"
+# GRSH single-shot prompt (controlled experiment 2026-06-04, attempt_05):
+# плотные однолинейные схемы ГРЩ получают отдельный prompt с инъекцией
+# Chandra-OCR-словаря буквальных маркировок + жёсткий анти-ряд / анти-переименование.
+# Single-shot (max_continuations=0), без tile mode. Отдельная prompt-версия →
+# отдельный cache-key (старый v5-кеш этих блоков не подхватывается, нужен
+# re-enrichment). v8 — GRSH + domain_fields (flag-gated).
+PROMPT_VERSION_GRSH = "v7_grsh_singleline"
+PROMPT_VERSION_GRSH_DOMAIN = "v8_grsh_domain_fields"
+
+# Все «схемные» prompt-версии (для prompt_family-метки и diagnostics).
+_SCHEME_FAMILY_VERSIONS = frozenset({
+    PROMPT_VERSION_SCHEME,
+    PROMPT_VERSION_SCHEME_DOMAIN,
+    PROMPT_VERSION_GRSH,
+    PROMPT_VERSION_GRSH_DOMAIN,
+})
 
 
 QWEN_SCHEME_DIFF_ANCHORS_PROMPT = """Ты анализируешь однолинейную/структурную схему из проектной документации (электрика, ОВиК, водопровод, автоматика, слаботочка).
@@ -298,6 +318,69 @@ relation — «питает» / «резервирует» / «подключё�
 """
 
 
+# ─── GRSH single-line prompt семейство (controlled experiment 2026-06-04) ──
+#
+# Для плотных однолинейных схем ГРЩ (главный распределительный щит) обычный
+# v5-prompt стабильно галлюцинировал ряды (ТП1…ТП22, ГРЩ1-РП1-8…40) и подменял
+# трансформаторы Т1/Т2 на ТП1/ТП2. Эксперимент (attempt_05) показал рабочий
+# рецепт:
+#   * single-shot @ image_long_side≈2000, max_tokens≈9000 (continuation выкл);
+#   * инъекция Chandra-OCR-словаря буквальных маркировок ПЕРЕД prompt'ом —
+#     модель строит СТРУКТУРУ/СВЯЗИ, опираясь на словарь, а не выдумывает;
+#   * жёсткий анти-ряд («вводов всего ДВА, не достраивай ряды») + анти-rename
+#     («если в словаре Т1/Т2 — пиши Т1/Т2, не ТП1/ТП2»);
+#   * раздельные взаимоисключающие бакеты verified / visual_unverified / rejected;
+#   * tile mode НЕ применять (он РЕинтродуцирует ложные ряды — attempt_06).
+#
+# Словарь Chandra инжектится per-block в enrich_side (build_grsh_anchor_vocab_block),
+# поэтому здесь — статический шаблон правил и схемы JSON.
+QWEN_GRSH_SINGLELINE_PROMPT = """Перед тобой ОДНОЛИНЕЙНАЯ СХЕМА ГРЩ (главный распределительный щит) из проектной документации.
+
+Твоя задача — восстановить СТРУКТУРУ и СВЯЗИ (кто кого питает: ввод → секция ГРЩ → автомат QF → кабель → потребитель ВРУ/ШУ), опираясь на словарь буквальных маркировок Chandra-OCR (он подан ВЫШЕ как РЕФЕРЕНС, а не как полное описание).
+
+ПРАВИЛА (нарушение = брак):
+1. Возвращай ТОЛЬКО валидный, полностью закрытый JSON. Никакого markdown, текста до/после JSON, комментариев `//`. Не используй многоточие (`…`, `...`, «и т.д.»).
+2. В `verified_anchors` клади ТОЛЬКО маркировки, которые есть в словаре Chandra ИЛИ буквально читаются на картинке и совпадают по форме со словарём.
+3. Если на картинке видно что-то, чего НЕТ в словаре — это `visual_unverified_anchors` (НЕ verified). Каждая маркировка живёт ровно в ОДНОМ списке (не дублируй в verified/visual/rejected/uncertain одновременно).
+4. ЗАПРЕЩЕНО придумывать числовые ряды (ТП1…ТП22, ВРУ1…ВРУ20, ГРЩ1-РП1…РП40, QF1…QF50). В этой схеме вводов всего ДВА. Отходящих ВРУ — единицы (см. словарь). Не достраивай ряды до «дом на N квартир».
+5. `uncertainties` — ТОЛЬКО для нечитаемых/сомнительных надписей. Если видишь намёк на ряд, но не уверен — добавь ОДИН элемент в `uncertainties` с перечислением читаемого, НЕ плоди элементы.
+6. Не переноси маркировки с соседних листов/таблиц. Только то, что на этой схеме.
+7. Числовые номиналы (А, кВт, кА, мм²) бери из словаря или из чётко читаемого текста рядом с элементом. Не добавляй типовые номиналы «из каталога» без видимого основания.
+8. НЕ переименовывай элементы. Если в словаре трансформатор Т1/Т2 — пиши Т1/Т2, НЕ заменяй на ТП1/ТП2. Если в словаре ШУ-ХЦ / ШУ-АПТ — так и пиши. Используй ровно ту форму маркировки, что в словаре/на картинке.
+9. Не считай разными потребителями те, что отличаются лишь формой записи (ШУ-ХЦ ↔ ВРУ-ХЦ, ШУ-АПТ ↔ ВРУ-АПТ) — если сомневаешься, отметь в `uncertainties`.
+
+Верни ТОЛЬКО JSON по схеме (заполнители `<...>` — шаблон, не пиши их в ответе):
+
+{
+"status": "done",
+"sheet_kind": "electrical_single_line",
+"summary": "<1-2 предложения о структуре схемы, без новых фактов>",
+"verified_anchors": {
+"labels": ["<буквальные маркировки, подтверждённые словарём Chandra>"],
+"cables": ["<кабели>"],
+"ratings": ["<номиналы A/кВт/кА/мм²>"],
+"equipment": ["<оборудование: счётчики, АУКРМ, АВР, ТТ>"]
+},
+"visual_unverified_anchors": ["<видно на картинке, но НЕТ в словаре Chandra>"],
+"rejected_anchors": ["<что ты НЕ стал выписывать: предполагаемый ряд, нечитаемое>"],
+"panels": [
+{"name": "<ГРЩ1 РП1>", "type": "main_switchboard_section", "fed_from": "<Т1|ТП1>", "input": {"label": "<Ввод 1>", "busbar": "<3L/PEN Al 3200А>"}}
+],
+"circuits": [
+{"id": "<1ГРЩ-ВРУ1>", "source": "<ГРЩ1 РП1>", "breaker": "<1QF6>", "breaker_params": "<3P 800A>", "cable": "<ППГнг(А)-HF 3х(5х120)>", "consumer": "<ВРУ1>", "load": {"p_calc_kw": null, "i_calc_a": null}, "validation": {"label_status": "verified_by_chandra|visual_only|rejected", "cable_status": "verified_by_chandra|visual_only|rejected"}, "confidence": 0.0}
+],
+"connections": [
+{"from": "<Т1>", "to": "<ГРЩ1 РП1>", "via": "<шинопровод 3200А>", "status": "verified_by_chandra|visual_only", "confidence": 0.0}
+],
+"uncertainties": ["<нечитаемое/сомнительное>"],
+"warnings": [],
+"confidence": 0.0
+}
+
+Никакого markdown вне JSON. Все скобки и кавычки закрыты.
+"""
+
+
 # ─── Block-type классификатор ────────────────────────────────────────────
 #
 # Классификатор image-блока по эвристикам из заголовка/окружения MD.
@@ -311,6 +394,10 @@ relation — «питает» / «резервирует» / «подключё�
 
 BLOCK_TYPE_SCHEME = "scheme"
 BLOCK_TYPE_DENSE_SCHEME = "dense_scheme"
+# Плотная однолинейная схема ГРЩ — особый подтип dense_scheme. Имеет приоритет
+# выше dense_scheme: использует GRSH single-shot prompt + Chandra-словарь и
+# запрещает tile mode. См. QWEN_GRSH_SINGLELINE_PROMPT.
+BLOCK_TYPE_DENSE_GRSH = "dense_grsh_singleline"
 BLOCK_TYPE_TABLE_LEGEND = "table_legend"
 BLOCK_TYPE_STAMP = "stamp"
 BLOCK_TYPE_PLAN = "plan"
@@ -374,12 +461,76 @@ _PLAN_MARKERS = (
     "трасса",
 )
 
+# ─── GRSH (главный распределительный щит) — детекция плотной однолинейной ──
+# Заголовок/лист должен явно говорить о ГРЩ (однолинейная/принципиальная схема
+# ГРЩ). Без этого обычная схема с упоминанием «ГРЩ» в сноске не становится GRSH.
+_GRSH_HEADING_MARKERS = (
+    "однолинейная схема грщ",
+    "схема электрическая принципиальная грщ",
+    "принципиальная схема грщ",
+    "схема грщ",
+    "однолинейная схема главного распределительного щита",
+)
+
+# Группы маркеров Chandra-raw: для подтверждения, что это реально плотная
+# однолинейная ГРЩ, требуется несколько РАЗНЫХ групп (≥ _GRSH_MIN_MARKER_GROUPS).
+# Каждая группа — кортеж вариантов (любого достаточно для попадания группы).
+_GRSH_CHANDRA_MARKER_GROUPS: tuple[tuple[str, ...], ...] = (
+    ("грщ",),
+    ("вру",),
+    ("тп1", "тп2", "т1", "т2"),     # вводы от ТП / трансформаторов
+    ("qf", "qs"),                    # автоматы / разъединители
+    ("ппгнг", "кппгнг", "пугпнг"),  # кабели ППГнг(А)-HF
+    ("шинопровод",),
+    ("аукрм", "акврм", "укрм"),     # компенсация реактивной мощности
+)
+_GRSH_MIN_MARKER_GROUPS = 3
+
 
 def _count_marker_hits(text: str, markers: tuple[str, ...]) -> int:
     if not text:
         return 0
     low = text.lower()
     return sum(low.count(m.lower()) for m in markers)
+
+
+def _count_marker_groups(text: str, groups: tuple[tuple[str, ...], ...]) -> int:
+    """Число РАЗНЫХ групп маркеров, у которых сработал хотя бы один вариант."""
+    if not text:
+        return 0
+    low = text.lower()
+    hit = 0
+    for group in groups:
+        if any(variant in low for variant in group):
+            hit += 1
+    return hit
+
+
+def _is_dense_grsh_singleline(excerpt: str, block_text: str) -> bool:
+    """Эвристика: это ли плотная однолинейная схема ГРЩ?
+
+    Требует ОДНОВРЕМЕННО:
+      * явное упоминание ГРЩ в заголовке/окружении (`_GRSH_HEADING_MARKERS`);
+      * ≥ `_GRSH_MIN_MARKER_GROUPS` РАЗНЫХ групп электро-маркеров в
+        Chandra-тексте блока (ГРЩ / ВРУ / ТП-Т / QF-QS / кабели / шинопровод /
+        компенсация).
+
+    Вызывается только когда блок уже распознан как электрическая схема
+    (`looks_like_scheme`), поэтому имеет приоритет над dense_scheme.
+    """
+    low_excerpt = (excerpt or "").lower()
+    heading_grsh = any(h in low_excerpt for h in _GRSH_HEADING_MARKERS)
+    if not heading_grsh:
+        # Запасной сигнал: «грщ» рядом с «однолинейн»/«принципиальн» в заголовке.
+        if "грщ" in low_excerpt and ("однолинейн" in low_excerpt
+                                     or "принципиальн" in low_excerpt):
+            heading_grsh = True
+    if not heading_grsh:
+        return False
+    # Chandra-маркеры считаем по тексту самого блока + окружению.
+    marker_source = (block_text or "") + "\n" + (excerpt or "")
+    groups = _count_marker_groups(marker_source, _GRSH_CHANDRA_MARKER_GROUPS)
+    return groups >= _GRSH_MIN_MARKER_GROUPS
 
 
 def classify_image_block(
@@ -433,6 +584,10 @@ def classify_image_block(
         or ("однолинейн" in excerpt.lower() and scheme_total >= 2)
     )
     if looks_like_scheme:
+        # GRSH плотная однолинейная схема имеет приоритет над dense_scheme:
+        # отдельный single-shot prompt + Chandra-словарь, без tile mode.
+        if _is_dense_grsh_singleline(excerpt, block_text):
+            return BLOCK_TYPE_DENSE_GRSH
         # Признаки плотной схемы:
         #   - суммарно ≥6 strong-маркеров (например, длинная цепочка ВРУ/ЩР/QF);
         #   - суммарно ≥10 любых scheme-маркеров;
@@ -533,6 +688,16 @@ BLOCK_TYPE_CONFIG: dict[str, dict[str, Any]] = {
         "max_continuations": _env_int("STAGE_COMPARISON_DENSE_SCHEME_MAX_CONTINUATIONS", 1),
         "prompt_version": PROMPT_VERSION_SCHEME,
     },
+    # GRSH single-shot профиль (attempt_05): крупнее картинка, больше токенов,
+    # БЕЗ continuation (continuation-merge на этом классе листов ломается —
+    # модель не склеивает фрагмент, salvage откатывается к началу).
+    BLOCK_TYPE_DENSE_GRSH: {
+        "render_target_long_side": _env_int("STAGE_COMPARISON_GRSH_RENDER_LONG_SIDE", 2200),
+        "image_input_long_side": _env_int("STAGE_COMPARISON_GRSH_IMAGE_LONG_SIDE", 2000),
+        "max_tokens": _env_int("STAGE_COMPARISON_GRSH_MAX_TOKENS", 9000),
+        "max_continuations": _env_int("STAGE_COMPARISON_GRSH_MAX_CONTINUATIONS", 0),
+        "prompt_version": PROMPT_VERSION_GRSH,
+    },
     BLOCK_TYPE_TABLE_LEGEND: {
         "render_target_long_side": _env_int("STAGE_COMPARISON_TABLE_RENDER_LONG_SIDE", 1800),
         "image_input_long_side": _env_int("STAGE_COMPARISON_TABLE_IMAGE_LONG_SIDE", 1600),
@@ -563,14 +728,230 @@ def get_block_type_config(block_type: str) -> dict[str, Any]:
     return dict(BLOCK_TYPE_CONFIG.get(block_type) or BLOCK_TYPE_CONFIG[BLOCK_TYPE_GENERAL])
 
 
-def get_prompt_for_block_type(block_type: str) -> tuple[str, str]:
+# ─── r1: фиксированная доменная схема (flag-gated, default OFF) ────────────
+#
+# Проблема: generic-схема Qwen переменной длины — отсутствующее поле молча
+# выпадает, и Opus не отличает «убрали поле» от «Qwen не описал». Доменный слой
+# навязывает фиксированный набор слотов с явным «не указано» для отсутствующих,
+# ОДИНАКОВЫЙ для обеих сторон. По умолчанию ВЫКЛЮЧЕН: prompt/cache/поведение
+# идентичны прежним. Включается STAGE_COMPARISON_DOMAIN_FIELDS_ENABLED=true
+# (после включения нужен re-enrichment пары — cache-key меняется на v6).
+
+_DOMAIN_FIELD_ABSENT = "не указано"
+
+# Фиксированные доменные слоты по block_type. Сейчас покрыты схемы электрики
+# (однолинейные); список расширяется добавлением ключей.
+DOMAIN_FIXED_SLOTS: dict[str, list[str]] = {
+    BLOCK_TYPE_SCHEME: [
+        "feeders", "main_breakers", "sectional", "metering",
+        "compensation", "cts", "busbars", "earthing", "notes",
+    ],
+    BLOCK_TYPE_DENSE_SCHEME: [
+        "feeders", "main_breakers", "sectional", "metering",
+        "compensation", "cts", "busbars", "earthing", "notes",
+    ],
+    BLOCK_TYPE_DENSE_GRSH: [
+        "feeders", "main_breakers", "sectional", "metering",
+        "compensation", "cts", "busbars", "earthing", "notes",
+    ],
+}
+
+_DOMAIN_FIELDS_PROMPT_SUFFIX = """
+
+ДОПОЛНИТЕЛЬНО — ФИКСИРОВАННЫЕ ДОМЕННЫЕ ПОЛЯ (электрические схемы):
+Добавь в JSON объект "domain_fields" со ВСЕМИ перечисленными ключами, даже если
+поля нет на чертеже — это нужно, чтобы отличить «поля нет» от «не описано».
+Правила:
+  - заполняй ТОЛЬКО тем, что реально видно (как и для остального JSON);
+  - если поля/раздела на схеме нет или не читается — поставь строку "не указано"
+    (НЕ выдумывай, НЕ достраивай ряды, НЕ копируй из соседних блоков);
+  - значение слота — короткая строка ИЛИ список коротких строк (видимые
+    значения/маркировки).
+Ключи domain_fields:
+  "feeders"        — отходящие линии/потребители (имя + номинал/сечение, если видно);
+  "main_breakers"  — вводные/главные автоматы (обозначение + номинал);
+  "sectional"      — секционный аппарат / АВР;
+  "metering"       — учёт (счётчики, ТТ-учёт);
+  "compensation"   — компенсация реактивной мощности (АУКРМ/УКМ, kvar);
+  "cts"            — трансформаторы тока (коэффициенты);
+  "busbars"        — шины/шинопровод (материал, сечение);
+  "earthing"       — заземление/ГЗШ/ДСУП;
+  "notes"          — примечания.
+Пример: "domain_fields": {"feeders": ["ЩР-1а 5х10"], "compensation": "не указано", ...}
+"""
+
+
+def _domain_fields_enabled() -> bool:
+    return (_os.environ.get("STAGE_COMPARISON_DOMAIN_FIELDS_ENABLED") or "").strip().lower() in (
+        "1", "true", "yes", "on")
+
+
+def _coerce_domain_fields(payload: dict, block_type: str) -> dict:
+    """Гарантировать фиксированный набор слотов в payload['domain_fields'].
+
+    Детерминированно (не доверяя полноте модели) проставляет недостающие/пустые
+    слоты = «не указано». No-op, если флаг выключен или block_type не схемный.
+    """
+    if not _domain_fields_enabled() or not isinstance(payload, dict):
+        return payload
+    slots = DOMAIN_FIXED_SLOTS.get(block_type)
+    if not slots:
+        return payload
+    df = payload.get("domain_fields")
+    if not isinstance(df, dict):
+        df = {}
+    for slot in slots:
+        v = df.get(slot)
+        empty = (
+            v is None
+            or (isinstance(v, str) and not v.strip())
+            or (isinstance(v, (list, dict)) and not v)
+        )
+        if empty:
+            df[slot] = _DOMAIN_FIELD_ABSENT
+    payload["domain_fields"] = df
+    return payload
+
+
+# ─── Chandra OCR anchor extractor (GRSH vocabulary) ───────────────────────
+#
+# Извлекает из исходного Chandra-MD блока БУКВАЛЬНЫЕ OCR-якоря: labels,
+# equipment, cables, ratings, loads, connection hints, raw_tokens. Это
+# СЛОВАРЬ, а не полное описание — Qwen строит структуру/связи, опираясь на
+# словарь. Перенесено из controlled-эксперимента (exp_lib.extract_chandra_anchors).
+# OCR Chandra часто путает кириллическую Н и латинскую H/F в суффиксе HF.
+
+_CHANDRA_ANCHOR_RE: dict[str, "re.Pattern[str]"] = {
+    # panels / switchboards / inputs (labels)
+    "panel_grsh":   re.compile(r"\b[12]?ГРЩ\d?(?:[ -](?:РП|ПСВ|ВП|КУ)\d?)?\b"),
+    "panel_vru":    re.compile(r"\bВРУ(?:-[А-Яа-я]{1,4}|[-\s]?[0-9а]{1,2})\b"),
+    "panel_shu":    re.compile(r"\b[12]?Ш?ЩУ[-.\s]?(?:[А-Яа-я]{1,4}|\d{1,2})\b|\bШУ[-.]?[А-Яа-я]{1,4}\b"),
+    "panel_tp":     re.compile(r"\bТП\d{1,2}\b"),
+    "panel_t":      re.compile(r"\bТ\d\b"),
+    "panel_shchr":  re.compile(r"\bЩРа?-\d\b"),
+    # equipment
+    "qf":           re.compile(r"\b[12]?QF[D]?\d{1,2}\b"),
+    "qs":           re.compile(r"\bQS\d?\b"),
+    "wh":           re.compile(r"\bWh\d?\b"),
+    "merk":         re.compile(r"Меркурий\s?\d{3}(?:\.\d+)?"),
+    "ttk":          re.compile(r"\b[12]?ТТ\d?(?:\.\.\.\d?ТТ\d)?\s?\d{0,4}(?:/5)?\b"),
+    "ukrm":         re.compile(r"\b(?:АУКРМ|АКВРМ|УКРМ|АУКРМ-\d|АУКРМ №?\d)\b"),
+    "avr":          re.compile(r"\bАВР\b"),
+    "vn":           re.compile(r"\bВН\s?\d{2}\b"),
+    # cables — OCR mixes Cyrillic Н and Latin H/F in the HF suffix
+    "cable":        re.compile(r"(?:К?ППГнг|ПуГПнг)\(А\)-(?:FR)?[НHнh][FFфf][\s\-]*(?:\d?х?\(?\d?х?\d+(?:[.,]\d+)?\)?(?:\s?мм²?)?)?"),
+    # ratings
+    "current":      re.compile(r"\b\d{2,4}\s?А\b"),
+    "voltage":      re.compile(r"\b\d{3}(?:/\d{3})?\s?В\b"),
+    "ka":           re.compile(r"\b\d{1,3}\s?кА\b"),
+    "kva":          re.compile(r"\b\d{3,4}\s?кВА\b"),
+    # loads
+    "power_kw":     re.compile(r"\b(?:Py|Pp|Рр|Pр|Ру|Рp)\s?=?\s?\d+[.,]?\d*\s?кВт"),
+    "current_calc": re.compile(r"\b(?:Iр|Iрасч|Ip)\.?\s?=?\s?\d+[.,]?\d*\s?А"),
+    "cosf":         re.compile(r"\bcos[fφ]\s?=?\s?\d[.,]\d+"),
+    # connection hints (literal line names)
+    "feeder_line":  re.compile(r"\b[12]ГРЩ-[А-ЯA-Z0-9.\-]+"),
+    "input_line":   re.compile(r"Ввод\s?[№]?\d(?:\s?к\s?ТП\d)?|Ввод\s?\d\s?к\s?ТП\d"),
+    "busbar":       re.compile(r"Шинопровод[^\n]{0,40}"),
+}
+
+
+def _uniq_anchors(seq: list[str]) -> list[str]:
+    seen: set[str] = set()
+    out: list[str] = []
+    for s in seq:
+        s = re.sub(r"\s+", " ", s).strip()
+        if s and s not in seen:
+            seen.add(s)
+            out.append(s)
+    return out
+
+
+def extract_chandra_anchors(raw_text: str) -> dict[str, list[str]]:
+    """Извлечь буквальные OCR-якоря из Chandra-MD блока (СЛОВАРЬ, не описание).
+
+    Возвращает dict с ключами labels / equipment / cables / ratings / loads /
+    connections_hint / raw_tokens. Используется для GRSH-режима: словарь
+    инжектится в prompt и применяется в validation (Chandra grounding).
+    """
+    t = raw_text or ""
+    labels: list[str] = []
+    for key in ("panel_grsh", "panel_vru", "panel_shu", "panel_tp", "panel_t", "panel_shchr"):
+        labels += _CHANDRA_ANCHOR_RE[key].findall(t)
+    equipment: list[str] = []
+    for key in ("qf", "qs", "wh", "merk", "ttk", "ukrm", "avr", "vn"):
+        equipment += _CHANDRA_ANCHOR_RE[key].findall(t)
+    cables = _CHANDRA_ANCHOR_RE["cable"].findall(t)
+    ratings: list[str] = []
+    for key in ("current", "voltage", "ka", "kva"):
+        ratings += _CHANDRA_ANCHOR_RE[key].findall(t)
+    loads: list[str] = []
+    for key in ("power_kw", "current_calc", "cosf"):
+        loads += _CHANDRA_ANCHOR_RE[key].findall(t)
+    conn: list[str] = []
+    for key in ("feeder_line", "input_line", "busbar"):
+        conn += _CHANDRA_ANCHOR_RE[key].findall(t)
+    raw_tokens = re.findall(r"[A-ZА-Я0-9][A-Za-zА-Яа-я0-9().\-/]{1,}", t)
+    return {
+        "labels": _uniq_anchors(labels),
+        "equipment": _uniq_anchors(equipment),
+        "cables": _uniq_anchors(cables),
+        "ratings": _uniq_anchors(ratings),
+        "loads": _uniq_anchors(loads),
+        "connections_hint": _uniq_anchors(conn),
+        "raw_tokens": _uniq_anchors(raw_tokens),
+    }
+
+
+def build_grsh_anchor_vocab_block(chandra_raw: str) -> str:
+    """Сформировать текст СЛОВАРЯ Chandra-OCR для инъекции в GRSH prompt.
+
+    Пустой/без якорей Chandra → пустая строка (vocab не добавляется, fail-soft).
+    """
+    anchors = extract_chandra_anchors(chandra_raw or "")
+    keep = ("labels", "equipment", "cables", "ratings", "connections_hint")
+    lines = [
+        "СЛОВАРЬ Chandra-OCR (буквальные надписи с ЭТОГО чертежа — РЕФЕРЕНС, "
+        "не полное описание; строй структуру/связи, опираясь на эти маркировки):"
+    ]
+    has_any = False
+    for k in keep:
+        vals = anchors.get(k) or []
+        if vals:
+            has_any = True
+            lines.append(f"- {k}: {json.dumps(vals, ensure_ascii=False)}")
+    if not has_any:
+        return ""
+    return "\n".join(lines)
+
+
+def get_prompt_for_block_type(
+    block_type: str, chandra_raw: Optional[str] = None,
+) -> tuple[str, str]:
     """Вернуть (prompt_text, prompt_version) для заданного block_type.
 
     Используется enrich_side() — каждый блок может уйти в разный prompt.
+    Для GRSH-блоков (`dense_grsh_singleline`) при наличии `chandra_raw`
+    инжектится словарь буквальных OCR-якорей ПЕРЕД prompt'ом.
     """
     cfg = get_block_type_config(block_type)
     version = str(cfg.get("prompt_version") or PROMPT_VERSION_GENERAL)
+
+    if version == PROMPT_VERSION_GRSH:
+        prompt = QWEN_GRSH_SINGLELINE_PROMPT
+        vocab = build_grsh_anchor_vocab_block(chandra_raw) if chandra_raw else ""
+        if vocab:
+            prompt = vocab + "\n\n" + prompt
+        if _domain_fields_enabled() and block_type in DOMAIN_FIXED_SLOTS:
+            return prompt + _DOMAIN_FIELDS_PROMPT_SUFFIX, PROMPT_VERSION_GRSH_DOMAIN
+        return prompt, PROMPT_VERSION_GRSH
+
     if version == PROMPT_VERSION_SCHEME:
+        if _domain_fields_enabled() and block_type in DOMAIN_FIXED_SLOTS:
+            return (
+                QWEN_SCHEME_DIFF_ANCHORS_PROMPT + _DOMAIN_FIELDS_PROMPT_SUFFIX,
+                PROMPT_VERSION_SCHEME_DOMAIN,
+            )
         return QWEN_SCHEME_DIFF_ANCHORS_PROMPT, PROMPT_VERSION_SCHEME
     return QWEN_IMAGE_DESCRIPTION_PROMPT, PROMPT_VERSION_GENERAL
 
@@ -925,6 +1306,108 @@ def _utc_now() -> str:
     return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def _format_grsh_sections(lines: list[str], desc_payload: dict) -> None:
+    """Отрендерить GRSH-секции (verified/ocr_only/visual/rejected + структура).
+
+    rejected_anchors помечены «НЕ evidence», чтобы Opus не строил по ним diff.
+    """
+    va = desc_payload.get("verified_anchors")
+    if isinstance(va, dict):
+        verified_labels = [str(x).strip() for x in (va.get("labels") or []) if str(x).strip()]
+        if verified_labels:
+            lines.append("GRSH_VERIFIED_ANCHORS — подтверждены словарём Chandra (evidence):")
+            for x in verified_labels:
+                lines.append(f"- {x}")
+            lines.append("")
+        for title, key in (("Кабели", "cables"), ("Номиналы", "ratings"),
+                           ("Оборудование", "equipment")):
+            arr = [str(x).strip() for x in (va.get(key) or []) if str(x).strip()]
+            if arr:
+                lines.append(f"GRSH_VERIFIED — {title}:")
+                for x in arr:
+                    lines.append(f"- {x}")
+                lines.append("")
+
+    ocr_only = [str(x).strip() for x in (desc_payload.get("ocr_only_anchors") or []) if str(x).strip()]
+    if ocr_only:
+        lines.append("GRSH_OCR_ONLY_ANCHORS — есть в Chandra-OCR, Qwen не описал (слабое evidence):")
+        for x in ocr_only:
+            lines.append(f"- {x}")
+        lines.append("")
+
+    visual = [_grsh_anchor_text(x).strip() for x in (desc_payload.get("visual_unverified_anchors") or [])]
+    visual = [x for x in visual if x]
+    if visual:
+        lines.append("GRSH_VISUAL_UNVERIFIED — видно на картинке, нет в Chandra (НЕ evidence в одиночку):")
+        for x in visual:
+            lines.append(f"- {x}")
+        lines.append("")
+
+    rejected = [_grsh_anchor_text(x).strip() for x in (desc_payload.get("rejected_anchors") or [])]
+    rejected = [x for x in rejected if x]
+    if rejected:
+        lines.append("GRSH_REJECTED — отброшены как достроенный ряд / нечитаемое (НЕ evidence, НЕ использовать):")
+        for x in rejected:
+            lines.append(f"- {x}")
+        lines.append("")
+
+    panels = desc_payload.get("panels")
+    if isinstance(panels, list) and panels:
+        lines.append("GRSH_PANELS — секции ГРЩ / вводы:")
+        for p in panels:
+            if not isinstance(p, dict):
+                continue
+            name = str(p.get("name") or "").strip()
+            fed = str(p.get("fed_from") or "").strip()
+            inp = p.get("input")
+            busbar = str((inp or {}).get("busbar") or "").strip() if isinstance(inp, dict) else ""
+            seg = f"- {name or '?'}"
+            if fed:
+                seg += f" ← {fed}"
+            if busbar:
+                seg += f" [{busbar}]"
+            lines.append(seg)
+        lines.append("")
+
+    circuits = desc_payload.get("circuits")
+    if isinstance(circuits, list) and circuits:
+        lines.append("GRSH_CIRCUITS — отходящие линии (источник → автомат → кабель → потребитель):")
+        for c in circuits:
+            if not isinstance(c, dict):
+                continue
+            src = str(c.get("source") or "").strip()
+            br = str(c.get("breaker") or "").strip()
+            cab = str(c.get("cable") or "").strip()
+            cons = str(c.get("consumer") or "").strip()
+            chain = " → ".join(x for x in (src, br, cab, cons) if x)
+            if chain:
+                lines.append(f"- {chain}")
+        lines.append("")
+
+    connections = desc_payload.get("connections")
+    if isinstance(connections, list) and connections:
+        lines.append("GRSH_CONNECTIONS — связи:")
+        for c in connections:
+            if not isinstance(c, dict):
+                continue
+            f_ = str(c.get("from") or "?").strip()
+            t_ = str(c.get("to") or "?").strip()
+            via = str(c.get("via") or c.get("relation") or "").strip()
+            seg = f"- {f_} → {t_}"
+            if via:
+                seg += f" ({via})"
+            lines.append(seg)
+        lines.append("")
+
+    uncertainties = [_grsh_anchor_text(x).strip() for x in (desc_payload.get("uncertainties") or [])]
+    uncertainties = [x for x in uncertainties if x]
+    if uncertainties:
+        lines.append("GRSH_UNCERTAIN — нечитаемое / сомнительное:")
+        for x in uncertainties:
+            lines.append(f"- {x}")
+        lines.append("")
+
+
 def _format_qwen_description_md(desc_payload: dict, *, model: str, page: Optional[int], block_id: Optional[str]) -> str:
     """Сформировать тело markdown-блока Qwen-описания для enriched MD (без HTML-обёртки).
 
@@ -984,6 +1467,28 @@ def _format_qwen_description_md(desc_payload: dict, *, model: str, page: Optiona
     if cov:
         lines.append(f"Покрытие: {cov}")
     lines.append("")
+
+    # ── DOMAIN_FIELDS (r1): фиксированные доменные слоты с явным «не указано» ──
+    # Рендерятся ВСЕГДА, когда присутствуют (включая «не указано»), чтобы Opus
+    # механически отличал «поля нет» от «не описано». Пустые слоты не скрываются.
+    domain_fields = desc_payload.get("domain_fields")
+    if isinstance(domain_fields, dict) and domain_fields:
+        lines.append("DOMAIN_FIELDS — фиксированные доменные поля (отсутствующее = «не указано»):")
+        for slot, val in domain_fields.items():
+            if isinstance(val, list):
+                rendered = "; ".join(str(x) for x in val if str(x).strip()) or _DOMAIN_FIELD_ABSENT
+            elif isinstance(val, dict):
+                rendered = json.dumps(val, ensure_ascii=False) if val else _DOMAIN_FIELD_ABSENT
+            else:
+                rendered = str(val).strip() or _DOMAIN_FIELD_ABSENT
+            lines.append(f"- {slot}: {rendered}")
+        lines.append("")
+
+    # ── GRSH (dense_grsh_singleline): verified / ocr_only / visual_unverified /
+    #    rejected якоря + panels/circuits/connections. rejected помечены явно
+    #    «НЕ evidence», чтобы Opus не использовал их как доказательство. ──
+    if is_grsh_payload(desc_payload):
+        _format_grsh_sections(lines, desc_payload)
 
     # ── DIFF_ANCHORS: буквальные маркировки/номиналы/связи для diff'а ──
     # Эта секция идёт ДО summary, чтобы Opus видел сырые ЩР-1а / ВРУ-2 с.ш.1
@@ -1818,6 +2323,261 @@ def _detect_unexpected_org_or_address(desc_payload: dict, item_context: dict) ->
     return False
 
 
+# ─── GRSH validation / dedup layer ────────────────────────────────────────
+#
+# Qwen на GRSH-схеме сам не партиционирует бакеты (копирует реальные labels
+# и в verified, и в visual_unverified, и в rejected) и иногда достраивает
+# числовые ряды. Этот детерминированный слой:
+#   * сверяет каждую verified-маркировку со словарём Chandra (grounding);
+#   * отбрасывает достроенные ряды (ТП3…ТП22, ГРЩ1-РП1-8…15) в rejected_anchors;
+#   * negrounded не-серии → visual_unverified_anchors;
+#   * не теряет важные Chandra-only маркировки → ocr_only_anchors;
+#   * делает бакеты взаимоисключающими (verified > ocr_only > visual_unverified
+#     > rejected > uncertainties).
+# Перенесено из controlled-эксперимента (exp_qwen.dedup_buckets / detect_artificial_series).
+
+# Серия = «префикс + хвостовое число»: ТП1, ВРУ2, ГРЩ1-РП1-8 → (key, num).
+_GRSH_SERIES_RE = re.compile(r"^(?P<key>.*?)[-.\s]?(?P<num>\d{1,3})$")
+
+
+def _norm_grsh(s: Any) -> str:
+    return re.sub(r"\s+", "", (str(s) if s is not None else "").lower().replace("ё", "е"))
+
+
+def _grsh_anchor_text(x: Any) -> str:
+    if isinstance(x, str):
+        return x
+    if isinstance(x, dict):
+        for k in ("raw_text", "label", "text", "possible_text", "name"):
+            if x.get(k):
+                return str(x[k])
+    return str(x)
+
+
+def is_grsh_payload(payload: Any) -> bool:
+    """True, если payload похож на GRSH-описание (verified_anchors+бакеты)."""
+    if not isinstance(payload, dict):
+        return False
+    if isinstance(payload.get("verified_anchors"), dict):
+        return True
+    return (payload.get("sheet_kind") == "electrical_single_line"
+            and ("panels" in payload or "circuits" in payload))
+
+
+def _grsh_parse_series(raw: str) -> tuple[Optional[str], Optional[int]]:
+    """Разобрать маркировку на (series_key, seq_num). ВРУа/ГРЩ → (None, None)."""
+    raw = (raw or "").strip()
+    m = _GRSH_SERIES_RE.match(raw)
+    if not m:
+        return None, None
+    key = (m.group("key") or "").strip(" -.")
+    if not key:
+        return None, None
+    try:
+        num = int(m.group("num"))
+    except (TypeError, ValueError):
+        return None, None
+    return key, num
+
+
+def _grsh_rejected_series_labels(label_texts: list[str], chandra_raw: str) -> set[str]:
+    """Нормализованные тексты labels, которые надо отбросить как достроенный ряд.
+
+    Серия отбрасывается (только её absent-члены), если в ней ≥4 номеров и
+    отсутствующих в Chandra членов «подавляюще много» (явная экстраполяция).
+    Члены, реально присутствующие в Chandra, НЕ трогаются.
+    """
+    chandra_norm = _norm_grsh(chandra_raw)
+    groups: dict[str, list[tuple[int, str]]] = {}
+    for raw in label_texts:
+        key, num = _grsh_parse_series(raw)
+        if key is None or num is None:
+            continue
+        groups.setdefault(_norm_grsh(key), []).append((num, raw))
+    reject: set[str] = set()
+    for _key, members in groups.items():
+        nums = sorted({n for n, _ in members})
+        if len(nums) < 4:
+            continue
+        present = [(n, r) for (n, r) in members if _norm_grsh(r) in chandra_norm]
+        absent = [(n, r) for (n, r) in members if _norm_grsh(r) not in chandra_norm]
+        # Экстраполированный ряд: много отсутствующих И их явно больше присутствующих.
+        if len(absent) >= 3 or (len(absent) >= 2 and len(absent) > len(present)):
+            for _n, r in absent:
+                reject.add(_norm_grsh(r))
+    return reject
+
+
+def detect_chandra_artificial_series(labels: list[Any], chandra_raw: str) -> list[str]:
+    """Найти достроенные ряды в Qwen labels с номерами, отсутствующими в Chandra.
+
+    Возвращает человекочитаемые маркеры (для diagnostics/тестов): напр.
+    ``"hallucinated_TP_series: ТП[3, 4, ...]"`` или ``"artificial_sequence:..."``.
+    """
+    issues: list[str] = []
+    chandra = chandra_raw or ""
+    flat = [_grsh_anchor_text(x) for x in (labels or [])]
+    joined = " ".join(flat)
+    tp_nums = sorted({int(m) for m in re.findall(r"ТП(\d{1,2})", joined)})
+    bad_tp = [n for n in tp_nums if n >= 3 and f"ТП{n}" not in chandra]
+    if bad_tp:
+        issues.append(f"hallucinated_TP_series: ТП{bad_tp}")
+    vru_nums = sorted({int(m) for m in re.findall(r"ВРУ[-\s]?(\d{1,2})\b", joined)})
+    bad_vru = [n for n in vru_nums if n >= 5 and f"ВРУ{n}" not in chandra and f"ВРУ-{n}" not in chandra]
+    if bad_vru:
+        issues.append(f"hallucinated_VRU_series: ВРУ{bad_vru}")
+    reject = _grsh_rejected_series_labels(flat, chandra_raw)
+    if reject:
+        issues.append(f"artificial_sequence_rejected:{len(reject)}")
+    return issues
+
+
+def _grsh_chandra_anchor_set(chandra_raw: str) -> tuple[set[str], list[str]]:
+    """(нормализованный набор всех Chandra-якорей, упорядоченные важные labels)."""
+    anchors = extract_chandra_anchors(chandra_raw or "")
+    important = list(anchors.get("labels") or []) + list(anchors.get("equipment") or [])
+    norm_set: set[str] = set()
+    for bucket in ("labels", "equipment", "cables", "ratings", "raw_tokens"):
+        for v in anchors.get(bucket) or []:
+            n = _norm_grsh(v)
+            if n:
+                norm_set.add(n)
+    # Полный нормализованный текст для substring-match (надёжнее токенов).
+    norm_set.add(_norm_grsh(chandra_raw))
+    return norm_set, important
+
+
+def _dedup_anchor_buckets(payload: dict) -> dict:
+    """Сделать бакеты якорей взаимоисключающими.
+
+    Приоритет: verified > ocr_only > visual_unverified > rejected > uncertainties.
+    Каждая нормализованная маркировка остаётся только в самом приоритетном бакете.
+    """
+    if not isinstance(payload, dict):
+        return payload
+    verified = {
+        _norm_grsh(_grsh_anchor_text(x))
+        for x in ((payload.get("verified_anchors") or {}).get("labels") or [])
+    }
+    seen = set(verified)
+    report: dict[str, list[str]] = {}
+
+    def _filter(bucket_key: str):
+        out: list[Any] = []
+        removed: list[str] = []
+        for x in (payload.get(bucket_key) or []):
+            n = _norm_grsh(_grsh_anchor_text(x))
+            if not n:
+                continue
+            if n in seen:
+                removed.append(_grsh_anchor_text(x))
+            else:
+                seen.add(n)
+                out.append(x)
+        payload[bucket_key] = out
+        if removed:
+            report[bucket_key] = removed
+
+    for bk in ("ocr_only_anchors", "visual_unverified_anchors", "rejected_anchors", "uncertainties"):
+        _filter(bk)
+    payload.setdefault("_grsh_validation", {})["dedup_removed"] = report
+    return payload
+
+
+def apply_grsh_validation(payload: dict, chandra_raw: str) -> dict:
+    """Провалидировать GRSH-описание против словаря Chandra (детерминированно).
+
+    Мутирует и возвращает payload:
+      * verified_anchors.labels → только Chandra-grounded;
+      * достроенные ряды → rejected_anchors;
+      * negrounded не-серии → visual_unverified_anchors;
+      * важные Chandra-only маркировки → ocr_only_anchors;
+      * бакеты взаимоисключающие (dedup).
+    Fail-soft: на не-GRSH payload или ошибке — возвращает payload как есть.
+    """
+    if not is_grsh_payload(payload):
+        return payload
+    try:
+        va = payload.get("verified_anchors")
+        if not isinstance(va, dict):
+            va = {}
+            payload["verified_anchors"] = va
+        verified_labels = [x for x in (va.get("labels") or [])]
+        visual = list(payload.get("visual_unverified_anchors") or [])
+        rejected = list(payload.get("rejected_anchors") or [])
+        uncertain_norm = {
+            _norm_grsh(_grsh_anchor_text(u)) for u in (payload.get("uncertainties") or [])
+        }
+
+        chandra_set, important_chandra = _grsh_chandra_anchor_set(chandra_raw)
+        all_label_texts = [_grsh_anchor_text(x) for x in verified_labels] + \
+                          [_grsh_anchor_text(x) for x in visual]
+        reject_set = _grsh_rejected_series_labels(all_label_texts, chandra_raw)
+
+        kept_verified: list[Any] = []
+        moved_visual: list[Any] = []
+        moved_rejected: list[Any] = []
+        for lab in verified_labels:
+            txt = _grsh_anchor_text(lab)
+            n = _norm_grsh(txt)
+            if not n:
+                continue
+            if n in reject_set:
+                moved_rejected.append(txt)
+            elif n in chandra_set:
+                # Chandra match: verified — даже если модель ещё и в uncertainties.
+                kept_verified.append(lab)
+            else:
+                # negrounded (в т.ч. label, продублированный в uncertainties) → downgrade.
+                _ = uncertain_norm  # downgrade одинаков с/без uncertainties-дубля
+                moved_visual.append(txt)
+
+        # Существующие visual labels: серии-достройки тоже в rejected.
+        kept_visual: list[Any] = list(moved_visual)
+        for lab in visual:
+            txt = _grsh_anchor_text(lab)
+            n = _norm_grsh(txt)
+            if not n:
+                continue
+            if n in reject_set:
+                moved_rejected.append(txt)
+            else:
+                kept_visual.append(lab)
+
+        # ocr_only: важные Chandra-маркировки, не попавшие ни в один бакет Qwen.
+        seen_norm = {_norm_grsh(_grsh_anchor_text(x)) for x in kept_verified}
+        seen_norm |= {_norm_grsh(_grsh_anchor_text(x)) for x in kept_visual}
+        seen_norm |= {_norm_grsh(x) for x in moved_rejected}
+        ocr_only: list[str] = []
+        for c in important_chandra:
+            n = _norm_grsh(c)
+            if n and n not in seen_norm:
+                seen_norm.add(n)
+                ocr_only.append(c)
+
+        va["labels"] = kept_verified
+        payload["visual_unverified_anchors"] = kept_visual
+        payload["rejected_anchors"] = _uniq_anchors(
+            [_grsh_anchor_text(x) for x in rejected] + moved_rejected
+        )
+        payload["ocr_only_anchors"] = ocr_only
+
+        payload.setdefault("_grsh_validation", {})
+        payload["_grsh_validation"].update({
+            "chandra_anchor_count": len(chandra_set),
+            "verified_count": len(kept_verified),
+            "visual_unverified_count": len(kept_visual),
+            "rejected_count": len(payload["rejected_anchors"]),
+            "ocr_only_count": len(ocr_only),
+            "series_rejected": sorted(reject_set),
+        })
+        payload["_grsh_validated"] = True
+        _dedup_anchor_buckets(payload)
+    except Exception:  # noqa: BLE001 — validation must never break enrichment
+        logger.debug("apply_grsh_validation failed (ignored)", exc_info=True)
+    return payload
+
+
 def analyze_qwen_description_quality(
     desc_payload: Optional[dict],
     item_context: dict,
@@ -1869,6 +2629,18 @@ def analyze_qwen_description_quality(
         labels = diff_anchors.get("labels") or []
         ratings = diff_anchors.get("ratings") or []
         connections = diff_anchors.get("connections") or []
+    elif is_grsh_payload(payload):
+        # GRSH-форма: detector'ы читают verified_anchors + connections.
+        va = payload.get("verified_anchors") or {}
+        labels = list(va.get("labels") or [])
+        ratings = list(va.get("ratings") or [])
+        for c in (payload.get("connections") or []):
+            if isinstance(c, dict):
+                connections.append({
+                    "from_raw": c.get("from"),
+                    "to_raw": c.get("to"),
+                    "relation": c.get("via") or c.get("relation"),
+                })
 
     # 1) Искусственные ряды (top-level или subindex).
     seq_series = _detect_artificial_sequences(labels)
@@ -1985,12 +2757,53 @@ _IMAGE_DIFF_INDEX_START = "<!-- IMAGE_DIFF_INDEX_START -->"
 _IMAGE_DIFF_INDEX_END = "<!-- IMAGE_DIFF_INDEX_END -->"
 
 
+def _extract_grsh_anchors_from_payload(payload: dict) -> dict[str, list[str]]:
+    """GRSH-форма → {labels (verified+ocr_only), ratings, connections,
+    visual_unverified, rejected}. rejected отдаётся отдельно — НЕ как evidence."""
+    out: dict[str, list[str]] = {
+        "labels": [], "ratings": [], "connections": [],
+        "visual_unverified": [], "rejected": [],
+    }
+    va = payload.get("verified_anchors") or {}
+    if isinstance(va, dict):
+        out["labels"].extend(str(x).strip() for x in (va.get("labels") or []) if str(x).strip())
+        out["ratings"].extend(str(x).strip() for x in (va.get("ratings") or []) if str(x).strip())
+    # ocr_only — Chandra-grounded, считаем verified-уровнем evidence.
+    out["labels"].extend(str(x).strip() for x in (payload.get("ocr_only_anchors") or []) if str(x).strip())
+    out["visual_unverified"].extend(
+        _grsh_anchor_text(x).strip() for x in (payload.get("visual_unverified_anchors") or [])
+        if _grsh_anchor_text(x).strip()
+    )
+    out["rejected"].extend(
+        _grsh_anchor_text(x).strip() for x in (payload.get("rejected_anchors") or [])
+        if _grsh_anchor_text(x).strip()
+    )
+    for c in (payload.get("connections") or []):
+        if isinstance(c, dict):
+            f = str(c.get("from") or "").strip()
+            t = str(c.get("to") or "").strip()
+            if f or t:
+                out["connections"].append(f"{f or '?'} -> {t or '?'}")
+    # dedup сохраняя порядок
+    for k in out:
+        seen: set[str] = set()
+        uniq: list[str] = []
+        for v in out[k]:
+            if v and v not in seen:
+                seen.add(v)
+                uniq.append(v)
+        out[k] = uniq
+    return out
+
+
 def _extract_anchors_from_description(d: dict) -> dict[str, list[str]]:
     """Извлечь labels/ratings/connections из item.description.
 
-    Сначала пытаемся diff_anchors (v5 prompt). Если их нет — fallback на
+    Сначала GRSH-форма (verified_anchors + ocr_only/visual/rejected), затем
+    diff_anchors (v5 prompt), иначе fallback на
     visible_text/numeric_parameters/scheme_analysis.nodes/connections от
-    v4-блоков. Результат всегда плоский: list[str].
+    v4-блоков. Результат всегда плоский: list[str]. Для GRSH дополнительно
+    возвращаются ключи visual_unverified / rejected.
     """
     out = {"labels": [], "ratings": [], "connections": []}
     if not isinstance(d, dict):
@@ -1998,6 +2811,9 @@ def _extract_anchors_from_description(d: dict) -> dict[str, list[str]]:
     payload = d.get("description")
     if not isinstance(payload, dict):
         return out
+
+    if is_grsh_payload(payload):
+        return _extract_grsh_anchors_from_payload(payload)
 
     da = payload.get("diff_anchors")
     if isinstance(da, dict):
@@ -2122,7 +2938,8 @@ def build_image_diff_index(descriptions: list[dict]) -> str:
         lines.append(header)
         lines.append("")
 
-        # labels / ratings / connections (если есть хотя бы по одной строке)
+        # labels / ratings / connections (если есть хотя бы по одной строке).
+        # Для GRSH labels = verified+ocr_only (это evidence).
         for section_name, key in (("labels", "labels"), ("ratings", "ratings"), ("connections", "connections")):
             arr = anchors.get(key) or []
             if not arr:
@@ -2130,6 +2947,21 @@ def build_image_diff_index(descriptions: list[dict]) -> str:
             lines.append(f"{section_name}:")
             # Ограничиваем размер на блок, чтобы index оставался компактным.
             for v in arr[:30]:
+                lines.append(f"- {v}")
+            lines.append("")
+
+        # GRSH: visual_unverified и rejected — РАЗДЕЛЬНО. rejected явно помечены
+        # «(NOT evidence)» и НЕ должны использоваться Opus как доказательство.
+        visual_unverified = anchors.get("visual_unverified") or []
+        if visual_unverified:
+            lines.append("visual_unverified (weak, not evidence alone):")
+            for v in visual_unverified[:30]:
+                lines.append(f"- {v}")
+            lines.append("")
+        rejected = anchors.get("rejected") or []
+        if rejected:
+            lines.append("rejected (NOT evidence — hallucinated/unreadable, do not use):")
+            for v in rejected[:30]:
                 lines.append(f"- {v}")
             lines.append("")
 
@@ -2640,12 +3472,15 @@ async def enrich_side(
             surrounding_context=page_text_context.get(mb.page) or page_text_context.get(None),
         )
         type_cfg = get_block_type_config(block_type)
-        prompt_text, prompt_version_for_block = get_prompt_for_block_type(block_type)
+        # GRSH-блок: словарь Chandra инжектится из исходного MD-текста блока.
+        prompt_text, prompt_version_for_block = get_prompt_for_block_type(
+            block_type, chandra_raw=mb.text,
+        )
         render_target_long_side = int(type_cfg.get("render_target_long_side") or 1200)
         image_input_long_side = int(type_cfg.get("image_input_long_side") or cfg.image_long_side)
         per_call_max_tokens = type_cfg.get("max_tokens")
         per_call_max_continuations = type_cfg.get("max_continuations")
-        prompt_family = "scheme" if prompt_version_for_block == PROMPT_VERSION_SCHEME else "general"
+        prompt_family = "scheme" if prompt_version_for_block in _SCHEME_FAMILY_VERSIONS else "general"
 
         item: dict[str, Any] = {
             "order": mb.order,
@@ -2698,12 +3533,14 @@ async def enrich_side(
             if refined_block_type != block_type:
                 block_type = refined_block_type
                 type_cfg = get_block_type_config(block_type)
-                prompt_text, prompt_version_for_block = get_prompt_for_block_type(block_type)
+                prompt_text, prompt_version_for_block = get_prompt_for_block_type(
+                    block_type, chandra_raw=mb.text,
+                )
                 render_target_long_side = int(type_cfg.get("render_target_long_side") or 1200)
                 image_input_long_side = int(type_cfg.get("image_input_long_side") or cfg.image_long_side)
                 per_call_max_tokens = type_cfg.get("max_tokens")
                 per_call_max_continuations = type_cfg.get("max_continuations")
-                prompt_family = "scheme" if prompt_version_for_block == PROMPT_VERSION_SCHEME else "general"
+                prompt_family = "scheme" if prompt_version_for_block in _SCHEME_FAMILY_VERSIONS else "general"
                 item["block_type"] = block_type
                 item["prompt_version"] = prompt_version_for_block
                 item["used_prompt_version"] = prompt_version_for_block
@@ -2874,6 +3711,9 @@ async def enrich_side(
         if result.status == "done" and isinstance(result.parsed, dict):
             payload = dict(result.parsed)
             payload.setdefault("status", "done")
+            _coerce_domain_fields(payload, block_type)  # r1: фикс. слоты (flag-gated)
+            if block_type == BLOCK_TYPE_DENSE_GRSH:
+                apply_grsh_validation(payload, mb.text)  # Chandra grounding + dedup
             item["status"] = "done"
             item["description"] = payload
             item["final_status_reason"] = "primary_done"
@@ -2911,6 +3751,9 @@ async def enrich_side(
             payload = dict(result.parsed)
             payload["status"] = "salvaged_partial"
             payload["_salvaged"] = True
+            _coerce_domain_fields(payload, block_type)  # r1: фикс. слоты (flag-gated)
+            if block_type == BLOCK_TYPE_DENSE_GRSH:
+                apply_grsh_validation(payload, mb.text)  # Chandra grounding + dedup
             item["status"] = "partial"
             item["salvaged"] = True
             item["description"] = payload
@@ -2955,7 +3798,20 @@ async def enrich_side(
         # ── Problem-block tiled high-res retry (feature-flagged, default OFF) ──
         # Runs only AFTER the baseline pass, only for problem blocks; preserves
         # baseline output; never raises into the pipeline.
-        if run_model and _retry_cfg.enabled and _retry_cfg.after_main:
+        #
+        # GRSH: tile mode для плотных однолинейных схем ГРЩ РЕинтродуцирует
+        # ложные ряды (эксперимент attempt_06). Поэтому для dense_grsh_singleline
+        # tiled-retry в обычном production flow НЕ запускается. Разрешён только
+        # явным debug-override STAGE_COMPARISON_QWEN_TILE_ALLOW_GRSH=true.
+        _grsh_tile_blocked = (
+            block_type == BLOCK_TYPE_DENSE_GRSH
+            and not _env_bool("STAGE_COMPARISON_QWEN_TILE_ALLOW_GRSH", False)
+        )
+        if _grsh_tile_blocked and item.get("status") in ("done", "partial", "error", "no_image"):
+            if "grsh_tile_retry_skipped" not in item["warnings"]:
+                item["warnings"].append("grsh_tile_retry_skipped")
+        if (run_model and _retry_cfg.enabled and _retry_cfg.after_main
+                and not _grsh_tile_blocked):
             try:
                 import dataclasses as _dc_retry
 
