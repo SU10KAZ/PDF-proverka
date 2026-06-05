@@ -40,6 +40,8 @@ import json
 import logging
 import os
 import re
+import tempfile
+from pathlib import Path
 from typing import Any, Callable, Optional, Sequence
 
 logger = logging.getLogger(__name__)
@@ -316,13 +318,21 @@ def llm_match_sheets(
             result["status"] = "no_unmatched"
             return result
 
-        pr = provider.invoke(
-            system_prompt=system,
-            user_prompt=user,
-            model=model or stamp_llm_model(),
-            timeout_sec=timeout_sec or stamp_llm_timeout_sec(),
-            work_dir=None,
-        )
+        # ВАЖНО: запускаем provider в ИЗОЛИРОВАННОМ temp-каталоге (вне дерева
+        # проекта). Иначе `claude -p` поднимется в CWD backend'а (корень
+        # проекта), подхватит огромный аудиторский CLAUDE.md + docs/skills и
+        # начнёт вести себя как «эксперт-аудитор» (спрашивать документы) вместо
+        # строгого JSON-матчера. Temp-каталог под /tmp обрывает discovery
+        # project-CLAUDE.md и даёт чистый контекст. Полный system prompt при
+        # этом идёт через --append-system-prompt-file (без обрезки 4000).
+        with tempfile.TemporaryDirectory(prefix="stamp_llm_") as wd:
+            pr = provider.invoke(
+                system_prompt=system,
+                user_prompt=user,
+                model=model or stamp_llm_model(),
+                timeout_sec=timeout_sec or stamp_llm_timeout_sec(),
+                work_dir=Path(wd),
+            )
         result["duration_sec"] = round(getattr(pr, "duration_sec", 0.0) or 0.0, 2)
         result["model"] = getattr(pr, "model", None) or result["model"]
         status = getattr(pr, "status", "error")
