@@ -506,3 +506,34 @@ def test_designation_recall_above_zero_for_dense_block():
     assert not d["rejected_artificial_series"]
     verified = [f for f in merged["feeders"] if f["anchor_status"] == "verified"]
     assert len(verified) >= 5
+
+
+# ─── B': series-number must bind to mark, not free rating (2026-06-06) ─────
+
+
+def test_series_number_binding_rejects_ratings():
+    """series_max не должен завышаться номиналами аппаратов («АВР 250А»/«QF 800A»)."""
+    # АВР-35 / ВРУ1-АВР-35 → 35 ; «АВР 250А» (пробел+номинал) НЕ даёт 250
+    a1 = gfe.extract_text_layer_anchors("АВР-35 АВР-1 АВР 250А 2QF1 3Р 250А")
+    assert a1["series_max"].get("АВР") == 35
+    a2 = gfe.extract_text_layer_anchors("ВРУ1-АВР-35 прочее")
+    assert a2["series_max"].get("АВР") == 35
+    # QF-44 valid ; «QF 800A» НЕ даёт 800
+    a3 = gfe.extract_text_layer_anchors("QF-44 QF1 QF 800A 1QS1 800А")
+    assert a3["series_max"].get("QF") == 44
+    assert a3["series_max"].get("QS") in (1, None)  # QS1 ok; «800А» не QS-номер
+    # ОДН-44 valid ; «ОДН 44А» (пробел+номинал) — НЕ series designation
+    a4 = gfe.extract_text_layer_anchors("ОДН-44 ОДН 44А")
+    assert a4["series_max"].get("ОДН") == 44
+    # «ОДН 44А» в одиночку → серии нет (нет дефиса)
+    a5 = gfe.extract_text_layer_anchors("ОДН 44А только номинал")
+    assert "ОДН" not in a5["series_max"]
+
+
+def test_series_binding_does_not_capture_amperes_inline():
+    """Прямое примыкание номинала к марке («QF160А»/«АВР250А») не даёт номер серии."""
+    a = gfe.extract_text_layer_anchors("QF160А АВР250А ВП1 РП1")
+    assert "QF" not in a["series_max"]          # 160 — номинал, не линия
+    assert a["series_max"].get("АВР") is None    # 250 — номинал, не линия
+    # но реальные ВП1/РП1 (малые, прямое примыкание) — валидны
+    assert a["series_max"].get("ВП") == 1 and a["series_max"].get("РП") == 1
