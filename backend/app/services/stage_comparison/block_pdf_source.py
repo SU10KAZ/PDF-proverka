@@ -23,6 +23,7 @@ pipeline» решает вызывающий код по своим feature-фл
 """
 from __future__ import annotations
 
+import hashlib
 import logging
 import re
 from dataclasses import dataclass, field
@@ -40,16 +41,19 @@ class BlockPdfSource:
     """Откуда взят PDF-фрагмент блока."""
 
     block_id: str
-    source: str = "none"           # "crop_url" | "image_file" | "none"
+    source: str = "none"           # "crop_url" | "source_pdf" | "image_file" | "cache" | "none"
     pdf_path: Optional[Path] = None
     crop_url_status: Optional[int] = None
     content_type: Optional[str] = None
     fallback_used: bool = False    # True → block-PDF недоступен, нужен page-crop
+    cache_hit: bool = False        # True → взято из локального кэша без http/render
     error: Optional[str] = None
 
     @property
     def ok(self) -> bool:
-        return self.source in ("crop_url", "image_file") and self.pdf_path is not None
+        # source_pdf (рендер из локального исходного PDF) — полноценный block-PDF,
+        # downstream работает так же, как с crop_url.
+        return self.source in ("crop_url", "source_pdf", "image_file") and self.pdf_path is not None
 
 
 @dataclass
@@ -109,28 +113,172 @@ def _block_field(block: dict, *names: str) -> Any:
 # ─── 1. resolve_block_pdf_source ──────────────────────────────────────────
 
 
+def _coords_px_from_block(block: dict) -> Optional[list[float]]:
+    """Bbox блока в пикселях (в системе ``page_width``×``page_height``)."""
+    cx = _block_field(block, "coords_px", "bbox", "coords")
+    if isinstance(cx, (list, tuple)) and len(cx) >= 4:
+        try:
+            return [float(cx[0]), float(cx[1]), float(cx[2]), float(cx[3])]
+        except (TypeError, ValueError):
+            return None
+    return None
+
+
+def _page_number_from_block(block: dict) -> Optional[int]:
+    for n in ("page", "page_number", "page_index", "page_idx"):
+        v = _block_field(block, n)
+        if v is not None:
+            try:
+                return int(v)
+            except (TypeError, ValueError):
+                continue
+    return None
+
+
+def _page_px_from_block(block: dict) -> Optional[tuple[int, int]]:
+    pw = _block_field(block, "page_width")
+    ph = _block_field(block, "page_height")
+    try:
+        pw, ph = int(pw), int(ph)
+        if pw > 0 and ph > 0:
+            return (pw, ph)
+    except (TypeError, ValueError):
+        pass
+    return None
+
+
+def _source_identity(source_pdf_path: Optional[str | Path]) -> Optional[str]:
+    """mtime:size исходного PDF — часть cache-key (rebuild при смене источника)."""
+    if not source_pdf_path:
+        return None
+    try:
+        st = Path(source_pdf_path).stat()
+        return f"{int(st.st_mtime)}:{st.st_size}"
+    except OSError:
+        return None
+
+
+def _block_pdf_cache_key(block_id: str, page: Optional[int],
+                         coords_px: Optional[list[float]], src_identity: str) -> str:
+    payload = f"{block_id}|{page}|{coords_px}|{src_identity}"
+    return hashlib.sha1(payload.encode("utf-8")).hexdigest()[:16]
+
+
+def _build_block_pdf_from_source(
+    *, source_pdf_path: str | Path, page_number: int,
+    coords_px: list[float], page_px_size: tuple[int, int], out_path: str | Path,
+) -> Optional[Path]:
+    """Собрать standalone 1-page block-PDF из локального исходного PDF.
+
+    coords_px (в px системе ``page_px_size``) → координаты страницы (pt) →
+    clip → ``show_pdf_page`` в новую страницу размером с clip (векторно,
+    без растеризации). Возвращает out_path или None (fail-soft)."""
+    try:
+        import fitz  # PyMuPDF
+    except ImportError:  # pragma: no cover
+        return None
+    try:
+        sp = Path(source_pdf_path)
+        if not sp.exists():
+            return None
+        doc = fitz.open(str(sp))
+        try:
+            pno = int(page_number) - 1
+            if pno < 0 or pno >= doc.page_count:
+                return None
+            page = doc[pno]
+            rw, rh = float(page.rect.width), float(page.rect.height)
+            w_px, h_px = float(page_px_size[0]), float(page_px_size[1])
+            if rw <= 0 or rh <= 0 or w_px <= 0 or h_px <= 0:
+                return None
+            sx, sy = rw / w_px, rh / h_px
+            x0, y0, x1, y1 = coords_px
+            clip = fitz.Rect(min(x0, x1) * sx, min(y0, y1) * sy,
+                             max(x0, x1) * sx, max(y0, y1) * sy) & page.rect
+            if clip.width < 2 or clip.height < 2:
+                return None
+            new = fitz.open()
+            npage = new.new_page(width=clip.width, height=clip.height)
+            npage.show_pdf_page(fitz.Rect(0, 0, clip.width, clip.height), doc, pno, clip=clip)
+            out_path = Path(out_path)
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            new.save(str(out_path), garbage=3, deflate=True)
+            new.close()
+            return out_path
+        finally:
+            doc.close()
+    except Exception as exc:  # noqa: BLE001 — fail-soft → следующий fallback
+        logger.warning("block_pdf_source: source-PDF build failed: %s", type(exc).__name__)
+        return None
+
+
 def resolve_block_pdf_source(
     block: dict,
     *,
     cache_dir: str | Path,
     http_get: Optional[Callable[[str], tuple[int, Optional[str], Optional[bytes]]]] = None,
     allow_download: bool = True,
+    source_pdf_path: Optional[str | Path] = None,
 ) -> BlockPdfSource:
-    """Найти лучший PDF-фрагмент блока.
+    """Найти лучший PDF-фрагмент блока (устойчиво к истёкшим/удалённым crop_url).
 
     Приоритет источников:
-      1. ``crop_url`` PDF из result.json (основной путь — по факту есть всегда);
-      2. ``image_file`` PDF, если локально существует;
-      3. иначе ``source="none"`` + ``fallback_used=True`` (caller → page-crop).
+      0. **локальный кэш block-PDF** (по cache-key) — без http/render;
+      1. ``crop_url`` PDF из result.json (R2/хранилище Chandra);
+      2. **source-PDF fallback** — если ``crop_url`` 404/недоступен И есть
+         локальный ``source_pdf_path`` + ``coords_px`` + ``page`` +
+         ``page_width/height``: вырезать block-region из локального PDF
+         (иммунно к чистке R2 — публичный объект crop_url может быть удалён);
+      3. ``image_file`` PDF, если локально существует;
+      4. иначе ``source="none"`` + ``fallback_used=True`` (caller → page-crop).
 
-    ``http_get(url) -> (status, content_type, body_bytes)`` инжектируется для
-    тестов; по умолчанию используется httpx. Загруженный PDF кладётся в
-    ``cache_dir/<block_id>.pdf``. Приватный URL целиком не логируется.
+    Cache-key = block_id + page + coords_px + identity(source_pdf | crop_url host).
+    Повторные прогоны берут block-PDF из кэша и не зависят от доступности
+    crop_url. ``http_get`` инжектируется для тестов. Приватный URL целиком не
+    логируется (только host).
     """
     bid = str(block.get("id") or block.get("block_id") or "block")
     cache_dir = Path(cache_dir)
     crop_url = _block_field(block, "crop_url")
     image_file = _block_field(block, "image_file")
+
+    coords_px = _coords_px_from_block(block)
+    page = _page_number_from_block(block)
+    page_px = _page_px_from_block(block)
+    src_identity = _source_identity(source_pdf_path)
+    can_source_fallback = bool(source_pdf_path and coords_px and page is not None and page_px)
+
+    # cache-key (если есть стабильные координаты блока)
+    ck: Optional[str] = None
+    cached_pdf: Optional[Path] = None
+    sidecar: Optional[Path] = None
+    if coords_px is not None and page is not None:
+        identity = src_identity or ("crop:" + _host_only(str(crop_url or "")))
+        ck = _block_pdf_cache_key(bid, page, coords_px, identity)
+        cached_pdf = cache_dir / f"{_safe_block_id(bid)}__{ck}.pdf"
+        sidecar = cache_dir / f"{_safe_block_id(bid)}__{ck}.src"
+        # 0. cache-first
+        try:
+            if cached_pdf.exists() and cached_pdf.stat().st_size > 0:
+                cached_source = "crop_url"
+                try:
+                    cached_source = (sidecar.read_text(encoding="utf-8").strip() or "crop_url")
+                except OSError:
+                    pass
+                return BlockPdfSource(
+                    block_id=bid, source=cached_source, pdf_path=cached_pdf,
+                    crop_url_status=200 if cached_source == "crop_url" else None,
+                    content_type="application/pdf", cache_hit=True)
+        except OSError:
+            pass
+
+    def _cache_paths() -> tuple[Path, Optional[Path]]:
+        if ck:
+            return cache_dir / f"{_safe_block_id(bid)}__{ck}.pdf", sidecar
+        return cache_dir / f"{_safe_block_id(bid)}.pdf", None
+
+    partial_status: Optional[int] = None
+    partial_ctype: Optional[str] = None
 
     # 1. crop_url PDF
     if crop_url and allow_download:
@@ -138,34 +286,50 @@ def resolve_block_pdf_source(
             cache_dir.mkdir(parents=True, exist_ok=True)
             status, ctype, body = (http_get or _default_http_get)(str(crop_url))
             if status == 200 and body and "pdf" in (ctype or "").lower():
-                out = cache_dir / f"{_safe_block_id(bid)}.pdf"
+                out, side = _cache_paths()
                 out.write_bytes(body)
+                if side is not None:
+                    side.write_text("crop_url", encoding="utf-8")
                 logger.info("block_pdf_source: %s ← crop_url (%s, %d bytes)",
-                            bid, _host_only(crop_url), len(body))
+                            bid, _host_only(str(crop_url)), len(body))
                 return BlockPdfSource(block_id=bid, source="crop_url", pdf_path=out,
                                       crop_url_status=status, content_type=ctype)
             logger.warning("block_pdf_source: %s crop_url not usable (status=%s ctype=%s)",
                            bid, status, ctype)
-            # падаем дальше в image_file/none, но запоминаем статус
-            partial_status = status
-            partial_ctype = ctype
-        except Exception as exc:  # noqa: BLE001 — fail-soft → fallback
+            partial_status, partial_ctype = status, ctype
+        except Exception as exc:  # noqa: BLE001 — fail-soft → следующий источник
             logger.warning("block_pdf_source: %s crop_url fetch failed: %s",
                            bid, type(exc).__name__)
-            partial_status = None
-            partial_ctype = None
-    else:
-        partial_status = None
-        partial_ctype = None
 
-    # 2. image_file PDF (локальный)
+    # 2. source-PDF fallback (crop_url 404/недоступен → рендер из локального PDF)
+    if can_source_fallback:
+        try:
+            cache_dir.mkdir(parents=True, exist_ok=True)
+            out, side = _cache_paths()
+            if not ck:
+                out = cache_dir / f"{_safe_block_id(bid)}_src.pdf"
+            built = _build_block_pdf_from_source(
+                source_pdf_path=source_pdf_path, page_number=int(page),
+                coords_px=coords_px, page_px_size=page_px, out_path=out)
+            if built is not None:
+                if side is not None:
+                    side.write_text("source_pdf", encoding="utf-8")
+                logger.info("block_pdf_source: %s ← source_pdf fallback (page %s)", bid, page)
+                return BlockPdfSource(block_id=bid, source="source_pdf", pdf_path=built,
+                                      crop_url_status=partial_status,
+                                      content_type="application/pdf")
+        except Exception as exc:  # noqa: BLE001 — fail-soft → следующий источник
+            logger.warning("block_pdf_source: %s source-PDF fallback failed: %s",
+                           bid, type(exc).__name__)
+
+    # 3. image_file PDF (локальный)
     if image_file:
         p = Path(str(image_file))
         if p.suffix.lower() == ".pdf" and p.exists():
             return BlockPdfSource(block_id=bid, source="image_file", pdf_path=p,
                                   crop_url_status=partial_status, content_type=partial_ctype)
 
-    # 3. нет block-PDF — caller использует page-crop
+    # 4. нет block-PDF — caller использует page-crop
     return BlockPdfSource(block_id=bid, source="none", pdf_path=None,
                           crop_url_status=partial_status, content_type=partial_ctype,
                           fallback_used=True)
@@ -419,7 +583,10 @@ def build_block_source_diagnostics(
     """Собрать per-block диагностику (для image_descriptions.json)."""
     return {
         "block_source": {
+            "pdf_source": src.source,                       # crop_url|source_pdf|image_file|none
             "used_crop_url_pdf": src.source == "crop_url",
+            "used_source_pdf_fallback": src.source == "source_pdf",
+            "cache_hit": src.cache_hit,
             "crop_url_status": src.crop_url_status,
             "text_layer_source": text_layer.source,
             "text_layer_usable": text_layer.usable,

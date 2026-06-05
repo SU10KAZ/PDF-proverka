@@ -193,3 +193,117 @@ def test_enrichment_block_pdf_flag_off_by_default(monkeypatch):
     out = mie.resolve_block_pdf_for_enrichment(
         "sid", "pid", "left", {"id": "B", "raw": {}}, render_target_long_side=1200)
     assert out is None
+
+
+# ─── Source-PDF fallback for expired/404 crop_url (2026-06-06) ─────────────
+
+
+def _make_source_pdf(path: Path, *, n_pages: int = 2, w_pt: float = 600, h_pt: float = 400) -> Path:
+    """Multi-page source PDF; page 2 carries a marker inside a known region."""
+    import fitz
+    doc = fitz.open()
+    for i in range(n_pages):
+        page = doc.new_page(width=w_pt, height=h_pt)
+        page.insert_text((40, 40), f"PAGE{i+1}", fontsize=14)
+        if i == 1:
+            page.insert_text((310, 210), "BLOCKMARK", fontsize=12)  # inside clip region
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(doc.tobytes())
+    doc.close()
+    return path
+
+
+def _grsh_block_404(coords_px, page=2, pw=1200, ph=800):
+    """A block whose public crop_url is dead (will 404), with local coords."""
+    return {
+        "id": "B404", "page": page, "page_width": pw, "page_height": ph, "bbox": coords_px,
+        "raw": {"crop_url": "https://pub-dead.r2.dev/tree_docs/gone.pdf", "coords_px": coords_px},
+    }
+
+
+def test_crop_url_200_still_used(tmp_path, block_pdf_bytes):
+    """Test A.1: crop_url 200 → block-PDF from crop_url (source_pdf ignored)."""
+    block = {"id": "B1", "page": 2, "page_width": 1200, "page_height": 800,
+             "bbox": [0, 0, 600, 400], "raw": {"crop_url": "https://ex.r2.dev/x.pdf"}}
+    src_pdf = _make_source_pdf(tmp_path / "src.pdf")
+    src = bps.resolve_block_pdf_source(
+        block, cache_dir=tmp_path / "cache",
+        http_get=lambda u: (200, "application/pdf", block_pdf_bytes),
+        source_pdf_path=src_pdf)
+    assert src.source == "crop_url" and src.ok and src.pdf_path.exists()
+
+
+def test_crop_url_404_builds_source_pdf_fallback(tmp_path):
+    """Test A.2/A.6: crop_url 404 + source PDF + coords_px → source-PDF block built,
+    coords_px converted to the correct PDF clip."""
+    src_pdf = _make_source_pdf(tmp_path / "src.pdf", w_pt=600, h_pt=400)
+    # page_px 1200x800 = 2x of pt; coords_px [600,400,1200,800] → clip [300,200,600,400] pt
+    block = _grsh_block_404([600, 400, 1200, 800], page=2, pw=1200, ph=800)
+    src = bps.resolve_block_pdf_source(
+        block, cache_dir=tmp_path / "cache",
+        http_get=lambda u: (404, "text/html", b"not found"),
+        source_pdf_path=src_pdf)
+    assert src.source == "source_pdf" and src.ok and src.pdf_path.exists()
+    assert src.crop_url_status == 404
+    # clip dims: (1200-600)/2 = 300pt wide, (800-400)/2 = 200pt tall
+    import fitz
+    d = fitz.open(str(src.pdf_path))
+    assert abs(d[0].rect.width - 300) < 2 and abs(d[0].rect.height - 200) < 2
+    d.close()
+
+
+def test_source_pdf_fallback_is_cached(tmp_path):
+    """Test A.3: the source-PDF block is written to cache (with a .src sidecar)."""
+    src_pdf = _make_source_pdf(tmp_path / "src.pdf")
+    block = _grsh_block_404([100, 100, 500, 300])
+    cache = tmp_path / "cache"
+    src = bps.resolve_block_pdf_source(
+        block, cache_dir=cache, http_get=lambda u: (404, "text/html", b"x"),
+        source_pdf_path=src_pdf)
+    assert src.pdf_path.exists() and src.pdf_path.parent == cache
+    sidecars = list(cache.glob("*.src"))
+    assert sidecars and sidecars[0].read_text().strip() == "source_pdf"
+
+
+def test_cache_first_no_http_on_repeat(tmp_path):
+    """Test A.4: a repeat resolve reads the cache and makes NO http call."""
+    src_pdf = _make_source_pdf(tmp_path / "src.pdf")
+    block = _grsh_block_404([100, 100, 500, 300])
+    cache = tmp_path / "cache"
+    bps.resolve_block_pdf_source(block, cache_dir=cache,
+                                 http_get=lambda u: (404, "text/html", b"x"),
+                                 source_pdf_path=src_pdf)
+    calls = {"n": 0}
+
+    def _boom(u):
+        calls["n"] += 1
+        raise AssertionError("http_get must NOT be called on cache hit")
+
+    src2 = bps.resolve_block_pdf_source(block, cache_dir=cache, http_get=_boom,
+                                        source_pdf_path=src_pdf)
+    assert src2.cache_hit and src2.ok and calls["n"] == 0
+    assert src2.source == "source_pdf"
+
+
+def test_no_source_pdf_falls_back_to_page_crop(tmp_path):
+    """Test A.5: crop_url 404 and NO source PDF → source='none' + fallback_used
+    (caller → page-crop)."""
+    block = _grsh_block_404([100, 100, 500, 300])
+    src = bps.resolve_block_pdf_source(
+        block, cache_dir=tmp_path / "cache",
+        http_get=lambda u: (404, "text/html", b"x"),
+        source_pdf_path=None)  # no local source
+    assert src.source == "none" and not src.ok and src.fallback_used
+
+
+def test_source_pdf_fallback_diagnostics(tmp_path):
+    """build_block_source_diagnostics surfaces the source-PDF fallback."""
+    src_pdf = _make_source_pdf(tmp_path / "src.pdf")
+    block = _grsh_block_404([100, 100, 500, 300])
+    src = bps.resolve_block_pdf_source(
+        block, cache_dir=tmp_path / "cache", http_get=lambda u: (404, "text/html", b"x"),
+        source_pdf_path=src_pdf)
+    tl = bps.extract_block_text_layer(None, result_json_text="ВРУ1 ОДН-1 ОДН-2 текст-слой достаточной длины")
+    diag = bps.build_block_source_diagnostics(src, tl, None)
+    assert diag["block_source"]["pdf_source"] == "source_pdf"
+    assert diag["block_source"]["used_source_pdf_fallback"] is True

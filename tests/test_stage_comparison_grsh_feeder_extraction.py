@@ -410,3 +410,99 @@ def test_default_concurrency_is_one(monkeypatch):
     assert gfe.load_grsh_feeder_config().concurrency == 1
     monkeypatch.setenv("STAGE_COMPARISON_GRSH_FEEDER_TILE_CONCURRENCY", "0")
     assert gfe.load_grsh_feeder_config().concurrency == 1
+
+
+# ─── B: generalized anchor extraction + recall/cap (2026-06-06) ───────────
+
+# Realistic dense apartment-distribution text-layer (как на p24/p27/p29): серии
+# ОДН/АВР/ППУ/QF реально присутствуют в тексте, но раньше extract_text_layer_anchors
+# их не ловил → expected_designations=0 → recall=0 + ложная отбраковка.
+_DENSE_TEXTLAYER = (
+    "1QS1 3Р 800А ВРУ1 ВП1 IP31 2QF1 3Р 320А QF1 QF2 QF3 QF4\n"
+    "ВРУ1-ОДН-1 ВРУ1-ОДН-2 ВРУ1-ОДН-14 ОДН-38 ОДН-39 ОДН-40 ОДН-44\n"
+    "АВР-1 АВР-2 АВР-31 АВР-35 ППГнг(А)-HF 5х150 Меркурий 234"
+)
+
+
+def test_anchors_extract_apartment_series():
+    """Test B.1: ОДН/АВР/QF серии из текст-слоя теперь извлекаются (раньше 0)."""
+    a = gfe.extract_text_layer_anchors(_DENSE_TEXTLAYER)
+    assert len(a["designation_norm"]) > 0
+    sm = a["series_max"]
+    assert sm.get("ОДН") == 44
+    assert sm.get("АВР") == 35
+    assert "QF" in sm
+    # bare-серии присутствуют как нормализованные обозначения
+    assert any("ОДН" in d and "44" in d for d in a["designation_norm"])
+
+
+def test_anchors_recognize_composite_vru_designation():
+    """Test B.2: ВРУ1-ОДН-14 распознаётся как designation."""
+    a = gfe.extract_text_layer_anchors("ВРУ1-ОДН-14 прочий текст")
+    assert any("ОДН" in d for d in a["designation_norm"])
+    assert a["series_max"].get("ОДН") == 14
+
+
+def test_qwen_designation_in_textlayer_is_verified():
+    """Test B.3: Qwen вернул ВРУ1-ОДН-38, и ОДН-38 есть в слое → verified, НЕ rejected."""
+    a = gfe.extract_text_layer_anchors(_DENSE_TEXTLAYER)
+    tiles = {"render_size": [7000, 3460], "n_tiles": 1, "tiles": [
+        {"tile_id": "t0", "status": "done", "parsed": {"feeders": [
+            {"consumer": "ВРУ1", "designation": "ВРУ1-ОДН-38"},
+            {"consumer": "ВРУ1", "designation": "ВРУ1-ОДН-44"},
+        ], "connections": [], "equipment": []}}]}
+    merged = gfe.merge_tile_feeders(tiles, a)
+    st = {f["designation"]: f["anchor_status"] for f in merged["feeders"]}
+    assert st["ВРУ1-ОДН-38"] == "verified"
+    assert st["ВРУ1-ОДН-44"] == "verified"
+    assert not merged["diagnostics"]["rejected_artificial_series"]
+
+
+def test_qwen_designation_above_maxindex_is_rejected():
+    """Test B.4: Qwen вернул ОДН-46, в слое max ОДН-44 → rejected (over-extrapolation cap)."""
+    a = gfe.extract_text_layer_anchors(_DENSE_TEXTLAYER)
+    tiles = {"render_size": [7000, 3460], "n_tiles": 1, "tiles": [
+        {"tile_id": "t0", "status": "done", "parsed": {"feeders": [
+            {"consumer": "ВРУ1", "designation": "ВРУ1-ОДН-38"},   # in-range → verified
+            {"consumer": "ВРУ1", "designation": "ВРУ1-ОДН-46"},   # > max 44 → rejected
+        ], "connections": [], "equipment": []}}]}
+    merged = gfe.merge_tile_feeders(tiles, a)
+    rej = merged["diagnostics"]["rejected_artificial_series"]
+    assert any("ОДН-46" in r for r in rej)
+    assert not any("ОДН-38" in r for r in rej)
+
+
+def test_legacy_grsh_anchors_not_broken():
+    """Test B.5: старые ГРЩ/ВРУ/кабельные anchors продолжают извлекаться."""
+    a = gfe.extract_text_layer_anchors("ВРУ1 ГРЩ1-РП1-1 ВРУ4 1ГРЩ-ВРУ4 ППГнг(А)-HF 5х120")
+    assert "ВРУ1" in a["consumers"]
+    norms = a["designation_norm"]
+    assert any("ГРЩ1-РП1-1" in n for n in norms)
+    assert any("1ГРЩ-ВРУ4" in n or "ГРЩ-ВРУ4" in n for n in norms)
+
+
+def test_designation_recall_above_zero_for_dense_block():
+    """Test B.6: для p24-подобного блока recall > 0 (раньше 0.0 из-за пустого anchor-set),
+    и реальные ОДН/АВР/QF фидеры НЕ уходят в rejected."""
+    a = gfe.extract_text_layer_anchors(_DENSE_TEXTLAYER)
+    assert len(a["designation_norm"]) >= 5  # expected_designations > 0
+    qwen_feeders = [
+        {"consumer": "ВРУ1", "designation": "ВРУ1-ОДН-1"},
+        {"consumer": "ВРУ1", "designation": "ВРУ1-ОДН-2"},
+        {"consumer": "ВРУ1", "designation": "ВРУ1-ОДН-14"},
+        {"consumer": "ВРУ1", "designation": "ВРУ1-ОДН-38"},
+        {"consumer": "ВРУ1", "designation": "ВРУ1-ОДН-44"},
+        {"consumer": "ВРУ1", "designation": "АВР-31"},
+        {"consumer": "ВРУ1", "designation": "QF1"},
+    ]
+    tiles = {"render_size": [7000, 3460], "n_tiles": 1, "tiles": [
+        {"tile_id": "t0", "status": "done", "parsed": {"feeders": qwen_feeders,
+                                                       "connections": [], "equipment": []}}]}
+    merged = gfe.merge_tile_feeders(tiles, a)
+    d = merged["diagnostics"]
+    assert d["chandra_expected_designations"] > 0
+    assert d["designation_recall"] > 0.0
+    # реальные фидеры (в слое) не отбракованы
+    assert not d["rejected_artificial_series"]
+    verified = [f for f in merged["feeders"] if f["anchor_status"] == "verified"]
+    assert len(verified) >= 5

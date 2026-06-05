@@ -232,8 +232,43 @@ _CONSUMER_DEFS = [
 ]
 
 
+# Серии распределительных/квартирных обозначений и аппаратов, реально
+# присутствующие на плотных однолинейных ВРУ/ГРЩ (ОДН/АВР/ППУ/ВП/РП/ЩО/…/QF).
+# Whitelist намеренно узкий — чтобы НЕ ловить номиналы (380В/25кА/800А/IP31) как
+# обозначения. Опциональный иерархический префикс (\d?ГРЩ…, ВРУ…) допускается.
+_SERIES_PREFIX = r'(?:ОДН|АВР|ППУ|ВП|РП|ЩО|ЩР|ЩС|НЦВ|НЦГ|НЦ|ЯРП|КНС|КМ|QF|QS)'
+_SERIES_DESIG_RE = re.compile(
+    rf'((?:\d?ГРЩ\d?[\-])?(?:ВРУ[\-\s]?[А-Я0-9]{{0,3}}[\-\s]?)?'
+    rf'{_SERIES_PREFIX})[\-\s]?(\d{{1,3}})(?:[\-]\d{{1,3}})?',
+    re.U)
+# Серия+номер в КОНЦЕ нормализованного designation (для membership / cap):
+# «ВРУ1-ОДН-38» → (ОДН,38); «ОДН-38» → (ОДН,38); «1QF1» → (QF,1).
+_SUFFIX_SERIES_RE = re.compile(rf'({_SERIES_PREFIX})[\-]?(\d{{1,3}})$', re.U)
+
+
+def _suffix_series(norm_d: Optional[str]) -> tuple[Optional[str], Optional[int]]:
+    m = _SUFFIX_SERIES_RE.search(norm_d or "")
+    if not m:
+        return (None, None)
+    try:
+        return (m.group(1), int(m.group(2)))
+    except (TypeError, ValueError):
+        return (None, None)
+
+
 def extract_text_layer_anchors(text: str) -> dict:
-    """Якоря из текст-слоя: consumers (canon) + cable_designations."""
+    """Якоря из текст-слоя: consumers (canon) + designations + series membership.
+
+    Расширено (2026-06-06): помимо ``ГРЩ-…`` обозначений извлекаются серии
+    квартирного/распределительного щита (ОДН/АВР/ППУ/ВП/РП/ЩО/QF…), реально
+    присутствующие в текст-слое. Раньше эти серии не ловились → denominator
+    recall был 0, а реальные фидеры уходили в rejected_artificial_series.
+
+    Дополнительно возвращает:
+      * ``series_nums`` — {series_key: set(int)} реальные номера серий из слоя
+        (membership для number-exact верификации);
+      * ``series_max`` — {series_key: max(int)} (для cap'а экстраполяции).
+    """
     text = text or ""
     consumers = {}
     for canon, pats in _CONSUMER_DEFS:
@@ -241,15 +276,30 @@ def extract_text_layer_anchors(text: str) -> dict:
             consumers[canon] = True
     desig = []
     seen = set()
+    # 1. существующие ГРЩ кабельные обозначения (поведение без изменений)
     for m in re.findall(r'\d?ГРЩ\d?[\-][А-Яа-яA-Z0-9\.]+(?:[\-]\d+)?', text, re.U):
         nd = norm_desig(m)
         if nd and nd not in seen:
             seen.add(nd)
             desig.append(m)
+    # 2. серии квартирного/распределительного щита + аппараты (новое)
+    series_nums: dict[str, set] = {}
+    for m in _SERIES_DESIG_RE.finditer(text):
+        full = m.group(0)
+        nd = norm_desig(full)
+        if nd and nd not in seen:
+            seen.add(nd)
+            desig.append(full)
+        skey, snum = _suffix_series(nd)
+        if skey and snum is not None:
+            series_nums.setdefault(skey, set()).add(snum)
+    series_max = {k: max(v) for k, v in series_nums.items() if v}
     return {"consumers": sorted(consumers.keys()),
             "consumer_canon": {norm_consumer(c) for c in consumers},
             "cable_designations": desig,
-            "designation_norm": {norm_desig(d) for d in desig}}
+            "designation_norm": {norm_desig(d) for d in desig},
+            "series_nums": series_nums,
+            "series_max": series_max}
 
 
 # ─── tiling ───────────────────────────────────────────────────────────────
@@ -395,6 +445,8 @@ def merge_tile_feeders(tile_results: dict, anchors: dict, *, cfg: Optional[GrshF
     cfg = cfg or load_grsh_feeder_config()
     ch_desig = set(anchors.get("designation_norm") or set())
     ch_consumer_canon = set(anchors.get("consumer_canon") or set())
+    series_nums = anchors.get("series_nums") or {}
+    series_max = anchors.get("series_max") or {}
 
     raw_feeders, raw_conns, raw_equip = [], [], []
     tile_failures = 0
@@ -447,15 +499,55 @@ def merge_tile_feeders(tile_results: dict, anchors: dict, *, cfg: Optional[GrshF
     for m in merged.values():
         dn = m["designation_norm"]
         cc = norm_consumer(m["consumer"])
-        verified = bool((dn and dn in ch_desig) or (cc and cc in ch_consumer_canon))
-        if not verified and dn:
-            verified = any((cd in dn or dn in cd) and len(cd) >= 6 for cd in ch_desig)
+        skey, snum = _suffix_series(dn)
+        # Over-extrapolation: номер серии выше max-index текст-слоя — выдуманная
+        # линия даже на реальном потребителе («ВРУ1-ОДН-46» при max ОДН 44).
+        # Перебивает consumer-верификацию.
+        over_max = bool(skey and snum is not None and skey in series_max
+                        and snum > series_max[skey])
+        verified = False
+        if not over_max:
+            if dn and dn in ch_desig:
+                verified = True                                  # точное совпадение нормы
+            elif skey and snum is not None and snum in series_nums.get(skey, ()):
+                verified = True                                  # number-exact membership серии
+            elif cc and cc in ch_consumer_canon:
+                verified = True                                  # известный потребитель
+            elif dn and skey is None:
+                # НЕ-серийные (ГРЩ-кабели и т.п.) — мягкий substring
+                verified = any((cd in dn or dn in cd) and len(cd) >= 5 for cd in ch_desig)
         m["anchor_status"] = "verified" if verified else "visual_unverified"
-        if dn and dn not in ch_desig and m["anchor_status"] == "visual_unverified" and re.search(r"-\d+$", dn):
-            rejected_series.append(dn)
+        # Отбраковываем ТОЛЬКО действительно выдуманное: над max-index серии ЛИБО
+        # серийноподобное обозначение неизвестной серии. In-range plausible фидеры
+        # остаются visual_unverified (НЕ отбраковываются как прежде).
+        if not verified and dn:
+            if over_max:
+                rejected_series.append(dn)
+            elif skey and snum is not None:
+                pass  # серия известна, номер in-range, но точного членства нет → keep
+            elif re.search(r"-\d+$", dn):
+                rejected_series.append(dn)
 
     merged_list = sorted(merged.values(), key=lambda x: (x["consumer"], x["designation_norm"] or ""))
-    matched_desig = {m["designation_norm"] for m in merged.values() if m["designation_norm"] in ch_desig}
+    # recall: сколько ОЖИДАЕМЫХ designations текст-слоя Qwen реально захватил.
+    # substring (composite Qwen «ВРУ1-ОДН-38» матчит bare-anchor «ОДН-38»), но
+    # number-серии — по точному членству, чтобы «ОДН-46» НЕ матчил «ОДН-4».
+    extracted_norms = {m["designation_norm"] for m in merged.values() if m["designation_norm"]}
+    extracted_series: dict[str, set] = {}
+    for e in extracted_norms:
+        ek, en = _suffix_series(e)
+        if ek and en is not None:
+            extracted_series.setdefault(ek, set()).add(en)
+
+    def _anchor_captured(a: str) -> bool:
+        if a in extracted_norms:
+            return True
+        ak, an = _suffix_series(a)
+        if ak and an is not None:
+            return an in extracted_series.get(ak, ())
+        return any((a in e or e in a) and len(a) >= 5 for e in extracted_norms)
+
+    matched_desig = {a for a in ch_desig if _anchor_captured(a)}
     desig_recall = round(len(matched_desig) / max(1, len(ch_desig)), 3)
     extracted_cons = {norm_consumer(m["consumer"]) for m in merged.values()}
     extracted_cons |= {norm_consumer(e.get("name")) for e in raw_equip if e.get("name")}

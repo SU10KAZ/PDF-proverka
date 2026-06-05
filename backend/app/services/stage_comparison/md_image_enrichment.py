@@ -979,6 +979,25 @@ def block_pdf_source_enabled() -> bool:
     return _env_bool("STAGE_COMPARISON_BLOCK_PDF_SOURCE_ENABLED", False)
 
 
+def _side_source_pdf_path(session_id: str, pair_id: str, side: str) -> Optional[str]:
+    """Локальный исходный PDF стороны (для source-PDF fallback при crop_url 404).
+
+    Берём из ``pair.json[side].pdf_path`` (без импорта store — fail-soft). Это
+    делает block-PDF устойчивым к удалённым публичным crop_url старой стадии.
+    """
+    try:
+        pj = paths_mod.pair_dir(session_id, pair_id) / "pair.json"
+        if not pj.exists():
+            return None
+        d = json.loads(pj.read_text(encoding="utf-8"))
+        pp = (d.get(side) or {}).get("pdf_path")
+        if pp and Path(pp).exists():
+            return str(pp)
+    except Exception:  # noqa: BLE001 — fallback опционален
+        return None
+    return None
+
+
 def resolve_block_pdf_for_enrichment(
     session_id: str, pair_id: str, side: str, side_block: Optional[dict],
     *, render_target_long_side: int,
@@ -996,7 +1015,9 @@ def resolve_block_pdf_for_enrichment(
     try:
         bid = str(side_block.get("id") or "block")
         cache_dir = paths_mod.text_enrichment_cache_dir(session_id, pair_id) / "block_pdf" / side
-        src = block_pdf_source_mod.resolve_block_pdf_source(side_block, cache_dir=cache_dir)
+        src = block_pdf_source_mod.resolve_block_pdf_source(
+            side_block, cache_dir=cache_dir,
+            source_pdf_path=_side_source_pdf_path(session_id, pair_id, side))
         text_layer = block_pdf_source_mod.extract_block_text_layer(
             src.pdf_path, result_json_text=raw.get("pdfplumber_text"))
         rendered = None
@@ -1045,7 +1066,9 @@ async def _run_grsh_feeder_extraction_for_block(
         bid = str(side_block.get("id") or "block")
         cache_dir = paths_mod.text_enrichment_cache_dir(session_id, pair_id) / "grsh_feeder" / side
 
-        src = block_pdf_source_mod.resolve_block_pdf_source(side_block, cache_dir=cache_dir)
+        src = block_pdf_source_mod.resolve_block_pdf_source(
+            side_block, cache_dir=cache_dir,
+            source_pdf_path=_side_source_pdf_path(session_id, pair_id, side))
         if not (src.ok and src.pdf_path is not None):
             return None  # нет block-PDF → single-shot
 
