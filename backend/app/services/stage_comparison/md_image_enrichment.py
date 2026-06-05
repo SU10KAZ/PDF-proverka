@@ -48,6 +48,7 @@ from typing import Any, Awaitable, Callable, Optional
 from . import block_pdf_source as block_pdf_source_mod
 from . import graphic_llm_local as graphic_local_mod
 from . import graphic_profiles as graphic_profiles_mod
+from . import grsh_core_systems as grsh_core_systems_mod
 from . import grsh_feeder_extraction as grsh_feeder_mod
 from . import paths as paths_mod
 from . import problem_block_retry as problem_block_retry_mod
@@ -1118,6 +1119,27 @@ async def _run_grsh_feeder_extraction_for_block(
                 f"text_layer={tl.source}"
             ),
         }
+        # ── GRSH_CORE_SYSTEMS (B1): структурное ядро ГРЩ (вводы/шины/вводные QF/
+        #    секц-АВР-ПСВ/УЗИП-ОПН/ТТ-ТШП/учёт/АУКРМ/ГЗШ-ДСУП/штамп) из
+        #    structured + connections + векторного text-layer block-PDF.
+        #    Кладём ШТАТНО в payload — build_enriched_md рендерит секцию без
+        #    отдельного rebuild-скрипта. ──
+        field_state_audit = graphic_profiles_mod.structured_field_state_audit(structured)
+        try:
+            cs = grsh_core_systems_mod.build_core_systems(
+                structured, merged["connections"], tl.text, source_side=side)
+            desc_payload["core_systems"] = {
+                "source_side": cs["source_side"], "categories": cs["categories"]}
+            desc_payload["core_diagnostics"] = cs["diagnostics"]
+            desc_payload["source_side"] = side
+            desc_payload["text_layer_stats"] = {
+                "source": tl.source, "chars": len(tl.text or ""),
+                "words": len(tl.words or []), "usable": bool(tl.usable),
+            }
+            desc_payload["block_source"] = src.source
+            desc_payload["field_state"] = field_state_audit
+        except Exception:  # noqa: BLE001 — core build must never break enrichment
+            logger.debug("GRSH core_systems build failed", exc_info=True)
         diagnostics = {
             "method": "grsh_feeder_tiled",
             "graphic_profile": graphic_profiles_mod.ELECTRICAL_SINGLELINE,
@@ -1125,7 +1147,7 @@ async def _run_grsh_feeder_extraction_for_block(
             "block_source": src.source,
             "text_layer_source": tl.source,
             "n_tiles": tile_results["n_tiles"],
-            "field_state_audit": graphic_profiles_mod.structured_field_state_audit(structured),
+            "field_state_audit": field_state_audit,
         }
         diagnostics.update({f"grsh_{k}": v for k, v in diag.items()})
         return {"desc_payload": desc_payload, "diagnostics": diagnostics}
@@ -1675,6 +1697,29 @@ def _format_qwen_description_md(desc_payload: dict, *, model: str, page: Optiona
     if isinstance(grsh_feeder_table, str) and grsh_feeder_table.strip():
         lines.append(grsh_feeder_table.strip())
         lines.append("")
+
+    # ── GRSH_CORE_SYSTEMS (B1): ядро ГРЩ (вводы/шины/вводные QF/секц-АВР-ПСВ/
+    #    УЗИП-ОПН/ТТ-ТШП/учёт/АУКРМ/ГЗШ-ДСУП/штамп) из structured + connections +
+    #    block-PDF text-layer. Идёт ДО summary; «not_extracted» ≠ removed. ──
+    try:
+        if isinstance(desc_payload.get("core_systems"), dict):
+            # production: ядро построено штатно в enrich_side (build_core_systems)
+            core_md = grsh_core_systems_mod.render_core_systems_md(desc_payload["core_systems"])
+        elif grsh_core_systems_mod.is_grsh_core_payload(desc_payload):
+            # legacy / offline rebuild: построить на лету из structured + text-layer
+            core_md = grsh_core_systems_mod.render_grsh_core_systems_md(
+                desc_payload.get("structured"),
+                desc_payload.get("grsh_connections"),
+                desc_payload.get("_core_text_layer") or "",
+                source_side=str(desc_payload.get("_source_side") or desc_payload.get("source_side") or "?"),
+            )
+        else:
+            core_md = ""
+        if core_md.strip():
+            lines.append(core_md.strip())
+            lines.append("")
+    except Exception:  # noqa: BLE001 — core render must never break enriched MD
+        logger.debug("GRSH_CORE_SYSTEMS render failed", exc_info=True)
 
     # ── DIFF_ANCHORS: буквальные маркировки/номиналы/связи для diff'а ──
     # Эта секция идёт ДО summary, чтобы Opus видел сырые ЩР-1а / ВРУ-2 с.ш.1
@@ -3150,6 +3195,18 @@ def build_image_diff_index(descriptions: list[dict]) -> str:
             for v in rejected[:30]:
                 lines.append(f"- {v}")
             lines.append("")
+
+        # GRSH core anchors (ядро ГРЩ): вводные QF 3200/50кА, шинопровод, АВР/ПСВ,
+        # УЗИП/ОПН, ТТ/ТШП, учёт(Меркурий/TS), АУКРМ, ГЗШ/ДСУП, штамп.
+        # not_extracted перечисляется явно (absence ≠ removed).
+        if isinstance(payload, dict) and isinstance(payload.get("core_systems"), dict):
+            try:
+                core_lines = grsh_core_systems_mod.core_diff_index_lines(payload["core_systems"])
+            except Exception:  # noqa: BLE001
+                core_lines = []
+            if core_lines:
+                lines.extend(core_lines)
+                lines.append("")
 
         # warnings: всегда показываем хотя бы «none», чтобы Opus понимал.
         lines.append("warnings:")

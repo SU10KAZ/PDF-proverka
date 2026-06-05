@@ -228,6 +228,12 @@ def test_grsh_feeder_helper_end_to_end_local_pdf(tmp_path, monkeypatch):
     assert out["diagnostics"]["method"] == "grsh_feeder_tiled"
     assert out["diagnostics"]["block_source"] == "image_file"  # local PDF, no network
     assert "grsh_feeders_extracted" in out["diagnostics"]
+    # B1 wiring: ядро ГРЩ передаётся ШТАТНО в payload (без отдельного rebuild-скрипта)
+    dp = out["desc_payload"]
+    assert isinstance(dp.get("core_systems"), dict) and isinstance(dp["core_systems"].get("categories"), dict)
+    assert isinstance(dp.get("core_diagnostics"), dict)
+    assert dp.get("source_side") == "left"
+    assert "text_layer_stats" in dp and "block_source" in dp and "field_state" in dp
 
 
 def test_grsh_feeder_helper_failsoft_without_block_pdf(tmp_path, monkeypatch):
@@ -239,3 +245,144 @@ def test_grsh_feeder_helper_failsoft_without_block_pdf(tmp_path, monkeypatch):
     out = asyncio.run(mie._run_grsh_feeder_extraction_for_block(
         "sid", "pid", "left", {"id": "B", "raw": {}}, cfg=cfg))
     assert out is None
+
+
+# ─── GRSH_CORE_SYSTEMS (B1) + cross-side guard (B2) — no Qwen/Opus, no network ──
+
+from backend.app.services.stage_comparison import grsh_core_systems as gcs  # noqa: E402
+
+# Synthetic core sources covering the ядро-checklist (text_layer passed as a
+# plain string → no PDF/fitz/network).
+_CORE_STRUCTURED = {
+    "profile": "electrical_singleline", "subtype": "grsh",
+    "compensation": [{"ref": "АУКРМ-1", "detail": "180 кВАр", "field_state": "present"},
+                     {"ref": "АУКРМ-2", "detail": "150 кВАр", "field_state": "present"}],
+    "earthing": [{"name": "ГЗШ", "detail": "Главная заземляющая шина", "field_state": "present"}],
+    "metering": [{"consumer": "ВРУ-ИТП", "ct_ratio": "40/5", "field_state": "present"}],
+}
+_CORE_CONNECTIONS = [
+    {"from": "ТП1", "to": "ГРЩ1", "via": "Шинопровод 3L/PEN Al 3200A, L=6м",
+     "evidence_text": "Ввод 1 к ТП1 Шинопровод 3L/PEN Al 3200A", "confidence": 0.95},
+]
+_CORE_TEXT_LAYER = "\n".join([
+    "QF1 3Р", "3200А", "50кА", "QF2 3Р", "3200А", "50кА",
+    "АВР", "ГРЩ1 ПСВ",
+    "УЗИП1", "УЗИП2", "ОПН Тип 1", "FU1..FU3 125А",
+    "1ТА1...1ТА3", "3хТШП-0,66", "40/5, 0,5S", "1500/5",
+    "10хМеркурий 234 ARTX2-03", "Анализатор качества ЭС", "к TS1", "к TS2",
+    "Ввод 1 к ТП1 Шинопровод 3L/PEN Al 3200А, L=6м",
+    "ГЗШ", "К металлоконструкциям", "Металлические трубы водопровода",
+    "Стадия П", "Граница балансовой принадлежности",
+])
+
+
+def test_build_core_systems_all_categories_present():
+    cs = gcs.build_core_systems(_CORE_STRUCTURED, _CORE_CONNECTIONS, _CORE_TEXT_LAYER,
+                                source_side="right")
+    cats = cs["categories"]
+    # все 11 фиксированных категорий присутствуют как ключи
+    assert set(cats.keys()) == set(gcs.CORE_CATEGORY_KEYS)
+    diag = cs["diagnostics"]
+    assert diag["source_side"] == "right"
+    # ядро реально наполнено (не пусто)
+    assert "main_breakers" in diag["categories_present"]
+    assert "surge_protection" in diag["categories_present"]
+
+
+def test_render_core_systems_md_covers_checklist():
+    cs = gcs.build_core_systems(_CORE_STRUCTURED, _CORE_CONNECTIONS, _CORE_TEXT_LAYER,
+                                source_side="right")
+    md = gcs.render_core_systems_md({"source_side": cs["source_side"], "categories": cs["categories"]})
+    assert "GRSH_CORE_SYSTEMS" in md
+    # 1 QF 3200/50кА · 2 шинопровод · 3 АВР/ПСВ · 4 УЗИП/ОПН · 5 ТТ/ТШП · 6 учёт · 7 ГЗШ
+    assert "3200" in md and "50кА" in md
+    assert "Шинопровод" in md
+    assert "АВР" in md and "ПСВ" in md
+    assert "УЗИП" in md and "ОПН" in md
+    assert "ТШП" in md
+    assert "Меркурий" in md and "TS1" in md
+    assert "ГЗШ" in md
+    assert "АУКРМ" in md
+
+
+def test_grsh_core_systems_renders_in_format_qwen_md():
+    """Payload c core_systems → _format_qwen_description_md рендерит секцию."""
+    from backend.app.services.stage_comparison import md_image_enrichment as mie
+    cs = gcs.build_core_systems(_CORE_STRUCTURED, _CORE_CONNECTIONS, _CORE_TEXT_LAYER,
+                                source_side="right")
+    payload = {"status": "done", "image_kind": "scheme",
+               "graphic_profile": "electrical_singleline",
+               "core_systems": {"source_side": "right", "categories": cs["categories"]}}
+    body = mie._format_qwen_description_md(payload, model="qwen", page=21, block_id="B")
+    assert "GRSH_CORE_SYSTEMS" in body
+    assert "3200" in body and "УЗИП" in body and "ТШП" in body and "Меркурий" in body
+
+
+def test_grsh_core_systems_in_enriched_md_and_diff_index():
+    """build_enriched_md: GRSH_CORE_SYSTEMS в теле + core anchors в IMAGE_DIFF_INDEX."""
+    from backend.app.services.stage_comparison import md_image_enrichment as mie
+    cs = gcs.build_core_systems(_CORE_STRUCTURED, _CORE_CONNECTIONS, _CORE_TEXT_LAYER,
+                                source_side="right")
+    payload = {"status": "done", "image_kind": "scheme",
+               "graphic_profile": "electrical_singleline",
+               "grsh_feeder_table": "GRSH_FEEDERS\n- потребитель=ВРУ1",
+               "core_systems": {"source_side": "right", "categories": cs["categories"]}}
+    blocks = [mie.MdBlock(kind="image", text="[IMAGE]", page=21, block_id="B",
+                          order=0, image_order_on_page=0)]
+    descriptions = [{"order": 0, "status": "done", "block_type": "dense_grsh_singleline",
+                     "page": 21, "side_block_id": "B", "description": payload}]
+    md = mie.build_enriched_md(blocks, descriptions)
+    assert "GRSH_CORE_SYSTEMS" in md
+    assert "GRSH_FEEDERS" in md
+    # IMAGE_DIFF_INDEX core anchors
+    assert "core:" in md
+    assert "АВР/ПСВ" in md and "УЗИП/ОПН" in md and "ГЗШ/ДСУП" in md
+
+
+def test_core_not_extracted_is_not_removed():
+    """Пустые источники → каждая категория not_extracted, НЕ removed/added."""
+    cs = gcs.build_core_systems({}, [], "", source_side="left")
+    md = gcs.render_core_systems_md({"source_side": "left", "categories": cs["categories"]})
+    assert "not_extracted" in md
+    # ни один элемент не классифицирован как removed/added (формат "value | state | …").
+    # (слово "removed" в шапке секции — это пояснение «НЕ трактовать как removed».)
+    assert " | removed" not in md and " | added" not in md
+    # все категории помечены not_extracted в диагностике
+    assert set(cs["diagnostics"]["categories_not_extracted"]) == set(gcs.CORE_CATEGORY_KEYS)
+
+
+def test_b2_extraction_guard_flags_ocr_only_categories():
+    """Категория есть только в text-layer (Qwen structured пусто) → requires_human_review."""
+    # surge_protection нет ни в structured, ни в connections — только в text-layer
+    cs = gcs.build_core_systems({}, [], "УЗИП1\nОПН Тип 1\nFU1..FU3 125А", source_side="left")
+    diag = cs["diagnostics"]
+    assert "surge_protection" in diag["ocr_only_categories"]
+    assert "surge_protection" in diag["requires_human_review_categories"]
+    # и при этом surge_protection присутствует (не removed)
+    assert "surge_protection" in diag["categories_present"]
+
+
+def test_b2_cross_side_guard_aukrm_not_false_added():
+    """AUKRM помечен added, но есть в text-layer старой стороны → requires_human_review."""
+    changes = [{"type": "added", "title": "Добавлены установки компенсации АУКРМ-1 и АУКРМ-2",
+                "new_value": "АУКРМ-1, АУКРМ-2",
+                "evidence_right": {"quote": "АУКРМ-1 180 кВАр; АУКРМ-2 150 кВАр"}}]
+    left_tl = "ГРЩ1-КУ1 ППГнг(А)-HF 5х150\nАУКРМ-1\nQр=200 кВАр"  # АУКРМ есть в OLD text-layer
+    right_tl = "АУКРМ №1\nАУКРМ №2\n180 кВАр\n150 кВАр"
+    out, stats = gcs.apply_cross_side_guard(changes, left_tl, right_tl)
+    assert stats["guarded"] == 1
+    assert out[0].get("requires_human_review") is True
+    assert out[0]["cross_side_guard"]["original_type"] == "added"
+    assert out[0]["cross_side_guard"]["present_in_text_layer_side"] == "left"
+
+
+def test_b2_cross_side_guard_genuine_add_not_flagged():
+    """Реально новый элемент (нет в other-side text-layer) НЕ помечается guard'ом."""
+    changes = [{"type": "added", "title": "Добавлены УЗИП1, УЗИП2",
+                "new_value": "УЗИП1 УЗИП2",
+                "evidence_right": {"quote": "УЗИП1 УЗИП2"}}]
+    left_tl = "ОПН Тип 1 FU1 125А"   # УЗИП НЕТ в старой стадии → честный added
+    right_tl = "УЗИП1 УЗИП2 ОПН"
+    out, stats = gcs.apply_cross_side_guard(changes, left_tl, right_tl)
+    assert stats["guarded"] == 0
+    assert "cross_side_guard" not in out[0]
