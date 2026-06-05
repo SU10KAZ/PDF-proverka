@@ -43,6 +43,7 @@ from backend.app.services.stage_comparison import md_image_enrichment as md_enri
 from backend.app.services.stage_comparison import md_enrichment_jobs as md_enrichment_jobs_mod
 from backend.app.services.stage_comparison import large_sheet_enrichment as large_sheet_mod
 from backend.app.services.stage_comparison import large_sheet_enrichment_jobs as large_sheet_jobs_mod
+from backend.app.services.stage_comparison import pipeline_queue as pipeline_queue_mod
 from backend.app.services.stage_comparison import enriched_comparison as enriched_compare_mod
 from backend.app.services.stage_comparison import unified_analysis as unified_analysis_mod
 from backend.app.services.stage_comparison import unified_analysis_jobs as unified_jobs_mod
@@ -1365,6 +1366,78 @@ async def get_large_sheet_job_endpoint(session_id: str, job_id: str):
 @router.post("/sessions/{session_id}/large-sheet-enrichment-jobs/{job_id}/cancel")
 async def cancel_large_sheet_job_endpoint(session_id: str, job_id: str):
     job = large_sheet_jobs_mod.cancel_job(session_id, job_id)
+    if job is None:
+        raise HTTPException(404, "Job не найден")
+    return job
+
+
+# ─── Qwen→Opus pipeline queue (1 Qwen worker + 1 Opus worker, decoupled) ─────
+
+
+class QwenOpusPreflightRequest(BaseModel):
+    scope: str = Field("selected", pattern="^(selected|session|pair)$")
+    pair_ids: Optional[list[str]] = None
+    force_qwen: bool = True
+    force_opus: bool = True
+
+
+class QwenOpusStartRequest(BaseModel):
+    scope: str = Field("selected", pattern="^(selected|session|pair)$")
+    pair_ids: Optional[list[str]] = None
+    force_qwen: bool = True
+    force_opus: bool = True
+    prebuild_large_sheets: bool = True
+    run_v2: bool = False
+    confirm: bool = False
+
+
+@router.post("/sessions/{session_id}/pipeline-qwen-opus/preflight")
+async def qwen_opus_preflight_endpoint(session_id: str, req: QwenOpusPreflightRequest):
+    """Сводка перед запуском Qwen→Opus pipeline (без запуска моделей)."""
+    try:
+        return pipeline_queue_mod.preflight(
+            session_id, scope=req.scope, pair_ids=req.pair_ids,
+            force_qwen=bool(req.force_qwen), force_opus=bool(req.force_opus),
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+
+@router.post("/sessions/{session_id}/pipeline-qwen-opus")
+async def qwen_opus_start_endpoint(session_id: str, req: QwenOpusStartRequest):
+    """Запустить Qwen→Opus pipeline по ВЫБРАННЫМ парам. Без confirm=true —
+    rejected (в фон не уходит). scope=session требует явного pair-выбора в UI."""
+    try:
+        job = pipeline_queue_mod.create_job(
+            session_id, scope=req.scope, pair_ids=req.pair_ids,
+            force_qwen=bool(req.force_qwen), force_opus=bool(req.force_opus),
+            prebuild_large_sheets=bool(req.prebuild_large_sheets),
+            run_v2=bool(req.run_v2), confirm=bool(req.confirm),
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    if job.get("status") == "rejected_no_confirm":
+        return job
+    if job.get("status") == "queued":
+        pipeline_queue_mod.start_job_in_background(session_id, job["job_id"])
+    return pipeline_queue_mod.get_job(session_id, job["job_id"]) or job
+
+
+@router.get("/sessions/{session_id}/pipeline-qwen-opus/{job_id}")
+async def qwen_opus_status_endpoint(session_id: str, job_id: str):
+    job = pipeline_queue_mod.get_job(session_id, job_id)
+    if job is None:
+        raise HTTPException(404, "Job не найден")
+    return job
+
+
+@router.post("/sessions/{session_id}/pipeline-qwen-opus/{job_id}/cancel")
+async def qwen_opus_cancel_endpoint(session_id: str, job_id: str):
+    """Graceful cancel: новых пар не начинать; Qwen завершает текущую страницу/
+    блок, Opus — текущую пару."""
+    job = pipeline_queue_mod.cancel_job(session_id, job_id)
     if job is None:
         raise HTTPException(404, "Job не найден")
     return job

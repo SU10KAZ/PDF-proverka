@@ -5372,6 +5372,50 @@
 
                     </div>
 
+                    <!-- Qwen→Opus pipeline toolbar -->
+                    <div v-if="scPairs && scPairs.length" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px; padding:8px 10px; background:#f8fafc; border:1px solid #e5e7eb; border-radius:6px">
+                        <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; font-weight:500">
+                            <input type="checkbox" :checked="scQOAllSelected" @change="scQOToggleAll($event)"> Выбрать все
+                        </label>
+                        <button class="btn btn-sm btn-primary" :disabled="scQOSelectedCount===0 || scQORunning" @click="scQOOpenConfirm()">
+                            Обработать выбранные ({{ scQOSelectedCount }})
+                        </button>
+                        <span style="font-size:11px; color:#6b7280">Qwen готовит enriched MD по очереди, Opus сравнивает готовые пары (Qwen не ждёт Opus).</span>
+                    </div>
+
+                    <!-- Pipeline status panel -->
+                    <div v-if="scQOJob" style="margin-bottom:10px; padding:10px 12px; background:linear-gradient(90deg,#f0fdf4,#fff); border:1px solid #bbf7d0; border-radius:8px; font-size:12px">
+                        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
+                            <strong>Pipeline Qwen→Opus</strong>
+                            <span style="color:#6b7280">job {{ scQOJob.job_id }} · {{ scQOJob.status }}</span>
+                            <button v-if="['running','queued'].includes(scQOJob.status)" class="btn btn-sm btn-secondary" @click="scQOCancel()" style="margin-left:auto">Остановить</button>
+                        </div>
+                        <div style="margin-top:6px; display:flex; gap:18px; flex-wrap:wrap">
+                            <span>🟦 Qwen: {{ scQOJob.qwen_worker.done }}/{{ scQOJob.qwen_worker.total }} done · {{ scQOJob.qwen_worker.failed }} fail<span v-if="scQOJob.qwen_worker.current_pair_id"> · сейчас {{ scQOPairLabel(scQOJob.qwen_worker.current_pair_id) }}</span></span>
+                            <span>🟪 Opus: {{ scQOJob.opus_worker.done }}/{{ scQOJob.opus_worker.total }} done · {{ scQOJob.opus_worker.failed }} fail<span v-if="scQOJob.opus_worker.current_pair_id"> · сейчас {{ scQOPairLabel(scQOJob.opus_worker.current_pair_id) }}</span></span>
+                            <span>✅ {{ scQOJob.queues.completed.length }} · ❌ {{ scQOJob.queues.failed.length }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Confirm modal -->
+                    <div v-if="scQOConfirm" class="retry-dialog-overlay" @click.self="scQOConfirm=null">
+                        <div class="retry-dialog" @click.stop>
+                            <h3 class="retry-dialog__title">Запустить обработку Qwen→Opus</h3>
+                            <div style="font-size:12px; color:var(--text2); margin-bottom:10px; line-height:1.7">
+                                Выбрано пар: <strong>{{ scQOConfirm.total_pairs }}</strong><br>
+                                Image-блоков: {{ scQOConfirm.image_blocks }} · dense_grsh: {{ scQOConfirm.dense_grsh }} · large-sheet страниц: {{ scQOConfirm.large_sheet_pages }} (готово {{ scQOConfirm.existing_large_sheet_artifacts }})<br>
+                                Оценка Qwen: ~{{ Math.round(scQOConfirm.estimated_qwen_duration_sec/60) }} мин · Opus: ~{{ Math.round(scQOConfirm.estimated_opus_duration_sec/60) }} мин<br>
+                                <span v-if="scQOConfirm.too_large_pairs.length">too_large пар: {{ scQOConfirm.too_large_pairs.length }}<br></span>
+                                <span v-for="r in scQOConfirm.risks" :key="r" style="color:#b45309; display:block">⚠ {{ r }}</span>
+                                <span style="display:block; margin-top:6px; color:#6b7280">Будет сделан backup артефактов пар. Запустятся Qwen (локально) и Opus (Claude Code).</span>
+                            </div>
+                            <div class="retry-dialog__buttons">
+                                <button class="btn btn-secondary" @click="scQOConfirm=null">Отмена</button>
+                                <button class="btn btn-primary" :disabled="scQORunning" @click="scQOStartConfirmed()">Запустить обработку</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <table style="width:100%; border-collapse:collapse; font-size:13px">
                         <thead style="background:#fafafa">
                             <tr>
@@ -5522,6 +5566,12 @@
                                           style="font-size:11px; white-space:nowrap">{{ scPairExpertBadge(p.id).label }}</span>
                                 </td>
                                 <td style="padding:8px; text-align:right; white-space:nowrap">
+                                    <input type="checkbox" v-model="scQOSelected[p.id]" :disabled="!p.left || !p.right"
+                                           :title="'Выбрать пару для обработки'" style="vertical-align:middle; margin-right:6px">
+                                    <span v-if="scQOPairBadge(p.id)" :title="scQOPairBadge(p.id).title"
+                                          :style="{fontSize:'10px', marginRight:'6px', whiteSpace:'nowrap', fontWeight:600, color: scQOPairBadge(p.id).color}">{{ scQOPairBadge(p.id).label }}</span>
+                                    <button class="btn btn-sm btn-primary" :disabled="!p.left || !p.right || scQORunning"
+                                            @click="scQOProcessPair(p.id)" title="Запустить Qwen→Opus для этой пары">Обработать</button>
                                     <button class="btn btn-sm" :disabled="!p.left || !p.right" @click="scOpenPair(p)">Открыть</button>
                                 </td>
                             </tr>

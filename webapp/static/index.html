@@ -5602,20 +5602,73 @@
                                 <span style="font-size:13px; color:#374151">
                                     пара <strong>{{ scOpusJob.aggregate.current_pair_index }}</strong> / {{ scOpusJob.aggregate.total_pairs }}
                                 </span>
-                                <span style="font-size:12px; opacity:.65; margin-left:auto" v-if="scOpusJob.aggregate.current_pair_status">
+                                <!-- fallback (evidence_first): прогноз времени вместо статичного comparing -->
+                                <span v-if="scOpusFallbackLabel()" style="font-size:12px; margin-left:auto; display:inline-flex; align-items:center; gap:8px"
+                                      :title="scOpusFallbackLabel().title">
+                                    <code style="color:#7c3aed; background:#f5f3ff; padding:1px 6px; border-radius:4px">{{ scOpusFallbackLabel().text }}</code>
+                                    <span v-if="scOpusFallbackLabel().eta" style="color:#6d28d9; font-weight:600">осталось ~{{ scOpusFallbackLabel().eta }}</span>
+                                </span>
+                                <span v-else style="font-size:12px; opacity:.65; margin-left:auto" v-show="scOpusJob.aggregate.current_pair_status">
                                     status: <code>{{ scOpusJob.aggregate.current_pair_status }}</code>
                                 </span>
                             </div>
                             <div style="font-family:monospace; font-size:13px; color:#1f2937; word-break:break-all">
                                 {{ scOpusCurrentPairLabel() }}
                             </div>
+                            <!-- прогресс-бар по чанкам fallback -->
+                            <div v-if="scOpusFallbackLabel()" style="margin-top:8px">
+                                <div style="height:6px; background:#ede9fe; border-radius:3px; overflow:hidden">
+                                    <div :style="{width: scOpusFallbackLabel().pct + '%', height:'100%', background:'#7c3aed', transition:'width .4s'}"></div>
+                                </div>
+                                <div v-if="scOpusFallbackLabel().title" style="font-size:11px; color:#6b7280; margin-top:3px">
+                                    текущий раздел: {{ scOpusFallbackLabel().title }}
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Финальный статус -->
-                        <div v-if="scOpusJob && ['done','cancelled','rejected_no_confirm','failed'].includes(scOpusJob.status)"
-                             style="margin-top:6px; font-size:11px; opacity:.75">
-                            Последний прогон: <code>{{ scOpusJob.id }}</code> · status: <code>{{ scOpusJob.status }}</code>
-                            <span v-if="scOpusJob.created_at"> · создан: {{ scOpusJob.created_at }}</span>
+                    </div>
+
+                    <!-- Qwen→Opus pipeline toolbar -->
+                    <div v-if="scPairs && scPairs.length" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px; padding:8px 10px; background:#f8fafc; border:1px solid #e5e7eb; border-radius:6px">
+                        <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; font-weight:500">
+                            <input type="checkbox" :checked="scQOAllSelected" @change="scQOToggleAll($event)"> Выбрать все
+                        </label>
+                        <button class="btn btn-sm btn-primary" :disabled="scQOSelectedCount===0 || scQORunning" @click="scQOOpenConfirm()">
+                            Обработать выбранные ({{ scQOSelectedCount }})
+                        </button>
+                        <span style="font-size:11px; color:#6b7280">Qwen готовит enriched MD по очереди, Opus сравнивает готовые пары (Qwen не ждёт Opus).</span>
+                    </div>
+
+                    <!-- Pipeline status panel -->
+                    <div v-if="scQOJob" style="margin-bottom:10px; padding:10px 12px; background:linear-gradient(90deg,#f0fdf4,#fff); border:1px solid #bbf7d0; border-radius:8px; font-size:12px">
+                        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
+                            <strong>Pipeline Qwen→Opus</strong>
+                            <span style="color:#6b7280">job {{ scQOJob.job_id }} · {{ scQOJob.status }}</span>
+                            <button v-if="['running','queued'].includes(scQOJob.status)" class="btn btn-sm btn-secondary" @click="scQOCancel()" style="margin-left:auto">Остановить</button>
+                        </div>
+                        <div style="margin-top:6px; display:flex; gap:18px; flex-wrap:wrap">
+                            <span>🟦 Qwen: {{ scQOJob.qwen_worker.done }}/{{ scQOJob.qwen_worker.total }} done · {{ scQOJob.qwen_worker.failed }} fail<span v-if="scQOJob.qwen_worker.current_pair_id"> · сейчас {{ scQOPairLabel(scQOJob.qwen_worker.current_pair_id) }}</span></span>
+                            <span>🟪 Opus: {{ scQOJob.opus_worker.done }}/{{ scQOJob.opus_worker.total }} done · {{ scQOJob.opus_worker.failed }} fail<span v-if="scQOJob.opus_worker.current_pair_id"> · сейчас {{ scQOPairLabel(scQOJob.opus_worker.current_pair_id) }}</span></span>
+                            <span>✅ {{ scQOJob.queues.completed.length }} · ❌ {{ scQOJob.queues.failed.length }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Confirm modal -->
+                    <div v-if="scQOConfirm" class="retry-dialog-overlay" @click.self="scQOConfirm=null">
+                        <div class="retry-dialog" @click.stop>
+                            <h3 class="retry-dialog__title">Запустить обработку Qwen→Opus</h3>
+                            <div style="font-size:12px; color:var(--text2); margin-bottom:10px; line-height:1.7">
+                                Выбрано пар: <strong>{{ scQOConfirm.total_pairs }}</strong><br>
+                                Image-блоков: {{ scQOConfirm.image_blocks }} · dense_grsh: {{ scQOConfirm.dense_grsh }} · large-sheet страниц: {{ scQOConfirm.large_sheet_pages }} (готово {{ scQOConfirm.existing_large_sheet_artifacts }})<br>
+                                Оценка Qwen: ~{{ Math.round(scQOConfirm.estimated_qwen_duration_sec/60) }} мин · Opus: ~{{ Math.round(scQOConfirm.estimated_opus_duration_sec/60) }} мин<br>
+                                <span v-if="scQOConfirm.too_large_pairs.length">too_large пар: {{ scQOConfirm.too_large_pairs.length }}<br></span>
+                                <span v-for="r in scQOConfirm.risks" :key="r" style="color:#b45309; display:block">⚠ {{ r }}</span>
+                                <span style="display:block; margin-top:6px; color:#6b7280">Будет сделан backup артефактов пар. Запустятся Qwen (локально) и Opus (Claude Code).</span>
+                            </div>
+                            <div class="retry-dialog__buttons">
+                                <button class="btn btn-secondary" @click="scQOConfirm=null">Отмена</button>
+                                <button class="btn btn-primary" :disabled="scQORunning" @click="scQOStartConfirmed()">Запустить обработку</button>
+                            </div>
                         </div>
                     </div>
 
@@ -5716,19 +5769,69 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td style="padding:8px; text-align:center">{{ p.left && p.left.has_md ? '✓' : '—' }}</td>
-                                <td style="padding:8px; text-align:center">{{ p.right && p.right.has_md ? '✓' : '—' }}</td>
-                                <td style="padding:8px; text-align:center">{{ p.left && p.left.has_result_json ? '✓' : '—' }}</td>
-                                <td style="padding:8px; text-align:center">{{ p.right && p.right.has_result_json ? '✓' : '—' }}</td>
+                                <td style="padding:8px; text-align:center; white-space:nowrap; font-size:11px"
+                                    :title="'MD: L ' + (p.left && p.left.has_md ? 'есть' : 'нет') + ' / R ' + (p.right && p.right.has_md ? 'есть' : 'нет') + ' · result.json: L ' + (p.left && p.left.has_result_json ? 'есть' : 'нет') + ' / R ' + (p.right && p.right.has_result_json ? 'есть' : 'нет')">
+                                    <span style="color:#9ca3af">MD</span> <span :style="{color: p.left && p.left.has_md ? '#16a34a' : '#9ca3af'}">{{ p.left && p.left.has_md ? '✓' : '—' }}</span><span style="color:#9ca3af">/</span><span :style="{color: p.right && p.right.has_md ? '#16a34a' : '#9ca3af'}">{{ p.right && p.right.has_md ? '✓' : '—' }}</span>
+                                    <span style="color:#9ca3af; margin-left:4px">json</span> <span :style="{color: p.left && p.left.has_result_json ? '#16a34a' : '#9ca3af'}">{{ p.left && p.left.has_result_json ? '✓' : '—' }}</span><span style="color:#9ca3af">/</span><span :style="{color: p.right && p.right.has_result_json ? '#16a34a' : '#9ca3af'}">{{ p.right && p.right.has_result_json ? '✓' : '—' }}</span>
+                                </td>
                                 <td style="padding:8px; text-align:center">
                                     <span :class="'sc-status ' + scRecogPairBadge(p.id).cls"
                                           :title="scRecogPairBadge(p.id).title"
                                           style="font-size:11px; white-space:nowrap">{{ scRecogPairBadge(p.id).label }}</span>
                                 </td>
-                                <td style="padding:8px; text-align:right; opacity:.7">{{ p.match_score ? (p.match_score*100).toFixed(0) + '%' : '—' }}</td>
+                                <td style="padding:8px; text-align:center; font-variant-numeric:tabular-nums; white-space:nowrap; position:relative"
+                                    :title="scRecogPairBlocks(p.id).available ? 'всего ' + scRecogPairBlocks(p.id).total + ' / готово ' + scRecogPairBlocks(p.id).done + ' / упало ' + scRecogPairBlocks(p.id).failed : 'нет данных'">
+                                    <template v-if="scRecogPairBlocks(p.id).available">
+                                        <span style="color:#9ca3af">(</span><span style="color:#6b7280">{{ scRecogPairBlocks(p.id).total }}</span><span style="color:#9ca3af">/</span><span style="color:#16a34a">{{ scRecogPairBlocks(p.id).done }}</span><span style="color:#9ca3af">/</span><span
+                                            v-if="scRecogPairBlocks(p.id).failed"
+                                            class="sc-failed-count"
+                                            :title="'Показать упавшие блоки (' + scRecogPairBlocks(p.id).failed + ')'"
+                                            @click.stop="scToggleFailedPopover(p)">{{ scRecogPairBlocks(p.id).failed }}</span><span
+                                            v-else style="color:#9ca3af">{{ scRecogPairBlocks(p.id).failed }}</span><span style="color:#9ca3af">)</span>
+                                    </template>
+                                    <span v-else style="color:#9ca3af">—</span>
+                                    <!-- Поповер со списком упавших блоков -->
+                                    <div v-if="scFailedPopoverPairId === p.id" class="sc-failed-backdrop" @click.stop="scFailedPopoverPairId = null"></div>
+                                    <div v-if="scFailedPopoverPairId === p.id" class="sc-failed-popover" @click.stop>
+                                        <div class="sc-failed-popover__head">
+                                            <span>Упавшие блоки ({{ scFailedBlocks.length }})</span>
+                                            <span class="sc-failed-popover__close" @click="scFailedPopoverPairId = null">✕</span>
+                                        </div>
+                                        <div v-if="scFailedBlocksLoading" class="sc-failed-popover__msg">Загрузка…</div>
+                                        <div v-else-if="scFailedBlocksError" class="sc-failed-popover__msg sc-failed-popover__msg--err">{{ scFailedBlocksError }}</div>
+                                        <div v-else-if="!scFailedBlocks.length" class="sc-failed-popover__msg">Нет упавших блоков</div>
+                                        <div v-else class="sc-failed-popover__list">
+                                            <div v-for="(fb, i) in scFailedBlocks" :key="i"
+                                                 class="sc-failed-block-row"
+                                                 :title="'Перейти к блоку в «Связь блоков»'"
+                                                 @click="scGotoFailedBlock(p, fb)">
+                                                <span class="sc-failed-block-row__side" :class="fb.side === 'left' ? 'is-left' : 'is-right'">{{ fb.side === 'left' ? 'Стадия A' : 'Стадия B' }}</span>
+                                                <span class="sc-failed-block-row__page">стр. {{ fb.page != null ? fb.page : '—' }}</span>
+                                                <span class="sc-failed-block-row__id">{{ fb.side_block_id || fb.md_block_id || '—' }}</span>
+                                                <span class="sc-failed-block-row__reason">{{ fb.error || fb.parse_error_detail || fb.status }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="padding:8px; text-align:center">
+                                    <span :class="'sc-status ' + scOpusPairBadge(p.id).cls + (scOpusPairBadge(p.id).canFallback ? ' sc-status--clickable' : '')"
+                                          :title="scOpusPairBadge(p.id).title"
+                                          :style="{fontSize:'11px', whiteSpace:'nowrap', cursor: scOpusPairBadge(p.id).canFallback ? 'pointer' : 'default'}"
+                                          @click="scOpusPairBadge(p.id).canFallback && scOpusRunFallbackForPair(p.id)">{{ scOpusPairBadge(p.id).label }}</span>
+                                </td>
+                                <td style="padding:8px; text-align:center">
+                                    <span :class="'sc-status ' + scPairExpertBadge(p.id).cls"
+                                          :title="scPairExpertBadge(p.id).title"
+                                          style="font-size:11px; white-space:nowrap">{{ scPairExpertBadge(p.id).label }}</span>
+                                </td>
                                 <td style="padding:8px; text-align:right; white-space:nowrap">
+                                    <input type="checkbox" v-model="scQOSelected[p.id]" :disabled="!p.left || !p.right"
+                                           :title="'Выбрать пару для обработки'" style="vertical-align:middle; margin-right:6px">
+                                    <span v-if="scQOPairBadge(p.id)" :title="scQOPairBadge(p.id).title"
+                                          :style="{fontSize:'10px', marginRight:'6px', whiteSpace:'nowrap', fontWeight:600, color: scQOPairBadge(p.id).color}">{{ scQOPairBadge(p.id).label }}</span>
+                                    <button class="btn btn-sm btn-primary" :disabled="!p.left || !p.right || scQORunning"
+                                            @click="scQOProcessPair(p.id)" title="Запустить Qwen→Opus для этой пары">Обработать</button>
                                     <button class="btn btn-sm" :disabled="!p.left || !p.right" @click="scOpenPair(p)">Открыть</button>
-                                    <button class="btn btn-sm btn-danger" @click="scDeletePair(p)" title="Скрыть/удалить пару">✕</button>
                                 </td>
                             </tr>
                         </tbody>

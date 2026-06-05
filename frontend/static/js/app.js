@@ -8869,8 +8869,26 @@ const app = createApp({
         const scReportPrefetchDone   = ref(0);
         const scReportPrefetchTotal  = ref(0);
         let   _scReportPrefetchGen   = 0;                // токен отмены устаревшей предзагрузки
+        // Сверка V1↔V2: pid -> число УНИКАЛЬНЫХ согласованных находок (после
+        // схлопывания chg_X и его V2-двойника v2_<sha1(pid::chg_X)>). Считается
+        // при открытии вкладки из scExpertDecisions, до ленивой загрузки пар,
+        // чтобы бейджи сразу показывали дедуплицированное число.
+        const scReportReconciledCounts = ref({});
 
         const scPairs = computed(() => scSession.value ? (scSession.value.pairs || []) : []);
+
+        // ── Qwen→Opus pipeline (per-pair processing, decoupled lanes) ─────────
+        const scQOSelected = reactive({});            // pairId → bool
+        const scQOJob = ref(null);                    // active pipeline job state
+        const scQOConfirm = ref(null);                // preflight payload for confirm modal
+        const scQORunning = ref(false);               // start request in flight / job running
+        let scQOPollTimer = null;
+        const scQOSelectedCount = computed(() => scPairs.value.filter(p => scQOSelected[p.id]).length);
+        const scQOAllSelected = computed(() => {
+            const sel = scPairs.value.filter(p => p.left && p.right);
+            return sel.length > 0 && sel.every(p => scQOSelected[p.id]);
+        });
+
         const scPairsCounts = computed(() => {
             const c = {matched:0, maybe:0, unmatched:0};
             for (const p of scPairs.value) {
@@ -9384,6 +9402,88 @@ const app = createApp({
             } catch (e) {
                 scError.value = 'Не удалось загрузить сессию: ' + e;
             }
+        }
+
+        function scQOToggleAll(ev) {
+            const on = ev && ev.target ? ev.target.checked : !scQOAllSelected.value;
+            scPairs.value.forEach(p => { if (p.left && p.right) scQOSelected[p.id] = on; });
+        }
+        function scQOPairLabel(pid) {
+            const p = scPairs.value.find(x => x.id === pid);
+            return p ? (p.label || (p.left && p.left.filename) || pid) : pid;
+        }
+        function scQOPairBadge(pid) {
+            const job = scQOJob.value;
+            if (!job) return null;
+            const it = (job.items || []).find(i => i.pair_id === pid);
+            if (!it) return null;
+            let label, color, title;
+            if (it.qwen_status === 'failed') { label = 'Qwen ✗'; color = '#b91c1c'; title = it.qwen_error || 'Qwen: ошибка'; }
+            else if (it.opus_status === 'done') { label = '✓ ' + (it.changes_count || 0); color = '#16a34a'; title = 'Opus готов · изменений: ' + (it.changes_count || 0); }
+            else if (it.opus_status === 'failed') { label = 'Opus ✗'; color = '#b91c1c'; title = it.opus_error || 'Opus: ошибка'; }
+            else if (it.opus_status === 'running') { label = 'Opus…'; color = '#2563eb'; title = 'Opus: сравнение'; }
+            else if (it.qwen_status === 'done') { label = 'Qwen ✓'; color = '#0d9488'; title = 'Qwen готов · ждёт/идёт Opus'; }
+            else if (it.qwen_status === 'running') { label = 'Qwen…'; color = '#2563eb'; title = 'Qwen: обогащение'; }
+            else { label = '…'; color = '#6b7280'; title = 'В очереди'; }
+            return { label, color, title };
+        }
+        async function scQOPreflight(pairIds) {
+            const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pipeline-qwen-opus/preflight`;
+            const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ scope: 'selected', pair_ids: pairIds, force_qwen: true, force_opus: true }) });
+            return await r.json();
+        }
+        async function scQOOpenConfirm() {
+            const ids = scPairs.value.filter(p => scQOSelected[p.id]).map(p => p.id);
+            if (!ids.length) return;
+            scQOConfirm.value = await scQOPreflight(ids);
+        }
+        async function scQOProcessPair(pid) {
+            scQOConfirm.value = await scQOPreflight([pid]);
+        }
+        async function scQOStartConfirmed() {
+            const ids = (scQOConfirm.value && scQOConfirm.value.pair_ids) || [];
+            if (!ids.length) { scQOConfirm.value = null; return; }
+            await scQOStart(ids);
+            scQOConfirm.value = null;
+        }
+        async function scQOStart(pairIds) {
+            if (!scSession.value || !scSession.value.id) return;
+            scQORunning.value = true;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pipeline-qwen-opus`;
+                const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ scope: 'selected', pair_ids: pairIds, force_qwen: true, force_opus: true, prebuild_large_sheets: true, confirm: true }) });
+                const job = await r.json();
+                scQOJob.value = job;
+                if (job && job.job_id) scQOPollJob(job.job_id);
+                else scQORunning.value = false;
+            } catch (e) { scQORunning.value = false; }
+        }
+        function scQOPollJob(jobId) {
+            if (scQOPollTimer) { clearTimeout(scQOPollTimer); scQOPollTimer = null; }
+            const terminal = ['done', 'partial', 'failed', 'cancelled', 'rejected_no_confirm', 'failed_interrupted'];
+            const tick = async () => {
+                try {
+                    const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pipeline-qwen-opus/${encodeURIComponent(jobId)}`;
+                    const job = await fetch(url).then(r => r.json());
+                    scQOJob.value = job;
+                    if (terminal.includes(job.status)) {
+                        scQORunning.value = false;
+                        if (typeof scLoadPairCompareStatuses === 'function') { try { await scLoadPairCompareStatuses(); } catch (e) {} }
+                        if (typeof scLoadUnifiedFlat === 'function') { try { await scLoadUnifiedFlat(); } catch (e) {} }
+                        return;
+                    }
+                    scQOPollTimer = setTimeout(tick, 3000);
+                } catch (e) { scQOPollTimer = setTimeout(tick, 5000); }
+            };
+            scQORunning.value = true;
+            tick();
+        }
+        async function scQOCancel() {
+            if (!scQOJob.value || !scQOJob.value.job_id) return;
+            const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pipeline-qwen-opus/${encodeURIComponent(scQOJob.value.job_id)}/cancel`;
+            try { await fetch(url, { method: 'POST' }); } catch (e) {}
         }
 
         async function scOpenPair(pair) {
@@ -13299,6 +13399,9 @@ const app = createApp({
             scStatusLabel, scDiffTypeLabel,
             scScanFolders, scOpenProject, scLoadSessionsList, scFetchSessionsList, scLoadSession,
             scOpenPair, scLoadPairData, scLoadAlignment,
+            scQOSelected, scQOJob, scQOConfirm, scQORunning, scQOSelectedCount, scQOAllSelected,
+            scQOToggleAll, scQOPairLabel, scQOPairBadge, scQOOpenConfirm, scQOProcessPair,
+            scQOStartConfirmed, scQOStart, scQOCancel,
             scFailedPopoverPairId, scFailedBlocks, scFailedBlocksLoading, scFailedBlocksError,
             scToggleFailedPopover, scLoadFailedBlocks, scGotoFailedBlock, scFocusBlock,
             scPageImageUrl, scOnImageLoad, scOnPageImageLoad,
