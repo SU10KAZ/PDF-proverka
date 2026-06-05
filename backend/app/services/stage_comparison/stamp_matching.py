@@ -219,7 +219,7 @@ def _matched_item(slot: int, left: SheetRec, right: SheetRec,
         "left_sheet_no": left.sheet_no,
         "right_sheet_no": right.sheet_no,
         "is_graphic": bool(left.is_graphic or right.is_graphic),
-        "needs_review": match_type in ("fuzzy_name", "text_layer"),
+        "needs_review": match_type in ("fuzzy_name", "text_layer", "llm_semantic"),
     }
 
 
@@ -246,15 +246,21 @@ def match_sheet_indexes(
     *,
     min_score: float = STAMP_MATCH_MIN_SCORE,
     fallback_min_score: float = STAMP_FALLBACK_MIN_SCORE,
+    llm_match_fn=None,
 ) -> dict:
     """Сопоставить листы двух сторон по имени и собрать карту page_alignment.
 
-    Три прохода:
+    Проходы:
       1. exact: одинаковое нормализованное имя; дубликаты (многостраничные
          листы, повторяющиеся планы) — в порядке появления (1-й↔1-й, 2-й↔2-й).
-      2. fuzzy: остаток — лучший глобальный SequenceMatcher ≥ порога
+      2. fuzzy: остаток — лучший взвешенный косинус ≥ порога
          (для text_layer-имён — более строгий fallback_min_score).
-      3. остаток → left_only / right_only.
+      3. [опц.] LLM-семантика: если передан `llm_match_fn`, он смотрит на
+         НЕсматченный остаток обеих сторон и предлагает пары «это один и тот же
+         лист» (например «Однолинейная расчетная схема ГРЩ» == «Однолинейная
+         схема ГРЩ»). Возвращает [(left_page, right_page, score, match_type)].
+         Пары проходят те же инварианты: каждый page не более одного раза.
+      4. остаток → left_only / right_only.
 
     Сборка items: слоты в порядке левых страниц; right-only вставляются по
     возрастанию их номера так, чтобы сматченные листы стояли НАПРОТИВ друг
@@ -316,6 +322,38 @@ def match_sheet_indexes(
         matches[l.page] = (best_page, best_sc, mtype)
         used_right.add(best_page)
 
+    # Pass 3 — опциональное LLM-семантическое доматчивание остатка.
+    # Детерминированные совпадения не трогаем; LLM работает только по тому, что
+    # осталось непарным с обеих сторон. Инварианты (page ≤ 1 раза) проверяем
+    # здесь, не доверяя ответу модели.
+    llm_match_count = 0
+    if llm_match_fn is not None:
+        rem_left = [l for l in sorted(left, key=lambda x: x.page)
+                    if l.page not in matches]
+        rem_right = [r for r in sorted(right, key=lambda x: x.page)
+                     if r.page not in used_right]
+        if rem_left and rem_right:
+            try:
+                proposals = llm_match_fn(rem_left, rem_right) or []
+            except Exception:  # fail-soft — LLM не должен валить матчинг
+                proposals = []
+            for item in proposals:
+                try:
+                    lp, rp, score, mtype = item
+                    lp = int(lp)
+                    rp = int(rp)
+                    score = float(score)
+                except (TypeError, ValueError):
+                    continue
+                if lp in matches or rp in used_right:
+                    continue
+                if lp not in left_by_page or rp not in right_by_page:
+                    continue
+                matches[lp] = (rp, max(0.0, min(1.0, score)),
+                               str(mtype or "llm_semantic"))
+                used_right.add(rp)
+                llm_match_count += 1
+
     # Сборка items — left в порядке страниц, right-only по возрастанию.
     right_only_pages = sorted(r.page for r in right if r.page not in used_right)
     items: list[dict] = []
@@ -356,6 +394,7 @@ def match_sheet_indexes(
         "confidence": confidence,
         "warnings": warnings,
         "matched_count": len(matched_items),
+        "llm_match_count": llm_match_count,
         "left_only_count": sum(1 for it in items if it["match_type"] == "left_only"),
         "right_only_count": sum(1 for it in items if it["match_type"] == "right_only"),
         "left_page_count": len(left),

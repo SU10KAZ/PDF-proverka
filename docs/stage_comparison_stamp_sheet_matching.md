@@ -1,10 +1,11 @@
 # Stage Comparison — сопоставление листов по штампу (page-alignment)
 
-**Дата:** 2026-06-05
-**Статус:** always-on (новый необязательный инструмент в «Связь блоков», ничего не ломает)
+**Дата:** 2026-06-05 (LLM-доматчинг — 2026-06-06)
+**Статус:** always-on (отдельная кнопка в «Связь блоков», ничего не ломает); Haiku-доматчинг — опц. чекбокс, fail-soft
 **Модули:**
-- [backend/app/services/stage_comparison/stamp_matching.py](../backend/app/services/stage_comparison/stamp_matching.py) — чистый матчер
-- [backend/app/services/stage_comparison/store.py](../backend/app/services/stage_comparison/store.py) — `suggest_alignment_by_stamp`
+- [backend/app/services/stage_comparison/stamp_matching.py](../backend/app/services/stage_comparison/stamp_matching.py) — чистый матчер (+ опц. `llm_match_fn`)
+- [backend/app/services/stage_comparison/stamp_llm_match.py](../backend/app/services/stage_comparison/stamp_llm_match.py) — Haiku-доматчинг семантически эквивалентных имён
+- [backend/app/services/stage_comparison/store.py](../backend/app/services/stage_comparison/store.py) — `suggest_alignment_by_stamp(use_llm=…)`
 - [backend/app/api/routers/stage_comparison.py](../backend/app/api/routers/stage_comparison.py) — эндпоинт
 
 ## Задача
@@ -125,11 +126,78 @@ NFKC + ё→е + lower, срезаются `(из N)`, «лист N», «стр.
 `page_alignment` (слоты + `insert_blank_side` + `move_page_side`); stamp-матчинг
 лишь автоматически строит эту карту по именам листов.
 
+## Haiku-доматчинг семантически эквивалентных имён (LLM-слой)
+
+**Дата:** 2026-06-06
+**Модуль:** [backend/app/services/stage_comparison/stamp_llm_match.py](../backend/app/services/stage_comparison/stamp_llm_match.py)
+
+Детерминированный матчер precision-biased: точное имя + IDF-косинус с
+margin-гейтом. Он намеренно **не** сводит листы, у которых имена просто
+«похожи по смыслу», но различаются токенами или стоят в неоднозначном наборе.
+Классический промах:
+
+```
+«Однолинейная расчетная схема ГРЩ»  ==  «Однолинейная схема ГРЩ»
+```
+
+(другой набор токенов: левый имеет лишний «расчетная»; OCR штампа дробит имя на
+две строки и т.п.). Такие листы остаются `left_only`/`right_only`.
+
+LLM-слой добавляет **третий проход** в `match_sheet_indexes` поверх
+детерминированного результата:
+
+```text
+Pass 1 exact  →  Pass 2 fuzzy (IDF-косинус + margin)
+  →  Pass 3 [опц.] LLM-семантика по ОСТАТКУ:
+       rem_left ∩ rem_right (только непарные обе стороны)
+         → Haiku (Claude Code subscription, claude -p --model haiku)
+         → пары «это один и тот же лист по смыслу»
+         → инварианты (page ≤ 1 раза, существует, score∈[0,1]) проверяет Python
+         → match_type="llm_semantic", needs_review=true
+  →  остаток → left_only / right_only
+```
+
+Принципы:
+* **только остаток** — детерминированные exact/fuzzy совпадения не трогаются
+  (precision сохраняется); LLM не может перебить уже сведённую пару;
+* **дёшево и узко** — в промпт идут ТОЛЬКО имена листов (+ номер, тип), не весь
+  MD. Haiku хватает, ответ быстрый;
+* **advisory** — пары приходят как обычные `suggested_items`
+  (`match_type="llm_semantic"`, фиолетовый бейдж «🧠 по смыслу», галочка по
+  умолчанию включена), пользователь подтверждает их перед «Применить». LLM
+  ничего не применяет сам;
+* **fail-soft** — нет CLI / таймаут / мусорный JSON → пустой список пар +
+  диагностика; результат деградирует ровно до детерминированного;
+* **инварианты в Python** — ответу модели не доверяем: каждый page используется
+  не более раза, page обязан существовать, score клампится.
+
+### Триггер и флаги
+
+UI: чекбокс **«🧠 ИИ-доматчинг»** рядом с кнопкой «🏷 Сопоставить по штампам»
+(по умолчанию ВКЛ). Фронт шлёт `POST .../suggest-by-stamp` с телом
+`{use_llm: true}`. Тяжёлый subprocess-вызов выносится в threadpool, чтобы не
+блокировать event loop. Результат содержит `llm_match_count`, `llm_requested` и
+блок `llm` (диагностика вызова: status / pairs_added / duration / model).
+
+| Переменная (`.env`) | Default | Назначение |
+|---|---|---|
+| `STAGE_COMPARISON_STAMP_LLM_ENABLED` | `true` | kill-switch LLM-слоя (false → чекбокс игнорируется, всегда детерминированный результат) |
+| `STAGE_COMPARISON_STAMP_LLM_MODEL` | `haiku` | модель для доматчинга |
+| `STAGE_COMPARISON_STAMP_LLM_TIMEOUT_SEC` | `90` | таймаут одного вызова |
+| `STAGE_COMPARISON_STAMP_LLM_MAX_SHEETS` | `150` | cap листов/сторону в промпте |
+| `STAGE_COMPARISON_STAMP_LLM_MIN_CONFIDENCE` | `0.6` | порог приёмки пары |
+
+uvicorn без `--reload` держит модуль в памяти — после правок эвристики/промпта
+нужен рестарт backend.
+
 ## Безопасность
 
 - always-on, но это отдельная кнопка — без клика поведение не меняется;
 - матчер чистый, fail-soft: нет MD → `suggested_items=[]` + warning, пара не падает;
-- офлайн: ни Qwen, ни сети, ни `crop_url` — только чтение MD/result.json с диска;
+- детерминированный путь офлайн (без Qwen/сети/`crop_url`); LLM-слой включается
+  только при `use_llm=true` + доступном Claude Code CLI и тоже fail-soft;
+- LLM работает по именам листов (не по содержимому чертежей), ничего не
+  применяет — только предлагает пары на подтверждение;
 - ничего не применяется без явного «Применить» (PUT page-alignment).
 
 ## Тесты
@@ -138,6 +206,12 @@ NFKC + ё→е + lower, срезаются `(из N)`, «лист N», «стр.
 — нормализация, forward-fill, text_layer фолбэк, distinctive-имя через большой
 сдвиг (золотой кейс), in-order дубликаты, margin-подавление неоднозначных,
 валидность items для `alignment.validate`, обвязка `store.suggest_alignment_by_stamp`.
+
+[tests/test_stage_comparison_stamp_llm_match.py](../tests/test_stage_comparison_stamp_llm_match.py)
+— LLM-слой: build/parse промпта, дедуп page и фильтр confidence, мок-provider
+(done/error/empty side), инъекция пары в `match_sheet_indexes` с `llm_semantic`,
+запрет перебить детерминированный матч, fail-soft на исключении fn, обвязка
+`store.suggest_alignment_by_stamp(use_llm=True)` (provider доступен / недоступен).
 
 ## Контролируемая проверка (ИОС1.1, реальная пара)
 
@@ -149,7 +223,9 @@ matched=19, confidence 0.995, без скремблинга. Золотой ке
 
 ## Связанные файлы
 
-- [stamp_matching.py](../backend/app/services/stage_comparison/stamp_matching.py)
-- [store.py](../backend/app/services/stage_comparison/store.py) — `suggest_alignment_by_stamp`, `_page_text_index_from_result_json`
+- [stamp_matching.py](../backend/app/services/stage_comparison/stamp_matching.py) — детерминированный матчер + опц. `llm_match_fn`
+- [stamp_llm_match.py](../backend/app/services/stage_comparison/stamp_llm_match.py) — Haiku-доматчинг остатка
+- [store.py](../backend/app/services/stage_comparison/store.py) — `suggest_alignment_by_stamp(use_llm=…)`, `_page_text_index_from_result_json`
+- [text_llm_provider.py](../backend/app/services/stage_comparison/text_llm_provider.py) — `ClaudeCodeProvider` (`claude -p`)
 - [alignment.py](../backend/app/services/stage_comparison/alignment.py) — карта слотов (`page_alignment`)
 - [evidence_first_fallback.py](../backend/app/services/stage_comparison/evidence_first_fallback.py) — `build_fact_index` (переиспользуется)

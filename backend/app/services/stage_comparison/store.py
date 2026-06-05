@@ -1856,13 +1856,20 @@ def _page_text_index_from_result_json(path: str | None) -> dict[int, str]:
     return out
 
 
-def suggest_alignment_by_stamp(session_id: str, pair_id: str) -> dict:
+def suggest_alignment_by_stamp(session_id: str, pair_id: str,
+                               *, use_llm: bool = False) -> dict:
     """Предложить карту страниц по ИМЕНИ листа из штампа (MD), с офлайн-фолбэком
     на текст-слой блоков (result.json) для безымянных страниц.
 
     В отличие от `suggest_alignment` (fingerprint, локальное окно) — матч
     глобальный по имени, поэтому находит листы, уехавшие далеко между стадиями
     (схема ГРЩ стр.21 ↔ стр.56).
+
+    use_llm: если True И включён kill-switch STAGE_COMPARISON_STAMP_LLM_ENABLED
+    И доступен Claude Code CLI — после детерминированного матчинга остаток
+    НЕсматченных листов отдаётся Haiku, который доматчивает семантически
+    эквивалентные имена («Однолинейная расчетная схема ГРЩ» == «Однолинейная
+    схема ГРЩ»). Fail-soft: любая проблема → обычный детерминированный результат.
     """
     from . import stamp_matching as sm  # lazy import (избегаем циклов)
 
@@ -1897,8 +1904,32 @@ def suggest_alignment_by_stamp(session_id: str, pair_id: str) -> dict:
     left_idx = sm.build_sheet_index(md_left, extra_text_by_page=extra_left or None)
     right_idx = sm.build_sheet_index(md_right, extra_text_by_page=extra_right or None)
 
-    result = sm.match_sheet_indexes(left_idx, right_idx)
+    # Опциональный LLM-слой доматчинга остатка (Haiku через Claude Code).
+    llm_match_fn = None
+    llm_diag: dict = {}
+    if use_llm:
+        try:
+            from . import stamp_llm_match as slm
+            from .text_llm_provider import ClaudeCodeProvider
+            if slm.stamp_llm_enabled():
+                provider = ClaudeCodeProvider()
+                ok, reason = provider.check_availability()
+                if ok:
+                    llm_match_fn = slm.make_llm_match_fn(provider, diagnostics=llm_diag)
+                else:
+                    llm_diag = {"status": "provider_not_available", "error": reason,
+                                "pairs_added": 0}
+            else:
+                llm_diag = {"status": "disabled_by_flag", "pairs_added": 0}
+        except Exception as exc:  # fail-soft — LLM-слой не должен валить эндпоинт
+            llm_diag = {"status": "setup_exception", "error": str(exc),
+                        "pairs_added": 0}
+
+    result = sm.match_sheet_indexes(left_idx, right_idx, llm_match_fn=llm_match_fn)
     result["warnings"] = list(dict.fromkeys([*warnings, *result.get("warnings", [])]))
+    result["llm_requested"] = bool(use_llm)
+    if use_llm:
+        result["llm"] = llm_diag or {"status": "no_unmatched", "pairs_added": 0}
 
     # Сверка с реальным числом страниц PDF (MD-разметка может быть неполной).
     left_pdf_pages = _pdf_page_count(left.get("pdf_path"))
