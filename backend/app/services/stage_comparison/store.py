@@ -1807,6 +1807,111 @@ def suggest_alignment(session_id: str, pair_id: str) -> dict:
     }
 
 
+def _read_text_file(path: str | None) -> str:
+    """Прочитать текстовый файл (MD) безопасно, errors='replace'."""
+    if not path:
+        return ""
+    try:
+        return Path(path).read_text(encoding="utf-8", errors="replace")
+    except (OSError, ValueError):
+        return ""
+
+
+def _page_text_index_from_result_json(path: str | None) -> dict[int, str]:
+    """page_number → объединённый текст-слой блоков (pdfplumber_text / ocr_text).
+
+    Офлайн-фолбэк для страниц без `**Наименование листа:**`: используем текст,
+    который уже извлёк OCR/текст-слой. Сети нет, result.json читается с диска.
+    Никогда не падает — на ошибке возвращает {}.
+    """
+    if not path:
+        return {}
+    try:
+        data = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError, json.JSONDecodeError):
+        return {}
+    pages = data.get("pages") if isinstance(data, dict) else data
+    if not isinstance(pages, list):
+        return {}
+    out: dict[int, str] = {}
+    for p in pages:
+        if not isinstance(p, dict):
+            continue
+        page_no = p.get("page_number") or p.get("page") or p.get("page_index")
+        try:
+            page_no = int(page_no)
+        except (TypeError, ValueError):
+            continue
+        parts: list[str] = []
+        for b in (p.get("blocks") or []):
+            if not isinstance(b, dict):
+                continue
+            for key in ("pdfplumber_text", "ocr_text", "text"):
+                val = b.get(key)
+                if isinstance(val, str) and val.strip():
+                    parts.append(val.strip())
+                    break
+        if parts:
+            out[page_no] = "\n".join(parts)[:2000]
+    return out
+
+
+def suggest_alignment_by_stamp(session_id: str, pair_id: str) -> dict:
+    """Предложить карту страниц по ИМЕНИ листа из штампа (MD), с офлайн-фолбэком
+    на текст-слой блоков (result.json) для безымянных страниц.
+
+    В отличие от `suggest_alignment` (fingerprint, локальное окно) — матч
+    глобальный по имени, поэтому находит листы, уехавшие далеко между стадиями
+    (схема ГРЩ стр.21 ↔ стр.56).
+    """
+    from . import stamp_matching as sm  # lazy import (избегаем циклов)
+
+    pair = _find_pair_meta(session_id, pair_id)
+    if pair is None:
+        raise KeyError("pair_not_found")
+
+    left = pair.get("left") or {}
+    right = pair.get("right") or {}
+    md_left = _read_text_file(left.get("md_path"))
+    md_right = _read_text_file(right.get("md_path"))
+
+    warnings: list[str] = []
+    if not md_left:
+        warnings.append("left_md_missing")
+    if not md_right:
+        warnings.append("right_md_missing")
+    if not md_left or not md_right:
+        return {
+            "method": "stamp",
+            "suggested_items": [],
+            "confidence": 0.0,
+            "warnings": warnings or ["md_missing"],
+            "matched_count": 0,
+            "left_only_count": 0,
+            "right_only_count": 0,
+        }
+
+    extra_left = _page_text_index_from_result_json(left.get("result_json_path"))
+    extra_right = _page_text_index_from_result_json(right.get("result_json_path"))
+
+    left_idx = sm.build_sheet_index(md_left, extra_text_by_page=extra_left or None)
+    right_idx = sm.build_sheet_index(md_right, extra_text_by_page=extra_right or None)
+
+    result = sm.match_sheet_indexes(left_idx, right_idx)
+    result["warnings"] = list(dict.fromkeys([*warnings, *result.get("warnings", [])]))
+
+    # Сверка с реальным числом страниц PDF (MD-разметка может быть неполной).
+    left_pdf_pages = _pdf_page_count(left.get("pdf_path"))
+    right_pdf_pages = _pdf_page_count(right.get("pdf_path"))
+    if left_pdf_pages and result.get("left_page_count") != left_pdf_pages:
+        result["warnings"].append("left_md_page_count_mismatch")
+    if right_pdf_pages and result.get("right_page_count") != right_pdf_pages:
+        result["warnings"].append("right_md_page_count_mismatch")
+    result["left_pdf_page_count"] = left_pdf_pages
+    result["right_pdf_page_count"] = right_pdf_pages
+    return result
+
+
 __all__ = [
     "SESSIONS_DIR",
     "create_session",
@@ -1827,6 +1932,7 @@ __all__ = [
     "alignment_move",
     "alignment_reset",
     "suggest_alignment",
+    "suggest_alignment_by_stamp",
     # Manual PDF pair management
     "list_unmatched",
     "update_pair_match",
