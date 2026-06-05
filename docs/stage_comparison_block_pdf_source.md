@@ -141,7 +141,7 @@ block-PDF (crop_url) → текст-слой → high-res render
 | `STAGE_COMPARISON_GRSH_FEEDER_USE_BLOCK_PDF` | `true` | block-PDF как источник рендера внутри режима |
 | `STAGE_COMPARISON_GRSH_FEEDER_TILE_CONCURRENCY` | `1` | **держать 1**: при параллели LM Studio делит ctx на слоты → `Context size exceeded` |
 | `STAGE_COMPARISON_GRSH_FEEDER_RENDER_LONG_SIDE` | `7000` | high-res рендер block-PDF |
-| `STAGE_COMPARISON_GRSH_FEEDER_TILE_LONG_SIDE` | `2000` | long_side tile'а в Qwen |
+| `STAGE_COMPARISON_GRSH_FEEDER_TILE_LONG_SIDE` | `1600` | long_side tile'а в Qwen (live-рекомендация после benchmark 2026-06-05: 1600 = качество как 2000, стабильнее по времени; 2000 — override/debug) |
 | `STAGE_COMPARISON_GRSH_FEEDER_MAX_TILES` | `16` | верхняя граница tiles/блок |
 | `STAGE_COMPARISON_GRSH_FEEDER_MAX_TOKENS` | `9000` | max_tokens per tile |
 | `STAGE_COMPARISON_GRSH_FEEDER_MIN_RECALL` | `0.80` | порог приёмки recall |
@@ -162,7 +162,40 @@ resolve'ит block-PDF, извлекает текст-слой с координ
 Любая ошибка контура → `None` → fail-soft на single-shot v7 GRSH. Диагностика
 (`grsh_designation_recall`, `grsh_consumer_recall`, `n_tiles`, `block_source`,
 `text_layer_source`, `grsh_rejected_artificial_series`) пишется в
-`item["grsh_feeder_extraction"]`.
+`item["grsh_feeder_extraction"]`. Tile-вызов идёт `stream=True` (см. ниже).
+
+### Runtime fast-profile + streaming (benchmark 2026-06-05)
+
+«Медленный» режим оказался не в размере tile, а в runtime-профиле LM Studio:
+Qwen генерировал ~24 tok/s, тяжёлый tile шёл ~290s и падал в ngrok `ReadError`.
+После clean reload с fast-profile стало ~230 tok/s, тот же tile — 29.3s.
+
+- **Fast-profile загрузки.** `ensure_lmstudio_model_loaded` / `_load_model` на
+  СВЕЖЕЙ загрузке поднимают primary с `context_length=16000`,
+  `flash_attention=true`, `offload_kv_cache_to_gpu=true`, `parallel=1`.
+  `fast_profile_ok` / reload ключуются на throughput-критичных факторах
+  (ctx + flash + offload): именно их clean reload поднял throughput с ~24 до
+  ~230 tok/s. **`parallel` НЕ форсит reload** — тот же benchmark наблюдал
+  быстрый профиль при `parallel=4`, поэтому `parallel=1` — лишь консервативный
+  дефолт свежей загрузки + диагностика (`parallel` / `parallel_ok`), а не повод
+  перезагружать уже-быстрый инстанс. Если модель загружена с явным
+  `flash_attention=false` / `offload_kv_cache_to_gpu=false` / малым ctx —
+  `ensure_lmstudio_model_loaded` выгружает её и грузит заново (protected
+  `chandra-ocr-2` не трогается → `fast_profile_mismatch_protected`).
+  Неизвестные поля (legacy LM Studio не эхоит config) reload НЕ триггерят.
+  Env-переопределение: `STAGE_COMPARISON_GRAPHIC_LLM_LOAD_FLASH_ATTENTION` /
+  `_LOAD_OFFLOAD_KV_CACHE_TO_GPU` / `_LOAD_PARALLEL`.
+- **Streaming.** `STAGE_COMPARISON_GRAPHIC_LLM_STREAM=true` (default) — все
+  graphic-LLM вызовы (GRSH tiles, dense image) гонят SSE-дельты сразу, поэтому
+  длинный ответ не простаивает до read-timeout. Частичный обрыв стрима →
+  partial content → salvage; сервер без SSE → fail-soft на non-streaming.
+- **Диагностика** в `GET /api/stage-comparison/graphic-llm-config`:
+  `context_length`, `flash_attention`, `offload_kv_cache_to_gpu`, `parallel`,
+  `ctx_ok`, `fast_profile_ok` (live snapshot primary) + desired
+  `load_*` / `stream_enabled`.
+- **Tile-рекомендация:** `STAGE_COMPARISON_GRSH_FEEDER_TILE_LONG_SIDE=1600`
+  (качество как 2000, стабильнее по времени), `MAX_TOKENS=9000`,
+  `RENDER_LONG_SIDE=7000`, `MIN_RECALL=0.80`, `TILE_CONCURRENCY=1`.
 
 ### Анти-галлюцинация / recall
 

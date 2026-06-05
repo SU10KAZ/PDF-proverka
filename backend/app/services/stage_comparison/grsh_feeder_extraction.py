@@ -76,7 +76,10 @@ def grsh_feeder_use_block_pdf() -> bool:
 @dataclass
 class GrshFeederConfig:
     render_long_side: int = 7000
-    tile_long_side: int = 2000
+    # 1600 — live-рекомендация после benchmark 2026-06-05: качество как у 2000,
+    # но стабильнее по времени (тяжёлый тайл укладывается в read-timeout).
+    # 2000 остаётся как override/debug через env.
+    tile_long_side: int = 1600
     n_cols: int = 7
     n_rows: int = 2
     tile_w_frac: float = 1500.0 / 7000.0
@@ -90,7 +93,7 @@ class GrshFeederConfig:
 def load_grsh_feeder_config() -> GrshFeederConfig:
     return GrshFeederConfig(
         render_long_side=_env_int("STAGE_COMPARISON_GRSH_FEEDER_RENDER_LONG_SIDE", 7000),
-        tile_long_side=_env_int("STAGE_COMPARISON_GRSH_FEEDER_TILE_LONG_SIDE", 2000),
+        tile_long_side=_env_int("STAGE_COMPARISON_GRSH_FEEDER_TILE_LONG_SIDE", 1600),
         n_cols=_env_int("STAGE_COMPARISON_GRSH_FEEDER_N_COLS", 7),
         n_rows=_env_int("STAGE_COMPARISON_GRSH_FEEDER_N_ROWS", 2),
         max_tiles=_env_int("STAGE_COMPARISON_GRSH_FEEDER_MAX_TILES", 16),

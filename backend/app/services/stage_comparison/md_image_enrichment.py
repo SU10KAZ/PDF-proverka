@@ -1079,10 +1079,13 @@ async def _run_grsh_feeder_extraction_for_block(
 
         async def _describe(png_bytes: bytes, prompt: str) -> dict:
             url = graphic_local_mod._png_bytes_to_data_url(png_bytes)
+            # stream=True: длинный feeder-tile ответ гонит дельты сразу и не
+            # упирается в ngrok read-timeout (benchmark 2026-06-05). Fail-soft на
+            # non-streaming внутри _describe_image_once.
             res, content = await graphic_local_mod._describe_image_once(
                 img_url=url, prompt=prompt, cfg=grsh_call_cfg,
                 use_model=grsh_call_cfg.model, primary_model=grsh_call_cfg.model,
-                fallback_used=False)
+                fallback_used=False, stream=True)
             parsed = res.parsed
             if parsed is None and content:
                 parsed = graphic_local_mod.salvage_partial_json(content)

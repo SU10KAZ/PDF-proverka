@@ -1949,3 +1949,364 @@ def test_desc_list_fields_dropped_legacy_keys():
     # Sanity: знакомые поля на месте
     assert "design_solutions" in _DESC_LIST_FIELDS
     assert "comparison_relevant_facts" in _DESC_LIST_FIELDS
+
+
+# ─── Fast-profile load config + reload semantics (benchmark 2026-06-05) ────
+
+
+def test_fast_profile_load_body_has_flash_attention(_local_env):
+    """Task 4.1: fast-profile load body всегда содержит flash_attention=true."""
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+
+    cfg = g.load_local_graphic_llm_config()
+    body = g._fast_profile_load_body(cfg, "qwen/qwen3.6-35b-a3b")
+    assert body["flash_attention"] is True
+    assert body["context_length"] == 16000
+    assert body["model"] == "qwen/qwen3.6-35b-a3b"
+
+
+def test_fast_profile_load_body_has_offload_kv_cache(_local_env):
+    """Task 4.2: fast-profile load body всегда содержит offload_kv_cache_to_gpu=true
+    и parallel=1."""
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+
+    cfg = g.load_local_graphic_llm_config()
+    body = g._fast_profile_load_body(cfg, "qwen/qwen3.6-35b-a3b")
+    assert body["offload_kv_cache_to_gpu"] is True
+    assert body["parallel"] == 1
+
+
+def test_instance_profile_status_detects_fast_and_slow(_local_env):
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+    cfg = g.load_local_graphic_llm_config()
+
+    fast = g._instance_profile_status(
+        {"config": {"context_length": 16000, "flash_attention": True,
+                    "offload_kv_cache_to_gpu": True, "parallel": 1}}, cfg)
+    assert fast["fast_profile_ok"] is True
+    assert fast["needs_reload"] is False
+    assert fast["parallel_ok"] is True
+
+    slow = g._instance_profile_status(
+        {"config": {"context_length": 16000, "flash_attention": False,
+                    "offload_kv_cache_to_gpu": True, "parallel": 1}}, cfg)
+    assert slow["fast_profile_ok"] is False
+    assert slow["needs_reload"] is True
+    assert any("flash" in r for r in slow["reasons"])
+
+    # Unknown fields (legacy LM Studio) → no forced reload, but not confirmed fast
+    unknown = g._instance_profile_status({"config": {"context_length": 16000}}, cfg)
+    assert unknown["needs_reload"] is False
+    assert unknown["fast_profile_ok"] is False
+
+
+def test_instance_profile_status_parallel4_is_still_fast(_local_env):
+    """Benchmark 2026-06-05: fast профиль наблюдался при parallel=4. parallel НЕ
+    входит в fast_profile_ok/needs_reload — иначе зря реклоадим быстрый инстанс.
+    parallel=1 ставится только на свежей загрузке; здесь это лишь диагностика."""
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+    cfg = g.load_local_graphic_llm_config()
+
+    st = g._instance_profile_status(
+        {"config": {"context_length": 16000, "flash_attention": True,
+                    "offload_kv_cache_to_gpu": True, "parallel": 4}}, cfg)
+    assert st["fast_profile_ok"] is True       # throughput-critical факторы ok
+    assert st["needs_reload"] is False         # parallel=4 не форсит reload
+    assert st["parallel"] == 4
+    assert st["parallel_ok"] is False          # информационно: != desired 1
+
+
+def test_ensure_lmstudio_reload_when_loaded_without_fast_profile(_local_env):
+    """Task 4.3: loaded qwen с flash_attention=false → unload + reload в fast-profile."""
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+
+    state = {"get_calls": 0, "post_calls": []}
+
+    class _Client(_MockAsyncClient):
+        async def get(self, url, headers=None):
+            state["get_calls"] += 1
+            if state["get_calls"] == 1:
+                # loaded но БЕЗ fast-profile (flash off)
+                return _MockHTTPResponse(200, {"models": [{
+                    "key": "qwen/qwen3.6-35b-a3b",
+                    "loaded_instances": [{"id": "inst-slow", "config": {
+                        "context_length": 16000, "flash_attention": False,
+                        "offload_kv_cache_to_gpu": True, "parallel": 1}}],
+                }]})
+            # после reload — полный fast-profile
+            return _MockHTTPResponse(200, {"models": [{
+                "key": "qwen/qwen3.6-35b-a3b",
+                "loaded_instances": [{"id": "inst-fast", "config": {
+                    "context_length": 16000, "flash_attention": True,
+                    "offload_kv_cache_to_gpu": True, "parallel": 1}}],
+            }]})
+
+        async def post(self, url, headers=None, json=None):
+            state["post_calls"].append({"url": url, "json": json})
+            return _MockHTTPResponse(200, {"ok": True})
+
+    with patch.object(g.httpx, "AsyncClient", _Client):
+        res = asyncio.run(g.ensure_lmstudio_model_loaded("qwen/qwen3.6-35b-a3b"))
+
+    assert res["ok"] is True
+    assert res["fast_profile_ok"] is True
+    urls = [c["url"] for c in state["post_calls"]]
+    assert any(u.endswith("/api/v1/models/unload") for u in urls)
+    load = next(c["json"] for c in state["post_calls"] if c["url"].endswith("/load"))
+    assert load["flash_attention"] is True
+    assert load["offload_kv_cache_to_gpu"] is True
+    assert load["parallel"] == 1
+
+
+def test_ensure_lmstudio_protected_not_fast_profile_is_not_unloaded(monkeypatch, _local_env):
+    """Task 4.4: protected chandra без fast-profile НЕ выгружается — ошибка, posts==0."""
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+    monkeypatch.setenv("STAGE_COMPARISON_GRAPHIC_LLM_MODEL", "chandra-ocr-2")
+    monkeypatch.setenv("STAGE_COMPARISON_GRAPHIC_LLM_PROTECT_MODELS", "chandra-ocr-2")
+
+    state = {"posts": 0}
+
+    class _Client(_MockAsyncClient):
+        async def get(self, url, headers=None):
+            return _MockHTTPResponse(200, {"models": [{
+                "key": "chandra-ocr-2",
+                "loaded_instances": [{"id": "c-1", "config": {
+                    "context_length": 16000, "flash_attention": False,
+                    "offload_kv_cache_to_gpu": True, "parallel": 1}}],
+            }]})
+
+        async def post(self, url, headers=None, json=None):
+            state["posts"] += 1
+            return _MockHTTPResponse(200, {"ok": True})
+
+    with patch.object(g.httpx, "AsyncClient", _Client):
+        res = asyncio.run(g.ensure_lmstudio_model_loaded("chandra-ocr-2"))
+
+    assert res["ok"] is False
+    assert res["reason"] == "fast_profile_mismatch_protected"
+    assert state["posts"] == 0, "protected model must NOT be unloaded/reloaded"
+
+
+def test_config_info_exposes_fast_profile_and_stream(_local_env):
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+    info = g.config_info_for_endpoint()
+    assert info["load_flash_attention"] is True
+    assert info["load_offload_kv_cache_to_gpu"] is True
+    assert info["load_parallel"] == 1
+    assert info["stream_enabled"] is True
+
+
+def test_loaded_models_diagnostics_reports_fast_profile_ok(_local_env):
+    """Diagnostics: primary с полным fast-profile → fast_profile_ok=true + поля."""
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+
+    class _Client(_MockAsyncClient):
+        async def get(self, url, headers=None):
+            return _MockHTTPResponse(200, {"models": [{
+                "key": "qwen/qwen3.6-35b-a3b",
+                "loaded_instances": [{"id": "q", "config": {
+                    "context_length": 16000, "flash_attention": True,
+                    "offload_kv_cache_to_gpu": True, "parallel": 1}}],
+            }]})
+
+    with patch.object(g.httpx, "AsyncClient", _Client):
+        diag = asyncio.run(g.loaded_models_diagnostics())
+
+    assert diag["ctx_ok"] is True
+    assert diag["fast_profile_ok"] is True
+    assert diag["flash_attention"] is True
+    assert diag["offload_kv_cache_to_gpu"] is True
+    assert diag["parallel"] == 1
+    assert diag["context_length"] == 16000
+
+
+def test_loaded_models_diagnostics_fast_profile_false_when_flash_off(_local_env):
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+
+    class _Client(_MockAsyncClient):
+        async def get(self, url, headers=None):
+            return _MockHTTPResponse(200, {"models": [{
+                "key": "qwen/qwen3.6-35b-a3b",
+                "loaded_instances": [{"id": "q", "config": {
+                    "context_length": 16000, "flash_attention": False,
+                    "offload_kv_cache_to_gpu": True, "parallel": 1}}],
+            }]})
+
+    with patch.object(g.httpx, "AsyncClient", _Client):
+        diag = asyncio.run(g.loaded_models_diagnostics())
+
+    assert diag["ctx_ok"] is True
+    assert diag["fast_profile_ok"] is False
+    assert diag["flash_attention"] is False
+
+
+# ─── Streaming (Task 2) ────────────────────────────────────────────────────
+
+
+class _StreamCtx:
+    """Async context manager имитирующий httpx streaming response."""
+
+    def __init__(self, status_code, lines, body=b""):
+        self.status_code = status_code
+        self._lines = list(lines)
+        self._body = body
+        self._raise_after = None
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, *exc):
+        return False
+
+    async def aiter_lines(self):
+        for i, ln in enumerate(self._lines):
+            yield ln
+
+    async def aread(self):
+        return self._body
+
+
+class _StreamInterruptCtx(_StreamCtx):
+    async def aiter_lines(self):
+        for ln in self._lines:
+            yield ln
+        raise __import__("httpx").ReadError("stream cut")
+
+
+class _StreamingClient(_MockAsyncClient):
+    _stream_lines: list = []
+    _stream_status: int = 200
+    _stream_body: bytes = b""
+    _stream_ctx_cls = _StreamCtx
+
+    def stream(self, method, url, headers=None, json=None):
+        type(self).last_stream = {"method": method, "url": url, "json": json}
+        return type(self)._stream_ctx_cls(
+            type(self)._stream_status, type(self)._stream_lines, type(self)._stream_body)
+
+
+def _sse(obj) -> str:
+    return "data: " + json.dumps(obj)
+
+
+def test_stream_chat_completion_assembles_chunks(_local_env):
+    """Task 4.5: streaming чанки собираются в полный JSON + finish_reason + usage."""
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+
+    lines = [
+        _sse({"choices": [{"delta": {"content": '{"status":"done",'}}]}),
+        _sse({"choices": [{"delta": {"content": '"summary":"S",'}}]}),
+        _sse({"choices": [{"delta": {"content": '"confidence":0.9}'}, "finish_reason": "stop"}]}),
+        _sse({"usage": {"prompt_tokens": 100, "completion_tokens": 50, "total_tokens": 150}}),
+        "data: [DONE]",
+    ]
+
+    class _C(_StreamingClient):
+        _stream_lines = lines
+
+    cfg = g.load_local_graphic_llm_config()
+    with patch.object(g.httpx, "AsyncClient", _C):
+        outcome = asyncio.run(g._stream_chat_completion(cfg, {"model": cfg.model, "stream": True}))
+
+    assert outcome["ok"] is True
+    assert outcome["content_text"] == '{"status":"done","summary":"S","confidence":0.9}'
+    assert outcome["finish_reason"] == "stop"
+    assert outcome["usage"] == {"prompt_tokens": 100, "completion_tokens": 50, "total_tokens": 150}
+    # Only the configured base_url is targeted — no external host
+    assert _C.last_stream["url"].endswith("/v1/chat/completions")
+    assert "test-ngrok.example.com" in _C.last_stream["url"]
+
+
+def test_describe_image_local_uses_streaming_done(_local_env, tmp_path):
+    """describe_image_local через streaming → done, .post НЕ вызывается."""
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+    png = _write_png(tmp_path / "img.png")
+
+    lines = [
+        _sse({"choices": [{"delta": {"content": '{"status":"done","summary":"S",'}}]}),
+        _sse({"choices": [{"delta": {"content": '"confidence":0.8}'}, "finish_reason": "stop"}]}),
+        "data: [DONE]",
+    ]
+
+    class _C(_StreamingClient):
+        _stream_lines = lines
+
+        async def post(self, url, headers=None, json=None):  # pragma: no cover
+            raise AssertionError("post must NOT be called when streaming succeeds")
+
+    with patch.object(g.httpx, "AsyncClient", _C):
+        cfg = g.load_local_graphic_llm_config()
+        res = asyncio.run(g.describe_image_local(png, "PROMPT", cfg=cfg))
+
+    assert res.status == "done"
+    assert res.finish_reason == "stop"
+    assert res.response_char_count > 0
+
+
+def test_describe_image_once_stream_fallback_to_non_streaming(_local_env, tmp_path):
+    """Task 4.6: сервер не стримит (0 SSE) → fallback на non-streaming .post."""
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+
+    state = {"post_called": 0}
+
+    class _C(_StreamingClient):
+        _stream_lines = []  # сервер проигнорировал stream=true
+
+        async def post(self, url, headers=None, json=None):
+            state["post_called"] += 1
+            # non-streaming запрос НЕ должен содержать stream-флаги
+            assert "stream" not in (json or {})
+            return _MockHTTPResponse(200, {
+                "choices": [{"message": {"content": '{"status":"done","summary":"OK"}'},
+                             "finish_reason": "stop"}],
+                "usage": {"prompt_tokens": 10, "completion_tokens": 5, "total_tokens": 15},
+            })
+
+    cfg = g.load_local_graphic_llm_config()
+    img_url = "data:image/png;base64,AAAA"
+    with patch.object(g.httpx, "AsyncClient", _C):
+        res, content = asyncio.run(g._describe_image_once(
+            img_url=img_url, prompt="P", cfg=cfg, use_model=cfg.model,
+            primary_model=cfg.model, fallback_used=False, stream=True))
+
+    assert state["post_called"] == 1, "fallback to non-streaming must call .post once"
+    assert res.status == "done"
+    assert getattr(_C, "last_stream", None) is not None, "streaming was attempted first"
+
+
+def test_stream_chat_completion_partial_on_interrupt(_local_env):
+    """Обрыв стрима ПОСЛЕ части content → ok=True, partial=True, content сохранён."""
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+
+    class _C(_StreamingClient):
+        _stream_ctx_cls = _StreamInterruptCtx
+        _stream_lines = [
+            _sse({"choices": [{"delta": {"content": '{"status":"done","summary":"par'}}]}),
+        ]
+
+    cfg = g.load_local_graphic_llm_config()
+    with patch.object(g.httpx, "AsyncClient", _C):
+        outcome = asyncio.run(g._stream_chat_completion(cfg, {"model": cfg.model, "stream": True}))
+
+    assert outcome["ok"] is True
+    assert outcome["partial"] is True
+    assert outcome["content_text"].startswith('{"status":"done","summary":"par')
+
+
+def test_streaming_no_external_host(_local_env):
+    """Task 4.9: streaming POST идёт только на сконфигурированный base_url,
+    не на внешний paid-хост."""
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+
+    class _C(_StreamingClient):
+        _stream_lines = ["data: [DONE]"]
+
+    cfg = g.load_local_graphic_llm_config()
+    with patch.object(g.httpx, "AsyncClient", _C):
+        asyncio.run(g._stream_chat_completion(cfg, {"model": cfg.model, "stream": True}))
+
+    url = _C.last_stream["url"]
+    from urllib.parse import urlparse
+    host = (urlparse(url).hostname or "").lower()
+    assert host not in g._BLOCKED_EXTERNAL_HOSTS
+    assert host == "test-ngrok.example.com"

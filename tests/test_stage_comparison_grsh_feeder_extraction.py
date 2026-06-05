@@ -386,3 +386,27 @@ def test_b2_cross_side_guard_genuine_add_not_flagged():
     out, stats = gcs.apply_cross_side_guard(changes, left_tl, right_tl)
     assert stats["guarded"] == 0
     assert "cross_side_guard" not in out[0]
+
+
+# ─── live-defaults после benchmark 2026-06-05 ──────────────────────────────
+
+
+def test_default_tile_long_side_is_1600(monkeypatch):
+    """Task 4.7: default tile_long_side = 1600 (2000 — только override/debug)."""
+    monkeypatch.delenv("STAGE_COMPARISON_GRSH_FEEDER_TILE_LONG_SIDE", raising=False)
+    assert gfe.GrshFeederConfig().tile_long_side == 1600
+    assert gfe.load_grsh_feeder_config().tile_long_side == 1600
+
+
+def test_tile_long_side_2000_override_still_works(monkeypatch):
+    monkeypatch.setenv("STAGE_COMPARISON_GRSH_FEEDER_TILE_LONG_SIDE", "2000")
+    assert gfe.load_grsh_feeder_config().tile_long_side == 2000
+
+
+def test_default_concurrency_is_one(monkeypatch):
+    """Task 4.8: GRSH tile concurrency = 1 по умолчанию и не опускается ниже 1."""
+    monkeypatch.delenv("STAGE_COMPARISON_GRSH_FEEDER_TILE_CONCURRENCY", raising=False)
+    assert gfe.GrshFeederConfig().concurrency == 1
+    assert gfe.load_grsh_feeder_config().concurrency == 1
+    monkeypatch.setenv("STAGE_COMPARISON_GRSH_FEEDER_TILE_CONCURRENCY", "0")
+    assert gfe.load_grsh_feeder_config().concurrency == 1

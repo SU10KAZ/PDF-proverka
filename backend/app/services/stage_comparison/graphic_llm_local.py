@@ -155,6 +155,19 @@ class LocalGraphicLLMConfig:
     auth: str
     enable_model_load: bool
     load_context_length: int
+    # Fast-profile параметры загрузки модели (benchmark 2026-06-05).
+    # Тяжёлый ГРЩ-тайл на «медленном» инстансе шёл ~290s @ ~24 tok/s и падал в
+    # ngrok ReadError; после clean reload c flash_attention + offload_kv_cache_to_gpu
+    # тот же тайл прошёл за 29.3s @ ~230 tok/s. Поэтому ensure/load ВСЕГДА
+    # поднимают модель с этим профилем, а diagnostics показывают fast_profile_ok.
+    load_flash_attention: bool = True
+    load_offload_kv_cache_to_gpu: bool = True
+    load_parallel: int = 1
+    # Streaming: длинный non-streaming ответ может простаивать до timeout без
+    # единого байта и падать по ngrok read-timeout. stream=true гонит дельты
+    # сразу, поэтому транспорт не считает соединение «висящим». Fallback на
+    # non-streaming, если сервер/транспорт стрим не поддержали.
+    stream_enabled: bool = True
     # Защита LM Studio: список model_key, которые НИКОГДА нельзя выгружать.
     # Если protected-модель пропадает после load/unload — её восстанавливаем
     # через /api/v1/models/load с config из pre-request snapshot.
@@ -204,6 +217,14 @@ def load_local_graphic_llm_config() -> LocalGraphicLLMConfig:
         auth=os.environ.get("STAGE_COMPARISON_GRAPHIC_LLM_AUTH", "basic").strip().lower() or "basic",
         enable_model_load=_env_bool("STAGE_COMPARISON_GRAPHIC_LLM_ENABLE_MODEL_LOAD", True),
         load_context_length=_env_int("STAGE_COMPARISON_GRAPHIC_LLM_LOAD_CONTEXT_LENGTH", 16000),
+        load_flash_attention=_env_bool(
+            "STAGE_COMPARISON_GRAPHIC_LLM_LOAD_FLASH_ATTENTION", True,
+        ),
+        load_offload_kv_cache_to_gpu=_env_bool(
+            "STAGE_COMPARISON_GRAPHIC_LLM_LOAD_OFFLOAD_KV_CACHE_TO_GPU", True,
+        ),
+        load_parallel=max(1, _env_int("STAGE_COMPARISON_GRAPHIC_LLM_LOAD_PARALLEL", 1)),
+        stream_enabled=_env_bool("STAGE_COMPARISON_GRAPHIC_LLM_STREAM", True),
         protect_models=_env_csv(
             "STAGE_COMPARISON_GRAPHIC_LLM_PROTECT_MODELS",
             ["chandra-ocr-2"],
@@ -362,12 +383,34 @@ async def _unload_instance(cfg: LocalGraphicLLMConfig, instance_id: str) -> tupl
     return True, "unloaded"
 
 
+def _fast_profile_load_body(cfg: LocalGraphicLLMConfig, model: str) -> dict[str, Any]:
+    """Тело /api/v1/models/load для нашего primary/fallback в fast-profile.
+
+    Включает benchmark-проверенный профиль: ctx=load_context_length,
+    flash_attention=true, offload_kv_cache_to_gpu=true, parallel=1.
+    ``echo_load_config`` просит LM Studio вернуть фактический применённый конфиг.
+    """
+    return {
+        "model": model,
+        "context_length": int(cfg.load_context_length),
+        "flash_attention": bool(cfg.load_flash_attention),
+        "offload_kv_cache_to_gpu": bool(cfg.load_offload_kv_cache_to_gpu),
+        "parallel": int(cfg.load_parallel),
+        "echo_load_config": True,
+    }
+
+
 async def _load_model_with_config(
     cfg: LocalGraphicLLMConfig,
     model: str,
     snapshot_config: dict[str, Any],
 ) -> tuple[bool, str]:
-    """POST /api/v1/models/load с конфигом из snapshot (для restore)."""
+    """POST /api/v1/models/load с конфигом из snapshot (для restore).
+
+    Восстанавливаем protected-модель (chandra-ocr-2) ровно в том состоянии, в
+    котором она была до того, как мы тронули LM Studio — поэтому профиль берём
+    из snapshot, а не навязываем qwen fast-profile.
+    """
     body: dict[str, Any] = {
         "model": model,
         "context_length": int(snapshot_config.get("context_length") or cfg.load_context_length),
@@ -375,6 +418,8 @@ async def _load_model_with_config(
         "offload_kv_cache_to_gpu": bool(snapshot_config.get("offload_kv_cache_to_gpu", True)),
         "echo_load_config": True,
     }
+    if snapshot_config.get("parallel"):
+        body["parallel"] = snapshot_config["parallel"]
     if snapshot_config.get("eval_batch_size"):
         body["eval_batch_size"] = snapshot_config["eval_batch_size"]
     try:
@@ -392,14 +437,8 @@ async def _load_model_with_config(
 
 
 async def _load_model(cfg: LocalGraphicLLMConfig, model: str) -> tuple[bool, str]:
-    """POST /api/v1/models/load. Возвращает (ok, message)."""
-    body = {
-        "model": model,
-        "context_length": int(cfg.load_context_length),
-        "flash_attention": True,
-        "offload_kv_cache_to_gpu": True,
-        "echo_load_config": True,
-    }
+    """POST /api/v1/models/load в fast-profile. Возвращает (ok, message)."""
+    body = _fast_profile_load_body(cfg, model)
     try:
         async with httpx.AsyncClient(timeout=900) as client:
             r = await client.post(
@@ -568,6 +607,76 @@ def _loaded_context_length(instance: dict[str, Any]) -> Optional[int]:
     return None
 
 
+def _instance_profile_status(
+    instance: dict[str, Any], cfg: LocalGraphicLLMConfig,
+) -> dict[str, Any]:
+    """Сверить loaded instance с fast-profile.
+
+    ``fast_profile_ok`` / ``needs_reload`` ключуются на ТROUGHPUT-критичных
+    факторах: ``ctx`` + ``flash_attention`` + ``offload_kv_cache_to_gpu``.
+    Именно их clean reload поднял throughput с ~24 до ~230 tok/s (benchmark
+    2026-06-05). ``parallel`` НЕ входит в эти проверки: тот же benchmark
+    наблюдал быстрый профиль при `parallel=4`, поэтому форсить reload из-за
+    `parallel != 1` значило бы зря перезагружать уже-быстрый инстанс.
+    `parallel=1` всё равно ставится на СВЕЖЕЙ загрузке (`_fast_profile_load_body`)
+    как консервативный дефолт под single-concurrency GRSH и просто
+    отображается в диагностике (`parallel` / `parallel_ok`).
+
+    Возвращает:
+      * ``ctx`` / ``ctx_ok`` — loaded context_length и >= desired;
+      * ``flash_attention`` / ``offload_kv_cache_to_gpu`` / ``parallel`` —
+        фактически загруженные значения (None, если LM Studio их не отдаёт);
+      * ``parallel_ok`` — parallel совпадает с desired (информационно);
+      * ``fast_profile_ok`` — ctx+flash+offload ПОДТВЕРЖДЕНЫ (None → не
+        подтверждено → False);
+      * ``needs_reload`` — True только при ЯВНОМ противоречии ctx/flash/offload
+        (поле отдано и не совпадает). Неизвестное поле (None) reload НЕ
+        триггерит — backward-compat с LM Studio, которая может не эхоить config.
+      * ``reasons`` — список причин reload (для логов/диагностики).
+    """
+    config = instance.get("config") or {}
+    ctx = _loaded_context_length(instance)
+    flash = config.get("flash_attention")
+    offload = config.get("offload_kv_cache_to_gpu")
+    parallel = config.get("parallel")
+    desired_ctx = int(cfg.load_context_length)
+
+    ctx_ok = bool(ctx is not None and ctx >= desired_ctx)
+    # fast_profile_ok требует ПОДТВЕРЖДЁННОГО совпадения (None → не подтверждено)
+    flash_ok = (flash is True) if cfg.load_flash_attention else (flash is False)
+    offload_ok = (offload is True) if cfg.load_offload_kv_cache_to_gpu else (offload is False)
+    try:
+        parallel_ok = parallel is not None and int(parallel) == int(cfg.load_parallel)
+    except (TypeError, ValueError):
+        parallel_ok = False
+    # parallel намеренно НЕ входит в fast_profile_ok (benchmark: parallel=4 был fast).
+    fast_profile_ok = bool(ctx_ok and flash_ok and offload_ok)
+
+    needs_reload = False
+    reasons: list[str] = []
+    if ctx is not None and ctx < desired_ctx:
+        needs_reload = True
+        reasons.append(f"ctx={ctx}<{desired_ctx}")
+    if cfg.load_flash_attention and flash is False:
+        needs_reload = True
+        reasons.append("flash_attention=false")
+    if cfg.load_offload_kv_cache_to_gpu and offload is False:
+        needs_reload = True
+        reasons.append("offload_kv_cache_to_gpu=false")
+
+    return {
+        "ctx": ctx,
+        "ctx_ok": ctx_ok,
+        "flash_attention": flash,
+        "offload_kv_cache_to_gpu": offload,
+        "parallel": parallel,
+        "parallel_ok": parallel_ok,
+        "fast_profile_ok": fast_profile_ok,
+        "needs_reload": needs_reload,
+        "reasons": reasons,
+    }
+
+
 async def ensure_lmstudio_model_loaded(
     model_name: str,
     *,
@@ -625,57 +734,65 @@ async def ensure_lmstudio_model_loaded(
         # endpoint available — посмотрим, есть ли уже нужная model
         same_model = [it for it in loaded if it.get("model_key") == model_name]
         if same_model:
-            # Берём первый instance: pick наиболее «жирный» ctx
+            # Берём instance с наибольшим ctx и сверяем с fast-profile.
             best_inst = max(
                 same_model,
                 key=lambda it: (_loaded_context_length(it) or -1),
             )
-            actual_ctx = _loaded_context_length(best_inst)
-            if actual_ctx is None:
-                # ctx unknown — backward-compat: считаем OK, не трогаем.
+            status = _instance_profile_status(best_inst, cfg)
+            actual_ctx = status["ctx"]
+            if not status["needs_reload"]:
+                # fast-profile подтверждён ИЛИ поля неизвестны (backward-compat):
+                # не трогаем уже загруженный инстанс.
+                msg = (
+                    "already_loaded:ctx_unknown"
+                    if actual_ctx is None
+                    else f"already_loaded:ctx={actual_ctx}"
+                )
                 return {
                     "ok": True,
                     "model_used": model_name,
                     "fallback_used": False,
                     "endpoint_available": True,
-                    "messages": ["already_loaded:ctx_unknown"],
-                }
-            if actual_ctx >= desired_ctx:
-                return {
-                    "ok": True,
-                    "model_used": model_name,
-                    "fallback_used": False,
-                    "endpoint_available": True,
-                    "messages": [f"already_loaded:ctx={actual_ctx}"],
+                    "messages": [msg],
                     "actual_ctx": actual_ctx,
                     "desired_ctx": desired_ctx,
+                    "fast_profile_ok": status["fast_profile_ok"],
                 }
-            # ctx mismatch: нужно reload
+            # Профиль не fast (ctx мал ИЛИ flash/offload/parallel не совпали):
+            # нужен reload.
             protect = set(cfg.protect_models or [])
             if model_name in protect:
+                ctx_is_reason = any(r.startswith("ctx=") for r in status["reasons"])
                 return {
                     "ok": False,
                     "status": "error",
-                    "reason": "context_length_mismatch_protected",
+                    "reason": (
+                        "context_length_mismatch_protected"
+                        if ctx_is_reason
+                        else "fast_profile_mismatch_protected"
+                    ),
                     "model_used": model_name,
                     "fallback_used": False,
                     "endpoint_available": True,
                     "messages": [
-                        f"ctx_mismatch_protected:actual={actual_ctx}<desired={desired_ctx}",
+                        f"profile_mismatch_protected:{','.join(status['reasons'])}",
                     ],
                     "desired_ctx": desired_ctx,
                     "actual_ctx": actual_ctx,
+                    "fast_profile_ok": status["fast_profile_ok"],
                 }
-            # unload bad instances для этой модели
+            # unload плохие instances этой модели
             for inst in same_model:
                 inst_id = inst.get("instance_id") or ""
                 if not inst_id:
                     continue
                 u_ok, u_msg = await _unload_instance(cfg, inst_id)
-                messages.append(f"unload_low_ctx:{model_name}:{u_msg}")
-            # reload c desired ctx
+                messages.append(f"unload_not_fast_profile:{model_name}:{u_msg}")
+            messages.append(f"reload_reasons:{','.join(status['reasons'])}")
+            # reload в fast-profile
             ok, msg = await _load_model(cfg, model_name)
-            messages.append(f"reload_with_desired_ctx:{msg}")
+            messages.append(f"reload_fast_profile:{msg}")
             if not ok:
                 return {
                     "ok": False,
@@ -687,18 +804,23 @@ async def ensure_lmstudio_model_loaded(
                     "messages": messages,
                     "desired_ctx": desired_ctx,
                     "actual_ctx": actual_ctx,
+                    "fast_profile_ok": False,
                 }
             # verify
             verify_loaded = await _list_loaded_models(cfg)
             verify_same = [it for it in verify_loaded if it.get("model_key") == model_name]
-            verify_ctx = None
+            verify_status = None
             if verify_same:
-                verify_ctx = _loaded_context_length(max(
+                verify_best = max(
                     verify_same,
                     key=lambda it: (_loaded_context_length(it) or -1),
-                ))
-            if verify_ctx is not None and verify_ctx >= desired_ctx:
-                messages.append(f"verify_ok:ctx={verify_ctx}")
+                )
+                verify_status = _instance_profile_status(verify_best, cfg)
+            if verify_status is not None and not verify_status["needs_reload"]:
+                messages.append(
+                    f"verify_ok:ctx={verify_status['ctx']},"
+                    f"fast_profile_ok={verify_status['fast_profile_ok']}"
+                )
                 return {
                     "ok": True,
                     "model_used": model_name,
@@ -706,19 +828,29 @@ async def ensure_lmstudio_model_loaded(
                     "endpoint_available": True,
                     "messages": messages,
                     "desired_ctx": desired_ctx,
-                    "actual_ctx": verify_ctx,
+                    "actual_ctx": verify_status["ctx"],
+                    "fast_profile_ok": verify_status["fast_profile_ok"],
                 }
-            # ctx по-прежнему мал/unknown → жёсткая ошибка
+            # профиль по-прежнему не fast → жёсткая ошибка
+            v_reasons = (
+                verify_status["reasons"] if verify_status else ["model_not_loaded_after_reload"]
+            )
+            ctx_is_reason = any(r.startswith("ctx=") for r in v_reasons)
             return {
                 "ok": False,
                 "status": "error",
-                "reason": "context_length_mismatch",
+                "reason": (
+                    "context_length_mismatch" if ctx_is_reason else "fast_profile_mismatch"
+                ),
                 "model_used": model_name,
                 "fallback_used": False,
                 "endpoint_available": True,
-                "messages": messages + [f"verify_fail:ctx={verify_ctx}"],
+                "messages": messages + [f"verify_fail:{','.join(v_reasons)}"],
                 "desired_ctx": desired_ctx,
-                "actual_ctx": verify_ctx if verify_ctx is not None else actual_ctx,
+                "actual_ctx": (verify_status["ctx"] if verify_status else actual_ctx),
+                "fast_profile_ok": (
+                    verify_status["fast_profile_ok"] if verify_status else False
+                ),
             }
     # Попытаться загрузить primary
     ok, msg = await _load_model(cfg, model_name)
@@ -1397,93 +1529,12 @@ def _extract_finish_reason(data: Any) -> Optional[str]:
     return None
 
 
-async def _describe_image_once(
-    *,
-    img_url: str,
-    prompt: str,
-    cfg: LocalGraphicLLMConfig,
-    use_model: str,
-    primary_model: str,
-    fallback_used: bool,
-) -> tuple[DescribeResult, str]:
-    """Один HTTP-вызов к LM Studio. Возвращает (DescribeResult, content_text).
+def _extract_content_text_from_data(data: Any) -> str:
+    """Достать content_text из non-streaming OpenAI-ответа.
 
-    `content_text` — это полный текст ответа модели (для последующего
-    salvage), а не обрезанный excerpt. Дублируется в
-    ``DescribeResult.full_raw_response`` для удобства caller'а
-    (например, ``enrich_side`` пишет его на диск целиком).
+    content может быть строкой, multi-part списком {type:text} или (fallback)
+    reasoning_content.
     """
-    payload = {
-        "model": use_model,
-        "max_tokens": int(cfg.max_tokens),
-        "temperature": float(cfg.temperature),
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": prompt},
-                    {"type": "image_url", "image_url": {"url": img_url}},
-                ],
-            },
-        ],
-    }
-
-    started = time.monotonic()
-    try:
-        async with httpx.AsyncClient(timeout=cfg.timeout_sec) as client:
-            response = await client.post(
-                f"{cfg.base_url}/v1/chat/completions",
-                headers=_build_headers(cfg),
-                json=payload,
-            )
-    except httpx.TimeoutException as exc:
-        return DescribeResult(
-            status="timeout",
-            provider=cfg.provider,
-            model=primary_model,
-            model_used=use_model,
-            fallback_used=fallback_used,
-            duration_sec=time.monotonic() - started,
-            error=f"timeout:{exc}",
-        ), ""
-    except Exception as exc:  # noqa: BLE001
-        return DescribeResult(
-            status="error",
-            provider=cfg.provider,
-            model=primary_model,
-            model_used=use_model,
-            fallback_used=fallback_used,
-            duration_sec=time.monotonic() - started,
-            error=f"http_error:{type(exc).__name__}:{exc}",
-        ), ""
-
-    duration = time.monotonic() - started
-    body_text = response.text or ""
-    try:
-        data = response.json()
-    except Exception:
-        data = None
-
-    finish_reason = _extract_finish_reason(data)
-    usage = _extract_usage(data)
-
-    if response.status_code >= 400:
-        return DescribeResult(
-            status="error",
-            provider=cfg.provider,
-            model=primary_model,
-            model_used=use_model,
-            fallback_used=fallback_used,
-            duration_sec=duration,
-            raw_response_excerpt=_excerpt(body_text),
-            error=f"http_{response.status_code}",
-            finish_reason=finish_reason,
-            usage=usage or None,
-            response_char_count=len(body_text or ""),
-            parse_error_detail="http_error",
-            full_raw_response=body_text or "",
-        ), body_text
-
     content_text = ""
     if isinstance(data, dict):
         choices = data.get("choices") or []
@@ -1502,6 +1553,40 @@ async def _describe_image_once(
                 reasoning = msg.get("reasoning_content")
                 if isinstance(reasoning, str):
                     content_text = reasoning
+    return content_text
+
+
+def _finalize_describe_result(
+    *,
+    content_text: str,
+    finish_reason: Optional[str],
+    usage: dict[str, int],
+    body_text: str,
+    status_code: int,
+    cfg: LocalGraphicLLMConfig,
+    use_model: str,
+    primary_model: str,
+    fallback_used: bool,
+    duration: float,
+) -> tuple[DescribeResult, str]:
+    """Построить DescribeResult из извлечённого content (общая логика для
+    streaming и non-streaming путей)."""
+    if status_code >= 400:
+        return DescribeResult(
+            status="error",
+            provider=cfg.provider,
+            model=primary_model,
+            model_used=use_model,
+            fallback_used=fallback_used,
+            duration_sec=duration,
+            raw_response_excerpt=_excerpt(body_text),
+            error=f"http_{status_code}",
+            finish_reason=finish_reason,
+            usage=usage or None,
+            response_char_count=len(body_text or ""),
+            parse_error_detail="http_error",
+            full_raw_response=body_text or "",
+        ), body_text
 
     response_chars = len(content_text or "")
     parsed = parse_diff_json(content_text)
@@ -1538,6 +1623,243 @@ async def _describe_image_once(
         parse_error_detail=None,
         full_raw_response=content_text,
     ), content_text
+
+
+async def _stream_chat_completion(
+    cfg: LocalGraphicLLMConfig, payload: dict[str, Any],
+) -> dict[str, Any]:
+    """Streaming chat completion: гонит SSE-дельты и собирает полный content.
+
+    Назначение — не дать длинному ответу простаивать до ngrok read-timeout без
+    единого байта. Транспорт видит непрерывный поток дельт, поэтому соединение
+    не считается «висящим» и не падает по ReadError.
+
+    Возвращает dict:
+      * ``ok`` — стрим дал годный результат (полный ИЛИ частичный, который
+        стоит парсить/salvage'ить). False → caller делает fallback на
+        non-streaming;
+      * ``status_code`` / ``content_text`` / ``finish_reason`` / ``usage`` /
+        ``raw_text`` / ``error`` / ``partial``.
+
+    Логика fallback (`ok=False`):
+      * HTTP >= 400 на открытии стрима (сервер отверг stream-запрос);
+      * 0 SSE-строк И пустой content (сервер проигнорировал stream=true или
+        транспорт не поддерживает `client.stream`) → пробуем non-streaming;
+      * исключение ДО получения хоть какого-то content.
+
+    Обрыв стрима ПОСЛЕ накопления части content → ``ok=True, partial=True``:
+    отдаём то, что успели собрать (finish_reason=length), чтобы salvage спас.
+    """
+    content_parts: list[str] = []
+    raw_lines: list[str] = []
+    finish_reason: Optional[str] = None
+    usage: dict[str, int] = {}
+    status_code = 0
+    saw_sse = False
+
+    try:
+        async with httpx.AsyncClient(timeout=cfg.timeout_sec) as client:
+            async with client.stream(
+                "POST",
+                f"{cfg.base_url}/v1/chat/completions",
+                headers=_build_headers(cfg),
+                json=payload,
+            ) as response:
+                status_code = response.status_code
+                if status_code >= 400:
+                    try:
+                        body = await response.aread()
+                        body_text = body.decode("utf-8", errors="replace")
+                    except Exception:  # noqa: BLE001
+                        body_text = ""
+                    return {
+                        "ok": False, "status_code": status_code, "content_text": "",
+                        "finish_reason": None, "usage": {}, "raw_text": body_text,
+                        "error": f"http_{status_code}", "partial": False,
+                    }
+                async for line in response.aiter_lines():
+                    raw_lines.append(line or "")
+                    s = (line or "").strip()
+                    if not s or not s.startswith("data:"):
+                        continue
+                    saw_sse = True
+                    data_str = s[len("data:"):].strip()
+                    if data_str == "[DONE]":
+                        break
+                    try:
+                        chunk = json.loads(data_str)
+                    except Exception:  # noqa: BLE001
+                        continue
+                    if not isinstance(chunk, dict):
+                        continue
+                    choices = chunk.get("choices") or []
+                    if choices and isinstance(choices[0], dict):
+                        delta = choices[0].get("delta") or {}
+                        piece = delta.get("content")
+                        if isinstance(piece, str):
+                            content_parts.append(piece)
+                        else:
+                            rc = delta.get("reasoning_content")
+                            if isinstance(rc, str):
+                                content_parts.append(rc)
+                        fr = choices[0].get("finish_reason")
+                        if isinstance(fr, str) and fr:
+                            finish_reason = fr
+                    u = _extract_usage(chunk)
+                    if u:
+                        usage = u
+    except Exception as exc:  # noqa: BLE001
+        content_text = "".join(content_parts)
+        if content_text:
+            # Стрим оборвался, но часть байтов мы получили — отдаём как partial,
+            # salvage_partial_json спасёт обрезанный JSON.
+            return {
+                "ok": True, "status_code": status_code or 200, "content_text": content_text,
+                "finish_reason": finish_reason or "length", "usage": usage,
+                "raw_text": "\n".join(raw_lines),
+                "error": f"stream_interrupted:{type(exc).__name__}", "partial": True,
+            }
+        return {
+            "ok": False, "status_code": 0, "content_text": "", "finish_reason": None,
+            "usage": {}, "raw_text": "", "error": f"stream_error:{type(exc).__name__}:{exc}",
+            "partial": False,
+        }
+
+    content_text = "".join(content_parts)
+    if not saw_sse and not content_text:
+        # Сервер не стримил (проигнорировал stream=true / транспорт без SSE) —
+        # сигналим fallback на non-streaming.
+        return {
+            "ok": False, "status_code": status_code or 200, "content_text": "",
+            "finish_reason": finish_reason, "usage": usage,
+            "raw_text": "\n".join(raw_lines), "error": "stream_unsupported", "partial": False,
+        }
+    return {
+        "ok": True, "status_code": status_code or 200, "content_text": content_text,
+        "finish_reason": finish_reason, "usage": usage, "raw_text": "\n".join(raw_lines),
+        "error": None, "partial": False,
+    }
+
+
+async def _describe_image_once(
+    *,
+    img_url: str,
+    prompt: str,
+    cfg: LocalGraphicLLMConfig,
+    use_model: str,
+    primary_model: str,
+    fallback_used: bool,
+    stream: Optional[bool] = None,
+) -> tuple[DescribeResult, str]:
+    """Один вызов к LM Studio. Возвращает (DescribeResult, content_text).
+
+    `content_text` — это полный текст ответа модели (для последующего
+    salvage), а не обрезанный excerpt. Дублируется в
+    ``DescribeResult.full_raw_response`` для удобства caller'а
+    (например, ``enrich_side`` пишет его на диск целиком).
+
+    ``stream`` — использовать ли streaming. None → берётся ``cfg.stream_enabled``
+    (default True). На streaming-сбое (сервер не поддержал / транспорт упал без
+    единого байта) — fallback на non-streaming с warning. Частично собранный
+    стрим спасается salvage'ем на уровне ``_describe_with_retry_and_fallback``.
+    """
+    base_payload = {
+        "model": use_model,
+        "max_tokens": int(cfg.max_tokens),
+        "temperature": float(cfg.temperature),
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": prompt},
+                    {"type": "image_url", "image_url": {"url": img_url}},
+                ],
+            },
+        ],
+    }
+
+    effective_stream = cfg.stream_enabled if stream is None else bool(stream)
+
+    if effective_stream:
+        stream_payload = dict(base_payload)
+        stream_payload["stream"] = True
+        # OpenAI-compatible: попросить usage в финальном чанке (LM Studio может
+        # игнорировать — usage остаётся диагностическим, не критичным).
+        stream_payload["stream_options"] = {"include_usage": True}
+        started = time.monotonic()
+        outcome = await _stream_chat_completion(cfg, stream_payload)
+        if outcome.get("ok"):
+            duration = time.monotonic() - started
+            return _finalize_describe_result(
+                content_text=outcome["content_text"],
+                finish_reason=outcome["finish_reason"],
+                usage=outcome["usage"] or {},
+                body_text=outcome["raw_text"],
+                status_code=outcome["status_code"],
+                cfg=cfg,
+                use_model=use_model,
+                primary_model=primary_model,
+                fallback_used=fallback_used,
+                duration=duration,
+            )
+        logger.warning(
+            "_describe_image_once: streaming failed (%s); falling back to non-streaming",
+            outcome.get("error"),
+        )
+
+    # ── non-streaming путь (исходный + fallback после streaming-сбоя) ──
+    started = time.monotonic()
+    try:
+        async with httpx.AsyncClient(timeout=cfg.timeout_sec) as client:
+            response = await client.post(
+                f"{cfg.base_url}/v1/chat/completions",
+                headers=_build_headers(cfg),
+                json=base_payload,
+            )
+    except httpx.TimeoutException as exc:
+        return DescribeResult(
+            status="timeout",
+            provider=cfg.provider,
+            model=primary_model,
+            model_used=use_model,
+            fallback_used=fallback_used,
+            duration_sec=time.monotonic() - started,
+            error=f"timeout:{exc}",
+        ), ""
+    except Exception as exc:  # noqa: BLE001
+        return DescribeResult(
+            status="error",
+            provider=cfg.provider,
+            model=primary_model,
+            model_used=use_model,
+            fallback_used=fallback_used,
+            duration_sec=time.monotonic() - started,
+            error=f"http_error:{type(exc).__name__}:{exc}",
+        ), ""
+
+    duration = time.monotonic() - started
+    body_text = response.text or ""
+    try:
+        data = response.json()
+    except Exception:
+        data = None
+
+    finish_reason = _extract_finish_reason(data)
+    usage = _extract_usage(data)
+    content_text = "" if response.status_code >= 400 else _extract_content_text_from_data(data)
+
+    return _finalize_describe_result(
+        content_text=content_text,
+        finish_reason=finish_reason,
+        usage=usage,
+        body_text=body_text,
+        status_code=response.status_code,
+        cfg=cfg,
+        use_model=use_model,
+        primary_model=primary_model,
+        fallback_used=fallback_used,
+        duration=duration,
+    )
 
 
 # Retry/fallback константы.
@@ -1891,6 +2213,7 @@ async def _describe_with_retry_and_fallback(
     fallback_used_hint: bool,
     allow_fallback: bool,
     pinned_model: Optional[str] = None,
+    stream: Optional[bool] = None,
 ) -> DescribeResult:
     """retry + (conditional) fallback + salvage для одного chunk'а.
 
@@ -1936,6 +2259,7 @@ async def _describe_with_retry_and_fallback(
                 use_model=cand_model,
                 primary_model=primary_model,
                 fallback_used=is_fallback,
+                stream=stream,
             )
 
             if result.status == "done":
@@ -2050,6 +2374,7 @@ async def describe_image_local(
     cfg: Optional[LocalGraphicLLMConfig] = None,
     model_used_hint: Optional[str] = None,
     fallback_used_hint: bool = False,
+    stream: Optional[bool] = None,
 ) -> DescribeResult:
     """Послать одну картинку + текстовый prompt в локальный OpenAI-compatible vision endpoint.
 
@@ -2109,6 +2434,7 @@ async def describe_image_local(
         fallback_used_hint=fallback_used_hint,
         allow_fallback=True,
         pinned_model=None,
+        stream=stream,
     )
 
     # Pass-through на non-done/partial: error/timeout/provider_unavailable.
@@ -2178,6 +2504,7 @@ async def describe_image_local(
             fallback_used_hint=base_result.fallback_used,
             allow_fallback=False,
             pinned_model=used_model,
+            stream=stream,
         )
 
         if cont_result.status not in ("done", "partial") or not isinstance(cont_result.parsed, dict):
@@ -2294,6 +2621,12 @@ def config_info_for_endpoint(
         "timeout_sec": cfg.timeout_sec,
         "image_long_side": cfg.image_long_side,
         "load_context_length": cfg.load_context_length,
+        # Desired fast-profile параметры загрузки (benchmark 2026-06-05).
+        # Live-значения (что реально загружено) приходят из loaded_models_diagnostics.
+        "load_flash_attention": cfg.load_flash_attention,
+        "load_offload_kv_cache_to_gpu": cfg.load_offload_kv_cache_to_gpu,
+        "load_parallel": cfg.load_parallel,
+        "stream_enabled": cfg.stream_enabled,
         # Защита LM Studio моделей
         "protect_models": list(cfg.protect_models or []),
         "unload_after_request": cfg.unload_after_request,
@@ -2329,6 +2662,19 @@ async def loaded_models_diagnostics(
         "desired_context_length": desired,
         "primary_loaded_ctx": None,
         "primary_context_ok": False,
+        "primary_fast_profile_ok": False,
+        # Desired fast-profile (для сравнения в UI/health-check)
+        "desired_flash_attention": bool(cfg.load_flash_attention),
+        "desired_offload_kv_cache_to_gpu": bool(cfg.load_offload_kv_cache_to_gpu),
+        "desired_parallel": int(cfg.load_parallel),
+        # Live snapshot ПЕРВИЧНОЙ модели — поля с именами как в задаче.
+        "context_length": None,
+        "flash_attention": None,
+        "offload_kv_cache_to_gpu": None,
+        "parallel": None,
+        "parallel_ok": False,
+        "ctx_ok": False,
+        "fast_profile_ok": False,
     }
 
     # Если provider неактивен или auth не сконфигурирован — диагностика не имеет смысла.
@@ -2343,26 +2689,32 @@ async def loaded_models_diagnostics(
 
     out["endpoint_available"] = True
 
-    # Группируем по model_key, выбирая наибольший ctx из загруженных instances.
-    by_key: dict[str, int | None] = {}
+    # Группируем по model_key, выбирая instance с наибольшим ctx (чтобы достать
+    # его полный config — flash/offload/parallel — для fast-profile проверки).
+    by_key_best: dict[str, dict[str, Any]] = {}
     for it in loaded:
         key = it.get("model_key") or ""
         if not key:
             continue
         ctx = _loaded_context_length(it)
-        prev = by_key.get(key)
-        if prev is None or (ctx is not None and (prev is None or ctx > prev)):
-            by_key[key] = ctx
+        prev = by_key_best.get(key)
+        if prev is None or (ctx or -1) > (_loaded_context_length(prev) or -1):
+            by_key_best[key] = it
 
     entries: list[dict[str, Any]] = []
-    for key, ctx in by_key.items():
+    for key, inst in by_key_best.items():
+        st = _instance_profile_status(inst, cfg)
         is_primary = bool(primary_key and key == primary_key)
-        ctx_ok = bool(ctx is not None and ctx >= desired)
         entry: dict[str, Any] = {
             "key": key,
-            "ctx": ctx,
+            "ctx": st["ctx"],
             "is_primary": is_primary,
-            "ctx_ok": ctx_ok,
+            "ctx_ok": st["ctx_ok"],
+            "flash_attention": st["flash_attention"],
+            "offload_kv_cache_to_gpu": st["offload_kv_cache_to_gpu"],
+            "parallel": st["parallel"],
+            "parallel_ok": st["parallel_ok"],
+            "fast_profile_ok": st["fast_profile_ok"],
         }
         if key in protect:
             entry["protected"] = True
@@ -2374,11 +2726,19 @@ async def loaded_models_diagnostics(
     ))
     out["loaded_models"] = entries
 
-    if primary_key in by_key:
-        out["primary_loaded_ctx"] = by_key[primary_key]
-        out["primary_context_ok"] = bool(
-            by_key[primary_key] is not None and by_key[primary_key] >= desired
-        )
+    if primary_key in by_key_best:
+        pst = _instance_profile_status(by_key_best[primary_key], cfg)
+        out["primary_loaded_ctx"] = pst["ctx"]
+        out["primary_context_ok"] = pst["ctx_ok"]
+        out["primary_fast_profile_ok"] = pst["fast_profile_ok"]
+        # Live snapshot первичной модели (имена полей как в задаче)
+        out["context_length"] = pst["ctx"]
+        out["flash_attention"] = pst["flash_attention"]
+        out["offload_kv_cache_to_gpu"] = pst["offload_kv_cache_to_gpu"]
+        out["parallel"] = pst["parallel"]
+        out["parallel_ok"] = pst["parallel_ok"]
+        out["ctx_ok"] = pst["ctx_ok"]
+        out["fast_profile_ok"] = pst["fast_profile_ok"]
 
     return out
 
