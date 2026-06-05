@@ -47,6 +47,7 @@ from typing import Any, Awaitable, Callable, Optional
 
 from . import block_pdf_source as block_pdf_source_mod
 from . import graphic_llm_local as graphic_local_mod
+from . import graphic_profiles as graphic_profiles_mod
 from . import grsh_feeder_extraction as grsh_feeder_mod
 from . import paths as paths_mod
 from . import problem_block_retry as problem_block_retry_mod
@@ -1092,10 +1093,16 @@ async def _run_grsh_feeder_extraction_for_block(
         merged = grsh_feeder_mod.merge_tile_feeders(tile_results, anchors, cfg=gcfg)
         diag = merged["diagnostics"]
         table = grsh_feeder_mod.render_feeder_table_md(merged)
+        # Универсальный structured output профиля electrical_singleline/grsh.
+        structured = graphic_profiles_mod.build_electrical_singleline_structured(
+            merged, subtype="grsh")
 
         desc_payload = {
             "status": "done",
             "image_kind": "scheme",
+            "graphic_profile": graphic_profiles_mod.ELECTRICAL_SINGLELINE,
+            "profile_subtype": "grsh",
+            "structured": structured,
             "grsh_feeder_table": table,
             "grsh_feeders": merged["feeders"],
             "grsh_connections": merged["connections"],
@@ -1113,9 +1120,12 @@ async def _run_grsh_feeder_extraction_for_block(
         }
         diagnostics = {
             "method": "grsh_feeder_tiled",
+            "graphic_profile": graphic_profiles_mod.ELECTRICAL_SINGLELINE,
+            "profile_subtype": "grsh",
             "block_source": src.source,
             "text_layer_source": tl.source,
             "n_tiles": tile_results["n_tiles"],
+            "field_state_audit": graphic_profiles_mod.structured_field_state_audit(structured),
         }
         diagnostics.update({f"grsh_{k}": v for k, v in diag.items()})
         return {"desc_payload": desc_payload, "diagnostics": diagnostics}
@@ -3772,16 +3782,21 @@ async def enrich_side(
                 for dk, dv in (bps_override.get("diagnostics") or {}).items():
                     item[dk] = dv
 
-        # ── Контур B: tiled GRSH feeder extraction (flag-gated, OFF) ──
-        # Для GRSH-блока при включённом флаге используем v9 prompt-версию
-        # (отдельный cache-key) — реальный прогон ниже, в Real call.
-        use_grsh_feeder = (
-            grsh_feeder_mod.grsh_feeder_extraction_enabled()
-            and block_type == BLOCK_TYPE_DENSE_GRSH
+        # ── Graphic Structured Extraction: классификация в профиль ────
+        # Универсальный слой: block_type → (profile, subtype). Рабочий extractor
+        # сейчас только у electrical_singleline/grsh (контур B). Остальные
+        # профили классифицируются, но извлекаются fallback'ом (single-shot).
+        graphic_profile_id, graphic_profile_subtype = graphic_profiles_mod.classify_graphic_profile(block_type)
+        item["graphic_profile"] = graphic_profile_id
+        item["graphic_profile_subtype"] = graphic_profile_subtype
+        use_structured = (
+            graphic_profiles_mod.graphic_structured_extraction_enabled()
+            and graphic_profiles_mod.profile_production_ready(graphic_profile_id, graphic_profile_subtype)
             and resolution.status == "ok"
             and resolution.side_block_id is not None
         )
-        if use_grsh_feeder:
+        _single_shot_prompt_version = prompt_version_for_block  # для fail-soft отката
+        if use_structured:
             prompt_version_for_block = PROMPT_VERSION_GRSH_FEEDER
             item["prompt_version"] = prompt_version_for_block
             item["used_prompt_version"] = prompt_version_for_block
@@ -3862,8 +3877,9 @@ async def enrich_side(
             await _notify_progress(_block_idx, mb, item)
             continue
 
-        # ── Контур B: tiled GRSH feeder extraction (Real call) ────────
-        if use_grsh_feeder:
+        # ── Graphic Structured Extraction: run profile extractor (Real call) ─
+        # electrical_singleline/grsh → tiled feeder extraction (контур B).
+        if use_structured:
             started = time.monotonic()
             grsh_out = await _run_grsh_feeder_extraction_for_block(
                 session_id, pair_id, side,
@@ -3889,8 +3905,12 @@ async def enrich_side(
                 summary.described += 1
                 await _notify_progress(_block_idx, mb, item)
                 continue
-            # grsh_out is None → fail-soft: продолжаем к single-shot ниже
+            # grsh_out is None → fail-soft: откатываем prompt-версию к single-shot
+            # (контур B не отработал — записываем реально применённую версию).
             item["warnings"].append("grsh_feeder_fallback_to_single_shot")
+            prompt_version_for_block = _single_shot_prompt_version
+            item["prompt_version"] = prompt_version_for_block
+            item["used_prompt_version"] = prompt_version_for_block
 
         # ── Real call ─────────────────────────────────────────────
         # Per-block cfg override: меняем image_long_side / max_tokens /

@@ -73,6 +73,55 @@ block-PDF всё равно используется, но как словарь
 Любая ошибка контура → fail-soft → page-crop. cache-key завязан на байты
 картинки, поэтому смена источника рендера автоматически инвалидирует кеш.
 
+## Универсальный слой — Graphic Structured Extraction (профили)
+
+[graphic_profiles.py](../backend/app/services/stage_comparison/graphic_profiles.py)
+превращает обработку image-блоков из «алгоритма под ГРЩ» в **универсальную основу
+с pluggable-профилями**. GRSH — первый доказанный профиль
+(`electrical_singleline / grsh`), не отдельный костыль.
+
+```text
+block crop_url PDF → text layer (OCR vocabulary) → high-res render
+  → block type classifier → extraction profile → Qwen structured JSON
+  → deterministic validation/merge (field_state, anti-hallucination, recall)
+  → enriched MD
+```
+
+**Профили** (`PROFILE_REGISTRY`, у каждого свой набор `field_groups`):
+
+| profile_id | дисциплины | production-ready |
+|---|---|---|
+| `electrical_singleline` | ЭОМ/ИОС1/ЭО (feeders/breakers/cables/loads/metering/compensation/earthing/connections) | ✅ subtype `grsh` |
+| `hvac_scheme` | ОВ/ХС (systems/equipment/airflows/ducts/valves/…) | скелет |
+| `water_supply_scheme` | ВК/ВПВ/ХПВ (zones/pumps/pipes/diameters/flows/…) | скелет |
+| `low_voltage_scheme` | СС/СПС/СОУЭ/АСКУЭ (systems/devices/loops/…) | скелет |
+| `structural_scheme` | КР/КЖ (elements/concrete_class/reinforcement/…) | скелет |
+| `architectural_plan_or_facade` | АР (zones/materials/facade_systems/…) | скелет |
+| `table_or_schedule` | таблицы (rows/columns/units/…) | скелет |
+| `title_stamp_notes` | штампы (document_code/sheet_name/…) | скелет |
+| `general` | fallback | — |
+
+`classify_graphic_profile(block_type)`: `dense_grsh_singleline → (electrical_singleline, grsh)`;
+`table_legend → table_or_schedule`; `stamp → title_stamp_notes`;
+`plan → architectural_plan_or_facade`; прочие схемы/фото → `general` (fallback).
+`profile_production_ready(profile, subtype)` сейчас `True` только для
+`electrical_singleline/grsh` — остальные профили имеют готовую schema, но
+**в production не запускаются** до своих extractor'ов и тестов.
+
+**field_state** (универсально для всех профилей, `FieldState`):
+`present | not_extracted | not_specified | visual_unverified | ocr_only |
+requires_human_review`. `NON_REMOVAL_STATES` гарантирует, что
+`not_extracted` / `visual_unverified` / `ocr_only` **не превращаются в «removed»**
+на стадии сравнения. `build_electrical_singleline_structured(merged)` собирает
+universal structured JSON из feeder-merge с field_state на каждом значимом поле.
+
+**Флаг:** `STAGE_COMPARISON_GRAPHIC_STRUCTURED_EXTRACTION_ENABLED` (default OFF) —
+главный включатель слоя. Backward-compat: исторический
+`STAGE_COMPARISON_GRSH_FEEDER_EXTRACTION_ENABLED=true` тоже включает слой (GRSH —
+профиль внутри него). `enrich_side` классифицирует блок в профиль и для
+production-ready профиля запускает extractor; иначе — обычный single-shot
+(fail-soft).
+
 ## Контур B — GRSH/ВРУ feeder extraction (flag-gated)
 
 `grsh_feeder_extraction.py` — для плотных однолинейных ГРЩ/ВРУ single-shot Qwen
