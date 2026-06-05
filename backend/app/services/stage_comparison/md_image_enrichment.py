@@ -45,6 +45,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Awaitable, Callable, Optional
 
+from . import block_pdf_source as block_pdf_source_mod
 from . import graphic_llm_local as graphic_local_mod
 from . import paths as paths_mod
 from . import problem_block_retry as problem_block_retry_mod
@@ -954,6 +955,60 @@ def get_prompt_for_block_type(
             )
         return QWEN_SCHEME_DIFF_ANCHORS_PROMPT, PROMPT_VERSION_SCHEME
     return QWEN_IMAGE_DESCRIPTION_PROMPT, PROMPT_VERSION_GENERAL
+
+
+# ─── block-PDF source (crop_url) для всех image-блоков (flag-gated, OFF) ───
+#
+# Архитектура: для любого image/imagine-блока приоритетный источник —
+# block-PDF из `crop_url` (по факту есть всегда). Перед Qwen-рендером
+# извлекаем его текст-слой (pdfplumber_text) как словарь буквальных значений,
+# затем рендерим этот же block-PDF в PNG. Page-crop — только fallback.
+# По умолчанию ВЫКЛЮЧЕНО (STAGE_COMPARISON_BLOCK_PDF_SOURCE_ENABLED=false):
+# поведение идентично прежнему (render_block_crop по странице). Helper-функции
+# самого block_pdf_source доступны всем режимам независимо от флага.
+
+
+def block_pdf_source_enabled() -> bool:
+    return _env_bool("STAGE_COMPARISON_BLOCK_PDF_SOURCE_ENABLED", False)
+
+
+def resolve_block_pdf_for_enrichment(
+    session_id: str, pair_id: str, side: str, side_block: Optional[dict],
+    *, render_target_long_side: int,
+) -> Optional[dict]:
+    """Приоритетный block-PDF путь для одного блока (fail-soft).
+
+    Возвращает dict {image_path, text_layer_text, text_layer_usable, ocr_anchors,
+    diagnostics} либо None (caller остаётся на page-crop). Любая ошибка → None.
+    """
+    if not isinstance(side_block, dict):
+        return None
+    raw = side_block.get("raw") if isinstance(side_block.get("raw"), dict) else side_block
+    if not (raw.get("crop_url") or raw.get("image_file") or raw.get("pdfplumber_text")):
+        return None
+    try:
+        bid = str(side_block.get("id") or "block")
+        cache_dir = paths_mod.text_enrichment_cache_dir(session_id, pair_id) / "block_pdf" / side
+        src = block_pdf_source_mod.resolve_block_pdf_source(side_block, cache_dir=cache_dir)
+        text_layer = block_pdf_source_mod.extract_block_text_layer(
+            src.pdf_path, result_json_text=raw.get("pdfplumber_text"))
+        rendered = None
+        if src.ok and src.pdf_path is not None:
+            out_png = cache_dir / f"{block_pdf_source_mod._safe_block_id(bid)}_{render_target_long_side}.png"
+            rendered = block_pdf_source_mod.render_block_pdf(
+                src.pdf_path, long_side=int(render_target_long_side), out_path=out_png)
+        anchors = block_pdf_source_mod.build_ocr_literal_anchors(text_layer) if text_layer.usable else {"tokens": []}
+        diag = block_pdf_source_mod.build_block_source_diagnostics(src, text_layer, rendered)
+        return {
+            "image_path": (rendered.png_path if (rendered and rendered.ok) else None),
+            "text_layer_text": text_layer.text if text_layer.usable else None,
+            "text_layer_usable": text_layer.usable,
+            "ocr_anchors": anchors.get("tokens", []),
+            "diagnostics": diag,
+        }
+    except Exception:  # noqa: BLE001 — block-PDF путь не должен валить enrich
+        logger.debug("resolve_block_pdf_for_enrichment failed; staying on page-crop", exc_info=True)
+        return None
 
 
 # ─── Парсер MD ────────────────────────────────────────────────────────────
@@ -3558,6 +3613,43 @@ async def enrich_side(
                         resolution.image_path = Path(new_path)
                 except Exception:  # noqa: BLE001
                     logger.debug("re-render after classify refinement failed", exc_info=True)
+
+        # ── block-PDF source (crop_url) preferred path (default OFF) ──
+        # Приоритетный источник для image-блока — block-PDF из crop_url:
+        # извлекаем текст-слой как словарь буквальных значений и рендерим
+        # ИМЕННО block-PDF (page-crop остаётся fallback'ом). Default OFF.
+        if (
+            block_pdf_source_enabled()
+            and resolution.status == "ok"
+            and resolution.side_block_id
+        ):
+            bps_override = resolve_block_pdf_for_enrichment(
+                session_id, pair_id, side,
+                side_block_by_id.get(resolution.side_block_id),
+                render_target_long_side=render_target_long_side,
+            )
+            if bps_override:
+                # block-PDF render предпочтительнее page-crop'а
+                if bps_override.get("image_path"):
+                    resolution.image_path = Path(bps_override["image_path"])
+                # текст-слой block-PDF → словарь буквальных значений в prompt
+                tl_text = bps_override.get("text_layer_text")
+                if tl_text:
+                    if prompt_version_for_block == PROMPT_VERSION_GRSH:
+                        prompt_text, _pv_ignored = get_prompt_for_block_type(
+                            block_type, chandra_raw=tl_text)
+                    else:
+                        vocab = bps_override.get("ocr_anchors") or []
+                        if vocab:
+                            prompt_text = (
+                                "OCR_VOCAB (буквальные надписи из текст-слоя block-PDF — "
+                                "референс, не считай verified отсутствующие здесь маркировки): "
+                                + ", ".join(str(v) for v in vocab[:80])
+                                + "\n\n" + prompt_text
+                            )
+                # диагностика block-PDF источника
+                for dk, dv in (bps_override.get("diagnostics") or {}).items():
+                    item[dk] = dv
 
         # ── Large Sheet Enrichment gated path (default OFF) ───────────
         # Если включён и блок относится к большому/плотному листу, обслуживаем

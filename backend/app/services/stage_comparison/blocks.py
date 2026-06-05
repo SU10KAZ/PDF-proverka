@@ -108,6 +108,25 @@ def _safe_load_json(path: str | Path) -> dict | None:
         return None
 
 
+def _block_raw_passthrough(raw: dict) -> dict:
+    """Минимально-полезные raw-поля для UI + источники block-PDF/текст-слоя.
+
+    Сохраняем block-level PDF ссылки (``crop_url``/``image_file``) и уже
+    извлечённый upstream'ом ``pdfplumber_text`` — их использует
+    ``block_pdf_source`` как приоритетный источник изображения и словарь
+    буквальных значений. Поля опциональны (могут отсутствовать у части блоков).
+    """
+    out = {
+        "shape_type": raw.get("shape_type"),
+        "ocr_text_present": bool(raw.get("ocr_text") or raw.get("text")),
+    }
+    for k in ("crop_url", "image_file", "pdfplumber_text", "coords_px"):
+        v = raw.get(k)
+        if v not in (None, ""):
+            out[k] = v
+    return out
+
+
 def normalize_blocks_from_result_json(path: str | Path) -> tuple[list[dict], dict]:
     """Прочитать result.json и вернуть список нормализованных блоков + метаданные.
 
@@ -168,10 +187,7 @@ def normalize_blocks_from_result_json(path: str | Path) -> tuple[list[dict], dic
                     "source": "result.json",
                     "page_width": pw,
                     "page_height": ph,
-                    "raw": {
-                        "shape_type": raw.get("shape_type"),
-                        "ocr_text_present": bool(raw.get("ocr_text") or raw.get("text")),
-                    },
+                    "raw": _block_raw_passthrough(raw),
                 })
 
     # Формат B: data["blocks"] = [...]
@@ -199,10 +215,7 @@ def normalize_blocks_from_result_json(path: str | Path) -> tuple[list[dict], dic
                     "source": "result.json",
                     "page_width": pw,
                     "page_height": ph,
-                    "raw": {
-                        "shape_type": raw.get("shape_type"),
-                        "ocr_text_present": bool(raw.get("ocr_text") or raw.get("text")),
-                    },
+                    "raw": _block_raw_passthrough(raw),
                 })
 
     if not pages_meta:
