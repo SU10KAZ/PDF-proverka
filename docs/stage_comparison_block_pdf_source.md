@@ -97,9 +97,23 @@ block-PDF (crop_url) → текст-слой → high-res render
 | `STAGE_COMPARISON_GRSH_FEEDER_MAX_TOKENS` | `9000` | max_tokens per tile |
 | `STAGE_COMPARISON_GRSH_FEEDER_MIN_RECALL` | `0.80` | порог приёмки recall |
 
-Qwen-вызов **инжектируется** (`describe_fn`) — модуль сетевых вызовов не делает,
-тестируется замоканным; live Qwen зовётся только при включённом флаге из живого
-pipeline. **Concurrency=1 обязательна** (ключевой рантайм-урок эксперимента).
+Qwen-вызов **инжектируется** (`describe_fn`) — сам модуль сетевых вызовов не
+делает, тестируется замоканным. **Concurrency=1 обязательна** (ключевой
+рантайм-урок эксперимента).
+
+**Врезка в живой pipeline** (`md_image_enrichment.enrich_side`):
+`_run_grsh_feeder_extraction_for_block` срабатывает, когда
+`grsh_feeder_extraction_enabled()` И `block_type == dense_grsh_singleline`. Он
+resolve'ит block-PDF, извлекает текст-слой с координатами (PyMuPDF words),
+рендерит high-res, гоняет `extract_feeders_for_block` с реальным Qwen
+(`_describe_image_once`), мёржит и кладёт пофидерную таблицу
+(`render_feeder_table_md`) в `item["description"]["grsh_feeder_table"]` —
+`_format_qwen_description_md` рендерит её в enriched MD секцией `GRSH_FEEDERS`
+(до summary). Отдельная prompt-версия `v9_grsh_feeder_tiled` → свой cache-key.
+Любая ошибка контура → `None` → fail-soft на single-shot v7 GRSH. Диагностика
+(`grsh_designation_recall`, `grsh_consumer_recall`, `n_tiles`, `block_source`,
+`text_layer_source`, `grsh_rejected_artificial_series`) пишется в
+`item["grsh_feeder_extraction"]`.
 
 ### Анти-галлюцинация / recall
 

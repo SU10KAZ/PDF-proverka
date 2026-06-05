@@ -47,6 +47,7 @@ from typing import Any, Awaitable, Callable, Optional
 
 from . import block_pdf_source as block_pdf_source_mod
 from . import graphic_llm_local as graphic_local_mod
+from . import grsh_feeder_extraction as grsh_feeder_mod
 from . import paths as paths_mod
 from . import problem_block_retry as problem_block_retry_mod
 
@@ -204,6 +205,9 @@ PROMPT_VERSION_SCHEME_DOMAIN = "v6_scheme_domain_fields"
 # re-enrichment). v8 — GRSH + domain_fields (flag-gated).
 PROMPT_VERSION_GRSH = "v7_grsh_singleline"
 PROMPT_VERSION_GRSH_DOMAIN = "v8_grsh_domain_fields"
+# v9 — GRSH tiled пофидерное извлечение (contour B, grsh_feeder_extraction).
+# Отдельная prompt-версия → отдельный cache-key (не подхватывает v7 single-shot).
+PROMPT_VERSION_GRSH_FEEDER = "v9_grsh_feeder_tiled"
 
 # Все «схемные» prompt-версии (для prompt_family-метки и diagnostics).
 _SCHEME_FAMILY_VERSIONS = frozenset({
@@ -211,6 +215,7 @@ _SCHEME_FAMILY_VERSIONS = frozenset({
     PROMPT_VERSION_SCHEME_DOMAIN,
     PROMPT_VERSION_GRSH,
     PROMPT_VERSION_GRSH_DOMAIN,
+    PROMPT_VERSION_GRSH_FEEDER,
 })
 
 
@@ -1011,6 +1016,115 @@ def resolve_block_pdf_for_enrichment(
         return None
 
 
+# ─── Контур B: tiled GRSH feeder extraction (flag-gated, default OFF) ──────
+#
+# Для плотного ГРЩ/ВРУ single-shot Qwen сжимает схему в бедный текст. Режим:
+# block-PDF (crop_url) → текст-слой (words+bbox) → high-res render → tiles
+# (concurrency=1) → per-tile Qwen feeder-JSON (tile-local OCR vocab) →
+# детерминированный merge + recall. Qwen зовётся реально (это живой путь),
+# но локализован в этом helper'е; любая ошибка → None → fallback на single-shot.
+
+
+async def _run_grsh_feeder_extraction_for_block(
+    session_id: str, pair_id: str, side: str, side_block: Optional[dict],
+    *, cfg: "graphic_local_mod.LocalGraphicLLMConfig",
+) -> Optional[dict]:
+    """Прогнать tiled feeder extraction для одного GRSH-блока (fail-soft).
+
+    Возвращает {"desc_payload": <renderable>, "diagnostics": <dict>} или None
+    (caller остаётся на single-shot v7 GRSH).
+    """
+    if not isinstance(side_block, dict):
+        return None
+    try:
+        from dataclasses import replace as _dc_replace
+        gcfg = grsh_feeder_mod.load_grsh_feeder_config()
+        raw = side_block.get("raw") if isinstance(side_block.get("raw"), dict) else side_block
+        bid = str(side_block.get("id") or "block")
+        cache_dir = paths_mod.text_enrichment_cache_dir(session_id, pair_id) / "grsh_feeder" / side
+
+        src = block_pdf_source_mod.resolve_block_pdf_source(side_block, cache_dir=cache_dir)
+        if not (src.ok and src.pdf_path is not None):
+            return None  # нет block-PDF → single-shot
+
+        # текст-слой С КООРДИНАТАМИ (PyMuPDF words) для tile-local vocabulary
+        tl = block_pdf_source_mod.extract_block_text_layer(src.pdf_path, result_json_text=None)
+        if not tl.usable and raw.get("pdfplumber_text"):
+            tl = block_pdf_source_mod.extract_block_text_layer(
+                src.pdf_path, result_json_text=raw.get("pdfplumber_text"))
+        anchors = grsh_feeder_mod.extract_text_layer_anchors(tl.text)
+
+        render_png = cache_dir / f"{block_pdf_source_mod._safe_block_id(bid)}_{gcfg.render_long_side}.png"
+        rb = block_pdf_source_mod.render_block_pdf(
+            src.pdf_path, long_side=int(gcfg.render_long_side), out_path=render_png)
+        if not rb.ok or rb.png_path is None:
+            return None
+        render_bytes = Path(rb.png_path).read_bytes()
+
+        # размер страницы block-PDF в точках (для проекции word bbox → render px)
+        page_pt = (float(rb.width), float(rb.height))
+        try:
+            import fitz
+            _doc = fitz.open(str(src.pdf_path))
+            page_pt = (float(_doc[0].rect.width), float(_doc[0].rect.height))
+            _doc.close()
+        except Exception:  # noqa: BLE001
+            pass
+
+        grsh_call_cfg = _dc_replace(
+            cfg, max_tokens=int(gcfg.max_tokens), image_long_side=int(gcfg.tile_long_side),
+            max_continuations=0)
+
+        async def _describe(png_bytes: bytes, prompt: str) -> dict:
+            url = graphic_local_mod._png_bytes_to_data_url(png_bytes)
+            res, content = await graphic_local_mod._describe_image_once(
+                img_url=url, prompt=prompt, cfg=grsh_call_cfg,
+                use_model=grsh_call_cfg.model, primary_model=grsh_call_cfg.model,
+                fallback_used=False)
+            parsed = res.parsed
+            if parsed is None and content:
+                parsed = graphic_local_mod.salvage_partial_json(content)
+            return {"parsed": parsed, "status": res.status}
+
+        tile_results = await grsh_feeder_mod.extract_feeders_for_block(
+            render_png_bytes=render_bytes, text_layer_words=tl.words, pdf_page_size=page_pt,
+            describe_fn=_describe, cfg=gcfg, image_size=(rb.width, rb.height))
+        merged = grsh_feeder_mod.merge_tile_feeders(tile_results, anchors, cfg=gcfg)
+        diag = merged["diagnostics"]
+        table = grsh_feeder_mod.render_feeder_table_md(merged)
+
+        desc_payload = {
+            "status": "done",
+            "image_kind": "scheme",
+            "grsh_feeder_table": table,
+            "grsh_feeders": merged["feeders"],
+            "grsh_connections": merged["connections"],
+            "summary": (
+                f"GRSH пофидерное извлечение (tiled): {diag['feeders_extracted']} фидеров, "
+                f"designation_recall={diag['designation_recall']}, "
+                f"consumer_recall={diag['consumer_recall']}, "
+                f"connections={diag['connections_count']}, "
+                f"искусственных рядов={len(diag['rejected_artificial_series'])}."
+            ),
+            "coverage_notes": (
+                f"tiles={tile_results['n_tiles']}, recall_ok={diag['meets_min_recall']}, "
+                f"text_layer={tl.source}"
+            ),
+        }
+        diagnostics = {
+            "method": "grsh_feeder_tiled",
+            "block_source": src.source,
+            "text_layer_source": tl.source,
+            "n_tiles": tile_results["n_tiles"],
+        }
+        diagnostics.update({f"grsh_{k}": v for k, v in diag.items()})
+        return {"desc_payload": desc_payload, "diagnostics": diagnostics}
+    except Exception:  # noqa: BLE001 — никогда не валим enrich
+        logger.warning("GRSH feeder extraction failed; falling back to single-shot",
+                       exc_info=True)
+        return None
+
+
 # ─── Парсер MD ────────────────────────────────────────────────────────────
 
 
@@ -1544,6 +1658,13 @@ def _format_qwen_description_md(desc_payload: dict, *, model: str, page: Optiona
     #    «НЕ evidence», чтобы Opus не использовал их как доказательство. ──
     if is_grsh_payload(desc_payload):
         _format_grsh_sections(lines, desc_payload)
+
+    # ── GRSH_FEEDERS (контур B): пофидерная таблица из tiled-извлечения ──
+    # Идёт ДО summary — Opus читает буквальные пофидерные строки раньше прозы.
+    grsh_feeder_table = desc_payload.get("grsh_feeder_table")
+    if isinstance(grsh_feeder_table, str) and grsh_feeder_table.strip():
+        lines.append(grsh_feeder_table.strip())
+        lines.append("")
 
     # ── DIFF_ANCHORS: буквальные маркировки/номиналы/связи для diff'а ──
     # Эта секция идёт ДО summary, чтобы Opus видел сырые ЩР-1а / ВРУ-2 с.ш.1
@@ -3651,6 +3772,20 @@ async def enrich_side(
                 for dk, dv in (bps_override.get("diagnostics") or {}).items():
                     item[dk] = dv
 
+        # ── Контур B: tiled GRSH feeder extraction (flag-gated, OFF) ──
+        # Для GRSH-блока при включённом флаге используем v9 prompt-версию
+        # (отдельный cache-key) — реальный прогон ниже, в Real call.
+        use_grsh_feeder = (
+            grsh_feeder_mod.grsh_feeder_extraction_enabled()
+            and block_type == BLOCK_TYPE_DENSE_GRSH
+            and resolution.status == "ok"
+            and resolution.side_block_id is not None
+        )
+        if use_grsh_feeder:
+            prompt_version_for_block = PROMPT_VERSION_GRSH_FEEDER
+            item["prompt_version"] = prompt_version_for_block
+            item["used_prompt_version"] = prompt_version_for_block
+
         # ── Large Sheet Enrichment gated path (default OFF) ───────────
         # Если включён и блок относится к большому/плотному листу, обслуживаем
         # его готовым page_enriched.md вместо single-image Qwen. Не зависит от
@@ -3726,6 +3861,36 @@ async def enrich_side(
             descriptions.append(item)
             await _notify_progress(_block_idx, mb, item)
             continue
+
+        # ── Контур B: tiled GRSH feeder extraction (Real call) ────────
+        if use_grsh_feeder:
+            started = time.monotonic()
+            grsh_out = await _run_grsh_feeder_extraction_for_block(
+                session_id, pair_id, side,
+                side_block_by_id.get(resolution.side_block_id), cfg=cfg)
+            if grsh_out:
+                item["duration_sec"] = round(time.monotonic() - started, 3)
+                item["description"] = grsh_out["desc_payload"]
+                item["model_used"] = cfg.model
+                item["grsh_feeder_extraction"] = grsh_out["diagnostics"]
+                recall_ok = bool(grsh_out["diagnostics"].get("grsh_meets_min_recall", True))
+                item["usable_for_diff"] = recall_ok
+                if not recall_ok:
+                    item["warnings"].append("grsh_feeder_recall_below_min")
+                item["status"] = "done"
+                try:
+                    write_cache(session_id, pair_id, cache_key, {
+                        "status": "done", "description": item["description"],
+                        "model_used": cfg.model, "raw_response_excerpt": "",
+                    })
+                except Exception:  # noqa: BLE001
+                    logger.debug("grsh feeder cache write failed", exc_info=True)
+                descriptions.append(item)
+                summary.described += 1
+                await _notify_progress(_block_idx, mb, item)
+                continue
+            # grsh_out is None → fail-soft: продолжаем к single-shot ниже
+            item["warnings"].append("grsh_feeder_fallback_to_single_shot")
 
         # ── Real call ─────────────────────────────────────────────
         # Per-block cfg override: меняем image_long_side / max_tokens /

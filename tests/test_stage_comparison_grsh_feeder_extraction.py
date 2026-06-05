@@ -159,3 +159,83 @@ def test_make_feeder_tiles_respects_max_tiles():
     for t in tiles:
         x0, y0, x1, y1 = t["bbox_render_px"]
         assert 0 <= x0 < x1 <= 7000 and 0 <= y0 < y1 <= 3460
+
+
+def test_render_feeder_table_md_has_feeders():
+    merged = {"feeders": [
+        {"consumer": "ВРУ1", "designation": "ГРЩ1-РП1-1", "breaker": "1QF1",
+         "breaker_rating": "3P 800A", "cable_section": "5х150", "p_calc_kw": 449.3,
+         "i_calc_a": 717.3, "anchor_status": "verified"}],
+        "diagnostics": {"designation_recall": 1.0, "consumer_recall": 1.0}}
+    md = gfe.render_feeder_table_md(merged)
+    assert "GRSH_FEEDERS" in md and "ВРУ1" in md and "ГРЩ1-РП1-1" in md and "3P 800A" in md
+
+
+# ─── contour B wiring into md_image_enrichment (mocked Qwen, local PDF) ────
+
+
+def test_enrich_wiring_renders_feeder_table_in_md():
+    """The feeder table produced by contour B renders into the enriched MD body."""
+    from backend.app.services.stage_comparison import md_image_enrichment as mie
+    payload = {"status": "done", "image_kind": "scheme",
+               "grsh_feeder_table": gfe.render_feeder_table_md({"feeders": [
+                   {"consumer": "ВРУ1", "designation": "ГРЩ1-РП1-1", "breaker_rating": "800A",
+                    "anchor_status": "verified"}], "diagnostics": {}})}
+    body = mie._format_qwen_description_md(payload, model="qwen", page=21, block_id="B")
+    assert "GRSH_FEEDERS" in body and "ВРУ1" in body
+
+
+def test_grsh_feeder_helper_end_to_end_local_pdf(tmp_path, monkeypatch):
+    """case 8: _run_grsh_feeder_extraction_for_block tiles a local block-PDF render
+    and calls only the (mocked) Qwen — no network, no live LLM. Produces a feeder table."""
+    monkeypatch.setenv("COMPARISON_ROOT", str(tmp_path / "cmp"))
+    monkeypatch.setenv("STAGE_COMPARISON_GRSH_FEEDER_RENDER_LONG_SIDE", "2400")
+    monkeypatch.setenv("STAGE_COMPARISON_GRSH_FEEDER_TILE_LONG_SIDE", "1000")
+    monkeypatch.setenv("STAGE_COMPARISON_GRSH_FEEDER_N_COLS", "2")
+    monkeypatch.setenv("STAGE_COMPARISON_GRSH_FEEDER_N_ROWS", "1")
+    from backend.app.services.stage_comparison import md_image_enrichment as mie
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+
+    import fitz
+    doc = fitz.open()
+    page = doc.new_page(width=600, height=300)
+    page.insert_text((40, 40), "VRU1 GRSCH1-RP1-1 QF1 3P 800A", fontsize=10)
+    pdf = tmp_path / "block.pdf"
+    pdf.write_bytes(doc.tobytes())
+    doc.close()
+    side_block = {"id": "B", "raw": {"image_file": str(pdf),
+                                     "pdfplumber_text": "VRU1 GRSCH1-RP1-1 QF1 800A"}}
+
+    class _Res:
+        parsed = {"status": "done", "feeders": [
+            {"consumer": "VRU1", "designation": "GRSCH1-RP1-1", "breaker_rating": "800A"}],
+            "connections": [{"from": "TP1", "to": "RP1"}], "equipment": []}
+        status = "done"
+
+    calls = {"n": 0}
+
+    async def fake_once(**kw):
+        calls["n"] += 1
+        return _Res(), ""
+
+    monkeypatch.setattr(g, "_describe_image_once", fake_once)
+    cfg = g.load_local_graphic_llm_config()
+    out = asyncio.run(mie._run_grsh_feeder_extraction_for_block(
+        "sid", "pid", "left", side_block, cfg=cfg))
+    assert out is not None
+    assert calls["n"] >= 1                                  # mocked Qwen used, no live call
+    assert "grsh_feeder_table" in out["desc_payload"]
+    assert out["diagnostics"]["method"] == "grsh_feeder_tiled"
+    assert out["diagnostics"]["block_source"] == "image_file"  # local PDF, no network
+    assert "grsh_feeders_extracted" in out["diagnostics"]
+
+
+def test_grsh_feeder_helper_failsoft_without_block_pdf(tmp_path, monkeypatch):
+    """Fail-soft: no crop_url/image_file/PDF → helper returns None → caller keeps single-shot."""
+    monkeypatch.setenv("COMPARISON_ROOT", str(tmp_path / "cmp"))
+    from backend.app.services.stage_comparison import md_image_enrichment as mie
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+    cfg = g.load_local_graphic_llm_config()
+    out = asyncio.run(mie._run_grsh_feeder_extraction_for_block(
+        "sid", "pid", "left", {"id": "B", "raw": {}}, cfg=cfg))
+    assert out is None
