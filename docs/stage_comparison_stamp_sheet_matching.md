@@ -1,6 +1,6 @@
 # Stage Comparison — сопоставление листов по штампу (page-alignment)
 
-**Дата:** 2026-06-05 (LLM-доматчинг — 2026-06-06)
+**Дата:** 2026-06-05 (LLM-доматчинг — 2026-06-06; признаки/hard-gates/mutual-best/adjudicator — 2026-06-06)
 **Статус:** always-on (отдельная кнопка в «Связь блоков», ничего не ломает); Haiku-доматчинг — опц. чекбокс, fail-soft
 **Модули:**
 - [backend/app/services/stage_comparison/stamp_matching.py](../backend/app/services/stage_comparison/stamp_matching.py) — чистый матчер (+ опц. `llm_match_fn`)
@@ -190,6 +190,138 @@ UI: чекбокс **«🧠 ИИ-доматчинг»** рядом с кнопк
 uvicorn без `--reload` держит модуль в памяти — после правок эвристики/промпта
 нужен рестарт backend.
 
+## Усиление матчинга — признаки + hard-gates + mutual-best (2026-06-06)
+
+Детерминированный матчер расширен под precision (лучше непарный лист, чем
+неверная пара). Always-on, публичный API совместим, ничего не применяется
+автоматически.
+
+### Признаки листа (`SheetFeatures` / `extract_sheet_features`)
+
+Из имени листа извлекаются: `sheet_kind` (план/схема/спецификация/ведомость/
+общие_данные/узел/разрез/фасад/текстовая_часть), `system_tokens`
+(вру/грщ/що/авр/рп/…), `equipment_ids` (вру-1, що-2, qf-1; номинал «0,4кВ» НЕ
+считается номером единицы), `floor_tokens` (этаж:1/этаж:-2/подвал/кровля/…),
+`building_tokens` (корпус:1/секция:2/блок:а), `canonical_tokens`,
+`text_signature`.
+
+### Каноникализация (`canonicalize_sheet_name`, `SAFE_ALIASES`)
+
+Второй слой нормализации снимает служебные слова (`SAFE_ALIASES`:
+«однолинейная расчетная схема»→«однолинейная схема», «план расположения»→«план»,
+…). Намеренно НЕ сливает разные виды схем (расчетная/принципиальная/
+структурная). Новый match-type **`exact_canonical_name`** — «Однолинейная
+расчетная схема ГРЩ» == «Однолинейная схема ГРЩ» без LLM.
+
+### Hard-gates (`get_hard_conflict`)
+
+Жёсткие запреты (применяются в canonical/fuzzy/LLM-проходах): разные единицы
+одного типа (ВРУ-1≠ВРУ-2, ЩО-1≠ЩО-2), разные основные системы (ГРЩ≠ВРУ), разные
+этажи, разные корпус/секция/блок, несовместимые виды (план↔спецификация/
+ведомость; схема↔спецификация без общего оборудования). Отклонённые «соблазны»
+пишутся в `result.rejected[]` (`{left_page,right_page,rejected_reason}`).
+
+### Candidate-matrix + mutual-best + составной score
+
+Fuzzy-проход строит матрицу кандидатов (без hard-конфликтов), score =
+имя (IDF-косинус по каноническим токенам) + bonus/penalty за вид/систему/
+оборудование/этаж/корпус (order/позиция страницы в score НЕ входит — только
+tie-break). Пара принимается лишь при **взаимно-лучшем** (best-for-left И
+best-for-right) + threshold + margin с обеих сторон. Диагностика в
+`item.match_diag` (`score/second_best_score/margin/mutual_best`). Feature-backed
+fuzzy помечается `fuzzy_structural`, чисто-именной — `fuzzy_name`.
+
+### LLM как adjudicator (Stage 7)
+
+Вместо «двух плоских списков» LLM получает per-left top-k **безопасных**
+кандидатов (`build_candidate_match_prompt` / `llm_adjudicate_candidates`) и
+выбирает ОДИН `new_page` из них или null. Инварианты в Python: выбор только
+из кандидатов, нет hard-конфликта, page ≤ 1 раза, ≥ confidence-порога, LLM не
+перебивает детерминированные пары. Fail-soft сохранён. Старый flat-промпт
+(`build_llm_match_prompt`/`llm_match_sheets`) оставлен для backward-compat.
+
+### Display-only поля (для UI, `alignment.validate` их отбрасывает)
+
+`reason`, `positive_evidence[]`, `negative_evidence[]`, `risk_flags[]`
+(`low_margin`/`duplicate_sheet_name`/`text_layer_fallback`/`llm_semantic`),
+`confidence`, `match_diag`. UI показывает подпись типа, % и risk-бейджи.
+
+### Env (новое; старые сохранены)
+
+| Переменная | Default | Назначение |
+|---|---|---|
+| `STAGE_COMPARISON_STAMP_CANDIDATE_TOPK` | `3` | top-k безопасных кандидатов на лист (mutual-best/LLM) |
+| `STAGE_COMPARISON_STAMP_LLM_CANDIDATE_MIN_SCORE` | `0.20` | нижний порог попадания в кандидаты (ниже auto-accept) |
+
+## Многостраничные листы (multipart) + пакетное авто-сопоставление (2026-06-06)
+
+### Multipart (Pass 1.5 в `match_sheet_indexes`)
+
+Один логический лист может в одной версии занимать 1 страницу, а в другой —
+несколько (начало/продолжение/конец). `SheetFeatures` расширен полями
+`sheet_group_key` (имя БЕЗ part-маркеров), `multipart_role`
+(None/start/continuation/end), `multipart_index`. `extract_multipart(norm)`
+распознаёт маркеры `начало/продолжение/прод/продолж/конец/окончание/часть N/
+ч N/из N` (числовые — только при наличии числа, поэтому имя «Текстовая часть»
+без числа НЕ ломается). normalize уже снимает «лист N»/«стр. N»/«(из N)».
+
+Pass 1.5 (после exact/canonical, до fuzzy/LLM) группирует ОСТАТОК по
+`sheet_group_key` и сопоставляет части по ролям (`_align_multipart_parts`):
+start↔start, end↔end, продолжения позиционно, лишнее → односторонние. Срабатывает
+только при реальном multipart-сигнале (>1 части ИЛИ явная роль); 1↔1 без ролей
+уже разобран canonical. hard-gate проверяется на каждой под-паре. Одна страница
+используется не более раза.
+
+Новые match types: `exact_multipart_group` (якорь группы), `multipart_group`
+(вторичные роль-пары), `multipart_continuation` (односторонняя лишняя часть).
+Диагностика результата: `multipart_match_count`, `multipart_continuation_count`.
+
+Раскладки: 1↔N → `(1,10),(None,11),(None,12)`; N↔1 → `(1,10),(2,None),(3,None)`;
+N↔M role-aware (start/end якоря, остаток односторонний). Порядок слотов:
+одностороннее продолжение ставится рядом с первой сматченной строкой группы (не
+обязательно в самом конце) — это валидная эквивалентная раскладка (важны пары и
+отсутствие дублей). LLM НЕ создаёт multipart-группы (только deterministic
+group_key).
+
+### Пакетное авто-сопоставление по всей сессии
+
+Кнопка **«🏷 Авто сопоставление листов»** в разделе «1. Загрузка документации»
+проходит по ВСЕМ парам сессии, применяет безопасные совпадения, рискованные
+оставляет на ручную проверку. Прогресс — polling job-эндпоинта.
+
+Reusable core:
+- `store.suggest_alignment_by_stamp` (тот же алгоритм, что ручной режим);
+- `stamp_auto_apply.should_auto_apply_stamp_match(item) → (bool, reason)` —
+  политика; `build_auto_apply_items(suggested_items)` — очищенные items (display-
+  поля НЕ копируются в alignment);
+- `store.apply_safe_stamp_alignment_for_pair(sid, pid, use_llm, overwrite_existing)`
+  — suggest → filter → `save_alignment` (тот же путь, что ручной PUT);
+  `has_manual_alignment` — guard от затирания ручной работы (`mode∈{manual,blank}`;
+  авто-дефолт `mode=auto` затирать можно);
+- `auto_match_jobs.py` — фоновый job (per-pair в `asyncio.to_thread`, fail-soft,
+  progress, artifact `page_alignment_auto_match/last_run.json`).
+
+Auto-apply (precision > recall): exact/canonical/`exact_multipart_group`/
+`multipart_group` (без risk) — да; `fuzzy_*` — при score ≥ MIN_SCORE без
+low_margin/text_layer; `llm_semantic` — при confidence ≥ LLM_MIN; text_layer /
+low_margin / duplicate-без-сильных-признаков → на ручную.
+
+| Переменная | Default | Назначение |
+|---|---|---|
+| `STAGE_COMPARISON_STAMP_AUTO_APPLY_MIN_SCORE` | `0.80` | порог auto-apply fuzzy |
+| `STAGE_COMPARISON_STAMP_AUTO_APPLY_LLM_MIN_CONFIDENCE` | `0.85` | порог auto-apply LLM |
+| `STAGE_COMPARISON_STAMP_AUTO_APPLY_TEXT_LAYER` | `false` | применять text_layer автоматически |
+| `STAGE_COMPARISON_STAMP_AUTO_OVERWRITE_EXISTING` | `false` | дефолт перезаписи ручного alignment |
+
+Endpoints (session-level — «проект» в stage_comparison = сессия):
+`POST /sessions/{sid}/page-alignment/auto-match` (старт),
+`GET …/auto-match/{job_id}` (прогресс), `POST …/auto-match/{job_id}/cancel`,
+`GET …/auto-match-last` (последний прогон для reload).
+
+Раздел «2. Связь блоков» остаётся ручным: кнопка **«🏷 Сопоставить листы»** +
+чекбокс «🧠 ИИ-доматчинг» → suggestions → подтверждение → PUT. Ничего не
+применяется автоматически.
+
 ## Безопасность
 
 - always-on, но это отдельная кнопка — без клика поведение не меняется;
@@ -212,6 +344,14 @@ uvicorn без `--reload` держит модуль в памяти — посл
 (done/error/empty side), инъекция пары в `match_sheet_indexes` с `llm_semantic`,
 запрет перебить детерминированный матч, fail-soft на исключении fn, обвязка
 `store.suggest_alignment_by_stamp(use_llm=True)` (provider доступен / недоступен).
+
+[tests/test_stage_comparison_stamp_matching_v2.py](../tests/test_stage_comparison_stamp_matching_v2.py)
+— усиление: canonicalize + анти-слияние видов схем, извлечение признаков
+(kind/system/equipment/floor/building, пропуск напряжения), hard-gates
+(ВРУ-1≠ВРУ-2, ГРЩ≠ВРУ, этаж/корпус/секция, план↔спецификация), `exact_canonical_name`
+без LLM, mutual-best (слабый левый не уводит правый), text_layer risk-флаг и
+строгий порог, LLM-adjudicator (только из кандидатов, hard-gate блокирует
+форсированную пару, membership-фильтр, fail-soft).
 
 ## Контролируемая проверка (ИОС1.1, реальная пара)
 

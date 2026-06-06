@@ -430,6 +430,18 @@ def reports_root(session_id: str) -> Path:
     return p
 
 
+def auto_match_dir(session_id: str) -> Path:
+    """`comparison/sessions/<sid>/page_alignment_auto_match/` — артефакты
+    пакетного авто-сопоставления листов по штампам."""
+    p = session_dir(session_id) / "page_alignment_auto_match"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def auto_match_last_run_path(session_id: str) -> Path:
+    return auto_match_dir(session_id) / "last_run.json"
+
+
 def templates_root() -> Path:
     """`comparison/templates/` — снимки конфигурации пар по identity ключу.
 

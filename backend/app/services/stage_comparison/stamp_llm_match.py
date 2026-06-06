@@ -182,6 +182,98 @@ def build_llm_match_prompt(
     return SYSTEM_PROMPT, user, meta
 
 
+# ─── Структурный adjudication-промпт (Stage 7) ─────────────────────────────
+
+ADJUDICATION_SYSTEM_PROMPT = (
+    "Ты — инженер-эксперт по проектной документации (МКД). Для каждого СТАРОГО "
+    "листа тебе дают НЕБОЛЬШОЙ список заранее отобранных кандидатов из НОВОЙ "
+    "стадии (это безопасные кандидаты, прошедшие проверку на конфликты). Твоя "
+    "задача — выбрать РОВНО ОДИН new_page из списка кандидатов этого листа, "
+    "если это ТОТ ЖЕ лист по смыслу, либо вернуть null, если ни один не подходит.\n\n"
+    "ЖЁСТКИЕ ПРАВИЛА:\n"
+    "1. new_page МОЖНО брать ТОЛЬКО из списка кандидатов конкретного старого листа. "
+    "Никаких других страниц.\n"
+    "2. Один и тот же объект. НЕ путай разные объекты: ВРУ-1 ≠ ВРУ-2, ГРЩ ≠ ВРУ, "
+    "ЩО-1 ≠ ЩО-2, «План 1 этажа» ≠ «План 2 этажа», «Корпус 1» ≠ «Корпус 2», "
+    "«Секция 1» ≠ «Секция 2».\n"
+    "3. Каждый старый page и каждый новый page используется НЕ БОЛЕЕ ОДНОГО РАЗА.\n"
+    "4. Если не уверен — верни null (не создавай пару). Лучше пропустить, чем ошибиться.\n"
+    "5. Сопоставляй по СМЫСЛУ/НАЗНАЧЕНИЮ листа, а не по точному совпадению слов "
+    "(«Однолинейная расчетная схема ГРЩ» = «Однолинейная схема ГРЩ»).\n\n"
+    "Ответ — СТРОГО JSON без пояснений:\n"
+    '{"pairs": [{"old_page": <int>, "new_page": <int>, '
+    '"confidence": <0.0-1.0>, "reason": "<кратко>"}]}\n'
+    "Включай в pairs только листы, для которых выбрал кандидата (null — не "
+    "включать). Если ни одной пары — верни {\"pairs\": []}."
+)
+
+
+def _systems_str(systems: Any) -> str:
+    items = [str(s) for s in (systems or []) if str(s).strip()]
+    return ", ".join(items[:6])
+
+
+def _task_block(task: dict, index: int) -> Optional[str]:
+    """Один блок «старый лист + кандидаты» для adjudication-промпта."""
+    try:
+        lp = int(task.get("left_page"))
+    except (TypeError, ValueError):
+        return None
+    cands = [c for c in (task.get("candidates") or []) if isinstance(c, dict)]
+    if not cands:
+        return None
+    name = re.sub(r"\s+", " ", str(task.get("left_name", "") or "")).strip()[:_NAME_MAX_CHARS]
+    kind = task.get("left_kind") or "?"
+    head = (f"ЗАДАЧА {index}\nСтарый лист [page {lp}, вид: {kind}"
+            f"{', системы: ' + _systems_str(task.get('left_systems')) if task.get('left_systems') else ''}]: "
+            f"«{name}»\nКандидаты (новые листы):")
+    lines = [head]
+    for c in cands:
+        try:
+            cp = int(c.get("new_page"))
+        except (TypeError, ValueError):
+            continue
+        cname = re.sub(r"\s+", " ", str(c.get("name", "") or "")).strip()[:_NAME_MAX_CHARS]
+        ckind = c.get("kind") or "?"
+        csys = _systems_str(c.get("systems"))
+        score = c.get("deterministic_score")
+        sc_str = f", детерм. score {score}" if score is not None else ""
+        lines.append(f"  - page {cp} [вид: {ckind}"
+                     f"{', системы: ' + csys if csys else ''}] «{cname}»{sc_str}")
+    return "\n".join(lines)
+
+
+def build_candidate_match_prompt(
+    tasks: Sequence[dict],
+    *,
+    max_tasks: Optional[int] = None,
+) -> tuple[str, str, dict]:
+    """Собрать structured adjudication-промпт (system, user, meta).
+
+    tasks: список {left_page, left_name, left_kind, left_systems,
+    candidates:[{new_page, name, deterministic_score, kind, systems}]}.
+    """
+    cap = stamp_llm_max_sheets() if max_tasks is None else max_tasks
+    blocks: list[str] = []
+    n_candidates = 0
+    for t in tasks:
+        blk = _task_block(t, len(blocks) + 1)
+        if blk is None:
+            continue
+        blocks.append(blk)
+        n_candidates += len([c for c in (t.get("candidates") or []) if isinstance(c, dict)])
+        if cap and cap > 0 and len(blocks) >= cap:
+            break
+    user = (
+        "Сопоставь старые листы с кандидатами. Для каждого выбери ОДИН new_page "
+        "из его списка кандидатов или null.\n\n"
+        + ("\n\n".join(blocks) if blocks else "(нет задач)")
+        + "\n\nВерни JSON с парами (только выбранные)."
+    )
+    meta = {"n_tasks": len(blocks), "n_candidates": n_candidates}
+    return ADJUDICATION_SYSTEM_PROMPT, user, meta
+
+
 # ─── Парсинг ответа ──────────────────────────────────────────────────────────
 
 _FENCE_RE = re.compile(r"```(?:json)?\s*(\{.*?\})\s*```", re.DOTALL)
@@ -353,6 +445,78 @@ def llm_match_sheets(
     return result
 
 
+def llm_adjudicate_candidates(
+    tasks: Sequence[dict],
+    *,
+    provider: Any,
+    model: Optional[str] = None,
+    timeout_sec: Optional[int] = None,
+    max_tasks: Optional[int] = None,
+    min_confidence: Optional[float] = None,
+) -> dict:
+    """Adjudication: для каждого старого листа выбрать ОДИН new_page из его
+    кандидатов (Stage 7). Возвращает пары + диагностику.
+
+    Defense-in-depth: пары, чей new_page НЕ входит в список кандидатов своего
+    old_page, отбрасываются здесь же (matcher проверяет это повторно).
+    Никогда не бросает наружу: любая ошибка → pairs=[] + status.
+    """
+    result = {"pairs": [], "status": "ok", "error": None, "duration_sec": 0.0,
+              "n_tasks": 0, "n_candidates": 0, "raw_pairs": 0,
+              "model": model or stamp_llm_model(), "mode": "adjudication"}
+    try:
+        allowed: dict[int, set] = {}
+        for t in tasks or []:
+            try:
+                lp = int(t.get("left_page"))
+            except (TypeError, ValueError):
+                continue
+            pages = set()
+            for c in (t.get("candidates") or []):
+                try:
+                    pages.add(int(c.get("new_page")))
+                except (TypeError, ValueError):
+                    continue
+            if pages:
+                allowed[lp] = pages
+
+        system, user, meta = build_candidate_match_prompt(tasks, max_tasks=max_tasks)
+        result["n_tasks"] = meta["n_tasks"]
+        result["n_candidates"] = meta["n_candidates"]
+        if not meta["n_tasks"]:
+            result["status"] = "no_unmatched"
+            return result
+
+        with tempfile.TemporaryDirectory(prefix="stamp_llm_") as wd:
+            pr = provider.invoke(
+                system_prompt=system,
+                user_prompt=user,
+                model=model or stamp_llm_model(),
+                timeout_sec=timeout_sec or stamp_llm_timeout_sec(),
+                work_dir=Path(wd),
+            )
+        result["duration_sec"] = round(getattr(pr, "duration_sec", 0.0) or 0.0, 2)
+        result["model"] = getattr(pr, "model", None) or result["model"]
+        status = getattr(pr, "status", "error")
+        if status != "done":
+            result["status"] = status
+            result["error"] = getattr(pr, "error", None)
+            return result
+
+        pairs = parse_llm_match_pairs(
+            getattr(pr, "raw_response", "") or "", min_confidence=min_confidence)
+        result["raw_pairs"] = len(pairs)
+        # Enforce candidate membership (модель не должна выбирать вне кандидатов).
+        result["pairs"] = [p for p in pairs
+                           if p["new_page"] in allowed.get(p["old_page"], set())]
+    except Exception as exc:  # fail-soft
+        logger.warning("stamp_llm_match: adjudicate failed: %s", exc)
+        result["status"] = "exception"
+        result["error"] = str(exc)
+        result["pairs"] = []
+    return result
+
+
 def make_llm_match_fn(
     provider: Any,
     *,
@@ -361,18 +525,28 @@ def make_llm_match_fn(
     max_sheets: Optional[int] = None,
     min_confidence: Optional[float] = None,
     diagnostics: Optional[dict] = None,
-) -> Callable[[Sequence[Any], Sequence[Any]], list[tuple[int, int, float, str]]]:
+) -> Callable[..., list[tuple[int, int, float, str]]]:
     """Построить инъектируемую в `match_sheet_indexes` функцию доматчинга.
 
-    Возвращаемая функция: (rem_left, rem_right) → [(old_page, new_page, score,
-    match_type), ...]. match_type всегда "llm_semantic". Если передан dict
-    `diagnostics`, в него пишется отчёт о вызове (для result.json).
+    Возвращаемая функция: (rem_left, rem_right, tasks=None) → [(old_page,
+    new_page, score, match_type), ...]. match_type всегда "llm_semantic".
+
+    Если matcher передаёт `tasks` (structured top-k кандидаты per-left) —
+    используется безопасный adjudication-промпт (Stage 7); иначе — flat-list
+    промпт (backward compat). Если передан dict `diagnostics`, в него пишется
+    отчёт о вызове (для result.json).
     """
-    def _fn(rem_left: Sequence[Any], rem_right: Sequence[Any]):
-        rep = llm_match_sheets(
-            rem_left, rem_right, provider=provider, model=model,
-            timeout_sec=timeout_sec, max_sheets=max_sheets,
-            min_confidence=min_confidence)
+    def _fn(rem_left: Sequence[Any], rem_right: Sequence[Any],
+            tasks: Optional[Sequence[dict]] = None):
+        if tasks:
+            rep = llm_adjudicate_candidates(
+                tasks, provider=provider, model=model, timeout_sec=timeout_sec,
+                max_tasks=max_sheets, min_confidence=min_confidence)
+        else:
+            rep = llm_match_sheets(
+                rem_left, rem_right, provider=provider, model=model,
+                timeout_sec=timeout_sec, max_sheets=max_sheets,
+                min_confidence=min_confidence)
         if diagnostics is not None:
             diagnostics.clear()
             diagnostics.update({k: v for k, v in rep.items() if k != "pairs"})
@@ -388,8 +562,10 @@ __all__ = [
     "stamp_llm_enabled",
     "stamp_llm_model",
     "build_llm_match_prompt",
+    "build_candidate_match_prompt",
     "parse_llm_match_pairs",
     "llm_match_sheets",
+    "llm_adjudicate_candidates",
     "make_llm_match_fn",
     "SYSTEM_PROMPT",
 ]

@@ -9396,10 +9396,15 @@ const app = createApp({
                 // F5 на вкладке «Загрузка документации» UI не знает, что job
                 // активен (watch(scTab) срабатывает только при смене вкладки).
                 try { await scOpusRestoreActive(); } catch (_) {}
+                // Re-attach к запущенному Qwen→Opus pipeline job после F5, иначе
+                // панель «Pipeline Qwen→Opus» пропадает, хотя job ещё работает.
                 try { await scLoadPairCompareStatuses(); } catch (_) {}
                 try { await scOpusLoadPreflight(); } catch (_) {}
                 // Per-pair статус «Проверено экспертом» для таблицы загрузки.
                 try { await scLoadExpertPerPair(); } catch (_) {}
+                // Показать результат последнего пакетного авто-сопоставления
+                // листов (и переподключиться к живому job после F5).
+                try { await scAutoMatchLoadLast(); } catch (_) {}
             } catch (e) {
                 scError.value = 'Не удалось загрузить сессию: ' + e;
             }
@@ -10889,6 +10894,242 @@ const app = createApp({
                 scError.value = 'Auto-link error: ' + e;
             } finally {
                 scLinking.value = false;
+            }
+        }
+
+        // ── Сопоставление листов по штампам (предложение page-alignment) ──
+        // Находит листы по имени из штампа (схема ГРЩ стр.21 ↔ стр.56) и
+        // предлагает поставить их напротив друг друга. Применение = обычный
+        // PUT page-alignment (ничего нового на сервере не мутирует впустую).
+        const scStampProposals = ref(null);   // {suggested_items, confidence, ...}
+        const scStampLoading   = ref(false);
+        const scStampApplying  = ref(false);
+        const scStampError     = ref('');
+        const scStampSelected  = ref({});      // `${L}_${R}` -> bool (matched rows)
+        const scStampUseLlm    = ref(true);    // доматчивать остаток через Haiku
+
+        function scStampRowKey(it) {
+            return (it.left_page == null ? '_' : it.left_page) + '_'
+                 + (it.right_page == null ? '_' : it.right_page);
+        }
+        const scStampMatchedRows = computed(() =>
+            (scStampProposals.value && scStampProposals.value.suggested_items || [])
+                .filter(it => it.match));
+        const scStampSelectedCount = computed(() =>
+            scStampMatchedRows.value.filter(it => scStampSelected.value[scStampRowKey(it)]).length);
+
+        async function scSuggestByStamp() {
+            if (!scSession.value || !scActivePair.value) return;
+            scStampError.value = '';
+            scStampLoading.value = true;
+            scStampProposals.value = null;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/page-alignment/suggest-by-stamp`;
+                // use_llm=true: после детерминированного матчинга остаток
+                // НЕсматченных листов доматчивает Haiku (семантически
+                // эквивалентные имена). Fail-soft на стороне backend.
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({use_llm: scStampUseLlm.value}),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    throw new Error(j.detail || ('HTTP ' + r.status));
+                }
+                const d = await r.json();
+                scStampProposals.value = d;
+                const sel = {};
+                (d.suggested_items || []).forEach(it => {
+                    if (it.match) sel[scStampRowKey(it)] = true;
+                });
+                scStampSelected.value = sel;
+            } catch (e) {
+                scStampError.value = 'Сопоставление по штампам: ' + (e.message || e);
+            } finally {
+                scStampLoading.value = false;
+            }
+        }
+
+        function scStampToggleRow(it) {
+            const k = scStampRowKey(it);
+            scStampSelected.value = {...scStampSelected.value, [k]: !scStampSelected.value[k]};
+        }
+
+        // Человекочитаемые подписи типов матча / risk-флагов (display-only поля).
+        const SC_STAMP_TYPE_LABELS = {
+            exact_name: 'точное',
+            exact_canonical_name: 'каноническое',
+            exact_multipart_group: '📑 многостр. лист',
+            multipart_group: '📑 многостр. часть',
+            multipart_continuation: '📑 продолжение',
+            fuzzy_name: 'похожее',
+            fuzzy_structural: 'по признакам',
+            text_layer: 'текст-слой',
+            llm_semantic: '🧠 по смыслу',
+        };
+        const SC_STAMP_RISK_LABELS = {
+            low_margin: 'слабый отрыв',
+            duplicate_sheet_name: 'дубль имени',
+            text_layer_fallback: 'текст-слой',
+            llm_semantic: 'ИИ',
+        };
+        function scStampTypeLabel(mt) { return SC_STAMP_TYPE_LABELS[mt] || 'похожее'; }
+        function scStampRiskLabel(f) { return SC_STAMP_RISK_LABELS[f] || f; }
+        function scStampTypeColor(it) {
+            if (['exact_name', 'exact_canonical_name', 'exact_multipart_group', 'multipart_group'].includes(it.match_type)) return '#15803d';
+            if (it.match_type === 'llm_semantic') return '#6d28d9';
+            return it.needs_review ? '#b45309' : '#374151';
+        }
+        function scStampRowTitle(it) {
+            const parts = [];
+            if (it.reason) parts.push(it.reason);
+            if (it.positive_evidence && it.positive_evidence.length)
+                parts.push('за: ' + it.positive_evidence.join('; '));
+            if (it.negative_evidence && it.negative_evidence.length)
+                parts.push('против: ' + it.negative_evidence.join('; '));
+            return parts.join('\n');
+        }
+
+        // ── Пакетное авто-сопоставление листов (раздел «1. Загрузка документации») ──
+        // Проходит по ВСЕМ парам сессии, безопасные совпадения применяет в
+        // page_alignment, рискованные оставляет на ручную проверку. Прогресс —
+        // polling job-эндпоинта. Ручное выравнивание по умолчанию не затирается.
+        const scAutoMatchJob      = ref(null);
+        const scAutoMatchStarting = ref(false);
+        const scAutoMatchError    = ref('');
+        const scAutoMatchUseLlm   = ref(true);
+        const scAutoMatchOverwrite = ref(false);
+        const scAutoMatchAsk      = ref(false);   // показать popup-вопрос перед стартом
+        let   scAutoMatchTimer    = null;
+        const scAutoMatchRunning  = computed(() =>
+            scAutoMatchJob.value && ['queued', 'running'].includes(scAutoMatchJob.value.status));
+
+        function scAutoMatchStopPolling() {
+            if (scAutoMatchTimer) { clearInterval(scAutoMatchTimer); scAutoMatchTimer = null; }
+        }
+        // Клик по кнопке открывает popup-вопрос (ИИ-доматчинг / перезапись),
+        // запуск — только после подтверждения в окне.
+        function scAutoMatchOpenDialog() {
+            if (scAutoMatchStarting.value || scAutoMatchRunning.value) return;
+            scAutoMatchError.value = '';
+            scAutoMatchAsk.value = true;
+        }
+        function scAutoMatchCloseDialog() { scAutoMatchAsk.value = false; }
+        async function scAutoMatchConfirm() {
+            scAutoMatchAsk.value = false;
+            await scAutoMatchStart();
+        }
+        async function scAutoMatchPoll() {
+            if (!scSession.value || !scAutoMatchJob.value) return;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/page-alignment/auto-match/${encodeURIComponent(scAutoMatchJob.value.id)}`;
+                const r = await fetch(url);
+                if (!r.ok) return;
+                const j = await r.json();
+                scAutoMatchJob.value = j;
+                if (!['queued', 'running'].includes(j.status)) scAutoMatchStopPolling();
+            } catch (_) { /* keep polling */ }
+        }
+        async function scAutoMatchStart() {
+            if (!scSession.value || scAutoMatchStarting.value || scAutoMatchRunning.value) return;
+            scAutoMatchError.value = '';
+            scAutoMatchStarting.value = true;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/page-alignment/auto-match`;
+                const r = await fetch(url, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({use_llm: scAutoMatchUseLlm.value,
+                                          overwrite_existing: scAutoMatchOverwrite.value,
+                                          auto_apply: true}),
+                });
+                if (!r.ok) {
+                    const e = await r.json().catch(() => ({}));
+                    throw new Error(e.detail || ('HTTP ' + r.status));
+                }
+                scAutoMatchJob.value = await r.json();
+                scAutoMatchStopPolling();
+                scAutoMatchTimer = setInterval(scAutoMatchPoll, 1200);
+            } catch (e) {
+                scAutoMatchError.value = 'Авто сопоставление: ' + (e.message || e);
+            } finally {
+                scAutoMatchStarting.value = false;
+            }
+        }
+        async function scAutoMatchCancel() {
+            if (!scSession.value || !scAutoMatchJob.value) return;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/page-alignment/auto-match/${encodeURIComponent(scAutoMatchJob.value.id)}/cancel`;
+                const r = await fetch(url, {method: 'POST'});
+                if (r.ok) scAutoMatchJob.value = await r.json();
+            } catch (_) { /* ignore */ }
+        }
+        async function scAutoMatchLoadLast() {
+            scAutoMatchStopPolling();
+            if (!scSession.value) { scAutoMatchJob.value = null; return; }
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/page-alignment/auto-match-last`;
+                const r = await fetch(url);
+                if (!r.ok) { scAutoMatchJob.value = null; return; }
+                const j = await r.json();
+                const job = j.latest_job || j.last_run || null;
+                scAutoMatchJob.value = job;
+                // Если последний job ещё жив — продолжить polling.
+                if (job && ['queued', 'running'].includes(job.status))
+                    scAutoMatchTimer = setInterval(scAutoMatchPoll, 1200);
+            } catch (_) { scAutoMatchJob.value = null; }
+        }
+
+        function scCloseStampProposals() {
+            scStampProposals.value = null;
+            scStampError.value = '';
+        }
+
+        async function scApplyStampProposals() {
+            if (!scStampProposals.value || scStampApplying.value) return;
+            scStampApplying.value = true;
+            scStampError.value = '';
+            try {
+                const props = scStampProposals.value.suggested_items || [];
+                const items = [];
+                for (const it of props) {
+                    if (it.match && scStampSelected.value[scStampRowKey(it)]) {
+                        // подтверждённый матч → пара напротив друг друга
+                        items.push({left_page: it.left_page, right_page: it.right_page,
+                                    mode: 'manual', note: it.note || ''});
+                    } else if (it.match) {
+                        // отклонённый матч → расцепить на два односторонних слота
+                        if (it.left_page != null)
+                            items.push({left_page: it.left_page, right_page: null,
+                                        mode: 'manual', note: 'не подтверждено'});
+                        if (it.right_page != null)
+                            items.push({left_page: null, right_page: it.right_page,
+                                        mode: 'manual', note: 'не подтверждено'});
+                    } else {
+                        // односторонний лист как есть
+                        items.push({left_page: it.left_page, right_page: it.right_page,
+                                    mode: 'manual', note: it.note || ''});
+                    }
+                }
+                items.forEach((it, i) => { it.slot = i + 1; });
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/page-alignment?force=true`;
+                const r = await fetch(url, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({items, force: true}),
+                });
+                if (!r.ok) {
+                    const j = await r.json().catch(() => ({}));
+                    const ve = j.detail && j.detail.validation_errors;
+                    throw new Error(ve ? JSON.stringify(ve) : (j.detail || ('HTTP ' + r.status)));
+                }
+                await scLoadAlignment();
+                await scLoadPairData();
+                scStampProposals.value = null;
+            } catch (e) {
+                scStampError.value = 'Применение карты: ' + (e.message || e);
+            } finally {
+                scStampApplying.value = false;
             }
         }
 
@@ -13423,6 +13664,17 @@ const app = createApp({
             scOnPaneScroll, scOnPaneWheel, scOnPanePanStart, scZoomBy, scZoomReset,
             scSetSlotRef, scIsSlotRendered, scSlotContainerStyle, scSlotPlaceholderStyle,
             scCreateLink, scDeleteLink, scRunAutoLink,
+            // Сопоставление листов по штампам
+            scStampProposals, scStampLoading, scStampApplying, scStampError,
+            scStampSelected, scStampRowKey, scStampToggleRow, scStampMatchedRows,
+            scStampSelectedCount, scSuggestByStamp, scApplyStampProposals,
+            scCloseStampProposals, scStampUseLlm,
+            scStampTypeLabel, scStampRiskLabel, scStampTypeColor, scStampRowTitle,
+            // Пакетное авто-сопоставление листов (раздел «1. Загрузка документации»)
+            scAutoMatchJob, scAutoMatchStarting, scAutoMatchError, scAutoMatchUseLlm,
+            scAutoMatchOverwrite, scAutoMatchRunning, scAutoMatchStart,
+            scAutoMatchCancel, scAutoMatchLoadLast,
+            scAutoMatchAsk, scAutoMatchOpenDialog, scAutoMatchCloseDialog, scAutoMatchConfirm,
             // Pair config templates
             scTemplateSaving, scTemplateLastSaveMsg, scTemplateError,
             scSavePairTemplate,

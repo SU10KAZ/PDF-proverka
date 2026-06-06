@@ -28,13 +28,13 @@ page→text. Никакого I/O и сети. I/O живёт в store.suggest_a
 """
 from __future__ import annotations
 
+import inspect
 import math
 import os
 import re
 import unicodedata
 from collections import Counter, defaultdict, deque
 from dataclasses import dataclass
-from difflib import SequenceMatcher
 from typing import Optional
 
 from .evidence_first_fallback import build_fact_index
@@ -52,6 +52,16 @@ def _env_float(name: str, default: float) -> float:
         return default
 
 
+def _env_int(name: str, default: int) -> int:
+    raw = os.environ.get(name)
+    if raw is None or str(raw).strip() == "":
+        return default
+    try:
+        return int(raw)
+    except (TypeError, ValueError):
+        return default
+
+
 # Минимальный score нечёткого совпадения имени листа (взвешенная косинусная
 # близость токенов с IDF-весами внутри пары).
 STAMP_MATCH_MIN_SCORE = _env_float("STAGE_COMPARISON_STAMP_MATCH_MIN_SCORE", 0.55)
@@ -61,8 +71,27 @@ STAMP_FALLBACK_MIN_SCORE = _env_float("STAGE_COMPARISON_STAMP_FALLBACK_MIN_SCORE
 # правых листов имеют ~равный score (типично для имён с общим бойлерплейт-
 # префиксом «Часть 1. …»), матч НЕОДНОЗНАЧЕН → не предлагаем (precision > recall).
 STAMP_MATCH_MIN_MARGIN = _env_float("STAGE_COMPARISON_STAMP_MATCH_MIN_MARGIN", 0.07)
+# Сколько безопасных правых кандидатов держать на один левый лист (для
+# mutual-best и для LLM-adjudication).
+STAMP_CANDIDATE_TOPK = _env_int("STAGE_COMPARISON_STAMP_CANDIDATE_TOPK", 3)
+# Нижний порог score, при котором пара становится КАНДИДАТОМ (для LLM или
+# диагностики отклонений). Ниже auto-accept порога: слабые-но-правдоподобные
+# пары не матчатся автоматически, а уходят на adjudication/ручной матч.
+STAMP_LLM_CANDIDATE_MIN_SCORE = _env_float(
+    "STAGE_COMPARISON_STAMP_LLM_CANDIDATE_MIN_SCORE", 0.20)
 # Длина текст-сигнатуры из текст-слоя для слабого фолбэка.
 _FALLBACK_TEXT_LEN = 120
+
+# ─── Веса составного score (Stage 6) ───────────────────────────────────────
+# Имя — основа; признаки дают bonus/penalty. order/позиция страницы в score НЕ
+# входит (только tie-break при равных score).
+_KIND_BONUS = 0.10
+_KIND_PENALTY = 0.15
+_SYSTEM_BONUS = 0.10
+_EQUIPMENT_BONUS = 0.15
+_FLOOR_BONUS = 0.08
+_BUILDING_BONUS = 0.08
+_TEXT_SIGNATURE_WEIGHT = 0.15
 
 
 # ─── Нормализация имени листа ──────────────────────────────────────────────
@@ -199,12 +228,519 @@ def build_sheet_index(
     return recs
 
 
+# ─── Каноникализация имени (Stage 3) ───────────────────────────────────────
+
+# Безопасные алиасы: приводят близкие формулировки к единому виду. Намеренно
+# консервативны — НЕ сливают разные виды схем (расчетная/принципиальная/
+# структурная), только снимают служебные/избыточные слова. Ключи в
+# нормализованной форме (lower, без пунктуации).
+SAFE_ALIASES = {
+    "однолинейная расчетная схема": "однолинейная схема",
+    "расчетная однолинейная схема": "однолинейная схема",
+    "принципиальная однолинейная схема": "однолинейная схема",
+    "план расположения": "план",
+    "план размещения": "план",
+    "общие данные по рабочим чертежам": "общие данные",
+    "общие данные рабочих чертежей": "общие данные",
+    "спецификация оборудования изделий и материалов": "спецификация",
+    "спецификация оборудования изделий материалов": "спецификация",
+    "спецификация оборудования": "спецификация",
+}
+
+# Длиннее — раньше, чтобы префиксная замена не съела более длинную фразу.
+_ALIAS_ITEMS = sorted(SAFE_ALIASES.items(), key=lambda kv: -len(kv[0]))
+
+
+def canonicalize_sheet_name(normalized_name: str) -> str:
+    """Второй слой нормализации: применить безопасные алиасы.
+
+    Вход — уже нормализованное имя (после :func:`normalize_sheet_name`). Возвращает
+    каноническую форму. Никогда не падает, идемпотентна для уже-канонических имён.
+    """
+    s = (normalized_name or "").strip()
+    if not s:
+        return ""
+    for src, dst in _ALIAS_ITEMS:
+        if src in s:
+            s = s.replace(src, dst)
+    return _WS_RE.sub(" ", s).strip()
+
+
+# ─── Извлечение признаков листа (Stage 2) ──────────────────────────────────
+
+# Системные «семьи» оборудования (нормализованные, без номера). MAIN — те,
+# что НЕ должны путаться между собой (ВРУ vs ГРЩ vs ЩО) и используются в
+# hard-gate. WEAK — слабые дисциплинарные/прочие теги (только bonus в score).
+MAIN_SYSTEM_FAMILIES = {"вру", "грщ", "гру", "що", "щр", "авр", "рп", "ппу"}
+_WEAK_SYSTEM_TAGS = {"эом", "эс", "сс", "апс", "соуэ", "вк", "ов", "вп", "qf", "qs"}
+_ALL_SYSTEM_FAMILIES = MAIN_SYSTEM_FAMILIES | _WEAK_SYSTEM_TAGS
+
+# Семьи, для которых ловим конкретный номер (ВРУ-1, ЩО-2, QF1, ГРЩ-1).
+_EQUIP_FAMILIES = ["вру", "грщ", "гру", "що", "щр", "щк", "рп", "qf", "qs"]
+_EQUIP_RE = re.compile(
+    r"(" + "|".join(_EQUIP_FAMILIES) + r")\s*[-–—.]?\s*"
+    r"(\d+(?:[.,]\d+)?)\s*(кв|квт|ква|вт|а|в)?",
+    re.IGNORECASE,
+)
+
+# Виды листа (sheet_kind). Порядок проверки важен: специфичные раньше общих.
+_KIND_RULES = [
+    ("текстовая_часть", ("текстов",)),
+    ("общие_данные", ("общие данны", "общих данны", "общие указани", "общих указани")),
+    ("спецификация", ("специфика",)),
+    ("ведомость", ("ведомост",)),
+    ("узел", ("узел", "узлы", "узлов")),
+    ("разрез", ("разрез", "сечени")),
+    ("фасад", ("фасад",)),
+    ("схема", ("схем",)),
+    ("план", ("план", "планировк")),
+]
+
+
+def _extract_sheet_kind(low: str) -> Optional[str]:
+    """Определить вид листа по lowered-имени. None если непонятно."""
+    s = low or ""
+    for kind, markers in _KIND_RULES:
+        if any(m in s for m in markers):
+            return kind
+    return None
+
+
+def _extract_system_tokens(norm_name: str) -> set:
+    """Системные семьи (вру/грщ/що/…), номер отброшен."""
+    out: set = set()
+    for tok in (norm_name or "").split(" "):
+        if not tok:
+            continue
+        for fam in _ALL_SYSTEM_FAMILIES:
+            if tok == fam or (tok.startswith(fam) and tok[len(fam):].isdigit()):
+                out.add(fam)
+                break
+    return out
+
+
+def _extract_equipment_ids(low: str) -> set:
+    """ID оборудования с номером: «вру-1», «що-2», «qf-1», «грщ-1».
+
+    Номера, за которыми идёт единица напряжения/мощности (0,4кВ, 10кВ), —
+    это рейтинг, а не индекс единицы; такие НЕ берём (иначе «ГРЩ-0,4кВ» дал бы
+    ложный equipment-конфликт).
+    """
+    out: set = set()
+    for m in _EQUIP_RE.finditer(low or ""):
+        fam = m.group(1).lower()
+        num = m.group(2).replace(",", ".")
+        unit = (m.group(3) or "").lower()
+        if unit:  # это номинал (кВ/А/кВт …), а не номер единицы
+            continue
+        out.add(f"{fam}-{num}")
+    return out
+
+
+# Этажи / уровни.
+_WORD_FLOORS = {
+    "подвал": "подвал", "паркинг": "паркинг", "кровл": "кровля",
+    "цокол": "цоколь",
+}
+_FLOOR_NUM_RE = re.compile(r"(минус\s*|-)?(\d+)\s*(?:[-–]?\s*[а-я]{0,3}\s*)?этаж", re.IGNORECASE)
+_FLOOR_NUM_RE2 = re.compile(r"этаж\w*\s*(минус\s*|-)?(\d+)", re.IGNORECASE)
+_WORD_FLOOR_NUM = {"первого": 1, "первый": 1, "второго": 2, "второй": 2,
+                   "третьего": 3, "третий": 3, "четвертого": 4, "четвертый": 4,
+                   "пятого": 5, "пятый": 5}
+
+
+def _extract_floor_tokens(low: str) -> set:
+    """Этажи/уровни: «этаж:1», «этаж:-2», «подвал», «кровля», «технический»."""
+    s = low or ""
+    out: set = set()
+    for sub, tok in _WORD_FLOORS.items():
+        if sub in s:
+            out.add(tok)
+    if "технич" in s and "этаж" in s or "техэтаж" in s:
+        out.add("технический")
+    for rx in (_FLOOR_NUM_RE, _FLOOR_NUM_RE2):
+        for m in rx.finditer(s):
+            sign = -1 if (m.group(1) or "").strip() else 1
+            try:
+                out.add(f"этаж:{sign * int(m.group(2))}")
+            except (TypeError, ValueError):
+                continue
+    for word, n in _WORD_FLOOR_NUM.items():
+        if f"{word} этаж" in s or f"{word}го этаж" in s:
+            out.add(f"этаж:{n}")
+    return out
+
+
+_BUILDING_RES = [
+    ("корпус", re.compile(r"корпус[аы]?\s*([0-9][0-9.,\s]*|[а-я])\b", re.IGNORECASE)),
+    ("секция", re.compile(r"секци[яюийе]?\s*([0-9]+|[а-я])\b", re.IGNORECASE)),
+    ("блок", re.compile(r"блок[\s\-]+([0-9]+|[а-я])\b", re.IGNORECASE)),
+]
+
+
+def _extract_building_tokens(low: str) -> set:
+    """Корпус/секция/блок: «корпус:1», «секция:2», «блок:а» (с namespace)."""
+    s = low or ""
+    out: set = set()
+    for kind, rx in _BUILDING_RES:
+        for m in rx.finditer(s):
+            raw = m.group(1)
+            nums = re.findall(r"\d+(?:\.\d+)?", raw)
+            if nums:
+                for n in nums:
+                    out.add(f"{kind}:{n}")
+            else:
+                val = raw.strip().lower()
+                if val:
+                    out.add(f"{kind}:{val}")
+    return out
+
+
+# ─── Многостраничные листы (multipart / multisheet) ────────────────────────
+#
+# Один логический лист может в одной версии занимать 1 страницу, а в другой —
+# несколько (начало / продолжение / конец). `sheet_group_key` — имя БЕЗ
+# part-маркеров; `multipart_role` — роль части; `multipart_index` — номер части.
+#
+# Важно: маркеры с числом («часть 2», «ч 2») распознаются ТОЛЬКО при наличии
+# числа, поэтому обычное имя «Текстовая часть» (без числа) НЕ ломается.
+
+# normalize_sheet_name уже срезает «лист N», «стр. N», «(из N)». Здесь снимаем
+# остаток: начало/продолжение/конец/окончание/часть N/ч N/из N.
+_MULTIPART_STRIP_RES = [
+    re.compile(r"\bначал[оа]\b"),
+    re.compile(r"\b(?:продолжение|продолжени[яе]|продолж|прод)\b"),
+    re.compile(r"\b(?:конец|окончание|оконч)\b"),
+    re.compile(r"\bчасть\s*\d+\b"),
+    re.compile(r"\bч\s*\d+\b"),
+    re.compile(r"\bиз\s*\d+\b"),
+]
+_RE_PART_START = re.compile(r"\bначал[оа]\b")
+_RE_PART_CONT = re.compile(r"\b(?:продолжение|продолжени[яе]|продолж|прод)\b")
+_RE_PART_END = re.compile(r"\b(?:конец|окончание|оконч)\b")
+_RE_PART_NUM = re.compile(r"\b(?:часть|ч)\s*(\d+)\b")
+_RE_PART_TOTAL = re.compile(r"\bиз\s*(\d+)\b")
+
+
+def extract_multipart(norm_name: str) -> tuple[str, Optional[str], Optional[int]]:
+    """Разобрать имя на (group_key, role, index).
+
+    role ∈ {None('single'), 'start', 'continuation', 'end'}.
+    group_key — нормализованное имя без part-маркеров (затем каноникализуется
+    вызывающим). Никогда не падает.
+    """
+    s = (norm_name or "").strip()
+    if not s:
+        return "", None, None
+    total = None
+    mt = _RE_PART_TOTAL.search(s)
+    if mt:
+        try:
+            total = int(mt.group(1))
+        except (TypeError, ValueError):
+            total = None
+    index = None
+    mn = _RE_PART_NUM.search(s)
+    if mn:
+        try:
+            index = int(mn.group(1))
+        except (TypeError, ValueError):
+            index = None
+
+    role: Optional[str] = None
+    if _RE_PART_START.search(s):
+        role = "start"
+        index = index or 1
+    elif _RE_PART_END.search(s):
+        role = "end"
+    elif _RE_PART_CONT.search(s):
+        role = "continuation"
+    elif index is not None:
+        if index == 1:
+            role = "start"
+        elif total is not None and index == total:
+            role = "end"
+        else:
+            role = "continuation"
+
+    base = s
+    for rx in _MULTIPART_STRIP_RES:
+        base = rx.sub(" ", base)
+    base = _WS_RE.sub(" ", base).strip()
+    return base, role, index
+
+
+@dataclass
+class SheetFeatures:
+    """Расширенное описание листа для безопасного матчинга."""
+    page: int
+    sheet_no_raw: Optional[str]
+    sheet_name_raw: Optional[str]
+    normalized_name: str
+    canonical_name: str
+    source: str                  # md | inherited | text_layer | none
+    is_text_layer_fallback: bool
+    sheet_kind: Optional[str]
+    system_tokens: set
+    equipment_ids: set
+    floor_tokens: set
+    building_tokens: set
+    canonical_tokens: set
+    text_signature: set
+    # Многостраничные листы (multipart):
+    sheet_group_key: str = ""
+    multipart_role: Optional[str] = None     # None/single | start | continuation | end
+    multipart_index: Optional[int] = None
+
+
+def extract_sheet_features(rec: SheetRec) -> SheetFeatures:
+    """Построить :class:`SheetFeatures` из :class:`SheetRec`."""
+    raw = (rec.sheet_name or "").strip()
+    norm = rec.norm_name or ""
+    # Для text_layer-фолбэка реального имени нет — признаки берём из текст-сигнатуры.
+    low = (raw or norm).lower().replace("ё", "е")
+    canon = canonicalize_sheet_name(norm)
+    canon_tokens = set(_tokens(canon))
+    base, role, index = extract_multipart(norm)
+    group_key = canonicalize_sheet_name(base)
+    return SheetFeatures(
+        page=rec.page,
+        sheet_no_raw=(rec.sheet_no or None),
+        sheet_name_raw=(raw or None),
+        normalized_name=norm,
+        canonical_name=canon,
+        source=rec.name_source,
+        is_text_layer_fallback=(rec.name_source == "text_layer"),
+        sheet_kind=_extract_sheet_kind(low),
+        system_tokens=_extract_system_tokens(norm),
+        equipment_ids=_extract_equipment_ids(low),
+        floor_tokens=_extract_floor_tokens(low),
+        building_tokens=_extract_building_tokens(low),
+        canonical_tokens=canon_tokens,
+        text_signature=canon_tokens,
+        sheet_group_key=group_key,
+        multipart_role=role,
+        multipart_index=index,
+    )
+
+
+# ─── Hard-gates (Stage 4) ──────────────────────────────────────────────────
+
+_KIND_HARD_PAIRS = {
+    frozenset({"план", "спецификация"}),
+    frozenset({"план", "ведомость"}),
+}
+
+
+def _group_equipment(ids: set) -> dict:
+    """{«вру-1»,«вру-2»} → {«вру»: {«1»,«2»}}."""
+    out: dict = defaultdict(set)
+    for eid in ids:
+        fam, _, num = eid.rpartition("-")
+        if fam and num:
+            out[fam].add(num)
+    return out
+
+
+def _group_building(tokens: set) -> dict:
+    """{«корпус:1»} → {«корпус»: {«1»}}."""
+    out: dict = defaultdict(set)
+    for t in tokens:
+        kind, _, val = t.partition(":")
+        if kind and val:
+            out[kind].add(val)
+    return out
+
+
+def get_hard_conflict(left: SheetFeatures, right: SheetFeatures) -> Optional[str]:
+    """Вернуть причину жёсткого конфликта пары листов или None.
+
+    Запреты (precision > recall): разные единицы одного типа (ВРУ-1 vs ВРУ-2),
+    разные основные системы (ГРЩ vs ВРУ), разные этажи, разные корпуса/секции/
+    блоки, несовместимые виды листа (план↔спецификация/ведомость; схема↔
+    спецификация без общего оборудования).
+    """
+    # 1. Одна семья оборудования, но непересекающиеся номера → разные единицы.
+    lg = _group_equipment(left.equipment_ids)
+    rg = _group_equipment(right.equipment_ids)
+    for fam in set(lg) & set(rg):
+        if lg[fam].isdisjoint(rg[fam]):
+            return f"equipment_conflict:{fam}"
+    # 2. Основные системы присутствуют с обеих сторон, но не пересекаются.
+    lmain = left.system_tokens & MAIN_SYSTEM_FAMILIES
+    rmain = right.system_tokens & MAIN_SYSTEM_FAMILIES
+    if lmain and rmain and lmain.isdisjoint(rmain):
+        return "system_conflict"
+    # 3. Разные этажи.
+    if left.floor_tokens and right.floor_tokens and left.floor_tokens.isdisjoint(right.floor_tokens):
+        return "floor_conflict"
+    # 4. Разные корпус/секция/блок (в пределах одного kind).
+    lb = _group_building(left.building_tokens)
+    rb = _group_building(right.building_tokens)
+    for kind in set(lb) & set(rb):
+        if lb[kind].isdisjoint(rb[kind]):
+            return "building_conflict"
+    # 5. Несовместимые виды листа.
+    lk, rk = left.sheet_kind, right.sheet_kind
+    if lk and rk and lk != rk:
+        pair = frozenset({lk, rk})
+        if pair in _KIND_HARD_PAIRS:
+            return "kind_conflict"
+        if pair == frozenset({"схема", "спецификация"}) and not (left.equipment_ids & right.equipment_ids):
+            return "kind_conflict"
+    return None
+
+
+# ─── Составной score (Stage 6) ─────────────────────────────────────────────
+
+def _jaccard(a: set, b: set) -> float:
+    if not a or not b:
+        return 0.0
+    inter = len(a & b)
+    if not inter:
+        return 0.0
+    return inter / float(len(a | b))
+
+
+def _composite_score(lf: SheetFeatures, rf: SheetFeatures,
+                     idf: dict[str, float]) -> tuple[float, dict]:
+    """Составной score пары + разбор (positive/negative evidence).
+
+    Имя — основа; признаки дают bonus/penalty. order/позиция страницы НЕ влияет
+    на score (используется лишь как tie-break в матчере). Слабую по имени пару
+    структурные бонусы не «вытаскивают»: нужна непустая близость имени ИЛИ общее
+    оборудование.
+    """
+    name_sim = _weighted_sim(lf.canonical_name, rf.canonical_name, idf)
+    eq_shared = lf.equipment_ids & rf.equipment_ids
+    if name_sim <= 0.0 and not eq_shared:
+        return 0.0, {"name_sim": 0.0, "positive": [], "negative": []}
+
+    score = name_sim
+    positive: list[str] = []
+    negative: list[str] = []
+
+    if lf.sheet_kind and rf.sheet_kind:
+        if lf.sheet_kind == rf.sheet_kind:
+            score += _KIND_BONUS
+            positive.append(f"вид:{lf.sheet_kind}")
+        else:
+            score -= _KIND_PENALTY
+            negative.append(f"вид:{lf.sheet_kind}≠{rf.sheet_kind}")
+
+    sys_shared = lf.system_tokens & rf.system_tokens
+    if sys_shared:
+        score += _SYSTEM_BONUS
+        positive.append("система:" + ",".join(sorted(sys_shared)))
+    else:
+        only = (lf.system_tokens ^ rf.system_tokens) & MAIN_SYSTEM_FAMILIES
+        if only:
+            negative.append("система:" + ",".join(sorted(only)))
+
+    if eq_shared:
+        score += _EQUIPMENT_BONUS
+        positive.append("оборуд:" + ",".join(sorted(eq_shared)))
+
+    fl_shared = lf.floor_tokens & rf.floor_tokens
+    if fl_shared:
+        score += _FLOOR_BONUS
+        positive.append("этаж:" + ",".join(sorted(fl_shared)))
+
+    bl_shared = lf.building_tokens & rf.building_tokens
+    if bl_shared:
+        score += _BUILDING_BONUS
+        positive.append("корпус:" + ",".join(sorted(bl_shared)))
+
+    if lf.is_text_layer_fallback or rf.is_text_layer_fallback:
+        score += _TEXT_SIGNATURE_WEIGHT * _jaccard(lf.text_signature, rf.text_signature)
+
+    score = max(0.0, min(1.0, score))
+    return score, {"name_sim": round(name_sim, 3),
+                   "positive": positive, "negative": negative}
+
+
+# ─── Multipart group alignment (Pass 1.5) ──────────────────────────────────
+
+def _align_multipart_parts(
+    lparts: list[tuple[int, Optional[str], Optional[int]]],
+    rparts: list[tuple[int, Optional[str], Optional[int]]],
+) -> tuple[list[tuple[int, int]], list[int], list[int]]:
+    """Сопоставить части одного логического листа по ролям/порядку.
+
+    parts: список (page, role, index), порядок — по странице (= порядок в
+    документе). Возвращает (pairs[(lpage,rpage)], left_extra_pages,
+    right_extra_pages). Одна страница используется не более одного раза.
+
+    Логика (role-aware, precision > recall):
+      1. start↔start (роль 'start' либо single/None как якорь начала);
+      2. end↔end;
+      3. остальные части — позиционно (по порядку страниц);
+      4. лишние части → односторонние.
+    """
+    L = sorted(lparts, key=lambda t: t[0])
+    R = sorted(rparts, key=lambda t: t[0])
+    used_l: set[int] = set()
+    used_r: set[int] = set()
+    pairs: list[tuple[int, int]] = []
+
+    def _first(parts, used, pred):
+        for p in parts:
+            if p[0] not in used and pred(p):
+                return p
+        return None
+
+    def _last(parts, used, pred):
+        for p in reversed(parts):
+            if p[0] not in used and pred(p):
+                return p
+        return None
+
+    is_start = lambda p: p[1] in ("start", None)   # noqa: E731 — single = якорь начала
+    is_end = lambda p: p[1] == "end"               # noqa: E731
+
+    ls = _first(L, used_l, is_start)
+    rs = _first(R, used_r, is_start)
+    if ls and rs:
+        pairs.append((ls[0], rs[0]))
+        used_l.add(ls[0])
+        used_r.add(rs[0])
+
+    le = _last(L, used_l, is_end)
+    re_ = _last(R, used_r, is_end)
+    if le and re_:
+        pairs.append((le[0], re_[0]))
+        used_l.add(le[0])
+        used_r.add(re_[0])
+
+    rem_l = [p for p in L if p[0] not in used_l]
+    rem_r = [p for p in R if p[0] not in used_r]
+    for a, b in zip(rem_l, rem_r):
+        pairs.append((a[0], b[0]))
+        used_l.add(a[0])
+        used_r.add(b[0])
+
+    left_extra = [p[0] for p in L if p[0] not in used_l]
+    right_extra = [p[0] for p in R if p[0] not in used_r]
+    pairs.sort(key=lambda x: x[0])
+    return pairs, left_extra, right_extra
+
+
 # ─── Матчинг ───────────────────────────────────────────────────────────────
 
 def _matched_item(slot: int, left: SheetRec, right: SheetRec,
-                  score: float, match_type: str) -> dict:
+                  score: float, match_type: str, *,
+                  needs_review: Optional[bool] = None,
+                  reason: str = "", positive_evidence: Optional[list] = None,
+                  negative_evidence: Optional[list] = None,
+                  risk_flags: Optional[list] = None,
+                  confidence: Optional[float] = None,
+                  diag: Optional[dict] = None) -> dict:
     note = f"{(left.sheet_name or right.sheet_name or '').strip()[:60]} · {match_type} {score:.2f}"
-    return {
+    if needs_review is None:
+        needs_review = match_type in ("fuzzy_name", "fuzzy_structural",
+                                      "text_layer", "llm_semantic")
+    conf = score if confidence is None else confidence
+    item = {
         "slot": slot,
         "left_page": left.page,
         "right_page": right.page,
@@ -214,30 +750,59 @@ def _matched_item(slot: int, left: SheetRec, right: SheetRec,
         "match": True,
         "match_type": match_type,
         "score": round(score, 3),
+        "confidence": round(conf, 3),
         "left_sheet_name": left.sheet_name,
         "right_sheet_name": right.sheet_name,
         "left_sheet_no": left.sheet_no,
         "right_sheet_no": right.sheet_no,
         "is_graphic": bool(left.is_graphic or right.is_graphic),
-        "needs_review": match_type in ("fuzzy_name", "text_layer", "llm_semantic"),
+        "needs_review": bool(needs_review),
+        "reason": reason or "",
+        "positive_evidence": list(positive_evidence or []),
+        "negative_evidence": list(negative_evidence or []),
+        "risk_flags": list(risk_flags or []),
     }
+    if diag:
+        item["match_diag"] = diag
+    return item
 
 
-def _one_sided_item(slot: int, rec: SheetRec, side: str) -> dict:
+def _one_sided_item(slot: int, rec: SheetRec, side: str, *,
+                    match_type: Optional[str] = None, reason: str = "",
+                    positive_evidence: Optional[list] = None) -> dict:
     return {
         "slot": slot,
         "left_page": rec.page if side == "left" else None,
         "right_page": rec.page if side == "right" else None,
         "mode": "manual",
-        "note": f"{side}_only",
+        "note": match_type or f"{side}_only",
         "match": False,
-        "match_type": f"{side}_only",
+        "match_type": match_type or f"{side}_only",
         "score": 0.0,
         "left_sheet_name": rec.sheet_name if side == "left" else "",
         "right_sheet_name": rec.sheet_name if side == "right" else "",
         "is_graphic": bool(rec.is_graphic),
         "needs_review": False,
+        "reason": reason or "",
+        "positive_evidence": list(positive_evidence or []),
+        "negative_evidence": [],
+        "risk_flags": [],
     }
+
+
+def _call_llm_match_fn(fn, rem_left, rem_right, tasks):
+    """Вызвать LLM-fn совместимо: новый fn принимает 3-й arg (tasks/candidates),
+    старый — только (rem_left, rem_right). Определяем по сигнатуре."""
+    accepts_tasks = False
+    try:
+        params = inspect.signature(fn).parameters
+        accepts_tasks = (len(params) >= 3) or any(
+            p.kind == inspect.Parameter.VAR_POSITIONAL for p in params.values())
+    except (TypeError, ValueError):
+        accepts_tasks = False
+    if accepts_tasks:
+        return fn(rem_left, rem_right, tasks)
+    return fn(rem_left, rem_right)
 
 
 def match_sheet_indexes(
@@ -248,28 +813,54 @@ def match_sheet_indexes(
     fallback_min_score: float = STAMP_FALLBACK_MIN_SCORE,
     llm_match_fn=None,
 ) -> dict:
-    """Сопоставить листы двух сторон по имени и собрать карту page_alignment.
+    """Сопоставить листы двух сторон по имени/признакам и собрать page_alignment.
 
-    Проходы:
-      1. exact: одинаковое нормализованное имя; дубликаты (многостраничные
-         листы, повторяющиеся планы) — в порядке появления (1-й↔1-й, 2-й↔2-й).
-      2. fuzzy: остаток — лучший взвешенный косинус ≥ порога
-         (для text_layer-имён — более строгий fallback_min_score).
-      3. [опц.] LLM-семантика: если передан `llm_match_fn`, он смотрит на
-         НЕсматченный остаток обеих сторон и предлагает пары «это один и тот же
-         лист» (например «Однолинейная расчетная схема ГРЩ» == «Однолинейная
-         схема ГРЩ»). Возвращает [(left_page, right_page, score, match_type)].
-         Пары проходят те же инварианты: каждый page не более одного раза.
-      4. остаток → left_only / right_only.
+    Проходы (precision > recall — лучше оставить лист непарным, чем ошибиться):
+      1.  exact: одинаковое нормализованное имя; дубликаты — в порядке появления.
+      1b. exact_canonical: совпадение после :func:`canonicalize_sheet_name`
+          (снятие служебных слов — «расчетная», «расположения» …).
+      1.5 multipart: один логический лист, разбитый на части (начало/продолжение/
+          конец) — сопоставление по `sheet_group_key` + ролям; лишние части →
+          односторонние `multipart_continuation`.
+      2.  fuzzy: матрица кандидатов left×right на составном score (имя + признаки),
+          приём только при mutual-best + threshold + margin + отсутствии
+          hard-конфликта.
+      3.  [опц.] LLM-adjudication: для непарного остатка строим top-k безопасных
+          кандидатов и просим LLM выбрать ОДИН из них (или null). Выбор вне
+          кандидатов / с hard-конфликтом / уже занятый — игнорируется. LLM не
+          может перебить детерминированные пары и НЕ создаёт multipart-группы.
+      4.  остаток → left_only / right_only.
 
     Сборка items: слоты в порядке левых страниц; right-only вставляются по
-    возрастанию их номера так, чтобы сматченные листы стояли НАПРОТИВ друг
-    друга (в одном слоте).
+    возрастанию их номера так, чтобы сматченные листы стояли НАПРОТИВ друг друга.
     """
-    matches: dict[int, tuple[int, float, str]] = {}   # left_page -> (right_page, score, type)
+    matches: dict[int, dict] = {}     # left_page -> match payload
     used_right: set[int] = set()
+    rejected: list[dict] = []         # hard-gate отклонения (диагностика)
+    # multipart-части, ставшие односторонними (не матч, но и не fuzzy/LLM-кандидаты):
+    consumed_left: set[int] = set()
+    consumed_right: set[int] = set()
+    multipart_one_sided: dict[tuple[str, int], dict] = {}  # (side, page) -> {reason, group_key}
+    multipart_count = 0
     left_by_page = {r.page: r for r in left}
     right_by_page = {r.page: r for r in right}
+
+    # Признаки листов (Stage 2).
+    lf_by_page = {r.page: extract_sheet_features(r) for r in left}
+    rf_by_page = {r.page: extract_sheet_features(r) for r in right}
+
+    # Дубликаты имён на стороне → risk flag.
+    dup_left = {n for n, c in Counter(r.norm_name for r in left if r.norm_name).items() if c > 1}
+    dup_right = {n for n, c in Counter(r.norm_name for r in right if r.norm_name).items() if c > 1}
+
+    def _risk(lp: int, rp: int, extra: Optional[list] = None) -> list:
+        flags = list(extra or [])
+        lf, rf = lf_by_page[lp], rf_by_page[rp]
+        if lf.normalized_name in dup_left or rf.normalized_name in dup_right:
+            flags.append("duplicate_sheet_name")
+        if lf.is_text_layer_fallback or rf.is_text_layer_fallback:
+            flags.append("text_layer_fallback")
+        return list(dict.fromkeys(flags))
 
     # Pass 1 — exact normalized name, дубликаты в порядке появления.
     right_name_q: dict[str, deque[int]] = defaultdict(deque)
@@ -280,100 +871,301 @@ def match_sheet_indexes(
         if l.norm_name and right_name_q.get(l.norm_name):
             rp = right_name_q[l.norm_name].popleft()
             mtype = "exact_name" if l.name_source != "text_layer" else "text_layer"
-            matches[l.page] = (rp, 1.0, mtype)
+            matches[l.page] = {"rp": rp, "score": 1.0, "mtype": mtype,
+                               "reason": "точное совпадение имени листа",
+                               "positive": [l.sheet_name or l.norm_name],
+                               "negative": [], "risk": _risk(l.page, rp),
+                               "confidence": 1.0}
             used_right.add(rp)
 
-    # IDF-веса по всем именам пары (разделяет общий бойлерплейт-префикс).
-    idf = _build_idf([r.norm_name for r in left if r.norm_name]
-                     + [r.norm_name for r in right if r.norm_name])
+    # Pass 1b — exact canonical name (после безопасных алиасов).
+    right_canon_q: dict[str, deque[int]] = defaultdict(deque)
+    for r in sorted(right, key=lambda x: x.page):
+        if r.page in used_right:
+            continue
+        cn = rf_by_page[r.page].canonical_name
+        if cn:
+            right_canon_q[cn].append(r.page)
+    for l in sorted(left, key=lambda x: x.page):
+        if l.page in matches:
+            continue
+        cn = lf_by_page[l.page].canonical_name
+        if not cn or not right_canon_q.get(cn):
+            continue
+        rp = right_canon_q[cn][0]
+        if get_hard_conflict(lf_by_page[l.page], rf_by_page[rp]):
+            continue  # каноническое совпадение, но конфликт признаков → пропуск
+        right_canon_q[cn].popleft()
+        is_text = (l.name_source == "text_layer"
+                   or right_by_page[rp].name_source == "text_layer")
+        mtype = "text_layer" if is_text else "exact_canonical_name"
+        matches[l.page] = {"rp": rp, "score": 0.95, "mtype": mtype,
+                           "reason": "каноническое совпадение (сняты служебные слова)",
+                           "positive": [lf_by_page[l.page].canonical_name],
+                           "negative": [], "risk": _risk(l.page, rp),
+                           "confidence": 0.95}
+        used_right.add(rp)
 
-    # Pass 2 — fuzzy для остатка: взвешенный косинус + margin-гейт.
-    # Неоднозначные (много почти равных кандидатов) НЕ матчим — precision > recall.
-    rem_left = [l for l in sorted(left, key=lambda x: x.page)
-                if l.page not in matches and l.norm_name]
+    # ─── Pass 1.5 — multipart/group match ──────────────────────────────────
+    # Один логический лист, разбитый на части (начало/продолжение/конец), в одной
+    # версии может быть одной страницей, в другой — несколькими. Группируем
+    # ОСТАТОК (после exact/canonical) по `sheet_group_key` и сопоставляем части
+    # по ролям. Срабатывает только при реальном multipart-сигнале (>1 части на
+    # стороне ИЛИ явная роль) — чистые 1↔1 уже разобраны canonical-проходом.
+    lg: dict[str, list[int]] = defaultdict(list)
+    rg: dict[str, list[int]] = defaultdict(list)
+    for l in sorted(left, key=lambda x: x.page):
+        if l.page in matches:
+            continue
+        gk = lf_by_page[l.page].sheet_group_key
+        if gk and len(gk) >= 2:
+            lg[gk].append(l.page)
+    for r in sorted(right, key=lambda x: x.page):
+        if r.page in used_right:
+            continue
+        gk = rf_by_page[r.page].sheet_group_key
+        if gk and len(gk) >= 2:
+            rg[gk].append(r.page)
+
+    for gk in [k for k in lg if k in rg]:
+        L = lg[gk]
+        R = rg[gk]
+        roles_present = any(lf_by_page[p].multipart_role for p in L) or \
+            any(rf_by_page[p].multipart_role for p in R)
+        if len(L) <= 1 and len(R) <= 1 and not roles_present:
+            continue  # 1↔1 без ролей → отдать fuzzy (canonical уже не сматчил)
+        lparts = [(p, lf_by_page[p].multipart_role, lf_by_page[p].multipart_index) for p in L]
+        rparts = [(p, rf_by_page[p].multipart_role, rf_by_page[p].multipart_index) for p in R]
+        pairs, left_extra, right_extra = _align_multipart_parts(lparts, rparts)
+        # hard-gate каждую под-пару; конфликт где-либо → пропускаем всю группу.
+        conflict = None
+        for lp, rp in pairs:
+            c = get_hard_conflict(lf_by_page[lp], rf_by_page[rp])
+            if c:
+                conflict = c
+                if len(rejected) < 60:
+                    rejected.append({"left_page": lp, "right_page": rp,
+                                     "rejected_reason": c, "score": 1.0})
+                break
+        if conflict or not pairs:
+            continue
+        for i, (lp, rp) in enumerate(pairs):
+            mtype = "exact_multipart_group" if i == 0 else "multipart_group"
+            matches[lp] = {
+                "rp": rp, "score": 0.98, "mtype": mtype,
+                "reason": (f"Один логический лист разбит на несколько страниц: "
+                           f"{gk} начало/продолжение/конец."),
+                "positive": [f"sheet_group_key: {gk}", "multipart: start/continuation/end"],
+                "negative": [], "risk": _risk(lp, rp), "confidence": 0.98,
+                "diag": {"multipart": True, "group_key": gk,
+                         "left_role": lf_by_page[lp].multipart_role,
+                         "right_role": rf_by_page[rp].multipart_role},
+            }
+            used_right.add(rp)
+            multipart_count += 1
+        cont_reason = (f"Продолжение многостраничного листа {gk}; "
+                       f"на другой стороне отдельной страницы нет.")
+        for lp in left_extra:
+            consumed_left.add(lp)
+            multipart_one_sided[("left", lp)] = {"reason": cont_reason, "group_key": gk}
+        for rp in right_extra:
+            consumed_right.add(rp)
+            multipart_one_sided[("right", rp)] = {"reason": cont_reason, "group_key": gk}
+
+    # IDF-веса по каноническим именам пары (разделяет общий бойлерплейт-префикс).
+    idf = _build_idf([lf_by_page[r.page].canonical_name for r in left
+                      if lf_by_page[r.page].canonical_name]
+                     + [rf_by_page[r.page].canonical_name for r in right
+                        if rf_by_page[r.page].canonical_name])
+
+    # ─── Матрица кандидатов (Stage 5): остаток после exact/canonical/multipart ──
+    # consumed_* — multipart-части, ставшие односторонними: их НЕ матчим повторно.
+    rem_left_pages = [l.page for l in sorted(left, key=lambda x: x.page)
+                      if l.page not in matches and l.page not in consumed_left]
+    rem_right_pages = [r.page for r in sorted(right, key=lambda x: x.page)
+                       if r.page not in used_right and r.page not in consumed_right]
     lcount = max(1, len(left))
     rcount = max(1, len(right))
-    for l in rem_left:
-        # Ожидаемая правая позиция (пропорционально), для tie-break при равенстве.
-        expected_rp = l.page / lcount * rcount
-        scored: list[tuple[float, float, int]] = []  # (score, -|rp-expected|, page)
-        for r in sorted(right, key=lambda x: x.page):
-            if r.page in used_right or not r.norm_name:
+    expected_rp = {lp: lp / lcount * rcount for lp in rem_left_pages}
+    cand: dict[tuple[int, int], tuple[float, dict]] = {}
+    for lp in rem_left_pages:
+        lf = lf_by_page[lp]
+        for rp in rem_right_pages:
+            rf = rf_by_page[rp]
+            conflict = get_hard_conflict(lf, rf)
+            sc, bd = _composite_score(lf, rf, idf)
+            if conflict:
+                # Записываем «соблазнительные» (похожие по имени) конфликты —
+                # penalty может занизить composite, поэтому смотрим и на name_sim.
+                attract = max(sc, bd.get("name_sim", 0.0))
+                if attract >= STAMP_LLM_CANDIDATE_MIN_SCORE and len(rejected) < 60:
+                    rejected.append({"left_page": lp, "right_page": rp,
+                                     "rejected_reason": conflict,
+                                     "score": round(attract, 3)})
                 continue
-            sc = _weighted_sim(l.norm_name, r.norm_name, idf)
-            if sc <= 0.0:
-                continue
-            scored.append((sc, -abs(r.page - expected_rp), r.page))
-        if not scored:
-            continue
-        scored.sort(reverse=True)
-        best_sc, _, best_page = scored[0]
-        second_sc = scored[1][0] if len(scored) > 1 else 0.0
-        is_text = (l.name_source == "text_layer"
-                   or right_by_page[best_page].name_source == "text_layer")
-        threshold = fallback_min_score if is_text else min_score
-        if best_sc < threshold:
-            continue
-        # Margin-гейт: лучший должен заметно опережать второго (иначе слипшийся
-        # набор похожих имён → неоднозначно → не предлагаем).
-        if (best_sc - second_sc) < STAMP_MATCH_MIN_MARGIN and best_sc < 0.999:
-            continue
-        mtype = "text_layer" if is_text else "fuzzy_name"
-        matches[l.page] = (best_page, best_sc, mtype)
-        used_right.add(best_page)
+            if sc > 0.0:
+                cand[(lp, rp)] = (sc, bd)
 
-    # Pass 3 — опциональное LLM-семантическое доматчивание остатка.
-    # Детерминированные совпадения не трогаем; LLM работает только по тому, что
-    # осталось непарным с обеих сторон. Инварианты (page ≤ 1 раза) проверяем
-    # здесь, не доверяя ответу модели.
+    # best/second по строке (left) и по столбцу (right) для mutual-best.
+    def _top2(pairs: list[tuple[float, float, int]]):
+        pairs.sort(reverse=True)
+        best = pairs[0]
+        second = pairs[1][0] if len(pairs) > 1 else 0.0
+        return best, second
+
+    best_for_left: dict[int, tuple] = {}
+    for lp in rem_left_pages:
+        scored = [(sc, -abs(rp - expected_rp[lp]), rp)
+                  for (l2, rp), (sc, _bd) in cand.items() if l2 == lp]
+        if scored:
+            (bsc, _, brp), ssc = _top2(scored)
+            best_for_left[lp] = (brp, bsc, ssc)
+    best_for_right: dict[int, tuple] = {}
+    for rp in rem_right_pages:
+        scored = [(sc, -abs(lp - expected_rp.get(lp, lp)), lp)
+                  for (lp, r2), (sc, _bd) in cand.items() if r2 == rp]
+        if scored:
+            (bsc, _, blp), ssc = _top2(scored)
+            best_for_right[rp] = (blp, bsc, ssc)
+
+    # Pass 2 — fuzzy приём только при ВЗАИМНОМ лучшем + threshold + margin.
+    for lp in rem_left_pages:
+        if lp not in best_for_left:
+            continue
+        rp, sc, sec_l = best_for_left[lp]
+        if rp in used_right:
+            continue
+        b_lp, rsc, sec_r = best_for_right.get(rp, (None, 0.0, 0.0))
+        if b_lp != lp:
+            continue  # не взаимно-лучшая пара → не предлагаем
+        lf, rf = lf_by_page[lp], rf_by_page[rp]
+        is_text = lf.is_text_layer_fallback or rf.is_text_layer_fallback
+        threshold = fallback_min_score if is_text else min_score
+        if sc < threshold:
+            continue
+        if (sc - sec_l) < STAMP_MATCH_MIN_MARGIN and sc < 0.999:
+            continue
+        if (rsc - sec_r) < STAMP_MATCH_MIN_MARGIN and rsc < 0.999:
+            continue
+        bd = cand[(lp, rp)][1]
+        risk = []
+        if (sc - sec_l) < STAMP_MATCH_MIN_MARGIN * 2:
+            risk.append("low_margin")
+        mtype = "text_layer" if is_text else (
+            "fuzzy_structural" if bd.get("positive") else "fuzzy_name")
+        reason = ("совпали: " + ", ".join(bd["positive"][:3])) if bd.get("positive") \
+            else "близкое имя листа"
+        matches[lp] = {"rp": rp, "score": sc, "mtype": mtype, "reason": reason,
+                       "positive": bd.get("positive", []),
+                       "negative": bd.get("negative", []),
+                       "risk": _risk(lp, rp, risk), "confidence": sc,
+                       "diag": {"score": round(sc, 3), "best_score": round(sc, 3),
+                                "second_best_score": round(sec_l, 3),
+                                "margin": round(sc - sec_l, 3), "mutual_best": True,
+                                "match_type": mtype, "name_sim": bd.get("name_sim")}}
+        used_right.add(rp)
+
+    # ─── Pass 3 — LLM adjudication по безопасным кандидатам (Stage 7) ───
     llm_match_count = 0
     if llm_match_fn is not None:
-        rem_left = [l for l in sorted(left, key=lambda x: x.page)
-                    if l.page not in matches]
-        rem_right = [r for r in sorted(right, key=lambda x: x.page)
-                     if r.page not in used_right]
-        if rem_left and rem_right:
+        rem_left2 = [left_by_page[lp] for lp in rem_left_pages if lp not in matches]
+        rem_right2 = [right_by_page[rp] for rp in rem_right_pages if rp not in used_right]
+        tasks: list[dict] = []
+        allowed: dict[int, set] = {}
+        for l in rem_left2:
+            lp = l.page
+            lf = lf_by_page[lp]
+            cands = []
+            for r in rem_right2:
+                rp = r.page
+                key = (lp, rp)
+                if key not in cand:
+                    continue
+                sc = cand[key][0]
+                if sc < STAMP_LLM_CANDIDATE_MIN_SCORE:
+                    continue
+                cands.append((sc, rp, r))
+            if not cands:
+                continue
+            cands.sort(key=lambda x: (-x[0], abs(x[1] - expected_rp.get(lp, lp))))
+            cands = cands[:max(1, STAMP_CANDIDATE_TOPK)]
+            allowed[lp] = {rp for _sc, rp, _r in cands}
+            tasks.append({
+                "left_page": lp,
+                "left_name": l.sheet_name or lf.normalized_name,
+                "left_kind": lf.sheet_kind,
+                "left_systems": sorted(lf.system_tokens),
+                "candidates": [
+                    {"new_page": rp, "name": r.sheet_name or rf_by_page[rp].normalized_name,
+                     "deterministic_score": round(sc, 3),
+                     "kind": rf_by_page[rp].sheet_kind,
+                     "systems": sorted(rf_by_page[rp].system_tokens)}
+                    for sc, rp, r in cands
+                ],
+            })
+        if tasks:
             try:
-                proposals = llm_match_fn(rem_left, rem_right) or []
+                proposals = _call_llm_match_fn(llm_match_fn, rem_left2, rem_right2, tasks) or []
             except Exception:  # fail-soft — LLM не должен валить матчинг
                 proposals = []
             for item in proposals:
                 try:
                     lp, rp, score, mtype = item
-                    lp = int(lp)
-                    rp = int(rp)
-                    score = float(score)
+                    lp, rp, score = int(lp), int(rp), float(score)
                 except (TypeError, ValueError):
                     continue
+                # Инварианты: внутри кандидатов, page свободен, нет hard-конфликта.
                 if lp in matches or rp in used_right:
                     continue
                 if lp not in left_by_page or rp not in right_by_page:
                     continue
-                matches[lp] = (rp, max(0.0, min(1.0, score)),
-                               str(mtype or "llm_semantic"))
+                if rp not in allowed.get(lp, set()):
+                    continue
+                if get_hard_conflict(lf_by_page[lp], rf_by_page[rp]):
+                    continue
+                matches[lp] = {"rp": rp, "score": max(0.0, min(1.0, score)),
+                               "mtype": "llm_semantic",
+                               "reason": "ИИ: один и тот же лист по смыслу",
+                               "positive": [], "negative": [],
+                               "risk": _risk(lp, rp, ["llm_semantic"]),
+                               "confidence": max(0.0, min(1.0, score))}
                 used_right.add(rp)
                 llm_match_count += 1
 
     # Сборка items — left в порядке страниц, right-only по возрастанию.
+    def _make_one_sided(slot_no: int, rec: SheetRec, side: str) -> dict:
+        mp = multipart_one_sided.get((side, rec.page))
+        if mp:
+            return _one_sided_item(
+                slot_no, rec, side, match_type="multipart_continuation",
+                reason=mp["reason"],
+                positive_evidence=[f"sheet_group_key: {mp['group_key']}"])
+        return _one_sided_item(slot_no, rec, side)
+
     right_only_pages = sorted(r.page for r in right if r.page not in used_right)
     items: list[dict] = []
     slot = 0
     ri = 0
     for l in sorted(left, key=lambda x: x.page):
         if l.page in matches:
-            rp, score, mtype = matches[l.page]
+            m = matches[l.page]
+            rp = m["rp"]
             while ri < len(right_only_pages) and right_only_pages[ri] < rp:
                 slot += 1
-                items.append(_one_sided_item(slot, right_by_page[right_only_pages[ri]], "right"))
+                items.append(_make_one_sided(slot, right_by_page[right_only_pages[ri]], "right"))
                 ri += 1
             slot += 1
-            items.append(_matched_item(slot, l, right_by_page[rp], score, mtype))
+            items.append(_matched_item(
+                slot, l, right_by_page[rp], m["score"], m["mtype"],
+                reason=m.get("reason", ""), positive_evidence=m.get("positive"),
+                negative_evidence=m.get("negative"), risk_flags=m.get("risk"),
+                confidence=m.get("confidence"), diag=m.get("diag")))
         else:
             slot += 1
-            items.append(_one_sided_item(slot, l, "left"))
+            items.append(_make_one_sided(slot, l, "left"))
     while ri < len(right_only_pages):
         slot += 1
-        items.append(_one_sided_item(slot, right_by_page[right_only_pages[ri]], "right"))
+        items.append(_make_one_sided(slot, right_by_page[right_only_pages[ri]], "right"))
         ri += 1
 
     matched_items = [it for it in items if it.get("match")]
@@ -395,18 +1187,31 @@ def match_sheet_indexes(
         "warnings": warnings,
         "matched_count": len(matched_items),
         "llm_match_count": llm_match_count,
+        "multipart_match_count": multipart_count,
+        "multipart_continuation_count": sum(
+            1 for it in items if it["match_type"] == "multipart_continuation"),
         "left_only_count": sum(1 for it in items if it["match_type"] == "left_only"),
         "right_only_count": sum(1 for it in items if it["match_type"] == "right_only"),
         "left_page_count": len(left),
         "right_page_count": len(right),
+        "rejected_count": len(rejected),
+        "rejected": rejected,
     }
 
 
 __all__ = [
     "SheetRec",
+    "SheetFeatures",
     "normalize_sheet_name",
+    "canonicalize_sheet_name",
+    "extract_multipart",
     "build_sheet_index",
+    "extract_sheet_features",
+    "get_hard_conflict",
     "match_sheet_indexes",
+    "MAIN_SYSTEM_FAMILIES",
+    "SAFE_ALIASES",
     "STAMP_MATCH_MIN_SCORE",
     "STAMP_FALLBACK_MIN_SCORE",
+    "STAMP_MATCH_MIN_MARGIN",
 ]

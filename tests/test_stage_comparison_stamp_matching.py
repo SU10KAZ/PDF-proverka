@@ -132,7 +132,9 @@ def test_positive_fuzzy_with_clear_winner():
     assert (1, 2) in matched
     it = next(it for it in res["suggested_items"]
               if it["match"] and it["left_page"] == 1)
-    assert it["match_type"] == "fuzzy_name"
+    # Богатый scoring помечает feature-backed fuzzy как fuzzy_structural
+    # (общий вид «схема» + система «вру»); чистое имя → fuzzy_name.
+    assert it["match_type"] in ("fuzzy_name", "fuzzy_structural")
     assert it["needs_review"] is True
 
 

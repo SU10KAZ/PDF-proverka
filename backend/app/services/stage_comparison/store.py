@@ -1943,6 +1943,78 @@ def suggest_alignment_by_stamp(session_id: str, pair_id: str,
     return result
 
 
+def has_manual_alignment(session_id: str, pair_id: str) -> bool:
+    """Есть ли у пары РУЧНОЕ/применённое выравнивание (не авто-дефолт).
+
+    `get_alignment`/`_ensure_alignment` авто-создаёт дефолт со `mode='auto'`
+    при первом открытии пары — это НЕ ручная работа. Ручным/применённым
+    считаем alignment, где хоть один item `mode` ∈ {manual, blank}.
+    """
+    raw = _load_alignment_raw(session_id, pair_id)
+    if not raw:
+        return False
+    for it in (raw.get("items") or []):
+        if str(it.get("mode") or "") in ("manual", "blank"):
+            return True
+    return False
+
+
+def apply_safe_stamp_alignment_for_pair(
+    session_id: str, pair_id: str, *,
+    use_llm: bool = False,
+    overwrite_existing: bool = False,
+) -> dict:
+    """Пакетное безопасное авто-применение штамп-сопоставления для ОДНОЙ пары.
+
+    Переиспользует `suggest_alignment_by_stamp` (тот же алгоритм, что и ручной
+    `suggest-by-stamp`), фильтрует безопасные пары через
+    `stamp_auto_apply.should_auto_apply_stamp_match` и сохраняет через тот же
+    `save_alignment`, что и ручной `PUT page-alignment`. Display-поля в
+    сохранённый alignment НЕ копируются.
+
+    Не перезаписывает ручное выравнивание, если overwrite_existing=False.
+    Fail-soft на уровне вызывающего (job); здесь бросаем только KeyError для
+    отсутствующей пары.
+    """
+    from . import stamp_auto_apply as auto_mod  # lazy import (избегаем циклов)
+
+    pair = _find_pair_meta(session_id, pair_id)
+    if pair is None:
+        raise KeyError("pair_not_found")
+
+    summary = {
+        "pair_id": pair_id, "status": "done", "applied": 0, "review": 0,
+        "skipped_reason": None, "confidence": 0.0, "matched_count": 0,
+        "multipart_match_count": 0, "errors": [],
+    }
+
+    if not overwrite_existing and has_manual_alignment(session_id, pair_id):
+        summary["status"] = "skipped_existing_alignment"
+        summary["skipped_reason"] = "existing_alignment"
+        return summary
+
+    sugg = suggest_alignment_by_stamp(session_id, pair_id, use_llm=use_llm)
+    summary["confidence"] = sugg.get("confidence", 0.0)
+    summary["matched_count"] = sugg.get("matched_count", 0)
+    summary["multipart_match_count"] = sugg.get("multipart_match_count", 0)
+
+    built = auto_mod.build_auto_apply_items(sugg.get("suggested_items") or [])
+    summary["applied"] = built["applied"]
+    summary["review"] = built["review"]
+    summary["reasons"] = built.get("reasons", {})
+
+    if built["applied"] == 0:
+        # Нечего применять безопасно — не трогаем alignment.
+        summary["status"] = "no_safe_matches"
+        return summary
+
+    save_res = save_alignment(session_id, pair_id, built["items"], force=True)
+    if not save_res.get("ok"):
+        summary["status"] = "error"
+        summary["errors"].append("save_failed")
+    return summary
+
+
 __all__ = [
     "SESSIONS_DIR",
     "create_session",
@@ -1964,6 +2036,8 @@ __all__ = [
     "alignment_reset",
     "suggest_alignment",
     "suggest_alignment_by_stamp",
+    "has_manual_alignment",
+    "apply_safe_stamp_alignment_for_pair",
     # Manual PDF pair management
     "list_unmatched",
     "update_pair_match",

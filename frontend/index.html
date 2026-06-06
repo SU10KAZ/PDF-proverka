@@ -5108,6 +5108,13 @@
                                 title="Сохранить текущую сессию (пары, режимы, порядок, связи блоков) как каноничную для объекта. Перезаписывает предыдущую каноничную.">
                             {{ scSavedConfigSaving ? 'Сохраняю…' : (scCanonicalConfig && scCanonicalConfig.saved ? '★ Обновить каноничную' : '★ Сохранить как каноничную') }}
                         </button>
+                        <button v-if="scSession"
+                                class="btn btn-sm btn-secondary"
+                                @click="scAutoMatchOpenDialog()"
+                                :disabled="scAutoMatchStarting || scAutoMatchRunning"
+                                title="Пройти по всем парам сессии и сопоставить листы по штампам. Безопасные совпадения (точное/каноническое/многостраничный лист/уверенный fuzzy) применяются в карту страниц автоматически; рискованные остаются на ручную проверку. Ручное выравнивание по умолчанию не затирается.">
+                            {{ scAutoMatchStarting || scAutoMatchRunning ? '⏳ Сопоставление…' : '🏷 Авто сопоставление листов' }}
+                        </button>
                         <span v-if="scAutoLoading" style="font-size:12px; opacity:.7">Подгружаю сохранённое сопоставление…</span>
                         <div v-if="scError" style="color:#b91c1c; font-size:13px">{{ scError }}</div>
                         <div v-if="scSavedConfigMsg" style="color:#065f46; font-size:12px">{{ scSavedConfigMsg }}</div>
@@ -5117,6 +5124,72 @@
                              style="background:#fef3c7; color:#92400e; padding:6px 10px; border-radius:4px; font-size:12px; margin-bottom:4px">
                             ⚠️ {{ w }}
                         </div>
+                    </div>
+
+                    <!-- Пакетное авто-сопоставление листов: popup-вопрос перед стартом -->
+                    <div v-if="scAutoMatchAsk"
+                         style="position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:1000; display:flex; align-items:center; justify-content:center"
+                         @click.self="scAutoMatchCloseDialog()">
+                        <div style="background:#fff; border-radius:10px; padding:18px 20px; width:440px; max-width:92vw; box-shadow:0 10px 40px rgba(0,0,0,.25); font-size:13px">
+                            <div style="font-weight:600; color:#1f2937; margin-bottom:6px">🏷 Авто сопоставление листов</div>
+                            <div style="color:#6b7280; margin-bottom:12px; font-size:12px">
+                                Пройти по всем парам сессии и сопоставить листы по штампам. Безопасные совпадения применятся в карту страниц, рискованные останутся на ручную проверку.
+                            </div>
+                            <label style="display:flex; align-items:flex-start; gap:8px; padding:6px 0; cursor:pointer">
+                                <input type="checkbox" v-model="scAutoMatchUseLlm" style="margin-top:2px" />
+                                <span><b>🧠 ИИ-доматчинг</b><br><span style="color:#6b7280; font-size:12px">Доматчить остаток нейросетью Haiku (семантически эквивалентные имена). Fail-soft.</span></span>
+                            </label>
+                            <label style="display:flex; align-items:flex-start; gap:8px; padding:6px 0; cursor:pointer">
+                                <input type="checkbox" v-model="scAutoMatchOverwrite" style="margin-top:2px" />
+                                <span><b style="color:#92400e">Перезаписать существующее выравнивание</b><br><span style="color:#6b7280; font-size:12px">По умолчанию выключено — ручная работа не затирается, такие пары пропускаются.</span></span>
+                            </label>
+                            <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:14px">
+                                <button class="btn btn-sm btn-secondary" @click="scAutoMatchCloseDialog()">Отмена</button>
+                                <button class="btn btn-sm btn-primary" @click="scAutoMatchConfirm()">Запустить</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Пакетное авто-сопоставление листов: ошибка -->
+                    <div v-if="scAutoMatchError" style="margin-top:10px; background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; padding:8px 12px; font-size:12px">
+                        {{ scAutoMatchError }}
+                    </div>
+
+                    <!-- Пакетное авто-сопоставление листов: прогресс / итог -->
+                    <div v-if="scAutoMatchJob" style="margin-top:10px; background:#eef2ff; border:1px solid #c7d2fe; border-radius:8px; padding:10px 12px; font-size:12px">
+                        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:6px">
+                            <strong style="color:#3730a3">🏷 Авто сопоставление листов</strong>
+                            <span v-if="scAutoMatchRunning" style="color:#1d4ed8">выполняется…</span>
+                            <span v-else-if="scAutoMatchJob.status==='finished'" style="color:#15803d">✓ готово</span>
+                            <span v-else-if="scAutoMatchJob.status==='cancelled'" style="color:#92400e">отменено</span>
+                            <span v-else-if="scAutoMatchJob.status==='failed'" style="color:#b91c1c">ошибка</span>
+                            <span v-else style="opacity:.7">{{ scAutoMatchJob.status }}</span>
+                            <div style="flex:1"></div>
+                            <button v-if="scAutoMatchRunning" class="btn btn-sm btn-secondary" @click="scAutoMatchCancel()">Отменить</button>
+                        </div>
+                        <div style="display:flex; gap:16px; flex-wrap:wrap; align-items:baseline">
+                            <span>Пары: <b>{{ scAutoMatchJob.processed_pairs || 0 }} / {{ scAutoMatchJob.total_pairs || 0 }}</b></span>
+                            <span v-if="scAutoMatchJob.current_pair">
+                                Текущая пара:
+                                <span style="opacity:.85">{{ scAutoMatchJob.current_pair.old_document }} → {{ scAutoMatchJob.current_pair.new_document }}</span>
+                            </span>
+                            <span style="color:#15803d">Применено: <b>{{ (scAutoMatchJob.summary && scAutoMatchJob.summary.applied_pairs) || 0 }}</b></span>
+                            <span style="color:#b45309">На ручную проверку: <b>{{ (scAutoMatchJob.summary && scAutoMatchJob.summary.review_pairs) || 0 }}</b></span>
+                            <span style="opacity:.75">Пропущено (есть выравнивание): {{ (scAutoMatchJob.summary && scAutoMatchJob.summary.skipped_existing_alignment) || 0 }}</span>
+                            <span :style="{color: ((scAutoMatchJob.summary && scAutoMatchJob.summary.failed_pairs) || 0) > 0 ? '#b91c1c' : 'inherit'}">Ошибки: {{ (scAutoMatchJob.summary && scAutoMatchJob.summary.failed_pairs) || 0 }}</span>
+                        </div>
+                        <div v-if="!scAutoMatchRunning && scAutoMatchJob.status==='finished'" style="margin-top:6px; color:#065f46">
+                            Готово: обработано {{ scAutoMatchJob.processed_pairs }}/{{ scAutoMatchJob.total_pairs }} пар,
+                            применено {{ (scAutoMatchJob.summary && scAutoMatchJob.summary.applied_pairs) || 0 }} сопоставлений,
+                            {{ (scAutoMatchJob.summary && scAutoMatchJob.summary.review_pairs) || 0 }} требуют ручной проверки.
+                        </div>
+                        <details v-if="(scAutoMatchJob.summary && scAutoMatchJob.summary.failed_pairs) > 0" style="margin-top:6px">
+                            <summary style="cursor:pointer; color:#b91c1c">Ошибки ({{ scAutoMatchJob.summary.failed_pairs }})</summary>
+                            <div v-for="it in (scAutoMatchJob.items || []).filter(x => x.status==='error')" :key="it.pair_id"
+                                 style="font-size:11px; opacity:.85; padding:2px 0">
+                                {{ it.old_document }} → {{ it.new_document }}: {{ (it.errors || []).join('; ') }}
+                            </div>
+                        </details>
                     </div>
                 </div>
 
@@ -5645,6 +5718,15 @@
                             :title="scAnalysisMode==='concept_no_block_links' ? 'Сейчас: концептуальный анализ без связей блоков. Клик вернёт обычный режим.' : 'Отключить block-to-block matching: анализ будет выполнен по enriched MD целиком (Qwen→Opus)'">
                         {{ scAnalysisMode==='concept_no_block_links' ? '✓ Блоки без связей' : 'Блоки без связей' }}
                     </button>
+                    <button class="btn btn-secondary" @click="scSuggestByStamp()" :disabled="scStampLoading"
+                            title="Сопоставить листы старой и новой стадии по имени листа из штампа и предложить поставить их напротив друг друга (находит листы, уехавшие далеко между стадиями)">
+                        {{ scStampLoading ? (scStampUseLlm ? 'Сопоставление + ИИ…' : 'Сопоставление…') : '🏷 Сопоставить листы' }}
+                    </button>
+                    <label style="display:inline-flex; align-items:center; gap:4px; font-size:12px; color:#374151; cursor:pointer"
+                           title="После точного/нечёткого матчинга доматчить остаток через нейросеть Haiku: ловит листы с одинаковым смыслом, но разными названиями («Однолинейная расчетная схема ГРЩ» = «Однолинейная схема ГРЩ»)">
+                        <input type="checkbox" v-model="scStampUseLlm" :disabled="scStampLoading" />
+                        🧠 ИИ-доматчинг
+                    </label>
                     <button class="btn btn-secondary" @click="scRunAutoLink()" :disabled="scLinking || scAnalysisMode==='concept_no_block_links'"
                             :title="scAnalysisMode==='concept_no_block_links' ? 'Недоступно в режиме «Блоки без связей»' : ''">Авто-связь по IoU</button>
                     <button class="btn btn-primary"
@@ -5658,6 +5740,96 @@
                             title="Запомнить связи блоков и карту страниц. При следующем создании сессии с этими же PDF — применится автоматически.">
                         {{ scTemplateSaving ? 'Сохранение…' : '💾 Сохранить конфигурацию пары' }}
                     </button>
+                </div>
+
+                <!-- Сопоставление листов по штампам: ошибка -->
+                <div v-if="scStampError"
+                     class="sc-card"
+                     style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; padding:8px 12px; margin-bottom:10px; font-size:12px">
+                    {{ scStampError }}
+                </div>
+
+                <!-- Сопоставление листов по штампам: панель предложений -->
+                <div v-if="scStampProposals"
+                     class="sc-card"
+                     style="background:#fff; border:1px solid #c7d2fe; border-radius:8px; padding:10px 12px; margin-bottom:10px; font-size:12px">
+                    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:8px">
+                        <strong style="color:#3730a3">🏷 Сопоставление листов по штампам</strong>
+                        <span style="opacity:.8">
+                            Совпадений: <b>{{ scStampProposals.matched_count }}</b>
+                            (увер. {{ Math.round((scStampProposals.confidence||0)*100) }}%) ·
+                            только слева: {{ scStampProposals.left_only_count }} ·
+                            только справа: {{ scStampProposals.right_only_count }}
+                        </span>
+                        <span v-if="scStampProposals.llm_match_count" style="color:#6d28d9; font-weight:600"
+                              title="Дополнительно сопоставлено нейросетью Haiku по смыслу названия листа">
+                            🧠 +{{ scStampProposals.llm_match_count }} по смыслу
+                        </span>
+                        <span v-else-if="scStampProposals.llm_requested && scStampProposals.llm && scStampProposals.llm.status && scStampProposals.llm.status!=='ok' && scStampProposals.llm.status!=='no_unmatched'"
+                              style="color:#92400e; font-size:11px"
+                              :title="scStampProposals.llm.error || ''">
+                            🧠 ИИ недоступен ({{ scStampProposals.llm.status }})
+                        </span>
+                        <div style="flex:1"></div>
+                        <span style="opacity:.7">Выбрано: {{ scStampSelectedCount }} / {{ scStampMatchedRows.length }}</span>
+                        <button class="btn btn-sm btn-primary"
+                                :disabled="scStampApplying || scStampSelectedCount===0"
+                                @click="scApplyStampProposals()"
+                                title="Поставить подтверждённые листы напротив друг друга (перезапишет карту страниц)">
+                            {{ scStampApplying ? 'Применение…' : 'Применить — поставить напротив' }}
+                        </button>
+                        <button class="btn btn-sm btn-secondary" :disabled="scStampApplying" @click="scCloseStampProposals()">Закрыть</button>
+                    </div>
+                    <div v-if="scStampProposals.warnings && scStampProposals.warnings.length"
+                         style="color:#92400e; margin-bottom:6px">⚠ {{ scStampProposals.warnings.join(', ') }}</div>
+                    <div v-if="scStampMatchedRows.length===0" style="opacity:.7; padding:6px 0">
+                        Совпадений по имени листа не найдено — листы можно сопоставить вручную (⊕ / ↑ / ↓ и связывание блоков).
+                    </div>
+                    <table v-else style="width:100%; border-collapse:collapse">
+                        <thead>
+                            <tr style="text-align:left; color:#6b7280; border-bottom:1px solid #e5e7eb">
+                                <th style="padding:3px 6px; width:30px"></th>
+                                <th style="padding:3px 6px; width:120px">Стр. (стар→нов)</th>
+                                <th style="padding:3px 6px">Лист</th>
+                                <th style="padding:3px 6px; width:120px">Тип / увер.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="it in scStampMatchedRows" :key="scStampRowKey(it)"
+                                style="border-bottom:1px solid #f3f4f6"
+                                :title="scStampRowTitle(it)"
+                                :style="{opacity: scStampSelected[scStampRowKey(it)] ? 1 : .5}">
+                                <td style="padding:3px 6px">
+                                    <input type="checkbox" :checked="!!scStampSelected[scStampRowKey(it)]"
+                                           @change="scStampToggleRow(it)" />
+                                </td>
+                                <td style="padding:3px 6px; font-weight:600">
+                                    {{ it.left_page }} → {{ it.right_page }}
+                                    <span v-if="it.is_graphic" title="графический лист">📐</span>
+                                </td>
+                                <td style="padding:3px 6px">
+                                    <span v-if="it.left_sheet_name && it.right_sheet_name && it.left_sheet_name!==it.right_sheet_name">
+                                        <span style="opacity:.8">{{ it.left_sheet_name }}</span>
+                                        <span style="opacity:.5"> → {{ it.right_sheet_name }}</span>
+                                    </span>
+                                    <span v-else>{{ it.left_sheet_name || it.right_sheet_name }}</span>
+                                </td>
+                                <td style="padding:3px 6px">
+                                    <span :style="{color: scStampTypeColor(it)}">
+                                        {{ scStampTypeLabel(it.match_type) }}
+                                        {{ Math.round((it.score||0)*100) }}%
+                                    </span>
+                                    <span v-for="f in (it.risk_flags||[])" :key="f"
+                                          style="display:inline-block; margin-left:4px; padding:0 4px; border-radius:4px; background:#fef3c7; color:#92400e; font-size:10px"
+                                          :title="'риск: ' + f">⚠ {{ scStampRiskLabel(f) }}</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="margin-top:6px; opacity:.6; font-size:11px">
+                        «Применить» перезапишет карту страниц: подтверждённые листы встанут напротив друг друга,
+                        отклонённые и непарные — отдельными слотами (их двигают вручную ⊕ / ↑ / ↓).
+                    </div>
                 </div>
 
                 <!-- Just saved confirmation -->

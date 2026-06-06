@@ -43,6 +43,7 @@ from backend.app.services.stage_comparison import md_image_enrichment as md_enri
 from backend.app.services.stage_comparison import md_enrichment_jobs as md_enrichment_jobs_mod
 from backend.app.services.stage_comparison import large_sheet_enrichment as large_sheet_mod
 from backend.app.services.stage_comparison import large_sheet_enrichment_jobs as large_sheet_jobs_mod
+from backend.app.services.stage_comparison import auto_match_jobs as auto_match_jobs_mod
 from backend.app.services.stage_comparison import pipeline_queue as pipeline_queue_mod
 from backend.app.services.stage_comparison import enriched_comparison as enriched_compare_mod
 from backend.app.services.stage_comparison import unified_analysis as unified_analysis_mod
@@ -90,6 +91,12 @@ class DeleteLinkRequest(BaseModel):
 
 class AutoLinkRequest(BaseModel):
     iou_threshold: float = Field(default=0.5, ge=0.0, le=1.0)
+
+
+class SuggestByStampRequest(BaseModel):
+    # Доматчить семантически эквивалентные имена листов через Haiku поверх
+    # детерминированного штамп-матчинга. Fail-soft, ничего не применяет.
+    use_llm: bool = True
 
 
 class GraphicDiffRequest(BaseModel):
@@ -746,6 +753,88 @@ async def suggest_alignment_endpoint(session_id: str, pair_id: str):
         return store.suggest_alignment(session_id, pair_id)
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
+
+
+@router.post("/sessions/{session_id}/pairs/{pair_id}/page-alignment/suggest-by-stamp")
+async def suggest_alignment_by_stamp_endpoint(
+    session_id: str, pair_id: str,
+    req: SuggestByStampRequest = SuggestByStampRequest(),
+):
+    """Предложить карту страниц по ИМЕНИ листа из штампа (MD).
+
+    Находит листы, уехавшие далеко между стадиями (схема ГРЩ стр.21 ↔ стр.56),
+    чего fingerprint-вариант `/suggest` не умеет. Ничего не применяет —
+    результат `suggested_items` пользователь подтверждает обычным PUT
+    `/page-alignment`.
+
+    `use_llm=true` (по умолчанию) добавляет Haiku-доматчинг семантически
+    эквивалентных имён листов поверх детерминированного результата (fail-soft).
+    Тяжёлый вызов (subprocess) выносим в thread, чтобы не блокировать event loop.
+    """
+    try:
+        return await run_in_threadpool(
+            store.suggest_alignment_by_stamp,
+            session_id, pair_id, use_llm=req.use_llm,
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+
+# ─── Пакетное авто-сопоставление листов по ВСЕЙ сессии ──────────────────────
+
+class AutoMatchRequest(BaseModel):
+    # Доматчить семантически эквивалентные имена через Haiku (fail-soft, опц.).
+    use_llm: bool = True
+    # По умолчанию НЕ перезаписывать ручное/применённое выравнивание.
+    overwrite_existing: bool = False
+    # auto_apply=true → применять безопасные пары; false → только предложить.
+    auto_apply: bool = True
+
+
+@router.post("/sessions/{session_id}/page-alignment/auto-match")
+async def auto_match_start_endpoint(session_id: str, req: AutoMatchRequest = AutoMatchRequest()):
+    """Запустить пакетное авто-сопоставление листов по штампам по ВСЕМ парам.
+
+    Безопасные пары (exact/canonical/multipart/высокоуверенный fuzzy/LLM)
+    применяются автоматически в `page_alignment`; рискованные остаются на
+    ручную проверку. Не блокирует event loop (фоновый asyncio task); прогресс
+    читается GET-эндпоинтом. Ручное выравнивание по умолчанию не затирается.
+    """
+    try:
+        job = auto_match_jobs_mod.create_job(
+            session_id, use_llm=req.use_llm,
+            overwrite_existing=req.overwrite_existing, auto_apply=req.auto_apply,
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    if job.get("status") == "queued":
+        auto_match_jobs_mod.start_job_in_background(session_id, job["id"])
+    return auto_match_jobs_mod.get_job(session_id, job["id"]) or job
+
+
+@router.get("/sessions/{session_id}/page-alignment/auto-match/{job_id}")
+async def auto_match_progress_endpoint(session_id: str, job_id: str):
+    """Прогресс пакетного авто-сопоставления."""
+    job = auto_match_jobs_mod.get_job(session_id, job_id)
+    if job is None:
+        raise HTTPException(404, "Job не найден")
+    return job
+
+
+@router.post("/sessions/{session_id}/page-alignment/auto-match/{job_id}/cancel")
+async def auto_match_cancel_endpoint(session_id: str, job_id: str):
+    job = auto_match_jobs_mod.cancel_job(session_id, job_id)
+    if job is None:
+        raise HTTPException(404, "Job не найден")
+    return job
+
+
+@router.get("/sessions/{session_id}/page-alignment/auto-match-last")
+async def auto_match_last_run_endpoint(session_id: str):
+    """Последний прогон (artifact + живой job, если есть) — для reload UI."""
+    last = auto_match_jobs_mod.read_last_run(session_id)
+    job = auto_match_jobs_mod.latest_job(session_id)
+    return {"last_run": last, "latest_job": job}
 
 
 @router.post("/sessions/{session_id}/pairs/{pair_id}/page-alignment/insert-blank")

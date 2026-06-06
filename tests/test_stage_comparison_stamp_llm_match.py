@@ -153,11 +153,13 @@ def test_llm_match_sheets_empty_side_skips_call():
 # ─── make_llm_match_fn + match_sheet_indexes инъекция ───────────────────────
 
 def test_match_sheet_indexes_injects_llm_pair():
-    # Имена слегка разные → детерминированный матчер может не свести.
+    # Имена сильно расходятся лексически (детерминированный score < auto-accept,
+    # но > candidate-порога) → пара остаётся кандидатом, и её доматчивает LLM.
     left = sm.build_sheet_index(_md([(1, "1", "Содержание тома"),
                                      (2, "2", "Однолинейная расчетная схема ГРЩ")]))
-    right = sm.build_sheet_index(_md([(1, "1", "Содержание тома"),
-                                      (2, "2", "Однолинейная схема ГРЩ Корпус 5 раздел")]))
+    right = sm.build_sheet_index(_md([
+        (1, "1", "Содержание тома"),
+        (2, "2", "Схема ГРЩ распределение этажные щиты корпус 5 секция 2 ввод резерв магистрали стояки")]))
 
     provider = _FakeProvider(_FakeProviderResult(
         status="done",
@@ -218,9 +220,10 @@ def test_store_suggest_by_stamp_use_llm(tmp_path, monkeypatch):
     left_md.write_text(_md([(1, "1", "Содержание тома"),
                             (2, "2", "Однолинейная расчетная схема ГРЩ")]),
                        encoding="utf-8")
-    right_md.write_text(_md([(1, "1", "Содержание тома"),
-                             (2, "2", "Однолинейная схема ГРЩ ввод корпус")]),
-                        encoding="utf-8")
+    right_md.write_text(_md([
+        (1, "1", "Содержание тома"),
+        (2, "2", "Схема ГРЩ ввод этажные щиты корпус 5 секция 2 резерв магистрали стояки распределение")]),
+        encoding="utf-8")
 
     fake_pair = {
         "id": "pX",
