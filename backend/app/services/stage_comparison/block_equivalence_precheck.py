@@ -495,6 +495,12 @@ def pair_blocks_by_iou(
 
     Сопоставление идёт ВНУТРИ пары страниц (блок OLD-страницы матчится только с
     блоками соответствующей NEW-страницы).
+
+    **One-sided страницы.** Страница, которой нет в ``page_pairs`` (например в
+    разреженном/одностороннем ``page_alignment``: лист есть только в OLD или
+    только в NEW), НЕ отбрасывается. Все её блоки попадают в deleted (OLD-only)
+    или added (NEW-only) — то есть в ``qwen_required``. Иначе на парах с сильно
+    «уехавшими» листами охват прекчека был бы неполным.
     """
     res = PairingResult()
 
@@ -512,13 +518,7 @@ def pair_blocks_by_iou(
     matched_old: set[str] = set()
     matched_new: set[str] = set()
 
-    # страницы, реально покрытые page_pairs (для корректного added/deleted)
-    covered_old_pages: set[int] = set()
-    covered_new_pages: set[int] = set()
-
     for op, np_ in page_pairs:
-        covered_old_pages.add(op)
-        covered_new_pages.add(np_)
         old_on = old_by_page.get(op, [])
         new_on = new_by_page.get(np_, [])
         if not old_on and not new_on:
@@ -568,16 +568,14 @@ def pair_blocks_by_iou(
                 "old_page": op, "new_page": np_,
             })
 
-    # unmatched → deleted / added (только на покрытых страницах)
+    # Все непарные блоки → deleted/added, ВКЛЮЧАЯ блоки на one-sided страницах
+    # (страницы вне page_pairs). Это гарантирует полный охват: ни один блок не
+    # выпадает из отчёта на парах с разреженным/односторонним page_alignment.
     for ob in old_blocks:
-        if ob.block_id in matched_old:
-            continue
-        if ob.page in covered_old_pages:
+        if ob.block_id not in matched_old:
             res.deleted.append(ob.block_id)
     for nb in new_blocks:
-        if nb.block_id in matched_new:
-            continue
-        if nb.page in covered_new_pages:
+        if nb.block_id not in matched_new:
             res.added.append(nb.block_id)
 
     return res

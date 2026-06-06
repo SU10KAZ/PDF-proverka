@@ -47,8 +47,13 @@ result.json OLD (left/старая стадия) + NEW (right/новая ста�
 - **split/merge**: один блок перекрывает ≥2 блока другой стороны (IoU ≥
   `OVERLAP_THRESHOLD`) → `split_merge_uncertain` (НЕ skip, исключается из
   one-to-one);
-- непарные OLD → `deleted_candidate`, непарные NEW → `added_candidate` (только
-  на страницах, покрытых картой).
+- непарные OLD → `deleted_candidate`, непарные NEW → `added_candidate`;
+- **one-sided страницы**: страница, которой нет в карте `page_pairs` (лист есть
+  только в OLD или только в NEW — частый случай разреженного/одностороннего
+  `page_alignment`, когда листы сильно «уехали»), НЕ отбрасывается: все её блоки
+  идут в `deleted_candidate` (OLD-only) / `added_candidate` (NEW-only) → все
+  `qwen_required`. Это гарантирует полный охват прекчека (а не только
+  двусторонних страниц).
 
 ## Text compare
 

@@ -130,6 +130,79 @@ def test_page_pairs_shifted_pages():
     assert len(res.paired) == 1 and res.paired[0]["old_page"] == 5 and res.paired[0]["new_page"] == 2
 
 
+def test_one_sided_old_page_blocks_become_deleted():
+    # page_pairs покрывает только (3,3); страница 7 есть только в OLD → её блоки
+    # должны попасть в deleted (а не выпасть из отчёта).
+    old = be.extract_blocks_for_equivalence(_result({
+        3: [_blk("O1", "image", [0.1, 0.1, 0.4, 0.4])],
+        7: [_blk("O2", "image", [0.0, 0.0, 0.5, 0.5]),
+            _blk("O3", "text", [0.5, 0.5, 1.0, 1.0], "x")]}))
+    new = be.extract_blocks_for_equivalence(_result({
+        3: [_blk("N1", "image", [0.1, 0.1, 0.4, 0.4])]}))
+    res = be.pair_blocks_by_iou(old, new, iou_threshold=0.5, page_pairs=[(3, 3)])
+    assert [p["old_id"] for p in res.paired] == ["O1"]
+    assert sorted(res.deleted) == ["O2", "O3"]   # one-sided OLD page 7 → deleted
+    assert res.added == []
+
+
+def test_one_sided_new_page_blocks_become_added():
+    # page_pairs покрывает только (3,3); страница 9 есть только в NEW → added.
+    old = be.extract_blocks_for_equivalence(_result({
+        3: [_blk("O1", "image", [0.1, 0.1, 0.4, 0.4])]}))
+    new = be.extract_blocks_for_equivalence(_result({
+        3: [_blk("N1", "image", [0.1, 0.1, 0.4, 0.4])],
+        9: [_blk("N2", "image", [0.0, 0.0, 0.5, 0.5]),
+            _blk("N3", "image", [0.6, 0.6, 0.9, 0.9])]}))
+    res = be.pair_blocks_by_iou(old, new, iou_threshold=0.5, page_pairs=[(3, 3)])
+    assert [p["new_id"] for p in res.paired] == ["N1"]
+    assert sorted(res.added) == ["N2", "N3"]     # one-sided NEW page 9 → added
+    assert res.deleted == []
+
+
+def test_report_one_sided_pages_full_coverage_qwen_required():
+    # Разреженный page_alignment: только (3,3) двусторонняя; стр.7 — OLD-only,
+    # стр.9 — NEW-only. Все блоки должны быть учтены (полный охват) и все →
+    # qwen_required; potential_qwen_saved=0 (идентичных нет, pdf не задан).
+    old = _result({
+        3: [_blk("O1", "image", [0.1, 0.1, 0.4, 0.4])],
+        7: [_blk("O2", "image", [0.0, 0.0, 0.5, 0.5]),
+            _blk("O3", "text", [0.5, 0.5, 1.0, 1.0], "удалённый лист")]})
+    new = _result({
+        3: [_blk("N1", "image", [0.1, 0.1, 0.4, 0.4])],
+        9: [_blk("N2", "image", [0.0, 0.0, 0.5, 0.5])]})
+    rep = be.build_block_equivalence_report(
+        old, new, cfg=be.BlockEquivalenceConfig(enabled=True), page_pairs=[(3, 3)])
+    s = rep["summary"]
+    assert s["total_old_blocks"] == 3 and s["total_new_blocks"] == 2
+    assert s["deleted_candidates"] == 2   # O2, O3 (one-sided OLD page 7)
+    assert s["added_candidates"] == 1     # N2 (one-sided NEW page 9)
+    assert s["paired"] == 1               # O1↔N1
+    # полный охват: paired + added + deleted == все блоки (с учётом двойного
+    # счёта paired = 1 пара из 1 old + 1 new)
+    covered_old = s["paired"] + s["deleted_candidates"]
+    covered_new = s["paired"] + s["added_candidates"]
+    assert covered_old == s["total_old_blocks"]
+    assert covered_new == s["total_new_blocks"]
+    # observe never skips: всё qwen_required, ничего не сохранено
+    assert s["potential_qwen_saved"] == 0
+    for rec in rep["pairs"] + rep["added"] + rep["deleted"]:
+        assert rec["qwen_action"] == be.QWEN_REQUIRED
+
+
+def test_two_sided_pages_unchanged_with_one_sided_fix():
+    # Регрессия: двусторонние страницы продолжают работать как раньше —
+    # leftover на ОБЩЕЙ странице тоже корректно идёт в added/deleted.
+    old = be.extract_blocks_for_equivalence(_result({1: [
+        _blk("A", "image", [0.0, 0.0, 0.3, 0.3]),
+        _blk("D", "image", [0.6, 0.6, 0.9, 0.9])]}))
+    new = be.extract_blocks_for_equivalence(_result({1: [
+        _blk("A2", "image", [0.0, 0.0, 0.3, 0.3]),
+        _blk("N", "image", [0.6, 0.0, 0.9, 0.3])]}))
+    res = be.pair_blocks_by_iou(old, new, iou_threshold=0.5, page_pairs=[(1, 1)])
+    assert [p["old_id"] for p in res.paired] == ["A"]
+    assert res.deleted == ["D"] and res.added == ["N"]
+
+
 # ═══════════════════════════════════════════════════════════════════════════
 # text compare
 # ═══════════════════════════════════════════════════════════════════════════
