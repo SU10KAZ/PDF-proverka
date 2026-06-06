@@ -140,6 +140,7 @@ def create_job(
             {"pair_id": p["id"], **_pair_label(p), "status": "queued",
              "applied": 0, "review": 0, "skipped_reason": None,
              "split_prevented": 0, "true_left_only": 0, "true_right_only": 0,
+             "positional_alignment": 0,
              "review_reasons": [],
              "confidence": 0.0, "errors": []}
             for p in pairs
@@ -150,9 +151,10 @@ def create_job(
         "summary": {
             "total_pairs": len(pairs), "processed_pairs": 0,
             # Раздельные счётчики (Task 9): применено vs оставлено на ревью vs
-            # истинно односторонние vs предотвращённые разрывы пар.
+            # истинно односторонние vs предотвращённые разрывы пар vs позиционно.
             "applied_matched_pairs": 0, "review_matched_pairs": 0,
             "split_prevented": 0, "true_left_only": 0, "true_right_only": 0,
+            "positional_alignment": 0,
             "needs_review_pairs": 0,
             "skipped_existing_alignment": 0, "failed_pairs": 0,
             # Backward-compat алиасы (старый UI/артефакты читали эти ключи).
@@ -241,6 +243,7 @@ def _write_artifact(session_id: str, job: dict) -> None:
                  "split_prevented": it.get("split_prevented", 0),
                  "true_left_only": it.get("true_left_only", 0),
                  "true_right_only": it.get("true_right_only", 0),
+                 "positional_alignment": it.get("positional_alignment", 0),
                  "review_reasons": it.get("review_reasons", []),
                  "skipped_reason": it.get("skipped_reason"),
                  "errors": it.get("errors", [])}
@@ -316,6 +319,7 @@ async def run_job(session_id: str, job_id: str) -> dict:
                     item["split_prevented"] = summary.get("split_prevented", 0)
                     item["true_left_only"] = summary.get("true_left_only", 0)
                     item["true_right_only"] = summary.get("true_right_only", 0)
+                    item["positional_alignment"] = summary.get("positional_alignment", 0)
                     # Компактные причины review-пар (для UI «на ручную проверку»).
                     item["review_reasons"] = [
                         {"left_page": r.get("left_page"), "right_page": r.get("right_page"),
@@ -331,6 +335,7 @@ async def run_job(session_id: str, job_id: str) -> dict:
                     s["split_prevented"] += item["split_prevented"]
                     s["true_left_only"] += item["true_left_only"]
                     s["true_right_only"] += item["true_right_only"]
+                    s["positional_alignment"] += item["positional_alignment"]
                     # backward-compat алиасы
                     s["applied_pairs"] = s["applied_matched_pairs"]
                     s["review_pairs"] = s["review_matched_pairs"]

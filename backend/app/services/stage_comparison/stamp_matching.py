@@ -790,6 +790,95 @@ def _one_sided_item(slot: int, rec: SheetRec, side: str, *,
     }
 
 
+# ─── Позиционное выравнивание нераспознанных начальных/межанкорных листов ───
+
+POSITIONAL_ALIGN_TYPE = "positional_alignment"
+POSITIONAL_ALIGN_RISK = "unconfirmed_alignment"
+POSITIONAL_ALIGN_REASON = (
+    "Нераспознанные начальные листы выровнены по порядку, чтобы не "
+    "смещать дальнейшее сопоставление.")
+
+
+def _positional_item(left_item: dict, right_item: dict) -> dict:
+    """Собрать строку позиционного выравнивания из пары односторонних строк.
+
+    Это НЕ уверенное сопоставление по штампу: страницы просто стоят напротив
+    друг друга по порядку (титульные/вводные листы без рамок). `match=False`,
+    поэтому такая строка не попадает в `matched_count`. Обе стороны заполнены.
+    """
+    return {
+        "slot": 0,
+        "left_page": left_item.get("left_page"),
+        "right_page": right_item.get("right_page"),
+        "mode": "manual",
+        "note": "позиционно",
+        # display-only поля (validate() их отбросит при сохранении)
+        "match": False,
+        "match_type": POSITIONAL_ALIGN_TYPE,
+        "score": 0.0,
+        "confidence": 0.0,
+        "left_sheet_name": left_item.get("left_sheet_name") or "",
+        "right_sheet_name": right_item.get("right_sheet_name") or "",
+        "left_sheet_no": left_item.get("left_sheet_no"),
+        "right_sheet_no": right_item.get("right_sheet_no"),
+        "is_graphic": bool(left_item.get("is_graphic") or right_item.get("is_graphic")),
+        "needs_review": True,
+        "reason": POSITIONAL_ALIGN_REASON,
+        "positive_evidence": [],
+        "negative_evidence": [],
+        "risk_flags": [POSITIONAL_ALIGN_RISK],
+    }
+
+
+def _apply_positional_alignment(items: list[dict]) -> list[dict]:
+    """Выровнять позиционно нераспознанный ВЕДУЩИЙ прогон (до первого anchor'а).
+
+    Проблема: титульные/вводные листы без рамок не матчатся по штампу, и сборка
+    раскладывает их как `1→∅ / ∅→1 / 2→∅ / ∅→2`, смещая ВСЮ дальнейшую карту.
+    Если до первого уверенного anchor'а с обеих сторон есть непарные листы,
+    ставим их напротив друг друга позиционно (`positional_alignment`,
+    `unconfirmed_alignment`) — это не уверенный матч, но карта не съезжает.
+
+    Только ВЕДУЩИЙ прогон (намеренно консервативно, см. roadmap «если есть
+    сомнения — только начальный run»):
+
+      * межанкорные прогоны НЕ трогаем — на реальных данных они зипуют далеко
+        отстоящие, часто несвязанные листы (L37↔R3) при крупной перетасовке;
+        съезд в середине документа честнее и не сдвигает начало;
+      * trailing (после последнего anchor'а) — реально добавленные/удалённые
+        в конце листы, тоже не трогаем;
+      * нет anchor'а / он первый (index 0) → нечего выравнивать «до»;
+      * непарный прогон только с одной стороны → positional НЕ выдумываем;
+      * при разной длине общая часть идёт позиционно, хвост — односторонним;
+      * каждая страница участвует не более одного раза (зипуем только true
+        left_only/right_only, которые уже непарны).
+    """
+    first_anchor = next((i for i, it in enumerate(items) if it.get("match")), None)
+    if first_anchor is None or first_anchor == 0:
+        return items
+
+    lead = items[:first_anchor]
+    # Ведущий прогон должен состоять только из истинно односторонних строк;
+    # любой иной тип (например multipart_continuation) → safety-выход.
+    if any(it.get("match_type") not in ("left_only", "right_only") for it in lead):
+        return items
+
+    lefts = [it for it in lead if it["match_type"] == "left_only"]
+    rights = [it for it in lead if it["match_type"] == "right_only"]
+    if not lefts or not rights:
+        return items  # односторонний ведущий прогон — positional не нужен
+
+    k = min(len(lefts), len(rights))
+    new_lead: list[dict] = [_positional_item(lefts[x], rights[x]) for x in range(k)]
+    new_lead.extend(lefts[k:])     # хвост слева — left_only как есть
+    new_lead.extend(rights[k:])    # хвост справа — right_only как есть
+
+    out = new_lead + items[first_anchor:]
+    for idx, it in enumerate(out):
+        it["slot"] = idx + 1
+    return out
+
+
 def _call_llm_match_fn(fn, rem_left, rem_right, tasks):
     """Вызвать LLM-fn совместимо: новый fn принимает 3-й arg (tasks/candidates),
     старый — только (rem_left, rem_right). Определяем по сигнатуре."""
@@ -1168,6 +1257,11 @@ def match_sheet_indexes(
         items.append(_make_one_sided(slot, right_by_page[right_only_pages[ri]], "right"))
         ri += 1
 
+    # Позиционно выровнять нераспознанный ВЕДУЩИЙ прогон (титульные/вводные листы
+    # без рамок), чтобы они не смещали всю карту пустыми вставками (не уверенный
+    # матч; межанкорные/trailing прогоны намеренно не трогаем).
+    items = _apply_positional_alignment(items)
+
     matched_items = [it for it in items if it.get("match")]
     scores = [it["score"] for it in matched_items]
     confidence = round(sum(scores) / len(scores), 3) if scores else 0.0
@@ -1190,6 +1284,8 @@ def match_sheet_indexes(
         "multipart_match_count": multipart_count,
         "multipart_continuation_count": sum(
             1 for it in items if it["match_type"] == "multipart_continuation"),
+        "positional_alignment_count": sum(
+            1 for it in items if it["match_type"] == POSITIONAL_ALIGN_TYPE),
         "left_only_count": sum(1 for it in items if it["match_type"] == "left_only"),
         "right_only_count": sum(1 for it in items if it["match_type"] == "right_only"),
         "left_page_count": len(left),
@@ -1214,4 +1310,7 @@ __all__ = [
     "STAMP_MATCH_MIN_SCORE",
     "STAMP_FALLBACK_MIN_SCORE",
     "STAMP_MATCH_MIN_MARGIN",
+    "POSITIONAL_ALIGN_TYPE",
+    "POSITIONAL_ALIGN_RISK",
+    "POSITIONAL_ALIGN_REASON",
 ]

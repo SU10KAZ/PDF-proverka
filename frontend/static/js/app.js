@@ -10912,11 +10912,20 @@ const app = createApp({
             return (it.left_page == null ? '_' : it.left_page) + '_'
                  + (it.right_page == null ? '_' : it.right_page);
         }
+        // Строка «выбираемая» (есть чекбокс) = уверенный матч ИЛИ позиционное
+        // выравнивание (его можно отклонить). Истинно односторонние — только показ.
+        function scStampIsSelectable(it) {
+            return !!it.match || it.match_type === 'positional_alignment';
+        }
+        // Все строки предложения (matched + positional + true one-sided) — для показа.
+        const scStampAllRows = computed(() =>
+            (scStampProposals.value && scStampProposals.value.suggested_items) || []);
         const scStampMatchedRows = computed(() =>
-            (scStampProposals.value && scStampProposals.value.suggested_items || [])
-                .filter(it => it.match));
+            scStampAllRows.value.filter(it => it.match));
+        const scStampSelectableRows = computed(() =>
+            scStampAllRows.value.filter(scStampIsSelectable));
         const scStampSelectedCount = computed(() =>
-            scStampMatchedRows.value.filter(it => scStampSelected.value[scStampRowKey(it)]).length);
+            scStampSelectableRows.value.filter(it => scStampSelected.value[scStampRowKey(it)]).length);
 
         async function scSuggestByStamp() {
             if (!scSession.value || !scActivePair.value) return;
@@ -10941,7 +10950,10 @@ const app = createApp({
                 scStampProposals.value = d;
                 const sel = {};
                 (d.suggested_items || []).forEach(it => {
-                    if (it.match) sel[scStampRowKey(it)] = true;
+                    // matched + positional отмечены по умолчанию (positional нужно
+                    // для сохранения визуальной карты, но его можно снять).
+                    if (it.match || it.match_type === 'positional_alignment')
+                        sel[scStampRowKey(it)] = true;
                 });
                 scStampSelected.value = sel;
             } catch (e) {
@@ -10967,18 +10979,24 @@ const app = createApp({
             fuzzy_structural: 'по признакам',
             text_layer: 'текст-слой',
             llm_semantic: '🧠 по смыслу',
+            positional_alignment: 'позиционно',
+            left_only: 'только слева',
+            right_only: 'только справа',
         };
         const SC_STAMP_RISK_LABELS = {
             low_margin: 'слабый отрыв',
             duplicate_sheet_name: 'дубль имени',
             text_layer_fallback: 'текст-слой',
             llm_semantic: 'ИИ',
+            unconfirmed_alignment: 'без уверенного матча',
         };
         function scStampTypeLabel(mt) { return SC_STAMP_TYPE_LABELS[mt] || 'похожее'; }
         function scStampRiskLabel(f) { return SC_STAMP_RISK_LABELS[f] || f; }
         function scStampTypeColor(it) {
             if (['exact_name', 'exact_canonical_name', 'exact_multipart_group', 'multipart_group'].includes(it.match_type)) return '#15803d';
             if (it.match_type === 'llm_semantic') return '#6d28d9';
+            if (it.match_type === 'positional_alignment') return '#0891b2';
+            if (['left_only', 'right_only', 'multipart_continuation'].includes(it.match_type)) return '#6b7280';
             return it.needs_review ? '#b45309' : '#374151';
         }
         function scStampRowTitle(it) {
@@ -11093,12 +11111,14 @@ const app = createApp({
                 const props = scStampProposals.value.suggested_items || [];
                 const items = [];
                 for (const it of props) {
-                    if (it.match && scStampSelected.value[scStampRowKey(it)]) {
-                        // подтверждённый матч → пара напротив друг друга
+                    const selectable = it.match || it.match_type === 'positional_alignment';
+                    if (selectable && scStampSelected.value[scStampRowKey(it)]) {
+                        // подтверждённый матч ИЛИ принятое позиционное выравнивание
+                        // → пара напротив друг друга
                         items.push({left_page: it.left_page, right_page: it.right_page,
                                     mode: 'manual', note: it.note || ''});
-                    } else if (it.match) {
-                        // отклонённый матч → расцепить на два односторонних слота
+                    } else if (selectable) {
+                        // отклонён (снят чекбокс) → расцепить на два односторонних слота
                         if (it.left_page != null)
                             items.push({left_page: it.left_page, right_page: null,
                                         mode: 'manual', note: 'не подтверждено'});
@@ -11106,7 +11126,7 @@ const app = createApp({
                             items.push({left_page: null, right_page: it.right_page,
                                         mode: 'manual', note: 'не подтверждено'});
                     } else {
-                        // односторонний лист как есть
+                        // истинно односторонний лист как есть
                         items.push({left_page: it.left_page, right_page: it.right_page,
                                     mode: 'manual', note: it.note || ''});
                     }
@@ -13667,6 +13687,7 @@ const app = createApp({
             // Сопоставление листов по штампам
             scStampProposals, scStampLoading, scStampApplying, scStampError,
             scStampSelected, scStampRowKey, scStampToggleRow, scStampMatchedRows,
+            scStampAllRows, scStampSelectableRows, scStampIsSelectable,
             scStampSelectedCount, scSuggestByStamp, scApplyStampProposals,
             scCloseStampProposals, scStampUseLlm,
             scStampTypeLabel, scStampRiskLabel, scStampTypeColor, scStampRowTitle,

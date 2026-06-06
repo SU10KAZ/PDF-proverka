@@ -5768,6 +5768,9 @@
                         <span style="opacity:.8">
                             Совпадений: <b>{{ scStampProposals.matched_count }}</b>
                             (увер. {{ Math.round((scStampProposals.confidence||0)*100) }}%) ·
+                            <span v-if="scStampProposals.positional_alignment_count" style="color:#0891b2">
+                                позиционно: {{ scStampProposals.positional_alignment_count }} ·
+                            </span>
                             только слева: {{ scStampProposals.left_only_count }} ·
                             только справа: {{ scStampProposals.right_only_count }}
                         </span>
@@ -5781,7 +5784,7 @@
                             🧠 ИИ недоступен ({{ scStampProposals.llm.status }})
                         </span>
                         <div style="flex:1"></div>
-                        <span style="opacity:.7">Выбрано: {{ scStampSelectedCount }} / {{ scStampMatchedRows.length }}</span>
+                        <span style="opacity:.7">Выбрано: {{ scStampSelectedCount }} / {{ scStampSelectableRows.length }}</span>
                         <button class="btn btn-sm btn-primary"
                                 :disabled="scStampApplying || scStampSelectedCount===0"
                                 @click="scApplyStampProposals()"
@@ -5792,42 +5795,49 @@
                     </div>
                     <div v-if="scStampProposals.warnings && scStampProposals.warnings.length"
                          style="color:#92400e; margin-bottom:6px">⚠ {{ scStampProposals.warnings.join(', ') }}</div>
-                    <div v-if="scStampMatchedRows.length===0" style="opacity:.7; padding:6px 0">
-                        Совпадений по имени листа не найдено — листы можно сопоставить вручную (⊕ / ↑ / ↓ и связывание блоков).
+                    <div v-if="scStampAllRows.length===0" style="opacity:.7; padding:6px 0">
+                        Листы по штампу не разобраны — сопоставьте вручную (⊕ / ↑ / ↓ и связывание блоков).
                     </div>
                     <table v-else style="width:100%; border-collapse:collapse">
                         <thead>
                             <tr style="text-align:left; color:#6b7280; border-bottom:1px solid #e5e7eb">
                                 <th style="padding:3px 6px; width:30px"></th>
-                                <th style="padding:3px 6px; width:120px">Стр. (стар→нов)</th>
-                                <th style="padding:3px 6px">Лист</th>
-                                <th style="padding:3px 6px; width:120px">Тип / увер.</th>
+                                <th style="padding:3px 6px; width:45%">Старый лист (стадия 1)</th>
+                                <th style="padding:3px 6px; width:45%">Новый лист (стадия 2)</th>
+                                <th style="padding:3px 6px; width:130px">Тип / увер.</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="it in scStampMatchedRows" :key="scStampRowKey(it)"
+                            <tr v-for="it in scStampAllRows" :key="scStampRowKey(it)"
                                 style="border-bottom:1px solid #f3f4f6"
                                 :title="scStampRowTitle(it)"
-                                :style="{opacity: scStampSelected[scStampRowKey(it)] ? 1 : .5}">
-                                <td style="padding:3px 6px">
-                                    <input type="checkbox" :checked="!!scStampSelected[scStampRowKey(it)]"
+                                :style="{opacity: (!scStampIsSelectable(it) || scStampSelected[scStampRowKey(it)]) ? 1 : .5}">
+                                <td style="padding:3px 6px; text-align:center">
+                                    <input v-if="scStampIsSelectable(it)" type="checkbox"
+                                           :checked="!!scStampSelected[scStampRowKey(it)]"
                                            @change="scStampToggleRow(it)" />
+                                    <span v-else style="opacity:.4" title="односторонний лист — нечего подтверждать">·</span>
                                 </td>
-                                <td style="padding:3px 6px; font-weight:600">
-                                    {{ it.left_page }} → {{ it.right_page }}
-                                    <span v-if="it.is_graphic" title="графический лист">📐</span>
+                                <!-- Старый лист: стр. + название отдельной стороны -->
+                                <td style="padding:3px 6px">
+                                    <template v-if="it.left_page != null">
+                                        <b>стр. {{ it.left_page }}</b>
+                                        <span v-if="it.is_graphic" title="графический лист">📐</span>
+                                        <span style="opacity:.85"> — {{ it.left_sheet_name || '(без названия)' }}</span>
+                                    </template>
+                                    <span v-else style="opacity:.4">—</span>
+                                </td>
+                                <!-- Новый лист: стр. + название отдельной стороны -->
+                                <td style="padding:3px 6px">
+                                    <template v-if="it.right_page != null">
+                                        <b>стр. {{ it.right_page }}</b>
+                                        <span style="opacity:.85"> — {{ it.right_sheet_name || '(без названия)' }}</span>
+                                    </template>
+                                    <span v-else style="opacity:.4">—</span>
                                 </td>
                                 <td style="padding:3px 6px">
-                                    <span v-if="it.left_sheet_name && it.right_sheet_name && it.left_sheet_name!==it.right_sheet_name">
-                                        <span style="opacity:.8">{{ it.left_sheet_name }}</span>
-                                        <span style="opacity:.5"> → {{ it.right_sheet_name }}</span>
-                                    </span>
-                                    <span v-else>{{ it.left_sheet_name || it.right_sheet_name }}</span>
-                                </td>
-                                <td style="padding:3px 6px">
-                                    <span :style="{color: scStampTypeColor(it)}">
-                                        {{ scStampTypeLabel(it.match_type) }}
-                                        {{ Math.round((it.score||0)*100) }}%
+                                    <span :style="{color: scStampTypeColor(it), fontWeight: it.match ? 600 : 400}">
+                                        {{ scStampTypeLabel(it.match_type) }}<template v-if="it.match"> {{ Math.round((it.score||0)*100) }}%</template>
                                     </span>
                                     <span v-for="f in (it.risk_flags||[])" :key="f"
                                           style="display:inline-block; margin-left:4px; padding:0 4px; border-radius:4px; background:#fef3c7; color:#92400e; font-size:10px"
@@ -5837,8 +5847,9 @@
                         </tbody>
                     </table>
                     <div style="margin-top:6px; opacity:.6; font-size:11px">
-                        «Применить» перезапишет карту страниц: подтверждённые листы встанут напротив друг друга,
-                        отклонённые и непарные — отдельными слотами (их двигают вручную ⊕ / ↑ / ↓).
+                        «Применить» перезапишет карту страниц: подтверждённые листы встанут напротив друг друга.
+                        <span style="color:#0891b2">Позиционно</span> — нераспознанные титульные/вводные листы выровнены по порядку,
+                        чтобы карта не съезжала (не уверенный матч, можно снять галочку). Непарные — отдельными слотами (двигаются ⊕ / ↑ / ↓).
                     </div>
                 </div>
 

@@ -1987,6 +1987,7 @@ def apply_safe_stamp_alignment_for_pair(
         "skipped_reason": None, "confidence": 0.0, "matched_count": 0,
         "multipart_match_count": 0,
         "split_prevented": 0, "true_left_only": 0, "true_right_only": 0,
+        "positional_alignment": 0,
         "review_items": [], "errors": [],
     }
 
@@ -2006,12 +2007,13 @@ def apply_safe_stamp_alignment_for_pair(
     summary["split_prevented"] = built.get("split_prevented", 0)
     summary["true_left_only"] = built.get("true_left_only", 0)
     summary["true_right_only"] = built.get("true_right_only", 0)
+    summary["positional_alignment"] = built.get("positional_alignment", 0)
     summary["review_items"] = built.get("review_items", [])
     summary["reasons"] = built.get("reasons", {})
 
-    if built["applied"] == 0:
-        # Нет ни одной безопасной пары — НЕ трогаем alignment (Вариант Б:
-        # лучше ничего не применить, чем испортить карту). Если matcher всё же
+    if built["applied"] == 0 and built.get("positional_alignment", 0) == 0:
+        # Нечего безопасно применить и нет позиционного выравнивания — НЕ трогаем
+        # alignment (Вариант Б: лучше ничего, чем испортить карту). Если matcher
         # что-то нашёл, но оно ушло в review — помечаем пару needs_review.
         summary["status"] = "needs_review" if built["review"] > 0 else "no_safe_matches"
         summary["skipped_reason"] = (

@@ -163,6 +163,7 @@ def build_auto_apply_items(suggested_items: list[dict]) -> dict:
     true_left_only = 0
     true_right_only = 0
     multipart_continuation = 0
+    positional_alignment = 0
     reasons: dict[str, int] = {}
 
     def _note(reason: str) -> None:
@@ -194,6 +195,13 @@ def build_auto_apply_items(suggested_items: list[dict]) -> dict:
                     "left_sheet_name": it.get("left_sheet_name"),
                     "right_sheet_name": it.get("right_sheet_name"),
                 })
+        elif str(it.get("match_type") or "") == "positional_alignment":
+            # Позиционное выравнивание (нераспознанные титульные/вводные листы):
+            # сохраняем как пару напротив друг друга, чтобы карта не съезжала, но
+            # это НЕ уверенный матч по штампу — считаем отдельно, не как applied.
+            items.append({"left_page": lp, "right_page": rp, "mode": "manual",
+                          "note": "positional_alignment"})
+            positional_alignment += 1
         else:
             # истинно односторонний лист (matcher не нашёл пару) → сохраняем как есть
             mt = str(it.get("match_type") or "")
@@ -226,6 +234,7 @@ def build_auto_apply_items(suggested_items: list[dict]) -> dict:
         "true_left_only": true_left_only,
         "true_right_only": true_right_only,
         "multipart_continuation": multipart_continuation,
+        "positional_alignment": positional_alignment,
         "reasons": reasons,
     }
 
