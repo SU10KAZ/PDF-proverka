@@ -5768,6 +5768,9 @@
                         <span style="opacity:.8">
                             Совпадений: <b>{{ scStampProposals.matched_count }}</b>
                             (увер. {{ Math.round((scStampProposals.confidence||0)*100) }}%) ·
+                            <span v-if="scStampProposals.derived_match_count" style="color:#0e7490">
+                                по содержимому: {{ scStampProposals.derived_match_count }} ·
+                            </span>
                             <span v-if="scStampProposals.positional_alignment_count" style="color:#0891b2">
                                 позиционно: {{ scStampProposals.positional_alignment_count }} ·
                             </span>
@@ -5818,20 +5821,26 @@
                                            @change="scStampToggleRow(it)" />
                                     <span v-else style="opacity:.4" title="односторонний лист — нечего подтверждать">·</span>
                                 </td>
-                                <!-- Старый лист: стр. + название отдельной стороны -->
+                                <!-- Старый лист: стр. + название (штамп или из содержимого) -->
                                 <td style="padding:3px 6px">
                                     <template v-if="it.left_page != null">
                                         <b>стр. {{ it.left_page }}</b>
                                         <span v-if="it.is_graphic" title="графический лист">📐</span>
-                                        <span style="opacity:.85"> — {{ it.left_sheet_name || '(без названия)' }}</span>
+                                        <span style="opacity:.85"> — {{ scStampDisplayName(it, 'left') }}</span>
+                                        <span v-if="scStampNameIsDerived(it, 'left')"
+                                              style="display:inline-block; margin-left:4px; padding:0 4px; border-radius:4px; background:#ecfeff; color:#0e7490; font-size:10px"
+                                              title="название выведено из содержимого листа, штамп не распознан">из содержимого</span>
                                     </template>
                                     <span v-else style="opacity:.4">—</span>
                                 </td>
-                                <!-- Новый лист: стр. + название отдельной стороны -->
+                                <!-- Новый лист: стр. + название (штамп или из содержимого) -->
                                 <td style="padding:3px 6px">
                                     <template v-if="it.right_page != null">
                                         <b>стр. {{ it.right_page }}</b>
-                                        <span style="opacity:.85"> — {{ it.right_sheet_name || '(без названия)' }}</span>
+                                        <span style="opacity:.85"> — {{ scStampDisplayName(it, 'right') }}</span>
+                                        <span v-if="scStampNameIsDerived(it, 'right')"
+                                              style="display:inline-block; margin-left:4px; padding:0 4px; border-radius:4px; background:#ecfeff; color:#0e7490; font-size:10px"
+                                              title="название выведено из содержимого листа, штамп не распознан">из содержимого</span>
                                     </template>
                                     <span v-else style="opacity:.4">—</span>
                                 </td>

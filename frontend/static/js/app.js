@@ -10979,6 +10979,7 @@ const app = createApp({
             fuzzy_structural: 'по признакам',
             text_layer: 'текст-слой',
             llm_semantic: '🧠 по смыслу',
+            derived_name_match: 'по содержимому',
             positional_alignment: 'позиционно',
             left_only: 'только слева',
             right_only: 'только справа',
@@ -10988,13 +10989,26 @@ const app = createApp({
             duplicate_sheet_name: 'дубль имени',
             text_layer_fallback: 'текст-слой',
             llm_semantic: 'ИИ',
+            derived_name: 'из содержимого',
             unconfirmed_alignment: 'без уверенного матча',
         };
+        // Имя для показа: штамп-имя, иначе derived-заголовок из содержимого.
+        function scStampDisplayName(it, side) {
+            const nm = (it[side + '_sheet_name'] || '').trim();
+            if (nm) return nm;
+            const dv = (it[side + '_derived_sheet_name'] || '').trim();
+            return dv ? dv + ' (из содержимого)' : '(без названия)';
+        }
+        function scStampNameIsDerived(it, side) {
+            return !((it[side + '_sheet_name'] || '').trim())
+                 && !!((it[side + '_derived_sheet_name'] || '').trim());
+        }
         function scStampTypeLabel(mt) { return SC_STAMP_TYPE_LABELS[mt] || 'похожее'; }
         function scStampRiskLabel(f) { return SC_STAMP_RISK_LABELS[f] || f; }
         function scStampTypeColor(it) {
             if (['exact_name', 'exact_canonical_name', 'exact_multipart_group', 'multipart_group'].includes(it.match_type)) return '#15803d';
             if (it.match_type === 'llm_semantic') return '#6d28d9';
+            if (it.match_type === 'derived_name_match') return '#0e7490';
             if (it.match_type === 'positional_alignment') return '#0891b2';
             if (['left_only', 'right_only', 'multipart_continuation'].includes(it.match_type)) return '#6b7280';
             return it.needs_review ? '#b45309' : '#374151';
@@ -13691,6 +13705,7 @@ const app = createApp({
             scStampSelectedCount, scSuggestByStamp, scApplyStampProposals,
             scCloseStampProposals, scStampUseLlm,
             scStampTypeLabel, scStampRiskLabel, scStampTypeColor, scStampRowTitle,
+            scStampDisplayName, scStampNameIsDerived,
             // Пакетное авто-сопоставление листов (раздел «1. Загрузка документации»)
             scAutoMatchJob, scAutoMatchStarting, scAutoMatchError, scAutoMatchUseLlm,
             scAutoMatchOverwrite, scAutoMatchRunning, scAutoMatchStart,

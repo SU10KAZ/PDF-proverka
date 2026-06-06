@@ -124,6 +124,66 @@ def normalize_sheet_name(s: str) -> str:
     return s
 
 
+# ─── Слабое извлечение заголовка листа из СОДЕРЖИМОГО (derived/weak title) ──
+# Когда штамп не читается / имя обрезано / отсутствует, заголовок листа часто
+# виден в самом тексте страницы (Календарный план, Содержание тома, …). Берём
+# его как weak-сигнал: для матчинга он менее надёжен, чем штамп, но позволяет
+# распознать листы, которые иначе остаются безымянными. (regex по
+# нормализованному тексту, канонический человекочитаемый заголовок.)
+_KNOWN_SHEET_TITLE_PATTERNS = [
+    (re.compile(r"календарн\w*\s+план"), "Календарный план"),
+    (re.compile(r"график\s+производства\s+работ"), "График производства работ"),
+    (re.compile(r"проект\s+организации\s+строительств\w*"), "Проект организации строительства"),
+    (re.compile(r"строительн\w*\s+генеральн\w*\s+план"), "Строительный генеральный план"),
+    (re.compile(r"стройгенплан\w*"), "Строительный генеральный план"),
+    (re.compile(r"содержани\w*\s+тома"), "Содержание тома"),
+    (re.compile(r"пояснительн\w*\s+записк\w*"), "Пояснительная записка"),
+    (re.compile(r"текстов\w*\s+часть"), "Текстовая часть"),
+    (re.compile(r"общие\s+данные"), "Общие данные"),
+    (re.compile(r"ведомость\s+объемов\s+работ"), "Ведомость объёмов работ"),
+    (re.compile(r"ведомость"), "Ведомость"),
+    (re.compile(r"спецификаци\w*"), "Спецификация"),
+]
+# Сколько символов содержимого сканировать (заголовок — В САМОМ ВЕРХУ листа;
+# узкое окно отсекает случайные упоминания «…в календарный план добавлено…» в
+# теле листа «Разрешение на корректировку»).
+_DERIVED_TITLE_SCAN_CHARS = 300
+# Строки штамп-метаданных MD — вырезаем перед derived-извлечением, чтобы НЕ
+# подхватить как «заголовок из содержимого» само штамп-имя листа (иначе
+# «Общие данные система» дал бы спурьёзный derived «Общие данные»).
+_META_LINE_RE = re.compile(
+    r"^\s*\*\*\s*(?:Лист|Наименование\s+листа|Штамп|Шифр|Стадия|Обозначение)\b.*$",
+    re.MULTILINE | re.IGNORECASE)
+
+
+def _derive_title_from_text(text: str, *, exclude_norms: Optional[set] = None) -> str:
+    """Слабое извлечение заголовка листа из текста страницы.
+
+    Возвращает канонический человекочитаемый заголовок, если в первых
+    ~`_DERIVED_TITLE_SCAN_CHARS` символах найден один из известных заголовков
+    листов, иначе "". Берём САМОЕ РАННЕЕ вхождение. `exclude_norms` — множество
+    нормализованных имён, которые игнорировать (обычно собственное штамп-имя
+    листа: лист «Проект организации строительства» с блоком «Календарный план»
+    должен дать derived «Календарный план», а не своё же имя). Никогда не падает.
+    """
+    if not text:
+        return ""
+    # Убрать штамп-метаданные (имя листа и т.п.) — derived только из содержимого.
+    content = _META_LINE_RE.sub(" ", text)
+    norm = normalize_sheet_name(content[:_DERIVED_TITLE_SCAN_CHARS])
+    if not norm:
+        return ""
+    excl = exclude_norms or set()
+    best, best_pos = "", None
+    for rx, canon in _KNOWN_SHEET_TITLE_PATTERNS:
+        if normalize_sheet_name(canon) in excl:
+            continue
+        m = rx.search(norm)
+        if m and (best_pos is None or m.start() < best_pos):
+            best, best_pos = canon, m.start()
+    return best
+
+
 def _tokens(norm_name: str) -> list[str]:
     return [t for t in (norm_name or "").split(" ") if len(t) >= 2]
 
@@ -171,7 +231,8 @@ class SheetRec:
     norm_name: str            # нормализованное имя для матчинга
     section_class: str        # pz | architectural | structural | ...
     is_graphic: bool          # есть ли image-блоки на странице
-    name_source: str          # md | inherited | text_layer | none
+    name_source: str          # md | inherited | derived_title | text_layer | none
+    derived_name: str = ""    # weak-заголовок из содержимого (Календарный план…)
 
 
 def build_sheet_index(
@@ -210,6 +271,17 @@ def build_sheet_index(
             norm = ""
             source = "none"
             display = ""
+        # Weak-заголовок из содержимого страницы (body + текст-слой). Считаем
+        # ВСЕГДА — даже когда есть штамп-имя: лист может иметь имя «Проект
+        # организации строительства», но содержать блок «Календарный план».
+        # Своё же имя листа исключаем, чтобы derived был именно из содержимого.
+        # derived НЕ становится norm_name (иначе попал бы в exact-проход на полной
+        # уверенности) — он используется только в weak derived-проходе, для
+        # divergence-сигнала позиционного выравнивания и для отображения.
+        _excl = {norm} if norm else set()
+        derived = _derive_title_from_text(pr.body or "", exclude_norms=_excl)
+        if not derived and pr.page in extra:
+            derived = _derive_title_from_text(extra.get(pr.page) or "", exclude_norms=_excl)
         # Фолбэк по тексту-слою для всё ещё безымянных страниц.
         if not norm and pr.page in extra:
             sig = normalize_sheet_name((extra.get(pr.page) or "")[:_FALLBACK_TEXT_LEN])
@@ -224,6 +296,7 @@ def build_sheet_index(
             section_class=pr.section_class,
             is_graphic=bool(pr.image_block_ids),
             name_source=source,
+            derived_name=derived,
         ))
     return recs
 
@@ -478,8 +551,10 @@ class SheetFeatures:
     sheet_name_raw: Optional[str]
     normalized_name: str
     canonical_name: str
-    source: str                  # md | inherited | text_layer | none
+    source: str                  # md | inherited | derived_title | text_layer | none
     is_text_layer_fallback: bool
+    derived_name: str
+    is_derived_name: bool
     sheet_kind: Optional[str]
     system_tokens: set
     equipment_ids: set
@@ -511,6 +586,8 @@ def extract_sheet_features(rec: SheetRec) -> SheetFeatures:
         canonical_name=canon,
         source=rec.name_source,
         is_text_layer_fallback=(rec.name_source == "text_layer"),
+        derived_name=(rec.derived_name or ""),
+        is_derived_name=(rec.name_source == "derived_title"),
         sheet_kind=_extract_sheet_kind(low),
         system_tokens=_extract_system_tokens(norm),
         equipment_ids=_extract_equipment_ids(low),
@@ -738,7 +815,8 @@ def _matched_item(slot: int, left: SheetRec, right: SheetRec,
     note = f"{(left.sheet_name or right.sheet_name or '').strip()[:60]} · {match_type} {score:.2f}"
     if needs_review is None:
         needs_review = match_type in ("fuzzy_name", "fuzzy_structural",
-                                      "text_layer", "llm_semantic")
+                                      "text_layer", "llm_semantic",
+                                      "derived_name_match")
     conf = score if confidence is None else confidence
     item = {
         "slot": slot,
@@ -755,6 +833,10 @@ def _matched_item(slot: int, left: SheetRec, right: SheetRec,
         "right_sheet_name": right.sheet_name,
         "left_sheet_no": left.sheet_no,
         "right_sheet_no": right.sheet_no,
+        "left_derived_sheet_name": left.derived_name or "",
+        "right_derived_sheet_name": right.derived_name or "",
+        "left_name_source": left.name_source,
+        "right_name_source": right.name_source,
         "is_graphic": bool(left.is_graphic or right.is_graphic),
         "needs_review": bool(needs_review),
         "reason": reason or "",
@@ -781,6 +863,10 @@ def _one_sided_item(slot: int, rec: SheetRec, side: str, *,
         "score": 0.0,
         "left_sheet_name": rec.sheet_name if side == "left" else "",
         "right_sheet_name": rec.sheet_name if side == "right" else "",
+        "left_derived_sheet_name": rec.derived_name or "" if side == "left" else "",
+        "right_derived_sheet_name": rec.derived_name or "" if side == "right" else "",
+        "left_name_source": rec.name_source if side == "left" else "",
+        "right_name_source": rec.name_source if side == "right" else "",
         "is_graphic": bool(rec.is_graphic),
         "needs_review": False,
         "reason": reason or "",
@@ -821,6 +907,10 @@ def _positional_item(left_item: dict, right_item: dict) -> dict:
         "right_sheet_name": right_item.get("right_sheet_name") or "",
         "left_sheet_no": left_item.get("left_sheet_no"),
         "right_sheet_no": right_item.get("right_sheet_no"),
+        "left_derived_sheet_name": left_item.get("left_derived_sheet_name") or "",
+        "right_derived_sheet_name": right_item.get("right_derived_sheet_name") or "",
+        "left_name_source": left_item.get("left_name_source") or "",
+        "right_name_source": right_item.get("right_name_source") or "",
         "is_graphic": bool(left_item.get("is_graphic") or right_item.get("is_graphic")),
         "needs_review": True,
         "reason": POSITIONAL_ALIGN_REASON,
@@ -830,48 +920,91 @@ def _positional_item(left_item: dict, right_item: dict) -> dict:
     }
 
 
+def _side_name_signal(item: dict, side: str) -> tuple[bool, str]:
+    """Есть ли у односторонней строки ОСМЫСЛЕННОЕ имя листа и какое (нормализ.).
+
+    «Осмысленное» = штамп-имя (md/inherited) ИЛИ derived-заголовок из содержимого
+    (Календарный план…). Безымянные титульные/вводные листы → (False, "").
+    """
+    src = item.get(f"{side}_name_source") or ""
+    nm = (item.get(f"{side}_sheet_name") or "").strip()
+    dv = (item.get(f"{side}_derived_sheet_name") or "").strip()
+    if src in ("md", "inherited") and nm:
+        return True, normalize_sheet_name(nm)
+    if src == "derived_title" and (dv or nm):
+        return True, normalize_sheet_name(dv or nm)
+    if dv:  # derived-заголовок есть даже при пустом штампе
+        return True, normalize_sheet_name(dv)
+    return False, ""
+
+
+def _positional_compatible(left_item: dict, right_item: dict) -> bool:
+    """Можно ли позиционно поставить эти листы напротив (без divergence).
+
+    Divergence (несовместимо, zip останавливаем) — когда у ОДНОЙ стороны уже
+    начался осмысленный блок (штамп-имя или derived-заголовок), а у другой нет
+    (`lm != rm`). Это прямое требование: «если с одной стороны осмысленный блок,
+    а с другой нет — зип остановить».
+
+    Совместимо, когда обе стороны без имени (титульные/вводные без рамок) ИЛИ обе
+    осмысленные (front-matter с разными подписями между стадиями — например
+    «Обложка тома» ↔ «Лист регистрации» — выравниваем позиционно, не выдавая за
+    уверенный матч). Одинаковые имена сюда не попадают: их забрал exact-проход.
+    """
+    lm, _ = _side_name_signal(left_item, "left")
+    rm, _ = _side_name_signal(right_item, "right")
+    return lm == rm
+
+
 def _apply_positional_alignment(items: list[dict]) -> list[dict]:
     """Выровнять позиционно нераспознанный ВЕДУЩИЙ прогон (до первого anchor'а).
 
     Проблема: титульные/вводные листы без рамок не матчатся по штампу, и сборка
     раскладывает их как `1→∅ / ∅→1 / 2→∅ / ∅→2`, смещая ВСЮ дальнейшую карту.
-    Если до первого уверенного anchor'а с обеих сторон есть непарные листы,
-    ставим их напротив друг друга позиционно (`positional_alignment`,
-    `unconfirmed_alignment`) — это не уверенный матч, но карта не съезжает.
+    До первого уверенного anchor'а ставим непарные листы напротив друг друга
+    позиционно (`positional_alignment`, `unconfirmed_alignment`) — не уверенный
+    матч, но карта не съезжает.
 
-    Только ВЕДУЩИЙ прогон (намеренно консервативно, см. roadmap «если есть
-    сомнения — только начальный run»):
+    Умная остановка по смыслу (а не механический zip всего прогона):
+    зипуем начальную часть, пока страницы выглядят как стартовые/безымянные ИЛИ
+    имеют одинаковый заголовок; как только начинается divergence (у одной стороны
+    осмысленный блок, у другой нет, либо разные имена) — STOP, остаток остаётся
+    односторонним (`_positional_compatible`).
 
-      * межанкорные прогоны НЕ трогаем — на реальных данных они зипуют далеко
-        отстоящие, часто несвязанные листы (L37↔R3) при крупной перетасовке;
-        съезд в середине документа честнее и не сдвигает начало;
-      * trailing (после последнего anchor'а) — реально добавленные/удалённые
-        в конце листы, тоже не трогаем;
-      * нет anchor'а / он первый (index 0) → нечего выравнивать «до»;
+    Только ВЕДУЩИЙ прогон (намеренно консервативно):
+      * межанкорные прогоны НЕ трогаем (на реальных данных зипуют далёкие
+        несвязанные листы L37↔R3); trailing — реально добавленные/удалённые;
+      * нет anchor'а / он первый → нечего выравнивать «до»;
       * непарный прогон только с одной стороны → positional НЕ выдумываем;
-      * при разной длине общая часть идёт позиционно, хвост — односторонним;
-      * каждая страница участвует не более одного раза (зипуем только true
-        left_only/right_only, которые уже непарны).
+      * каждая страница участвует не более одного раза.
+
+    Хвост: остаток правой стороны идёт ПЕРЕД остатком левой, чтобы непарный
+    правый лист не «висел» отдельным блоком под левыми титульниками.
     """
     first_anchor = next((i for i, it in enumerate(items) if it.get("match")), None)
     if first_anchor is None or first_anchor == 0:
         return items
 
     lead = items[:first_anchor]
-    # Ведущий прогон должен состоять только из истинно односторонних строк;
-    # любой иной тип (например multipart_continuation) → safety-выход.
     if any(it.get("match_type") not in ("left_only", "right_only") for it in lead):
-        return items
+        return items  # неожиданный тип в начале → safety-выход
 
     lefts = [it for it in lead if it["match_type"] == "left_only"]
     rights = [it for it in lead if it["match_type"] == "right_only"]
     if not lefts or not rights:
         return items  # односторонний ведущий прогон — positional не нужен
 
-    k = min(len(lefts), len(rights))
+    # Зипуем по порядку, пока совместимо; на первой divergence — стоп.
+    k = 0
+    limit = min(len(lefts), len(rights))
+    while k < limit and _positional_compatible(lefts[k], rights[k]):
+        k += 1
+    if k == 0:
+        return items  # сразу divergence — ничего не выравниваем
+
     new_lead: list[dict] = [_positional_item(lefts[x], rights[x]) for x in range(k)]
-    new_lead.extend(lefts[k:])     # хвост слева — left_only как есть
-    new_lead.extend(rights[k:])    # хвост справа — right_only как есть
+    new_lead.extend(rights[k:])    # остаток справа — раньше, чтобы не «висел» ниже
+    new_lead.extend(lefts[k:])     # остаток слева — left_only как есть
 
     out = new_lead + items[first_anchor:]
     for idx, it in enumerate(out):
@@ -949,6 +1082,8 @@ def match_sheet_indexes(
             flags.append("duplicate_sheet_name")
         if lf.is_text_layer_fallback or rf.is_text_layer_fallback:
             flags.append("text_layer_fallback")
+        if lf.is_derived_name or rf.is_derived_name:
+            flags.append("derived_name")
         return list(dict.fromkeys(flags))
 
     # Pass 1 — exact normalized name, дубликаты в порядке появления.
@@ -1154,6 +1289,48 @@ def match_sheet_indexes(
                                 "match_type": mtype, "name_sim": bd.get("name_sim")}}
         used_right.add(rp)
 
+    # ─── Pass 2.6 — derived/weak title match (Календарный план и т.п.) ──────
+    # Лист может НЕ матчиться по штампу (имя обрезано/иное), но содержать
+    # известный заголовок в теле страницы (left «Проект организации
+    # строительства» содержит блок «Календарный план» ↔ right «Календарный
+    # план»). Сопоставляем ОСТАТОК по derived-заголовку: ключ = нормализованный
+    # derived_name слева == norm_name ИЛИ derived_name справа. Слабый матч:
+    # низкая уверенность, risk «derived_name», hard-gate соблюдается.
+    derived_match_count = 0
+    right_derived_q: dict[str, deque[int]] = defaultdict(deque)
+    for r in sorted(right, key=lambda x: x.page):
+        if r.page in used_right:
+            continue
+        for key in {normalize_sheet_name(rf_by_page[r.page].derived_name),
+                    rf_by_page[r.page].normalized_name}:
+            if key and len(key) >= 4:
+                right_derived_q[key].append(r.page)
+    for l in sorted(left, key=lambda x: x.page):
+        if l.page in matches:
+            continue
+        dk = normalize_sheet_name(lf_by_page[l.page].derived_name)
+        if not dk or len(dk) < 4:
+            continue
+        # выбрать первый свободный правый кандидат по этому ключу
+        rp = None
+        while right_derived_q.get(dk):
+            cand = right_derived_q[dk].popleft()
+            if cand not in used_right:
+                rp = cand
+                break
+        if rp is None:
+            continue
+        if get_hard_conflict(lf_by_page[l.page], rf_by_page[rp]):
+            continue
+        matches[l.page] = {
+            "rp": rp, "score": 0.6, "mtype": "derived_name_match",
+            "reason": f"совпадение по заголовку из содержимого: {lf_by_page[l.page].derived_name}",
+            "positive": [f"derived: {lf_by_page[l.page].derived_name}"],
+            "negative": [], "risk": _risk(l.page, rp, ["derived_name"]),
+            "confidence": 0.6}
+        used_right.add(rp)
+        derived_match_count += 1
+
     # ─── Pass 3 — LLM adjudication по безопасным кандидатам (Stage 7) ───
     llm_match_count = 0
     if llm_match_fn is not None:
@@ -1281,6 +1458,7 @@ def match_sheet_indexes(
         "warnings": warnings,
         "matched_count": len(matched_items),
         "llm_match_count": llm_match_count,
+        "derived_match_count": derived_match_count,
         "multipart_match_count": multipart_count,
         "multipart_continuation_count": sum(
             1 for it in items if it["match_type"] == "multipart_continuation"),
