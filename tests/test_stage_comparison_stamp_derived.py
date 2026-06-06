@@ -129,43 +129,76 @@ def test_display_carries_derived_name_and_source():
 
 # ═══ Умный ведущий positional ═════════════════════════════════════════════
 
-def test_leading_target_case_no_sjezd():
-    """Целевой кейс пользователя: ведущие безымянные листы выровнены, без съезда.
+def test_leading_target_case_exact_layout():
+    """РЕАЛЬНЫЙ целевой кейс пользователя (acceptance): сильно неравные ведущие
+    прогоны (left 1..6 безымянных, right 1..3 безымянных, anchor 7↔4) дают РОВНО:
 
-    Для полностью безымянных страниц позиционно выравнивается общий префикс
-    (1↔1, 2↔2, …), реальный anchor «Текстовая часть» остаётся парой, именованный
-    «Содержание тома» НЕ мис-парится, и НЕТ раскладки 1→None / None→1.
+        1 ↔ 1  positional
+        2 ↔ 2  positional
+        3 ↔ —  left_only   (None ↔ 3 — справа отдельным right_only рядом)
+        4 ↔ —  left_only
+        5 ↔ —  left_only
+        6 ↔ —  left_only
+        7 ↔ 4  matched
+
+    Boundary-buffer не приклеивает 3-ю правую к 3-й левой → НЕТ 3↔3.
     """
     res = _match(
         [(1, None), (2, None), (3, None), (4, None),
          (5, "Содержание тома"), (6, None), (7, "Текстовая часть")],
         [(1, None), (2, None), (3, None), (4, "Текстовая часть")])
     seq = [(it["left_page"], it["right_page"], it["match_type"]) for it in res["suggested_items"]]
+    # первые две пары выровнены
     assert (1, 1, "positional_alignment") in seq
     assert (2, 2, "positional_alignment") in seq
+    assert res["positional_alignment_count"] == 2          # ровно 2, не 3
+    # КЛЮЧЕВОЕ: нет 3↔3 (правую стр.3 не притянули к левой стр.3)
+    assert _row(res, 3, 3) is None
+    # левые 3..6 — односторонние
+    for lp in (3, 4, 5, 6):
+        assert (lp, None, "left_only") in seq
+    # правая стр.3 — честный right_only (не висит как 3↔3 и не теряется)
+    assert (None, 3, "right_only") in seq
+    # реальный anchor сохранён
     assert (7, 4, "exact_name") in seq
-    # именованный «Содержание тома» (стр.5) не спарен позиционно
-    assert (5, None, "left_only") in seq
-    # НЕТ старого съезда: левый и правый титульник не висят раздельными слотами
-    assert not any(lp == 1 and rp is None for lp, rp, _ in seq)
-    assert not any(lp is None and rp == 1 for lp, rp, _ in seq)
+    # НЕТ старого съезда для первых двух страниц
+    assert _row(res, 1, None) is None and _row(res, None, 1) is None
+    assert _row(res, 2, None) is None and _row(res, None, 2) is None
 
 
 def test_leading_stops_on_divergence():
-    """Как только у одной стороны начинается осмысленный блок (derived-заголовок),
-    а у другой нет — позиционный zip останавливается."""
+    """Как только у одной стороны начинается осмысленный ШТАМП-блок, а у другой
+    нет — позиционный zip останавливается (обложки с derived-именем НЕ считаются
+    divergence, см. test_leading_cover_pages_still_align)."""
     res = _match(
         [(1, None), (2, None),
-         (3, None, "Ведомость объемов работ по корпусу 1\nтаблица"),
+         (3, "Ведомость объемов работ"),
          (4, None), (5, "Текстовая часть")],
         [(1, None), (2, None), (3, None), (4, "Текстовая часть")])
     seq = [(it["left_page"], it["right_page"], it["match_type"]) for it in res["suggested_items"]]
     assert (1, 1, "positional_alignment") in seq
     assert (2, 2, "positional_alignment") in seq
-    # divergence на 3-й позиции (left3 = Ведомость) → НЕ позиционно
+    # divergence на 3-й позиции (left3 = штамп «Ведомость») → НЕ позиционно
     assert not any(lp == 3 and it_t == "positional_alignment" for lp, rp, it_t in seq)
     assert (5, 4, "exact_name") in seq
     assert res["positional_alignment_count"] == 2
+
+
+def test_leading_cover_pages_still_align():
+    """Обложечные листы без штампа, но с derived-именем РАЗДЕЛА/ТОМА в шапке
+    («Проект организации строительства»), считаются front-matter и выравниваются
+    позиционно — derived НЕ ломает ведущее выравнивание (реальный кейс pac34250b
+    right стр.2,3)."""
+    cover = ("ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ\nПРОЕКТНАЯ ДОКУМЕНТАЦИЯ\n"
+             "Раздел 7 «Проект организации строительства»\nТом 7")
+    res = _match(
+        [(1, None), (2, None), (3, "Текстовая часть")],
+        [(1, None, cover), (2, None, cover), (3, "Текстовая часть")])
+    seq = [(it["left_page"], it["right_page"], it["match_type"]) for it in res["suggested_items"]]
+    # обложки выровнены позиционно, несмотря на derived «Проект организации…»
+    assert (1, 1, "positional_alignment") in seq
+    assert (2, 2, "positional_alignment") in seq
+    assert (3, 3, "exact_name") in seq
 
 
 def test_leading_named_frontmatter_still_aligns():

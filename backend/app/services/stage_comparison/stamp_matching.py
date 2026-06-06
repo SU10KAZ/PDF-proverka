@@ -921,20 +921,18 @@ def _positional_item(left_item: dict, right_item: dict) -> dict:
 
 
 def _side_name_signal(item: dict, side: str) -> tuple[bool, str]:
-    """Есть ли у односторонней строки ОСМЫСЛЕННОЕ имя листа и какое (нормализ.).
+    """Есть ли у односторонней строки ОСМЫСЛЕННОЕ ШТАМП-имя листа (md/inherited).
 
-    «Осмысленное» = штамп-имя (md/inherited) ИЛИ derived-заголовок из содержимого
-    (Календарный план…). Безымянные титульные/вводные листы → (False, "").
+    Только штамп-имя. Derived-заголовки из содержимого НЕ считаются осмысленными
+    для позиционного выравнивания: титульные/обложечные листы часто выводят имя
+    РАЗДЕЛА/ТОМА из шапки («Раздел 7 Проект организации строительства»), и это
+    всё ещё front-matter, который надо выравнивать позиционно, а не divergence.
+    Безымянные (в т.ч. обложки с derived-именем) → (False, "").
     """
     src = item.get(f"{side}_name_source") or ""
     nm = (item.get(f"{side}_sheet_name") or "").strip()
-    dv = (item.get(f"{side}_derived_sheet_name") or "").strip()
     if src in ("md", "inherited") and nm:
         return True, normalize_sheet_name(nm)
-    if src == "derived_title" and (dv or nm):
-        return True, normalize_sheet_name(dv or nm)
-    if dv:  # derived-заголовок есть даже при пустом штампе
-        return True, normalize_sheet_name(dv)
     return False, ""
 
 
@@ -969,7 +967,9 @@ def _apply_positional_alignment(items: list[dict]) -> list[dict]:
     зипуем начальную часть, пока страницы выглядят как стартовые/безымянные ИЛИ
     имеют одинаковый заголовок; как только начинается divergence (у одной стороны
     осмысленный блок, у другой нет, либо разные имена) — STOP, остаток остаётся
-    односторонним (`_positional_compatible`).
+    односторонним (`_positional_compatible`). Дополнительно — boundary-buffer:
+    при СИЛЬНОМ перекосе длин (короткий прогон полностью съеден прямо перед
+    далёким anchor'ом) последнюю безымянную пару не зипуем (нет доказательств).
 
     Только ВЕДУЩИЙ прогон (намеренно консервативно):
       * межанкорные прогоны НЕ трогаем (на реальных данных зипуют далёкие
@@ -1001,6 +1001,20 @@ def _apply_positional_alignment(items: list[dict]) -> list[dict]:
         k += 1
     if k == 0:
         return items  # сразу divergence — ничего не выравниваем
+
+    # Boundary-buffer (precision > recall): когда ведущие прогоны СИЛЬНО неравны
+    # и короткий прогон ПОЛНОСТЬЮ съеден зипом прямо перед далёким anchor'ом, его
+    # последнюю БЕЗЫМЯННУЮ страницу не приклеиваем к длинной стороне без
+    # доказательств — расхождение длин означает, что где-то перед anchor'ом
+    # вставлены лишние листы, и соответствие последней пары не подтверждено.
+    # Пример: left_run=1..6, right_run=1..3, anchor 7↔4 → 1↔1, 2↔2 (НЕ 3↔3).
+    if k >= 2 and len(lefts) != len(rights) and k == limit:
+        a = items[first_anchor]
+        offset = abs((a.get("left_page") or 0) - (a.get("right_page") or 0))
+        last_lm, _ = _side_name_signal(lefts[k - 1], "left")
+        last_rm, _ = _side_name_signal(rights[k - 1], "right")
+        if offset >= 2 and not last_lm and not last_rm:
+            k -= 1  # последнюю безымянную пару короткого прогона не зипуем
 
     new_lead: list[dict] = [_positional_item(lefts[x], rights[x]) for x in range(k)]
     new_lead.extend(rights[k:])    # остаток справа — раньше, чтобы не «висел» ниже
