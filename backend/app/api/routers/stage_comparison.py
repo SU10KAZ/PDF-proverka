@@ -52,6 +52,7 @@ from backend.app.services.stage_comparison import unified_findings as unified_fi
 from backend.app.services.stage_comparison import unified_grouping as unified_grouping_mod
 from backend.app.services.stage_comparison import expert_review as expert_review_mod
 from backend.app.services.stage_comparison import v2_review as v2_review_mod
+from backend.app.services.stage_comparison import review_transfer as review_transfer_mod
 from backend.app.services.stage_comparison import paths as sc_paths_mod
 from backend.app.services.stage_comparison import saved_config as saved_config_mod
 
@@ -2318,6 +2319,32 @@ async def prune_expert_review_orphans_endpoint(session_id: str, dry_run: bool = 
     `dry_run=true` — посчитать без записи (рекомендуется сначала dry-run).
     """
     return expert_review_mod.prune_orphans(session_id, dry_run=dry_run)
+
+
+class V2ReviewTransferRequest(BaseModel):
+    """Запрос переноса решений из «Расхождений» в V2 (на всю сессию)."""
+    use_claude: bool = True
+
+
+@router.post("/sessions/{session_id}/v2-review/transfer")
+async def v2_review_transfer_endpoint(session_id: str, req: Optional[V2ReviewTransferRequest] = None):
+    """Перенести решения из классических «Расхождений» в V2 по всей сессии.
+
+    Точные совпадения по `raw_id` переносятся детерминированно; остаток
+    (находки, переименованные/слитые при перепрогоне Opus) сопоставляется
+    Claude по смыслу. Конфликты помечаются, не перезаписываются; неуверенные
+    совпадения переносятся с флагом «проверить». Возвращает отчёт.
+    """
+    req = req or V2ReviewTransferRequest()
+    try:
+        report = await asyncio.to_thread(
+            review_transfer_mod.transfer_session,
+            session_id,
+            use_claude=req.use_claude,
+        )
+    except KeyError as exc:
+        raise HTTPException(404, f"session not found: {exc}") from exc
+    return report
 
 
 @router.post("/sessions/{session_id}/regroup")

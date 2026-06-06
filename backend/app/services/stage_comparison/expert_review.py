@@ -386,3 +386,82 @@ def apply_batch(
             "summary": _summary(store),
             "updated_at": now,
         }
+
+
+def apply_transfer(session_id: str, transfers: Iterable[dict]) -> dict:
+    """Применить перенос решений (из «Расхождений» в V2) с пометкой конфликтов.
+
+    Каждый элемент `transfers`:
+      - `key` — СОСТАВНОЙ ключ `<pair_id>::<raw_id>` цели (обычно v2_id);
+      - `decision` ("accepted" | "rejected");
+      - `rejection_reason` (optional);
+      - `method` ("exact" | "semantic"), `source_raw_id`, `confidence` —
+        метаданные переноса;
+      - `needs_review` (bool) — флаг «проверить» для неуверенных совпадений.
+
+    Политика конфликта — НЕ перезаписывать существующее решение: если у ключа
+    уже есть вердикт, он сохраняется. Совпадающий вердикт считается
+    «consistent», расходящийся — конфликтом (помечается на записи флагом
+    `conflict` + историей `transfer_conflicts`). Идемпотентно: повторный
+    перенос того же не плодит дублей.
+    """
+    with _lock:
+        data = load(session_id)
+        store = data.get("decisions") or {}
+        now = _utc_now()
+        applied = 0
+        consistent = 0
+        needs_review = 0
+        conflicts: list[dict] = []
+        for t in transfers or ():
+            if not isinstance(t, dict):
+                continue
+            key = str(t.get("key") or "").strip()
+            decision = str(t.get("decision") or "").strip().lower()
+            if not key or decision not in ("accepted", "rejected"):
+                continue
+            existing = store.get(key)
+            if isinstance(existing, dict) and (existing.get("decision") or "").lower() in ("accepted", "rejected"):
+                if (existing.get("decision") or "").lower() == decision:
+                    consistent += 1
+                    continue
+                # Расхождение вердиктов — конфликт. Существующее не трогаем.
+                src_raw = str(t.get("source_raw_id") or "")
+                conflicts.append({
+                    "key": key,
+                    "existing_decision": (existing.get("decision") or "").lower(),
+                    "incoming_decision": decision,
+                    "source_raw_id": src_raw,
+                })
+                existing["conflict"] = True
+                hist = existing.setdefault("transfer_conflicts", [])
+                entry_c = {"incoming_decision": decision, "source_raw_id": src_raw}
+                if entry_c not in hist:
+                    hist.append(entry_c)
+                continue
+            entry = {
+                "decision": decision,
+                "rejection_reason": str(t.get("rejection_reason") or "")[:1000],
+                "reviewer": "transfer",
+                "timestamp": now,
+                "transferred": True,
+                "transfer_method": str(t.get("method") or "exact"),
+                "transfer_source_raw_id": str(t.get("source_raw_id") or ""),
+                "transfer_confidence": round(float(t.get("confidence") or 0.0), 3),
+            }
+            if t.get("needs_review"):
+                entry["needs_review"] = True
+                needs_review += 1
+            store[key] = entry
+            applied += 1
+        data["decisions"] = store
+        data["updated_at"] = now
+        data["version"] = VERSION
+        _atomic_write_json(paths_mod.expert_review_path(session_id), data)
+        return {
+            "applied": applied,
+            "consistent_existing": consistent,
+            "needs_review": needs_review,
+            "conflicts": conflicts,
+            "total_decisions": len(store),
+        }
