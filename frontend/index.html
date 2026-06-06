@@ -5377,8 +5377,8 @@
                         <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; font-weight:500">
                             <input type="checkbox" :checked="scQOAllSelected" @change="scQOToggleAll($event)"> Выбрать все
                         </label>
-                        <button class="btn btn-sm btn-primary" :disabled="scQOSelectedCount===0 || scQORunning" @click="scQOOpenConfirm()">
-                            Обработать выбранные ({{ scQOSelectedCount }})
+                        <button class="btn btn-sm btn-primary" :disabled="scQOSelectedCount===0 || scQORunning || scQOPreflighting" @click="scQOOpenConfirm()">
+                            {{ scQOPreflighting ? 'Подготовка…' : ('Обработать выбранные (' + scQOSelectedCount + ')') }}
                         </button>
                         <span style="font-size:11px; color:#6b7280">Qwen готовит enriched MD по очереди, Opus сравнивает готовые пары (Qwen не ждёт Opus).</span>
                     </div>
@@ -5570,8 +5570,8 @@
                                            :title="'Выбрать пару для обработки'" style="vertical-align:middle; margin-right:6px">
                                     <span v-if="scQOPairBadge(p.id)" :title="scQOPairBadge(p.id).title"
                                           :style="{fontSize:'10px', marginRight:'6px', whiteSpace:'nowrap', fontWeight:600, color: scQOPairBadge(p.id).color}">{{ scQOPairBadge(p.id).label }}</span>
-                                    <button class="btn btn-sm btn-primary" :disabled="!p.left || !p.right || scQORunning"
-                                            @click="scQOProcessPair(p.id)" title="Запустить Qwen→Opus для этой пары">Обработать</button>
+                                    <button class="btn btn-sm btn-primary" :disabled="!p.left || !p.right || scQORunning || scQOPreflighting"
+                                            @click="scQOProcessPair(p.id)" title="Запустить Qwen→Opus для этой пары">{{ scQOPreflighting ? '…' : 'Обработать' }}</button>
                                     <button class="btn btn-sm" :disabled="!p.left || !p.right" @click="scOpenPair(p)">Открыть</button>
                                 </td>
                             </tr>

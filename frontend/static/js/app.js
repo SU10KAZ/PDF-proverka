@@ -8882,6 +8882,7 @@ const app = createApp({
         const scQOJob = ref(null);                    // active pipeline job state
         const scQOConfirm = ref(null);                // preflight payload for confirm modal
         const scQORunning = ref(false);               // start request in flight / job running
+        const scQOPreflighting = ref(false);          // preflight request in flight → button feedback
         let scQOPollTimer = null;
         const scQOSelectedCount = computed(() => scPairs.value.filter(p => scQOSelected[p.id]).length);
         const scQOAllSelected = computed(() => {
@@ -9435,11 +9436,18 @@ const app = createApp({
         }
         async function scQOOpenConfirm() {
             const ids = scPairs.value.filter(p => scQOSelected[p.id]).map(p => p.id);
-            if (!ids.length) return;
-            scQOConfirm.value = await scQOPreflight(ids);
+            if (!ids.length || scQOPreflighting.value) return;
+            scQOPreflighting.value = true;
+            try { scQOConfirm.value = await scQOPreflight(ids); }
+            catch (e) { alert('Не удалось подготовить прогон (preflight): ' + ((e && e.message) || e)); }
+            finally { scQOPreflighting.value = false; }
         }
         async function scQOProcessPair(pid) {
-            scQOConfirm.value = await scQOPreflight([pid]);
+            if (scQOPreflighting.value) return;
+            scQOPreflighting.value = true;
+            try { scQOConfirm.value = await scQOPreflight([pid]); }
+            catch (e) { alert('Не удалось подготовить прогон (preflight): ' + ((e && e.message) || e)); }
+            finally { scQOPreflighting.value = false; }
         }
         async function scQOStartConfirmed() {
             const ids = (scQOConfirm.value && scQOConfirm.value.pair_ids) || [];
@@ -13399,7 +13407,7 @@ const app = createApp({
             scStatusLabel, scDiffTypeLabel,
             scScanFolders, scOpenProject, scLoadSessionsList, scFetchSessionsList, scLoadSession,
             scOpenPair, scLoadPairData, scLoadAlignment,
-            scQOSelected, scQOJob, scQOConfirm, scQORunning, scQOSelectedCount, scQOAllSelected,
+            scQOSelected, scQOJob, scQOConfirm, scQORunning, scQOPreflighting, scQOSelectedCount, scQOAllSelected,
             scQOToggleAll, scQOPairLabel, scQOPairBadge, scQOOpenConfirm, scQOProcessPair,
             scQOStartConfirmed, scQOStart, scQOCancel,
             scFailedPopoverPairId, scFailedBlocks, scFailedBlocksLoading, scFailedBlocksError,

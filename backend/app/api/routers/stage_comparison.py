@@ -1393,9 +1393,14 @@ class QwenOpusStartRequest(BaseModel):
 
 @router.post("/sessions/{session_id}/pipeline-qwen-opus/preflight")
 async def qwen_opus_preflight_endpoint(session_id: str, req: QwenOpusPreflightRequest):
-    """Сводка перед запуском Qwen→Opus pipeline (без запуска моделей)."""
+    """Сводка перед запуском Qwen→Opus pipeline (без запуска моделей).
+
+    preflight() — синхронный файловый проход; на 21 паре он раньше блокировал
+    event loop (>30 c), из-за чего /api/info переставал отвечать и watchdog
+    убивал процесс. Выносим в threadpool, чтобы loop оставался отзывчивым."""
     try:
-        return pipeline_queue_mod.preflight(
+        return await asyncio.to_thread(
+            pipeline_queue_mod.preflight,
             session_id, scope=req.scope, pair_ids=req.pair_ids,
             force_qwen=bool(req.force_qwen), force_opus=bool(req.force_opus),
         )
@@ -1408,7 +1413,8 @@ async def qwen_opus_start_endpoint(session_id: str, req: QwenOpusStartRequest):
     """Запустить Qwen→Opus pipeline по ВЫБРАННЫМ парам. Без confirm=true —
     rejected (в фон не уходит). scope=session требует явного pair-выбора в UI."""
     try:
-        job = pipeline_queue_mod.create_job(
+        job = await asyncio.to_thread(
+            pipeline_queue_mod.create_job,
             session_id, scope=req.scope, pair_ids=req.pair_ids,
             force_qwen=bool(req.force_qwen), force_opus=bool(req.force_opus),
             prebuild_large_sheets=bool(req.prebuild_large_sheets),
