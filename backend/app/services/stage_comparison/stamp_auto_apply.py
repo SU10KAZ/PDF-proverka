@@ -53,7 +53,8 @@ _BLOCKING_RISK = {"low_margin"}
 # Сильные признаки: при их наличии duplicate_sheet_name перестаёт быть блокером.
 _STRONG_EVIDENCE_PREFIXES = ("оборуд:", "этаж:", "корпус:", "система:")
 
-_EXACT_TYPES = {"exact_name", "exact_canonical_name", "exact_multipart_group"}
+_EXACT_TYPES = {"exact_name", "exact_canonical_name", "exact_multipart_group",
+                "equipment_canonical_match"}
 _FUZZY_TYPES = {"fuzzy_name", "fuzzy_structural"}
 
 

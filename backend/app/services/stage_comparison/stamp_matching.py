@@ -469,6 +469,84 @@ def _extract_building_tokens(low: str) -> set:
     return out
 
 
+# ─── Идентичность однолинейной схемы оборудования (panel identity) ─────────
+#
+# На однолинейных схемах электрики имя листа в штампе часто содержит длинный
+# дисциплинарный/разделный ПРЕФИКС, который МЕНЯЕТСЯ между стадиями:
+#   старая: «Часть 1. Внутреннее электроснабжение и освещение. Молниезащита и
+#            заземление. (в т.ч.ОЗДС). Однолинейная расчетная схема ГРЩ»
+#   новая:  «Внутреннее электроснабжение и освещение. (втч ОЗДС) Однолинейная
+#            схема ГРЩ»
+# Различающийся префикс ломает и `canonical_name` (exact_canonical мимо), и
+# `sheet_group_key` на основе всего имени (multipart-проход мимо). Но РЕАЛЬНАЯ
+# идентичность такого листа — это марка оборудования, которое он описывает
+# (ГРЩ, ВРУ-1, ЩО-2, ЩР-1а), плюс маркер «однолинейная схема». Извлекаем её как
+# `scheme_identity_key` = «однолинейная схема|<panel>» и используем как
+# group_key и как ключ детерминированного equipment-матча. Префикс — шум.
+
+# Семьи электрических щитов/устройств (нормализованные). Длиннее — раньше в
+# альтернации (Python re — first-match, не longest), иначе «щрп»→«щр»+«п».
+_PANEL_FAMILIES = [
+    "грщв", "грщ", "гру", "вру",
+    "щаво", "щао", "що", "щрп", "щр", "щк", "щс", "щэ", "щу", "щло",
+    "ярп", "рщ", "рп", "рш", "шс", "як", "ппу", "ату", "авр",
+]
+_PANEL_HEAD_RE = re.compile(
+    r"(" + "|".join(sorted(_PANEL_FAMILIES, key=len, reverse=True)) + r")",
+    re.IGNORECASE)
+_PANEL_SEP_RE = re.compile(r"\s*[-–—.]?\s*")
+# число с опц. дробью и буквенным субиндексом: «1», «1а», «12», «0,4».
+_PANEL_DESIG_NUM_RE = re.compile(r"(\d+)([.,]\d+)?([а-я])?", re.IGNORECASE)
+# единица напряжения/мощности — признак РЕЙТИНГА, а не индекса единицы.
+_PANEL_DESIG_UNIT_RE = re.compile(r"\s*(кв|квт|ква|вт|в|а)\b", re.IGNORECASE)
+# словесный/одиночный буквенный суффикс: «итп», «а» (но не первая буква слова).
+_PANEL_DESIG_WORD_RE = re.compile(r"(итп|[а-я])(?![а-я])", re.IGNORECASE)
+_SCHEME_MARKER_RE = re.compile(r"однолинейн", re.IGNORECASE)
+
+
+def _parse_panel_designation(tail: str) -> str:
+    """Из «хвоста» после семьи извлечь марку: «1», «1а», «итп», «а» или «»."""
+    rest = tail[_PANEL_SEP_RE.match(tail).end():]
+    m = _PANEL_DESIG_NUM_RE.match(rest)
+    if m:
+        # 0,4кВ / 380в / дробное → напряжение (рейтинг), а не индекс единицы.
+        if m.group(2) or _PANEL_DESIG_UNIT_RE.match(rest[m.end():]):
+            return ""
+        return m.group(1) + (m.group(3) or "")
+    mw = _PANEL_DESIG_WORD_RE.match(rest)
+    return mw.group(1).lower() if mw else ""
+
+
+def _extract_panel_designation(low: str) -> str:
+    """Марка панели — субъекта однолинейной схемы: «вру-1», «грщ», «щр-1а».
+
+    Работает по RAW lowered имени (с запятыми/единицами), чтобы корректно
+    отбрасывать напряжение «0,4кВ». Берём ПОСЛЕДНЕЕ вхождение семьи (субъект
+    схемы стоит после «...схема»). «» если панель не распознана.
+    """
+    low = (low or "").lower().replace("ё", "е")
+    best: Optional[tuple[str, str]] = None
+    for m in _PANEL_HEAD_RE.finditer(low):
+        best = (m.group(1).lower(), _parse_panel_designation(low[m.end():]))
+    if best is None:
+        return ""
+    fam, desig = best
+    return f"{fam}-{desig}" if desig else fam
+
+
+def _extract_scheme_identity(low: str) -> str:
+    """Идентичность однолинейной схемы: «однолинейная схема|<panel>».
+
+    «» если это не однолинейная схема (нет маркера «однолинейн») или панель не
+    распознана. Включает маркер схемы, чтобы «План ВРУ-1» (другой вид листа) НЕ
+    слился с «Однолинейная схема ВРУ-1».
+    """
+    if not _SCHEME_MARKER_RE.search(low or ""):
+        return ""
+    panel = _extract_panel_designation(low)
+    return f"однолинейная схема|{panel}" if panel else ""
+
+
 # ─── Многостраничные листы (multipart / multisheet) ────────────────────────
 #
 # Один логический лист может в одной версии занимать 1 страницу, а в другой —
@@ -566,6 +644,8 @@ class SheetFeatures:
     sheet_group_key: str = ""
     multipart_role: Optional[str] = None     # None/single | start | continuation | end
     multipart_index: Optional[int] = None
+    # Идентичность однолинейной схемы оборудования (panel identity) или "".
+    scheme_identity_key: str = ""
 
 
 def extract_sheet_features(rec: SheetRec) -> SheetFeatures:
@@ -577,7 +657,13 @@ def extract_sheet_features(rec: SheetRec) -> SheetFeatures:
     canon = canonicalize_sheet_name(norm)
     canon_tokens = set(_tokens(canon))
     base, role, index = extract_multipart(norm)
-    group_key = canonicalize_sheet_name(base)
+    # Идентичность однолинейной схемы оборудования (panel) — из RAW lowered имени
+    # (с единицами, чтобы отбросить «0,4кВ»); начало/конец панели не мешают.
+    scheme_id = _extract_scheme_identity(low)
+    # group_key для multipart: у однолинейных схем — panel identity (игнорирует
+    # различающийся между стадиями дисциплинарный префикс штампа); иначе —
+    # каноническое имя без part-маркеров (прежнее поведение).
+    group_key = scheme_id or canonicalize_sheet_name(base)
     return SheetFeatures(
         page=rec.page,
         sheet_no_raw=(rec.sheet_no or None),
@@ -598,6 +684,7 @@ def extract_sheet_features(rec: SheetRec) -> SheetFeatures:
         sheet_group_key=group_key,
         multipart_role=role,
         multipart_index=index,
+        scheme_identity_key=scheme_id,
     )
 
 
@@ -1055,6 +1142,9 @@ def match_sheet_indexes(
       1.  exact: одинаковое нормализованное имя; дубликаты — в порядке появления.
       1b. exact_canonical: совпадение после :func:`canonicalize_sheet_name`
           (снятие служебных слов — «расчетная», «расположения» …).
+      1c. equipment_canonical: однолинейные схемы оборудования, у которых
+          различается лишь дисциплинарный префикс штампа (ГРЩ/ВРУ-1/ЩО-2) —
+          совпадение по panel identity (`scheme_identity_key`), строго 1↔1.
       1.5 multipart: один логический лист, разбитый на части (начало/продолжение/
           конец) — сопоставление по `sheet_group_key` + ролям; лишние части →
           односторонние `multipart_continuation`.
@@ -1142,6 +1232,43 @@ def match_sheet_indexes(
                            "positive": [lf_by_page[l.page].canonical_name],
                            "negative": [], "risk": _risk(l.page, rp),
                            "confidence": 0.95}
+        used_right.add(rp)
+
+    # ─── Pass 1c — equipment-canonical 1↔1 (renamed + shifted одолинейные схемы) ─
+    # Однолинейная схема оборудования, у которой различается только дисциплинарный
+    # ПРЕФИКС штампа между стадиями («Часть 1. Внутреннее электроснабжение …
+    # Однолинейная расчетная схема ГРЩ» ↔ «… (втч ОЗДС) Однолинейная схема ГРЩ»).
+    # canonical_name не совпал (префикс), но panel identity одинакова. Матчим ТОЛЬКО
+    # строгий 1↔1 (по одной странице с этой идентичностью на сторону); неоднозначные
+    # (>1 страницы где-либо — реальный multipart, как 1↔3 для ГРЩ) уходят в Pass 1.5.
+    left_sid: dict[str, list[int]] = defaultdict(list)
+    right_sid: dict[str, list[int]] = defaultdict(list)
+    for l in sorted(left, key=lambda x: x.page):
+        if l.page in matches:
+            continue
+        sid = lf_by_page[l.page].scheme_identity_key
+        if sid:
+            left_sid[sid].append(l.page)
+    for r in sorted(right, key=lambda x: x.page):
+        if r.page in used_right:
+            continue
+        sid = rf_by_page[r.page].scheme_identity_key
+        if sid:
+            right_sid[sid].append(r.page)
+    for sid, lps in left_sid.items():
+        rps = right_sid.get(sid)
+        if not rps or len(lps) != 1 or len(rps) != 1:
+            continue  # неоднозначно/multipart → отдать Pass 1.5
+        lp, rp = lps[0], rps[0]
+        if get_hard_conflict(lf_by_page[lp], rf_by_page[rp]):
+            continue  # panel совпал, но конфликт признаков (этаж/корпус) → пропуск
+        matches[lp] = {
+            "rp": rp, "score": 0.93, "mtype": "equipment_canonical_match",
+            "reason": ("совпадение по оборудованию однолинейной схемы "
+                       "(снят различающийся префикс раздела штампа)"),
+            "positive": [sid], "negative": [], "risk": _risk(lp, rp),
+            "confidence": 0.93,
+            "diag": {"scheme_identity": sid}}
         used_right.add(rp)
 
     # ─── Pass 1.5 — multipart/group match ──────────────────────────────────
@@ -1475,6 +1602,8 @@ def match_sheet_indexes(
         "matched_count": len(matched_items),
         "llm_match_count": llm_match_count,
         "derived_match_count": derived_match_count,
+        "equipment_canonical_match_count": sum(
+            1 for it in items if it["match_type"] == "equipment_canonical_match"),
         "multipart_match_count": multipart_count,
         "multipart_continuation_count": sum(
             1 for it in items if it["match_type"] == "multipart_continuation"),
