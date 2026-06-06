@@ -127,6 +127,35 @@ async def _check_qwen_ctx() -> tuple[bool, Optional[int]]:
         return True, None
 
 
+async def _probe_qwen_health() -> dict:
+    """Injection seam for the pre-pipeline health gate. Default reaches the live
+    local graphic-LLM probe (loaded model / ctx / fast-profile / live ping vs
+    ngrok HTML). Tests patch this. Never raises → ok=False on failure."""
+    try:
+        from . import graphic_llm_local as g
+        return await g.probe_qwen_health()
+    except Exception as exc:  # noqa: BLE001 — health gate must never crash callers
+        return {"ok": False, "reason": f"probe_error:{type(exc).__name__}", "details": {}}
+
+
+async def qwen_health_gate(*, probe_fn: Optional[Callable[..., Awaitable[dict]]] = None) -> dict:
+    """Run the health probe and return its normalized result.
+
+    Returns ``{ok, reason, details}``. ``probe_fn`` overrides the default probe
+    (tests). Used by preflight (advisory) and start (enforced)."""
+    fn = probe_fn or _probe_qwen_health
+    try:
+        res = await fn()
+    except Exception as exc:  # noqa: BLE001
+        return {"ok": False, "reason": f"probe_error:{type(exc).__name__}", "details": {}}
+    if not isinstance(res, dict):
+        return {"ok": False, "reason": "probe_bad_result", "details": {}}
+    res.setdefault("ok", False)
+    res.setdefault("reason", "unknown")
+    res.setdefault("details", {})
+    return res
+
+
 def _backup_pair_artifacts(session_id: str, pair_id: str) -> Optional[str]:
     """Backup text_enrichment/ of a pair before re-enrichment. Returns backup dir
     or None. Never deletes anything; copy-only."""
@@ -263,11 +292,39 @@ def _verified_labels(item: dict) -> list[str]:
     return [str(x) for x in out if x]
 
 
+# Подстроки в error/parse_error_detail/raw, означающие транспортный (retryable)
+# сбой, а не content/model. Используется как fallback к ``error_class`` для
+# блоков, записанных до появления поля (или сторонними путями).
+_TRANSPORT_ERROR_MARKERS = (
+    "http_error", "readerror", "connecterror", "network", "remoteprotocol",
+    "timeout", "ngrok", "tunnel not found", "http_404", "http_408", "http_425",
+    "http_429", "http_500", "http_502", "http_503", "http_504",
+    "provider_unavailable", "transient_llm_transport",
+)
+
+
+def _is_transport_error_block(it: dict) -> bool:
+    """True, если error-блок — транспортный (ngrok/сеть/таймаут), а не
+    content/model. Приоритет — явному ``error_class``/``transport_error``,
+    затем эвристика по строкам ошибки."""
+    if it.get("transport_error") is True:
+        return True
+    ec = (it.get("error_class") or "").strip().lower()
+    if ec == "transport":
+        return True
+    if ec in ("content", "model"):
+        return False
+    hay = " ".join(str(it.get(k) or "") for k in (
+        "error", "parse_error_detail", "final_status_reason")).lower()
+    return any(m in hay for m in _TRANSPORT_ERROR_MARKERS)
+
+
 def _validate_qwen_pair(session_id: str, pair_id: str) -> tuple[bool, str, dict]:
     """File-based validation of a pair's Qwen output. Returns (ok, reason, metrics).
     Reads <side>_image_descriptions.json — no live calls."""
     te = paths_mod.pair_dir(session_id, pair_id) / "text_enrichment"
     total = errors = json_failed = placeholders = grsh_artificial = 0
+    transport_errors = 0
     sides_present = 0
     for side in ("left", "right"):
         p = te / f"{side}_image_descriptions.json"
@@ -284,6 +341,8 @@ def _validate_qwen_pair(session_id: str, pair_id: str) -> tuple[bool, str, dict]
             st = it.get("status")
             if st == "error":
                 errors += 1
+                if _is_transport_error_block(it):
+                    transport_errors += 1
             if st == "large_sheet_not_prepared":
                 placeholders += 1
             ped = (it.get("parse_error_detail") or "")
@@ -292,9 +351,14 @@ def _validate_qwen_pair(session_id: str, pair_id: str) -> tuple[bool, str, dict]
             if it.get("block_type") == "dense_grsh_singleline":
                 if _has_artificial_run(_verified_labels(it)):
                     grsh_artificial += 1
+    # Content-ошибки = error-блоки, НЕ являющиеся транспортными. Порог 25%
+    # остаётся прежним, но применяется к content-ошибкам — сетевой флап ngrok/
+    # LM Studio не должен выглядеть как «модель не справилась с содержимым».
+    content_errors = max(0, errors - transport_errors)
     metrics = {
         "total_blocks": total, "error_blocks": errors, "json_parse_failed": json_failed,
         "placeholders": placeholders, "grsh_artificial_verified": grsh_artificial,
+        "transport_error_blocks": transport_errors, "content_error_blocks": content_errors,
         "sides_present": sides_present,
     }
     if sides_present == 0:
@@ -304,7 +368,12 @@ def _validate_qwen_pair(session_id: str, pair_id: str) -> tuple[bool, str, dict]
     if grsh_artificial > 0:
         return False, "grsh_artificial_series_verified", metrics
     if total > 0 and (errors / total) > ERROR_BLOCKS_MAX_RATIO:
-        return False, "error_blocks_over_threshold", metrics
+        # Над порогом. Если CONTENT-ошибок самих по себе достаточно — это
+        # настоящий content-fail. Иначе порог перебили транспортные ошибки →
+        # transient, безопасно повторить (НЕ роняем как content validation fail).
+        if (content_errors / total) > ERROR_BLOCKS_MAX_RATIO:
+            return False, "error_blocks_over_threshold", metrics
+        return False, "transient_llm_transport_failed", metrics
     if total > 0 and (json_failed / total) > JSON_PARSE_FAILED_MAX_RATIO:
         return False, "json_parse_failed_over_threshold", metrics
     return True, "ok", metrics
@@ -587,6 +656,22 @@ def _fail_qwen(job: dict, it: dict, error: str) -> None:
     it["status"] = "failed"
     it["qwen_error"] = error
     it["qwen_finished_at"] = _utc_now()
+    # Транспортный/инфраструктурный сбой (ngrok/сеть/ctx/transient) — retryable:
+    # маркируем для UI, чтобы оператор видел «безопасно повторить», а не
+    # «модель не справилась с содержимым».
+    low = (error or "").lower()
+    is_transport = (
+        "transient_llm_transport_failed" in low
+        or "qwen_ctx_below_min" in low
+        or any(m in low for m in _TRANSPORT_ERROR_MARKERS)
+    )
+    if is_transport:
+        it["retryable"] = True
+        it["failure_class"] = "transport"
+        it["problem_hint"] = "LLM/ngrok transport failed — safe to retry"
+    else:
+        it["retryable"] = False
+        it["failure_class"] = "content"
     job["qwen_worker"]["failed"] += 1
     if it["pair_id"] not in job["queues"]["failed"]:
         job["queues"]["failed"].append(it["pair_id"])

@@ -4022,6 +4022,16 @@ async def enrich_side(
             item["status"] = "error"
             item["error"] = f"describe_exception:{type(exc).__name__}:{exc}"
             item["duration_sec"] = round(time.monotonic() - started, 3)
+            # Транспортные исключения (httpx ReadError/ConnectError/Timeout…)
+            # помечаем как retryable, чтобы pair-валидация не записала их в
+            # content-ошибки. Имя класса исключения — дешёвый детектор.
+            _exc_name = type(exc).__name__.lower()
+            if any(m in _exc_name for m in ("readerror", "connect", "timeout",
+                                            "network", "protocol", "remotedisconnected")):
+                item["error_class"] = "transport"
+                item["transport_error"] = True
+            else:
+                item["error_class"] = "content"
             summary.errors += 1
             descriptions.append(item)
             await _notify_progress(_block_idx, mb, item)
@@ -4153,6 +4163,17 @@ async def enrich_side(
             item["final_status_reason"] = (
                 result.parse_error_detail or result.status or "unknown_error"
             )
+            # Транспорт vs content/model: retry-слой уже проставил error_class;
+            # если нет (старый путь) — классифицируем здесь. transport_error
+            # читает pair-валидация, чтобы не считать сетевой флап content-сбоем.
+            err_cls = getattr(result, "error_class", None) or (
+                graphic_local_mod.classify_describe_error(result)
+            )
+            item["error_class"] = err_cls
+            if err_cls == "transport":
+                item["transport_error"] = True
+                if "transport_error" not in item["warnings"]:
+                    item["warnings"].append("transport_error")
             summary.errors += 1
 
         # ── Problem-block tiled high-res retry (feature-flagged, default OFF) ──

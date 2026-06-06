@@ -34,6 +34,7 @@ import io
 import json
 import logging
 import os
+import random
 import re
 import time
 from dataclasses import dataclass, field
@@ -1177,6 +1178,136 @@ def _is_retryable_exception(exc: Exception) -> Optional[str]:
     return None
 
 
+# ─── Transport-vs-content error classification (retry resilience 2026-06-06) ──
+#
+# Инцидент: на паре ПОС Qwen упал не из-за модели, а из-за транспорта — ngrok
+# вернул HTML «tunnel not found» (HTTP 404) и httpx.ReadError. Такие сбои
+# RETRYABLE: туннель/агент LM Studio временно отвалился, повтор через паузу
+# обычно проходит. Их нельзя путать с content/model-ошибками (валидный 2xx, но
+# контент не распарсился / не прошёл schema) — те повтором транспорта не лечатся.
+
+# Маркеры HTML-страницы прокси/ngrok в теле ответа: запрос не дошёл до модели.
+_TRANSPORT_HTML_MARKERS = (
+    "ngrok",
+    "err_ngrok",
+    "tunnel not found",
+    "tunnel-not-found",
+    "<!doctype html",
+    "<html",
+    "bad gateway",
+    "gateway time-out",
+    "gateway timeout",
+    "service unavailable",
+    "502 bad gateway",
+    "503 service",
+    "504 gateway",
+)
+
+# HTTP-коды, которые на стеке «LM Studio за ngrok» практически всегда означают
+# временную недоступность апстрима, а не валидную ошибку запроса:
+#   404 — ngrok «tunnel not found» (агент офлайн);
+#   408/425/429 — таймаут / too-early / rate-limit;
+#   5xx — апстрим упал/перегружен (обрабатывается отдельно как >=500).
+_RETRYABLE_TRANSPORT_STATUS = {404, 408, 425, 429}
+
+
+def _looks_like_transport_html(body: Optional[str]) -> bool:
+    """True, если тело ответа — HTML-страница ошибки прокси/ngrok, а не JSON от
+    модели (т.е. запрос не дошёл до LLM → transport-сбой)."""
+    if not body:
+        return False
+    low = body[:2000].lower()
+    return any(m in low for m in _TRANSPORT_HTML_MARKERS)
+
+
+def _parse_http_status_from_error(error: Optional[str]) -> int:
+    """Достать числовой HTTP-код из строки вида 'http_404' / 'http_503:...'."""
+    if not error or not error.startswith("http_"):
+        return 0
+    try:
+        return int(error.split("_", 1)[1].split(":", 1)[0])
+    except (ValueError, IndexError):
+        return 0
+
+
+def classify_describe_error(result: Optional["DescribeResult"]) -> str:
+    """Классифицировать исход одного describe-вызова.
+
+    Возвращает:
+      * ``ok``        — done/partial (успех, включая salvage);
+      * ``transport`` — RETRYABLE: сетевой/транспортный сбой (ngrok HTML 404,
+        408/425/429, 5xx, ReadError/ConnectError/Timeout/RemoteProtocol, пустой
+        ответ, HTML вместо JSON). Повтор после паузы имеет смысл;
+      * ``content``   — NON-RETRYABLE: модель ответила (2xx), но контент не
+        распарсился/не прошёл schema (invalid_json). Это путь salvage/fallback,
+        а не транспортный повтор;
+      * ``model``     — NON-RETRYABLE: валидная ошибка API запроса (4xx с
+        осмысленным телом, например 400 bad request). Повтор не поможет.
+    """
+    if result is None:
+        return "transport"
+    st = (result.status or "").strip()
+    if st in ("done", "partial"):
+        return "ok"
+    if st == "timeout":
+        return "transport"
+    body = getattr(result, "full_raw_response", "") or ""
+    err = result.error or ""
+    if st == "invalid_json":
+        # 2xx, но контент не JSON. Транспортным считаем ТОЛЬКО если апстрим
+        # подсунул HTML-страницу прокси вместо ответа модели (200 + ngrok page).
+        return "transport" if _looks_like_transport_html(body) else "content"
+    if st == "error":
+        if err.startswith(("http_error:", "network:", "timeout")):
+            return "transport"
+        if err.startswith("http_"):
+            code = _parse_http_status_from_error(err)
+            if code in _RETRYABLE_TRANSPORT_STATUS or code >= 500:
+                return "transport"
+            if _looks_like_transport_html(body) or not body.strip():
+                return "transport"
+            return "model"  # настоящая 4xx с телом (например, 400 bad request)
+        # Неизвестная строка ошибки: транспорт только при HTML/пустом теле.
+        return "transport" if (_looks_like_transport_html(body) or not body.strip()) else "content"
+    if st == "provider_unavailable":
+        return "transport"
+    return "content"
+
+
+def _transport_retry_plan() -> tuple[int, list[float], float]:
+    """(retries, backoff_seconds, jitter_frac) для transport-повторов из env.
+
+    ``retries`` — число ПОВТОРОВ (итого попыток = 1 + retries). ``backoff`` —
+    задержка перед каждым повтором по индексу (последнее значение тянется на
+    хвост). ``jitter_frac`` — доля случайной добавки сверху [0..base*jitter].
+    """
+    retries = max(0, _env_int("STAGE_COMPARISON_GRAPHIC_LLM_TRANSPORT_RETRIES", 3))
+    raw = os.environ.get("STAGE_COMPARISON_GRAPHIC_LLM_TRANSPORT_BACKOFF", "5,15,30,60")
+    backoff: list[float] = []
+    for tok in (raw or "").split(","):
+        tok = tok.strip()
+        if not tok:
+            continue
+        try:
+            backoff.append(max(0.0, float(tok)))
+        except ValueError:
+            continue
+    if not backoff:
+        backoff = [5.0, 15.0, 30.0, 60.0]
+    jitter = max(0.0, _env_float("STAGE_COMPARISON_GRAPHIC_LLM_TRANSPORT_JITTER", 0.25))
+    return retries, backoff, jitter
+
+
+def _transport_retry_delay(attempt_index: int, backoff: list[float], jitter: float) -> float:
+    """Задержка перед повтором: backoff[attempt] + небольшой джиттер."""
+    if not backoff:
+        return 0.0
+    base = backoff[min(attempt_index, len(backoff) - 1)]
+    if jitter > 0 and base > 0:
+        base = base + random.uniform(0.0, base * jitter)
+    return base
+
+
 def _build_summary_text(parsed: dict[str, Any]) -> str:
     """Собрать человекочитаемую summary из распарсенного JSON для UI."""
     if not isinstance(parsed, dict):
@@ -1456,6 +1587,11 @@ class DescribeResult:
     response_char_count: int = 0
     parse_error_detail: Optional[str] = None
     full_raw_response: str = ""
+    # Грубая категория сбоя для retry/validation: None|ok|transport|content|model.
+    # Заполняется retry-слоем (см. ``classify_describe_error``). Транспортные
+    # сбои (ngrok HTML 404, 5xx, ReadError…) → ``transport`` (retryable); ответы
+    # модели, не прошедшие парс/schema → ``content``; валидные API-ошибки → ``model``.
+    error_class: Optional[str] = None
 
 
 def _classify_parse_error(content_text: str) -> str:
@@ -1863,8 +1999,12 @@ async def _describe_image_once(
 
 
 # Retry/fallback константы.
+# LEGACY (2026-06-06): describe-путь больше их НЕ использует — transport-повторы
+# теперь конфигурируются через ``_transport_retry_plan`` (env
+# STAGE_COMPARISON_GRAPHIC_LLM_TRANSPORT_RETRIES/_BACKOFF/_JITTER, default
+# 3 повтора с backoff 5/15/30/60s + jitter). Оставлены для обратной совместимости.
 DESCRIBE_TRANSIENT_RETRY_SLEEP_SEC = 5.0
-DESCRIBE_TRANSIENT_RETRY_COUNT = 1   # сколько повторов на одну модель-кандидата
+DESCRIBE_TRANSIENT_RETRY_COUNT = 1   # legacy, не используется describe-путём
 
 
 CONTINUATION_PROMPT_TEMPLATE = """Это ПРОДОЛЖЕНИЕ описания одного и того же изображения из проектной/рабочей документации в строительстве.
@@ -2251,7 +2391,8 @@ async def _describe_with_retry_and_fallback(
         cand_model, is_fallback = candidates[cand_idx]
         result: Optional[DescribeResult] = None
         content_text: str = ""
-        for attempt in range(1 + DESCRIBE_TRANSIENT_RETRY_COUNT):
+        retries, backoff, jitter = _transport_retry_plan()
+        for attempt in range(1 + retries):
             result, content_text = await _describe_image_once(
                 img_url=img_url,
                 prompt=prompt,
@@ -2270,26 +2411,30 @@ async def _describe_with_retry_and_fallback(
                     )
                 return result
 
-            transient_reason = None
-            if result.status == "error":
-                err = (result.error or "")
-                if err.startswith("http_"):
-                    try:
-                        status_code = int(err.split("_", 1)[1].split(":", 1)[0])
-                    except (ValueError, IndexError):
-                        status_code = 0
-                    transient_reason = _is_retryable_http(status_code, content_text)
-                elif err.startswith("http_error:") or err.startswith("network:"):
-                    transient_reason = err.split(":", 1)[0]
-            elif result.status == "timeout":
-                transient_reason = "timeout"
+            # Классифицируем: транспортный сбой (ngrok 404/HTML, 5xx, ReadError,
+            # timeout, пустой ответ) → RETRYABLE; content/model → нет.
+            err_class = classify_describe_error(result)
+            is_transport = err_class == "transport"
+            body_for_log = getattr(result, "full_raw_response", "") or content_text or ""
+            logger.warning(
+                "describe attempt=%d/%d model=%s status=%s error=%s class=%s "
+                "content_type=%s retryable=%s body_preview=%r",
+                attempt + 1, retries + 1, cand_model, result.status,
+                (result.error or "")[:80], err_class,
+                "html" if _looks_like_transport_html(body_for_log) else "json/text",
+                is_transport, body_for_log[:200],
+            )
 
-            if transient_reason and attempt < DESCRIBE_TRANSIENT_RETRY_COUNT:
+            if is_transport and attempt < retries:
+                delay = _transport_retry_delay(attempt, backoff, jitter)
                 logger.warning(
-                    "describe_image_local: transient %s on model %s (attempt %d), retrying after %.1fs",
-                    transient_reason, cand_model, attempt + 1, DESCRIBE_TRANSIENT_RETRY_SLEEP_SEC,
+                    "describe_image_local: transient transport error (%s) on model %s "
+                    "(attempt %d/%d), retrying after %.1fs",
+                    result.error or result.status, cand_model,
+                    attempt + 1, retries + 1, delay,
                 )
-                await asyncio.sleep(DESCRIBE_TRANSIENT_RETRY_SLEEP_SEC)
+                if delay > 0:
+                    await asyncio.sleep(delay)
                 continue
             break
 
@@ -2356,13 +2501,21 @@ async def _describe_with_retry_and_fallback(
             last_result.parse_error_detail or "salvage_no_safe_boundary"
         )
 
-    return last_result or DescribeResult(
+    if last_result is not None:
+        # Финальный (исчерпавший повторы) результат: проставляем категорию,
+        # чтобы caller/validation отличили транспортный сбой от content/model.
+        if last_result.status not in ("done", "partial"):
+            last_result.error_class = classify_describe_error(last_result)
+        return last_result
+
+    return DescribeResult(
         status="error",
         provider=cfg.provider,
         model=primary_model,
         model_used=primary_model,
         fallback_used=fallback_used_hint,
         error="no_candidate_attempted",
+        error_class="transport",
     )
 
 
@@ -2743,6 +2896,104 @@ async def loaded_models_diagnostics(
     return out
 
 
+async def _live_completion_probe(cfg: LocalGraphicLLMConfig) -> dict[str, Any]:
+    """Короткий chat/completions без картинки. Возвращает {ok, reason, …}.
+
+    Главная цель — отличить ЖИВОЙ JSON-ответ модели от HTML-страницы ngrok 404
+    («tunnel not found») или иного transport-сбоя ДО запуска тяжёлого прогона.
+    """
+    payload = {
+        "model": (cfg.model or "").strip(),
+        "max_tokens": 8,
+        "temperature": 0.0,
+        "messages": [{"role": "user", "content": "ping"}],
+    }
+    try:
+        async with httpx.AsyncClient(timeout=min(30, cfg.timeout_sec)) as client:
+            r = await client.post(
+                f"{cfg.base_url}/v1/chat/completions",
+                headers=_build_headers(cfg),
+                json=payload,
+            )
+    except httpx.TimeoutException as exc:
+        return {"ok": False, "reason": f"timeout:{type(exc).__name__}"}
+    except Exception as exc:  # noqa: BLE001
+        return {"ok": False, "reason": f"network:{type(exc).__name__}"}
+    body = r.text or ""
+    if r.status_code >= 400:
+        suffix = "_html" if _looks_like_transport_html(body) else ""
+        return {"ok": False, "reason": f"http_{r.status_code}{suffix}", "status_code": r.status_code}
+    if _looks_like_transport_html(body):
+        return {"ok": False, "reason": "html_response", "status_code": r.status_code}
+    try:
+        data = r.json()
+    except Exception:  # noqa: BLE001
+        return {"ok": False, "reason": "non_json_response", "status_code": r.status_code}
+    if not isinstance(data, dict) or "choices" not in data:
+        return {"ok": False, "reason": "unexpected_response_shape", "status_code": r.status_code}
+    return {"ok": True, "reason": "ok", "status_code": r.status_code}
+
+
+async def probe_qwen_health(
+    cfg: Optional[LocalGraphicLLMConfig] = None,
+    *,
+    do_live_test: bool = True,
+    require_fast_profile: Optional[bool] = None,
+) -> dict[str, Any]:
+    """Read-only health-gate локального graphic-LLM перед запуском pipeline.
+
+    Проверяет (без mutating-операций):
+      * provider настроен и endpoint доступен;
+      * есть хотя бы одна загруженная модель (``loaded_models`` не пуст);
+      * primary ctx >= desired (``ctx_ok``);
+      * ``fast_profile_ok`` (если fast-profile включён env-флагами и требуется);
+      * (опц.) короткий live chat/completions — пришёл JSON, а не HTML/ngrok 404.
+
+    Возвращает ``{ok, reason, details}``. Никогда не бросает — на любой
+    непредвиденной ошибке отдаёт ``ok=False`` с понятной причиной.
+    """
+    try:
+        cfg = cfg or load_local_graphic_llm_config()
+        if require_fast_profile is None:
+            require_fast_profile = bool(
+                cfg.load_flash_attention or cfg.load_offload_kv_cache_to_gpu
+            )
+        details: dict[str, Any] = {}
+        avail, areason = check_local_graphic_llm_available(cfg)
+        if not avail:
+            return {"ok": False, "reason": f"provider_unavailable:{areason}", "details": details}
+        try:
+            diag = await loaded_models_diagnostics(cfg)
+        except Exception as exc:  # noqa: BLE001
+            return {"ok": False, "reason": f"diagnostics_failed:{type(exc).__name__}",
+                    "details": details}
+        details.update({
+            "endpoint_available": bool(diag.get("endpoint_available")),
+            "loaded_models_count": len(diag.get("loaded_models") or []),
+            "ctx_ok": bool(diag.get("ctx_ok")),
+            "fast_profile_ok": bool(diag.get("fast_profile_ok")),
+            "primary_loaded_ctx": diag.get("primary_loaded_ctx"),
+            "require_fast_profile": bool(require_fast_profile),
+        })
+        if not diag.get("endpoint_available"):
+            return {"ok": False, "reason": "endpoint_unavailable", "details": details}
+        if not (diag.get("loaded_models") or []):
+            return {"ok": False, "reason": "no_model_loaded", "details": details}
+        if not diag.get("ctx_ok"):
+            return {"ok": False, "reason": "ctx_below_desired", "details": details}
+        if require_fast_profile and not diag.get("fast_profile_ok"):
+            return {"ok": False, "reason": "fast_profile_not_loaded", "details": details}
+        if do_live_test:
+            live = await _live_completion_probe(cfg)
+            details["live_test"] = live
+            if not live.get("ok"):
+                return {"ok": False, "reason": f"live_test_failed:{live.get('reason')}",
+                        "details": details}
+        return {"ok": True, "reason": "ok", "details": details}
+    except Exception as exc:  # noqa: BLE001 — health gate must never raise
+        return {"ok": False, "reason": f"probe_error:{type(exc).__name__}", "details": {}}
+
+
 __all__ = [
     "PROVIDER_NAME",
     "GRAPHIC_DIFF_LOCAL_PROMPT",
@@ -2754,10 +3005,12 @@ __all__ = [
     "compare_images_local",
     "describe_image_local",
     "DescribeResult",
+    "classify_describe_error",
     "parse_diff_json",
     "salvage_partial_json",
     "config_info_for_endpoint",
     "loaded_models_diagnostics",
+    "probe_qwen_health",
     "snapshot_loaded_models",
     "cleanup_local_graphic_llm",
 ]

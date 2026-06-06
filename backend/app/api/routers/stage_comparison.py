@@ -1389,6 +1389,10 @@ class QwenOpusStartRequest(BaseModel):
     prebuild_large_sheets: bool = True
     run_v2: bool = False
     confirm: bool = False
+    # Health gate: по умолчанию старт блокируется, если локальный Qwen/ngrok
+    # недоступен (нет загруженной модели, ctx мал, или ping вернул HTML ngrok 404).
+    # Оператор может явно обойти проверку (на свой риск).
+    skip_health_check: bool = False
 
 
 @router.post("/sessions/{session_id}/pipeline-qwen-opus/preflight")
@@ -1399,19 +1403,47 @@ async def qwen_opus_preflight_endpoint(session_id: str, req: QwenOpusPreflightRe
     event loop (>30 c), из-за чего /api/info переставал отвечать и watchdog
     убивал процесс. Выносим в threadpool, чтобы loop оставался отзывчивым."""
     try:
-        return await asyncio.to_thread(
+        pf = await asyncio.to_thread(
             pipeline_queue_mod.preflight,
             session_id, scope=req.scope, pair_ids=req.pair_ids,
             force_qwen=bool(req.force_qwen), force_opus=bool(req.force_opus),
         )
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
+    # Health gate (advisory in preflight): показать оператору, доступен ли
+    # локальный Qwen/ngrok, ДО подтверждения запуска. can_run учитывает здоровье.
+    health = await pipeline_queue_mod.qwen_health_gate()
+    pf["health"] = health
+    if not health.get("ok"):
+        pf["health_reason"] = health.get("reason")
+        pf["can_run"] = False
+        risks = pf.get("risks")
+        if isinstance(risks, list):
+            risks.append(
+                f"LLM/ngrok недоступен ({health.get('reason')}) — запуск заблокирован "
+                "до восстановления туннеля/модели."
+            )
+    return pf
 
 
 @router.post("/sessions/{session_id}/pipeline-qwen-opus")
 async def qwen_opus_start_endpoint(session_id: str, req: QwenOpusStartRequest):
     """Запустить Qwen→Opus pipeline по ВЫБРАННЫМ парам. Без confirm=true —
     rejected (в фон не уходит). scope=session требует явного pair-выбора в UI."""
+    # Health gate (ENFORCED): не запускать тяжёлый прогон, если локальный Qwen/
+    # ngrok сейчас недоступен — иначе все пары упадут на transport-сбоях. Обойти
+    # можно явным skip_health_check (оператор берёт риск на себя).
+    if not req.skip_health_check:
+        health = await pipeline_queue_mod.qwen_health_gate()
+        if not health.get("ok"):
+            return {
+                "status": "rejected_llm_unavailable",
+                "reason": health.get("reason"),
+                "health": health,
+                "message": "LLM/ngrok transport недоступен — старт заблокирован. "
+                           "Восстановите туннель/модель и повторите "
+                           "(или skip_health_check=true на свой риск).",
+            }
     try:
         job = await asyncio.to_thread(
             pipeline_queue_mod.create_job,

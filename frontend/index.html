@@ -5407,11 +5407,13 @@
                                 Оценка Qwen: ~{{ Math.round(scQOConfirm.estimated_qwen_duration_sec/60) }} мин · Opus: ~{{ Math.round(scQOConfirm.estimated_opus_duration_sec/60) }} мин<br>
                                 <span v-if="scQOConfirm.too_large_pairs.length">too_large пар: {{ scQOConfirm.too_large_pairs.length }}<br></span>
                                 <span v-for="r in scQOConfirm.risks" :key="r" style="color:#b45309; display:block">⚠ {{ r }}</span>
+                                <span v-if="scQOConfirm.health && scQOConfirm.health.ok" style="display:block; margin-top:4px; color:#16a34a">✓ LLM/ngrok доступен (модель загружена, ctx ok)</span>
+                                <span v-if="scQOConfirm.health && !scQOConfirm.health.ok" style="display:block; margin-top:4px; color:#dc2626; font-weight:600">✗ LLM/ngrok недоступен: {{ scQOConfirm.health.reason }} — старт заблокирован. Восстановите туннель/модель.</span>
                                 <span style="display:block; margin-top:6px; color:#6b7280">Будет сделан backup артефактов пар. Запустятся Qwen (локально) и Opus (Claude Code).</span>
                             </div>
                             <div class="retry-dialog__buttons">
                                 <button class="btn btn-secondary" @click="scQOConfirm=null">Отмена</button>
-                                <button class="btn btn-primary" :disabled="scQORunning" @click="scQOStartConfirmed()">Запустить обработку</button>
+                                <button class="btn btn-primary" :disabled="scQORunning || (scQOConfirm.health && !scQOConfirm.health.ok)" @click="scQOStartConfirmed()">Запустить обработку</button>
                             </div>
                         </div>
                     </div>
