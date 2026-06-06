@@ -224,7 +224,103 @@ def _per_pair_status(session_id: str, decisions: dict) -> dict:
     return per_pair
 
 
+def _prune_decisions(session_id: str, decisions: dict) -> tuple[dict, dict]:
+    """Разделить решения на (kept, removed_orphans). НИКОГДА не вызывается с
+    диска автоматически — только из явного `prune_orphans` (см. инцидент ниже).
+
+    Orphan — составной ключ `<pid>::<raw>`, где пара `pid` СЕЙЧАС done и
+    перечислена `_iter_session_pair_changes`, но `raw` уже не встречается среди
+    её изменений (остался от прошлой регенерации сравнения — id'шники `chg_…`
+    переgenerировались).
+
+    КРИТИЧЕСКИЙ guard «zero-overlap» (после инцидента 2026-06-04, когда пара была
+    стёрта целиком): если у пары НИ ОДНО сохранённое решение не совпадает с
+    текущими id её changes, пара НЕ чистится — это сигнатура того, что
+    comparison пары прямо сейчас регенерируется / id полностью переgenerированы
+    (race), и стирать всю разметку пары недопустимо. Чистим пару только при
+    ЧАСТИЧНОМ совпадении (есть и совпавшие, и пропавшие id) — тогда пропавшие
+    действительно orphan'ы. Пары, которые не удалось перечислить (не done /
+    удалена), и legacy-ключи (без `::`) не трогаем.
+    """
+    valid_by_pair: dict[str, set[str]] = {}
+    try:
+        for pid, rid in _iter_session_pair_changes(session_id):
+            if not pid:
+                continue
+            valid_by_pair.setdefault(pid, set())
+            if rid:
+                valid_by_pair[pid].add(rid)
+    except Exception:  # noqa: BLE001 — prune не должен ронять чтение
+        return dict(decisions or {}), {}
+
+    # Группируем сохранённые составные ключи по паре.
+    stored_by_pair: dict[str, list[str]] = {}
+    kept: dict = {}
+    removed: dict = {}
+    for key, entry in (decisions or {}).items():
+        skey = str(key)
+        if _is_legacy_key(skey):
+            kept[skey] = entry           # legacy → миграция, не трогаем
+            continue
+        pid = skey.split(_KEY_SEP, 1)[0]
+        stored_by_pair.setdefault(pid, []).append(skey)
+
+    for pid, keys in stored_by_pair.items():
+        valid_ids = valid_by_pair.get(pid)
+        if not valid_ids:
+            # Пара не перечислена ИЛИ дала 0 валидных id (не done / race) →
+            # сохраняем всю разметку пары как есть.
+            for k in keys:
+                kept[k] = decisions[k]
+            continue
+        matched = [k for k in keys if k.split(_KEY_SEP, 1)[1] in valid_ids]
+        if not matched:
+            # zero-overlap guard: вероятно id полностью переgenerированы /
+            # пара регенерируется прямо сейчас. НЕ стираем пару целиком.
+            for k in keys:
+                kept[k] = decisions[k]
+            continue
+        for k in keys:
+            raw = k.split(_KEY_SEP, 1)[1]
+            if raw in valid_ids:
+                kept[k] = decisions[k]
+            else:
+                removed[k] = decisions[k]
+    return kept, removed
+
+
+def prune_orphans(session_id: str, dry_run: bool = False) -> dict:
+    """Удалить решения по `raw_id`, которых больше нет в текущих changes пары.
+
+    ЯВНОЕ действие (endpoint/скрипт), НЕ авто-триггер на чтении. Безопасно:
+    чистит только пары, что сейчас done, перечислимы и имеют частичное
+    совпадение id (см. zero-overlap guard в `_prune_decisions`). `dry_run=True`
+    — только посчитать, ничего не писать. Возвращает отчёт.
+    """
+    with _lock:
+        data = load(session_id)
+        decisions = data.get("decisions") or {}
+        kept, removed = _prune_decisions(session_id, decisions)
+        if removed and not dry_run:
+            data["decisions"] = kept
+            data["updated_at"] = _utc_now()
+            data["version"] = VERSION
+            _atomic_write_json(paths_mod.expert_review_path(session_id), data)
+        return {
+            "session_id": session_id,
+            "removed_count": len(removed),
+            "removed_keys": sorted(removed.keys()),
+            "kept_count": len(kept),
+            "dry_run": bool(dry_run),
+        }
+
+
 def get_with_summary(session_id: str, include_pairs: bool = False) -> dict:
+    # ВАЖНО: чтение НЕ мутирует хранилище. Orphan-решения не накручивают
+    # счётчик за счёт скоупинга на фронте (только видимые changes), а реальная
+    # чистка диска — отдельное явное действие `prune_orphans`. Авто-prune на
+    # каждом GET был убран после инцидента 2026-06-04 (race с регенерацией пары
+    # стёр разметку пары целиком).
     data = load(session_id)
     decisions = data.get("decisions") or {}
     out = {

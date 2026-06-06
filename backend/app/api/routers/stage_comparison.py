@@ -2304,6 +2304,22 @@ async def post_expert_review_endpoint(session_id: str, req: ExpertReviewSubmissi
     )
 
 
+@router.post("/sessions/{session_id}/expert-review/prune-orphans")
+async def prune_expert_review_orphans_endpoint(session_id: str, dry_run: bool = False):
+    """Удалить «осиротевшие» экспертные решения по исчезнувшим `raw_id`.
+
+    После регенерации сравнения id'шники расхождений (`chg_…`) меняются, а
+    старые решения остаются в `expert_review.json` — у них нет строки в UI,
+    снять их галочкой нельзя, и они накручивают счётчик «Принято/Отклонено».
+    Чистит только пары, которые сейчас done, перечислимы и ЧАСТИЧНО совпадают
+    по id (zero-overlap guard не даёт стереть пару целиком при регенерации).
+    ЯВНОЕ действие: чтение раздела (`get_with_summary`) ничего не мутирует —
+    счётчик чинится скоупингом на фронте, а реальная чистка диска только здесь.
+    `dry_run=true` — посчитать без записи (рекомендуется сначала dry-run).
+    """
+    return expert_review_mod.prune_orphans(session_id, dry_run=dry_run)
+
+
 @router.post("/sessions/{session_id}/regroup")
 async def regroup_endpoint(session_id: str, req: RegroupRequest):
     """Принудительно пересобрать `unified_findings_grouped.json`.
