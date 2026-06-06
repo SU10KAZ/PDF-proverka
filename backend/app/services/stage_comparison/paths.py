@@ -270,6 +270,31 @@ def large_sheet_artifact_path(
     return large_sheet_page_dir(session_id, pair_id, side, page) / safe
 
 
+# ─── Block equivalence precheck (pre-Qwen gate, observe mode) ────────────
+
+
+def block_equivalence_dir(session_id: str, pair_id: str) -> Path:
+    """Корень `block_equivalence/` для пары — артефакты pre-Qwen прекчека
+    эквивалентности блоков OLD↔NEW (Stage 1: observe). Независим от
+    `text_enrichment/` и не влияет на Qwen-конвейер."""
+    p = pair_dir(session_id, pair_id) / "block_equivalence"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def block_equivalence_report_path(session_id: str, pair_id: str) -> Path:
+    """`.../block_equivalence/block_equivalence_report.json`."""
+    return block_equivalence_dir(session_id, pair_id) / "block_equivalence_report.json"
+
+
+def block_equivalence_debug_dir(session_id: str, pair_id: str) -> Path:
+    """`.../block_equivalence/debug/` — debug PNG `{block_id}_diff.png` для
+    changed-visual блоков."""
+    p = block_equivalence_dir(session_id, pair_id) / "debug"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
 # ─── Enriched comparison (Opus over enriched MD) ─────────────────────────
 
 
@@ -486,6 +511,9 @@ __all__ = [
     "large_sheet_cache_dir",
     "large_sheet_raw_dir",
     "large_sheet_artifact_path",
+    "block_equivalence_dir",
+    "block_equivalence_report_path",
+    "block_equivalence_debug_dir",
     "enriched_comparison_dir",
     "enriched_comparison_result_path",
     "enriched_comparison_prompt_path",

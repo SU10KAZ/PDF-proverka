@@ -24,6 +24,7 @@ from . import md_image_enrichment as md_mod
 from . import paths as paths_mod
 from . import store as store_mod
 from . import graphic_llm_local as graphic_local_mod
+from . import block_equivalence_precheck as block_eq_mod
 
 logger = logging.getLogger(__name__)
 
@@ -348,6 +349,55 @@ def list_md_enrichment_jobs(session_id: str) -> list[dict]:
     return out
 
 
+async def _maybe_run_block_equivalence_precheck(session_id: str, job_id: str, job: dict) -> None:
+    """Pre-Qwen block equivalence gate (Stage 1: observe).
+
+    Если фича включена (``STAGE_COMPARISON_BLOCK_EQUIVALENCE_PRECHECK_ENABLED``),
+    строит отчёт об эквивалентности блоков OLD↔NEW для каждой пары job'а и
+    прикладывает компактную диагностику к job.json (``block_equivalence``). В
+    observe-режиме НИЧЕГО не пропускает — Qwen-конвейер не меняется.
+
+    Рендер/cv2 — CPU-bound, поэтому уводим в threadpool (не блокируем event loop).
+    Полностью fail-soft: любая ошибка не влияет на enrichment.
+    """
+    try:
+        cfg = block_eq_mod.BlockEquivalenceConfig.from_env()
+    except Exception:  # noqa: BLE001
+        return
+    if not cfg.enabled:
+        return
+    pids: list[str] = []
+    for it in (job.get("items") or []):
+        pid = it.get("pair_id")
+        if pid and pid not in pids:
+            pids.append(pid)
+    if not pids:
+        return
+    results: dict[str, dict] = {}
+    for pid in pids:
+        # cancel-aware: уважать отмену job между парами
+        latest = _read_job(session_id, job_id)
+        if latest and latest.get("status") == "cancelled":
+            break
+        try:
+            diag = await asyncio.to_thread(block_eq_mod.run_pair_precheck, session_id, pid, cfg=cfg)
+        except Exception:  # noqa: BLE001 — observe must never break enrichment
+            logger.debug("block_equivalence precheck failed for %s/%s", session_id, pid, exc_info=True)
+            diag = None
+        if diag is not None:
+            results[pid] = diag
+    if not results:
+        return
+    payload = {"mode": cfg.mode, "skip_qwen": cfg.skip_qwen,
+               "cv2_available": block_eq_mod.cv2_available(), "pairs": results}
+    with _lock:
+        latest = _read_job(session_id, job_id)
+        if latest is not None:
+            latest["block_equivalence"] = payload
+            _write_job(session_id, latest)
+    job["block_equivalence"] = payload
+
+
 async def run_md_enrichment_job(session_id: str, job_id: str) -> dict:
     """Прогнать job: для каждой (pair_id, side) пары вызвать enrich_side."""
     job = _read_job(session_id, job_id)
@@ -389,6 +439,9 @@ async def run_md_enrichment_job(session_id: str, job_id: str) -> dict:
                 _write_job(session_id, job)
         except Exception as exc:  # noqa: BLE001
             logger.warning("md_enrichment_jobs: preflight raised, continuing: %s", exc)
+
+    # Pre-Qwen block equivalence gate (Stage 1: observe — не меняет Qwen-конвейер).
+    await _maybe_run_block_equivalence_precheck(session_id, job_id, job)
 
     for idx, item in enumerate(items):
         latest = _read_job(session_id, job_id)
@@ -1048,6 +1101,7 @@ def aggregate_job_progress(session_id: str, job: dict) -> dict:
         "current_status_message": cur.get("status_message") or "",
         "pair_statuses": pair_statuses,
         "diagnostics": diagnostics,
+        "block_equivalence": job.get("block_equivalence"),
     }
 
 

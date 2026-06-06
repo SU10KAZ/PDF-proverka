@@ -191,7 +191,18 @@ async def _qwen_process_pair(
         )
         if job.get("status") == "queued":
             await mdj.run_md_enrichment_job(session_id, job["id"])
-        return {"status": "done", "error": None}
+        # Pre-Qwen block equivalence gate (Stage 1: observe). Отчёт уже построен
+        # внутри run_md_enrichment_job (если фича включена) — здесь только
+        # читаем компактную диагностику для pipeline status. Fail-soft.
+        block_eq = None
+        try:
+            from . import block_equivalence_precheck as be_mod
+            rep = be_mod.read_pair_report(session_id, pair_id)
+            if rep is not None:
+                block_eq = be_mod.build_pair_diagnostics(rep)
+        except Exception:  # noqa: BLE001 — diagnostics must never fail the lane
+            block_eq = None
+        return {"status": "done", "error": None, "block_equivalence": block_eq}
     except Exception as exc:  # noqa: BLE001
         return {"status": "failed", "error": f"{type(exc).__name__}: {exc}"}
 
@@ -621,6 +632,8 @@ async def _qwen_lane(state: _RunState, *,
 
         it["backup_dir"] = _backup_pair_artifacts(state.session_id, pid)
         res = await qwen_fn(state.session_id, pid, force_qwen=force_qwen, prebuild_large_sheets=prebuild)
+        if isinstance(res, dict) and res.get("block_equivalence") is not None:
+            it["block_equivalence"] = res["block_equivalence"]
         if (res or {}).get("status") != "done":
             _fail_qwen(job, it, (res or {}).get("error") or "qwen_failed")
             await state.persist()
