@@ -244,6 +244,19 @@ async def _opus_process_pair(session_id: str, pair_id: str, *, force_opus: bool)
     NOTE: only called in live runs. Tests replace this with a fake.
     """
     from . import unified_analysis as ua
+    # Non-destructive findings preservation: snapshot the previous comparison
+    # BEFORE Opus overwrites it, then merge after (keeps old findings + carries
+    # expert verdicts, tags genuinely-new ones). Default ON; env kill-switch.
+    preserve = os.environ.get("STAGE_COMPARISON_PRESERVE_FINDINGS", "true").strip().lower() not in (
+        "0", "false", "no", "off")
+    prev_changes = None
+    if preserve:
+        try:
+            from . import enriched_comparison as ec
+            prev = ec.get_comparison_result(session_id, pair_id)
+            prev_changes = (prev or {}).get("changes") or []
+        except Exception:  # noqa: BLE001
+            prev_changes = None
     try:
         res = await ua.run_pair(
             session_id, pair_id,
@@ -252,10 +265,14 @@ async def _opus_process_pair(session_id: str, pair_id: str, *, force_opus: bool)
             force_fallback=False,          # too_large → fallback handled inside if enabled
         )
         status = getattr(res, "status", None) or "failed"
-        changes = getattr(res, "changes_count", None)
-        if changes is None:
-            changes = _read_changes_count(session_id, pair_id)
         ok = status not in ("failed", "error")
+        if ok and preserve and prev_changes:
+            try:
+                from . import comparison_merge as cm
+                cm.apply_merge(session_id, pair_id, prev_changes)
+            except Exception:  # noqa: BLE001 — merge must never fail the pair
+                pass
+        changes = _read_changes_count(session_id, pair_id)  # after merge
         return {
             "status": "done" if ok else "failed",
             "changes_count": int(changes or 0),
