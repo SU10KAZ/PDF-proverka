@@ -125,22 +125,48 @@ def should_auto_apply_stamp_match(item: dict) -> tuple[bool, str]:
 def build_auto_apply_items(suggested_items: list[dict]) -> dict:
     """Преобразовать suggested_items в очищенные `items` для PUT page-alignment.
 
-    Безопасные matched-пары применяются как пара; небезопасные — расцепляются на
-    два односторонних слота (остаются на ручную проверку); односторонние слоты
-    (включая multipart_continuation) сохраняются как есть. В сохранённый
-    alignment попадают ТОЛЬКО канонические поля (slot/left_page/right_page/mode/
-    note) — display-поля (match_type/score/…) не копируются.
+    Контракт (precision > recall, см. fix «batch не разрывает найденные пары»):
 
-    Возвращает {items, applied, review, reasons:{reason: count}}.
+    * **safe matched pair** → сохраняем как ОДНУ строку-пару (left↔right);
+    * **unsafe matched pair** → НЕ применяем И **НЕ расцепляем** на два
+      односторонних слота. Пара уходит в `review_items` (на ручную проверку), её
+      страницы в сохранённый alignment НЕ попадают. Это ключевой инвариант:
+      односторонний слот в page_alignment означает «у листа нет пары» (удалён/
+      добавлен), а unsafe matched pair — это листы, которые matcher СЧИТАЕТ парой,
+      просто не уверен. Расцепить их = солгать «1 — пусто / пусто — 1»;
+    * **истинно односторонний лист** (`left_only` / `right_only` /
+      `multipart_continuation`) → сохраняем как есть (это и есть удалённый/
+      добавленный лист, корректная информация).
+
+    В сохранённый alignment попадают ТОЛЬКО канонические поля
+    (slot/left_page/right_page/mode/note) — display-поля (match_type/score/…) не
+    копируются.
+
+    Возвращает::
+
+        {
+          items,                       # очищенные строки для save_alignment
+          applied,                     # safe matched pairs (сохранены парами)
+          review,                      # unsafe matched pairs (НЕ сохранены, на ручную)
+          review_items: [...],         # детали review-пар (для diagnostics/UI)
+          split_prevented,             # сколько разрывов 1↔1→(1,None)+(None,1) предотвращено
+          true_left_only,
+          true_right_only,
+          multipart_continuation,
+          reasons: {reason: count},
+        }
     """
     items: list[dict] = []
+    review_items: list[dict] = []
     applied = 0
     review = 0
+    true_left_only = 0
+    true_right_only = 0
+    multipart_continuation = 0
     reasons: dict[str, int] = {}
 
-    def _note(reason: str) -> str:
+    def _note(reason: str) -> None:
         reasons[reason] = reasons.get(reason, 0) + 1
-        return reason
 
     for it in (suggested_items or []):
         lp = it.get("left_page")
@@ -148,28 +174,60 @@ def build_auto_apply_items(suggested_items: list[dict]) -> dict:
         if it.get("match"):
             ok, reason = should_auto_apply_stamp_match(it)
             if ok:
+                _note("applied:" + reason)
                 items.append({"left_page": lp, "right_page": rp, "mode": "manual",
-                              "note": f"auto:{_note('applied:' + reason)}"})
+                              "note": f"auto:applied:{reason}"})
                 applied += 1
             else:
-                # небезопасно → два односторонних слота (на ручную проверку)
+                # КЛЮЧЕВОЙ ФИКС: unsafe matched pair НЕ расцепляем на два
+                # односторонних слота и НЕ сохраняем — только на ручную проверку.
                 _note("review:" + reason)
-                if lp is not None:
-                    items.append({"left_page": lp, "right_page": None, "mode": "manual",
-                                  "note": f"auto-review:{reason}"})
-                if rp is not None:
-                    items.append({"left_page": None, "right_page": rp, "mode": "manual",
-                                  "note": f"auto-review:{reason}"})
                 review += 1
+                review_items.append({
+                    "left_page": lp,
+                    "right_page": rp,
+                    "reason": reason,
+                    "match_type": it.get("match_type"),
+                    "score": it.get("score"),
+                    "confidence": it.get("confidence"),
+                    "risk_flags": list(it.get("risk_flags") or []),
+                    "left_sheet_name": it.get("left_sheet_name"),
+                    "right_sheet_name": it.get("right_sheet_name"),
+                })
         else:
-            # односторонний (left_only/right_only/multipart_continuation) → как есть
-            note = str(it.get("match_type") or it.get("note") or "")
+            # истинно односторонний лист (matcher не нашёл пару) → сохраняем как есть
+            mt = str(it.get("match_type") or "")
+            note = mt or str(it.get("note") or "")
             items.append({"left_page": lp, "right_page": rp, "mode": "manual",
                           "note": note[:80]})
+            if mt == "multipart_continuation":
+                multipart_continuation += 1
+            elif lp is not None and rp is None:
+                true_left_only += 1
+            elif rp is not None and lp is None:
+                true_right_only += 1
 
     for i, it in enumerate(items):
         it["slot"] = i + 1
-    return {"items": items, "applied": applied, "review": review, "reasons": reasons}
+
+    # split_prevented = число matched-пар, которые СТАРАЯ логика расцепила бы на
+    # два односторонних слота; ровно равно числу review-пар с обеими страницами.
+    split_prevented = sum(
+        1 for r in review_items
+        if r.get("left_page") is not None and r.get("right_page") is not None
+    )
+
+    return {
+        "items": items,
+        "applied": applied,
+        "review": review,
+        "review_items": review_items,
+        "split_prevented": split_prevented,
+        "true_left_only": true_left_only,
+        "true_right_only": true_right_only,
+        "multipart_continuation": multipart_continuation,
+        "reasons": reasons,
+    }
 
 
 __all__ = [

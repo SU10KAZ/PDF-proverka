@@ -136,15 +136,49 @@ def test_build_items_strips_display_only_fields():
         assert set(it.keys()) == {"slot", "left_page", "right_page", "mode", "note"}
 
 
-def test_build_items_splits_unsafe_into_one_sided():
+def _contains_pair(items, lp, rp):
+    return any(it.get("left_page") == lp and it.get("right_page") == rp for it in items)
+
+
+def test_auto_apply_does_not_split_unsafe_matched_pair():
+    """Regression: unsafe matched pair НЕ должна расцепляться в (L,None)+(None,R)."""
     suggested = [
-        {"match": True, "match_type": "fuzzy_name", "left_page": 1, "right_page": 5,
-         "score": 0.4, "risk_flags": []},  # ниже порога → review
+        {"match": True, "match_type": "fuzzy_structural", "left_page": 1,
+         "right_page": 1, "score": 0.79, "risk_flags": ["low_margin"],
+         "needs_review": True},
     ]
     built = aa.build_auto_apply_items(suggested)
     assert built["applied"] == 0 and built["review"] == 1
+    # Ключевое: НЕ появилось ни (1, None), ни (None, 1).
+    assert not _contains_pair(built["items"], 1, None)
+    assert not _contains_pair(built["items"], None, 1)
+    assert built["items"] == []                       # ничего не сохраняем
+    assert built["split_prevented"] == 1
+    # review_items сохраняет исходную пару 1↔1 с причиной.
+    assert len(built["review_items"]) == 1
+    rv = built["review_items"][0]
+    assert (rv["left_page"], rv["right_page"]) == (1, 1)
+    assert rv["reason"] == "low_margin"
+
+
+def test_build_items_keeps_true_one_sided_but_not_split_pairs():
+    """Истинно односторонние сохраняются; unsafe matched НЕ расцепляется."""
+    suggested = [
+        {"match": True, "match_type": "exact_name", "left_page": 1, "right_page": 1,
+         "score": 1.0},                                            # safe pair
+        {"match": True, "match_type": "fuzzy_name", "left_page": 2, "right_page": 7,
+         "score": 0.4, "risk_flags": []},                          # unsafe → review
+        {"match": False, "match_type": "left_only", "left_page": 9, "right_page": None},
+        {"match": False, "match_type": "right_only", "left_page": None, "right_page": 8},
+    ]
+    built = aa.build_auto_apply_items(suggested)
+    assert built["applied"] == 1 and built["review"] == 1
+    assert built["true_left_only"] == 1 and built["true_right_only"] == 1
     pages = {(it["left_page"], it["right_page"]) for it in built["items"]}
-    assert pages == {(1, None), (None, 5)}  # расцеплено на два слота
+    assert (1, 1) in pages                       # safe pair сохранена
+    assert (9, None) in pages and (None, 8) in pages  # истинно односторонние
+    # unsafe pair 2↔7 НЕ расцеплена и НЕ сохранена
+    assert (2, None) not in pages and (None, 7) not in pages
 
 
 # ═══ store.apply_safe_stamp_alignment_for_pair ════════════════════════════
@@ -215,6 +249,83 @@ def test_apply_safe_multipart_three_to_one_persisted(monkeypatch, tmp_path):
     assert (2, None) in seq and (3, None) in seq
 
 
+# ═══ regression: batch не разрывает matched-but-review пары ════════════════
+
+def test_batch_does_not_persist_split_rows_for_review_match(monkeypatch, tmp_path):
+    """matcher нашёл 1↔1, но пометил рискованной → batch НЕ пишет 1→None/None→1."""
+    pair = _bind_pair(monkeypatch, tmp_path, "p1",
+                      [(1, "1", "Схема ГРЩ")], [(1, "1", "Схема ГРЩ")])
+    monkeypatch.setattr(store_mod, "_find_pair_meta",
+                        lambda s, p: pair if p == "p1" else None)
+    fake = {
+        "suggested_items": [
+            {"match": True, "match_type": "fuzzy_structural",
+             "left_page": 1, "right_page": 1, "score": 0.79,
+             "risk_flags": ["low_margin"], "needs_review": True,
+             "left_sheet_name": "Схема ГРЩ", "right_sheet_name": "Схема ГРЩ"},
+        ],
+        "confidence": 0.79, "matched_count": 1, "multipart_match_count": 0,
+    }
+    monkeypatch.setattr(store_mod, "suggest_alignment_by_stamp",
+                        lambda s, p, **kw: fake)
+    res = store_mod.apply_safe_stamp_alignment_for_pair("s1", "p1", use_llm=False)
+    # нет ни одной безопасной пары → ничего не сохраняем, помечаем needs_review
+    assert res["status"] == "needs_review"
+    assert res["applied"] == 0 and res["review"] == 1
+    assert res["split_prevented"] == 1
+    assert res["skipped_reason"] == "unsafe_matches_not_applied"
+    # alignment НЕ записан (мы не портим карту) → нет manual-выравнивания
+    assert store_mod.has_manual_alignment("s1", "p1") is False
+
+
+def test_batch_persists_safe_keeps_unsafe_out_of_split(monkeypatch, tmp_path):
+    """Смешанная пара: safe сохраняется как пара, unsafe НЕ расцепляется."""
+    pair = _bind_pair(monkeypatch, tmp_path, "p1",
+                      [(1, "1", "A"), (2, "2", "B")],
+                      [(1, "1", "A"), (2, "2", "B")])
+    monkeypatch.setattr(store_mod, "_find_pair_meta",
+                        lambda s, p: pair if p == "p1" else None)
+    fake = {
+        "suggested_items": [
+            {"match": True, "match_type": "exact_name",
+             "left_page": 1, "right_page": 1, "score": 1.0, "risk_flags": []},
+            {"match": True, "match_type": "fuzzy_structural",
+             "left_page": 2, "right_page": 2, "score": 0.79,
+             "risk_flags": ["low_margin"], "needs_review": True},
+        ],
+        "confidence": 0.9, "matched_count": 2, "multipart_match_count": 0,
+    }
+    monkeypatch.setattr(store_mod, "suggest_alignment_by_stamp",
+                        lambda s, p, **kw: fake)
+    res = store_mod.apply_safe_stamp_alignment_for_pair("s1", "p1", use_llm=False)
+    assert res["status"] == "done"
+    assert res["applied"] == 1 and res["review"] == 1 and res["split_prevented"] == 1
+    align = store_mod.get_alignment("s1", "p1")["alignment"]["items"]
+    seq = [(it["left_page"], it["right_page"]) for it in align]
+    assert (1, 1) in seq                                   # safe пара сохранена
+    assert (2, None) not in seq and (None, 2) not in seq   # unsafe НЕ расцеплён
+
+
+def test_batch_persists_safe_match_same_as_manual_suggest(monkeypatch, tmp_path):
+    """Positive: batch сохраняет ровно те же safe-пары, что нашёл manual suggest."""
+    pair = _bind_pair(monkeypatch, tmp_path, "p1",
+                      [(1, "1", "Содержание тома"), (2, "2", "Схема ГРЩ")],
+                      [(1, "1", "Содержание тома"), (2, "2", "Схема ГРЩ")])
+    monkeypatch.setattr(store_mod, "_find_pair_meta",
+                        lambda s, p: pair if p == "p1" else None)
+    # manual suggest (тот же pipeline, что и batch)
+    sugg = store_mod.suggest_alignment_by_stamp("s1", "p1", use_llm=False)
+    manual_pairs = {(it["left_page"], it["right_page"])
+                    for it in sugg["suggested_items"] if it.get("match")}
+    assert (1, 1) in manual_pairs and (2, 2) in manual_pairs
+    # batch apply
+    store_mod.apply_safe_stamp_alignment_for_pair("s1", "p1", use_llm=False)
+    align = store_mod.get_alignment("s1", "p1")["alignment"]["items"]
+    saved_pairs = {(it["left_page"], it["right_page"]) for it in align
+                   if it["left_page"] and it["right_page"]}
+    assert manual_pairs <= saved_pairs                     # все safe-пары сохранены
+
+
 # ═══ auto_match_jobs (batch) ══════════════════════════════════════════════
 
 def _bind_session(monkeypatch, tmp_path, pairs: dict):
@@ -274,6 +385,47 @@ def test_batch_job_failsoft_on_one_pair(monkeypatch, tmp_path):
     assert done["summary"]["failed_pairs"] == 1
     bad = next(it for it in done["items"] if it["pair_id"] == "bad")
     assert bad["status"] == "error" and bad["errors"]
+
+
+def test_batch_job_aggregates_review_and_split_prevented(monkeypatch, tmp_path):
+    """Job-сводка раздельно считает applied / review / split_prevented / needs_review."""
+    pairs = {
+        "p1": _bind_pair(monkeypatch, tmp_path, "p1",
+                         [(1, "1", "A")], [(1, "1", "A")]),
+        "p2": _bind_pair(monkeypatch, tmp_path, "p2",
+                         [(1, "1", "B")], [(1, "1", "B")]),
+    }
+    _bind_session(monkeypatch, tmp_path, pairs)
+
+    def _apply(sid, pid, **kw):
+        if pid == "p1":
+            return {"pair_id": pid, "status": "done", "applied": 3, "review": 1,
+                    "split_prevented": 1, "true_left_only": 2, "true_right_only": 0,
+                    "review_items": [{"left_page": 5, "right_page": 5,
+                                      "reason": "low_margin",
+                                      "match_type": "fuzzy_structural", "score": 0.79}],
+                    "confidence": 0.9, "errors": []}
+        return {"pair_id": pid, "status": "needs_review", "applied": 0, "review": 2,
+                "split_prevented": 2, "true_left_only": 0, "true_right_only": 0,
+                "skipped_reason": "unsafe_matches_not_applied",
+                "review_items": [], "confidence": 0.5, "errors": []}
+
+    monkeypatch.setattr(store_mod, "apply_safe_stamp_alignment_for_pair", _apply)
+
+    job = amj.create_job("s1", use_llm=False)
+    done = asyncio.run(amj.run_job("s1", job["id"]))
+    assert done["status"] == "finished"
+    s = done["summary"]
+    assert s["applied_matched_pairs"] == 3
+    assert s["review_matched_pairs"] == 3
+    assert s["split_prevented"] == 3
+    assert s["true_left_only"] == 2
+    assert s["needs_review_pairs"] == 1
+    # backward-compat алиасы синхронизированы
+    assert s["applied_pairs"] == 3 and s["review_pairs"] == 3
+    # per-pair review_reasons прокинуты
+    p1 = next(it for it in done["items"] if it["pair_id"] == "p1")
+    assert p1["review_reasons"] and p1["review_reasons"][0]["reason"] == "low_margin"
 
 
 def test_batch_job_respects_existing_alignment(monkeypatch, tmp_path):

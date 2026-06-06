@@ -139,6 +139,8 @@ def create_job(
         "items": [
             {"pair_id": p["id"], **_pair_label(p), "status": "queued",
              "applied": 0, "review": 0, "skipped_reason": None,
+             "split_prevented": 0, "true_left_only": 0, "true_right_only": 0,
+             "review_reasons": [],
              "confidence": 0.0, "errors": []}
             for p in pairs
         ],
@@ -147,8 +149,14 @@ def create_job(
         "current_pair": None,
         "summary": {
             "total_pairs": len(pairs), "processed_pairs": 0,
-            "applied_pairs": 0, "review_pairs": 0,
+            # Раздельные счётчики (Task 9): применено vs оставлено на ревью vs
+            # истинно односторонние vs предотвращённые разрывы пар.
+            "applied_matched_pairs": 0, "review_matched_pairs": 0,
+            "split_prevented": 0, "true_left_only": 0, "true_right_only": 0,
+            "needs_review_pairs": 0,
             "skipped_existing_alignment": 0, "failed_pairs": 0,
+            # Backward-compat алиасы (старый UI/артефакты читали эти ключи).
+            "applied_pairs": 0, "review_pairs": 0,
         },
         "last_events": [],
     }
@@ -230,6 +238,10 @@ def _write_artifact(session_id: str, job: dict) -> None:
                 {"pair_id": it["pair_id"], "old_document": it.get("old_document"),
                  "new_document": it.get("new_document"), "status": it.get("status"),
                  "applied": it.get("applied", 0), "review": it.get("review", 0),
+                 "split_prevented": it.get("split_prevented", 0),
+                 "true_left_only": it.get("true_left_only", 0),
+                 "true_right_only": it.get("true_right_only", 0),
+                 "review_reasons": it.get("review_reasons", []),
                  "skipped_reason": it.get("skipped_reason"),
                  "errors": it.get("errors", [])}
                 for it in (job.get("items") or [])
@@ -301,14 +313,33 @@ async def run_job(session_id: str, job_id: str) -> dict:
                     item["status"] = summary.get("status", "done")
                     item["applied"] = summary.get("applied", 0)
                     item["review"] = summary.get("review", 0)
+                    item["split_prevented"] = summary.get("split_prevented", 0)
+                    item["true_left_only"] = summary.get("true_left_only", 0)
+                    item["true_right_only"] = summary.get("true_right_only", 0)
+                    # Компактные причины review-пар (для UI «на ручную проверку»).
+                    item["review_reasons"] = [
+                        {"left_page": r.get("left_page"), "right_page": r.get("right_page"),
+                         "reason": r.get("reason"), "match_type": r.get("match_type"),
+                         "score": r.get("score")}
+                        for r in (summary.get("review_items") or [])
+                    ]
                     item["skipped_reason"] = summary.get("skipped_reason")
                     item["confidence"] = summary.get("confidence", 0.0)
-                    job["summary"]["applied_pairs"] += item["applied"]
-                    job["summary"]["review_pairs"] += item["review"]
+                    s = job["summary"]
+                    s["applied_matched_pairs"] += item["applied"]
+                    s["review_matched_pairs"] += item["review"]
+                    s["split_prevented"] += item["split_prevented"]
+                    s["true_left_only"] += item["true_left_only"]
+                    s["true_right_only"] += item["true_right_only"]
+                    # backward-compat алиасы
+                    s["applied_pairs"] = s["applied_matched_pairs"]
+                    s["review_pairs"] = s["review_matched_pairs"]
                     if item["status"] == "skipped_existing_alignment":
-                        job["summary"]["skipped_existing_alignment"] += 1
+                        s["skipped_existing_alignment"] += 1
+                    elif item["status"] == "needs_review":
+                        s["needs_review_pairs"] += 1
                     elif item["status"] == "error":
-                        job["summary"]["failed_pairs"] += 1
+                        s["failed_pairs"] += 1
                         item["errors"] = summary.get("errors") or ["apply_failed"]
                 else:
                     item["status"] = "done"

@@ -1985,7 +1985,9 @@ def apply_safe_stamp_alignment_for_pair(
     summary = {
         "pair_id": pair_id, "status": "done", "applied": 0, "review": 0,
         "skipped_reason": None, "confidence": 0.0, "matched_count": 0,
-        "multipart_match_count": 0, "errors": [],
+        "multipart_match_count": 0,
+        "split_prevented": 0, "true_left_only": 0, "true_right_only": 0,
+        "review_items": [], "errors": [],
     }
 
     if not overwrite_existing and has_manual_alignment(session_id, pair_id):
@@ -2001,11 +2003,19 @@ def apply_safe_stamp_alignment_for_pair(
     built = auto_mod.build_auto_apply_items(sugg.get("suggested_items") or [])
     summary["applied"] = built["applied"]
     summary["review"] = built["review"]
+    summary["split_prevented"] = built.get("split_prevented", 0)
+    summary["true_left_only"] = built.get("true_left_only", 0)
+    summary["true_right_only"] = built.get("true_right_only", 0)
+    summary["review_items"] = built.get("review_items", [])
     summary["reasons"] = built.get("reasons", {})
 
     if built["applied"] == 0:
-        # Нечего применять безопасно — не трогаем alignment.
-        summary["status"] = "no_safe_matches"
+        # Нет ни одной безопасной пары — НЕ трогаем alignment (Вариант Б:
+        # лучше ничего не применить, чем испортить карту). Если matcher всё же
+        # что-то нашёл, но оно ушло в review — помечаем пару needs_review.
+        summary["status"] = "needs_review" if built["review"] > 0 else "no_safe_matches"
+        summary["skipped_reason"] = (
+            "unsafe_matches_not_applied" if built["review"] > 0 else "no_safe_matches")
         return summary
 
     save_res = save_alignment(session_id, pair_id, built["items"], force=True)
