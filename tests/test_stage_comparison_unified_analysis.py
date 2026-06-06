@@ -387,6 +387,199 @@ def test_enriched_comparison_too_large(tmp_path, monkeypatch):
     assert not provider.invoke_calls
 
 
+# ─── r6 self-check на основном пути ────────────────────────────────────────
+
+
+def _selfcheck_payload() -> dict:
+    """Один real change (число есть в MD) + один phantom (ничего не grounded)."""
+    return {
+        "status": "done",
+        "summary": "Сверка номиналов",
+        "changes": [
+            {
+                "id": "chg_real", "source": "text", "type": "changed",
+                "title": "Номинал вводного автомата", "old_value": "160А",
+                "new_value": "250А",
+                "evidence_left": {"quote": "ном."},
+                "evidence_right": {"quote": "ном."},
+            },
+            {
+                "id": "chg_phantom", "source": "text", "type": "added",
+                "title": "Фантомный щит", "old_value": "",
+                "new_value": "ЩО-7 на 999А",
+                "evidence_left": {"quote": ""},
+                "evidence_right": {"quote": "фантомный щит ЩО-7 999А"},
+            },
+        ],
+        "warnings": [],
+    }
+
+
+def _make_selfcheck_pair(session_id: str, tmp_path):
+    _make_pair(session_id, "p1",
+               left_md=_write_md(tmp_path / "L.md", "left"),
+               right_md=_write_md(tmp_path / "R.md", "right"))
+    _write_enriched(session_id, "p1", "left", "Вводной автомат 160А для ВРУ-1.")
+    _write_enriched(session_id, "p1", "right", "Вводной автомат 250А для ВРУ-1.")
+
+
+def test_enriched_comparison_selfcheck_mark_mode(tmp_path, monkeypatch):
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+
+    monkeypatch.setenv("STAGE_COMPARISON_ENRICHED_COMPARE_ENABLED", "true")
+    monkeypatch.setenv("STAGE_COMPARISON_SELFCHECK_ENABLED", "true")
+    monkeypatch.delenv("STAGE_COMPARISON_SELFCHECK_DROP_UNGROUNDED", raising=False)
+    _make_selfcheck_pair("sess_sc_mark", tmp_path)
+
+    provider = _AvailableProvider(raw_response=json.dumps(_selfcheck_payload()), status="done")
+    res = ec.run_enriched_comparison("sess_sc_mark", "p1", provider=provider)
+
+    assert res["status"] == "done"
+    assert res["selfcheck"]["mode"] == "mark"
+    assert res["selfcheck"]["rescued_by_number"] == 1
+    assert res["selfcheck"]["ungrounded"] == 1
+    assert res["selfcheck"]["marked_review"] == 1
+    # в мягком режиме ничего не удалено
+    assert len(res["changes"]) == 2
+    by_id = {c["id"]: c for c in res["changes"]}
+    assert by_id["chg_real"]["evidence_verified"] is True
+    assert by_id["chg_real"]["evidence_verified_by"] == "number"
+    assert by_id["chg_phantom"]["requires_human_review"] is True
+    assert by_id["chg_phantom"].get("evidence_verified") is False
+    assert "selfcheck_note" in by_id["chg_phantom"]
+
+
+def test_enriched_comparison_selfcheck_drop_mode(tmp_path, monkeypatch):
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+
+    monkeypatch.setenv("STAGE_COMPARISON_ENRICHED_COMPARE_ENABLED", "true")
+    monkeypatch.setenv("STAGE_COMPARISON_SELFCHECK_ENABLED", "true")
+    monkeypatch.setenv("STAGE_COMPARISON_SELFCHECK_DROP_UNGROUNDED", "true")
+    _make_selfcheck_pair("sess_sc_drop", tmp_path)
+
+    provider = _AvailableProvider(raw_response=json.dumps(_selfcheck_payload()), status="done")
+    res = ec.run_enriched_comparison("sess_sc_drop", "p1", provider=provider)
+
+    assert res["status"] == "done"
+    assert res["selfcheck"]["mode"] == "drop"
+    assert res["selfcheck"]["dropped"] == 1
+    # phantom удалён, real остался
+    assert len(res["changes"]) == 1
+    assert res["changes"][0]["id"] == "chg_real"
+
+
+def test_enriched_comparison_selfcheck_disabled_by_default(tmp_path, monkeypatch):
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+
+    monkeypatch.setenv("STAGE_COMPARISON_ENRICHED_COMPARE_ENABLED", "true")
+    monkeypatch.delenv("STAGE_COMPARISON_SELFCHECK_ENABLED", raising=False)
+    _make_selfcheck_pair("sess_sc_off", tmp_path)
+
+    provider = _AvailableProvider(raw_response=json.dumps(_selfcheck_payload()), status="done")
+    res = ec.run_enriched_comparison("sess_sc_off", "p1", provider=provider)
+
+    assert res["status"] == "done"
+    # self-check выключен → поле None, ничего не помечено/не удалено
+    assert res["selfcheck"] is None
+    assert len(res["changes"]) == 2
+    by_id = {c["id"]: c for c in res["changes"]}
+    assert "selfcheck_note" not in by_id["chg_phantom"]
+    # requires_human_review остаётся как пришло от модели (False по умолчанию)
+    assert by_id["chg_phantom"]["requires_human_review"] is False
+
+
+# ─── r5: контракт Opus (present_one_side / disputed) ───────────────────────
+
+
+def test_normalize_change_present_one_side_forces_review():
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+    out = ec._normalize_change({
+        "type": "present_one_side", "title": "Щит виден только справа",
+        "new_value": "ЩО-7", "old_value": "не описано (возможно, не распознано)",
+        "requires_human_review": False,
+    })
+    assert out is not None
+    assert out["type"] == "present_one_side"
+    # present_one_side по определению неоднозначно → принудительно на ручную проверку
+    assert out["requires_human_review"] is True
+    assert out["disputed"] is False
+
+
+def test_normalize_change_disputed_passthrough_and_forces_review():
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+    out = ec._normalize_change({
+        "type": "changed", "title": "Сомнительная дельта",
+        "old_value": "A", "new_value": "B",
+        "disputed": True, "requires_human_review": False,
+    })
+    assert out["disputed"] is True
+    assert out["requires_human_review"] is True
+
+
+def test_normalize_change_disputed_defaults_false_and_keeps_review():
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+    out = ec._normalize_change({
+        "type": "changed", "title": "Обычная дельта",
+        "old_value": "A", "new_value": "B",
+    })
+    assert out["disputed"] is False
+    assert out["requires_human_review"] is False
+
+
+# ─── r4: словарь синонимов + выравнивание по потребителю ───────────────────
+
+
+def test_consumer_synonyms_shipped_file_loads():
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+    groups = ec.load_consumer_synonyms()
+    assert isinstance(groups, list) and groups
+    flat = [name for g in groups for name in g]
+    assert "ШУ-ХЦ" in flat and "ВРУ-ХЦ" in flat
+
+
+def test_consumer_synonyms_context_format_and_empty():
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+    ctx = ec.build_consumer_synonyms_context([["ШУ-ХЦ", "ВРУ-ХЦ"], ["ЩО", "щит освещения"]])
+    assert "<CONSUMER_SYNONYMS>" in ctx and "</CONSUMER_SYNONYMS>" in ctx
+    assert "ШУ-ХЦ = ВРУ-ХЦ" in ctx
+    # пустой список групп → тег не добавляется
+    assert ec.build_consumer_synonyms_context([]) == ""
+
+
+def test_system_prompt_has_consumer_alignment_rule():
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+    sp, _ = ec.build_prompts("LEFT", "RIGHT")
+    assert "ВЫРАВНИВАНИЕ ОТХОДЯЩИХ ЛИНИЙ" in sp
+    assert "по ИМЕНИ потребителя" in sp
+    assert "CONSUMER_SYNONYMS" in sp
+    # явный запрет позиционного/по-аппарату сопоставления
+    assert "1QF8" in sp or "QF8" in sp
+
+
+def test_user_prompt_injects_synonyms_tag():
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+    up = ec.build_user_prompt("LEFT", "RIGHT")
+    assert "<CONSUMER_SYNONYMS>" in up
+
+
+def test_consumer_synonyms_env_override(tmp_path, monkeypatch):
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+    f = tmp_path / "syn.json"
+    f.write_text('{"groups": [["AAA", "BBB", "ccc"]]}', encoding="utf-8")
+    monkeypatch.setenv("STAGE_COMPARISON_CONSUMER_SYNONYMS_FILE", str(f))
+    groups = ec.load_consumer_synonyms()
+    assert ["AAA", "BBB", "ccc"] in groups
+
+
+def test_consumer_synonyms_missing_file_fail_soft(tmp_path, monkeypatch):
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+    monkeypatch.setenv("STAGE_COMPARISON_CONSUMER_SYNONYMS_FILE",
+                       str(tmp_path / "nope.json"))
+    assert ec.load_consumer_synonyms() == []
+    # без синонимов тег в user-prompt не появляется
+    assert "<CONSUMER_SYNONYMS>" not in ec.build_user_prompt("L", "R")
+
+
 # 6. unified preflight считает image_blocks / enriched_ready / compare_ready.
 def test_unified_preflight_counts_blocks_and_status(tmp_path, monkeypatch):
     from backend.app.services.stage_comparison import unified_analysis as ua

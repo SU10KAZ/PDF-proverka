@@ -207,31 +207,48 @@ async def _qwen_process_pair(
         return {"status": "failed", "error": f"{type(exc).__name__}: {exc}"}
 
 
+def _dense_scheme_pages(session_id: str, pair_id: str) -> set[tuple[str, int]]:
+    """Pages that carry a ``dense_scheme`` block (these are the ones that route
+    to large-sheet in enrichment). EXCLUDES GRSH (``dense_grsh_singleline`` →
+    single-shot) and tables/plans, read from the pair's current classification."""
+    te = paths_mod.pair_dir(session_id, pair_id) / "text_enrichment"
+    out: set[tuple[str, int]] = set()
+    for side in ("left", "right"):
+        p = te / f"{side}_image_descriptions.json"
+        if not p.exists():
+            continue
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                items = json.load(f).get("items", []) or []
+        except (OSError, json.JSONDecodeError):
+            continue
+        for it in items:
+            if it.get("block_type") == "dense_scheme" and it.get("page"):
+                try:
+                    out.add((side, int(it["page"])))
+                except (TypeError, ValueError):
+                    pass
+    return out
+
+
 async def _prebuild_large_sheets_for_pair(session_id: str, pair_id: str, *, force: bool) -> None:
-    """Best-effort large-sheet prebuild for a pair's detector-large pages that
-    lack a page_enriched.json. GRSH pages are kept single-shot (we do not build
-    artifacts for them). Fail-soft. Only used in live runs."""
+    """Large-sheet prebuild for a pair: build artifacts ONLY for dense_scheme
+    block pages that lack one. GRSH pages stay single-shot (never built here),
+    tables/plans are never hijacked, and existing artifacts are REUSED (no
+    re-tile). Fail-soft. Only used in live runs."""
     from . import large_sheet_enrichment as ls
     from . import large_sheet_enrichment_jobs as lsj
     if not ls.large_sheet_enabled():
         return
     items: list[dict] = []
-    for side in ("left", "right"):
-        try:
-            scan = ls.scan_pair_side_for_large_sheets(session_id, pair_id, side)
-        except Exception:  # noqa: BLE001
-            continue
-        for cand in scan.get("large_sheets", []):
-            page = cand.get("page")
-            if not page:
-                continue
-            summ = ls.read_large_sheet_summary(session_id, pair_id, side, page)
-            if summ.get("status") not in (None, "not_run") and not force:
-                continue  # artifact already exists
-            items.append({"pair_id": pair_id, "side": side, "page": int(page)})
+    for side, page in sorted(_dense_scheme_pages(session_id, pair_id)):
+        summ = ls.read_large_sheet_summary(session_id, pair_id, side, page)
+        if summ.get("status") not in (None, "not_run"):
+            continue  # reuse existing artifact — never re-tile
+        items.append({"pair_id": pair_id, "side": side, "page": page})
     if not items:
         return
-    job = lsj.create_job(session_id, scope="selected", items=items, force=bool(force), confirm=True)
+    job = lsj.create_job(session_id, scope="selected", items=items, force=False, confirm=True)
     if job.get("status") == "queued":
         await lsj.run_job(session_id, job["id"])
 
@@ -244,6 +261,19 @@ async def _opus_process_pair(session_id: str, pair_id: str, *, force_opus: bool)
     NOTE: only called in live runs. Tests replace this with a fake.
     """
     from . import unified_analysis as ua
+    # Non-destructive findings preservation: snapshot the previous comparison
+    # BEFORE Opus overwrites it, then merge after (keeps old findings + carries
+    # expert verdicts, tags genuinely-new ones). Default ON; env kill-switch.
+    preserve = os.environ.get("STAGE_COMPARISON_PRESERVE_FINDINGS", "true").strip().lower() not in (
+        "0", "false", "no", "off")
+    prev_changes = None
+    if preserve:
+        try:
+            from . import enriched_comparison as ec
+            prev = ec.get_comparison_result(session_id, pair_id)
+            prev_changes = (prev or {}).get("changes") or []
+        except Exception:  # noqa: BLE001
+            prev_changes = None
     try:
         res = await ua.run_pair(
             session_id, pair_id,
@@ -252,10 +282,14 @@ async def _opus_process_pair(session_id: str, pair_id: str, *, force_opus: bool)
             force_fallback=False,          # too_large → fallback handled inside if enabled
         )
         status = getattr(res, "status", None) or "failed"
-        changes = getattr(res, "changes_count", None)
-        if changes is None:
-            changes = _read_changes_count(session_id, pair_id)
         ok = status not in ("failed", "error")
+        if ok and preserve and prev_changes:
+            try:
+                from . import comparison_merge as cm
+                cm.apply_merge(session_id, pair_id, prev_changes)
+            except Exception:  # noqa: BLE001 — merge must never fail the pair
+                pass
+        changes = _read_changes_count(session_id, pair_id)  # after merge
         return {
             "status": "done" if ok else "failed",
             "changes_count": int(changes or 0),
@@ -439,16 +473,20 @@ def preflight(session_id: str, *, scope: str, pair_ids: Optional[list[str]],
                     dense_grsh += sum(1 for i in items if i.get("block_type") == "dense_grsh_singleline")
                 except (OSError, json.JSONDecodeError):
                     pass
-            if ls_enabled and ls is not None:
-                try:
-                    scan = ls.scan_pair_side_for_large_sheets(session_id, pid, side)
-                    for c in scan.get("large_sheets", []):
-                        large_sheet_pages += 1
-                        summ = ls.read_large_sheet_summary(session_id, pid, side, c.get("page"))
-                        if summ.get("status") not in (None, "not_run"):
-                            existing_artifacts += 1
-                except Exception:  # noqa: BLE001
-                    pass
+        # large-sheet prebuild estimate — match what _prebuild_large_sheets_for_pair
+        # ACTUALLY builds (dense_scheme pages only), instead of opening every PDF and
+        # running the detector on every page. That scan blocked the request ~40s on
+        # 21 pairs (→ /api/info timeout → watchdog killed the process) and over-counted
+        # physically-large pages the prebuild never touches.
+        if ls_enabled and ls is not None:
+            try:
+                for ds_side, ds_page in _dense_scheme_pages(session_id, pid):
+                    large_sheet_pages += 1
+                    summ = ls.read_large_sheet_summary(session_id, pid, ds_side, ds_page)
+                    if summ.get("status") not in (None, "not_run"):
+                        existing_artifacts += 1
+            except Exception:  # noqa: BLE001
+                pass
         # too_large detection from existing comparison_result
         crp = paths_mod.pair_dir(session_id, pid) / "enriched_comparison" / "comparison_result.json"
         try:
@@ -459,16 +497,19 @@ def preflight(session_id: str, *, scope: str, pair_ids: Optional[list[str]],
             pass
 
     ls_to_build = max(0, large_sheet_pages - existing_artifacts)
-    est_qwen_calls = image_blocks + ls_to_build * 8  # ~8 tiles per large sheet
-    est_qwen_sec = ls_to_build * 8 * 8 + image_blocks * 5  # ~8s/tile, ~5s/block (cache-heavy)
+    # rough estimate: fresh image-block enrichment + GRSH feeder tiling (~8 tiles)
+    # + large-sheet prebuild (~8 tiles). Blended ~12s/block covers the mix of fast
+    # (photo/table/stamp) and slow (scheme) blocks on a fresh force run.
+    est_qwen_calls = image_blocks + dense_grsh * 8 + ls_to_build * 8
+    est_qwen_sec = image_blocks * 12 + dense_grsh * 8 * 30 + ls_to_build * 8 * 8
     est_opus_sec = len(ids) * 120  # ~2 min/pair Opus (rough)
 
     if too_large:
         risks.append(f"{len(too_large)} too_large пар — Opus пойдёт через fallback (если включён).")
     if missing:
         risks.append(f"{len(missing)} отсутствующих MD/пар — будут пропущены/упадут.")
-    if ls_to_build > 50:
-        risks.append(f"{ls_to_build} large-sheet страниц на сборку — длительно (~{est_qwen_sec//3600}ч).")
+    if est_qwen_sec > 2 * 3600:
+        risks.append(f"Длительный прогон (~{est_qwen_sec // 3600}ч Qwen) — LM Studio/ngrok должны держаться всё время.")
 
     return {
         "scope": scope, "pair_ids": ids, "total_pairs": len(ids),

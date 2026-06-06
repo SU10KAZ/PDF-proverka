@@ -115,3 +115,90 @@ def test_migration_idempotent(er_module, monkeypatch):
     first = calls["n"]
     er_module.load(sid)        # второй раз — уже всё составное, миграция не нужна
     assert calls["n"] == first  # источник changes не перечитывался повторно
+
+
+# ── Prune orphan-решений (исчезнувшие raw_id после регенерации сравнения) ──
+
+
+def test_prune_orphans_removes_stale_raw_ids(er_module, monkeypatch):
+    sid = "sess_prune"
+    pid = "pA"
+    er_module.apply_batch(sid, decisions=[
+        {"item_id": er_module.make_key(pid, "chg_keep"), "decision": "accepted"},
+        {"item_id": er_module.make_key(pid, "chg_gone"), "decision": "rejected"},
+    ])
+    # Текущее сравнение содержит только chg_keep (chg_gone исчез при регенерации).
+    monkeypatch.setattr(er_module, "_iter_session_pair_changes",
+                        lambda _sid: [(pid, "chg_keep")])
+    report = er_module.prune_orphans(sid)
+    assert report["removed_count"] == 1
+    assert er_module.make_key(pid, "chg_gone") in report["removed_keys"]
+    data = er_module.load(sid)
+    assert er_module.make_key(pid, "chg_keep") in data["decisions"]
+    assert er_module.make_key(pid, "chg_gone") not in data["decisions"]
+
+
+def test_prune_keeps_decisions_of_unenumerated_pair(er_module, monkeypatch):
+    sid = "sess_prune_keep"
+    er_module.apply_batch(sid, decisions=[
+        {"item_id": er_module.make_key("pA", "chg_x"), "decision": "accepted"},
+        {"item_id": er_module.make_key("pB", "chg_y"), "decision": "rejected"},
+    ])
+    # Перечислима только pA; pB не done / перезапускается → её решения не трогаем.
+    monkeypatch.setattr(er_module, "_iter_session_pair_changes",
+                        lambda _sid: [("pA", "chg_x")])
+    er_module.prune_orphans(sid)
+    data = er_module.load(sid)
+    assert er_module.make_key("pB", "chg_y") in data["decisions"]
+    assert er_module.make_key("pA", "chg_x") in data["decisions"]
+
+
+def test_prune_dry_run_does_not_write(er_module, monkeypatch):
+    sid = "sess_prune_dry"
+    er_module.apply_batch(sid, decisions=[
+        {"item_id": er_module.make_key("pA", "chg_keep"), "decision": "accepted"},
+        {"item_id": er_module.make_key("pA", "chg_gone"), "decision": "accepted"},
+    ])
+    # Частичное совпадение: chg_keep валиден, chg_gone — orphan.
+    monkeypatch.setattr(er_module, "_iter_session_pair_changes",
+                        lambda _sid: [("pA", "chg_keep")])
+    report = er_module.prune_orphans(sid, dry_run=True)
+    assert report["removed_count"] == 1
+    assert report["dry_run"] is True
+    data = er_module.load(sid)
+    assert er_module.make_key("pA", "chg_gone") in data["decisions"]  # не удалён
+
+
+def test_prune_zero_overlap_keeps_all(er_module, monkeypatch):
+    """Guard инцидента 2026-06-04: если НИ ОДИН сохранённый id пары не совпал с
+    текущими changes (пара регенерируется / id переgenerированы) — НЕ стираем
+    пару целиком."""
+    sid = "sess_prune_zero_overlap"
+    er_module.apply_batch(sid, decisions=[
+        {"item_id": er_module.make_key("pA", "chg_old1"), "decision": "accepted"},
+        {"item_id": er_module.make_key("pA", "chg_old2"), "decision": "rejected"},
+    ])
+    # Текущие changes пары — совсем другие id (полная регенерация / race).
+    monkeypatch.setattr(er_module, "_iter_session_pair_changes",
+                        lambda _sid: [("pA", "chg_new1"), ("pA", "chg_new2")])
+    report = er_module.prune_orphans(sid)
+    assert report["removed_count"] == 0          # ничего не стёрто
+    data = er_module.load(sid)
+    assert er_module.make_key("pA", "chg_old1") in data["decisions"]
+    assert er_module.make_key("pA", "chg_old2") in data["decisions"]
+
+
+def test_get_with_summary_is_non_destructive(er_module, monkeypatch):
+    """Чтение не мутирует хранилище — orphan'ы остаются на диске (их убирает
+    только явный prune_orphans / скоупинг на фронте)."""
+    sid = "sess_summary_nondestructive"
+    er_module.apply_batch(sid, decisions=[
+        {"item_id": er_module.make_key("pA", "chg_keep"), "decision": "accepted"},
+        {"item_id": er_module.make_key("pA", "chg_gone"), "decision": "accepted"},
+    ])
+    monkeypatch.setattr(er_module, "_iter_session_pair_changes",
+                        lambda _sid: [("pA", "chg_keep")])
+    out = er_module.get_with_summary(sid)
+    assert er_module.make_key("pA", "chg_gone") in out["decisions"]
+    data = er_module.load(sid)
+    assert er_module.make_key("pA", "chg_gone") in data["decisions"]

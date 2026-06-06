@@ -104,6 +104,7 @@ uncertain в confirmed.
 | `STAGE_COMPARISON_QWEN_TILE_OVERLAP` | `200` | перекрытие tiles (px) |
 | `STAGE_COMPARISON_QWEN_TILE_MAX_TILES` | `24` | макс. число tiles (иначе downscale) |
 | `STAGE_COMPARISON_QWEN_TILE_MIN_LONG_SIDE` | `1400` | ниже — tiling пропускается |
+| `STAGE_COMPARISON_QWEN_TILE_PROACTIVE_FOR_DENSE` | `false` | проактивный тайлинг `scheme`/`dense_scheme` ДАЖЕ при «ок» baseline (мелочь ТТ/сечения/0,5S); требует `..._RETRY_ENABLED=true` |
 | `STAGE_COMPARISON_QWEN_TILE_TIMEOUT_SEC` | `300` | per-tile timeout |
 | `STAGE_COMPARISON_QWEN_TILE_MAX_TOTAL_SEC_PER_BLOCK` | `1200` | бюджет времени на блок |
 | `STAGE_COMPARISON_QWEN_TILE_CACHE_ENABLED` | `true` | кеш tiled-результата |
