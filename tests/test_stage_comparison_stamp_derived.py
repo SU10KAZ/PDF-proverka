@@ -211,3 +211,41 @@ def test_leading_named_frontmatter_still_aligns():
     assert (1, 1, "positional_alignment") in seq
     assert (2, 2, "positional_alignment") in seq
     assert (3, 5, "exact_name") in seq
+
+
+# ═══ Регрессия: derived (Pass 2.6) не затирает матрицу кандидатов Pass 3 ═════
+
+def test_derived_match_with_llm_pass_does_not_crash():
+    """Pass 2.6 (derived) использовал локальную переменную `cand` как номер
+    страницы (int), затирая матрицу кандидатов `cand` (dict (lp,rp)->score),
+    которую читает Pass 3 (LLM adjudication). Итог — `TypeError: argument of
+    type 'int' is not iterable` на suggest-by-stamp с включённым ИИ-доматчингом
+    (HTTP 500). Здесь: derived-матч (49↔46) клобберил `cand`, а остаток
+    (50 / 47) уводил исполнение в Pass 3 → падение ДО вызова LLM."""
+    left = sm.build_sheet_index(_md([
+        (48, "Текстовая часть"),
+        (49, "Проект организации строительства",
+         "BLOCK ELXF Календарный план\n| N | работы |"),   # derived → 46
+        (50, "Схема ВРУ-7"),                                 # остаток (hard-gate vs ГРЩ)
+    ]))
+    right = sm.build_sheet_index(_md([
+        (45, "Текстовая часть"),
+        (46, "Календарный план", "Календарный план\nграфик производства работ"),
+        (47, "Схема ГРЩ-9"),                                 # остаток
+    ]))
+    def fn(rem_left, rem_right, tasks):  # new-style llm_match_fn (3 args)
+        return []  # fail-soft; важно лишь, что Pass 3 ДОШЁЛ сюда без TypeError
+
+    # До фикса этот вызов поднимал TypeError внутри match_sheet_indexes:
+    # цикл построения кандидатов Pass 3 (`if (lp, rp) not in cand`) падал,
+    # т.к. `cand` был затёрт в int derived-проходом.
+    res = sm.match_sheet_indexes(left, right, llm_match_fn=fn)
+
+    # derived-матч сохранён
+    it = _row(res, 49, 46)
+    assert it is not None and it["match_type"] == "derived_name_match"
+    # остаток с обеих сторон ПРОШЁЛ через Pass 3 (цикл кандидатов отработал)
+    # и не упал; hard-gate ВРУ≠ГРЩ → 50 и 47 односторонние, ложной пары нет
+    assert _row(res, 50, 47) is None
+    assert _row(res, 50, None) is not None
+    assert _row(res, None, 47) is not None

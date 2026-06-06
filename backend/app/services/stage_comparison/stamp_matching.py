@@ -1326,11 +1326,13 @@ def match_sheet_indexes(
         if not dk or len(dk) < 4:
             continue
         # выбрать первый свободный правый кандидат по этому ключу
+        # ВНИМАНИЕ: не переиспользовать имя `cand` — это матрица кандидатов
+        # (dict (lp,rp)->(score,bd)), нужная Pass 3 (LLM adjudication) ниже.
         rp = None
         while right_derived_q.get(dk):
-            cand = right_derived_q[dk].popleft()
-            if cand not in used_right:
-                rp = cand
+            cand_page = right_derived_q[dk].popleft()
+            if cand_page not in used_right:
+                rp = cand_page
                 break
         if rp is None:
             continue
