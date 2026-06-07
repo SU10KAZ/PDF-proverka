@@ -12579,19 +12579,48 @@ const app = createApp({
             return keys;
         }
         function scExpertReviewSummary() {
-            // Счётчики «Принято/Отклонено» — только по текущей паре, а не по всей
-            // сессии. Учитываем лишь ключи активного представления: V2 хранит
-            // решения по `v2_…`, классические «Расхождения» — по `chg_…/uf_…`.
-            // Иначе после переноса оценок (chg_ + v2_ на одну пару) счётчик
-            // удвоился бы.
+            // Счётчики «Принято/Отклонено» — только по ТЕКУЩЕЙ паре.
             const v2view = (scV2View.value === 'v2');
+            if (v2view) {
+                // V2: считаем строго по текущим загруженным изменениям пары
+                // (scV2Data.items), а НЕ по всем expert-решениям сессии. id вида
+                // `v2_<hash>` — контент-хеши: при регенерации сравнения они
+                // меняются, оставляя осиротевшие expert-решения от прошлых
+                // прогонов. Раньше V2-ветка не скоупила решения по текущим
+                // строкам и накручивала этих сирот (на ИОС1.1 шапка показывала
+                // 26/4 вместо честных 10). Теперь источник решения каждой строки
+                // тот же, что и в самой таблице: живой экспертный клик
+                // (ключ = текущий pid::item.id, сиротой быть не может) ИЛИ
+                // канонический review_status (confirmed/rejected; regen-устойчив,
+                // т.к. бэкенд резолвит его по стабильному raw_id). Согласовано с
+                // backend `_per_pair_status` (тот же «размечено N из M»).
+                const items = (scV2Data.value && Array.isArray(scV2Data.value.items))
+                    ? scV2Data.value.items : [];
+                let accepted = 0, rejected = 0;
+                for (const it of items) {
+                    let d = null;
+                    if (scExpertReviewMode.value) {
+                        const ed = scGetExpertDecision(it);   // ключ = текущий pid::item.id
+                        if (ed === 'accepted' || ed === 'rejected') d = ed;
+                    }
+                    if (!d) {
+                        const rs = String((it && it.review_status) || '');
+                        if (rs === 'confirmed') d = 'accepted';
+                        else if (rs === 'rejected') d = 'rejected';
+                    }
+                    if (d === 'accepted') accepted++;
+                    else if (d === 'rejected') rejected++;
+                }
+                return { accepted, rejected, total: accepted + rejected };
+            }
+            // Классический вид «Расхождения» — поведение без изменений: считаем по
+            // chg_/uf_ ключам, скоуп по строкам загруженного scUnifiedFlat
+            // (orphan-решения по исчезнувшим raw_id в счётчик не входят).
             const known = _scSummaryKnownKeys();   // не-null только для классического вида
             const vals = _scExpertDecisionsForActivePair()
                 .filter(([k]) => {
                     const raw = String(k).split('::').slice(1).join('::');
-                    const viewOk = v2view ? raw.startsWith('v2_') : !raw.startsWith('v2_');
-                    if (!viewOk) return false;
-                    // orphan-решения по исчезнувшим raw_id счётчик не накручивают.
+                    if (raw.startsWith('v2_')) return false;   // только chg_/uf_
                     return known === null || known.has(k);
                 })
                 .map(([, d]) => d);
