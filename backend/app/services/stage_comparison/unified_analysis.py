@@ -26,6 +26,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Optional
 
+from . import analysis_profile as analysis_profile_mod
 from . import enriched_comparison as enriched_mod
 from . import graphic_llm_local as graphic_local_mod
 from . import md_image_enrichment as md_enrich_mod
@@ -420,6 +421,36 @@ async def run_pair(
     force_enrichment: bool = False,
     force_compare: bool = False,
     force_fallback: bool = False,
+    analysis_profile: Optional[str] = None,
+    allow_profile_downgrade: bool = False,
+    progress_cb: Optional[Any] = None,
+) -> "PairRunResult":
+    """Тонкая обёртка: выставляет per-run профиль анализа (override без правки
+    .env) на ВЕСЬ прогон пары — и enrichment (Qwen), и comparison (Opus).
+    contextvars копируются в asyncio.to_thread, поэтому override виден и
+    blocking-сравнению. None → env-профиль (массовый default-прогон).
+
+    `analysis_profile="rich_grsh"` + `force_enrichment=True` = эталонный
+    глубокий прогон одной пары без глобального включения флагов.
+    """
+    with analysis_profile_mod.profile_override_for(analysis_profile):
+        return await _run_pair_impl(
+            session_id, pair_id,
+            force_enrichment=force_enrichment, force_compare=force_compare,
+            force_fallback=force_fallback,
+            allow_profile_downgrade=allow_profile_downgrade,
+            progress_cb=progress_cb,
+        )
+
+
+async def _run_pair_impl(
+    session_id: str,
+    pair_id: str,
+    *,
+    force_enrichment: bool = False,
+    force_compare: bool = False,
+    force_fallback: bool = False,
+    allow_profile_downgrade: bool = False,
     progress_cb: Optional[Any] = None,
 ) -> PairRunResult:
     """Цепочка enrichment (если нужно) + enriched_comparison для одной пары.
@@ -555,6 +586,7 @@ async def run_pair(
             enriched_mod.run_enriched_comparison,
             session_id, pair_id, force=bool(force_compare),
             force_fallback=bool(force_fallback),
+            allow_profile_downgrade=bool(allow_profile_downgrade),
         )
     except Exception as exc:  # noqa: BLE001
         logger.exception("unified_analysis: enriched_comparison failed")

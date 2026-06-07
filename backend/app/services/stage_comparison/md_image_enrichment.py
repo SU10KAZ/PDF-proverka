@@ -976,7 +976,9 @@ def get_prompt_for_block_type(
 
 
 def block_pdf_source_enabled() -> bool:
-    return _env_bool("STAGE_COMPARISON_BLOCK_PDF_SOURCE_ENABLED", False)
+    # Учитывает per-run analysis_profile override (rich_grsh) поверх env-флага.
+    from . import analysis_profile as _ap
+    return _ap.flag_enabled(_ap.BLOCK_PDF_SOURCE_FLAG, False)
 
 
 def _side_source_pdf_path(session_id: str, pair_id: str, side: str) -> Optional[str]:

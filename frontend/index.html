@@ -6260,6 +6260,26 @@
                             <code>{{ (scActivePair.left && scActivePair.left.filename) || scActivePair.id }}</code>
                             ↔ <code>{{ (scActivePair.right && scActivePair.right.filename) || '' }}</code>
                         </span>
+                        <!-- Профиль анализа результата (Быстрый / Глубокий ГРЩ / неизвестен) -->
+                        <span v-if="scV2ProfileBadge()"
+                              :style="'margin-left:auto; padding:1px 8px; border-radius:10px; font-weight:600; ' + scV2ProfileBadge().style"
+                              :title="scV2ProfileBadge().title">
+                            Профиль: {{ scV2ProfileBadge().label }}
+                        </span>
+                    </div>
+
+                    <!-- Warning: быстрый профиль на паре с плотной графикой ГРЩ -->
+                    <div v-if="scV2DenseWarning()"
+                         style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; padding:8px 12px; border-radius:6px; margin-bottom:10px; font-size:12px">
+                        ⚠ В этой паре есть плотные однолинейные схемы (ГРЩ/ВРУ). Быстрый профиль мог
+                        пропустить часть графических отличий. Для эталонной проверки запустите
+                        <b>«Глубокий ГРЩ»</b> (перепроверка с графическим извлечением).
+                    </div>
+                    <!-- Notice: rich-результат защищён от перезаписи быстрым прогоном -->
+                    <div v-if="scV2DowngradeBlocked()"
+                         style="background:#e0e7ff; color:#3730a3; border:1px solid #c7d2fe; padding:8px 12px; border-radius:6px; margin-bottom:10px; font-size:12px">
+                        ℹ Сохранённый результат глубокого анализа (ГРЩ) НЕ был перезаписан быстрым
+                        профилем. Чтобы пересчитать быстрым — подтвердите перезапись явно.
                     </div>
 
                     <div v-if="scV2Error"
