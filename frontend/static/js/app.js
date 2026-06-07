@@ -12540,6 +12540,26 @@ const app = createApp({
             if (decisions.size > 1) return 'mixed';
             return [...decisions][0];
         }
+        // Решение ДЛЯ ОТОБРАЖЕНИЯ в колонке «Решение». Сначала явное
+        // живое/перенесённое expert-решение (scGetExpertDecision, ключ pid::id),
+        // а если его нет — канонический review_status (его backend резолвит по
+        // стабильному raw_id, и именно по нему summary считает «Принято/Отклонено»).
+        // Без этого fallback строка, попавшая в summary как confirmed/rejected,
+        // не получала галочку, если решение эксперта сохранено под ключом
+        // pid::raw_id, а не pid::v2_id (расхождение «Принято: 8» в summary vs
+        // меньше галочек в таблице — orphan-ключи legacy expert_review).
+        // ВАЖНО: только ОТОБРАЖЕНИЕ. Логика редактирования (scSetExpertDecision
+        // toggle, _scDecisionRank) по-прежнему опирается на scGetExpertDecision —
+        // только явные клики, иначе первый клик по «унаследованной» строке снял
+        // бы отметку вместо подтверждения.
+        function scResolvedDecision(itemOrGroup) {
+            const d = scGetExpertDecision(itemOrGroup);
+            if (d) return d;   // 'accepted' | 'rejected' | 'mixed'
+            const rs = itemOrGroup && itemOrGroup.review_status;
+            if (rs === 'confirmed') return 'accepted';
+            if (rs === 'rejected') return 'rejected';
+            return null;
+        }
         // Приоритет в очереди: принятые сверху (0), нерешённые/смешанные в
         // середине (1), отклонённые внизу (2).
         function _scDecisionRank(itemOrGroup) {
@@ -14287,7 +14307,7 @@ const app = createApp({
             scExpertReviewMode, scExpertDecisions, scExpertReviewSaving,
             scToggleExpertReview, scLoadExpertDecisions,
             scSetExpertDecision, scSetExpertReason,
-            scGetExpertDecision, scGetExpertReason, scExpertReviewSummary,
+            scGetExpertDecision, scResolvedDecision, scGetExpertReason, scExpertReviewSummary,
             scExpertItemFlags, scV2TransferBusy, scV2TransferReviews,
             scSubmitExpertReview,
             scLoadUnifiedConfig, scLoadUnifiedPairStatus, scLoadUnifiedFlat,
