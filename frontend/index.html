@@ -6402,14 +6402,14 @@
                                     <td v-if="scExpertReviewMode" class="decision-cell" style="text-align:center">
                                         <div class="decision-toggle">
                                             <button class="btn-decision btn-accept btn-sm"
-                                                    :class="{ active: scGetExpertDecision(it) === 'accepted' }"
+                                                    :class="{ active: scResolvedDecision(it) === 'accepted' }"
                                                     @click.stop="scSetExpertDecision(it, 'accepted')" title="Принять">
-                                                <span v-if="scGetExpertDecision(it) === 'accepted'" class="decision-glyph">✓</span>
+                                                <span v-if="scResolvedDecision(it) === 'accepted'" class="decision-glyph">✓</span>
                                             </button>
                                             <button class="btn-decision btn-reject btn-sm"
-                                                    :class="{ active: scGetExpertDecision(it) === 'rejected' }"
+                                                    :class="{ active: scResolvedDecision(it) === 'rejected' }"
                                                     @click.stop="scSetExpertDecision(it, 'rejected')" title="Отклонить">
-                                                <span v-if="scGetExpertDecision(it) === 'rejected'" class="decision-glyph">✗</span>
+                                                <span v-if="scResolvedDecision(it) === 'rejected'" class="decision-glyph">✗</span>
                                             </button>
                                         </div>
                                         <!-- Метки переноса из «Расхождений» -->
@@ -6428,11 +6428,11 @@
                                     </td>
                                     <!-- Причина -->
                                     <td v-if="scExpertReviewMode" class="reason-cell">
-                                        <textarea v-if="scGetExpertDecision(it)"
+                                        <textarea v-if="scResolvedDecision(it)"
                                                   class="rejection-reason-input"
                                                   :value="scGetExpertReason(it)"
                                                   @input="scSetExpertReason(it, $event.target.value)"
-                                                  :placeholder="scGetExpertDecision(it) === 'accepted' ? 'Почему подтверждено…' : 'Почему отклонено…'"
+                                                  :placeholder="scResolvedDecision(it) === 'accepted' ? 'Почему подтверждено…' : 'Почему отклонено…'"
                                                   rows="2"></textarea>
                                     </td>
                                     <!-- Перейти к месту -->
