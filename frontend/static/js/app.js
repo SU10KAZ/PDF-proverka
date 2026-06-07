@@ -10679,7 +10679,8 @@ const app = createApp({
         // и только для нужной пары (?pair_id=…), не всю сессию разом.
         const _SC_REPORT_SEV_RANK = { high: 0, medium: 1, low: 2, unknown: 3 };
 
-        // Число accepted по каждой паре — прямо из ключей `<pair_id>::<raw_id>`.
+        // Сырое число accepted-ключей по паре (без дедупа V1/V2). Используется
+        // как fallback до того, как построена сверка scReportReconciledCounts.
         const scReportApprovedCountByPair = computed(() => {
             const counts = {};
             for (const [key, entry] of Object.entries(scExpertDecisions.value || {})) {
@@ -10691,27 +10692,116 @@ const app = createApp({
             }
             return counts;
         });
-        function scReportApprovedCountFor(pairId) {
-            return scReportApprovedCountByPair.value[String(pairId)] || 0;
-        }
-        const scReportTotalApproved = computed(() =>
-            Object.values(scReportApprovedCountByPair.value).reduce((n, c) => n + c, 0)
-        );
-        const scReportPairsWithApprovedCount = computed(() =>
-            Object.values(scReportApprovedCountByPair.value).filter(c => c > 0).length
-        );
 
-        // accepted по составному ключу напрямую (не через scGetExpertDecision —
-        // там scope-хелпер переклеивает pair_id на активную пару).
-        function _scReportItemAccepted(it) {
-            if (!it) return false;
-            const pid = String(it.pair_id || '');
-            if (!pid) return false;
-            const raws = (Array.isArray(it.source_finding_ids) && it.source_finding_ids.length)
-                ? it.source_finding_ids.filter(Boolean).map(String)
-                : (it.id ? [String(it.id)] : []);
-            return raws.some(r => ((scExpertDecisions.value[`${pid}::${r}`] || {}).decision) === 'accepted');
+        // ── Сверка V1 («Расхождения») ↔ V2 ──────────────────────────────────
+        // В expert_review.json одно и то же расхождение может быть согласовано
+        // дважды: под классическим id `chg_X` (вид «Расхождения») и под его
+        // V2-двойником `v2_<sha1(pid::chg_X)>` (вид «V2»). Без дедупа бейдж
+        // «N согласовано» задваивается. Считаем V2-id так же, как backend
+        // make_v2_id, и схлопываем двойники в одну находку.
+        // Чистый JS SHA-1 (синхронный). Не зависит от crypto.subtle, который
+        // доступен только в secure-context (HTTPS/localhost) — портал могут
+        // открыть и по голому HTTP на IP сервера. TextEncoder даёт UTF-8 байты
+        // и доступен везде. Результат побайтно совпадает с hashlib.sha1.
+        function _scSha1Hex(str) {
+            const bytes = new TextEncoder().encode(String(str));
+            const l = bytes.length;
+            const total = (((l + 8) >>> 6) + 1) << 6;   // кратно 64, оставляя 8 байт под длину
+            const msg = new Uint8Array(total);
+            msg.set(bytes);
+            msg[l] = 0x80;
+            const dv = new DataView(msg.buffer);
+            const bitLen = l * 8;
+            dv.setUint32(total - 4, bitLen >>> 0, false);
+            dv.setUint32(total - 8, Math.floor(bitLen / 0x100000000) >>> 0, false);
+            let h0 = 0x67452301, h1 = 0xEFCDAB89, h2 = 0x98BADCFE, h3 = 0x10325476, h4 = 0xC3D2E1F0;
+            const w = new Int32Array(80);
+            for (let i = 0; i < total; i += 64) {
+                for (let j = 0; j < 16; j++) w[j] = dv.getInt32(i + j * 4, false);
+                for (let j = 16; j < 80; j++) { const n = w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16]; w[j] = (n << 1) | (n >>> 31); }
+                let a = h0, b = h1, c = h2, d = h3, e = h4;
+                for (let j = 0; j < 80; j++) {
+                    let f, k;
+                    if (j < 20) { f = (b & c) | ((~b) & d); k = 0x5A827999; }
+                    else if (j < 40) { f = b ^ c ^ d; k = 0x6ED9EBA1; }
+                    else if (j < 60) { f = (b & c) | (b & d) | (c & d); k = 0x8F1BBCDC; }
+                    else { f = b ^ c ^ d; k = 0xCA62C1D6; }
+                    const t = (((a << 5) | (a >>> 27)) + f + e + k + w[j]) | 0;
+                    e = d; d = c; c = (b << 30) | (b >>> 2); b = a; a = t;
+                }
+                h0 = (h0 + a) | 0; h1 = (h1 + b) | 0; h2 = (h2 + c) | 0; h3 = (h3 + d) | 0; h4 = (h4 + e) | 0;
+            }
+            const hx = (n) => ('00000000' + ((n >>> 0).toString(16))).slice(-8);
+            return hx(h0) + hx(h1) + hx(h2) + hx(h3) + hx(h4);
         }
+        // Зеркало backend v2_review.make_v2_id: база = стабильный chg_-id, иначе
+        // (uf_/без id) — хэш контента.
+        function _scV2IdForItem(pairId, it) {
+            const raw = String((it && it.id) || '').trim();
+            let base;
+            if (raw && !raw.startsWith('uf_')) {
+                base = raw;
+            } else {
+                const ql = (it && it.evidence_left && it.evidence_left.quote) || '';
+                const qr = (it && it.evidence_right && it.evidence_right.quote) || '';
+                base = String((it && it.title) || '') + String((it && it.old_value) || '')
+                     + String((it && it.new_value) || '') + String(ql) + String(qr);
+            }
+            return 'v2_' + _scSha1Hex(`${pairId}::${base}`).slice(0, 16);
+        }
+        function _scKeyAccepted(key) {
+            return ((scExpertDecisions.value[key] || {}).decision) === 'accepted';
+        }
+        // Строит scReportReconciledCounts: для каждого accepted-классического
+        // ключа считаем находку и помечаем его V2-двойника как «покрытого»;
+        // accepted-V2-ключи, чей двойник не покрыт классическим, — это уникальные
+        // V2-находки и добавляются отдельно.
+        function _scBuildReconciledCounts() {
+            const dec = scExpertDecisions.value || {};
+            const classic = [];
+            const v2keys = [];
+            for (const [key, entry] of Object.entries(dec)) {
+                if (!entry || entry.decision !== 'accepted') continue;
+                const sep = String(key).indexOf('::');
+                if (sep < 0) continue;
+                const pid = String(key).slice(0, sep);
+                const rid = String(key).slice(sep + 2);
+                if (rid.startsWith('v2_')) v2keys.push({ pid, rid, key });
+                else classic.push({ pid, rid, key });
+            }
+            const counts = {};
+            const twinSet = new Set();   // `${pid}::${v2id}` для accepted-классики
+            for (const { pid, rid } of classic) {
+                counts[pid] = (counts[pid] || 0) + 1;   // каждая классика = находка
+                if (rid && !rid.startsWith('uf_')) {
+                    twinSet.add(`${pid}::v2_${_scSha1Hex(`${pid}::${rid}`).slice(0, 16)}`);
+                }
+            }
+            for (const { pid, key } of v2keys) {
+                if (!twinSet.has(key)) counts[pid] = (counts[pid] || 0) + 1;   // V2-only
+            }
+            scReportReconciledCounts.value = counts;
+        }
+
+        function scReportApprovedCountFor(pairId) {
+            const pid = String(pairId);
+            // Точный счёт по загруженной паре: дедуп V1/V2 уже применён к строкам,
+            // и осиротевшие решения (id из старого прогона) сюда не попадают.
+            // Прямой доступ к свойству — чтобы computed пересчитался при загрузке.
+            const loaded = scReportPairItems[pid];
+            if (Array.isArray(loaded)) return loaded.length;
+            const rc = scReportReconciledCounts.value || {};
+            if (Object.prototype.hasOwnProperty.call(rc, pid)) return rc[pid];
+            return scReportApprovedCountByPair.value[pid] || 0;   // до сверки
+        }
+        const scReportTotalApproved = computed(() => {
+            let n = 0;
+            for (const p of (scPairs.value || [])) n += scReportApprovedCountFor(p.id);
+            return n;
+        });
+        const scReportPairsWithApprovedCount = computed(() =>
+            (scPairs.value || []).filter(p => scReportApprovedCountFor(p.id) > 0).length
+        );
         // Кэш лениво загруженных согласованных расхождений по паре.
         function scReportApprovedFor(pairId) {
             return scReportPairItems[String(pairId)] || [];
@@ -10735,8 +10825,28 @@ const app = createApp({
                     throw new Error(j.detail || ('HTTP ' + r.status));
                 }
                 const data = await r.json();
-                const items = ((data && data.items) || []).filter(_scReportItemAccepted);
-                items.sort((a, b) => {
+                const all = (data && data.items) || [];
+                // Сверка с решениями эксперта: V1 (классический id) и V2-двойник.
+                const rows = [];
+                for (const it of all) {
+                    if (!it || typeof it !== 'object') continue;
+                    it._v2id = _scV2IdForItem(pid, it);
+                    const v1 = _scKeyAccepted(`${pid}::${it.id}`);
+                    const v2 = _scKeyAccepted(`${pid}::${it._v2id}`);
+                    if (!v1 && !v2) continue;
+                    // both → консенсус (основной список); v1/v2 → уникальное (в конец).
+                    it._approvedIn = (v1 && v2) ? 'both' : (v1 ? 'v1' : 'v2');
+                    rows.push(it);
+                }
+                const groupRank = (it) => (it._approvedIn === 'both' ? 0 : 1);
+                rows.sort((a, b) => {
+                    const ga = groupRank(a), gb = groupRank(b);
+                    if (ga !== gb) return ga - gb;                  // консенсус выше уникальных
+                    if (ga === 1) {                                 // внутри уникальных: V1, потом V2
+                        const oa = a._approvedIn === 'v1' ? 0 : 1;
+                        const ob = b._approvedIn === 'v1' ? 0 : 1;
+                        if (oa !== ob) return oa - ob;
+                    }
                     const ra = _SC_REPORT_SEV_RANK[a.severity] ?? 3;
                     const rb = _SC_REPORT_SEV_RANK[b.severity] ?? 3;
                     if (ra !== rb) return ra - rb;
@@ -10744,7 +10854,12 @@ const app = createApp({
                     const pb = Array.isArray(b.page) ? (b.page[0] || 0) : (b.page || 0);
                     return pa - pb;
                 });
-                scReportPairItems[pid] = items;
+                // Флаг первой уникальной строки — под неё рисуется разделитель.
+                rows.forEach((it, i) => {
+                    it._firstUnique = it._approvedIn !== 'both'
+                        && (i === 0 || rows[i - 1]._approvedIn === 'both');
+                });
+                scReportPairItems[pid] = rows;
             } catch (e) {
                 scReportError.value = String(e.message || e);
                 scReportPairItems[pid] = [];
@@ -10769,7 +10884,7 @@ const app = createApp({
         function scReportExportUrl() {
             if (!scSession.value) return '';
             const sid = encodeURIComponent(scSession.value.id);
-            return `/api/stage-comparison/sessions/${sid}/unified-diff-flat/export.xlsx?accepted_only=true`;
+            return `/api/stage-comparison/sessions/${sid}/unified-diff-flat/export.xlsx?accepted_only=true&grouped=true`;
         }
 
         // Фоновая предзагрузка расхождений всех пар (только тех, где есть
@@ -10806,6 +10921,8 @@ const app = createApp({
                 // Грузим только решения эксперта — этого хватает для счётчиков,
                 // вкладка открывается мгновенно.
                 await scLoadExpertDecisions();
+                // Сверяем V1/V2-двойники → дедуплицированные счётчики бейджей.
+                await _scBuildReconciledCounts();
             } catch (e) {
                 scReportError.value = String(e.message || e);
             } finally {

@@ -3678,6 +3678,9 @@ tr.row-rejected td.sc-cell-goto {
 .sc-chip--nolinks { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 /* Источник изменения, перенесённый в колонку «№» — компактный, может переноситься */
 .sc-chip--source-in-no { margin-top: 4px; max-width: 100%; white-space: normal; font-size: 9px; padding: 1px 6px; text-align: center; }
+/* Отчёт: разделитель перед расхождениями, согласованными только в одном виде (V1/V2) */
+.sc-report-unique-divider td { background: #f8fafc; color: #64748b; font-size: 11px; font-weight: 600; padding: 6px 12px; border-top: 2px solid #e2e8f0; }
+.sc-row--unique { background: #fcfcfd; }
 .sc-change-title { font-weight: 600; font-size: 13px; line-height: 1.35; color: var(--text); }
 .sc-change-summary { opacity: 0.85; margin-top: 4px; line-height: 1.45; }
 .sc-change-details { margin-top: 6px; font-size: 11px; opacity: 0.85; }

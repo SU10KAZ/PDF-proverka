@@ -7318,12 +7318,24 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(it, i) in scReportApprovedFor(p.id)" :key="it.id"
-                                            :class="['sc-row', 'sc-row--' + (it.severity || 'unknown'), 'row-accepted']">
+                                        <template v-for="(it, i) in scReportApprovedFor(p.id)" :key="it.id">
+                                        <!-- Разделитель: ниже идут расхождения, согласованные только в одном из видов (V1/V2). -->
+                                        <tr v-if="it._firstUnique" class="sc-report-unique-divider">
+                                            <td colspan="6">
+                                                ↓ Согласовано только в одном источнике (V1 «Расхождения» или V2)
+                                            </td>
+                                        </tr>
+                                        <tr :class="['sc-row', 'sc-row--' + (it.severity || 'unknown'), 'row-accepted', it._approvedIn !== 'both' ? 'sc-row--unique' : '']">
                                             <td class="sc-cell-no">
                                                 <div class="sc-cell-no__num">№{{ i + 1 }}</div>
                                                 <span :class="'sc-sev-chip sc-sev-chip--' + (it.severity || 'unknown')"
                                                       :title="'Важность: ' + (it.severity || '—')">{{ it.severity || '—' }}</span>
+                                                <span v-if="it._approvedIn === 'v1'"
+                                                      class="sc-chip sc-chip--source-in-no" style="background:#e0e7ff;color:#3730a3;border:1px solid #c7d2fe"
+                                                      title="Согласовано только в V1 («Расхождения»), в V2 не отмечено">только в V1</span>
+                                                <span v-else-if="it._approvedIn === 'v2'"
+                                                      class="sc-chip sc-chip--source-in-no" style="background:#fae8ff;color:#86198f;border:1px solid #f5d0fe"
+                                                      title="Согласовано только в V2, в V1 («Расхождения») не отмечено">только в V2</span>
                                                 <span v-if="it.change_direction && it.change_direction !== 'unknown'"
                                                       :class="'sc-grouped-dir-chip sc-grouped-dir-chip--' + it.change_direction"
                                                       :title="'Характер изменения: ' + scDirectionLabel(it.change_direction)">{{ scDirectionLabel(it.change_direction) }}</span>
@@ -7356,6 +7368,7 @@
                                                 <div v-else class="sc-impact-text muted">—</div>
                                             </td>
                                         </tr>
+                                        </template>
                                     </tbody>
                                 </table>
                             </div>
