@@ -8892,6 +8892,10 @@ const app = createApp({
         const scQORunning = ref(false);               // start request in flight / job running
         const scQOPreflighting = ref(false);          // preflight request in flight → button feedback
         let scQOPollTimer = null;
+        const scQOClock = ref(Date.now());            // 1s tick → live elapsed timers
+        let scQOClockTimer = null;
+        const scQOActiveRecog = ref(null);            // live md-enrichment aggregate of the running Qwen pair
+        const scQODetailsOpen = ref(true);            // expand per-pair live timeline
         const scQOSelectedCount = computed(() => scPairs.value.filter(p => scQOSelected[p.id]).length);
         const scQOAllSelected = computed(() => {
             const sel = scPairs.value.filter(p => p.left && p.right);
@@ -9158,6 +9162,7 @@ const app = createApp({
                 scAutoLoadInfo.value = null;
                 try { await scRecogRestoreActive(); } catch (_) {}
                 try { await scOpusRestoreActive(); } catch (_) {}
+                try { await scQORestoreActive(); } catch (_) {}
                 try { await scLoadPairCompareStatuses(); } catch (_) {}
                 try { await scOpusLoadPreflight(); } catch (_) {}
                 return true;
@@ -9247,6 +9252,7 @@ const app = createApp({
                             };
                             try { await scRecogRestoreActive(); } catch (_) {}
                             try { await scOpusRestoreActive(); } catch (_) {}
+                            try { await scQORestoreActive(); } catch (_) {}
                             try { await scLoadPairCompareStatuses(); } catch (_) {}
                             try { await scOpusLoadPreflight(); } catch (_) {}
                             return;
@@ -9406,6 +9412,7 @@ const app = createApp({
                 try { await scOpusRestoreActive(); } catch (_) {}
                 // Re-attach к запущенному Qwen→Opus pipeline job после F5, иначе
                 // панель «Pipeline Qwen→Opus» пропадает, хотя job ещё работает.
+                try { await scQORestoreActive(); } catch (_) {}
                 try { await scLoadPairCompareStatuses(); } catch (_) {}
                 try { await scOpusLoadPreflight(); } catch (_) {}
                 // Per-pair статус «Проверено экспертом» для таблицы загрузки.
@@ -9441,6 +9448,201 @@ const app = createApp({
             else { label = '…'; color = '#6b7280'; title = 'В очереди'; }
             return { label, color, title };
         }
+
+        // ── live timing / dynamics for the running Qwen→Opus pipeline ────────
+        // All durations tick via scQOClock (1s), so the panel shows live elapsed
+        // for running items and frozen totals for finished ones.
+        function scQOParseTs(s) {
+            if (!s) return null;
+            const ms = Date.parse(s);              // ISO "...Z" → UTC ms
+            return Number.isFinite(ms) ? ms : null;
+        }
+        function scQOClockStart() {
+            if (scQOClockTimer) return;
+            scQOClock.value = Date.now();
+            scQOClockTimer = setInterval(() => { scQOClock.value = Date.now(); }, 1000);
+        }
+        function scQOClockStop() {
+            if (scQOClockTimer) { clearInterval(scQOClockTimer); scQOClockTimer = null; }
+        }
+        function scQOItemFor(pid) {
+            const job = scQOJob.value;
+            if (!job || !pid) return null;
+            return (job.items || []).find(i => i.pair_id === pid) || null;
+        }
+        // Overall job elapsed: from the first Qwen start (else created_at) to now
+        // while live, frozen at updated_at once terminal.
+        function scQOElapsedMs() {
+            const job = scQOJob.value;
+            if (!job) return 0;
+            let startMs = null;
+            for (const it of job.items || []) {
+                const t = scQOParseTs(it.qwen_started_at);
+                if (t != null && (startMs == null || t < startMs)) startMs = t;
+            }
+            if (startMs == null) startMs = scQOParseTs(job.created_at);
+            if (startMs == null) return 0;
+            const live = ['running', 'queued'].includes(job.status);
+            const endMs = live ? scQOClock.value : (scQOParseTs(job.updated_at) || scQOClock.value);
+            return Math.max(0, endMs - startMs);
+        }
+        // Duration (ms) of one lane (qwen|opus) of a pair. Finished → fixed;
+        // running → live; not started → null.
+        function scQOItemLaneMs(it, lane) {
+            if (!it) return null;
+            const st = scQOParseTs(it[lane + '_started_at']);
+            if (st == null) return null;
+            const fin = scQOParseTs(it[lane + '_finished_at']);
+            return Math.max(0, (fin != null ? fin : scQOClock.value) - st);
+        }
+        function scQOItemLaneLabel(it, lane) {
+            const ms = scQOItemLaneMs(it, lane);
+            if (ms == null) return '';
+            return formatDuration(ms) || '0с';
+        }
+        // Compact lane cell for the per-pair timeline: status glyph + duration.
+        function scQOLaneCell(it, lane) {
+            if (!it) return '—';
+            const st = it[lane + '_status'];
+            const dur = scQOItemLaneLabel(it, lane);
+            if (st === 'done') return '✓ ' + (dur || '0с');
+            if (st === 'running') return '… ' + (dur || '0с');
+            if (st === 'failed') return '✗' + (dur ? ' ' + dur : '');
+            if (st === 'queued') return '⏱';
+            if (st === 'skipped') return '⊘';
+            return '—';  // waiting_qwen / waiting
+        }
+        function scQOLaneColor(it, lane) {
+            if (!it) return '#9ca3af';
+            const st = it[lane + '_status'];
+            if (st === 'running') return '#2563eb';
+            if (st === 'done') return '#16a34a';
+            if (st === 'failed') return '#b91c1c';
+            return '#9ca3af';
+        }
+        // Total wall-clock for a pair across both lanes (min start → max finish,
+        // live if still in flight).
+        function scQOItemTotalLabel(it) {
+            if (!it) return '';
+            const starts = [scQOParseTs(it.qwen_started_at), scQOParseTs(it.opus_started_at)]
+                .filter(x => x != null);
+            if (!starts.length) return '';
+            const start = Math.min(...starts);
+            const terminal = ['done', 'failed', 'skipped'].includes(it.status);
+            let end = scQOClock.value;
+            if (terminal) {
+                const fins = [scQOParseTs(it.qwen_finished_at), scQOParseTs(it.opus_finished_at)]
+                    .filter(x => x != null);
+                if (fins.length) end = Math.max(...fins);
+            }
+            return formatDuration(Math.max(0, end - start)) || '0с';
+        }
+        // Live image-block detail of the Qwen lane's current pair, taken from the
+        // active md-enrichment aggregate (refreshed during polling).
+        function scQOCurrentBlock() {
+            const job = scQOJob.value;
+            const curPid = job && job.qwen_worker && job.qwen_worker.current_pair_id;
+            if (!curPid) return null;
+            const agg = scQOActiveRecog.value && scQOActiveRecog.value.aggregate;
+            if (!agg) return null;
+            if (agg.current_pair_id && agg.current_pair_id !== curPid) return null;
+            const tot = Number(agg.current_total_blocks || 0);
+            if (!tot) return null;
+            return {
+                index: Number(agg.current_block_index || 0), total: tot,
+                page: agg.current_page, side: agg.current_side,
+                avg_sec: (agg.diagnostics && agg.diagnostics.avg_duration_sec) || 0,
+                eta_sec: agg.eta_sec, message: agg.current_status_message || '',
+            };
+        }
+        // Job-wide image-block totals: how many image blocks Qwen must process
+        // across ALL pairs in this run, and how many are already processed.
+        // Per-pair totals come from the on-disk recognition metrics
+        // (scRecogPairBlocks — block counts are stable across re-runs, so they
+        // are a reliable estimate of the work). "Готово" counts the full block
+        // total of every pair whose Qwen lane already finished, plus the live
+        // in-flight progress of the pair Qwen is processing right now. Returns
+        // null until at least one pair's block total is known.
+        function scQOBlocksOverall() {
+            const job = scQOJob.value;
+            if (!job || !Array.isArray(job.items)) return null;
+            const curPid = job.qwen_worker && job.qwen_worker.current_pair_id;
+            const cur = scQOCurrentBlock();
+            let total = 0, done = 0, known = false;
+            for (const it of job.items) {
+                const pb = (typeof scRecogPairBlocks === 'function') ? scRecogPairBlocks(it.pair_id) : null;
+                const pairTotal = (pb && pb.available) ? Number(pb.total || 0) : 0;
+                if (pairTotal > 0) known = true;
+                total += pairTotal;
+                if (it.qwen_status === 'done') {
+                    done += pairTotal;
+                } else if (curPid && it.pair_id === curPid && cur) {
+                    done += Math.min(Number(cur.index || 0), pairTotal || Number(cur.index || 0));
+                }
+            }
+            if (!known) return null;
+            return {
+                total, done,
+                pairsDone: Number((job.qwen_worker && job.qwen_worker.done) || 0),
+                pairsTotal: Number((job.qwen_worker && job.qwen_worker.total) || job.items.length),
+            };
+        }
+        // Remaining-time estimate. Lanes are decoupled, so the wall-clock floor is
+        // the slower of the two remaining workloads (avg finished lane duration ×
+        // pairs still needing that lane, minus already-elapsed for in-flight ones).
+        function scQOEtaSec() {
+            const job = scQOJob.value;
+            if (!job || !['running', 'queued'].includes(job.status)) return null;
+            const items = job.items || [];
+            const avg = (lane) => {
+                const ds = items
+                    .filter(it => scQOParseTs(it[lane + '_finished_at']) != null
+                                  && scQOParseTs(it[lane + '_started_at']) != null)
+                    .map(it => scQOItemLaneMs(it, lane))
+                    .filter(ms => ms != null && ms > 0);
+                return ds.length ? ds.reduce((a, b) => a + b, 0) / ds.length / 1000 : null;
+            };
+            const laneRemain = (lane, avgSec) => {
+                if (avgSec == null) return 0;
+                let rem = 0;
+                for (const it of items) {
+                    const st = it[lane + '_status'];
+                    if (st === 'running') {
+                        const elapsed = (scQOItemLaneMs(it, lane) || 0) / 1000;
+                        rem += Math.max(0, avgSec - elapsed);
+                    } else if (!['done', 'failed', 'skipped'].includes(st)) {
+                        rem += avgSec;
+                    }
+                }
+                return rem;
+            };
+            const eta = Math.max(laneRemain('qwen', avg('qwen')), laneRemain('opus', avg('opus')));
+            return eta > 0 ? Math.round(eta) : null;
+        }
+        async function scQORefreshActiveRecog() {
+            // Pull the running internal md-enrichment job for live image-block
+            // detail. Merge ONLY the active pair's status into scRecogJob so the
+            // "Блоки" column stays live for the running pair without dropping the
+            // already-recognised pairs (the active job is pair-scoped).
+            if (!scSession.value || !scSession.value.id) return;
+            const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/md-enrichment-jobs/active`;
+            const data = await fetch(url).then(r => r.json());
+            const job = data && data.job;
+            if (!job) return;
+            scQOActiveRecog.value = job;
+            const agg = job.aggregate;
+            if (!agg || !agg.pair_statuses) return;
+            if (!scRecogJob.value || !scRecogJob.value.aggregate) {
+                scRecogJob.value = job;
+                return;
+            }
+            const merged = { ...(scRecogJob.value.aggregate.pair_statuses || {}), ...agg.pair_statuses };
+            scRecogJob.value = {
+                ...scRecogJob.value,
+                aggregate: { ...scRecogJob.value.aggregate, pair_statuses: merged },
+            };
+        }
+
         async function scQOPreflight(pairIds) {
             const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pipeline-qwen-opus/preflight`;
             const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -9476,10 +9678,58 @@ const app = createApp({
                 const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ scope: 'selected', pair_ids: pairIds, force_qwen: true, force_opus: true, prebuild_large_sheets: true, confirm: true }) });
                 const job = await r.json();
+                // Health-gate: backend заблокировал старт (LLM/ngrok недоступен).
+                if (job && job.status === 'rejected_llm_unavailable') {
+                    scQORunning.value = false;
+                    alert('Запуск заблокирован: локальный LLM/ngrok недоступен (' +
+                        (job.reason || 'unknown') + ').\nВосстановите ngrok-туннель и загрузите модель в LM Studio, затем повторите.');
+                    return;
+                }
                 scQOJob.value = job;
-                if (job && job.job_id) scQOPollJob(job.job_id);
+                if (job && job.job_id) { scQORemember(job.job_id); scQOPollJob(job.job_id); }
                 else scQORunning.value = false;
             } catch (e) { scQORunning.value = false; }
+        }
+        // Persist the running pipeline job id per-session so an F5 / tab reopen
+        // can re-attach to it (the panel state lives only in memory otherwise,
+        // so without this a reload makes the whole "Pipeline Qwen→Opus" box
+        // vanish even though the backend job keeps running).
+        function scQOJobKey() {
+            return scSession.value && scSession.value.id ? ('sc_qo_job:' + scSession.value.id) : null;
+        }
+        function scQORemember(jobId) {
+            const k = scQOJobKey();
+            if (k && jobId) { try { localStorage.setItem(k, jobId); } catch (_) {} }
+        }
+        function scQOForget() {
+            const k = scQOJobKey();
+            if (k) { try { localStorage.removeItem(k); } catch (_) {} }
+        }
+        // Re-attach to a still-running pipeline job after a page reload. Called
+        // from scLoadSession. Frontend-only: reads the remembered job id and
+        // resumes polling via the existing status endpoint.
+        async function scQORestoreActive() {
+            const k = scQOJobKey();
+            if (!k) return;
+            let jobId = null;
+            try { jobId = localStorage.getItem(k); } catch (_) {}
+            if (!jobId) return;
+            const terminal = ['done', 'partial', 'failed', 'cancelled', 'rejected_no_confirm', 'failed_interrupted'];
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pipeline-qwen-opus/${encodeURIComponent(jobId)}`;
+                const r = await fetch(url);
+                if (!r.ok) { scQOForget(); return; }
+                const job = await r.json();
+                if (!job || !job.job_id) { scQOForget(); return; }
+                scQOJob.value = job;
+                if (terminal.includes(job.status)) {
+                    // finished while the page was closed — show the last run once,
+                    // then stop tracking it so it doesn't keep re-appearing.
+                    scQOForget();
+                } else {
+                    scQOPollJob(job.job_id);  // resume live polling
+                }
+            } catch (_) { /* keep pointer; transient network error */ }
         }
         function scQOPollJob(jobId) {
             if (scQOPollTimer) { clearTimeout(scQOPollTimer); scQOPollTimer = null; }
@@ -9489,8 +9739,15 @@ const app = createApp({
                     const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pipeline-qwen-opus/${encodeURIComponent(jobId)}`;
                     const job = await fetch(url).then(r => r.json());
                     scQOJob.value = job;
+                    // live image-block detail while Qwen is enriching a pair
+                    if (job.qwen_worker && job.qwen_worker.current_pair_id) {
+                        try { await scQORefreshActiveRecog(); } catch (e) {}
+                    }
                     if (terminal.includes(job.status)) {
                         scQORunning.value = false;
+                        scQOClockStop();
+                        scQOActiveRecog.value = null;
+                        scQOForget();
                         if (typeof scLoadPairCompareStatuses === 'function') { try { await scLoadPairCompareStatuses(); } catch (e) {} }
                         if (typeof scLoadUnifiedFlat === 'function') { try { await scLoadUnifiedFlat(); } catch (e) {} }
                         return;
@@ -9499,6 +9756,7 @@ const app = createApp({
                 } catch (e) { scQOPollTimer = setTimeout(tick, 5000); }
             };
             scQORunning.value = true;
+            scQOClockStart();
             tick();
         }
         async function scQOCancel() {
@@ -13038,6 +13296,7 @@ const app = createApp({
                 if (!scSession.value || !scSession.value.id) return;
                 scRecogRestoreActive();
                 scOpusRestoreActive();
+                scQORestoreActive();
                 scOpusLoadPreflight();
                 // Возврат с «3. Расхождения» — обновить колонку «Проверено экспертом».
                 scLoadExpertPerPair();
@@ -13967,6 +14226,8 @@ const app = createApp({
             scQOSelected, scQOJob, scQOConfirm, scQORunning, scQOPreflighting, scQOSelectedCount, scQOAllSelected,
             scQOToggleAll, scQOPairLabel, scQOPairBadge, scQOOpenConfirm, scQOProcessPair,
             scQOStartConfirmed, scQOStart, scQOCancel,
+            scQODetailsOpen, scQOElapsedMs, scQOEtaSec, scQOItemFor, scQOItemLaneLabel,
+            scQOLaneCell, scQOLaneColor, scQOItemTotalLabel, scQOCurrentBlock, scQOBlocksOverall,
             scFailedPopoverPairId, scFailedBlocks, scFailedBlocksLoading, scFailedBlocksError,
             scToggleFailedPopover, scLoadFailedBlocks, scGotoFailedBlock, scFocusBlock,
             scPageImageUrl, scOnImageLoad, scOnPageImageLoad,

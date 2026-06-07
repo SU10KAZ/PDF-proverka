@@ -5471,12 +5471,57 @@
                         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
                             <strong>Pipeline Qwen→Opus</strong>
                             <span style="color:#6b7280">job {{ scQOJob.job_id }} · {{ scQOJob.status }}</span>
+                            <span style="color:#374151; font-variant-numeric:tabular-nums" title="Общее время с момента старта">⏱ {{ formatDuration(scQOElapsedMs()) || '0с' }}</span>
+                            <span v-if="scQOEtaSec()!=null" style="color:#6b7280; font-variant-numeric:tabular-nums" title="Оценка оставшегося времени по средней длительности завершённых пар (медленная из двух дорожек)">· осталось ~{{ formatEta(scQOEtaSec()) }}</span>
                             <button v-if="['running','queued'].includes(scQOJob.status)" class="btn btn-sm btn-secondary" @click="scQOCancel()" style="margin-left:auto">Остановить</button>
                         </div>
                         <div style="margin-top:6px; display:flex; gap:18px; flex-wrap:wrap">
-                            <span>🟦 Qwen: {{ scQOJob.qwen_worker.done }}/{{ scQOJob.qwen_worker.total }} done · {{ scQOJob.qwen_worker.failed }} fail<span v-if="scQOJob.qwen_worker.current_pair_id"> · сейчас {{ scQOPairLabel(scQOJob.qwen_worker.current_pair_id) }}</span></span>
-                            <span>🟪 Opus: {{ scQOJob.opus_worker.done }}/{{ scQOJob.opus_worker.total }} done · {{ scQOJob.opus_worker.failed }} fail<span v-if="scQOJob.opus_worker.current_pair_id"> · сейчас {{ scQOPairLabel(scQOJob.opus_worker.current_pair_id) }}</span></span>
+                            <span>🟦 Qwen: {{ scQOJob.qwen_worker.done }}/{{ scQOJob.qwen_worker.total }} done · {{ scQOJob.qwen_worker.failed }} fail<span v-if="scQOJob.qwen_worker.current_pair_id"> · сейчас {{ scQOPairLabel(scQOJob.qwen_worker.current_pair_id) }} <span style="color:#2563eb; font-variant-numeric:tabular-nums">({{ scQOItemLaneLabel(scQOItemFor(scQOJob.qwen_worker.current_pair_id), 'qwen') }})</span></span></span>
+                            <span>🟪 Opus: {{ scQOJob.opus_worker.done }}/{{ scQOJob.opus_worker.total }} done · {{ scQOJob.opus_worker.failed }} fail<span v-if="scQOJob.opus_worker.current_pair_id"> · сейчас {{ scQOPairLabel(scQOJob.opus_worker.current_pair_id) }} <span style="color:#2563eb; font-variant-numeric:tabular-nums">({{ scQOItemLaneLabel(scQOItemFor(scQOJob.opus_worker.current_pair_id), 'opus') }})</span></span></span>
                             <span>✅ {{ scQOJob.queues.completed.length }} · ❌ {{ scQOJob.queues.failed.length }}</span>
+                        </div>
+                        <!-- job-wide block total: how many blocks Qwen must process across all pairs, and how many done -->
+                        <div v-if="scQOBlocksOverall()" style="margin-top:6px; padding:5px 9px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; color:#166534; font-variant-numeric:tabular-nums" title="Всего графических блоков по всем парам прогона и сколько уже обработано Qwen (готовые пары целиком + текущая по блокам)">
+                            🧱 Блоки Qwen всего: <strong>{{ scQOBlocksOverall().done }}</strong> / {{ scQOBlocksOverall().total }}
+                            <span style="color:#15803d"> · пары {{ scQOBlocksOverall().pairsDone }} / {{ scQOBlocksOverall().pairsTotal }}</span>
+                        </div>
+                        <!-- live image-block detail of the Qwen lane current pair -->
+                        <div v-if="scQOCurrentBlock()" style="margin-top:6px; padding:5px 9px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; color:#1e40af; font-variant-numeric:tabular-nums">
+                            🧩 Блоки текущей пары: <strong>{{ scQOCurrentBlock().index }}</strong> / {{ scQOCurrentBlock().total }}
+                            <span v-if="scQOCurrentBlock().side"> · {{ scQOCurrentBlock().side==='left' ? 'слева' : 'справа' }}</span>
+                            <span v-if="scQOCurrentBlock().page"> · стр. {{ scQOCurrentBlock().page }}</span>
+                            <span v-if="scQOCurrentBlock().avg_sec"> · ~{{ scFormatDuration(scQOCurrentBlock().avg_sec) }}/блок</span>
+                            <span v-if="scQOCurrentBlock().eta_sec!=null" style="color:#3b82f6"> · пара ~{{ formatEta(scQOCurrentBlock().eta_sec) }}</span>
+                            <span v-if="scQOCurrentBlock().message" style="color:#60a5fa"> · {{ scQOCurrentBlock().message }}</span>
+                        </div>
+                        <!-- per-pair live timeline (dynamics) -->
+                        <div style="margin-top:8px">
+                            <a href="#" @click.prevent="scQODetailsOpen=!scQODetailsOpen" style="font-size:11px; color:#2563eb; text-decoration:none">
+                                {{ scQODetailsOpen ? '▾' : '▸' }} Динамика по парам ({{ scQOJob.items.length }})
+                            </a>
+                            <div v-if="scQODetailsOpen" style="margin-top:5px; max-height:240px; overflow:auto; border:1px solid #e5e7eb; border-radius:6px; background:#fff">
+                                <table style="width:100%; border-collapse:collapse; font-size:11px; font-variant-numeric:tabular-nums">
+                                    <thead>
+                                        <tr style="background:#f9fafb; color:#6b7280; position:sticky; top:0">
+                                            <th style="text-align:left; padding:4px 8px; font-weight:600">Пара</th>
+                                            <th style="text-align:center; padding:4px 8px; font-weight:600">🟦 Qwen</th>
+                                            <th style="text-align:center; padding:4px 8px; font-weight:600">🟪 Opus</th>
+                                            <th style="text-align:center; padding:4px 8px; font-weight:600" title="Полное время пары (обе дорожки)">Σ</th>
+                                            <th style="text-align:right; padding:4px 8px; font-weight:600" title="Найдено изменений">изм.</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="it in scQOJob.items" :key="it.pair_id"
+                                            :style="{borderTop:'1px solid #f1f5f9', background: (it.status==='qwen_running'||it.status==='opus_running') ? '#fffbeb' : 'transparent'}">
+                                            <td style="padding:3px 8px; max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap" :title="scQOPairLabel(it.pair_id)">{{ scQOPairLabel(it.pair_id) }}</td>
+                                            <td style="padding:3px 8px; text-align:center" :style="{color: scQOLaneColor(it,'qwen')}">{{ scQOLaneCell(it,'qwen') }}</td>
+                                            <td style="padding:3px 8px; text-align:center" :style="{color: scQOLaneColor(it,'opus')}">{{ scQOLaneCell(it,'opus') }}</td>
+                                            <td style="padding:3px 8px; text-align:center; color:#374151">{{ scQOItemTotalLabel(it) }}</td>
+                                            <td style="padding:3px 8px; text-align:right; color:#16a34a">{{ it.opus_status==='done' ? it.changes_count : '' }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
 
