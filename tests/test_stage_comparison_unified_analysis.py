@@ -957,6 +957,82 @@ def test_unified_diff_flat_aggregates_changes(tmp_path, monkeypatch):
     assert flat_unknown["pair_modes"] == []
 
 
+def test_unified_diff_flat_exposes_cost_direction_and_merge_tags(tmp_path, monkeypatch):
+    """build_unified_flat должен отдавать cost_direction / is_new / change_origin
+    (их читает modern frontend: денежный бейдж + NEW/«прежнее» маркеры).
+    Поля присутствуют всегда; при отсутствии данных — безопасный fallback."""
+    from backend.app.services.stage_comparison import unified_findings as uf
+    from backend.app.services.stage_comparison import paths as paths_mod
+
+    session_id = "sess_flat_meta"
+    paths_mod.session_json_path(session_id).write_text(
+        json.dumps({"id": session_id, "pair_order": ["p1"]}), encoding="utf-8",
+    )
+    pair = {
+        "id": "p1",
+        "status": "matched",
+        "left":  {"filename": "p1-l.pdf", "md_path": "/x.md"},
+        "right": {"filename": "p1-r.pdf", "md_path": "/y.md"},
+    }
+    paths_mod.pair_json_path(session_id, "p1").write_text(
+        json.dumps(pair), encoding="utf-8",
+    )
+    comp = {
+        "status": "done",
+        "summary": "s",
+        "changes": [
+            # added → complication → cost_direction=increase; свежая находка merge.
+            {"id": "c_added", "source": "text", "type": "added",
+             "category": "general", "severity": "high",
+             "title": "Добавлен щит", "summary": "...",
+             "old_value": "", "new_value": "ЩР-1", "cost_impact": "possible",
+             "is_new": True, "change_origin": "new"},
+            # removed → simplification → cost_direction=decrease; перенесённая находка.
+            {"id": "c_removed", "source": "text", "type": "removed",
+             "category": "general", "severity": "medium",
+             "title": "Убран щит", "summary": "...",
+             "old_value": "ЩР-2", "new_value": "", "cost_impact": "possible",
+             "is_new": False, "change_origin": "previous"},
+            # changed без merge-полей и cost-сигналов → безопасный fallback.
+            {"id": "c_plain", "source": "text", "type": "changed",
+             "category": "general", "severity": "low",
+             "title": "Прочее", "summary": "...",
+             "old_value": "", "new_value": "", "cost_impact": "unknown"},
+        ],
+        "warnings": [],
+        "input_stats": {},
+    }
+    f = paths_mod.enriched_comparison_result_path(session_id, "p1")
+    f.parent.mkdir(parents=True, exist_ok=True)
+    f.write_text(json.dumps(comp), encoding="utf-8")
+
+    flat = uf.build_unified_flat(session_id)
+    by_id = {it["id"]: it for it in flat["items"]}
+    assert len(by_id) == 3
+
+    # Поля присутствуют у КАЖДОГО item (frontend на них рассчитывает).
+    for it in flat["items"]:
+        assert "cost_direction" in it
+        assert it["cost_direction"] in ("increase", "decrease", "unknown")
+        assert "is_new" in it and isinstance(it["is_new"], bool)
+        assert "change_origin" in it and isinstance(it["change_origin"], str)
+
+    # cost_direction по эвристике направления.
+    assert by_id["c_added"]["cost_direction"] == "increase"
+    assert by_id["c_removed"]["cost_direction"] == "decrease"
+
+    # merge-теги пробрасываются как есть.
+    assert by_id["c_added"]["is_new"] is True
+    assert by_id["c_added"]["change_origin"] == "new"
+    assert by_id["c_removed"]["is_new"] is False
+    assert by_id["c_removed"]["change_origin"] == "previous"
+
+    # fallback: нет is_new/change_origin/cost-сигналов → безопасные дефолты.
+    assert by_id["c_plain"]["is_new"] is False
+    assert by_id["c_plain"]["change_origin"] == ""
+    assert by_id["c_plain"]["cost_direction"] == "unknown"
+
+
 def test_unified_diff_flat_endpoint_supports_pair_id_query(tmp_path, monkeypatch):
     """HTTP-endpoint /unified-diff-flat?pair_id=X прокидывает фильтр."""
     from fastapi.testclient import TestClient
