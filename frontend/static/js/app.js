@@ -11355,6 +11355,7 @@ const app = createApp({
         const SC_STAMP_TYPE_LABELS = {
             exact_name: 'точное',
             exact_canonical_name: 'каноническое',
+            equipment_canonical_match: '⚡ по оборудованию',
             exact_multipart_group: '📑 многостр. лист',
             multipart_group: '📑 многостр. часть',
             multipart_continuation: '📑 продолжение',
@@ -11389,7 +11390,7 @@ const app = createApp({
         function scStampTypeLabel(mt) { return SC_STAMP_TYPE_LABELS[mt] || 'похожее'; }
         function scStampRiskLabel(f) { return SC_STAMP_RISK_LABELS[f] || f; }
         function scStampTypeColor(it) {
-            if (['exact_name', 'exact_canonical_name', 'exact_multipart_group', 'multipart_group'].includes(it.match_type)) return '#15803d';
+            if (['exact_name', 'exact_canonical_name', 'equipment_canonical_match', 'exact_multipart_group', 'multipart_group'].includes(it.match_type)) return '#15803d';
             if (it.match_type === 'llm_semantic') return '#6d28d9';
             if (it.match_type === 'derived_name_match') return '#0e7490';
             if (it.match_type === 'positional_alignment') return '#0891b2';
