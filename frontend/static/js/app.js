@@ -12346,6 +12346,40 @@ const app = createApp({
                 { key: 'notrev', label: 'не пров.',     value: s.not_reviewed || 0,      bg: '#f1f5f9', border: '#e2e8f0', fg: '#475569' },
             ];
         }
+        // Однозначные счётчики ревью V2 для шапки. Раньше «10 из 38» можно было
+        // прочитать как «принято + отклонено», хотя в 10 входят ещё и
+        // автоматически исключённые (формальные) изменения. Разводим понятия:
+        //   total          = engineering_total + excluded_total   (все raw-расхождения)
+        //   processed      = confirmed + rejected + excluded       («обработано»)
+        //   expert_decided = confirmed + rejected                  («экспертно решено»)
+        //   not_reviewed   = total - processed
+        // «Принято/Отклонено» считаем строго по ИНЖЕНЕРНЫМ (не исключённым)
+        // строкам — так toggle «Показать формальные» (include_excluded) не двоит
+        // счётчик, а engineering_total/excluded_total берём из backend-summary
+        // (он считает корректно и стабилен независимо от toggle). Тот же скоуп по
+        // текущим items + review_status, что и в scExpertReviewSummary — сироты
+        // после регенерации сравнения в счётчик не попадают.
+        function scV2ReviewProgress() {
+            const s = (scV2Data.value && scV2Data.value.summary) || {};
+            const items = (scV2Data.value && Array.isArray(scV2Data.value.items))
+                ? scV2Data.value.items : [];
+            let confirmed = 0, rejected = 0;
+            for (const it of items) {
+                if (it && it.excluded_from_main) continue;   // исключённые → в «Исключено»
+                const rs = String((it && it.review_status) || '');
+                if (rs === 'confirmed') confirmed++;
+                else if (rs === 'rejected') rejected++;
+            }
+            const excluded = Number(s.excluded_total) || 0;
+            const engineering = (s.engineering_total != null)
+                ? (Number(s.engineering_total) || 0)
+                : (Number(s.total) || 0);
+            const total = engineering + excluded;
+            const processed = confirmed + rejected + excluded;
+            const expert_decided = confirmed + rejected;
+            const not_reviewed = Math.max(0, total - processed);
+            return { total, processed, expert_decided, confirmed, rejected, excluded, not_reviewed };
+        }
         function scV2SourceLabel(s) { return scUnifiedSourceLabel(s); }
         // ─── Impact class (инженерная значимость) ───
         const _scV2ImpactLabels = {
@@ -14244,6 +14278,7 @@ const app = createApp({
             scV2ProfileBadge, scV2DenseWarning, scV2DowngradeBlocked,
             scSetV2View, scLoadV2Changes, scV2FilteredItems, scV2SelectedIds,
             scV2AllSelected, scV2ToggleAll, scV2ToggleOne, scV2SummaryCards,
+            scV2ReviewProgress,
             scV2SourceLabel, scV2ExportXlsxUrl, scV2SetStatus, scV2SaveComment,
             scV2ImpactLabel,
             scV2IsExcludedClass, scV2ImpactBadgeStyle, scV2ImpactClassOptions,

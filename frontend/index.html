@@ -6268,6 +6268,26 @@
                         </span>
                     </div>
 
+                    <!-- Однозначные счётчики ревью. «Обработано» = принято+отклонено+исключено,
+                         «Экспертно решено» = принято+отклонено. Развели понятия, чтобы
+                         «10 из 38» не читалось как только принято+отклонено (в 10 входят
+                         и автоматически исключённые формальные изменения). -->
+                    <div v-if="scV2Data && (scV2Data.items||[]).length" class="sc-card sc-v2-review-progress"
+                         style="display:flex; gap:6px 14px; align-items:baseline; flex-wrap:wrap; padding:8px 12px; border-radius:6px; margin-bottom:10px; font-size:12px; background:#f8fafc; border:1px solid #e2e8f0; color:#0f172a; font-variant-numeric:tabular-nums">
+                        <span title="Обработано = принято + отклонено + исключено (из общего числа расхождений)">
+                            Обработано: <b>{{ scV2ReviewProgress().processed }}</b> из <b>{{ scV2ReviewProgress().total }}</b>
+                        </span>
+                        <span style="opacity:.4">·</span>
+                        <span title="Экспертно решено = принято + отклонено (без автоматически исключённых формальных изменений)">
+                            Экспертно решено: <b>{{ scV2ReviewProgress().expert_decided }}</b> из <b>{{ scV2ReviewProgress().total }}</b>
+                        </span>
+                        <span style="opacity:.4">·</span>
+                        <span title="Принято экспертом">Принято: <b style="color:#15803d">{{ scV2ReviewProgress().confirmed }}</b></span>
+                        <span title="Отклонено экспертом">Отклонено: <b style="color:#b91c1c">{{ scV2ReviewProgress().rejected }}</b></span>
+                        <span title="Исключено фильтром инженерной значимости (административные / оформительские / косметические изменения)">Исключено: <b style="color:#92400e">{{ scV2ReviewProgress().excluded }}</b></span>
+                        <span title="Ещё не проверено экспертом">Не проверено: <b style="color:#475569">{{ scV2ReviewProgress().not_reviewed }}</b></span>
+                    </div>
+
                     <!-- Warning: быстрый профиль на паре с плотной графикой ГРЩ -->
                     <div v-if="scV2DenseWarning()"
                          style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; padding:8px 12px; border-radius:6px; margin-bottom:10px; font-size:12px">
