@@ -2278,15 +2278,27 @@ def _v2_require_pair(session_id: str, pair_id: str) -> dict:
 
 
 @router.get("/sessions/{session_id}/pairs/{pair_id}/v2/changes")
-async def v2_pair_changes(session_id: str, pair_id: str):
+async def v2_pair_changes(
+    session_id: str,
+    pair_id: str,
+    include_excluded: bool = False,
+):
     """V2-список расхождений ТОЛЬКО текущей PDF-пары.
 
     Read-only по отношению к comparison_result.json — никаких Qwen/Opus/
     unified-analysis. Накладывает ручные статусы из v2_review_status.json.
+
+    По умолчанию (`include_excluded=false`) возвращает только инженерно
+    значимые изменения; административные / только-оформление / косметика-шум
+    скрыты (их аудит-снимок пишется в v2_excluded_changes.json). При
+    `include_excluded=true` возвращаются все изменения, и у каждого есть
+    `impact_class`, `excluded_from_main`, `exclusion_reason`.
     """
     _v2_require_pair(session_id, pair_id)
     try:
-        return v2_review_mod.build_pair_v2_changes(session_id, pair_id)
+        return v2_review_mod.build_pair_v2_changes(
+            session_id, pair_id, include_excluded=include_excluded,
+        )
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
 
@@ -2336,8 +2348,22 @@ _V2_EXPORT_COLUMNS = [
     "№", "Лист", "Источник", "Тип", "Категория", "Важность",
     "Изменение", "Описание", "Было", "Стало", "Влияние", "Стоимость",
     "Evidence A", "Evidence B", "Quality label",
-    "Статус проверки", "Комментарий",
+    "Статус проверки", "Комментарий", "Impact class",
 ]
+
+_V2_IMPACT_CLASS_LABELS = {
+    "construction_cost_impact": "влияет на стоимость",
+    "construction_technical_impact": "влияет на строительство",
+    "procurement_impact": "влияет на закупку",
+    "schedule_or_risk_impact": "сроки / риски",
+    "design_solution_impact": "проектное решение",
+    "engineering_system_impact": "инж. система",
+    "manual_review_required": "ручная проверка",
+    "admin_only": "административное",
+    "documentation_only": "только оформление",
+    "cosmetic_or_noise": "косметика / шум",
+    "unknown": "не классифицировано",
+}
 
 
 def _v2_fill_sheet(ws, items: list[dict]):
@@ -2381,6 +2407,7 @@ def _v2_fill_sheet(ws, items: list[dict]):
             it.get("quality_label") or "",
             it.get("review_status") or "not_reviewed",
             it.get("review_comment") or "",
+            _V2_IMPACT_CLASS_LABELS.get(str(it.get("impact_class") or ""), it.get("impact_class") or ""),
         ])
         row = ws[ws.max_row]
         sev = (it.get("severity") or "").lower()
@@ -2392,18 +2419,24 @@ def _v2_fill_sheet(ws, items: list[dict]):
             cell.border = border
             cell.font = Font(size=10)
 
-    widths = [5, 16, 14, 16, 16, 11, 38, 46, 34, 34, 30, 12, 30, 30, 16, 18, 28]
+    widths = [5, 16, 14, 16, 16, 11, 38, 46, 34, 34, 30, 12, 30, 30, 16, 18, 28, 18]
     for col_idx, w in enumerate(widths, start=1):
         ws.column_dimensions[ws.cell(row=1, column=col_idx).column_letter].width = w
     ws.freeze_panes = "A2"
 
 
 @router.get("/sessions/{session_id}/pairs/{pair_id}/v2/export.xlsx")
-async def v2_export_xlsx(session_id: str, pair_id: str):
+async def v2_export_xlsx(session_id: str, pair_id: str, include_excluded: bool = False):
     """Экспорт V2-таблицы ТОЛЬКО текущей PDF-пары.
 
+    По умолчанию выгружаются только инженерно значимые изменения
+    (административные / только-оформление / косметика-шум исключены; их
+    количество показано в Summary как `excluded_count`). При
+    `include_excluded=true` добавляется отдельный лист
+    «Excluded admin-doc-noise» с исключёнными изменениями.
+
     Листы: Summary · All V2 changes · Confirmed · Needs clarification ·
-    Rejected · Cost impact · Not reviewed. Не смешивается с full-session XLSX.
+    Rejected · Cost impact · Not reviewed [· Excluded admin-doc-noise].
     """
     try:
         from openpyxl import Workbook
@@ -2413,12 +2446,16 @@ async def v2_export_xlsx(session_id: str, pair_id: str):
 
     _v2_require_pair(session_id, pair_id)
     try:
-        built = v2_review_mod.build_pair_v2_changes(session_id, pair_id)
+        # Берём ВСЕ изменения (с impact_class), сами разводим на kept/excluded.
+        built = v2_review_mod.build_pair_v2_changes(session_id, pair_id, include_excluded=True)
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
 
-    items = built.get("items") or []
+    all_items = built.get("items") or []
     summary = built.get("summary") or {}
+    # Основная инженерная ведомость — без исключённых.
+    items = [it for it in all_items if not it.get("excluded_from_main")]
+    excluded_items = [it for it in all_items if it.get("excluded_from_main")]
 
     wb = Workbook()
     # Summary sheet
@@ -2427,21 +2464,26 @@ async def v2_export_xlsx(session_id: str, pair_id: str):
     ws_sum.append(["Метрика", "Значение"])
     for cell in ws_sum[1]:
         cell.font = Font(bold=True, size=10)
+    eng_summary = v2_review_mod.compute_summary(items)
     _sum_rows = [
-        ("Всего изменений", summary.get("total", 0)),
-        ("Высокая важность", summary.get("high", 0)),
-        ("Средняя важность", summary.get("medium", 0)),
-        ("Низкая важность", summary.get("low", 0)),
-        ("good", summary.get("good", 0)),
-        ("needs_human_review", summary.get("needs_human_review", 0)),
-        ("questionable", summary.get("questionable", 0)),
-        ("Подтверждено", summary.get("confirmed", 0)),
-        ("Отклонено", summary.get("rejected", 0)),
-        ("Не проверено", summary.get("not_reviewed", 0)),
+        ("Всего инженерных изменений", summary.get("engineering_total", len(items))),
+        ("Высокая важность", eng_summary.get("high", 0)),
+        ("Средняя важность", eng_summary.get("medium", 0)),
+        ("Низкая важность", eng_summary.get("low", 0)),
+        ("good", eng_summary.get("good", 0)),
+        ("needs_human_review", eng_summary.get("needs_human_review", 0)),
+        ("questionable", eng_summary.get("questionable", 0)),
+        ("Подтверждено", eng_summary.get("confirmed", 0)),
+        ("Отклонено", eng_summary.get("rejected", 0)),
+        ("Не проверено", eng_summary.get("not_reviewed", 0)),
+        ("Исключено всего", summary.get("excluded_total", len(excluded_items))),
+        ("— административные", summary.get("excluded_admin_only", 0)),
+        ("— только оформление", summary.get("excluded_documentation_only", 0)),
+        ("— косметика / шум", summary.get("excluded_cosmetic_or_noise", 0)),
     ]
     for name, val in _sum_rows:
         ws_sum.append([name, val])
-    ws_sum.column_dimensions["A"].width = 26
+    ws_sum.column_dimensions["A"].width = 30
     ws_sum.column_dimensions["B"].width = 12
 
     def _by_status(status: str) -> list[dict]:
@@ -2459,6 +2501,8 @@ async def v2_export_xlsx(session_id: str, pair_id: str):
     _v2_fill_sheet(wb.create_sheet("Rejected"), _by_status("rejected"))
     _v2_fill_sheet(wb.create_sheet("Cost impact"), cost_items)
     _v2_fill_sheet(wb.create_sheet("Not reviewed"), _by_status("not_reviewed"))
+    if include_excluded:
+        _v2_fill_sheet(wb.create_sheet("Excluded admin-doc-noise"), excluded_items)
 
     buf = io.BytesIO()
     wb.save(buf)

@@ -391,3 +391,223 @@ def test_ui_app_js_exposes_v2_methods():
     app_js = (_ROOT / "frontend" / "static" / "js" / "app.js").read_text(encoding="utf-8")
     assert "scLoadV2Changes" in app_js
     assert "scV2View" in app_js
+
+
+# ── V2 router/export glue: include_excluded + V2 XLSX export ─────────────
+# (Stage 7) backend-only tests lifted from the WIP snapshot — UI/expert-
+# fallback tests intentionally excluded.
+
+
+@pytest.fixture
+def session_mixed_impact():
+    """Пара с тремя инженерными и тремя исключаемыми изменениями."""
+    sid, pid = "sess_impact", "pIMP"
+    _write_session(sid, [pid])
+    _write_pair(sid, pid, "old.pdf", "new.pdf")
+    _write_comparison_result(sid, pid, [
+        # инженерные (остаются):
+        _change("chg_eng_beton", title="Класс бетона B25 на B30", sev="medium", old="B25", new="B30"),
+        _change("chg_cost_guard", title="Корректировка штампа", sev="low", cost="likely", old="s1", new="s2"),
+        _change("chg_rhr_eng", title="Пересмотр нагрузок по щиту", sev="low", rhr=True, old="n1", new="n2"),
+        # исключаемые:
+        _change("chg_admin_org", title="Сменилась проектная организация и ГИП, подпись", sev="low", old="o1", new="o2"),
+        _change("chg_doc_shifr", title="Изменён шифр, номер листа и дата выпуска", sev="low", old="d1", new="d2"),
+        _change("chg_cosm", title="Переформулировка: значение не изменилось", sev="low", old="c1", new="c2"),
+    ])
+    return {"sid": sid, "pid": pid}
+
+
+def _items_by_raw(items):
+    return {it["raw_id"]: it for it in items}
+
+
+# 1/3/4. admin / documentation / cosmetic скрыты по умолчанию.
+def test_v2_excludes_admin_doc_cosmetic_by_default(session_mixed_impact):
+    s = session_mixed_impact
+    client = _client()
+    data = client.get(f"{_v2_base(s['sid'], s['pid'])}/changes").json()
+    raws = {it["raw_id"] for it in data["items"]}
+    assert "chg_admin_org" not in raws          # admin_only скрыт
+    assert "chg_doc_shifr" not in raws          # documentation_only скрыт
+    assert "chg_cosm" not in raws               # cosmetic_or_noise скрыт
+    # инженерные остались:
+    assert {"chg_eng_beton", "chg_cost_guard", "chg_rhr_eng"} <= raws
+    assert len(data["items"]) == 3
+
+
+# 2. include_excluded=true возвращает всё с флагами.
+def test_v2_include_excluded_returns_all_with_flags(session_mixed_impact):
+    s = session_mixed_impact
+    client = _client()
+    data = client.get(f"{_v2_base(s['sid'], s['pid'])}/changes?include_excluded=true").json()
+    assert len(data["items"]) == 6
+    by = _items_by_raw(data["items"])
+    admin = by["chg_admin_org"]
+    assert admin["impact_class"] == "admin_only"
+    assert admin["excluded_from_main"] is True
+    assert admin["exclusion_reason"]
+    assert by["chg_doc_shifr"]["impact_class"] == "documentation_only"
+    assert by["chg_cosm"]["impact_class"] == "cosmetic_or_noise"
+    # инженерные не помечены excluded
+    assert by["chg_eng_beton"]["excluded_from_main"] is False
+    assert by["chg_eng_beton"]["impact_class"] not in v2_excluded_set()
+
+
+def v2_excluded_set():
+    from backend.app.services.stage_comparison import v2_review as v2r
+    return v2r.EXCLUDED_IMPACT_CLASSES
+
+
+# 5. инженерное изменение остаётся.
+def test_v2_engineering_change_remains(session_mixed_impact):
+    s = session_mixed_impact
+    client = _client()
+    data = client.get(f"{_v2_base(s['sid'], s['pid'])}/changes").json()
+    by = _items_by_raw(data["items"])
+    assert "chg_eng_beton" in by
+    assert by["chg_eng_beton"]["impact_class"] == "construction_technical_impact"
+
+
+# 5b. cost_direction (денежный эффект) присутствует у каждого изменения —
+#     питает чип «удорожание/удешевление/нейтрально» в колонке «№».
+def test_v2_items_have_cost_direction(session_mixed_impact):
+    s = session_mixed_impact
+    client = _client()
+    data = client.get(f"{_v2_base(s['sid'], s['pid'])}/changes").json()
+    assert data["items"], "ожидались инженерные изменения"
+    allowed = {"increase", "decrease", "unknown", "neutral"}
+    for it in data["items"]:
+        assert it.get("cost_direction") in allowed
+
+
+# 6. cost_impact=likely не скрывается (даже если выглядит как штамп).
+def test_v2_cost_impact_not_excluded(session_mixed_impact):
+    s = session_mixed_impact
+    client = _client()
+    data = client.get(f"{_v2_base(s['sid'], s['pid'])}/changes").json()
+    by = _items_by_raw(data["items"])
+    assert "chg_cost_guard" in by               # не исключено
+    assert by["chg_cost_guard"]["impact_class"] == "manual_review_required"
+
+
+# 7. requires_human_review инженерное остаётся.
+def test_v2_rhr_engineering_remains(session_mixed_impact):
+    s = session_mixed_impact
+    client = _client()
+    data = client.get(f"{_v2_base(s['sid'], s['pid'])}/changes").json()
+    by = _items_by_raw(data["items"])
+    assert "chg_rhr_eng" in by
+    assert by["chg_rhr_eng"]["impact_class"] == "engineering_system_impact"
+
+
+# Summary: разбивка исключённых.
+def test_v2_summary_exclusion_breakdown(session_mixed_impact):
+    s = session_mixed_impact
+    client = _client()
+    summ = client.get(f"{_v2_base(s['sid'], s['pid'])}/changes").json()["summary"]
+    assert summ["engineering_total"] == 3
+    assert summ["excluded_total"] == 3
+    assert summ["excluded_admin_only"] == 1
+    assert summ["excluded_documentation_only"] == 1
+    assert summ["excluded_cosmetic_or_noise"] == 1
+
+
+# 8. v2_excluded_changes.json создаётся.
+def test_v2_excluded_changes_file_written(session_mixed_impact):
+    s = session_mixed_impact
+    client = _client()
+    client.get(f"{_v2_base(s['sid'], s['pid'])}/changes")
+    p = _paths().v2_excluded_changes_path(s["sid"], s["pid"])
+    assert p.exists()
+    assert p.name == "v2_excluded_changes.json"
+    data = json.loads(p.read_text(encoding="utf-8"))
+    # 3 исключённых изменения с impact_class + причиной + контентом.
+    assert len(data["items"]) == 3
+    entry = next(iter(data["items"].values()))
+    assert entry["impact_class"] in v2_excluded_set()
+    assert entry["exclusion_reason"]
+    assert "source_title" in entry
+
+
+# comparison_result.json не мутируется фильтром.
+def test_v2_filter_does_not_mutate_comparison_result(session_mixed_impact):
+    s = session_mixed_impact
+    client = _client()
+    cr = _paths().enriched_comparison_result_path(s["sid"], s["pid"])
+    before = cr.read_bytes()
+    client.get(f"{_v2_base(s['sid'], s['pid'])}/changes")
+    client.get(f"{_v2_base(s['sid'], s['pid'])}/changes?include_excluded=true")
+    assert cr.read_bytes() == before
+
+
+# 9. review_status для excluded item сохраняется и виден при include_excluded.
+def test_v2_review_status_preserved_for_excluded(session_mixed_impact):
+    s = session_mixed_impact
+    client = _client()
+    # id исключённого изменения берём из include_excluded.
+    alld = client.get(f"{_v2_base(s['sid'], s['pid'])}/changes?include_excluded=true").json()
+    admin = _items_by_raw(alld["items"])["chg_admin_org"]
+    cid = admin["id"]
+    # PATCH разрешён даже для исключённого.
+    r = client.patch(f"{_v2_base(s['sid'], s['pid'])}/changes/{cid}",
+                     json={"review_status": "rejected", "review_comment": "оформление"})
+    assert r.status_code == 200
+    # статус хранится в v2_review_status.json
+    sp = _paths().v2_review_status_path(s["sid"], s["pid"])
+    assert cid in json.loads(sp.read_text(encoding="utf-8"))["items"]
+    # при include_excluded=true статус виден
+    again = client.get(f"{_v2_base(s['sid'], s['pid'])}/changes?include_excluded=true").json()
+    assert _items_by_raw(again["items"])["chg_admin_org"]["review_status"] == "rejected"
+    # в основной таблице строка скрыта, но не потеряна
+    main = client.get(f"{_v2_base(s['sid'], s['pid'])}/changes").json()
+    assert "chg_admin_org" not in {it["raw_id"] for it in main["items"]}
+
+
+# 10. export.xlsx по умолчанию не содержит excluded.
+def test_v2_export_default_excludes(session_mixed_impact):
+    s = session_mixed_impact
+    client = _client()
+    r = client.get(f"{_v2_base(s['sid'], s['pid'])}/export.xlsx")
+    assert r.status_code == 200
+    wb = load_workbook(io.BytesIO(r.content))
+    assert "Excluded admin-doc-noise" not in wb.sheetnames
+    ws = wb["All V2 changes"]
+    titles = [ws.cell(row=ri, column=7).value for ri in range(2, ws.max_row + 1)]
+    assert "Сменилась проектная организация и ГИП, подпись" not in titles
+    assert "Класс бетона B25 на B30" in titles
+    # Summary показывает excluded breakdown.
+    sumvals = {ws2.value for ws2 in wb["Summary"]["A"]}
+    assert "Исключено всего" in sumvals
+
+
+# 11. export.xlsx?include_excluded=true содержит excluded sheet.
+def test_v2_export_include_excluded_sheet(session_mixed_impact):
+    s = session_mixed_impact
+    client = _client()
+    r = client.get(f"{_v2_base(s['sid'], s['pid'])}/export.xlsx?include_excluded=true")
+    wb = load_workbook(io.BytesIO(r.content))
+    assert "Excluded admin-doc-noise" in wb.sheetnames
+    ws = wb["Excluded admin-doc-noise"]
+    titles = [ws.cell(row=ri, column=7).value for ri in range(2, ws.max_row + 1)]
+    assert set(titles) == {
+        "Сменилась проектная организация и ГИП, подпись",
+        "Изменён шифр, номер листа и дата выпуска",
+        "Переформулировка: значение не изменилось",
+    }
+
+
+# 13. No Qwen/Opus при фильтрации.
+def test_v2_impact_filter_no_llm(session_mixed_impact, monkeypatch):
+    s = session_mixed_impact
+    from backend.app.services.stage_comparison import enriched_comparison as ec
+    from backend.app.services.stage_comparison import graphic_llm_local as gl
+
+    def _boom(*a, **k):
+        raise AssertionError("LLM must NOT be called by V2 impact filter")
+
+    monkeypatch.setattr(ec, "run_enriched_comparison", _boom, raising=False)
+    monkeypatch.setattr(gl, "describe_image_local", _boom, raising=False)
+    client = _client()
+    assert client.get(f"{_v2_base(s['sid'], s['pid'])}/changes").status_code == 200
+    assert client.get(f"{_v2_base(s['sid'], s['pid'])}/changes?include_excluded=true").status_code == 200
+    assert client.get(f"{_v2_base(s['sid'], s['pid'])}/export.xlsx?include_excluded=true").status_code == 200
