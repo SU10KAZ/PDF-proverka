@@ -6234,6 +6234,14 @@
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px; margin-right:3px"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
                             Экспертная оценка
                         </button>
+                        <!-- Показать формальные (админ/оформление) — include_excluded=true -->
+                        <button class="btn btn-sm"
+                                :class="scV2ShowFormal ? 'btn-primary' : 'btn-secondary'"
+                                @click="scV2ToggleShowFormal()"
+                                :disabled="scV2Loading"
+                                title="Подмешать административные и оформительские изменения (смена организации, ответственных, год, перенумерация, заключения экспертизы). По умолчанию V2 показывает только инженерно значимые.">
+                            Показать формальные<template v-if="scV2Data && scV2Data.summary && scV2Data.summary.excluded_total"> ({{ scV2Data.summary.excluded_total }})</template>
+                        </button>
                         <!-- Экспорт в Excel — правый край ряда -->
                         <a v-if="scV2Data && (scV2Data.items || []).length"
                            class="btn btn-sm btn-secondary"
