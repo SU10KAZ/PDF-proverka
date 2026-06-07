@@ -8604,9 +8604,11 @@ const app = createApp({
             severity: '', source_layer: '', quality_label: '',
             review_status: '', cost_impact: '', impact_class: '', search: '',
         });
-        // Исключённые (админ/оформление/шум) изменения в V2-ведомости не
-        // показываются: бэкенд по умолчанию (include_excluded=false) уже
-        // отдаёт только инженерно значимые строки.
+        // Исключённые (админ/оформление/шум) изменения в V2-ведомости по
+        // умолчанию не показываются: бэкенд при include_excluded=false отдаёт
+        // только инженерно значимые строки. Кнопка «Показать формальные»
+        // выставляет этот флаг → запрос идёт с include_excluded=true.
+        const scV2ShowFormal   = ref(false);
         // Опции ручного статуса (значение + человекочитаемая метка). Покрывают
         // все действия инженера: подтвердить/отклонить/уточнить/стоимость/маршрут.
         const scV2StatusOptions = [
@@ -12252,7 +12254,8 @@ const app = createApp({
             scV2Loading.value = true;
             scV2Error.value = '';
             try {
-                const r = await fetch(`${_scV2Base()}/changes`);
+                const qs = scV2ShowFormal.value ? '?include_excluded=true' : '';
+                const r = await fetch(`${_scV2Base()}/changes${qs}`);
                 if (!r.ok) throw new Error('HTTP ' + r.status);
                 scV2Data.value = await r.json();
             } catch (e) {
@@ -12261,6 +12264,12 @@ const app = createApp({
             } finally {
                 scV2Loading.value = false;
             }
+        }
+        // «Показать формальные» — подмешать админ/оформительские изменения
+        // (include_excluded=true) и перезагрузить ведомость текущей пары.
+        function scV2ToggleShowFormal() {
+            scV2ShowFormal.value = !scV2ShowFormal.value;
+            return scLoadV2Changes();
         }
         const scV2FilteredItems = computed(() => {
             const data = scV2Data.value;
@@ -14175,6 +14184,7 @@ const app = createApp({
             // V2 режим вкладки «Расхождения» (pair-scoped ручная верификация)
             scV2View, scV2Data, scV2Loading, scV2Error, scV2SaveBusy,
             scV2Selected, scV2Filters, scV2StatusOptions,
+            scV2ShowFormal, scV2ToggleShowFormal,
             scSetV2View, scLoadV2Changes, scV2FilteredItems, scV2SelectedIds,
             scV2AllSelected, scV2ToggleAll, scV2ToggleOne, scV2SummaryCards,
             scV2SourceLabel, scV2ExportXlsxUrl, scV2SetStatus, scV2SaveComment,
