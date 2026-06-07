@@ -378,6 +378,17 @@ def v2_review_status_path(session_id: str, pair_id: str) -> Path:
     return pair_dir(session_id, pair_id) / "v2_review_status.json"
 
 
+def v2_excluded_changes_path(session_id: str, pair_id: str) -> Path:
+    """`comparison/sessions/<sid>/pairs/<pid>/v2_excluded_changes.json` —
+    аудит-снимок изменений, исключённых из основной инженерной V2-ведомости
+    (административные / только оформление / косметика-шум). Производное
+    (derived) от `comparison_result.json` через детерминированную
+    impact-классификацию; `comparison_result.json` НИКОГДА не мутируется.
+    Нужен, чтобы исключённые изменения не терялись для аудита.
+    """
+    return pair_dir(session_id, pair_id) / "v2_excluded_changes.json"
+
+
 def pages_dir(session_id: str, pair_id: str, side: str) -> Path:
     if side not in ("left", "right"):
         raise ValueError("side must be 'left' or 'right'")
@@ -535,6 +546,7 @@ __all__ = [
     "unified_findings_grouped_path",
     "expert_review_path",
     "v2_review_status_path",
+    "v2_excluded_changes_path",
     "pages_dir",
     "crops_dir",
     "previews_dir",

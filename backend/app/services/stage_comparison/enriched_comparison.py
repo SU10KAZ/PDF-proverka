@@ -69,6 +69,9 @@ class EnrichedCompareConfig:
     model: str
     timeout_sec: int
     max_chars: int
+    # r6: self-check на основном пути (grounding changes по исходному MD).
+    selfcheck_enabled: bool = False
+    selfcheck_drop_ungrounded: bool = False
 
 
 def _env_bool(name: str, default: bool = False) -> bool:
@@ -96,6 +99,8 @@ def load_config() -> EnrichedCompareConfig:
         model=(os.environ.get("STAGE_COMPARISON_ENRICHED_COMPARE_MODEL") or "opus").strip() or "opus",
         timeout_sec=_env_int("STAGE_COMPARISON_ENRICHED_COMPARE_TIMEOUT_SEC", 900),
         max_chars=_env_int("STAGE_COMPARISON_ENRICHED_COMPARE_MAX_CHARS", 600_000),
+        selfcheck_enabled=_env_bool("STAGE_COMPARISON_SELFCHECK_ENABLED", False),
+        selfcheck_drop_ungrounded=_env_bool("STAGE_COMPARISON_SELFCHECK_DROP_UNGROUNDED", False),
     )
 
 
@@ -220,7 +225,7 @@ repeated_pattern_detected / continuation_salvaged / low_literal_label_recall
     {
       "id": "chg_<short_uuid_or_slug>",
       "source": "text|image_enrichment|scheme_analysis|table|stamp|mixed",
-      "type": "added|removed|changed|material_changed|equipment_changed|calculation_changed|requirement_changed|design_logic_changed|scheme_sequence_changed|table_changed|stamp_changed|section_changed|unknown",
+      "type": "added|removed|changed|present_one_side|material_changed|equipment_changed|calculation_changed|requirement_changed|design_logic_changed|scheme_sequence_changed|table_changed|stamp_changed|section_changed|unknown",
       "category": "architecture|structures|engineering_systems|electrical|hvac|water_supply|fire_safety|low_voltage|technology|general|other",
       "severity": "low|medium|high",
       "title": "Короткий заголовок изменения",
@@ -230,6 +235,7 @@ repeated_pattern_detected / continuation_salvaged / low_literal_label_recall
       "construction_impact": "Как это влияет на строительство",
       "cost_impact": "none|possible|likely|unknown",
       "requires_human_review": true,
+      "disputed": false,
       "confidence": 0.0,
       "evidence_left": {
         "quote": "Короткая цитата из OLD_ENRICHED_MD (до 240 символов)",
@@ -287,9 +293,59 @@ repeated_pattern_detected / continuation_salvaged / low_literal_label_recall
 Для схем обязательно фиксируй изменение последовательности элементов, если
 оно видно в enriched MD (`Последовательность:`, `Связи:`, `Узлы:`).
 
+ЯДРО ГРЩ — секция `GRSH_CORE_SYSTEMS` (для однолинейных схем ГРЩ/ВРУ):
+  - Если в enriched MD есть секция `GRSH_CORE_SYSTEMS`, СРАВНИ её ПОКАТЕГОРИЙНО
+    между сторонами и выдай отдельное изменение на КАЖДУЮ категорию, где есть
+    дельта: inputs/вводы, busbars/шинопроводы, main_breakers/вводные QF (+Iкз),
+    sectional_and_avr/секционный-АВР-ПСВ, surge_protection/УЗИП-ОПН-FU,
+    current_transformers/ТТ-ТШП-коэффициенты, metering/счётчики-Меркурий-
+    анализаторы-TS, compensation/АУКРМ, earthing_dsup/ГЗШ-ДСУП.
+  - Это ядро (вводные аппараты, защита от перенапряжений, измерительные ТТ,
+    учёт) КЛИНИЧЕСКИ ВАЖНО — не сворачивай его в один общий «ввод/перекомпоновка».
+    Например: «УЗИП появились только в новой стадии», «ТТ 2000/5 → ТШП 1500/5 +
+    наборы 200/5…40/5», «учёт Wh/Мультиметр → Меркурий 234 + анализаторы + TS1/TS2».
+  - Источник `ocr_only` (вектор-текст листа) — ДОСТОВЕРНОЕ доказательство, не
+    слабее визуального; не игнорируй его и не считай отсутствие в Qwen-описании
+    удалением (помни про `not_extracted`).
+  - Если категория помечена `not_extracted` с обеих сторон — НЕ выдавай по ней
+    изменение (нет данных, а не «удалено»).
+
+ВЫРАВНИВАНИЕ ОТХОДЯЩИХ ЛИНИЙ / ПОТРЕБИТЕЛЕЙ (важно для схем и спецификаций):
+  - Сопоставляй отходящие линии и потребители по ИМЕНИ потребителя/нагрузки
+    (ВРУ1, ШУ-ХЦ, ЩР-1а и т.п.), а НЕ по позиции в списке/таблице и НЕ по
+    обозначению аппарата защиты. Один и тот же `QF8` / `1QF8` в двух стадиях
+    может питать РАЗНЫЕ нагрузки (панели переразбили, напр. 1ГРЩ/2ГРЩ → РП1/РП2)
+    — это НЕ «то же самое».
+  - Если в user-prompt есть тег <CONSUMER_SYNONYMS>, считай перечисленные в
+    одной группе обозначения ОДНИМ потребителем (например ШУ-ХЦ = ВРУ-ХЦ =
+    шкаф управления хладоцентром). Переименование внутри группы синонимов —
+    НЕ изменение.
+  - Изменение номинала / сечения / режима оформляй на потребителя,
+    сопоставленного по имени, а не на строку таблицы/позицию.
+
 quote должен быть КОРОТКИМ (до 240 символов) — не копируй большие куски MD.
-Если у изменения только одна сторона (added/removed) — другую evidence-ветку
-можно оставить с пустыми полями.
+
+ТРИ СОСТОЯНИЯ И ПРАВИЛО ДВУХ ЦИТАТ (строго):
+  - Для типов «изменилось» (changed / material_changed / equipment_changed /
+    calculation_changed / requirement_changed / design_logic_changed /
+    scheme_sequence_changed / table_changed / stamp_changed / section_changed)
+    ты ОБЯЗАН процитировать ОБА значения: непустой evidence_left (старое) И
+    непустой evidence_right (новое). Если не можешь привести оба — это НЕ
+    «изменилось».
+  - Если факт/значение виден ТОЛЬКО на одной стороне, а на другой его НЕТ в
+    описании — помни, что отсутствие может означать не реальное удаление, а
+    ПРОПУСК РАСПОЗНАВАНИЯ Qwen/OCR. Не выдавай это как факт `removed`/`added`,
+    если не уверен. Используй `type=present_one_side`: заполни видимую сторону,
+    а в значение и цитату отсутствующей стороны напиши «не описано (возможно,
+    не распознано)». Ставь `requires_human_review=true`.
+  - Однозначное появление/исчезновение (целый лист, раздел, изменение, явно
+    заявленное проектировщиком) по-прежнему оформляй как `added`/`removed` —
+    но только когда уверен, что это реальное изменение состава, а не пропуск
+    описания.
+  - `disputed=true` — если не можешь уверенно процитировать изменение или
+    источник сомнителен (`usable_for_diff=false`, низкий confidence). Такое
+    изменение всё равно верни, но с `disputed=true` и
+    `requires_human_review=true`.
 """
 
 
@@ -364,6 +420,60 @@ def build_block_links_context(block_links: Optional[list[dict]]) -> str:
     )
 
 
+# r4: словарь синонимов потребителей для выравнивания отходящих линий по имени.
+_CONSUMER_SYNONYMS_LIMIT = 60
+
+
+def load_consumer_synonyms() -> list[list[str]]:
+    """Загрузить группы синонимов потребителей из JSON. Fail-soft → [].
+
+    Путь: env `STAGE_COMPARISON_CONSUMER_SYNONYMS_FILE` либо
+    `APP_DATA_DIR/consumer_synonyms.json`. Формат: `{"groups": [[...], ...]}`
+    или просто список групп. Группа короче 2 имён игнорируется.
+    """
+    env = (os.environ.get("STAGE_COMPARISON_CONSUMER_SYNONYMS_FILE") or "").strip()
+    if env:
+        path = Path(env)
+    else:
+        try:
+            from backend.app.core.config import APP_DATA_DIR
+            path = APP_DATA_DIR / "consumer_synonyms.json"
+        except Exception:  # noqa: BLE001
+            return []
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001 — отсутствует/битый файл → синонимов нет
+        return []
+    groups_raw = data.get("groups") if isinstance(data, dict) else data
+    if not isinstance(groups_raw, list):
+        return []
+    groups: list[list[str]] = []
+    for g in groups_raw:
+        if isinstance(g, list):
+            names = [str(x).strip() for x in g if str(x).strip()]
+            if len(names) >= 2:
+                groups.append(names)
+    return groups
+
+
+def build_consumer_synonyms_context(groups: Optional[list[list[str]]] = None) -> str:
+    """Сформировать `<CONSUMER_SYNONYMS>` тег для user-prompt'а (или пусто)."""
+    if groups is None:
+        groups = load_consumer_synonyms()
+    if not groups:
+        return ""
+    body = "\n".join(" = ".join(g) for g in groups[:_CONSUMER_SYNONYMS_LIMIT])
+    return (
+        "\n<CONSUMER_SYNONYMS>\n"
+        "Группы эквивалентных обозначений потребителей/щитов (одно и то же,\n"
+        "разные подписи между стадиями). Считай имена в одной группе ОДНИМ\n"
+        "потребителем при выравнивании отходящих линий; переименование внутри\n"
+        "группы — НЕ изменение:\n"
+        + body
+        + "\n</CONSUMER_SYNONYMS>\n"
+    )
+
+
 def build_user_prompt(
     left_md: str,
     right_md: str,
@@ -398,9 +508,11 @@ def build_user_prompt(
     links_ctx = ""
     if analysis_mode != "concept_no_block_links":
         links_ctx = build_block_links_context(block_links)
+    synonyms_ctx = build_consumer_synonyms_context()
     return (
         intro
         + links_ctx
+        + synonyms_ctx
         + "\n<OLD_ENRICHED_MD>\n" + (left_md or "") + "\n</OLD_ENRICHED_MD>\n\n"
         + "<NEW_ENRICHED_MD>\n" + (right_md or "") + "\n</NEW_ENRICHED_MD>\n"
     )
@@ -501,7 +613,7 @@ _ALLOWED_SOURCE = {
     "table", "stamp", "mixed",
 }
 _ALLOWED_TYPE = {
-    "added", "removed", "changed",
+    "added", "removed", "changed", "present_one_side",
     "material_changed", "equipment_changed", "calculation_changed",
     "requirement_changed", "design_logic_changed",
     "scheme_sequence_changed", "table_changed", "stamp_changed",
@@ -633,6 +745,12 @@ def _normalize_change(raw: Any) -> Optional[dict]:
     except (TypeError, ValueError):
         confidence = 0.0
     confidence = max(0.0, min(1.0, confidence))
+    requires_human_review = bool(raw.get("requires_human_review") or False)
+    disputed = bool(raw.get("disputed") or False)
+    # present_one_side по определению неоднозначно (реальное add/remove vs пропуск
+    # распознавания), disputed — тоже → принудительно на ручную проверку.
+    if type_ == "present_one_side" or disputed:
+        requires_human_review = True
     out: dict[str, Any] = {
         "id": str(raw.get("id") or f"chg_{uuid.uuid4().hex[:10]}"),
         "source": source,
@@ -645,7 +763,8 @@ def _normalize_change(raw: Any) -> Optional[dict]:
         "new_value": str(raw.get("new_value") or "")[:800],
         "construction_impact": str(raw.get("construction_impact") or "")[:600],
         "cost_impact": cost_impact,
-        "requires_human_review": bool(raw.get("requires_human_review") or False),
+        "requires_human_review": requires_human_review,
+        "disputed": disputed,
         "confidence": round(confidence, 3),
         "evidence_left": _normalize_evidence(raw.get("evidence_left")),
         "evidence_right": _normalize_evidence(raw.get("evidence_right")),
@@ -655,6 +774,138 @@ def _normalize_change(raw: Any) -> Optional[dict]:
     if evidence_array:
         out["evidence"] = evidence_array
     return out
+
+
+# ─── Self-check: grounding замечаний по исходному MD (r6 на основном пути) ───
+#
+# Поднимает evidence-верификацию из evidence_first_fallback на ОСНОВНОЙ путь
+# сравнения (раньше она работала только в too_large-ветке). Для каждого change
+# от Opus сверяем цитаты evidence_left/right + evidence[] с raw MD сторон. Если
+# цитата не grounded — пробуем «числовой re-cite»: ищем конкретное значение
+# (320 / 5x185 / 0,5S / 160А) в MD соответствующей стороны. Это практичная
+# версия рекомендации r3 для проектов, где векторный текст-слой PDF недоступен
+# (CAD-шрифты) и текст берётся из Chandra MD. Негрунтованные changes либо
+# помечаются requires_human_review (мягкий режим, default), либо дропаются.
+
+_NUM_TOKEN_RE = re.compile(r"\d[\d.]*(?:x\d[\d.]*)*[a-zа-я]*")
+
+
+def _num_canon(s: str) -> str:
+    """Канонизировать строку для числового сравнения: запятая→точка,
+    ×/х(кир)/x→x, плюс NFKC+ё→е+lower+collapse (через _ef._norm_text)."""
+    from . import evidence_first_fallback as _ef
+    s = _ef._norm_text(s or "")
+    return s.replace(",", ".").replace("×", "x").replace("х", "x")
+
+
+def _salient_numbers(text: str) -> set[str]:
+    """Извлечь «значимые» числовые токены (сечения/номиналы/коэффициенты).
+
+    Берём токены с цифрой длиной >=3 после канонизации: 320, 5x185, 0.5s,
+    160а, 1000а. Короткие (1-2 символа) отбрасываем как шум (номера пунктов,
+    позиции, единичные счётчики).
+    """
+    out: set[str] = set()
+    for tok in _NUM_TOKEN_RE.findall(_num_canon(text)):
+        tok = tok.strip(".")
+        if len(tok) >= 3 and any(ch.isdigit() for ch in tok):
+            out.add(tok)
+    return out
+
+
+def _numeric_grounded(change: dict, left_nums: set[str], right_nums: set[str]) -> bool:
+    """True, если конкретное значение change реально встречается в MD нужной
+    стороны: old_value/evidence_left → left, new_value/evidence_right → right."""
+    left_side = _salient_numbers(str(change.get("old_value") or ""))
+    right_side = _salient_numbers(str(change.get("new_value") or ""))
+    left_side |= _salient_numbers((change.get("evidence_left") or {}).get("quote") or "")
+    right_side |= _salient_numbers((change.get("evidence_right") or {}).get("quote") or "")
+    for e in change.get("evidence") or []:
+        nums = _salient_numbers(e.get("quote") or "")
+        side = e.get("side")
+        if side == "left":
+            left_side |= nums
+        elif side == "right":
+            right_side |= nums
+        else:
+            left_side |= nums
+            right_side |= nums
+    return bool((left_side & left_nums) or (right_side & right_nums))
+
+
+def _apply_selfcheck(
+    changes: list[dict], left_md: str, right_md: str, cfg: EnrichedCompareConfig,
+) -> tuple[list[dict], dict]:
+    """r6 на основном пути: grounding каждого change по raw MD + числовой re-cite.
+
+    Мягкий режим (default): негрунтованные → requires_human_review=True +
+    selfcheck_note. Strict-режим (selfcheck_drop_ungrounded=true): негрунтованные
+    выкидываются. Никогда не бросает наружу — fail-soft per change.
+    """
+    from . import evidence_first_fallback as _ef
+
+    fb_cfg = _ef.load_fallback_config()
+    left_norm = _ef._norm_text(left_md or "")
+    right_norm = _ef._norm_text(right_md or "")
+    left_nums = _salient_numbers(left_md or "")
+    right_nums = _salient_numbers(right_md or "")
+
+    total = len(changes)
+    verified = 0
+    rescued = 0
+    ungrounded: list[int] = []
+    for i, ch in enumerate(changes):
+        try:
+            _ef.verify_change_evidence(ch, left_norm, right_norm, fb_cfg)
+        except Exception:  # noqa: BLE001 — fail-soft: верификация не валит сравнение
+            ch["evidence_verified"] = True
+            verified += 1
+            continue
+        if ch.get("evidence_verified"):
+            ch.setdefault("evidence_verified_by", "quote")
+            verified += 1
+            continue
+        # Дословная цитата не нашлась → числовой re-cite против MD стороны.
+        if _numeric_grounded(ch, left_nums, right_nums):
+            ch["evidence_verified"] = True
+            ch["evidence_verified_by"] = "number"
+            verified += 1
+            rescued += 1
+            continue
+        ungrounded.append(i)
+
+    dropped = 0
+    marked = 0
+    if cfg.selfcheck_drop_ungrounded:
+        drop_set = set(ungrounded)
+        kept = [ch for i, ch in enumerate(changes) if i not in drop_set]
+        dropped = total - len(kept)
+        changes = kept
+    else:
+        for i in ungrounded:
+            ch = changes[i]
+            ch["requires_human_review"] = True
+            ch["evidence_verified"] = False
+            ch["selfcheck_note"] = (
+                "self-check: цитата не найдена в исходном MD ни дословно, ни по "
+                "числовому значению — возможна галлюцинация Opus или пропуск "
+                "распознавания Qwen; проверьте вручную."
+            )
+            marked += 1
+
+    diag = {
+        "enabled": True,
+        "mode": "drop" if cfg.selfcheck_drop_ungrounded else "mark",
+        "total": total,
+        "verified": verified,
+        "rescued_by_number": rescued,
+        "ungrounded": len(ungrounded),
+        "dropped": dropped,
+        "marked_review": marked,
+        "fuzzy_threshold": fb_cfg.fuzzy_threshold,
+        "min_quote_len": fb_cfg.min_quote_len,
+    }
+    return changes, diag
 
 
 # ─── IO ──────────────────────────────────────────────────────────────────
@@ -1127,6 +1378,29 @@ def run_enriched_comparison(
             if norm:
                 changes.append(norm)
 
+        # r6 self-check (default OFF): сверить evidence-цитаты каждого change
+        # с исходным MD (+ числовой re-cite). Негрунтованные дельты помечаются
+        # requires_human_review (мягкий режим) либо дропаются. Fail-soft.
+        selfcheck_diag = None
+        if cfg.selfcheck_enabled and changes:
+            try:
+                changes, selfcheck_diag = _apply_selfcheck(changes, left_md, right_md, cfg)
+            except Exception:  # noqa: BLE001 — self-check никогда не валит сравнение
+                logger.exception("enriched_comparison: self-check failed (ignored)")
+                selfcheck_diag = {"enabled": True, "error": "selfcheck_exception"}
+            if selfcheck_diag and selfcheck_diag.get("ungrounded"):
+                if selfcheck_diag.get("mode") == "drop":
+                    warnings_list.append(
+                        f"Self-check: {selfcheck_diag.get('dropped')} замечаний без "
+                        "подтверждения в исходном MD удалено "
+                        "(STAGE_COMPARISON_SELFCHECK_DROP_UNGROUNDED)."
+                    )
+                else:
+                    warnings_list.append(
+                        f"Self-check: {selfcheck_diag.get('ungrounded')} замечаний без "
+                        "подтверждения в исходном MD помечены requires_human_review."
+                    )
+
         payload = {
             "status": "done",
             "provider": cfg.provider,
@@ -1135,6 +1409,7 @@ def run_enriched_comparison(
             "summary": summary_text,
             "changes": changes,
             "warnings": warnings_list,
+            "selfcheck": selfcheck_diag,
             "raw_response_excerpt": (result.raw_response or "")[:1500],
             "duration_sec": duration,
             "error": None,

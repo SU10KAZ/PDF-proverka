@@ -176,7 +176,7 @@ def build_unified_flat(session_id: str, pair_id: Optional[str] = None) -> dict:
     # Lazy import — unified_grouping импортирует этот модуль на уровне модуля,
     # поэтому прямой top-level import создал бы цикл. Нужна только чистая
     # эвристика направления изменения (усложнение/упрощение/нейтрально).
-    from .unified_grouping import infer_change_direction
+    from .unified_grouping import infer_change_direction, infer_cost_impact_direction
 
     pairs = session.get("pairs") or []
     summary = _empty_summary()
@@ -308,6 +308,9 @@ def build_unified_flat(session_id: str, pair_id: Optional[str] = None) -> dict:
                 # Направление изменения для индикатора в колонке «№»:
                 # complication / simplification / neutral / unknown.
                 "change_direction": infer_change_direction(ch),
+                # Денежный эффект для индикатора в колонке «№»:
+                # increase (удорожание) / decrease (удешевление) / unknown.
+                "cost_direction": infer_cost_impact_direction(ch),
                 "severity": sev or "unknown",
                 "title": str(ch.get("title") or "").strip(),
                 "summary": str(ch.get("summary") or "").strip(),
@@ -325,6 +328,11 @@ def build_unified_flat(session_id: str, pair_id: Optional[str] = None) -> dict:
                 # пустого массива — поле просто отсутствует.
                 **({"evidence": ch["evidence"]}
                    if isinstance(ch.get("evidence"), list) and ch.get("evidence") else {}),
+                # Non-destructive merge tags (comparison_merge): is_new=True →
+                # finding появилась только в свежем сравнении (бейдж «NEW» в UI);
+                # change_origin = new | carried | previous | current.
+                "is_new": bool(ch.get("is_new") or False),
+                "change_origin": str(ch.get("change_origin") or ""),
                 "status": "new",
             })
 
