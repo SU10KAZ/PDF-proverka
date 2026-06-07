@@ -1869,12 +1869,223 @@ _SC_UNIFIED_SOURCE_LABELS = {
     "mixed": "Текст + изобр.",
 }
 
+# Метки источника/направления для grouped-отчёта — зеркало фронтенда
+# (вкладка «Отчёт»): источник схлопнут до «текст» / «изображение».
+_SC_REPORT_SOURCE_LABELS = {
+    "text": "текст",
+    "image_enrichment": "изображение",
+    "scheme_analysis": "изображение",
+    "table": "текст",
+    "stamp": "текст",
+    "mixed": "изображение",
+}
+_SC_REPORT_DIRECTION_LABELS = {
+    "complication": "усложнение",
+    "simplification": "упрощение",
+    "neutral": "нейтрально",
+    "unknown": "—",
+}
+_SC_REPORT_SEV_RANK = {"high": 0, "medium": 1, "low": 2, "unknown": 3}
+
+
+def _sc_page_str(page) -> str:
+    """Нормализует page (int | list | None) в строку для ячейки «Место»."""
+    if isinstance(page, list):
+        return ", ".join(str(p) for p in page if p is not None)
+    if page is None:
+        return ""
+    return str(page)
+
+
+def _sc_split_lines(val) -> str:
+    """Зеркало фронтендового scUnifiedLines: режет значение расхождения по ';'
+    на отдельные строки (точка с запятой сохраняется, кроме последней)."""
+    if val is None:
+        return ""
+    text = str(val).strip()
+    if not text:
+        return ""
+    if ";" not in text:
+        return text
+    parts = [s.strip() for s in text.split(";") if s.strip()]
+    if not parts:
+        return text
+    return "\n".join(
+        (s + ";") if i < len(parts) - 1 else s for i, s in enumerate(parts)
+    )
+
+
+def _sc_report_page_sort_key(item: dict) -> int:
+    page = item.get("page")
+    if isinstance(page, list):
+        return (page[0] if page and page[0] is not None else 0) or 0
+    return (page if page is not None else 0) or 0
+
+
+def _build_grouped_comparison_workbook(items: list[dict], pair_order: Optional[list[str]] = None):
+    """Собирает XLSX в виде, повторяющем вкладку «Отчёт»: каждая PDF-пара —
+    сворачиваемый раздел (Excel-группировка, открывается «плюсиком»), внутри —
+    таблица сравнения с колонками №, Место, Изменение, Было, Стало, Влияние.
+
+    `pair_order` — порядок PDF-пар как в сессии (так же, как вкладка «Отчёт»
+    обходит `scSession.pairs`). Разделы выводятся в этом порядке; пары вне
+    списка идут следом по порядку первого появления в `items`.
+
+    Возвращает openpyxl Workbook.
+    """
+    from openpyxl import Workbook
+    from openpyxl.styles import Alignment, Font, PatternFill, Border, Side
+    from openpyxl.utils import get_column_letter
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Сравнение стадий"
+    # «+» (toggle) должен стоять у строки-заголовка пары, а она ВЫШЕ группы
+    # деталей — поэтому summary-строка сверху.
+    ws.sheet_properties.outlinePr.summaryBelow = False
+
+    headers = ["№", "Место", "Изменение", "Было", "Стало", "Влияние"]
+    widths = [16, 26, 46, 34, 34, 30]
+    n_cols = len(headers)
+    for col_idx, w in enumerate(widths, start=1):
+        ws.column_dimensions[get_column_letter(col_idx)].width = w
+
+    thin = Side(border_style="thin", color="D1D5DB")
+    border = Border(left=thin, right=thin, top=thin, bottom=thin)
+    sev_fill = {
+        "high":   PatternFill("solid", fgColor="FEE2E2"),
+        "medium": PatternFill("solid", fgColor="FEF3C7"),
+        "low":    PatternFill("solid", fgColor="DBEAFE"),
+    }
+    was_fill = PatternFill("solid", fgColor="FEF2F2")
+    became_fill = PatternFill("solid", fgColor="ECFDF5")
+    impact_fill = PatternFill("solid", fgColor="FEFCE8")
+    pair_fill = PatternFill("solid", fgColor="EFF6FF")
+    subhdr_fill = PatternFill("solid", fgColor="F3F4F6")
+
+    # Группируем по паре. Порядок разделов = порядок пар сессии (как вкладка
+    # «Отчёт»); пары вне `pair_order` — по первому появлению в items.
+    appearance: list[str] = []
+    groups: dict[str, dict] = {}
+    for it in items:
+        pid = str(it.get("pair_id") or "")
+        if pid not in groups:
+            groups[pid] = {"label": (it.get("pair_label") or pid), "items": []}
+            appearance.append(pid)
+        groups[pid]["items"].append(it)
+
+    order: list[str] = []
+    seen: set[str] = set()
+    for pid in (pair_order or []):
+        pid = str(pid)
+        if pid in groups and pid not in seen:
+            order.append(pid)
+            seen.add(pid)
+    for pid in appearance:
+        if pid not in seen:
+            order.append(pid)
+            seen.add(pid)
+
+    r = 0
+    for pid in order:
+        g = groups[pid]
+        rows = sorted(
+            g["items"],
+            key=lambda x: (
+                _SC_REPORT_SEV_RANK.get(str(x.get("severity") or "").lower(), 3),
+                _sc_report_page_sort_key(x),
+            ),
+        )
+
+        # ── строка-заголовок пары (summary/toggle, outline level 0) ──
+        r += 1
+        hdr_row = r
+        head_cell = ws.cell(
+            row=hdr_row, column=1,
+            value=f"{g['label']}    —    согласовано: {len(rows)}",
+        )
+        ws.merge_cells(start_row=hdr_row, start_column=1, end_row=hdr_row, end_column=n_cols)
+        head_cell.font = Font(bold=True, size=11, color="1E3A8A")
+        head_cell.alignment = Alignment(vertical="center", horizontal="left")
+        for c in range(1, n_cols + 1):
+            cell = ws.cell(row=hdr_row, column=c)
+            cell.fill = pair_fill
+            cell.border = border
+        # Стартуем со свёрнутого раздела — раскрывается «плюсиком».
+        ws.row_dimensions[hdr_row].collapsed = True
+
+        # ── под-заголовок таблицы (outline level 1) ──
+        r += 1
+        for c, h in enumerate(headers, start=1):
+            cell = ws.cell(row=r, column=c, value=h)
+            cell.font = Font(bold=True, size=10)
+            cell.fill = subhdr_fill
+            cell.alignment = Alignment(wrap_text=True, vertical="center", horizontal="center")
+            cell.border = border
+        ws.row_dimensions[r].outline_level = 1
+        ws.row_dimensions[r].hidden = True
+
+        # ── строки сравнения (outline level 1) ──
+        for i, it in enumerate(rows, start=1):
+            r += 1
+            sev = str(it.get("severity") or "unknown").lower()
+
+            no_lines = [f"№{i}", sev or "—"]
+            direction = str(it.get("change_direction") or "").lower()
+            if direction and direction != "unknown":
+                no_lines.append(_SC_REPORT_DIRECTION_LABELS.get(direction, direction))
+            src = str(it.get("source_layer") or "")
+            if src:
+                no_lines.append(_SC_REPORT_SOURCE_LABELS.get(src, src))
+            no_text = "\n".join(no_lines)
+
+            place_parts = []
+            if it.get("sheet"):
+                place_parts.append(str(it.get("sheet")))
+            pstr = _sc_page_str(it.get("page"))
+            if pstr:
+                place_parts.append(f"стр. PDF: {pstr}")
+            place_text = "\n".join(place_parts)
+
+            change_parts = []
+            if it.get("title"):
+                change_parts.append(str(it.get("title")))
+            if it.get("summary"):
+                change_parts.append(str(it.get("summary")))
+            change_text = "\n".join(change_parts) or "—"
+
+            old_value = it.get("old_value") or ((it.get("evidence_left") or {}).get("quote")) or ""
+            new_value = it.get("new_value") or ((it.get("evidence_right") or {}).get("quote")) or ""
+            was_text = _sc_split_lines(old_value) or "—"
+            became_text = _sc_split_lines(new_value) or "—"
+            impact_text = str(it.get("construction_impact") or "").strip() or "—"
+
+            values = [no_text, place_text, change_text, was_text, became_text, impact_text]
+            for c, v in enumerate(values, start=1):
+                cell = ws.cell(row=r, column=c, value=v)
+                cell.alignment = Alignment(wrap_text=True, vertical="top")
+                cell.border = border
+                cell.font = Font(size=10)
+            if sev in sev_fill:
+                ws.cell(row=r, column=1).fill = sev_fill[sev]
+            ws.cell(row=r, column=4).fill = was_fill
+            ws.cell(row=r, column=5).fill = became_fill
+            ws.cell(row=r, column=6).fill = impact_fill
+            ws.row_dimensions[r].outline_level = 1
+            ws.row_dimensions[r].hidden = True
+
+        # пустая строка-разделитель между парами (level 0)
+        r += 1
+
+    return wb
+
 
 @router.get("/sessions/{session_id}/unified-diff-flat/export.xlsx")
 async def unified_diff_flat_export_xlsx(
     session_id: str,
     pair_id: Optional[str] = None,
     accepted_only: bool = False,
+    grouped: bool = False,
 ):
     """Экспорт таблицы расхождений в Excel (xlsx).
 
@@ -1888,6 +2099,10 @@ async def unified_diff_flat_export_xlsx(
     `accepted_only=true` — оставить только расхождения, согласованные экспертом
     (`expert_review.json`, decision=accepted). Используется вкладкой «Отчёт»:
     один XLSX со всеми согласованными изменениями по всем парам сразу.
+
+    `grouped=true` — выгрузка в виде вкладки «Отчёт»: каждая PDF-пара —
+    сворачиваемый раздел (Excel-группировка, открывается «плюсиком»), внутри —
+    таблица сравнения с колонками №, Место, Изменение, Было, Стало, Влияние.
     """
     try:
         from openpyxl import Workbook
@@ -1903,18 +2118,51 @@ async def unified_diff_flat_export_xlsx(
     items = flat.get("items") or []
 
     if accepted_only:
-        from backend.app.services.stage_comparison import expert_review as expert_review_mod
         decisions = (expert_review_mod.load(session_id) or {}).get("decisions") or {}
         accepted_keys = {
             str(key)
             for key, entry in decisions.items()
             if isinstance(entry, dict) and (entry.get("decision") or "").lower() == "accepted"
         }
-        items = [
-            it for it in items
-            if isinstance(it, dict)
-            and expert_review_mod.make_key(str(it.get("pair_id") or ""), str(it.get("id") or "")) in accepted_keys
-        ]
+
+        def _it_accepted(it: dict) -> bool:
+            pid = str(it.get("pair_id") or "")
+            # Согласовано в классическом виде «Расхождения» (V1)…
+            if expert_review_mod.make_key(pid, str(it.get("id") or "")) in accepted_keys:
+                return True
+            # …или в виде V2 (под двойником v2_<sha1(pid::raw_id)>). Учитываем оба,
+            # чтобы экспорт совпадал с экраном «Отчёт» и не терял V2-only находки.
+            v2_key = expert_review_mod.make_key(pid, v2_review_mod.make_v2_id(pid, it))
+            return v2_key in accepted_keys
+
+        items = [it for it in items if isinstance(it, dict) and _it_accepted(it)]
+
+    if grouped:
+        # Порядок разделов как на вкладке «Отчёт» — по порядку пар сессии
+        # (scSession.pairs), а не по алфавиту pair_label из build_unified_flat.
+        pair_order: list[str] = []
+        try:
+            _session = store.get_session(session_id)
+            for _p in ((_session or {}).get("pairs") or []):
+                if not isinstance(_p, dict) or _p.get("status") == "disabled":
+                    continue
+                _pid = str(_p.get("id") or "")
+                if _pid:
+                    pair_order.append(_pid)
+        except Exception:  # noqa: BLE001
+            pair_order = []
+        wb = _build_grouped_comparison_workbook(items, pair_order=pair_order)
+        buf = io.BytesIO()
+        wb.save(buf)
+        buf.seek(0)
+        safe_sid = re.sub(r"[^A-Za-z0-9_.-]", "_", session_id)[:64] or "session"
+        scope = "report" if accepted_only else ("pair" if pair_id else "all")
+        fname = f"stage_comparison_{safe_sid}_{scope}.xlsx"
+        return StreamingResponse(
+            buf,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": f'attachment; filename="{fname}"'},
+        )
 
     wb = Workbook()
     ws = wb.active
