@@ -63,8 +63,9 @@ def _env_float(name: str, default: float) -> float:
 
 
 def grsh_feeder_extraction_enabled() -> bool:
-    """Главный включатель режима (default OFF)."""
-    return _env_bool("STAGE_COMPARISON_GRSH_FEEDER_EXTRACTION_ENABLED", False)
+    """Главный включатель режима (default OFF). Учитывает per-run override (rich_grsh)."""
+    from . import analysis_profile as _ap
+    return _ap.flag_enabled(_ap.GRSH_FEEDER_FLAG, False)
 
 
 def grsh_feeder_use_block_pdf() -> bool:

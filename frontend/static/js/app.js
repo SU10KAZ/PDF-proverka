@@ -12271,6 +12271,33 @@ const app = createApp({
             scV2ShowFormal.value = !scV2ShowFormal.value;
             return scLoadV2Changes();
         }
+        // ─── Профиль анализа результата (Быстрый / Глубокий ГРЩ) ───
+        // Бейдж в шапке V2: каким профилем графического извлечения получен
+        // результат. rich_grsh даёт пофидерные отличия ГРЩ (эталон), default —
+        // быстрый. Старые результаты без метаданных → «неизвестен».
+        function scV2ProfileBadge() {
+            const ap = scV2Data.value && scV2Data.value.analysis_profile;
+            if (!ap) return null;
+            const name = String(ap.analysis_profile || 'unknown');
+            if (name === 'rich_grsh') {
+                return { name, label: 'Глубокий ГРЩ', style: 'background:#dcfce7;color:#166534',
+                         title: 'Глубокий ГРЩ: пофидерное графическое извлечение однолинейных схем (эталонный профиль).' };
+            }
+            if (name === 'default') {
+                return { name, label: 'Быстрый', style: 'background:#e2e8f0;color:#475569',
+                         title: 'Быстрый режим: глубокое графическое извлечение ГРЩ выключено. Для ГРЩ-листов может найти меньше отличий.' };
+            }
+            return { name, label: 'неизвестен', style: 'background:#fef3c7;color:#92400e',
+                     title: 'Профиль результата неизвестен (старый результат без метаданных профиля анализа).' };
+        }
+        function scV2DenseWarning() {
+            const ap = scV2Data.value && scV2Data.value.analysis_profile;
+            return !!(ap && ap.dense_graphics_default_profile);
+        }
+        function scV2DowngradeBlocked() {
+            const ap = scV2Data.value && scV2Data.value.analysis_profile;
+            return !!(ap && ap.profile_downgrade_blocked);
+        }
         const scV2FilteredItems = computed(() => {
             const data = scV2Data.value;
             if (!data || !Array.isArray(data.items)) return [];
@@ -14214,6 +14241,7 @@ const app = createApp({
             scV2View, scV2Data, scV2Loading, scV2Error, scV2SaveBusy,
             scV2Selected, scV2Filters, scV2StatusOptions,
             scV2ShowFormal, scV2ToggleShowFormal,
+            scV2ProfileBadge, scV2DenseWarning, scV2DowngradeBlocked,
             scSetV2View, scLoadV2Changes, scV2FilteredItems, scV2SelectedIds,
             scV2AllSelected, scV2ToggleAll, scV2ToggleOne, scV2SummaryCards,
             scV2SourceLabel, scV2ExportXlsxUrl, scV2SetStatus, scV2SaveComment,

@@ -622,7 +622,36 @@ def build_pair_v2_changes(session_id: str, pair_id: str, include_excluded: bool 
         "include_excluded": bool(include_excluded),
         "summary": summary,
         "items": returned,
+        "analysis_profile": _read_profile_meta(session_id, pair_id),
     }
+
+
+def _read_profile_meta(session_id: str, pair_id: str) -> dict:
+    """Профиль анализа из comparison_result.json (для бейджа в UI). Старые
+    результаты без профиля → analysis_profile='unknown'. Fail-soft."""
+    meta = {
+        "analysis_profile": "unknown",
+        "analysis_profile_label": "Неизвестен",
+        "profile_flags": None,
+        "profile_source": None,
+        "dense_graphics_default_profile": False,
+        "profile_downgrade_blocked": False,
+    }
+    try:
+        p = paths_mod.enriched_comparison_result_path(session_id, pair_id)
+        if not p.exists():
+            return meta
+        data = json.loads(p.read_text(encoding="utf-8"))
+        if data.get("analysis_profile"):
+            meta["analysis_profile"] = data.get("analysis_profile")
+            meta["analysis_profile_label"] = data.get("analysis_profile_label") or meta["analysis_profile_label"]
+            meta["profile_flags"] = data.get("profile_flags")
+            meta["profile_source"] = data.get("profile_source")
+        meta["dense_graphics_default_profile"] = bool(data.get("dense_graphics_default_profile"))
+        meta["profile_downgrade_blocked"] = bool(data.get("profile_downgrade_blocked"))
+    except Exception:  # noqa: BLE001
+        logger.debug("read profile meta failed", exc_info=True)
+    return meta
 
 
 def _exclusion_breakdown(all_items: list[dict], kept_items: list[dict],

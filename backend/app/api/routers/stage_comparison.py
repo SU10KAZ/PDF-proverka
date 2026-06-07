@@ -1656,6 +1656,12 @@ class UnifiedAnalysisRunRequest(BaseModel):
     force_enrichment: bool = False
     force_compare: bool = False
     confirm: bool = False
+    # Профиль анализа: "default" (быстрый) | "rich_grsh" (глубокий ГРЩ). None →
+    # env-профиль. rich_grsh = per-run override без правки .env; для эталонного
+    # результата комбинировать с force_enrichment=true.
+    analysis_profile: Optional[str] = None
+    # Разрешить перезаписать сохранённый rich_grsh результат быстрым прогоном.
+    allow_profile_downgrade: bool = False
 
 
 class CreateUnifiedAnalysisJobRequest(BaseModel):
@@ -1673,6 +1679,10 @@ class CreateUnifiedAnalysisJobRequest(BaseModel):
     # Явный per-pair override: too_large прогнать через evidence_first_s2_fallback
     # даже при выключенном глобальном флаге. UI-кнопка «запустить fallback».
     force_fallback: bool = False
+    # Профиль анализа для batch. Default-массовый прогон НЕ должен включать
+    # rich-флаги: default остаётся default. rich_grsh — только явно / selected.
+    analysis_profile: Optional[str] = None
+    allow_profile_downgrade: bool = False
 
 
 class UnifiedAnalysisBatchPreflightRequest(BaseModel):
@@ -1763,6 +1773,8 @@ async def unified_pair_run_endpoint(
             session_id, pair_id,
             force_enrichment=req.force_enrichment,
             force_compare=req.force_compare,
+            analysis_profile=req.analysis_profile,
+            allow_profile_downgrade=req.allow_profile_downgrade,
         )
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
@@ -1786,6 +1798,8 @@ async def create_unified_job_endpoint(
             force_enrichment=req.force_enrichment,
             force_compare=req.force_compare,
             force_fallback=req.force_fallback,
+            analysis_profile=req.analysis_profile,
+            allow_profile_downgrade=req.allow_profile_downgrade,
             confirm=req.confirm,
             skip_ineligible=req.skip_ineligible,
         )

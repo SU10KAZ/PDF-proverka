@@ -304,6 +304,8 @@ def create_unified_job(
     force_enrichment: bool = False,
     force_compare: bool = False,
     force_fallback: bool = False,
+    analysis_profile: Optional[str] = None,
+    allow_profile_downgrade: bool = False,
     confirm: bool = False,
     skip_ineligible: bool = False,
 ) -> dict:
@@ -377,6 +379,8 @@ def create_unified_job(
             "force_enrichment": bool(force_enrichment),
             "force_compare": bool(force_compare),
             "force_fallback": bool(force_fallback),
+            "analysis_profile": (str(analysis_profile) if analysis_profile else None),
+            "allow_profile_downgrade": bool(allow_profile_downgrade),
             "skip_ineligible": bool(skip_ineligible),
             "status": "queued",
             "created_at": now,
@@ -460,6 +464,8 @@ async def run_unified_job(session_id: str, job_id: str) -> dict:
     force_e = bool(job.get("force_enrichment"))
     force_c = bool(job.get("force_compare"))
     force_fb = bool(job.get("force_fallback"))
+    profile = job.get("analysis_profile") or None
+    allow_downgrade = bool(job.get("allow_profile_downgrade"))
     items = list(job.get("items") or [])
     for idx, item in enumerate(items):
         latest = _read_job(session_id, job_id)
@@ -501,6 +507,8 @@ async def run_unified_job(session_id: str, job_id: str) -> dict:
                 force_enrichment=force_e,
                 force_compare=force_c,
                 force_fallback=force_fb,
+                analysis_profile=profile,
+                allow_profile_downgrade=allow_downgrade,
                 progress_cb=_on_progress,
             )
         except Exception as exc:  # noqa: BLE001

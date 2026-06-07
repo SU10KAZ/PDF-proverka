@@ -46,10 +46,13 @@ def graphic_structured_extraction_enabled() -> bool:
 
     Backward-compat: исторический `STAGE_COMPARISON_GRSH_FEEDER_EXTRACTION_ENABLED`
     тоже включает слой (GRSH — это профиль electrical_singleline/grsh внутри него).
+
+    Учитывает per-run analysis_profile override (rich_grsh) поверх env-флагов.
     """
+    from . import analysis_profile as _ap
     return (
-        _env_bool("STAGE_COMPARISON_GRAPHIC_STRUCTURED_EXTRACTION_ENABLED", False)
-        or _env_bool("STAGE_COMPARISON_GRSH_FEEDER_EXTRACTION_ENABLED", False)
+        _ap.flag_enabled(_ap.GRAPHIC_STRUCTURED_FLAG, False)
+        or _ap.flag_enabled(_ap.GRSH_FEEDER_FLAG, False)
     )
 
 
