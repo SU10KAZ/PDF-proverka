@@ -8589,9 +8589,12 @@ const app = createApp({
         // ──────────────────────────────────────────────────────────────────
         const scTab            = ref('upload');     // upload | links | diffs
         const scDiffSubtab     = ref('unified');    // unified (primary) | text (debug) | graphic (debug)
-        // ─── V2 режим вкладки «Расхождения» (pair-scoped ручная верификация) ───
-        // scV2View: 'current' (классический unified) | 'v2' (новый список текущей пары).
-        const scV2View         = ref('current');
+        // ─── Вкладка «Расхождения» построена на V2-алгоритме (pair-scoped) ───
+        // scV2View: 'v2' (основной и единственный пользовательский режим —
+        // список текущей PDF-пары + ручная верификация) | 'current'
+        // (классический unified-список, оставлен ТОЛЬКО для отладки за
+        // scDevTools; переключатель [Расхождения][V2] из UI убран).
+        const scV2View         = ref('v2');
         const scV2Data         = ref(null);          // {session_id, pair_id, summary, items}
         const scV2Loading      = ref(false);
         const scV2Error        = ref('');
@@ -8599,8 +8602,11 @@ const app = createApp({
         const scV2Selected     = reactive({});       // {[change_id]: true}
         const scV2Filters      = reactive({
             severity: '', source_layer: '', quality_label: '',
-            review_status: '', cost_impact: '', search: '',
+            review_status: '', cost_impact: '', impact_class: '', search: '',
         });
+        // Исключённые (админ/оформление/шум) изменения в V2-ведомости не
+        // показываются: бэкенд по умолчанию (include_excluded=false) уже
+        // отдаёт только инженерно значимые строки.
         // Опции ручного статуса (значение + человекочитаемая метка). Покрывают
         // все действия инженера: подтвердить/отклонить/уточнить/стоимость/маршрут.
         const scV2StatusOptions = [
@@ -8811,9 +8817,11 @@ const app = createApp({
         // Экспертная оценка расхождений: ключ хранения — стабильный raw `id`
         // (chg_…/uf_…). Решения по группам агрегируются из source_finding_ids.
         const scExpertReviewMode      = ref(false);
-        const scExpertDecisions       = ref({});   // {raw_id: {decision, rejection_reason}}
+        const scExpertDecisions       = ref({});   // {raw_id: {decision, rejection_reason, needs_review, conflict, transferred}}
         const scExpertReviewSaving    = ref(false);
         const scExpertReviewLoaded    = ref(false);
+        // Перенос решений из «Расхождений» в V2 (на всю сессию, с участием Claude).
+        const scV2TransferBusy        = ref(false);
         // Per-pair статус разметки для колонки «Проверено экспертом» на этапе
         // «1. Загрузка документации»: {pair_id: {total, decided, fully_verified}}.
         const scExpertPerPair         = ref({});
@@ -11806,6 +11814,22 @@ const app = createApp({
         function scDirectionLabel(d) {
             return _SC_DIRECTION_LABELS[d || 'unknown'] || '—';
         }
+        // Денежный эффект изменения для чипа в колонке «№»:
+        // increase → удорожание, decrease → удешевление, иначе → нейтрально.
+        const _SC_COST_DIRECTION_LABELS = {
+            increase: 'удорожание',
+            decrease: 'удешевление',
+            unknown: 'нейтрально',
+            neutral: 'нейтрально',
+        };
+        function scCostDirectionLabel(d) {
+            return _SC_COST_DIRECTION_LABELS[d || 'unknown'] || 'нейтрально';
+        }
+        function scCostDirectionStyle(d) {
+            if (d === 'increase') return 'background:#fee2e2; color:#991b1b';
+            if (d === 'decrease') return 'background:#dcfce7; color:#166534';
+            return 'background:#f1f5f9; color:#475569';
+        }
         async function scLoadUnifiedFlat() {
             if (!scSession.value) return;
             scUnifiedFlatLoading.value = true;
@@ -11856,7 +11880,7 @@ const app = createApp({
                 if (!r.ok) throw new Error('HTTP ' + r.status);
                 scV2Data.value = await r.json();
             } catch (e) {
-                scV2Error.value = 'Не удалось загрузить V2-расхождения: ' + String(e.message || e);
+                scV2Error.value = 'Не удалось загрузить расхождения: ' + String(e.message || e);
                 scV2Data.value = null;
             } finally {
                 scV2Loading.value = false;
@@ -11873,6 +11897,7 @@ const app = createApp({
                 if (f.quality_label && String(it.quality_label || '') !== f.quality_label) return false;
                 if (f.review_status && String(it.review_status || '') !== f.review_status) return false;
                 if (f.cost_impact && String(it.cost_impact || '') !== f.cost_impact) return false;
+                if (f.impact_class && String(it.impact_class || '') !== f.impact_class) return false;
                 if (q) {
                     const hay = [it.title, it.summary, it.old_value, it.new_value,
                                  it.evidence_left, it.evidence_right, it.sheet]
@@ -11910,9 +11935,48 @@ const app = createApp({
             ];
         }
         function scV2SourceLabel(s) { return scUnifiedSourceLabel(s); }
+        // ─── Impact class (инженерная значимость) ───
+        const _scV2ImpactLabels = {
+            construction_cost_impact: 'стоимость',
+            construction_technical_impact: 'строительство',
+            procurement_impact: 'закупка',
+            schedule_or_risk_impact: 'сроки/риск',
+            design_solution_impact: 'проектное решение',
+            engineering_system_impact: 'инж. система',
+            manual_review_required: 'на проверку',
+            admin_only: 'административное',
+            documentation_only: 'оформление',
+            cosmetic_or_noise: 'косметика/шум',
+            unknown: 'не классиф.',
+        };
+        const _scV2ExcludedClasses = ['admin_only', 'documentation_only', 'cosmetic_or_noise'];
+        function scV2ImpactLabel(cls) { return _scV2ImpactLabels[cls] || cls || '—'; }
+        function scV2IsExcludedClass(cls) { return _scV2ExcludedClasses.includes(cls); }
+        function scV2ImpactBadgeStyle(cls) {
+            if (_scV2ExcludedClasses.includes(cls)) return 'background:#e5e7eb; color:#4b5563';
+            if (cls === 'construction_cost_impact' || cls === 'procurement_impact') return 'background:#fef3c7; color:#92400e';
+            if (cls === 'manual_review_required') return 'background:#fef9c3; color:#854d0e';
+            if (cls === 'unknown') return 'background:#f1f5f9; color:#475569';
+            return 'background:#dcfce7; color:#166534';
+        }
+        const scV2ImpactClassOptions = [
+            { v: '', l: 'Impact: все' },
+            { v: 'construction_technical_impact', l: 'строительство' },
+            { v: 'construction_cost_impact', l: 'стоимость' },
+            { v: 'procurement_impact', l: 'закупка' },
+            { v: 'schedule_or_risk_impact', l: 'сроки/риск' },
+            { v: 'design_solution_impact', l: 'проектное решение' },
+            { v: 'engineering_system_impact', l: 'инж. система' },
+            { v: 'manual_review_required', l: 'на проверку' },
+            { v: 'admin_only', l: 'административное' },
+            { v: 'documentation_only', l: 'оформление' },
+            { v: 'cosmetic_or_noise', l: 'косметика/шум' },
+            { v: 'unknown', l: 'не классиф.' },
+        ];
         function scV2ExportXlsxUrl() {
             const base = _scV2Base();
-            return base ? `${base}/export.xlsx` : '';
+            if (!base) return '';
+            return `${base}/export.xlsx`;
         }
         // Локально применяет статус/комментарий к строке (оптимистично), затем
         // перечитывает список, чтобы summary совпадал с сервером.
@@ -12048,6 +12112,20 @@ const app = createApp({
             }
             return reasons.join(' / ');
         }
+        // Флаги переноса для значка в ячейке «Решение»: была ли отметка
+        // перенесена из «Расхождений», нужна ли ручная проверка, есть ли конфликт.
+        function scExpertItemFlags(itemOrGroup) {
+            const ids = _scExpertRawIds(itemOrGroup);
+            const out = { transferred: false, needs_review: false, conflict: false };
+            for (const rid of ids) {
+                const e = scExpertDecisions.value[rid];
+                if (!e) continue;
+                if (e.transferred) out.transferred = true;
+                if (e.needs_review) out.needs_review = true;
+                if (e.conflict) out.conflict = true;
+            }
+            return out;
+        }
         function scSetExpertDecision(itemOrGroup, decision) {
             const ids = _scExpertRawIds(itemOrGroup);
             if (!ids.length) return;
@@ -12093,9 +12171,45 @@ const app = createApp({
             }
             return out;
         }
+        // Составные ключи `<pair>::<raw>`, у которых СЕЙЧАС есть строка в
+        // таблице «Расхождения» (из загруженного scUnifiedFlat). Решения по
+        // raw_id, которого уже нет в changes (остался от прошлой регенерации
+        // сравнения), снять галочкой нечем — поэтому в счётчик они не входят.
+        // Возвращает null (= не скоупим, legacy) для V2-вида (там строки
+        // хранятся отдельно), пока flat не загружен, или когда flat загружен
+        // для другой пары (момент переключения).
+        function _scSummaryKnownKeys() {
+            if (scV2View.value === 'v2') return null;
+            const flat = scUnifiedFlat.value;
+            if (!flat || !Array.isArray(flat.items)) return null;
+            if (!scUnifiedShowAllPairs.value && scActivePair.value
+                && scUnifiedFlatScopePairId.value
+                && String(scUnifiedFlatScopePairId.value) !== String(scActivePair.value.id)) {
+                return null;
+            }
+            const keys = new Set();
+            for (const it of flat.items) {
+                for (const k of _scExpertRawIds(it)) keys.add(k);
+            }
+            return keys;
+        }
         function scExpertReviewSummary() {
-            // Счётчики «Принято/Отклонено» — только по текущей паре, а не по всей сессии.
-            const vals = _scExpertDecisionsForActivePair().map(([, d]) => d);
+            // Счётчики «Принято/Отклонено» — только по текущей паре, а не по всей
+            // сессии. Учитываем лишь ключи активного представления: V2 хранит
+            // решения по `v2_…`, классические «Расхождения» — по `chg_…/uf_…`.
+            // Иначе после переноса оценок (chg_ + v2_ на одну пару) счётчик
+            // удвоился бы.
+            const v2view = (scV2View.value === 'v2');
+            const known = _scSummaryKnownKeys();   // не-null только для классического вида
+            const vals = _scExpertDecisionsForActivePair()
+                .filter(([k]) => {
+                    const raw = String(k).split('::').slice(1).join('::');
+                    const viewOk = v2view ? raw.startsWith('v2_') : !raw.startsWith('v2_');
+                    if (!viewOk) return false;
+                    // orphan-решения по исчезнувшим raw_id счётчик не накручивают.
+                    return known === null || known.has(k);
+                })
+                .map(([, d]) => d);
             return {
                 accepted: vals.filter(d => d.decision === 'accepted').length,
                 rejected: vals.filter(d => d.decision === 'rejected').length,
@@ -12116,6 +12230,10 @@ const app = createApp({
                         map[rid] = {
                             decision: entry.decision,
                             rejection_reason: entry.rejection_reason || '',
+                            // Метаданные переноса из «Расхождений» (если есть).
+                            needs_review: !!entry.needs_review,
+                            conflict: !!entry.conflict,
+                            transferred: !!entry.transferred,
                         };
                     }
                 }
@@ -12200,6 +12318,48 @@ const app = createApp({
                 alert('Ошибка сохранения: ' + (e.message || e));
             } finally {
                 scExpertReviewSaving.value = false;
+            }
+        }
+        // Перенести решения «принято/отклонено» + комментарии из классических
+        // «Расхождений» в V2 по ВСЕЙ сессии. Точные совпадения — мгновенно,
+        // переименованные/слитые находки сопоставляет Claude (может занять
+        // пару минут на пары, перепрогнанные Opus).
+        async function scV2TransferReviews() {
+            if (!scSession.value || scV2TransferBusy.value) return;
+            if (!confirm('Перенести экспертные оценки из «Расхождений» в V2 по всей сессии?\n\nТочные совпадения переносятся сразу; переименованные находки сверяет Claude — это может занять пару минут.')) return;
+            scV2TransferBusy.value = true;
+            try {
+                const sid = encodeURIComponent(scSession.value.id);
+                const r = await fetch(`/api/stage-comparison/sessions/${sid}/v2-review/transfer`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ use_claude: true }),
+                });
+                if (!r.ok) {
+                    const err = await r.json().catch(() => ({}));
+                    throw new Error(err.detail || ('HTTP ' + r.status));
+                }
+                const rep = await r.json();
+                const t = rep.totals || {};
+                // Перезагрузить решения и список V2, показать оценку.
+                scExpertReviewLoaded.value = false;
+                await scLoadExpertDecisions();
+                scExpertReviewMode.value = true;
+                try { await scLoadV2Changes(); } catch (_) {}
+                try { await scLoadExpertPerPair(); } catch (_) {}
+                let msg = `Перенос завершён по ${t.pairs_processed || 0} парам.\n`
+                    + `Перенесено: ${t.applied || 0} (точных ${t.exact || 0}, по смыслу ${t.semantic || 0}).\n`
+                    + `Совпало с уже отмеченным: ${t.consistent_existing || 0}.\n`
+                    + `Конфликтов: ${t.conflicts || 0} · «проверить»: ${t.needs_review || 0} · не сопоставлено: ${t.unmatched_source || 0}.`;
+                if (!rep.claude_available && (t.unmatched_source || 0) > 0) {
+                    msg += `\n\n⚠ Claude был недоступен (${rep.claude_unavailable_reason || 'причина неизвестна'}) — перенесены только точные совпадения.`;
+                }
+                alert(msg);
+            } catch (e) {
+                console.error('SC v2 transfer error:', e);
+                alert('Ошибка переноса: ' + (e.message || e));
+            } finally {
+                scV2TransferBusy.value = false;
             }
         }
         async function scUnifiedToggleShowAllPairs() {
@@ -12804,6 +12964,8 @@ const app = createApp({
             if (newPid === oldPid) return;
             if (scTab.value !== 'diffs') return;
             if (scDiffSubtab.value !== 'unified') return;
+            // V2 — основной режим вкладки: всегда перегружаем список новой пары.
+            if (scV2View.value === 'v2') scLoadV2Changes();
             if (scUnifiedShowAllPairs.value) return;
             scUnifiedFilterPair.value = '';
             scLoadUnifiedFlat();
@@ -13639,18 +13801,21 @@ const app = createApp({
             scSetV2View, scLoadV2Changes, scV2FilteredItems, scV2SelectedIds,
             scV2AllSelected, scV2ToggleAll, scV2ToggleOne, scV2SummaryCards,
             scV2SourceLabel, scV2ExportXlsxUrl, scV2SetStatus, scV2SaveComment,
+            scV2ImpactLabel,
+            scV2IsExcludedClass, scV2ImpactBadgeStyle, scV2ImpactClassOptions,
             scV2BulkStatus, scV2Goto,
             // Expert review для расхождений (per-session)
             scExpertReviewMode, scExpertDecisions, scExpertReviewSaving,
             scToggleExpertReview, scLoadExpertDecisions,
             scSetExpertDecision, scSetExpertReason,
             scGetExpertDecision, scGetExpertReason, scExpertReviewSummary,
+            scExpertItemFlags, scV2TransferBusy, scV2TransferReviews,
             scSubmitExpertReview,
             scLoadUnifiedConfig, scLoadUnifiedPairStatus, scLoadUnifiedFlat,
             scOpenUnifiedPairPreflight, scOpenUnifiedSessionPreflight, scCloseUnifiedPreflight,
             scRunUnifiedPair, scRunUnifiedSession, scPollUnifiedJob, scCancelUnifiedJob,
             scUnifiedSourceLabel, scUnifiedLines, scGotoUnifiedChange,
-            scDirectionLabel,
+            scDirectionLabel, scCostDirectionLabel, scCostDirectionStyle,
             scSwitchDiffSubtab, scGotoTextChange,
             scHumanizeDuration,
             scTextLLMTypeLabel, scTextLLMCategoryLabel, scTextLLMSeverityLabel, scTextLLMStatusLabel,
