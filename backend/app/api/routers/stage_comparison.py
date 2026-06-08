@@ -781,6 +781,44 @@ async def suggest_alignment_by_stamp_endpoint(
         raise HTTPException(404, str(exc)) from exc
 
 
+class AutoMatchApplyRequest(BaseModel):
+    # ИИ-доматчинг по умолчанию ВЫКЛ (не запускаем тяжёлый LLM без явного флага).
+    use_llm: bool = False
+    # Не перезаписывать ручное/применённое выравнивание, если уже есть.
+    overwrite_existing: bool = False
+    # dry_run=true → ничего не сохраняет, только preview-отчёт.
+    dry_run: bool = False
+
+
+@router.post("/sessions/{session_id}/pairs/{pair_id}/page-alignment/auto-match-apply")
+async def auto_match_apply_endpoint(
+    session_id: str, pair_id: str,
+    req: AutoMatchApplyRequest = AutoMatchApplyRequest(),
+):
+    """One-click авто-сопоставление листов ОДНОЙ пары.
+
+    Запускает детерминированный stamp-matching, АВТО-применяет надёжные пары
+    (exact/canonical/multipart/высокоуверенный fuzzy), сомнительные оставляет
+    в `needs_review`, несопоставленные — в `unmatched_*`, сохраняет результат в
+    `page_alignment.json` и возвращает подробный отчёт. Связи блоков не
+    удаляются (только stale/cross-page пометка). Qwen/Opus/pipeline НЕ
+    запускаются. `dry_run=true` → preview без сохранения.
+
+    Тяжёлая часть (file I/O, опц. LLM-доматчинг) вынесена в threadpool.
+    """
+    try:
+        return await run_in_threadpool(
+            store.auto_match_apply_pair,
+            session_id, pair_id,
+            use_llm=req.use_llm, overwrite_existing=req.overwrite_existing,
+            dry_run=req.dry_run,
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except Exception as exc:  # noqa: BLE001 — deterministic/fail-soft
+        raise HTTPException(500, f"auto-match-apply failed: {exc}") from exc
+
+
 # ─── Пакетное авто-сопоставление листов по ВСЕЙ сессии ──────────────────────
 
 class AutoMatchRequest(BaseModel):
