@@ -295,6 +295,34 @@ def block_equivalence_debug_dir(session_id: str, pair_id: str) -> Path:
     return p
 
 
+# ─── Visual block equivalence precheck (Stage 2, links-based, mark-only) ──
+
+
+def visual_block_equivalence_dir(session_id: str, pair_id: str) -> Path:
+    """Корень `visual_block_equivalence/` для пары — артефакты links-based
+    визуального прекчека эквивалентности связанных блоков (Stage 2: mark-only).
+
+    Независим от `block_equivalence/` (IoU-прекчек Stage 1) и от
+    `text_enrichment/`. Ничего в Qwen/MD/Opus не меняет.
+    """
+    p = pair_dir(session_id, pair_id) / "visual_block_equivalence"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def visual_block_equivalence_report_path(session_id: str, pair_id: str) -> Path:
+    """`.../visual_block_equivalence/visual_block_equivalence.json`."""
+    return visual_block_equivalence_dir(session_id, pair_id) / "visual_block_equivalence.json"
+
+
+def visual_block_equivalence_debug_dir(session_id: str, pair_id: str) -> Path:
+    """`.../visual_block_equivalence/debug/` — debug PNG `{block_id}_diff.png`
+    для changed/minor-visual связей."""
+    p = visual_block_equivalence_dir(session_id, pair_id) / "debug"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
 # ─── Enriched comparison (Opus over enriched MD) ─────────────────────────
 
 
@@ -376,6 +404,17 @@ def v2_review_status_path(session_id: str, pair_id: str) -> Path:
     Скоупится парой: ключ — стабильный `v2_…` id изменения.
     """
     return pair_dir(session_id, pair_id) / "v2_review_status.json"
+
+
+def v2_excluded_changes_path(session_id: str, pair_id: str) -> Path:
+    """`comparison/sessions/<sid>/pairs/<pid>/v2_excluded_changes.json` —
+    аудит-снимок изменений, исключённых из основной инженерной V2-ведомости
+    (административные / только оформление / косметика-шум). Производное
+    (derived) от `comparison_result.json` через детерминированную
+    impact-классификацию; `comparison_result.json` НИКОГДА не мутируется.
+    Нужен, чтобы исключённые изменения не терялись для аудита.
+    """
+    return pair_dir(session_id, pair_id) / "v2_excluded_changes.json"
 
 
 def pages_dir(session_id: str, pair_id: str, side: str) -> Path:
@@ -526,6 +565,9 @@ __all__ = [
     "block_equivalence_dir",
     "block_equivalence_report_path",
     "block_equivalence_debug_dir",
+    "visual_block_equivalence_dir",
+    "visual_block_equivalence_report_path",
+    "visual_block_equivalence_debug_dir",
     "enriched_comparison_dir",
     "enriched_comparison_result_path",
     "enriched_comparison_prompt_path",
@@ -535,6 +577,7 @@ __all__ = [
     "unified_findings_grouped_path",
     "expert_review_path",
     "v2_review_status_path",
+    "v2_excluded_changes_path",
     "pages_dir",
     "crops_dir",
     "previews_dir",
