@@ -8877,6 +8877,8 @@ const app = createApp({
         const scQOConfirm = ref(null);                // preflight payload for confirm modal
         const scQORunning = ref(false);               // start request in flight / job running
         const scQOPreflighting = ref(false);          // preflight request in flight → button feedback
+        const scQOClearBeforeRun = ref(false);        // confirm modal: clear findings+review before run
+        const scQOClearing = ref(false);              // clear-analysis request in flight
         let scQOPollTimer = null;
         const scQOClock = ref(Date.now());            // 1s tick → live elapsed timers
         let scQOClockTimer = null;
@@ -9492,11 +9494,24 @@ const app = createApp({
             const st = it[lane + '_status'];
             const dur = scQOItemLaneLabel(it, lane);
             if (st === 'done') return '✓ ' + (dur || '0с');
-            if (st === 'running') return '… ' + (dur || '0с');
+            if (st === 'running') {
+                // Qwen-дорожка обрабатываемой сейчас пары: показать прогресс по
+                // блокам «… N/M» (живой из активной md-enrichment job), иначе —
+                // длительность.
+                if (lane === 'qwen') {
+                    const job = scQOJob.value;
+                    const curPid = job && job.qwen_worker && job.qwen_worker.current_pair_id;
+                    if (curPid && curPid === it.pair_id && typeof scQOCurrentBlock === 'function') {
+                        const cb = scQOCurrentBlock();
+                        if (cb && cb.total) return '… ' + cb.index + '/' + cb.total;
+                    }
+                }
+                return '… ' + (dur || '0с');
+            }
             if (st === 'failed') return '✗' + (dur ? ' ' + dur : '');
             if (st === 'queued') return '⏱';
             if (st === 'skipped') return '⊘';
-            return '—';  // waiting_qwen / waiting
+            return '—';  // waiting_qwen / waiting / not run
         }
         function scQOLaneColor(it, lane) {
             if (!it) return '#9ca3af';
@@ -9638,6 +9653,7 @@ const app = createApp({
         async function scQOOpenConfirm() {
             const ids = scPairs.value.filter(p => scQOSelected[p.id]).map(p => p.id);
             if (!ids.length || scQOPreflighting.value) return;
+            scQOClearBeforeRun.value = false;  // safe default each open
             scQOPreflighting.value = true;
             try { scQOConfirm.value = await scQOPreflight(ids); }
             catch (e) { alert('Не удалось подготовить прогон (preflight): ' + ((e && e.message) || e)); }
@@ -9645,15 +9661,52 @@ const app = createApp({
         }
         async function scQOProcessPair(pid) {
             if (scQOPreflighting.value) return;
+            scQOClearBeforeRun.value = false;  // safe default each open
             scQOPreflighting.value = true;
             try { scQOConfirm.value = await scQOPreflight([pid]); }
             catch (e) { alert('Не удалось подготовить прогон (preflight): ' + ((e && e.message) || e)); }
             finally { scQOPreflighting.value = false; }
         }
+        // POST clear-analysis (backup → удалить найденные расхождения + ручные
+        // отметки проверки по выбранным парам). Возвращает ответ backend'а.
+        async function scQOClearAnalysis(pairIds) {
+            if (!scSession.value || !scSession.value.id || !pairIds || !pairIds.length)
+                return { ok: true, cleared_pairs: 0, skipped: [] };
+            const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/clear-analysis`;
+            const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pair_ids: pairIds, clear_findings: true, clear_review: true, clear_enrichment: false }) });
+            if (!r.ok) throw new Error('clear-analysis HTTP ' + r.status);
+            return await r.json();
+        }
         async function scQOStartConfirmed() {
             const ids = (scQOConfirm.value && scQOConfirm.value.pair_ids) || [];
             if (!ids.length) { scQOConfirm.value = null; return; }
+            // Режим «Очистить и запустить»: 1) clear-analysis, 2) дождаться успеха,
+            // 3) обновить статусы пар, 4) обычный pipeline. Очистка молча НЕ идёт.
+            if (scQOClearBeforeRun.value) {
+                scQOClearing.value = true;
+                try {
+                    const res = await scQOClearAnalysis(ids);
+                    const blocked = ((res && res.skipped) || [])
+                        .filter(s => /running job/.test(s.reason || '')).map(s => s.pair_id);
+                    if (blocked.length) {
+                        scQOClearing.value = false;
+                        alert('Очистка пропущена для пар с активным прогоном: ' + blocked.join(', ') +
+                            '.\nОстановите job и повторите.');
+                        return;  // не запускаем — пусть пользователь разрулит
+                    }
+                    // cleared пары должны выглядеть как непроверенные
+                    if (typeof scLoadPairCompareStatuses === 'function') { try { await scLoadPairCompareStatuses(); } catch (e) {} }
+                    if (typeof scLoadUnifiedFlat === 'function') { try { await scLoadUnifiedFlat(); } catch (e) {} }
+                } catch (e) {
+                    scQOClearing.value = false;
+                    alert('Не удалось очистить анализ выбранных пар: ' + ((e && e.message) || e));
+                    return;
+                }
+                scQOClearing.value = false;
+            }
             await scQOStart(ids);
+            scQOClearBeforeRun.value = false;
             scQOConfirm.value = null;
         }
         async function scQOStart(pairIds) {
@@ -14331,6 +14384,7 @@ const app = createApp({
             scScanFolders, scOpenProject, scLoadSessionsList, scFetchSessionsList, scLoadSession,
             scOpenPair, scLoadPairData, scLoadAlignment,
             scQOSelected, scQOJob, scQOConfirm, scQORunning, scQOPreflighting, scQOSelectedCount, scQOAllSelected,
+            scQOClearBeforeRun, scQOClearing, scQOClearAnalysis,
             scQOToggleAll, scQOPairLabel, scQOPairBadge, scQOOpenConfirm, scQOProcessPair,
             scQOStartConfirmed, scQOStart, scQOCancel,
             scQODetailsOpen, scQOElapsedMs, scQOEtaSec, scQOItemFor, scQOItemLaneLabel,

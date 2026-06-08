@@ -5488,9 +5488,23 @@
                                 <span v-if="scQOConfirm.health && !scQOConfirm.health.ok" style="display:block; margin-top:4px; color:#dc2626; font-weight:600">✗ LLM/ngrok недоступен: {{ scQOConfirm.health.reason }} — старт заблокирован. Восстановите туннель/модель.</span>
                                 <span style="display:block; margin-top:6px; color:#6b7280">Будет сделан backup артефактов пар. Запустятся Qwen (локально) и Opus (Claude Code).</span>
                             </div>
+                            <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; font-size:12px; margin:2px 0 10px; padding:8px 10px; background:#fff7ed; border:1px solid #fed7aa; border-radius:6px">
+                                <input type="checkbox" v-model="scQOClearBeforeRun" style="margin-top:2px">
+                                <span>
+                                    <strong>Очистить найденные и отмеченные изменения перед запуском</strong>
+                                    <span v-if="scQOClearBeforeRun" style="display:block; margin-top:6px; color:#9a3412; line-height:1.6">
+                                        Будут удалены найденные расхождения и ручные отметки проверки по выбранным парам.
+                                        Исходные PDF, OCR, Qwen-cache и page_enriched.json не удаляются.
+                                        Перед очисткой будет создан backup.
+                                    </span>
+                                    <span v-else style="display:block; margin-top:4px; color:#6b7280; line-height:1.5">
+                                        По умолчанию — обработка без очистки (продолжить). Включите, чтобы сбросить старые расхождения и отметки проверки и сравнить заново.
+                                    </span>
+                                </span>
+                            </label>
                             <div class="retry-dialog__buttons">
-                                <button class="btn btn-secondary" @click="scQOConfirm=null">Отмена</button>
-                                <button class="btn btn-primary" :disabled="scQORunning || (scQOConfirm.health && !scQOConfirm.health.ok)" @click="scQOStartConfirmed()">Запустить обработку</button>
+                                <button class="btn btn-secondary" @click="scQOConfirm=null" :disabled="scQOClearing">Отмена</button>
+                                <button class="btn btn-primary" :disabled="scQORunning || scQOClearing || (scQOConfirm.health && !scQOConfirm.health.ok)" @click="scQOStartConfirmed()">{{ scQOClearing ? 'Очистка…' : (scQOClearBeforeRun ? 'Очистить и запустить' : 'Запустить обработку') }}</button>
                             </div>
                         </div>
                     </div>
@@ -5506,6 +5520,8 @@
                                 <th style="text-align:center; padding:8px; border-bottom:1px solid #e5e7eb" title="Наличие файлов (L/R): MD · result.json">Файлы<br><span style="font-weight:400; font-size:10px; color:#9ca3af">MD&nbsp;L/R · json&nbsp;L/R</span></th>
                                 <th style="text-align:center; padding:8px; border-bottom:1px solid #e5e7eb">Графика</th>
                                 <th style="text-align:center; padding:8px; border-bottom:1px solid #e5e7eb" title="Блоки (L+R): всего / готово (вкл. salvage/partial) / упало">Блоки<br><span style="font-weight:400; font-size:10px; color:#9ca3af">всего/готово/упало</span></th>
+                                <th style="text-align:center; padding:8px; border-bottom:1px solid #e5e7eb" title="Время обработки Qwen этой пары (текущего/последнего прогона)">🟦 Qwen</th>
+                                <th style="text-align:center; padding:8px; border-bottom:1px solid #e5e7eb" title="Время сравнения Opus этой пары (текущего/последнего прогона)">🟪 Opus</th>
                                 <th style="text-align:center; padding:8px; border-bottom:1px solid #e5e7eb" title="Статус Opus-сравнения пары">Сравнение</th>
                                 <th style="text-align:center; padding:8px; border-bottom:1px solid #e5e7eb" title="Эксперт разметил каждое расхождение (✓/✗) на этапе «3. Расхождения»">Проверено<br><span style="font-weight:400; font-size:10px; color:#9ca3af">экспертом</span></th>
                                 <th style="padding:8px; border-bottom:1px solid #e5e7eb"></th>
@@ -5633,6 +5649,12 @@
                                         </div>
                                     </div>
                                 </td>
+                                <td style="padding:8px; text-align:center; font-variant-numeric:tabular-nums; white-space:nowrap"
+                                    :style="{color: scQOLaneColor(scQOItemFor(p.id),'qwen')}"
+                                    :title="'Qwen (обогащение enriched MD): ' + scQOLaneCell(scQOItemFor(p.id),'qwen')">{{ scQOLaneCell(scQOItemFor(p.id),'qwen') }}</td>
+                                <td style="padding:8px; text-align:center; font-variant-numeric:tabular-nums; white-space:nowrap"
+                                    :style="{color: scQOLaneColor(scQOItemFor(p.id),'opus')}"
+                                    :title="'Opus (сравнение стадий): ' + scQOLaneCell(scQOItemFor(p.id),'opus')">{{ scQOLaneCell(scQOItemFor(p.id),'opus') }}</td>
                                 <td style="padding:8px; text-align:center">
                                     <span :class="'sc-status ' + scOpusPairBadge(p.id).cls + (scOpusPairBadge(p.id).canFallback ? ' sc-status--clickable' : '')"
                                           :title="scOpusPairBadge(p.id).title"
