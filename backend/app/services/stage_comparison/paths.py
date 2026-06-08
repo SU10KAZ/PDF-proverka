@@ -323,6 +323,24 @@ def visual_block_equivalence_debug_dir(session_id: str, pair_id: str) -> Path:
     return p
 
 
+# ─── Text block equivalence precheck (Stage POS-1, links-based, mark-only) ──
+
+
+def text_block_equivalence_dir(session_id: str, pair_id: str) -> Path:
+    """Корень `text_block_equivalence/` для пары — артефакты links-based
+    сравнения СВЯЗАННЫХ текстовых блоков (mark-only). Независим от
+    `visual_block_equivalence/` и `text_enrichment/`. Ничего в Qwen/MD/Opus не
+    меняет."""
+    p = pair_dir(session_id, pair_id) / "text_block_equivalence"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def text_block_equivalence_report_path(session_id: str, pair_id: str) -> Path:
+    """`.../text_block_equivalence/text_block_equivalence.json`."""
+    return text_block_equivalence_dir(session_id, pair_id) / "text_block_equivalence.json"
+
+
 # ─── Enriched comparison (Opus over enriched MD) ─────────────────────────
 
 
