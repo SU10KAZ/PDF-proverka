@@ -129,3 +129,23 @@ comparison_sources/**/*
 
 # heavy local experiment workspace (renders, ~1.2G) — not for git
 experiments/qwen_problem_block_recognition/
+
+# === Live project / runtime data (Tier A) ===
+# Проектные OCR-артефакты, версии и метаданные — live-data, не для git.
+# Файлы остаются на диске; git их просто не отслеживает.
+projects/
+
+# Live runtime state in backend/app/data (пофайлово — НЕ вся папка!)
+backend/app/data/objects.json
+backend/app/data/project_groups.json
+backend/app/data/missing_norms_vault.json
+
+# Live expert/knowledge data
+knowledge_base/decisions_log.json
+
+# Local generated reports / scratch
+/nnn.md
+/сравнение.xlsx
+
+# Static config seed — keep tracked despite rules above
+!backend/app/data/consumer_synonyms.json

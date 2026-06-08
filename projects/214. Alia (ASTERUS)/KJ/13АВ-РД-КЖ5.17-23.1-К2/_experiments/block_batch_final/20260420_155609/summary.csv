@@ -1,5 +1,0 @@
-run_id,profile,parallelism,mode,total_batches,total_blocks,avg_batch_size,max_batch_size,max_heavy_in_batch,heavy_count,normal_count,light_count,elapsed_sec,avg_batch_sec,median_batch_sec,p95_batch_sec,success,failed,coverage_pct,missing_count,duplicate_count,extra_count,unreadable_pct,empty_summary,empty_kv,blocks_with_findings_pct,total_findings,findings_per_100_blocks
-baseline_p3,baseline,3,real,33,215,6.52,8,2,11,151,53,1979.25,176.64,173.81,244.94,33,0,100.0,0,0,0,0.0,0,0,61.4,168,78.14
-aggressive_p3,aggressive,3,real,31,215,6.94,10,2,11,151,53,1790.01,172.91,164.28,279.97,31,0,100.0,0,0,0,0.0,0,0,66.51,186,86.51
-baseline_p3_subset,baseline,3,real,10,60,6,8,3,11,36,13,180.83,51.25,2.12,174.47,0,10,30.0,42,0,0,0.0,0,0,83.33,24,133.33
-aggressive_p3_subset,aggressive,3,real,9,60,6.67,10,3,11,36,13,7.63,2.48,2.44,2.7,0,9,0.0,60,0,0,0.0,0,0,0.0,0,0.0

@@ -1,4 +1,0 @@
-profile_id,hard_gate_passed,quality_gate_passed,survived,coverage_pct,missing_count,duplicate_count,extra_count,strict_success_count,retry_triggered_count,retry_recovered_count,fail_mode_distribution,likely_improved_count,likely_equivalent_count,likely_degraded_count,total_findings_delta,blocks_with_findings_delta,total_kv_delta,summary_specificity_improved_count,actual_cost_usd,elapsed_s,hard_fail_reasons,manual_review_block_ids
-b2,True,True,True,100.0,0,0,0,8,0,0,{},5,2,1,2,0,38,2,0.42125,154.73012947198004,[],"['4UTW-PPGP-VEN', '4WTD-JFKA-JLE', '6DRC-7KQL-9TJ', '9GNP-D7CE-RYM', 'DTGF-MYHX-PPD', 'RELE-MX3A-MEN']"
-b4,True,True,True,100.0,0,0,0,8,0,0,{},3,4,1,-2,0,30,1,0.306682,119.74617327807937,[],"['4MQJ-6NXP-4YH', '6DRC-7KQL-9TJ', 'DTGF-MYHX-PPD', 'TULW-YCYU-YVQ']"
-b6,True,True,True,100.0,0,0,0,8,0,0,{},3,4,1,-1,0,9,0,0.229294,91.59215171902906,[],"['4UTW-PPGP-VEN', '4WTD-JFKA-JLE', '6DRC-7KQL-9TJ', 'RELE-MX3A-MEN']"
