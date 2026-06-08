@@ -240,9 +240,107 @@ def build_auto_apply_items(suggested_items: list[dict]) -> dict:
     }
 
 
+# ─── One-click отчёт (детальные корзины для UI) ──────────────────────────────
+
+# Человекочитаемые причины для review-кодов из should_auto_apply_stamp_match.
+_REVIEW_REASON = {
+    "low_margin": "неоднозначный матч (малый отрыв от второго кандидата)",
+    "text_layer": "имя листа из текст-слоя, не из штампа MD",
+    "duplicate_sheet_name": "повторяющееся имя листа без сильных признаков",
+    "low_score": "низкая уверенность fuzzy-матча",
+    "multipart_risky": "многостраничный лист с дополнительными рисками",
+    "llm_low_confidence": "низкая уверенность ИИ-доматчинга",
+    "llm_risky": "ИИ-матч с дополнительными рисками",
+    "unknown_type": "неизвестный тип матча",
+}
+
+
+def _conf_of(item: dict) -> float:
+    c = item.get("confidence")
+    if c is None:
+        c = item.get("score")
+    try:
+        return round(float(c or 0.0), 3)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def classify_for_one_click(suggested_items: list[dict]) -> dict:
+    """Разложить `suggested_items` на ДЕТАЛЬНЫЕ корзины для one-click отчёта.
+
+    Использует ту же политику `should_auto_apply_stamp_match`, что и
+    `build_auto_apply_items` (применяемые пары совпадают), но возвращает
+    подробные записи (имена листов / confidence / match_type / reason /
+    risk_flags) по 4 корзинам:
+
+      * ``applied``       — безопасные matched-пары (будут применены);
+      * ``needs_review``  — неуверенные matched-пары + позиционные (на ручную);
+      * ``unmatched_old`` — листы только в OLD (нет пары в NEW);
+      * ``unmatched_new`` — листы только в NEW (нет пары в OLD).
+
+    Чистая функция (без I/O). ``slot`` у applied — порядковый, для отображения.
+    """
+    applied: list[dict] = []
+    needs_review: list[dict] = []
+    unmatched_old: list[dict] = []
+    unmatched_new: list[dict] = []
+    positional = 0
+
+    for it in (suggested_items or []):
+        lp = it.get("left_page")
+        rp = it.get("right_page")
+        mt = str(it.get("match_type") or "")
+        risk = list(it.get("risk_flags") or [])
+        base = {
+            "left_page": lp, "right_page": rp,
+            "confidence": _conf_of(it),
+            "match_type": mt,
+            "reason": str(it.get("reason") or "").strip(),
+            "risk_flags": risk,
+            "left_sheet_name": it.get("left_sheet_name"),
+            "right_sheet_name": it.get("right_sheet_name"),
+        }
+        if it.get("match"):
+            ok, code = should_auto_apply_stamp_match(it)
+            if ok:
+                applied.append({**base, "status": "applied", "apply_code": code})
+            else:
+                if not base["reason"]:
+                    base["reason"] = _REVIEW_REASON.get(code, code)
+                needs_review.append({**base, "status": "needs_review", "review_code": code})
+        elif mt == "positional_alignment":
+            positional += 1
+            needs_review.append({
+                **base, "status": "needs_review", "review_code": "positional_alignment",
+                "reason": base["reason"] or "позиционное выравнивание (нераспознанные листы)",
+                "risk_flags": risk or ["unconfirmed_alignment"],
+            })
+        else:
+            if lp is not None and rp is None:
+                unmatched_old.append({
+                    "left_page": lp, "left_sheet_name": it.get("left_sheet_name"),
+                    "reason": base["reason"] or "нет пары в новой стадии", "status": "unmatched"})
+            elif rp is not None and lp is None:
+                unmatched_new.append({
+                    "right_page": rp, "right_sheet_name": it.get("right_sheet_name"),
+                    "reason": base["reason"] or "нет пары в старой стадии", "status": "unmatched"})
+
+    for i, r in enumerate(applied):
+        r["slot"] = i + 1
+
+    return {
+        "applied": applied,
+        "needs_review": needs_review,
+        "unmatched_old": unmatched_old,
+        "unmatched_new": unmatched_new,
+        "positional_alignment": positional,
+    }
+
+
 __all__ = [
     "should_auto_apply_stamp_match",
     "build_auto_apply_items",
+    "classify_for_one_click",
     "auto_apply_min_score",
     "auto_apply_llm_min_confidence",
     "auto_apply_text_layer",
