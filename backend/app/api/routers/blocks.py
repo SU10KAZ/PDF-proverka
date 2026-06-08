@@ -553,23 +553,44 @@ async def get_blocks_analysis(
     project_id: str,
     version_id: Optional[str] = Query(None),
 ):
-    """Агрегированные данные анализа блоков из block_batch_*.json или typed_facts_batch_*.json (v4)."""
+    """Агрегированные данные анализа блоков из 02_blocks_analysis.json
+    (текущий production-pipeline) с fallback на legacy block_batch_*.json /
+    typed_facts_batch_*.json (v4)."""
     output_dir = _version_output(project_id, version_id)
 
-    # Legacy: block_batch_*.json
-    batch_files = sorted(output_dir.glob("block_batch_*.json"))
     blocks_map = {}
-    for bf in batch_files:
+
+    # Primary: 02_blocks_analysis.json — единый merged-результат Stage 02 текущего
+    # production-режима (findings_only_gemma_pair / single_block). Он использует
+    # тот же ключ block_analyses, что и legacy-парсер ниже. Без этого источника
+    # все блоки уходили в "skipped" (Без значимого содержимого), даже когда аудит
+    # завершён, потому что новый режим не пишет per-batch block_batch_*.json.
+    merged_path = output_dir / "02_blocks_analysis.json"
+    if merged_path.exists():
         try:
-            with open(bf, "r", encoding="utf-8") as f:
-                data = json.load(f)
+            data = json.loads(merged_path.read_text(encoding="utf-8"))
             block_list = data.get("blocks_reviewed") or data.get("block_analyses") or []
             for block_info in block_list:
                 bid = block_info.get("block_id", "")
                 if bid:
                     blocks_map[bid] = block_info
         except Exception:
-            continue
+            pass
+
+    # Legacy fallback: block_batch_*.json (старые batched-проекты без merged-файла)
+    if not blocks_map:
+        batch_files = sorted(output_dir.glob("block_batch_*.json"))
+        for bf in batch_files:
+            try:
+                with open(bf, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                block_list = data.get("blocks_reviewed") or data.get("block_analyses") or []
+                for block_info in block_list:
+                    bid = block_info.get("block_id", "")
+                    if bid:
+                        blocks_map[bid] = block_info
+            except Exception:
+                continue
 
     # V4 fallback: typed_facts_batch_*.json → конвертируем в совместимый формат
     if not blocks_map:
