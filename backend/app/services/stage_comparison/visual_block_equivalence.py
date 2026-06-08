@@ -146,6 +146,17 @@ class VisualBlockEquivalenceConfig:
 
     max_links_compared: int = 2000  # safety cap на число визуальных сравнений на пару
 
+    # ── Stage 3E: нормализация кропа + каскад выравнивания ──
+    foreground_threshold: int = 200   # gray < this => «линия» (foreground маска line-art)
+    trim_pad: int = 4                 # padding (px) после trim по content bbox
+    fallback_size: int = 256          # downscale для fallback correlation/mask
+    enable_affine: bool = True        # пробовать MOTION_AFFINE, если euclidean не сошёлся
+    enable_fallback: bool = True      # грубое сравнение (corr/mask), если ECC не сошёлся
+    identical_min_mask_iou: float = 0.97   # строгий гейт identical: mask IoU
+    identical_min_ncc: float = 0.97        # строгий гейт identical: normalized correlation
+    fallback_changed_max_iou: float = 0.5  # fallback: ниже => явно changed_visual
+    fallback_changed_max_ncc: float = 0.5  # fallback: ниже => явно changed_visual
+
     @classmethod
     def from_env(cls) -> "VisualBlockEquivalenceConfig":
         return cls(
@@ -168,6 +179,20 @@ class VisualBlockEquivalenceConfig:
                 "STAGE_COMPARISON_VISUAL_BLOCK_EQUIVALENCE_COLORED_MINOR_MAX_RATIO", 0.02),
             max_links_compared=_env_int(
                 "STAGE_COMPARISON_VISUAL_BLOCK_EQUIVALENCE_MAX_LINKS_COMPARED", 2000),
+            foreground_threshold=_env_int(
+                "STAGE_COMPARISON_VISUAL_BLOCK_EQUIVALENCE_FOREGROUND_THRESHOLD", 200),
+            trim_pad=_env_int("STAGE_COMPARISON_VISUAL_BLOCK_EQUIVALENCE_TRIM_PAD", 4),
+            fallback_size=_env_int("STAGE_COMPARISON_VISUAL_BLOCK_EQUIVALENCE_FALLBACK_SIZE", 256),
+            enable_affine=_env_flag("STAGE_COMPARISON_VISUAL_BLOCK_EQUIVALENCE_ENABLE_AFFINE", True),
+            enable_fallback=_env_flag("STAGE_COMPARISON_VISUAL_BLOCK_EQUIVALENCE_ENABLE_FALLBACK", True),
+            identical_min_mask_iou=_env_float(
+                "STAGE_COMPARISON_VISUAL_BLOCK_EQUIVALENCE_IDENTICAL_MIN_MASK_IOU", 0.97),
+            identical_min_ncc=_env_float(
+                "STAGE_COMPARISON_VISUAL_BLOCK_EQUIVALENCE_IDENTICAL_MIN_NCC", 0.97),
+            fallback_changed_max_iou=_env_float(
+                "STAGE_COMPARISON_VISUAL_BLOCK_EQUIVALENCE_FALLBACK_CHANGED_MAX_IOU", 0.5),
+            fallback_changed_max_ncc=_env_float(
+                "STAGE_COMPARISON_VISUAL_BLOCK_EQUIVALENCE_FALLBACK_CHANGED_MAX_NCC", 0.5),
         )
 
     def to_block_cfg(self) -> BlockEquivalenceConfig:
@@ -204,7 +229,12 @@ def _link_pages(link: dict, old_block: Optional[EqBlock], new_block: Optional[Eq
 
 
 def _empty_metrics() -> dict:
-    return {"total_diff_ratio": None, "colored_overlay_diff_ratio": None, "alignment_score": None}
+    return {
+        "total_diff_ratio": None, "colored_overlay_diff_ratio": None, "alignment_score": None,
+        "diff_bbox": None, "alignment_method": None, "mask_iou": None,
+        "normalized_correlation": None, "content_bbox_old": None, "content_bbox_new": None,
+        "trim_applied": None, "foreground_ratio_old": None, "foreground_ratio_new": None,
+    }
 
 
 def _exclusion_for(status: str) -> bool:
@@ -243,6 +273,294 @@ def _base_record(link: dict, old_block: Optional[EqBlock], new_block: Optional[E
 
 
 # ═══════════════════════════════════════════════════════════════════════════
+# Stage 3E — cascade visual compare (Euclidean → Affine → fallback) + metrics
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+def _cv2():
+    try:
+        import cv2  # type: ignore
+        return cv2
+    except Exception:  # noqa: BLE001 — optional dep
+        return None
+
+
+def _to_gray(cv2, np, img):
+    if getattr(img, "ndim", 2) == 3:
+        return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    return img
+
+
+def _content_bbox(np, mask):
+    ys, xs = np.where(mask > 0)
+    if xs.size == 0 or ys.size == 0:
+        return None
+    return int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1
+
+
+def _normalize_for_match(cv2, np, img, cfg: "VisualBlockEquivalenceConfig"):
+    """grayscale → line-art маска → trim по content bbox (+pad).
+
+    Возвращает ``(gray, mask, content_bbox_norm, fg_ratio, trim_applied,
+    color_trim|None)``. Foreground маска: пиксели темнее ``foreground_threshold``
+    (линии чертежа). Trim применяется только если убирает значимое пустое поле и
+    остаётся достаточный контент; иначе исходник без обрезки (fail-soft).
+    """
+    gray = _to_gray(cv2, np, img)
+    h, w = gray.shape[:2]
+    mask = (gray < cfg.foreground_threshold).astype(np.uint8)
+    fg_ratio = round(float(mask.sum()) / float(mask.size), 5) if mask.size else 0.0
+    bbox = _content_bbox(np, mask)
+    content_norm = None
+    trim_applied = False
+    color_trim = img if getattr(img, "ndim", 2) == 3 else None
+    if bbox is not None and w > 0 and h > 0:
+        content_norm = [round(bbox[0] / w, 4), round(bbox[1] / h, 4),
+                        round(bbox[2] / w, 4), round(bbox[3] / h, 4)]
+        bw, bh = bbox[2] - bbox[0], bbox[3] - bbox[1]
+        if bw >= 8 and bh >= 8 and (bw < w * 0.98 or bh < h * 0.98):
+            pad = max(0, int(cfg.trim_pad))
+            x0 = max(0, bbox[0] - pad); y0 = max(0, bbox[1] - pad)
+            x1 = min(w, bbox[2] + pad); y1 = min(h, bbox[3] + pad)
+            gray = gray[y0:y1, x0:x1]
+            mask = mask[y0:y1, x0:x1]
+            trim_applied = True
+            if color_trim is not None:
+                color_trim = color_trim[y0:y1, x0:x1]
+    return gray, mask, content_norm, fg_ratio, trim_applied, color_trim
+
+
+def _ncc(np, a, b) -> float:
+    """Normalized cross-correlation двух массивов ([-1..1])."""
+    a = a.astype(np.float64).ravel(); b = b.astype(np.float64).ravel()
+    a = a - a.mean(); b = b - b.mean()
+    da = float(np.sqrt((a * a).sum())); db = float(np.sqrt((b * b).sum()))
+    if da < 1e-6 or db < 1e-6:
+        return 0.0
+    return float((a * b).sum() / (da * db))
+
+
+def _mask_iou(np, ma, mb) -> float:
+    a = ma > 0; b = mb > 0
+    inter = float(np.logical_and(a, b).sum())
+    union = float(np.logical_or(a, b).sum())
+    return round(inter / union, 4) if union > 0 else 0.0
+
+
+def _empty_cascade_metrics() -> dict:
+    return {
+        "status": "render_failed",
+        "total_diff_ratio": None, "colored_overlay_diff_ratio": None, "diff_bbox": None,
+        "alignment_score": None, "alignment_method": "failed",
+        "mask_iou": None, "normalized_correlation": None,
+        "content_bbox_old": None, "content_bbox_new": None, "trim_applied": False,
+        "foreground_ratio_old": None, "foreground_ratio_new": None,
+    }
+
+
+def compare_block_images_cascade(old_img, new_img, *,
+                                 cfg: Optional["VisualBlockEquivalenceConfig"] = None,
+                                 debug_path: Optional[str | Path] = None) -> dict:
+    """Каскадное визуальное сравнение двух кропов блока (Stage 3E).
+
+    Контракт совместим с ``compare_visual_blocks`` (те же ключи ``status`` /
+    ``total_diff_ratio`` / ``colored_overlay_diff_ratio`` / ``diff_bbox`` /
+    ``alignment_score``) + доп. метрики (``alignment_method`` / ``mask_iou`` /
+    ``normalized_correlation`` / ``content_bbox_*`` / ``trim_applied`` /
+    ``foreground_ratio_*``).
+
+    Каскад выравнивания:
+      1. нормализация (grayscale + line-art mask + trim по content bbox);
+      2. ECC ``MOTION_EUCLIDEAN`` (как раньше);
+      3. ECC ``MOTION_AFFINE`` — если euclidean не сошёлся и ``enable_affine``;
+      4. fallback без ECC — downscale + normalized correlation + mask IoU.
+
+    Решение КОНСЕРВАТИВНО:
+      * ``identical_visual`` — ТОЛЬКО при сошедшемся ECC И strict diff/colored И
+        высоких ``mask_iou``/``ncc``; никаких identical из fallback или при
+        слабом alignment;
+      * ``changed_visual`` — сошедшийся ECC с заметным diff, ИЛИ fallback с явно
+        низким ``mask_iou``/``ncc``;
+      * иначе ``uncertain`` (лучше uncertain, чем ложный identical).
+
+    Fail-soft: исключение → ``alignment_failed``; cv2 нет → ``visual_unavailable``.
+    """
+    cfg = cfg or VisualBlockEquivalenceConfig()
+    out = _empty_cascade_metrics()
+    if old_img is None or new_img is None:
+        return out
+    cv2 = _cv2()
+    if cv2 is None:
+        out["status"] = "visual_unavailable"
+        return out
+    try:
+        import numpy as np
+
+        og, om, obbox, ofr, otrim, ocolor = _normalize_for_match(cv2, np, old_img, cfg)
+        ng, nm, nbbox, nfr, ntrim, ncolor = _normalize_for_match(cv2, np, new_img, cfg)
+        out.update(content_bbox_old=obbox, content_bbox_new=nbbox,
+                   trim_applied=bool(otrim or ntrim),
+                   foreground_ratio_old=ofr, foreground_ratio_new=nfr)
+        oh, ow = og.shape[:2]
+        if oh < 4 or ow < 4 or ng.shape[0] < 2 or ng.shape[1] < 2:
+            out["status"] = "render_failed"
+            return out
+        ng_r = cv2.resize(ng, (ow, oh), interpolation=cv2.INTER_AREA)
+        nm_r = cv2.resize(nm, (ow, oh), interpolation=cv2.INTER_NEAREST)
+        ogb = cv2.GaussianBlur(og, (3, 3), 0)
+        ngb = cv2.GaussianBlur(ng_r, (3, 3), 0)
+
+        # ── cascade ECC: euclidean, затем (опц.) affine ──
+        best_cc = None
+        method = None
+        warp = None
+        motions = [(cv2.MOTION_EUCLIDEAN, "euclidean")]
+        if cfg.enable_affine:
+            motions.append((cv2.MOTION_AFFINE, "affine"))
+        for motion, name in motions:
+            try:
+                warp0 = np.eye(2, 3, dtype=np.float32)
+                criteria = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 200, 1e-5)
+                cc_try, warp_try = cv2.findTransformECC(
+                    ogb.astype(np.float32), ngb.astype(np.float32),
+                    warp0, motion, criteria, None, 5)
+            except cv2.error:
+                continue
+            if not np.isfinite(cc_try):
+                continue
+            if best_cc is None or cc_try > best_cc:
+                best_cc = cc_try
+            if cc_try >= cfg.ecc_min_score:
+                method = name
+                warp = warp_try
+                break
+        out["alignment_score"] = round(float(best_cc), 4) if best_cc is not None else None
+
+        debug_extra: dict = {}
+
+        if method is not None:
+            aligned_gray = cv2.warpAffine(
+                ng_r, warp, (ow, oh),
+                flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP, borderMode=cv2.BORDER_REPLICATE)
+            aligned_mask = cv2.warpAffine(
+                nm_r, warp, (ow, oh),
+                flags=cv2.INTER_NEAREST + cv2.WARP_INVERSE_MAP,
+                borderMode=cv2.BORDER_CONSTANT, borderValue=0)
+            out["alignment_method"] = method
+            agb = cv2.GaussianBlur(aligned_gray, (3, 3), 0)
+            diff = cv2.absdiff(ogb, agb)
+            margin = max(1, int(round(min(oh, ow) * 0.01)))
+            if 2 * margin < min(oh, ow):
+                inner = np.zeros_like(diff)
+                inner[margin:oh - margin, margin:ow - margin] = 1
+                diff = diff * inner
+            dmask = (diff > cfg.visual_diff_pixel_threshold).astype(np.uint8)
+            total = float(oh * ow)
+            tdr = round(float(int(dmask.sum())) / total, 5) if total > 0 else 1.0
+            out["total_diff_ratio"] = tdr
+            ys, xs = np.where(dmask > 0)
+            if xs.size and ys.size:
+                out["diff_bbox"] = [round(int(xs.min()) / ow, 4), round(int(ys.min()) / oh, 4),
+                                    round((int(xs.max()) + 1) / ow, 4), round((int(ys.max()) + 1) / oh, 4)]
+            # colored diff (если оба входа цветные)
+            colored_ratio = None
+            try:
+                if ocolor is not None and ncolor is not None:
+                    ocol = ocolor if ocolor.shape[:2] == (oh, ow) else cv2.resize(ocolor, (ow, oh))
+                    nc_r = cv2.resize(ncolor, (ow, oh), interpolation=cv2.INTER_AREA)
+                    nc_al = cv2.warpAffine(
+                        nc_r, warp, (ow, oh),
+                        flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP, borderMode=cv2.BORDER_REPLICATE)
+                    os_ = cv2.cvtColor(ocol, cv2.COLOR_BGR2HSV)[:, :, 1].astype(np.int16)
+                    ns_ = cv2.cvtColor(nc_al, cv2.COLOR_BGR2HSV)[:, :, 1].astype(np.int16)
+                    cdmask = (np.abs(os_ - ns_) > cfg.colored_diff_sat_threshold).astype(np.uint8)
+                    colored_ratio = round(float(int(cdmask.sum())) / total, 5) if total > 0 else 0.0
+            except Exception:  # noqa: BLE001 — colored опционален
+                colored_ratio = None
+            out["colored_overlay_diff_ratio"] = colored_ratio
+            miou = _mask_iou(np, om, aligned_mask)
+            ncc = round(_ncc(np, ogb, agb), 4)
+            out["mask_iou"] = miou
+            out["normalized_correlation"] = ncc
+            is_identical = (
+                tdr <= cfg.visual_identical_max_ratio
+                and (colored_ratio is None or colored_ratio <= cfg.colored_identical_max_ratio)
+                and miou >= cfg.identical_min_mask_iou
+                and ncc >= cfg.identical_min_ncc
+            )
+            out["status"] = "identical_visual" if is_identical else "changed_visual"
+            debug_extra = {"aligned_new": aligned_gray, "dmask": dmask}
+        else:
+            # fallback — БЕЗ выравнивания; identical здесь ЗАПРЕЩЁН.
+            if cfg.enable_fallback:
+                fs = max(32, int(cfg.fallback_size))
+                og_s = cv2.resize(og, (fs, fs), interpolation=cv2.INTER_AREA)
+                ng_s = cv2.resize(ng_r, (fs, fs), interpolation=cv2.INTER_AREA)
+                om_s = cv2.resize(om, (fs, fs), interpolation=cv2.INTER_NEAREST)
+                nm_s = cv2.resize(nm_r, (fs, fs), interpolation=cv2.INTER_NEAREST)
+                miou = _mask_iou(np, om_s, nm_s)
+                ncc = round(_ncc(np, og_s, ng_s), 4)
+                out["mask_iou"] = miou
+                out["normalized_correlation"] = ncc
+                if miou < cfg.fallback_changed_max_iou or ncc < cfg.fallback_changed_max_ncc:
+                    out["status"] = "changed_visual"
+                    out["alignment_method"] = (
+                        "fallback_mask" if miou < cfg.fallback_changed_max_iou
+                        else "fallback_correlation")
+                else:
+                    out["status"] = "uncertain"
+                    out["alignment_method"] = "failed"
+            else:
+                out["status"] = "alignment_failed"
+                out["alignment_method"] = "failed"
+
+        if debug_path is not None:
+            try:
+                _write_cascade_debug(cv2, np, debug_path, old_img, new_img,
+                                     og, ng_r, om, nm_r, debug_extra)
+            except Exception as exc:  # noqa: BLE001 — debug never fails compare
+                logger.debug("cascade debug write failed: %s", exc)
+
+        return out
+    except Exception as exc:  # noqa: BLE001 — fail-soft
+        logger.debug("compare_block_images_cascade failed: %s", exc)
+        out["status"] = "alignment_failed"
+        return out
+
+
+def _write_cascade_debug(cv2, np, debug_path, old_img, new_img, og, ng_r, om, nm_r, extra) -> None:
+    """Записать набор debug-PNG (только при write_debug). Главная панель → в
+    ``debug_path``, остальные — siblings с тем же stem."""
+    p = Path(debug_path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+
+    def _w(suffix, img):
+        cv2.imwrite(str(p.parent / (p.stem + suffix)), img)
+
+    _w("_old_crop.png", old_img)
+    _w("_new_crop.png", new_img)
+    _w("_old_normalized.png", og)
+    _w("_new_normalized.png", ng_r)
+    _w("_mask_old.png", (om * 255).astype(np.uint8))
+    _w("_mask_new.png", (nm_r * 255).astype(np.uint8))
+    if "aligned_new" in extra:
+        _w("_aligned_new.png", extra["aligned_new"])
+    if "dmask" in extra:
+        _w("_diff_mask.png", (extra["dmask"] * 255).astype(np.uint8))
+    # Главная панель: OLD | NEW(aligned|resized) | overlay(diff красным).
+    h, w = og.shape[:2]
+    right = extra.get("aligned_new", ng_r)
+    overlay = cv2.cvtColor(og, cv2.COLOR_GRAY2BGR)
+    if "dmask" in extra:
+        overlay[extra["dmask"] > 0] = (0, 0, 255)
+    sep = np.full((h, 4, 3), 255, dtype=np.uint8)
+    panel = np.hstack([
+        cv2.cvtColor(og, cv2.COLOR_GRAY2BGR), sep,
+        cv2.cvtColor(right, cv2.COLOR_GRAY2BGR), sep, overlay])
+    cv2.imwrite(str(p), panel)
+
+
+# ═══════════════════════════════════════════════════════════════════════════
 # compare_one_link_visual_equivalence
 # ═══════════════════════════════════════════════════════════════════════════
 
@@ -275,7 +593,7 @@ def compare_one_link_visual_equivalence(
       * ``render_fn(block, source_pdf_path=, render_long_side=) -> (img, meta)``
         (default ``load_or_render_block_image``);
       * ``visual_compare_fn(old_img, new_img, cfg=, debug_path=) -> dict``
-        (default ``compare_visual_blocks``);
+        (default ``compare_block_images_cascade``);
       * ``text_compare_fn(old_block, new_block) -> dict``
         (default ``compare_text_blocks``).
 
@@ -284,7 +602,7 @@ def compare_one_link_visual_equivalence(
     """
     cfg = cfg or VisualBlockEquivalenceConfig.from_env()
     render_fn = render_fn or load_or_render_block_image
-    visual_compare_fn = visual_compare_fn or compare_visual_blocks
+    visual_compare_fn = visual_compare_fn or compare_block_images_cascade
     text_compare_fn = text_compare_fn or compare_text_blocks
 
     # 0. Принудительный skip от batch (stale / не-1↔1) — без рендера/сравнения.
@@ -329,9 +647,9 @@ def compare_one_link_visual_equivalence(
                             reason=f"render failed (old={old_render}, new={new_render})",
                             old_render=old_render, new_render=new_render)
 
-    # 4. Визуальное сравнение (переиспользуем существующую ECC/pixel/colored логику).
+    # 4. Визуальное сравнение — Stage 3E каскад (Euclidean → Affine → fallback).
     try:
-        vis = visual_compare_fn(old_img, new_img, cfg=cfg.to_block_cfg(), debug_path=debug_path)
+        vis = visual_compare_fn(old_img, new_img, cfg=cfg, debug_path=debug_path)
     except Exception as exc:  # noqa: BLE001 — fail-soft
         logger.debug("visual_block_equivalence: compare failed %s/%s: %s", left_id, right_id, exc)
         return _base_record(link, old_block, new_block, status=VS_UNCERTAIN,
@@ -342,10 +660,22 @@ def compare_one_link_visual_equivalence(
     total_diff = vis.get("total_diff_ratio")
     colored_diff = vis.get("colored_overlay_diff_ratio")
     align = vis.get("alignment_score")
+    amethod = vis.get("alignment_method")
+    miou = vis.get("mask_iou")
+    ncc = vis.get("normalized_correlation")
     metrics = {
         "total_diff_ratio": total_diff,
         "colored_overlay_diff_ratio": colored_diff,
         "alignment_score": align,
+        "diff_bbox": vis.get("diff_bbox"),
+        "alignment_method": amethod,
+        "mask_iou": miou,
+        "normalized_correlation": ncc,
+        "content_bbox_old": vis.get("content_bbox_old"),
+        "content_bbox_new": vis.get("content_bbox_new"),
+        "trim_applied": vis.get("trim_applied"),
+        "foreground_ratio_old": vis.get("foreground_ratio_old"),
+        "foreground_ratio_new": vis.get("foreground_ratio_new"),
     }
     diff_mask = None
     if debug_path is not None:
@@ -361,7 +691,8 @@ def compare_one_link_visual_equivalence(
 
     if vstatus == "identical_visual":
         status = VS_IDENTICAL
-        reason = f"ECC ok; diff={total_diff} colored={colored_diff} ≤ identical thresholds"
+        reason = (f"{amethod} align={align}; diff={total_diff} colored={colored_diff} "
+                  f"iou={miou} ncc={ncc} ≤ strict identical thresholds")
     elif vstatus == "changed_visual":
         # Полоса «незначимого шума рендера» → minor_render_noise (не исключаем).
         is_minor = (
@@ -372,18 +703,20 @@ def compare_one_link_visual_equivalence(
         )
         if is_minor:
             status = VS_MINOR
-            reason = (f"minor render noise; diff={total_diff} colored={colored_diff} "
-                      f"≤ minor band (keep for Qwen)")
+            reason = (f"minor render noise ({amethod}); diff={total_diff} "
+                      f"colored={colored_diff} ≤ minor band (keep for Qwen)")
         else:
             status = VS_CHANGED
-            reason = f"visual changed; diff={total_diff} colored={colored_diff}"
+            reason = (f"visual changed ({amethod}); diff={total_diff} colored={colored_diff} "
+                      f"iou={miou} ncc={ncc}")
     elif vstatus == "render_failed":
         status = VS_RENDER_FAILED
         reason = "visual render_failed"
     else:
-        # alignment_failed / visual_unavailable / неизвестный → uncertain (НЕ исключаем).
+        # alignment_failed / uncertain / visual_unavailable → uncertain (НЕ исключаем).
         status = VS_UNCERTAIN
-        reason = f"visual uncertain (status={vstatus})"
+        reason = (f"visual uncertain (status={vstatus}, method={amethod}); "
+                  f"align={align} iou={miou} ncc={ncc}")
 
     return _base_record(
         link, old_block, new_block,
@@ -683,6 +1016,7 @@ def _atomic_write_json(path: Path, payload: Any) -> None:
 
 __all__ = [
     "VisualBlockEquivalenceConfig",
+    "compare_block_images_cascade",
     "compare_one_link_visual_equivalence",
     "run_pair_visual_block_equivalence",
     "read_pair_visual_block_equivalence",
