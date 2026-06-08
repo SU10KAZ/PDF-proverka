@@ -5542,6 +5542,11 @@
                         <input type="checkbox" v-model="scStampUseLlm" :disabled="scStampLoading" />
                         🧠 ИИ-доматчинг
                     </label>
+                    <button class="btn btn-primary" @click="scAutoMatchApplySheets(false)"
+                            :disabled="scAutoMatchApplyLoading || scStampLoading"
+                            title="One-click: умно сопоставить листы и СРАЗУ применить надёжные пары; сомнительные — на проверку; результат сохраняется в page_alignment.json. Связи блоков не удаляются (только stale-пометка).">
+                        {{ scAutoMatchApplyLoading ? 'Сопоставление…' : '🪄 Сопоставить и применить' }}
+                    </button>
                     <button class="btn btn-secondary" @click="scRunAutoLink()" :disabled="scLinking || scAnalysisMode==='concept_no_block_links'"
                             :title="scAnalysisMode==='concept_no_block_links' ? 'Недоступно в режиме «Блоки без связей»' : ''">Авто-связь по IoU</button>
                     <button class="btn btn-primary"
@@ -5557,6 +5562,67 @@
                     </button>
                 </div>
 
+                <!-- One-click авто-сопоставление листов: ошибка -->
+                <div v-if="scAutoMatchApplyError" class="sc-card"
+                     style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; padding:8px 12px; margin-bottom:10px; font-size:12px">
+                    {{ scAutoMatchApplyError }}
+                </div>
+                <!-- One-click авто-сопоставление листов: отчёт -->
+                <div v-if="scAutoMatchApplyResult" class="sc-card"
+                     style="background:#fff; border:1px solid #bbf7d0; border-radius:8px; padding:10px 12px; margin-bottom:10px; font-size:12px">
+                    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:8px">
+                        <strong style="color:#166534">🪄 Авто-сопоставление листов</strong>
+                        <span v-if="scAutoMatchApplyResult.dry_run" style="color:#b45309">(preview, без сохранения)</span>
+                        <span v-if="scAutoMatchApplyResult.status==='skipped_existing_alignment'" style="color:#b45309">(пропущено: есть ручное выравнивание)</span>
+                        <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:2px 8px">✓ Автоматически: {{ scAutoMatchApplyResult.summary.auto_applied }}</span>
+                        <span style="background:#fef3c7; color:#92400e; border-radius:10px; padding:2px 8px">⚠ Требуют проверки: {{ scAutoMatchApplyResult.summary.needs_review }}</span>
+                        <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:2px 8px">Не сопоставлено старых: {{ scAutoMatchApplyResult.summary.unmatched_old }}</span>
+                        <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:2px 8px">Не сопоставлено новых: {{ scAutoMatchApplyResult.summary.unmatched_new }}</span>
+                        <span v-if="scAutoMatchApplyResult.summary.stale_block_links_marked" style="background:#e0e7ff; color:#3730a3; border-radius:10px; padding:2px 8px"
+                              title="Существующие связи блоков помечены stale/cross-page (НЕ удалены)">Связи помечены stale: {{ scAutoMatchApplyResult.summary.stale_block_links_marked }}</span>
+                        <div style="flex:1"></div>
+                        <button class="btn btn-sm btn-secondary" @click="scAutoMatchApplyResult = null" title="Скрыть отчёт">×</button>
+                    </div>
+                    <details v-if="(scAutoMatchApplyResult.applied||[]).length" open style="margin-bottom:4px">
+                        <summary style="cursor:pointer; color:#166534">Применено ({{ scAutoMatchApplyResult.applied.length }})</summary>
+                        <table style="width:100%; border-collapse:collapse; margin-top:4px; font-size:11px">
+                            <tr style="color:#6b7280; text-align:left"><th>OLD лист</th><th>NEW лист</th><th>тип</th><th>увер.</th><th>причина</th></tr>
+                            <tr v-for="(a,i) in scAutoMatchApplyResult.applied" :key="'ap'+i" style="border-top:1px solid #f1f5f9">
+                                <td>стр.{{ a.left_page }} · {{ (a.left_sheet_name||'').slice(0,40) }}</td>
+                                <td>стр.{{ a.right_page }} · {{ (a.right_sheet_name||'').slice(0,40) }}</td>
+                                <td>{{ a.match_type }}</td>
+                                <td>{{ Math.round((a.confidence||0)*100) }}%</td>
+                                <td>{{ a.reason }}</td>
+                            </tr>
+                        </table>
+                    </details>
+                    <details v-if="(scAutoMatchApplyResult.needs_review||[]).length" style="margin-bottom:4px">
+                        <summary style="cursor:pointer; color:#92400e">Требуют проверки ({{ scAutoMatchApplyResult.needs_review.length }})</summary>
+                        <table style="width:100%; border-collapse:collapse; margin-top:4px; font-size:11px">
+                            <tr style="color:#6b7280; text-align:left"><th>OLD лист</th><th>NEW лист</th><th>тип</th><th>увер.</th><th>причина / риски</th></tr>
+                            <tr v-for="(a,i) in scAutoMatchApplyResult.needs_review" :key="'nr'+i" style="border-top:1px solid #f1f5f9">
+                                <td>стр.{{ a.left_page }} · {{ (a.left_sheet_name||'').slice(0,40) }}</td>
+                                <td>стр.{{ a.right_page }} · {{ (a.right_sheet_name||'').slice(0,40) }}</td>
+                                <td>{{ a.match_type }}</td>
+                                <td>{{ Math.round((a.confidence||0)*100) }}%</td>
+                                <td>{{ a.reason }}<span v-if="(a.risk_flags||[]).length" style="color:#b91c1c"> [{{ a.risk_flags.join(', ') }}]</span></td>
+                            </tr>
+                        </table>
+                    </details>
+                    <details v-if="(scAutoMatchApplyResult.unmatched_old||[]).length || (scAutoMatchApplyResult.unmatched_new||[]).length">
+                        <summary style="cursor:pointer; color:#6b7280">Не сопоставлено (старых {{ (scAutoMatchApplyResult.unmatched_old||[]).length }} / новых {{ (scAutoMatchApplyResult.unmatched_new||[]).length }})</summary>
+                        <div style="display:flex; gap:16px; margin-top:4px; font-size:11px">
+                            <div style="flex:1">
+                                <div style="color:#6b7280">Старые без пары:</div>
+                                <div v-for="(u,i) in scAutoMatchApplyResult.unmatched_old" :key="'uo'+i">стр.{{ u.left_page }} · {{ (u.left_sheet_name||'').slice(0,40) }}</div>
+                            </div>
+                            <div style="flex:1">
+                                <div style="color:#6b7280">Новые без пары:</div>
+                                <div v-for="(u,i) in scAutoMatchApplyResult.unmatched_new" :key="'un'+i">стр.{{ u.right_page }} · {{ (u.right_sheet_name||'').slice(0,40) }}</div>
+                            </div>
+                        </div>
+                    </details>
+                </div>
                 <!-- Сопоставление листов по штампам: ошибка -->
                 <div v-if="scStampError"
                      class="sc-card"

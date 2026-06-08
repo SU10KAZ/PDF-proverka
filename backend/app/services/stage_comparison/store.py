@@ -2027,6 +2027,122 @@ def apply_safe_stamp_alignment_for_pair(
     return summary
 
 
+def _backup_page_alignment(session_id: str, pair_id: str) -> Optional[str]:
+    """Бэкап существующего page_alignment.json перед перезаписью (one-click).
+
+    Возвращает путь бэкапа или None (файла ещё нет). Не бросает наружу."""
+    try:
+        import shutil
+        src = paths_mod.page_alignment_path(session_id, pair_id)
+        if not src.exists():
+            return None
+        ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        dst = src.with_name(f"{src.name}.bak_onclick_{ts}")
+        shutil.copy2(src, dst)
+        return str(dst)
+    except Exception as exc:  # noqa: BLE001 — бэкап best-effort
+        logger.warning("page_alignment backup failed %s/%s: %s", session_id, pair_id, exc)
+        return None
+
+
+def auto_match_apply_pair(
+    session_id: str, pair_id: str, *,
+    use_llm: bool = False,
+    overwrite_existing: bool = False,
+    dry_run: bool = False,
+) -> dict:
+    """One-click авто-сопоставление листов ОДНОЙ пары: suggest → классификация →
+    (опц.) безопасное применение → подробный отчёт.
+
+    Детерминированно и быстро (без Qwen/Opus/pipeline). ``use_llm`` по умолчанию
+    False — тяжёлый LLM-доматчинг не запускается без явного флага. ``dry_run``
+    True → ничего не сохраняет (preview). Перед реальной перезаписью делает
+    бэкап ``page_alignment.json``. Связи блоков НЕ удаляются — ``save_alignment``
+    лишь помечает их stale/cross-page через ``_resync_links_after_alignment``.
+
+    Fail-soft: бросает только KeyError при отсутствии пары; прочее ловит
+    вызывающий (endpoint).
+    """
+    from . import stamp_auto_apply as auto_mod  # lazy import (избегаем циклов)
+
+    pair = _find_pair_meta(session_id, pair_id)
+    if pair is None:
+        raise KeyError("pair_not_found")
+
+    report = {
+        "session_id": session_id, "pair_id": pair_id,
+        "status": "completed", "dry_run": bool(dry_run), "applied_to_disk": False,
+        "use_llm": bool(use_llm),
+        "summary": {
+            "old_pages_total": 0, "new_pages_total": 0,
+            "auto_applied": 0, "needs_review": 0,
+            "unmatched_old": 0, "unmatched_new": 0,
+            "replaced_existing": 0, "stale_block_links_marked": 0,
+            "positional_alignment": 0,
+        },
+        "applied": [], "needs_review": [], "unmatched_old": [], "unmatched_new": [],
+        "warnings": [], "backup_path": None,
+    }
+
+    # Сколько существующих ручных/применённых пар (с обеими страницами) будет
+    # перезаписано — для отчёта (replaced_existing).
+    existing = _load_alignment_raw(session_id, pair_id) or {}
+    replaced = sum(
+        1 for it in (existing.get("items") or [])
+        if it.get("left_page") is not None and it.get("right_page") is not None
+        and str(it.get("mode") or "") in ("manual", "blank")
+    )
+    report["summary"]["replaced_existing"] = replaced
+
+    skip = (not overwrite_existing) and has_manual_alignment(session_id, pair_id)
+
+    sugg = suggest_alignment_by_stamp(session_id, pair_id, use_llm=use_llm)
+    report["warnings"] = list(sugg.get("warnings") or [])
+    s = report["summary"]
+    s["old_pages_total"] = sugg.get("left_page_count") or sugg.get("left_pdf_page_count") or 0
+    s["new_pages_total"] = sugg.get("right_page_count") or sugg.get("right_pdf_page_count") or 0
+
+    suggested_items = sugg.get("suggested_items") or []
+    cls = auto_mod.classify_for_one_click(suggested_items)
+    report["applied"] = cls["applied"]
+    report["needs_review"] = cls["needs_review"]
+    report["unmatched_old"] = cls["unmatched_old"]
+    report["unmatched_new"] = cls["unmatched_new"]
+    s["auto_applied"] = len(cls["applied"])
+    s["needs_review"] = len(cls["needs_review"])
+    s["unmatched_old"] = len(cls["unmatched_old"])
+    s["unmatched_new"] = len(cls["unmatched_new"])
+    s["positional_alignment"] = cls["positional_alignment"]
+
+    if skip:
+        report["status"] = "skipped_existing_alignment"
+        report["warnings"].append("manual_alignment_exists_not_overwritten")
+        return report
+
+    built = auto_mod.build_auto_apply_items(suggested_items)
+
+    if dry_run:
+        report["status"] = "dry_run"
+        return report
+
+    if built["applied"] == 0 and built.get("positional_alignment", 0) == 0:
+        # Нечего безопасно применить — НЕ трогаем карту (лучше ничего).
+        report["status"] = "needs_review" if built["review"] > 0 else "no_safe_matches"
+        return report
+
+    report["backup_path"] = _backup_page_alignment(session_id, pair_id)
+    save_res = save_alignment(session_id, pair_id, built["items"], force=True)
+    if not save_res.get("ok"):
+        report["status"] = "error"
+        report["warnings"].append("save_failed")
+        return report
+
+    report["applied_to_disk"] = True
+    rs = save_res.get("links_resync") or {}
+    s["stale_block_links_marked"] = int(rs.get("stale_auto", 0)) + int(rs.get("cross_page_manual", 0))
+    return report
+
+
 __all__ = [
     "SESSIONS_DIR",
     "create_session",
@@ -2050,6 +2166,7 @@ __all__ = [
     "suggest_alignment_by_stamp",
     "has_manual_alignment",
     "apply_safe_stamp_alignment_for_pair",
+    "auto_match_apply_pair",
     # Manual PDF pair management
     "list_unmatched",
     "update_pair_match",

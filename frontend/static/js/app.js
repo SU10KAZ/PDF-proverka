@@ -11381,6 +11381,35 @@ const app = createApp({
         const scStampSelectedCount = computed(() =>
             scStampSelectableRows.value.filter(it => scStampSelected.value[scStampRowKey(it)]).length);
 
+        // One-click авто-сопоставление листов: умный matching + авто-применение
+        // надёжных пар + отчёт. dryRun=true → preview без сохранения.
+        const scAutoMatchApplyLoading = ref(false);
+        const scAutoMatchApplyResult = ref(null);
+        const scAutoMatchApplyError = ref(null);
+        async function scAutoMatchApplySheets(dryRun = false) {
+            if (!scSession.value || !scActivePair.value) return;
+            scAutoMatchApplyLoading.value = true;
+            scAutoMatchApplyError.value = null;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/page-alignment/auto-match-apply`;
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ use_llm: false, overwrite_existing: false, dry_run: !!dryRun }),
+                });
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                scAutoMatchApplyResult.value = await r.json();
+                // Реально применили — перечитать карту страниц и связи блоков.
+                if (scAutoMatchApplyResult.value && scAutoMatchApplyResult.value.applied_to_disk) {
+                    await scLoadAlignment();
+                    await scLoadPairData();
+                }
+            } catch (e) {
+                scAutoMatchApplyError.value = 'Ошибка авто-сопоставления листов: ' + e;
+            } finally {
+                scAutoMatchApplyLoading.value = false;
+            }
+        }
         async function scSuggestByStamp() {
             if (!scSession.value || !scActivePair.value) return;
             scStampError.value = '';
@@ -14207,6 +14236,7 @@ const app = createApp({
             scStampSelected, scStampRowKey, scStampToggleRow, scStampMatchedRows,
             scStampAllRows, scStampSelectableRows, scStampIsSelectable,
             scStampSelectedCount, scSuggestByStamp, scApplyStampProposals,
+            scAutoMatchApplyLoading, scAutoMatchApplyResult, scAutoMatchApplyError, scAutoMatchApplySheets,
             scCloseStampProposals, scStampUseLlm,
             scStampTypeLabel, scStampRiskLabel, scStampTypeColor, scStampRowTitle,
             scStampDisplayName, scStampNameIsDerived,
