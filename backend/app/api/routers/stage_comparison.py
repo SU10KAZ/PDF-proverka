@@ -45,6 +45,7 @@ from backend.app.services.stage_comparison import md_enrichment_jobs as md_enric
 from backend.app.services.stage_comparison import large_sheet_enrichment as large_sheet_mod
 from backend.app.services.stage_comparison import large_sheet_enrichment_jobs as large_sheet_jobs_mod
 from backend.app.services.stage_comparison import auto_match_jobs as auto_match_jobs_mod
+from backend.app.services.stage_comparison import visual_block_equivalence_jobs as vbe_jobs_mod
 from backend.app.services.stage_comparison import pipeline_queue as pipeline_queue_mod
 from backend.app.services.stage_comparison import clear_analysis as clear_analysis_mod
 from backend.app.services.stage_comparison import enriched_comparison as enriched_compare_mod
@@ -838,6 +839,100 @@ async def auto_match_last_run_endpoint(session_id: str):
     last = auto_match_jobs_mod.read_last_run(session_id)
     job = auto_match_jobs_mod.latest_job(session_id)
     return {"last_run": last, "latest_job": job}
+
+
+# ─── Visual block equivalence recompute (Stage 3B, mark-only, flag-gated) ──
+#
+# Recompute-only API поверх mark-only прекчека визуальной эквивалентности
+# СВЯЗАННЫХ блоков (links.json). Эти endpoint'ы:
+#   • НЕ запускают Qwen/Opus/LLM и НЕ трогают основной pipeline;
+#   • выполняют только рендер кропов + cv2-сравнение (Stage 2 runner);
+#   • не делают реального skip Qwen/MD/Opus (enforced=false, флаги
+#     exclude_* информационны);
+#   • запуск job защищён флагом
+#     STAGE_COMPARISON_VISUAL_BLOCK_EQUIVALENCE_JOBS_ENABLED (default OFF) —
+#     при OFF запуск безопасно отклоняется (403); read-only status/list/artifact
+#     остаются доступными.
+
+class VisualBlockEquivalenceJobRequest(BaseModel):
+    scope: str = "selected"                       # "pair" | "selected" | "session"
+    pair_ids: Optional[list[str]] = None
+    write_artifact: bool = True                   # писать visual_block_equivalence.json
+    write_debug: bool = False                     # default False — не плодить debug PNG
+
+
+@router.post("/sessions/{session_id}/visual-block-equivalence/jobs")
+async def start_visual_block_equivalence_job_endpoint(
+    session_id: str, req: VisualBlockEquivalenceJobRequest = VisualBlockEquivalenceJobRequest(),
+):
+    """Запустить recompute-only job визуальной эквивалентности связанных блоков.
+
+    scope=pair|selected|session. Создаёт background asyncio-job (НЕ блокирует
+    event loop), который для каждой пары пересчитывает визуальную эквивалентность
+    по `links.json` (рендер кропов + cv2). Qwen/Opus/основной pipeline НЕ
+    запускаются. Защищён feature-флагом (default OFF).
+    """
+    if not vbe_jobs_mod.VisualBlockEquivalenceJobsConfig.from_env().enabled:
+        raise HTTPException(
+            403,
+            "visual_block_equivalence jobs отключены "
+            "(STAGE_COMPARISON_VISUAL_BLOCK_EQUIVALENCE_JOBS_ENABLED=false)",
+        )
+    try:
+        job = vbe_jobs_mod.create_visual_block_equivalence_job(
+            session_id, scope=req.scope, pair_ids=req.pair_ids,
+            write_artifact=req.write_artifact, write_debug=req.write_debug,
+        )
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    # Фоновый запуск (asyncio task) — прогресс читается GET-эндпоинтом.
+    vbe_jobs_mod.start_job_in_background(job["job_id"])
+    return vbe_jobs_mod.get_visual_block_equivalence_job(job["job_id"]) or job
+
+
+@router.get("/sessions/{session_id}/visual-block-equivalence/jobs")
+async def list_visual_block_equivalence_jobs_endpoint(session_id: str):
+    """Список visual-block-equivalence job'ов сессии (read-only, без флага)."""
+    return {"jobs": vbe_jobs_mod.list_visual_block_equivalence_jobs(session_id)}
+
+
+@router.get("/sessions/{session_id}/visual-block-equivalence/jobs/{job_id}")
+async def get_visual_block_equivalence_job_endpoint(session_id: str, job_id: str):
+    """Статус visual-block-equivalence job (processed/failed/total + per-pair)."""
+    job = vbe_jobs_mod.get_visual_block_equivalence_job(job_id)
+    if job is None or job.get("session_id") != session_id:
+        raise HTTPException(404, "Job не найден")
+    return job
+
+
+@router.post("/sessions/{session_id}/visual-block-equivalence/jobs/{job_id}/cancel")
+async def cancel_visual_block_equivalence_job_endpoint(session_id: str, job_id: str):
+    """Отменить visual-block-equivalence job (останавливает дальнейшие пары)."""
+    job = vbe_jobs_mod.get_visual_block_equivalence_job(job_id)
+    if job is None or job.get("session_id") != session_id:
+        raise HTTPException(404, "Job не найден")
+    cancelled = vbe_jobs_mod.cancel_visual_block_equivalence_job(job_id)
+    return cancelled or job
+
+
+@router.get("/sessions/{session_id}/pairs/{pair_id}/visual-block-equivalence")
+async def get_pair_visual_block_equivalence_endpoint(session_id: str, pair_id: str):
+    """Последний `visual_block_equivalence.json` пары (read-only, без флага).
+
+    404 если артефакта нет, 500 если он битый. Путь резолвится только через
+    path-helper (произвольный filesystem path от пользователя не принимается).
+    """
+    path = sc_paths_mod.visual_block_equivalence_report_path(session_id, pair_id)
+    if not path.exists():
+        raise HTTPException(404, "Артефакт visual_block_equivalence не найден")
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, json.JSONDecodeError) as exc:
+        raise HTTPException(
+            500, f"Битый артефакт visual_block_equivalence: {exc}") from exc
 
 
 @router.post("/sessions/{session_id}/pairs/{pair_id}/page-alignment/insert-blank")

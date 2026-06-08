@@ -295,6 +295,34 @@ def block_equivalence_debug_dir(session_id: str, pair_id: str) -> Path:
     return p
 
 
+# ─── Visual block equivalence precheck (Stage 2, links-based, mark-only) ──
+
+
+def visual_block_equivalence_dir(session_id: str, pair_id: str) -> Path:
+    """Корень `visual_block_equivalence/` для пары — артефакты links-based
+    визуального прекчека эквивалентности связанных блоков (Stage 2: mark-only).
+
+    Независим от `block_equivalence/` (IoU-прекчек Stage 1) и от
+    `text_enrichment/`. Ничего в Qwen/MD/Opus не меняет.
+    """
+    p = pair_dir(session_id, pair_id) / "visual_block_equivalence"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def visual_block_equivalence_report_path(session_id: str, pair_id: str) -> Path:
+    """`.../visual_block_equivalence/visual_block_equivalence.json`."""
+    return visual_block_equivalence_dir(session_id, pair_id) / "visual_block_equivalence.json"
+
+
+def visual_block_equivalence_debug_dir(session_id: str, pair_id: str) -> Path:
+    """`.../visual_block_equivalence/debug/` — debug PNG `{block_id}_diff.png`
+    для changed/minor-visual связей."""
+    p = visual_block_equivalence_dir(session_id, pair_id) / "debug"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
 # ─── Enriched comparison (Opus over enriched MD) ─────────────────────────
 
 
@@ -537,6 +565,9 @@ __all__ = [
     "block_equivalence_dir",
     "block_equivalence_report_path",
     "block_equivalence_debug_dir",
+    "visual_block_equivalence_dir",
+    "visual_block_equivalence_report_path",
+    "visual_block_equivalence_debug_dir",
     "enriched_comparison_dir",
     "enriched_comparison_result_path",
     "enriched_comparison_prompt_path",
