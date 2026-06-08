@@ -8883,6 +8883,11 @@ const app = createApp({
         const scQOClock = ref(Date.now());            // 1s tick → live elapsed timers
         let scQOClockTimer = null;
         const scQOActiveRecog = ref(null);            // live md-enrichment aggregate of the running Qwen pair
+        // Latest persisted Qwen/Opus timing per pair (from qopipe job files).
+        // Survives F5: in-memory scQOJob теряется после refresh, а колонки
+        // 🟦/🟪 должны показывать времена завершённого прогона. Грузится на
+        // загрузке сессии через /pipeline-qwen-opus/pair-timings.
+        const scQOPairTimings = ref({});              // pairId → {qwen_*, opus_*, status,…}
         const scQODetailsOpen = ref(true);            // expand per-pair live timeline
         const scQOSelectedCount = computed(() => scPairs.value.filter(p => scQOSelected[p.id]).length);
         const scQOAllSelected = computed(() => {
@@ -9401,6 +9406,9 @@ const app = createApp({
                 // Re-attach к запущенному Qwen→Opus pipeline job после F5, иначе
                 // панель «Pipeline Qwen→Opus» пропадает, хотя job ещё работает.
                 try { await scQORestoreActive(); } catch (_) {}
+                // Persisted Qwen/Opus времена по парам — чтобы колонки 🟦/🟪
+                // показывали значения после refresh (in-memory job потерян).
+                try { await scQOLoadPairTimings(); } catch (_) {}
                 try { await scLoadPairCompareStatuses(); } catch (_) {}
                 try { await scOpusLoadPreflight(); } catch (_) {}
                 // Per-pair статус «Проверено экспертом» для таблицы загрузки.
@@ -9454,9 +9462,30 @@ const app = createApp({
             if (scQOClockTimer) { clearInterval(scQOClockTimer); scQOClockTimer = null; }
         }
         function scQOItemFor(pid) {
+            if (!pid) return null;
+            // 1) живой in-memory job (приоритет — содержит running-состояние)
             const job = scQOJob.value;
-            if (!job || !pid) return null;
-            return (job.items || []).find(i => i.pair_id === pid) || null;
+            if (job) {
+                const it = (job.items || []).find(i => i.pair_id === pid);
+                if (it) return it;
+            }
+            // 2) fallback на персистентный timing (переживает F5): тот же shape
+            //    item'а (qwen_*/opus_* started/finished/status), поэтому
+            //    scQOLaneCell/scQOLaneColor/scQOItemLaneMs работают без правок.
+            const t = scQOPairTimings.value && scQOPairTimings.value[pid];
+            return t || null;
+        }
+        // Подтянуть последние Qwen/Opus времена по всем парам из persisted
+        // qopipe job-файлов (read-only, маленькие json). Вызывается на загрузке
+        // сессии и после завершения прогона, чтобы колонки 🟦/🟪 показывали
+        // времена и ПОСЛЕ refresh.
+        async function scQOLoadPairTimings() {
+            if (!scSession.value || !scSession.value.id) return;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pipeline-qwen-opus/pair-timings`;
+                const data = await fetch(url).then(r => r.json());
+                scQOPairTimings.value = (data && data.timings) || {};
+            } catch (_) { /* fail-soft: остаётся прежняя карта / пусто → «—» */ }
         }
         // Overall job elapsed: from the first Qwen start (else created_at) to now
         // while live, frozen at updated_at once terminal.
@@ -9787,6 +9816,9 @@ const app = createApp({
                         scQOClockStop();
                         scQOActiveRecog.value = null;
                         scQOForget();
+                        // Закешировать времена завершённого прогона, чтобы они
+                        // пережили последующий refresh (scQOJob будет очищен).
+                        if (typeof scQOLoadPairTimings === 'function') { try { await scQOLoadPairTimings(); } catch (e) {} }
                         if (typeof scLoadPairCompareStatuses === 'function') { try { await scLoadPairCompareStatuses(); } catch (e) {} }
                         if (typeof scLoadUnifiedFlat === 'function') { try { await scLoadUnifiedFlat(); } catch (e) {} }
                         return;
@@ -14155,6 +14187,7 @@ const app = createApp({
             scQOToggleAll, scQOPairLabel, scQOPairBadge, scQOOpenConfirm, scQOProcessPair,
             scQOStartConfirmed, scQOStart, scQOCancel,
             scQODetailsOpen, scQOElapsedMs, scQOEtaSec, scQOItemFor, scQOItemLaneLabel,
+            scQOPairTimings, scQOLoadPairTimings,
             scQOLaneCell, scQOLaneColor, scQOItemTotalLabel, scQOCurrentBlock, scQOBlocksOverall,
             scFailedPopoverPairId, scFailedBlocks, scFailedBlocksLoading, scFailedBlocksError,
             scToggleFailedPopover, scLoadFailedBlocks, scGotoFailedBlock, scFocusBlock,

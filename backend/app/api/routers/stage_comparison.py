@@ -1650,6 +1650,17 @@ async def qwen_opus_start_endpoint(session_id: str, req: QwenOpusStartRequest):
     return pipeline_queue_mod.get_job(session_id, job["job_id"]) or job
 
 
+@router.get("/sessions/{session_id}/pipeline-qwen-opus/pair-timings")
+async def qwen_opus_pair_timings_endpoint(session_id: str):
+    """Latest Qwen/Opus timing по каждой паре из персистентных qopipe job-файлов.
+
+    Нужен, чтобы колонки 🟦 Qwen / 🟪 Opus в таблице пар показывали времена
+    ПОСЛЕ refresh страницы (in-memory job на фронте теряется). Read-only,
+    только маленькие job-json, без тяжёлых Qwen/tile-артефактов. Объявлен ДО
+    `/{job_id}`, чтобы `pair-timings` не попал в path-параметр job_id."""
+    return {"timings": pipeline_queue_mod.latest_pair_timings(session_id)}
+
+
 @router.get("/sessions/{session_id}/pipeline-qwen-opus/{job_id}")
 async def qwen_opus_status_endpoint(session_id: str, job_id: str):
     job = pipeline_queue_mod.get_job(session_id, job_id)
