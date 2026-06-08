@@ -219,6 +219,26 @@ def _build_describe_fn(cfg, model: str) -> Callable[..., Awaitable[Any]]:
     return _describe
 
 
+def _apply_large_sheet_llm_overrides(cfg):
+    """Точечный override per-tile LLM-параметров ТОЛЬКО для large_sheet пути.
+
+    Большие листы дают длинный per-tile JSON: при общем graphic max_tokens (5500)
+    плотные тайлы обрываются (finish=length) и уходят в salvage + continuation
+    (3-4 chunk'а, картинка тайла префилится заново каждый chunk).
+    ``STAGE_COMPARISON_LARGE_SHEET_LLM_MAX_TOKENS`` поднимает лимит, не трогая
+    обычный image-enrichment и GRSH feeder-путь. Env не задан → cfg без изменений.
+    Fail-soft: любая ошибка override → исходный cfg."""
+    try:
+        import dataclasses
+
+        mt = ls.cfg_llm_max_tokens()
+        if mt and mt != getattr(cfg, "max_tokens", None):
+            return dataclasses.replace(cfg, max_tokens=mt)
+    except Exception:  # noqa: BLE001 — override никогда не должен ронять job
+        logger.warning("large_sheet llm override failed, using base cfg", exc_info=True)
+    return cfg
+
+
 # ─── run ────────────────────────────────────────────────────────────────────
 
 async def run_job(session_id: str, job_id: str) -> dict:
@@ -233,6 +253,7 @@ async def run_job(session_id: str, job_id: str) -> dict:
     # provider + model
     from . import graphic_llm_local as g
     cfg = g.load_local_graphic_llm_config()
+    cfg = _apply_large_sheet_llm_overrides(cfg)
     model = getattr(cfg, "model", "") or ""
     describe_fn = _build_describe_fn(cfg, model)
 
