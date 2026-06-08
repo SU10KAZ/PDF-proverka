@@ -1205,6 +1205,8 @@ th.cv2-sort-active {
 .tile-analysis-empty { text-align: center; padding: 40px 20px; color: var(--text3); }
 .tile-analysis-empty__icon { font-size: 28px; margin-bottom: 8px; }
 .tile-analysis-empty__hint { font-size: 12px; margin-top: 6px; }
+/* Нейтральный inline-статус «нет финальных замечаний» под секцией «Замечания» */
+.tile-analysis-empty--inline { text-align: left; padding: 12px 4px; font-size: 13px; }
 
 /* ══════════════════════════════════════════════════════════════
    DISCUSSIONS / CHAT

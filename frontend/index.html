@@ -3142,68 +3142,13 @@
                                     </ul>
                                 </div>
 
-                                <!-- findings -->
-                                <div v-if="selectedBlockAnalysis.findings && selectedBlockAnalysis.findings.length > 0"
-                                     class="tile-analysis-section">
-                                    <div class="tile-analysis-section__header">
-                                        <h4>Замечания ({{ selectedBlockAnalysis.findings.length }})</h4>
-                                        <button class="btn-toggle-highlights" @click="toggleAllHighlights"
-                                                :title="allHighlightsVisible ? 'Скрыть все подсветки' : 'Показать все подсветки'">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <template v-if="allHighlightsVisible">
-                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                                    <circle cx="12" cy="12" r="3"/>
-                                                </template>
-                                                <template v-else>
-                                                    <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 01-4.24-4.24"/>
-                                                    <line x1="1" y1="1" x2="23" y2="23"/>
-                                                </template>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    <div v-for="(f, i) in selectedBlockAnalysis.findings" :key="i"
-                                         class="tile-finding-card"
-                                         :class="['tile-finding-card--' + sevClass(f.severity),
-                                                   {'tile-finding-card--highlighted': highlightedFindingId === f.id,
-                                                    'tile-finding-card--dimmed': f.id && !isFindingHighlightVisible(f.id),
-                                                    'tile-finding-card--has-regions': f.highlight_regions && f.highlight_regions.length > 0}]"
-                                         @click="f.highlight_regions && f.highlight_regions.length ? highlightFinding(f.id) : null"
-                                         :style="f.highlight_regions && f.highlight_regions.length ? {cursor: 'pointer'} : {}">
-                                        <div class="tile-finding-card__header">
-                                            <label v-if="f.id && f.highlight_regions && f.highlight_regions.length"
-                                                   class="finding-visibility-toggle" @click.stop
-                                                   :title="isFindingHighlightVisible(f.id) ? 'Скрыть подсветку' : 'Показать подсветку'">
-                                                <input type="checkbox"
-                                                       :checked="isFindingHighlightVisible(f.id)"
-                                                       @change="toggleFindingHighlight(f.id)">
-                                            </label>
-                                            <span class="sev-badge sev-badge--sm" :class="'sev-' + sevClass(f.severity)">
-                                                {{ f.severity || 'N/A' }}
-                                            </span>
-                                            <span v-if="f.id" class="tile-finding-card__id">{{ f.id }}</span>
-                                            <span v-if="f.highlight_regions && f.highlight_regions.length"
-                                                  class="tile-finding-card__locate"
-                                                  title="Показать на чертеже">&#9678;</span>
-                                        </div>
-                                        <div class="tile-finding-card__text">
-                                            {{ f.description || f.problem || f.finding || '' }}
-                                        </div>
-                                        <div v-if="f.norm" class="tile-finding-card__norm">
-                                            {{ f.norm }}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div v-if="(!selectedBlockAnalysis.findings || selectedBlockAnalysis.findings.length === 0) && !selectedBlockAnalysis.summary"
-                                     class="tile-analysis-empty">
-                                    Анализ выполнен, данных мало.
-                                </div>
-
-                                <!-- Связанные F-замечания (из 03_findings) -->
-                                <div v-if="getBlockFindings(selectedBlock.block_id).length > 0"
-                                     class="tile-analysis-section tile-analysis-section--findings">
-                                    <div class="tile-analysis-section__header">
-                                        <h4>Финальные замечания ({{ getBlockFindings(selectedBlock.block_id).length }})</h4>
+                                <!-- Замечания: только финальный список (03_findings), прошедший критика. -->
+                                <!-- Сырые Stage 02 findings (selectedBlockAnalysis.findings) пользователю НЕ показываем -->
+                                <!-- — критик мог их отфильтровать; источник истины = финальные замечания проекта. -->
+                                <div class="tile-analysis-section tile-analysis-section--findings">
+                                    <div class="tile-analysis-section__header"
+                                         v-if="getBlockFindings(selectedBlock.block_id).length > 0">
+                                        <h4>Замечания ({{ getBlockFindings(selectedBlock.block_id).length }})</h4>
                                         <button class="btn-toggle-highlights" @click="toggleAllHighlights"
                                                 :title="allHighlightsVisible ? 'Скрыть все подсветки' : 'Показать все подсветки'">
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -3248,6 +3193,10 @@
                                         <div v-if="f.norm" class="tile-finding-card__norm">
                                             {{ f.norm }}
                                         </div>
+                                    </div>
+                                    <div v-if="getBlockFindings(selectedBlock.block_id).length === 0"
+                                         class="tile-analysis-empty tile-analysis-empty--inline">
+                                        Финальных замечаний по этому блоку не выявлено.
                                     </div>
                                 </div>
                             </template>

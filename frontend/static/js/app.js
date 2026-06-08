@@ -6095,17 +6095,19 @@ const app = createApp({
         }
 
         function blockFindingsCount(blockId) {
-            const info = blockAnalysis.value[blockId];
-            if (!info) return 0;
-            return (info.findings || []).length;
+            // Бейдж количества на превью блока считаем по ФИНАЛЬНОМУ списку
+            // (03_findings, getBlockFindings), а не по сырым Stage 02 findings —
+            // чтобы число на превью совпадало с модалкой блока и не показывало
+            // отфильтрованные критиком замечания.
+            return getBlockFindings(blockId).length;
         }
 
         function blockMaxSeverity(blockId) {
-            const info = blockAnalysis.value[blockId];
-            if (!info || !info.findings) return null;
+            const findings = getBlockFindings(blockId);
+            if (!findings.length) return null;
             const order = ['КРИТИЧЕСКОЕ', 'ЭКОНОМИЧЕСКОЕ', 'ЭКСПЛУАТАЦИОННОЕ', 'РЕКОМЕНДАТЕЛЬНОЕ', 'ПРОВЕРИТЬ ПО СМЕЖНЫМ'];
             let best = 999;
-            for (const f of info.findings) {
+            for (const f of findings) {
                 const s = (f.severity || '').toUpperCase();
                 for (let i = 0; i < order.length; i++) {
                     if (s.includes(order[i].substring(0, 6)) && i < best) {
@@ -6168,6 +6170,9 @@ const app = createApp({
             if (!selectedBlock.value) return [];
             const bid = selectedBlock.value.block_id;
             const hidden = hiddenHighlightFindings.value;
+            // Подсветки строим ТОЛЬКО по финальным замечаниям (03_findings),
+            // связанным с блоком. Сырые Stage 02 findings не показываем — критик
+            // мог их отфильтровать, и их подсветка вводила бы в заблуждение.
             const findings = getBlockFindings(bid);
             const regions = [];
             for (const f of findings) {
@@ -6179,21 +6184,6 @@ const app = createApp({
                         finding_id: f.id,
                         severity: f.severity,
                     });
-                }
-            }
-            // Также из блочного анализа (G-замечания)
-            const analysis = blockAnalysis.value[bid];
-            if (analysis && analysis.findings) {
-                for (const gf of analysis.findings) {
-                    if (!gf.highlight_regions || !gf.highlight_regions.length) continue;
-                    if (hidden.has(gf.id)) continue;
-                    for (const r of gf.highlight_regions) {
-                        regions.push({
-                            ...r,
-                            finding_id: gf.id,
-                            severity: gf.severity,
-                        });
-                    }
                 }
             }
             return regions;
@@ -6223,12 +6213,6 @@ const app = createApp({
                     const bid = selectedBlock.value.block_id;
                     for (const f of getBlockFindings(bid)) {
                         if (f.highlight_regions && f.highlight_regions.length) allIds.add(f.id);
-                    }
-                    const analysis = blockAnalysis.value[bid];
-                    if (analysis && analysis.findings) {
-                        for (const gf of analysis.findings) {
-                            if (gf.highlight_regions && gf.highlight_regions.length && gf.id) allIds.add(gf.id);
-                        }
                     }
                 }
                 hiddenHighlightFindings.value = allIds;
