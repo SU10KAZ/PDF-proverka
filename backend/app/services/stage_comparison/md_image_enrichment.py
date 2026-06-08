@@ -3570,8 +3570,42 @@ def _maybe_large_sheet_block(
     if use_existing and has_artifact and pe_path.exists():
         pe = _read_json_file(pe_path) or {}
         diag = _read_json_file(diag_path) or (summary.get("diagnostics") or {})
-        body = ls_mod.build_large_sheet_embed_summary(
-            pe, diag, json_path=str(pe_path), md_path=str(md_art))
+        # max_circuits — сколько цепей видит Opus (default 12). max_chars
+        # масштабируем под него, иначе таблица из >12 цепей обрежется по символам.
+        mc = ls_mod.cfg_md_max_circuits()
+        if ls_mod.md_rich_render_enabled():
+            # rich-рендер (default OFF): инженерные секции из page_enriched
+            # (режимы щитов, breaker_params, ТТ/учёт, АУКРМ/вводы, notes>5,
+            # visible_text) — закрывает потерю на md_render. Qwen/Opus не зовём.
+            body = ls_mod.build_large_sheet_rich_embed_summary(
+                pe, diag, json_path=str(pe_path), md_path=str(md_art),
+                max_circuits=mc, max_notes=ls_mod.cfg_md_max_notes(),
+                max_chars=ls_mod.cfg_md_rich_max_chars())
+            # Feeder/consumer matching (default OFF). Только на стороне NEW
+            # (right), чтобы не дублировать секцию в обоих enriched MD: матчер
+            # сравнивает OLD(left)↔NEW(right), результат одинаков. Загружает
+            # противоположную сторону из готового page_enriched.json (Qwen/Opus
+            # не зовём). Любая ошибка → секция не добавляется (fail-soft).
+            if str(side).lower() == "right":
+                try:
+                    from . import large_sheet_feeder_matching as fm_mod
+                    want_cand = fm_mod.feeder_candidate_changes_enabled()
+                    if fm_mod.feeder_matching_enabled() or want_cand:
+                        left_pe_path = paths_mod.large_sheet_artifact_path(
+                            session_id, pair_id, "left", page, "page_enriched.json")
+                        left_pe = _read_json_file(left_pe_path) or {}
+                        # таблица сопоставления + (опц.) секция кандидатов
+                        # пофидерных изменений после неё.
+                        sec = fm_mod.feeder_md_for_pair(
+                            left_pe, pe, include_candidates=want_cand)
+                        if sec:
+                            body = f"{body}\n\n{sec}"
+                except Exception:  # noqa: BLE001 — matching не должен валить enrich
+                    logger.debug("feeder matching section failed", exc_info=True)
+        else:
+            body = ls_mod.build_large_sheet_embed_summary(
+                pe, diag, json_path=str(pe_path), md_path=str(md_art),
+                max_circuits=mc, max_chars=max(6000, mc * 150 + 3000))
         # Синтетический `description` с diff_anchors — чтобы буквальные
         # large-sheet маркировки попали в IMAGE_DIFF_INDEX через общий
         # _extract_anchors_from_description (у large-sheet нет Qwen-описания).
