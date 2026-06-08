@@ -565,6 +565,69 @@ def list_jobs(session_id: str) -> list[dict]:
     return out
 
 
+def _iso_dur_sec(start: Optional[str], end: Optional[str]) -> Optional[float]:
+    """Длительность в секундах между двумя ISO-таймстампами; None если нет данных."""
+    if not start or not end:
+        return None
+    try:
+        a = datetime.fromisoformat(str(start).replace("Z", "+00:00"))
+        b = datetime.fromisoformat(str(end).replace("Z", "+00:00"))
+    except (ValueError, TypeError):
+        return None
+    d = (b - a).total_seconds()
+    return round(d, 1) if d >= 0 else None
+
+
+def latest_pair_timings(session_id: str) -> dict:
+    """Для каждой пары — Qwen/Opus timing из САМОГО СВЕЖЕГО qopipe job, где у
+    пары есть хотя бы один timestamp (т.е. она реально прогонялась).
+
+    Назначение: показать колонки 🟦 Qwen / 🟪 Opus в таблице пар ПОСЛЕ refresh
+    страницы, когда in-memory job на фронте уже потерян. Читает только
+    маленькие job-json (list_jobs), без тяжёлых Qwen/tile-артефактов.
+
+    Возвращает `{pair_id: {qwen_status, qwen_started_at, qwen_finished_at,
+    qwen_duration_sec, opus_status, opus_started_at, opus_finished_at,
+    opus_duration_sec, status, changes_count, job_id, job_status, updated_at}}`.
+    """
+    jobs = list_jobs(session_id)
+    # По возрастанию created_at → более свежий job перезаписывает старый.
+    jobs.sort(key=lambda j: (j.get("created_at") or j.get("updated_at") or ""))
+    out: dict = {}
+    for job in jobs:
+        jid = job.get("job_id")
+        jstatus = job.get("status")
+        upd = job.get("updated_at")
+        for it in job.get("items") or []:
+            pid = it.get("pair_id")
+            if not pid:
+                continue
+            # пара числится в этом job только если реально стартовала (есть ts)
+            if not (it.get("qwen_started_at") or it.get("opus_started_at")):
+                continue
+            out[str(pid)] = {
+                "pair_id": str(pid),
+                "qwen_status": it.get("qwen_status"),
+                "qwen_started_at": it.get("qwen_started_at"),
+                "qwen_finished_at": it.get("qwen_finished_at"),
+                "qwen_duration_sec": _iso_dur_sec(
+                    it.get("qwen_started_at"), it.get("qwen_finished_at")),
+                "opus_status": it.get("opus_status"),
+                "opus_started_at": it.get("opus_started_at"),
+                "opus_finished_at": it.get("opus_finished_at"),
+                "opus_duration_sec": _iso_dur_sec(
+                    it.get("opus_started_at"), it.get("opus_finished_at")),
+                "status": it.get("status"),
+                "changes_count": it.get("changes_count"),
+                "qwen_error": it.get("qwen_error"),
+                "opus_error": it.get("opus_error"),
+                "job_id": jid,
+                "job_status": jstatus,
+                "updated_at": upd,
+            }
+    return out
+
+
 def _maybe_mark_interrupted(session_id: str, job: dict) -> dict:
     """If a job claims running/queued but no live asyncio.Task exists (uvicorn
     restart/crash), mark it failed_interrupted so the UI can resume."""
