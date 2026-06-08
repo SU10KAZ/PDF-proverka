@@ -155,6 +155,43 @@ def cfg_llm_max_tokens() -> Optional[int]:
         return None
 
 
+def cfg_md_max_circuits() -> int:
+    """Сколько цепей large-sheet встраивать в enriched MD (вход Opus).
+
+    Default 12 — прежнее поведение. Полный фидер-лист всегда есть в
+    ``page_enriched.json``, но Opus читает ТОЛЬКО enriched MD, поэтому при 12 он
+    видит лишь первые 12 из N цепей и не может делать пофидерный diff (схлопывает
+    в одно «структура переработана»). Поднять (напр. 80), чтобы Opus видел весь
+    фидер-лист. Связанный ``max_chars`` масштабируется в call-site, чтобы 80 цепей
+    не обрезались по символам."""
+    return max(1, _env_int("STAGE_COMPARISON_LARGE_SHEET_MD_MAX_CIRCUITS", 12))
+
+
+def md_rich_render_enabled() -> bool:
+    """Rich-рендер large-sheet enriched MD (default OFF → прежнее поведение).
+
+    При OFF в MD идёт прежняя компактная сводка (таблица id/breaker/cable/load/P/I
+    + notes[:N]). При ON дополнительно рендерятся инженерные секции из полей
+    page_enriched, которые иначе теряются на md_render: режимы щитов
+    (scheme_graph.nodes.parameters.mode_*), breaker_params/conflicts, учёт (ТТ,
+    Меркурий), компенсация/вводы (АУКРМ, шинопровод, QF, УЗИП, ГЗШ) из visible_text.
+    Qwen/Opus не задействуются — это чистый рендер уже извлечённого JSON."""
+    return _env_bool("STAGE_COMPARISON_LARGE_SHEET_MD_RICH_RENDER_ENABLED", False)
+
+
+def cfg_md_max_notes() -> int:
+    """Лимит примечаний (notes) в large-sheet MD. Default 5 — прежнее поведение
+    (``notes[:5]``). При rich-рендере полезно поднять (напр. 80), т.к. у плотных
+    ГРЩ-листов десятки примечаний с инженерными деталями."""
+    return max(0, _env_int("STAGE_COMPARISON_LARGE_SHEET_MD_MAX_NOTES", 5))
+
+
+def cfg_md_rich_max_chars() -> int:
+    """Жёсткий потолок размера rich-сводки (символы). Default 40000 — с запасом
+    под полный инженерный набор, всё ещё << лимита Opus (600K)."""
+    return max(6000, _env_int("STAGE_COMPARISON_LARGE_SHEET_MD_RICH_MAX_CHARS", 40000))
+
+
 # ─── Marker dictionaries (для detection и zone-hint, без ML) ────────────────
 
 _ELECTRICAL_MARKERS = (
@@ -1518,6 +1555,206 @@ def build_large_sheet_embed_summary(
     return body
 
 
+# ─── Rich render (default-OFF, flag-gated) ──────────────────────────────────
+
+# Ключевые слова для секции F (visible_text snippets) и метеринга/core-systems.
+_RICH_FOCUS_KEYWORDS = (
+    "вру", "грщ", "ввру", "итп", "хц", "хладоцентр", "хм", "чиллер", "гвс",
+    "бак", "апт", "нст", "хвс", "водоснабж", "автостоян", "меркурий", "аукрм",
+    "квар", "лето", "зима", "шинопровод", "узип", "гзш", "дсуп", "/5",
+)
+_RICH_METER_RE = re.compile(
+    r"меркурий|wh\d|\bтт\b|\bта\d|\d+\s*/\s*5|тшп|испытательн|аскуэ|узо|"
+    r"счетчик|учет",
+    re.IGNORECASE,
+)
+_RICH_CORE_RE = re.compile(
+    r"шинопровод|узип|гзш|дсуп|аукрм|квар|секцион|\bвво[дн]|\bqf\d|\bqs\d|"
+    r"трансформатор|тп\b|молниез|заземл",
+    re.IGNORECASE,
+)
+
+
+def _rich_mode_cell(mode: Any) -> str:
+    """`{power_kw, current_A}` → 'P / I' компактно ('' если нет)."""
+    if not isinstance(mode, dict):
+        return ""
+    p = mode.get("power_kw")
+    i = mode.get("current_A", mode.get("current_a"))
+    if p is None and i is None:
+        return ""
+    return f"{'' if p is None else p} / {'' if i is None else i}"
+
+
+def _rich_circuit_alts(circuit: dict) -> str:
+    """Сжатый список альтернативных значений (conflicts) по инженерным полям."""
+    alts: list[str] = []
+    for cf in circuit.get("conflicts") or []:
+        fld = cf.get("field")
+        if fld in ("breaker_params", "calculated_current_a", "calculated_power_kw",
+                   "cable", "load_name"):
+            vals = [str(v) for v in (cf.get("values") or []) if str(v).strip()]
+            if len(vals) > 1:
+                alts.append(f"{fld}: {' | '.join(vals[:3])}")
+    return "; ".join(alts[:3])
+
+
+def _rich_dedup_text(items: list[Any], limit: int) -> list[str]:
+    out: list[str] = []
+    seen: set[str] = set()
+    for it in items:
+        s = re.sub(r"\s+", " ", str(it)).strip()
+        key = s.lower()
+        if not s or key in seen:
+            continue
+        seen.add(key)
+        out.append(s)
+        if len(out) >= limit:
+            break
+    return out
+
+
+def build_large_sheet_rich_embed_summary(
+    page_enriched: dict,
+    diagnostics: dict,
+    *,
+    json_path: str = "",
+    md_path: str = "",
+    max_circuits: int = 80,
+    max_notes: int = 80,
+    max_chars: int = 40000,
+    max_visible: int = 60,
+) -> str:
+    """Rich-сводка большого листа: компактные инженерные таблицы из УЖЕ
+    извлечённого ``page_enriched`` (Qwen/Opus НЕ вызываются).
+
+    Закрывает основной канал потери (md_render): помимо базовой таблицы цепей
+    рендерит режимы щитов (A/B), учёт (C), компенсацию/вводы (D), notes (E),
+    visible_text/conflicts по ключевым словам (F). Только таблицы/списки, без
+    длинной прозы. Жёстко ограничена ``max_chars``."""
+    pe = page_enriched or {}
+    diag = diagnostics or {}
+    det = pe.get("detection") or {}
+    circuits = pe.get("circuits") or []
+    tb = pe.get("title_block") or {}
+    notes = pe.get("notes") or []
+    nodes = ((pe.get("scheme_graph") or {}).get("nodes")) or []
+    visible = pe.get("visible_text") or []
+
+    L: list[str] = []
+    L.append("### Большой лист (Large Sheet Enrichment, rich)")
+    L.append("")
+    L.append("- source: large_sheet_enrichment | render: rich")
+    L.append(f"- sheet_kind: {det.get('sheet_kind', 'unknown')} | "
+             f"format: {det.get('format_hint')} | mode: {pe.get('mode', 'unknown')}")
+    if tb:
+        keys = [k for k in ("doc_code", "section_name", "stage", "sheet",
+                            "sheets_total", "sheet_name", "organization", "format")
+                if tb.get(k)]
+        if keys:
+            L.append("- title_block: " + "; ".join(f"{k}={tb.get(k)}" for k in keys))
+
+    # ── A. Rich feeders/circuits table ──────────────────────────────
+    L.append("")
+    shown = min(len(circuits), max_circuits)
+    L.append(f"#### A. Цепи/фидеры (rich): {len(circuits)} (показаны {shown})")
+    if circuits:
+        L.append("| id | потребитель | автомат | параметры автомата | кабель | P,кВт | I,А | фаза | альтернативы(conflicts) |")
+        L.append("|---|---|---|---|---|---|---|---|---|")
+        for c in circuits[:max_circuits]:
+            L.append("| {id} | {ld} | {b} | {bp} | {cab} | {p} | {i} | {ph} | {alt} |".format(
+                id=c.get("id", ""), ld=c.get("load_name", ""),
+                b=c.get("breaker", ""), bp=c.get("breaker_params", ""),
+                cab=c.get("cable", ""),
+                p=c.get("calculated_power_kw", c.get("installed_power_kw", "")),
+                i=c.get("calculated_current_a", ""), ph=c.get("phase", ""),
+                alt=_rich_circuit_alts(c)))
+        if len(circuits) > max_circuits:
+            L.append(f"… ещё {len(circuits) - max_circuits} цепей — в page_enriched.json")
+
+    # ── B. Mode summary (щиты с режимами normal/emergency/fire) ──────
+    mode_nodes = [n for n in nodes
+                  if any(str(k).startswith("mode_") for k in (n.get("parameters") or {}))]
+    if mode_nodes:
+        L.append("")
+        L.append(f"#### B. Режимы щитов (раб./авар./пож.): {len(mode_nodes)}")
+        L.append("| щит | тип | раб. P/I | авар. P/I | пож. P/I |")
+        L.append("|---|---|---|---|---|")
+        for n in mode_nodes[:40]:
+            p = n.get("parameters") or {}
+            L.append("| {lab} | {t} | {mn} | {me} | {mf} |".format(
+                lab=n.get("label", n.get("id", "")), t=n.get("type", ""),
+                mn=_rich_mode_cell(p.get("mode_normal")),
+                me=_rich_mode_cell(p.get("mode_emergency")),
+                mf=_rich_mode_cell(p.get("mode_fire"))))
+
+    # ── C. Metering summary (ТТ, Меркурий, ИК, АСКУЭ) ────────────────
+    meter_lines = _rich_dedup_text(
+        [t for t in visible if _RICH_METER_RE.search(str(t))], 30)
+    if meter_lines:
+        L.append("")
+        L.append(f"#### C. Учёт/ТТ/счётчики: {len(meter_lines)}")
+        for s in meter_lines:
+            L.append(f"- {s[:140]}")
+
+    # ── D. Core systems / compensation (АУКРМ, шинопровод, QF, УЗИП…) ─
+    core_lines = _rich_dedup_text(
+        [t for t in visible if _RICH_CORE_RE.search(str(t))], 30)
+    core_labels = _rich_dedup_text(
+        [f"{n.get('label')} [{n.get('type')}]" for n in nodes
+         if n.get("type") in ("transformer_station", "busbar", "compensation")
+         or _RICH_CORE_RE.search(str(n.get("label") or ""))], 20)
+    if core_lines or core_labels:
+        L.append("")
+        L.append(f"#### D. Вводы/компенсация/системы: {len(core_lines) + len(core_labels)}")
+        for s in core_labels:
+            L.append(f"- узел: {s[:120]}")
+        for s in core_lines:
+            L.append(f"- {s[:140]}")
+
+    # ── E. Notes (configurable, не [:5]) ────────────────────────────
+    if notes and max_notes > 0:
+        shown_n = min(len(notes), max_notes)
+        L.append("")
+        L.append(f"#### E. Примечания: {len(notes)} (показаны {shown_n})")
+        for n in notes[:max_notes]:
+            L.append(f"- {str(n)[:200]}")
+
+    # ── F. Visible_text по ключевым словам + числовые conflicts ──────
+    focus = []
+    for t in visible:
+        s = str(t).lower()
+        if any(kw in s for kw in _RICH_FOCUS_KEYWORDS):
+            focus.append(t)
+    focus_lines = _rich_dedup_text(focus, max_visible)
+    if focus_lines:
+        L.append("")
+        L.append(f"#### F. Ключевые надписи (visible_text): {len(focus_lines)}")
+        for s in focus_lines:
+            L.append(f"- {s[:160]}")
+
+    # ── Диагностика + пути ──────────────────────────────────────────
+    L.append("")
+    L.append("#### Диагностика")
+    for k in ("tiles_total", "tiles_processed", "tiles_failed", "words_assigned_percent",
+              "circuits_detected", "equipment_detected", "connections_detected",
+              "conflicts_count", "circuits_raw_count", "circuits_merged_count",
+              "weak_id_count", "overmerge_prevented_count", "conflict_groups_count"):
+        if k in diag:
+            L.append(f"- {k}: {diag[k]}")
+    L.append("")
+    if json_path:
+        L.append(f"- page_enriched.json: {json_path}")
+    if md_path:
+        L.append(f"- page_enriched.md: {md_path}")
+
+    body = "\n".join(L)
+    if len(body) > max_chars:
+        body = body[:max_chars] + (
+            f"\n…(обрезано до {max_chars} символов; полная сводка — в page_enriched.json/md)\n")
+    return body
+
+
 def build_large_sheet_diff_anchors(
     page_enriched: dict,
     *,
@@ -2204,6 +2441,10 @@ __all__ = [
     "should_route_to_large_sheet", "is_weak_circuit_id",
     "build_tile_prompt", "merge_tile_results", "build_page_enriched_md",
     "build_large_sheet_embed_summary",
+    "build_large_sheet_rich_embed_summary",
+    "md_rich_render_enabled",
+    "cfg_md_max_notes",
+    "cfg_md_rich_max_chars",
     "build_diagnostics", "run_large_sheet_enrichment",
     "run_large_sheet_enrichment_live", "compute_tile_cache_key",
     "read_large_sheet_summary", "scan_pair_side_for_large_sheets",

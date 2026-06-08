@@ -3570,8 +3570,21 @@ def _maybe_large_sheet_block(
     if use_existing and has_artifact and pe_path.exists():
         pe = _read_json_file(pe_path) or {}
         diag = _read_json_file(diag_path) or (summary.get("diagnostics") or {})
-        body = ls_mod.build_large_sheet_embed_summary(
-            pe, diag, json_path=str(pe_path), md_path=str(md_art))
+        # max_circuits — сколько цепей видит Opus (default 12). max_chars
+        # масштабируем под него, иначе таблица из >12 цепей обрежется по символам.
+        mc = ls_mod.cfg_md_max_circuits()
+        if ls_mod.md_rich_render_enabled():
+            # rich-рендер (default OFF): инженерные секции из page_enriched
+            # (режимы щитов, breaker_params, ТТ/учёт, АУКРМ/вводы, notes>5,
+            # visible_text) — закрывает потерю на md_render. Qwen/Opus не зовём.
+            body = ls_mod.build_large_sheet_rich_embed_summary(
+                pe, diag, json_path=str(pe_path), md_path=str(md_art),
+                max_circuits=mc, max_notes=ls_mod.cfg_md_max_notes(),
+                max_chars=ls_mod.cfg_md_rich_max_chars())
+        else:
+            body = ls_mod.build_large_sheet_embed_summary(
+                pe, diag, json_path=str(pe_path), md_path=str(md_art),
+                max_circuits=mc, max_chars=max(6000, mc * 150 + 3000))
         # Синтетический `description` с diff_anchors — чтобы буквальные
         # large-sheet маркировки попали в IMAGE_DIFF_INDEX через общий
         # _extract_anchors_from_description (у large-sheet нет Qwen-описания).
