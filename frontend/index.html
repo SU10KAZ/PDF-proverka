@@ -5238,223 +5238,6 @@
                         <span v-if="scConfirmAllError" style="color:#b91c1c">{{ scConfirmAllError }}</span>
                     </div>
 
-                    <!-- ── «Распознать графику» (Qwen image enrichment по всей сессии) ── -->
-                    <div class="sc-card"
-                         style="background:#eef2ff; border-bottom:1px solid #c7d2fe; border-radius:0; padding:8px 12px; font-size:12px">
-                        <div style="display:flex; gap:10px; align-items:baseline; flex-wrap:wrap">
-                            <template v-if="!(scRecogJob && ['queued','running'].includes(scRecogJob.status))">
-                                <button class="btn btn-sm btn-primary"
-                                        :disabled="scRecogStarting || !scPairs.length"
-                                        @click="scRecogStart(false)"
-                                        :title="scRecogJob && ['failed_interrupted','cancelled'].includes(scRecogJob.status) ? 'Запустить заново с пропуском готовых сторон (cache hits сохранятся)' : 'Запустить Qwen image enrichment для всех PDF-пар сессии (готовые из cache)'">
-                                    {{ scRecogStarting ? 'Запуск…' : (scRecogJob && ['failed_interrupted','cancelled'].includes(scRecogJob.status) ? '▶ Продолжить (пропустить готовые)' : '🖼 Распознать графику') }}
-                                </button>
-                                <button v-if="scRecogJob && scRecogJob.aggregate && (scRecogJob.aggregate.error_pairs > 0 || scRecogJob.aggregate.partial_pairs > 0)"
-                                        class="btn btn-sm btn-secondary"
-                                        :disabled="scRecogStarting"
-                                        @click="scRecogRetryErrors()"
-                                        title="Перезапустить только реально проблемные пары (errors/partial). done_with_salvage не трогается — данные пригодны.">
-                                    Повторить ошибки ({{ (scRecogJob.aggregate.error_pairs || 0) + (scRecogJob.aggregate.partial_pairs || 0) }})
-                                </button>
-                            </template>
-                            <template v-else>
-                                <span style="color:#1d4ed8">Обработка…</span>
-                                <button class="btn btn-sm btn-secondary"
-                                        @click="scRecogCancel()"
-                                        title="Отменить выполнение задачи">Отменить</button>
-                            </template>
-                            <template v-if="!(scOpusJob && ['queued','running'].includes(scOpusJob.status))">
-                                <button v-if="scOpusJob && scOpusJob.status === 'failed_interrupted'"
-                                        class="btn btn-sm btn-primary"
-                                        :disabled="scOpusStarting || !scPairs.length || (scRecogJob && ['queued','running'].includes(scRecogJob.status))"
-                                        @click="scOpusContinue()"
-                                        title="Продолжить прерванный батч: пропустить пары с готовым сравнением, доделать остальные">
-                                    {{ scOpusStarting ? 'Запуск…' : '▶ Продолжить (пропустить готовые)' }}
-                                </button>
-                                <button v-else
-                                        class="btn btn-sm btn-primary"
-                                        :disabled="scOpusStarting || !scPairs.length || (scRecogJob && ['queued','running'].includes(scRecogJob.status)) || (scOpusPreflight && scOpusPreflight.will_run === 0)"
-                                        @click="scOpusStart()"
-                                        :title="scOpusStartTitle">
-                                    {{ scOpusStarting ? 'Запуск…' : '🔍 Проанализировать и сравнить' }}
-                                </button>
-                                <button v-if="scOpusJob && scOpusJob.aggregate && scOpusJob.aggregate.failed > 0"
-                                        class="btn btn-sm btn-secondary"
-                                        :disabled="scOpusStarting"
-                                        @click="scOpusRetryErrors()"
-                                        title="Повторить только пары, которые упали с ошибкой в прошлом прогоне">
-                                    Повторить ошибки ({{ scOpusJob.aggregate.failed }})
-                                </button>
-                            </template>
-                            <template v-else>
-                                <span style="color:#15803d">
-                                    Обработка…
-                                    <template v-if="scOpusJob && scOpusJob.aggregate && scOpusJob.aggregate.current_pair_index">
-                                        пара {{ scOpusJob.aggregate.current_pair_index }} / {{ scOpusJob.aggregate.total_pairs }}
-                                    </template>
-                                </span>
-                                <button class="btn btn-sm btn-secondary"
-                                        @click="scOpusCancel()"
-                                        title="Отменить выполнение задачи">Отменить</button>
-                            </template>
-                            <span v-if="scRecogJob && scRecogJob.aggregate"
-                                  style="margin-left:auto; color:#475569; white-space:nowrap; font-size:12px">
-                                Прошло: <strong>{{ scRecogElapsedLabel() }}</strong>
-                            </span>
-                        </div>
-                        <div v-if="scRecogError"
-                             style="margin-top:6px; background:#fee2e2; color:#991b1b; padding:6px 8px; border-radius:6px">
-                            {{ scRecogError }}
-                        </div>
-
-                        <div v-if="scRecogJob && scRecogJob.status === 'failed_interrupted'"
-                             style="margin-top:6px; background:#fff7ed; color:#9a3412; padding:8px 10px; border:1px solid #fed7aa; border-radius:6px; font-size:12px; display:flex; gap:8px; align-items:flex-start">
-                            <span style="font-size:16px; line-height:1">⚡</span>
-                            <div>
-                                <strong>Распознавание было прервано.</strong>
-                                {{ scRecogJob.error || 'Backend перезапустился во время выполнения, воркер был потерян.' }}
-                                Готовые стороны сохранены в кеше — нажмите «▶ Продолжить (пропустить готовые)», чтобы дописать остальные.
-                            </div>
-                        </div>
-
-                        <!-- Текущая пара/блок — заметный live-индикатор -->
-                        <div v-if="scRecogJob && scRecogJob.status === 'running' && scRecogJob.aggregate && scRecogJob.aggregate.current_pair_id"
-                             style="margin-top:8px; padding:8px 12px; background:linear-gradient(90deg,#eef2ff,#fff); border:1px solid #c7d2fe; border-radius:8px">
-                            <!-- Шапка: «Сейчас» + пара X/Y + ETA -->
-                            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px">
-                                <span style="display:inline-flex; align-items:center; gap:6px; font-weight:600; color:#3730a3">
-                                    <span class="sc-pulse" style="display:inline-block; width:10px; height:10px; background:#4f46e5; border-radius:50%"></span>
-                                    Идёт обработка
-                                </span>
-                                <span style="font-size:13px; color:#374151">
-                                    пара <strong>{{ scRecogPairProgress().current }}</strong> / {{ scRecogPairProgress().total }}
-                                </span>
-                                <span v-if="scRecogJob.aggregate.eta_sec"
-                                      style="font-size:12px; opacity:.65; margin-left:auto">
-                                    ETA ≈ {{ scFormatDuration(scRecogJob.aggregate.eta_sec) }}
-                                </span>
-                            </div>
-                            <!-- Сейчас обрабатываемая пара/сторона/страница -->
-                            <div style="font-family:monospace; font-size:13px; color:#1f2937; margin-bottom:6px; word-break:break-all">
-                                {{ scRecogJob.aggregate.current_pair_label || scRecogJob.aggregate.current_pair_id }}
-                                <span style="opacity:.6"> · сторона: <strong>{{ scRecogJob.aggregate.current_side }}</strong></span>
-                                <span v-if="scRecogJob.aggregate.current_page != null"
-                                      style="opacity:.6"> · стр. <strong>{{ scRecogJob.aggregate.current_page }}</strong></span>
-                                <span v-if="scRecogJob.aggregate.current_status_message"
-                                      style="opacity:.6"> · {{ scRecogJob.aggregate.current_status_message }}</span>
-                            </div>
-                            <!-- БОЛЬШОЙ прогресс по блокам ВНУТРИ текущей пары -->
-                            <div v-if="scRecogJob.aggregate.current_total_blocks > 0">
-                                <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:3px">
-                                    <span style="color:#3730a3">блок</span>
-                                    <span style="font-weight:600; color:#3730a3">
-                                        {{ scRecogJob.aggregate.current_block_index }} / {{ scRecogJob.aggregate.current_total_blocks }}
-                                    </span>
-                                </div>
-                                <div style="height:14px; background:#e0e7ff; border-radius:7px; overflow:hidden; box-shadow:inset 0 1px 2px rgba(0,0,0,.08)">
-                                    <div :style="{
-                                            width: Math.min(100, Math.round(100 * (scRecogJob.aggregate.current_block_index / Math.max(1, scRecogJob.aggregate.current_total_blocks))) ) + '%',
-                                            height: '100%',
-                                            background: 'linear-gradient(90deg,#4f46e5,#6366f1)',
-                                            transition: 'width 0.4s'
-                                         }"></div>
-                                </div>
-                            </div>
-                            <div v-else style="font-size:12px; opacity:.6">
-                                подсчитываю блоки текущей пары…
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <!-- ── Opus session batch — статус (кнопка перенесена в шапку Qwen-карточки выше) ── -->
-                    <div class="sc-card"
-                         style="background:#f0fdf4; border-bottom:1px solid #bbf7d0; border-radius:0; padding:10px 14px; font-size:12px">
-                        <!-- Banner: batch был прерван (uvicorn restart / crash) -->
-                        <div v-if="scOpusJob && scOpusJob.status === 'failed_interrupted'"
-                             style="margin-top:6px; background:#fff7ed; color:#9a3412; padding:8px 10px; border:1px solid #fed7aa; border-radius:6px; font-size:12px; display:flex; gap:8px; align-items:flex-start">
-                            <span style="font-size:16px; line-height:1">⚡</span>
-                            <div>
-                                <strong>Сравнение было прервано.</strong>
-                                {{ scOpusJob.error || 'Backend перезапустился во время выполнения, воркер был потерян.' }}
-                                Готовые пары сохранены — нажмите «▶ Продолжить (пропустить готовые)», чтобы доделать остальные.
-                            </div>
-                        </div>
-
-                        <!-- Warning: Qwen ещё идёт -->
-                        <div v-if="scRecogJob && ['queued','running'].includes(scRecogJob.status)"
-                             style="margin-top:6px; background:#fef3c7; color:#92400e; padding:6px 8px; border-radius:6px; font-size:12px">
-                            Сначала дождитесь завершения распознавания графики.
-                        </div>
-
-                        <!-- Warning: enriched MD ещё не готов хотя бы по одной паре -->
-                        <div v-if="scOpusPreflight && scOpusPreflight.skip_not_ready > 0"
-                             style="margin-top:6px; background:#fef3c7; color:#92400e; padding:6px 8px; border-radius:6px; font-size:12px">
-                            Не готово к сравнению: <strong>{{ scOpusPreflight.skip_not_ready }}</strong> пар без enriched MD. Будут пропущены.
-                        </div>
-
-                        <!-- Warning: canonical конфигурация -->
-                        <div v-if="scSavedConfig && scSavedConfig.saved && scSavedConfig.canonical_session_id && scSession && scSavedConfig.canonical_session_id !== scSession.id"
-                             style="margin-top:6px; background:#fef3c7; color:#92400e; padding:6px 8px; border-radius:6px; font-size:12px">
-                            Текущая сессия не каноничная. Если вы меняли связи блоков / порядок / disabled — сохраните как каноничную, иначе результат может быть устаревшим.
-                        </div>
-
-                        <div v-if="scOpusError"
-                             style="margin-top:6px; background:#fee2e2; color:#991b1b; padding:6px 8px; border-radius:6px">
-                            {{ scOpusError }}
-                        </div>
-
-                        <!-- Preflight сводка (до запуска) -->
-                        <div v-if="scOpusPreflight && !scOpusJob"
-                             style="margin-top:8px; display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:6px 14px; font-size:12px">
-                            <div>всего пар: <strong>{{ scOpusPreflight.total_pairs }}</strong></div>
-                            <div style="color:#15803d">будет запущено: <strong>{{ scOpusPreflight.will_run }}</strong></div>
-                            <div v-if="scOpusPreflight.skip_done" style="color:#1d4ed8" title="Comparison уже сделан, force_compare=false">уже готово: <strong>{{ scOpusPreflight.skip_done }}</strong></div>
-                            <div v-if="scOpusPreflight.skip_not_ready" style="color:#92400e">не готовы: <strong>{{ scOpusPreflight.skip_not_ready }}</strong></div>
-                            <div v-if="scOpusPreflight.skip_too_large" style="color:#991b1b"
-                                 title="Большие пары пропускаются в общем сравнении. В таблице ниже нажмите бейдж «⚠ файл большой ▸ fallback» в колонке «Сравнение», чтобы прогнать пару через Opus fallback (evidence_first) на готовых enriched MD.">
-                                too_large: <strong>{{ scOpusPreflight.skip_too_large }}</strong>
-                                <span style="opacity:.7; font-weight:400"> — запускайте по бейджу ниже</span>
-                            </div>
-                        </div>
-
-                        <!-- Текущая пара (live) -->
-                        <div v-if="scOpusJob && scOpusJob.status === 'running' && scOpusJob.aggregate && scOpusJob.aggregate.current_pair_id"
-                             style="margin-top:10px; padding:12px 14px; background:linear-gradient(90deg,#ecfdf5,#fff); border:1px solid #bbf7d0; border-radius:8px">
-                            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px">
-                                <span style="display:inline-flex; align-items:center; gap:6px; font-weight:600; color:#15803d">
-                                    <span class="sc-pulse" style="display:inline-block; width:10px; height:10px; background:#16a34a; border-radius:50%"></span>
-                                    Идёт сравнение
-                                </span>
-                                <span style="font-size:13px; color:#374151">
-                                    пара <strong>{{ scOpusJob.aggregate.current_pair_index }}</strong> / {{ scOpusJob.aggregate.total_pairs }}
-                                </span>
-                                <!-- fallback (evidence_first): прогноз времени вместо статичного comparing -->
-                                <span v-if="scOpusFallbackLabel()" style="font-size:12px; margin-left:auto; display:inline-flex; align-items:center; gap:8px"
-                                      :title="scOpusFallbackLabel().title">
-                                    <code style="color:#7c3aed; background:#f5f3ff; padding:1px 6px; border-radius:4px">{{ scOpusFallbackLabel().text }}</code>
-                                    <span v-if="scOpusFallbackLabel().eta" style="color:#6d28d9; font-weight:600">осталось ~{{ scOpusFallbackLabel().eta }}</span>
-                                </span>
-                                <span v-else style="font-size:12px; opacity:.65; margin-left:auto" v-show="scOpusJob.aggregate.current_pair_status">
-                                    status: <code>{{ scOpusJob.aggregate.current_pair_status }}</code>
-                                </span>
-                            </div>
-                            <div style="font-family:monospace; font-size:13px; color:#1f2937; word-break:break-all">
-                                {{ scOpusCurrentPairLabel() }}
-                            </div>
-                            <!-- прогресс-бар по чанкам fallback -->
-                            <div v-if="scOpusFallbackLabel()" style="margin-top:8px">
-                                <div style="height:6px; background:#ede9fe; border-radius:3px; overflow:hidden">
-                                    <div :style="{width: scOpusFallbackLabel().pct + '%', height:'100%', background:'#7c3aed', transition:'width .4s'}"></div>
-                                </div>
-                                <div v-if="scOpusFallbackLabel().title" style="font-size:11px; color:#6b7280; margin-top:3px">
-                                    текущий раздел: {{ scOpusFallbackLabel().title }}
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
                     <!-- Qwen→Opus pipeline toolbar -->
                     <div v-if="scPairs && scPairs.length" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px; padding:8px 10px; background:#f8fafc; border:1px solid #e5e7eb; border-radius:6px">
                         <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; font-weight:500">
@@ -6401,7 +6184,7 @@
                     <!-- Empty state: pair выбрана, но анализ ещё не запускался -->
                     <div v-if="!scUnifiedFlatLoading && !scUnifiedShowAllPairs && scActivePair && scUnifiedFlat && (!scUnifiedFlat.items || !scUnifiedFlat.items.length)"
                          class="empty-state" style="padding:14px 0; font-size:13px; opacity:.85">
-                        Для выбранной PDF-пары анализ ещё не запускался. Перейдите на этап «1. Загрузка документации» и нажмите «🔍 Проанализировать и сравнить» — будут обработаны все готовые пары сессии.
+                        Для выбранной PDF-пары анализ ещё не запускался. Перейдите на этап «1. Загрузка документации», выберите пары и нажмите «Обработать выбранные».
                     </div>
 
 
@@ -6419,7 +6202,7 @@
                     <!-- Empty state (для всей сессии — фолбэк) -->
                     <div v-if="scUnifiedShowAllPairs && scUnifiedFlat && (!scUnifiedFlat.items || !scUnifiedFlat.items.length)"
                          class="empty-state" style="padding:14px 0; font-size:13px">
-                        Расхождений пока нет. Перейдите на этап «1. Загрузка документации» и запустите «🔍 Проанализировать и сравнить» по всей сессии.
+                        Расхождений пока нет. Перейдите на этап «1. Загрузка документации», выберите пары и запустите «Обработать выбранные».
                     </div>
 
                     <!-- Unified Excel-style table (номер / место / изменение / было / стало / влияние) -->
@@ -6659,7 +6442,7 @@
                             </strong>
                             <span v-if="!(scMdEnrichmentSummary && (scMdEnrichmentSummary.left||{}).status==='done' && (scMdEnrichmentSummary.right||{}).status==='done')"
                                   style="color:#92400e">
-                                Перейдите на этап «1. Загрузка документации» и нажмите <strong>«Распознать графику»</strong>, чтобы Qwen сформировал enriched MD по всей сессии.
+                                Перейдите на этап «1. Загрузка документации», выберите пары и нажмите <strong>«Обработать выбранные»</strong>, чтобы Qwen сформировал enriched MD.
                             </span>
                             <div style="flex:1"></div>
                             <button class="btn btn-sm btn-secondary"
@@ -6669,7 +6452,7 @@
                             <button class="btn btn-sm btn-secondary"
                                     :disabled="scMdEnrichmentLoading || scMdEnrichmentRunning"
                                     @click="scMdEnrichmentRequestConfirm()"
-                                    title="Manual retry: запустить Qwen только для этой пары. Основной сценарий — кнопка «Распознать графику» на этапе 1.">
+                                    title="Manual retry: запустить Qwen только для этой пары. Основной сценарий — «Обработать выбранные» на этапе 1.">
                                 Перезапустить для пары
                             </button>
                         </div>

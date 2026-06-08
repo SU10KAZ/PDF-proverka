@@ -11418,92 +11418,6 @@ const app = createApp({
             try { await scLoadMdEnrichmentSummary(); } catch (_) {}
         }
 
-        // ──────────────────────────────────────────────────────────────────
-        // Stage 1: «Распознать графику» — session-level Qwen enrichment
-        // ──────────────────────────────────────────────────────────────────
-        async function scRecogStart(force) {
-            if (!scSession.value || !scSession.value.id) return;
-            if (scRecogStarting.value) return;
-            scRecogStarting.value = true;
-            scRecogError.value = '';
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/md-enrichment-jobs`;
-                const r = await fetch(url, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        scope: 'session',
-                        side: 'both',
-                        force: !!force,
-                        confirm: true,
-                        skip_done: !force,
-                    }),
-                });
-                if (!r.ok) {
-                    const j = await r.json().catch(() => ({}));
-                    const msg = (j && j.detail && (j.detail.message || j.detail)) || ('HTTP ' + r.status);
-                    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
-                }
-                const job = await r.json();
-                scRecogJob.value = job;
-                scRecogStartedAtClient.value = Date.now();
-                if (job && job.id && (job.status === 'queued' || job.status === 'running')) {
-                    scRecogPoll(job.id);
-                }
-            } catch (e) {
-                scRecogError.value = String(e.message || e);
-            } finally {
-                scRecogStarting.value = false;
-            }
-        }
-
-        async function scRecogRetryErrors() {
-            // Перезапустить только пары, у которых есть РЕАЛЬНЫЕ ошибки/partial.
-            // done_with_salvage сюда НЕ попадает: данные пригодны, перегенерация
-            // дала бы лишь cache-hit для уже salvaged блоков. force=false →
-            // готовые блоки берутся из cache.
-            if (!scSession.value || !scRecogJob.value) return;
-            const agg = scRecogJob.value.aggregate || {};
-            const ps  = agg.pair_statuses || {};
-            const pairIds = Object.values(ps)
-                .filter(p => p && (p.status === 'error' || p.status === 'partial'))
-                .map(p => p.pair_id)
-                .filter(Boolean);
-            if (!pairIds.length) return;
-            scRecogStarting.value = true;
-            scRecogError.value = '';
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/md-enrichment-jobs`;
-                const r = await fetch(url, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        scope: 'selected',
-                        pair_ids: pairIds,
-                        side: 'both',
-                        force: false,
-                        confirm: true,
-                        skip_done: false,   // повторить именно эти пары, не пропускать
-                    }),
-                });
-                if (!r.ok) {
-                    const j = await r.json().catch(() => ({}));
-                    const msg = (j && j.detail && (j.detail.message || j.detail)) || ('HTTP ' + r.status);
-                    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
-                }
-                const job = await r.json();
-                scRecogJob.value = job;
-                scRecogStartedAtClient.value = Date.now();
-                if (job && job.id && (job.status === 'queued' || job.status === 'running')) {
-                    scRecogPoll(job.id);
-                }
-            } catch (e) {
-                scRecogError.value = String(e.message || e);
-            } finally {
-                scRecogStarting.value = false;
-            }
-        }
-
         async function scRecogPoll(jobId) {
             if (!scSession.value || !jobId) return;
             if (scRecogPolling.value) return;
@@ -11527,16 +11441,6 @@ const app = createApp({
             } finally {
                 scRecogPolling.value = false;
             }
-        }
-
-        async function scRecogCancel() {
-            const job = scRecogJob.value;
-            if (!job || !job.id || !scSession.value) return;
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/md-enrichment-jobs/${encodeURIComponent(job.id)}/cancel`;
-                const r = await fetch(url, {method: 'POST'});
-                if (r.ok) scRecogJob.value = await r.json();
-            } catch (_) { /* silent */ }
         }
 
         async function scRecogRestoreActive() {
@@ -12403,131 +12307,6 @@ const app = createApp({
             }
         }
 
-        async function scOpusStart() {
-            if (!scSession.value || !scSession.value.id) return;
-            if (scOpusStarting.value) return;
-            scOpusStarting.value = true;
-            scOpusError.value = '';
-            // Session-wide rerun перекрывает per-pair fallback-оверрайды.
-            scOpusFallbackByPair.value = {};
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/unified-analysis-jobs`;
-                const r = await fetch(url, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        scope: 'session',
-                        confirm: true,
-                        // Qwen НЕ запускаем — графика уже распознана отдельной
-                        // кнопкой. Если enriched MD нет — пара пропускается.
-                        force_enrichment: false,
-                        // force_compare=true: если ранее уже считали и
-                        // пользователь нажал снова — пересчитываем (canonical
-                        // конфигурация / block_links могли поменяться).
-                        force_compare: true,
-                        // Pre-flight фильтр: пропустить too_large / not_ready.
-                        skip_ineligible: true,
-                    }),
-                });
-                if (!r.ok) {
-                    const j = await r.json().catch(() => ({}));
-                    const msg = (j && j.detail && (j.detail.message || j.detail)) || ('HTTP ' + r.status);
-                    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
-                }
-                const job = await r.json();
-                scOpusJob.value = job;
-                scOpusStartedAtClient.value = Date.now();
-                if (job && job.id && (job.status === 'queued' || job.status === 'running')) {
-                    scOpusPoll(job.id);
-                }
-            } catch (e) {
-                scOpusError.value = String(e.message || e);
-            } finally {
-                scOpusStarting.value = false;
-            }
-        }
-
-        async function scOpusRetryErrors() {
-            if (!scSession.value || !scOpusJob.value) return;
-            const items = (scOpusJob.value.items || [])
-                .filter(it => it && it.status === 'failed' && it.pair_id)
-                .map(it => it.pair_id);
-            if (!items.length) return;
-            scOpusStarting.value = true;
-            scOpusError.value = '';
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/unified-analysis-jobs`;
-                const r = await fetch(url, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        scope: 'selected',
-                        pair_ids: items,
-                        confirm: true,
-                        force_enrichment: false,
-                        force_compare: true,
-                        skip_ineligible: true,
-                    }),
-                });
-                if (!r.ok) {
-                    const j = await r.json().catch(() => ({}));
-                    const msg = (j && j.detail && (j.detail.message || j.detail)) || ('HTTP ' + r.status);
-                    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
-                }
-                const job = await r.json();
-                scOpusJob.value = job;
-                scOpusStartedAtClient.value = Date.now();
-                if (job && job.id && (job.status === 'queued' || job.status === 'running')) {
-                    scOpusPoll(job.id);
-                }
-            } catch (e) {
-                scOpusError.value = String(e.message || e);
-            } finally {
-                scOpusStarting.value = false;
-            }
-        }
-
-        // Продолжить прерванный батч: пропустить пары с готовым comparison
-        // (force_compare=false → skip_done сработает), повторить остальные.
-        // Та же семантика, что и Qwen «▶ Продолжить (пропустить готовые)».
-        async function scOpusContinue() {
-            if (!scSession.value || !scSession.value.id) return;
-            if (scOpusStarting.value) return;
-            scOpusStarting.value = true;
-            scOpusError.value = '';
-            // Session-wide rerun перекрывает per-pair fallback-оверрайды.
-            scOpusFallbackByPair.value = {};
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/unified-analysis-jobs`;
-                const r = await fetch(url, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        scope: 'session',
-                        confirm: true,
-                        force_enrichment: false,
-                        force_compare: false,
-                        skip_ineligible: true,
-                    }),
-                });
-                if (!r.ok) {
-                    const j = await r.json().catch(() => ({}));
-                    const msg = (j && j.detail && (j.detail.message || j.detail)) || ('HTTP ' + r.status);
-                    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
-                }
-                const job = await r.json();
-                scOpusJob.value = job;
-                scOpusStartedAtClient.value = Date.now();
-                if (job && job.id && (job.status === 'queued' || job.status === 'running')) {
-                    scOpusPoll(job.id);
-                }
-            } catch (e) {
-                scOpusError.value = String(e.message || e);
-            } finally {
-                scOpusStarting.value = false;
-            }
-        }
-
         async function scOpusPoll(jobId) {
             if (!scSession.value || !jobId) return;
             if (scOpusPolling.value) return;
@@ -12655,16 +12434,6 @@ const app = createApp({
             } finally {
                 scOpusFallbackPolling.value = {...scOpusFallbackPolling.value, [pairId]: false};
             }
-        }
-
-        async function scOpusCancel() {
-            const job = scOpusJob.value;
-            if (!job || !job.id || !scSession.value) return;
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/unified-analysis-jobs/${encodeURIComponent(job.id)}/cancel`;
-                const r = await fetch(url, {method: 'POST'});
-                if (r.ok) scOpusJob.value = await r.json();
-            } catch (_) { /* silent */ }
         }
 
         async function scOpusRestoreActive() {
@@ -13600,7 +13369,6 @@ const app = createApp({
             scPollMdEnrichmentJob, scCancelMdEnrichmentJob, scRefreshMdEnrichmentJob,
             // Stage 1: «Распознать графику» (session-level Qwen enrichment job)
             scRecogJob, scRecogPolling, scRecogStarting, scRecogError,
-            scRecogStart, scRecogRetryErrors, scRecogCancel,
             scRecogRestoreActive, scRecogPairStatus, scRecogPairBadge,
             scRecogPairBlocks, scOpusPairBadge,
             scPairCompareStatus, scLoadPairCompareStatuses,
@@ -13609,7 +13377,6 @@ const app = createApp({
             // Stage 1: «Проанализировать и сравнить» (session-level Opus batch)
             scOpusJob, scOpusPolling, scOpusStarting, scOpusError,
             scOpusPreflight, scOpusPreflightLoading,
-            scOpusStart, scOpusRetryErrors, scOpusCancel, scOpusContinue,
             scOpusRestoreActive, scOpusLoadPreflight,
             scOpusElapsedLabel, scOpusCurrentPairLabel, scOpusStartTitle,
             scOpusFallbackLabel,
