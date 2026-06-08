@@ -238,7 +238,23 @@ def get_finding_block_map(
     *,
     version_id: Optional[str] = None,
 ) -> Optional[dict]:
-    """Маппинг finding_id → [block_ids] через совпадение страниц."""
+    """Маппинг finding_id → [block_ids] ТОЛЬКО по явной привязке к блоку.
+
+    Строгая привязка (требование: не путать общий лист/страницу с конкретным
+    графическим блоком). Замечание попадает в блок только если оно явно
+    ссылается именно на этот блок:
+
+      1. evidence[] с type="image" и block_id;
+      2. явные поля related_block_ids / source_block_ids;
+      3. явный block_id, упомянутый прямо в тексте замечания.
+
+    Page/sheet/document-level замечания без явной ссылки на блок (например,
+    замечания к общим данным, экспликациям, пояснительной записке) НЕ
+    привязываются к графическим блокам — они остаются только в общем списке
+    финальных замечаний проекта. Прежний page-fallback (привязка ко ВСЕМ блокам
+    страницы по совпадению листа/страницы) убран намеренно: именно он ошибочно
+    затаскивал текстовые замечания в карточки графических блоков.
+    """
     import re
 
     findings_path = _get_findings_path(project_id, version_id)
@@ -246,7 +262,9 @@ def get_finding_block_map(
     if findings_data is None:
         return None
 
-    blocks_by_page, block_info, all_block_ids = _load_blocks_data(project_id, version_id)
+    # blocks_by_page больше не используется для привязки (page-fallback убран),
+    # но _load_blocks_data остаётся источником all_block_ids / block_info.
+    _blocks_by_page, block_info, all_block_ids = _load_blocks_data(project_id, version_id)
     block_id_re = re.compile(r'\b([A-Z0-9]{3,5}-[A-Z0-9]{3,5}-[A-Z0-9]{2,4})\b')
 
     items = findings_data.get("findings", findings_data.get("items", []))
@@ -264,27 +282,30 @@ def get_finding_block_map(
         matched_blocks: list[str] = []
         seen: set[str] = set()
 
-        # 1. evidence array (наивысший приоритет — точная трассировка)
+        # 1. evidence[] с type="image" — точная трассировка к конкретному блоку.
         evidence = f.get("evidence")
         if evidence and isinstance(evidence, list):
             for ev in evidence:
-                raw_bid = ev.get("block_id", "")
-                bid = _norm_bid(raw_bid)
+                if not isinstance(ev, dict):
+                    continue
+                bid = _norm_bid(ev.get("block_id", ""))
                 if ev.get("type") == "image" and bid in all_block_ids and bid not in seen:
                     matched_blocks.append(bid)
                     seen.add(bid)
 
-        # 2. related_block_ids (fallback от evidence)
+        # 2. Явные поля привязки к блоку: related_block_ids + source_block_ids.
         if not matched_blocks:
-            related = f.get("related_block_ids")
-            if related and isinstance(related, list):
-                for raw_bid in related:
+            for field in ("related_block_ids", "source_block_ids"):
+                value = f.get(field)
+                if not isinstance(value, list):
+                    continue
+                for raw_bid in value:
                     bid = _norm_bid(raw_bid)
                     if bid in all_block_ids and bid not in seen:
                         matched_blocks.append(bid)
                         seen.add(bid)
 
-        # 2. Явные block_id в description (fallback)
+        # 3. Явный block_id, упомянутый прямо в тексте замечания.
         if not matched_blocks:
             desc = f.get("description", "")
             for m in block_id_re.finditer(desc):
@@ -293,14 +314,7 @@ def get_finding_block_map(
                     matched_blocks.append(bid)
                     seen.add(bid)
 
-        # 3. По страницам из sheet (последний fallback)
-        if not matched_blocks:
-            pages = _parse_pages_from_text(f.get("sheet") or "")
-            for page in sorted(pages):
-                for bid in blocks_by_page.get(page, []):
-                    if bid not in seen:
-                        matched_blocks.append(bid)
-                        seen.add(bid)
+        # Page/sheet fallback намеренно УДАЛЁН — см. docstring.
 
         if matched_blocks:
             result[fid] = matched_blocks
