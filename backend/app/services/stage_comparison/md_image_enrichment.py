@@ -3581,6 +3581,23 @@ def _maybe_large_sheet_block(
                 pe, diag, json_path=str(pe_path), md_path=str(md_art),
                 max_circuits=mc, max_notes=ls_mod.cfg_md_max_notes(),
                 max_chars=ls_mod.cfg_md_rich_max_chars())
+            # Feeder/consumer matching (default OFF). Только на стороне NEW
+            # (right), чтобы не дублировать секцию в обоих enriched MD: матчер
+            # сравнивает OLD(left)↔NEW(right), результат одинаков. Загружает
+            # противоположную сторону из готового page_enriched.json (Qwen/Opus
+            # не зовём). Любая ошибка → секция не добавляется (fail-soft).
+            if str(side).lower() == "right":
+                try:
+                    from . import large_sheet_feeder_matching as fm_mod
+                    if fm_mod.feeder_matching_enabled():
+                        left_pe_path = paths_mod.large_sheet_artifact_path(
+                            session_id, pair_id, "left", page, "page_enriched.json")
+                        left_pe = _read_json_file(left_pe_path) or {}
+                        sec = fm_mod.feeder_section_for_pair(left_pe, pe)
+                        if sec:
+                            body = f"{body}\n\n{sec}"
+                except Exception:  # noqa: BLE001 — matching не должен валить enrich
+                    logger.debug("feeder matching section failed", exc_info=True)
         else:
             body = ls_mod.build_large_sheet_embed_summary(
                 pe, diag, json_path=str(pe_path), md_path=str(md_art),
