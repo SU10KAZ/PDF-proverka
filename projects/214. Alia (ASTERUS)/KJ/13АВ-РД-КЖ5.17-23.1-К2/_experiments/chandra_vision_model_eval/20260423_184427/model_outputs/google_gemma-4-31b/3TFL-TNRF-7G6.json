@@ -1,8 +1,0 @@
-{
-  "ok": false,
-  "model": "google/gemma-4-31b",
-  "block_id": "3TFL-TNRF-7G6",
-  "elapsed_s": 100.672,
-  "error_type": "BadRequestError",
-  "error": "Error code: 400 - {'error': 'Invalid image detected at index 0 '}"
-}

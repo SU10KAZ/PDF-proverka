@@ -1,4 +1,0 @@
-profile,total_blocks,long_side_avg,long_side_median,long_side_p95,long_side_max,long_side_ge_1000,long_side_ge_1200,long_side_ge_1500,long_side_ge_2000,size_kb_avg,size_kb_median,size_kb_p95,size_kb_max,risk_heavy,risk_normal,risk_light,planned_total_batches,planned_avg_batch_size,planned_max_heavy,planned_median_batch_kb
-r800,215,842.7,800.0,988.3,2629,10,5,4,2,44.5,39.5,69.4,605.6,11,151,53,33,6.52,2,271.6
-r1000,215,1022.6,1000.0,1000.0,2629,215,5,4,2,56.1,50.2,91.6,605.6,11,151,53,33,6.52,2,354.0
-r1200,215,1216.5,1200.0,1200.0,2629,215,215,4,2,68.4,64.2,110.6,605.6,11,151,53,33,6.52,2,428.3

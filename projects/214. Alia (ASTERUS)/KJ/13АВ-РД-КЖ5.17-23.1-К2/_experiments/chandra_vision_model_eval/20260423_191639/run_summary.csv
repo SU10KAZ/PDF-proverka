@@ -1,2 +1,0 @@
-model,block_id,page,ok,elapsed_s,image_width,image_height,image_kb,native_crop,json_ok,key_values_count,relationships_count,possible_issues_count,unreadable_count,parse_error,error
-google/gemma-4-31b,A9M4-EJ7R-MKH,6,False,138.596,2143,1117,157.1,True,False,0,0,0,0,,Request timed out.

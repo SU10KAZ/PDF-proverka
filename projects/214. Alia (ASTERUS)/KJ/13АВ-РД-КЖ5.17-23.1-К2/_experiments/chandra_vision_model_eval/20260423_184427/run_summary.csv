@@ -1,4 +1,0 @@
-model,block_id,page,ok,elapsed_s,image_width,image_height,image_kb,native_crop,json_ok,key_values_count,relationships_count,possible_issues_count,unreadable_count,parse_error,error
-qwen/qwen3.6-35b-a3b,3TFL-TNRF-7G6,8,False,71.12,7887,7498,2335.7,True,False,0,0,0,0,,Error code: 400 - {'error': 'Invalid image detected at index 0 '}
-qwen/qwen3.6-27b,3TFL-TNRF-7G6,8,False,81.904,7887,7498,2335.7,True,False,0,0,0,0,,Error code: 400 - {'error': 'Invalid image detected at index 0 '}
-google/gemma-4-31b,3TFL-TNRF-7G6,8,False,100.672,7887,7498,2335.7,True,False,0,0,0,0,,Error code: 400 - {'error': 'Invalid image detected at index 0 '}
