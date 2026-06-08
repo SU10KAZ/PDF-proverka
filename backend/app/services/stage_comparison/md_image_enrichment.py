@@ -3589,11 +3589,15 @@ def _maybe_large_sheet_block(
             if str(side).lower() == "right":
                 try:
                     from . import large_sheet_feeder_matching as fm_mod
-                    if fm_mod.feeder_matching_enabled():
+                    want_cand = fm_mod.feeder_candidate_changes_enabled()
+                    if fm_mod.feeder_matching_enabled() or want_cand:
                         left_pe_path = paths_mod.large_sheet_artifact_path(
                             session_id, pair_id, "left", page, "page_enriched.json")
                         left_pe = _read_json_file(left_pe_path) or {}
-                        sec = fm_mod.feeder_section_for_pair(left_pe, pe)
+                        # таблица сопоставления + (опц.) секция кандидатов
+                        # пофидерных изменений после неё.
+                        sec = fm_mod.feeder_md_for_pair(
+                            left_pe, pe, include_candidates=want_cand)
                         if sec:
                             body = f"{body}\n\n{sec}"
                 except Exception:  # noqa: BLE001 — matching не должен валить enrich
