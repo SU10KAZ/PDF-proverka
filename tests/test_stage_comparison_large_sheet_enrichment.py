@@ -1230,3 +1230,153 @@ def test_apply_override_replaces_only_max_tokens(monkeypatch):
     assert out.max_continuations == base.max_continuations
     assert out.image_long_side == base.image_long_side
     assert out.model == base.model
+
+
+# ─── 10. large_sheet MD max_circuits override (default-off) ──────────────────
+
+
+def test_cfg_md_max_circuits_default_off(monkeypatch):
+    """10a. env не задан → 12 (прежнее поведение)."""
+    monkeypatch.delenv("STAGE_COMPARISON_LARGE_SHEET_MD_MAX_CIRCUITS", raising=False)
+    assert ls.cfg_md_max_circuits() == 12
+
+
+def test_cfg_md_max_circuits_set_and_garbage(monkeypatch):
+    """10b. заданный env читается; мусор → default 12 (fail-safe)."""
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_MD_MAX_CIRCUITS", "80")
+    assert ls.cfg_md_max_circuits() == 80
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_MD_MAX_CIRCUITS", "garbage")
+    assert ls.cfg_md_max_circuits() == 12
+
+
+def _pe_with_n_circuits(n: int) -> dict:
+    return {
+        "detection": {"sheet_kind": "electrical_single_line", "format_hint": "A1"},
+        "title_block": {"doc_code": "X", "sheet": "1"},
+        "circuits": [
+            {"id": f"ВРУ-{i}", "breaker": f"QF{i}", "cable": f"ППГнг-HF 5х{i}мм²",
+             "load_name": f"Потребитель {i}", "calculated_power_kw": i,
+             "calculated_current_a": i * 2, "merge_method": "strong_id",
+             "conflicts": []}
+            for i in range(1, n + 1)
+        ],
+    }
+
+
+def test_embed_summary_default_12_truncates():
+    """10c. при max_circuits=12 таблица обрезана и есть строка «первые 12»/«ещё»."""
+    pe = _pe_with_n_circuits(40)
+    body = ls.build_large_sheet_embed_summary(pe, {}, max_circuits=12, max_chars=6000)
+    assert "показаны первые 12" in body
+    assert "ещё 28 цепей" in body
+    assert "ВРУ-40" not in body  # 40-я цепь не попала
+
+
+def test_embed_summary_80_embeds_all_no_truncation():
+    """10d. при max_circuits=80 + масштабированном max_chars все цепи в MD,
+    нет «ещё … цепей» и нет посимвольной обрезки."""
+    n = 55
+    pe = _pe_with_n_circuits(n)
+    mc = 80
+    body = ls.build_large_sheet_embed_summary(
+        pe, {}, max_circuits=mc, max_chars=max(6000, mc * 150 + 3000))
+    assert f"показаны первые {n}" in body  # shown == все n
+    assert "ещё" not in body
+    assert "обрезано до" not in body
+    assert "ВРУ-55" in body  # последняя цепь попала
+
+
+# ─── 11. Rich render (default-off) ──────────────────────────────────────────
+
+
+def test_md_rich_render_disabled_by_default(monkeypatch):
+    """11a. флаг по умолчанию OFF; включается env'ом."""
+    monkeypatch.delenv("STAGE_COMPARISON_LARGE_SHEET_MD_RICH_RENDER_ENABLED", raising=False)
+    assert ls.md_rich_render_enabled() is False
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_MD_RICH_RENDER_ENABLED", "true")
+    assert ls.md_rich_render_enabled() is True
+
+
+def test_cfg_md_max_notes_default_and_set(monkeypatch):
+    """11b. notes-лимит default 5 (прежнее), env переопределяет, мусор → 5."""
+    monkeypatch.delenv("STAGE_COMPARISON_LARGE_SHEET_MD_MAX_NOTES", raising=False)
+    assert ls.cfg_md_max_notes() == 5
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_MD_MAX_NOTES", "80")
+    assert ls.cfg_md_max_notes() == 80
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_MD_MAX_NOTES", "xx")
+    assert ls.cfg_md_max_notes() == 5
+
+
+def _rich_pe():
+    """Синтетический page_enriched с полями, которые теряются в standard-рендере:
+    breaker_params, conflicts, scheme_graph.nodes.mode_*, visible_text (ТТ/Меркурий/
+    АУКРМ), >5 notes."""
+    return {
+        "detection": {"sheet_kind": "electrical_single_line", "format_hint": "A1"},
+        "title_block": {"doc_code": "X", "sheet": "1.1"},
+        "circuits": [
+            {"id": "ГРЩ1-РП1-5", "load_name": "Автостоянка", "breaker": "1QF5",
+             "breaker_params": "3P 320A 380В 40кА", "cable": "5х185мм²",
+             "calculated_power_kw": 62.5, "calculated_current_a": 103.9, "phase": "3",
+             "conflicts": [{"field": "calculated_current_a", "values": [103.9, 137.1]}]},
+            {"id": "ГРЩ1-РП1-12", "load_name": "Чиллер", "breaker": "1QF12",
+             "breaker_params": "3P 800A 720А", "cable": "5х50мм²",
+             "calculated_power_kw": 335.0, "calculated_current_a": 676.8, "phase": "3",
+             "conflicts": []},
+        ],
+        "scheme_graph": {"nodes": [
+            {"id": "VPU1", "label": "ВРУ1", "type": "distribution_board",
+             "parameters": {"mode_normal": {"power_kw": 449.3, "current_A": 717.3},
+                            "mode_emergency": {"power_kw": 414.5, "current_A": 751.1}}},
+            {"id": "VPU4", "label": "ВРУ4", "type": "distribution_board",
+             "parameters": {"mode_normal": {"power_kw": 335.3, "current_A": 526.5}}},
+        ]},
+        "visible_text": [
+            "Меркурий 234 ARTX2-01 (D)POBR", "2ТА4...2ТА6 3хТШП-0.66 40/5, 0.5S",
+            "АУКРМ №1", "АУКРМ-1 Qp=200 кВАр", "Шинопровод 3L/PEN Al 3200А, L=6м",
+            "УЗИП1 QF4", "РЕ (ГЗШ)", "посторонний текст без ключевых слов",
+        ],
+        "notes": [f"Примечание {i}" for i in range(1, 9)],  # 8 notes (>5)
+    }
+
+
+def test_rich_render_outputs_breaker_params_and_modes():
+    """11c. rich выводит breaker_params, conflicts и режимы щитов (mode_normal/
+    emergency) — то, что standard-рендер терял на md_render."""
+    body = ls.build_large_sheet_rich_embed_summary(_rich_pe(), {}, max_circuits=80,
+                                                    max_notes=80, max_chars=40000)
+    assert "3P 320A 380В 40кА" in body            # breaker_params
+    assert "B. Режимы щитов" in body              # секция B
+    assert "449.3" in body and "717.3" in body    # mode_normal ВРУ1
+    assert "751.1" in body                        # mode_emergency
+    assert "335.3" in body and "526.5" in body    # ВРУ4 normal
+    assert "137.1" in body                        # conflicts alt current
+
+
+def test_rich_render_metering_and_core():
+    """11d. rich выводит учёт (ТТ/Меркурий) и компенсацию/вводы (АУКРМ/шинопровод/
+    УЗИП) из visible_text."""
+    body = ls.build_large_sheet_rich_embed_summary(_rich_pe(), {})
+    assert "Меркурий 234" in body
+    assert "40/5" in body
+    assert "АУКРМ" in body and "200 кВАр" in body
+    assert "3200А" in body
+    assert "УЗИП" in body
+    assert "посторонний текст" not in body  # нерелевантное не тащим
+
+
+def test_rich_render_notes_beyond_five():
+    """11e. rich выводит больше 5 примечаний при max_notes>5 (standard капал на 5)."""
+    body = ls.build_large_sheet_rich_embed_summary(_rich_pe(), {}, max_notes=80)
+    assert "Примечание 8" in body  # 8-е примечание попало
+    # standard-рендер с notes[:5] восьмое не показал бы
+    std = ls.build_large_sheet_embed_summary(_rich_pe(), {})
+    assert "Примечание 8" not in std
+
+
+def test_rich_render_respects_max_circuits():
+    """11f. rich уважает max_circuits (не ломает фичу max_circuits)."""
+    body = ls.build_large_sheet_rich_embed_summary(_rich_pe(), {}, max_circuits=1)
+    assert "ГРЩ1-РП1-5" in body
+    assert "ГРЩ1-РП1-12" not in body  # вторая цепь обрезана
+    assert "ещё 1 цепей" in body
