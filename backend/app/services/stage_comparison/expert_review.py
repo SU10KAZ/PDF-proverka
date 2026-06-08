@@ -315,6 +315,42 @@ def prune_orphans(session_id: str, dry_run: bool = False) -> dict:
         }
 
 
+def clear_pairs(session_id: str, pair_ids: list[str]) -> dict:
+    """Удалить ВСЕ экспертные решения, относящиеся к указанным парам.
+
+    Хранилище session-level (`<pair>::<raw>`), поэтому очистка по паре — это
+    выборочное удаление ключей с префиксом `<pid>::`. Решения по другим парам
+    и legacy-ключи (без `::`) НЕ трогаются. Под общим `_lock` (как
+    prune_orphans), чтобы не гонять с конкурентной записью. Возвращает отчёт.
+    """
+    targets = {str(p).strip() for p in (pair_ids or []) if str(p).strip()}
+    with _lock:
+        data = load(session_id)
+        decisions = data.get("decisions") or {}
+        if not targets:
+            return {"session_id": session_id, "removed_count": 0,
+                    "removed_keys": [], "kept_count": len(decisions)}
+        kept: dict = {}
+        removed: list[str] = []
+        for key, entry in decisions.items():
+            skey = str(key)
+            if _KEY_SEP in skey and skey.split(_KEY_SEP, 1)[0] in targets:
+                removed.append(skey)
+            else:
+                kept[skey] = entry
+        if removed:
+            data["decisions"] = kept
+            data["updated_at"] = _utc_now()
+            data["version"] = VERSION
+            _atomic_write_json(paths_mod.expert_review_path(session_id), data)
+        return {
+            "session_id": session_id,
+            "removed_count": len(removed),
+            "removed_keys": sorted(removed),
+            "kept_count": len(kept),
+        }
+
+
 def get_with_summary(session_id: str, include_pairs: bool = False) -> dict:
     # ВАЖНО: чтение НЕ мутирует хранилище. Orphan-решения не накручивают
     # счётчик за счёт скоупинга на фронте (только видимые changes), а реальная

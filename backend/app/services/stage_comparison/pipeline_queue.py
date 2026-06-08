@@ -549,6 +549,22 @@ def get_job(session_id: str, job_id: str) -> Optional[dict]:
     return _maybe_mark_interrupted(session_id, job)
 
 
+def list_jobs(session_id: str) -> list[dict]:
+    """Все pipeline-qwen-opus job'ы сессии (stale running/queued → interrupted).
+
+    Используется для определения, занята ли пара активным прогоном
+    (clear_analysis.active_pair_ids)."""
+    out: list[dict] = []
+    for p in sorted(_jobs_dir(session_id).glob("*.json")):
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                job = json.load(f)
+        except (OSError, json.JSONDecodeError):
+            continue
+        out.append(_maybe_mark_interrupted(session_id, job))
+    return out
+
+
 def _maybe_mark_interrupted(session_id: str, job: dict) -> dict:
     """If a job claims running/queued but no live asyncio.Task exists (uvicorn
     restart/crash), mark it failed_interrupted so the UI can resume."""
