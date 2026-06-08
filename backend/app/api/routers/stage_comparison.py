@@ -46,6 +46,7 @@ from backend.app.services.stage_comparison import large_sheet_enrichment as larg
 from backend.app.services.stage_comparison import large_sheet_enrichment_jobs as large_sheet_jobs_mod
 from backend.app.services.stage_comparison import auto_match_jobs as auto_match_jobs_mod
 from backend.app.services.stage_comparison import pipeline_queue as pipeline_queue_mod
+from backend.app.services.stage_comparison import clear_analysis as clear_analysis_mod
 from backend.app.services.stage_comparison import enriched_comparison as enriched_compare_mod
 from backend.app.services.stage_comparison import unified_analysis as unified_analysis_mod
 from backend.app.services.stage_comparison import unified_analysis_jobs as unified_jobs_mod
@@ -1570,6 +1571,39 @@ async def qwen_opus_cancel_endpoint(session_id: str, job_id: str):
     if job is None:
         raise HTTPException(404, "Job не найден")
     return job
+
+
+class ClearAnalysisRequest(BaseModel):
+    pair_ids: list[str] = Field(default_factory=list)
+    clear_findings: bool = True
+    clear_review: bool = True
+    clear_enrichment: bool = False
+
+
+@router.post("/sessions/{session_id}/pairs/clear-analysis")
+async def clear_pairs_analysis_endpoint(session_id: str, req: ClearAnalysisRequest):
+    """Очистить найденные расхождения и/или ручные отметки проверки по
+    ВЫБРАННЫМ парам (backup → удаление). Возвращает per-pair backup_paths /
+    deleted_files / skipped.
+
+    Пары с running/queued job пропускаются (warning «pair has running job,
+    cancel first»). НЕ удаляются: исходные PDF, OCR result.json,
+    page_enriched.json/tiles (large-sheet Qwen), left/right_enriched.md,
+    Qwen image-cache.
+    """
+    if not req.pair_ids:
+        raise HTTPException(400, "pair_ids required")
+    try:
+        result = await run_in_threadpool(
+            clear_analysis_mod.clear_pairs_analysis,
+            session_id, req.pair_ids,
+            clear_findings=bool(req.clear_findings),
+            clear_review=bool(req.clear_review),
+            clear_enrichment=bool(req.clear_enrichment),
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    return result
 
 
 @router.post("/sessions/{session_id}/md-enrichment-jobs")
