@@ -135,6 +135,26 @@ def cfg_max_pixels() -> int:
     return max(4_000_000, _env_int("STAGE_COMPARISON_LARGE_SHEET_MAX_PIXELS", 45_000_000))
 
 
+def cfg_llm_max_tokens() -> Optional[int]:
+    """Точечный override per-tile max_tokens ТОЛЬКО для large_sheet пути.
+
+    None (env не задан) → использовать общий graphic-config
+    (``STAGE_COMPARISON_GRAPHIC_LLM_MAX_TOKENS``, default 5500). Большие листы
+    (ГРЩ/ВРУ) дают длинный per-tile JSON: при 5500 плотные тайлы упираются в
+    лимит (finish=length), уходят в salvage + continuation (3-4 chunk'а,
+    картинка тайла префилится заново каждый chunk). Бенч на реальном тайле:
+    при 9000 тот же тайл закрывается в ОДИН проход (finish=stop, JSON полный),
+    ~40% быстрее prod-варианта с continuation. Не трогает обычный
+    image-enrichment и GRSH feeder-путь (у них свои конфиги)."""
+    raw = os.environ.get("STAGE_COMPARISON_LARGE_SHEET_LLM_MAX_TOKENS", "").strip()
+    if not raw:
+        return None
+    try:
+        return max(256, int(raw))
+    except ValueError:
+        return None
+
+
 # ─── Marker dictionaries (для detection и zone-hint, без ML) ────────────────
 
 _ELECTRICAL_MARKERS = (

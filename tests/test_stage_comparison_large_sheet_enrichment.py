@@ -1182,3 +1182,51 @@ async def test_writegate_enriched_md_written_atomically(monkeypatch, tmp_path):
     assert not md_out.with_suffix(md_out.suffix + ".tmp").exists()
     text = md_out.read_text(encoding="utf-8")
     assert "Large Sheet Enrichment" in text and text.endswith("\n")
+
+
+# ─── 9. large_sheet-only LLM max_tokens override (default-off) ───────────────
+
+
+def test_cfg_llm_max_tokens_default_off(monkeypatch):
+    """9a. env не задан → None (поведение остаётся 5500 из общего graphic-config)."""
+    monkeypatch.delenv("STAGE_COMPARISON_LARGE_SHEET_LLM_MAX_TOKENS", raising=False)
+    assert ls.cfg_llm_max_tokens() is None
+
+
+def test_cfg_llm_max_tokens_set_and_clamped(monkeypatch):
+    """9b. заданный env читается; ниже минимума клампится; мусор → None (fail-safe)."""
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_LLM_MAX_TOKENS", "9000")
+    assert ls.cfg_llm_max_tokens() == 9000
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_LLM_MAX_TOKENS", "10")
+    assert ls.cfg_llm_max_tokens() == 256
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_LLM_MAX_TOKENS", "garbage")
+    assert ls.cfg_llm_max_tokens() is None
+
+
+def _base_graphic_cfg(monkeypatch):
+    monkeypatch.setenv("STAGE_COMPARISON_GRAPHIC_LLM_PROVIDER", "local_openai_compatible")
+    monkeypatch.setenv("STAGE_COMPARISON_GRAPHIC_LLM_BASE_URL", "https://test.example.com")
+    monkeypatch.setenv("STAGE_COMPARISON_GRAPHIC_LLM_MAX_TOKENS", "5500")
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+    return g.load_local_graphic_llm_config()
+
+
+def test_apply_override_noop_when_unset(monkeypatch):
+    """9c. env не задан → cfg возвращается как есть (max_tokens=5500)."""
+    monkeypatch.delenv("STAGE_COMPARISON_LARGE_SHEET_LLM_MAX_TOKENS", raising=False)
+    base = _base_graphic_cfg(monkeypatch)
+    out = ls_jobs._apply_large_sheet_llm_overrides(base)
+    assert out.max_tokens == 5500
+
+
+def test_apply_override_replaces_only_max_tokens(monkeypatch):
+    """9d. env=9000 → max_tokens поднят, исходный cfg не мутирован, остальные
+    поля те же (override = только max_tokens)."""
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_LLM_MAX_TOKENS", "9000")
+    base = _base_graphic_cfg(monkeypatch)
+    out = ls_jobs._apply_large_sheet_llm_overrides(base)
+    assert out.max_tokens == 9000
+    assert base.max_tokens == 5500  # исходный объект не тронут
+    assert out.max_continuations == base.max_continuations
+    assert out.image_long_side == base.image_long_side
+    assert out.model == base.model
