@@ -5464,20 +5464,14 @@
                             {{ scQOPreflighting ? 'Подготовка…' : ('Обработать выбранные (' + scQOSelectedCount + ')') }}
                         </button>
                         <span style="font-size:11px; color:#6b7280">Qwen готовит enriched MD по очереди, Opus сравнивает готовые пары (Qwen не ждёт Opus).</span>
-                    </div>
-
-                    <!-- Pipeline status panel -->
-                    <div v-if="scQOJob" style="margin-bottom:10px; padding:10px 12px; background:linear-gradient(90deg,#f0fdf4,#fff); border:1px solid #bbf7d0; border-radius:8px; font-size:12px">
-                        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
-                            <strong>Pipeline Qwen→Opus</strong>
-                            <span style="color:#6b7280">job {{ scQOJob.job_id }} · {{ scQOJob.status }}</span>
-                            <button v-if="['running','queued'].includes(scQOJob.status)" class="btn btn-sm btn-secondary" @click="scQOCancel()" style="margin-left:auto">Остановить</button>
-                        </div>
-                        <div style="margin-top:6px; display:flex; gap:18px; flex-wrap:wrap">
-                            <span>🟦 Qwen: {{ scQOJob.qwen_worker.done }}/{{ scQOJob.qwen_worker.total }} done · {{ scQOJob.qwen_worker.failed }} fail<span v-if="scQOJob.qwen_worker.current_pair_id"> · сейчас {{ scQOPairLabel(scQOJob.qwen_worker.current_pair_id) }}</span></span>
-                            <span>🟪 Opus: {{ scQOJob.opus_worker.done }}/{{ scQOJob.opus_worker.total }} done · {{ scQOJob.opus_worker.failed }} fail<span v-if="scQOJob.opus_worker.current_pair_id"> · сейчас {{ scQOPairLabel(scQOJob.opus_worker.current_pair_id) }}</span></span>
-                            <span>✅ {{ scQOJob.queues.completed.length }} · ❌ {{ scQOJob.queues.failed.length }}</span>
-                        </div>
+                        <span v-if="scQOJob && ['running','queued'].includes(scQOJob.status)"
+                              style="margin-left:auto; display:flex; align-items:center; gap:10px; font-size:11px; color:#374151; font-variant-numeric:tabular-nums">
+                            <span :title="'job ' + scQOJob.job_id">Pipeline: {{ scQOJob.status }}</span>
+                            <span title="Общее время с момента старта">⏱ {{ formatDuration(scQOElapsedMs()) || '0с' }}</span>
+                            <span v-if="scQOEtaSec()!=null" style="color:#6b7280" title="Оценка оставшегося времени">~{{ formatEta(scQOEtaSec()) }}</span>
+                            <span style="color:#6b7280">🟦 {{ scQOJob.qwen_worker.done }}/{{ scQOJob.qwen_worker.total }} · 🟪 {{ scQOJob.opus_worker.done }}/{{ scQOJob.opus_worker.total }}</span>
+                            <button class="btn btn-sm btn-secondary" @click="scQOCancel()">Остановить</button>
+                        </span>
                     </div>
 
                     <!-- Confirm modal -->
@@ -5512,6 +5506,8 @@
                                 <th style="text-align:center; padding:8px; border-bottom:1px solid #e5e7eb" title="Наличие файлов (L/R): MD · result.json">Файлы<br><span style="font-weight:400; font-size:10px; color:#9ca3af">MD&nbsp;L/R · json&nbsp;L/R</span></th>
                                 <th style="text-align:center; padding:8px; border-bottom:1px solid #e5e7eb">Графика</th>
                                 <th style="text-align:center; padding:8px; border-bottom:1px solid #e5e7eb" title="Блоки (L+R): всего / готово (вкл. salvage/partial) / упало">Блоки<br><span style="font-weight:400; font-size:10px; color:#9ca3af">всего/готово/упало</span></th>
+                                <th style="text-align:center; padding:8px; border-bottom:1px solid #e5e7eb" title="Время обработки Qwen этой пары (текущего/последнего прогона)">🟦 Qwen</th>
+                                <th style="text-align:center; padding:8px; border-bottom:1px solid #e5e7eb" title="Время сравнения Opus этой пары (текущего/последнего прогона)">🟪 Opus</th>
                                 <th style="text-align:center; padding:8px; border-bottom:1px solid #e5e7eb" title="Статус Opus-сравнения пары">Сравнение</th>
                                 <th style="text-align:center; padding:8px; border-bottom:1px solid #e5e7eb" title="Эксперт разметил каждое расхождение (✓/✗) на этапе «3. Расхождения»">Проверено<br><span style="font-weight:400; font-size:10px; color:#9ca3af">экспертом</span></th>
                                 <th style="padding:8px; border-bottom:1px solid #e5e7eb"></th>
@@ -5639,6 +5635,12 @@
                                         </div>
                                     </div>
                                 </td>
+                                <td style="padding:8px; text-align:center; font-variant-numeric:tabular-nums; white-space:nowrap"
+                                    :style="{color: scQOLaneColor(scQOItemFor(p.id),'qwen')}"
+                                    :title="'Qwen (обогащение enriched MD): ' + scQOLaneCell(scQOItemFor(p.id),'qwen')">{{ scQOLaneCell(scQOItemFor(p.id),'qwen') }}</td>
+                                <td style="padding:8px; text-align:center; font-variant-numeric:tabular-nums; white-space:nowrap"
+                                    :style="{color: scQOLaneColor(scQOItemFor(p.id),'opus')}"
+                                    :title="'Opus (сравнение стадий): ' + scQOLaneCell(scQOItemFor(p.id),'opus')">{{ scQOLaneCell(scQOItemFor(p.id),'opus') }}</td>
                                 <td style="padding:8px; text-align:center">
                                     <span :class="'sc-status ' + scOpusPairBadge(p.id).cls + (scOpusPairBadge(p.id).canFallback ? ' sc-status--clickable' : '')"
                                           :title="scOpusPairBadge(p.id).title"
