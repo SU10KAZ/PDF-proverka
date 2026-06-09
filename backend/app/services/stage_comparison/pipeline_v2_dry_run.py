@@ -1,19 +1,23 @@
 # -*- coding: utf-8 -*-
-"""Pipeline V2 — Dry Run / Orchestrator (offline-связка этапов 1–4).
+"""Pipeline V2 — Dry Run / Orchestrator (offline-связка этапов 1–4 + графика).
 
-Backend-only слой, который объединяет четыре изолированных этапа Pipeline V2 в
-ОДИН локальный offline dry-run и пишет на диск их артефакты:
+Backend-only слой, который объединяет изолированные этапы Pipeline V2 в ОДИН
+локальный offline dry-run и пишет на диск их артефакты:
 
     left_package / right_package (подготовленные пакеты)
-      → [1] build_normalized_document_model      → *_normalized_document_model.json
-      → [2] match_normalized_documents           → block_matching_report.json
-      → [3] extract_entities_for_matched_documents → entity_extraction_report.json
-      → [4] diff_entity_extraction_report        → entity_diff_report.json
+      → [1] build_normalized_document_model        → *_normalized_document_model.json
+      → [2] match_normalized_documents             → block_matching_report.json
+      → [3] build_graphic_descriptor_report (×2)   → *_graphic_descriptor_report.json
+            describe_matched_graphic_blocks        → graphic_descriptor_matched_report.json
+      → [4] extract_entities_for_matched_documents → entity_extraction_report.json
+      → [5] diff_entity_extraction_report          → entity_diff_report.json
       → pipeline_v2_summary.json / .md + pipeline_v2_manifest.json
 
 Это НЕ UI, НЕ Opus/critic, НЕ замена старой логики. Только оркестрация уже
-готовых чистых функций этапов 1–4 + сводка/манифест. Никаких сетевых вызовов,
-Qwen/Opus/OCR/PDF-render и скачивания `crop_url`.
+готовых чистых функций этапов 1–5 + сводка/манифест. Никаких сетевых вызовов,
+Qwen/Opus/OCR/PDF-render и скачивания `crop_url`. Graphic Descriptor —
+вспомогательный «светофор» готовности графики к diff: его падение fail-soft и НЕ
+валит обязательные этапы 1–2/4–5.
 
 Fail-soft: writer'ы атомарны (tmp + os.replace), поэтому частично записанного
 broken JSON не остаётся. Если этап падает — `status=failed`, в summary короткая
@@ -46,17 +50,26 @@ from backend.app.services.stage_comparison.pipeline_v2_entity_diff import (
     diff_entity_extraction_report,
     write_entity_diff_report,
 )
+from backend.app.services.stage_comparison.pipeline_v2_graphic_block_descriptor import (
+    build_graphic_descriptor_report,
+    describe_matched_graphic_blocks,
+    write_graphic_descriptor_report,
+)
 
 SUMMARY_VERSION = 1
 SUMMARY_KIND = "stage_comparison_pipeline_v2_dry_run_summary"
 MANIFEST_KIND = "stage_comparison_pipeline_v2_manifest"
-NEXT_RECOMMENDED_STAGE = "delta_explanation_or_graphic_descriptor"
+GRAPHIC_MATCHED_KIND = "stage_comparison_pipeline_v2_graphic_descriptor_matched"
+NEXT_RECOMMENDED_STAGE = "delta_explanation"
 
 # artifact-ключ → имя файла в out_dir
 _ARTIFACT_FILENAMES = {
     "left_model": "left_normalized_document_model.json",
     "right_model": "right_normalized_document_model.json",
     "block_matching": "block_matching_report.json",
+    "left_graphic": "left_graphic_descriptor_report.json",
+    "right_graphic": "right_graphic_descriptor_report.json",
+    "graphic_matched": "graphic_descriptor_matched_report.json",
     "entity_extraction": "entity_extraction_report.json",
     "entity_diff": "entity_diff_report.json",
     "summary_json": "pipeline_v2_summary.json",
@@ -65,8 +78,9 @@ _ARTIFACT_FILENAMES = {
 }
 # Артефакты, перечисляемые в манифесте (manifest сам себя не хеширует).
 _MANIFEST_ARTIFACT_KEYS = [
-    "left_model", "right_model", "block_matching", "entity_extraction",
-    "entity_diff", "summary_json", "summary_md",
+    "left_model", "right_model", "block_matching",
+    "left_graphic", "right_graphic", "graphic_matched",
+    "entity_extraction", "entity_diff", "summary_json", "summary_md",
 ]
 
 
@@ -176,10 +190,70 @@ def _warnings_count(report: Any) -> int:
     return 0
 
 
+def _merge_counts(a: Any, b: Any) -> dict:
+    out = dict(a or {})
+    for k, v in (b or {}).items():
+        out[k] = out.get(k, 0) + v
+    return out
+
+
+def _risk_count(matched: list[dict], flag: str) -> int:
+    return sum(1 for m in (matched or []) if flag in (m.get("risk_flags") or []))
+
+
+def build_graphic_matched_report(matched: list[dict]) -> dict:
+    """Обёртка-артефакт для matched_graphic_blocks (этап Graphic Descriptor)."""
+    matched = matched or []
+    return {
+        "version": SUMMARY_VERSION,
+        "kind": GRAPHIC_MATCHED_KIND,
+        "summary": {
+            "matched_graphic_blocks_total": len(matched),
+            "low_token_overlap_total": _risk_count(matched, "low_token_overlap"),
+            "one_side_not_usable_total": _risk_count(matched, "one_side_not_usable"),
+            "graphic_type_mismatch_total": _risk_count(matched, "graphic_type_mismatch"),
+            "discipline_mismatch_total": _risk_count(matched, "discipline_mismatch"),
+        },
+        "matched_graphic_blocks": matched,
+        "warnings": [],
+    }
+
+
+def _graphic_descriptor_section(left_graphic: Any, right_graphic: Any,
+                                matched: list[dict], graphic_error: Optional[str]) -> dict:
+    lg, rg = _summary_of(left_graphic), _summary_of(right_graphic)
+    matched = matched or []
+    sec = {
+        "left_graphic_blocks_total": lg.get("graphic_blocks_total", 0),
+        "right_graphic_blocks_total": rg.get("graphic_blocks_total", 0),
+        "left_usable_for_diff_total": lg.get("usable_for_diff_total", 0),
+        "right_usable_for_diff_total": rg.get("usable_for_diff_total", 0),
+        "left_needs_vision_enrichment_total": lg.get("needs_vision_enrichment_total", 0),
+        "right_needs_vision_enrichment_total": rg.get("needs_vision_enrichment_total", 0),
+        "left_manual_review_recommended_total": lg.get("manual_review_recommended_total", 0),
+        "right_manual_review_recommended_total": rg.get("manual_review_recommended_total", 0),
+        "matched_graphic_blocks_total": len(matched),
+        "matched_low_token_overlap_total": _risk_count(matched, "low_token_overlap"),
+        "matched_one_side_not_usable_total": _risk_count(matched, "one_side_not_usable"),
+        "matched_graphic_type_mismatch_total": _risk_count(matched, "graphic_type_mismatch"),
+        "matched_discipline_mismatch_total": _risk_count(matched, "discipline_mismatch"),
+        "by_graphic_type": _merge_counts(lg.get("by_graphic_type"), rg.get("by_graphic_type")),
+        "by_discipline": _merge_counts(lg.get("by_discipline"), rg.get("by_discipline")),
+        "by_readiness": _merge_counts(lg.get("by_readiness"), rg.get("by_readiness")),
+        "warnings_count": (_warnings_count(left_graphic) + _warnings_count(right_graphic)
+                           + (1 if graphic_error else 0)),
+    }
+    if graphic_error:
+        sec["error"] = graphic_error
+    return sec
+
+
 def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report: Any,
                               entity_report: Any, diff_report: Any, inputs: dict,
                               artifact_paths: dict, warnings: list[str], status: str,
-                              error: Optional[str] = None) -> dict:
+                              error: Optional[str] = None, left_graphic: Any = None,
+                              right_graphic: Any = None, matched_graphic: Optional[list] = None,
+                              graphic_error: Optional[str] = None) -> dict:
     """Собрать ``pipeline_v2_summary`` из артефактов этапов 1–4."""
     lm, rm = _summary_of(left_model), _summary_of(right_model)
     bm, em, dm = _summary_of(block_report), _summary_of(entity_report), _summary_of(diff_report)
@@ -229,6 +303,8 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
         "artifacts": {k: p.name for k, p in artifact_paths.items()},
         "inputs": inputs,
         "stages": stages,
+        "graphic_descriptor": _graphic_descriptor_section(
+            left_graphic, right_graphic, matched_graphic, graphic_error),
         "warnings": warnings,
         "next_recommended_stage": NEXT_RECOMMENDED_STAGE,
     }
@@ -247,6 +323,24 @@ def _md_counts_table(title: str, counts: dict) -> list[str]:
         return [f"- {title}: —"]
     parts = ", ".join(f"{k}={v}" for k, v in counts.items())
     return [f"- {title}: {parts}"]
+
+
+def _graphic_traffic_light(gd: dict) -> str:
+    """Светофор пригодности графики для deterministic diff."""
+    combined = (gd.get("left_graphic_blocks_total", 0)
+                + gd.get("right_graphic_blocks_total", 0))
+    if combined == 0:
+        return "ℹ Графических блоков нет."
+    not_usable = (gd.get("by_readiness", {}) or {}).get("not_usable", 0)
+    manual = (gd.get("left_manual_review_recommended_total", 0)
+              + gd.get("right_manual_review_recommended_total", 0))
+    vision = (gd.get("left_needs_vision_enrichment_total", 0)
+              + gd.get("right_needs_vision_enrichment_total", 0))
+    if not_usable > 0 or manual > 0:
+        return "🔴 Есть графические блоки, которые нельзя уверенно сравнить (нужна ручная проверка)."
+    if vision > 0:
+        return "🟡 Есть блоки, которым нужен vision enrichment."
+    return "🟢 Графика пригодна для deterministic diff."
 
 
 def write_pipeline_v2_summary_md(out_path: str | Path, summary: dict,
@@ -311,6 +405,29 @@ def write_pipeline_v2_summary_md(out_path: str | Path, summary: dict,
                  f"changed={dif.get('changed_total', 0)}, uncertain={dif.get('uncertain_total', 0)}")
     lines += _md_counts_table("Уверенность", dif.get("by_confidence", {}))
     lines += _md_counts_table("По типам дельт", dif.get("by_entity_type", {}))
+    lines.append("")
+
+    gd = summary.get("graphic_descriptor", {}) or {}
+    lines.append("## Graphic readiness")
+    lines.append(f"- Графических блоков слева: {gd.get('left_graphic_blocks_total', 0)}")
+    lines.append(f"- Графических блоков справа: {gd.get('right_graphic_blocks_total', 0)}")
+    lines.append(f"- Пригодны для diff: left={gd.get('left_usable_for_diff_total', 0)}, "
+                 f"right={gd.get('right_usable_for_diff_total', 0)}")
+    lines.append(f"- Требуют vision enrichment: left={gd.get('left_needs_vision_enrichment_total', 0)}, "
+                 f"right={gd.get('right_needs_vision_enrichment_total', 0)}")
+    lines.append(f"- Ручная проверка: left={gd.get('left_manual_review_recommended_total', 0)}, "
+                 f"right={gd.get('right_manual_review_recommended_total', 0)}")
+    lines += _md_counts_table("По типам графики", gd.get("by_graphic_type", {}))
+    lines += _md_counts_table("По дисциплинам", gd.get("by_discipline", {}))
+    lines += _md_counts_table("По readiness", gd.get("by_readiness", {}))
+    lines.append(f"- Риски matched-графики: low_token_overlap="
+                 f"{gd.get('matched_low_token_overlap_total', 0)}, "
+                 f"one_side_not_usable={gd.get('matched_one_side_not_usable_total', 0)}, "
+                 f"discipline_mismatch={gd.get('matched_discipline_mismatch_total', 0)}, "
+                 f"graphic_type_mismatch={gd.get('matched_graphic_type_mismatch_total', 0)}")
+    lines.append(f"- {_graphic_traffic_light(gd)}")
+    if gd.get("error"):
+        lines.append(f"- ⚠ Ошибка graphic descriptor: {gd['error']}")
     lines.append("")
 
     lines.append("## Warnings")
@@ -402,6 +519,9 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     status = "ok"
     error: Optional[str] = None
     left_model = right_model = block_report = entity_report = diff_report = None
+    left_graphic = right_graphic = None
+    matched_graphic: list = []
+    graphic_error: Optional[str] = None
 
     try:
         for side, pkg in (("left", left), ("right", right)):
@@ -426,12 +546,27 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
             left_model, right_model, options.get("matching"))
         write_block_matching_report(paths["block_matching"], block_report)
 
-        # [3] entity extraction
+        # [3] graphic descriptor — вспомогательный, fail-soft: его падение НЕ
+        #     валит обязательные этапы 1–4 (нижний try ловит ошибку).
+        try:
+            gopts = options.get("graphic")
+            left_graphic = build_graphic_descriptor_report(left_model, side="left", options=gopts)
+            right_graphic = build_graphic_descriptor_report(right_model, side="right", options=gopts)
+            matched_graphic = describe_matched_graphic_blocks(
+                left_model, right_model, block_report, gopts)
+            write_graphic_descriptor_report(paths["left_graphic"], left_graphic)
+            write_graphic_descriptor_report(paths["right_graphic"], right_graphic)
+            write_graphic_descriptor_report(
+                paths["graphic_matched"], build_graphic_matched_report(matched_graphic))
+        except Exception as gexc:  # noqa: BLE001 — graphic не критичен
+            graphic_error = f"{type(gexc).__name__}: {gexc}"
+
+        # [4] entity extraction
         entity_report = extract_entities_for_matched_documents(
             left_model, right_model, block_report, options.get("extraction"))
         write_entity_extraction_report(paths["entity_extraction"], entity_report)
 
-        # [4] deterministic entity diff
+        # [5] deterministic entity diff
         diff_report = diff_entity_extraction_report(entity_report, options.get("diff"))
         write_entity_diff_report(paths["entity_diff"], diff_report)
 
@@ -441,11 +576,14 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
 
     # собрать warnings из артефактов этапов
     for rpt, prefix in ((left_model, "ingest_left"), (right_model, "ingest_right"),
-                        (block_report, "block_matching"), (entity_report, "entity_extraction"),
-                        (diff_report, "entity_diff")):
+                        (block_report, "block_matching"),
+                        (left_graphic, "graphic_left"), (right_graphic, "graphic_right"),
+                        (entity_report, "entity_extraction"), (diff_report, "entity_diff")):
         if isinstance(rpt, dict):
             for w in rpt.get("warnings", []) or []:
                 warnings.append(f"{prefix}: {w}")
+    if graphic_error:
+        warnings.append(f"graphic_descriptor: {graphic_error}")
 
     if status != "failed" and warnings:
         status = "completed_with_warnings"
@@ -453,7 +591,9 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     summary = build_pipeline_v2_summary(
         left_model=left_model, right_model=right_model, block_report=block_report,
         entity_report=entity_report, diff_report=diff_report, inputs=inputs,
-        artifact_paths=paths, warnings=warnings, status=status, error=error)
+        artifact_paths=paths, warnings=warnings, status=status, error=error,
+        left_graphic=left_graphic, right_graphic=right_graphic,
+        matched_graphic=matched_graphic, graphic_error=graphic_error)
 
     # summary + manifest пишем всегда (best-effort, атомарно)
     write_pipeline_v2_summary_json(paths["summary_json"], summary)
@@ -466,11 +606,13 @@ __all__ = [
     "SUMMARY_VERSION",
     "SUMMARY_KIND",
     "MANIFEST_KIND",
+    "GRAPHIC_MATCHED_KIND",
     "NEXT_RECOMMENDED_STAGE",
     "run_pipeline_v2_dry_run",
     "normalize_package_paths",
     "build_pipeline_v2_artifact_paths",
     "build_pipeline_v2_summary",
+    "build_graphic_matched_report",
     "write_pipeline_v2_summary_md",
     "write_pipeline_v2_summary_json",
     "write_pipeline_v2_manifest",

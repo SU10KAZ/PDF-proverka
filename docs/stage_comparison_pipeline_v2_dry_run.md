@@ -1,31 +1,36 @@
-# Stage Comparison Pipeline V2 — Dry Run / Orchestrator (этапы 1–4)
+# Stage Comparison Pipeline V2 — Dry Run / Orchestrator (этапы 1–5)
 
 **Дата:** 2026-06-10
 **Статус:** backend-only offline-оркестратор. НЕ UI, НЕ Opus/critic, НЕ замена
 старой логики Stage Comparison.
 **Модуль:** [backend/app/services/stage_comparison/pipeline_v2_dry_run.py](../backend/app/services/stage_comparison/pipeline_v2_dry_run.py)
-**Связывает:** [этап 1 — Ingest](stage_comparison_pipeline_v2_prepared_package_ingest.md) · [этап 2 — Block Matching](stage_comparison_pipeline_v2_block_matching.md) · [этап 3 — Entity Extraction](stage_comparison_pipeline_v2_entity_extraction.md) · [этап 4 — Entity Diff](stage_comparison_pipeline_v2_entity_diff.md)
+**Связывает:** [этап 1 — Ingest](stage_comparison_pipeline_v2_prepared_package_ingest.md) · [этап 2 — Block Matching](stage_comparison_pipeline_v2_block_matching.md) · [Graphic Descriptor](stage_comparison_pipeline_v2_graphic_block_descriptor.md) · [этап 3 — Entity Extraction](stage_comparison_pipeline_v2_entity_extraction.md) · [этап 4 — Entity Diff](stage_comparison_pipeline_v2_entity_diff.md)
 
 ## Зачем нужен dry-run orchestrator
 
-Этапы 1–4 — изолированные чистые слои. Чтобы прогнать их как единый offline
-конвейер на подготовленной паре OLD/NEW и получить все промежуточные артефакты
-для инспекции (без UI, без сети, без LLM), нужен один входной вызов. Dry-run
-оркестратор именно это и делает: принимает два подготовленных пакета, по очереди
-запускает этапы 1→2→3→4, пишет каждый артефакт на диск и собирает сводку +
+Этапы Pipeline V2 — изолированные чистые слои. Чтобы прогнать их как единый
+offline конвейер на подготовленной паре OLD/NEW и получить все промежуточные
+артефакты для инспекции (без UI, без сети, без LLM), нужен один входной вызов.
+Dry-run оркестратор именно это и делает: принимает два подготовленных пакета, по
+очереди запускает ingest → block matching → **graphic descriptor** → entity
+extraction → entity diff, пишет каждый артефакт на диск и собирает сводку +
 манифест.
 
 ```text
 left_package / right_package
-  → [1] build_normalized_document_model       → *_normalized_document_model.json
-  → [2] match_normalized_documents            → block_matching_report.json
-  → [3] extract_entities_for_matched_documents → entity_extraction_report.json
-  → [4] diff_entity_extraction_report         → entity_diff_report.json
+  → [1] build_normalized_document_model        → *_normalized_document_model.json
+  → [2] match_normalized_documents             → block_matching_report.json
+  → [3] build_graphic_descriptor_report (×2)   → left/right_graphic_descriptor_report.json
+        describe_matched_graphic_blocks        → graphic_descriptor_matched_report.json
+  → [4] extract_entities_for_matched_documents → entity_extraction_report.json
+  → [5] diff_entity_extraction_report          → entity_diff_report.json
   → pipeline_v2_summary.json + .md + pipeline_v2_manifest.json
 ```
 
-Оркестратор **переиспользует существующие функции и writer'ы** этапов 1–4 —
-формат их артефактов не меняется.
+Оркестратор **переиспользует существующие функции и writer'ы** этапов — формат их
+артефактов не меняется. **Graphic Descriptor** вставлен между block matching и
+entity extraction как вспомогательный «светофор» готовности графики (см. ниже);
+он fail-soft и НЕ скачивает crop, НЕ вызывает Qwen/Opus.
 
 ## Входные пакеты
 
@@ -50,6 +55,9 @@ exists» отражаются в `inputs`, а указанный-но-несущ
 left_normalized_document_model.json     # этап 1 (OLD)
 right_normalized_document_model.json    # этап 1 (NEW)
 block_matching_report.json              # этап 2
+left_graphic_descriptor_report.json     # graphic descriptor (OLD)
+right_graphic_descriptor_report.json    # graphic descriptor (NEW)
+graphic_descriptor_matched_report.json  # graphic descriptor (matched pairs)
 entity_extraction_report.json           # этап 3
 entity_diff_report.json                 # этап 4
 pipeline_v2_summary.json                # сводка (машиночитаемая)
@@ -58,7 +66,32 @@ pipeline_v2_manifest.json               # манифест артефактов
 ```
 
 Все записи атомарны (tmp + `os.replace`) — частично записанного broken JSON не
-остаётся.
+остаётся. `left/right_graphic_descriptor_report.json` имеют kind
+`stage_comparison_pipeline_v2_graphic_block_descriptor`; matched-обёртка —
+`stage_comparison_pipeline_v2_graphic_descriptor_matched`.
+
+## Graphic readiness («светофор» графики)
+
+Dry-run пишет графические descriptor-артефакты и добавляет в summary секцию
+`graphic_descriptor`: сколько графических блоков с каждой стороны, сколько
+пригодно для diff (`*_usable_for_diff_total`), сколько требует vision-enrichment
+(`*_needs_vision_enrichment_total`) / ручной проверки
+(`*_manual_review_recommended_total`), `by_graphic_type`/`by_discipline`/
+`by_readiness`, а также метрики matched-пар (`matched_graphic_blocks_total`,
+`matched_low_token_overlap_total`, `matched_one_side_not_usable_total`,
+`matched_*_mismatch_total`).
+
+В `pipeline_v2_summary.md` появляется раздел **«## Graphic readiness»** со
+светофором:
+
+- 🟢 графика пригодна для deterministic diff;
+- 🟡 есть блоки, которым нужен vision enrichment;
+- 🔴 есть графические блоки, которые нельзя уверенно сравнить (ручная проверка).
+
+Это честный ответ на вопрос «почему по плотной схеме diff пустой»: если блок
+`not_usable`/`needs_vision_enrichment`, пустой diff вызван слабым распознаванием,
+а не отсутствием изменений. Graphic descriptor **не скачивает crop и не вызывает
+Qwen/Opus** — только диагностика по уже имеющимся полям.
 
 ## Summary
 
@@ -66,8 +99,9 @@ pipeline_v2_manifest.json               # манифест артефактов
 `status` (`ok|completed_with_warnings|failed`), `artifacts` (имена файлов),
 `inputs.left/right` (пути + provided/exists), `stages` с компактными счётчиками
 каждого этапа (prepared_ingest / block_matching / entity_extraction /
-entity_diff), агрегированные `warnings`, `next_recommended_stage`. При падении —
-поле `error`.
+entity_diff), отдельная секция **`graphic_descriptor`** (см. «Graphic
+readiness»), агрегированные `warnings`, `next_recommended_stage`
+(`delta_explanation`). При падении — поле `error`.
 
 `pipeline_v2_summary.md` — человекочитаемо: статус, входные файлы, страниц/блоков
 обработано и сопоставлено, сущностей извлечено, дельт найдено (added/removed/
@@ -78,22 +112,32 @@ changed/uncertain + уверенность), top-10 warnings, список ар�
 ## Manifest
 
 `pipeline_v2_manifest.json` (`kind=stage_comparison_pipeline_v2_manifest`) — для
-каждого из 7 артефактов (кроме самого манифеста): `key`, `filename`,
+каждого из 10 артефактов (кроме самого манифеста): `key`, `filename`,
 `relative_path`, `exists`, `size_bytes`, `sha256`, `kind` (вычитан из JSON).
-Несуществующие (если этап не дошёл) перечислены с `exists=false`.
+Несуществующие (если этап не дошёл / graphic descriptor упал) перечислены с
+`exists=false`.
 
 ## Статусы и fail-soft
 
-- `failed` — нет/не найден `result_json_path` ИЛИ исключение в одном из этапов.
-  Уже записанные артефакты остаются валидными (атомарность), последующие не
-  пишутся, в summary — короткая `error` (`Тип: сообщение`), `status=failed`;
-  summary и manifest всё равно записываются.
-- `completed_with_warnings` — все этапы прошли, но есть warnings (из артефактов
-  этапов и/или указанные-но-отсутствующие optional-файлы).
+- `failed` — нет/не найден `result_json_path` ИЛИ исключение в обязательном
+  этапе (ingest / block matching / entity extraction / entity diff). Уже
+  записанные артефакты остаются валидными (атомарность), последующие не пишутся,
+  в summary — короткая `error` (`Тип: сообщение`), `status=failed`; summary и
+  manifest всё равно записываются.
+- `completed_with_warnings` — все обязательные этапы прошли, но есть warnings
+  (из артефактов этапов, указанных-но-отсутствующих optional-файлов и/или
+  **ошибки graphic descriptor**).
 - `ok` — все этапы прошли без warnings.
 
-Оркестратор не роняет процесс: исключение этапа ловится, превращается в
-`status=failed` + `error`.
+**Graphic Descriptor fail-soft.** Graphic descriptor — вспомогательный, поэтому
+его падение НЕ валит обязательные этапы: ошибка ловится отдельным `try`,
+графические артефакты при сбое не пишутся (битого JSON нет), в `warnings` и в
+`graphic_descriptor.error` добавляется короткое сообщение, а `status`
+понижается до `completed_with_warnings` (если этапы 1–2/4–5 прошли). Обязательные
+этапы 4–5 (entity extraction / diff) выполняются даже после сбоя графики.
+
+Оркестратор не роняет процесс: исключение обязательного этапа ловится,
+превращается в `status=failed` + `error`.
 
 ## Что этот этап НЕ делает
 
@@ -134,20 +178,22 @@ ok/with-warnings, ключевые счётчики в MD, sha256+размеры
 дельты, согласованность счётчиков summary с вложенными отчётами, отсутствие
 сети/LLM-импортов и сохранение `kind` артефактов (переиспользование writer'ов).
 
-## Следующий блок (на выбор)
+## Следующий блок
 
-- **`pipeline_v2_graphic_block_descriptor`** — усилить графику: детерминированный
-  дескриптор image/scheme-блока (геометрия, плотность, наличие текст-слоя/crop,
-  «насколько блок пригоден для diff»), чтобы повысить полноту сущностей на
-  плотных схемах ещё до LLM.
-- **`pipeline_v2_delta_explanation`** — начать объяснять уже найденные
-  deterministic deltas: точечный LLM (через `claude -p`, fail-soft) комментирует
-  смысл/влияние конкретной дельты и/или critic проверяет её грунтованность —
-  **без поиска отличий по всему тому**, приоритет дельтам `needs_human_review`.
+- **`pipeline_v2_delta_explanation` (LLM Delta Explanation / Critic)** — начать
+  объяснять уже найденные deterministic deltas с учётом graphic readiness:
+  точечный LLM (через `claude -p`, fail-soft) комментирует смысл/влияние
+  конкретной дельты и/или critic проверяет её грунтованность — **без поиска
+  отличий по всему тому**, приоритет дельтам `needs_human_review`. Секция
+  `graphic_descriptor` подсказывает, где пустой diff вызван слабой графикой
+  (нужен vision-enrichment), а не отсутствием изменений.
+
+> Graphic Descriptor уже интегрирован в dry-run (этот PR).
 
 ## Связанные файлы
 
 - [pipeline_v2_dry_run.py](../backend/app/services/stage_comparison/pipeline_v2_dry_run.py)
+- [pipeline_v2_graphic_block_descriptor.py](../backend/app/services/stage_comparison/pipeline_v2_graphic_block_descriptor.py) — Graphic Descriptor
 - [pipeline_v2_entity_diff.py](../backend/app/services/stage_comparison/pipeline_v2_entity_diff.py) — этап 4
 - [pipeline_v2_entity_extraction.py](../backend/app/services/stage_comparison/pipeline_v2_entity_extraction.py) — этап 3
 - [pipeline_v2_block_matching.py](../backend/app/services/stage_comparison/pipeline_v2_block_matching.py) — этап 2

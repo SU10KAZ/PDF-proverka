@@ -139,12 +139,18 @@ matched token overlap, mismatch risk-флаги, summary-счётчики, ат�
 отсутствие сети/LLM-импортов и сквозная интеграция `result_json → normalize →
 match → build_graphic_descriptor_report`.
 
-## Следующий блок (на выбор)
+## Интеграция в Dry Run (готово)
 
-- **Интеграция Graphic Descriptor в Dry Run summary** — добавить отдельным
-  артефактом `graphic_descriptor_report.json` (обе стороны) + `matched_graphic_
-  blocks` в `pipeline_v2_dry_run`, чтобы единый прогон сразу показывал «светофор»
-  графики и какие блоки требуют vision-enrichment.
+Graphic Descriptor уже подключён к
+[Dry Run / Orchestrator](stage_comparison_pipeline_v2_dry_run.md): между block
+matching и entity extraction dry-run пишет `left_graphic_descriptor_report.json`,
+`right_graphic_descriptor_report.json` и `graphic_descriptor_matched_report.json`,
+добавляет секцию `graphic_descriptor` в `pipeline_v2_summary.json` и раздел
+«Graphic readiness» со светофором в `pipeline_v2_summary.md`. Подключение
+fail-soft: падение descriptor не валит обязательные этапы 1–2/4–5.
+
+## Следующий блок
+
 - **`LLM Delta Explanation / Critic`** — точечный LLM (через `claude -p`,
   fail-soft) объясняет/проверяет уже найденные deterministic deltas (этап 4),
   приоритет дельтам `needs_human_review`; descriptor подсказывает, где источник —
