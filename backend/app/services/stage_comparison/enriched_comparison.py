@@ -1543,11 +1543,27 @@ def get_session_comparison_statuses(session_id: str) -> dict[str, dict]:
             continue
         result = get_comparison_result(session_id, pid)
         if result is not None:
+            changes = result.get("changes") or []
+            strategy = result.get("strategy") or None
+            status_str = str(result.get("status") or "not_run")
+            via_fb = bool(result.get("fallback")) or strategy == "evidence_first_s2_fallback"
+            pos = sum(1 for c in changes
+                      if isinstance(c, dict) and c.get("type") == "present_one_side")
+            rhr = sum(1 for c in changes
+                      if isinstance(c, dict) and c.get("requires_human_review"))
             out[pid] = {
-                "status": str(result.get("status") or "not_run"),
-                "changes_count": len(result.get("changes") or []),
-                "strategy": (result.get("strategy") or None),
-                "via_fallback": bool(result.get("fallback")),
+                "status": status_str,
+                "changes_count": len(changes),
+                "strategy": strategy,
+                "via_fallback": via_fb,
+                # mode — компактный признак режима для UI-бейджа (без чтения job'ов):
+                # «fallback» для too_large/evidence_first, иначе «normal». «repair»
+                # тут не выводим — comparison_result его не фиксирует, а пара после
+                # repair — это валидное normal-сравнение.
+                "mode": "fallback" if (via_fb or status_str == "too_large") else "normal",
+                "present_one_side_count": pos,
+                "requires_human_review_count": rhr,
+                "created_at": result.get("updated_at") or result.get("created_at"),
             }
             continue
         # Нет сохранённого результата. Если обе enriched MD готовы, но суммарный
@@ -1570,6 +1586,10 @@ def get_session_comparison_statuses(session_id: str) -> dict[str, dict]:
                     "changes_count": 0,
                     "strategy": None,
                     "via_fallback": False,
+                    "mode": "fallback",
+                    "present_one_side_count": 0,
+                    "requires_human_review_count": 0,
+                    "created_at": None,
                     "total_chars": total_chars,
                     "limit_chars": cfg.max_chars,
                 }

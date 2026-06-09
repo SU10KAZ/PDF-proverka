@@ -9345,10 +9345,13 @@ const app = createApp({
                 const data = await rs.json();
                 scSession.value = data;
                 // Этот путь (object-autoselect после refresh) минует scLoadSession,
-                // поэтому persisted Qwen/Opus времена и активные job'ы тут надо
-                // подтянуть явно — иначе колонки 🟦/🟪 показывают «—» после F5.
+                // поэтому persisted Qwen/Opus времена, статусы сравнения и активные
+                // job'ы тут надо подтянуть явно — иначе после F5 колонки 🟦/🟪
+                // показывают «—», а колонка «Сравнение» теряет статус/режим
+                // (fallback) у реально сравнённых пар.
                 try { await scQORestoreActive(); } catch (_) {}
                 try { await scQOLoadPairTimings(); } catch (_) {}
+                try { await scLoadPairCompareStatuses(); } catch (_) {}
                 scAutoLoadInfo.value = {
                     session_id: match.id,
                     created_at: match.created_at,
@@ -12075,6 +12078,9 @@ const app = createApp({
                     comparison_status: persisted.status,
                     changes_count: persisted.changes_count,
                     _via_fallback: !!persisted.via_fallback,
+                    _present_one_side: persisted.present_one_side_count,
+                    _requires_human_review: persisted.requires_human_review_count,
+                    _mode: persisted.mode,
                 });
             }
             if (live) return scOpusBadgeFromRecord(live);
@@ -12119,9 +12125,15 @@ const app = createApp({
             if (st === 'done' || cmp === 'done') {
                 const n = Number(it.changes_count || 0);
                 const suffix = viaFb ? ' (fallback)' : '';
-                return {label: '✓ сравнено' + suffix, cls: 'sc-status-matched',
-                        title: (n ? `сравнено · расхождений: ${n}` : 'сравнено')
-                             + (viaFb ? ' · через Opus fallback (evidence_first)' : '')};
+                const pos = Number(it._present_one_side || 0);
+                const rhr = Number(it._requires_human_review || 0);
+                // Бейдж «✓ сравнено» НЕ зависит от экспертной проверки: «Проверено
+                // 0/N» означает лишь, что инженер ещё не размечал расхождения.
+                let title = (n ? `сравнено · расхождений: ${n}` : 'сравнено')
+                          + (viaFb ? ' · через Opus fallback (evidence_first)' : '');
+                if (pos) title += ` · видно с одной стороны: ${pos}`;
+                if (rhr) title += ` · на проверку инженером: ${rhr}`;
+                return {label: '✓ сравнено' + suffix, cls: 'sc-status-matched', title};
             }
             if (st === 'failed' || st === 'failed_interrupted' || st === 'error') {
                 return {label: '✗ ошибка', cls: 'sc-status-unmatched', title: it.error || 'ошибка сравнения'};
