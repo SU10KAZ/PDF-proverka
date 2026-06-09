@@ -41,6 +41,12 @@ MODEL_KIND = "stage_comparison_pipeline_v2_normalized_document"
 _TEXT_EXCERPT_LEN = 600
 _PDFPLUMBER_EXCERPT_LEN = 600
 
+# Безопасный (size-bounded) срез ocr_json для downstream-этапов (entity
+# extraction). Сохраняет только человекочитаемую сводку, не весь ocr_json.
+_OCR_SUMMARY_TEXT_LEN = 400
+_OCR_SUMMARY_KEY_ENTITIES_MAX = 60
+_OCR_SUMMARY_KEY_ENTITY_LEN = 80
+
 # ─── Markdown page-разметка (для опционального cross-check / fallback имён) ──
 
 _MD_PAGE_HEADING_RE = re.compile(
@@ -620,6 +626,39 @@ def _block_quality_flags(block: dict) -> list[str]:
     return flags
 
 
+def _ocr_json_summary(block: dict) -> Optional[dict]:
+    """Безопасная сводка ocr_json для downstream-этапов (без всего ocr_json).
+
+    Возвращает ``{content_summary, detailed_description, key_entities}`` (всё
+    size-bounded) для НЕ-штампного ocr_json, иначе ``None``. Это backward-
+    compatible расширение модели: downstream читает поле опционально, а старые
+    потребители его просто игнорируют.
+    """
+    oj = block.get("ocr_json")
+    if not isinstance(oj, dict) or block.get("ocr_json_is_stamp"):
+        return None
+    key_entities: list[str] = []
+    ke_raw = oj.get("key_entities")
+    if isinstance(ke_raw, list):
+        for item in ke_raw[:_OCR_SUMMARY_KEY_ENTITIES_MAX]:
+            if isinstance(item, dict):
+                s = _clean_str(item.get("text") or item.get("name") or item.get("value"))
+            else:
+                s = _clean_str(item)
+            if s:
+                key_entities.append(s[:_OCR_SUMMARY_KEY_ENTITY_LEN])
+    summary = {
+        "content_summary": _truncate(_clean_str(oj.get("content_summary")), _OCR_SUMMARY_TEXT_LEN),
+        "detailed_description": _truncate(
+            _clean_str(oj.get("detailed_description")), _OCR_SUMMARY_TEXT_LEN),
+        "key_entities": key_entities,
+    }
+    if not summary["content_summary"] and not summary["detailed_description"] \
+            and not key_entities:
+        return None
+    return summary
+
+
 def _build_block_model(block: dict) -> dict:
     """Финальная per-block модель (формат, описанный в docs)."""
     semantic = classify_block_semantic_type(block)
@@ -641,6 +680,7 @@ def _build_block_model(block: dict) -> dict:
         "has_pdfplumber_text": bool(block.get("pdfplumber_text")),
         "has_ocr_json": bool(block.get("ocr_json")),
         "has_stamp_data": bool(block.get("stamp_data")),
+        "ocr_json_summary": _ocr_json_summary(block),
         "text_excerpt": _truncate(block.get("ocr_text") or block.get("ocr_clean") or "",
                                   _TEXT_EXCERPT_LEN),
         "pdfplumber_text_excerpt": _truncate(block.get("pdfplumber_text") or "",
