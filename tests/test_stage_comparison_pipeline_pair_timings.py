@@ -173,3 +173,119 @@ def test_endpoint_not_shadowed_by_job_id_route(env):
     r = _client().get(f"/api/stage-comparison/sessions/{SID}/pipeline-qwen-opus/pair-timings")
     assert r.status_code == 200
     assert "timings" in r.json()
+
+
+# ─── repair overlay: manual / selected workflow (НЕ qopipe) ───────────────────
+# Закрывает баг: пары, восстановленные через large_sheet + md rebuild +
+# unified-analysis (а не qopipe), показывали в колонках устаревший
+# failed/skipped из упавшего qopipe-батча. Overlay подтягивает их актуальный
+# статус из session-level job'ов + comparison_result.json.
+
+def _write_session_job(job: dict) -> None:
+    """Session-level job (md_enrichment / large_sheet / unified) в <sid>/jobs/."""
+    d = pq.paths_mod.session_dir(SID) / "jobs"
+    d.mkdir(parents=True, exist_ok=True)
+    with open(d / f"{job['id']}.json", "w", encoding="utf-8") as f:
+        json.dump(job, f, ensure_ascii=False)
+
+
+def _write_comparison_result(pid: str, payload: dict) -> None:
+    p = pq.paths_mod.enriched_comparison_result_path(SID, pid)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    with open(p, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False)
+
+
+def test_overlay_md_and_unified_repair(env):
+    # qopipe оставил пару failed/skipped; ручной repair (large_sheet + md + unified)
+    # делает её done — overlay это отражает.
+    _write_job(_job("qopipe_batch", "2026-06-08T18:00:00Z", "failed_interrupted", [
+        _item("pR", qwen_status="failed", opus_status="skipped", status="failed",
+              qwen_started_at="2026-06-08T18:00:00Z", qwen_finished_at="2026-06-08T20:00:00Z",
+              qwen_error="validation:large_sheet_placeholders_remain"),
+    ]))
+    _write_session_job({"id": "lsj_x", "type": "large_sheet_enrichment", "status": "done",
+        "created_at": "2026-06-09T08:30:00Z", "updated_at": "2026-06-09T08:40:00Z",
+        "items": [{"pair_id": "pR", "side": "right", "page": 28, "status": "done",
+                   "tiles_total": 15, "tiles_failed": 0}]})
+    _write_session_job({"id": "mdenrich_x", "type": "md_enrichment_batch", "status": "done",
+        "created_at": "2026-06-09T08:45:00Z", "updated_at": "2026-06-09T08:51:00Z",
+        "items": [{"pair_id": "pR", "side": "right", "status": "done"}]})
+    _write_session_job({"id": "uajob_x", "type": "unified_stage_comparison", "status": "done",
+        "created_at": "2026-06-09T09:00:00Z", "updated_at": "2026-06-09T09:05:00Z",
+        "items": [{"pair_id": "pR", "status": "done", "duration_sec": 244.0,
+                   "changes_count": 23}]})
+    t = pq.latest_pair_timings(SID)["pR"]
+    assert t["qwen_status"] == "done"                       # repair поднял Qwen из failed
+    assert t["qwen_source"] in ("md_enrichment", "large_sheet")
+    assert t["opus_status"] == "done"                       # unified дал Opus
+    assert t["opus_source"] == "unified"
+    assert t["opus_duration_sec"] == pytest.approx(244.0)
+    assert t["changes_count"] == 23
+    assert t["status"] == "done"
+
+
+def test_overlay_comparison_result_fallback(env):
+    # нет unified-job, но есть comparison_result.json → Opus done/duration из него.
+    _write_job(_job("qopipe_batch", "2026-06-08T18:00:00Z", "failed_interrupted", [
+        _item("pC", qwen_status="failed", opus_status="skipped", status="failed",
+              qwen_started_at="2026-06-08T18:00:00Z", qwen_finished_at="2026-06-08T19:00:00Z"),
+    ]))
+    _write_comparison_result("pC", {"status": "done", "strategy": "evidence_first_s2_fallback",
+        "duration_sec": 1292.9, "updated_at": "2026-06-09T10:00:00Z",
+        "changes": [{"x": 1}] * 5})
+    t = pq.latest_pair_timings(SID)["pC"]
+    assert t["opus_status"] == "done"
+    assert t["opus_source"] == "comparison_result"
+    assert t["opus_duration_sec"] == pytest.approx(1292.9)
+    assert t["changes_count"] == 5
+    assert t["status"] == "done"
+
+
+def test_overlay_does_not_downgrade_fresh_qopipe(env):
+    # свежий qopipe-прогон (Opus done) НЕ перебивается СТАРЫМ comparison_result.
+    _write_job(_job("qopipe_fresh", "2026-06-09T12:00:00Z", "done", [
+        _item("pF", qwen_status="done", opus_status="done", status="done",
+              qwen_started_at="2026-06-09T12:00:00Z", qwen_finished_at="2026-06-09T12:20:00Z",
+              opus_started_at="2026-06-09T12:20:00Z", opus_finished_at="2026-06-09T12:24:00Z",
+              changes_count=9),
+    ]))
+    _write_comparison_result("pF", {"status": "done", "duration_sec": 5.0,
+        "updated_at": "2026-06-08T01:00:00Z", "changes": [{"x": 1}]})  # старее qopipe
+    t = pq.latest_pair_timings(SID)["pF"]
+    assert t["opus_duration_sec"] == pytest.approx(240.0)   # qopipe сохранён
+    assert t["changes_count"] == 9
+    assert "opus_source" not in t                            # overlay не трогал
+
+
+def test_overlay_manual_only_pair_added(env):
+    # пара, которой нет ни в одном qopipe job, но есть unified repair → появляется.
+    _write_session_job({"id": "uajob_y", "type": "unified_stage_comparison", "status": "done",
+        "created_at": "2026-06-09T09:00:00Z", "updated_at": "2026-06-09T09:05:00Z",
+        "items": [{"pair_id": "pManual", "status": "done", "duration_sec": 100.0,
+                   "changes_count": 4}]})
+    t = pq.latest_pair_timings(SID)
+    assert "pManual" in t
+    assert t["pManual"]["opus_status"] == "done"
+    assert t["pManual"]["opus_duration_sec"] == pytest.approx(100.0)
+
+
+def test_overlay_large_sheet_legacy_gives_qwen(env):
+    # large_sheet job без поля type (legacy) распознаётся по items → Qwen done.
+    _write_session_job({"id": "lsj_legacy", "status": "done",
+        "created_at": "2026-06-09T08:00:00Z", "updated_at": "2026-06-09T08:10:00Z",
+        "items": [{"pair_id": "pLS", "side": "left", "page": 30, "status": "done",
+                   "tiles_total": 4, "tiles_failed": 0}]})
+    t = pq.latest_pair_timings(SID)["pLS"]
+    assert t["qwen_status"] == "done"
+    assert t["qwen_source"] == "large_sheet"
+
+
+def test_overlay_missing_pair_still_absent(env):
+    # пара без любого сигнала → её нет в timings (фронт покажет «—»).
+    _write_job(_job("qopipe_batch", "2026-06-08T18:00:00Z", "done", [
+        _item("pHas", qwen_status="done", status="done",
+              qwen_started_at="2026-06-08T18:00:00Z", qwen_finished_at="2026-06-08T18:05:00Z"),
+    ]))
+    t = pq.latest_pair_timings(SID)
+    assert "pNope" not in t
