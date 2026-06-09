@@ -5275,25 +5275,47 @@
                                 <span v-for="r in scQOConfirm.risks" :key="r" style="color:#b45309; display:block">⚠ {{ r }}</span>
                                 <span v-if="scQOConfirm.health && scQOConfirm.health.ok" style="display:block; margin-top:4px; color:#16a34a">✓ LLM/ngrok доступен (модель загружена, ctx ok)</span>
                                 <span v-if="scQOConfirm.health && !scQOConfirm.health.ok" style="display:block; margin-top:4px; color:#dc2626; font-weight:600">✗ LLM/ngrok недоступен: {{ scQOConfirm.health.reason }} — старт заблокирован. Восстановите туннель/модель.</span>
-                                <span style="display:block; margin-top:6px; color:#6b7280">Будет сделан backup артефактов пар. Запустятся Qwen (локально) и Opus (Claude Code).</span>
+                                <span v-if="scQOMode !== 'opus_only' && scQOMode !== 'clear_result_opus_only'" style="display:block; margin-top:6px; color:#6b7280">Будет сделан backup артефактов пар. Запустятся Qwen (локально) и Opus (Claude Code).</span>
+                                <span v-else style="display:block; margin-top:6px; color:#6b7280">Только Opus по уже готовым enriched MD. Qwen / распознавание графики повторно НЕ запускаются.</span>
                             </div>
-                            <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; font-size:12px; margin:2px 0 10px; padding:8px 10px; background:#fff7ed; border:1px solid #fed7aa; border-radius:6px">
-                                <input type="checkbox" v-model="scQOClearBeforeRun" style="margin-top:2px">
-                                <span>
-                                    <strong>Очистить найденные и отмеченные изменения перед запуском</strong>
-                                    <span v-if="scQOClearBeforeRun" style="display:block; margin-top:6px; color:#9a3412; line-height:1.6">
-                                        Будут удалены найденные расхождения и ручные отметки проверки по выбранным парам.
-                                        Исходные PDF, OCR, Qwen-cache и page_enriched.json не удаляются.
-                                        Перед очисткой будет создан backup.
-                                    </span>
-                                    <span v-else style="display:block; margin-top:4px; color:#6b7280; line-height:1.5">
-                                        По умолчанию — обработка без очистки (продолжить). Включите, чтобы сбросить старые расхождения и отметки проверки и сравнить заново.
-                                    </span>
-                                </span>
-                            </label>
+                            <div style="font-size:12px; margin:2px 0 10px; padding:8px 10px; background:#fff7ed; border:1px solid #fed7aa; border-radius:6px">
+                                <div style="font-weight:600; margin-bottom:6px">Режим запуска:</div>
+                                <label style="display:flex; align-items:flex-start; gap:7px; cursor:pointer; margin:3px 0">
+                                    <input type="radio" value="normal" v-model="scQOMode" style="margin-top:2px">
+                                    <span>Обычная обработка (Qwen → Opus)</span>
+                                </label>
+                                <label style="display:flex; align-items:flex-start; gap:7px; cursor:pointer; margin:3px 0">
+                                    <input type="radio" value="clear_and_run" v-model="scQOMode" style="margin-top:2px">
+                                    <span>Очистить анализ и запустить заново (Qwen → Opus)</span>
+                                </label>
+                                <label style="display:flex; align-items:flex-start; gap:7px; cursor:pointer; margin:3px 0">
+                                    <input type="radio" value="opus_only" v-model="scQOMode" style="margin-top:2px">
+                                    <span>Запустить <strong>только Opus</strong> по выбранным парам</span>
+                                </label>
+                                <label style="display:flex; align-items:flex-start; gap:7px; cursor:pointer; margin:3px 0">
+                                    <input type="radio" value="clear_result_opus_only" v-model="scQOMode" style="margin-top:2px">
+                                    <span>Очистить результат сравнения и запустить <strong>только Opus</strong></span>
+                                </label>
+                                <div v-if="scQOMode==='clear_and_run'" style="margin-top:6px; color:#9a3412; line-height:1.6">
+                                    Будут удалены найденные расхождения и ручные отметки проверки по выбранным парам.
+                                    Исходные PDF, OCR, Qwen-cache и page_enriched.json не удаляются. Перед очисткой — backup.
+                                </div>
+                                <div v-else-if="scQOMode==='opus_only'" style="margin-top:6px; color:#1e40af; line-height:1.6">
+                                    Будет запущено только сравнение Opus по уже готовым enriched MD.
+                                    Qwen и распознавание графики повторно запускаться не будут.
+                                    Если enriched MD отсутствует, такая пара будет пропущена с предупреждением.
+                                </div>
+                                <div v-else-if="scQOMode==='clear_result_opus_only'" style="margin-top:6px; color:#9a3412; line-height:1.6">
+                                    Будет удалён текущий comparison_result.json (с backup), затем запущен только Opus.
+                                    Ручные отметки expert_review / v2_review_status не удаляются, если не выбрана полная очистка анализа.
+                                </div>
+                                <div v-else style="margin-top:6px; color:#6b7280; line-height:1.5">
+                                    По умолчанию — обработка без очистки: Qwen (локально) + Opus (Claude Code). Перед запуском — backup артефактов пар.
+                                </div>
+                            </div>
                             <div class="retry-dialog__buttons">
                                 <button class="btn btn-secondary" @click="scQOConfirm=null" :disabled="scQOClearing">Отмена</button>
-                                <button class="btn btn-primary" :disabled="scQORunning || scQOClearing || (scQOConfirm.health && !scQOConfirm.health.ok)" @click="scQOStartConfirmed()">{{ scQOClearing ? 'Очистка…' : (scQOClearBeforeRun ? 'Очистить и запустить' : 'Запустить обработку') }}</button>
+                                <button class="btn btn-primary" :disabled="scQORunning || scQOClearing || (scQOConfirm.health && !scQOConfirm.health.ok)" @click="scQOStartConfirmed()">{{ scQOClearing ? 'Очистка…' : (scQOMode==='opus_only' ? 'Запустить только Opus' : (scQOMode==='clear_result_opus_only' ? 'Очистить результат и запустить Opus' : (scQOMode==='clear_and_run' ? 'Очистить и запустить' : 'Запустить обработку'))) }}</button>
                             </div>
                         </div>
                     </div>

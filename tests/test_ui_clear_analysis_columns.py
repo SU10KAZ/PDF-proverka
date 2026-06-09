@@ -41,12 +41,13 @@ def test_js_qwen_running_shows_block_progress():
 # ─── Task 2: clear-analysis mode ─────────────────────────────────────────
 
 def test_html_has_clear_mode_checkbox_and_warning():
-    assert 'v-model="scQOClearBeforeRun"' in HTML
-    assert "Очистить найденные и отмеченные изменения перед запуском" in HTML
+    # Режим очистки теперь — radio 'clear_and_run' в mode-селекторе (раньше чекбокс).
+    assert 'value="clear_and_run" v-model="scQOMode"' in HTML
+    assert "Очистить анализ и запустить заново" in HTML
     # warning copy
     assert "Будут удалены найденные расхождения и ручные отметки проверки" in HTML
     assert "page_enriched.json не удаляются" in HTML
-    assert "будет создан backup" in HTML
+    assert "backup" in HTML.lower()
     # button reflects the mode
     assert "Очистить и запустить" in HTML
 
@@ -59,7 +60,8 @@ def test_js_calls_clear_analysis_endpoint():
 
 def test_js_sequences_clear_then_run():
     """«Очистить и запустить»: сначала clear, потом обычный pipeline."""
-    assert "if (scQOClearBeforeRun.value)" in JS
+    # Режим выбирается mode-селектором: 'clear_and_run' (раньше чекбокс).
+    assert "mode === 'clear_and_run'" in JS
     # clear precedes start within the confirmed handler
     sc = JS[JS.index("async function scQOStartConfirmed("):]
     sc = sc[: sc.index("async function ", 1)]

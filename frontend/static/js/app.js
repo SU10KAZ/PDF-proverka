@@ -8877,7 +8877,13 @@ const app = createApp({
         const scQOConfirm = ref(null);                // preflight payload for confirm modal
         const scQORunning = ref(false);               // start request in flight / job running
         const scQOPreflighting = ref(false);          // preflight request in flight → button feedback
-        const scQOClearBeforeRun = ref(false);        // confirm modal: clear findings+review before run
+        const scQOClearBeforeRun = ref(false);        // confirm modal: clear findings+review before run (legacy compat)
+        // Режим запуска из диалога «Обработать выбранные»:
+        //   'normal'                 — Qwen → Opus (как раньше);
+        //   'clear_and_run'          — clear-analysis, затем Qwen → Opus;
+        //   'opus_only'              — только Opus по готовым enriched MD (без Qwen);
+        //   'clear_result_opus_only' — очистить comparison_result, затем только Opus.
+        const scQOMode = ref('normal');
         const scQOClearing = ref(false);              // clear-analysis request in flight
         let scQOPollTimer = null;
         const scQOClock = ref(Date.now());            // 1s tick → live elapsed timers
@@ -9708,6 +9714,7 @@ const app = createApp({
             const ids = scPairs.value.filter(p => scQOSelected[p.id]).map(p => p.id);
             if (!ids.length || scQOPreflighting.value) return;
             scQOClearBeforeRun.value = false;  // safe default each open
+            scQOMode.value = 'normal';         // safe default each open
             scQOPreflighting.value = true;
             try { scQOConfirm.value = await scQOPreflight(ids); }
             catch (e) { alert('Не удалось подготовить прогон (preflight): ' + ((e && e.message) || e)); }
@@ -9716,6 +9723,7 @@ const app = createApp({
         async function scQOProcessPair(pid) {
             if (scQOPreflighting.value) return;
             scQOClearBeforeRun.value = false;  // safe default each open
+            scQOMode.value = 'normal';         // safe default each open
             scQOPreflighting.value = true;
             try { scQOConfirm.value = await scQOPreflight([pid]); }
             catch (e) { alert('Не удалось подготовить прогон (preflight): ' + ((e && e.message) || e)); }
@@ -9735,9 +9743,17 @@ const app = createApp({
         async function scQOStartConfirmed() {
             const ids = (scQOConfirm.value && scQOConfirm.value.pair_ids) || [];
             if (!ids.length) { scQOConfirm.value = null; return; }
-            // Режим «Очистить и запустить»: 1) clear-analysis, 2) дождаться успеха,
-            // 3) обновить статусы пар, 4) обычный pipeline. Очистка молча НЕ идёт.
-            if (scQOClearBeforeRun.value) {
+            const mode = scQOMode.value || 'normal';
+            // Режимы «Только Opus»: unified-analysis по готовым enriched MD без Qwen.
+            if (mode === 'opus_only' || mode === 'clear_result_opus_only') {
+                await scQOStartOpusOnly(ids, mode === 'clear_result_opus_only');
+                scQOMode.value = 'normal';
+                scQOConfirm.value = null;
+                return;
+            }
+            // Режим «Очистить и запустить»: 1) clear-analysis, 2) обычный pipeline.
+            // Очистка молча НЕ идёт.
+            if (mode === 'clear_and_run') {
                 scQOClearing.value = true;
                 try {
                     const res = await scQOClearAnalysis(ids);
@@ -9761,7 +9777,40 @@ const app = createApp({
             }
             await scQOStart(ids);
             scQOClearBeforeRun.value = false;
+            scQOMode.value = 'normal';
             scQOConfirm.value = null;
+        }
+        // Запустить ТОЛЬКО Opus по выбранным парам (без Qwen) через endpoint
+        // /pairs/opus-only. clearResult=true → очистить текущий comparison_result
+        // (с backup) перед Opus. Пары без enriched MD пропускаются с предупреждением.
+        // Серверный unified-job подхватывается обычным трекером (scOpusRestoreActive).
+        async function scQOStartOpusOnly(pairIds, clearResult) {
+            if (!scSession.value || !scSession.value.id || !pairIds || !pairIds.length) return;
+            scQORunning.value = true;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/opus-only`;
+                const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pair_ids: pairIds, force: true, backup_existing: true,
+                                           clear_comparison_result: !!clearResult }) });
+                if (!r.ok) { scQORunning.value = false; alert('Только Opus: HTTP ' + r.status); return; }
+                const res = await r.json();
+                const skipped = (res && res.skipped) || [];
+                if (skipped.length) {
+                    const txt = skipped.map(s => s.pair_id + ' (' + (s.reason || '?') + ')').join(', ');
+                    alert('Часть пар пропущена (только Opus): ' + txt +
+                        '.\nПары без enriched MD сначала нужно распознать (Qwen).');
+                }
+                // Подхватить запущенный unified-job (если стартовал) + обновить статусы.
+                if (res && res.job_id && typeof scOpusRestoreActive === 'function') {
+                    try { await scOpusRestoreActive(); } catch (e) {}
+                }
+                if (typeof scQOLoadPairTimings === 'function') { try { await scQOLoadPairTimings(); } catch (e) {} }
+                if (typeof scLoadPairCompareStatuses === 'function') { try { await scLoadPairCompareStatuses(); } catch (e) {} }
+            } catch (e) {
+                alert('Не удалось запустить только Opus: ' + ((e && e.message) || e));
+            } finally {
+                scQORunning.value = false;
+            }
         }
         async function scQOStart(pairIds) {
             if (!scSession.value || !scSession.value.id) return;
@@ -14246,7 +14295,7 @@ const app = createApp({
             scScanFolders, scOpenProject, scLoadSessionsList, scFetchSessionsList, scLoadSession,
             scOpenPair, scLoadPairData, scLoadAlignment,
             scQOSelected, scQOJob, scQOConfirm, scQORunning, scQOPreflighting, scQOSelectedCount, scQOAllSelected,
-            scQOClearBeforeRun, scQOClearing, scQOClearAnalysis,
+            scQOClearBeforeRun, scQOMode, scQOClearing, scQOClearAnalysis, scQOStartOpusOnly,
             scQOToggleAll, scQOPairLabel, scQOPairBadge, scQOOpenConfirm, scQOProcessPair,
             scQOStartConfirmed, scQOStart, scQOCancel,
             scQODetailsOpen, scQOElapsedMs, scQOEtaSec, scQOItemFor, scQOItemLaneLabel,

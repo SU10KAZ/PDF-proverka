@@ -48,6 +48,7 @@ from backend.app.services.stage_comparison import auto_match_jobs as auto_match_
 from backend.app.services.stage_comparison import visual_block_equivalence_jobs as vbe_jobs_mod
 from backend.app.services.stage_comparison import pipeline_queue as pipeline_queue_mod
 from backend.app.services.stage_comparison import clear_analysis as clear_analysis_mod
+from backend.app.services.stage_comparison import opus_only as opus_only_mod
 from backend.app.services.stage_comparison import enriched_comparison as enriched_compare_mod
 from backend.app.services.stage_comparison import unified_analysis as unified_analysis_mod
 from backend.app.services.stage_comparison import unified_analysis_jobs as unified_jobs_mod
@@ -1748,6 +1749,54 @@ async def clear_pairs_analysis_endpoint(session_id: str, req: ClearAnalysisReque
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
     return result
+
+
+class OpusOnlyRequest(BaseModel):
+    pair_ids: list[str] = Field(default_factory=list)
+    force: bool = True
+    backup_existing: bool = True
+    clear_comparison_result: bool = False
+
+
+@router.post("/sessions/{session_id}/pairs/opus-only")
+async def opus_only_endpoint(session_id: str, req: OpusOnlyRequest):
+    """Запустить ТОЛЬКО Opus / unified-analysis по выбранным парам, без Qwen.
+
+    Читает готовые `left_enriched.md` / `right_enriched.md` и (пере)создаёт
+    `comparison_result.json`. Qwen / large-sheet / md-enrichment НЕ запускаются,
+    enriched MD не пересобирается, page_enriched.json / OCR / PDF не трогаются.
+
+    Пары без enriched MD пропускаются (`missing_enriched_md`); с running job —
+    `running_job`; превышающие лимит Opus — `too_large` (для них используйте
+    per-pair fallback-бейдж). При `backup_existing`/`clear_comparison_result`
+    текущий `comparison_result.json` бэкапится (и опц. удаляется);
+    `expert_review` / `v2_review_status` не трогаются.
+    """
+    if not req.pair_ids:
+        raise HTTPException(400, "pair_ids required")
+    try:
+        prep = await run_in_threadpool(
+            opus_only_mod.prepare_opus_only,
+            session_id, req.pair_ids,
+            backup_existing=bool(req.backup_existing),
+            clear_comparison_result=bool(req.clear_comparison_result),
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    eligible = prep.get("eligible") or []
+    if not eligible:
+        return {"ok": True, "job_id": None, "started_pairs": [],
+                "skipped": prep.get("skipped") or [], "backups": prep.get("backups") or {}}
+    # Только Opus: force_enrichment=False (Qwen/enrichment не трогаем),
+    # force_compare=True (пере-сравнить готовые enriched MD).
+    job = unified_jobs_mod.create_unified_job(
+        session_id, scope="selected", pair_ids=eligible,
+        force_enrichment=False, force_compare=True, force_fallback=False,
+        confirm=True, skip_ineligible=False)
+    if job.get("status") == "queued":
+        unified_jobs_mod.start_job_in_background(session_id, job["id"])
+    return {"ok": True, "job_id": job.get("id"), "started_pairs": eligible,
+            "skipped": prep.get("skipped") or [], "backups": prep.get("backups") or {}}
 
 
 @router.post("/sessions/{session_id}/md-enrichment-jobs")
