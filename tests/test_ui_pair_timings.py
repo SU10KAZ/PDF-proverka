@@ -3,6 +3,12 @@
 Баг: после F5 scQOItemFor возвращал null (in-memory job потерян) → «—».
 Фикс: scQOItemFor падает на persisted timings (scQOPairTimings), которые
 грузятся scQOLoadPairTimings() с backend /pipeline-qwen-opus/pair-timings.
+
+Регрессия (PR #16 object-autoselect): путь scTryAutoLoadSession грузит сессию
+МИНУЯ scLoadSession, поэтому loader там тоже надо звать. Плюс: scQOItemFor
+должен предпочитать persisted timing терминальному in-memory job (иначе
+устаревший qopipe failed/skipped перебивает свежий ручной repair), а
+scQOItemLaneMs — уметь брать готовый *_duration_sec без started_at.
 """
 from __future__ import annotations
 
@@ -51,3 +57,39 @@ def test_lane_cell_glyphs_unchanged():
 
 def test_exposed_in_setup_return():
     assert "scQOPairTimings, scQOLoadPairTimings," in JS
+
+
+def test_autoload_path_calls_loader():
+    # object-autoselect путь (scTryAutoLoadSession) минует scLoadSession —
+    # должен сам подтянуть persisted timings + active job, иначе после F5 «—».
+    sc = JS[JS.index("async function scTryAutoLoadSession("):]
+    sc = sc[: sc.index("async function ", 1)]
+    assert "scQOLoadPairTimings()" in sc
+    assert "scQORestoreActive()" in sc
+
+
+def test_itemfor_prefers_persisted_over_terminal_job():
+    sc = JS[JS.index("function scQOItemFor("):]
+    sc = sc[: sc.index("async function scQOLoadPairTimings(")]
+    # живой job берётся ТОЛЬКО если running/queued.
+    assert "jobLive" in sc
+    assert "['running', 'queued'].includes(job.status)" in sc
+    # persisted timing проверяется РАНЬШЕ терминального job-item.
+    i_persisted = sc.index("scQOPairTimings.value")
+    i_terminal = sc.rindex("job.items")
+    assert i_persisted < i_terminal
+
+
+def test_lane_ms_duration_sec_fallback():
+    sc = JS[JS.index("function scQOItemLaneMs("):]
+    sc = sc[: sc.index("function scQOItemLaneLabel(")]
+    # без started_at берём готовый *_duration_sec (repair/manual timing).
+    assert "_duration_sec'" in sc
+    assert "* 1000" in sc
+
+
+def test_lane_cell_done_without_duration_shows_check():
+    sc = JS[JS.index("function scQOLaneCell("):]
+    sc = sc[: sc.index("function scQOLaneColor(")]
+    # done без длительности → «✓» (не вводящее «✓ 0с»).
+    assert "dur ? '✓ ' + dur : '✓'" in sc

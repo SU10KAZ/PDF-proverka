@@ -9344,6 +9344,11 @@ const app = createApp({
                 if (!rs.ok) return;
                 const data = await rs.json();
                 scSession.value = data;
+                // Этот путь (object-autoselect после refresh) минует scLoadSession,
+                // поэтому persisted Qwen/Opus времена и активные job'ы тут надо
+                // подтянуть явно — иначе колонки 🟦/🟪 показывают «—» после F5.
+                try { await scQORestoreActive(); } catch (_) {}
+                try { await scQOLoadPairTimings(); } catch (_) {}
                 scAutoLoadInfo.value = {
                     session_id: match.id,
                     created_at: match.created_at,
@@ -9463,17 +9468,27 @@ const app = createApp({
         }
         function scQOItemFor(pid) {
             if (!pid) return null;
-            // 1) живой in-memory job (приоритет — содержит running-состояние)
             const job = scQOJob.value;
+            const jobLive = job && ['running', 'queued'].includes(job.status);
+            // 1) ЖИВОЙ job (running/queued) — приоритет: содержит live-прогресс.
+            if (jobLive) {
+                const it = (job.items || []).find(i => i.pair_id === pid);
+                if (it) return it;
+            }
+            // 2) persisted timing (переживает F5; авторитетно для ПОСЛЕДНЕГО
+            //    прогона по паре — включая ручной repair через unified/large_sheet/
+            //    md, который не идёт через qopipe). Берётся РАНЬШЕ терминального
+            //    in-memory job, иначе устаревший qopipe-item (failed/skipped)
+            //    перебивал бы свежий repair-результат.
+            const t = scQOPairTimings.value && scQOPairTimings.value[pid];
+            if (t) return t;
+            // 3) терминальный in-memory job — последний резерв (сразу после
+            //    завершения, пока persisted-карта ещё не обновилась).
             if (job) {
                 const it = (job.items || []).find(i => i.pair_id === pid);
                 if (it) return it;
             }
-            // 2) fallback на персистентный timing (переживает F5): тот же shape
-            //    item'а (qwen_*/opus_* started/finished/status), поэтому
-            //    scQOLaneCell/scQOLaneColor/scQOItemLaneMs работают без правок.
-            const t = scQOPairTimings.value && scQOPairTimings.value[pid];
-            return t || null;
+            return null;
         }
         // Подтянуть последние Qwen/Opus времена по всем парам из persisted
         // qopipe job-файлов (read-only, маленькие json). Вызывается на загрузке
@@ -9508,7 +9523,12 @@ const app = createApp({
         function scQOItemLaneMs(it, lane) {
             if (!it) return null;
             const st = scQOParseTs(it[lane + '_started_at']);
-            if (st == null) return null;
+            if (st == null) {
+                // Нет start-таймстампа (persisted repair/manual timing) → берём
+                // готовую длительность *_duration_sec, если она есть.
+                const d = it[lane + '_duration_sec'];
+                return (typeof d === 'number' && d >= 0) ? d * 1000 : null;
+            }
             const fin = scQOParseTs(it[lane + '_finished_at']);
             return Math.max(0, (fin != null ? fin : scQOClock.value) - st);
         }
@@ -9522,7 +9542,9 @@ const app = createApp({
             if (!it) return '—';
             const st = it[lane + '_status'];
             const dur = scQOItemLaneLabel(it, lane);
-            if (st === 'done') return '✓ ' + (dur || '0с');
+            // «✓ 22,8м» если длительность известна; иначе просто «✓» (repair-
+            // сигнал без per-pair длительности — лучше, чем вводящее «✓ 0с»).
+            if (st === 'done') return dur ? '✓ ' + dur : '✓';
             if (st === 'running') {
                 // Qwen-дорожка обрабатываемой сейчас пары: показать прогресс по
                 // блокам «… N/M» (живой из активной md-enrichment job), иначе —
