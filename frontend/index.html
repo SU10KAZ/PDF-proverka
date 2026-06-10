@@ -4966,6 +4966,12 @@
                             :disabled="!scSession">
                         4. Отчёт<span v-if="scReportTotalApproved" class="project-tab__count project-tab__count--amber">{{ scReportTotalApproved }}</span>
                     </button>
+                    <button class="project-tab" :class="{'project-tab--active': scTab==='pv2'}"
+                            @click="scTab='pv2'; scPv2EnsureLoaded()"
+                            :disabled="!scSession"
+                            title="Read-only панель Pipeline V2: показывает готовые артефакты, ничего не запускает">
+                        Pipeline V2 <span style="opacity:.55; font-size:10px">β</span>
+                    </button>
                 </div>
             </div>
 
@@ -7173,6 +7179,176 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Tab 5: Pipeline V2 (β) — read-only панель поверх готовых
+                 артефактов. ТОЛЬКО читает ui-payload endpoint: ничего не
+                 запускает, ничего не пишет. -->
+            <div v-if="scTab==='pv2' && scSession">
+                <!-- Шапка: выбор пары + обновить + статус -->
+                <div class="sc-card" style="background:var(--card-bg,#fff); border:1px solid var(--border,#e5e7eb); border-radius:8px; padding:8px 12px; margin-bottom:8px; display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+                    <div style="font-weight:600; font-size:14px">Pipeline V2 <span style="opacity:.5; font-size:11px">β · read-only</span></div>
+                    <select v-model="scPv2PairId" @change="scPv2Load()" class="form-control" style="padding:4px 8px; font-size:12px; max-width:340px">
+                        <option value="">— вся сессия (session-level) —</option>
+                        <option v-for="p in scPairs" :key="'pv2'+p.id" :value="p.id">
+                            {{ p.id }}{{ (p.left && p.left.filename) ? ' · ' + p.left.filename : ((p.right && p.right.filename) ? ' · ' + p.right.filename : '') }}
+                        </option>
+                    </select>
+                    <button class="btn btn-secondary" @click="scPv2Load()" :disabled="scPv2Loading"
+                            title="Перечитать готовые артефакты (ничего не запускает)">⟳</button>
+                    <span v-if="scPv2Resp && !scPv2Loading" style="font-size:11px; color:#6b7280">
+                        {{ scPv2StatusBadge(scPv2Resp.status) }}
+                        <template v-if="scPv2Resp.source"> · {{ scPv2Resp.source === 'ready_payload' ? 'готовый payload' : 'собран из артефактов' }}</template>
+                        <template v-if="scPv2Resp.artifacts_dir"> · {{ scPv2Resp.artifacts_dir }}</template>
+                    </span>
+                </div>
+
+                <!-- Загрузка -->
+                <div v-if="scPv2Loading" class="sc-card" style="padding:18px; text-align:center; color:#6b7280; font-size:13px">
+                    Загрузка Pipeline V2 payload…
+                </div>
+
+                <!-- Транспорт / доступ -->
+                <div v-else-if="scPv2Error" class="sc-card" style="padding:12px 14px; background:#fef2f2; border:1px solid #fecaca; border-radius:8px; font-size:13px; color:#991b1b">
+                    ⚠ {{ scPv2Error }}
+                </div>
+
+                <template v-else-if="scPv2Resp">
+                    <!-- not_found: нормальное состояние, пока артефактов нет -->
+                    <div v-if="scPv2Resp.status==='not_found'" class="sc-card" style="padding:26px 18px; text-align:center; border:1px dashed #d1d5db; border-radius:8px; background:#fafafa">
+                        <div style="font-size:26px; margin-bottom:8px">∅</div>
+                        <div style="font-size:14px; font-weight:600; margin-bottom:4px">Pipeline V2 ещё не запускался для этой {{ scPv2PairId ? 'пары' : 'сессии' }}.</div>
+                        <div style="font-size:12.5px; color:#6b7280">Артефакты не найдены. Панель только читает готовые результаты — запуск анализа отсюда не выполняется.</div>
+                        <div v-if="scPv2Resp.available_pairs && scPv2Resp.available_pairs.length" style="margin-top:12px; font-size:12.5px">
+                            Артефакты есть у пар:
+                            <button v-for="pid in scPv2Resp.available_pairs" :key="'pv2ap'+pid"
+                                    class="btn btn-secondary" style="margin:2px 3px; padding:2px 10px; font-size:12px"
+                                    @click="scPv2OpenPair(pid)">{{ pid }}</button>
+                        </div>
+                    </div>
+
+                    <!-- error: артефакты есть, но непригодны -->
+                    <div v-else-if="scPv2Resp.status==='error'" class="sc-card" style="padding:12px 14px; background:#fffbeb; border:1px solid #fde68a; border-radius:8px; font-size:13px">
+                        <div style="font-weight:600; color:#92400e; margin-bottom:4px">⚠ Артефакты Pipeline V2 найдены, но непригодны для отображения.</div>
+                        <div style="font-size:12px; color:#92400e">{{ scPv2Resp.message }}</div>
+                        <ul v-if="scPv2Resp.warnings && scPv2Resp.warnings.length" style="margin:6px 0 0 18px; font-size:11.5px; color:#a16207">
+                            <li v-for="(w, wi) in scPv2Resp.warnings.slice(0, 8)" :key="'pv2w'+wi">{{ w }}</li>
+                        </ul>
+                    </div>
+
+                    <!-- ok / partial: payload -->
+                    <template v-else-if="scPv2Payload">
+                        <div v-if="scPv2Payload.status==='failed'"
+                             style="margin-bottom:8px; padding:6px 12px; background:#fef2f2; border:1px solid #fecaca; border-radius:6px; font-size:12px; color:#991b1b">
+                            ❌ Pipeline V2 dry-run завершился с ошибкой — результаты ниже неполные или недостоверны.
+                            <span v-if="scPv2AllWarnings.length" style="opacity:.85">{{ scPv2AllWarnings[0] }}</span>
+                        </div>
+                        <div v-else-if="scPv2Resp.status==='partial' || scPv2Payload.status==='completed_with_warnings'"
+                             style="margin-bottom:8px; padding:6px 12px; background:#fffbeb; border:1px solid #fde68a; border-radius:6px; font-size:12px; color:#92400e">
+                            ◐ Payload собран с предупреждениями — часть отчётов dry-run недоступна или деградирована.
+                            <span v-if="scPv2AllWarnings.length" style="opacity:.8">({{ scPv2AllWarnings.length }} warning)</span>
+                        </div>
+
+                        <!-- Headline -->
+                        <div v-if="scPv2Headline" class="sc-card" style="display:flex; gap:14px; flex-wrap:wrap; padding:10px 14px; margin-bottom:8px; background:var(--card-bg,#fff); border:1px solid var(--border,#e5e7eb); border-radius:8px; font-size:12.5px">
+                            <div><b>{{ scPv2Headline.deltas_total }}</b> изменений всего</div>
+                            <div>· в LLM: <b>{{ scPv2Headline.selected_for_explanation_total }}</b></div>
+                            <div style="color:#15803d">✅ подтверждённые: <b>{{ scPv2Headline.confirmed_total }}</b></div>
+                            <div style="color:#a16207">🟡 на проверку: <b>{{ scPv2Headline.needs_review_total }}</b></div>
+                            <div style="color:#c2410c">🟠 слабая графика: <b>{{ scPv2Headline.weak_graphic_total }}</b></div>
+                            <div style="color:#6b7280">⚪ скрытый шум: <b>{{ scPv2Headline.hidden_noise_total }}</b></div>
+                            <div style="color:#b91c1c">🔴 ошибки/пропущенные: <b>{{ scPv2Headline.failed_or_skipped_total }}</b></div>
+                            <div v-if="scPv2Headline.coverage_notes_total" style="opacity:.7">⚑ coverage notes: {{ scPv2Headline.coverage_notes_total }}</div>
+                        </div>
+
+                        <!-- Фильтры -->
+                        <div v-if="scPv2HasFilterOptions" class="sc-card" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; padding:8px 12px; margin-bottom:8px; background:var(--card-bg,#fff); border:1px solid var(--border,#e5e7eb); border-radius:8px">
+                            <select v-model="scPv2Filters.entity_type" class="form-control" style="padding:3px 6px; font-size:12px">
+                                <option value="">тип сущности: все</option>
+                                <option v-for="v in scPv2FilterOptions.entity_type" :key="'pv2fe'+v" :value="v">{{ v }}</option>
+                            </select>
+                            <select v-model="scPv2Filters.delta_type" class="form-control" style="padding:3px 6px; font-size:12px">
+                                <option value="">тип изменения: все</option>
+                                <option v-for="v in scPv2FilterOptions.delta_type" :key="'pv2fd'+v" :value="v">{{ v }}</option>
+                            </select>
+                            <select v-model="scPv2Filters.risk_level" class="form-control" style="padding:3px 6px; font-size:12px">
+                                <option value="">риск: все</option>
+                                <option v-for="v in scPv2FilterOptions.risk_level" :key="'pv2fr'+v" :value="v">{{ v }}</option>
+                            </select>
+                            <select v-model="scPv2Filters.critic_verdict" class="form-control" style="padding:3px 6px; font-size:12px">
+                                <option value="">вердикт критика: все</option>
+                                <option v-for="v in scPv2FilterOptions.critic_verdict" :key="'pv2fv'+v" :value="v">{{ v }}</option>
+                            </select>
+                            <button v-if="scPv2FiltersActive" class="btn btn-secondary" style="padding:2px 10px; font-size:12px" @click="scPv2ResetFilters()">✕ сбросить</button>
+                        </div>
+
+                        <!-- Секции -->
+                        <div v-for="sec in scPv2Sections" :key="'pv2s'+sec.key"
+                             class="sc-card" style="margin-bottom:8px; border:1px solid var(--border,#e5e7eb); border-radius:8px; background:var(--card-bg,#fff); overflow:hidden">
+                            <div @click="scPv2ToggleSection(sec.key)"
+                                 style="display:flex; gap:8px; align-items:center; padding:8px 12px; cursor:pointer; user-select:none; background:#f8fafc">
+                                <span style="font-size:13px">{{ scPv2Open[sec.key] ? '▾' : '▸' }}</span>
+                                <span>{{ scPv2SectionEmoji(sec.key) }}</span>
+                                <span style="font-weight:600; font-size:13px">{{ sec.title || sec.key }}</span>
+                                <span style="font-size:11.5px; color:#6b7280">{{ sec.count }}</span>
+                                <span v-if="scPv2FiltersActive && scPv2CardsFor(sec).length !== (sec.cards || []).length"
+                                      style="font-size:11px; color:#a16207">(показано {{ scPv2CardsFor(sec).length }})</span>
+                                <span v-if="sec.display_hint==='warning'" style="font-size:10.5px; color:#c2410c; border:1px solid #fed7aa; border-radius:8px; padding:0 6px">предупреждение</span>
+                                <span v-if="sec.show_in_diagnostics" style="font-size:10.5px; color:#6b7280; border:1px solid #e5e7eb; border-radius:8px; padding:0 6px">диагностика</span>
+                            </div>
+                            <div v-if="scPv2Open[sec.key]" style="padding:8px 12px">
+                                <div style="font-size:11.5px; color:#6b7280; margin-bottom:8px">{{ sec.description }}</div>
+                                <div v-if="!scPv2CardsFor(sec).length" style="font-size:12px; color:#9ca3af; padding:4px 0 8px">
+                                    {{ (sec.cards || []).length ? 'Нет карточек под выбранные фильтры.' : (sec.count ? 'Карточки недоступны (см. warnings) — известны только id дельт.' : 'Пусто.') }}
+                                </div>
+                                <!-- Карточки -->
+                                <div v-for="(card, ci) in scPv2CardsFor(sec)" :key="'pv2c' + sec.key + (card.delta_id || ci)"
+                                     style="border:1px solid #e5e7eb; border-radius:6px; padding:8px 10px; margin-bottom:6px">
+                                    <div style="display:flex; justify-content:space-between; gap:10px; align-items:baseline; flex-wrap:wrap">
+                                        <div style="font-weight:600; font-size:13px">{{ card.title || card.delta_id || '—' }}</div>
+                                        <div style="font-size:11px; color:#6b7280; white-space:nowrap">{{ card.subtitle }}</div>
+                                    </div>
+                                    <div v-if="card.old_value || card.new_value" style="font-size:12px; margin-top:5px">
+                                        <code style="background:#fef2f2; border:1px solid #fecaca; border-radius:4px; padding:1px 5px">{{ card.old_value || '∅' }}</code>
+                                        <span style="opacity:.6"> → </span>
+                                        <code style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:4px; padding:1px 5px">{{ card.new_value || '∅' }}</code>
+                                    </div>
+                                    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; font-size:10.5px">
+                                        <span v-if="card.risk_level" style="border:1px solid #e5e7eb; border-radius:8px; padding:0 7px">риск: {{ card.risk_level }}</span>
+                                        <span style="border:1px solid #e5e7eb; border-radius:8px; padding:0 7px">{{ card.critic_verdict || 'нет объяснения' }}</span>
+                                        <span v-if="card.confidence != null" style="border:1px solid #e5e7eb; border-radius:8px; padding:0 7px">confidence: {{ card.confidence }}</span>
+                                        <span v-if="card.groundedness" style="border:1px solid #e5e7eb; border-radius:8px; padding:0 7px">{{ card.groundedness }}</span>
+                                        <span v-if="card.should_show_to_engineer === false" style="border:1px solid #fde68a; background:#fffbeb; color:#92400e; border-radius:8px; padding:0 7px">скрыто для инженера</span>
+                                    </div>
+                                    <div v-if="card.summary" style="font-size:12px; margin-top:6px">{{ card.summary }}</div>
+                                    <div v-if="card.contractor_impact" style="font-size:11.5px; color:#6b7280; margin-top:3px">Влияние: {{ card.contractor_impact }}</div>
+                                    <div style="font-size:10.5px; color:#9ca3af; margin-top:6px">
+                                        <template v-if="card.page_numbers">стр. A: {{ card.page_numbers.left != null ? card.page_numbers.left : '—' }} · стр. B: {{ card.page_numbers.right != null ? card.page_numbers.right : '—' }}</template>
+                                        <template v-if="card.block_ids && (card.block_ids.left || card.block_ids.right)"> · блоки: {{ card.block_ids.left || '—' }} / {{ card.block_ids.right || '—' }}</template>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Готовность графики + warnings -->
+                        <div v-if="scPv2Payload.graphic_readiness" style="font-size:11.5px; color:#6b7280; margin-bottom:6px">
+                            Графика: {{ scPv2Payload.graphic_readiness.status }}
+                            · блоков {{ scPv2Payload.graphic_readiness.graphic_blocks_total }}
+                            · пригодно для diff {{ scPv2Payload.graphic_readiness.usable_for_diff_total }}
+                        </div>
+                        <details v-if="scPv2AllWarnings.length" style="font-size:11px; color:#6b7280; margin-bottom:10px">
+                            <summary style="cursor:pointer">Warnings ({{ scPv2AllWarnings.length }})</summary>
+                            <ul style="margin:4px 0 0 18px">
+                                <li v-for="(w, wi) in scPv2AllWarnings" :key="'pv2pw'+wi">{{ w }}</li>
+                            </ul>
+                        </details>
+                    </template>
+                </template>
+
+                <!-- Ещё не загружали -->
+                <div v-else class="sc-card" style="padding:18px; text-align:center; color:#9ca3af; font-size:13px">
+                    Нажмите ⟳, чтобы прочитать готовые артефакты Pipeline V2.
                 </div>
             </div>
 

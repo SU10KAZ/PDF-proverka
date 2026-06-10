@@ -13910,6 +13910,161 @@ const app = createApp({
             }
         }
 
+        // ─── Stage Comparison: Pipeline V2 (β) — read-only панель ────────
+        // Панель ТОЛЬКО читает GET /api/stage-comparison/pipeline-v2/{sid}/
+        // ui-payload (+?pair_id=). Ничего не запускает (ни Pipeline V2, ни
+        // Qwen/Opus), ничего не пишет. not_found — нормальное состояние,
+        // пока артефакты dry-run не записаны в comparison/sessions/.
+        const scPv2Loading = ref(false);
+        const scPv2Error = ref('');          // транспорт / HTTP / доступ
+        const scPv2Resp = ref(null);         // envelope {status, payload, …}
+        const scPv2PairId = ref('');         // '' = session-level
+        const scPv2LoadedFor = ref('');      // ключ sid|pair последней загрузки
+        const scPv2Open = reactive({});      // sectionKey -> развёрнута ли
+        const scPv2Filters = reactive({ entity_type: '', risk_level: '',
+                                        critic_verdict: '', delta_type: '' });
+
+        const scPv2Payload = computed(() =>
+            (scPv2Resp.value && scPv2Resp.value.payload) || null);
+        const scPv2Sections = computed(() =>
+            (scPv2Payload.value && scPv2Payload.value.sections) || []);
+        const scPv2Headline = computed(() =>
+            (scPv2Payload.value && scPv2Payload.value.headline) || null);
+        const scPv2FilterOptions = computed(() => {
+            const f = (scPv2Payload.value && scPv2Payload.value.filters) || {};
+            return {
+                entity_type: f.entity_types || [],
+                risk_level: f.risk_levels || [],
+                critic_verdict: f.critic_verdicts || [],
+                delta_type: f.delta_types || [],
+            };
+        });
+        const scPv2HasFilterOptions = computed(() => {
+            const o = scPv2FilterOptions.value;
+            return Object.values(o).some(list => list && list.length);
+        });
+        const scPv2FiltersActive = computed(() =>
+            Object.values(scPv2Filters).some(v => v));
+
+        const SC_PV2_SECTION_EMOJI = {
+            confirmed_changes: '✅', needs_review: '🟡',
+            weak_graphic_review: '🟠', likely_noise_hidden_by_default: '⚪',
+            llm_failed_or_skipped: '🔴',
+        };
+        function scPv2SectionEmoji(key) {
+            return SC_PV2_SECTION_EMOJI[key] || '▫';
+        }
+
+        // Карточка проходит фильтры? Отсутствующие поля карточки не валят
+        // фильтрацию (null != выбранное значение → просто скрыта).
+        function scPv2CardMatches(card, filters) {
+            if (!card) return false;
+            const f = filters || scPv2Filters;
+            return (!f.entity_type || card.entity_type === f.entity_type)
+                && (!f.risk_level || card.risk_level === f.risk_level)
+                && (!f.critic_verdict || card.critic_verdict === f.critic_verdict)
+                && (!f.delta_type || card.delta_type === f.delta_type);
+        }
+        function scPv2CardsFor(sec) {
+            const cards = (sec && sec.cards) || [];
+            if (!scPv2FiltersActive.value) return cards;
+            return cards.filter(c => scPv2CardMatches(c));
+        }
+        function scPv2ResetFilters() {
+            scPv2Filters.entity_type = '';
+            scPv2Filters.risk_level = '';
+            scPv2Filters.critic_verdict = '';
+            scPv2Filters.delta_type = '';
+        }
+
+        // default_visible → секция развёрнута; noise/llm_failed свёрнуты.
+        function scPv2ApplyDefaultOpen(payload) {
+            for (const sec of (payload && payload.sections) || []) {
+                if (sec && sec.key) scPv2Open[sec.key] = !!sec.default_visible;
+            }
+        }
+        function scPv2ToggleSection(key) {
+            scPv2Open[key] = !scPv2Open[key];
+        }
+
+        function scPv2StatusBadge(status) {
+            return { ok: '✓ ok', partial: '◐ partial', not_found: '∅',
+                     error: '⚠ error' }[status] || (status || '');
+        }
+
+        // Объединённые warnings: envelope (чтение артефактов) + payload
+        // (adapter/summary warnings вида «section_X: … without card data»).
+        const scPv2AllWarnings = computed(() => {
+            const env = (scPv2Resp.value && scPv2Resp.value.warnings) || [];
+            const pl = (scPv2Payload.value && scPv2Payload.value.warnings) || [];
+            return [...env, ...pl];
+        });
+
+        // sequence-guard: авторитетен только ПОСЛЕДНИЙ запрос — поздний ответ
+        // старой пары/сессии не должен перетирать актуальный (race).
+        let scPv2ReqSeq = 0;
+
+        async function scPv2Load() {
+            if (!scSession.value || !scSession.value.id) return;
+            const myReq = ++scPv2ReqSeq;
+            scPv2Loading.value = true;
+            scPv2Error.value = '';
+            const sid = scSession.value.id;
+            const pid = scPv2PairId.value;
+            let url = '/api/stage-comparison/pipeline-v2/'
+                + encodeURIComponent(sid) + '/ui-payload';
+            if (pid) url += '?pair_id=' + encodeURIComponent(pid);
+            try {
+                const r = await fetch(url);
+                if (myReq !== scPv2ReqSeq) return;     // устаревший ответ
+                if (r.status === 401 || r.status === 403) {
+                    // portal_auth-интерсептор обычно сам уводит на /login;
+                    // это запасной понятный текст, если редиректа не было
+                    scPv2Resp.value = null;
+                    scPv2Error.value = 'Доступ запрещён (' + r.status
+                        + '). Войдите в портал заново.';
+                    return;
+                }
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const j = await r.json();
+                if (myReq !== scPv2ReqSeq) return;     // устаревший ответ
+                scPv2Resp.value = j;
+                if (j && j.payload) scPv2ApplyDefaultOpen(j.payload);
+                scPv2LoadedFor.value = sid + '|' + pid;
+            } catch (e) {
+                if (myReq !== scPv2ReqSeq) return;
+                scPv2Resp.value = null;
+                scPv2Error.value = String((e && e.message) || e);
+            } finally {
+                if (myReq === scPv2ReqSeq) scPv2Loading.value = false;
+            }
+        }
+        // Ленивая загрузка при входе на вкладку / смене сессии-пары.
+        function scPv2EnsureLoaded() {
+            if (!scSession.value || !scSession.value.id) return;
+            const key = scSession.value.id + '|' + scPv2PairId.value;
+            if (scPv2LoadedFor.value !== key && !scPv2Loading.value) scPv2Load();
+        }
+        function scPv2OpenPair(pid) {
+            scPv2PairId.value = pid || '';
+            scPv2Load();
+        }
+        // Смена пары → сброс фильтров: значения старой пары могли исчезнуть
+        // из options новой (селекты выглядели бы пустыми и скрывали карточки).
+        watch(scPv2PairId, () => { scPv2ResetFilters(); });
+        // Смена сессии → полный сброс панели: pair из старой сессии не должен
+        // утекать в запросы новой, фильтры и payload устаревают; инвалидация
+        // sequence отменяет in-flight ответы старой сессии.
+        watch(() => (scSession.value && scSession.value.id) || '', () => {
+            scPv2ReqSeq++;
+            scPv2PairId.value = '';
+            scPv2Resp.value = null;
+            scPv2LoadedFor.value = '';
+            scPv2Error.value = '';
+            scPv2Loading.value = false;
+            scPv2ResetFilters();
+        });
+
         return {
             // Theme
             theme, toggleTheme,
@@ -14167,6 +14322,13 @@ const app = createApp({
             findingExtRegBadge,
             // ─── Stage Comparison ───
             scTab, scDiffSubtab, scStageAPath, scStageBPath,
+            // Pipeline V2 (β) — read-only панель
+            scPv2Loading, scPv2Error, scPv2Resp, scPv2PairId,
+            scPv2Open, scPv2Filters, scPv2Payload, scPv2Sections,
+            scPv2Headline, scPv2FilterOptions, scPv2HasFilterOptions,
+            scPv2FiltersActive, scPv2SectionEmoji, scPv2CardsFor,
+            scPv2ResetFilters, scPv2ToggleSection, scPv2StatusBadge,
+            scPv2AllWarnings, scPv2Load, scPv2EnsureLoaded, scPv2OpenPair,
             // Saved canonical config (one-click apply/save)
             scSavedConfig, scSavedConfigSaving, scSavedConfigMsg,
             scLoadSavedConfig, scApplySavedConfig, scSaveCurrentAsCanonical,
