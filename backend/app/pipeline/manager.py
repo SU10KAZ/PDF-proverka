@@ -1202,6 +1202,37 @@ class PipelineManager:
             version_dir = root_dir
         return root_dir, version_dir, version_dir / "_output"
 
+    def _require_project_md(self, pid: str, root_dir: Path, version_dir: Path, info_path: Path):
+        """Version-aware MD-gate. Бросает RuntimeError с понятной диагностикой
+        (md_not_found / ambiguous_md_candidates), если MD не разрешается в папке
+        активной версии. Возвращает MdResolution при успехе.
+
+        Заменяет прежний наивный glob: учитывает latest_version_id, не доверяет
+        битому project_info (md_file=None / pdf_file на чужой проект), даёт
+        cross-version подсказку, не угадывает при неоднозначности.
+        """
+        from backend.app.services.common.md_resolver import resolve_project_md
+        from backend.app.services.common import version_service as _vs
+        info = {}
+        try:
+            p = Path(info_path)
+            if p.exists():
+                info = json.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            info = {}
+        latest_vid = None
+        try:
+            latest_vid = _vs.get_latest_version_id(Path(root_dir), pid)
+        except Exception:
+            latest_vid = None
+        res = resolve_project_md(
+            Path(version_dir), pid,
+            project_info=info, root_dir=Path(root_dir), latest_version_id=latest_vid,
+        )
+        if not res.ok:
+            raise RuntimeError(res.error_message(pid))
+        return res
+
     def _make_stage_context(self, job: "AuditJob") -> "PipelineStageContext":
         """Построить PipelineStageContext из текущего job для передачи в stage runner-ы."""
         from backend.app.pipeline.context import PipelineStageContext
@@ -3612,17 +3643,8 @@ class PipelineManager:
             _root_dir, project_dir, output_dir = self._resolve_job_paths(job)
             info_path = project_dir / "project_info.json"
 
-            # ═══ Проверка MD-файла (обязательный источник текста) ═══
-            md_candidates = [
-                f for f in project_dir.iterdir()
-                if f.suffix == ".md" and f.name.endswith("_document.md")
-            ]
-            if not md_candidates:
-                raise RuntimeError(
-                    f"MD-файл не найден для проекта {pid}. "
-                    f"Анализ без MD-файла не поддерживается. "
-                    f"Создайте MD через Chandra OCR и положите в папку проекта."
-                )
+            # ═══ Проверка MD-файла (version-aware, обязательный источник текста) ═══
+            self._require_project_md(pid, _root_dir, project_dir, info_path)
 
             # ═══ ЭТАП 1: Подготовка текста ═══
             job.stage = AuditStage.PREPARE
@@ -4089,13 +4111,8 @@ class PipelineManager:
             with open(info_path, "r", encoding="utf-8") as f:
                 project_info = json.load(f)
 
-            # ═══ Проверка MD-файла (обязательный источник текста) ═══
-            if find_project_markdown(project_dir, project_info) is None:
-                raise RuntimeError(
-                    f"MD-файл не найден для проекта {pid}. "
-                    f"{GEMMA_STAGE_LABEL} и анализ без MD-файла не поддерживаются. "
-                    f"Создайте MD через Chandra OCR и положите в папку проекта."
-                )
+            # ═══ Проверка MD-файла (version-aware, обязательный источник текста) ═══
+            self._require_project_md(pid, _root_dir, project_dir, info_path)
 
             # ═══ ЭТАП 1: Кроп image-блоков ═══
             job.stage = AuditStage.CROP_BLOCKS
@@ -4180,6 +4197,20 @@ class PipelineManager:
                 job.status = JobStatus.CANCELLED
                 return
             if not _ta_result.success:
+                # rate_limit_exhausted + pause_on_rate_limit: не давать очереди
+                # бесконтрольно стартовать следующий проект — ставим паузу.
+                if (
+                    _ta_result.data
+                    and _ta_result.data.get("pause_on_rate_limit")
+                    and not self._paused
+                ):
+                    await self._log(
+                        job,
+                        "⏸ Очередь на паузе: rate_limit_exhausted "
+                        "(TEXT_ANALYSIS_PAUSE_ON_RATE_LIMIT=true)",
+                        "warn",
+                    )
+                    await self.pause("finish_current")
                 raise RuntimeError(_ta_result.error or "Текстовый анализ: ошибка")
 
             print(f"[{pid}] ЭТАП 2 OK")
