@@ -11,13 +11,15 @@ Backend-only слой, который объединяет изолирован�
             describe_matched_graphic_blocks        → graphic_descriptor_matched_report.json
       → [4] extract_entities_for_matched_documents → entity_extraction_report.json
       → [5] diff_entity_extraction_report          → entity_diff_report.json
+      → [6] explain_entity_diff_report             → delta_explanation_report.json
       → pipeline_v2_summary.json / .md + pipeline_v2_manifest.json
 
-Это НЕ UI, НЕ Opus/critic, НЕ замена старой логики. Только оркестрация уже
-готовых чистых функций этапов 1–5 + сводка/манифест. Никаких сетевых вызовов,
-Qwen/Opus/OCR/PDF-render и скачивания `crop_url`. Graphic Descriptor —
-вспомогательный «светофор» готовности графики к diff: его падение fail-soft и НЕ
-валит обязательные этапы 1–2/4–5.
+Это НЕ UI, НЕ замена старой логики. Только оркестрация уже готовых чистых функций
++ сводка/манифест. Никаких сетевых вызовов, Qwen/Opus/OCR/PDF-render и скачивания
+`crop_url`. Graphic Descriptor — вспомогательный «светофор» готовности графики к
+diff; Delta Explanation — LLM-объяснение готовых дельт с ИНЪЕКТИРУЕМЫМ
+``llm_runner`` (по умолчанию ``None`` → `skipped_no_runner`, без реального LLM).
+Оба вспомогательных слоя fail-soft и НЕ валят обязательные этапы 1–2/4–5.
 
 Fail-soft: writer'ы атомарны (tmp + os.replace), поэтому частично записанного
 broken JSON не остаётся. Если этап падает — `status=failed`, в summary короткая
@@ -55,6 +57,10 @@ from backend.app.services.stage_comparison.pipeline_v2_graphic_block_descriptor 
     describe_matched_graphic_blocks,
     write_graphic_descriptor_report,
 )
+from backend.app.services.stage_comparison.pipeline_v2_delta_explanation import (
+    explain_entity_diff_report,
+    write_delta_explanation_report,
+)
 
 SUMMARY_VERSION = 1
 SUMMARY_KIND = "stage_comparison_pipeline_v2_dry_run_summary"
@@ -72,6 +78,7 @@ _ARTIFACT_FILENAMES = {
     "graphic_matched": "graphic_descriptor_matched_report.json",
     "entity_extraction": "entity_extraction_report.json",
     "entity_diff": "entity_diff_report.json",
+    "delta_explanation": "delta_explanation_report.json",
     "summary_json": "pipeline_v2_summary.json",
     "summary_md": "pipeline_v2_summary.md",
     "manifest": "pipeline_v2_manifest.json",
@@ -80,7 +87,8 @@ _ARTIFACT_FILENAMES = {
 _MANIFEST_ARTIFACT_KEYS = [
     "left_model", "right_model", "block_matching",
     "left_graphic", "right_graphic", "graphic_matched",
-    "entity_extraction", "entity_diff", "summary_json", "summary_md",
+    "entity_extraction", "entity_diff", "delta_explanation",
+    "summary_json", "summary_md",
 ]
 
 
@@ -248,12 +256,58 @@ def _graphic_descriptor_section(left_graphic: Any, right_graphic: Any,
     return sec
 
 
+def _delta_explanation_status(enabled: bool, error: Optional[str], de_report: Any) -> str:
+    if not enabled:
+        return "disabled"
+    if error:
+        return "failed"
+    s = _summary_of(de_report)
+    selected = s.get("selected_total", 0)
+    skipped = s.get("skipped_total", 0)
+    failed = s.get("failed_total", 0)
+    warns = s.get("warnings_count", 0)
+    if selected == 0:
+        return "completed"
+    if skipped == selected:
+        return "skipped_no_runner"
+    if failed or warns:
+        return "completed_with_warnings"
+    return "completed"
+
+
+def _delta_explanation_section(de_report: Any, de_enabled: bool, de_error: Optional[str]) -> dict:
+    s = _summary_of(de_report)
+    sec = {
+        "enabled": bool(de_enabled),
+        "status": _delta_explanation_status(de_enabled, de_error, de_report),
+        "deltas_total": s.get("deltas_total", 0),
+        "selected_total": s.get("selected_total", 0),
+        "explained_total": s.get("explained_total", 0),
+        "skipped_total": s.get("skipped_total", 0),
+        "failed_total": s.get("failed_total", 0),
+        "accepted_total": s.get("accepted_total", 0),
+        "rejected_total": s.get("rejected_total", 0),
+        "needs_human_review_total": s.get("needs_human_review_total", 0),
+        "possible_ocr_noise_total": s.get("possible_ocr_noise_total", 0),
+        "possible_weak_graphic_total": s.get("possible_weak_graphic_total", 0),
+        "by_risk_level": s.get("by_risk_level", {}),
+        "by_status": s.get("by_status", {}),
+        "coverage_notes_total": len((de_report or {}).get("coverage_notes") or [])
+        if isinstance(de_report, dict) else 0,
+        "warnings_count": s.get("warnings_count", 0),
+    }
+    if de_error:
+        sec["error"] = de_error
+    return sec
+
+
 def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report: Any,
                               entity_report: Any, diff_report: Any, inputs: dict,
                               artifact_paths: dict, warnings: list[str], status: str,
                               error: Optional[str] = None, left_graphic: Any = None,
                               right_graphic: Any = None, matched_graphic: Optional[list] = None,
-                              graphic_error: Optional[str] = None) -> dict:
+                              graphic_error: Optional[str] = None, de_report: Any = None,
+                              de_enabled: bool = True, de_error: Optional[str] = None) -> dict:
     """Собрать ``pipeline_v2_summary`` из артефактов этапов 1–4."""
     lm, rm = _summary_of(left_model), _summary_of(right_model)
     bm, em, dm = _summary_of(block_report), _summary_of(entity_report), _summary_of(diff_report)
@@ -305,6 +359,7 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
         "stages": stages,
         "graphic_descriptor": _graphic_descriptor_section(
             left_graphic, right_graphic, matched_graphic, graphic_error),
+        "delta_explanation": _delta_explanation_section(de_report, de_enabled, de_error),
         "warnings": warnings,
         "next_recommended_stage": NEXT_RECOMMENDED_STAGE,
     }
@@ -430,6 +485,26 @@ def write_pipeline_v2_summary_md(out_path: str | Path, summary: dict,
         lines.append(f"- ⚠ Ошибка graphic descriptor: {gd['error']}")
     lines.append("")
 
+    de = summary.get("delta_explanation", {}) or {}
+    lines.append("## Delta explanation / critic")
+    lines.append(f"- Status: `{de.get('status', 'unknown')}`")
+    lines.append(f"- Selected deltas: {de.get('selected_total', 0)} из {de.get('deltas_total', 0)}")
+    lines.append(f"- Explained: {de.get('explained_total', 0)}")
+    lines.append(f"- Needs human review: {de.get('needs_human_review_total', 0)}")
+    lines.append(f"- Possible OCR noise: {de.get('possible_ocr_noise_total', 0)}")
+    lines.append(f"- Possible weak graphic: {de.get('possible_weak_graphic_total', 0)}")
+    lines.append(f"- Coverage notes: {de.get('coverage_notes_total', 0)}")
+    de_status = de.get("status")
+    if de_status == "disabled":
+        lines.append("- ℹ LLM explanation отключён (delta_explanation.enabled=false).")
+    elif de_status == "skipped_no_runner":
+        lines.append("- ℹ LLM explanation не запускался: runner не передан (offline).")
+    elif de_status == "failed":
+        lines.append(f"- ⚠ LLM explanation упал: {de.get('error', 'см. warnings')}.")
+    else:
+        lines.append("- ✅ LLM explanation выполнен по выбранным дельтам.")
+    lines.append("")
+
     lines.append("## Warnings")
     if warnings:
         for w in warnings[:10]:
@@ -497,11 +572,15 @@ def write_pipeline_v2_manifest(out_path: str | Path, artifact_paths: dict) -> Pa
 
 
 def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str | Path,
-                            options: Optional[dict] = None) -> dict:
-    """Прогнать этапы 1–4 offline и записать артефакты в ``out_dir``.
+                            options: Optional[dict] = None, llm_runner: Any = None) -> dict:
+    """Прогнать этапы 1–5 (+ delta explanation) offline и записать артефакты.
 
     Возвращает summary-словарь (status ok/completed_with_warnings/failed).
     Чистый offline-конвейер: без сети/Qwen/Opus/crop-download.
+
+    ``llm_runner`` ИНЪЕКТИРУЕТСЯ в delta explanation. По умолчанию ``None`` →
+    объяснения `skipped_no_runner` (offline). Реальный runner подключается
+    снаружи (controlled smoke), здесь не создаётся.
     """
     options = options or {}
     out_dir = Path(out_dir)
@@ -516,12 +595,17 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
         "right": _input_info(right, warnings, "right"),
     }
 
+    de_opts = options.get("delta_explanation") or {}
+    de_enabled = de_opts.get("enabled", True) is not False
+
     status = "ok"
     error: Optional[str] = None
     left_model = right_model = block_report = entity_report = diff_report = None
     left_graphic = right_graphic = None
     matched_graphic: list = []
     graphic_error: Optional[str] = None
+    de_report = None
+    de_error: Optional[str] = None
 
     try:
         for side, pkg in (("left", left), ("right", right)):
@@ -570,6 +654,20 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
         diff_report = diff_entity_extraction_report(entity_report, options.get("diff"))
         write_entity_diff_report(paths["entity_diff"], diff_report)
 
+        # [6] delta explanation / critic — вспомогательный LLM-слой, fail-soft.
+        #     По умолчанию llm_runner=None → skipped_no_runner (offline).
+        if de_enabled:
+            try:
+                de_report = explain_entity_diff_report(
+                    diff_report,
+                    graphic_descriptor_report={"left": left_graphic,
+                                               "right": right_graphic,
+                                               "matched": matched_graphic},
+                    options=de_opts, llm_runner=llm_runner)
+                write_delta_explanation_report(paths["delta_explanation"], de_report)
+            except Exception as dexc:  # noqa: BLE001 — delta explanation не критичен
+                de_error = f"{type(dexc).__name__}: {dexc}"
+
     except Exception as exc:  # fail-soft: фиксируем, не роняем процесс
         status = "failed"
         error = f"{type(exc).__name__}: {exc}"
@@ -584,6 +682,14 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
                 warnings.append(f"{prefix}: {w}")
     if graphic_error:
         warnings.append(f"graphic_descriptor: {graphic_error}")
+    if isinstance(de_report, dict):
+        # benign «no_llm_runner» (offline skip) НЕ повышаем до dry-run warning
+        for w in de_report.get("warnings", []) or []:
+            if str(w).startswith("no_llm_runner"):
+                continue
+            warnings.append(f"delta_explanation: {w}")
+    if de_error:
+        warnings.append(f"delta_explanation: {de_error}")
 
     if status != "failed" and warnings:
         status = "completed_with_warnings"
@@ -593,7 +699,8 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
         entity_report=entity_report, diff_report=diff_report, inputs=inputs,
         artifact_paths=paths, warnings=warnings, status=status, error=error,
         left_graphic=left_graphic, right_graphic=right_graphic,
-        matched_graphic=matched_graphic, graphic_error=graphic_error)
+        matched_graphic=matched_graphic, graphic_error=graphic_error,
+        de_report=de_report, de_enabled=de_enabled, de_error=de_error)
 
     # summary + manifest пишем всегда (best-effort, атомарно)
     write_pipeline_v2_summary_json(paths["summary_json"], summary)

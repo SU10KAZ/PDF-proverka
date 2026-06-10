@@ -124,13 +124,23 @@ possible_weak_graphic totals + `by_risk_level`/`by_status`/`warnings_count`),
 - **НЕ** делает сетевых вызовов сам; импорты — только stdlib
   (`json/os/tempfile/pathlib/typing`).
 
-## Как подключить в будущем
+## Интеграция в Dry Run (готово)
 
-- **Dry-run:** добавить вызов `explain_entity_diff_report(entity_diff_report,
-  {left/right graphic reports}, options, llm_runner)` после entity diff и писать
-  `delta_explanation_report.json` + секцию в `pipeline_v2_summary`. Runner —
-  тонкая обёртка вокруг существующего `claude -p` provider'а (инъектируется
-  снаружи, fail-soft, по умолчанию выключен флагом).
+Delta Explanation уже подключён к
+[Dry Run / Orchestrator](stage_comparison_pipeline_v2_dry_run.md): после entity
+diff dry-run вызывает `explain_entity_diff_report(diff_report, {left/right/matched
+graphic}, options["delta_explanation"], llm_runner)`, пишет
+`delta_explanation_report.json`, добавляет секцию `delta_explanation` в
+`pipeline_v2_summary.json` и раздел «Delta explanation / critic» в `.md`.
+**По умолчанию `run_pipeline_v2_dry_run(..., llm_runner=None)` → `skipped_no_runner`
+(offline, реальный LLM не вызывается).** `options["delta_explanation"].enabled=false`
+→ этап `disabled`. Подключение fail-soft: падение не валит обязательные этапы.
+
+## Как подключить дальше
+
+- **Реальный runner:** тонкая обёртка вокруг существующего `claude -p`
+  provider'а, инъектируется в `run_pipeline_v2_dry_run(..., llm_runner=...)`
+  снаружи (controlled smoke, под флагом). Модуль её не создаёт.
 - **UI:** показывать `explanations` рядом с дельтами + `coverage_notes` как
   предупреждение «по графике возможны пропуски, нужна дообработка».
 
@@ -147,12 +157,11 @@ JSON, `skipped_no_runner` без runner'а, подсчёт `possible_ocr_noise`/
 
 ## Следующий блок
 
-- **Интеграция delta explanation в dry-run summary** — `delta_explanation_report.json`
-  как артефакт + секция в `pipeline_v2_summary.json/.md` (с инъекцией runner'а
-  через флаг, по умолчанию off → `skipped_no_runner`).
-- Затем — **controlled smoke** на одном маленьком реальном prepared package
-  (без production/deploy, под флагом, с реальным runner'ом), чтобы проверить
-  качество объяснений на живых дельтах.
+- **Controlled smoke** на одном маленьком реальном prepared package (без
+  production/deploy, под флагом): сначала `llm_runner=None` (offline,
+  `skipped_no_runner`), затем отдельным разрешённым запуском с fake/real runner —
+  проверить качество объяснений/critic на живых дельтах и корректность
+  `coverage_notes` по слабой графике.
 
 ## Связанные файлы
 

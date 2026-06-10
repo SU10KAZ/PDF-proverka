@@ -23,6 +23,7 @@ from pathlib import Path
 import pytest
 
 from backend.app.services.stage_comparison import pipeline_v2_dry_run as dr
+from backend.app.services.stage_comparison import pipeline_v2_delta_explanation as de
 
 
 # ─── synthetic result.json ──────────────────────────────────────────────────
@@ -80,7 +81,7 @@ def dry_run_result(tmp_path: Path):
 # ─── tests ──────────────────────────────────────────────────────────────────
 
 
-def test_1_creates_all_11_artifacts(dry_run_result):
+def test_1_creates_all_12_artifacts(dry_run_result):
     _, out = dry_run_result
     expected = [
         "left_normalized_document_model.json", "right_normalized_document_model.json",
@@ -88,7 +89,8 @@ def test_1_creates_all_11_artifacts(dry_run_result):
         "left_graphic_descriptor_report.json", "right_graphic_descriptor_report.json",
         "graphic_descriptor_matched_report.json",
         "entity_extraction_report.json",
-        "entity_diff_report.json", "pipeline_v2_summary.json",
+        "entity_diff_report.json", "delta_explanation_report.json",
+        "pipeline_v2_summary.json",
         "pipeline_v2_summary.md", "pipeline_v2_manifest.json",
     ]
     for name in expected:
@@ -118,7 +120,7 @@ def test_4_manifest_has_sha256_and_sizes(dry_run_result):
     manifest = json.loads((out / "pipeline_v2_manifest.json").read_text(encoding="utf-8"))
     assert manifest["kind"] == dr.MANIFEST_KIND
     existing = [e for e in manifest["artifacts"] if e["exists"]]
-    assert len(existing) == 10  # всё, кроме самого манифеста
+    assert len(existing) == 11  # всё, кроме самого манифеста
     for e in existing:
         assert isinstance(e["size_bytes"], int) and e["size_bytes"] > 0
         assert isinstance(e["sha256"], str) and len(e["sha256"]) == 64
@@ -239,7 +241,8 @@ def test_artifact_paths(tmp_path: Path):
     assert paths["entity_diff"].name == "entity_diff_report.json"
     assert paths["left_graphic"].name == "left_graphic_descriptor_report.json"
     assert paths["graphic_matched"].name == "graphic_descriptor_matched_report.json"
-    assert len(paths) == 11
+    assert paths["delta_explanation"].name == "delta_explanation_report.json"
+    assert len(paths) == 12
 
 
 # ─── graphic descriptor в dry-run ────────────────────────────────────────────
@@ -357,3 +360,123 @@ def test_graphic_fail_soft(tmp_path: Path, monkeypatch):
     # summary.json валиден
     reloaded = json.loads((out / "pipeline_v2_summary.json").read_text(encoding="utf-8"))
     assert reloaded["status"] == "completed_with_warnings"
+
+
+# ─── delta explanation в dry-run ─────────────────────────────────────────────
+
+
+def _de_fake_accept(prompt: str) -> str:
+    return json.dumps({
+        "summary": "изменение", "engineering_meaning": "смысл",
+        "contractor_impact": "влияние", "risk_level": "medium",
+        "groundedness": {"verdict": "grounded", "uses_left_evidence": True,
+                         "uses_right_evidence": True},
+        "critic": {"verdict": "accept", "should_show_to_engineer": True},
+    }, ensure_ascii=False)
+
+
+def test_delta_explanation_artifact_created(dry_run_result):
+    _, out = dry_run_result
+    assert (out / "delta_explanation_report.json").exists()
+    rep = json.loads((out / "delta_explanation_report.json").read_text(encoding="utf-8"))
+    assert rep["kind"] == de.REPORT_KIND
+
+
+def test_delta_explanation_in_manifest(dry_run_result):
+    _, out = dry_run_result
+    manifest = json.loads((out / "pipeline_v2_manifest.json").read_text(encoding="utf-8"))
+    entry = next(e for e in manifest["artifacts"]
+                 if e["key"] == "delta_explanation" and e["exists"])
+    assert isinstance(entry["size_bytes"], int) and entry["size_bytes"] > 0
+    assert isinstance(entry["sha256"], str) and len(entry["sha256"]) == 64
+    assert entry["kind"] == de.REPORT_KIND
+
+
+def test_delta_explanation_summary_section(dry_run_result):
+    summary, _ = dry_run_result
+    sec = summary["delta_explanation"]
+    for key in ("enabled", "status", "deltas_total", "selected_total", "explained_total",
+                "skipped_total", "failed_total", "needs_human_review_total",
+                "possible_ocr_noise_total", "possible_weak_graphic_total",
+                "by_risk_level", "by_status", "coverage_notes_total", "warnings_count"):
+        assert key in sec
+
+
+def test_delta_explanation_md_section(dry_run_result):
+    _, out = dry_run_result
+    md = (out / "pipeline_v2_summary.md").read_text(encoding="utf-8")
+    assert "## Delta explanation / critic" in md
+    assert "Status:" in md
+
+
+def test_delta_explanation_skipped_no_runner(tmp_path: Path):
+    """llm_runner=None + есть отобранные дельты → status skipped_no_runner, не падает."""
+    left, right = _write_packages(tmp_path)
+    summary = dr.run_pipeline_v2_dry_run(
+        left, right, tmp_path / "out",
+        options={"delta_explanation": {"selection_strategy": "all"}})
+    sec = summary["delta_explanation"]
+    assert sec["status"] == "skipped_no_runner"
+    assert sec["selected_total"] >= 1
+    assert sec["skipped_total"] == sec["selected_total"]
+    assert summary["status"] in ("ok", "completed_with_warnings")
+
+
+def test_delta_explanation_disabled(tmp_path: Path):
+    left, right = _write_packages(tmp_path)
+    out = tmp_path / "out"
+    summary = dr.run_pipeline_v2_dry_run(
+        left, right, out, options={"delta_explanation": {"enabled": False}})
+    assert summary["delta_explanation"]["status"] == "disabled"
+    assert summary["delta_explanation"]["enabled"] is False
+    # артефакт не создаётся
+    assert not (out / "delta_explanation_report.json").exists()
+
+
+def test_delta_explanation_fake_runner_explained(tmp_path: Path):
+    left, right = _write_packages(tmp_path)
+    summary = dr.run_pipeline_v2_dry_run(
+        left, right, tmp_path / "out",
+        options={"delta_explanation": {"selection_strategy": "all"}},
+        llm_runner=_de_fake_accept)
+    sec = summary["delta_explanation"]
+    assert sec["status"] in ("completed", "completed_with_warnings")
+    assert sec["explained_total"] > 0
+    assert sec["accepted_total"] > 0
+
+
+def test_delta_explanation_fail_soft(tmp_path: Path, monkeypatch):
+    """Падение delta explanation НЕ валит этапы 1–5 и не пишет битый JSON."""
+    def _boom(*a, **k):
+        raise RuntimeError("synthetic delta explanation failure")
+
+    monkeypatch.setattr(dr, "explain_entity_diff_report", _boom)
+    left, right = _write_packages(tmp_path)
+    out = tmp_path / "out"
+    summary = dr.run_pipeline_v2_dry_run(left, right, out)
+
+    assert summary["status"] == "completed_with_warnings"
+    assert (out / "entity_diff_report.json").exists()
+    assert not (out / "delta_explanation_report.json").exists()
+    assert "error" in summary["delta_explanation"]
+    assert summary["delta_explanation"]["status"] == "failed"
+    assert any("delta_explanation" in w for w in summary["warnings"])
+    reloaded = json.loads((out / "pipeline_v2_summary.json").read_text(encoding="utf-8"))
+    assert reloaded["status"] == "completed_with_warnings"
+
+
+def test_delta_explanation_coverage_notes_from_graphic(tmp_path: Path):
+    left, right = _write_graphic_packages(tmp_path)
+    out = tmp_path / "out"
+    summary = dr.run_pipeline_v2_dry_run(left, right, out)
+    # «плохой» графический блок → coverage note в delta explanation report
+    assert summary["delta_explanation"]["coverage_notes_total"] >= 1
+    rep = json.loads((out / "delta_explanation_report.json").read_text(encoding="utf-8"))
+    assert any(n["kind"] == "weak_graphic" for n in rep["coverage_notes"])
+
+
+def test_delta_explanation_no_provider_imports():
+    src = Path(dr.__file__).read_text(encoding="utf-8")
+    for forbidden in ("ClaudeCodeProvider", "claude -p", "import subprocess",
+                      "text_llm_provider", "qwen", "opus"):
+        assert forbidden not in src, f"dry_run references {forbidden!r}"

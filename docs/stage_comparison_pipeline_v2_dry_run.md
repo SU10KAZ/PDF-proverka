@@ -24,13 +24,15 @@ left_package / right_package
         describe_matched_graphic_blocks        → graphic_descriptor_matched_report.json
   → [4] extract_entities_for_matched_documents → entity_extraction_report.json
   → [5] diff_entity_extraction_report          → entity_diff_report.json
+  → [6] explain_entity_diff_report             → delta_explanation_report.json
   → pipeline_v2_summary.json + .md + pipeline_v2_manifest.json
 ```
 
 Оркестратор **переиспользует существующие функции и writer'ы** этапов — формат их
 артефактов не меняется. **Graphic Descriptor** вставлен между block matching и
-entity extraction как вспомогательный «светофор» готовности графики (см. ниже);
-он fail-soft и НЕ скачивает crop, НЕ вызывает Qwen/Opus.
+entity extraction как вспомогательный «светофор» готовности графики; **Delta
+Explanation / Critic** — после entity diff как LLM-объяснение готовых дельт (см.
+ниже). Оба fail-soft и НЕ скачивают crop, НЕ вызывают Qwen/Opus.
 
 ## Входные пакеты
 
@@ -60,6 +62,7 @@ right_graphic_descriptor_report.json    # graphic descriptor (NEW)
 graphic_descriptor_matched_report.json  # graphic descriptor (matched pairs)
 entity_extraction_report.json           # этап 3
 entity_diff_report.json                 # этап 4
+delta_explanation_report.json           # delta explanation / critic
 pipeline_v2_summary.json                # сводка (машиночитаемая)
 pipeline_v2_summary.md                  # сводка (человекочитаемая)
 pipeline_v2_manifest.json               # манифест артефактов
@@ -68,7 +71,41 @@ pipeline_v2_manifest.json               # манифест артефактов
 Все записи атомарны (tmp + `os.replace`) — частично записанного broken JSON не
 остаётся. `left/right_graphic_descriptor_report.json` имеют kind
 `stage_comparison_pipeline_v2_graphic_block_descriptor`; matched-обёртка —
-`stage_comparison_pipeline_v2_graphic_descriptor_matched`.
+`stage_comparison_pipeline_v2_graphic_descriptor_matched`;
+`delta_explanation_report.json` — `stage_comparison_pipeline_v2_delta_explanation`.
+
+## Delta explanation / critic (LLM-слой, offline по умолчанию)
+
+После entity diff dry-run прогоняет `explain_entity_diff_report(...)` по выбранным
+дельтам (этап 4) и пишет `delta_explanation_report.json`. **По умолчанию реальный
+LLM не подключён:** `run_pipeline_v2_dry_run(..., llm_runner=None)` →
+объяснения `skipped_no_runner`. Это нормальное offline-поведение: артефакт
+создаётся, но объяснения не выполняются. Реальный LLM запускается **только** через
+внешний инъектированный `llm_runner` (controlled smoke), здесь он не создаётся.
+
+`llm_runner` — параметр `run_pipeline_v2_dry_run` (backward-compatible, default
+`None`). Опции — `options["delta_explanation"]`:
+
+```json
+{"enabled": true, "mode": "explain_and_critic",
+ "selection_strategy": "priority_only", "max_deltas": 20,
+ "include_high_confidence": false}
+```
+
+`enabled=false` → этап не запускается, артефакт не пишется, в summary
+`delta_explanation.status="disabled"`.
+
+В summary добавляется секция `delta_explanation` (`enabled`, `status`
+[`skipped_no_runner|completed|completed_with_warnings|failed|disabled`],
+`selected_total`/`explained_total`/`needs_human_review_total`/
+`possible_ocr_noise_total`/`possible_weak_graphic_total`/`coverage_notes_total`
++ `by_risk_level`/`by_status`), а в `.md` — раздел **«## Delta explanation /
+critic»** с честным выводом «LLM explanation не запускался: runner не передан».
+
+**Инвариант:** LLM НЕ ищет отличия по всему тому и НЕ добавляет дельты — только
+объясняет/проверяет уже найденные deterministic deltas (см.
+[delta explanation](stage_comparison_pipeline_v2_delta_explanation.md)).
+`coverage_notes` по слабой графике строятся даже без runner'а.
 
 ## Graphic readiness («светофор» графики)
 
@@ -112,10 +149,10 @@ changed/uncertain + уверенность), top-10 warnings, список ар�
 ## Manifest
 
 `pipeline_v2_manifest.json` (`kind=stage_comparison_pipeline_v2_manifest`) — для
-каждого из 10 артефактов (кроме самого манифеста): `key`, `filename`,
+каждого из 11 артефактов (кроме самого манифеста): `key`, `filename`,
 `relative_path`, `exists`, `size_bytes`, `sha256`, `kind` (вычитан из JSON).
-Несуществующие (если этап не дошёл / graphic descriptor упал) перечислены с
-`exists=false`.
+Несуществующие (если этап не дошёл / graphic descriptor / delta explanation упали
+или delta explanation `disabled`) перечислены с `exists=false`.
 
 ## Статусы и fail-soft
 
@@ -126,15 +163,17 @@ changed/uncertain + уверенность), top-10 warnings, список ар�
   manifest всё равно записываются.
 - `completed_with_warnings` — все обязательные этапы прошли, но есть warnings
   (из артефактов этапов, указанных-но-отсутствующих optional-файлов и/или
-  **ошибки graphic descriptor**).
+  **ошибки graphic descriptor / delta explanation**).
 - `ok` — все этапы прошли без warnings.
 
-**Graphic Descriptor fail-soft.** Graphic descriptor — вспомогательный, поэтому
-его падение НЕ валит обязательные этапы: ошибка ловится отдельным `try`,
-графические артефакты при сбое не пишутся (битого JSON нет), в `warnings` и в
-`graphic_descriptor.error` добавляется короткое сообщение, а `status`
-понижается до `completed_with_warnings` (если этапы 1–2/4–5 прошли). Обязательные
-этапы 4–5 (entity extraction / diff) выполняются даже после сбоя графики.
+**Graphic Descriptor / Delta Explanation fail-soft.** Оба вспомогательны, поэтому
+их падение НЕ валит обязательные этапы: ошибка ловится отдельным `try`, их
+артефакты при сбое не пишутся (битого JSON нет), в `warnings` и в
+`graphic_descriptor.error` / `delta_explanation.error` добавляется сообщение, а
+`status` понижается до `completed_with_warnings` (если обязательные этапы прошли).
+Обязательные этапы 4–5 (entity extraction / diff) выполняются даже после сбоя
+графики; delta explanation идёт последним. Бенайн `skipped_no_runner` (offline,
+runner не передан) НЕ повышается до dry-run warning — это ожидаемое поведение.
 
 Оркестратор не роняет процесс: исключение обязательного этапа ловится,
 превращается в `status=failed` + `error`.
@@ -180,19 +219,21 @@ ok/with-warnings, ключевые счётчики в MD, sha256+размеры
 
 ## Следующий блок
 
-- **`pipeline_v2_delta_explanation` (LLM Delta Explanation / Critic)** — начать
-  объяснять уже найденные deterministic deltas с учётом graphic readiness:
-  точечный LLM (через `claude -p`, fail-soft) комментирует смысл/влияние
-  конкретной дельты и/или critic проверяет её грунтованность — **без поиска
-  отличий по всему тому**, приоритет дельтам `needs_human_review`. Секция
-  `graphic_descriptor` подсказывает, где пустой diff вызван слабой графикой
-  (нужен vision-enrichment), а не отсутствием изменений.
+- **Controlled smoke на одном маленьком реальном prepared package** — прогнать
+  полный dry-run на одной небольшой паре `pdf+result.json+md+ocr` (без
+  production/deploy): сначала `llm_runner=None` (всё offline, `skipped_no_runner`),
+  затем отдельным разрешённым запуском с fake/real runner — проверить качество
+  объяснений/critic на живых дельтах и корректность `coverage_notes` по графике.
+  Это первый момент реального вызова LLM — выполнять осознанно, вне
+  `pf06effb7`/`p9692b6b5`, не трогая runtime comparison data.
 
-> Graphic Descriptor уже интегрирован в dry-run (этот PR).
+> Graphic Descriptor и Delta Explanation уже интегрированы в dry-run (offline,
+> `llm_runner=None` по умолчанию).
 
 ## Связанные файлы
 
 - [pipeline_v2_dry_run.py](../backend/app/services/stage_comparison/pipeline_v2_dry_run.py)
+- [pipeline_v2_delta_explanation.py](../backend/app/services/stage_comparison/pipeline_v2_delta_explanation.py) — Delta Explanation / Critic
 - [pipeline_v2_graphic_block_descriptor.py](../backend/app/services/stage_comparison/pipeline_v2_graphic_block_descriptor.py) — Graphic Descriptor
 - [pipeline_v2_entity_diff.py](../backend/app/services/stage_comparison/pipeline_v2_entity_diff.py) — этап 4
 - [pipeline_v2_entity_extraction.py](../backend/app/services/stage_comparison/pipeline_v2_entity_extraction.py) — этап 3
