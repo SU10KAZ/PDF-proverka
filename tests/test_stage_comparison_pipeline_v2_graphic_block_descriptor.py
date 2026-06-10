@@ -338,3 +338,26 @@ def test_classify_graphic_token():
     assert gd.classify_graphic_token("Коммутатор") == "equipment"
     assert gd.classify_graphic_token("ШК.СВН4") == "equipment"
     assert gd.classify_graphic_token("подключается к ШК") == "connection_hint"
+
+
+# ─── ambiguous power tokens (АР2 cleanup, 2026-06-10) ────────────────────────
+
+
+def test_power_tokens_axis_labels_suppressed_on_plan():
+    # «4 в»/«1в» на АР-плане — осевые/блочные метки, не номиналы питания
+    blk = _blk("ar1", semantic_type="plan", content_summary="Фасад 4 в осях 1-5",
+               key_entities=["4 в", "1в"], crop_url="u")
+    tokens = gd.extract_graphic_tokens(blk)
+    assert tokens["power"] == []
+    assert gd.classify_graphic_token("4 в") != "power"
+    assert gd.classify_graphic_token("1в") != "power"
+
+
+def test_power_tokens_valid_voltage_kept_on_scheme():
+    blk = _blk("s1", semantic_type="scheme",
+               content_summary="Питание шкафа 220В от щита, резерв ИБП",
+               key_entities=["220В", "ИБП"], crop_url="u")
+    tokens = gd.extract_graphic_tokens(blk)
+    assert "220В" in tokens["power"]
+    assert "ИБП" in tokens["power"]
+    assert gd.classify_graphic_token("220В") == "power"

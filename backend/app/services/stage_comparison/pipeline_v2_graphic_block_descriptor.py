@@ -39,6 +39,10 @@ from collections import Counter
 from pathlib import Path
 from typing import Any, Optional
 
+from backend.app.services.stage_comparison.pipeline_v2_entity_extraction import (
+    is_ambiguous_power_token,
+)
+
 REPORT_VERSION = 1
 REPORT_KIND = "stage_comparison_pipeline_v2_graphic_block_descriptor"
 
@@ -69,7 +73,12 @@ _CABLE_RE = re.compile(
     r"utp|ftp|кпсввнг(?:\([а-я]+\))?|кпсвв|lan|cat\.?\s?5e|cat\.?\s?6|frls|lsltx|"
     r"ввгнг(?:\([а-я]+\))?|ввг|вок|\bнг\b|\bls\b|\bhf\b", re.IGNORECASE)
 
-_POWER_VOLT_RE = re.compile(r"\d+(?:[.,]\d+)?\s*в\b", re.IGNORECASE)
+# Левая граница и целочисленная латинская V — как в pipeline_v2_entity_extraction
+# (иначе «MP4V»/«802.11v» считаются напряжением).
+_POWER_VOLT_RE = re.compile(
+    r"(?<![\w.,])\d+(?:[.,]\d+)?\s*в\b"
+    r"|(?<![\w.,])\d+\s*v\b",
+    re.IGNORECASE)
 _POWER_CURR_RE = re.compile(r"\d+(?:[.,]\d+)?\s*а\b", re.IGNORECASE)
 _POWER_UPS_RE = re.compile(r"\bибп\b", re.IGNORECASE)
 _POWER_CAT_RE = re.compile(r"\b[iv]+\s*-?\s*(?:я\s+)?категори\w*", re.IGNORECASE)
@@ -279,8 +288,10 @@ def classify_graphic_token(token: Any) -> str:
         return "unknown"
     if _CABLE_RE.search(t):
         return "cable"
-    if (_POWER_VOLT_RE.search(t) or _POWER_CURR_RE.search(t)
-            or _POWER_UPS_RE.search(t) or _POWER_CAT_RE.search(t)):
+    pm = _POWER_VOLT_RE.search(t) or _POWER_CURR_RE.search(t)
+    if pm and not is_ambiguous_power_token(pm.group(0), t):
+        return "power"
+    if _POWER_UPS_RE.search(t) or _POWER_CAT_RE.search(t):
         return "power"
     if (any(k in t for k in _CONNECTION_KW) or _INPUT_RE.search(t)
             or re.match(r"^(к|от)\s+\S", t)):
@@ -349,7 +360,9 @@ def extract_graphic_tokens(block: dict, page: Optional[dict] = None) -> dict:
     # 2) text-scan по всему blob
     cables += [m.group(0) for m in _CABLE_RE.finditer(blob)]
     for rx in (_POWER_VOLT_RE, _POWER_CURR_RE):
-        power += [_canon_power(m.group(0)) for m in rx.finditer(blob)]
+        # «4в»/«1а» без power-контекста — осевые/блочные метки, не номиналы
+        power += [_canon_power(m.group(0)) for m in rx.finditer(blob)
+                  if not is_ambiguous_power_token(m.group(0), blob)]
     if _POWER_UPS_RE.search(blob):
         power.append("ИБП")
     for m in _POWER_CAT_RE.finditer(blob):

@@ -107,11 +107,14 @@ def normalize_cable_value(value: Any) -> str:
 
 def normalize_power_value(value: Any) -> str:
     """Канонизировать электропитание: `220В`/`220 В`→`220b`; `+12В`→`12b`;
-    `0.5А`/`0.5A`→`0.5a`."""
+    `0.5А`/`0.5A`→`0.5a`; латинская V ≡ кириллической В (`12V`→`12b`)."""
     s = unicodedata.normalize("NFKC", str(value or "")).lower().replace("ё", "е")
     s = s.translate(_HOMOGLYPH)
     s = s.replace(",", ".").lstrip("+")
-    return re.sub(r"\s+", "", s).strip()
+    s = re.sub(r"\s+", "", s).strip()
+    # кириллическая «в» уже стала «b» через _HOMOGLYPH; латинскую v после
+    # цифры приводим к той же букве, чтобы «12V» ↔ «12В» не давали дельту
+    return re.sub(r"(?<=[\d.])v\b", "b", s)
 
 
 def extract_numeric_tokens(value: Any) -> list[str]:

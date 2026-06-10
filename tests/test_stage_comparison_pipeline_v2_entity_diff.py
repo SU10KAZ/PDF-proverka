@@ -396,3 +396,76 @@ def test_26_power_spacing_unchanged_and_real_change_kept():
     changed = [d for d in rep["deltas"] if d["delta_type"] == "changed"]
     assert len(changed) == 1
     assert changed[0]["old_value"] == "12В" and changed[0]["new_value"] == "24В"
+
+
+# ─── ambiguous power tokens не дают дельт (АР2 cleanup, 2026-06-10) ──────────
+
+
+def _axis_label_model(token_texts, key_entities):
+    blocks = [{
+        "block_id": "B1", "page_number": 2, "page_index": 1,
+        "block_type": "image", "semantic_type": "plan",
+        "coords_px": [100, 100, 500, 500], "coords_norm": [0.1, 0.1, 0.5, 0.5],
+        "shape_type": "rectangle", "source": "user",
+        "crop_url": "https://r2.example.com/b1.pdf", "image_file": None,
+        "has_crop_pdf": True, "has_image_file": False,
+        "has_pdfplumber_text": False, "has_ocr_json": True,
+        "has_stamp_data": False,
+        "text_excerpt": token_texts, "pdfplumber_text_excerpt": "",
+        "stamp_data": {}, "quality_flags": [],
+        "ocr_json_summary": {"content_summary": "", "detailed_description": "",
+                             "key_entities": list(key_entities)},
+    }]
+    return {
+        "version": 1, "kind": "stage_comparison_pipeline_v2_normalized_document",
+        "source": {}, "document": {"document_code": "DC", "pages_total": 1},
+        "summary": {},
+        "pages": [{"page_number": 2, "page_index": 1, "width": 1000,
+                   "height": 700, "sheet_number": "", "total_sheets": "",
+                   "sheet_name": "План", "document_code": "DC",
+                   "page_type": "scheme", "blocks": ["B1"]}],
+        "blocks": {b["block_id"]: b for b in blocks}, "warnings": [],
+    }
+
+
+def test_27_no_power_delta_from_axis_label_4v():
+    # «4 в» (осевая метка) больше не извлекается как power_supply →
+    # one-sided power-дельты по ней не существует; полный chain extract→diff.
+    # Right ГЕНУИННО без «4 в» (и в тексте, и в key_entities) — на коде до
+    # фикса этот вход давал one-sided removed power-дельту.
+    left = _axis_label_model("Фасад 4 в осях 1-5", ["4 в"])
+    right = _axis_label_model("Фасад в осях 1-5", [])
+    bmr = bm.match_normalized_documents(left, right)
+    ent = ee.extract_entities_for_matched_documents(left, right, bmr)
+    rep = ed.diff_entity_extraction_report(ent)
+    assert [d for d in rep["deltas"] if d["entity_type"] == "power_supply"] == []
+
+
+def test_27b_axis_label_spacing_jitter_no_scheme_deltas():
+    # тот же физический ярлык «4 в» / «4в» (OCR spacing-джиттер между
+    # сторонами) — fallback компактизирует чистый номинал-токен, пары
+    # removed+added по scheme_component не плодятся
+    left = _axis_label_model("Фасад корпуса", ["4 в"])
+    right = _axis_label_model("Фасад корпуса", ["4в"])
+    bmr = bm.match_normalized_documents(left, right)
+    ent = ee.extract_entities_for_matched_documents(left, right, bmr)
+    rep = ed.diff_entity_extraction_report(ent)
+    assert rep["summary"]["deltas_total"] == 0
+
+
+def test_28_power_spacing_unchanged_and_change_kept_post_cleanup():
+    # «220В» ↔ «220 В» — не дельта; «12В» → «24В» — дельта (переутверждение
+    # spec-кейсов 10/11 после ambiguous-фильтра)
+    rep = _diff([_e("l1", "power_supply", "left", value="220В", unit="В")],
+                [_e("r1", "power_supply", "right", value="220 В", unit="В")])
+    assert rep["summary"]["deltas_total"] == 0
+    rep = _diff([_e("l1", "power_supply", "left", value="12В", unit="В")],
+                [_e("r1", "power_supply", "right", value="24В", unit="В")])
+    assert rep["summary"]["changed_total"] == 1
+
+
+def test_29_latin_v_equals_cyrillic():
+    assert ed.normalize_power_value("12V") == ed.normalize_power_value("12В")
+    rep = _diff([_e("l1", "power_supply", "left", value="12V", unit="В")],
+                [_e("r1", "power_supply", "right", value="12В", unit="В")])
+    assert rep["summary"]["deltas_total"] == 0

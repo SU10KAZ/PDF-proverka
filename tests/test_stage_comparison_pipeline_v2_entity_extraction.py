@@ -602,3 +602,122 @@ def test_composite_power_token_yields_entity_per_nominal():
     pw = {e["value"] for e in ents if e["entity_type"] == "power_supply"}
     # составной токен не схлопывается в первый номинал
     assert {"ИБП", "220В", "16А"} <= pw
+
+
+# ─── ambiguous power tokens (АР2 cleanup, 2026-06-10) ────────────────────────
+
+
+def _ar_plan_block(key_entities=None, text=""):
+    return _blk("ar1", page_number=2, block_type="image", semantic_type="plan",
+                crop_url="https://r2.example.com/ar1.pdf",
+                text_excerpt=text,
+                ocr_json_summary={"content_summary": "", "detailed_description": "",
+                                  "key_entities": key_entities or []})
+
+
+def test_ambiguous_power_4v_not_extracted_on_plan():
+    ents = ee.extract_entities_for_block(
+        _ar_plan_block(key_entities=["4 в"], text="Фасад 4 в осях 1-5"),
+        page={"page_type": "scheme", "document_code": "DC"})
+    assert [e for e in ents if e["entity_type"] == "power_supply"] == []
+    # неоднозначный схемный токен остаётся компонентом схемы (канонизирован
+    # «4 в» → «4в» против spacing-джиттера OCR), а не пропадает
+    assert any(e["entity_type"] == "scheme_component" and e["value"] == "4в"
+               for e in ents)
+
+
+def test_ambiguous_power_single_digit_labels_not_extracted():
+    ents = ee.extract_entities_for_block(
+        _ar_plan_block(key_entities=["1в", "2в", "3в"],
+                       text="Оси 1в, 2в, 3в по плану этажа"),
+        page={"page_type": "scheme", "document_code": "DC"})
+    assert [e for e in ents if e["entity_type"] == "power_supply"] == []
+
+
+def test_power_220v_extracted():
+    ents = _text_entities("Электроснабжение от сети 220В.")
+    pw = {e["value"] for e in ents if e["entity_type"] == "power_supply"}
+    assert "220В" in pw
+
+
+def test_power_220v_with_space_normalized():
+    ents = _text_entities("Подключение к сети 220 В выполняется кабелем.")
+    pw = {e["value"] for e in ents if e["entity_type"] == "power_supply"}
+    assert "220В" in pw and "220 В" not in pw
+
+
+def test_power_plus12v_normalized():
+    ents = _text_entities("Резервное питание +12В от ИБП.")
+    pw = {e["value"] for e in ents if e["entity_type"] == "power_supply"}
+    assert "12В" in pw and "+12В" not in pw
+
+
+def test_power_ups_kept():
+    ents = _text_entities("Установить ИБП в стойке.")
+    pw = {e["value"] for e in ents if e["entity_type"] == "power_supply"}
+    assert "ИБП" in pw
+
+
+def test_power_category_kept():
+    ents = _text_entities("Электроприёмники I-я категория надёжности.")
+    pw = {e["value"].lower() for e in ents if e["entity_type"] == "power_supply"}
+    assert any("категори" in p for p in pw)
+
+
+def test_ambiguous_4v_does_not_suppress_nearby_valid_power():
+    # в power-контексте («питание», «220») валидные номиналы извлекаются;
+    # одиночная цифра при таком контексте тоже считается номиналом — by design
+    ents = _text_entities("Питание 220В от щита. Отметка 4 в осях.")
+    pw = {e["value"] for e in ents if e["entity_type"] == "power_supply"}
+    assert "220В" in pw
+
+
+def test_power_latin_v_supported():
+    ents = _text_entities("Питание камер 12V по PoE.")
+    pw = {e["value"] for e in ents if e["entity_type"] == "power_supply"}
+    assert "12V" in pw
+
+
+def test_ambiguous_power_warning_in_matched_report():
+    left = _model("DC", [
+        _page(2, page_type="scheme", blocks=[
+            _ar_plan_block(key_entities=["4 в"], text="Фасад 4 в осях")])])
+    right = _model("DC", [
+        _page(2, page_type="scheme", blocks=[
+            _ar_plan_block(key_entities=["4 в"], text="Фасад 4 в осях")])])
+    bmr = bm.match_normalized_documents(left, right)
+    rep = ee.extract_entities_for_matched_documents(left, right, bmr)
+    assert any(w.startswith("ambiguous_power_token_suppressed") for w in rep["warnings"])
+
+
+def test_power_context_does_not_leak_on_construction_boilerplate():
+    # подстрочные утечки контекста: «2200 мм» (220), «ввод в эксплуатацию»,
+    # пожарная «Категория помещения В1», «напряженные плиты», «отметка 1380»
+    for text in ("Высота проёма 2200 мм. Фасад 4 в осях 1-5",
+                 "Объект сдан, ввод в эксплуатацию. Корпус 4 в осях А-Б",
+                 "Категория помещения В1. Фасад 4 в осях",
+                 "Предварительно напряженные плиты. Корпус 4 в осях",
+                 "Отметка 1380. Корпус 4 в осях",
+                 "Площадь 380,5 м2. Корпус 4 в осях"):
+        ents = _text_entities(text)
+        pw = [e for e in ents if e["entity_type"] == "power_supply"]
+        assert pw == [], f"{text!r} дал power: {[e['value'] for e in pw]}"
+    # а настоящий power-контекст по-прежнему валидирует
+    ents = _text_entities("Напряжение сети, ввод 4 в на щит")
+    assert any(e["entity_type"] == "power_supply" for e in ents)
+
+
+def test_latin_v_no_false_positives_from_standards_and_codecs():
+    # 802.11v / 802.1v / MP4V / версии «1.2v» — НЕ напряжение
+    for text in ("Точки доступа с поддержкой 802.11v",
+                 "Стандарт IEEE 802.1v для классификации VLAN",
+                 "видеокодек MP4V, питание 12В",
+                 "прошивка версии 1.2v"):
+        ents = _text_entities(text)
+        pw = {e["value"] for e in ents if e["entity_type"] == "power_supply"}
+        bad = {v for v in pw if "v" in v.lower() and v.lower() != "12v"}
+        assert not bad, f"{text!r} дал ложный power: {bad}"
+    # целочисленная латиница остаётся
+    ents = _text_entities("видеокодек MP4V, питание 12В")
+    pw = {e["value"] for e in ents if e["entity_type"] == "power_supply"}
+    assert "12В" in pw and "4V" not in pw

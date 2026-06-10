@@ -65,11 +65,49 @@ _CABLE_PATTERNS = [
 ]
 _CABLE_RE = re.compile("|".join(_CABLE_PATTERNS), re.IGNORECASE)
 
-# Электропитание.
-_POWER_VOLTAGE_RE = re.compile(r"\d+(?:[.,]\d+)?\s*в\b", re.IGNORECASE)
+# Электропитание. Левая граница (?<![\w.,]) отсекает совпадения внутри
+# токенов («MP4V» → «4V», «802.11v» → «11v»). Латинская V допускается ТОЛЬКО
+# для целых номиналов («12V», «220V») — десятичная форма с латиницей это
+# версии/стандарты («1.2v», «802.11v»), не напряжение.
+_POWER_VOLTAGE_RE = re.compile(
+    r"(?<![\w.,])\d+(?:[.,]\d+)?\s*в\b"
+    r"|(?<![\w.,])\d+\s*v\b",
+    re.IGNORECASE)
 _POWER_CURRENT_RE = re.compile(r"\d+(?:[.,]\d+)?\s*а\b", re.IGNORECASE)
 _POWER_UPS_RE = re.compile(r"\bибп\b", re.IGNORECASE)
 _POWER_CATEGORY_RE = re.compile(r"\b[iv]+\s*-?\s*(?:я\s+)?категори\w*", re.IGNORECASE)
+
+# Power-контекст для неоднозначных токенов: одиночная цифра + «в»/«а»
+# («4в», «1а») на АР/КР-чертежах — это чаще осевая/блочная метка, чем номинал.
+# Стемы точные, чтобы не утекать на строительный бойлерплейт: «напряжени»
+# (не «напряженные плиты»), без «ввод» («ввод в эксплуатацию»), без
+# «категори» (пожарная «Категория помещения В1»); номиналы 220/380 —
+# digit-bounded (не «2200 мм»/«отметка 1380»).
+_POWER_CONTEXT_RE = re.compile(
+    r"питани|напряжени|электро|ибп|вольт|ампер"
+    r"|(?<![\d.,])(?:220|380)(?![.,]?\d)",
+    re.IGNORECASE)
+
+# Токен, целиком состоящий из одного номинала («4 в», «+12В», «0,5А») —
+# для канонизации fallback-значения схемного key_entity.
+_PURE_POWER_TOKEN_RE = re.compile(r"[+~]?\s*\d+(?:[.,]\d+)?\s*[вva]\.?",
+                                  re.IGNORECASE)
+
+
+def is_ambiguous_power_token(matched: str, context: str) -> bool:
+    """«4в»/«1а» (целое из ОДНОЙ цифры) — номинал только при power-контексте.
+
+    Двузначные и дробные значения («12В», «220В», «0.5А») однозначны всегда.
+    ``context`` — текст, в котором токен встретился (блок целиком или сам
+    токен для схемных key_entities).
+    """
+    m = re.search(r"\d+(?:[.,]\d+)?", matched or "")
+    if not m:
+        return True
+    num = m.group(0)
+    if "." in num or "," in num or len(num) >= 2:
+        return False
+    return not _POWER_CONTEXT_RE.search(context or "")
 
 # Нормативные ссылки. Lookbehind отсекает совпадение внутри слова («ОСП-3»,
 # «Аккорд-512», «способ»); дефис-формы «СП-1»/«РД-082» НЕ считаются нормами
@@ -301,7 +339,8 @@ def _canon_power(token: str) -> str:
     return _WS_RE.sub("", token).strip().lstrip("+")
 
 
-def _power_entities_from_token(tok: str, source: str) -> list[dict]:
+def _power_entities_from_token(tok: str, source: str,
+                               stats: Optional[Counter] = None) -> list[dict]:
     """power_supply-сущности из произвольного токена (схемный key_entity).
 
     Значения канонизируются до номиналов («Ввод ~220 В» → «220В»), unit
@@ -309,7 +348,8 @@ def _power_entities_from_token(tok: str, source: str) -> list[dict]:
     даёт мусорную unit-дельту ``'' → 'В'``. Составной токен («ИБП 220В»,
     «Ввод 220В, 16А») даёт ОТДЕЛЬНУЮ сущность на каждый факт — first-match
     схлопывание прятало реальные изменения номиналов. Токен без числа /
-    ИБП / категории → пустой список (НЕ power_supply).
+    ИБП / категории, а также неоднозначный («4в» без power-контекста —
+    осевая метка) → пустой список (НЕ power_supply).
     """
     out: list[dict] = []
     if _POWER_UPS_RE.search(tok):
@@ -320,10 +360,18 @@ def _power_entities_from_token(tok: str, source: str) -> list[dict]:
         out.append(_p("power_supply", "power", name=val, value=val,
                       confidence=0.55, quote=tok, source=source))
     for m in _POWER_VOLTAGE_RE.finditer(tok):
+        if is_ambiguous_power_token(m.group(0), tok):
+            if stats is not None:
+                stats["ambiguous_power_token_suppressed"] += 1
+            continue
         val = _canon_power(m.group(0))
         out.append(_p("power_supply", "power", name=val, value=val, unit="В",
                       confidence=0.6, quote=tok, source=source))
     for m in _POWER_CURRENT_RE.finditer(tok):
+        if is_ambiguous_power_token(m.group(0), tok):
+            if stats is not None:
+                stats["ambiguous_power_token_suppressed"] += 1
+            continue
         val = _canon_power(m.group(0))
         out.append(_p("power_supply", "power", name=val, value=val, unit="А",
                       confidence=0.6, quote=tok, source=source))
@@ -339,10 +387,15 @@ def _scan_cables(text: str, source: str) -> list[dict]:
     return out
 
 
-def _scan_power(text: str, source: str) -> list[dict]:
+def _scan_power(text: str, source: str, stats: Optional[Counter] = None) -> list[dict]:
     out: list[dict] = []
     for rx, unit in ((_POWER_VOLTAGE_RE, "В"), (_POWER_CURRENT_RE, "А")):
         for m in rx.finditer(text):
+            if is_ambiguous_power_token(m.group(0), text):
+                # «4 в» на чертеже без power-контекста — осевая метка
+                if stats is not None:
+                    stats["ambiguous_power_token_suppressed"] += 1
+                continue
             val = _canon_power(m.group(0))
             out.append(_p("power_supply", "power", name=val, value=val, unit=unit,
                           confidence=0.6, quote=m.group(0), source=source))
@@ -449,7 +502,7 @@ def extract_text_entities(block: dict, page: Optional[dict] = None,
     out += _scan_requirements(text, source)
     out += _scan_equipment(text, source)
     out += _scan_cables(text, source)
-    out += _scan_power(text, source)
+    out += _scan_power(text, source, stats=stats)
     return out
 
 
@@ -611,7 +664,8 @@ def extract_contents_entities(block: dict, page: Optional[dict] = None) -> list[
     return out
 
 
-def extract_scheme_entities(block: dict, page: Optional[dict] = None) -> list[dict]:
+def extract_scheme_entities(block: dict, page: Optional[dict] = None,
+                            stats: Optional[Counter] = None) -> list[dict]:
     """scheme_component / equipment / cable / power_supply / scheme_connection_hint."""
     out: list[dict] = []
     summ = block.get("ocr_json_summary") if isinstance(block.get("ocr_json_summary"), dict) else {}
@@ -622,12 +676,18 @@ def extract_scheme_entities(block: dict, page: Optional[dict] = None) -> list[di
             continue
         etype, group = _classify_scheme_token(tok)
         if etype == "power_supply":
-            ents = _power_entities_from_token(tok, "ocr_json")
-            # классификатор и хелпер используют одни регэкспы; fallback на
-            # старое поведение — страховка от рассинхрона
-            out.extend(ents if ents
-                       else [_p(etype, group, name=tok, value=tok,
-                                confidence=0.6, quote=tok, source="ocr_json")])
+            ents = _power_entities_from_token(tok, "ocr_json", stats=stats)
+            if ents:
+                out.extend(ents)
+            else:
+                # неоднозначный токен («4в» — осевая/блочная метка) или
+                # рассинхрон регэкспов: это компонент схемы, не номинал.
+                # Чистый номинал-токен компактизируется («4 в» ≡ «4в»),
+                # иначе spacing-джиттер OCR между сторонами плодит
+                # removed+added пары на одной и той же метке.
+                lbl = _canon_power(tok) if _PURE_POWER_TOKEN_RE.fullmatch(tok) else tok
+                out.append(_p("scheme_component", "scheme", name=lbl, value=lbl,
+                              confidence=0.6, quote=tok, source="ocr_json"))
             continue
         out.append(_p(etype, group, name=tok, value=tok, confidence=0.6,
                       quote=tok, source="ocr_json"))
@@ -635,7 +695,7 @@ def extract_scheme_entities(block: dict, page: Optional[dict] = None) -> list[di
     for text, source in _scheme_text_sources(block):
         out += _scan_equipment(text, source)
         out += _scan_cables(text, source)
-        out += _scan_power(text, source)
+        out += _scan_power(text, source, stats=stats)
         out += _scan_connection_hints(text, source)
     return out
 
@@ -703,7 +763,7 @@ def extract_entities_for_block(block: dict, page: Optional[dict] = None,
         if page_type not in ("change_log", "contents"):
             raw += extract_table_entities(block, page)
     elif st in ("scheme", "large_scheme", "plan"):
-        raw += extract_scheme_entities(block, page)
+        raw += extract_scheme_entities(block, page, stats=options.get("_stats"))
     elif st in ("text", "legend", "title", "unknown"):
         if page_type not in ("change_log", "contents"):
             raw += extract_text_entities(block, page, stats=options.get("_stats"))
@@ -873,6 +933,10 @@ def extract_entities_for_matched_documents(
                         + right_stats["degenerate_norm_reference_suppressed"])
     if degenerate_norms:
         warnings.append(f"degenerate_norm_reference_suppressed: {degenerate_norms}")
+    ambiguous_power = (left_stats["ambiguous_power_token_suppressed"]
+                       + right_stats["ambiguous_power_token_suppressed"])
+    if ambiguous_power:
+        warnings.append(f"ambiguous_power_token_suppressed: {ambiguous_power}")
 
     # summary
     all_entities = left_entities + right_entities
@@ -954,6 +1018,7 @@ __all__ = [
     "normalize_entity_text",
     "strip_html_markup",
     "clean_entity_value",
+    "is_ambiguous_power_token",
     "make_entity_id",
     "write_entity_extraction_report",
 ]
