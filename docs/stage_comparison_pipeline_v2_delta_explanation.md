@@ -56,11 +56,74 @@ entity_diff_report.deltas (+ optional graphic readiness)
   (`needs_human_review`/`possible_ocr_noise`/`fuzzy_match`/`low_match_score`/
   `one_sided_entity`), либо `uncertain`/`added`/`removed`, либо `changed` с
   невысокой уверенностью. **High-confidence clear `changed` пропускаются** (если
-  не задан `include_high_confidence`).
+  не задан `include_high_confidence`);
+- `engineering_first` — квотированная выборка по selection-группам (см. ниже).
 
 `max_deltas` (default 20) ограничивает выборку — чтобы не отправлять весь том.
 Options: `{mode, selection_strategy, max_deltas, include_high_confidence,
-high_confidence_threshold}`.
+high_confidence_threshold, engineering_first?}`.
+
+### engineering_first — инженерное содержание раньше штампов
+
+**Зачем.** На инженерных разделах (live-кейс ИОС1.1: 1014 дельт, из них
+changed = stamp_field 326 / power_supply 16 / contents 2) `changed_only` по
+confidence набирает почти одни штампы и не доходит до cable/equipment/power/
+scheme. При этом инженерные сущности — атомарные: их изменение выглядит как
+`removed`+`added`, а не `changed`. Deterministic diff НЕ меняется — меняется
+только выборка для critic.
+
+**Selection-группы** (`classify_selection_group`, по `entity_type`):
+
+| группа | entity_type |
+|---|---|
+| `engineering` | cable, equipment, power_supply, scheme_component, scheme_connection_hint, table_row, requirement, norm_reference (+ нераспознанные не-weak типы, forward-compat) |
+| `admin_stamp` | stamp_field |
+| `navigation_contents` | contents_item, document_section, change_log_item |
+| `weak_or_artifact` | unknown/пустой entity_type ИЛИ флаги possible_ocr_noise / low_match_score (one-sided evidence-флаги weak НЕ делают) |
+
+**Правила:** кандидаты фильтруются как в `priority_only`
+(`include_high_confidence` сохраняет семантику); внутри группы порядок
+детерминированный — `changed` → `added` → `removed`, далее по убыванию
+confidence, далее по delta_id; проход 1 — квоты групп; проход 2 — добор
+остатка из leftovers в порядке приоритета групп (мало инженерных → слоты
+достаются stamp/navigation, но не наоборот); проход 3 — overflow
+per_subject_cap. `max_deltas` строгий.
+
+**per_subject_cap** (`build_selection_group_key` =
+`entity_type|subject|left_page|right_page`): композитная подпись штампа
+дробится diff'ом на 4 атомарные дельты одного события (composite + role +
+surname + date) — cap (default 2) не даёт одному событию занять квоту;
+излишки уходят в конец выборки, не теряются.
+
+**Пример включения (рекомендуемые опции):**
+
+```json
+{
+  "selection_strategy": "engineering_first",
+  "max_deltas": 20,
+  "include_high_confidence": true,
+  "engineering_first": {
+    "engineering_quota": 12,
+    "admin_stamp_quota": 4,
+    "navigation_quota": 2,
+    "weak_quota": 2,
+    "per_subject_cap": 2
+  }
+}
+```
+
+Квоты/cap в примере = code-defaults (`_ENGINEERING_FIRST_DEFAULTS`), а вот
+`include_high_confidence` в коде по умолчанию **false** — без явного `true`
+high-confidence чистые `changed` (включая инженерные номиналы @0.9) выпадают
+из кандидатов целиком (семантика как у `priority_only`). Для
+engineering_first рекомендуется явно ставить `true` (так шёл smoke ИОС1.1).
+
+Примечание к порядку: «weak в конец» относится к квотному проходу — добор
+leftovers (проход 2) может поставить инженерные leftovers ПОСЛЕ weak-квоты,
+это задокументированное перераспределение, а не нарушение приоритета.
+
+Стратегия включается только явным указанием — default остаётся
+`priority_only`, существующие стратегии не изменены.
 
 ## Runner — инъектируемый, fail-soft
 

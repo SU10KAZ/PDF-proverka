@@ -52,7 +52,7 @@ LLMRunner = Callable[[str], Any]
 
 _DEFAULTS = {
     "mode": "explain_and_critic",            # explain | critic | explain_and_critic
-    "selection_strategy": "priority_only",   # all|priority_only|low_confidence|needs_human_review|changed_only
+    "selection_strategy": "priority_only",   # all|priority_only|low_confidence|needs_human_review|changed_only|engineering_first
     "max_deltas": 20,
     "include_high_confidence": False,
     "high_confidence_threshold": 0.75,
@@ -63,6 +63,34 @@ _PRIORITY_FLAGS = {
     "needs_human_review", "possible_ocr_noise", "fuzzy_match",
     "low_match_score", "one_sided_entity",
 }
+
+# ── engineering_first: selection-группы по entity_type ──
+# Инженерное содержание — в приоритете; штампы/оглавление — квотированы,
+# чтобы high-confidence stamp_field не вытеснял cable/power/scheme.
+_SELECTION_ENGINEERING_TYPES = {
+    "cable", "equipment", "power_supply", "scheme_component",
+    "scheme_connection_hint", "table_row", "requirement", "norm_reference",
+}
+_SELECTION_STAMP_TYPES = {"stamp_field"}
+_SELECTION_NAVIGATION_TYPES = {"contents_item", "document_section",
+                               "change_log_item"}
+# Флаги-маркеры вероятного артефакта извлечения/слабого матча. Сюда НЕ входят
+# left/right_evidence_missing (их имеет каждая one-sided дельта) и fuzzy_match
+# (легитимный матч-метод).
+_SELECTION_WEAK_FLAGS = {"possible_ocr_noise", "low_match_score"}
+
+_SELECTION_GROUP_ORDER = ("engineering", "admin_stamp",
+                          "navigation_contents", "weak_or_artifact")
+
+_ENGINEERING_FIRST_DEFAULTS = {
+    "engineering_quota": 12,
+    "admin_stamp_quota": 4,
+    "navigation_quota": 2,
+    "weak_quota": 2,
+    "per_subject_cap": 2,
+}
+
+_DELTA_TYPE_RANK = {"changed": 0, "added": 1, "removed": 2, "uncertain": 3}
 
 _WEAK_GRAPHIC_READINESS = {"low", "not_usable"}
 _WEAK_GRAPHIC_FLAGS = {"needs_vision_enrichment", "manual_review_recommended",
@@ -122,6 +150,136 @@ def _is_priority_delta(d: dict, high_thr: float, include_high: bool) -> bool:
     return conf < high_thr
 
 
+def classify_selection_group(delta: dict) -> str:
+    """Selection-группа дельты для engineering_first.
+
+    Приоритет: weak-маркеры (артефакты/шум) выносятся в weak_or_artifact
+    независимо от entity_type; нераспознанные НЕ-weak типы трактуются как
+    engineering (forward-compat: новые контентные типы не должны падать в
+    хвост выборки).
+    """
+    d = delta if isinstance(delta, dict) else {}
+    et = _clean(d.get("entity_type")).lower()
+    flags = set(d.get("quality_flags") or [])
+    if not et or et == "unknown" or flags & _SELECTION_WEAK_FLAGS:
+        return "weak_or_artifact"
+    if et in _SELECTION_STAMP_TYPES:
+        return "admin_stamp"
+    if et in _SELECTION_NAVIGATION_TYPES:
+        return "navigation_contents"
+    return "engineering"
+
+
+def build_selection_group_key(delta: dict) -> str:
+    """Ключ «одного события» для per_subject_cap.
+
+    Композитная подпись штампа дробится diff'ом на атомарные дельты
+    (composite + role + surname + date) с одним subject и одной парой
+    страниц — cap не даёт одному событию занять всю квоту группы.
+    """
+    d = delta if isinstance(delta, dict) else {}
+    et = _clean(d.get("entity_type")).lower() or "unknown"
+    subj = (_clean(d.get("subject")) or _clean(d.get("field"))).lower()
+    pages = d.get("page_numbers") if isinstance(d.get("page_numbers"), dict) else {}
+    return f"{et}|{subj}|{pages.get('left')}|{pages.get('right')}"
+
+
+def _selection_sort_key(d: dict):
+    """Детерминированный порядок внутри группы: changed → added → removed,
+    внутри типа — по убыванию confidence, затем по delta_id."""
+    try:
+        conf = float(d.get("confidence") or 0.0)
+    except (TypeError, ValueError):
+        conf = 0.0
+    return (_DELTA_TYPE_RANK.get(d.get("delta_type"), 9), -conf,
+            str(d.get("delta_id")))
+
+
+def _engineering_first_config(options: Optional[dict]) -> dict:
+    raw = (options or {}).get("engineering_first")
+    raw = raw if isinstance(raw, dict) else {}
+    cfg = dict(_ENGINEERING_FIRST_DEFAULTS)
+    for key in cfg:
+        try:
+            if raw.get(key) is not None:
+                cfg[key] = max(0, int(raw[key]))
+        except (TypeError, ValueError):
+            pass
+    return cfg
+
+
+def _select_engineering_first(deltas: list, max_deltas: Optional[int],
+                              high_thr: float, include_high: bool,
+                              options: Optional[dict]) -> list[dict]:
+    """engineering_first: квотированная выборка по selection-группам.
+
+    1) кандидаты фильтруются как в priority_only (include_high_confidence
+       сохраняет прежнюю семантику);
+    2) группы сортируются детерминированно (changed раньше added/removed,
+       внутри — по confidence);
+    3) per_subject_cap отсекает дробление одного события (излишки — в
+       overflow, используются последними);
+    4) проход 1 — квоты групп; проход 2 — остаток слотов из leftovers в
+       порядке приоритета групп; проход 3 — overflow. max_deltas строгий.
+    """
+    cfg = _engineering_first_config(options)
+    candidates = [d for d in deltas
+                  if isinstance(d, dict)
+                  and _is_priority_delta(d, high_thr, include_high)]
+
+    groups: dict[str, list] = {g: [] for g in _SELECTION_GROUP_ORDER}
+    for d in candidates:
+        groups[classify_selection_group(d)].append(d)
+
+    per_cap = cfg["per_subject_cap"]
+    kept: dict[str, list] = {}
+    overflow: list = []
+    for g in _SELECTION_GROUP_ORDER:
+        seen: dict[str, int] = {}
+        kept[g] = []
+        for d in sorted(groups[g], key=_selection_sort_key):
+            key = build_selection_group_key(d)
+            seen[key] = seen.get(key, 0) + 1
+            if per_cap > 0 and seen[key] > per_cap:
+                overflow.append(d)
+            else:
+                kept[g].append(d)
+
+    limit = max_deltas if (max_deltas is not None and max_deltas >= 0) else None
+    quotas = {"engineering": cfg["engineering_quota"],
+              "admin_stamp": cfg["admin_stamp_quota"],
+              "navigation_contents": cfg["navigation_quota"],
+              "weak_or_artifact": cfg["weak_quota"]}
+
+    selected: list = []
+    leftovers: dict[str, list] = {}
+
+    def _room() -> Optional[int]:
+        return None if limit is None else max(0, limit - len(selected))
+
+    # проход 1: квоты
+    for g in _SELECTION_GROUP_ORDER:
+        take = quotas[g]
+        room = _room()
+        if room is not None:
+            take = min(take, room)
+        selected.extend(kept[g][:take])
+        leftovers[g] = kept[g][take:]
+    # проход 2: добор из leftovers в порядке приоритета (если в инженерной
+    # группе пусто — слоты достаются stamp/navigation, но НЕ наоборот)
+    for g in _SELECTION_GROUP_ORDER:
+        room = _room()
+        if room == 0:
+            break
+        selected.extend(leftovers[g][:room] if room is not None else leftovers[g])
+    # проход 3: overflow per_subject_cap — последним
+    room = _room()
+    if room != 0 and overflow:
+        selected.extend(overflow[:room] if room is not None else overflow)
+
+    return selected[:limit] if limit is not None else selected
+
+
 def select_deltas_for_explanation(entity_diff_report: dict,
                                   options: Optional[dict] = None) -> list[dict]:
     """Выбрать дельты для отправки в LLM по стратегии (без отправки всего тома)."""
@@ -133,6 +291,9 @@ def select_deltas_for_explanation(entity_diff_report: dict,
 
     if strategy == "all":
         selected = list(deltas)
+    elif strategy == "engineering_first":
+        selected = _select_engineering_first(deltas, max_deltas, high_thr,
+                                             include_high, options)
     elif strategy == "changed_only":
         selected = [d for d in deltas if d.get("delta_type") == "changed"]
     elif strategy == "low_confidence":
@@ -654,6 +815,8 @@ __all__ = [
     "REPORT_KIND",
     "explain_entity_diff_report",
     "select_deltas_for_explanation",
+    "classify_selection_group",
+    "build_selection_group_key",
     "build_delta_explanation_prompt",
     "parse_delta_explanation_response",
     "explain_single_delta",
