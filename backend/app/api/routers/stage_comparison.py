@@ -43,6 +43,7 @@ from backend.app.services.stage_comparison import graphic_llm_local as graphic_l
 from backend.app.services.stage_comparison import md_image_enrichment as md_enrichment_mod
 from backend.app.services.stage_comparison import md_enrichment_jobs as md_enrichment_jobs_mod
 from backend.app.services.stage_comparison import large_sheet_enrichment as large_sheet_mod
+from backend.app.services.stage_comparison import pipeline_v2_payload_service as pipeline_v2_payload_mod
 from backend.app.services.stage_comparison import large_sheet_enrichment_jobs as large_sheet_jobs_mod
 from backend.app.services.stage_comparison import auto_match_jobs as auto_match_jobs_mod
 from backend.app.services.stage_comparison import visual_block_equivalence_jobs as vbe_jobs_mod
@@ -3434,3 +3435,25 @@ async def cancel_graphic_diff_job(session_id: str, job_id: str):
 #     эндпоинты удалены вместе с переездом вкладки «Отчёт» на read-only
 #     сводку согласованных расхождений (см. unified-diff-flat/export.xlsx
 #     ?accepted_only=true). ───────────────────────────────────────────────
+
+
+# ─── Pipeline V2 (controlled integration): read-only UI payload ────────────
+#
+# Endpoint НИЧЕГО не запускает (ни Pipeline V2, ни Qwen/Opus/LLM, ни jobs)
+# и НИЧЕГО не пишет: отдаёт готовый pipeline_v2_ui_payload.json или собирает
+# payload из готовых артефактов dry-run. Отсутствие артефактов — обычный
+# JSON-ответ {"status": "not_found", ...}, не 404 (контракт для портала).
+# Дисковое I/O уведено в threadpool (sync-тяжёлый handler в event loop
+# блокирует /api/info и провоцирует watchdog-restart).
+
+
+@router.get("/pipeline-v2/{session_id}/ui-payload")
+async def get_pipeline_v2_ui_payload_endpoint(session_id: str,
+                                              pair_id: Optional[str] = None):
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_payload_mod.discover_pipeline_v2_payload,
+            session_id, pair_id)
+    except ValueError as exc:
+        # невалидный session_id/pair_id (path traversal и т.п.)
+        raise HTTPException(400, str(exc)) from exc
