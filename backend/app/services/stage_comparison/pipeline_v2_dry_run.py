@@ -61,6 +61,10 @@ from backend.app.services.stage_comparison.pipeline_v2_delta_explanation import 
     explain_entity_diff_report,
     write_delta_explanation_report,
 )
+from backend.app.services.stage_comparison.pipeline_v2_visual_equivalence_gate import (
+    run_visual_equivalence_gate,
+    write_visual_equivalence_gate_report,
+)
 
 SUMMARY_VERSION = 1
 SUMMARY_KIND = "stage_comparison_pipeline_v2_dry_run_summary"
@@ -76,6 +80,7 @@ _ARTIFACT_FILENAMES = {
     "left_graphic": "left_graphic_descriptor_report.json",
     "right_graphic": "right_graphic_descriptor_report.json",
     "graphic_matched": "graphic_descriptor_matched_report.json",
+    "visual_gate": "visual_equivalence_gate_report.json",
     "entity_extraction": "entity_extraction_report.json",
     "entity_diff": "entity_diff_report.json",
     "delta_explanation": "delta_explanation_report.json",
@@ -86,7 +91,7 @@ _ARTIFACT_FILENAMES = {
 # Артефакты, перечисляемые в манифесте (manifest сам себя не хеширует).
 _MANIFEST_ARTIFACT_KEYS = [
     "left_model", "right_model", "block_matching",
-    "left_graphic", "right_graphic", "graphic_matched",
+    "left_graphic", "right_graphic", "graphic_matched", "visual_gate",
     "entity_extraction", "entity_diff", "delta_explanation",
     "summary_json", "summary_md",
 ]
@@ -450,13 +455,41 @@ def build_delta_sections(entity_diff_report: Any, delta_explanation_report: Any,
     return sections
 
 
+def _visual_gate_section(ve_report: Any, ve_enabled: bool,
+                         ve_error: Optional[str]) -> dict:
+    s = (ve_report.get("summary") if isinstance(ve_report, dict) else {}) or {}
+    sec = {
+        "enabled": bool(ve_enabled),
+        "status": ("disabled" if not ve_enabled else
+                   "failed" if ve_error else
+                   (ve_report or {}).get("status", "not_run")
+                   if isinstance(ve_report, dict) else "not_run"),
+        "matched_graphic_blocks_total": s.get("matched_graphic_blocks_total", 0),
+        "compared_total": s.get("compared_total", 0),
+        "identical_visual": s.get("identical_visual", 0),
+        "minor_visual": s.get("minor_visual", 0),
+        "changed_visual": s.get("changed_visual", 0),
+        "uncertain": s.get("uncertain", 0),
+        "render_failed": s.get("render_failed", 0),
+        "skipped": s.get("skipped", 0),
+        "exclude_from_vision": s.get("exclude_from_vision", 0),
+        "send_to_vision": s.get("send_to_vision", 0),
+        "manual_review": s.get("manual_review", 0),
+    }
+    if ve_error:
+        sec["error"] = ve_error
+    return sec
+
+
 def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report: Any,
                               entity_report: Any, diff_report: Any, inputs: dict,
                               artifact_paths: dict, warnings: list[str], status: str,
                               error: Optional[str] = None, left_graphic: Any = None,
                               right_graphic: Any = None, matched_graphic: Optional[list] = None,
                               graphic_error: Optional[str] = None, de_report: Any = None,
-                              de_enabled: bool = True, de_error: Optional[str] = None) -> dict:
+                              de_enabled: bool = True, de_error: Optional[str] = None,
+                              ve_report: Any = None, ve_enabled: bool = True,
+                              ve_error: Optional[str] = None) -> dict:
     """Собрать ``pipeline_v2_summary`` из артефактов этапов 1–4."""
     lm, rm = _summary_of(left_model), _summary_of(right_model)
     bm, em, dm = _summary_of(block_report), _summary_of(entity_report), _summary_of(diff_report)
@@ -508,6 +541,8 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
         "stages": stages,
         "graphic_descriptor": _graphic_descriptor_section(
             left_graphic, right_graphic, matched_graphic, graphic_error),
+        "visual_equivalence_gate": _visual_gate_section(ve_report, ve_enabled,
+                                                        ve_error),
         "delta_explanation": _delta_explanation_section(de_report, de_enabled, de_error),
         "delta_sections": build_delta_sections(diff_report, de_report),
         "warnings": warnings,
@@ -688,6 +723,24 @@ def write_pipeline_v2_summary_md(out_path: str | Path, summary: dict,
         lines.append(f"- ⚠ Ошибка graphic descriptor: {gd['error']}")
     lines.append("")
 
+    ve = summary.get("visual_equivalence_gate", {}) or {}
+    lines.append("## Visual equivalence gate (mark-only, до vision)")
+    lines.append(f"- Status: `{ve.get('status', 'unknown')}`")
+    lines.append(f"- Compared: {ve.get('compared_total', 0)} из "
+                 f"{ve.get('matched_graphic_blocks_total', 0)} matched graphic pairs")
+    lines.append(f"- identical_visual={ve.get('identical_visual', 0)}, "
+                 f"minor_visual={ve.get('minor_visual', 0)}, "
+                 f"changed_visual={ve.get('changed_visual', 0)}, "
+                 f"uncertain={ve.get('uncertain', 0)}, "
+                 f"render_failed={ve.get('render_failed', 0)}, "
+                 f"skipped={ve.get('skipped', 0)}")
+    lines.append(f"- excluded_from_vision={ve.get('exclude_from_vision', 0)}, "
+                 f"send_to_vision={ve.get('send_to_vision', 0)}, "
+                 f"manual_review={ve.get('manual_review', 0)}")
+    if ve.get("error"):
+        lines.append(f"- ⚠ Ошибка visual gate: {ve['error']}")
+    lines.append("")
+
     de = summary.get("delta_explanation", {}) or {}
     lines.append("## Delta explanation / critic")
     lines.append(f"- Status: `{de.get('status', 'unknown')}`")
@@ -803,12 +856,17 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     de_opts = options.get("delta_explanation") or {}
     de_enabled = de_opts.get("enabled", True) is not False
 
+    ve_opts = options.get("visual_gate") or {}
+    ve_enabled = ve_opts.get("enabled", True) is not False
+
     status = "ok"
     error: Optional[str] = None
     left_model = right_model = block_report = entity_report = diff_report = None
     left_graphic = right_graphic = None
     matched_graphic: list = []
     graphic_error: Optional[str] = None
+    ve_report = None
+    ve_error: Optional[str] = None
     de_report = None
     de_error: Optional[str] = None
 
@@ -850,6 +908,22 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
         except Exception as gexc:  # noqa: BLE001 — graphic не критичен
             graphic_error = f"{type(gexc).__name__}: {gexc}"
 
+        # [3b] visual equivalence gate — mark-only наложение matched graphic
+        #      блоков ДО vision; fail-soft: падение НЕ валит этапы 4-6,
+        #      downstream пока не использует пометки (Stage 1: observe).
+        if ve_enabled:
+            try:
+                ve_report = run_visual_equivalence_gate(
+                    left_model, right_model, block_report,
+                    left_graphic_report=left_graphic,
+                    right_graphic_report=right_graphic,
+                    graphic_matched_report=matched_graphic,
+                    options=ve_opts)
+                write_visual_equivalence_gate_report(paths["visual_gate"],
+                                                     ve_report)
+            except Exception as vexc:  # noqa: BLE001 — gate не критичен
+                ve_error = f"{type(vexc).__name__}: {vexc}"
+
         # [4] entity extraction
         entity_report = extract_entities_for_matched_documents(
             left_model, right_model, block_report, options.get("extraction"))
@@ -887,6 +961,11 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
                 warnings.append(f"{prefix}: {w}")
     if graphic_error:
         warnings.append(f"graphic_descriptor: {graphic_error}")
+    if isinstance(ve_report, dict):
+        for w in ve_report.get("warnings", []) or []:
+            warnings.append(f"visual_gate: {w}")
+    if ve_error:
+        warnings.append(f"visual_gate: {ve_error}")
     if isinstance(de_report, dict):
         # benign «no_llm_runner» (offline skip) НЕ повышаем до dry-run warning
         for w in de_report.get("warnings", []) or []:
@@ -905,7 +984,8 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
         artifact_paths=paths, warnings=warnings, status=status, error=error,
         left_graphic=left_graphic, right_graphic=right_graphic,
         matched_graphic=matched_graphic, graphic_error=graphic_error,
-        de_report=de_report, de_enabled=de_enabled, de_error=de_error)
+        de_report=de_report, de_enabled=de_enabled, de_error=de_error,
+        ve_report=ve_report, ve_enabled=ve_enabled, ve_error=ve_error)
 
     # summary + manifest пишем всегда (best-effort, атомарно)
     write_pipeline_v2_summary_json(paths["summary_json"], summary)

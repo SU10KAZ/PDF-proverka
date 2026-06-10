@@ -496,6 +496,23 @@ def build_pipeline_v2_ui_payload(summary: dict,
     if graphic_descriptor_reports is not None:
         graphic_readiness["weak_blocks_preview"] = _collect_weak_blocks_preview(
             graphic_descriptor_reports)
+    # visual equivalence gate (mark-only) — добавляется ТОЛЬКО если секция
+    # есть в summary (старые payload'ы без неё полностью совместимы)
+    ve = s.get("visual_equivalence_gate")
+    if isinstance(ve, dict) and ve.get("enabled"):
+        ve_sec = {
+            "status": _clean(ve.get("status")) or "unknown",
+            "compared_total": _safe_count(ve.get("compared_total")),
+            "exclude_from_vision": _safe_count(ve.get("exclude_from_vision")),
+            "send_to_vision": _safe_count(ve.get("send_to_vision")),
+            "manual_review": _safe_count(ve.get("manual_review")),
+            "changed_visual": _safe_count(ve.get("changed_visual")),
+            "uncertain": _safe_count(ve.get("uncertain")),
+        }
+        # упавший gate НЕ должен выглядеть как чистый прогон с нулями
+        if ve.get("error"):
+            ve_sec["error"] = str(ve["error"])
+        graphic_readiness["visual_equivalence"] = ve_sec
 
     summary_warnings = _str_list(s.get("warnings"))
     if s.get("warnings") and not summary_warnings:
