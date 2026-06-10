@@ -31,7 +31,12 @@ from backend.app.models.audit import AuditJob, AuditStage, JobStatus, BatchQueue
 from backend.app.models.websocket import WSMessage
 from backend.app.core.config import get_claude_model, get_model_for_stage
 from backend.app.models.usage import UsageRecord
-from backend.app.services.common.process_runner import run_script, kill_all_processes
+from backend.app.services.common.process_runner import (
+    run_script,
+    kill_all_processes,
+    has_live_processes,
+    active_process_pids,
+)
 import backend.app.services.llm.claude_runner as claude_runner
 from backend.app.services.common.usage_service import usage_tracker, global_scanner, paid_cost_tracker
 from backend.app.services.llm.lmstudio_lifecycle_service import (
@@ -188,6 +193,20 @@ def _current_object_id_or_none() -> Optional[str]:
         return get_current_id()
     except Exception:
         return None
+
+
+class BatchResumeBlockedError(RuntimeError):
+    """Resume очереди временно недоступен — текущий проект ещё выполняется.
+
+    Отличается от обычного RuntimeError, чтобы API мог вернуть структурированный
+    409 с reason=current_project_running вместо общего сообщения.
+    """
+
+
+# Сколько проектов вперёд (после текущего running) сканирует pre-Gemma prefetch,
+# пропуская временно неподготовляемые (нет crops / V2 skip), чтобы не «залипать»
+# на первом не готовом проекте. Порядок основной очереди НЕ меняется.
+BATCH_PREGEMMA_WINDOW = max(1, int(os.environ.get("BATCH_PREGEMMA_WINDOW", "4")))
 
 
 class PipelineManager:
@@ -390,6 +409,99 @@ class PipelineManager:
             for it in q.items
         )
 
+    # ─── Живость worker'а очереди и текущего аудита ─────────────────────
+    # Ключевой инвариант инцидента: batch-worker __BATCH__ ВЫПОЛНЯЕТ текущий
+    # project audit внутри своей же корутины (см. _run_batch_queue:
+    # self._tasks[pid] = asyncio.current_task()). Поэтому «worker потерян, но
+    # проект ещё жив» на практике = у живой корутины ошибочно сняли регистрацию
+    # в self._tasks (это делал cleanup_zombies). Эти helper'ы дают надёжный
+    # признак живости, не завязанный на in-memory job/heartbeat-трекинг.
+
+    def _batch_worker_alive(self) -> bool:
+        """True если asyncio-таск worker'а очереди __BATCH__ реально жив."""
+        task = self._tasks.get("__BATCH__")
+        return task is not None and not task.done()
+
+    def _current_batch_item_pid(self) -> Optional[str]:
+        """project_id текущего (current_index) элемента очереди, либо None."""
+        q = self._batch_queue
+        if q is None:
+            return None
+        idx = q.current_index
+        if 0 <= idx < len(q.items):
+            return q.items[idx].project_id
+        return None
+
+    def _has_live_project_audit(self) -> bool:
+        """True если реально выполняется аудит проекта этой очереди.
+
+        Любого сигнала достаточно (от самого надёжного к запасному):
+          1. worker-таск __BATCH__ жив (он же исполняет текущий project audit);
+          2. в active_jobs есть не-__BATCH__ job со статусом RUNNING;
+          3. у текущего элемента очереди есть живые дочерние процессы
+             (ground-truth, переживает in-memory GC джоба/heartbeat'а).
+        """
+        if self._batch_worker_alive():
+            return True
+        for pid, job in self.active_jobs.items():
+            if pid == "__BATCH__":
+                continue
+            if job.status == JobStatus.RUNNING:
+                return True
+        cur = self._current_batch_item_pid()
+        if cur is not None and has_live_processes(cur):
+            return True
+        return False
+
+    def _protected_pids(self) -> set[str]:
+        """pid, которые cleanup_zombies НЕ имеет права снимать как зомби.
+
+        Защищаем worker очереди и текущий выполняющийся проект, пока аудит жив,
+        а также любой проект с живыми дочерними процессами. Иначе живой аудит
+        ошибочно признаётся зомби → очередь демотируется в interrupted.
+        """
+        protected: set[str] = set(active_process_pids())
+        if self._batch_worker_alive():
+            protected.add("__BATCH__")
+            cur = self._current_batch_item_pid()
+            if cur is not None:
+                protected.add(cur)
+        return protected
+
+    def get_batch_diagnostics(self) -> dict:
+        """Диагностика для UI/API: разделяет состояние очереди, текущего проекта
+        и worker'а, чтобы не показывать ложный «полный сбой».
+        """
+        q = self._batch_queue
+        worker_alive = self._batch_worker_alive()
+        live_audit = self._has_live_project_audit()
+        cur = self._current_batch_item_pid()
+        status = q.status if q is not None else None
+        # worker потерян, но очередь формально running
+        batch_worker_lost = bool(q is not None and status == "running" and not worker_alive)
+        # resume безопасен только когда нет живого аудита и очередь прервана
+        # (или running с потерянным worker'ом и без живого проекта)
+        resume_available = bool(
+            q is not None
+            and not live_audit
+            and (status == "interrupted" or batch_worker_lost)
+        )
+        if live_audit and batch_worker_lost:
+            display_status = "degraded_but_current_running"
+        elif live_audit and status == "running":
+            display_status = "running"
+        else:
+            display_status = status
+        return {
+            "queue_status": status,
+            "display_status": display_status,
+            "worker_alive": worker_alive,
+            "current_project_running": live_audit,
+            "current_project_id": cur if live_audit else None,
+            "batch_worker_lost": batch_worker_lost,
+            "resume_available": resume_available,
+        }
+
     def load_persisted_queue(self) -> None:
         """Загрузить очередь после перезапуска сервера.
 
@@ -456,13 +568,34 @@ class PipelineManager:
             print(f"[PipelineManager] Ошибка удаления batch_queue.json: {e}")
 
     async def resume_interrupted_batch(self) -> BatchQueueStatus:
-        """Restart a persisted interrupted queue from unfinished items."""
+        """Restart a persisted interrupted queue from unfinished items.
+
+        Безопасность resume:
+          - идемпотентность: если worker очереди уже жив — НЕ создаём второй
+            worker, просто возвращаем текущую очередь (повторный клик безвреден);
+          - НЕ запускаем resume, пока жив текущий аудит проекта — иначе
+            дубль-worker мог бы перезапустить уже идущий проект, убить его
+            claude-процессы и перезаписать 01/02/03. Возвращаем понятный 409.
+          - НЕ делаем kill/pkill активных процессов и НЕ удаляем артефакты.
+        """
         async with self._enqueue_lock:
             queue = self._batch_queue
             if not queue:
                 raise RuntimeError("Нет прерванной очереди")
-            if queue.status == "running":
+            # Идемпотентность: worker уже жив → очередь и так работает.
+            if self._batch_worker_alive():
                 return queue
+            # Текущий проект ещё реально выполняется (worker-регистрацию могли
+            # ошибочно снять, но корутина/процессы живы) — resume небезопасен.
+            if self._has_live_project_audit():
+                raise BatchResumeBlockedError(
+                    "Текущий проект ещё выполняется — продолжение очереди будет "
+                    "доступно после его завершения"
+                )
+            if queue.status == "running":
+                # status running, но worker мёртв и живого аудита нет —
+                # нормализуем, чтобы можно было пересоздать worker.
+                queue.status = "interrupted"
             if queue.status != "interrupted":
                 raise RuntimeError("Очередь не находится в состоянии interrupted")
 
@@ -850,10 +983,29 @@ class PipelineManager:
         return None
 
     def cleanup_zombies(self):
-        """Очистить зомби-задачи (нет heartbeat более ZOMBIE_TIMEOUT_SEC)."""
+        """Очистить зомби-задачи (нет heartbeat более ZOMBIE_TIMEOUT_SEC).
+
+        Защита: НИКОГДА не снимаем worker очереди __BATCH__ и текущий живой
+        проект, пока аудит реально выполняется. Раньше __BATCH__ (у него нет
+        собственного heartbeat-цикла) после ZOMBIE_TIMEOUT_SEC ложно
+        признавался зомби, снимался из self._tasks — и _reconcile_stale_queue
+        затем демотировал всю очередь в interrupted, хотя проект ещё шёл.
+        """
         now = datetime.now()
+        # pid, которые нельзя трогать пока жив batch-worker / есть живые процессы.
+        protected = self._protected_pids()
         zombies = []
         for pid, job in list(self.active_jobs.items()):
+            if pid in protected:
+                continue  # живой worker / текущий проект — не зомби
+            # __BATCH__ судим по живости таска, а не по heartbeat (его нет).
+            if pid == "__BATCH__":
+                if not self._batch_worker_alive():
+                    zombies.append(pid)
+                continue
+            # Любой проект с живыми дочерними процессами — реально работает.
+            if has_live_processes(pid):
+                continue
             if job.status != JobStatus.RUNNING:
                 zombies.append(pid)
                 continue
@@ -4543,13 +4695,22 @@ class PipelineManager:
     def _select_pregemma_candidate(
         self, queue: BatchQueueStatus
     ) -> Optional[tuple[Optional[BatchQueueItem], bool]]:
-        """Window=1: возвращает (target, mutated) для следующего pending проекта.
+        """Window skip-ahead: первый ГОТОВЫЙ к prefetch pending-проект в окне.
 
-        target=None означает что валидного кандидата нет (но возможно были
-        мутации — например item был помечен skipped если outputs уже готовы).
-        mutated=True означает caller должен _persist_queue() и broadcast.
+        Раньше было строго window=1: смотрели ровно queue.current_index + 1. Если
+        этот проект временно неподготовляем (нет PNG crops — например V2, который
+        pre-crop пропускает), prefetch «залипал» навсегда и не готовил ни один из
+        следующих готовых проектов.
 
-        НЕ переходит к N+2, даже если N+1 уже валиден — соблюдается window=1.
+        Теперь сканируем до BATCH_PREGEMMA_WINDOW (env `BATCH_PREGEMMA_WINDOW`,
+        default 4) pending-проектов после текущего и возвращаем ПЕРВЫЙ, у которого
+        crops готовы, а enrichment ещё не валиден. Временно неподготовляемые
+        тихо пропускаются (skip reason логируется), порядок основной очереди НЕ
+        меняется.
+
+        target=None — готового кандидата в окне нет (возможны мутации: item
+        помечен skipped, если его outputs уже валидны). mutated=True означает,
+        что caller обязан _persist_queue() + broadcast.
         """
         # Локальные импорты — явные зависимости метода, не полагаемся на module-level
         from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
@@ -4558,32 +4719,38 @@ class PipelineManager:
         )
 
         running_idx = queue.current_index
-        if running_idx + 1 >= len(queue.items):
-            return (None, False)
-        item = queue.items[running_idx + 1]
-        if item.status != "pending":
-            return (None, False)
-        action = item.action or queue.action
-        if action == "optimization":
-            return (None, False)
-        # Failed — больше не ретраим (MVP). Done/running/skipped — пропуск.
-        if item.gemma_prefetch_status in ("running", "done", "skipped", "failed"):
-            return (None, False)
+        mutated = False
+        window = BATCH_PREGEMMA_WINDOW
+        end = min(len(queue.items), running_idx + 1 + window)
+        for idx in range(running_idx + 1, end):
+            item = queue.items[idx]
+            if item.status != "pending":
+                continue
+            action = item.action or queue.action
+            if action == "optimization":
+                continue
+            # Failed — больше не ретраим (MVP). Done/running/skipped — пропуск.
+            if item.gemma_prefetch_status in ("running", "done", "skipped", "failed"):
+                continue
 
-        proj_dir = resolve_project_dir(item.project_id)
-        index_file = _gemma_blocks_index_path(proj_dir)
-        if not index_file.exists():
-            # PNG crop ещё не готов — _run_precrop_loop его сделает позже.
-            return (None, False)
+            proj_dir = resolve_project_dir(item.project_id)
+            index_file = _gemma_blocks_index_path(proj_dir)
+            if not index_file.exists():
+                # PNG crop ещё не готов (V2 skip / pre-crop отстаёт) — НЕ залипаем,
+                # смотрим следующий в окне.
+                continue
 
-        ok, reason = gemma_outputs_are_valid(proj_dir)
-        if ok:
-            item.gemma_prefetched = True
-            item.gemma_prefetch_status = "skipped"
-            item.gemma_prefetch_finished_at = datetime.now().isoformat()
-            return (None, True)  # mutated — caller обязан persist
+            ok, _reason = gemma_outputs_are_valid(proj_dir)
+            if ok:
+                item.gemma_prefetched = True
+                item.gemma_prefetch_status = "skipped"
+                item.gemma_prefetch_finished_at = datetime.now().isoformat()
+                mutated = True
+                continue  # уже готов — ищем дальше реальный кандидат
 
-        return (item, False)
+            return (item, mutated)
+
+        return (None, mutated)
 
     async def _run_gemma_prefetch_loop(
         self, queue: BatchQueueStatus, pause_event: asyncio.Event
@@ -4600,7 +4767,9 @@ class PipelineManager:
           Gemma этап (gate _is_current_running_past_gemma).
         - Использует короткий timeout-acquire (1 сек), чтобы не блокировать
           main pipeline когда тот хочет lock.
-        - Window=1: только следующий pending после текущего running.
+        - Window skip-ahead: первый ГОТОВЫЙ pending в окне
+          BATCH_PREGEMMA_WINDOW после текущего running (не залипает на
+          неподготовленном V2/no-crops проекте). Порядок очереди не меняется.
         - Failed prefetch не ретраит — main pipeline выполнит Gemma штатно.
         - Pause-aware: ставится на паузу вместе с батчем через pause_event.
         - Cancel-aware: при отмене task'а во время активного run сбрасывает
@@ -4615,7 +4784,11 @@ class PipelineManager:
         PREGEMMA_LOCK_ACQUIRE_TIMEOUT_S = 1.0
 
         await ws_manager.broadcast_global(
-            WSMessage.log("__BATCH__", "▶ Pre-Gemma loop запущен (window=1)", "info")
+            WSMessage.log(
+                "__BATCH__",
+                f"▶ Pre-Gemma loop запущен (window={BATCH_PREGEMMA_WINDOW})",
+                "info",
+            )
         )
 
         try:
@@ -4820,7 +4993,7 @@ class PipelineManager:
 
             # Запустить фоновые таски для будущих проектов:
             # - pre-crop: PDF→PNG для следующих pending;
-            # - pre-Gemma: gemma_enrichment для следующего pending (window=1)
+            # - pre-Gemma: gemma_enrichment для первого готового pending в окне
             #   под общим Gemma-локом, не пересекаясь с main pipeline.
             if queue.total > 1:
                 precrop_task = asyncio.create_task(self._run_precrop_loop(queue))
@@ -5189,7 +5362,11 @@ class PipelineManager:
         поднимает worker.
         """
         queue = self._batch_queue
-        if queue is not None and queue.status == "running" and "__BATCH__" in self.active_jobs:
+        # Идемпотентность по ЖИВОСТИ таска, а не по наличию ключа в active_jobs:
+        # cleanup_zombies мог снять __BATCH__ из active_jobs у живой корутины —
+        # тогда наличие ключа лгало бы об отсутствии worker'а и мы создали бы
+        # дубль. Доверяем _batch_worker_alive().
+        if queue is not None and queue.status == "running" and self._batch_worker_alive():
             return queue
 
         queue = BatchQueueStatus(
@@ -5407,9 +5584,16 @@ class PipelineManager:
         q = self._batch_queue
         if q is None:
             return False
-        worker = self._tasks.get("__BATCH__")
-        if worker is not None and not worker.done():
+        if self._batch_worker_alive():
             return False  # воркер жив — доверяем его учёту
+        # Worker-таск не зарегистрирован/завершён, НО текущий проект мог ещё
+        # реально выполняться (его корутина = тот же __BATCH__ таск, у которого
+        # cleanup_zombies мог снять регистрацию; либо живы дочерние процессы).
+        # В этом случае НЕ демотируем очередь в interrupted — иначе фоновые
+        # циклы (gated на status == "running") умрут, а UI покажет ложный
+        # «полный сбой». Демотируем только когда проект реально завершился.
+        if self._has_live_project_audit():
+            return False
         changed = False
         for it in q.items:
             if it.status == "running":
