@@ -111,6 +111,38 @@ critic»** с честным выводом «LLM explanation не запуск�
 [delta explanation](stage_comparison_pipeline_v2_delta_explanation.md)).
 `coverage_notes` по слабой графике строятся даже без runner'а.
 
+## Delta sections (секционирование отчёта)
+
+Summary делит ОБЪЯСНЁННЫЕ дельты на секции для инженера/генподрядчика —
+JSON-секция `delta_sections` + раздел **«## Delta sections»** в `.md`
+(заголовки ✅/🟡/🟠/⚪/🔴, count + до 10 компактных примеров на секцию).
+Это **offline-report, не портал UI**; selection/prompt/diff не меняются,
+backend restart не нужен.
+
+Каждая дельта попадает ровно в ОДНУ главную секцию по приоритету:
+
+| Приоритет | Секция | Критерий |
+|---|---|---|
+| 1 | `llm_failed_or_skipped` 🔴 | status `failed`/`skipped_no_runner`, `model.raw_status != ok` или флаг `llm_response_parse_failed` (нечитаемый ответ LLM = «объяснения нет»); с `llm_runner=None` сюда уходят ВСЕ selected |
+| 2 | `likely_noise_hidden_by_default` ⚪ | вердикт `reject` (критик отверг дельту) ИЛИ `possible_ocr_noise` И (show=false ИЛИ risk=none) — типографика/OCR-артефакты/отвергнутое, скрывать по умолчанию |
+| 3 | `weak_graphic_review` 🟠 | `possible_weak_graphic` или graphic-контекст блока слабый (needs_vision_enrichment / readiness low/not_usable) — слабая графика бьёт даже accept |
+| 4 | `needs_review` 🟡 | `needs_human_review` (вердикт/флаг/статус); сюда же `possible_ocr_noise` с show=true И risk≠none — инженер взглянет |
+| 5 | `confirmed_changes` ✅ | `accept` + show=true + groundedness grounded/partially_grounded |
+
+Неклассифицированное — fallback в `needs_review` (safe default). Каждая
+секция: `{count, delta_ids, description, examples[≤10]}`; пример: entity/
+delta type, subject/field, old→new (обрезка до 60 симв.), critic verdict,
+risk, show. `delta_sections.coverage_notes` — счётчики
+`{count, weak_graphic, matched_risk}`.
+
+Как читать: **confirmed** — можно показывать как подтверждённые изменения;
+**needs_review** — очередь ручной проверки; **weak_graphic** — сперва
+vision-доработка/ручной просмотр листа; **noise** — скрыто по умолчанию
+(показывать по тумблеру); **failed/skipped** — explanation не выполнялся
+(offline-режим) или упал. Валидация на real АР2 changed_only: 3 confirmed
+(ИНПАД/Бернер/дата), 1 needs_review (пробелы в шифре, ocr_noise+show=true),
+1 noise (кавычки `"…"`→`«…»`, show=false), 0 weak/failed.
+
 ## Graphic readiness («светофор» графики)
 
 Dry-run пишет графические descriptor-артефакты и добавляет в summary секцию

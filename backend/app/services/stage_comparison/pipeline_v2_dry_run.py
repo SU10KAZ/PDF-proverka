@@ -301,6 +301,155 @@ def _delta_explanation_section(de_report: Any, de_enabled: bool, de_error: Optio
     return sec
 
 
+# ─── delta sections (секционирование отчёта по вердиктам critic) ─────────────
+#
+# Offline-представление для инженера/генподрядчика: каждая ОБЪЯСНЁННАЯ дельта
+# попадает ровно в одну главную секцию по приоритету
+# llm_failed_or_skipped → likely_noise_hidden_by_default → weak_graphic_review
+# → needs_review → confirmed_changes. Селекцию/prompt/diff это НЕ меняет.
+
+_DELTA_SECTION_ORDER = [
+    "confirmed_changes",
+    "needs_review",
+    "weak_graphic_review",
+    "likely_noise_hidden_by_default",
+    "llm_failed_or_skipped",
+]
+
+_DELTA_SECTION_DESCRIPTIONS = {
+    "confirmed_changes": ("Accepted deterministic deltas that are grounded "
+                          "and should be shown to engineer."),
+    "needs_review": "Deltas requiring engineer/manual review.",
+    "weak_graphic_review": "Deltas affected by weak/not usable graphic context.",
+    "likely_noise_hidden_by_default": (
+        "OCR/formatting noise or critic-rejected deltas; hidden by default "
+        "(should_show_to_engineer=false, risk_level=none or verdict=reject)."),
+    "llm_failed_or_skipped": ("Selected deltas without successful explanation "
+                              "(failed, skipped or unparseable LLM response)."),
+}
+
+_WEAK_GRAPHIC_READINESS = ("low", "not_usable")
+_EXAMPLE_VALUE_MAX = 60
+
+
+def _cap_text(value: Any, limit: int = _EXAMPLE_VALUE_MAX) -> str:
+    s = "" if value is None else str(value).strip()
+    if len(s) <= limit:
+        return s
+    return s[: limit - 1].rstrip() + "…"
+
+
+def classify_explained_delta_section(explanation: dict,
+                                     delta: Optional[dict] = None) -> str:
+    """Главная секция для одной объяснённой дельты (приоритетная, без двоения)."""
+    e = explanation if isinstance(explanation, dict) else {}
+    status = _clean(e.get("status"))
+    model = e.get("model") or {}
+    raw_status = _clean(model.get("raw_status"))
+    critic = e.get("critic") or {}
+    verdict = _clean(critic.get("verdict"))
+    show = bool(critic.get("should_show_to_engineer", True))
+    grounded = _clean((e.get("groundedness") or {}).get("verdict"))
+    gc = e.get("graphic_context") or {}
+    flags = set(e.get("quality_flags") or [])
+
+    # 1) объяснение не состоялось: сбой/пропуск runner'а или нечитаемый ответ
+    #    (llm_response_parse_failed = «объяснения нет», а не «нужна проверка»)
+    if (status in ("failed", "skipped_no_runner")
+            or (raw_status and raw_status != "ok")
+            or "llm_response_parse_failed" in flags):
+        return "llm_failed_or_skipped"
+    # 2) скрываемое по умолчанию: ocr_noise + (не показывать ИЛИ risk none),
+    #    а также явный reject критика (отвергнутая дельта сильнее, чем шум)
+    if verdict == "reject" or status == "critic_rejected":
+        return "likely_noise_hidden_by_default"
+    if verdict == "possible_ocr_noise" and (not show or e.get("risk_level") == "none"):
+        return "likely_noise_hidden_by_default"
+    # 3) слабая графика
+    if (verdict == "possible_weak_graphic" or bool(gc.get("needs_vision_enrichment"))
+            or _clean(gc.get("readiness")) in _WEAK_GRAPHIC_READINESS):
+        return "weak_graphic_review"
+    # 4) ручная проверка (включая ocr_noise с show=true и risk≠none —
+    #    инженер взглянет)
+    if (verdict == "needs_human_review" or "needs_human_review" in flags
+            or status == "needs_human_review"):
+        return "needs_review"
+    # 5) подтверждённое изменение
+    if verdict == "accept" and show and grounded in ("grounded", "partially_grounded"):
+        return "confirmed_changes"
+    # fallback: всё неклассифицированное — на ручную проверку (safe default)
+    return "needs_review"
+
+
+def format_delta_section_examples(delta_ids: list, deltas_by_id: dict,
+                                  explanations_by_id: dict,
+                                  limit: int = 10) -> list[dict]:
+    """Компактные примеры дельт секции (≤limit) для summary JSON/MD."""
+    out: list[dict] = []
+    for did in delta_ids[:limit]:
+        d = deltas_by_id.get(did) or {}
+        e = explanations_by_id.get(did) or {}
+        critic = e.get("critic") or {}
+        out.append({
+            "delta_id": did,
+            "entity_type": d.get("entity_type", "unknown"),
+            "delta_type": d.get("delta_type", "unknown"),
+            "subject": _cap_text(d.get("subject")),
+            "field": d.get("field", ""),
+            "old_value": _cap_text(d.get("old_value")),
+            "new_value": _cap_text(d.get("new_value")),
+            "critic_verdict": _clean(critic.get("verdict")) or None,
+            "risk_level": e.get("risk_level"),
+            "should_show_to_engineer": critic.get("should_show_to_engineer"),
+        })
+    return out
+
+
+def build_delta_sections(entity_diff_report: Any, delta_explanation_report: Any,
+                         graphic_descriptor_reports: Any = None) -> dict:
+    """Секционирование объяснённых дельт + сводка coverage_notes.
+
+    ``graphic_descriptor_reports`` зарезервирован для будущих эвристик —
+    graphic-контекст каждой дельты уже встроен в её explanation
+    (``graphic_context``), отдельный отчёт не требуется.
+    """
+    diff = entity_diff_report if isinstance(entity_diff_report, dict) else {}
+    de = (delta_explanation_report
+          if isinstance(delta_explanation_report, dict) else {})
+    deltas_by_id = {d.get("delta_id"): d for d in (diff.get("deltas") or [])}
+    explanations = [e for e in (de.get("explanations") or []) if isinstance(e, dict)]
+    explanations_by_id = {e.get("delta_id"): e for e in explanations}
+
+    ids_by_section: dict[str, list] = {k: [] for k in _DELTA_SECTION_ORDER}
+    for e in explanations:
+        did = e.get("delta_id")
+        section = classify_explained_delta_section(e, deltas_by_id.get(did))
+        ids_by_section[section].append(did)
+
+    sections: dict[str, Any] = {"selected_total": len(explanations)}
+    for key in _DELTA_SECTION_ORDER:
+        ids = ids_by_section[key]
+        sections[key] = {
+            "count": len(ids),
+            "delta_ids": ids,
+            "description": _DELTA_SECTION_DESCRIPTIONS[key],
+            "examples": format_delta_section_examples(
+                ids, deltas_by_id, explanations_by_id),
+        }
+
+    notes = de.get("coverage_notes") or []
+    kinds: dict[str, int] = {}
+    for n in notes:
+        if isinstance(n, dict):
+            kinds[n.get("kind", "unknown")] = kinds.get(n.get("kind", "unknown"), 0) + 1
+    sections["coverage_notes"] = {
+        "count": len(notes),
+        "weak_graphic": kinds.get("weak_graphic", 0),
+        "matched_risk": kinds.get("matched_risk", 0),
+    }
+    return sections
+
+
 def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report: Any,
                               entity_report: Any, diff_report: Any, inputs: dict,
                               artifact_paths: dict, warnings: list[str], status: str,
@@ -360,6 +509,7 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
         "graphic_descriptor": _graphic_descriptor_section(
             left_graphic, right_graphic, matched_graphic, graphic_error),
         "delta_explanation": _delta_explanation_section(de_report, de_enabled, de_error),
+        "delta_sections": build_delta_sections(diff_report, de_report),
         "warnings": warnings,
         "next_recommended_stage": NEXT_RECOMMENDED_STAGE,
     }
@@ -396,6 +546,59 @@ def _graphic_traffic_light(gd: dict) -> str:
     if vision > 0:
         return "🟡 Есть блоки, которым нужен vision enrichment."
     return "🟢 Графика пригодна для deterministic diff."
+
+
+_DELTA_SECTION_MD_TITLES = [
+    ("confirmed_changes", "### ✅ Подтверждённые изменения"),
+    ("needs_review", "### 🟡 На ручную проверку"),
+    ("weak_graphic_review", "### 🟠 Слабая графика / нужна доработка vision"),
+    ("likely_noise_hidden_by_default", "### ⚪ Вероятный шум / скрывать по умолчанию"),
+    ("llm_failed_or_skipped", "### 🔴 Ошибки или пропущенные объяснения"),
+]
+
+
+def _delta_example_md(ex: dict) -> str:
+    show = ex.get("should_show_to_engineer")
+    show_s = "—" if show is None else ("true" if show else "false")
+    subj = ex.get("subject") or ex.get("field") or ""
+    return (f"- {ex.get('entity_type')}/{ex.get('delta_type')} {subj}: "
+            f"`{ex.get('old_value') or '∅'}` → `{ex.get('new_value') or '∅'}` "
+            f"[{ex.get('critic_verdict') or '—'}, risk={ex.get('risk_level') or '—'}, "
+            f"show={show_s}]")
+
+
+def _delta_sections_md(ds: dict) -> list[str]:
+    """Раздел «## Delta sections» для summary.md (компактный, ≤10 примеров)."""
+    lines: list[str] = ["## Delta sections", ""]
+    if not ds or not ds.get("selected_total"):
+        lines.append("- Объяснённых дельт нет (LLM не запускался или selection пуст).")
+        lines.append("")
+        cov = (ds or {}).get("coverage_notes") or {}
+        if cov.get("count"):
+            lines.append(f"- Coverage notes: {cov.get('count', 0)} "
+                         f"(weak_graphic={cov.get('weak_graphic', 0)}, "
+                         f"matched_risk={cov.get('matched_risk', 0)})")
+            lines.append("")
+        return lines
+    for key, title in _DELTA_SECTION_MD_TITLES:
+        sec = ds.get(key) or {}
+        count = sec.get("count", 0)
+        lines.append(f"{title} — {count}")
+        examples = sec.get("examples") or []
+        if not examples:
+            lines.append("- нет")
+        else:
+            for ex in examples[:10]:
+                lines.append(_delta_example_md(ex))
+            if count > len(examples):
+                lines.append(f"- … ещё {count - len(examples)}")
+        lines.append("")
+    cov = ds.get("coverage_notes") or {}
+    lines.append(f"- Coverage notes: {cov.get('count', 0)} "
+                 f"(weak_graphic={cov.get('weak_graphic', 0)}, "
+                 f"matched_risk={cov.get('matched_risk', 0)})")
+    lines.append("")
+    return lines
 
 
 def write_pipeline_v2_summary_md(out_path: str | Path, summary: dict,
@@ -504,6 +707,8 @@ def write_pipeline_v2_summary_md(out_path: str | Path, summary: dict,
     else:
         lines.append("- ✅ LLM explanation выполнен по выбранным дельтам.")
     lines.append("")
+
+    lines += _delta_sections_md(summary.get("delta_sections") or {})
 
     lines.append("## Warnings")
     if warnings:
@@ -719,6 +924,9 @@ __all__ = [
     "normalize_package_paths",
     "build_pipeline_v2_artifact_paths",
     "build_pipeline_v2_summary",
+    "build_delta_sections",
+    "classify_explained_delta_section",
+    "format_delta_section_examples",
     "build_graphic_matched_report",
     "write_pipeline_v2_summary_md",
     "write_pipeline_v2_summary_json",

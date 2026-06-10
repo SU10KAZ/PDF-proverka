@@ -101,6 +101,17 @@ combined `{left,right,matched}`). Если блок `low`/`not_usable` /
 `possible_weak_graphic`, и (важно) НЕ делается вывод «изменений нет»: пустота
 трактуется как «нужна дообработка графики».
 
+## Использование verdict в summary sections
+
+Dry-run строит из вердиктов офлайн-секции `delta_sections` (см.
+[dry run](stage_comparison_pipeline_v2_dry_run.md)): `accept`+show →
+✅ confirmed; `needs_human_review` (и `possible_ocr_noise` с show=true и
+risk≠none) → 🟡 needs_review; `possible_weak_graphic`/слабый graphic-контекст →
+🟠 weak_graphic_review; `reject`, а также `possible_ocr_noise` с show=false
+или risk=none → ⚪ noise (скрыто по умолчанию); failed/skipped/нечитаемый
+ответ (`llm_response_parse_failed`) → 🔴. Сам этот модуль секций не строит —
+только отдаёт explanations.
+
 ## Статусы и critic verdict
 
 Статус explanation: `explained | critic_rejected | needs_human_review |
