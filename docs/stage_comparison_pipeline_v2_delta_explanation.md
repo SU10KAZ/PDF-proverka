@@ -66,9 +66,22 @@ high_confidence_threshold}`.
 
 `llm_runner: Callable[[str], str | dict]` — ИНЪЕКТИРУЕТСЯ. Модуль НЕ импортирует
 claude/provider и НЕ делает сетевых вызовов сам. Возврат строки → raw text;
-возврат dict (`{status, raw_response, error}`) → совместимость с
-provider-обёрткой (напр., будущая обёртка вокруг `ClaudeCodeProvider` — но
-подключается СНАРУЖИ, не здесь).
+возврат dict (`{status, raw_response, error, provider?, model?}`) →
+совместимость с provider-обёрткой (напр., будущая обёртка вокруг
+`ClaudeCodeProvider` — но подключается СНАРУЖИ, не здесь).
+
+### Provider metadata (cleanup 2026-06-10)
+
+`explanation.model.provider` НЕ хардкодится — runner self-report'ит себя:
+
+- dict-ответ с `provider`/`model` → значения попадают в `explanation.model`
+  (`{"provider": "mock", "model": "fake-model-1"}` для теста; реальный
+  claude-wrapper явно передаёт `provider="claude"`);
+- string-ответ или dict без `provider` → `provider="custom_runner"`
+  (анонимный инъектированный runner, НЕ «claude»);
+- `llm_runner=None` → `provider="none"` (как раньше).
+
+Fail-soft поведение:
 
 - `llm_runner=None` → каждая дельта `skipped_no_runner` (noop, не падение);
 - исключение runner'а → `failed`, дельта не теряется;

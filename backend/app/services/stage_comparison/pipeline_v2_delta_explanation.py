@@ -352,22 +352,31 @@ def parse_delta_explanation_response(raw_response: Any, delta: Optional[dict] = 
 # ─── single delta ────────────────────────────────────────────────────────────
 
 
-def _invoke_runner(llm_runner: LLMRunner, prompt: str) -> tuple[str, str, Optional[str]]:
-    """Вызвать инъектированный runner. Возвращает (raw_text, raw_status, error)."""
+def _invoke_runner(llm_runner: LLMRunner,
+                   prompt: str) -> tuple[str, str, Optional[str], dict]:
+    """Вызвать инъектированный runner.
+
+    Возвращает (raw_text, raw_status, error, runner_meta). ``runner_meta`` —
+    self-reported идентификация runner'а (``provider``/``model`` из dict-ответа);
+    пустой dict для string-ответов и ошибок.
+    """
     try:
         out = llm_runner(prompt)
     except Exception as exc:  # noqa: BLE001 — fail-soft по контракту
-        return "", "failed", f"{type(exc).__name__}: {exc}"
+        return "", "failed", f"{type(exc).__name__}: {exc}", {}
     if isinstance(out, str):
-        return (out, "ok", None) if out.strip() else ("", "failed", "empty_response")
+        return ((out, "ok", None, {}) if out.strip()
+                else ("", "failed", "empty_response", {}))
     if isinstance(out, dict):
+        meta = {k: _clean(out.get(k)) for k in ("provider", "model")
+                if _clean(out.get(k))}
         raw = _clean(out.get("raw_response") or out.get("text") or out.get("response"))
-        status = _clean(out.get("status"))
+        status = _clean(out.get("status") or out.get("raw_status"))
         err = out.get("error")
         if raw and status in ("", "ok", "completed", "success"):
-            return raw, "ok", err
-        return raw, "failed", err or (status or "no_response")
-    return "", "failed", "unsupported_runner_return"
+            return raw, "ok", err, meta
+        return raw, "failed", err or (status or "no_response"), meta
+    return "", "failed", "unsupported_runner_return", {}
 
 
 def _status_from_critic(verdict: str) -> str:
@@ -426,8 +435,14 @@ def explain_single_delta(delta: dict, graphic_context: Optional[dict] = None,
         return base
 
     prompt = build_delta_explanation_prompt(delta, graphic_context, options)
-    raw, raw_status, err = _invoke_runner(llm_runner, prompt)
-    base["model"] = {"provider": "claude", "raw_status": raw_status, "error": err}
+    raw, raw_status, err, runner_meta = _invoke_runner(llm_runner, prompt)
+    # provider НЕ хардкодится: runner self-report'ит provider/model в dict-ответе
+    # (реальный claude-wrapper передаст provider="claude"); string-ответ →
+    # анонимный инъектированный runner → "custom_runner"
+    base["model"] = {"provider": runner_meta.get("provider") or "custom_runner",
+                     "raw_status": raw_status, "error": err}
+    if runner_meta.get("model"):
+        base["model"]["model"] = runner_meta["model"]
 
     if raw_status != "ok":
         base["status"] = "failed"

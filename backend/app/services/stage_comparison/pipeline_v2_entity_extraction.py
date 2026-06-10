@@ -28,6 +28,7 @@ PDF-render и НЕ создаёт findings. Только stdlib.
 """
 from __future__ import annotations
 
+import html
 import json
 import os
 import re
@@ -70,11 +71,25 @@ _POWER_CURRENT_RE = re.compile(r"\d+(?:[.,]\d+)?\s*а\b", re.IGNORECASE)
 _POWER_UPS_RE = re.compile(r"\bибп\b", re.IGNORECASE)
 _POWER_CATEGORY_RE = re.compile(r"\b[iv]+\s*-?\s*(?:я\s+)?категори\w*", re.IGNORECASE)
 
-# Нормативные ссылки.
+# Нормативные ссылки. Lookbehind отсекает совпадение внутри слова («ОСП-3»,
+# «Аккорд-512», «способ»); дефис-формы «СП-1»/«РД-082» НЕ считаются нормами
+# (марки оборудования/шифры) — у норм РФ номер пишется через пробел. Номер
+# может начинаться с МЭК/ИСО/IEC/ISO («ГОСТ Р МЭК 61140-2000») или римской
+# группы («СНиП II-12-77»).
 _NORM_RE = re.compile(
-    r"(гост\s*р|гост|снип|сп|фз|пуэ|рд)\s*[№n]?\s*((?:\d[\d.\-/]*)?)",
+    r"(?<![а-яёa-z0-9])(гост\s*р|гост|снип|сп|фз|пуэ|рд)\s*[№n]?\s*"
+    r"((?:мэк|исо|iec|iso)\s*\d[\d.\-/]*"
+    r"|[ivx]+[-–—]\d[\d.\-/]*"
+    r"|\d[\d.\-/]*)?",
     re.IGNORECASE,
 )
+# Формы федеральных законов: «ФЗ-384» (дефис допустим ТОЛЬКО для ФЗ) и
+# «384-ФЗ» / «№ 384-ФЗ» (номер ПЕРЕД ключевым словом).
+_NORM_FZ_PREFIX_RE = re.compile(r"(?<![а-яёa-z0-9])фз\s*[-–—]\s*(\d+)\b",
+                                re.IGNORECASE)
+_NORM_FZ_SUFFIX_RE = re.compile(r"\b(\d+)\s*-\s*фз\b", re.IGNORECASE)
+# Ключевые слова, валидные БЕЗ номера (ПУЭ — самостоятельная ссылка).
+_NORM_STANDALONE_OK = {"пуэ"}
 
 # Подсказки связей на схемах (без построения полноценного графа).
 _CONNECTION_KW = (
@@ -93,6 +108,48 @@ _SECTION_RE = re.compile(
 # ─── Текстовая нормализация / id ────────────────────────────────────────────
 
 _WS_RE = re.compile(r"\s+")
+
+# HTML-разметка: ocr_text в result.json бывает HTML-обёрнут (теги + data-bbox/
+# data-label атрибуты) — без стрипа разметка протекает в entity values.
+_HTML_TAG_RE = re.compile(r"</?[a-zA-Z][^>]*>")
+_HTML_CELL_SEP_RE = re.compile(r"</\s*t[dh]\s*>\s*<\s*t[dh][^>]*>", re.IGNORECASE)
+_HTML_ROW_BREAK_RE = re.compile(
+    r"</\s*tr\s*>|<\s*br\s*/?\s*>|</\s*(?:p|div|li|h[1-6])\s*>", re.IGNORECASE)
+
+_INFORMATIVE_RE = re.compile(r"[0-9a-zа-яё]", re.IGNORECASE)
+
+
+def strip_html_markup(value: Any) -> str:
+    """Убрать HTML-разметку, сохранив текст и структуру строк/таблиц.
+
+    ``</td><td>`` → `` | `` (ячейки → pipe-таблица), ``</tr>``/``<br>``/блочные
+    закрытия → перенос строки, остальные теги (включая атрибуты ``data-bbox``/
+    ``data-label``) — пробел; HTML-entities декодируются. Текст без тегов
+    (включая markdown pipe-таблицы) возвращается без изменений.
+    """
+    s = "" if value is None else str(value)
+    if "<" not in s or not _HTML_TAG_RE.search(s):
+        return s
+    s = _HTML_CELL_SEP_RE.sub(" | ", s)
+    s = _HTML_ROW_BREAK_RE.sub("\n", s)
+    s = _HTML_TAG_RE.sub(" ", s)
+    # хвостовой обрезанный тег («…</t» от upstream-truncation excerpt'а до 600
+    # символов) не имеет закрывающего «>» и не ловится _HTML_TAG_RE; якорим на
+    # реальное начало тега «<буква»/«</», чтобы не съесть сравнение «t < 5 °C»
+    s = re.sub(r"</?[a-zA-Z][^>]*\Z", "", s)
+    s = html.unescape(s)
+    lines = (_WS_RE.sub(" ", ln).strip() for ln in s.splitlines())
+    return "\n".join(ln for ln in lines if ln)
+
+
+def clean_entity_value(value: Any) -> str:
+    """Очистить одиночное значение сущности: strip HTML + схлопнуть пробелы."""
+    return _WS_RE.sub(" ", strip_html_markup(value)).strip()
+
+
+def _is_informative(text: str) -> bool:
+    """Есть ли в тексте хоть одна буква/цифра (фильтр пустых HTML-огрызков)."""
+    return bool(_INFORMATIVE_RE.search(text or ""))
 
 
 def normalize_entity_text(value: Any) -> str:
@@ -149,11 +206,15 @@ def _p(entity_type: str, semantic_group: str, *, subject: str = "", name: str = 
 
 
 def _primary_text(block: dict) -> tuple[str, str]:
-    """Главный текст блока + источник (text_excerpt > pdfplumber_text_excerpt)."""
-    te = _clean(block.get("text_excerpt"))
+    """Главный текст блока + источник (text_excerpt > pdfplumber_text_excerpt).
+
+    HTML-разметка снимается здесь, чтобы ВСЕ extractors ниже работали с чистым
+    текстом; чисто-разметочный excerpt (теги без текста) считается пустым.
+    """
+    te = strip_html_markup(_clean(block.get("text_excerpt")))
     if te:
         return te, "text_excerpt"
-    pp = _clean(block.get("pdfplumber_text_excerpt"))
+    pp = strip_html_markup(_clean(block.get("pdfplumber_text_excerpt")))
     if pp:
         return pp, "pdfplumber_text"
     return "", "heuristic"
@@ -165,13 +226,13 @@ def _scheme_text_sources(block: dict) -> list[tuple[str, str]]:
     summ = block.get("ocr_json_summary")
     if isinstance(summ, dict):
         if _clean(summ.get("content_summary")):
-            out.append((_clean(summ["content_summary"]), "ocr_json"))
+            out.append((strip_html_markup(_clean(summ["content_summary"])), "ocr_json"))
         if _clean(summ.get("detailed_description")):
-            out.append((_clean(summ["detailed_description"]), "ocr_json"))
-    te = _clean(block.get("text_excerpt"))
+            out.append((strip_html_markup(_clean(summ["detailed_description"])), "ocr_json"))
+    te = strip_html_markup(_clean(block.get("text_excerpt")))
     if te:
         out.append((te, "text_excerpt"))
-    pp = _clean(block.get("pdfplumber_text_excerpt"))
+    pp = strip_html_markup(_clean(block.get("pdfplumber_text_excerpt")))
     if pp:
         out.append((pp, "pdfplumber_text"))
     return out
@@ -180,11 +241,31 @@ def _scheme_text_sources(block: dict) -> list[tuple[str, str]]:
 # ─── Сканеры (общие для text/scheme) ────────────────────────────────────────
 
 
-def _scan_norms(text: str, source: str) -> list[dict]:
+def _scan_norms(text: str, source: str, stats: Optional[Counter] = None) -> list[dict]:
     out: list[dict] = []
+    # формы ФЗ с дефисом извлекаются отдельными регэкспами; их спаны помнят,
+    # чтобы вырожденный хвост «фз» из основного регэкспа не считался шумом
+    fz_spans: list[tuple[int, int]] = []
+    for rx in (_NORM_FZ_PREFIX_RE, _NORM_FZ_SUFFIX_RE):
+        for m in rx.finditer(text):
+            ref = f"ФЗ {m.group(1)}"
+            out.append(_p("norm_reference", "text", name=ref, value=ref,
+                          confidence=0.7, quote=m.group(0), source=source))
+            fz_spans.append(m.span())
     for m in _NORM_RE.finditer(text):
         kw = _WS_RE.sub(" ", m.group(1)).strip()
         num = _clean(m.group(2))
+        if not num:
+            if normalize_entity_text(kw) in _NORM_STANDALONE_OK:
+                pass  # ПУЭ валиден standalone
+            elif any(s <= m.start() < e for s, e in fz_spans):
+                continue  # часть формы «ФЗ-384»/«384-ФЗ» — уже извлечена выше
+            else:
+                # одиночное «СП»/«ГОСТ»/«ФЗ» без номера (часто кусок слова —
+                # «способ», «спецификация») — это не ссылка на норму
+                if stats is not None:
+                    stats["degenerate_norm_reference_suppressed"] += 1
+                continue
         ref = f"{kw} {num}".strip()
         out.append(_p("norm_reference", "text", name=ref, value=ref,
                       confidence=0.7, quote=m.group(0), source=source))
@@ -216,8 +297,37 @@ def _scan_equipment(text: str, source: str) -> list[dict]:
 
 
 def _canon_power(token: str) -> str:
-    # «220 В» → «220В», «0,5 А» → «0,5А»
-    return _WS_RE.sub("", token).strip()
+    # «220 В» → «220В», «0,5 А» → «0,5А», «+12В» → «12В»
+    return _WS_RE.sub("", token).strip().lstrip("+")
+
+
+def _power_entities_from_token(tok: str, source: str) -> list[dict]:
+    """power_supply-сущности из произвольного токена (схемный key_entity).
+
+    Значения канонизируются до номиналов («Ввод ~220 В» → «220В»), unit
+    выставляется как в ``_scan_power`` — иначе тот же номинал с двух сторон
+    даёт мусорную unit-дельту ``'' → 'В'``. Составной токен («ИБП 220В»,
+    «Ввод 220В, 16А») даёт ОТДЕЛЬНУЮ сущность на каждый факт — first-match
+    схлопывание прятало реальные изменения номиналов. Токен без числа /
+    ИБП / категории → пустой список (НЕ power_supply).
+    """
+    out: list[dict] = []
+    if _POWER_UPS_RE.search(tok):
+        out.append(_p("power_supply", "power", name="ИБП", value="ИБП",
+                      confidence=0.6, quote=tok, source=source))
+    for m in _POWER_CATEGORY_RE.finditer(tok):
+        val = _WS_RE.sub(" ", m.group(0)).strip()
+        out.append(_p("power_supply", "power", name=val, value=val,
+                      confidence=0.55, quote=tok, source=source))
+    for m in _POWER_VOLTAGE_RE.finditer(tok):
+        val = _canon_power(m.group(0))
+        out.append(_p("power_supply", "power", name=val, value=val, unit="В",
+                      confidence=0.6, quote=tok, source=source))
+    for m in _POWER_CURRENT_RE.finditer(tok):
+        val = _canon_power(m.group(0))
+        out.append(_p("power_supply", "power", name=val, value=val, unit="А",
+                      confidence=0.6, quote=tok, source=source))
+    return out
 
 
 def _scan_cables(text: str, source: str) -> list[dict]:
@@ -327,14 +437,15 @@ def extract_stamp_entities(block: dict, page: Optional[dict] = None) -> list[dic
     return out
 
 
-def extract_text_entities(block: dict, page: Optional[dict] = None) -> list[dict]:
+def extract_text_entities(block: dict, page: Optional[dict] = None,
+                          stats: Optional[Counter] = None) -> list[dict]:
     """document_section / requirement / norm_reference / equipment / cable / power."""
     text, source = _primary_text(block)
     if not text:
         return []
     out: list[dict] = []
     out += _scan_sections(text, source)
-    out += _scan_norms(text, source)
+    out += _scan_norms(text, source, stats=stats)
     out += _scan_requirements(text, source)
     out += _scan_equipment(text, source)
     out += _scan_cables(text, source)
@@ -490,10 +601,11 @@ def extract_contents_entities(block: dict, page: Optional[dict] = None) -> list[
                           value=name, fields=fields, confidence=0.6,
                           quote=" | ".join(cells), source="table"))
         return out
-    # текстовый fallback: непустые строки
+    # текстовый fallback: непустые ИНФОРМАТИВНЫЕ строки (после HTML-стрипа
+    # огрызки разметки/пунктуации не должны становиться contents_item)
     for line in text.splitlines():
         s = line.strip()
-        if len(s) >= 3:
+        if len(s) >= 3 and _is_informative(s):
             out.append(_p("contents_item", "contents", name=s, value=s,
                           confidence=0.45, quote=s, source="text_excerpt"))
     return out
@@ -505,10 +617,18 @@ def extract_scheme_entities(block: dict, page: Optional[dict] = None) -> list[di
     summ = block.get("ocr_json_summary") if isinstance(block.get("ocr_json_summary"), dict) else {}
     key_entities = summ.get("key_entities") if isinstance(summ.get("key_entities"), list) else []
     for ke in key_entities:
-        tok = _clean(ke)
+        tok = clean_entity_value(ke)
         if not tok:
             continue
         etype, group = _classify_scheme_token(tok)
+        if etype == "power_supply":
+            ents = _power_entities_from_token(tok, "ocr_json")
+            # классификатор и хелпер используют одни регэкспы; fallback на
+            # старое поведение — страховка от рассинхрона
+            out.extend(ents if ents
+                       else [_p(etype, group, name=tok, value=tok,
+                                confidence=0.6, quote=tok, source="ocr_json")])
+            continue
         out.append(_p(etype, group, name=tok, value=tok, confidence=0.6,
                       quote=tok, source="ocr_json"))
     # сканеры по всем текстам схемы (покрывают и блоки без key_entities)
@@ -586,7 +706,7 @@ def extract_entities_for_block(block: dict, page: Optional[dict] = None,
         raw += extract_scheme_entities(block, page)
     elif st in ("text", "legend", "title", "unknown"):
         if page_type not in ("change_log", "contents"):
-            raw += extract_text_entities(block, page)
+            raw += extract_text_entities(block, page, stats=options.get("_stats"))
 
     # dedup внутри блока
     deduped: list[dict] = []
@@ -640,14 +760,17 @@ def extract_entities_for_block(block: dict, page: Optional[dict] = None,
 # ─── Документ / matched documents ───────────────────────────────────────────
 
 
-def _extract_side(model: dict, side: str, options: Optional[dict]) -> tuple[list[dict], dict]:
+def _extract_side(model: dict, side: str,
+                  options: Optional[dict]) -> tuple[list[dict], dict, Counter]:
     pages = {p.get("page_number"): p for p in (model.get("pages") or [])}
     entities: list[dict] = []
     by_block: dict[str, dict] = {}
+    stats: Counter = Counter()
     for bid, block in (model.get("blocks") or {}).items():
         page = pages.get(block.get("page_number"))
-        ents = extract_entities_for_block(block, page=page,
-                                          options={**(options or {}), "side": side})
+        ents = extract_entities_for_block(
+            block, page=page,
+            options={**(options or {}), "side": side, "_stats": stats})
         by_block[bid] = {
             "page_number": block.get("page_number"),
             "semantic_type": block.get("semantic_type"),
@@ -655,13 +778,13 @@ def _extract_side(model: dict, side: str, options: Optional[dict]) -> tuple[list
             "flags": _block_extraction_flags(block, page),
         }
         entities.extend(ents)
-    return entities, by_block
+    return entities, by_block, stats
 
 
 def extract_document_entities(model: dict, options: Optional[dict] = None) -> list[dict]:
     """Извлечь сущности всех блоков ОДНОЙ модели (side из ``options``)."""
     side = (options or {}).get("side", "unknown")
-    entities, _ = _extract_side(model or {}, side, options)
+    entities, _, _ = _extract_side(model or {}, side, options)
     return entities
 
 
@@ -682,8 +805,8 @@ def extract_entities_for_matched_documents(
     right_model = right_model or {}
     report = block_matching_report or {}
 
-    left_entities, left_by_block = _extract_side(left_model, "left", options)
-    right_entities, right_by_block = _extract_side(right_model, "right", options)
+    left_entities, left_by_block, left_stats = _extract_side(left_model, "left", options)
+    right_entities, right_by_block, right_stats = _extract_side(right_model, "right", options)
 
     left_by_id = {e["entity_id"]: e for e in left_entities}
     right_by_id = {e["entity_id"]: e for e in right_entities}
@@ -746,6 +869,10 @@ def extract_entities_for_matched_documents(
         if not entry.get("entity_ids"))
     if empty_blocks:
         warnings.append(f"blocks_without_entities: {empty_blocks}")
+    degenerate_norms = (left_stats["degenerate_norm_reference_suppressed"]
+                        + right_stats["degenerate_norm_reference_suppressed"])
+    if degenerate_norms:
+        warnings.append(f"degenerate_norm_reference_suppressed: {degenerate_norms}")
 
     # summary
     all_entities = left_entities + right_entities
@@ -825,6 +952,8 @@ __all__ = [
     "extract_change_log_entities",
     "extract_contents_entities",
     "normalize_entity_text",
+    "strip_html_markup",
+    "clean_entity_value",
     "make_entity_id",
     "write_entity_extraction_report",
 ]

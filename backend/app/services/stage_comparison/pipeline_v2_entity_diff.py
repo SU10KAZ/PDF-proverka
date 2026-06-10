@@ -332,9 +332,12 @@ def compare_matched_entities(left_entity: dict, right_entity: dict,
             out.append({"field": "value", "old_value": _clean(lv), "new_value": _clean(rv),
                         "flags": flags,
                         "numeric_change": extract_numeric_tokens(lv) != extract_numeric_tokens(rv)})
-        # unit
+        # unit — сравниваем только когда ОБЕ стороны его выставили: отсутствие
+        # unit у одной стороны — артефакт экстракции (разные пути извлечения),
+        # а не инженерное изменение; иначе плодятся дельты вида «'' → 'В'»
         lu, ru = left_entity.get("unit"), right_entity.get("unit")
-        if normalize_entity_value(lu) != normalize_entity_value(ru):
+        if (_clean(lu) and _clean(ru)
+                and normalize_entity_value(lu) != normalize_entity_value(ru)):
             out.append({"field": "unit", "old_value": _clean(lu), "new_value": _clean(ru),
                         "flags": [], "numeric_change": False})
     out += compare_entity_fields(left_entity, right_entity, options)

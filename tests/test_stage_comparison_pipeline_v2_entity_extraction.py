@@ -410,3 +410,195 @@ def test_normalize_and_id():
     assert ee.normalize_entity_text("  Коммутатор   ЦОД ") == "коммутатор цод"
     assert ee.make_entity_id("left", "blk 1", 3) == "ent_l_blk_1_03"
     assert ee.make_entity_id("right", "b2", 0) == "ent_r_b2_00"
+
+
+# ─── normalization cleanup (HTML / norm / power, 2026-06-10) ─────────────────
+
+
+def test_html_strip_keeps_useful_text():
+    s = ee.strip_html_markup('<div data-bbox="17 5 216 26" data-label="Table">'
+                             '<td>Содержание тома</td></div>')
+    assert s == "Содержание тома"
+    assert "data-bbox" not in s and "data-label" not in s
+
+
+def test_html_strip_cells_become_pipe_row():
+    s = ee.strip_html_markup("<tr><td>АА/БЭ-03-П-ИОС5.2-С</td><td>Содержание тома</td></tr>")
+    assert "АА/БЭ-03-П-ИОС5.2-С | Содержание тома" in s
+
+
+def test_html_strip_does_not_touch_plain_text_and_markdown():
+    md_table = "| Обозначение | Наименование |\n| АА-С | Содержание тома |"
+    assert ee.strip_html_markup(md_table) == md_table
+    plain = "Кабель КПСВВнг(А)-LS 1x2x0,5, питание 220В, cat.5e"
+    assert ee.strip_html_markup(plain) == plain
+    assert ee.clean_entity_value("<td>КПСВВнг(А)-LS</td>") == "КПСВВнг(А)-LS"
+
+
+def test_html_attrs_not_in_entity_values():
+    blk = _blk("c1", page_number=1, block_type="text", semantic_type="text",
+               text_excerpt='<div data-bbox="5 133 988 817" data-label="Table">'
+                            "<td>АА/БЭ-03-П-ИОС5.2-С</td></div>\n"
+                            '<div data-bbox="960 40 978 63" data-label="Page-Header">4</div>')
+    ents = ee.extract_entities_for_block(blk, page={"page_type": "contents",
+                                                    "document_code": "DC"})
+    for e in ents:
+        for v in (e["subject"], e["name"], e["value"]):
+            assert "<" not in v and "data-bbox" not in v and "data-label" not in v
+    # полезный текст внутри тегов сохранился
+    assert any("АА/БЭ-03-П-ИОС5.2-С" in e["value"] for e in ents)
+
+
+def test_contents_item_not_created_from_empty_html_tags():
+    blk = _blk("c2", page_number=1, block_type="text", semantic_type="text",
+               text_excerpt='<div data-bbox="17 5 216 26" data-label="Page-Header"></div>\n'
+                            "<td></td>\n<tr></tr>")
+    ents = ee.extract_entities_for_block(blk, page={"page_type": "contents",
+                                                    "document_code": "DC"})
+    assert [e for e in ents if e["entity_type"] == "contents_item"] == []
+
+
+def test_norm_reference_not_created_from_bare_keyword():
+    ents = _text_entities("Сп определяет способ прокладки. СП обязателен к применению.")
+    assert [e for e in ents if e["entity_type"] == "norm_reference"] == []
+
+
+def test_norm_reference_created_with_number():
+    ents = _text_entities("Выполнено по СП 256.1325800.2016 и СП132.13330.2011.")
+    refs = {e["value"] for e in ents if e["entity_type"] == "norm_reference"}
+    assert any("256.1325800.2016" in r for r in refs)
+    assert any("132.13330.2011" in r for r in refs)
+
+
+def test_norm_reference_gost_with_number():
+    ents = _text_entities("Кабели по ГОСТ 31565-2012.")
+    refs = {e["value"] for e in ents if e["entity_type"] == "norm_reference"}
+    assert any(r.lower().startswith("гост") and "31565-2012" in r for r in refs)
+
+
+def test_norm_reference_pue_standalone_allowed():
+    ents = _text_entities("Электроустановки соответствуют ПУЭ.")
+    refs = {e["value"] for e in ents if e["entity_type"] == "norm_reference"}
+    assert any("ПУЭ" in r for r in refs)
+
+
+def test_norm_reference_fz_forms():
+    ents = _text_entities("Согласно ФЗ-384 и Федеральному закону № 123-ФЗ.")
+    refs = {ee.normalize_entity_text(e["value"])
+            for e in ents if e["entity_type"] == "norm_reference"}
+    assert "фз 384" in refs
+    assert "фз 123" in refs
+
+
+def test_degenerate_norm_stats_counted():
+    from collections import Counter
+    stats: Counter = Counter()
+    ents = ee.extract_text_entities(
+        _text_block("Сп прокладки и СП без номера."), stats=stats)
+    assert [e for e in ents if e["entity_type"] == "norm_reference"] == []
+    assert stats["degenerate_norm_reference_suppressed"] >= 2
+
+
+def test_power_supply_not_created_from_bare_unit():
+    ents = _text_entities("Напряжение, В. Ток, А. кВт")
+    assert [e for e in ents if e["entity_type"] == "power_supply"] == []
+    # и через схемный key_entities путь
+    blk = _blk("s1", page_number=2, block_type="image", semantic_type="scheme",
+               crop_url="https://r2.example.com/s1.pdf",
+               ocr_json_summary={"content_summary": "", "detailed_description": "",
+                                 "key_entities": ["В", "А"]})
+    ents = ee.extract_entities_for_block(blk, page={"page_type": "scheme",
+                                                    "document_code": "DC"})
+    assert [e for e in ents if e["entity_type"] == "power_supply"] == []
+
+
+def test_power_supply_normalized_from_spaced_token():
+    ents = _text_entities("Электропитание 220 В, резерв +12 В.")
+    pw = {e["value"] for e in ents if e["entity_type"] == "power_supply"}
+    assert "220В" in pw
+    assert "12В" in pw and "+12В" not in pw
+
+
+def test_scheme_power_token_gets_unit_and_canonical_value():
+    blk = _blk("s2", page_number=2, block_type="image", semantic_type="scheme",
+               crop_url="https://r2.example.com/s2.pdf",
+               ocr_json_summary={"content_summary": "", "detailed_description": "",
+                                 "key_entities": ["Ввод ~220 В", "+12В"]})
+    ents = ee.extract_entities_for_block(blk, page={"page_type": "scheme",
+                                                    "document_code": "DC"})
+    pw = {e["value"]: e for e in ents if e["entity_type"] == "power_supply"}
+    assert "220В" in pw and pw["220В"]["unit"] == "В"
+    assert "12В" in pw and pw["12В"]["unit"] == "В"
+
+
+def test_degenerate_norm_warning_in_matched_report():
+    left = _model("DC", [
+        _page(1, page_type="text", blocks=[
+            _blk("Lt", page_number=1, block_type="text", semantic_type="text",
+                 coords_norm=(0.1, 0.1, 0.9, 0.6),
+                 text_excerpt="Сп прокладки кабеля без номера нормы.")])])
+    right = _model("DC", [
+        _page(1, page_type="text", blocks=[
+            _blk("Rt", page_number=1, block_type="text", semantic_type="text",
+                 coords_norm=(0.1, 0.1, 0.9, 0.6),
+                 text_excerpt="Сп прокладки кабеля без номера нормы.")])])
+    bmr = bm.match_normalized_documents(left, right)
+    rep = ee.extract_entities_for_matched_documents(left, right, bmr)
+    assert any(w.startswith("degenerate_norm_reference_suppressed") for w in rep["warnings"])
+
+
+def test_html_strip_drops_truncated_trailing_tag():
+    # upstream-truncation excerpt'а режет тег посередине: «</t…» без «>»
+    s = ee.strip_html_markup("<td>Графическая часть</t…")
+    assert s == "Графическая часть"
+    s = ee.strip_html_markup("<td>АА/БЭ-03-П-ИОС5.2-ГЧ</td>\n<td>Графическая час</t")
+    assert "Графическая час" in s and "<" not in s
+
+
+# ─── адверсариальное ревью cleanup'а: false positives / lost refs ────────────
+
+
+def test_html_strip_preserves_bare_less_than_comparisons():
+    # «t < 5 °C» после реального тега — НЕ обрезанный тег, текст сохраняется
+    s = ee.strip_html_markup("<td>Длина трассы</td> не более < 5 м")
+    assert s == "Длина трассы не более < 5 м"
+    s = ee.strip_html_markup("<div>Прокладка кабеля</div>\n"
+                             "При t < 5 °C монтаж не допускается\nСечение 2,5 мм2")
+    assert "t < 5 °C" in s and "Сечение 2,5 мм2" in s
+
+
+def test_norm_not_minted_from_equipment_marks_and_ciphers():
+    # дефис-формы и вхождения внутри слова — НЕ нормы
+    for text in ("Контроллер Аккорд-512 установлен в шкафу",
+                 "Реле давления РД-2 на вводе",
+                 "СП-1 | Унитаз подвесной | 4 шт.",
+                 "Шифр 13АВ-РД-082-К4",
+                 "Датчик ОСП-3 и извещатель КСП-5",
+                 "Бикрост ССП-3,5",
+                 "Световые приборы СП — 12 шт."):
+        ents = _text_entities(text)
+        refs = [e["value"] for e in ents if e["entity_type"] == "norm_reference"]
+        assert refs == [], f"{text!r} дал ложные нормы: {refs}"
+
+
+def test_norm_letter_prefixed_numbers_supported():
+    ents = _text_entities("Расчёт по СНиП II-12-77, кабели ГОСТ IEC 60332-1-2, "
+                          "защита по ГОСТ Р МЭК 61140-2000, трубы ГОСТ ISO 2531.")
+    refs = {ee.normalize_entity_text(e["value"])
+            for e in ents if e["entity_type"] == "norm_reference"}
+    assert any("ii-12-77" in r for r in refs)
+    assert any("iec 60332-1-2" in r for r in refs)
+    assert any("мэк 61140-2000" in r for r in refs)
+    assert any("iso 2531" in r for r in refs)
+
+
+def test_composite_power_token_yields_entity_per_nominal():
+    blk = _blk("s3", page_number=2, block_type="image", semantic_type="scheme",
+               crop_url="https://r2.example.com/s3.pdf",
+               ocr_json_summary={"content_summary": "", "detailed_description": "",
+                                 "key_entities": ["ИБП 220В", "Ввод 220В, 16А"]})
+    ents = ee.extract_entities_for_block(blk, page={"page_type": "scheme",
+                                                    "document_code": "DC"})
+    pw = {e["value"] for e in ents if e["entity_type"] == "power_supply"}
+    # составной токен не схлопывается в первый номинал
+    assert {"ИБП", "220В", "16А"} <= pw

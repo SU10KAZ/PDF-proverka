@@ -480,3 +480,55 @@ def test_delta_explanation_no_provider_imports():
     for forbidden in ("ClaudeCodeProvider", "claude -p", "import subprocess",
                       "text_llm_provider", "qwen", "opus"):
         assert forbidden not in src, f"dry_run references {forbidden!r}"
+
+
+# ─── normalization cleanup: HTML-шум не доминирует в selection (2026-06-10) ──
+
+
+def test_priority_selection_prefers_engineering_over_html_noise(tmp_path: Path):
+    """HTML-обёртка ocr_text не должна превращаться в дельты и съедать
+    priority_only-бюджет: после cleanup в selected нет `<div`/`<td`, а
+    инженерная дельта (оборудование) выбрана.
+
+    Дискриминирующий сценарий: в OLD реальный текст ОБЁРНУТ в HTML (плюс
+    пустые огрызки разметки), в NEW тот же текст голый — до cleanup такая
+    пара давала фантомные дельты с тегами в значениях."""
+    old_doc = _result_json("П")
+    new_doc = _result_json("П", extra_equipment=True)
+    plain = old_doc["pages"][0]["blocks"][1]["ocr_text"]
+    # HTML-wrap только в OLD (характерный случай: разный OCR-wrap сторон)
+    old_doc["pages"][0]["blocks"][1]["ocr_text"] = (
+        '<div data-bbox="17 5 216 26" data-label="Page-Header"></div>\n'
+        f'<div data-bbox="5 133 988 817" data-label="Text"><p>{plain}</p></div>\n'
+        "<td></td>")
+
+    old = tmp_path / "old_result.json"
+    new = tmp_path / "new_result.json"
+    old.write_text(json.dumps(old_doc, ensure_ascii=False), encoding="utf-8")
+    new.write_text(json.dumps(new_doc, ensure_ascii=False), encoding="utf-8")
+
+    out = tmp_path / "out"
+    summary = dr.run_pipeline_v2_dry_run(
+        {"result_json_path": str(old)}, {"result_json_path": str(new)}, out,
+        options={"delta_explanation": {"enabled": True,
+                                       "selection_strategy": "priority_only",
+                                       "max_deltas": 20,
+                                       "include_high_confidence": False}},
+        llm_runner=None)
+    assert summary["status"] in ("ok", "completed_with_warnings")
+
+    diff = json.loads((out / "entity_diff_report.json").read_text(encoding="utf-8"))
+    for d in diff["deltas"]:
+        assert "<div" not in (d["old_value"] + d["new_value"])
+        assert "<td" not in (d["old_value"] + d["new_value"])
+
+    de_rep = json.loads(
+        (out / "delta_explanation_report.json").read_text(encoding="utf-8"))
+    selected_ids = set(de_rep["selection"]["selected_delta_ids"])
+    assert selected_ids, "инженерные дельты должны быть выбраны"
+    by_id = {d["delta_id"]: d for d in diff["deltas"]}
+    sel_types = {by_id[i]["entity_type"] for i in selected_ids if i in by_id}
+    assert "equipment" in sel_types
+    for i in selected_ids:
+        d = by_id[i]
+        assert "<" not in d["old_value"] and "<" not in d["new_value"]

@@ -351,3 +351,48 @@ def test_normalizers_and_keys():
     id1 = ed.make_entity_identity_key({"entity_type": "cable", "value": "КПСВВ-LS 1x2x0,5"})
     id2 = ed.make_entity_identity_key({"entity_type": "cable", "value": "КПСВВ-LS 1x2x1.0"})
     assert id1 == id2  # одно семейство кабеля
+
+
+# ─── power unit cleanup (2026-06-10) ─────────────────────────────────────────
+
+
+def test_23_power_unit_asymmetry_is_not_delta():
+    # тот же номинал, но unit выставила только одна сторона (разные пути
+    # извлечения) — это артефакт экстракции, дельты «'' → 'В'» быть не должно
+    rep = _diff([_e("l1", "power_supply", "left", value="12В", unit="")],
+                [_e("r1", "power_supply", "right", value="12В", unit="В")])
+    assert rep["summary"]["deltas_total"] == 0
+    assert rep["summary"]["matched_unchanged_total"] == 1
+
+
+def test_24_no_empty_to_unit_deltas_ever():
+    rep = _diff(
+        [_e("l1", "power_supply", "left", value="220В", unit="В"),
+         _e("l2", "power_supply", "left", value="12В", unit="")],
+        [_e("r1", "power_supply", "right", value="220В", unit=""),
+         _e("r2", "power_supply", "right", value="12В", unit="В")])
+    for d in rep["deltas"]:
+        assert not (d["field"] == "unit"
+                    and (not d["old_value"] or not d["new_value"]))
+
+
+def test_25_power_unit_real_change_still_delta():
+    # обе стороны выставили unit и он реально различается → дельта остаётся
+    rep = _diff([_e("l1", "power_supply", "left", value="0.5", unit="А")],
+                [_e("r1", "power_supply", "right", value="0.5", unit="В")])
+    unit_deltas = [d for d in rep["deltas"] if d["field"] == "unit"]
+    assert len(unit_deltas) == 1
+    assert unit_deltas[0]["old_value"] == "А" and unit_deltas[0]["new_value"] == "В"
+
+
+def test_26_power_spacing_unchanged_and_real_change_kept():
+    # «220 В» ↔ «220В» — не дельта; «12В» → «24В» — дельта (spec-кейсы 11/12
+    # переутверждены после cleanup)
+    rep = _diff([_e("l1", "power_supply", "left", value="220 В", unit="В")],
+                [_e("r1", "power_supply", "right", value="220В", unit="В")])
+    assert rep["summary"]["deltas_total"] == 0
+    rep = _diff([_e("l1", "power_supply", "left", value="12В", unit="В")],
+                [_e("r1", "power_supply", "right", value="24В", unit="В")])
+    changed = [d for d in rep["deltas"] if d["delta_type"] == "changed"]
+    assert len(changed) == 1
+    assert changed[0]["old_value"] == "12В" and changed[0]["new_value"] == "24В"

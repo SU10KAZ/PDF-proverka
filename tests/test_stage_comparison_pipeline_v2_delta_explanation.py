@@ -155,7 +155,8 @@ def test_6_fake_runner_json_creates_explanation():
     assert e["status"] == "explained"
     assert e["critic"]["verdict"] == "accept"
     assert e["summary"] == "Изменено сечение кабеля"
-    assert e["model"]["provider"] == "claude"
+    # string-runner НЕ выдаётся за claude: provider не хардкодится
+    assert e["model"]["provider"] == "custom_runner"
 
 
 def test_7_broken_json_fail_soft():
@@ -298,3 +299,40 @@ def test_runner_dict_return_and_exception():
     e2 = de.explain_single_delta(_delta("d2", confidence=0.4), None, None, _raises)
     assert e2["status"] == "failed"
     assert e2["model"]["raw_status"] == "failed"
+
+
+# ─── runner provider metadata (2026-06-10) ───────────────────────────────────
+
+
+def test_runner_dict_provider_mock_propagates():
+    def runner(prompt: str) -> dict:
+        return {"status": "ok", "raw_response": _runner_accept(prompt),
+                "provider": "mock", "model": "fake-model-1"}
+
+    e = de.explain_single_delta(_delta("d1", confidence=0.4), None, None, runner)
+    assert e["status"] == "explained"
+    assert e["model"]["provider"] == "mock"
+    assert e["model"]["model"] == "fake-model-1"
+
+
+def test_runner_string_provider_is_custom_not_claude():
+    e = de.explain_single_delta(_delta("d1", confidence=0.4), None, None, _runner_accept)
+    assert e["model"]["provider"] in ("custom_runner", "injected")
+    assert e["model"]["provider"] != "claude"
+
+
+def test_runner_dict_without_provider_is_custom():
+    def runner(prompt: str) -> dict:
+        return {"status": "ok", "raw_response": _runner_accept(prompt)}
+
+    e = de.explain_single_delta(_delta("d1", confidence=0.4), None, None, runner)
+    assert e["model"]["provider"] == "custom_runner"
+
+
+def test_runner_claude_wrapper_can_declare_itself():
+    def runner(prompt: str) -> dict:
+        return {"status": "ok", "raw_response": _runner_accept(prompt),
+                "provider": "claude"}
+
+    e = de.explain_single_delta(_delta("d1", confidence=0.4), None, None, runner)
+    assert e["model"]["provider"] == "claude"

@@ -60,11 +60,28 @@ change_log | contents | unknown`.
   записка`/`Текстовая часть`…);
 - `requirement` — клаузы со словами `должен/должны/предусматривается/необходимо/
   выполняется/устанавливается/прокладывается`;
-- `norm_reference` — `СП`, `ГОСТ`/`ГОСТ Р`, `ФЗ`, `ПУЭ`, `РД`, `СНиП` (+ номер);
+- `norm_reference` — `СП`, `ГОСТ`/`ГОСТ Р`, `ФЗ`, `ПУЭ`, `РД`, `СНиП` (+ номер).
+  Ключевое слово БЕЗ номера НЕ создаёт сущность (типичный мусор: `Сп` из
+  «способ»/«спецификация»); исключение — `ПУЭ`, валидное standalone.
+  Lookbehind отсекает вхождения внутри слова (`ОСП-3`, `Аккорд-512`,
+  `ССП-3,5` — не нормы). Дефис-формы `СП-1`/`РД-082` тоже НЕ нормы (марки
+  сантехники/шифры документов; у норм РФ номер пишется через пробел) —
+  дефис допустим только для федеральных законов: `ФЗ-384` и `384-ФЗ`
+  (отдельные регэкспы). Номер может начинаться с `МЭК/ИСО/IEC/ISO`
+  (`ГОСТ Р МЭК 61140-2000`, `ГОСТ ISO 2531`) или римской группы
+  (`СНиП II-12-77`). Поддержана форма `СП132.13330.2011` (без пробела).
+  Подавления считаются в warning отчёта
+  `degenerate_norm_reference_suppressed: N`;
 - `equipment` — `коммутатор/шкаф/видеорегистратор/ИБП/камера/контроллер/
   считыватель/вызывная панель/АРМ/кросс/патч-панель`;
 - `cable` — `UTP/FTP/КПСВВ(нг)/LAN/cat.5e/cat.6/FRLS/LSLTx/ВВГ(нг)/ВОК/нг/LS/HF`;
-- `power_supply` — `220В/12В/0.5А/ИБП/I категории`.
+- `power_supply` — `220В/12В/0.5А/ИБП/I категории`. Номинал обязан содержать
+  число (голое `В`/`А` сущность не создаёт); значение канонизируется
+  (`220 В`→`220В`, `+12 В`→`12В`), `unit` (`В`/`А`) выставляется на ВСЕХ путях
+  извлечения — и в text-сканере, и для схемных `key_entities` (иначе diff
+  плодил unit-дельты `'' → 'В'`). Составной схемный токен (`ИБП 220В`,
+  `Ввод 220В, 16А`) даёт ОТДЕЛЬНУЮ сущность на каждый факт — иначе изменение
+  второго номинала (`16А`→`25А`) было бы невидимо для diff.
 
 ### Из table (`extract_table_entities`)
 Каждая строка `| … | … |` → `table_row` с массивом ячеек (`fields.cells`) и
@@ -92,6 +109,28 @@ change_log | contents | unknown`.
 Этап работает с полями нормализованного блока: `text_excerpt`,
 `pdfplumber_text_excerpt`, `stamp_data`, `quality_flags`, `semantic_type` и
 **`ocr_json_summary`**.
+
+### HTML-стрип (cleanup 2026-06-10)
+
+`ocr_text` в result.json бывает HTML-обёрнут (теги с `data-bbox`/`data-label`),
+и без очистки разметка протекала в entity values (`<td>АА/БЭ-03-…</td>` как
+`contents_item`). Теперь весь текст блока проходит `strip_html_markup` в
+`_primary_text` / `_scheme_text_sources` — ДО всех экстракторов:
+
+- `</td><td>` → ` | ` (HTML-ячейки превращаются в pipe-строку, которую понимает
+  `_parse_table_rows`), `</tr>`/`<br>`/блочные закрытия → перенос строки;
+- остальные теги вместе с атрибутами — пробел; HTML-entities декодируются;
+- хвостовой ОБРЕЗАННЫЙ тег (`…Графическая часть</t` от upstream-truncation
+  excerpt'а) снимается; голое `<` сравнения (`t < 5 °C`) при этом
+  сохраняется — удаление якорится на реальное начало тега `<буква`/`</`;
+- текст без тегов (включая markdown pipe-таблицы и значения типа
+  `КПСВВнг(А)-LS`, `220В`, `cat.5e`) возвращается без изменений;
+- contents-fallback создаёт `contents_item` только из информативных строк
+  (есть буква/цифра) — огрызки разметки/пунктуации не становятся сущностями.
+
+Публичные хелперы: `strip_html_markup(value)` (блочный текст, сохраняет
+структуру строк/таблиц) и `clean_entity_value(value)` (одиночное значение,
+схлопывает пробелы).
 
 `ocr_json_summary` — минимальное **backward-compatible** расширение этапа 1
 ([pipeline_v2_prepared_ingest](stage_comparison_pipeline_v2_prepared_package_ingest.md)):
@@ -147,13 +186,14 @@ block_matching_report, options=None)` → отчёт с `left/right` сводк�
 `extract_entities_for_matched_documents`, `extract_stamp_entities`,
 `extract_text_entities`, `extract_table_entities`, `extract_scheme_entities`,
 `extract_change_log_entities`, `extract_contents_entities`,
-`normalize_entity_text`, `make_entity_id`, `write_entity_extraction_report`.
+`normalize_entity_text`, `strip_html_markup`, `clean_entity_value`,
+`make_entity_id`, `write_entity_extraction_report`.
 
 ## Что этот этап НЕ делает
 
 - **НЕ** сравнивает сущности (это следующий этап — diff);
 - **НЕ** вызывает Qwen / Opus / OCR / PDF-render и **НЕ** скачивает `crop_url`;
-- **НЕ** ходит в сеть; импорты — только stdlib (`json/os/re/tempfile/
+- **НЕ** ходит в сеть; импорты — только stdlib (`html/json/os/re/tempfile/
   unicodedata/collections/pathlib/typing`);
 - **НЕ** создаёт findings;
 - **НЕ** подключён к UI и не запускается автоматически;
