@@ -84,6 +84,9 @@ claude/provider и НЕ делает сетевых вызовов сам. Во�
 Fail-soft поведение:
 
 - `llm_runner=None` → каждая дельта `skipped_no_runner` (noop, не падение);
+- dict-ответ runner'а со `status`/`raw_status` = `skipped`/`disabled`
+  (noop-runner из `pipeline_v2_llm_runner`) → тоже `skipped_no_runner`
+  (сознательный пропуск, НЕ сбой — failed-метрики не инфлируются);
 - исключение runner'а → `failed`, дельта не теряется;
 - битый/неполный JSON → `parse_delta_explanation_response` fail-soft
   (`needs_human_review` + флаг `llm_response_parse_failed`), поля обрезаются по
@@ -151,9 +154,14 @@ graphic}, options["delta_explanation"], llm_runner)`, пишет
 
 ## Как подключить дальше
 
-- **Реальный runner:** тонкая обёртка вокруг существующего `claude -p`
-  provider'а, инъектируется в `run_pipeline_v2_dry_run(..., llm_runner=...)`
-  снаружи (controlled smoke, под флагом). Модуль её не создаёт.
+- **Реальный runner — ГОТОВ:**
+  [pipeline_v2_llm_runner.py](../backend/app/services/stage_comparison/pipeline_v2_llm_runner.py)
+  (`build_pipeline_v2_claude_runner()` поверх существующего `claude -p`
+  provider'а) инъектируется в `run_pipeline_v2_dry_run(..., llm_runner=...)`
+  явным вызовом — default dry-run остаётся `llm_runner=None`. Детали и
+  smoke-runbook: [stage_comparison_pipeline_v2_llm_runner.md](stage_comparison_pipeline_v2_llm_runner.md).
+  Этот модуль (delta_explanation) runner по-прежнему НЕ создаёт и НЕ
+  импортирует.
 - **UI:** показывать `explanations` рядом с дельтами + `coverage_notes` как
   предупреждение «по графике возможны пропуски, нужна дообработка».
 

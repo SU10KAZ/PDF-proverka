@@ -373,6 +373,10 @@ def _invoke_runner(llm_runner: LLMRunner,
         raw = _clean(out.get("raw_response") or out.get("text") or out.get("response"))
         status = _clean(out.get("status") or out.get("raw_status"))
         err = out.get("error")
+        if status.lower() in ("skipped", "disabled"):
+            # runner-заглушка (noop: disabled / provider_not_available) —
+            # сознательный пропуск, НЕ сбой
+            return raw, "skipped", err or status, meta
         if raw and status in ("", "ok", "completed", "success"):
             return raw, "ok", err, meta
         return raw, "failed", err or (status or "no_response"), meta
@@ -443,6 +447,15 @@ def explain_single_delta(delta: dict, graphic_context: Optional[dict] = None,
                      "raw_status": raw_status, "error": err}
     if runner_meta.get("model"):
         base["model"]["model"] = runner_meta["model"]
+
+    if raw_status == "skipped":
+        # noop-runner (disabled / provider_not_available) — сознательный
+        # пропуск, та же семантика, что llm_runner=None, а НЕ сбой
+        base["status"] = "skipped_no_runner"
+        base["critic"]["verdict"] = "possible_weak_graphic" if weak else "needs_human_review"
+        base["critic"]["reason"] = err or "runner_skipped"
+        base["quality_flags"] = sorted(set(quality_flags + ["skipped_no_runner"]))
+        return base
 
     if raw_status != "ok":
         base["status"] = "failed"

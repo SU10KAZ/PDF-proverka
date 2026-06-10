@@ -82,6 +82,10 @@ LLM не подключён:** `run_pipeline_v2_dry_run(..., llm_runner=None)` �
 объяснения `skipped_no_runner`. Это нормальное offline-поведение: артефакт
 создаётся, но объяснения не выполняются. Реальный LLM запускается **только** через
 внешний инъектированный `llm_runner` (controlled smoke), здесь он не создаётся.
+Готовый постоянный runner — `build_pipeline_v2_claude_runner()` из
+[pipeline_v2_llm_runner.py](../backend/app/services/stage_comparison/pipeline_v2_llm_runner.py)
+(см. [stage_comparison_pipeline_v2_llm_runner.md](stage_comparison_pipeline_v2_llm_runner.md));
+default dry-run это НЕ меняет.
 
 `llm_runner` — параметр `run_pipeline_v2_dry_run` (backward-compatible, default
 `None`). Опции — `options["delta_explanation"]`:
