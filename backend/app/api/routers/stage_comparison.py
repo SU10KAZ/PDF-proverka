@@ -3459,6 +3459,27 @@ async def get_pipeline_v2_ui_payload_endpoint(session_id: str,
         raise HTTPException(400, str(exc)) from exc
 
 
+@router.get("/pipeline-v2/{session_id}/graphic-vision-grounding")
+async def get_pipeline_v2_grounding_detail_endpoint(
+        session_id: str, pair_id: Optional[str] = None,
+        kind: str = "all", status: str = "all",
+        item_id: Optional[str] = None, limit: int = 100, offset: int = 0):
+    """Read-only детализация graphic_vision_grounding_report.json.
+
+    Отдаёт конкретные grounded/weakly_grounded/ungrounded/rejected_* сущности и
+    изменения карточками (value/status/reason/anchor/source/page/fact_level).
+    НИЧЕГО не запускает и не пишет; отсутствие отчёта — обычный JSON
+    {"status":"not_found"}, битый — {"status":"error"}, не 500.
+    """
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_payload_mod.discover_graphic_vision_grounding_detail,
+            session_id, pair_id, kind=kind, status=status, item_id=item_id,
+            limit=limit, offset=offset)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
 @router.get("/pipeline-v2/{session_id}/block-link-preview")
 async def get_pipeline_v2_block_link_preview_endpoint(
         session_id: str, pair_id: Optional[str] = None):

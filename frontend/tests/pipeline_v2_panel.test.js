@@ -452,3 +452,136 @@ describe('Pipeline V2 — Графика / Vision grounding', () => {
     expect(p.headline).toBeTruthy();                 // headline цел
   });
 });
+
+// ── Grounding detail drawer (зеркало scPv2GdMatch / scPv2GdCards /
+//    scPv2GdStatusColor / фильтрации из app.js) ────────────────────────────
+
+function scPv2GdCards(resp) {
+  const f = resp && resp.flat;
+  if (!f) return [];
+  return [].concat(f.entities || [], f.changes || [], f.rejected || []);
+}
+function scPv2GdMatch(card, tab) {
+  if (tab === 'all') return true;
+  if (tab === 'changes') return card.card_type === 'change';
+  if (tab === 'grounded') return card.status === 'grounded';
+  if (tab === 'weak') return card.status === 'weakly_grounded';
+  if (tab === 'ungrounded')
+    return card.status === 'ungrounded' || card.status === 'no_anchor_available';
+  if (tab === 'rejected')
+    return typeof card.status === 'string' && card.status.indexOf('rejected_') === 0;
+  return true;
+}
+function scPv2GdFiltered(resp, tab) {
+  return scPv2GdCards(resp).filter(c => scPv2GdMatch(c, tab));
+}
+function scPv2GdStatusColor(status) {
+  if (status === 'grounded') return 'green';
+  if (status === 'weakly_grounded') return 'amber';
+  if (typeof status === 'string' && status.indexOf('rejected_') === 0) return 'red';
+  return 'gray';
+}
+
+function makeDetailResp() {
+  return {
+    status: 'ok', available: true,
+    summary: { entities_grounded: 87, entities_weakly_grounded: 39,
+      entities_ungrounded: 126, designator_range_rejected: 10,
+      artificial_series_rejected: 0, noop_changes_rejected: 1 },
+    flat: {
+      entities: [
+        { id: 'a', card_type: 'entity', value: 'QF5 400А', status: 'grounded',
+          reason: 'grounded', use_as_fact: true, fact_level: 'confirmed',
+          anchor: '400a', anchor_source: 'full_text', page_number: 52 },
+        { id: 'b', card_type: 'entity', value: 'QF9 999А', status: 'ungrounded',
+          reason: 'not_found_in_anchors', use_as_fact: false, fact_level: 'not_fact' },
+        { id: 'c', card_type: 'entity', value: 'QF2 125А', status: 'weakly_grounded',
+          reason: 'partial_match', use_as_fact: true, fact_level: 'weak' },
+      ],
+      changes: [
+        { id: 'd', card_type: 'change', value: 'QF5: 400А → 200А', status: 'grounded',
+          reason: 'grounded', use_as_fact: true, left_page_number: 52, right_page_number: 21 },
+      ],
+      rejected: [
+        { id: 'e', card_type: 'entity', value: 'QF1...QF100',
+          status: 'rejected_designator_range', reason: 'artificial_designator_range',
+          use_as_fact: false },
+        { id: 'f', card_type: 'change', value: '… (без изменений)',
+          status: 'rejected_noop', reason: 'noop_change', use_as_fact: false },
+      ],
+    },
+    pagination: { limit: 500, offset: 0, returned: 6, total: 6 },
+  };
+}
+
+describe('Pipeline V2 — grounding detail drawer', () => {
+  it('1. кнопка деталей доступна при наличии grounding (summary present)', () => {
+    const p = makeGroundingPayload();
+    // условие рендера кнопки = scPv2GraphicGrounding не null
+    expect(scPv2GraphicGrounding(p)).not.toBeNull();
+  });
+
+  it('2. missing grounding → кнопки нет, панель цела', () => {
+    const p = makeGroundingPayload();
+    delete p.graphic_vision_grounding;
+    expect(scPv2GraphicGrounding(p)).toBeNull();
+  });
+
+  it('3. drawer cards собираются из flat (entities+changes+rejected)', () => {
+    const cards = scPv2GdCards(makeDetailResp());
+    expect(cards.length).toBe(6);
+  });
+
+  it('4. grounded карточки рендерятся (фильтр grounded)', () => {
+    const g = scPv2GdFiltered(makeDetailResp(), 'grounded');
+    expect(g.length).toBe(2);                 // QF5 entity + QF5 change
+    expect(g.every(c => c.status === 'grounded')).toBe(true);
+    expect(scPv2GdStatusColor('grounded')).toBe('green');
+  });
+
+  it('5. rejected карточки рендерятся (фильтр rejected) + красный цвет', () => {
+    const r = scPv2GdFiltered(makeDetailResp(), 'rejected');
+    expect(r.length).toBe(2);                 // designator_range + noop
+    expect(r.every(c => c.status.indexOf('rejected_') === 0)).toBe(true);
+    expect(scPv2GdStatusColor('rejected_designator_range')).toBe('red');
+    expect(scPv2GdStatusColor('rejected_noop')).toBe('red');
+  });
+
+  it('6. empty state — нет элементов в выбранной категории', () => {
+    const resp = makeDetailResp();
+    resp.flat.rejected = [];
+    expect(scPv2GdFiltered(resp, 'rejected').length).toBe(0);
+  });
+
+  it('7. counts совпадают с summary', () => {
+    const resp = makeDetailResp();
+    expect(resp.summary.entities_grounded).toBe(87);
+    const rejTotal = (resp.summary.designator_range_rejected || 0)
+      + (resp.summary.artificial_series_rejected || 0)
+      + (resp.summary.noop_changes_rejected || 0);
+    expect(rejTotal).toBe(11);
+  });
+
+  it('8. фильтр changes → только change-карточки', () => {
+    const ch = scPv2GdFiltered(makeDetailResp(), 'changes');
+    expect(ch.length).toBe(2);                // grounded change + rejected noop change
+    expect(ch.every(c => c.card_type === 'change')).toBe(true);
+  });
+
+  it('9. fact-level: grounded=факт, weak=факт(проверить), rejected=не факт', () => {
+    const cards = scPv2GdCards(makeDetailResp());
+    const byId = Object.fromEntries(cards.map(c => [c.id, c]));
+    expect(byId.a.use_as_fact).toBe(true);    // grounded
+    expect(byId.c.use_as_fact).toBe(true);    // weak (с пометкой)
+    expect(byId.b.use_as_fact).toBe(false);   // ungrounded
+    expect(byId.e.use_as_fact).toBe(false);   // rejected
+  });
+
+  it('10. ungrounded фильтр включает no_anchor_available', () => {
+    const resp = makeDetailResp();
+    resp.flat.entities.push({ id: 'g', card_type: 'entity', value: 'X',
+      status: 'no_anchor_available', use_as_fact: false });
+    const u = scPv2GdFiltered(resp, 'ungrounded');
+    expect(u.map(c => c.status).sort()).toEqual(['no_anchor_available', 'ungrounded']);
+  });
+});

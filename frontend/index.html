@@ -7472,9 +7472,85 @@
                                     Grounded / weakly grounded можно использовать как подтверждающий слой.
                                     Ungrounded и rejected_* не используются как факт.
                                 </div>
+                                <button class="btn btn-sm btn-secondary" style="margin-top:8px; padding:3px 10px; font-size:12px"
+                                        @click="scPv2GdOpenDrawer()">Показать детали grounding</button>
                             </div>
                             <div v-else style="color:#9ca3af">
                                 Grounding ещё не выполнен.
+                            </div>
+                        </div>
+
+                        <!-- Grounding detail drawer (read-only) -->
+                        <div v-if="scPv2GdOpen"
+                             style="position:fixed; inset:0; background:rgba(15,23,42,.45); z-index:1000; display:flex; justify-content:flex-end"
+                             @click.self="scPv2GdClose()">
+                            <div style="width:min(680px,96vw); height:100%; background:var(--card-bg,#fff); box-shadow:-4px 0 24px rgba(0,0,0,.2); display:flex; flex-direction:column">
+                                <!-- header -->
+                                <div style="display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid var(--border,#e5e7eb)">
+                                    <strong style="color:#3730a3">📐 Детали grounding</strong>
+                                    <span v-if="scPv2GdLoading" style="font-size:12px; color:#6b7280">загрузка…</span>
+                                    <button class="btn btn-sm btn-secondary" style="margin-left:auto; padding:2px 10px" @click="scPv2GdClose()">✕ закрыть</button>
+                                </div>
+                                <div style="flex:1; overflow:auto; padding:14px 16px; font-size:12.5px">
+                                    <div v-if="scPv2GdError" style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; padding:8px 10px; margin-bottom:10px">
+                                        {{ scPv2GdError }}
+                                    </div>
+                                    <template v-else-if="scPv2GdResp && scPv2GdResp.status==='not_found'">
+                                        <div style="color:#9ca3af; padding:12px 0">Детальный grounding-отчёт ещё не найден.</div>
+                                    </template>
+                                    <template v-else-if="scPv2GdResp && scPv2GdResp.status==='error'">
+                                        <div style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; border-radius:6px; padding:8px 10px">
+                                            Отчёт повреждён: {{ scPv2GdResp.message }}
+                                        </div>
+                                    </template>
+                                    <template v-else-if="scPv2GdResp && scPv2GdResp.summary">
+                                        <!-- summary -->
+                                        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:10px">
+                                            <span style="color:#15803d">✅ Подтверждено: <b>{{ scPv2GdResp.summary.entities_grounded || 0 }}</b></span>
+                                            <span style="color:#a16207">🟡 Частично: <b>{{ scPv2GdResp.summary.entities_weakly_grounded || 0 }}</b></span>
+                                            <span style="color:#6b7280">⚪ Не подтверждено: <b>{{ scPv2GdResp.summary.entities_ungrounded || 0 }}</b></span>
+                                            <span style="color:#b91c1c">🔴 Отклонено: <b>{{ (scPv2GdResp.summary.designator_range_rejected||0) + (scPv2GdResp.summary.artificial_series_rejected||0) + (scPv2GdResp.summary.noop_changes_rejected||0) }}</b></span>
+                                        </div>
+                                        <!-- filter tabs -->
+                                        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px">
+                                            <button v-for="t in [['all','Все'],['grounded','✅ Подтверждённые'],['weak','🟡 Частично'],['ungrounded','⚪ Не подтверждены'],['rejected','🔴 Отклонённые'],['changes','🔁 Изменения']]"
+                                                    :key="'gdtab'+t[0]"
+                                                    class="btn btn-sm" :class="scPv2GdFilter===t[0] ? 'btn-primary' : 'btn-secondary'"
+                                                    style="padding:2px 9px; font-size:11.5px"
+                                                    @click="scPv2GdFilter=t[0]">{{ t[1] }}</button>
+                                        </div>
+                                        <div style="font-size:11px; color:#6b7280; margin-bottom:8px">
+                                            показано {{ scPv2GdFilteredCards.length }}<template v-if="scPv2GdPagination"> из {{ scPv2GdPagination.total }} (limit {{ scPv2GdPagination.limit }})</template>
+                                        </div>
+                                        <!-- cards -->
+                                        <div v-if="!scPv2GdFilteredCards.length" style="color:#9ca3af; padding:10px 0">
+                                            Нет элементов в выбранной категории.
+                                        </div>
+                                        <div v-for="card in scPv2GdFilteredCards" :key="'gdc'+card.id"
+                                             :style="{border:'1px solid '+scPv2GdStatusColor(card.status).br, background:scPv2GdStatusColor(card.status).bg, borderRadius:'6px', padding:'7px 10px', marginBottom:'6px'}">
+                                            <div style="display:flex; gap:8px; align-items:baseline; flex-wrap:wrap">
+                                                <code style="background:rgba(255,255,255,.6); border-radius:4px; padding:1px 5px; font-size:12px">{{ card.card_type==='change' ? card.value : card.value }}</code>
+                                                <span :style="{color:scPv2GdStatusColor(card.status).fg, fontWeight:600, fontSize:'11px'}">{{ card.status }}</span>
+                                                <span style="font-size:10.5px; color:#6b7280">{{ card.reason }}</span>
+                                                <span v-if="card.use_as_fact" style="font-size:10px; color:#166534; border:1px solid #bbf7d0; border-radius:8px; padding:0 6px">факт{{ card.fact_level==='weak' ? ' (проверить)' : '' }}</span>
+                                                <span v-else style="font-size:10px; color:#6b7280; border:1px solid #e5e7eb; border-radius:8px; padding:0 6px">не факт</span>
+                                            </div>
+                                            <div style="font-size:10.5px; color:#6b7280; margin-top:4px; display:flex; gap:10px; flex-wrap:wrap">
+                                                <span v-if="card.anchor">anchor: {{ card.anchor }}</span>
+                                                <span v-if="card.anchor_source">source: {{ card.anchor_source }}</span>
+                                                <span v-if="card.card_type==='change' && (card.left_page_number!=null || card.right_page_number!=null)">стр. {{ card.left_page_number!=null?card.left_page_number:'—' }} → {{ card.right_page_number!=null?card.right_page_number:'—' }}</span>
+                                                <span v-else-if="card.page_number!=null">стр. {{ card.page_number }}</span>
+                                                <span v-if="card.block_id">block: {{ card.block_id }}</span>
+                                                <span v-if="card.left_block_id || card.right_block_id">blocks: {{ card.left_block_id||'—' }} / {{ card.right_block_id||'—' }}</span>
+                                            </div>
+                                        </div>
+                                        <div style="font-size:11px; color:#6b7280; margin-top:10px; border-top:1px solid var(--border,#e5e7eb); padding-top:8px">
+                                            Grounded можно использовать как подтверждающий слой.
+                                            Weakly grounded — только как подсказку для ручной проверки.
+                                            Ungrounded и rejected_* не используются как факт.
+                                        </div>
+                                    </template>
+                                </div>
                             </div>
                         </div>
 

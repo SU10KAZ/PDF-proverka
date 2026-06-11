@@ -45,6 +45,9 @@ from backend.app.services.stage_comparison.pipeline_v2_block_link_preview import
     REPORT_KIND as BLOCK_LINK_PREVIEW_KIND,
     build_block_link_preview,
 )
+from backend.app.services.stage_comparison import (
+    pipeline_v2_grounding_detail as _grounding_detail_mod,
+)
 
 PIPELINE_V2_DIRNAME = "pipeline_v2"
 UI_PAYLOAD_FILENAME = "pipeline_v2_ui_payload.json"
@@ -456,6 +459,93 @@ def _discover_block_link_preview(art_dir: Path, session_id: str,
                          session_id))
 
 
+GROUNDING_REPORT_FILENAME = "graphic_vision_grounding_report.json"
+
+
+def _grounding_page_map(art_dir: Path, warnings: list[str]) -> dict:
+    """{block_id: page_number} из visual_equivalence_gate (для page в карточках).
+
+    Read-only, fail-soft: нет gate / битый gate → пустая карта (page=None).
+    """
+    gate, err = _read_json(art_dir / VISUAL_GATE_FILENAME)
+    if err:
+        warnings.append(err)
+    page_map: dict[str, Any] = {}
+    if isinstance(gate, dict):
+        for bp in gate.get("block_pairs") or []:
+            if not isinstance(bp, dict):
+                continue
+            lb, rb = bp.get("left_block_id"), bp.get("right_block_id")
+            if lb and bp.get("left_page_number") is not None:
+                page_map[lb] = bp.get("left_page_number")
+            if rb and bp.get("right_page_number") is not None:
+                page_map[rb] = bp.get("right_page_number")
+    return page_map
+
+
+def discover_graphic_vision_grounding_detail(
+        session_id: str, pair_id: Optional[str] = None, *, kind: str = "all",
+        status: str = "all", item_id: Optional[str] = None,
+        limit: int = 100, offset: int = 0) -> dict:
+    """Read-only детализация graphic_vision_grounding_report.json.
+
+    Контракт ответа: собственный формат detail (см.
+    :mod:`pipeline_v2_grounding_detail`), НЕ стандартный ``_envelope``:
+
+    * ``ok``        — отчёт прочитан, карточки построены;
+    * ``not_found`` — отчёта нет (``available=false``);
+    * ``error``     — отчёт битый/непригоден (``available=false``), не 500.
+
+    НИЧЕГО не пишет, не запускает, не вызывает модели. ``ValueError`` — только
+    на невалидный session_id/pair_id (path traversal).
+    """
+    if pair_id and _safe_id(pair_id) != pair_id:
+        raise ValueError(f"invalid pair_id: {pair_id!r}")
+    art_dir = pipeline_v2_artifacts_dir(session_id, pair_id)
+    try:
+        report, err = _read_json(art_dir / GROUNDING_REPORT_FILENAME)
+        if err:
+            return {"version": _grounding_detail_mod.DETAIL_VERSION,
+                    "kind": _grounding_detail_mod.DETAIL_KIND, "status": "error",
+                    "available": False, "session_id": session_id,
+                    "pair_id": pair_id,
+                    "message": "Graphic vision grounding report could not be read.",
+                    "warnings": [err]}
+        if report is None:
+            return {"version": _grounding_detail_mod.DETAIL_VERSION,
+                    "kind": _grounding_detail_mod.DETAIL_KIND,
+                    "status": "not_found", "available": False,
+                    "session_id": session_id, "pair_id": pair_id,
+                    "message": "Graphic vision grounding report not found for "
+                               "this pair.", "warnings": []}
+        if not isinstance(report, dict):
+            return {"version": _grounding_detail_mod.DETAIL_VERSION,
+                    "kind": _grounding_detail_mod.DETAIL_KIND, "status": "error",
+                    "available": False, "session_id": session_id,
+                    "pair_id": pair_id,
+                    "message": "Graphic vision grounding report is not a JSON "
+                               "object.", "warnings": []}
+        warnings: list[str] = []
+        page_map = _grounding_page_map(art_dir, warnings)
+        detail = _grounding_detail_mod.build_grounding_detail(
+            report, session_id=session_id, pair_id=pair_id, page_map=page_map,
+            kind=kind, status=status, item_id=item_id, limit=limit, offset=offset)
+        if warnings:
+            detail["warnings"] = list(detail.get("warnings") or []) + warnings
+        # санитайз NaN/Inf + глубины (как у остальных endpoint'ов)
+        san_warn: list[str] = []
+        detail = _sanitize_payload(detail, san_warn) or detail
+        if san_warn:
+            detail["warnings"] = list(detail.get("warnings") or []) + san_warn
+        return detail
+    except Exception as exc:  # noqa: BLE001 — endpoint не должен дать 500
+        return {"version": _grounding_detail_mod.DETAIL_VERSION,
+                "kind": _grounding_detail_mod.DETAIL_KIND, "status": "error",
+                "available": False, "session_id": session_id, "pair_id": pair_id,
+                "message": "Graphic vision grounding detail could not be built.",
+                "warnings": [f"{type(exc).__name__}: {exc}"]}
+
+
 __all__ = [
     "PIPELINE_V2_DIRNAME",
     "UI_PAYLOAD_FILENAME",
@@ -467,8 +557,10 @@ __all__ = [
     "LEFT_MODEL_FILENAME",
     "RIGHT_MODEL_FILENAME",
     "VISUAL_GATE_FILENAME",
+    "GROUNDING_REPORT_FILENAME",
     "discover_pipeline_v2_payload",
     "discover_block_link_preview",
+    "discover_graphic_vision_grounding_detail",
     "pipeline_v2_artifacts_dir",
     "list_pairs_with_artifacts",
     "resolve_session_dir",

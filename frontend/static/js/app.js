@@ -13946,6 +13946,78 @@ const app = createApp({
             return n(g.artificial_series_rejected) + n(g.designator_range_rejected)
                 + n(g.noop_changes_rejected);
         });
+        // ─── Grounding detail drawer (read-only) ────────────────────────────
+        // Грузит GET …/pipeline-v2/{sid}/graphic-vision-grounding?pair_id=…
+        // Один fetch (limit 500) → клиентская фильтрация по табам.
+        const scPv2GdOpen = ref(false);
+        const scPv2GdLoading = ref(false);
+        const scPv2GdError = ref('');
+        const scPv2GdResp = ref(null);       // detail-ответ {summary, flat, …}
+        const scPv2GdFilter = ref('all');    // all|grounded|weak|ungrounded|rejected|changes
+        let scPv2GdReqSeq = 0;
+        const scPv2GdCards = computed(() => {
+            const f = scPv2GdResp.value && scPv2GdResp.value.flat;
+            if (!f) return [];
+            return [].concat(f.entities || [], f.changes || [], f.rejected || []);
+        });
+        function scPv2GdMatch(card, tab) {
+            if (tab === 'all') return true;
+            if (tab === 'changes') return card.card_type === 'change';
+            if (tab === 'grounded') return card.status === 'grounded';
+            if (tab === 'weak') return card.status === 'weakly_grounded';
+            if (tab === 'ungrounded')
+                return card.status === 'ungrounded' || card.status === 'no_anchor_available';
+            if (tab === 'rejected')
+                return typeof card.status === 'string' && card.status.indexOf('rejected_') === 0;
+            return true;
+        }
+        const scPv2GdFilteredCards = computed(() =>
+            scPv2GdCards.value.filter(c => scPv2GdMatch(c, scPv2GdFilter.value)));
+        const scPv2GdPagination = computed(() =>
+            (scPv2GdResp.value && scPv2GdResp.value.pagination) || null);
+        function scPv2GdStatusColor(status) {
+            if (status === 'grounded') return { bg: '#dcfce7', fg: '#166534', br: '#bbf7d0' };
+            if (status === 'weakly_grounded') return { bg: '#fef9c3', fg: '#854d0e', br: '#fde68a' };
+            if (typeof status === 'string' && status.indexOf('rejected_') === 0)
+                return { bg: '#fee2e2', fg: '#991b1b', br: '#fecaca' };
+            return { bg: '#f3f4f6', fg: '#6b7280', br: '#e5e7eb' };  // ungrounded
+        }
+        async function scPv2GdLoad() {
+            if (!scSession.value || !scSession.value.id) return;
+            const myReq = ++scPv2GdReqSeq;
+            scPv2GdLoading.value = true;
+            scPv2GdError.value = '';
+            const sid = scSession.value.id;
+            const pid = scPv2PairId.value;
+            let url = '/api/stage-comparison/pipeline-v2/'
+                + encodeURIComponent(sid) + '/graphic-vision-grounding?limit=500';
+            if (pid) url += '&pair_id=' + encodeURIComponent(pid);
+            try {
+                const r = await fetch(url);
+                if (myReq !== scPv2GdReqSeq) return;
+                if (r.status === 401 || r.status === 403) {
+                    scPv2GdResp.value = null;
+                    scPv2GdError.value = 'Доступ запрещён (' + r.status + ').';
+                    return;
+                }
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const j = await r.json();
+                if (myReq !== scPv2GdReqSeq) return;
+                scPv2GdResp.value = j;
+            } catch (e) {
+                if (myReq !== scPv2GdReqSeq) return;
+                scPv2GdResp.value = null;
+                scPv2GdError.value = String((e && e.message) || e);
+            } finally {
+                if (myReq === scPv2GdReqSeq) scPv2GdLoading.value = false;
+            }
+        }
+        function scPv2GdOpenDrawer() {
+            scPv2GdOpen.value = true;
+            scPv2GdFilter.value = 'all';
+            scPv2GdLoad();
+        }
+        function scPv2GdClose() { scPv2GdOpen.value = false; }
         const scPv2FilterOptions = computed(() => {
             const f = (scPv2Payload.value && scPv2Payload.value.filters) || {};
             return {
@@ -14067,7 +14139,15 @@ const app = createApp({
         }
         // Смена пары → сброс фильтров: значения старой пары могли исчезнуть
         // из options новой (селекты выглядели бы пустыми и скрывали карточки).
-        watch(scPv2PairId, () => { scPv2ResetFilters(); });
+        // Grounding-drawer тоже закрываем: detail старой пары не должен висеть.
+        watch(scPv2PairId, () => {
+            scPv2ResetFilters();
+            scPv2GdReqSeq++;
+            scPv2GdOpen.value = false;
+            scPv2GdResp.value = null;
+            scPv2GdError.value = '';
+            scPv2GdFilter.value = 'all';
+        });
         // Смена сессии → полный сброс панели: pair из старой сессии не должен
         // утекать в запросы новой, фильтры и payload устаревают; инвалидация
         // sequence отменяет in-flight ответы старой сессии.
@@ -14569,6 +14649,9 @@ const app = createApp({
             scPv2Open, scPv2Filters, scPv2Payload, scPv2Sections,
             scPv2Headline, scPv2GraphicVision, scPv2GraphicGrounding,
             scPv2GroundingRejectedTotal,
+            scPv2GdOpen, scPv2GdLoading, scPv2GdError, scPv2GdResp,
+            scPv2GdFilter, scPv2GdFilteredCards, scPv2GdPagination,
+            scPv2GdStatusColor, scPv2GdOpenDrawer, scPv2GdClose,
             scPv2FilterOptions, scPv2HasFilterOptions,
             scPv2FiltersActive, scPv2SectionEmoji, scPv2CardsFor,
             scPv2ResetFilters, scPv2ToggleSection, scPv2StatusBadge,
