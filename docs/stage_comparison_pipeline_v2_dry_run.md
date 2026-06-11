@@ -25,6 +25,9 @@ left_package / right_package
   → [3b] run_visual_equivalence_gate          → visual_equivalence_gate_report.json
          (mark-only наложение matched graphic blocks ДО vision; fail-soft;
          см. stage_comparison_pipeline_v2_visual_equivalence_gate.md)
+  → [3c] build_block_link_preview             → block_link_preview_report.json
+         (read-only витрина предложенных связей для UI «Связь блоков»;
+         fail-soft; см. stage_comparison_pipeline_v2_block_link_preview.md)
   → [4] extract_entities_for_matched_documents → entity_extraction_report.json
   → [5] diff_entity_extraction_report          → entity_diff_report.json
   → [6] explain_entity_diff_report             → delta_explanation_report.json
@@ -64,6 +67,7 @@ left_graphic_descriptor_report.json     # graphic descriptor (OLD)
 right_graphic_descriptor_report.json    # graphic descriptor (NEW)
 graphic_descriptor_matched_report.json  # graphic descriptor (matched pairs)
 visual_equivalence_gate_report.json     # visual gate (mark-only, до vision)
+block_link_preview_report.json          # block link preview (read-only, UI «Связь блоков»)
 entity_extraction_report.json           # этап 3
 entity_diff_report.json                 # этап 4
 delta_explanation_report.json           # delta explanation / critic

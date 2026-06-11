@@ -3457,3 +3457,22 @@ async def get_pipeline_v2_ui_payload_endpoint(session_id: str,
     except ValueError as exc:
         # невалидный session_id/pair_id (path traversal и т.п.)
         raise HTTPException(400, str(exc)) from exc
+
+
+@router.get("/pipeline-v2/{session_id}/block-link-preview")
+async def get_pipeline_v2_block_link_preview_endpoint(
+        session_id: str, pair_id: Optional[str] = None):
+    """Read-only превью предложенных связей блоков Pipeline V2.
+
+    Отдаёт готовый block_link_preview_report.json либо собирает его
+    on-the-fly из артефактов dry-run (models + block_matching, опц. graphic /
+    visual gate). НИЧЕГО не запускает и не пишет; отсутствие артефактов —
+    обычный JSON {"status": "not_found"}, не 404.
+    """
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_payload_mod.discover_block_link_preview,
+            session_id, pair_id)
+    except ValueError as exc:
+        # невалидный session_id/pair_id (path traversal и т.п.)
+        raise HTTPException(400, str(exc)) from exc

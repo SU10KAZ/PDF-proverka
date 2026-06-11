@@ -5575,6 +5575,12 @@
                             title="One-click: умно сопоставить листы и СРАЗУ применить надёжные пары; сомнительные — на проверку; результат сохраняется в page_alignment.json. Связи блоков не удаляются (только stale-пометка).">
                         {{ scAutoMatchApplyLoading ? 'Сопоставление…' : '🪄 Сопоставить и применить' }}
                     </button>
+                    <button class="btn"
+                            :class="{'btn-primary': scPv2LpVisible, 'btn-secondary': !scPv2LpVisible}"
+                            @click="scPv2LpToggle()"
+                            title="Read-only превью предложенных Pipeline V2 связей блоков OLD↔NEW: страницы рядом, блоки подсвечены по статусу (strong/weak/manual review/без пары). Ничего не применяет и не меняет ручные связи.">
+                        🔗 Pipeline V2 связи <span style="opacity:.55; font-size:10px">β</span>
+                    </button>
                     <button class="btn btn-secondary" @click="scRunAutoLink()" :disabled="scLinking || scAnalysisMode==='concept_no_block_links'"
                             :title="scAnalysisMode==='concept_no_block_links' ? 'Недоступно в режиме «Блоки без связей»' : ''">Авто-связь по IoU</button>
                     <button class="btn btn-primary"
@@ -5588,6 +5594,168 @@
                             title="Запомнить связи блоков и карту страниц. При следующем создании сессии с этими же PDF — применится автоматически.">
                         {{ scTemplateSaving ? 'Сохранение…' : '💾 Сохранить конфигурацию пары' }}
                     </button>
+                </div>
+
+                <!-- Pipeline V2 — предложенные связи (read-only превью) -->
+                <div v-if="scPv2LpVisible" class="sc-card"
+                     style="background:#fff; border:1px solid #c7d2fe; border-radius:8px; padding:10px 12px; margin-bottom:10px; font-size:12px">
+                    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:8px">
+                        <strong style="color:#3730a3">🔗 Pipeline V2 — предложенные связи</strong>
+                        <span style="opacity:.6">read-only: ничего не применяется, ручные связи не меняются</span>
+                        <div style="flex:1"></div>
+                        <select v-model="scPv2LpPairId" class="form-control" style="padding:3px 6px; font-size:12px; max-width:280px"
+                                title="Пара документов (по умолчанию — активная)">
+                            <option value="">— активная пара —</option>
+                            <option v-for="p in scPairs" :key="'pv2lp-'+p.id" :value="p.id">
+                                {{ (p.left && p.left.filename) || p.id }}
+                            </option>
+                        </select>
+                        <button class="btn btn-sm btn-primary" @click="scPv2LpLoad()" :disabled="scPv2LpLoading">
+                            {{ scPv2LpLoading ? 'Загрузка…' : 'Загрузить предложенные связи' }}
+                        </button>
+                        <button class="btn btn-sm btn-secondary" @click="scPv2LpVisible=false">Закрыть</button>
+                    </div>
+                    <!-- transport / HTTP errors -->
+                    <div v-if="scPv2LpError" style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; padding:6px 10px; margin-bottom:8px">
+                        {{ scPv2LpError }}
+                    </div>
+                    <!-- envelope status=error -->
+                    <div v-else-if="scPv2LpRespError" style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; padding:6px 10px; margin-bottom:8px">
+                        Артефакты Pipeline V2 нечитаемы: {{ scPv2LpRespError }}
+                    </div>
+                    <!-- not_found: артефактов нет — это норма, пока dry-run не записан -->
+                    <div v-else-if="scPv2LpNotFound" style="background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; padding:14px; text-align:center; color:#6b7280">
+                        Для этой пары ещё нет артефактов Pipeline V2 (block_matching_report).<br>
+                        Превью появится после offline dry-run прогона Pipeline V2 для пары.
+                    </div>
+                    <template v-else-if="scPv2LpReport">
+                        <!-- Счётчики + фильтры -->
+                        <div v-if="scPv2LpSummary" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:8px">
+                            <span style="background:#eef2ff; color:#3730a3; border-radius:10px; padding:2px 8px">страниц: {{ scPv2LpSummary.page_links_total }}</span>
+                            <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:2px 8px">🟢 strong: {{ scPv2LpSummary.strong_links }}</span>
+                            <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:2px 8px">🟡 weak: {{ scPv2LpSummary.weak_links }}</span>
+                            <span style="background:#ffedd5; color:#9a3412; border-radius:10px; padding:2px 8px">🟠 manual: {{ scPv2LpSummary.manual_review_links }}</span>
+                            <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:2px 8px">⚪ без пары: {{ scPv2LpSummary.unmatched_left_blocks }} / {{ scPv2LpSummary.unmatched_right_blocks }}</span>
+                            <span style="background:#e0f2fe; color:#075985; border-radius:10px; padding:2px 8px">📐 графика: {{ scPv2LpSummary.graphic_links_total }}</span>
+                            <span v-if="scPv2LpSummary.visual_gate_available" style="background:#ede9fe; color:#5b21b6; border-radius:10px; padding:2px 8px"
+                                  title="visual equivalence gate: = идентично · ≈ шум рендера · ≠ изменено · ? неуверенно · ⏭ не сравнивалось (cap)">
+                                👁 visual: ={{ scPv2LpSummary.visual_identical }}<template v-if="scPv2LpSummary.visual_minor"> ≈{{ scPv2LpSummary.visual_minor }}</template> ≠{{ scPv2LpSummary.visual_changed }} ?{{ scPv2LpSummary.visual_uncertain }}<template v-if="scPv2LpSummary.visual_skipped"> ⏭{{ scPv2LpSummary.visual_skipped }}</template>
+                            </span>
+                        </div>
+                        <div style="display:flex; gap:4px; flex-wrap:wrap; margin-bottom:8px">
+                            <button v-for="f in SC_PV2_LP_FILTERS" :key="'pv2lpf-'+f.key"
+                                    class="btn btn-sm"
+                                    :class="scPv2LpFilter===f.key ? 'btn-primary' : 'btn-secondary'"
+                                    style="padding:1px 8px; font-size:11px"
+                                    @click="scPv2LpFilter=f.key">{{ f.label }}</button>
+                            <span style="margin-left:auto; opacity:.6; align-self:center">показано связей: {{ scPv2LpFilteredLinks.length }}</span>
+                        </div>
+                        <div style="display:grid; grid-template-columns:230px 1fr; gap:10px">
+                            <!-- Список пар страниц -->
+                            <div style="border:1px solid #e5e7eb; border-radius:6px; max-height:560px; overflow:auto">
+                                <div style="position:sticky; top:0; background:#f1f5f9; padding:4px 8px; font-weight:600; border-bottom:1px solid #e5e7eb">Пары страниц</div>
+                                <div v-for="p in scPv2LpPageLinks" :key="p.page_link_id"
+                                     @click="scPv2LpSelectPage(p.page_link_id)"
+                                     :style="{background: scPv2LpSelectedPage===p.page_link_id ? '#dbeafe' : 'transparent'}"
+                                     style="padding:4px 8px; border-bottom:1px solid #f3f4f6; cursor:pointer; font-size:11px">
+                                    <b>{{ p.left_page_number ?? '—' }} ↔ {{ p.right_page_number ?? '—' }}</b>
+                                    <span style="opacity:.6"> · {{ (p.block_link_ids||[]).length }} св.</span>
+                                    <span v-if="p.page_link_kind==='one_sided'" style="color:#6b7280" title="лист есть только в одной стадии"> · только {{ p.left_page_number != null ? 'старая' : 'новая' }}</span>
+                                    <span v-else-if="p.match_confidence" :style="{color: p.match_confidence==='strong' ? '#16a34a' : '#ca8a04'}"> · {{ p.match_confidence }}</span>
+                                    <div v-if="p.left_sheet_name || p.right_sheet_name" style="opacity:.7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis"
+                                         :title="(p.left_sheet_name||'') + ' ↔ ' + (p.right_sheet_name||'')">
+                                        {{ p.left_sheet_name || p.right_sheet_name }}
+                                    </div>
+                                </div>
+                                <div v-if="!scPv2LpPageLinks.length" style="padding:10px; opacity:.6">Совпавших страниц нет</div>
+                            </div>
+                            <!-- Side-by-side: OLD слева, NEW справа -->
+                            <div>
+                                <div v-if="scPv2LpSelectedPageLink" style="display:grid; grid-template-columns:1fr 1fr; gap:8px">
+                                    <div v-for="side in ['left','right']" :key="'pv2lp-pane-'+side"
+                                         style="border:1px solid #e5e7eb; border-radius:6px; overflow:auto; max-height:560px; background:#fafafa">
+                                        <div style="position:sticky; top:0; z-index:2; background:#f1f5f9; padding:3px 8px; font-size:11px; border-bottom:1px solid #e5e7eb">
+                                            <b>{{ side==='left' ? 'Старая стадия' : 'Новая стадия' }}</b>
+                                            · стр. {{ side==='left' ? (scPv2LpSelectedPageLink.left_page_number ?? '—') : (scPv2LpSelectedPageLink.right_page_number ?? '—') }}
+                                        </div>
+                                        <div v-if="side==='left' ? scPv2LpSelectedPageLink.left_page_number : scPv2LpSelectedPageLink.right_page_number"
+                                             style="position:relative">
+                                            <img :src="scPv2LpPageImageUrl(side, side==='left' ? scPv2LpSelectedPageLink.left_page_number : scPv2LpSelectedPageLink.right_page_number)"
+                                                 loading="lazy" decoding="async"
+                                                 style="display:block; width:100%; height:auto" />
+                                            <div v-for="ov in scPv2LpPageOverlays[side]"
+                                                 :key="'pv2lp-ov-'+side+'-'+ov.entry.block_link_id"
+                                                 :style="scPv2LpOverlayStyle(ov)"
+                                                 :title="ov.entry.ui ? ov.entry.ui.label : ''"
+                                                 @click.stop="scPv2LpSelectLink(ov.entry)"></div>
+                                        </div>
+                                        <div v-else style="padding:40px; text-align:center; color:#9ca3af">∅ нет страницы</div>
+                                    </div>
+                                </div>
+                                <div v-else style="padding:24px; text-align:center; color:#9ca3af; border:1px dashed #e5e7eb; border-radius:6px">
+                                    Выберите пару страниц слева
+                                </div>
+                                <!-- Карточка выбранной связи -->
+                                <div v-if="scPv2LpSelectedLinkObj" style="margin-top:8px; border:2px solid #2563eb; border-radius:6px; padding:8px 10px; background:#eff6ff">
+                                    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
+                                        <span :style="{background: scPv2LpStatusColor(scPv2LpSelectedLinkObj), color:'#fff', borderRadius:'10px', padding:'1px 8px', fontWeight:600}">
+                                            {{ scPv2LpSelectedLinkObj.ui ? scPv2LpSelectedLinkObj.ui.label : scPv2LpSelectedLinkObj.link_status }}
+                                        </span>
+                                        <span v-if="scPv2LpSelectedLinkObj.kind==='link'">
+                                            <code>{{ scPv2LpSelectedLinkObj.left_block_id }}</code> (стр. {{ scPv2LpSelectedLinkObj.left_page_number }})
+                                            ↔ <code>{{ scPv2LpSelectedLinkObj.right_block_id }}</code> (стр. {{ scPv2LpSelectedLinkObj.right_page_number }})
+                                        </span>
+                                        <span v-else>
+                                            <code>{{ scPv2LpSelectedLinkObj.block_id }}</code>
+                                            ({{ scPv2LpSelectedLinkObj.side==='left' ? 'старая' : 'новая' }} стадия, стр. {{ scPv2LpSelectedLinkObj.page_number }})
+                                        </span>
+                                        <span>тип: <b>{{ scPv2LpSelectedLinkObj.semantic_type }}</b></span>
+                                        <span v-if="scPv2LpSelectedLinkObj.method">метод: <b>{{ scPv2LpSelectedLinkObj.method }}</b></span>
+                                        <span v-if="scPv2LpSelectedLinkObj.confidence_score != null">score: <b>{{ Math.round(scPv2LpSelectedLinkObj.confidence_score*100) }}%</b></span>
+                                        <span v-if="scPv2LpSelectedLinkObj.visual_status">visual: <b>{{ scPv2LpSelectedLinkObj.visual_status }}</b> → {{ scPv2LpSelectedLinkObj.visual_decision }}</span>
+                                        <span v-if="scPv2LpSelectedLinkObj.visual_metrics && scPv2LpSelectedLinkObj.visual_metrics.mask_iou != null">IoU: {{ scPv2LpSelectedLinkObj.visual_metrics.mask_iou }}</span>
+                                        <span v-if="scPv2LpSelectedLinkObj.visual_metrics && scPv2LpSelectedLinkObj.visual_metrics.normalized_correlation != null">NCC: {{ scPv2LpSelectedLinkObj.visual_metrics.normalized_correlation }}</span>
+                                    </div>
+                                    <div v-if="(scPv2LpSelectedLinkObj.risk_flags||[]).length" style="margin-top:4px">
+                                        <span v-for="f in scPv2LpSelectedLinkObj.risk_flags" :key="f"
+                                              style="display:inline-block; margin-right:4px; padding:0 6px; border-radius:4px; background:#fef3c7; color:#92400e; font-size:10px">⚠ {{ f }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Список связей (фильтрованный) -->
+                        <details style="margin-top:10px" open>
+                            <summary style="cursor:pointer; color:#3730a3; font-weight:600">Связи блоков ({{ scPv2LpFilteredLinks.length }})</summary>
+                            <table style="width:100%; border-collapse:collapse; margin-top:4px; font-size:11px">
+                                <tr style="color:#6b7280; text-align:left">
+                                    <th style="padding:2px 6px">статус</th><th>OLD блок</th><th>NEW блок</th>
+                                    <th>стр.</th><th>тип</th><th>метод</th><th>score</th><th>visual</th><th>риски</th>
+                                </tr>
+                                <tr v-for="l in scPv2LpFilteredLinks" :key="'pv2lpr-'+l.block_link_id"
+                                    @click="scPv2LpSelectLink(l)"
+                                    :style="{background: scPv2LpSelectedLink===l.block_link_id ? '#dbeafe' : 'transparent', cursor:'pointer', borderTop:'1px solid #f1f5f9'}">
+                                    <td style="padding:2px 6px">
+                                        <span :style="{color: scPv2LpStatusColor(l), fontWeight:600}">●</span>
+                                        {{ l.link_status }}
+                                    </td>
+                                    <td><code>{{ l.kind==='link' ? (l.left_block_id||'—') : (l.side==='left' ? l.block_id : '—') }}</code></td>
+                                    <td><code>{{ l.kind==='link' ? (l.right_block_id||'—') : (l.side==='right' ? l.block_id : '—') }}</code></td>
+                                    <td>{{ l.kind==='link' ? ((l.left_page_number??'—') + '→' + (l.right_page_number??'—')) : (l.page_number??'—') }}</td>
+                                    <td>{{ l.semantic_type }}{{ l.is_graphic ? ' 📐' : '' }}</td>
+                                    <td>{{ l.method || '—' }}</td>
+                                    <td>{{ l.confidence_score != null ? Math.round(l.confidence_score*100)+'%' : '—' }}</td>
+                                    <td>{{ l.visual_status || '—' }}</td>
+                                    <td>
+                                        <span v-if="(l.risk_flags||[]).length" :title="(l.risk_flags||[]).join(', ')" style="color:#92400e">⚠ {{ (l.risk_flags||[]).length }}</span>
+                                        <span v-else>—</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </details>
+                    </template>
+                    <div v-else-if="!scPv2LpLoading" style="opacity:.6; padding:6px 0">
+                        Нажмите «Загрузить предложенные связи».
+                    </div>
                 </div>
 
                 <!-- One-click авто-сопоставление листов: ошибка -->

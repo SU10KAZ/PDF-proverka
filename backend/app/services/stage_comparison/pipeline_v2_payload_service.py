@@ -41,6 +41,10 @@ from backend.app.services.stage_comparison.pipeline_v2_ui_payload import (
     PAYLOAD_KIND,
     build_pipeline_v2_ui_payload,
 )
+from backend.app.services.stage_comparison.pipeline_v2_block_link_preview import (
+    REPORT_KIND as BLOCK_LINK_PREVIEW_KIND,
+    build_block_link_preview,
+)
 
 PIPELINE_V2_DIRNAME = "pipeline_v2"
 UI_PAYLOAD_FILENAME = "pipeline_v2_ui_payload.json"
@@ -49,8 +53,14 @@ ENTITY_DIFF_FILENAME = "entity_diff_report.json"
 DELTA_EXPLANATION_FILENAME = "delta_explanation_report.json"
 LEFT_GRAPHIC_FILENAME = "left_graphic_descriptor_report.json"
 RIGHT_GRAPHIC_FILENAME = "right_graphic_descriptor_report.json"
+LEFT_MODEL_FILENAME = "left_normalized_document_model.json"
+RIGHT_MODEL_FILENAME = "right_normalized_document_model.json"
+BLOCK_MATCHING_FILENAME = "block_matching_report.json"
+VISUAL_GATE_FILENAME = "visual_equivalence_gate_report.json"
+BLOCK_LINK_PREVIEW_FILENAME = "block_link_preview_report.json"
 
 NOT_FOUND_MESSAGE = "Pipeline V2 artifacts not found for this session."
+BLP_NOT_FOUND_MESSAGE = "Pipeline V2 block link preview artifacts not found."
 
 
 # ─── резолв путей (БЕЗ mkdir — endpoint read-only) ───────────────────────────
@@ -111,19 +121,27 @@ def _read_json(path: Path) -> tuple[Optional[Any], Optional[str]]:
         return None, f"{path.name}: {type(exc).__name__}: {exc}"
 
 
-def _json_safe(value: Any, hits: list[int]) -> Any:
+_JSON_SAFE_MAX_DEPTH = 200
+
+
+def _json_safe(value: Any, hits: list[int], depth: int = 0) -> Any:
     """Заменить не-финитные float'ы (NaN/Inf из artifact-JSON) на None.
 
     json.loads принимает NaN/Infinity, а сериализация ответа на них падает —
-    payload должен оставаться строгим JSON.
+    payload должен оставаться строгим JSON. Патологически глубокая вложенность
+    обрезается (None + warning-hit): иначе она прошла бы санитайзер, но
+    уронила бы сериализацию ответа в RecursionError → 500.
     """
+    if depth > _JSON_SAFE_MAX_DEPTH:
+        hits.append(1)
+        return None
     if isinstance(value, float) and not math.isfinite(value):
         hits.append(1)
         return None
     if isinstance(value, dict):
-        return {k: _json_safe(v, hits) for k, v in value.items()}
+        return {k: _json_safe(v, hits, depth + 1) for k, v in value.items()}
     if isinstance(value, list):
-        return [_json_safe(v, hits) for v in value]
+        return [_json_safe(v, hits, depth + 1) for v in value]
     return value
 
 
@@ -293,13 +311,164 @@ def _discover(art_dir: Path, session_id: str, pair_id: Optional[str]) -> dict:
                      available_pairs=list_pairs_with_artifacts(session_id))
 
 
+# ─── block link preview: read-only discovery ────────────────────────────────
+
+
+def _list_pairs_with_block_link_artifacts(session_id: str) -> list[str]:
+    """pair_id пар, у которых есть артефакты для block link preview."""
+    pairs_dir = resolve_session_dir(session_id) / "pairs"
+    if not pairs_dir.is_dir():
+        return []
+    out: list[str] = []
+    try:
+        children = sorted(pairs_dir.iterdir())
+    except OSError:
+        return []
+    for child in children:
+        art = child / PIPELINE_V2_DIRNAME
+        if not art.is_dir():
+            continue
+        # предикат СОВПАДАЕТ с условием сборки в discover: либо готовый
+        # отчёт, либо полный набор (models + block_matching) — иначе
+        # advertised-пара сама отвечала бы not_found
+        if ((art / BLOCK_LINK_PREVIEW_FILENAME).is_file()
+                or ((art / LEFT_MODEL_FILENAME).is_file()
+                    and (art / RIGHT_MODEL_FILENAME).is_file()
+                    and (art / BLOCK_MATCHING_FILENAME).is_file())):
+            out.append(child.name)
+    return out
+
+
+def discover_block_link_preview(session_id: str,
+                                pair_id: Optional[str] = None) -> dict:
+    """Найти/собрать block link preview для сессии (read-only, fail-soft).
+
+    Статусы ответа (контракт тот же, что у discover_pipeline_v2_payload):
+
+    * ``ok``        — готовый отчёт с диска или собран on-the-fly;
+    * ``not_found`` — нет ни готового отчёта, ни (models + block_matching);
+    * ``error``     — артефакты есть, но непригодны (битый JSON и т.п.).
+
+    НИЧЕГО не пишет (отчёт on-the-fly не кешируется на диск), ничего не
+    запускает. ``ValueError`` — только на невалидный session_id/pair_id.
+
+    pair_id проверяется строго: значение, которое ``_safe_id`` пришлось бы
+    переписать, отклоняется (HTTP 400), а не молча резолвится в чужую пару.
+    """
+    if pair_id and _safe_id(pair_id) != pair_id:
+        raise ValueError(f"invalid pair_id: {pair_id!r}")
+    art_dir = pipeline_v2_artifacts_dir(session_id, pair_id)
+    try:
+        return _discover_block_link_preview(art_dir, session_id, pair_id)
+    except Exception as exc:  # noqa: BLE001 — endpoint не должен дать 500
+        return _envelope("error", session_id=session_id, pair_id=pair_id,
+                         warnings=[f"{type(exc).__name__}: {exc}"],
+                         message="Pipeline V2 block link preview artifacts "
+                                 "could not be read.")
+
+
+def _discover_block_link_preview(art_dir: Path, session_id: str,
+                                 pair_id: Optional[str]) -> dict:
+    warnings: list[str] = []
+
+    # 1) готовый отчёт — отдать как есть
+    ready_path = art_dir / BLOCK_LINK_PREVIEW_FILENAME
+    ready, err = _read_json(ready_path)
+    if isinstance(ready, dict) and ready.get("kind") == BLOCK_LINK_PREVIEW_KIND:
+        return _envelope("ok", session_id=session_id, pair_id=pair_id,
+                         source="ready_report",
+                         payload=_sanitize_payload(ready, warnings),
+                         artifacts_dir=art_dir, warnings=warnings,
+                         message="Готовый block_link_preview_report.json.")
+    if err:
+        warnings.append(err)
+    elif isinstance(ready, dict):
+        warnings.append(f"{BLOCK_LINK_PREVIEW_FILENAME}: unexpected kind "
+                        f"{ready.get('kind')!r} — rebuilt from artifacts")
+    elif ready is not None:
+        warnings.append(f"{BLOCK_LINK_PREVIEW_FILENAME}: expected JSON object, "
+                        f"got {type(ready).__name__} — rebuilt from artifacts")
+
+    # 2) собрать on-the-fly из артефактов dry-run (только чтение)
+    required = {}
+    for fname in (LEFT_MODEL_FILENAME, RIGHT_MODEL_FILENAME,
+                  BLOCK_MATCHING_FILENAME):
+        value, err = _read_json(art_dir / fname)
+        if err:
+            warnings.append(err)
+        elif value is not None and not isinstance(value, dict):
+            # файл есть, но это не объект — это error, а не not_found
+            warnings.append(f"{fname}: expected JSON object, "
+                            f"got {type(value).__name__}")
+            value = None
+        required[fname] = value
+    left_model = required[LEFT_MODEL_FILENAME]
+    right_model = required[RIGHT_MODEL_FILENAME]
+    block_matching = required[BLOCK_MATCHING_FILENAME]
+
+    # неполный набор при частично существующих артефактах — сигнал
+    # оборванного dry-run, а не «Pipeline V2 не запускался»
+    present = [f for f, v in required.items() if v is not None]
+    missing = [f for f, v in required.items() if v is None]
+    if present and missing:
+        warnings.append("block link preview inputs incomplete: missing "
+                        + ", ".join(missing))
+
+    if (isinstance(left_model, dict) and isinstance(right_model, dict)
+            and isinstance(block_matching, dict)):
+        left_g, err = _read_json(art_dir / LEFT_GRAPHIC_FILENAME)
+        if err:
+            warnings.append(err)
+        right_g, err = _read_json(art_dir / RIGHT_GRAPHIC_FILENAME)
+        if err:
+            warnings.append(err)
+        visual_gate, err = _read_json(art_dir / VISUAL_GATE_FILENAME)
+        if err:
+            warnings.append(err)
+        try:
+            report = build_block_link_preview(
+                left_model, right_model, block_matching,
+                left_graphic_report=left_g if isinstance(left_g, dict) else None,
+                right_graphic_report=right_g if isinstance(right_g, dict) else None,
+                visual_gate_report=visual_gate if isinstance(visual_gate, dict) else None)
+        except Exception as exc:  # noqa: BLE001 — endpoint не должен дать 500
+            return _envelope("error", session_id=session_id, pair_id=pair_id,
+                             artifacts_dir=art_dir,
+                             warnings=warnings + [f"{type(exc).__name__}: {exc}"],
+                             message="Pipeline V2 artifacts exist but block "
+                                     "link preview could not be built.")
+        return _envelope("ok", session_id=session_id, pair_id=pair_id,
+                         source="built_from_artifacts",
+                         payload=_sanitize_payload(report, warnings),
+                         artifacts_dir=art_dir, warnings=warnings,
+                         message="Preview собран on-the-fly из артефактов "
+                                 "dry-run (не записан на диск).")
+
+    # 3) что-то прочиталось с ошибками → error, иначе not_found
+    if warnings:
+        return _envelope("error", session_id=session_id, pair_id=pair_id,
+                         artifacts_dir=art_dir, warnings=warnings,
+                         message="Pipeline V2 artifacts exist but are not "
+                                 "readable for block link preview.")
+    return _envelope("not_found", session_id=session_id, pair_id=pair_id,
+                     message=BLP_NOT_FOUND_MESSAGE,
+                     available_pairs=_list_pairs_with_block_link_artifacts(
+                         session_id))
+
+
 __all__ = [
     "PIPELINE_V2_DIRNAME",
     "UI_PAYLOAD_FILENAME",
     "SUMMARY_FILENAME",
     "ENTITY_DIFF_FILENAME",
     "DELTA_EXPLANATION_FILENAME",
+    "BLOCK_LINK_PREVIEW_FILENAME",
+    "BLOCK_MATCHING_FILENAME",
+    "LEFT_MODEL_FILENAME",
+    "RIGHT_MODEL_FILENAME",
+    "VISUAL_GATE_FILENAME",
     "discover_pipeline_v2_payload",
+    "discover_block_link_preview",
     "pipeline_v2_artifacts_dir",
     "list_pairs_with_artifacts",
     "resolve_session_dir",

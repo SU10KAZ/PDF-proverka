@@ -14065,6 +14065,232 @@ const app = createApp({
             scPv2ResetFilters();
         });
 
+        // ─── Stage Comparison: Pipeline V2 Block Link Preview ────────────
+        // Read-only режим «Pipeline V2 — предложенные связи» в разделе
+        // «Связь блоков»: GET /api/stage-comparison/pipeline-v2/{sid}/
+        // block-link-preview?pair_id=. Ничего не применяет: ручные связи
+        // блоков пары не читаются и не изменяются, никаких job'ов.
+        const scPv2LpVisible = ref(false);     // панель открыта
+        const scPv2LpLoading = ref(false);
+        const scPv2LpError = ref('');
+        const scPv2LpResp = ref(null);         // envelope {status, payload, …}
+        const scPv2LpPairId = ref('');         // выбранная пара (дефолт — активная)
+        const scPv2LpFilter = ref('all');      // all|strong|weak|manual_review|unmatched|graphic|visual_changed|visual_identical
+        const scPv2LpSelectedPage = ref('');   // page_link_id
+        const scPv2LpSelectedLink = ref('');   // block_link_id / un_<side>_<id>
+        let scPv2LpReqSeq = 0;
+
+        const SC_PV2_LP_COLORS = { green: '#16a34a', yellow: '#ca8a04',
+                                   orange: '#ea580c', gray: '#6b7280',
+                                   blue: '#2563eb' };
+        const SC_PV2_LP_FILTERS = [
+            { key: 'all', label: 'Все' },
+            { key: 'strong', label: '🟢 strong' },
+            { key: 'weak', label: '🟡 weak' },
+            { key: 'manual_review', label: '🟠 manual review' },
+            { key: 'unmatched', label: '⚪ без пары' },
+            { key: 'graphic', label: '📐 только графика' },
+            { key: 'visual_changed', label: '👁 visual changed' },
+            { key: 'visual_identical', label: '👁 visual identical' },
+        ];
+
+        const scPv2LpReport = computed(() =>
+            (scPv2LpResp.value && scPv2LpResp.value.payload) || null);
+        const scPv2LpSummary = computed(() =>
+            (scPv2LpReport.value && scPv2LpReport.value.summary) || null);
+        const scPv2LpPageLinks = computed(() =>
+            (scPv2LpReport.value && scPv2LpReport.value.page_links) || []);
+        const scPv2LpNotFound = computed(() =>
+            !!scPv2LpResp.value && scPv2LpResp.value.status === 'not_found');
+        const scPv2LpRespError = computed(() =>
+            (scPv2LpResp.value && scPv2LpResp.value.status === 'error')
+                ? ((scPv2LpResp.value.warnings || []).join('; ')
+                   || scPv2LpResp.value.message || 'error')
+                : '');
+        // Связи + односторонние блоки в одном списке (kind: link|unmatched).
+        const scPv2LpAllLinks = computed(() => {
+            const r = scPv2LpReport.value;
+            if (!r) return [];
+            const links = (r.block_links || []).map(l =>
+                ({ ...l, kind: 'link' }));
+            const un = r.unmatched || {};
+            const one = [...(un.left_blocks || []), ...(un.right_blocks || [])]
+                .map(u => ({ ...u, kind: 'unmatched',
+                             block_link_id: 'un_' + u.side + '_' + u.block_id }));
+            return [...links, ...one];
+        });
+        function scPv2LpLinkMatchesFilter(l) {
+            const f = scPv2LpFilter.value;
+            if (!f || f === 'all') return true;
+            if (f === 'unmatched') return l.kind === 'unmatched';
+            if (f === 'graphic') return !!l.is_graphic;
+            if (f === 'visual_changed') return l.visual_status === 'changed_visual';
+            if (f === 'visual_identical')
+                return l.visual_status === 'identical_visual'
+                    || l.visual_status === 'minor_visual';
+            return l.link_status === f;
+        }
+        const scPv2LpFilteredLinks = computed(() =>
+            scPv2LpAllLinks.value.filter(l => scPv2LpLinkMatchesFilter(l)));
+        const scPv2LpSelectedPageLink = computed(() =>
+            scPv2LpPageLinks.value.find(
+                p => p.page_link_id === scPv2LpSelectedPage.value) || null);
+        const scPv2LpSelectedLinkObj = computed(() =>
+            scPv2LpAllLinks.value.find(
+                l => l.block_link_id === scPv2LpSelectedLink.value) || null);
+        // Блоки для overlay выбранной пары страниц (обе стороны).
+        const scPv2LpPageOverlays = computed(() => {
+            const p = scPv2LpSelectedPageLink.value;
+            const out = { left: [], right: [] };
+            if (!p) return out;
+            for (const l of scPv2LpAllLinks.value) {
+                if (l.kind === 'link') {
+                    if (l.page_match_id !== p.page_link_id) continue;
+                    if (l.left_bbox_norm)
+                        out.left.push({ entry: l, side: 'left', bbox: l.left_bbox_norm });
+                    if (l.right_bbox_norm)
+                        out.right.push({ entry: l, side: 'right', bbox: l.right_bbox_norm });
+                } else {
+                    // unmatched: только на своей стороне и своей странице
+                    const page = l.side === 'left' ? p.left_page_number
+                                                   : p.right_page_number;
+                    if (page != null && l.page_number === page && l.bbox_norm)
+                        out[l.side].push({ entry: l, side: l.side, bbox: l.bbox_norm });
+                }
+            }
+            return out;
+        });
+        function scPv2LpEffectivePairId() {
+            return scPv2LpPairId.value
+                || (scActivePair.value && scActivePair.value.id) || '';
+        }
+        function scPv2LpPageImageUrl(side, page) {
+            const sid = scSession.value && scSession.value.id;
+            // картинки ДОЛЖНЫ соответствовать паре загруженного отчёта
+            // (envelope.pair_id), а не живому селектору — иначе при смене
+            // пары в селекторе bbox старой пары лёг бы на листы новой
+            const pid = (scPv2LpResp.value && scPv2LpResp.value.pair_id)
+                || scPv2LpEffectivePairId();
+            if (!sid || !pid || !page) return '';
+            return `/api/stage-comparison/sessions/${encodeURIComponent(sid)}/pairs/${encodeURIComponent(pid)}/page-image?side=${side}&page=${page}&target_long_side=1400`;
+        }
+        function scPv2LpOverlayStyle(ov) {
+            const b = ov.bbox || [0, 0, 0, 0];
+            const sel = scPv2LpSelectedLink.value
+                && ov.entry.block_link_id === scPv2LpSelectedLink.value;
+            const color = SC_PV2_LP_COLORS[(ov.entry.ui && ov.entry.ui.color) || 'gray']
+                || SC_PV2_LP_COLORS.gray;
+            return {
+                position: 'absolute',
+                left: (b[0] * 100) + '%',
+                top: (b[1] * 100) + '%',
+                width: (Math.max(0, b[2] - b[0]) * 100) + '%',
+                height: (Math.max(0, b[3] - b[1]) * 100) + '%',
+                border: sel ? ('3px solid ' + SC_PV2_LP_COLORS.blue)
+                            : ('2px solid ' + color),
+                boxShadow: sel ? ('inset 0 0 0 2px ' + color) : 'none',
+                background: sel ? 'rgba(37,99,235,.12)' : (color + '22'),
+                cursor: 'pointer',
+                boxSizing: 'border-box',
+            };
+        }
+        function scPv2LpStatusColor(l) {
+            return SC_PV2_LP_COLORS[(l && l.ui && l.ui.color) || 'gray']
+                || SC_PV2_LP_COLORS.gray;
+        }
+        function scPv2LpSelectLink(l) {
+            if (!l) return;
+            scPv2LpSelectedLink.value =
+                scPv2LpSelectedLink.value === l.block_link_id
+                    ? '' : l.block_link_id;
+            // выбор из списка подтягивает страницу связи
+            if (scPv2LpSelectedLink.value) {
+                if (l.kind === 'link' && l.page_match_id) {
+                    scPv2LpSelectedPage.value = l.page_match_id;
+                } else if (l.kind === 'unmatched') {
+                    const p = scPv2LpPageLinks.value.find(pl =>
+                        (l.side === 'left' ? pl.left_page_number
+                                           : pl.right_page_number) === l.page_number);
+                    if (p) scPv2LpSelectedPage.value = p.page_link_id;
+                }
+            }
+        }
+        function scPv2LpSelectPage(pid) {
+            scPv2LpSelectedPage.value = pid || '';
+            scPv2LpSelectedLink.value = '';
+        }
+        async function scPv2LpLoad() {
+            const sid = scSession.value && scSession.value.id;
+            const pid = scPv2LpEffectivePairId();
+            if (!sid || !pid) return;
+            const myReq = ++scPv2LpReqSeq;
+            scPv2LpLoading.value = true;
+            scPv2LpError.value = '';
+            const url = '/api/stage-comparison/pipeline-v2/'
+                + encodeURIComponent(sid)
+                + '/block-link-preview?pair_id=' + encodeURIComponent(pid);
+            try {
+                const r = await fetch(url);
+                if (myReq !== scPv2LpReqSeq) return;   // устаревший ответ
+                if (r.status === 401 || r.status === 403) {
+                    scPv2LpResp.value = null;
+                    scPv2LpError.value = 'Доступ запрещён (' + r.status
+                        + '). Войдите в портал заново.';
+                    return;
+                }
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const j = await r.json();
+                if (myReq !== scPv2LpReqSeq) return;   // устаревший ответ
+                scPv2LpResp.value = j;
+                scPv2LpSelectedLink.value = '';
+                // автоселект первой пары страниц со связями
+                const pages = (j && j.payload && j.payload.page_links) || [];
+                const first = pages.find(p =>
+                    (p.block_link_ids || []).length) || pages[0];
+                scPv2LpSelectedPage.value = first ? first.page_link_id : '';
+            } catch (e) {
+                if (myReq !== scPv2LpReqSeq) return;
+                scPv2LpResp.value = null;
+                scPv2LpError.value = String((e && e.message) || e);
+            } finally {
+                if (myReq === scPv2LpReqSeq) scPv2LpLoading.value = false;
+            }
+        }
+        function scPv2LpToggle() {
+            scPv2LpVisible.value = !scPv2LpVisible.value;
+            if (scPv2LpVisible.value && !scPv2LpResp.value
+                    && !scPv2LpLoading.value) {
+                scPv2LpPairId.value = scPv2LpEffectivePairId();
+                scPv2LpLoad();
+            }
+        }
+        // Смена сессии/активной пары → полный сброс панели (поздние ответы
+        // старой пары отменяются инвалидацией sequence).
+        function scPv2LpReset() {
+            scPv2LpReqSeq++;
+            scPv2LpVisible.value = false;
+            scPv2LpResp.value = null;
+            scPv2LpError.value = '';
+            scPv2LpLoading.value = false;
+            scPv2LpPairId.value = '';
+            scPv2LpFilter.value = 'all';
+            scPv2LpSelectedPage.value = '';
+            scPv2LpSelectedLink.value = '';
+        }
+        watch(() => (scSession.value && scSession.value.id) || '', scPv2LpReset);
+        watch(() => (scActivePair.value && scActivePair.value.id) || '', scPv2LpReset);
+        // Смена пары в селекторе панели → сброс загруженного отчёта до
+        // явного «Загрузить»: данные и изображения не могут разъехаться
+        // по парам (поздние ответы отменяет sequence guard).
+        watch(scPv2LpPairId, () => {
+            scPv2LpReqSeq++;
+            scPv2LpResp.value = null;
+            scPv2LpError.value = '';
+            scPv2LpLoading.value = false;
+            scPv2LpSelectedPage.value = '';
+            scPv2LpSelectedLink.value = '';
+        });
+
         return {
             // Theme
             theme, toggleTheme,
@@ -14329,6 +14555,15 @@ const app = createApp({
             scPv2FiltersActive, scPv2SectionEmoji, scPv2CardsFor,
             scPv2ResetFilters, scPv2ToggleSection, scPv2StatusBadge,
             scPv2AllWarnings, scPv2Load, scPv2EnsureLoaded, scPv2OpenPair,
+            // Pipeline V2 Block Link Preview («Связь блоков», read-only)
+            scPv2LpVisible, scPv2LpLoading, scPv2LpError, scPv2LpResp,
+            scPv2LpPairId, scPv2LpFilter, scPv2LpSelectedPage, scPv2LpSelectedLink,
+            scPv2LpReport, scPv2LpSummary, scPv2LpPageLinks, scPv2LpNotFound,
+            scPv2LpRespError, scPv2LpFilteredLinks, scPv2LpSelectedPageLink,
+            scPv2LpSelectedLinkObj, scPv2LpPageOverlays,
+            scPv2LpPageImageUrl, scPv2LpOverlayStyle, scPv2LpStatusColor,
+            scPv2LpSelectLink, scPv2LpSelectPage, scPv2LpLoad, scPv2LpToggle,
+            SC_PV2_LP_FILTERS,
             // Saved canonical config (one-click apply/save)
             scSavedConfig, scSavedConfigSaving, scSavedConfigMsg,
             scLoadSavedConfig, scApplySavedConfig, scSaveCurrentAsCanonical,

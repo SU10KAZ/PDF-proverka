@@ -65,6 +65,10 @@ from backend.app.services.stage_comparison.pipeline_v2_visual_equivalence_gate i
     run_visual_equivalence_gate,
     write_visual_equivalence_gate_report,
 )
+from backend.app.services.stage_comparison.pipeline_v2_block_link_preview import (
+    build_block_link_preview,
+    write_block_link_preview_report,
+)
 
 SUMMARY_VERSION = 1
 SUMMARY_KIND = "stage_comparison_pipeline_v2_dry_run_summary"
@@ -81,6 +85,7 @@ _ARTIFACT_FILENAMES = {
     "right_graphic": "right_graphic_descriptor_report.json",
     "graphic_matched": "graphic_descriptor_matched_report.json",
     "visual_gate": "visual_equivalence_gate_report.json",
+    "block_link_preview": "block_link_preview_report.json",
     "entity_extraction": "entity_extraction_report.json",
     "entity_diff": "entity_diff_report.json",
     "delta_explanation": "delta_explanation_report.json",
@@ -92,6 +97,7 @@ _ARTIFACT_FILENAMES = {
 _MANIFEST_ARTIFACT_KEYS = [
     "left_model", "right_model", "block_matching",
     "left_graphic", "right_graphic", "graphic_matched", "visual_gate",
+    "block_link_preview",
     "entity_extraction", "entity_diff", "delta_explanation",
     "summary_json", "summary_md",
 ]
@@ -455,6 +461,30 @@ def build_delta_sections(entity_diff_report: Any, delta_explanation_report: Any,
     return sections
 
 
+def _block_link_preview_section(blp_report: Any, blp_enabled: bool,
+                                blp_error: Optional[str]) -> dict:
+    s = (blp_report.get("summary") if isinstance(blp_report, dict) else {}) or {}
+    sec = {
+        "enabled": bool(blp_enabled),
+        "status": ("disabled" if not blp_enabled else
+                   "failed" if blp_error else
+                   (blp_report or {}).get("status", "not_run")
+                   if isinstance(blp_report, dict) else "not_run"),
+        "page_links_total": s.get("page_links_total", 0),
+        "block_links_total": s.get("block_links_total", 0),
+        "strong_links": s.get("strong_links", 0),
+        "weak_links": s.get("weak_links", 0),
+        "manual_review_links": s.get("manual_review_links", 0),
+        "unmatched_left_blocks": s.get("unmatched_left_blocks", 0),
+        "unmatched_right_blocks": s.get("unmatched_right_blocks", 0),
+        "graphic_links_total": s.get("graphic_links_total", 0),
+        "visual_gate_available": s.get("visual_gate_available", False),
+    }
+    if blp_error:
+        sec["error"] = blp_error
+    return sec
+
+
 def _visual_gate_section(ve_report: Any, ve_enabled: bool,
                          ve_error: Optional[str]) -> dict:
     s = (ve_report.get("summary") if isinstance(ve_report, dict) else {}) or {}
@@ -489,7 +519,9 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
                               graphic_error: Optional[str] = None, de_report: Any = None,
                               de_enabled: bool = True, de_error: Optional[str] = None,
                               ve_report: Any = None, ve_enabled: bool = True,
-                              ve_error: Optional[str] = None) -> dict:
+                              ve_error: Optional[str] = None,
+                              blp_report: Any = None, blp_enabled: bool = True,
+                              blp_error: Optional[str] = None) -> dict:
     """Собрать ``pipeline_v2_summary`` из артефактов этапов 1–4."""
     lm, rm = _summary_of(left_model), _summary_of(right_model)
     bm, em, dm = _summary_of(block_report), _summary_of(entity_report), _summary_of(diff_report)
@@ -543,6 +575,8 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
             left_graphic, right_graphic, matched_graphic, graphic_error),
         "visual_equivalence_gate": _visual_gate_section(ve_report, ve_enabled,
                                                         ve_error),
+        "block_link_preview": _block_link_preview_section(blp_report, blp_enabled,
+                                                          blp_error),
         "delta_explanation": _delta_explanation_section(de_report, de_enabled, de_error),
         "delta_sections": build_delta_sections(diff_report, de_report),
         "warnings": warnings,
@@ -741,6 +775,21 @@ def write_pipeline_v2_summary_md(out_path: str | Path, summary: dict,
         lines.append(f"- ⚠ Ошибка visual gate: {ve['error']}")
     lines.append("")
 
+    blp = summary.get("block_link_preview", {}) or {}
+    lines.append("## Block link preview (read-only, для UI «Связь блоков»)")
+    lines.append(f"- Status: `{blp.get('status', 'unknown')}`")
+    lines.append(f"- Page links: {blp.get('page_links_total', 0)}, "
+                 f"block links: {blp.get('block_links_total', 0)} "
+                 f"(graphic: {blp.get('graphic_links_total', 0)})")
+    lines.append(f"- strong={blp.get('strong_links', 0)}, "
+                 f"weak={blp.get('weak_links', 0)}, "
+                 f"manual_review={blp.get('manual_review_links', 0)}, "
+                 f"unmatched: left={blp.get('unmatched_left_blocks', 0)} / "
+                 f"right={blp.get('unmatched_right_blocks', 0)}")
+    if blp.get("error"):
+        lines.append(f"- ⚠ Ошибка block link preview: {blp['error']}")
+    lines.append("")
+
     de = summary.get("delta_explanation", {}) or {}
     lines.append("## Delta explanation / critic")
     lines.append(f"- Status: `{de.get('status', 'unknown')}`")
@@ -859,6 +908,9 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     ve_opts = options.get("visual_gate") or {}
     ve_enabled = ve_opts.get("enabled", True) is not False
 
+    blp_opts = options.get("block_link_preview") or {}
+    blp_enabled = blp_opts.get("enabled", True) is not False
+
     status = "ok"
     error: Optional[str] = None
     left_model = right_model = block_report = entity_report = diff_report = None
@@ -867,6 +919,8 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     graphic_error: Optional[str] = None
     ve_report = None
     ve_error: Optional[str] = None
+    blp_report = None
+    blp_error: Optional[str] = None
     de_report = None
     de_error: Optional[str] = None
 
@@ -924,6 +978,21 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
             except Exception as vexc:  # noqa: BLE001 — gate не критичен
                 ve_error = f"{type(vexc).__name__}: {vexc}"
 
+        # [3c] block link preview — read-only витрина предложенных связей
+        #      для UI «Связь блоков»; fail-soft: падение НЕ валит этапы 4-6,
+        #      ничего не применяет и существующие связи не меняет.
+        if blp_enabled:
+            try:
+                blp_report = build_block_link_preview(
+                    left_model, right_model, block_report,
+                    left_graphic_report=left_graphic,
+                    right_graphic_report=right_graphic,
+                    visual_gate_report=ve_report)
+                write_block_link_preview_report(paths["block_link_preview"],
+                                                blp_report)
+            except Exception as bexc:  # noqa: BLE001 — preview не критичен
+                blp_error = f"{type(bexc).__name__}: {bexc}"
+
         # [4] entity extraction
         entity_report = extract_entities_for_matched_documents(
             left_model, right_model, block_report, options.get("extraction"))
@@ -966,6 +1035,11 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
             warnings.append(f"visual_gate: {w}")
     if ve_error:
         warnings.append(f"visual_gate: {ve_error}")
+    if isinstance(blp_report, dict):
+        for w in blp_report.get("warnings", []) or []:
+            warnings.append(f"block_link_preview: {w}")
+    if blp_error:
+        warnings.append(f"block_link_preview: {blp_error}")
     if isinstance(de_report, dict):
         # benign «no_llm_runner» (offline skip) НЕ повышаем до dry-run warning
         for w in de_report.get("warnings", []) or []:
@@ -985,7 +1059,8 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
         left_graphic=left_graphic, right_graphic=right_graphic,
         matched_graphic=matched_graphic, graphic_error=graphic_error,
         de_report=de_report, de_enabled=de_enabled, de_error=de_error,
-        ve_report=ve_report, ve_enabled=ve_enabled, ve_error=ve_error)
+        ve_report=ve_report, ve_enabled=ve_enabled, ve_error=ve_error,
+        blp_report=blp_report, blp_enabled=blp_enabled, blp_error=blp_error)
 
     # summary + manifest пишем всегда (best-effort, атомарно)
     write_pipeline_v2_summary_json(paths["summary_json"], summary)
