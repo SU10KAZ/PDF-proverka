@@ -158,6 +158,33 @@ failed` в summary, этапы 4–6 работают. `vision_runner` — от�
 * **штамп** депризован (−0.35, `stamp_block_low_vision_value`) — дельты
   штампа ловит текстовый слой, vision-бюджет идёт на инженерную графику.
 
+### Legend/domain hardening (после pilot v2)
+
+Pilot v2 вскрыл ложную пару 7VMV: легенда/условные обозначения, которой
+position-matching дал `same_entity_likely` 0.7 только по семейству схем — а
+vision показал подмену сущности (OLD = ОЗДС/20кВ/SOT, NEW = квартирные
+ящики ШК/ВРУ/ЭОМ). Ужесточение отбора:
+
+* **сила сигналов рассогласования** разделена. *Сильные* (`discipline_mismatch`,
+  `domain_mismatch` — разные инженерные системы) при отсутствии сильной
+  идентичности (`entity_id_match`) понижают пару до `validation_candidate`, а
+  при ≥2 сильных / legend / наличии `graphic_type_mismatch` — до
+  `mismatch_likely`. *Слабый* `graphic_type_mismatch` (cabinet_scheme ↔
+  single_line_scheme — частый vision-jitter одной ГРЩ) сам по себе SAME **не**
+  блокирует (pilot v2: 7EMD — настоящая ГРЩ↔ГРЩ пара осталась
+  `same_entity_likely`).
+* **legend caution**: если `graphic_type=legend` хотя бы с одной стороны, пара
+  НЕ получает `same_entity_likely` только по семейству/виду листа — нужна
+  сильная нумерованная идентичность (`entity_id_match`); иначе минимум
+  `validation_candidate`.
+* **domain mismatch** (`_DOMAIN_MARKERS`: security_ozds / fire_alarm /
+  medium_voltage / apartment_power / lighting / grounding) — при разных доменах
+  с обеих сторон −0.25 и `domain_mismatch` risk. Это ловит подмену даже при
+  совпадении дисциплины из штампа.
+* enrichment по-прежнему исключает `mismatch_likely`; `link_validation`
+  целенаправленно берёт их первыми. Smoke ИОС1.1: enrichment top5 — инженерные
+  схемы, 7VMV (legend/SOT) исключён.
+
 Каждый кандидат получает `candidate_score` (0..1), `candidate_rank`,
 `candidate_reasons`, `candidate_risk_flags`, `candidate_kind`:
 
@@ -174,25 +201,60 @@ failed` в summary, этапы 4–6 работают. `vision_runner` — от�
 схем (ГРЩ/ВРУ-4/…, 0 штампов, 0 false-пар; mismatch_excluded=16 из 54);
 link_validation top5 начинается с ВРУ-1↔план ТП.
 
-## Render options (high_res / tiled-контракт)
+## Render options (high_res / tiled)
 
 ```json
 {"render": {"mode": "normal|high_res|tiled", "long_side": 1600,
-            "dense_long_side": 2400, "tile_long_side": 1400, "max_tiles": 6}}
+            "dense_long_side": 2400, "tile_long_side": 1400, "max_tiles": 6,
+            "tile_overlap": 0.12, "include_full_image": true}}
 ```
 
 `normal` (default) — `long_side` для всех (legacy `render_long_side`
 учитывается). `high_res` — для плотных типов (`cabinet_scheme`,
 `single_line_scheme`, `dense_scheme`, `table_scheme`) берётся
 `dense_long_side` (пилот: ГРЩ при 1600px дал low confidence по номиналам).
-`tiled` — зарезервированный контракт (`tile_long_side`/`max_tiles`): до
-реализации честно деградирует к high_res с warning'ом уже на merge опций —
-независимо от того, дошёл ли прогон до рендера (TODO: пофрагментный рендер +
-merge по образцу grsh_feeder_extraction). Невалидный mode → warning + normal.
+Невалидный mode → warning + normal.
+
 `summary.render_mode` — ЭФФЕКТИВНЫЙ режим, `summary.render_mode_requested` —
 запрошенный; планируемый long_side пишется в `item.render_long_side_used` у
 ВСЕХ items (включая plan-only), runner получает per-item
 `options.render_long_side`.
+
+### tiled (реализован — MVP, default OFF)
+
+`tiled` режет плотную схему на перекрывающиеся плитки и описывает каждую
+отдельным vision-вызовом — большой crop при single-shot заставляет модель
+обобщать и упирается в read-timeout (тот же урок, что в
+[grsh_feeder_extraction](stage_comparison_block_pdf_source.md)).
+
+* **только для плотных типов** (`_DENSE_GRAPHIC_TYPES`): для не-dense item'а
+  tiled эффективно деградирует к `high_res` (`item.render.effective_mode`
+  ≠ `tiled`, плиток нет) — `_item_effective_render_mode`;
+* full OLD + full NEW рендерятся в высоком разрешении (`tile_long_side×3`,
+  cap 6000); `include_full_image` сохраняет их refs рядом с плитками;
+* `plan_tile_grid` строит сетку по aspect ratio (широкая → больше колонок,
+  высокая → больше строк), `rows×cols ≤ max_tiles`, перекрытие `tile_overlap`;
+  bbox каждой плитки нормирован 0..1;
+* per OLD-tile/NEW-tile → один runner-вызов с tile-промптом («плитка N из M»,
+  «НЕ делать вывод по всей схеме», «выписать читаемые номиналы/обозначения
+  буквально», «нечитаемое — `[нечитаемо]`»);
+* `aggregate_tile_results` сливает плитки: union+dedup `observed_changes` /
+  entities / risks, `confidence` = минимум по успешным плиткам,
+  `tile_results_summary` (tiles_total/ok/failed).
+
+`item.render` (tiled): `requested_mode`, `effective_mode`,
+`tile_long_side`/`max_tiles`/`tile_overlap`, `full_left_crop_ref`/
+`full_right_crop_ref`, `tiles_total`, `tiles[]` (`tile_id`, `bbox_norm`,
+`left_tile_ref`/`right_tile_ref`, `vision_status`, `result`).
+`summary` добавляет `tiled_items`, `tiles_total`.
+
+Гарантии fail-soft: упавшая плитка (render/runner exception) → `vision_status`
+этой плитки `failed`, остальные мёржатся; item падает только если упали ВСЕ.
+Без runner'а — плитки рендерятся и план сохраняется (`vision_status`
+`skipped_no_runner`), реальных вызовов нет. Без `crops_dir` (некуда писать
+refs): с runner'ом — честный item `failed`, без runner'а — plan-only
+`skipped_no_runner`. Реальный tiled-пилот на плотных ГРЩ — отдельная
+controlled-задача (этот слой только готовит вход).
 
 Real vision benchmark (сравнение моделей/разрешений) запускается отдельной
 controlled-задачей — этот слой только готовит вход.
@@ -231,6 +293,11 @@ Controlled pilot на 5 инженерных блоках ИОС 1.1 (qwen/qwen3
 — selection (exclude/send/manual/cap/приоритет), skipped_no_visual_gate,
 no-runner (prompts/refs сохранены), fake runner (нормализация, JSON-строка,
 invalid confidence), bad output / exception / пустые описания (fail-soft),
-prompt contract, crop refs, render-failure path, dry-run (артефакт+manifest+MD,
-default OFF, fail-soft, инвариантность deterministic deltas), ui_payload
+prompt contract, crop refs, render-failure path, legend/domain hardening
+(legend без сильной идентичности → не SAME, domain_mismatch → downgrade,
+graphic_type-jitter ГРЩ остаётся SAME, 7VMV-подобная пара исключена из
+enrichment), tiled (плитки+refs+aggregate, no-runner plan, per-tile промпты,
+dedup/min-confidence, max_tiles/overlap, одна плитка упала ≠ item упал, все
+упали → failed), dry-run (артефакт+manifest+MD, default OFF, fail-soft,
+инвариантность deterministic deltas), ui_payload
 (секция + backward compat), офлайн-гарантии (source scan + socket-patch).

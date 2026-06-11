@@ -58,16 +58,31 @@ _DEFAULT_OPTIONS = {
 }
 
 # render-опции (options["render"]): high_res поднимает long_side для
-# плотных типов графики; tiled — зарезервированный контракт (см. доку)
+# плотных типов графики; tiled режет dense-схему на перекрывающиеся плитки и
+# гонит vision по каждой паре плиток (мелкие номиналы — см. доку)
 _DEFAULT_RENDER_OPTIONS = {
     "mode": "normal",               # normal | high_res | tiled
     "long_side": 1600,
     "dense_long_side": 2400,
-    "tile_long_side": 1400,
+    "tile_long_side": 1400,         # целевая длинная сторона ОДНОЙ плитки
     "max_tiles": 6,
+    "tile_overlap": 0.12,           # доля перекрытия соседних плиток
+    "include_full_image": True,     # сохранять full-crop refs рядом с плитками
 }
 _DENSE_GRAPHIC_TYPES = {"cabinet_scheme", "single_line_scheme",
                         "dense_scheme", "table_scheme"}
+
+# домены инженерных систем для детекта подмены сущности (pilot v2: legend
+# ОЗДС/20кВ/300В ↔ схема квартирных ящиков ШК/ВРУ/Меркурий — РАЗНЫЕ домены,
+# хотя обе «схема» и обе содержат bare «вру»). Маркеры буквальные, lower.
+_DOMAIN_MARKERS = {
+    "security_ozds": ("оздс", "бву", "бпи", "охранно", "охранн"),
+    "fire_alarm": ("спс", "соуэ", "пожарн", "дымоуд"),
+    "medium_voltage": ("20кв", "10кв", "6кв", "ктп", "ру-10", "ру-20"),
+    "apartment_power": ("квартир", "щк-", "уэрм", "яур", "меркурий"),
+    "lighting": ("освещен", "светильник"),
+    "grounding": ("молниезащит", "заземлен", "гзш"),
+}
 
 CANDIDATE_SAME = "same_entity_likely"
 CANDIDATE_MISMATCH = "mismatch_likely"
@@ -128,6 +143,14 @@ def _opt(options: Optional[dict], key: str) -> Any:
 def _safe_int(value: Any, fallback: int) -> int:
     try:
         return int(value)
+    except (TypeError, ValueError):
+        return fallback
+
+
+def _safe_float(value: Any, fallback: float) -> float:
+    try:
+        f = float(value)
+        return f if f == f else fallback   # NaN-guard
     except (TypeError, ValueError):
         return fallback
 
@@ -354,6 +377,19 @@ def _matched_graphic_index(graphic_matched_report: Any) -> dict:
     return out
 
 
+def _domain_signature(desc: dict) -> set[str]:
+    """Множество инженерных доменов из sheet_name + токенов дескриптора."""
+    t = desc.get("tokens") if isinstance(desc.get("tokens"), dict) else {}
+    blob = " ".join([
+        str(desc.get("sheet_name") or ""),
+        " ".join(str(x) for x in (t.get("equipment") or [])),
+        " ".join(str(x) for x in (t.get("raw_key_entities") or [])),
+        " ".join(str(x) for x in (t.get("power") or [])),
+    ]).lower()
+    return {dom for dom, markers in _DOMAIN_MARKERS.items()
+            if any(m in blob for m in markers)}
+
+
 def score_vision_candidate(pair: dict, *, left_desc: dict, right_desc: dict,
                            matched_entry: Optional[dict] = None) -> dict:
     """Оценить пару gate как кандидата на vision (score/kind/reasons/risks)."""
@@ -475,21 +511,50 @@ def score_vision_candidate(pair: dict, *, left_desc: dict, right_desc: dict,
 
     # штамп — та же сущность, но низкая ценность для vision-enrichment
     # (дельты штампа ловит текстовый слой); инженерная графика приоритетнее
-    if "stamp" in (str(left_desc.get("graphic_type") or "").lower(),
-                   str(right_desc.get("graphic_type") or "").lower()):
+    lg_lower = str(left_desc.get("graphic_type") or "").lower()
+    rg_lower = str(right_desc.get("graphic_type") or "").lower()
+    if "stamp" in (lg_lower, rg_lower):
         score -= 0.35
         risks.append("stamp_block_low_vision_value")
 
+    # домен-конфликт: явно разные инженерные системы с обеих сторон
+    # (pilot v2: ОЗДС-легенда ↔ схема квартирных ящиков) — подмена сущности
+    ldom, rdom = _domain_signature(left_desc), _domain_signature(right_desc)
+    if ldom and rdom and not (ldom & rdom):
+        score -= 0.25
+        risks.append("domain_mismatch")
+
     score = max(0.0, min(1.0, round(score, 3)))
+
+    # рассогласование сущности по СИЛЬНЫМ сигналам — дисциплина/домен
+    # (разные инженерные системы). graphic_type_mismatch — СЛАБЫЙ: cabinet
+    # vs single_line часто одна и та же ГРЩ с разной vision-классификацией,
+    # сам по себе SAME не блокирует (pilot v2: 7EMD ГРЩ — настоящая пара).
+    strong_identity = (identity == "match")
+    strong_soft = [r for r in risks if r.startswith(
+        ("discipline_mismatch", "domain_mismatch"))]
+    weak_soft = [r for r in risks if r.startswith("graphic_type_mismatch")]
+    is_legend = "legend" in (lg_lower, rg_lower)
 
     hard_mismatch = any(r.startswith(("entity_id_conflict",
                                       "entity_family_conflict",
                                       "sheet_kind_mismatch")) for r in risks)
+    if hard_mismatch:
+        kind = CANDIDATE_MISMATCH
+    elif strong_soft and not strong_identity:
+        # разная дисциплина/домен без нумерованной идентичности.
+        # подкреплено вторым strong / типом / legend → почти наверняка
+        # подмена сущности (legend ОЗДС↔квартиры); одиночный сигнал → review
+        kind = (CANDIDATE_MISMATCH
+                if len(strong_soft) >= 2 or weak_soft or is_legend
+                else CANDIDATE_VALIDATION)
+    elif is_legend and not strong_identity:
+        # legend-caution: условные обозначения нельзя сводить по одному
+        # family/sheet_kind — нужна нумерованная идентичность (ревью pilot v2)
+        kind = CANDIDATE_VALIDATION
     # SAME требует корроборации (entity/вид листа), не только score:
     # blank-дескрипторные пары не должны проходить в enrichment по одним
     # gate-бонусам (ревью: позиционный срез reasons[2:] был артефактом)
-    if hard_mismatch:
-        kind = CANDIDATE_MISMATCH
     elif score >= 0.6 and (identity in ("match", "family_only_match")
                            or (lk and lk == rk)):
         kind = CANDIDATE_SAME
@@ -890,27 +955,47 @@ def _render_options(options: Optional[dict]) -> tuple[dict, list[str]]:
     if legacy:
         out["long_side"] = _safe_int(legacy, out["long_side"])
     raw = (options or {}).get("render")
+    _float_keys = {"tile_overlap"}
+    _bool_keys = {"include_full_image"}
     if isinstance(raw, dict):
         for k in out:
-            if k in raw:
-                out[k] = raw[k] if k == "mode" else _safe_int(raw[k], out[k])
+            if k not in raw:
+                continue
+            if k == "mode":
+                out[k] = raw[k]
+            elif k in _float_keys:
+                out[k] = _safe_float(raw[k], out[k])
+            elif k in _bool_keys:
+                out[k] = bool(raw[k])
+            else:
+                out[k] = _safe_int(raw[k], out[k])
     mode = str(out.get("mode") or "normal").strip().lower()
     if mode not in _VALID_RENDER_MODES:
         warnings.append(f"invalid render mode {out.get('mode')!r} → normal")
         mode = "normal"
     out["mode_requested"] = mode
-    if mode == "tiled":
-        warnings.append("render mode 'tiled' not implemented yet — "
-                        "falling back to high_res")
-        mode = "high_res"
-    out["mode"] = mode
+    out["mode"] = mode               # tiled теперь реализован — без fallback
     return out, warnings
 
 
+def _item_effective_render_mode(item: dict, render_opts: dict) -> str:
+    """Эффективный режим рендера для КОНКРЕТНОГО item'а.
+
+    tiling имеет смысл только для плотных схем; для не-dense типов tiled
+    деградирует к high_res (один крупный рендер вместо плиток).
+    """
+    mode = render_opts.get("mode") or "normal"
+    is_dense = (item.get("graphic_type") or "") in _DENSE_GRAPHIC_TYPES
+    if mode == "tiled" and not is_dense:
+        return "high_res"
+    return mode
+
+
 def _item_render_long_side(item: dict, render_opts: dict) -> int:
-    """long_side рендера для item'а (mode уже эффективный)."""
+    """long_side одиночного рендера item'а (для normal/high_res путей)."""
     base = _safe_int(render_opts.get("long_side"), 1600)
-    if (render_opts.get("mode") == "high_res"
+    eff = _item_effective_render_mode(item, render_opts)
+    if (eff == "high_res"
             and (item.get("graphic_type") or "") in _DENSE_GRAPHIC_TYPES):
         return _safe_int(render_opts.get("dense_long_side"), 2400)
     return base
@@ -966,6 +1051,286 @@ def _render_crop_png(block: Optional[dict], pages: dict,
     return str(out_path), None
 
 
+# ─── tiled render (MVP: grid + per-tile vision + aggregate) ──────────────────
+
+TILE_PROMPT_TEMPLATE = """Ты — инженер-эксперт. Тебе даны ДВА ФРАГМЕНТА \
+(плитка {tile_no} из {tile_total}) ОДНОГО графического блока чертежа: \
+OLD (старая стадия) и NEW (новая стадия). Это НЕ вся схема, а только её часть \
+(зона {bbox}).
+
+Задача по ЭТОЙ ПЛИТКЕ:
+1. Выпиши ТОЛЬКО то, что РЕАЛЬНО ВИДНО на фрагменте: номиналы автоматов (А), \
+сечения кабелей (мм²), напряжения (В), обозначения аппаратов (QF, ЩР, ВРУ…).
+2. Перечисли видимые изменения между OLD и NEW В ПРЕДЕЛАХ этой плитки.
+
+Жёсткие правила:
+- НЕ делай выводов по ВСЕЙ схеме — ты видишь только фрагмент.
+- НЕ придумывай того, чего не видно; нечитаемое — «[нечитаемо]».
+- Маркировки и номиналы переписывай БУКВАЛЬНО (160А, ЩР-1а, 4х185).
+
+Ответ — строго один JSON-объект:
+{{
+  "old_description": "что видно на OLD-фрагменте",
+  "new_description": "что видно на NEW-фрагменте",
+  "observed_changes": ["…"],
+  "engineering_entities_old": ["…"],
+  "engineering_entities_new": ["…"],
+  "possible_risks": ["…"],
+  "confidence": "high|medium|low"
+}}"""
+
+
+def build_tile_prompt(tile_no: int, tile_total: int, bbox_norm: list) -> str:
+    bb = "[" + ", ".join(f"{round(float(v), 2)}" for v in bbox_norm) + "]"
+    return TILE_PROMPT_TEMPLATE.format(tile_no=tile_no, tile_total=tile_total,
+                                       bbox=bb)
+
+
+def plan_tile_grid(width: int, height: int, *, max_tiles: int,
+                   overlap: float) -> list[dict]:
+    """Сетка перекрывающихся плиток по aspect ratio (MVP).
+
+    Возвращает список ``{tile_id, bbox_norm:[x0,y0,x1,y1]}`` в нормированных
+    координатах (0..1). Широкие схемы → больше колонок; всегда ≥1 плитка;
+    rows*cols ≤ max_tiles.
+    """
+    max_tiles = max(1, _safe_int(max_tiles, 6))
+    ov = min(0.45, max(0.0, _safe_float(overlap, 0.12)))
+    aspect = (float(width) / float(height)) if height else 1.0
+    # выбрать cols×rows под aspect, уважая max_tiles
+    if aspect >= 2.2:
+        cols, rows = 3, 1
+    elif aspect >= 1.3:
+        cols, rows = 2, 2
+    elif aspect <= 0.45:
+        cols, rows = 1, 3
+    elif aspect <= 0.77:
+        cols, rows = 2, 2
+    else:
+        cols, rows = 2, 2
+    while cols * rows > max_tiles and (cols > 1 or rows > 1):
+        if cols >= rows and cols > 1:
+            cols -= 1
+        elif rows > 1:
+            rows -= 1
+        else:
+            break
+    tiles: list[dict] = []
+    cw, ch = 1.0 / cols, 1.0 / rows
+    n = 0
+    for r in range(rows):
+        for c in range(cols):
+            n += 1
+            x0 = max(0.0, c * cw - ov * cw)
+            y0 = max(0.0, r * ch - ov * ch)
+            x1 = min(1.0, (c + 1) * cw + ov * cw)
+            y1 = min(1.0, (r + 1) * ch + ov * ch)
+            tiles.append({"tile_id": f"tile_{n:03d}",
+                          "bbox_norm": [round(x0, 4), round(y0, 4),
+                                        round(x1, 4), round(y1, 4)]})
+    return tiles
+
+
+def _render_block_array(block: Optional[dict], pages: dict,
+                        pdf_path: Optional[str], long_side: int):
+    """Срендерить блок в BGR ndarray. Возвращает (img|None, error|None)."""
+    if not isinstance(block, dict):
+        return None, "block missing in normalized model"
+    try:
+        from backend.app.services.stage_comparison.block_equivalence_precheck import (  # noqa: PLC0415
+            EqBlock, load_or_render_block_image)
+    except Exception as exc:  # noqa: BLE001 — окружение без cv2/fitz
+        return None, f"render dependencies unavailable: {exc}"
+    page_no = block.get("page_number") or 0
+    page = pages.get(page_no) if isinstance(pages.get(page_no), dict) else {}
+    eq = EqBlock(
+        block_id=str(block.get("block_id") or ""), page=_safe_int(page_no, 0),
+        block_type=str(block.get("block_type") or "image"),
+        coords_norm=block.get("coords_norm"), coords_px=block.get("coords_px"),
+        page_width=_safe_int(page.get("width"), 0),
+        page_height=_safe_int(page.get("height"), 0), text="",
+        image_file=block.get("image_file"), crop_url=block.get("crop_url"),
+        raw=block)
+    try:
+        img, meta = load_or_render_block_image(
+            eq, source_pdf_path=pdf_path, render_long_side=long_side)
+    except Exception as exc:  # noqa: BLE001
+        return None, f"render failed: {exc}"
+    if img is None:
+        return None, f"render failed: {(meta or {}).get('status')}"
+    return img, None
+
+
+def _save_tile(img, bbox_norm: list, out_path: Path) -> Optional[str]:
+    """Вырезать плитку по bbox_norm и сохранить PNG. None — ошибка."""
+    try:
+        import cv2  # noqa: PLC0415
+        h, w = img.shape[:2]
+        x0 = max(0, int(bbox_norm[0] * w)); y0 = max(0, int(bbox_norm[1] * h))
+        x1 = min(w, int(bbox_norm[2] * w)); y1 = min(h, int(bbox_norm[3] * h))
+        if x1 <= x0 or y1 <= y0:
+            return None
+        tile = img[y0:y1, x0:x1]
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        return str(out_path) if cv2.imwrite(str(out_path), tile) else None
+    except Exception:  # noqa: BLE001 — fail-soft по плитке
+        return None
+
+
+def _dedup_keep_order(values: list) -> list:
+    seen, out = set(), []
+    for v in values:
+        key = str(v).strip().lower()
+        if key and key not in seen:
+            seen.add(key); out.append(v)
+    return out
+
+
+_CONF_RANK = {"low": 0, "medium": 1, "high": 2}
+_CONF_NAME = {0: "low", 1: "medium", 2: "high"}
+
+
+def aggregate_tile_results(tile_results: list[dict]) -> Optional[dict]:
+    """Слить per-tile результаты в один result (union+dedup, conf=min)."""
+    ok = [t.get("result") for t in tile_results
+          if t.get("vision_status") == "ok" and isinstance(t.get("result"), dict)]
+    if not ok:
+        return None
+    olds = [r.get("old_description") for r in ok if r.get("old_description")]
+    news = [r.get("new_description") for r in ok if r.get("new_description")]
+    changes, eo, en, risks = [], [], [], []
+    confs = []
+    for r in ok:
+        changes += _str_list(r.get("observed_changes"))[0]
+        eo += _str_list(r.get("engineering_entities_old"))[0]
+        en += _str_list(r.get("engineering_entities_new"))[0]
+        risks += _str_list(r.get("possible_risks"))[0]
+        c = str(r.get("confidence") or "").lower()
+        if c in _CONF_RANK:
+            confs.append(_CONF_RANK[c])
+    conf = _CONF_NAME[min(confs)] if confs else "low"
+    return {
+        "old_description": " | ".join(olds[:4]) or "[нечитаемо]",
+        "new_description": " | ".join(news[:4]) or "[нечитаемо]",
+        "observed_changes": _dedup_keep_order(changes),
+        "engineering_entities_old": _dedup_keep_order(eo),
+        "engineering_entities_new": _dedup_keep_order(en),
+        "possible_risks": _dedup_keep_order(risks),
+        "confidence": conf,
+        "tile_results_summary": {
+            "tiles_total": len(tile_results),
+            "tiles_ok": len(ok),
+            "tiles_failed": sum(1 for t in tile_results
+                                if t.get("vision_status") == "failed"),
+        },
+    }
+
+
+def _run_tiled_item(item: dict, *, left_block, right_block, left_pages,
+                    right_pages, left_pdf, right_pdf, render_opts: dict,
+                    runner_options: dict, crops_dir: Optional[Path],
+                    vision_runner: Optional[VisionRunner]) -> str:
+    """Tiled-обработка одного item'а. Возвращает vision_status.
+
+    Заполняет ``item['render']`` (full refs + tiles). Fail-soft: упавшая
+    плитка пропускается, item падает только если ВСЕ плитки упали.
+    """
+    tile_long = _safe_int(render_opts.get("tile_long_side"), 1400)
+    max_tiles = _safe_int(render_opts.get("max_tiles"), 6)
+    overlap = _safe_float(render_opts.get("tile_overlap"), 0.12)
+    include_full = render_opts.get("include_full_image") is not False
+    render_meta = {"requested_mode": render_opts.get("mode_requested"),
+                   "effective_mode": "tiled", "tile_long_side": tile_long,
+                   "max_tiles": max_tiles, "tile_overlap": overlap,
+                   "full_left_crop_ref": None, "full_right_crop_ref": None,
+                   "tiles_total": 0, "tiles": []}
+    item["render"] = render_meta
+
+    if crops_dir is None:
+        # без места для рендера плиток план остаётся без refs; с runner'ом это
+        # честный fail (звать его нечем), без runner'а — plan-only skip
+        item["warnings"].append("tiled render requires crops_dir for tile refs")
+        return "skipped_no_runner" if vision_runner is None else "failed"
+    base = Path(crops_dir)
+    # full render: длинная сторона ≈ tile_long × число колонок (детальные плитки)
+    full_long = min(6000, tile_long * 3)
+    lh = _render_block_array(left_block, left_pages, left_pdf, full_long)
+    rh = _render_block_array(right_block, right_pages, right_pdf, full_long)
+    left_img, lerr = lh
+    right_img, rerr = rh
+    for e in (lerr, rerr):
+        if e:
+            item["warnings"].append(e)
+    if left_img is None and right_img is None:
+        item["warnings"].append("tiled: no full image rendered")
+        return "failed"
+    if include_full:
+        import cv2  # noqa: PLC0415
+        if left_img is not None:
+            p = base / f"{item['item_id']}_full_left.png"
+            p.parent.mkdir(parents=True, exist_ok=True)
+            if cv2.imwrite(str(p), left_img):
+                render_meta["full_left_crop_ref"] = str(p)
+                item["left_crop_ref"] = str(p)
+        if right_img is not None:
+            p = base / f"{item['item_id']}_full_right.png"
+            if cv2.imwrite(str(p), right_img):
+                render_meta["full_right_crop_ref"] = str(p)
+                item["right_crop_ref"] = str(p)
+
+    ref_img = left_img if left_img is not None else right_img
+    h, w = ref_img.shape[:2]
+    grid = plan_tile_grid(w, h, max_tiles=max_tiles, overlap=overlap)
+    render_meta["tiles_total"] = len(grid)
+
+    any_ok = any_attempt = False
+    for i, g in enumerate(grid, start=1):
+        bbox = g["bbox_norm"]
+        lt = _save_tile(left_img, bbox, base / f"{item['item_id']}_{g['tile_id']}_left.png") if left_img is not None else None
+        rt = _save_tile(right_img, bbox, base / f"{item['item_id']}_{g['tile_id']}_right.png") if right_img is not None else None
+        tile = {"tile_id": g["tile_id"], "bbox_norm": bbox,
+                "left_tile_ref": lt, "right_tile_ref": rt,
+                "vision_status": "pending", "result": None}
+        if vision_runner is None:
+            tile["vision_status"] = "skipped_no_runner"
+            render_meta["tiles"].append(tile)
+            continue
+        if lt is None and rt is None:
+            tile["vision_status"] = "failed"
+            tile["error"] = "tile render failed"
+            render_meta["tiles"].append(tile)
+            continue
+        any_attempt = True
+        prompt = build_tile_prompt(i, len(grid), bbox)
+        try:
+            raw = vision_runner(prompt, lt, rt,
+                                {**runner_options, "tile": g["tile_id"],
+                                 "render_long_side": tile_long})
+            result, _w = normalize_vision_runner_result(raw)
+        except Exception as exc:  # noqa: BLE001 — плитка не валит item
+            tile["vision_status"] = "failed"
+            tile["error"] = f"{type(exc).__name__}: {exc}"
+            render_meta["tiles"].append(tile)
+            continue
+        if result is None:
+            tile["vision_status"] = "failed"
+        else:
+            tile["vision_status"] = "ok"
+            tile["result"] = result
+            any_ok = True
+        render_meta["tiles"].append(tile)
+
+    if vision_runner is None:
+        return "skipped_no_runner"
+    if not any_attempt:
+        return "failed"
+    agg = aggregate_tile_results(render_meta["tiles"])
+    if agg is None:
+        return "failed"
+    item["result"] = agg
+    return "ok"
+
+
 # ─── main entry ──────────────────────────────────────────────────────────────
 
 
@@ -1019,6 +1384,31 @@ def run_graphic_vision_enrichment(
             # консьюмер отчёта может восстановить, чем рендерили бы
             long_side = _item_render_long_side(item, render_opts)
             item["render_long_side_used"] = long_side
+
+            # tiled-ветка (только для плотных типов; остальные эффективно
+            # high_res — см. _item_effective_render_mode). Обрабатывает и
+            # no-runner (план плиток без вызовов), и runner per-tile.
+            if _item_effective_render_mode(item, render_opts) == "tiled":
+                st = _run_tiled_item(
+                    item,
+                    left_block=left_blocks.get(item["left_block_id"]),
+                    right_block=right_blocks.get(item["right_block_id"]),
+                    left_pages=left_pages, right_pages=right_pages,
+                    left_pdf=left_pdf, right_pdf=right_pdf,
+                    render_opts=render_opts, runner_options=runner_options,
+                    crops_dir=Path(crops_dir) if crops_dir else None,
+                    vision_runner=vision_runner)
+                item["vision_status"] = st
+                if st == "ok":
+                    attempted += 1
+                    succeeded += 1
+                elif st == "skipped_no_runner":
+                    skipped += 1
+                else:  # failed
+                    attempted += 1
+                    failed += 1
+                continue
+
             if vision_runner is None:
                 item["vision_status"] = "skipped_no_runner"
                 skipped += 1
@@ -1129,6 +1519,12 @@ def run_graphic_vision_enrichment(
             "render_mode": render_opts["mode"],
             "render_mode_requested": render_opts.get("mode_requested",
                                                      render_opts["mode"]),
+            "tiled_items": sum(1 for i in items
+                               if isinstance(i.get("render"), dict)
+                               and i["render"].get("effective_mode") == "tiled"),
+            "tiles_total": sum(int(i["render"].get("tiles_total") or 0)
+                               for i in items
+                               if isinstance(i.get("render"), dict)),
         },
         "items": items,
         "warnings": warnings,

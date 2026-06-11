@@ -1014,22 +1014,27 @@ def test_render_normal_mode_keeps_base_long_side(tmp_path):
     assert rep["items"][0]["render_long_side_used"] == 1234
 
 
-def test_render_tiled_falls_back_to_high_res_with_warning(tmp_path):
+def test_render_tiled_non_dense_degrades_to_high_res(tmp_path):
+    """tiled имеет смысл только для плотных типов; не-dense item эффективно
+    high_res (без плиток), normal/high_res путь не ломается."""
     pytest.importorskip("cv2")
     lm, rm = _model("left"), _model("right")
     lm["blocks"]["L_S1"]["image_file"] = _png(tmp_path / "l.png")
     rm["blocks"]["R_S1"]["image_file"] = _png(tmp_path / "r.png")
     gate = _gate([_gate_pair(1, "send_to_vision")])
     lg = {"descriptors": [
-        {"block_id": "L_S1", "graphic_type": "dense_scheme",
-         "discipline": "EOM"}]}
+        {"block_id": "L_S1", "graphic_type": "scheme",
+         "discipline": "EOM"}]}   # НЕ в _DENSE_GRAPHIC_TYPES
     rep = gv.run_graphic_vision_enrichment(
         lm, rm, gate, left_graphic_report=lg,
         options={"render_crops": True,
                  "render": {"mode": "tiled", "dense_long_side": 2100}},
         vision_runner=_ok_runner, crops_dir=tmp_path / "crops")
-    assert rep["items"][0]["render_long_side_used"] == 2100
-    assert any("tiled" in w for w in rep["warnings"])
+    item = rep["items"][0]
+    # не-dense → высокого-разрешения один рендер, без плиток
+    assert "render" not in item or not item.get("render")
+    assert item["render_long_side_used"] == 1600  # base (тип не в dense set)
+    assert item["vision_status"] == "ok"
 
 
 def test_render_legacy_render_long_side_still_works():
@@ -1045,11 +1050,20 @@ def test_render_legacy_render_long_side_still_works():
     opts3, w3 = gv._render_options({"render": {"mode": "hi_res"}})
     assert opts3["mode"] == "normal"
     assert any("invalid render mode" in w for w in w3)
-    # tiled → эффективный high_res + warning уже на merge
+    # tiled теперь реализован — режим сохраняется, без warning/fallback
     opts4, w4 = gv._render_options({"render": {"mode": "tiled"}})
-    assert opts4["mode"] == "high_res"
+    assert opts4["mode"] == "tiled"
     assert opts4["mode_requested"] == "tiled"
-    assert any("tiled" in w for w in w4)
+    assert not any("tiled" in w for w in w4)
+    # tiled-специфичные опции читаются (float/bool)
+    opts5, _ = gv._render_options(
+        {"render": {"mode": "tiled", "tile_long_side": 1500,
+                    "max_tiles": 4, "tile_overlap": 0.2,
+                    "include_full_image": False}})
+    assert opts5["tile_long_side"] == 1500
+    assert opts5["max_tiles"] == 4
+    assert opts5["tile_overlap"] == 0.2
+    assert opts5["include_full_image"] is False
 
 
 # ─── dry-run интеграция (11-12) ──────────────────────────────────────────────
@@ -1211,3 +1225,304 @@ def test_v2_stamp_blocks_deprioritized_for_enrichment():
         matched_entry=_matched("a", "b", eq_overlap=0.4))
     assert stamp["candidate_score"] < scheme["candidate_score"]
     assert "stamp_block_low_vision_value" in stamp["candidate_risk_flags"]
+
+
+# ─── legend/domain hardening (Section 2) ─────────────────────────────────────
+
+
+def test_legend_one_side_not_same_by_family_alone():
+    """spec 2.1: legend на одной стороне НЕ даёт same_entity_likely только
+    по семейству/листу — нужна сильная идентичность (pilot v2: 7VMV)."""
+    base = {**_gate_pair(1, "send_to_vision")}
+    # одинаковое семейство схем, но правый — легенда/условные обозначения
+    res = gv.score_vision_candidate(
+        base,
+        left_desc=_desc("a", "Условные обозначения", gt="legend",
+                        equipment=["вру"]),
+        right_desc=_desc("b", "Условные обозначения", gt="legend",
+                         equipment=["вру"]),
+        matched_entry=_matched("a", "b", gt_match=True, disc_match=True,
+                               eq_overlap=0.3))
+    assert res["candidate_kind"] != gv.CANDIDATE_SAME
+    assert res["candidate_kind"] in (gv.CANDIDATE_VALIDATION,
+                                     gv.CANDIDATE_MISMATCH)
+
+
+def test_legend_with_strong_identity_can_be_same():
+    """legend сам по себе не запрещает SAME — но требует СИЛЬНОЙ идентичности
+    (numbered match), а не одного семейства."""
+    base = {**_gate_pair(1, "send_to_vision")}
+    res = gv.score_vision_candidate(
+        base,
+        left_desc=_desc("a", "Условные обозначения ЩО-1", gt="legend",
+                        equipment=["що-1"], raw=["ЩО-1"]),
+        right_desc=_desc("b", "Условные обозначения ЩО-1", gt="legend",
+                         equipment=["що-1"], raw=["ЩО-1"]),
+        matched_entry=_matched("a", "b", gt_match=True, disc_match=True,
+                               eq_overlap=0.6))
+    # numbered identity match → legend не понижает до validation
+    if "entity_id_match" in res["candidate_reasons"]:
+        assert res["candidate_kind"] == gv.CANDIDATE_SAME
+
+
+def test_domain_mismatch_downgrades_to_validation():
+    """spec 2.2: разные инженерные ДОМЕНЫ (при совпадении дисциплины) →
+    domain_mismatch risk → НЕ same_entity_likely."""
+    base = {**_gate_pair(1, "send_to_vision")}
+    res = gv.score_vision_candidate(
+        base,
+        left_desc=_desc("a", "Схема ОЗДС охранная (БВУ/БПИ)",
+                        equipment=["бву"], raw=["ОЗДС"]),
+        right_desc=_desc("b", "Схема освещения квартир",
+                         equipment=["светильник"], raw=["освещение"]),
+        matched_entry=_matched("a", "b", gt_match=True, disc_match=True,
+                               eq_overlap=0.0))
+    assert "domain_mismatch" in res["candidate_risk_flags"]
+    assert res["candidate_kind"] in (gv.CANDIDATE_VALIDATION,
+                                     gv.CANDIDATE_MISMATCH)
+
+
+def test_genuine_grsh_pair_with_type_jitter_stays_same():
+    """Регрессия: cabinet vs single_line (vision-jitter) одной ГРЩ НЕ должен
+    падать из SAME — graphic_type_mismatch это СЛАБЫЙ сигнал (pilot v2: 7EMD)."""
+    base = {**_gate_pair(1, "send_to_vision")}
+    res = gv.score_vision_candidate(
+        base,
+        left_desc=_desc("a", "Однолинейная расчетная схема ГРЩ",
+                        gt="cabinet_scheme", equipment=["грщ"], raw=["ГРЩ"]),
+        right_desc=_desc("b", "Однолинейная схема ГРЩ",
+                         gt="single_line_scheme", equipment=["грщ"],
+                         raw=["ГРЩ"]),
+        matched_entry=_matched("a", "b", gt_match=False, disc_match=True,
+                               eq_overlap=0.5))
+    assert "graphic_type_mismatch" in res["candidate_risk_flags"]
+    assert res["candidate_kind"] == gv.CANDIDATE_SAME
+
+
+def test_legend_false_pair_excluded_from_top_enrichment():
+    """spec 2.3 + top5: при наличии настоящих инженерных кандидатов
+    legend/domain-mismatch пара (7VMV-подобная) НЕ попадает в enrichment."""
+    legend_pair = {**_gate_pair(9, "send_to_vision"),
+                   "pair_key": "L_LEG__R_LEG",
+                   "left_block_id": "L_LEG", "right_block_id": "R_LEG"}
+    gate = _gate([
+        {**_gate_pair(1, "send_to_vision"), "pair_key": "L_GRSH__R_GRSH",
+         "left_block_id": "L_GRSH", "right_block_id": "R_GRSH"},
+        legend_pair,
+    ])
+    lg = {"descriptors": [
+        _desc("L_GRSH", "Однолинейная расчетная схема ГРЩ",
+              gt="cabinet_scheme", equipment=["грщ"], raw=["ГРЩ"]),
+        _desc("L_LEG", "Условные обозначения (ОЗДС)", gt="legend",
+              disc="SOT", equipment=["оздс"], raw=["ОЗДС", "20кВ"]),
+    ]}
+    rg = {"descriptors": [
+        _desc("R_GRSH", "Однолинейная схема ГРЩ", equipment=["грщ"],
+              raw=["ГРЩ"]),
+        _desc("R_LEG", "Условные обозначения (квартирные ящики)", gt="legend",
+              disc="EOM", equipment=["щк", "меркурий"], raw=["ШК", "ВРУ"]),
+    ]}
+    matched = {"matched_graphic_blocks": [
+        _matched("L_GRSH", "R_GRSH", quality="strong", gt_match=False,
+                 disc_match=True, eq_overlap=0.5),
+        _matched("L_LEG", "R_LEG", quality="weak", gt_match=True,
+                 disc_match=False, eq_overlap=0.0),
+    ]}
+    selected, stats, _ = gv.select_vision_candidates_v2(
+        gate, left_graphic_report=lg, right_graphic_report=rg,
+        graphic_matched_report=matched,
+        options={"selection_mode": "enrichment", "max_items": 5})
+    keys = [p["pair_key"] for p in selected]
+    assert "L_GRSH__R_GRSH" in keys
+    assert "L_LEG__R_LEG" not in keys
+    assert stats["mismatch_excluded"] >= 1
+
+
+# ─── tiled render MVP (Section 3) ────────────────────────────────────────────
+
+
+def _dense_pair(tmp_path):
+    lm, rm = _model("left"), _model("right")
+    lm["blocks"]["L_S1"]["image_file"] = _png(tmp_path / "src_l.png")
+    rm["blocks"]["R_S1"]["image_file"] = _png(tmp_path / "src_r.png",
+                                              color=(180, 180, 180))
+    gate = _gate([_gate_pair(1, "send_to_vision")])
+    lg = {"descriptors": [
+        {"block_id": "L_S1", "graphic_type": "dense_scheme",
+         "discipline": "EOM"}]}
+    return lm, rm, gate, lg
+
+
+def test_tiled_dense_creates_tiles_and_aggregates(tmp_path):
+    pytest.importorskip("cv2")
+    lm, rm, gate, lg = _dense_pair(tmp_path)
+    rep = gv.run_graphic_vision_enrichment(
+        lm, rm, gate, left_graphic_report=lg,
+        options={"render_crops": True,
+                 "render": {"mode": "tiled", "max_tiles": 4}},
+        vision_runner=_ok_runner, crops_dir=tmp_path / "crops")
+    item = rep["items"][0]
+    rnd = item["render"]
+    assert rnd["requested_mode"] == "tiled"
+    assert rnd["effective_mode"] == "tiled"
+    assert rnd["tiles_total"] >= 1
+    assert len(rnd["tiles"]) == rnd["tiles_total"]
+    # каждая плитка несёт refs + bbox + статус
+    for t in rnd["tiles"]:
+        assert t["tile_id"]
+        assert len(t["bbox_norm"]) == 4
+        assert t["vision_status"] == "ok"
+    # full crop refs сохранены
+    assert rnd["full_left_crop_ref"] and rnd["full_right_crop_ref"]
+    # агрегированный результат собран
+    assert item["vision_status"] == "ok"
+    assert item["result"]["observed_changes"]
+    assert "tile_results_summary" in item["result"]
+    assert rep["summary"]["tiled_items"] == 1
+    assert rep["summary"]["tiles_total"] == rnd["tiles_total"]
+    assert rep["summary"]["render_mode_requested"] == "tiled"
+
+
+def test_tiled_no_runner_saves_tile_plan(tmp_path):
+    pytest.importorskip("cv2")
+    lm, rm, gate, lg = _dense_pair(tmp_path)
+    rep = gv.run_graphic_vision_enrichment(
+        lm, rm, gate, left_graphic_report=lg,
+        options={"render_crops": True, "render": {"mode": "tiled"}},
+        vision_runner=None, crops_dir=tmp_path / "crops")
+    item = rep["items"][0]
+    rnd = item["render"]
+    assert item["vision_status"] == "skipped_no_runner"
+    assert rnd["tiles_total"] >= 1
+    # план плиток существует, но без vision-вызовов
+    for t in rnd["tiles"]:
+        assert t["vision_status"] == "skipped_no_runner"
+        assert t["result"] is None
+    assert rep["summary"]["skipped_no_runner"] == 1
+    assert rep["status"] == "skipped_no_runner"
+
+
+def test_tiled_runner_called_per_tile_with_prompts(tmp_path):
+    pytest.importorskip("cv2")
+    lm, rm, gate, lg = _dense_pair(tmp_path)
+    calls = []
+
+    def _cap(prompt, lp, rp, options):
+        calls.append({"prompt": prompt, "lp": lp, "rp": rp,
+                      "tile": options.get("tile")})
+        return _ok_runner(prompt, lp, rp, options)
+
+    rep = gv.run_graphic_vision_enrichment(
+        lm, rm, gate, left_graphic_report=lg,
+        options={"render_crops": True,
+                 "render": {"mode": "tiled", "max_tiles": 4}},
+        vision_runner=_cap, crops_dir=tmp_path / "crops")
+    rnd = rep["items"][0]["render"]
+    # ровно один вызов на плитку
+    assert len(calls) == rnd["tiles_total"]
+    # tile-промпт: номер плитки, оговорка про фрагмент, маркер нечитаемого
+    for n, c in enumerate(calls, start=1):
+        assert f"{n} из {len(calls)}" in c["prompt"]
+        assert "фрагмент" in c["prompt"].lower()
+        assert "[нечитаемо]" in c["prompt"]
+        # tile-файлы существуют и переданы runner'у (не перепутаны)
+        assert c["lp"] and Path(c["lp"]).exists()
+        assert c["rp"] and Path(c["rp"]).exists()
+        assert "_left.png" in c["lp"] and "_right.png" in c["rp"]
+
+
+def test_tiled_aggregation_merges_dedups_and_min_confidence():
+    tiles = [
+        {"vision_status": "ok", "result": {
+            "old_description": "ВРУ-2 1000А", "new_description": "ВРУ-2",
+            "observed_changes": ["QF3 160А→250А"],
+            "engineering_entities_old": ["ВРУ-2", "QF3"],
+            "engineering_entities_new": ["ВРУ-2", "QF3"],
+            "possible_risks": ["селективность"], "confidence": "high"}},
+        {"vision_status": "ok", "result": {
+            "old_description": "ЩО-1", "new_description": "ЩО-1 доб. линия",
+            "observed_changes": ["QF3 160А→250А", "добавлена линия L5"],
+            "engineering_entities_old": ["ЩО-1"],
+            "engineering_entities_new": ["ЩО-1", "L5"],
+            "possible_risks": ["селективность"], "confidence": "low"}},
+        {"vision_status": "failed", "result": None},
+    ]
+    agg = gv.aggregate_tile_results(tiles)
+    # dedup observed_changes (QF3 повторялся)
+    assert agg["observed_changes"].count("QF3 160А→250А") == 1
+    assert "добавлена линия L5" in agg["observed_changes"]
+    # dedup risks
+    assert agg["possible_risks"] == ["селективность"]
+    # confidence = минимум по плиткам
+    assert agg["confidence"] == "low"
+    assert agg["tile_results_summary"]["tiles_ok"] == 2
+    assert agg["tile_results_summary"]["tiles_failed"] == 1
+
+
+def test_tiled_grid_respects_max_tiles_and_overlap():
+    # широкая схема, cap=3
+    grid = gv.plan_tile_grid(3000, 800, max_tiles=3, overlap=0.1)
+    assert 1 <= len(grid) <= 3
+    # высокая схема
+    grid2 = gv.plan_tile_grid(700, 2400, max_tiles=4, overlap=0.1)
+    assert 1 <= len(grid2) <= 4
+    # каждая bbox нормирована и валидна
+    for g in grid + grid2:
+        x0, y0, x1, y1 = g["bbox_norm"]
+        assert 0.0 <= x0 < x1 <= 1.0
+        assert 0.0 <= y0 < y1 <= 1.0
+    # cap=1 → ровно одна плитка (полный кадр)
+    grid3 = gv.plan_tile_grid(2000, 2000, max_tiles=1, overlap=0.1)
+    assert len(grid3) == 1
+
+
+def test_tiled_one_tile_failure_does_not_fail_item(tmp_path):
+    pytest.importorskip("cv2")
+    lm, rm, gate, lg = _dense_pair(tmp_path)
+    state = {"n": 0}
+
+    def _flaky(prompt, lp, rp, options):
+        state["n"] += 1
+        if state["n"] == 1:
+            raise RuntimeError("tile boom")
+        return _ok_runner(prompt, lp, rp, options)
+
+    rep = gv.run_graphic_vision_enrichment(
+        lm, rm, gate, left_graphic_report=lg,
+        options={"render_crops": True,
+                 "render": {"mode": "tiled", "max_tiles": 4}},
+        vision_runner=_flaky, crops_dir=tmp_path / "crops")
+    item = rep["items"][0]
+    rnd = item["render"]
+    statuses = [t["vision_status"] for t in rnd["tiles"]]
+    assert "failed" in statuses          # одна плитка упала
+    assert "ok" in statuses              # остальные прошли
+    # item жив за счёт остальных плиток
+    assert item["vision_status"] == "ok"
+    assert item["result"]["tile_results_summary"]["tiles_failed"] >= 1
+
+
+def test_tiled_all_tiles_fail_marks_item_failed(tmp_path):
+    pytest.importorskip("cv2")
+    lm, rm, gate, lg = _dense_pair(tmp_path)
+
+    def _boom(prompt, lp, rp, options):
+        raise RuntimeError("nope")
+
+    rep = gv.run_graphic_vision_enrichment(
+        lm, rm, gate, left_graphic_report=lg,
+        options={"render_crops": True,
+                 "render": {"mode": "tiled", "max_tiles": 4}},
+        vision_runner=_boom, crops_dir=tmp_path / "crops")
+    item = rep["items"][0]
+    assert item["vision_status"] == "failed"
+    assert all(t["vision_status"] == "failed" for t in item["render"]["tiles"])
+
+
+def test_tile_prompt_builder_contents():
+    p = gv.build_tile_prompt(2, 5, [0.1, 0.0, 0.6, 0.5])
+    assert "2 из 5" in p
+    assert "[нечитаемо]" in p
+    assert "фрагмент" in p.lower()
+    # буквальная выписка номиналов/обозначений упомянута
+    assert "номинал" in p.lower() or "обознач" in p.lower()
