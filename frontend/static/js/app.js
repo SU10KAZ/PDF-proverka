@@ -14699,6 +14699,8 @@ const app = createApp({
                     scPv2EaDraft(scPv2EaUnpairedKey(e, 'right'),
                                  (e.manual_mapping && e.manual_mapping.decision) || '');
                 }
+                // подгрузить link validation для той же пары (read-only)
+                scPv2LvLoad();
             } catch (e) {
                 if (myReq !== scPv2EaReqSeq) return;
                 scPv2EaResp.value = null;
@@ -14723,6 +14725,7 @@ const app = createApp({
             scPv2EaLoading.value = false;
             scPv2EaPairId.value = '';
             scPv2EaFilter.value = 'all';
+            scPv2LvReset();
         }
         watch(() => (scSession.value && scSession.value.id) || '', scPv2EaReset);
         watch(() => (scActivePair.value && scActivePair.value.id) || '', scPv2EaReset);
@@ -14731,6 +14734,7 @@ const app = createApp({
             scPv2EaResp.value = null;
             scPv2EaError.value = '';
             scPv2EaLoading.value = false;
+            scPv2LvReset();
         });
         // Read-only jump: карточка выравнивания сущностей → block link preview.
         // Переиспользует существующий мост (scPv2OpenBlockLinkFromGrounding):
@@ -14745,6 +14749,92 @@ const app = createApp({
                 right_page_number: p.right_page_number,
                 value: (p.left_entity_label || p.right_entity_label
                         || p.entity_family || ''),
+            });
+        }
+
+        // ── Link validation (read-only, mark-only) ───────────────────────────
+        // GET /api/stage-comparison/pipeline-v2/{sid}/link-validation?pair_id=.
+        // Vision-проверка manual mapping пар (same/reorganized/different) +
+        // agreement с ручным решением. НЕ grounded-факт, НЕ для delta. Read-only:
+        // ничего не запускает/применяет/создаёт.
+        const scPv2LvResp = ref(null);          // detail {status, summary, items, …}
+        const scPv2LvLoading = ref(false);
+        const scPv2LvError = ref('');
+        let scPv2LvReqSeq = 0;
+
+        const SC_PV2_LV_DECISION_META = {
+            valid_mapping: { label: 'valid_mapping', icon: '🟢', bg: '#dcfce7', fg: '#166534' },
+            manual_review: { label: 'manual_review', icon: '🟡', bg: '#fef9c3', fg: '#854d0e' },
+            reject_mapping: { label: 'reject_mapping', icon: '🔴', bg: '#fee2e2', fg: '#991b1b' },
+        };
+
+        const scPv2LvSummary = computed(() =>
+            (scPv2LvResp.value && scPv2LvResp.value.summary) || null);
+        const scPv2LvItems = computed(() =>
+            (scPv2LvResp.value && scPv2LvResp.value.items) || []);
+        const scPv2LvAvailable = computed(() =>
+            !!scPv2LvResp.value && scPv2LvResp.value.status === 'ok'
+            && scPv2LvResp.value.available);
+        const scPv2LvNotFound = computed(() =>
+            !!scPv2LvResp.value && scPv2LvResp.value.status === 'not_found');
+        const scPv2LvRespError = computed(() =>
+            (scPv2LvResp.value && scPv2LvResp.value.status === 'error')
+                ? ((scPv2LvResp.value.warnings || []).join('; ')
+                   || scPv2LvResp.value.message || 'error')
+                : '');
+        function scPv2LvDecisionMeta(d) {
+            return SC_PV2_LV_DECISION_META[d]
+                || { label: d || '—', icon: '⚪', bg: '#f3f4f6', fg: '#374151' };
+        }
+        function scPv2LvConfPct(it) {
+            const c = it && it.validation && it.validation.confidence;
+            return (typeof c === 'number') ? Math.round(c * 100) + '%' : '';
+        }
+        async function scPv2LvLoad() {
+            const sid = scSession.value && scSession.value.id;
+            const pid = scPv2EaEffectivePairId();
+            if (!sid || !pid) return;
+            const myReq = ++scPv2LvReqSeq;
+            scPv2LvLoading.value = true;
+            scPv2LvError.value = '';
+            const url = '/api/stage-comparison/pipeline-v2/'
+                + encodeURIComponent(sid)
+                + '/link-validation?pair_id=' + encodeURIComponent(pid) + '&limit=200';
+            try {
+                const r = await fetch(url);
+                if (myReq !== scPv2LvReqSeq) return;
+                if (r.status === 401 || r.status === 403) {
+                    scPv2LvResp.value = null;
+                    scPv2LvError.value = 'Доступ запрещён (' + r.status + ').';
+                    return;
+                }
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const j = await r.json();
+                if (myReq !== scPv2LvReqSeq) return;
+                scPv2LvResp.value = j;
+            } catch (e) {
+                if (myReq !== scPv2LvReqSeq) return;
+                scPv2LvResp.value = null;
+                scPv2LvError.value = String((e && e.message) || e);
+            } finally {
+                if (myReq === scPv2LvReqSeq) scPv2LvLoading.value = false;
+            }
+        }
+        function scPv2LvReset() {
+            scPv2LvReqSeq++;
+            scPv2LvResp.value = null;
+            scPv2LvError.value = '';
+            scPv2LvLoading.value = false;
+        }
+        // read-only jump: validation item → block link preview (reuse мост)
+        function scPv2LvOpenBlockLink(it) {
+            if (!it) return;
+            scPv2OpenBlockLinkFromGrounding({
+                item_id: '', left_block_id: it.left_block_id,
+                right_block_id: it.right_block_id,
+                left_page_number: it.left_page_number,
+                right_page_number: it.right_page_number,
+                value: (it.left_entity_label || it.right_entity_label || ''),
             });
         }
 
@@ -15206,6 +15296,10 @@ const app = createApp({
             scPv2EaShowUnpaired, scPv2EaShowPairs, scPv2EaFilteredPairs,
             scPv2EaClassMeta, scPv2EaConfPct, scPv2EaLoad, scPv2EaToggle,
             scPv2EaOpenBlockLink, SC_PV2_EA_FILTERS,
+            // Pipeline V2 Link Validation (read-only, mark-only)
+            scPv2LvResp, scPv2LvLoading, scPv2LvError, scPv2LvSummary,
+            scPv2LvItems, scPv2LvAvailable, scPv2LvNotFound, scPv2LvRespError,
+            scPv2LvDecisionMeta, scPv2LvConfPct, scPv2LvLoad, scPv2LvOpenBlockLink,
             // Pipeline V2 Manual Entity Mapping (write-слой)
             SC_PV2_EA_DECISIONS, scPv2EaDrafts, scPv2EaSaving, scPv2EaSaveErr,
             scPv2EaSaveHint, scPv2EaPairKey, scPv2EaUnpairedKey, scPv2EaDraft,

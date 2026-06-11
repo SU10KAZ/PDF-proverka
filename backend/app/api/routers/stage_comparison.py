@@ -3545,6 +3545,31 @@ async def get_pipeline_v2_entity_alignment_preview_endpoint(
         raise HTTPException(400, str(exc)) from exc
 
 
+@router.get("/pipeline-v2/{session_id}/link-validation")
+async def get_pipeline_v2_link_validation_endpoint(
+        session_id: str, pair_id: Optional[str] = None,
+        decision: str = "all", agreement: str = "all",
+        limit: int = 100, offset: int = 0):
+    """Read-only mark-only link validation report Pipeline V2.
+
+    Отдаёт готовый link_validation_report.json (vision-проверка manual mapping
+    пар: same/reorganized/different + agreement с ручным решением). Отсутствие
+    отчёта — обычный JSON {"status":"not_found"} (runner НЕ запускается), битый —
+    {"status":"error"}, не 404/500. НИЧЕГО не запускает, не пишет, не вызывает
+    модели. Фильтры decision/agreement + пагинация (limit clamp ≤500) к items;
+    summary целиком. Raw prompt/image не отдаются. Результат — НЕ grounded-факт
+    (use_as_grounded_fact / use_for_delta_explanation всегда false).
+    """
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_payload_mod.discover_link_validation,
+            session_id, pair_id, decision=decision, agreement=agreement,
+            limit=limit, offset=offset)
+    except ValueError as exc:
+        # невалидный session_id/pair_id (path traversal и т.п.)
+        raise HTTPException(400, str(exc)) from exc
+
+
 # ─── Pipeline V2: ручные override'ы выравнивания сущностей (write) ──────────
 #
 # Отдельный обратимый artifact entity_mapping_overrides.json. Endpoints НИЧЕГО

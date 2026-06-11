@@ -52,6 +52,12 @@ from backend.app.services.stage_comparison.pipeline_v2_entity_alignment_preview 
 from backend.app.services.stage_comparison.pipeline_v2_entity_alignment_detail import (
     build_entity_alignment_detail,
 )
+from backend.app.services.stage_comparison.pipeline_v2_link_validation import (
+    REPORT_KIND as LINK_VALIDATION_KIND,
+)
+from backend.app.services.stage_comparison.pipeline_v2_link_validation_detail import (
+    build_link_validation_detail,
+)
 from backend.app.services.stage_comparison import (
     pipeline_v2_grounding_detail as _grounding_detail_mod,
 )
@@ -72,6 +78,7 @@ GROUNDED_EVIDENCE_FILENAME = "grounded_evidence_report.json"
 GRAPHIC_MATCHED_FILENAME = "graphic_descriptor_matched_report.json"
 ENTITY_ALIGNMENT_PREVIEW_FILENAME = "entity_alignment_preview_report.json"
 ENTITY_MAPPING_OVERRIDES_FILENAME = "entity_mapping_overrides.json"
+LINK_VALIDATION_FILENAME = "link_validation_report.json"
 
 NOT_FOUND_MESSAGE = "Pipeline V2 artifacts not found for this session."
 BLP_NOT_FOUND_MESSAGE = "Pipeline V2 block link preview artifacts not found."
@@ -697,6 +704,66 @@ def _discover_entity_alignment_preview(
     return _sanitize_payload(detail, detail.setdefault("warnings", [])) or detail
 
 
+# ─── link validation (read-only, mark-only) ──────────────────────────────────
+
+LV_NOT_FOUND_MESSAGE = "Link validation report not found for this pair."
+
+
+def _lv_detail_envelope(status: str, *, session_id: str, pair_id: Optional[str],
+                        message: str, warnings: Optional[list[str]] = None) -> dict:
+    """not_found/error ответ link-validation endpoint'а (detail-формат)."""
+    return {
+        "version": 1, "kind": LINK_VALIDATION_KIND, "status": status,
+        "available": False, "session_id": session_id, "pair_id": pair_id,
+        "source": None, "summary": {}, "items": [],
+        "message": message, "warnings": warnings or [],
+    }
+
+
+def discover_link_validation(
+        session_id: str, pair_id: Optional[str] = None, *,
+        decision: str = "all", agreement: str = "all",
+        limit: int = 100, offset: int = 0) -> dict:
+    """Найти link validation report для пары (read-only, fail-soft).
+
+    Статусы: ``ok`` (готовый отчёт), ``not_found`` (отчёта нет — runner НЕ
+    запускается), ``error`` (битый JSON), не 404/500. Фильтры ``decision`` /
+    ``agreement`` и пагинация (``limit`` clamp ≤500) применяются к ``items``;
+    summary отдаётся целиком. НИЧЕГО не пишет, не запускает, не вызывает модели.
+    Raw prompt/image не отдаются. ``ValueError`` — только на невалидный id.
+    """
+    if pair_id and _safe_id(pair_id) != pair_id:
+        raise ValueError(f"invalid pair_id: {pair_id!r}")
+    art_dir = pipeline_v2_artifacts_dir(session_id, pair_id)
+    try:
+        ready, err = _read_json(art_dir / LINK_VALIDATION_FILENAME)
+        if err:
+            return _lv_detail_envelope(
+                "error", session_id=session_id, pair_id=pair_id,
+                message="Link validation report could not be read.",
+                warnings=[err])
+        if ready is None:
+            return _lv_detail_envelope(
+                "not_found", session_id=session_id, pair_id=pair_id,
+                message=LV_NOT_FOUND_MESSAGE)
+        if not isinstance(ready, dict) or ready.get("kind") != LINK_VALIDATION_KIND:
+            return _lv_detail_envelope(
+                "error", session_id=session_id, pair_id=pair_id,
+                message="Link validation report is not a valid report.",
+                warnings=[f"{LINK_VALIDATION_FILENAME}: unexpected kind "
+                          f"{ready.get('kind') if isinstance(ready, dict) else type(ready).__name__!r}"])
+        detail = build_link_validation_detail(
+            ready, session_id=session_id, pair_id=pair_id,
+            decision=decision, agreement=agreement, limit=limit, offset=offset,
+            source="ready_report")
+        return _sanitize_payload(detail, detail.setdefault("warnings", [])) or detail
+    except Exception as exc:  # noqa: BLE001 — endpoint не должен дать 500
+        return _lv_detail_envelope(
+            "error", session_id=session_id, pair_id=pair_id,
+            message="Link validation report could not be read.",
+            warnings=[f"{type(exc).__name__}: {exc}"])
+
+
 __all__ = [
     "PIPELINE_V2_DIRNAME",
     "UI_PAYLOAD_FILENAME",
@@ -710,10 +777,12 @@ __all__ = [
     "VISUAL_GATE_FILENAME",
     "GROUNDING_REPORT_FILENAME",
     "ENTITY_ALIGNMENT_PREVIEW_FILENAME",
+    "LINK_VALIDATION_FILENAME",
     "discover_pipeline_v2_payload",
     "discover_block_link_preview",
     "discover_graphic_vision_grounding_detail",
     "discover_entity_alignment_preview",
+    "discover_link_validation",
     "pipeline_v2_artifacts_dir",
     "list_pairs_with_artifacts",
     "resolve_session_dir",

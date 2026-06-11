@@ -1340,3 +1340,177 @@ describe('Pipeline V2 — Manual Entity Mapping contract (files)', () => {
     expect(eaPanel()).toContain('Открыть связь блоков');
   });
 });
+
+// ── Pipeline V2 — Link Validation (read-only, mark-only) ─────────────────────
+//
+// Зеркало pure-логики scPv2Lv* из app.js + контрактные проверки по файлам:
+// панель НИЧЕГО не применяет, не запускает vision/Qwen/Opus, не создаёт
+// замечаний; link-validation никогда не grounded-факт.
+
+const SC_PV2_LV_DECISION_META = {
+  valid_mapping: { label: 'valid_mapping', icon: '🟢', bg: '#dcfce7', fg: '#166534' },
+  manual_review: { label: 'manual_review', icon: '🟡', bg: '#fef9c3', fg: '#854d0e' },
+  reject_mapping: { label: 'reject_mapping', icon: '🔴', bg: '#fee2e2', fg: '#991b1b' },
+};
+function scPv2LvDecisionMeta(d) {
+  return SC_PV2_LV_DECISION_META[d]
+    || { label: d || '—', icon: '⚪', bg: '#f3f4f6', fg: '#374151' };
+}
+function scPv2LvConfPct(it) {
+  const c = it && it.validation && it.validation.confidence;
+  return (typeof c === 'number') ? Math.round(c * 100) + '%' : '';
+}
+// зеркало state-машины подпанели по detail-envelope
+function scPv2LvViewState(resp) {
+  if (!resp) return 'idle';
+  if (resp.status === 'ok' && resp.available) return 'available';
+  if (resp.status === 'not_found') return 'not_found';
+  if (resp.status === 'error') return 'error';
+  return 'idle';
+}
+
+function makeLvReport() {
+  return {
+    version: 1, kind: 'stage_comparison_pipeline_v2_link_validation', status: 'ok',
+    available: true, source: 'ready_report',
+    summary: {
+      candidates_total: 3, attempted: 3, succeeded: 3, failed: 0,
+      valid_mapping: 1, manual_review: 1, reject_mapping: 1,
+      agrees_with_manual_mapping: 1, conflicts_with_manual_mapping: 1,
+      orientation_failed: 0,
+    },
+    items: [
+      { item_id: 'a2', left_block_id: '6XDP-JLWQ-KNX', right_block_id: '3T6X-4PHG-D96',
+        left_page_number: 27, right_page_number: 26,
+        left_entity_label: 'ВРУ-3', right_entity_label: 'ВРУ-2',
+        manual_decision: 'confirmed_reorganized', recommended_action: 'manual_review_mapping',
+        validation: { old_new_orientation_ok: true, entity_relation: 'different_entity',
+                      decision: 'reject_mapping', confidence: 0.95, do_not_use_as_fact: true },
+        agreement: { agrees_with_manual_mapping: false, conflicts_with_manual_mapping: true,
+                     reason: 'vision противоречит manual mapping' },
+        use_as_grounded_fact: false, use_for_delta_explanation: false },
+      { item_id: 'a1', left_block_id: '9T7M', right_block_id: 'DW7M',
+        left_page_number: 28, right_page_number: 27,
+        left_entity_label: 'ВРУ-3', right_entity_label: 'ВРУ-3',
+        manual_decision: 'confirmed_same', recommended_action: 'keep_mapping',
+        validation: { old_new_orientation_ok: true, entity_relation: 'same_entity',
+                      decision: 'valid_mapping', confidence: 0.92, do_not_use_as_fact: true },
+        agreement: { agrees_with_manual_mapping: true, conflicts_with_manual_mapping: false,
+                     reason: 'vision согласуется' },
+        use_as_grounded_fact: false, use_for_delta_explanation: false },
+    ],
+    warnings: [],
+  };
+}
+
+describe('Pipeline V2 — Link Validation logic', () => {
+  it('1. decision meta: цвета valid/review/reject + fallback', () => {
+    expect(scPv2LvDecisionMeta('valid_mapping').fg).toBe('#166534');
+    expect(scPv2LvDecisionMeta('manual_review').fg).toBe('#854d0e');
+    expect(scPv2LvDecisionMeta('reject_mapping').fg).toBe('#991b1b');
+    expect(scPv2LvDecisionMeta('reject_mapping').icon).toBe('🔴');
+    expect(scPv2LvDecisionMeta('weird').icon).toBe('⚪');   // fallback
+  });
+  it('2. confidence → проценты, без числа = пусто', () => {
+    expect(scPv2LvConfPct({ validation: { confidence: 0.95 } })).toBe('95%');
+    expect(scPv2LvConfPct({ validation: {} })).toBe('');
+    expect(scPv2LvConfPct({})).toBe('');
+  });
+  it('3. view-state по detail-envelope', () => {
+    expect(scPv2LvViewState(null)).toBe('idle');
+    expect(scPv2LvViewState(makeLvReport())).toBe('available');
+    expect(scPv2LvViewState({ status: 'not_found' })).toBe('not_found');
+    expect(scPv2LvViewState({ status: 'error', warnings: ['x'] })).toBe('error');
+  });
+  it('4. summary рендерит счётчики (включая conflicts)', () => {
+    const s = makeLvReport().summary;
+    expect(s.attempted).toBe(3);
+    expect(s.reject_mapping).toBe(1);
+    expect(s.conflicts_with_manual_mapping).toBe(1);
+  });
+  it('5. конфликтный item: manual confirmed_reorganized vs vision reject', () => {
+    const it = makeLvReport().items[0];
+    expect(it.manual_decision).toBe('confirmed_reorganized');
+    expect(it.validation.decision).toBe('reject_mapping');
+    expect(it.agreement.conflicts_with_manual_mapping).toBe(true);
+    expect(scPv2LvDecisionMeta(it.validation.decision).fg).toBe('#991b1b'); // красный
+  });
+  it('6. mark-only инвариант: ни один item не grounded-факт', () => {
+    for (const it of makeLvReport().items) {
+      expect(it.use_as_grounded_fact).toBe(false);
+      expect(it.use_for_delta_explanation).toBe(false);
+      expect(it.validation.do_not_use_as_fact).toBe(true);
+    }
+  });
+  it('7. missing report не ломает подпанель', () => {
+    expect(scPv2LvViewState({ status: 'not_found' })).toBe('not_found');
+    // items-геттер на пустом ответе → []
+    const items = (({ items }) => items || [])({});
+    expect(items).toEqual([]);
+  });
+});
+
+describe('Pipeline V2 — Link Validation read-only contract (files)', () => {
+  const indexHtml = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  const appJs = fs.readFileSync(path.join(__dirname, '..', 'static', 'js', 'app.js'), 'utf8');
+  function lvBlock() {
+    const s = indexHtml.indexOf('🔎 Link validation (read-only, mark-only)');
+    const e = indexHtml.indexOf('<!-- transport / HTTP errors -->', s);
+    expect(s).toBeGreaterThan(0);
+    expect(e).toBeGreaterThan(s);
+    return indexHtml.slice(s, e);
+  }
+
+  it('1. подпанель Link validation присутствует с заголовком и summary', () => {
+    const blk = lvBlock();
+    expect(blk).toContain('🔎 Link validation');
+    expect(blk).toContain('scPv2LvSummary');
+    expect(blk).toContain('scPv2LvItems');
+    expect(blk).toContain('attempted:');
+    expect(blk).toContain('reject:');
+    expect(blk).toContain('conflicts:');
+  });
+  it('2. mark-only предупреждение присутствует дословно', () => {
+    expect(lvBlock()).toContain(
+      'Link validation is mark-only. It is not used as grounded fact and is not used for delta explanation.');
+  });
+  it('3. НЕТ кнопок применить/запустить vision/изменить mapping/создать замечание', () => {
+    const blk = lvBlock();
+    for (const forbidden of ['Применить', 'Запустить vision', 'Изменить mapping',
+                             'Создать замечание', 'Принять связь']) {
+      expect(blk).not.toContain(forbidden);
+    }
+  });
+  it('4. конфликт визуализируется (бейдж + цветовой код)', () => {
+    const blk = lvBlock();
+    expect(blk).toContain('conflicts_with_manual_mapping');
+    expect(blk).toContain('конфликт с manual mapping');
+    expect(blk).toContain('scPv2LvDecisionMeta');
+  });
+  it('5. опциональный read-only jump «Открыть связь блоков»', () => {
+    expect(lvBlock()).toContain('Открыть связь блоков');
+    expect(appJs).toContain('scPv2LvOpenBlockLink');
+    expect(appJs).toContain('scPv2OpenBlockLinkFromGrounding');   // мост переиспользован
+  });
+  it('6. чтение = GET /link-validation; никаких write/job вызовов в LV-логике', () => {
+    expect(appJs).toContain('/link-validation?pair_id=');
+    const s = appJs.indexOf('async function scPv2LvLoad');
+    const e = appJs.indexOf('function scPv2LvReset', s);
+    const lvJs = appJs.slice(s, e);
+    expect(lvJs).not.toMatch(/method:\s*['"](POST|PUT|DELETE)['"]/);
+    expect(lvJs).not.toContain('md-enrichment-jobs');
+    expect(lvJs).not.toContain('unified-analysis');
+    expect(lvJs).not.toContain('entity-mapping-overrides');
+  });
+  it('7. старая панель entity-alignment не сломана', () => {
+    expect(appJs).toContain('scPv2EaToggle');
+    expect(appJs).toContain('/entity-alignment-preview?pair_id=');
+    expect(indexHtml).toContain('🧩 Pipeline V2 сущности');
+  });
+  it('8. старые grounding / block-link / ui-payload панели не сломаны', () => {
+    expect(appJs).toContain('scPv2LpToggle');                 // block link preview
+    expect(appJs).toContain('/block-link-preview?pair_id=');
+    expect(appJs).toContain('scPv2OpenBlockLinkFromGrounding'); // grounding jump
+    expect(appJs).toContain('/ui-payload');                   // основная панель жива
+  });
+});
