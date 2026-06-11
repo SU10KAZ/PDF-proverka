@@ -14018,6 +14018,11 @@ const app = createApp({
             scPv2GdLoad();
         }
         function scPv2GdClose() { scPv2GdOpen.value = false; }
+        // Мост grounding-карточка → block link preview (read-only UX, без
+        // автоприменения связей): баннер «открыта связь по карточке» и warning,
+        // если matching block_link не найден.
+        const scPv2GdJumpBanner = ref('');    // label карточки, по которой прыгнули
+        const scPv2GdJumpWarning = ref('');   // связь не найдена
         const scPv2FilterOptions = computed(() => {
             const f = (scPv2Payload.value && scPv2Payload.value.filters) || {};
             return {
@@ -14147,6 +14152,8 @@ const app = createApp({
             scPv2GdResp.value = null;
             scPv2GdError.value = '';
             scPv2GdFilter.value = 'all';
+            scPv2GdJumpBanner.value = '';
+            scPv2GdJumpWarning.value = '';
         });
         // Смена сессии → полный сброс панели: pair из старой сессии не должен
         // утекать в запросы новой, фильтры и payload устаревают; инвалидация
@@ -14386,6 +14393,122 @@ const app = createApp({
             scPv2LpSelectedPage.value = '';
             scPv2LpSelectedLink.value = '';
         });
+
+        // ── Мост: grounding-карточка → block link preview ───────────────────
+        // Выводит block ids из карточки (или из item_id gv_<L>__<R>).
+        function scPv2GdBlockIdsFromCard(card) {
+            let left = (card && card.left_block_id) || null;
+            let right = (card && card.right_block_id) || null;
+            if ((!left || !right) && card && card.item_id) {
+                const parts = String(card.item_id).replace(/^gv_/, '').split('__');
+                if (parts.length === 2) {
+                    left = left || parts[0];
+                    right = right || parts[1];
+                }
+            }
+            if (!left && card && card.side === 'old' && card.block_id) left = card.block_id;
+            if (!right && card && card.side === 'new' && card.block_id) right = card.block_id;
+            if (!left && card && card.block_id) left = card.block_id;   // either
+            return { left, right };
+        }
+        function scPv2GdCardHasTarget(card) {
+            if (!card) return false;
+            return !!(card.left_block_id || card.right_block_id || card.item_id
+                || card.block_id || card.left_page_number != null
+                || card.right_page_number != null || card.page_number != null);
+        }
+        function scPv2GdMatchLink(target) {
+            const links = scPv2LpAllLinks.value || [];
+            // 1) exact: оба block_id совпали
+            let m = links.find(l => l.kind === 'link'
+                && l.left_block_id === target.left_block_id
+                && l.right_block_id === target.right_block_id);
+            if (m) return m;
+            // 2) по одному block_id
+            m = links.find(l => l.kind === 'link'
+                && (l.left_block_id === target.left_block_id
+                    || l.right_block_id === target.right_block_id));
+            if (m) return m;
+            // 3) односторонний блок (unmatched)
+            m = links.find(l => l.kind === 'unmatched'
+                && (l.block_id === target.left_block_id
+                    || l.block_id === target.right_block_id));
+            if (m) return m;
+            // 4) по номерам страниц
+            if (target.left_page_number != null && target.right_page_number != null) {
+                m = links.find(l => l.kind === 'link'
+                    && l.left_page_number === target.left_page_number
+                    && l.right_page_number === target.right_page_number);
+                if (m) return m;
+            }
+            return null;
+        }
+        function scPv2GdSelectMatchingLink(target) {
+            const link = scPv2GdMatchLink(target);
+            if (link) {
+                scPv2LpSelectedLink.value = '';     // сброс → toggle выберет
+                scPv2LpSelectLink(link);            // ставит link + page
+                scPv2GdJumpWarning.value = '';
+                nextTick(() => {
+                    try {
+                        const el = (typeof document !== 'undefined')
+                            && document.querySelector('[data-bllink="' + link.block_link_id + '"]');
+                        if (el && el.scrollIntoView)
+                            el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                    } catch (_) { /* no-op в jsdom/без DOM */ }
+                });
+                return true;
+            }
+            scPv2GdJumpWarning.value =
+                'Связь блоков для этой grounding-карточки не найдена. Откройте пару вручную.';
+            return false;
+        }
+        // Главный обработчик кнопки «🔗 К связи блоков» в grounding-карточке.
+        async function scPv2OpenBlockLinkFromGrounding(card) {
+            if (!card) return;
+            const ids = scPv2GdBlockIdsFromCard(card);
+            const pid = scPv2PairId.value
+                || (scActivePair.value && scActivePair.value.id) || '';
+            const target = {
+                pair_id: pid, item_id: card.item_id || '',
+                left_block_id: ids.left, right_block_id: ids.right,
+                left_page_number: (card.left_page_number != null ? card.left_page_number
+                    : (card.side === 'old' ? card.page_number : null)),
+                right_page_number: (card.right_page_number != null ? card.right_page_number
+                    : (card.side === 'new' ? card.page_number : null)),
+                label: card.value || '',
+            };
+            // 1) закрыть grounding drawer
+            scPv2GdOpen.value = false;
+            scPv2GdJumpWarning.value = '';
+            // 2) активировать пару + вкладку «Связь блоков» (если другая активна;
+            //    scActivePair-watch сбросит LP-панель — поэтому ДО открытия LP)
+            if (pid && (!scActivePair.value || scActivePair.value.id !== pid)) {
+                const pairObj = (scPairs.value || []).find(p => p && p.id === pid);
+                if (pairObj && pairObj.left && pairObj.right) {
+                    await scOpenPair(pairObj);
+                } else {
+                    scTab.value = 'links';
+                }
+            } else {
+                scTab.value = 'links';
+            }
+            // 3) открыть LP-панель на нужной паре
+            scPv2LpPairId.value = pid;
+            scPv2LpVisible.value = true;
+            // 4) загрузить отчёт пары, если не загружен / другой пары
+            const loadedPid = scPv2LpResp.value && scPv2LpResp.value.pair_id;
+            if (!scPv2LpResp.value || loadedPid !== pid) {
+                await scPv2LpLoad();
+            }
+            // 5) баннер + поиск/выбор связи
+            scPv2GdJumpBanner.value = target.label;
+            scPv2GdSelectMatchingLink(target);
+        }
+        function scPv2GdClearJumpBanner() {
+            scPv2GdJumpBanner.value = '';
+            scPv2GdJumpWarning.value = '';
+        }
 
         return {
             // Theme
@@ -14652,6 +14775,8 @@ const app = createApp({
             scPv2GdOpen, scPv2GdLoading, scPv2GdError, scPv2GdResp,
             scPv2GdFilter, scPv2GdFilteredCards, scPv2GdPagination,
             scPv2GdStatusColor, scPv2GdOpenDrawer, scPv2GdClose,
+            scPv2GdJumpBanner, scPv2GdJumpWarning, scPv2GdCardHasTarget,
+            scPv2OpenBlockLinkFromGrounding, scPv2GdClearJumpBanner,
             scPv2FilterOptions, scPv2HasFilterOptions,
             scPv2FiltersActive, scPv2SectionEmoji, scPv2CardsFor,
             scPv2ResetFilters, scPv2ToggleSection, scPv2StatusBadge,

@@ -585,3 +585,175 @@ describe('Pipeline V2 — grounding detail drawer', () => {
     expect(u.map(c => c.status).sort()).toEqual(['no_anchor_available', 'ungrounded']);
   });
 });
+
+// ── Grounding → block link preview jump (зеркало scPv2GdBlockIdsFromCard /
+//    scPv2GdCardHasTarget / scPv2GdMatchLink + state-machine из app.js) ──────
+
+function scPv2GdBlockIdsFromCard(card) {
+  let left = (card && card.left_block_id) || null;
+  let right = (card && card.right_block_id) || null;
+  if ((!left || !right) && card && card.item_id) {
+    const parts = String(card.item_id).replace(/^gv_/, '').split('__');
+    if (parts.length === 2) { left = left || parts[0]; right = right || parts[1]; }
+  }
+  if (!left && card && card.side === 'old' && card.block_id) left = card.block_id;
+  if (!right && card && card.side === 'new' && card.block_id) right = card.block_id;
+  if (!left && card && card.block_id) left = card.block_id;
+  return { left, right };
+}
+function scPv2GdCardHasTarget(card) {
+  if (!card) return false;
+  return !!(card.left_block_id || card.right_block_id || card.item_id
+    || card.block_id || card.left_page_number != null
+    || card.right_page_number != null || card.page_number != null);
+}
+function scPv2GdMatchLink(links, target) {
+  let m = links.find(l => l.kind === 'link'
+    && l.left_block_id === target.left_block_id
+    && l.right_block_id === target.right_block_id);
+  if (m) return m;
+  m = links.find(l => l.kind === 'link'
+    && (l.left_block_id === target.left_block_id || l.right_block_id === target.right_block_id));
+  if (m) return m;
+  m = links.find(l => l.kind === 'unmatched'
+    && (l.block_id === target.left_block_id || l.block_id === target.right_block_id));
+  if (m) return m;
+  if (target.left_page_number != null && target.right_page_number != null) {
+    m = links.find(l => l.kind === 'link'
+      && l.left_page_number === target.left_page_number
+      && l.right_page_number === target.right_page_number);
+    if (m) return m;
+  }
+  return null;
+}
+
+const GD_LINKS = [
+  { kind: 'link', block_link_id: 'bm_7EMD__763U', left_block_id: '7EMD-DT4R-6TN',
+    right_block_id: '763U-YFTA-DVQ', left_page_number: 52, right_page_number: 21 },
+  { kind: 'link', block_link_id: 'bm_A__B', left_block_id: 'A', right_block_id: 'B',
+    left_page_number: 3, right_page_number: 3 },
+  { kind: 'unmatched', block_link_id: 'un_left_X', side: 'left', block_id: 'X', page_number: 9 },
+];
+
+// state-machine моста (зеркало scPv2OpenBlockLinkFromGrounding)
+function makeGdJump() {
+  const state = {
+    drawerOpen: true, tab: 'pv2', activePairId: null, lpVisible: false,
+    lpPairId: '', lpResp: null, selectedLink: '', banner: '', warning: '',
+    fetched: 0,
+  };
+  async function open(card, opts = {}) {
+    const ids = scPv2GdBlockIdsFromCard(card);
+    const pid = opts.groundingPair || 'pf06effb7';
+    const target = { left_block_id: ids.left, right_block_id: ids.right,
+      left_page_number: card.left_page_number != null ? card.left_page_number
+        : (card.side === 'old' ? card.page_number : null),
+      right_page_number: card.right_page_number != null ? card.right_page_number
+        : (card.side === 'new' ? card.page_number : null), label: card.value };
+    state.drawerOpen = false;                  // 1
+    if (pid && state.activePairId !== pid) { state.activePairId = pid; state.tab = 'links'; }
+    else state.tab = 'links';
+    state.lpPairId = pid;                       // 4
+    state.lpVisible = true;                     // 3
+    const loadedPid = state.lpResp && state.lpResp.pair_id;
+    if (!state.lpResp || loadedPid !== pid) {   // 5
+      state.fetched++;
+      state.lpResp = { pair_id: pid, payload: { block_links: opts.links || GD_LINKS } };
+    }
+    const links = (state.lpResp.payload.block_links || []).map(l => ({ ...l }));
+    const m = scPv2GdMatchLink(links, target);
+    state.banner = target.label;
+    if (m) { state.selectedLink = m.block_link_id; state.warning = ''; }
+    else { state.warning = 'Связь блоков для этой grounding-карточки не найдена. Откройте пару вручную.'; }
+    return state;
+  }
+  return { state, open };
+}
+
+describe('Pipeline V2 — grounding → block link jump', () => {
+  it('1. card с left/right block ids → кнопка показывается', () => {
+    expect(scPv2GdCardHasTarget({ left_block_id: 'A', right_block_id: 'B' })).toBe(true);
+  });
+
+  it('2. card без идентификаторов → кнопки нет', () => {
+    expect(scPv2GdCardHasTarget({ value: 'x' })).toBe(false);
+    expect(scPv2GdCardHasTarget(null)).toBe(false);
+  });
+
+  it('3. block ids выводятся из item_id (gv_<L>__<R>)', () => {
+    const ids = scPv2GdBlockIdsFromCard({ item_id: 'gv_7EMD-DT4R-6TN__763U-YFTA-DVQ' });
+    expect(ids.left).toBe('7EMD-DT4R-6TN');
+    expect(ids.right).toBe('763U-YFTA-DVQ');
+  });
+
+  it('4. exact match по обоим block_id', () => {
+    const m = scPv2GdMatchLink(GD_LINKS,
+      { left_block_id: '7EMD-DT4R-6TN', right_block_id: '763U-YFTA-DVQ' });
+    expect(m && m.block_link_id).toBe('bm_7EMD__763U');
+  });
+
+  it('5. fallback по одному block_id', () => {
+    const m = scPv2GdMatchLink(GD_LINKS,
+      { left_block_id: '7EMD-DT4R-6TN', right_block_id: 'NOPE' });
+    expect(m && m.block_link_id).toBe('bm_7EMD__763U');
+  });
+
+  it('6. fallback по unmatched single block', () => {
+    const m = scPv2GdMatchLink(GD_LINKS, { left_block_id: 'X', right_block_id: 'Y' });
+    expect(m && m.block_link_id).toBe('un_left_X');
+  });
+
+  it('7. fallback по номерам страниц', () => {
+    const m = scPv2GdMatchLink(GD_LINKS,
+      { left_block_id: 'zzz', right_block_id: 'qqq', left_page_number: 52, right_page_number: 21 });
+    expect(m && m.block_link_id).toBe('bm_7EMD__763U');
+  });
+
+  it('8. ничего не найдено → null (UI покажет warning)', () => {
+    const m = scPv2GdMatchLink(GD_LINKS,
+      { left_block_id: 'no', right_block_id: 'no' });
+    expect(m).toBeNull();
+  });
+
+  it('9. jump закрывает drawer и выбирает связь', async () => {
+    const j = makeGdJump();
+    await j.open({ value: 'QF5 400А → 200А', item_id: 'gv_7EMD-DT4R-6TN__763U-YFTA-DVQ',
+      left_block_id: '7EMD-DT4R-6TN', right_block_id: '763U-YFTA-DVQ' });
+    expect(j.state.drawerOpen).toBe(false);
+    expect(j.state.lpVisible).toBe(true);
+    expect(j.state.selectedLink).toBe('bm_7EMD__763U');
+    expect(j.state.banner).toBe('QF5 400А → 200А');
+    expect(j.state.warning).toBe('');
+  });
+
+  it('10. если payload не загружен — сначала fetch, потом selection', async () => {
+    const j = makeGdJump();
+    expect(j.state.lpResp).toBeNull();
+    await j.open({ value: 'X', item_id: 'gv_A__B' });
+    expect(j.state.fetched).toBe(1);
+    expect(j.state.selectedLink).toBe('bm_A__B');
+  });
+
+  it('11. payload уже загружен для пары → без повторного fetch', async () => {
+    const j = makeGdJump();
+    j.state.lpResp = { pair_id: 'pf06effb7', payload: { block_links: GD_LINKS } };
+    await j.open({ value: 'X', item_id: 'gv_A__B' });
+    expect(j.state.fetched).toBe(0);            // не перезагружали
+    expect(j.state.selectedLink).toBe('bm_A__B');
+  });
+
+  it('12. не найдено → warning, drawer закрыт, UI не падает', async () => {
+    const j = makeGdJump();
+    await j.open({ value: 'ZZ', item_id: 'gv_no__pe' });
+    expect(j.state.warning).toContain('не найдена');
+    expect(j.state.drawerOpen).toBe(false);
+    expect(j.state.selectedLink).toBe('');
+  });
+
+  it('13. pair_id передаётся в block link preview', async () => {
+    const j = makeGdJump();
+    await j.open({ value: 'X', item_id: 'gv_A__B' }, { groundingPair: 'pXYZ' });
+    expect(j.state.lpPairId).toBe('pXYZ');
+    expect(j.state.activePairId).toBe('pXYZ');
+  });
+});

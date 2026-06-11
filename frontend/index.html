@@ -5615,6 +5615,14 @@
                         </button>
                         <button class="btn btn-sm btn-secondary" @click="scPv2LpVisible=false">Закрыть</button>
                     </div>
+                    <!-- banner: переход по grounding-карточке -->
+                    <div v-if="scPv2GdJumpBanner" style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; border-radius:6px; padding:6px 10px; margin-bottom:8px; display:flex; gap:8px; align-items:center">
+                        <span>🔗 Открыта связь по grounding-карточке: <b>{{ scPv2GdJumpBanner }}</b></span>
+                        <button class="btn btn-sm btn-secondary" style="margin-left:auto; padding:1px 8px; font-size:11px" @click="scPv2GdClearJumpBanner()">✕</button>
+                    </div>
+                    <div v-if="scPv2GdJumpWarning" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; border-radius:6px; padding:6px 10px; margin-bottom:8px">
+                        ⚠ {{ scPv2GdJumpWarning }}
+                    </div>
                     <!-- transport / HTTP errors -->
                     <div v-if="scPv2LpError" style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; padding:6px 10px; margin-bottom:8px">
                         {{ scPv2LpError }}
@@ -5732,6 +5740,7 @@
                                     <th>стр.</th><th>тип</th><th>метод</th><th>score</th><th>visual</th><th>риски</th>
                                 </tr>
                                 <tr v-for="l in scPv2LpFilteredLinks" :key="'pv2lpr-'+l.block_link_id"
+                                    :data-bllink="l.block_link_id"
                                     @click="scPv2LpSelectLink(l)"
                                     :style="{background: scPv2LpSelectedLink===l.block_link_id ? '#dbeafe' : 'transparent', cursor:'pointer', borderTop:'1px solid #f1f5f9'}">
                                     <td style="padding:2px 6px">
@@ -7542,6 +7551,11 @@
                                                 <span v-else-if="card.page_number!=null">стр. {{ card.page_number }}</span>
                                                 <span v-if="card.block_id">block: {{ card.block_id }}</span>
                                                 <span v-if="card.left_block_id || card.right_block_id">blocks: {{ card.left_block_id||'—' }} / {{ card.right_block_id||'—' }}</span>
+                                            </div>
+                                            <div style="margin-top:6px">
+                                                <button v-if="scPv2GdCardHasTarget(card)" class="btn btn-sm btn-secondary"
+                                                        style="padding:2px 8px; font-size:11px"
+                                                        @click="scPv2OpenBlockLinkFromGrounding(card)">🔗 К связи блоков</button>
                                             </div>
                                         </div>
                                         <div style="font-size:11px; color:#6b7280; margin-top:10px; border-top:1px solid var(--border,#e5e7eb); padding-top:8px">
