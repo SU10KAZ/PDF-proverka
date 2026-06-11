@@ -89,6 +89,10 @@ from backend.app.services.stage_comparison.pipeline_v2_entity_alignment_preview 
 from backend.app.services.stage_comparison.pipeline_v2_link_validation import (
     run_pipeline_v2_link_validation,
 )
+from backend.app.services.stage_comparison.pipeline_v2_exclusion_preview import (
+    build_exclusion_preview_report,
+    write_exclusion_preview_report,
+)
 
 SUMMARY_VERSION = 1
 SUMMARY_KIND = "stage_comparison_pipeline_v2_dry_run_summary"
@@ -114,6 +118,7 @@ _ARTIFACT_FILENAMES = {
     "entity_diff": "entity_diff_report.json",
     "grounded_evidence": "grounded_evidence_report.json",
     "delta_explanation": "delta_explanation_report.json",
+    "exclusion_preview": "exclusion_preview_v2_report.json",
     "summary_json": "pipeline_v2_summary.json",
     "summary_md": "pipeline_v2_summary.md",
     "manifest": "pipeline_v2_manifest.json",
@@ -125,6 +130,7 @@ _MANIFEST_ARTIFACT_KEYS = [
     "block_link_preview", "entity_alignment_preview",
     "graphic_vision", "graphic_vision_grounding", "link_validation",
     "entity_extraction", "entity_diff", "grounded_evidence", "delta_explanation",
+    "exclusion_preview",
     "summary_json", "summary_md",
 ]
 
@@ -620,6 +626,31 @@ def _link_validation_section(lv_report: Any, lv_enabled: bool,
     return sec
 
 
+def _exclusion_preview_section(xp_report: Any, xp_enabled: bool,
+                               xp_error: Optional[str]) -> dict:
+    s = (xp_report.get("summary") if isinstance(xp_report, dict) else {}) or {}
+    sec = {
+        "enabled": bool(xp_enabled),
+        "status": ("disabled" if not xp_enabled else
+                   "failed" if xp_error else
+                   (xp_report or {}).get("status", "not_run")
+                   if isinstance(xp_report, dict) else "not_run"),
+        "items_total": s.get("items_total", 0),
+        "candidate_exclude": s.get("candidate_exclude", 0),
+        "review_only": s.get("review_only", 0),
+        "keep": s.get("keep", 0),
+        "link_validation_required": s.get("link_validation_required", 0),
+        "high_confidence_exclude": s.get("high_confidence_exclude", 0),
+        "manual_override_present": s.get("manual_override_present", 0),
+        "manual_vision_conflict": s.get("manual_vision_conflict", 0),
+        "repeated_reject_transitions": s.get("repeated_reject_transitions", 0),
+        "auto_enforce_enabled": False,
+    }
+    if xp_error:
+        sec["error"] = xp_error
+    return sec
+
+
 def _block_link_preview_section(blp_report: Any, blp_enabled: bool,
                                 blp_error: Optional[str]) -> dict:
     s = (blp_report.get("summary") if isinstance(blp_report, dict) else {}) or {}
@@ -690,7 +721,9 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
                               eap_report: Any = None, eap_enabled: bool = False,
                               eap_error: Optional[str] = None,
                               lv_report: Any = None, lv_enabled: bool = False,
-                              lv_error: Optional[str] = None) -> dict:
+                              lv_error: Optional[str] = None,
+                              xp_report: Any = None, xp_enabled: bool = False,
+                              xp_error: Optional[str] = None) -> dict:
     """Собрать ``pipeline_v2_summary`` из артефактов этапов 1–4."""
     lm, rm = _summary_of(left_model), _summary_of(right_model)
     bm, em, dm = _summary_of(block_report), _summary_of(entity_report), _summary_of(diff_report)
@@ -750,6 +783,8 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
             eap_report, eap_enabled, eap_error),
         "link_validation": _link_validation_section(
             lv_report, lv_enabled, lv_error),
+        "exclusion_preview_v2": _exclusion_preview_section(
+            xp_report, xp_enabled, xp_error),
         "graphic_vision": _graphic_vision_section(gv_report, gv_enabled,
                                                   gv_error),
         "graphic_vision_grounding": _graphic_vision_grounding_section(
@@ -1190,6 +1225,12 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     lv_opts = options.get("link_validation") or {}
     lv_enabled = lv_opts.get("enabled", False) is True
 
+    # exclusion preview v2: mark-only агрегатор сигналов в exclude/review/keep/
+    # link_validation_required. Default OFF. Не запускает модели, не меняет входы,
+    # не делает enforce. Читает уже записанные артефакты из out_dir.
+    xp_opts = options.get("exclusion_preview") or {}
+    xp_enabled = xp_opts.get("enabled", False) is True
+
     # vision grounding: проверка vision-результата по anchor-тексту блока.
     # Включается только если есть graphic_vision (нечего грунтовать иначе);
     # явно отключается graphic_vision_grounding.enabled=false.
@@ -1216,6 +1257,8 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     eap_error: Optional[str] = None
     lv_report = None
     lv_error: Optional[str] = None
+    xp_report = None
+    xp_error: Optional[str] = None
     gv_report = None
     gv_error: Optional[str] = None
     gvg_report = None
@@ -1423,6 +1466,33 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
             except Exception as dexc:  # noqa: BLE001 — delta explanation не критичен
                 de_error = f"{type(dexc).__name__}: {dexc}"
 
+        # [7] exclusion preview v2 — mark-only агрегатор сигналов в
+        #     exclude/review/keep/link_validation_required. Default OFF; читает
+        #     уже посчитанные in-memory отчёты, моделей НЕ запускает, входы НЕ
+        #     меняет, enforce НЕ делает; fail-soft: падение не валит dry-run.
+        if xp_enabled:
+            try:
+                overrides_report = None
+                ov_path = out_dir / "entity_mapping_overrides.json"
+                if ov_path.is_file():
+                    try:
+                        overrides_report = json.loads(ov_path.read_text(encoding="utf-8"))
+                    except Exception:  # noqa: BLE001
+                        overrides_report = None
+                xp_report = build_exclusion_preview_report(
+                    session_id=str(out_dir.name), pair_id=None,
+                    entity_alignment_report=eap_report, overrides_report=overrides_report,
+                    link_validation_report=lv_report, visual_gate_report=ve_report,
+                    block_link_preview_report=blp_report,
+                    grounded_evidence_report=ge_report,
+                    delta_explanation_report=de_report,
+                    graphic_vision_report=gv_report,
+                    graphic_vision_grounding_report=gvg_report,
+                    entity_diff_report=diff_report, options=xp_opts)
+                write_exclusion_preview_report(paths["exclusion_preview"], xp_report)
+            except Exception as xpexc:  # noqa: BLE001 — слой не критичен
+                xp_error = f"{type(xpexc).__name__}: {xpexc}"
+
     except Exception as exc:  # fail-soft: фиксируем, не роняем процесс
         status = "failed"
         error = f"{type(exc).__name__}: {exc}"
@@ -1496,6 +1566,15 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
             warnings.append(f"delta_explanation: {w}")
     if de_error:
         warnings.append(f"delta_explanation: {de_error}")
+    if isinstance(xp_report, dict):
+        for w in xp_report.get("warnings", []) or []:
+            # benign «input artifact not found» — диагностика опционального
+            # mark-only слоя, не деградация dry-run
+            if "input artifact" in str(w):
+                continue
+            warnings.append(f"exclusion_preview: {w}")
+    if xp_error:
+        warnings.append(f"exclusion_preview: {xp_error}")
 
     if status != "failed" and warnings:
         status = "completed_with_warnings"
@@ -1513,7 +1592,8 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
         gvg_report=gvg_report, gvg_enabled=gvg_enabled, gvg_error=gvg_error,
         ge_report=ge_report, ge_enabled=ge_enabled, ge_error=ge_error,
         eap_report=eap_report, eap_enabled=eap_enabled, eap_error=eap_error,
-        lv_report=lv_report, lv_enabled=lv_enabled, lv_error=lv_error)
+        lv_report=lv_report, lv_enabled=lv_enabled, lv_error=lv_error,
+        xp_report=xp_report, xp_enabled=xp_enabled, xp_error=xp_error)
 
     # summary + manifest пишем всегда (best-effort, атомарно)
     write_pipeline_v2_summary_json(paths["summary_json"], summary)

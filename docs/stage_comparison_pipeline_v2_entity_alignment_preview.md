@@ -334,3 +334,14 @@ possible_rename 0 (ни одна numbered_conflict-пара не имеет си
 - [pipeline_v2_graphic_vision_enrichment.py](../backend/app/services/stage_comparison/pipeline_v2_graphic_vision_enrichment.py) — entity-хелперы + базовый scoring
 - [pipeline_v2_dry_run.py](../backend/app/services/stage_comparison/pipeline_v2_dry_run.py) — этап [3c2]
 - [pipeline_v2_ui_payload.py](../backend/app/services/stage_comparison/pipeline_v2_ui_payload.py) — summary
+
+## Downstream: Exclusion Preview v2
+
+Классификация выравнивания (`same_entity_likely / scope_reorganized /
+mismatch_likely / link_validation_candidate / possible_rename`) — один из
+входных сигналов mark-only слоя
+[Exclusion Preview v2](stage_comparison_pipeline_v2_exclusion_preview.md):
+`mismatch_likely → candidate_exclude`, `scope_reorganized / link_validation_candidate /
+possible_rename → link_validation_required`, `same_entity_likely → keep`. Слой
+ничего не применяет; link-validation и ручные решения имеют приоритет над
+выравниванием.

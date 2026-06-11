@@ -239,3 +239,22 @@ graphic_readiness + weak_blocks_preview, деградация на неполн�
 `available=false` при `disabled`/`not_run`/`unknown`. Блок добавляется ТОЛЬКО
 когда слой включён — старые payload'ы без секции совместимы. Подробно —
 [stage_comparison_pipeline_v2_entity_alignment_preview.md](stage_comparison_pipeline_v2_entity_alignment_preview.md).
+
+## Секция `exclusion_preview_v2` (mark-only)
+
+Когда в summary включён этап `exclusion_preview_v2`, ui_payload получает блок:
+
+```json
+"exclusion_preview_v2": {
+  "available": true, "status": "ok", "items_total": 0,
+  "candidate_exclude": 0, "review_only": 0, "keep": 0,
+  "link_validation_required": 0, "high_confidence_exclude": 0,
+  "manual_vision_conflict": 0, "repeated_reject_transitions": 0,
+  "auto_enforce_enabled": false
+}
+```
+
+`available=false` при `disabled`/`not_run`/`unknown`; блок добавляется ТОЛЬКО
+когда слой включён (старые payload'ы совместимы). `auto_enforce_enabled` всегда
+`false` — слой mark-only, ничего не применяет. Подробно —
+[stage_comparison_pipeline_v2_exclusion_preview.md](stage_comparison_pipeline_v2_exclusion_preview.md).

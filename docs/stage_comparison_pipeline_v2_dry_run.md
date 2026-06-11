@@ -332,3 +332,16 @@ fail-soft (`options.entity_alignment_preview.enabled=false` отключает).
 применяет; downstream selection пока не читает (wiring — следующий шаг). Подробно
 — [stage_comparison_pipeline_v2_entity_alignment_preview.md](stage_comparison_pipeline_v2_entity_alignment_preview.md).
 - [pipeline_v2_entity_alignment_preview.py](../backend/app/services/stage_comparison/pipeline_v2_entity_alignment_preview.py) — этап [3c2]
+
+## Этап [7] — exclusion_preview_v2 (mark-only)
+
+Опциональный этап `[7] exclusion_preview` объединяет уже посчитанные сигналы
+(entity alignment, manual mapping, link validation, visual gate, grounded
+evidence, delta explanation) в единый предварительный список
+`candidate_exclude / review_only / keep / link_validation_required`. Артефакт
+`exclusion_preview_v2_report.json` (добавлен в `_ARTIFACT_FILENAMES` и манифест),
+summary получает секцию `exclusion_preview_v2`. Default **OFF**
+(`options.exclusion_preview.enabled=true` включает), fail-soft, моделей не
+запускает, входы не меняет, enforce не делает (`auto_apply=false`,
+`enforce_allowed=false`, `auto_enforce_enabled=false`). Подробно —
+[stage_comparison_pipeline_v2_exclusion_preview.md](stage_comparison_pipeline_v2_exclusion_preview.md).

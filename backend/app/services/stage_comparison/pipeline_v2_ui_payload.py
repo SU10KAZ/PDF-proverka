@@ -771,6 +771,29 @@ def build_pipeline_v2_ui_payload(summary: dict,
         if lv.get("error"):
             link_validation_section["error"] = str(lv["error"])
 
+    # exclusion preview v2 — mark-only сводка (exclude/review/keep/
+    # link_validation_required). auto_enforce_enabled всегда false.
+    xp = s.get("exclusion_preview_v2")
+    exclusion_preview_section = None
+    if isinstance(xp, dict) and xp.get("enabled"):
+        xp_status = _clean(xp.get("status")) or "unknown"
+        exclusion_preview_section = {
+            "available": xp_status not in ("disabled", "not_run", "unknown"),
+            "status": xp_status,
+            "items_total": _safe_count(xp.get("items_total")),
+            "candidate_exclude": _safe_count(xp.get("candidate_exclude")),
+            "review_only": _safe_count(xp.get("review_only")),
+            "keep": _safe_count(xp.get("keep")),
+            "link_validation_required": _safe_count(xp.get("link_validation_required")),
+            "high_confidence_exclude": _safe_count(xp.get("high_confidence_exclude")),
+            "manual_vision_conflict": _safe_count(xp.get("manual_vision_conflict")),
+            "repeated_reject_transitions": _safe_count(
+                xp.get("repeated_reject_transitions")),
+            "auto_enforce_enabled": False,
+        }
+        if xp.get("error"):
+            exclusion_preview_section["error"] = str(xp["error"])
+
     # per-delta compact evidence → attach к карточкам дельт (по delta_id).
     # Успешный attach — НЕ warning (не деградирует статус); счётчик кладём
     # в саму grounded_evidence-секцию для прозрачности.
@@ -821,6 +844,8 @@ def build_pipeline_v2_ui_payload(summary: dict,
         payload["entity_alignment_preview"] = entity_alignment_section
     if link_validation_section is not None:
         payload["link_validation"] = link_validation_section
+    if exclusion_preview_section is not None:
+        payload["exclusion_preview_v2"] = exclusion_preview_section
     payload["filters"] = build_ui_filters(payload)
     return payload
 
