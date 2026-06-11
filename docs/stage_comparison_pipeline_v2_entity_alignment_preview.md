@@ -296,6 +296,18 @@ Options (default OFF, старое поведение сохранено):
 
 `entity_alignment_by_pair_key(report)` остаётся для preview-индексации.
 
+## Link Validation Report (vision-проверка manual mapping, 2026-06-12)
+
+Следующий слой поверх manual mapping: для пар `confirmed_reorganized` (и
+других link-validation-кандидатов) vision проверяет, одна ли это
+реорганизованная сущность или разные, и сверяет вердикт с ручным решением
+(agreement / **conflict**). Mark-only, НЕ grounded-факт, runner инъектируется
+(None → skipped_no_runner). Контракт, agreement-таблица и controlled validation
+(ИОС 1.1: manual `confirmed_reorganized` ↔ vision `different_entity` = conflict)
+описаны в
+[stage_comparison_pipeline_v2_graphic_vision_enrichment.md → Link Validation Report](stage_comparison_pipeline_v2_graphic_vision_enrichment.md#link-validation-report-mark-only-проверка-manual-mapping-2026-06-12).
+Модуль: [pipeline_v2_link_validation.py](../backend/app/services/stage_comparison/pipeline_v2_link_validation.py).
+
 ## Безопасность
 
 - mark-only: vision/grounding/связи не запускаются и не применяются;

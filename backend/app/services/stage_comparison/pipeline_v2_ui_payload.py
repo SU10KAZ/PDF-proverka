@@ -751,6 +751,26 @@ def build_pipeline_v2_ui_payload(summary: dict,
         if eap.get("error"):
             entity_alignment_section["error"] = str(eap["error"])
 
+    # link validation summary (mark-only проверка manual mapping через vision);
+    # добавляется ТОЛЬКО если секция есть в summary и слой включён
+    lv = s.get("link_validation")
+    link_validation_section = None
+    if isinstance(lv, dict) and lv.get("enabled"):
+        lv_status = _clean(lv.get("status")) or "unknown"
+        link_validation_section = {
+            "available": lv_status not in ("disabled", "not_run", "unknown"),
+            "status": lv_status,
+            "candidates_total": _safe_count(lv.get("candidates_total")),
+            "attempted": _safe_count(lv.get("attempted")),
+            "valid_mapping": _safe_count(lv.get("valid_mapping")),
+            "manual_review": _safe_count(lv.get("manual_review")),
+            "reject_mapping": _safe_count(lv.get("reject_mapping")),
+            "conflicts_with_manual_mapping": _safe_count(
+                lv.get("conflicts_with_manual_mapping")),
+        }
+        if lv.get("error"):
+            link_validation_section["error"] = str(lv["error"])
+
     # per-delta compact evidence → attach к карточкам дельт (по delta_id).
     # Успешный attach — НЕ warning (не деградирует статус); счётчик кладём
     # в саму grounded_evidence-секцию для прозрачности.
@@ -799,6 +819,8 @@ def build_pipeline_v2_ui_payload(summary: dict,
         payload["grounded_evidence"] = grounded_evidence_section
     if entity_alignment_section is not None:
         payload["entity_alignment_preview"] = entity_alignment_section
+    if link_validation_section is not None:
+        payload["link_validation"] = link_validation_section
     payload["filters"] = build_ui_filters(payload)
     return payload
 

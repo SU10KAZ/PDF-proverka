@@ -273,6 +273,74 @@ Stats отбора дополнены: `manual_mapping_enabled`, `manual_mapping
 
 Тесты: [tests/test_stage_comparison_pipeline_v2_manual_mapping_selection.py](../tests/test_stage_comparison_pipeline_v2_manual_mapping_selection.py).
 
+## Link Validation Report (mark-only проверка manual mapping, 2026-06-12)
+
+**Модуль:** [pipeline_v2_link_validation.py](../backend/app/services/stage_comparison/pipeline_v2_link_validation.py).
+
+Отдельный mark-only слой ПОВЕРХ manual entity mapping: проверяет через vision,
+действительно ли ручная пара OLD↔NEW является одной реорганизованной сущностью
+или это РАЗНЫЕ сущности, и сверяет вердикт vision с ручным решением инженера.
+Это **не enrichment и не grounding** — результат НИКОГДА не grounded-факт.
+
+```text
+entity_mapping_overrides.json (confirmed_reorganized …)
+  → select link-validation candidates (selection_mode=link_validation)
+  → build_link_validation_prompt (validation-oriented)
+  → [injectable runner] vision → parse → agreement vs manual_decision
+  → link_validation_report.json (mark-only)
+```
+
+**Кандидаты (MVP):** только manual `confirmed_reorganized`
+(`candidate_kind=manual_confirmed_reorganized`) — переиспользует
+`select_vision_candidates_v2` в режиме link_validation. Метки берутся из
+override (`index_overrides_for_lookup`). Scope расширяется через
+`options.candidate_kinds`.
+
+**Prompt** — validation-oriented (НЕ enrichment): «являются ли эти блоки одной и
+той же инженерной сущностью после переименования/реорганизации, либо это разные
+сущности», с правилами «не судить только по названию листа», «сохранять OLD/NEW»,
+«не использовать как grounded fact». Ответ — строгий JSON
+(`entity_relation`/`decision`/`confidence`/`old_new_orientation_ok`/evidence).
+
+**Agreement** (`compute_agreement`) — сверка `manual_decision` ↔ vision-вердикта:
+
+| manual | validation positive (same/rename/reorg + valid) | validation negative (different/reject) | uncertain/manual_review | orientation_failed |
+|---|---|---|---|---|
+| `confirmed_*` | agrees → `keep_mapping` | **conflict** → `manual_review_mapping` | `manual_review_mapping` | `manual_review_mapping` |
+| `rejected_mapping`/`no_match` | conflict → `manual_review_mapping` | agrees → `reject_mapping_candidate` | `manual_review_mapping` | `manual_review_mapping` |
+
+`old_new_orientation_ok=false` → вердикт ненадёжен (стороны перепутаны) →
+всегда `manual_review_mapping`, не agree/conflict.
+
+**Runner** ИНЪЕКТИРУЕТСЯ (`run_pipeline_v2_link_validation(..., runner=None)`):
+`runner=None` → `status=skipped_no_runner` (кандидаты построены, модель не
+вызвана). Модуль НЕ создаёт vision-моделей, НЕ ходит в сеть (тест
+`test_15_no_model_imports`). Пишет на диск ТОЛЬКО при явном `output_path`.
+Каждый item: `use_as_grounded_fact=false` и `use_for_delta_explanation=false`
+ВСЕГДА. fail-soft: битый ответ/исключение runner'а → `failed` item, не падение.
+
+**Контракт отчёта** `link_validation_report.json`:
+`{version, kind, status, session_id, pair_id, created_at, summary{candidates_total,
+attempted, succeeded, failed, valid_mapping, manual_review, reject_mapping,
+agrees_with_manual_mapping, conflicts_with_manual_mapping, orientation_failed},
+items[…], warnings}`. Каждый item: validation{…} + agreement{agrees, conflicts,
+reason} + recommended_action + use_as_grounded_fact/use_for_delta_explanation=false.
+
+**Dry-run:** optional stage `[3c3] link_validation` (default **OFF**, читает
+`entity_mapping_overrides.json` из out_dir; без runner → skipped_no_runner;
+fail-soft; manifest + summary-секция). **UI payload:** секция `link_validation`
+(если слой включён). Frontend в этой задаче НЕ менялся.
+
+**Controlled validation (ИОС 1.1, из сохранённого Qwen-ответа):** exact pair
+OLD ВРУ-3 (6XDP-JLWQ-KNX) ↔ NEW ВРУ-2 (3T6X-4PHG-D96), manual
+`confirmed_reorganized` → vision `different_entity`/`reject_mapping`/conf 0.95 →
+**conflicts_with_manual_mapping=true**, `use_as_grounded_fact=false`,
+`recommended_action=manual_review_mapping`. Это и есть целевой сигнал:
+расхождение ручного маппинга и визуального свидетельства вынесено на ручную
+проверку, без записи в runtime/findings.
+
+Тесты: [tests/test_stage_comparison_pipeline_v2_link_validation.py](../tests/test_stage_comparison_pipeline_v2_link_validation.py) (15 кейсов).
+
 ## Render options (high_res / tiled)
 
 ```json

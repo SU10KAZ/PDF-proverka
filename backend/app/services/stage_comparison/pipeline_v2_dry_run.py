@@ -86,6 +86,9 @@ from backend.app.services.stage_comparison.pipeline_v2_entity_alignment_preview 
     build_entity_alignment_preview_report,
     write_entity_alignment_preview_report,
 )
+from backend.app.services.stage_comparison.pipeline_v2_link_validation import (
+    run_pipeline_v2_link_validation,
+)
 
 SUMMARY_VERSION = 1
 SUMMARY_KIND = "stage_comparison_pipeline_v2_dry_run_summary"
@@ -106,6 +109,7 @@ _ARTIFACT_FILENAMES = {
     "entity_alignment_preview": "entity_alignment_preview_report.json",
     "graphic_vision": "graphic_vision_enrichment_report.json",
     "graphic_vision_grounding": "graphic_vision_grounding_report.json",
+    "link_validation": "link_validation_report.json",
     "entity_extraction": "entity_extraction_report.json",
     "entity_diff": "entity_diff_report.json",
     "grounded_evidence": "grounded_evidence_report.json",
@@ -119,7 +123,7 @@ _MANIFEST_ARTIFACT_KEYS = [
     "left_model", "right_model", "block_matching",
     "left_graphic", "right_graphic", "graphic_matched", "visual_gate",
     "block_link_preview", "entity_alignment_preview",
-    "graphic_vision", "graphic_vision_grounding",
+    "graphic_vision", "graphic_vision_grounding", "link_validation",
     "entity_extraction", "entity_diff", "grounded_evidence", "delta_explanation",
     "summary_json", "summary_md",
 ]
@@ -591,6 +595,31 @@ def _entity_alignment_preview_section(eap_report: Any, eap_enabled: bool,
     return sec
 
 
+def _link_validation_section(lv_report: Any, lv_enabled: bool,
+                             lv_error: Optional[str]) -> dict:
+    s = (lv_report.get("summary") if isinstance(lv_report, dict) else {}) or {}
+    sec = {
+        "enabled": bool(lv_enabled),
+        "status": ("disabled" if not lv_enabled else
+                   "failed" if lv_error else
+                   (lv_report or {}).get("status", "not_run")
+                   if isinstance(lv_report, dict) else "not_run"),
+        "candidates_total": s.get("candidates_total", 0),
+        "attempted": s.get("attempted", 0),
+        "succeeded": s.get("succeeded", 0),
+        "failed": s.get("failed", 0),
+        "valid_mapping": s.get("valid_mapping", 0),
+        "manual_review": s.get("manual_review", 0),
+        "reject_mapping": s.get("reject_mapping", 0),
+        "agrees_with_manual_mapping": s.get("agrees_with_manual_mapping", 0),
+        "conflicts_with_manual_mapping": s.get("conflicts_with_manual_mapping", 0),
+        "orientation_failed": s.get("orientation_failed", 0),
+    }
+    if lv_error:
+        sec["error"] = lv_error
+    return sec
+
+
 def _block_link_preview_section(blp_report: Any, blp_enabled: bool,
                                 blp_error: Optional[str]) -> dict:
     s = (blp_report.get("summary") if isinstance(blp_report, dict) else {}) or {}
@@ -659,7 +688,9 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
                               ge_report: Any = None, ge_enabled: bool = False,
                               ge_error: Optional[str] = None,
                               eap_report: Any = None, eap_enabled: bool = False,
-                              eap_error: Optional[str] = None) -> dict:
+                              eap_error: Optional[str] = None,
+                              lv_report: Any = None, lv_enabled: bool = False,
+                              lv_error: Optional[str] = None) -> dict:
     """Собрать ``pipeline_v2_summary`` из артефактов этапов 1–4."""
     lm, rm = _summary_of(left_model), _summary_of(right_model)
     bm, em, dm = _summary_of(block_report), _summary_of(entity_report), _summary_of(diff_report)
@@ -717,6 +748,8 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
                                                           blp_error),
         "entity_alignment_preview": _entity_alignment_preview_section(
             eap_report, eap_enabled, eap_error),
+        "link_validation": _link_validation_section(
+            lv_report, lv_enabled, lv_error),
         "graphic_vision": _graphic_vision_section(gv_report, gv_enabled,
                                                   gv_error),
         "graphic_vision_grounding": _graphic_vision_grounding_section(
@@ -953,6 +986,23 @@ def write_pipeline_v2_summary_md(out_path: str | Path, summary: dict,
             lines.append(f"- ⚠ Ошибка entity alignment preview: {eap['error']}")
         lines.append("")
 
+    lv = summary.get("link_validation", {}) or {}
+    if lv.get("enabled") or lv.get("status") not in (None, "disabled"):
+        lines.append("## Link validation (mark-only, проверка manual mapping)")
+        lines.append(f"- Status: `{lv.get('status', 'unknown')}`")
+        lines.append(f"- Кандидатов: {lv.get('candidates_total', 0)}, "
+                     f"attempted={lv.get('attempted', 0)}, "
+                     f"succeeded={lv.get('succeeded', 0)}, failed={lv.get('failed', 0)}")
+        lines.append(f"- valid_mapping={lv.get('valid_mapping', 0)}, "
+                     f"manual_review={lv.get('manual_review', 0)}, "
+                     f"reject_mapping={lv.get('reject_mapping', 0)}")
+        lines.append(f"- agrees={lv.get('agrees_with_manual_mapping', 0)}, "
+                     f"conflicts={lv.get('conflicts_with_manual_mapping', 0)}, "
+                     f"orientation_failed={lv.get('orientation_failed', 0)}")
+        if lv.get("error"):
+            lines.append(f"- ⚠ Ошибка link validation: {lv['error']}")
+        lines.append("")
+
     gv = summary.get("graphic_vision", {}) or {}
     lines.append("## Graphic vision enrichment (после visual gate)")
     lines.append(f"- Status: `{gv.get('status', 'unknown')}`")
@@ -1135,6 +1185,11 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     gv_opts = options.get("graphic_vision") or {}
     gv_enabled = gv_opts.get("enabled", False) is True
 
+    # link validation: mark-only проверка manual mapping пар через vision.
+    # Default OFF (может требовать vision runner). Без runner → skipped_no_runner.
+    lv_opts = options.get("link_validation") or {}
+    lv_enabled = lv_opts.get("enabled", False) is True
+
     # vision grounding: проверка vision-результата по anchor-тексту блока.
     # Включается только если есть graphic_vision (нечего грунтовать иначе);
     # явно отключается graphic_vision_grounding.enabled=false.
@@ -1159,6 +1214,8 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     blp_error: Optional[str] = None
     eap_report = None
     eap_error: Optional[str] = None
+    lv_report = None
+    lv_error: Optional[str] = None
     gv_report = None
     gv_error: Optional[str] = None
     gvg_report = None
@@ -1258,6 +1315,30 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
                     paths["entity_alignment_preview"], eap_report)
             except Exception as eaexc:  # noqa: BLE001 — preview не критичен
                 eap_error = f"{type(eaexc).__name__}: {eaexc}"
+
+        # [3c3] link validation — mark-only проверка manual mapping пар через
+        #       vision. Default OFF; читает entity_mapping_overrides.json из
+        #       out_dir, если он там есть. runner ИНЪЕКТИРУЕТСЯ (None →
+        #       skipped_no_runner). НЕ grounded-факт, downstream его не читает.
+        if lv_enabled:
+            try:
+                overrides_report = None
+                ov_path = out_dir / "entity_mapping_overrides.json"
+                if ov_path.is_file():
+                    try:
+                        overrides_report = json.loads(ov_path.read_text(encoding="utf-8"))
+                    except Exception:  # noqa: BLE001
+                        overrides_report = None
+                lv_report = run_pipeline_v2_link_validation(
+                    ve_report, overrides_report,
+                    session_id=str(out_dir.name), pair_id=None,
+                    left_graphic_report=left_graphic,
+                    right_graphic_report=right_graphic,
+                    graphic_matched_report=matched_graphic,
+                    options=lv_opts, runner=vision_runner,
+                    output_path=paths["link_validation"])
+            except Exception as lvexc:  # noqa: BLE001 — слой не критичен
+                lv_error = f"{type(lvexc).__name__}: {lvexc}"
 
         # [3d] graphic vision enrichment — mark-only слой описания
         #      send_to_vision/manual_review блоков; default OFF; fail-soft:
@@ -1375,6 +1456,11 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
             warnings.append(f"entity_alignment_preview: {w}")
     if eap_error:
         warnings.append(f"entity_alignment_preview: {eap_error}")
+    if isinstance(lv_report, dict):
+        for w in lv_report.get("warnings", []) or []:
+            warnings.append(f"link_validation: {w}")
+    if lv_error:
+        warnings.append(f"link_validation: {lv_error}")
     if isinstance(gv_report, dict):
         for w in gv_report.get("warnings", []) or []:
             # benign «selection truncated by max_items» (штатный cap, уже
@@ -1426,7 +1512,8 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
         gv_report=gv_report, gv_enabled=gv_enabled, gv_error=gv_error,
         gvg_report=gvg_report, gvg_enabled=gvg_enabled, gvg_error=gvg_error,
         ge_report=ge_report, ge_enabled=ge_enabled, ge_error=ge_error,
-        eap_report=eap_report, eap_enabled=eap_enabled, eap_error=eap_error)
+        eap_report=eap_report, eap_enabled=eap_enabled, eap_error=eap_error,
+        lv_report=lv_report, lv_enabled=lv_enabled, lv_error=lv_error)
 
     # summary + manifest пишем всегда (best-effort, атомарно)
     write_pipeline_v2_summary_json(paths["summary_json"], summary)

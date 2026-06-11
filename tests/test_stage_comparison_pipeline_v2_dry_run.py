@@ -248,9 +248,10 @@ def test_artifact_paths(tmp_path: Path):
     assert paths["grounded_evidence"].name == "grounded_evidence_report.json"
     assert paths["entity_alignment_preview"].name == \
         "entity_alignment_preview_report.json"
+    assert paths["link_validation"].name == "link_validation_report.json"
     # + visual_gate + block_link_preview + graphic_vision + grounding
-    #   + grounded_evidence + entity_alignment_preview
-    assert len(paths) == 18
+    #   + grounded_evidence + entity_alignment_preview + link_validation
+    assert len(paths) == 19
 
 
 # ─── graphic descriptor в dry-run ────────────────────────────────────────────
