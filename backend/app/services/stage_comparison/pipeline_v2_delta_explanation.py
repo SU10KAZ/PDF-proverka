@@ -101,6 +101,7 @@ _MATCHED_RISK_FLAGS = {"one_side_not_usable", "low_token_overlap",
 
 _FIELD_MAX = 1200
 _SHORT_MAX = 400
+_GE_MAX_LINES = 6   # макс. grounded-evidence записей в prompt (защита от раздувания)
 
 _RISK_LEVELS = {"high", "medium", "low", "none", "unknown"}
 _CRITIC_VERDICTS = {"accept", "reject", "needs_human_review",
@@ -389,6 +390,16 @@ _PROMPT_PREAMBLE = (
     "- Верни СТРОГО валидный JSON по схеме ниже, без markdown и пояснений.\n"
 )
 
+# Правила для подтверждённого визуального evidence (добавляются в prompt ТОЛЬКО
+# когда для дельты есть grounded_evidence). Без evidence prompt идентичен старому.
+_EVIDENCE_RULES = (
+    "ПРАВИЛА ПО GROUNDED VISION EVIDENCE (если секция ниже присутствует):\n"
+    "- Используй grounded evidence как ПОДТВЕРЖДАЮЩИЙ слой для этой дельты.\n"
+    "- weak evidence трактуй как ПОДСКАЗКУ, требующую ручной проверки, а не как факт.\n"
+    "- НЕ считай ungrounded/rejected vision-выводы фактами.\n"
+    "- НЕ выдумывай изменений сверх переданной deterministic-дельты.\n"
+)
+
 _PROMPT_SCHEMA = (
     '{\n'
     '  "summary": "краткое описание изменения",\n'
@@ -403,16 +414,68 @@ _PROMPT_SCHEMA = (
 )
 
 
+def _grounded_evidence_lines(grounded_evidence: Optional[dict]) -> list[str]:
+    """Секция «GROUNDED VISION EVIDENCE» для prompt'а (только usable evidence).
+
+    Передаёт лишь grounded (как факт) и weak (как hint) записи. ungrounded/
+    rejected как факт НЕ передаются; rejected_only/conflict уровень
+    показывается одной строкой-предупреждением «не использовать как evidence».
+    """
+    ge = grounded_evidence if isinstance(grounded_evidence, dict) else None
+    if not ge:
+        return []
+    level = _clean(ge.get("evidence_level"))
+    lines: list[str] = ["", "=== GROUNDED VISION EVIDENCE (подтверждение по графике) ==="]
+    lines.append(f"evidence_level: {level or 'none'}")
+    if level in ("conflict", "rejected_only"):
+        lines.append("ВНИМАНИЕ: vision-вывод по этой дельте отвергнут/противоречив "
+                     "(designator-range/noop/artificial-series) — НЕ использовать "
+                     "как evidence, это НЕ факт.")
+        return lines
+    usable = [e for e in (ge.get("evidence") or [])
+              if isinstance(e, dict) and e.get("fact_level") in ("confirmed", "weak")]
+    if not usable:
+        lines.append("Подтверждающих grounded/weak записей нет.")
+        return lines
+    for e in usable[:_GE_MAX_LINES]:
+        tag = "GROUNDED" if e.get("fact_level") == "confirmed" else "WEAK(hint)"
+        old_a = _cap(e.get("old_anchor"), _SHORT_MAX)
+        new_a = _cap(e.get("new_anchor"), _SHORT_MAX)
+        desig = e.get("designator")
+        bits = [f"[{tag}]"]
+        if desig:
+            bits.append(f"designator={desig}")
+        if old_a and old_a != "—":
+            bits.append(f"old_anchor={old_a}")
+        if new_a and new_a != "—":
+            bits.append(f"new_anchor={new_a}")
+        bits.append(f"score={e.get('match_score')}")
+        lines.append(" ".join(bits))
+    return lines
+
+
 def build_delta_explanation_prompt(delta: dict, graphic_context: Optional[dict] = None,
-                                   options: Optional[dict] = None) -> str:
-    """Собрать строгий prompt по ОДНОЙ дельте (контракт «не ищи новые отличия»)."""
+                                   options: Optional[dict] = None,
+                                   grounded_evidence: Optional[dict] = None) -> str:
+    """Собрать строгий prompt по ОДНОЙ дельте (контракт «не ищи новые отличия»).
+
+    ``grounded_evidence`` (optional) — per-delta evidence card из
+    grounded_evidence_report. Если передан и содержит usable записи, в prompt
+    добавляется секция GROUNDED VISION EVIDENCE + правила её использования.
+    Без него prompt полностью идентичен прежнему (backward-compat).
+    """
     mode = _opt(options, "mode")
     ev = delta.get("evidence") or {}
     ev_l = ev.get("left") or {}
     ev_r = ev.get("right") or {}
     pages = delta.get("page_numbers") or {}
 
-    lines = [_PROMPT_PREAMBLE, ""]
+    ge_lines = _grounded_evidence_lines(grounded_evidence)
+
+    lines = [_PROMPT_PREAMBLE]
+    if ge_lines:
+        lines.append(_EVIDENCE_RULES)
+    lines.append("")
     lines.append(f"Режим: {mode}")
     lines.append("")
     lines.append("=== ДЕЛЬТА (только её анализируй) ===")
@@ -442,6 +505,9 @@ def build_delta_explanation_prompt(delta: dict, graphic_context: Optional[dict] 
         lines.append(f"manual_review_recommended: {graphic_context.get('manual_review_recommended')}")
         if graphic_context.get("notes"):
             lines.append(f"notes: {', '.join(graphic_context['notes'])}")
+        lines.append("")
+    if ge_lines:
+        lines.extend(ge_lines)
         lines.append("")
     lines.append("=== ВЕРНИ СТРОГО JSON ПО СХЕМЕ ===")
     lines.append(_PROMPT_SCHEMA)
@@ -553,8 +619,15 @@ def _status_from_critic(verdict: str) -> str:
 
 
 def explain_single_delta(delta: dict, graphic_context: Optional[dict] = None,
-                         options: Optional[dict] = None, llm_runner: Optional[LLMRunner] = None) -> dict:
-    """Объяснить/проверить ОДНУ дельту (fail-soft, runner инъектируется)."""
+                         options: Optional[dict] = None, llm_runner: Optional[LLMRunner] = None,
+                         grounded_evidence: Optional[dict] = None) -> dict:
+    """Объяснить/проверить ОДНУ дельту (fail-soft, runner инъектируется).
+
+    ``grounded_evidence`` (optional) — per-delta evidence card; если передан,
+    grounded/weak записи попадают в prompt как supporting/weak evidence (см.
+    `build_delta_explanation_prompt`). Также фиксируется в результате как
+    `grounded_evidence_level` для трассировки.
+    """
     mode = _opt(options, "mode")
     weak = _is_weak_graphic(graphic_context)
     quality_flags: list[str] = []
@@ -587,6 +660,13 @@ def explain_single_delta(delta: dict, graphic_context: Optional[dict] = None,
         "quality_flags": quality_flags,
     }
 
+    # трассировка grounded vision evidence (если передан) — для отчёта/UI
+    ge_level = (grounded_evidence.get("evidence_level")
+                if isinstance(grounded_evidence, dict) else None)
+    if ge_level:
+        base["grounded_evidence_level"] = ge_level
+        base["grounded_evidence_used"] = ge_level in ("grounded", "weak")
+
     if weak:
         quality_flags.append("possible_weak_graphic")
 
@@ -599,7 +679,8 @@ def explain_single_delta(delta: dict, graphic_context: Optional[dict] = None,
         base["quality_flags"] = sorted(set(quality_flags + ["skipped_no_runner"]))
         return base
 
-    prompt = build_delta_explanation_prompt(delta, graphic_context, options)
+    prompt = build_delta_explanation_prompt(delta, graphic_context, options,
+                                            grounded_evidence)
     raw, raw_status, err, runner_meta = _invoke_runner(llm_runner, prompt)
     # provider НЕ хардкодится: runner self-report'ит provider/model в dict-ответе
     # (реальный claude-wrapper передаст provider="claude"); string-ответ →
@@ -762,19 +843,33 @@ def build_delta_explanation_report(entity_diff_report: dict, explanations: list[
 def explain_entity_diff_report(entity_diff_report: dict,
                                graphic_descriptor_report: Any = None,
                                options: Optional[dict] = None,
-                               llm_runner: Optional[LLMRunner] = None) -> dict:
+                               llm_runner: Optional[LLMRunner] = None,
+                               grounded_evidence_report: Any = None) -> dict:
     """Полный прогон: выбрать дельты → объяснить/проверить → собрать отчёт.
 
     `llm_runner=None` → все объяснения `skipped_no_runner` (fail-soft, не падает).
     Coverage notes по слабой графике строятся независимо от наличия runner'а.
+
+    ``grounded_evidence_report`` (optional) — `grounded_evidence_report.json`;
+    если передан, per-delta evidence карточки подмешиваются в prompt каждой
+    дельты как supporting/weak evidence. Без него поведение прежнее (старые
+    тесты зелёные).
     """
     entity_diff_report = entity_diff_report or {}
     selected = select_deltas_for_explanation(entity_diff_report, options)
 
+    ge_by_id: dict = {}
+    if grounded_evidence_report is not None:
+        # lazy import: без цикла импортов при будущей интеграции
+        from .pipeline_v2_grounded_evidence import grounded_evidence_by_delta_id
+        ge_by_id = grounded_evidence_by_delta_id(grounded_evidence_report)
+
     explanations: list[dict] = []
     for delta in selected:
         gctx = build_graphic_context_for_delta(delta, graphic_descriptor_report)
-        explanations.append(explain_single_delta(delta, gctx, options, llm_runner))
+        ge_card = ge_by_id.get(delta.get("delta_id"))
+        explanations.append(
+            explain_single_delta(delta, gctx, options, llm_runner, ge_card))
 
     coverage_notes = _build_coverage_notes(graphic_descriptor_report)
     selection = {

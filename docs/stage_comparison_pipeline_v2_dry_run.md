@@ -285,9 +285,34 @@ ok/with-warnings, ключевые счётчики в MD, sha256+размеры
 > Graphic Descriptor и Delta Explanation уже интегрированы в dry-run (offline,
 > `llm_runner=None` по умолчанию).
 
+## Этап [5b] grounded_evidence (2026-06-11)
+
+После entity-diff [5] и перед delta-explanation [6] добавлен опциональный этап
+**grounded_evidence** (mark-only):
+
+```text
+graphic_vision_grounding [3e] → entity_diff [5] → grounded_evidence [5b] → delta_explanation [6]
+```
+
+* связывает дельты с grounded vision (`build_grounded_evidence_report`), пишет
+  `grounded_evidence_report.json`, добавлен в `_ARTIFACT_FILENAMES` и манифест;
+* включается, только если `gvg_report.items` непуст (нечего связывать иначе);
+  отключается `options.grounded_evidence.enabled=false`;
+* fail-soft: падение не валит pipeline (`grounded_evidence.error` в summary,
+  benign `skipped_no_grounding` не деградирует статус);
+* `grounded_evidence_report` прокидывается в `explain_entity_diff_report` →
+  per-delta grounded/weak записи попадают в prompt как supporting/weak evidence;
+* summary получает секцию `grounded_evidence` (`deltas_with_grounded_evidence`,
+  `deltas_with_weak_evidence`, `deltas_without_evidence`,
+  `deltas_with_rejected_conflicts`, `*_links`).
+
+`rejected_*` / `ungrounded` НИКОГДА не факт. Подробно —
+[stage_comparison_pipeline_v2_grounded_evidence.md](stage_comparison_pipeline_v2_grounded_evidence.md).
+
 ## Связанные файлы
 
 - [pipeline_v2_dry_run.py](../backend/app/services/stage_comparison/pipeline_v2_dry_run.py)
+- [pipeline_v2_grounded_evidence.py](../backend/app/services/stage_comparison/pipeline_v2_grounded_evidence.py) — этап [5b]
 - [pipeline_v2_delta_explanation.py](../backend/app/services/stage_comparison/pipeline_v2_delta_explanation.py) — Delta Explanation / Critic
 - [pipeline_v2_graphic_block_descriptor.py](../backend/app/services/stage_comparison/pipeline_v2_graphic_block_descriptor.py) — Graphic Descriptor
 - [pipeline_v2_entity_diff.py](../backend/app/services/stage_comparison/pipeline_v2_entity_diff.py) — этап 4

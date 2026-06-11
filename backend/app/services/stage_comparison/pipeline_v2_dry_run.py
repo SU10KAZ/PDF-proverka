@@ -78,6 +78,10 @@ from backend.app.services.stage_comparison.pipeline_v2_graphic_vision_grounding 
     build_graphic_vision_grounding_report,
     write_graphic_vision_grounding_report,
 )
+from backend.app.services.stage_comparison.pipeline_v2_grounded_evidence import (
+    build_grounded_evidence_report,
+    write_grounded_evidence_report,
+)
 
 SUMMARY_VERSION = 1
 SUMMARY_KIND = "stage_comparison_pipeline_v2_dry_run_summary"
@@ -99,6 +103,7 @@ _ARTIFACT_FILENAMES = {
     "graphic_vision_grounding": "graphic_vision_grounding_report.json",
     "entity_extraction": "entity_extraction_report.json",
     "entity_diff": "entity_diff_report.json",
+    "grounded_evidence": "grounded_evidence_report.json",
     "delta_explanation": "delta_explanation_report.json",
     "summary_json": "pipeline_v2_summary.json",
     "summary_md": "pipeline_v2_summary.md",
@@ -109,7 +114,7 @@ _MANIFEST_ARTIFACT_KEYS = [
     "left_model", "right_model", "block_matching",
     "left_graphic", "right_graphic", "graphic_matched", "visual_gate",
     "block_link_preview", "graphic_vision", "graphic_vision_grounding",
-    "entity_extraction", "entity_diff", "delta_explanation",
+    "entity_extraction", "entity_diff", "grounded_evidence", "delta_explanation",
     "summary_json", "summary_md",
 ]
 
@@ -531,6 +536,31 @@ def _graphic_vision_grounding_section(gvg_report: Any, gvg_enabled: bool,
     return sec
 
 
+def _grounded_evidence_section(ge_report: Any, ge_enabled: bool,
+                              ge_error: Optional[str]) -> dict:
+    s = (ge_report.get("summary") if isinstance(ge_report, dict) else {}) or {}
+    sec = {
+        "enabled": bool(ge_enabled),
+        "status": ("disabled" if not ge_enabled else
+                   "failed" if ge_error else
+                   (ge_report or {}).get("status", "not_run")
+                   if isinstance(ge_report, dict) else "not_run"),
+        "deltas_total": s.get("deltas_total", 0),
+        "deltas_total_all_diff": s.get("deltas_total_all_diff", 0),
+        "deltas_with_grounded_evidence": s.get("deltas_with_grounded_evidence", 0),
+        "deltas_with_weak_evidence": s.get("deltas_with_weak_evidence", 0),
+        "deltas_without_evidence": s.get("deltas_without_evidence", 0),
+        "deltas_with_rejected_conflicts": s.get("deltas_with_rejected_conflicts", 0),
+        "evidence_links_total": s.get("evidence_links_total", 0),
+        "grounded_links": s.get("grounded_links", 0),
+        "weak_links": s.get("weak_links", 0),
+        "rejected_links": s.get("rejected_links", 0),
+    }
+    if ge_error:
+        sec["error"] = ge_error
+    return sec
+
+
 def _block_link_preview_section(blp_report: Any, blp_enabled: bool,
                                 blp_error: Optional[str]) -> dict:
     s = (blp_report.get("summary") if isinstance(blp_report, dict) else {}) or {}
@@ -595,7 +625,9 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
                               gv_report: Any = None, gv_enabled: bool = False,
                               gv_error: Optional[str] = None,
                               gvg_report: Any = None, gvg_enabled: bool = False,
-                              gvg_error: Optional[str] = None) -> dict:
+                              gvg_error: Optional[str] = None,
+                              ge_report: Any = None, ge_enabled: bool = False,
+                              ge_error: Optional[str] = None) -> dict:
     """Собрать ``pipeline_v2_summary`` из артефактов этапов 1–4."""
     lm, rm = _summary_of(left_model), _summary_of(right_model)
     bm, em, dm = _summary_of(block_report), _summary_of(entity_report), _summary_of(diff_report)
@@ -655,6 +687,8 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
                                                   gv_error),
         "graphic_vision_grounding": _graphic_vision_grounding_section(
             gvg_report, gvg_enabled, gvg_error),
+        "grounded_evidence": _grounded_evidence_section(
+            ge_report, ge_enabled, ge_error),
         "delta_explanation": _delta_explanation_section(de_report, de_enabled, de_error),
         "delta_sections": build_delta_sections(diff_report, de_report),
         "warnings": warnings,
@@ -1050,6 +1084,12 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     gvg_opts = options.get("graphic_vision_grounding") or {}
     gvg_requested = gvg_opts.get("enabled", True) is not False
 
+    # grounded evidence: связывает дельты с grounded vision. Включается, только
+    # если есть grounding-результат (нечего связывать иначе); явно отключается
+    # grounded_evidence.enabled=false. Mark-only, downstream — delta_explanation.
+    ge_opts = options.get("grounded_evidence") or {}
+    ge_requested = ge_opts.get("enabled", True) is not False
+
     status = "ok"
     error: Optional[str] = None
     left_model = right_model = block_report = entity_report = diff_report = None
@@ -1065,6 +1105,9 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     gvg_report = None
     gvg_enabled = False
     gvg_error: Optional[str] = None
+    ge_report = None
+    ge_enabled = False
+    ge_error: Optional[str] = None
     de_report = None
     de_error: Optional[str] = None
 
@@ -1185,8 +1228,28 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
         diff_report = diff_entity_extraction_report(entity_report, options.get("diff"))
         write_entity_diff_report(paths["entity_diff"], diff_report)
 
+        # [5b] grounded vision evidence — связать дельты с grounded vision
+        #      (mark-only). Включается, только если есть grounding-итемы;
+        #      fail-soft. Downstream — delta_explanation (как supporting/weak
+        #      evidence). Никаких замечаний/enforce не создаёт.
+        ge_enabled = bool(ge_requested and isinstance(gvg_report, dict)
+                          and gvg_report.get("items"))
+        if ge_enabled:
+            try:
+                ge_report = build_grounded_evidence_report(
+                    diff_report, gvg_report,
+                    block_link_report=blp_report,
+                    visual_gate_report=ve_report,
+                    enrichment_report=gv_report,
+                    left_model=left_model, right_model=right_model,
+                    options=ge_opts)
+                write_grounded_evidence_report(paths["grounded_evidence"], ge_report)
+            except Exception as geexc:  # noqa: BLE001 — слой не критичен
+                ge_error = f"{type(geexc).__name__}: {geexc}"
+
         # [6] delta explanation / critic — вспомогательный LLM-слой, fail-soft.
         #     По умолчанию llm_runner=None → skipped_no_runner (offline).
+        #     grounded_evidence_report (если есть) подмешивается per-delta.
         if de_enabled:
             try:
                 de_report = explain_entity_diff_report(
@@ -1194,7 +1257,8 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
                     graphic_descriptor_report={"left": left_graphic,
                                                "right": right_graphic,
                                                "matched": matched_graphic},
-                    options=de_opts, llm_runner=llm_runner)
+                    options=de_opts, llm_runner=llm_runner,
+                    grounded_evidence_report=ge_report)
                 write_delta_explanation_report(paths["delta_explanation"], de_report)
             except Exception as dexc:  # noqa: BLE001 — delta explanation не критичен
                 de_error = f"{type(dexc).__name__}: {dexc}"
@@ -1241,6 +1305,15 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
             warnings.append(f"graphic_vision_grounding: {w}")
     if gvg_error:
         warnings.append(f"graphic_vision_grounding: {gvg_error}")
+    if isinstance(ge_report, dict):
+        for w in ge_report.get("warnings", []) or []:
+            # benign «skipped_no_grounding»/«grounding report missing» — не
+            # деградация (нечего связывать), это диагностика слоя
+            if str(w).startswith(("grounding report missing", "no grounding")):
+                continue
+            warnings.append(f"grounded_evidence: {w}")
+    if ge_error:
+        warnings.append(f"grounded_evidence: {ge_error}")
     if isinstance(de_report, dict):
         # benign «no_llm_runner» (offline skip) НЕ повышаем до dry-run warning
         for w in de_report.get("warnings", []) or []:
@@ -1263,7 +1336,8 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
         ve_report=ve_report, ve_enabled=ve_enabled, ve_error=ve_error,
         blp_report=blp_report, blp_enabled=blp_enabled, blp_error=blp_error,
         gv_report=gv_report, gv_enabled=gv_enabled, gv_error=gv_error,
-        gvg_report=gvg_report, gvg_enabled=gvg_enabled, gvg_error=gvg_error)
+        gvg_report=gvg_report, gvg_enabled=gvg_enabled, gvg_error=gvg_error,
+        ge_report=ge_report, ge_enabled=ge_enabled, ge_error=ge_error)
 
     # summary + manifest пишем всегда (best-effort, атомарно)
     write_pipeline_v2_summary_json(paths["summary_json"], summary)

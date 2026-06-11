@@ -196,9 +196,30 @@ graphic_readiness + weak_blocks_preview, деградация на неполн�
 неизвестная будущая секция, атомарная запись JSON, офлайн-гарантии
 (socket-monkeypatch + скан источника на provider/network импорты).
 
+## `grounded_evidence` summary (2026-06-11)
+
+Если в summary есть секция `grounded_evidence` со `enabled=true`, payload
+получает блок (mark-only, frontend в той задаче не менялся):
+
+```json
+"grounded_evidence": {
+  "available": true,
+  "deltas_with_grounded_evidence": 0,
+  "deltas_with_weak_evidence": 0,
+  "deltas_without_evidence": 0,
+  "deltas_with_rejected_conflicts": 0
+}
+```
+
+`available=false` при `disabled` / `not_run` / `skipped_no_grounding`. Блок
+добавляется ТОЛЬКО когда слой включён — старые payload'ы без секции полностью
+совместимы. Подробно —
+[stage_comparison_pipeline_v2_grounded_evidence.md](stage_comparison_pipeline_v2_grounded_evidence.md).
+
 ## Связанные файлы
 
 - [pipeline_v2_ui_payload.py](../backend/app/services/stage_comparison/pipeline_v2_ui_payload.py) — adapter
 - [pipeline_v2_dry_run.py](../backend/app/services/stage_comparison/pipeline_v2_dry_run.py) — `delta_sections` (источник секционирования)
+- [pipeline_v2_grounded_evidence.py](../backend/app/services/stage_comparison/pipeline_v2_grounded_evidence.py) — источник `grounded_evidence` summary
 - [stage_comparison_pipeline_v2_dry_run.md](stage_comparison_pipeline_v2_dry_run.md) — приоритет секций
 - [stage_comparison_pipeline_v2_delta_explanation.md](stage_comparison_pipeline_v2_delta_explanation.md) — формат explanation/critic

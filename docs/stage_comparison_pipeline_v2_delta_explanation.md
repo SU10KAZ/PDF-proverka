@@ -258,10 +258,40 @@ JSON, `skipped_no_runner` без runner'а, подсчёт `possible_ocr_noise`/
   проверить качество объяснений/critic на живых дельтах и корректность
   `coverage_notes` по слабой графике.
 
+## Grounded Vision Evidence в prompt (2026-06-11)
+
+`build_delta_explanation_prompt`, `explain_single_delta` и
+`explain_entity_diff_report` получили опциональный grounded-evidence вход:
+
+* `build_delta_explanation_prompt(delta, graphic_context, options, grounded_evidence=None)`
+  — если передана per-delta evidence-карточка (из
+  `grounded_evidence_report.json`), в prompt добавляется секция
+  `GROUNDED VISION EVIDENCE` + блок правил;
+* `explain_single_delta(..., grounded_evidence=None)` — прокидывает карточку и
+  фиксирует `grounded_evidence_level` / `grounded_evidence_used` в результате;
+* `explain_entity_diff_report(..., grounded_evidence_report=None)` — строит
+  индекс `delta_id → карточка` и подмешивает per-delta.
+
+Правила в prompt'е (добавляются ТОЛЬКО при наличии evidence):
+
+```text
+Используй grounded evidence как ПОДТВЕРЖДАЮЩИЙ слой.
+weak evidence трактуй как ПОДСКАЗКУ, требующую ручной проверки.
+НЕ считай ungrounded/rejected vision-выводы фактами.
+НЕ выдумывай изменений сверх переданной deterministic-дельты.
+```
+
+В секцию попадают только `confirmed` (как факт) и `weak` (помечены
+`WEAK(hint)`). `conflict`/`rejected_only` показываются одной строкой-
+предупреждением — rejected-якоря как факт НЕ всплывают. Без evidence prompt
+полностью идентичен прежнему (backward-compat, старые тесты зелёные). Подробно —
+[stage_comparison_pipeline_v2_grounded_evidence.md](stage_comparison_pipeline_v2_grounded_evidence.md).
+
 ## Связанные файлы
 
 - [pipeline_v2_delta_explanation.py](../backend/app/services/stage_comparison/pipeline_v2_delta_explanation.py)
 - [pipeline_v2_entity_diff.py](../backend/app/services/stage_comparison/pipeline_v2_entity_diff.py) — этап 4 (вход)
+- [pipeline_v2_grounded_evidence.py](../backend/app/services/stage_comparison/pipeline_v2_grounded_evidence.py) — источник evidence-карточек
 - [pipeline_v2_graphic_block_descriptor.py](../backend/app/services/stage_comparison/pipeline_v2_graphic_block_descriptor.py) — graphic readiness
-- [pipeline_v2_dry_run.py](../backend/app/services/stage_comparison/pipeline_v2_dry_run.py) — оркестратор (точка будущей интеграции)
+- [pipeline_v2_dry_run.py](../backend/app/services/stage_comparison/pipeline_v2_dry_run.py) — оркестратор (этап [5b] grounded_evidence → [6] delta_explanation)
 - [text_llm_provider.py](../backend/app/services/stage_comparison/text_llm_provider.py) — существующий `claude -p` provider (обёртка-runner подключается снаружи, не импортируется здесь)

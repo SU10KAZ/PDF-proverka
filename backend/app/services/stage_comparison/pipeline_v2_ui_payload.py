@@ -557,6 +557,28 @@ def build_pipeline_v2_ui_payload(summary: dict,
         if gvg.get("error"):
             graphic_vision_grounding_section["error"] = str(gvg["error"])
 
+    # grounded vision evidence — сводка связки дельт с grounded vision;
+    # добавляется ТОЛЬКО если секция есть в summary и слой включён
+    ge = s.get("grounded_evidence")
+    grounded_evidence_section = None
+    if isinstance(ge, dict) and ge.get("enabled"):
+        ge_status = _clean(ge.get("status")) or "unknown"
+        grounded_evidence_section = {
+            "available": ge_status not in ("disabled", "not_run", "unknown",
+                                           "skipped_no_grounding"),
+            "status": ge_status,
+            "deltas_with_grounded_evidence": _safe_count(
+                ge.get("deltas_with_grounded_evidence")),
+            "deltas_with_weak_evidence": _safe_count(
+                ge.get("deltas_with_weak_evidence")),
+            "deltas_without_evidence": _safe_count(
+                ge.get("deltas_without_evidence")),
+            "deltas_with_rejected_conflicts": _safe_count(
+                ge.get("deltas_with_rejected_conflicts")),
+        }
+        if ge.get("error"):
+            grounded_evidence_section["error"] = str(ge["error"])
+
     summary_warnings = _str_list(s.get("warnings"))
     if s.get("warnings") and not summary_warnings:
         adapter_warnings.append("summary_warnings_invalid_ignored")
@@ -584,6 +606,8 @@ def build_pipeline_v2_ui_payload(summary: dict,
         payload["graphic_vision"] = graphic_vision_section
     if graphic_vision_grounding_section is not None:
         payload["graphic_vision_grounding"] = graphic_vision_grounding_section
+    if grounded_evidence_section is not None:
+        payload["grounded_evidence"] = grounded_evidence_section
     payload["filters"] = build_ui_filters(payload)
     return payload
 
