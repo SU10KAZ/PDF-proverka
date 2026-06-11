@@ -267,20 +267,34 @@ unpaired-сущность получают select решения + коммен�
 (10 backend-кейсов), блок «Manual Entity Mapping» в
 [frontend/tests/pipeline_v2_panel.test.js](../frontend/tests/pipeline_v2_panel.test.js).
 
-## Будущий wiring в graphic vision selection (НЕ в этой задаче)
+## Wiring overrides → graphic vision candidate selection (2026-06-12)
 
-`pipeline_v2_graphic_vision_enrichment` может опционально читать
-`entity_alignment_preview_report.json` (`options.use_entity_alignment_preview`)
-и фильтровать кандидатов:
+Реализовано: `select_vision_candidates_v2(..., overrides_report=...)` в
+[pipeline_v2_graphic_vision_enrichment.py](../backend/app/services/stage_comparison/pipeline_v2_graphic_vision_enrichment.py)
+учитывает ручные решения при отборе кандидатов на vision. Это всё ещё
+**mark-only**: НЕ применяет block links, НЕ запускает vision/Qwen/Opus/Claude,
+НЕ создаёт замечаний — только определяет enrichment / link_validation /
+исключение.
 
-- `same_entity_likely` → можно в enrichment;
-- `possible_rename` → только при `include_possible_rename=true` / high confidence;
-- `scope_reorganized` → manual_review / link_validation;
-- `mismatch_likely` → исключить из enrichment;
-- `link_validation_candidate` → только `selection_mode=link_validation`.
+Primary source — `entity_mapping_overrides.json` (этот слой); вторичный —
+`manual_mapping` в `entity_alignment_preview_report.json`. Матч кандидата →
+override: **block-ids → pair_key → labels → mapping_id**
+(`index_overrides_for_lookup` / `find_override_for_pair`).
 
-`entity_alignment_by_pair_key(report)` даёт индекс `pair_key → классификация`
-для такого wiring. В этой задаче слой **report-only** (selection не меняется).
+Правила по `manual_decision` (полная таблица + почему `confirmed_reorganized` по
+умолчанию идёт в link_validation, а не enrichment — см.
+[stage_comparison_pipeline_v2_graphic_vision_enrichment.md](stage_comparison_pipeline_v2_graphic_vision_enrichment.md#manual-entity-mapping-overrides-in-candidate-selection-2026-06-12)):
+
+- `confirmed_same_entity` / `confirmed_rename` → `same_entity_likely`, в enrichment (score boost);
+- `confirmed_reorganized` → `manual_confirmed_reorganized`, по умолчанию ТОЛЬКО link_validation (приоритет); в enrichment лишь при `include_confirmed_reorganized=true` (+ `requires_human_review`);
+- `rejected_mapping` → исключён из enrichment (и link_validation, кроме debug);
+- `no_match` → исключён из обоих.
+
+Options (default OFF, старое поведение сохранено):
+`use_entity_mapping_overrides`, `manual_mapping_mode` (`enrichment|link_validation|both`),
+`include_confirmed_reorganized`, `manual_mapping_debug`.
+
+`entity_alignment_by_pair_key(report)` остаётся для preview-индексации.
 
 ## Безопасность
 

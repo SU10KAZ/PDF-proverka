@@ -35,6 +35,11 @@ import tempfile
 from pathlib import Path
 from typing import Any, Callable, Optional
 
+from backend.app.services.stage_comparison.pipeline_v2_entity_mapping_overrides import (
+    find_override_for_pair,
+    index_overrides_for_lookup,
+)
+
 REPORT_VERSION = 1
 REPORT_KIND = "stage_comparison_pipeline_v2_graphic_vision_enrichment"
 
@@ -55,6 +60,13 @@ _DEFAULT_OPTIONS = {
     # (целенаправленная проверка подозрительных связей)
     "selection_mode": "enrichment",
     "exclude_mismatch_likely": True,    # только для enrichment
+    # manual entity mapping overrides → candidate selection (mark-only,
+    # default OFF — старое поведение). manual_mapping_mode = в каких
+    # selection_mode применять override'ы: enrichment | link_validation | both.
+    "use_entity_mapping_overrides": False,
+    "manual_mapping_mode": "both",
+    "include_confirmed_reorganized": False,
+    "manual_mapping_debug": False,      # link_validation: пускать rejected_mapping
 }
 
 # render-опции (options["render"]): high_res поднимает long_side для
@@ -88,6 +100,9 @@ CANDIDATE_SAME = "same_entity_likely"
 CANDIDATE_MISMATCH = "mismatch_likely"
 CANDIDATE_VALIDATION = "validation_candidate"
 CANDIDATE_UNCERTAIN = "uncertain"
+# kind для пар, которые инженер вручную пометил как реорганизацию: НЕ обычная
+# same-пара для enrichment, а кандидат на целенаправленную проверку связи
+CANDIDATE_MANUAL_REORG = "manual_confirmed_reorganized"
 
 _VALID_CONFIDENCE = {"high", "medium", "low"}
 
@@ -571,10 +586,96 @@ def score_vision_candidate(pair: dict, *, left_desc: dict, right_desc: dict,
     }
 
 
+# ─── manual entity mapping overrides → candidate selection ───────────────────
+
+
+def _candidate_primary_label(desc: dict) -> Optional[str]:
+    """Primary-метка кандидата (для fallback-матча override'а по labels).
+
+    Lazy import предотвращает цикл: entity_alignment_preview импортирует ЭТОТ
+    модуль на старте, поэтому обратную зависимость берём в рантайме.
+    """
+    try:
+        from backend.app.services.stage_comparison.pipeline_v2_entity_alignment_preview import (  # noqa: E501
+            extract_entity_labels)
+    except Exception:  # noqa: BLE001 — fallback-метка опциональна
+        return None
+    try:
+        lab = extract_entity_labels(
+            desc.get("sheet_name"),
+            (desc.get("tokens") or {}).get("equipment"))
+        return lab.get("primary")
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def apply_manual_decision_to_candidate(cand: dict, override: dict, *, mode: str,
+                                       include_confirmed_reorganized: bool,
+                                       debug: bool = False) -> str:
+    """Применить ручное решение override'а к кандидату (мутирует cand).
+
+    Возвращает ``manual_decision``. Выставляет ``manual_mapping``, дополняет
+    ``candidate_reasons`` / ``candidate_risk_flags`` и ставит транзиентный
+    ``_manual_exclude`` (исключить из ТЕКУЩЕГО режима). Manual decision
+    переопределяет авто-классификацию — это видно в reasons.
+    """
+    decision = override.get("manual_decision")
+    cand["manual_mapping"] = {
+        "mapping_id": override.get("mapping_id"),
+        "decision": decision,
+        "comment": override.get("comment"),
+        "source": "entity_mapping_overrides",
+    }
+    reasons = list(cand.get("candidate_reasons") or [])
+    risks = list(cand.get("candidate_risk_flags") or [])
+    reasons.append(f"manual_mapping:{decision}")
+    exclude = False
+
+    if decision == "confirmed_same_entity":
+        cand["candidate_kind"] = CANDIDATE_SAME
+        cand["candidate_score"] = round(
+            min(1.0, _safe_float(cand.get("candidate_score"), 0.5) + 0.4), 3)
+        reasons.append("manual_confirmed_same_entity")
+    elif decision == "confirmed_rename":
+        cand["candidate_kind"] = CANDIDATE_SAME
+        cand["candidate_score"] = round(
+            min(1.0, _safe_float(cand.get("candidate_score"), 0.5) + 0.3), 3)
+        reasons.append("manual_confirmed_rename")
+    elif decision == "confirmed_reorganized":
+        cand["candidate_kind"] = CANDIDATE_MANUAL_REORG
+        if "manual_confirmed_reorganized" not in risks:
+            risks.append("manual_confirmed_reorganized")
+        if mode == "enrichment":
+            if include_confirmed_reorganized:
+                if "requires_human_review" not in risks:
+                    risks.append("requires_human_review")
+            else:
+                exclude = True
+        # link_validation: оставляем и приоритизируем (см. сортировку)
+    elif decision == "rejected_mapping":
+        reasons.append("manual_rejected_mapping")
+        if mode == "enrichment":
+            exclude = True
+        elif mode == "link_validation":
+            exclude = not debug      # только debug-режим пускает rejected
+    elif decision == "no_match":
+        reasons.append("manual_no_match")
+        exclude = True               # исключён из обоих режимов
+    else:
+        # неизвестное решение — не трогаем классификацию, только помечаем
+        reasons.append("manual_unknown_decision")
+
+    cand["candidate_reasons"] = reasons
+    cand["candidate_risk_flags"] = risks
+    cand["_manual_exclude"] = exclude
+    return decision
+
+
 def select_vision_candidates_v2(visual_gate_report: Any, *,
                                 left_graphic_report: Any = None,
                                 right_graphic_report: Any = None,
                                 graphic_matched_report: Any = None,
+                                overrides_report: Any = None,
                                 options: Optional[dict] = None
                                 ) -> tuple[list[dict], dict, list[str]]:
     """Entity-aware отбор: score → режим (enrichment/link_validation) → cap.
@@ -598,12 +699,24 @@ def select_vision_candidates_v2(visual_gate_report: Any, *,
         mode = "enrichment"
     exclude_mismatch = _opt(options, "exclude_mismatch_likely") is not False
 
+    # manual entity mapping overrides (mark-only, default OFF)
+    use_overrides = _opt(options, "use_entity_mapping_overrides") is True
+    mm_mode = str(_opt(options, "manual_mapping_mode") or "both").lower()
+    include_reorg = _opt(options, "include_confirmed_reorganized") is True
+    manual_debug = _opt(options, "manual_mapping_debug") is True
+    manual_applies = (use_overrides and isinstance(overrides_report, dict)
+                      and (mm_mode in ("both", mode)))
+    ov_index = index_overrides_for_lookup(overrides_report) if manual_applies else None
+
     matched_idx = _matched_graphic_index(graphic_matched_report)
     stats = {"candidates_total": len(pairs), "excluded_by_visual_gate": 0,
              "manual_review_included": 0, "manual_review_skipped": 0,
              "other_skipped": 0, "dropped_by_cap": 0,
              "by_candidate_kind": {}, "mismatch_excluded": 0,
-             "selection_mode": mode}
+             "selection_mode": mode,
+             "manual_mapping_enabled": bool(manual_applies),
+             "manual_mapping_applied": 0, "manual_excluded": 0,
+             "by_manual_decision": {}}
 
     eligible: list[dict] = []
     for bp in pairs:
@@ -620,19 +733,42 @@ def select_vision_candidates_v2(visual_gate_report: Any, *,
             stats["other_skipped"] += 1
             continue
         lid, rid = bp.get("left_block_id"), bp.get("right_block_id")
+        ld = _descriptor_for(left_graphic_report, lid)
+        rd = _descriptor_for(right_graphic_report, rid)
         verdict = score_vision_candidate(
-            bp,
-            left_desc=_descriptor_for(left_graphic_report, lid),
-            right_desc=_descriptor_for(right_graphic_report, rid),
+            bp, left_desc=ld, right_desc=rd,
             matched_entry=matched_idx.get((lid, rid)))
-        eligible.append({**bp, **verdict})
-        k = verdict["candidate_kind"]
+        cand = {**bp, **verdict}
+        if manual_applies:
+            override = find_override_for_pair(
+                ov_index, left_block_id=lid, right_block_id=rid,
+                pair_key=bp.get("pair_key"),
+                left_label=_candidate_primary_label(ld),
+                right_label=_candidate_primary_label(rd))
+            if override:
+                dec = apply_manual_decision_to_candidate(
+                    cand, override, mode=mode,
+                    include_confirmed_reorganized=include_reorg,
+                    debug=manual_debug)
+                stats["manual_mapping_applied"] += 1
+                stats["by_manual_decision"][dec] = \
+                    stats["by_manual_decision"].get(dec, 0) + 1
+        eligible.append(cand)
+        k = cand["candidate_kind"]
         stats["by_candidate_kind"][k] = stats["by_candidate_kind"].get(k, 0) + 1
 
+    # drop manually-excluded кандидаты (rejected/no_match/reorg-default-enrichment)
+    if manual_applies:
+        kept = [c for c in eligible if c.pop("_manual_exclude", False) is not True]
+        stats["manual_excluded"] = len(eligible) - len(kept)
+        eligible = kept
+
     if mode == "link_validation":
-        # цель — проверить подозрительные связи: mismatch/validation первыми
-        prio = {CANDIDATE_MISMATCH: 0, CANDIDATE_VALIDATION: 1,
-                CANDIDATE_UNCERTAIN: 2, CANDIDATE_SAME: 3}
+        # цель — проверить подозрительные связи: ручная реорганизация и
+        # mismatch/validation первыми (manual_confirmed_reorganized — приоритет)
+        prio = {CANDIDATE_MANUAL_REORG: -1, CANDIDATE_MISMATCH: 0,
+                CANDIDATE_VALIDATION: 1, CANDIDATE_UNCERTAIN: 2,
+                CANDIDATE_SAME: 3}
         eligible.sort(key=lambda c: (prio.get(c["candidate_kind"], 9),
                                      -c["candidate_score"]))
     else:
@@ -641,8 +777,10 @@ def select_vision_candidates_v2(visual_gate_report: Any, *,
                     if c["candidate_kind"] != CANDIDATE_MISMATCH]
             stats["mismatch_excluded"] = len(eligible) - len(kept)
             eligible = kept
-        prio = {CANDIDATE_SAME: 0, CANDIDATE_UNCERTAIN: 1,
-                CANDIDATE_VALIDATION: 2, CANDIDATE_MISMATCH: 3}
+        # manual_confirmed_reorganized (если include=true) — сразу после SAME
+        prio = {CANDIDATE_SAME: 0, CANDIDATE_MANUAL_REORG: 1,
+                CANDIDATE_UNCERTAIN: 2, CANDIDATE_VALIDATION: 3,
+                CANDIDATE_MISMATCH: 4}
         eligible.sort(key=lambda c: (prio.get(c["candidate_kind"], 9),
                                      -c["candidate_score"]))
 
@@ -751,7 +889,7 @@ def build_vision_prompt_for_block_pair(pair: dict, *,
 def build_graphic_vision_enrichment_plan(
         left_model: Any, right_model: Any, visual_gate_report: Any, *,
         left_graphic_report: Any = None, right_graphic_report: Any = None,
-        graphic_matched_report: Any = None,
+        graphic_matched_report: Any = None, overrides_report: Any = None,
         options: Optional[dict] = None) -> dict:
     """Построить план (items без vision-результатов) из готовых артефактов.
 
@@ -777,6 +915,7 @@ def build_graphic_vision_enrichment_plan(
             gate, left_graphic_report=left_graphic_report,
             right_graphic_report=right_graphic_report,
             graphic_matched_report=graphic_matched_report,
+            overrides_report=overrides_report,
             options=options)
     else:
         selected, stats, sel_warnings = select_blocks_for_vision(gate, options)
@@ -834,7 +973,7 @@ def build_graphic_vision_enrichment_plan(
         candidate_fields = {
             k: bp[k] for k in ("candidate_score", "candidate_rank",
                                "candidate_kind", "candidate_reasons",
-                               "candidate_risk_flags") if k in bp}
+                               "candidate_risk_flags", "manual_mapping") if k in bp}
         items.append({
             "item_id": item_id,
             **candidate_fields,
@@ -1337,7 +1476,7 @@ def _run_tiled_item(item: dict, *, left_block, right_block, left_pages,
 def run_graphic_vision_enrichment(
         left_model: Any, right_model: Any, visual_gate_report: Any, *,
         left_graphic_report: Any = None, right_graphic_report: Any = None,
-        graphic_matched_report: Any = None,
+        graphic_matched_report: Any = None, overrides_report: Any = None,
         options: Optional[dict] = None,
         vision_runner: Optional[VisionRunner] = None,
         crops_dir: Optional[str | Path] = None) -> dict:
@@ -1345,13 +1484,15 @@ def run_graphic_vision_enrichment(
 
     ``vision_runner=None`` → ``skipped_no_runner``: items с prompt/crop refs
     записаны, реальных вызовов нет. Ошибки runner'а/рендера — per-item
-    fail-soft.
+    fail-soft. ``overrides_report`` — прочитанный entity_mapping_overrides.json
+    (опц.); влияет на отбор только при ``use_entity_mapping_overrides=true``.
     """
     plan = build_graphic_vision_enrichment_plan(
         left_model, right_model, visual_gate_report,
         left_graphic_report=left_graphic_report,
         right_graphic_report=right_graphic_report,
         graphic_matched_report=graphic_matched_report,
+        overrides_report=overrides_report,
         options=options)
 
     warnings = list(plan.get("warnings") or [])

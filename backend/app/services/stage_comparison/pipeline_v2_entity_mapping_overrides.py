@@ -228,6 +228,67 @@ def overrides_by_identity(data: Any) -> dict:
     return out
 
 
+def index_overrides_for_lookup(data: Any) -> dict:
+    """Индексы поиска override'а по разным ключам (для wiring в selection).
+
+    Возвращает ``{by_block_pair, by_pair_key, by_label_pair, by_id}``:
+    ключи — (left_block_id, right_block_id) / pair_key / (left_label, right_label)
+    / mapping_id. Пустые/None-стороны допускаются (односторонние no_match).
+    """
+    by_block_pair: dict = {}
+    by_pair_key: dict = {}
+    by_label_pair: dict = {}
+    by_id: dict = {}
+    mappings = (data.get("mappings") if isinstance(data, dict) else None) or []
+    for m in mappings:
+        if not isinstance(m, dict):
+            continue
+        mid = m.get("mapping_id")
+        if mid:
+            by_id.setdefault(mid, m)
+        lb, rb = m.get("left_block_id"), m.get("right_block_id")
+        if lb or rb:
+            by_block_pair.setdefault((lb, rb), m)
+        pk = m.get("pair_key")
+        if pk:
+            by_pair_key.setdefault(pk, m)
+        ll, rl = m.get("left_entity_label"), m.get("right_entity_label")
+        if ll or rl:
+            by_label_pair.setdefault((ll, rl), m)
+    return {"by_block_pair": by_block_pair, "by_pair_key": by_pair_key,
+            "by_label_pair": by_label_pair, "by_id": by_id}
+
+
+def find_override_for_pair(index: Any, *, left_block_id: Optional[str] = None,
+                           right_block_id: Optional[str] = None,
+                           pair_key: Optional[str] = None,
+                           left_label: Optional[str] = None,
+                           right_label: Optional[str] = None,
+                           mapping_id: Optional[str] = None) -> Optional[dict]:
+    """Найти override по (block-ids → pair_key → labels → mapping_id), в этом
+    порядке приоритета. ``index`` — результат :func:`index_overrides_for_lookup`.
+    """
+    if not isinstance(index, dict):
+        return None
+    if mapping_id:
+        hit = index.get("by_id", {}).get(mapping_id)
+        if hit:
+            return hit
+    if left_block_id is not None or right_block_id is not None:
+        hit = index.get("by_block_pair", {}).get((left_block_id, right_block_id))
+        if hit:
+            return hit
+    if pair_key:
+        hit = index.get("by_pair_key", {}).get(pair_key)
+        if hit:
+            return hit
+    if left_label is not None or right_label is not None:
+        hit = index.get("by_label_pair", {}).get((left_label, right_label))
+        if hit:
+            return hit
+    return None
+
+
 def summarize_overrides(data: Any) -> dict:
     """Сводка по решениям (для summary preview-эндпоинта)."""
     mappings = (data.get("mappings") if isinstance(data, dict) else None) or []
@@ -391,5 +452,6 @@ __all__ = [
     "read_entity_mapping_overrides", "list_entity_mapping_overrides",
     "write_entity_mapping_overrides", "upsert_entity_mapping",
     "delete_entity_mapping", "overrides_by_identity", "summarize_overrides",
+    "index_overrides_for_lookup", "find_override_for_pair",
     "manual_status_for_decision", "_mapping_identity",
 ]

@@ -201,6 +201,78 @@ vision показал подмену сущности (OLD = ОЗДС/20кВ/SOT
 схем (ГРЩ/ВРУ-4/…, 0 штампов, 0 false-пар; mismatch_excluded=16 из 54);
 link_validation top5 начинается с ВРУ-1↔план ТП.
 
+## Manual entity mapping overrides in candidate selection (2026-06-12)
+
+Ручные решения инженера из `entity_mapping_overrides.json` (см.
+[stage_comparison_pipeline_v2_entity_alignment_preview.md](stage_comparison_pipeline_v2_entity_alignment_preview.md))
+переопределяют автоматическую классификацию при отборе кандидатов. Это
+**mark-only**: НЕ применяет block links, НЕ запускает vision/Qwen/Opus, НЕ
+создаёт замечаний — только меняет, какие пары попадают в enrichment /
+link_validation / исключаются.
+
+`select_vision_candidates_v2(..., overrides_report=...)` принимает прочитанный
+overrides-dict. Primary source — `entity_mapping_overrides.json`; матч
+кандидата → override ищется по приоритету **block-ids → pair_key → labels →
+mapping_id** (`index_overrides_for_lookup` / `find_override_for_pair` в
+[pipeline_v2_entity_mapping_overrides.py](../backend/app/services/stage_comparison/pipeline_v2_entity_mapping_overrides.py)).
+Если у блока есть `manual_mapping` в `entity_alignment_preview_report.json` — это
+вторичный источник, но primary всегда overrides-файл.
+
+| `manual_decision` | candidate_kind | enrichment | link_validation | reasons / risk_flags |
+|---|---|---|---|---|
+| `confirmed_same_entity` | `same_entity_likely` | да (score +0.4) | да (низкий приоритет) | `manual_confirmed_same_entity` |
+| `confirmed_rename` | `same_entity_likely` | да (score +0.3) | да (низкий приоритет) | `manual_confirmed_rename` |
+| `confirmed_reorganized` | `manual_confirmed_reorganized` | **нет** (default) | **да (первый приоритет)** | risk `manual_confirmed_reorganized` |
+| `rejected_mapping` | (исходный) | исключён | исключён (кроме debug) | `manual_rejected_mapping` |
+| `no_match` | (исходный) | исключён | исключён | `manual_no_match` |
+
+**Почему `confirmed_reorganized` по умолчанию идёт в link_validation, а не в
+enrichment.** Реорганизация = состав/нумерация щита изменились (ВРУ-3 OLD ↔
+ВРУ-2 NEW). Если прогнать такую пару через обычный enrichment блок-в-блок, почти
+каждый номинал/линия даст ложное `changed` (OLD/NEW-путаница). Поэтому такие
+пары — кандидаты на **целенаправленную проверку связи** (link_validation),
+а не на обычное описание одной сущности.
+
+Каждый затронутый кандидат получает поле `manual_mapping`:
+
+```json
+{"mapping_id": "...", "decision": "confirmed_reorganized",
+ "comment": "...", "source": "entity_mapping_overrides"}
+```
+
+плюс `candidate_reasons += ["manual_mapping:<decision>", ...]` и (где уместно)
+`candidate_risk_flags`. Manual decision переопределяет авто-`candidate_kind` —
+это видно в reasons (например, авто `mismatch_likely` → ручное
+`confirmed_same_entity` проходит в enrichment с reason
+`manual_mapping:confirmed_same_entity`).
+
+### Options
+
+```json
+{"graphic_vision": {
+  "use_entity_mapping_overrides": false,   // главный включатель (default OFF)
+  "manual_mapping_mode": "both",           // в каком selection_mode применять: enrichment|link_validation|both
+  "include_confirmed_reorganized": false,  // пускать reorg в enrichment с requires_human_review
+  "manual_mapping_debug": false            // link_validation: пускать rejected_mapping
+}}
+```
+
+`use_entity_mapping_overrides=false` (default) → поведение идентично прежнему
+(старые тесты зелёные). При `include_confirmed_reorganized=true` reorg-пара
+проходит в enrichment, но помечается `requires_human_review`.
+
+### Включить (controlled)
+
+1. Сохранить ручное решение в UI «🧩 Pipeline V2 сущности» (или PUT overrides).
+2. Передать `use_entity_mapping_overrides=true` в опции graphic_vision и
+   прочитанный `entity_mapping_overrides.json` как `overrides_report`.
+3. Для проверки реорганизованной пары — `selection_mode=link_validation`.
+
+Stats отбора дополнены: `manual_mapping_enabled`, `manual_mapping_applied`,
+`manual_excluded`, `by_manual_decision`.
+
+Тесты: [tests/test_stage_comparison_pipeline_v2_manual_mapping_selection.py](../tests/test_stage_comparison_pipeline_v2_manual_mapping_selection.py).
+
 ## Render options (high_res / tiled)
 
 ```json
