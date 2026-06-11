@@ -3497,3 +3497,29 @@ async def get_pipeline_v2_block_link_preview_endpoint(
     except ValueError as exc:
         # невалидный session_id/pair_id (path traversal и т.п.)
         raise HTTPException(400, str(exc)) from exc
+
+
+@router.get("/pipeline-v2/{session_id}/entity-alignment-preview")
+async def get_pipeline_v2_entity_alignment_preview_endpoint(
+        session_id: str, pair_id: Optional[str] = None,
+        classification: str = "all", limit: int = 100, offset: int = 0):
+    """Read-only mapping-aware entity alignment preview Pipeline V2.
+
+    Классифицирует графические пары OLD↔NEW (same_entity_likely /
+    possible_rename / scope_reorganized / mismatch_likely /
+    link_validation_candidate) + unpaired-сущности. Отдаёт готовый
+    entity_alignment_preview_report.json либо собирает его on-the-fly из
+    артефактов dry-run (visual gate + descriptors + models, опц. matched /
+    grounding). НИЧЕГО не запускает, не пишет, не вызывает модели; отсутствие
+    отчёта — обычный JSON {"status":"not_found"}, битый — {"status":"error"},
+    не 500. Фильтр classification + пагинация (limit clamp ≤500) применяются к
+    pairs; summary/unpaired_entities отдаются целиком. Raw-текст не отдаётся.
+    """
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_payload_mod.discover_entity_alignment_preview,
+            session_id, pair_id, classification=classification,
+            limit=limit, offset=offset)
+    except ValueError as exc:
+        # невалидный session_id/pair_id (path traversal и т.п.)
+        raise HTTPException(400, str(exc)) from exc

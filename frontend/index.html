@@ -5581,6 +5581,12 @@
                             title="Read-only превью предложенных Pipeline V2 связей блоков OLD↔NEW: страницы рядом, блоки подсвечены по статусу (strong/weak/manual review/без пары). Ничего не применяет и не меняет ручные связи.">
                         🔗 Pipeline V2 связи <span style="opacity:.55; font-size:10px">β</span>
                     </button>
+                    <button class="btn"
+                            :class="{'btn-primary': scPv2EaVisible, 'btn-secondary': !scPv2EaVisible}"
+                            @click="scPv2EaToggle()"
+                            title="Read-only Pipeline V2 «Сущности и маппинг»: классифицирует графические пары OLD↔NEW (та же сущность / переименование / реорганизация / mismatch / проверка связи) + сущности без пары. Ничего не применяет, ручной маппинг не подтверждает.">
+                        🧩 Pipeline V2 сущности <span style="opacity:.55; font-size:10px">β</span>
+                    </button>
                     <button class="btn btn-secondary" @click="scRunAutoLink()" :disabled="scLinking || scAnalysisMode==='concept_no_block_links'"
                             :title="scAnalysisMode==='concept_no_block_links' ? 'Недоступно в режиме «Блоки без связей»' : ''">Авто-связь по IoU</button>
                     <button class="btn btn-primary"
@@ -5764,6 +5770,141 @@
                     </template>
                     <div v-else-if="!scPv2LpLoading" style="opacity:.6; padding:6px 0">
                         Нажмите «Загрузить предложенные связи».
+                    </div>
+                </div>
+
+                <!-- Pipeline V2 — выравнивание сущностей (read-only, mark-only) -->
+                <div v-if="scPv2EaVisible" class="sc-card"
+                     style="background:#fff; border:1px solid #ddd6fe; border-radius:8px; padding:10px 12px; margin-bottom:10px; font-size:12px">
+                    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:8px">
+                        <strong style="color:#5b21b6">🧩 Pipeline V2 — сущности и маппинг</strong>
+                        <span style="opacity:.6">read-only: ничего не применяется, ручной маппинг не подтверждается</span>
+                        <div style="flex:1"></div>
+                        <select v-model="scPv2EaPairId" class="form-control" style="padding:3px 6px; font-size:12px; max-width:280px"
+                                title="Пара документов (по умолчанию — активная)">
+                            <option value="">— активная пара —</option>
+                            <option v-for="p in scPairs" :key="'pv2ea-'+p.id" :value="p.id">
+                                {{ (p.left && p.left.filename) || p.id }}
+                            </option>
+                        </select>
+                        <button class="btn btn-sm btn-primary" @click="scPv2EaLoad()" :disabled="scPv2EaLoading">
+                            {{ scPv2EaLoading ? 'Загрузка…' : 'Загрузить' }}
+                        </button>
+                        <button class="btn btn-sm btn-secondary" @click="scPv2EaVisible=false">Закрыть</button>
+                    </div>
+                    <!-- read-only note: manual mapping confirmation is a future stage -->
+                    <div style="background:#f5f3ff; color:#5b21b6; border:1px solid #ddd6fe; border-radius:6px; padding:5px 10px; margin-bottom:8px">
+                        ℹ Ручное подтверждение/перепривязка маппинга будет добавлено отдельным этапом. Сейчас это только наблюдение.
+                    </div>
+                    <!-- transport / HTTP errors -->
+                    <div v-if="scPv2EaError" style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; padding:6px 10px; margin-bottom:8px">
+                        {{ scPv2EaError }}
+                    </div>
+                    <!-- detail status=error -->
+                    <div v-else-if="scPv2EaRespError" style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; padding:6px 10px; margin-bottom:8px">
+                        Артефакты Pipeline V2 нечитаемы: {{ scPv2EaRespError }}
+                    </div>
+                    <!-- not_found: отчёта ещё нет — это норма, пока dry-run не записан -->
+                    <div v-else-if="scPv2EaNotFound" style="background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; padding:14px; text-align:center; color:#6b7280">
+                        Entity alignment preview ещё не построен для этой пары.<br>
+                        Появится после offline dry-run прогона Pipeline V2 для пары.
+                    </div>
+                    <template v-else-if="scPv2EaResp && scPv2EaSummary">
+                        <!-- Summary cards -->
+                        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:8px">
+                            <span style="background:#eef2ff; color:#3730a3; border-radius:10px; padding:2px 8px">пар: {{ scPv2EaSummary.graphic_pairs_total }}</span>
+                            <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:2px 8px">🟢 same: {{ scPv2EaSummary.same_entity_likely }}</span>
+                            <span style="background:#dbeafe; color:#1e40af; border-radius:10px; padding:2px 8px">🔵 rename: {{ scPv2EaSummary.possible_rename }}</span>
+                            <span style="background:#ffedd5; color:#9a3412; border-radius:10px; padding:2px 8px">🟠 реорг: {{ scPv2EaSummary.scope_reorganized }}</span>
+                            <span style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:2px 8px">🔴 mismatch: {{ scPv2EaSummary.mismatch_likely }}</span>
+                            <span style="background:#ede9fe; color:#5b21b6; border-radius:10px; padding:2px 8px">🟣 проверка связи: {{ scPv2EaSummary.link_validation_candidate }}</span>
+                            <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:2px 8px" title="possible_rename + scope_reorganized">✋ ручной маппинг: {{ scPv2EaSummary.needs_manual_mapping }}</span>
+                            <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:2px 8px">⚪ без пары: {{ scPv2EaSummary.unpaired_left }} / {{ scPv2EaSummary.unpaired_right }}</span>
+                        </div>
+                        <!-- Filters -->
+                        <div style="display:flex; gap:4px; flex-wrap:wrap; margin-bottom:8px">
+                            <button v-for="f in SC_PV2_EA_FILTERS" :key="'pv2eaf-'+f.key"
+                                    class="btn btn-sm"
+                                    :class="scPv2EaFilter===f.key ? 'btn-primary' : 'btn-secondary'"
+                                    style="padding:1px 8px; font-size:11px"
+                                    @click="scPv2EaFilter=f.key">{{ f.label }}</button>
+                            <span style="margin-left:auto; opacity:.6; align-self:center">показано пар: {{ scPv2EaFilteredPairs.length }}</span>
+                        </div>
+                        <!-- Pair cards -->
+                        <div v-if="scPv2EaShowPairs" style="display:flex; flex-direction:column; gap:6px; max-height:560px; overflow:auto">
+                            <div v-for="(p, i) in scPv2EaFilteredPairs" :key="'pv2eapair-'+i"
+                                 :style="{borderLeft: '4px solid ' + scPv2EaClassMeta(p.classification).color, border:'1px solid #e5e7eb', borderRadius:'6px', padding:'6px 10px', background:'#fafafa'}">
+                                <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:4px">
+                                    <span :style="{background: scPv2EaClassMeta(p.classification).bg, color: scPv2EaClassMeta(p.classification).fg, borderRadius:'10px', padding:'1px 8px', fontWeight:600}">
+                                        {{ scPv2EaClassMeta(p.classification).icon }} {{ scPv2EaClassMeta(p.classification).label }}
+                                    </span>
+                                    <span v-if="scPv2EaConfPct(p)" style="opacity:.7">уверенность: {{ scPv2EaConfPct(p) }}</span>
+                                    <span v-if="p.entity_family" style="background:#f1f5f9; color:#475569; border-radius:10px; padding:1px 8px">{{ p.entity_family }}</span>
+                                    <div style="flex:1"></div>
+                                    <button class="btn btn-sm btn-secondary" style="padding:1px 8px; font-size:11px"
+                                            @click="scPv2EaOpenBlockLink(p)"
+                                            title="Read-only переход в «Связь блоков» с подсветкой этой пары. Связь не применяется.">
+                                        🔗 Открыть связь блоков
+                                    </button>
+                                </div>
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px">
+                                    <div style="border-right:1px dashed #e5e7eb; padding-right:8px">
+                                        <div><span style="opacity:.55">OLD:</span> <b>{{ p.left_entity_label || '—' }}</b>
+                                            <span style="opacity:.6"> · стр. {{ p.left_page_number ?? '—' }}</span></div>
+                                        <div style="opacity:.6"><code>{{ p.left_block_id || '—' }}</code></div>
+                                        <div v-if="p.left_sheet_name" style="opacity:.7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis" :title="p.left_sheet_name">{{ p.left_sheet_name }}</div>
+                                    </div>
+                                    <div>
+                                        <div><span style="opacity:.55">NEW:</span> <b>{{ p.right_entity_label || '—' }}</b>
+                                            <span style="opacity:.6"> · стр. {{ p.right_page_number ?? '—' }}</span></div>
+                                        <div style="opacity:.6"><code>{{ p.right_block_id || '—' }}</code></div>
+                                        <div v-if="p.right_sheet_name" style="opacity:.7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis" :title="p.right_sheet_name">{{ p.right_sheet_name }}</div>
+                                    </div>
+                                </div>
+                                <div v-if="p.recommended_action" style="margin-top:4px; opacity:.8">Рекомендация: <b>{{ p.recommended_action }}</b></div>
+                                <div v-if="(p.reasons||[]).length" style="margin-top:4px; display:flex; gap:4px; flex-wrap:wrap">
+                                    <span v-for="(r, ri) in p.reasons" :key="'pv2ear-'+i+'-'+ri"
+                                          style="background:#f1f5f9; color:#475569; border-radius:8px; padding:1px 6px; font-size:11px">{{ r }}</span>
+                                </div>
+                                <div v-if="(p.risk_flags||[]).length" style="margin-top:4px; color:#9a3412">
+                                    ⚠ <span v-for="(rf, rfi) in p.risk_flags" :key="'pv2earf-'+i+'-'+rfi"
+                                          style="background:#ffedd5; border-radius:8px; padding:1px 6px; font-size:11px; margin-right:4px">{{ rf }}</span>
+                                </div>
+                            </div>
+                            <div v-if="!scPv2EaFilteredPairs.length" style="padding:10px; opacity:.6; text-align:center">
+                                Нет пар в этой категории.
+                            </div>
+                        </div>
+                        <!-- Unpaired entities (manual mapping needed) -->
+                        <details v-if="scPv2EaShowUnpaired && ((scPv2EaUnpaired.left||[]).length || (scPv2EaUnpaired.right||[]).length)"
+                                 open style="margin-top:10px; border-top:1px solid #eee; padding-top:6px">
+                            <summary style="cursor:pointer; color:#5b21b6; font-weight:600">
+                                Сущности без пары — требуют ручного маппинга (OLD {{ (scPv2EaUnpaired.left||[]).length }} / NEW {{ (scPv2EaUnpaired.right||[]).length }})
+                            </summary>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px">
+                                <div style="border:1px solid #e5e7eb; border-radius:6px; max-height:300px; overflow:auto">
+                                    <div style="position:sticky; top:0; background:#f1f5f9; padding:4px 8px; font-weight:600; border-bottom:1px solid #e5e7eb">Старая стадия (OLD)</div>
+                                    <div v-for="(e, i) in scPv2EaUnpaired.left" :key="'pv2eaul-'+i" style="padding:4px 8px; border-bottom:1px solid #f3f4f6">
+                                        <b>{{ e.entity_label }}</b>
+                                        <span v-if="e.graphic_type" style="opacity:.6"> · {{ e.graphic_type }}</span>
+                                        <div v-if="e.sheet_name" style="opacity:.7; font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis" :title="e.sheet_name">{{ e.sheet_name }}</div>
+                                    </div>
+                                    <div v-if="!(scPv2EaUnpaired.left||[]).length" style="padding:8px; opacity:.6">Нет</div>
+                                </div>
+                                <div style="border:1px solid #e5e7eb; border-radius:6px; max-height:300px; overflow:auto">
+                                    <div style="position:sticky; top:0; background:#f1f5f9; padding:4px 8px; font-weight:600; border-bottom:1px solid #e5e7eb">Новая стадия (NEW)</div>
+                                    <div v-for="(e, i) in scPv2EaUnpaired.right" :key="'pv2eaur-'+i" style="padding:4px 8px; border-bottom:1px solid #f3f4f6">
+                                        <b>{{ e.entity_label }}</b>
+                                        <span v-if="e.graphic_type" style="opacity:.6"> · {{ e.graphic_type }}</span>
+                                        <div v-if="e.sheet_name" style="opacity:.7; font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis" :title="e.sheet_name">{{ e.sheet_name }}</div>
+                                    </div>
+                                    <div v-if="!(scPv2EaUnpaired.right||[]).length" style="padding:8px; opacity:.6">Нет</div>
+                                </div>
+                            </div>
+                        </details>
+                    </template>
+                    <div v-else-if="!scPv2EaLoading" style="opacity:.6; padding:6px 0">
+                        Нажмите «Загрузить».
                     </div>
                 </div>
 

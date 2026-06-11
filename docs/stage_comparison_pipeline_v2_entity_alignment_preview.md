@@ -162,7 +162,44 @@ pipeline). `options.entity_alignment_preview.enabled=false` отключает.
 }
 ```
 
-Frontend в этой задаче НЕ менялся.
+## Read-only endpoint + UI (runtime)
+
+`GET /api/stage-comparison/pipeline-v2/{session_id}/entity-alignment-preview`
+(`?pair_id=&classification=&limit=&offset=`) — read-only выдача
+([pipeline_v2_payload_service.discover_entity_alignment_preview](../backend/app/services/stage_comparison/pipeline_v2_payload_service.py)
+→ [pipeline_v2_entity_alignment_detail.build_entity_alignment_detail](../backend/app/services/stage_comparison/pipeline_v2_entity_alignment_detail.py)):
+
+- отдаёт готовый `entity_alignment_preview_report.json`, либо собирает его
+  **on-the-fly** из артефактов dry-run (visual gate + descriptors + models +
+  опц. matched/grounding) — ничего не пишет, не запускает, не вызывает модели;
+- статусы: `ok` (готовый/собранный), `not_found` (нет ни отчёта, ни gate),
+  `error` (битый JSON) — НЕ 404/500;
+- фильтр `classification` (`same_entity_likely` … `link_validation_candidate` /
+  `all`) и пагинация (`limit` clamp ≤500, `offset`) применяются к `pairs`;
+  `summary` и `unpaired_entities` отдаются целиком;
+- **no raw leak**: pairs/evidence режутся по whitelist'у (только скаляры/булевы
+  признаки + короткий `visual_status`), длинные имена листов усекаются; raw
+  Qwen / большие anchor-тексты не отдаются (тест `test_8_no_raw_text_leak`);
+- путь НЕ в auth-exempt (PortalAuthMiddleware отдаёт 401 анониму).
+
+**Frontend** (read-only панель в «Сравнение стадий → 2. Связь блоков»):
+кнопка **«🧩 Pipeline V2 сущности β»** рядом с «🔗 Pipeline V2 связи β»
+открывает панель `scPv2Ea*` ([app.js](../frontend/static/js/app.js)):
+
+- summary-карточки (same/rename/scope/mismatch/link_validation/needs_manual_mapping/unpaired);
+- фильтры по классу + «Без пары»; карточки пар OLD↔NEW с цветом класса,
+  уверенностью, reasons, risk_flags, рекомендацией;
+- список unpaired-сущностей (OLD/NEW) — «требует ручного маппинга»;
+- read-only переход **«🔗 Открыть связь блоков»** (переиспользует мост
+  `scPv2OpenBlockLinkFromGrounding` → подсветка пары в «Связь блоков», связь НЕ
+  применяется);
+- **никаких** кнопок «Подтвердить / Перепривязать / Применить» — явная пометка,
+  что ручной маппинг это будущий этап (`test`: read-only contract по
+  index.html / app.js).
+
+Тесты: [tests/test_stage_comparison_pipeline_v2_entity_alignment_endpoint.py](../tests/test_stage_comparison_pipeline_v2_entity_alignment_endpoint.py)
+(10 backend-кейсов), [frontend/tests/pipeline_v2_panel.test.js](../frontend/tests/pipeline_v2_panel.test.js)
+(блок «Entity Alignment …»: summary/cards/filters/states + read-only contract).
 
 ## Будущий wiring в graphic vision selection (НЕ в этой задаче)
 

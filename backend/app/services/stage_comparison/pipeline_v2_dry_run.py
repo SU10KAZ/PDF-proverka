@@ -936,6 +936,23 @@ def write_pipeline_v2_summary_md(out_path: str | Path, summary: dict,
         lines.append(f"- ⚠ Ошибка block link preview: {blp['error']}")
     lines.append("")
 
+    eap = summary.get("entity_alignment_preview", {}) or {}
+    if eap.get("enabled") or eap.get("status") not in (None, "disabled"):
+        lines.append("## Entity alignment preview (mark-only, сущности OLD↔NEW)")
+        lines.append(f"- Status: `{eap.get('status', 'unknown')}`")
+        lines.append(f"- Графических пар: {eap.get('graphic_pairs_total', 0)}")
+        lines.append(f"- same_entity_likely={eap.get('same_entity_likely', 0)}, "
+                     f"possible_rename={eap.get('possible_rename', 0)}, "
+                     f"scope_reorganized={eap.get('scope_reorganized', 0)}, "
+                     f"mismatch_likely={eap.get('mismatch_likely', 0)}, "
+                     f"link_validation_candidate={eap.get('link_validation_candidate', 0)}")
+        lines.append(f"- needs_manual_mapping={eap.get('needs_manual_mapping', 0)}, "
+                     f"unpaired: left={eap.get('unpaired_left', 0)} / "
+                     f"right={eap.get('unpaired_right', 0)}")
+        if eap.get("error"):
+            lines.append(f"- ⚠ Ошибка entity alignment preview: {eap['error']}")
+        lines.append("")
+
     gv = summary.get("graphic_vision", {}) or {}
     lines.append("## Graphic vision enrichment (после visual gate)")
     lines.append(f"- Status: `{gv.get('status', 'unknown')}`")

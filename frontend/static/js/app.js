@@ -14593,6 +14593,144 @@ const app = createApp({
             scPv2GdJumpWarning.value = '';
         }
 
+        // ─── Stage Comparison: Pipeline V2 Entity Alignment Preview ──────────
+        // Read-only «Сущности и маппинг»: GET /api/stage-comparison/pipeline-v2/
+        // {sid}/entity-alignment-preview?pair_id=. Классифицирует графические
+        // пары OLD↔NEW (same_entity_likely / possible_rename / scope_reorganized
+        // / mismatch_likely / link_validation_candidate) + unpaired-сущности.
+        // Ничего не применяет: подтверждения/перепривязки маппинга НЕТ (это
+        // отдельный будущий этап). Никаких job'ов, моделей, мутаций.
+        const scPv2EaVisible = ref(false);
+        const scPv2EaLoading = ref(false);
+        const scPv2EaError = ref('');
+        const scPv2EaResp = ref(null);         // detail {status, summary, pairs, unpaired_entities, …}
+        const scPv2EaPairId = ref('');
+        const scPv2EaFilter = ref('all');      // all|<classification>|unpaired
+        let scPv2EaReqSeq = 0;
+
+        const SC_PV2_EA_CLASS_META = {
+            same_entity_likely:        { label: 'Same entity', icon: '🟢', color: '#16a34a', bg: '#dcfce7', fg: '#166534' },
+            possible_rename:           { label: 'Возможно переименование', icon: '🔵', color: '#2563eb', bg: '#dbeafe', fg: '#1e40af' },
+            scope_reorganized:         { label: 'Реорганизация', icon: '🟠', color: '#ea580c', bg: '#ffedd5', fg: '#9a3412' },
+            mismatch_likely:           { label: 'Mismatch', icon: '🔴', color: '#dc2626', bg: '#fee2e2', fg: '#991b1b' },
+            link_validation_candidate: { label: 'Проверка связи', icon: '🟣', color: '#7c3aed', bg: '#ede9fe', fg: '#5b21b6' },
+        };
+        const SC_PV2_EA_FILTERS = [
+            { key: 'all', label: 'Все' },
+            { key: 'same_entity_likely', label: '🟢 Same entity' },
+            { key: 'scope_reorganized', label: '🟠 Реорганизация' },
+            { key: 'mismatch_likely', label: '🔴 Mismatch' },
+            { key: 'link_validation_candidate', label: '🟣 Проверка связи' },
+            { key: 'unpaired', label: '⚪ Без пары' },
+        ];
+
+        const scPv2EaSummary = computed(() =>
+            (scPv2EaResp.value && scPv2EaResp.value.summary) || null);
+        const scPv2EaPairs = computed(() =>
+            (scPv2EaResp.value && scPv2EaResp.value.pairs) || []);
+        const scPv2EaUnpaired = computed(() =>
+            (scPv2EaResp.value && scPv2EaResp.value.unpaired_entities) || { left: [], right: [] });
+        const scPv2EaNotFound = computed(() =>
+            !!scPv2EaResp.value && scPv2EaResp.value.status === 'not_found');
+        const scPv2EaRespError = computed(() =>
+            (scPv2EaResp.value && scPv2EaResp.value.status === 'error')
+                ? ((scPv2EaResp.value.warnings || []).join('; ')
+                   || scPv2EaResp.value.message || 'error')
+                : '');
+        const scPv2EaShowUnpaired = computed(() =>
+            scPv2EaFilter.value === 'all' || scPv2EaFilter.value === 'unpaired');
+        const scPv2EaShowPairs = computed(() => scPv2EaFilter.value !== 'unpaired');
+        const scPv2EaFilteredPairs = computed(() => {
+            const f = scPv2EaFilter.value;
+            if (f === 'unpaired') return [];
+            if (!f || f === 'all') return scPv2EaPairs.value;
+            return scPv2EaPairs.value.filter((p) => p.classification === f);
+        });
+        function scPv2EaClassMeta(c) {
+            return SC_PV2_EA_CLASS_META[c]
+                || { label: c || '—', icon: '⚪', color: '#6b7280', bg: '#f3f4f6', fg: '#6b7280' };
+        }
+        function scPv2EaConfPct(p) {
+            const c = p && p.confidence;
+            return (typeof c === 'number') ? Math.round(c * 100) + '%' : '';
+        }
+        function scPv2EaEffectivePairId() {
+            return scPv2EaPairId.value
+                || (scActivePair.value && scActivePair.value.id) || '';
+        }
+        async function scPv2EaLoad() {
+            const sid = scSession.value && scSession.value.id;
+            const pid = scPv2EaEffectivePairId();
+            if (!sid || !pid) return;
+            const myReq = ++scPv2EaReqSeq;
+            scPv2EaLoading.value = true;
+            scPv2EaError.value = '';
+            const url = '/api/stage-comparison/pipeline-v2/'
+                + encodeURIComponent(sid)
+                + '/entity-alignment-preview?pair_id=' + encodeURIComponent(pid)
+                + '&limit=500';
+            try {
+                const r = await fetch(url);
+                if (myReq !== scPv2EaReqSeq) return;   // устаревший ответ
+                if (r.status === 401 || r.status === 403) {
+                    scPv2EaResp.value = null;
+                    scPv2EaError.value = 'Доступ запрещён (' + r.status
+                        + '). Войдите в портал заново.';
+                    return;
+                }
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const j = await r.json();
+                if (myReq !== scPv2EaReqSeq) return;   // устаревший ответ
+                scPv2EaResp.value = j;
+            } catch (e) {
+                if (myReq !== scPv2EaReqSeq) return;
+                scPv2EaResp.value = null;
+                scPv2EaError.value = String((e && e.message) || e);
+            } finally {
+                if (myReq === scPv2EaReqSeq) scPv2EaLoading.value = false;
+            }
+        }
+        function scPv2EaToggle() {
+            scPv2EaVisible.value = !scPv2EaVisible.value;
+            if (scPv2EaVisible.value && !scPv2EaResp.value
+                    && !scPv2EaLoading.value) {
+                scPv2EaPairId.value = scPv2EaEffectivePairId();
+                scPv2EaLoad();
+            }
+        }
+        function scPv2EaReset() {
+            scPv2EaReqSeq++;
+            scPv2EaVisible.value = false;
+            scPv2EaResp.value = null;
+            scPv2EaError.value = '';
+            scPv2EaLoading.value = false;
+            scPv2EaPairId.value = '';
+            scPv2EaFilter.value = 'all';
+        }
+        watch(() => (scSession.value && scSession.value.id) || '', scPv2EaReset);
+        watch(() => (scActivePair.value && scActivePair.value.id) || '', scPv2EaReset);
+        watch(scPv2EaPairId, () => {
+            scPv2EaReqSeq++;
+            scPv2EaResp.value = null;
+            scPv2EaError.value = '';
+            scPv2EaLoading.value = false;
+        });
+        // Read-only jump: карточка выравнивания сущностей → block link preview.
+        // Переиспользует существующий мост (scPv2OpenBlockLinkFromGrounding):
+        // НЕ применяет связь, только подсвечивает её в панели «Связь блоков».
+        function scPv2EaOpenBlockLink(p) {
+            if (!p) return;
+            scPv2OpenBlockLinkFromGrounding({
+                item_id: '',
+                left_block_id: p.left_block_id,
+                right_block_id: p.right_block_id,
+                left_page_number: p.left_page_number,
+                right_page_number: p.right_page_number,
+                value: (p.left_entity_label || p.right_entity_label
+                        || p.entity_family || ''),
+            });
+        }
+
         return {
             // Theme
             theme, toggleTheme,
@@ -14876,6 +15014,13 @@ const app = createApp({
             scPv2LpPageImageUrl, scPv2LpOverlayStyle, scPv2LpStatusColor,
             scPv2LpSelectLink, scPv2LpSelectPage, scPv2LpLoad, scPv2LpToggle,
             SC_PV2_LP_FILTERS,
+            // Pipeline V2 Entity Alignment Preview («Сущности и маппинг», read-only)
+            scPv2EaVisible, scPv2EaLoading, scPv2EaError, scPv2EaResp,
+            scPv2EaPairId, scPv2EaFilter, scPv2EaSummary, scPv2EaPairs,
+            scPv2EaUnpaired, scPv2EaNotFound, scPv2EaRespError,
+            scPv2EaShowUnpaired, scPv2EaShowPairs, scPv2EaFilteredPairs,
+            scPv2EaClassMeta, scPv2EaConfPct, scPv2EaLoad, scPv2EaToggle,
+            scPv2EaOpenBlockLink, SC_PV2_EA_FILTERS,
             // Saved canonical config (one-click apply/save)
             scSavedConfig, scSavedConfigSaving, scSavedConfigMsg,
             scLoadSavedConfig, scApplySavedConfig, scSaveCurrentAsCanonical,

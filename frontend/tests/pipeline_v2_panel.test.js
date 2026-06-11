@@ -17,6 +17,11 @@
  *   cd frontend && npm test
  */
 import { describe, it, expect } from 'vitest';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // ── зеркала pure-helpers из app.js (scPv2*) ─────────────────────────────────
 
@@ -967,5 +972,229 @@ describe('Pipeline V2 — evidence + critic verdict chips', () => {
     expect(scPv2GeVerdictBreakdown([]).total).toBe(0);
     expect(scPv2GeVerdictBreakdown(null).total).toBe(0);
     expect(scPv2GeVerdictBreakdown([{cards: null}]).total).toBe(0);
+  });
+});
+
+// ── Pipeline V2 — Entity Alignment Preview («Сущности и маппинг», read-only) ──
+//
+// Зеркало pure-логики панели scPv2Ea* из app.js + контрактные проверки
+// read-only / отсутствия apply-кнопок прямо по файлам index.html / app.js.
+
+const SC_PV2_EA_CLASS_META = {
+  same_entity_likely:        { label: 'Same entity', icon: '🟢', color: '#16a34a', bg: '#dcfce7', fg: '#166534' },
+  possible_rename:           { label: 'Возможно переименование', icon: '🔵', color: '#2563eb', bg: '#dbeafe', fg: '#1e40af' },
+  scope_reorganized:         { label: 'Реорганизация', icon: '🟠', color: '#ea580c', bg: '#ffedd5', fg: '#9a3412' },
+  mismatch_likely:           { label: 'Mismatch', icon: '🔴', color: '#dc2626', bg: '#fee2e2', fg: '#991b1b' },
+  link_validation_candidate: { label: 'Проверка связи', icon: '🟣', color: '#7c3aed', bg: '#ede9fe', fg: '#5b21b6' },
+};
+function scPv2EaClassMeta(c) {
+  return SC_PV2_EA_CLASS_META[c]
+      || { label: c || '—', icon: '⚪', color: '#6b7280', bg: '#f3f4f6', fg: '#6b7280' };
+}
+function scPv2EaConfPct(p) {
+  const c = p && p.confidence;
+  return (typeof c === 'number') ? Math.round(c * 100) + '%' : '';
+}
+function scPv2EaFilteredPairs(pairs, f) {
+  pairs = pairs || [];
+  if (f === 'unpaired') return [];
+  if (!f || f === 'all') return pairs;
+  return pairs.filter((p) => p.classification === f);
+}
+function scPv2EaShowUnpaired(f) { return f === 'all' || f === 'unpaired'; }
+function scPv2EaShowPairs(f) { return f !== 'unpaired'; }
+// state-machine ответа панели (detail-формат: status/available)
+function scPv2EaViewState(httpStatus, resp) {
+  if (httpStatus === 401 || httpStatus === 403) return 'access_denied';
+  if (httpStatus !== 200) return 'transport_error';
+  if (!resp) return 'transport_error';
+  if (resp.status === 'not_found') return 'empty_state';
+  if (resp.status === 'error') return 'resp_error';
+  if (resp.status === 'ok' && resp.summary) return 'ok';
+  return 'idle';
+}
+
+// runtime ИОС1.1 значения (как в build/runtime smoke)
+const EA_REAL = {
+  status: 'ok', available: true,
+  kind: 'stage_comparison_pipeline_v2_entity_alignment_preview',
+  summary: {
+    graphic_pairs_total: 54, same_entity_likely: 7, possible_rename: 0,
+    scope_reorganized: 5, mismatch_likely: 17, link_validation_candidate: 25,
+    needs_manual_mapping: 5, unpaired_left: 22, unpaired_right: 21,
+  },
+  pairs: [
+    { pair_key: 'a__b', left_block_id: '9T7M', right_block_id: 'DW7M',
+      left_page_number: 28, right_page_number: 27, left_entity_label: 'ВРУ-3',
+      right_entity_label: 'ВРУ-3', entity_family: 'ВРУ',
+      classification: 'same_entity_likely', confidence: 0.9,
+      recommended_action: 'use_for_enrichment',
+      reasons: ['entity id совпадает'], risk_flags: [], evidence: {} },
+    { pair_key: 'c__d', left_block_id: 'EYMU', right_block_id: 'PNNH',
+      left_page_number: 27, right_page_number: 26, left_entity_label: 'ВРУ-3',
+      right_entity_label: 'ВРУ-2', entity_family: 'ВРУ',
+      classification: 'scope_reorganized', confidence: 0.6,
+      recommended_action: 'manual_mapping',
+      reasons: ['numbered_entity_conflict', 'equipment overlap insufficient'],
+      risk_flags: ['numbered_conflict'], evidence: {} },
+    { pair_key: 'e__f', left_block_id: 'EQRC', right_block_id: '64E3',
+      left_page_number: 34, right_page_number: 33, left_entity_label: 'ЯК-3',
+      right_entity_label: 'ЩО-1', entity_family: 'ЯК',
+      classification: 'mismatch_likely', confidence: 0.85,
+      recommended_action: 'exclude_from_enrichment',
+      reasons: ['family_conflict'], risk_flags: [], evidence: {} },
+    { pair_key: 'g__h', left_block_id: 'XX', right_block_id: 'YY',
+      left_page_number: 40, right_page_number: 41, left_entity_label: null,
+      right_entity_label: null, entity_family: null,
+      classification: 'link_validation_candidate', confidence: 0.4,
+      recommended_action: 'link_validation_only', reasons: [], risk_flags: [],
+      evidence: {} },
+  ],
+  unpaired_entities: {
+    left: [{ entity_label: 'ЩО-7', family: 'ЩО', graphic_type: 'scheme',
+             sheet_name: 'Схема ЩО-7', block_ids: ['z1'] }],
+    right: [{ entity_label: 'ВРУ-А', family: 'ВРУ', graphic_type: 'scheme',
+              sheet_name: 'Схема ВРУ-А', block_ids: ['z2'] }],
+  },
+  warnings: [],
+};
+
+describe('Pipeline V2 — Entity Alignment summary', () => {
+  it('1. summary рендерится со всеми классами (runtime ИОС1.1)', () => {
+    const s = EA_REAL.summary;
+    expect(s.graphic_pairs_total).toBe(54);
+    expect(s.same_entity_likely).toBe(7);
+    expect(s.possible_rename).toBe(0);
+    expect(s.scope_reorganized).toBe(5);
+    expect(s.mismatch_likely).toBe(17);
+    expect(s.link_validation_candidate).toBe(25);
+    expect(s.needs_manual_mapping).toBe(5);
+    expect(s.unpaired_left).toBe(22);
+    expect(s.unpaired_right).toBe(21);
+  });
+  it('2. classMeta даёт цвет/иконку для каждого класса + fallback', () => {
+    expect(scPv2EaClassMeta('same_entity_likely').color).toBe('#16a34a');
+    expect(scPv2EaClassMeta('scope_reorganized').icon).toBe('🟠');
+    expect(scPv2EaClassMeta('mismatch_likely').fg).toBe('#991b1b');
+    expect(scPv2EaClassMeta('totally_unknown_future').label).toBe('totally_unknown_future');
+  });
+  it('3. confidence форматируется в проценты, нет числа → пусто', () => {
+    expect(scPv2EaConfPct({ confidence: 0.9 })).toBe('90%');
+    expect(scPv2EaConfPct({ confidence: 0 })).toBe('0%');
+    expect(scPv2EaConfPct({})).toBe('');
+    expect(scPv2EaConfPct(null)).toBe('');
+  });
+});
+
+describe('Pipeline V2 — Entity Alignment cards', () => {
+  it('1. same_entity_likely карточка рендерится (ВРУ-3↔ВРУ-3)', () => {
+    const c = EA_REAL.pairs.find((p) => p.classification === 'same_entity_likely');
+    expect(c.left_entity_label).toBe('ВРУ-3');
+    expect(c.right_entity_label).toBe('ВРУ-3');
+    expect(scPv2EaClassMeta(c.classification).label).toBe('Same entity');
+  });
+  it('2. scope_reorganized карточка рендерится (ВРУ-3↔ВРУ-2)', () => {
+    const c = EA_REAL.pairs.find((p) => p.classification === 'scope_reorganized');
+    expect(c.left_entity_label).toBe('ВРУ-3');
+    expect(c.right_entity_label).toBe('ВРУ-2');
+    expect(c.recommended_action).toBe('manual_mapping');
+    expect(c.reasons.length).toBeGreaterThan(0);
+  });
+  it('3. mismatch_likely карточка рендерится (ЯК↔ЩО)', () => {
+    const c = EA_REAL.pairs.find((p) => p.classification === 'mismatch_likely');
+    expect(c.left_entity_label).toBe('ЯК-3');
+    expect(c.right_entity_label).toBe('ЩО-1');
+    expect(scPv2EaClassMeta(c.classification).icon).toBe('🔴');
+  });
+  it('4. карточка без меток/семьи не падает (фолбэк —)', () => {
+    const c = EA_REAL.pairs.find((p) => p.classification === 'link_validation_candidate');
+    const lbl = c.left_entity_label || '—';
+    expect(lbl).toBe('—');
+    expect(scPv2EaConfPct(c)).toBe('40%');
+  });
+  it('5. unpaired state рендерится (left/right)', () => {
+    expect(EA_REAL.unpaired_entities.left[0].entity_label).toBe('ЩО-7');
+    expect(EA_REAL.unpaired_entities.right[0].entity_label).toBe('ВРУ-А');
+    expect(scPv2EaShowUnpaired('all')).toBe(true);
+    expect(scPv2EaShowUnpaired('unpaired')).toBe(true);
+    expect(scPv2EaShowUnpaired('mismatch_likely')).toBe(false);
+  });
+});
+
+describe('Pipeline V2 — Entity Alignment filters / states', () => {
+  it('1. фильтр classification отбирает только нужный класс', () => {
+    expect(scPv2EaFilteredPairs(EA_REAL.pairs, 'all').length).toBe(4);
+    expect(scPv2EaFilteredPairs(EA_REAL.pairs, 'same_entity_likely').length).toBe(1);
+    expect(scPv2EaFilteredPairs(EA_REAL.pairs, 'mismatch_likely')
+      .every((p) => p.classification === 'mismatch_likely')).toBe(true);
+  });
+  it('2. фильтр unpaired скрывает карточки пар, показывает unpaired', () => {
+    expect(scPv2EaFilteredPairs(EA_REAL.pairs, 'unpaired').length).toBe(0);
+    expect(scPv2EaShowPairs('unpaired')).toBe(false);
+    expect(scPv2EaShowUnpaired('unpaired')).toBe(true);
+  });
+  it('3. missing report (not_found) → empty-state, панель не падает', () => {
+    expect(scPv2EaViewState(200, { status: 'not_found', available: false })).toBe('empty_state');
+  });
+  it('4. битый report (error) → resp_error, не 500', () => {
+    expect(scPv2EaViewState(200, { status: 'error', available: false, warnings: ['x'] })).toBe('resp_error');
+  });
+  it('5. 401/403 → отказ в доступе; ok+summary → ok', () => {
+    expect(scPv2EaViewState(401, null)).toBe('access_denied');
+    expect(scPv2EaViewState(403, null)).toBe('access_denied');
+    expect(scPv2EaViewState(200, EA_REAL)).toBe('ok');
+  });
+});
+
+describe('Pipeline V2 — Entity Alignment read-only contract (files)', () => {
+  const indexHtml = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  const appJs = fs.readFileSync(path.join(__dirname, '..', 'static', 'js', 'app.js'), 'utf8');
+
+  function eaPanelBlock() {
+    const start = indexHtml.indexOf('Pipeline V2 — выравнивание сущностей');
+    const end = indexHtml.indexOf('One-click авто-сопоставление листов: ошибка', start);
+    expect(start).toBeGreaterThan(0);
+    expect(end).toBeGreaterThan(start);
+    return indexHtml.slice(start, end);
+  }
+  function eaJsBlock() {
+    const start = appJs.indexOf('Pipeline V2 Entity Alignment Preview');
+    const end = appJs.indexOf('return {', start);
+    expect(start).toBeGreaterThan(0);
+    expect(end).toBeGreaterThan(start);
+    return appJs.slice(start, end);
+  }
+
+  it('1. панель сущностей присутствует с summary-карточками и фильтрами', () => {
+    const blk = eaPanelBlock();
+    expect(blk).toContain('🧩 Pipeline V2 — сущности и маппинг');
+    expect(blk).toContain('SC_PV2_EA_FILTERS');
+    expect(blk).toContain('same:');        // summary card
+    expect(blk).toContain('mismatch:');
+    expect(blk).toContain('без пары:');
+  });
+  it('2. НЕТ кнопок apply/confirm/rebind (только наблюдение)', () => {
+    const blk = eaPanelBlock();
+    for (const forbidden of ['Подтвердить', 'Перепривязать', 'Применить', 'Принять связь']) {
+      expect(blk).not.toContain(forbidden);
+    }
+    // явная пометка, что ручной маппинг — будущий этап
+    expect(blk).toContain('будет добавлено отдельным этапом');
+  });
+  it('3. есть read-only jump «Открыть связь блоков»', () => {
+    expect(eaPanelBlock()).toContain('Открыть связь блоков');
+  });
+  it('4. fetch — это GET к entity-alignment-preview, без POST/PUT/DELETE', () => {
+    const blk = eaJsBlock();
+    expect(blk).toContain("/entity-alignment-preview?pair_id=");
+    expect(blk).not.toMatch(/method:\s*['"](POST|PUT|DELETE|PATCH)['"]/);
+    expect(blk).not.toContain('md-enrichment-jobs');
+    expect(blk).not.toContain('unified-analysis');
+  });
+  it('5. старые панели не тронуты (block link preview + ui-payload живы)', () => {
+    expect(appJs).toContain('scPv2LpToggle');         // block link preview
+    expect(appJs).toContain('/block-link-preview?pair_id=');
+    expect(indexHtml).toContain('🔗 Pipeline V2 связи');
+    expect(appJs).toContain('/ui-payload');           // основная панель Pipeline V2 жива
   });
 });

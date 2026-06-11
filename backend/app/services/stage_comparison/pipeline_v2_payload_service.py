@@ -45,6 +45,13 @@ from backend.app.services.stage_comparison.pipeline_v2_block_link_preview import
     REPORT_KIND as BLOCK_LINK_PREVIEW_KIND,
     build_block_link_preview,
 )
+from backend.app.services.stage_comparison.pipeline_v2_entity_alignment_preview import (
+    REPORT_KIND as ENTITY_ALIGNMENT_KIND,
+    build_entity_alignment_preview_report,
+)
+from backend.app.services.stage_comparison.pipeline_v2_entity_alignment_detail import (
+    build_entity_alignment_detail,
+)
 from backend.app.services.stage_comparison import (
     pipeline_v2_grounding_detail as _grounding_detail_mod,
 )
@@ -62,9 +69,12 @@ BLOCK_MATCHING_FILENAME = "block_matching_report.json"
 VISUAL_GATE_FILENAME = "visual_equivalence_gate_report.json"
 BLOCK_LINK_PREVIEW_FILENAME = "block_link_preview_report.json"
 GROUNDED_EVIDENCE_FILENAME = "grounded_evidence_report.json"
+GRAPHIC_MATCHED_FILENAME = "graphic_descriptor_matched_report.json"
+ENTITY_ALIGNMENT_PREVIEW_FILENAME = "entity_alignment_preview_report.json"
 
 NOT_FOUND_MESSAGE = "Pipeline V2 artifacts not found for this session."
 BLP_NOT_FOUND_MESSAGE = "Pipeline V2 block link preview artifacts not found."
+EAP_NOT_FOUND_MESSAGE = "Entity alignment preview report not found for this pair."
 
 
 # ─── резолв путей (БЕЗ mkdir — endpoint read-only) ───────────────────────────
@@ -553,6 +563,124 @@ def discover_graphic_vision_grounding_detail(
                 "warnings": [f"{type(exc).__name__}: {exc}"]}
 
 
+def _eap_detail_envelope(status: str, *, session_id: str,
+                         pair_id: Optional[str], message: str,
+                         warnings: Optional[list[str]] = None) -> dict:
+    """not_found/error ответ entity-alignment endpoint'а (detail-формат)."""
+    return {
+        "version": 1, "kind": ENTITY_ALIGNMENT_KIND, "status": status,
+        "available": False, "session_id": session_id, "pair_id": pair_id,
+        "source": None, "summary": {}, "pairs": [],
+        "unpaired_entities": {"left": [], "right": []},
+        "message": message, "warnings": warnings or [],
+    }
+
+
+def discover_entity_alignment_preview(
+        session_id: str, pair_id: Optional[str] = None, *,
+        classification: str = "all", limit: int = 100, offset: int = 0) -> dict:
+    """Найти/собрать entity alignment preview для пары (read-only, fail-soft).
+
+    Статусы ответа (detail-формат, см. pipeline_v2_entity_alignment_detail):
+
+    * ``ok``        — готовый отчёт с диска или собран on-the-fly из артефактов;
+    * ``not_found`` — нет ни готового отчёта, ни visual gate с block_pairs;
+    * ``error``     — артефакты есть, но непригодны (битый JSON и т.п.), не 500.
+
+    Фильтр ``classification`` и пагинация (``limit``/``offset``, clamp ≤500)
+    применяются к ``pairs``; summary и unpaired_entities отдаются целиком.
+    НИЧЕГО не пишет (отчёт on-the-fly не кешируется), не запускает, не вызывает
+    модели. ``ValueError`` — только на невалидный session_id/pair_id.
+    """
+    if pair_id and _safe_id(pair_id) != pair_id:
+        raise ValueError(f"invalid pair_id: {pair_id!r}")
+    art_dir = pipeline_v2_artifacts_dir(session_id, pair_id)
+    try:
+        return _discover_entity_alignment_preview(
+            art_dir, session_id, pair_id,
+            classification=classification, limit=limit, offset=offset)
+    except Exception as exc:  # noqa: BLE001 — endpoint не должен дать 500
+        return _eap_detail_envelope(
+            "error", session_id=session_id, pair_id=pair_id,
+            message="Entity alignment preview report could not be read.",
+            warnings=[f"{type(exc).__name__}: {exc}"])
+
+
+def _discover_entity_alignment_preview(
+        art_dir: Path, session_id: str, pair_id: Optional[str], *,
+        classification: str, limit: int, offset: int) -> dict:
+    warnings: list[str] = []
+
+    # 1) готовый отчёт — отдать как есть (с фильтром/пагинацией)
+    ready, err = _read_json(art_dir / ENTITY_ALIGNMENT_PREVIEW_FILENAME)
+    if isinstance(ready, dict) and ready.get("kind") == ENTITY_ALIGNMENT_KIND:
+        detail = build_entity_alignment_detail(
+            ready, session_id=session_id, pair_id=pair_id,
+            classification=classification, limit=limit, offset=offset,
+            source="ready_report")
+        return _sanitize_payload(detail, detail.setdefault("warnings", [])) or detail
+    if err:
+        warnings.append(err)
+    elif isinstance(ready, dict):
+        warnings.append(f"{ENTITY_ALIGNMENT_PREVIEW_FILENAME}: unexpected kind "
+                        f"{ready.get('kind')!r} — rebuilt from artifacts")
+    elif ready is not None:
+        warnings.append(f"{ENTITY_ALIGNMENT_PREVIEW_FILENAME}: expected JSON "
+                        f"object, got {type(ready).__name__} — rebuilt")
+
+    # 2) собрать on-the-fly из артефактов dry-run (только чтение). Минимально
+    #    нужен visual gate с block_pairs — без него отчёт пуст по построению.
+    gate, gerr = _read_json(art_dir / VISUAL_GATE_FILENAME)
+    if gerr:
+        warnings.append(gerr)
+    if not (isinstance(gate, dict) and isinstance(gate.get("block_pairs"), list)):
+        if warnings:
+            return _eap_detail_envelope(
+                "error", session_id=session_id, pair_id=pair_id,
+                message="Pipeline V2 artifacts exist but entity alignment "
+                        "preview could not be read.", warnings=warnings)
+        return _eap_detail_envelope(
+            "not_found", session_id=session_id, pair_id=pair_id,
+            message=EAP_NOT_FOUND_MESSAGE,
+            warnings=warnings)
+
+    def _opt(fname: str) -> Optional[dict]:
+        value, e = _read_json(art_dir / fname)
+        if e:
+            warnings.append(e)
+            return None
+        return value if isinstance(value, dict) else None
+
+    left_model = _opt(LEFT_MODEL_FILENAME)
+    right_model = _opt(RIGHT_MODEL_FILENAME)
+    left_graphic = _opt(LEFT_GRAPHIC_FILENAME)
+    right_graphic = _opt(RIGHT_GRAPHIC_FILENAME)
+    block_matching = _opt(BLOCK_MATCHING_FILENAME)
+    block_link_preview = _opt(BLOCK_LINK_PREVIEW_FILENAME)
+    graphic_matched = _opt(GRAPHIC_MATCHED_FILENAME)
+    grounding = _opt(GROUNDING_REPORT_FILENAME)
+
+    try:
+        report = build_entity_alignment_preview_report(
+            left_model, right_model, gate,
+            block_matching_report=block_matching,
+            block_link_preview_report=block_link_preview,
+            left_graphic_report=left_graphic, right_graphic_report=right_graphic,
+            graphic_matched_report=graphic_matched, grounding_report=grounding)
+    except Exception as exc:  # noqa: BLE001 — endpoint не должен дать 500
+        return _eap_detail_envelope(
+            "error", session_id=session_id, pair_id=pair_id,
+            message="Pipeline V2 artifacts exist but entity alignment preview "
+                    "could not be built.",
+            warnings=warnings + [f"{type(exc).__name__}: {exc}"])
+
+    detail = build_entity_alignment_detail(
+        report, session_id=session_id, pair_id=pair_id,
+        classification=classification, limit=limit, offset=offset,
+        source="built_from_artifacts", extra_warnings=warnings)
+    return _sanitize_payload(detail, detail.setdefault("warnings", [])) or detail
+
+
 __all__ = [
     "PIPELINE_V2_DIRNAME",
     "UI_PAYLOAD_FILENAME",
@@ -565,9 +693,11 @@ __all__ = [
     "RIGHT_MODEL_FILENAME",
     "VISUAL_GATE_FILENAME",
     "GROUNDING_REPORT_FILENAME",
+    "ENTITY_ALIGNMENT_PREVIEW_FILENAME",
     "discover_pipeline_v2_payload",
     "discover_block_link_preview",
     "discover_graphic_vision_grounding_detail",
+    "discover_entity_alignment_preview",
     "pipeline_v2_artifacts_dir",
     "list_pairs_with_artifacts",
     "resolve_session_dir",
