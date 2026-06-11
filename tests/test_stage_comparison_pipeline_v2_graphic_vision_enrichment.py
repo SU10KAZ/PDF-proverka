@@ -544,6 +544,514 @@ def test_20_str_list_keeps_falsy_scalars_and_caps():
     assert any("list truncated" in w for w in warnings2)
 
 
+# ─── candidate selection v2 (entity-aware) ───────────────────────────────────
+
+
+def _desc(block_id, sheet_name, *, gt="single_line_scheme", disc="EOM",
+          equipment=None, raw=None):
+    return {"block_id": block_id, "sheet_name": sheet_name,
+            "graphic_type": gt, "discipline": disc,
+            "tokens": {"equipment": equipment or [],
+                       "raw_key_entities": raw or []}}
+
+
+def _matched(lid, rid, *, quality="medium", gt_match=True, disc_match=True,
+             eq_overlap=0.0, risks=None):
+    return {"left_block_id": lid, "right_block_id": rid,
+            "match_quality": quality, "graphic_type_match": gt_match,
+            "discipline_match": disc_match,
+            "token_overlap": {"equipment": eq_overlap},
+            "risk_flags": risks or []}
+
+
+# Реконструкция пилотных пар ИОС1.1 (синтетика с реальными сигналами)
+_PILOT_DESCS_L = {
+    "L_GRSH": _desc("L_GRSH", "Однолинейная расчетная схема ГРЩ",
+                    gt="cabinet_scheme",
+                    equipment=["грщ", "вру", "QF1"], raw=["1600А", "2500А"]),
+    "L_VRU1": _desc("L_VRU1", "Однолинейная расчетная схема ВРУ-1",
+                    equipment=["грщ", "вру"]),
+    "L_VRU3": _desc("L_VRU3", "Однолинейная расчетная схема ВРУ-3",
+                    gt="cabinet_scheme", equipment=["вру", "qs"],
+                    raw=["ВРУ-3"]),
+    "L_YAK": _desc("L_YAK", "Однолинейная расчетная схема щита квартирного ЯК5",
+                   equipment=[], raw=["ЯК1"]),
+}
+_PILOT_DESCS_R = {
+    "R_GRSH": _desc("R_GRSH", "Однолинейная схема ГРЩ",
+                    equipment=["ГРЩ1", "ВРУ1", "ВРУ2"], raw=["3200А"]),
+    "R_PLAN": _desc("R_PLAN", "План расположения помещений ТП на -1 этаже",
+                    disc="SOT", equipment=["ГРЩ"]),
+    # bare 'вру'/'грщ'/'авр' — как в РЕАЛЬНЫХ дескрипторах pf06effb7
+    # (critical-находка: generic-токен не должен маскировать конфликт)
+    "R_VRU2": _desc("R_VRU2", "Однолинейная схема ВРУ-2",
+                    equipment=["ВРУ2-РП1", "QF1", "вру", "грщ", "авр"]),
+    "R_SHO3": _desc("R_SHO3", "Однолинейная схема ЩО-3",
+                    gt="cabinet_scheme", equipment=["qs", "qf1"]),
+}
+
+
+def _pilot_ctx():
+    gate = _gate([
+        {**_gate_pair(1, "send_to_vision"), "pair_key": "L_GRSH__R_GRSH",
+         "left_block_id": "L_GRSH", "right_block_id": "R_GRSH"},
+        {**_gate_pair(2, "send_to_vision"), "pair_key": "L_VRU1__R_PLAN",
+         "left_block_id": "L_VRU1", "right_block_id": "R_PLAN"},
+        {**_gate_pair(3, "send_to_vision"), "pair_key": "L_VRU3__R_VRU2",
+         "left_block_id": "L_VRU3", "right_block_id": "R_VRU2"},
+        {**_gate_pair(4, "send_to_vision"), "pair_key": "L_YAK__R_SHO3",
+         "left_block_id": "L_YAK", "right_block_id": "R_SHO3"},
+    ])
+    lg = {"descriptors": list(_PILOT_DESCS_L.values())}
+    rg = {"descriptors": list(_PILOT_DESCS_R.values())}
+    matched = {"matched_graphic_blocks": [
+        _matched("L_GRSH", "R_GRSH", quality="strong", gt_match=False,
+                 eq_overlap=0.33),
+        _matched("L_VRU1", "R_PLAN", gt_match=True, disc_match=False,
+                 eq_overlap=0.5),
+        _matched("L_VRU3", "R_VRU2", quality="weak", gt_match=False,
+                 eq_overlap=0.07),
+        _matched("L_YAK", "R_SHO3", gt_match=False, eq_overlap=0.0),
+    ]}
+    return gate, lg, rg, matched
+
+
+def _score_pair(key):
+    gate, lg, rg, matched = _pilot_ctx()
+    bp = next(p for p in gate["block_pairs"] if p["pair_key"] == key)
+    lid, rid = bp["left_block_id"], bp["right_block_id"]
+    return gv.score_vision_candidate(
+        bp,
+        left_desc=next(d for d in lg["descriptors"] if d["block_id"] == lid),
+        right_desc=next(d for d in rg["descriptors"] if d["block_id"] == rid),
+        matched_entry=next(m for m in matched["matched_graphic_blocks"]
+                           if m["left_block_id"] == lid))
+
+
+def test_v2_same_entity_signals_raise_score():
+    """spec 1: совпадение entity/листа/типа/дисциплины повышает score."""
+    good = _score_pair("L_GRSH__R_GRSH")
+    bad = _score_pair("L_YAK__R_SHO3")
+    assert good["candidate_score"] > bad["candidate_score"]
+    assert good["candidate_kind"] == gv.CANDIDATE_SAME
+    # ГРЩ↔ГРЩ — bare-family совпадение (слабое, но положительное)
+    assert "entity_family_match" in good["candidate_reasons"]
+    assert "sheet_kind_match:scheme" in good["candidate_reasons"]
+
+
+def test_v2_graphic_type_and_discipline_mismatch_lower_score():
+    """spec 2-3: mismatch-флаги понижают score и попадают в risk_flags."""
+    base = {**_gate_pair(1, "send_to_vision")}
+    d1 = _desc("a", "Схема X")
+    same = gv.score_vision_candidate(
+        base, left_desc=d1, right_desc=_desc("b", "Схема X"),
+        matched_entry=_matched("a", "b", gt_match=True, disc_match=True))
+    worse = gv.score_vision_candidate(
+        base, left_desc=d1, right_desc=_desc("b", "Схема X"),
+        matched_entry=_matched("a", "b", gt_match=False, disc_match=False))
+    assert worse["candidate_score"] < same["candidate_score"]
+    assert "graphic_type_mismatch" in worse["candidate_risk_flags"]
+    assert "discipline_mismatch" in worse["candidate_risk_flags"]
+
+
+def test_v2_pilot_false_pairs_classified():
+    """spec 4-6: пилотные false-пары распознаются."""
+    vru1_plan = _score_pair("L_VRU1__R_PLAN")
+    assert vru1_plan["candidate_kind"] == gv.CANDIDATE_MISMATCH
+    assert any(r.startswith("sheet_kind_mismatch")
+               for r in vru1_plan["candidate_risk_flags"])
+
+    vru3_vru2 = _score_pair("L_VRU3__R_VRU2")
+    assert vru3_vru2["candidate_kind"] in (gv.CANDIDATE_MISMATCH,
+                                           gv.CANDIDATE_VALIDATION)
+    assert "entity_id_conflict" in vru3_vru2["candidate_risk_flags"]
+
+    yak_sho = _score_pair("L_YAK__R_SHO3")
+    assert yak_sho["candidate_kind"] == gv.CANDIDATE_MISMATCH
+    assert any("conflict" in r for r in yak_sho["candidate_risk_flags"])
+
+
+def test_v2_enrichment_mode_excludes_mismatch():
+    """spec 7: enrichment не берёт mismatch_likely при наличии хороших."""
+    gate, lg, rg, matched = _pilot_ctx()
+    selected, stats, _ = gv.select_vision_candidates_v2(
+        gate, left_graphic_report=lg, right_graphic_report=rg,
+        graphic_matched_report=matched,
+        options={"selection_mode": "enrichment", "max_items": 5})
+    keys = [p["pair_key"] for p in selected]
+    assert "L_GRSH__R_GRSH" in keys
+    assert "L_VRU1__R_PLAN" not in keys
+    assert "L_YAK__R_SHO3" not in keys
+    assert stats["mismatch_excluded"] >= 2
+    assert stats["by_candidate_kind"].get(gv.CANDIDATE_SAME, 0) >= 1
+    # GRSH первым (лучший score)
+    assert keys[0] == "L_GRSH__R_GRSH"
+
+
+def test_v2_link_validation_mode_picks_mismatch_first():
+    """spec 8: link_validation целенаправленно берёт подозрительные пары."""
+    gate, lg, rg, matched = _pilot_ctx()
+    selected, stats, _ = gv.select_vision_candidates_v2(
+        gate, left_graphic_report=lg, right_graphic_report=rg,
+        graphic_matched_report=matched,
+        options={"selection_mode": "link_validation", "max_items": 2})
+    kinds = [p["candidate_kind"] for p in selected]
+    assert all(k in (gv.CANDIDATE_MISMATCH, gv.CANDIDATE_VALIDATION)
+               for k in kinds)
+    assert "L_GRSH__R_GRSH" not in [p["pair_key"] for p in selected]
+
+
+def test_v2_max_items_after_scoring():
+    """spec 9: cap применяется ПОСЛЕ ранжирования (лучшие выживают)."""
+    gate, lg, rg, matched = _pilot_ctx()
+    selected, stats, _ = gv.select_vision_candidates_v2(
+        gate, left_graphic_report=lg, right_graphic_report=rg,
+        graphic_matched_report=matched,
+        options={"selection_mode": "enrichment", "max_items": 1})
+    assert len(selected) == 1
+    assert selected[0]["pair_key"] == "L_GRSH__R_GRSH"
+    assert selected[0]["candidate_rank"] == 1
+    # link_validation: 3 подозрительных кандидата, cap=1 → честный warning
+    sel2, stats2, warnings2 = gv.select_vision_candidates_v2(
+        gate, left_graphic_report=lg, right_graphic_report=rg,
+        graphic_matched_report=matched,
+        options={"selection_mode": "link_validation", "max_items": 1})
+    assert len(sel2) == 1
+    assert stats2["dropped_by_cap"] >= 2
+    assert any("max_items" in w for w in warnings2)
+
+
+def test_v2_reasons_and_risks_populated_in_items():
+    """spec 10-11: candidate_* поля доходят до items отчёта."""
+    gate, lg, rg, matched = _pilot_ctx()
+    rep = gv.run_graphic_vision_enrichment(
+        _model("left"), _model("right"), gate,
+        left_graphic_report=lg, right_graphic_report=rg,
+        graphic_matched_report=matched,
+        options={"candidate_selection": "entity_aware", "max_items": 5,
+                 "render_crops": False})
+    assert rep["summary"]["candidate_selection"] == "entity_aware"
+    assert rep["summary"]["by_candidate_kind"]
+    for item in rep["items"]:
+        assert isinstance(item.get("candidate_score"), float)
+        assert item.get("candidate_kind")
+        assert isinstance(item.get("candidate_reasons"), list)
+        assert isinstance(item.get("candidate_risk_flags"), list)
+        assert isinstance(item.get("candidate_rank"), int)
+
+
+def test_v2_legacy_selection_unchanged_by_default():
+    """spec 13/14: default candidate_selection=legacy — поведение прежнее."""
+    rep = _run()   # _DEFAULT_GATE, legacy
+    assert rep["summary"]["candidate_selection"] == "legacy"
+    for item in rep["items"]:
+        assert "candidate_score" not in item
+
+
+def test_v2_entity_helpers():
+    ids = gv.extract_entity_ids("Однолинейная расчетная схема ВРУ-1",
+                                ["грщ", "ЩО-3"], ["ЯК1"])
+    assert "ВРУ-1" in ids and "ГРЩ" in ids and "ЩО-3" in ids and "ЯК-1" in ids
+    # точное нумерованное совпадение
+    assert gv.entity_identity_signal({"ВРУ-2"}, {"ВРУ-2", "ГРЩ"}) == "match"
+    # bare-family совпадение — слабый сигнал, НЕ полноценный match
+    assert gv.entity_identity_signal({"ГРЩ"}, {"ГРЩ", "ВРУ-1"}) == \
+        "family_only_match"
+    assert gv.entity_identity_signal({"ВРУ-3"}, {"ВРУ-2"}) == "numbered_conflict"
+    # critical-регрессия ревью: generic 'вру' на обеих сторонах НЕ маскирует
+    # конфликт номеров (реальные дескрипторы pf06effb7)
+    assert gv.entity_identity_signal({"ВРУ", "ВРУ-3"},
+                                     {"ВРУ", "ВРУ-2"}) == "numbered_conflict"
+    assert gv.entity_identity_signal({"ЯК-5"}, {"ЩО-3"}) == "family_conflict"
+    assert gv.entity_identity_signal(set(), {"ЩО-3"}) == "none"
+    assert gv.sheet_kind_of("План расположения помещений ТП") == "plan"
+    assert gv.sheet_kind_of("Однолинейная расчетная схема ВРУ-1") == "scheme"
+    assert gv.sheet_kind_of("Спецификация оборудования") == "table"
+    # комбинированное имя: РАННИЙ маркер решает (nit ревью)
+    assert gv.sheet_kind_of("План ТП и схема вентиляции") == "plan"
+
+
+def test_v2_entity_extraction_hardening():
+    """Ревью-фиксы regex: рейтинги, letter-суффиксы, false-positive слова,
+    feeder leak, все families."""
+    # ампер-рейтинг через пробел — НЕ номер единицы
+    assert gv.extract_entity_ids("АВР 100А") == {"АВР"}
+    # letter-суффиксные серии различимы
+    assert gv.extract_entity_ids("ЩР-ТХ1") == {"ЩР-тх1"}
+    assert gv.extract_entity_ids("ЩР-ТХ2") == {"ЩР-тх2"}
+    assert gv.entity_identity_signal({"ЩР-тх1"}, {"ЩР-тх2"}) == \
+        "numbered_conflict"
+    assert gv.extract_entity_ids("ЩС-ДР") == {"ЩС-др"}
+    assert gv.extract_entity_ids("ШУ-В1ас") == {"ШУ-в1ас"}
+    # «ВРУ-А» и «ВРУа» — одна серия
+    assert gv.extract_entity_ids("ВРУ-А") == gv.extract_entity_ids("ВРУа") \
+        == {"ВРУ-а"}
+    # обычные слова не дают сущностей
+    for word in ("вручную", "шум", "якорь", "щуп", "ТПУ", "Якорь", "врут"):
+        assert gv.extract_entity_ids(word) == set(), word
+    # feeder leak: назначение не попадает в идентичность листа
+    assert gv.extract_entity_ids("ВРУ2-РП1") == {"ВРУ-2"}
+    # суффикс нормализуется по регистру; запятая-вольтаж намеренно
+    # отсекается (consistent со stamp_matching: «0,4кВ» — не номер)
+    assert gv.extract_entity_ids("ЩР-1А") == {"ЩР-1а"}
+    assert gv.extract_entity_ids("РУСН-0,4") == {"РУСН-0"}
+    # все объявленные families извлекаются
+    for fam in gv._ENTITY_FAMILIES:
+        got = gv.extract_entity_ids(f"{fam}-7")
+        assert f"{fam}-7" in got or got == {f"{fam}-7"}, fam
+
+
+def _kinds_ctx():
+    """Gate со всеми четырьмя candidate kinds (killer-тесты ревью)."""
+    descs_l = {
+        "L_A": _desc("L_A", "Однолинейная схема ВРУ-1"),
+        "L_B": _desc("L_B", ""),
+        "L_C": _desc("L_C", ""),
+        "L_D": _desc("L_D", "Однолинейная схема щита квартирного ЯК5"),
+    }
+    descs_r = {
+        "R_A": _desc("R_A", "Однолинейная схема ВРУ-1"),
+        "R_B": _desc("R_B", ""),
+        "R_C": _desc("R_C", ""),
+        "R_D": _desc("R_D", "Однолинейная схема ЩО-3"),
+    }
+    pairs = []
+    # SAME: общий numbered entity
+    pairs.append({**_gate_pair(1, "send_to_vision"), "pair_key": "A",
+                  "left_block_id": "L_A", "right_block_id": "R_A"})
+    # UNCERTAIN: пустые дескрипторы, без gate-бонусов и метрик
+    pairs.append({**_gate_pair(2, "manual_review", status="uncertain"),
+                  "pair_key": "B", "left_block_id": "L_B",
+                  "right_block_id": "R_B", "metrics": {}})
+    # VALIDATION: риски без прямого конфликта
+    pairs.append({**_gate_pair(3, "manual_review", status="uncertain"),
+                  "pair_key": "C", "left_block_id": "L_C",
+                  "right_block_id": "R_C", "metrics": {}})
+    # MISMATCH: family conflict
+    pairs.append({**_gate_pair(4, "send_to_vision"), "pair_key": "D",
+                  "left_block_id": "L_D", "right_block_id": "R_D"})
+    gate = _gate(pairs)
+    matched = {"matched_graphic_blocks": [
+        _matched("L_A", "R_A", quality="strong", eq_overlap=0.5),
+        _matched("L_C", "R_C", quality="weak", gt_match=False),
+    ]}
+    return gate, {"descriptors": list(descs_l.values())}, \
+        {"descriptors": list(descs_r.values())}, matched
+
+
+def test_v2_killer_backfill_order_and_link_validation_order():
+    """Killer ревью: enrichment backfill same→uncertain→validation;
+    link_validation: mismatch→validation→uncertain→same."""
+    gate, lg, rg, matched = _kinds_ctx()
+    sel, _, _ = gv.select_vision_candidates_v2(
+        gate, left_graphic_report=lg, right_graphic_report=rg,
+        graphic_matched_report=matched,
+        options={"selection_mode": "enrichment", "max_items": 3})
+    assert [c["candidate_kind"] for c in sel] == [
+        gv.CANDIDATE_SAME, gv.CANDIDATE_UNCERTAIN, gv.CANDIDATE_VALIDATION]
+    sel2, _, _ = gv.select_vision_candidates_v2(
+        gate, left_graphic_report=lg, right_graphic_report=rg,
+        graphic_matched_report=matched,
+        options={"selection_mode": "link_validation", "max_items": 4})
+    assert [c["candidate_kind"] for c in sel2] == [
+        gv.CANDIDATE_MISMATCH, gv.CANDIDATE_VALIDATION,
+        gv.CANDIDATE_UNCERTAIN, gv.CANDIDATE_SAME]
+
+
+def test_v2_killer_defaults_and_optout():
+    """Killer ревью: default selection_mode=enrichment; opt-out
+    exclude_mismatch_likely=False оставляет mismatch последними."""
+    gate, lg, rg, matched = _kinds_ctx()
+    sel, stats, _ = gv.select_vision_candidates_v2(
+        gate, left_graphic_report=lg, right_graphic_report=rg,
+        graphic_matched_report=matched, options={"max_items": 5})
+    assert stats["selection_mode"] == "enrichment"
+    assert stats["mismatch_excluded"] == 1
+    assert all(c["candidate_kind"] != gv.CANDIDATE_MISMATCH for c in sel)
+    assert sel[0]["candidate_kind"] == gv.CANDIDATE_SAME
+    sel2, stats2, _ = gv.select_vision_candidates_v2(
+        gate, left_graphic_report=lg, right_graphic_report=rg,
+        graphic_matched_report=matched,
+        options={"exclude_mismatch_likely": False, "max_items": 0})
+    assert stats2["mismatch_excluded"] == 0
+    kinds2 = [c["candidate_kind"] for c in sel2]
+    assert kinds2[-1] == gv.CANDIDATE_MISMATCH
+    # неизвестный режим → warning + enrichment
+    _, stats3, w3 = gv.select_vision_candidates_v2(
+        gate, left_graphic_report=lg, right_graphic_report=rg,
+        graphic_matched_report=matched,
+        options={"selection_mode": "frobnicate"})
+    assert stats3["selection_mode"] == "enrichment"
+    assert any("unknown selection_mode" in w for w in w3)
+
+
+def test_v2_killer_score_weights_and_clamp():
+    """Killer ревью: вес entity match (+0.2) и clamp 0..1 закреплены."""
+    base = {"decision": "manual_review", "status": "uncertain",
+            "risk_flags": [], "metrics": {}}
+    with_match = gv.score_vision_candidate(
+        base, left_desc=_desc("a", "Схема ВРУ-1"),
+        right_desc=_desc("b", "Схема ВРУ-1"))
+    without = gv.score_vision_candidate(
+        base, left_desc=_desc("a", "Схема"), right_desc=_desc("b", "Схема"))
+    assert with_match["candidate_score"] - without["candidate_score"] == \
+        pytest.approx(0.2)
+    # clamp: максимум сигналов → ровно 1.0
+    maxed = gv.score_vision_candidate(
+        {**_gate_pair(1, "send_to_vision")},
+        left_desc=_desc("a", "Однолинейная схема ВРУ-1",
+                        equipment=["ВРУ-1", "QF1"]),
+        right_desc=_desc("b", "Однолинейная схема ВРУ-1",
+                         equipment=["ВРУ-1", "QF1"]),
+        matched_entry=_matched("a", "b", quality="strong", eq_overlap=0.9))
+    assert maxed["candidate_score"] == 1.0
+
+
+def test_v2_killer_high_score_numbered_conflict_never_same():
+    """Killer ревью: numbered conflict с сильными прочими сигналами всё
+    равно MISMATCH (hard guard перебивает score)."""
+    verdict = gv.score_vision_candidate(
+        {**_gate_pair(1, "send_to_vision")},
+        left_desc=_desc("a", "Однолинейная схема ВРУ-3",
+                        equipment=["вру", "QF1"]),
+        right_desc=_desc("b", "Однолинейная схема ВРУ-2",
+                         equipment=["вру", "QF1"]),
+        matched_entry=_matched("a", "b", quality="strong", eq_overlap=0.5))
+    assert "entity_id_conflict" in verdict["candidate_risk_flags"]
+    assert verdict["candidate_kind"] == gv.CANDIDATE_MISMATCH
+
+
+def test_v2_killer_exact_kind_counts_and_stamp_magnitude():
+    """Killer ревью: by_candidate_kind аккумулируется точно; величина
+    stamp-штрафа 0.35 закреплена в uncapped-области."""
+    gate, lg, rg, matched = _pilot_ctx()
+    _, stats, _ = gv.select_vision_candidates_v2(
+        gate, left_graphic_report=lg, right_graphic_report=rg,
+        graphic_matched_report=matched, options={"max_items": 5})
+    assert stats["by_candidate_kind"] == {gv.CANDIDATE_SAME: 1,
+                                          gv.CANDIDATE_MISMATCH: 3}
+    base = {"decision": "manual_review", "status": "uncertain",
+            "risk_flags": [], "metrics": {}}
+    scheme = gv.score_vision_candidate(
+        base, left_desc=_desc("a", "Схема ВРУ-1"),
+        right_desc=_desc("b", "Схема ВРУ-1"))
+    stamp = gv.score_vision_candidate(
+        base, left_desc=_desc("a", "Схема ВРУ-1", gt="stamp"),
+        right_desc=_desc("b", "Схема ВРУ-1", gt="stamp"))
+    assert scheme["candidate_score"] - stamp["candidate_score"] == \
+        pytest.approx(0.35)
+
+
+def test_v2_killer_generic_equipment_overlap_not_rewarded():
+    """Killer ревью: overlap=1.0 на ['вру']↔['вру'] бессодержателен."""
+    base = {**_gate_pair(1, "send_to_vision"), "metrics": {}}
+    verdict = gv.score_vision_candidate(
+        base,
+        left_desc=_desc("a", "", equipment=["вру"]),
+        right_desc=_desc("b", "", equipment=["вру"]),
+        matched_entry=_matched("a", "b", eq_overlap=1.0))
+    assert not any(r.startswith("equipment_overlap")
+                   for r in verdict["candidate_reasons"])
+    # информативные токены — бонус есть
+    verdict2 = gv.score_vision_candidate(
+        base,
+        left_desc=_desc("a", "", equipment=["ВРУ-1", "QF1"]),
+        right_desc=_desc("b", "", equipment=["ВРУ-1", "QF1"]),
+        matched_entry=_matched("a", "b", eq_overlap=1.0))
+    assert any(r.startswith("equipment_overlap")
+               for r in verdict2["candidate_reasons"])
+
+
+@pytest.mark.parametrize("gtype", sorted(gv._DENSE_GRAPHIC_TYPES))
+def test_v2_killer_dense_types_each_get_dense_long_side(gtype):
+    opts = {"mode": "high_res", "long_side": 1000, "dense_long_side": 2400}
+    assert gv._item_render_long_side({"graphic_type": gtype}, opts) == 2400
+
+
+@pytest.mark.parametrize("gtype", ["photo", "plan", "", None, "stamp"])
+def test_v2_killer_non_dense_keeps_base_in_high_res(gtype):
+    opts = {"mode": "high_res", "long_side": 1000, "dense_long_side": 2400}
+    assert gv._item_render_long_side({"graphic_type": gtype}, opts) == 1000
+
+
+# ─── render options (spec 12) ────────────────────────────────────────────────
+
+
+def test_render_high_res_uses_dense_long_side_for_dense_types(tmp_path):
+    pytest.importorskip("cv2")
+    lm, rm = _model("left"), _model("right")
+    lm["blocks"]["L_S1"]["image_file"] = _png(tmp_path / "l.png")
+    rm["blocks"]["R_S1"]["image_file"] = _png(tmp_path / "r.png")
+    gate = _gate([_gate_pair(1, "send_to_vision")])
+    lg = {"descriptors": [
+        {"block_id": "L_S1", "graphic_type": "cabinet_scheme",
+         "discipline": "EOM"}]}
+    rep = gv.run_graphic_vision_enrichment(
+        lm, rm, gate, left_graphic_report=lg,
+        options={"render_crops": True,
+                 "render": {"mode": "high_res", "long_side": 1000,
+                            "dense_long_side": 2000}},
+        vision_runner=_ok_runner, crops_dir=tmp_path / "crops")
+    item = rep["items"][0]
+    assert item["graphic_type"] == "cabinet_scheme"
+    assert item["render_long_side_used"] == 2000
+    assert rep["summary"]["render_mode"] == "high_res"
+    assert item["vision_status"] == "ok"
+
+
+def test_render_normal_mode_keeps_base_long_side(tmp_path):
+    pytest.importorskip("cv2")
+    lm, rm = _model("left"), _model("right")
+    lm["blocks"]["L_S1"]["image_file"] = _png(tmp_path / "l.png")
+    rm["blocks"]["R_S1"]["image_file"] = _png(tmp_path / "r.png")
+    gate = _gate([_gate_pair(1, "send_to_vision")])
+    rep = gv.run_graphic_vision_enrichment(
+        lm, rm, gate,
+        options={"render_crops": True,
+                 "render": {"mode": "normal", "long_side": 1234,
+                            "dense_long_side": 2000}},
+        vision_runner=_ok_runner, crops_dir=tmp_path / "crops")
+    assert rep["items"][0]["render_long_side_used"] == 1234
+
+
+def test_render_tiled_falls_back_to_high_res_with_warning(tmp_path):
+    pytest.importorskip("cv2")
+    lm, rm = _model("left"), _model("right")
+    lm["blocks"]["L_S1"]["image_file"] = _png(tmp_path / "l.png")
+    rm["blocks"]["R_S1"]["image_file"] = _png(tmp_path / "r.png")
+    gate = _gate([_gate_pair(1, "send_to_vision")])
+    lg = {"descriptors": [
+        {"block_id": "L_S1", "graphic_type": "dense_scheme",
+         "discipline": "EOM"}]}
+    rep = gv.run_graphic_vision_enrichment(
+        lm, rm, gate, left_graphic_report=lg,
+        options={"render_crops": True,
+                 "render": {"mode": "tiled", "dense_long_side": 2100}},
+        vision_runner=_ok_runner, crops_dir=tmp_path / "crops")
+    assert rep["items"][0]["render_long_side_used"] == 2100
+    assert any("tiled" in w for w in rep["warnings"])
+
+
+def test_render_legacy_render_long_side_still_works():
+    opts, warnings = gv._render_options({"render_long_side": 1777})
+    assert opts["long_side"] == 1777
+    assert opts["mode"] == "normal"
+    assert warnings == []
+    # явный приоритет: render.long_side перебивает legacy-ключ
+    opts2, _ = gv._render_options({"render_long_side": 1777,
+                                   "render": {"long_side": 1234}})
+    assert opts2["long_side"] == 1234
+    # невалидный mode → normal + warning (не молча)
+    opts3, w3 = gv._render_options({"render": {"mode": "hi_res"}})
+    assert opts3["mode"] == "normal"
+    assert any("invalid render mode" in w for w in w3)
+    # tiled → эффективный high_res + warning уже на merge
+    opts4, w4 = gv._render_options({"render": {"mode": "tiled"}})
+    assert opts4["mode"] == "high_res"
+    assert opts4["mode_requested"] == "tiled"
+    assert any("tiled" in w for w in w4)
+
+
 # ─── dry-run интеграция (11-12) ──────────────────────────────────────────────
 
 
@@ -685,3 +1193,21 @@ def test_14b_no_network_during_run(monkeypatch):
     monkeypatch.setattr(socket, "create_connection", _boom)
     rep = _run(vision_runner=_ok_runner)
     assert rep["status"] == "ok"
+
+
+def test_v2_stamp_blocks_deprioritized_for_enrichment():
+    """Штамп — та же сущность, но для vision-enrichment инженерная графика
+    приоритетнее (дельты штампа ловит текстовый слой)."""
+    base = {**_gate_pair(1, "send_to_vision")}
+    scheme = gv.score_vision_candidate(
+        base,
+        left_desc=_desc("a", "Однолинейная схема ВРУ-1"),
+        right_desc=_desc("b", "Однолинейная схема ВРУ-1"),
+        matched_entry=_matched("a", "b", eq_overlap=0.4))
+    stamp = gv.score_vision_candidate(
+        base,
+        left_desc=_desc("a", "Однолинейная схема ВРУ-1", gt="stamp"),
+        right_desc=_desc("b", "Однолинейная схема ВРУ-1", gt="stamp"),
+        matched_entry=_matched("a", "b", eq_overlap=0.4))
+    assert stamp["candidate_score"] < scheme["candidate_score"]
+    assert "stamp_block_low_vision_value" in stamp["candidate_risk_flags"]

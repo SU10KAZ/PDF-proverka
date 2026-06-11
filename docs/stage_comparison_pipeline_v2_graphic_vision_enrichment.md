@@ -134,6 +134,69 @@ failed` в summary, этапы 4–6 работают. `vision_runner` — от�
   "skipped_no_runner": 0}
 ```
 
+## Candidate selection v2 (entity-aware) — после пилота
+
+Пилот показал: слепой отбор «всех send_to_vision» тратит vision-бюджет на
+пары, где position-based block matching свёл РАЗНЫЕ сущности (схема ВРУ-1 ↔
+план ТП, ВРУ-3 ↔ ВРУ-2, ЯК ↔ ЩО-3) — vision честно отвечает «это разные
+объекты», но это другой use-case. `candidate_selection: "entity_aware"`
+включает scoring v2 (default — `legacy`, прежнее поведение):
+
+* **entity-идентичность**: маркировки (ВРУ-1, ГРЩ, ЩО-3, ЯК5, ЩР-ТХ1…)
+  извлекаются из имени листа + equipment/raw_key_entities токенов;
+  primary-идентичность (только sheet_name) перебивает mention-pool
+  (упоминание ГРЩ на схеме ВРУ-2 не подтверждает идентичность);
+  `match` нумерованный (+0.2) / `family_only_match` bare (+0.05) /
+  `numbered_conflict` ВРУ-3↔ВРУ-2 (−0.35, generic-токен «вру» обеих сторон
+  его НЕ маскирует) / `family_conflict` ЯК↔ЩО (−0.3); анти-false-positive:
+  «вручную»/«шум»/«ТПУ» не дают сущностей, «АВР 100А» — рейтинг, не номер,
+  «ВРУ2-РП1» не утекает назначением РП-1;
+* **вид листа** (схема/план/таблица/узел): совпадение +0.1, конфликт
+  scheme↔plan −0.3;
+* graphic_type/discipline match (graphic_matched_report или дескрипторы),
+  `token_overlap.equipment`, `match_quality`, mask_iou/NCC, duplicate;
+* **штамп** депризован (−0.35, `stamp_block_low_vision_value`) — дельты
+  штампа ловит текстовый слой, vision-бюджет идёт на инженерную графику.
+
+Каждый кандидат получает `candidate_score` (0..1), `candidate_rank`,
+`candidate_reasons`, `candidate_risk_flags`, `candidate_kind`:
+
+| kind | значение | enrichment | link_validation |
+|---|---|---|---|
+| `same_entity_likely` | одна сущность | основной пул (по score) | в конец |
+| `validation_candidate` | риски без прямого конфликта | при недоборе | второй приоритет |
+| `mismatch_likely` | entity/вид листа конфликтуют | исключён при `exclude_mismatch_likely=true` (default) | **первый приоритет** |
+| `uncertain` | сигналов мало | при недоборе | третий |
+
+`selection_mode`: `enrichment` (default) — vision описывает изменения одной
+сущности; `link_validation` — vision целенаправленно проверяет подозрительные
+связи («та ли это сущность?»). Smoke ИОС1.1: enrichment top5 = 5 инженерных
+схем (ГРЩ/ВРУ-4/…, 0 штампов, 0 false-пар; mismatch_excluded=16 из 54);
+link_validation top5 начинается с ВРУ-1↔план ТП.
+
+## Render options (high_res / tiled-контракт)
+
+```json
+{"render": {"mode": "normal|high_res|tiled", "long_side": 1600,
+            "dense_long_side": 2400, "tile_long_side": 1400, "max_tiles": 6}}
+```
+
+`normal` (default) — `long_side` для всех (legacy `render_long_side`
+учитывается). `high_res` — для плотных типов (`cabinet_scheme`,
+`single_line_scheme`, `dense_scheme`, `table_scheme`) берётся
+`dense_long_side` (пилот: ГРЩ при 1600px дал low confidence по номиналам).
+`tiled` — зарезервированный контракт (`tile_long_side`/`max_tiles`): до
+реализации честно деградирует к high_res с warning'ом уже на merge опций —
+независимо от того, дошёл ли прогон до рендера (TODO: пофрагментный рендер +
+merge по образцу grsh_feeder_extraction). Невалидный mode → warning + normal.
+`summary.render_mode` — ЭФФЕКТИВНЫЙ режим, `summary.render_mode_requested` —
+запрошенный; планируемый long_side пишется в `item.render_long_side_used` у
+ВСЕХ items (включая plan-only), runner получает per-item
+`options.render_long_side`.
+
+Real vision benchmark (сравнение моделей/разрешений) запускается отдельной
+controlled-задачей — этот слой только готовит вход.
+
 ## Реальный local vision runner (pilot 2026-06-11)
 
 [pipeline_v2_local_vision_runner.py](../backend/app/services/stage_comparison/pipeline_v2_local_vision_runner.py)

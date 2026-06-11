@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import tempfile
 from pathlib import Path
 from typing import Any, Callable, Optional
@@ -48,7 +49,30 @@ _DEFAULT_OPTIONS = {
     "render_crops": True,           # рендерить PNG-кропы перед вызовом runner
     "render_long_side": 1600,
     "runner_model": "fake",
+    # отбор кандидатов: legacy (как было) | entity_aware (scoring v2)
+    "candidate_selection": "legacy",
+    # entity_aware режимы: enrichment (одна сущность) | link_validation
+    # (целенаправленная проверка подозрительных связей)
+    "selection_mode": "enrichment",
+    "exclude_mismatch_likely": True,    # только для enrichment
 }
+
+# render-опции (options["render"]): high_res поднимает long_side для
+# плотных типов графики; tiled — зарезервированный контракт (см. доку)
+_DEFAULT_RENDER_OPTIONS = {
+    "mode": "normal",               # normal | high_res | tiled
+    "long_side": 1600,
+    "dense_long_side": 2400,
+    "tile_long_side": 1400,
+    "max_tiles": 6,
+}
+_DENSE_GRAPHIC_TYPES = {"cabinet_scheme", "single_line_scheme",
+                        "dense_scheme", "table_scheme"}
+
+CANDIDATE_SAME = "same_entity_likely"
+CANDIDATE_MISMATCH = "mismatch_likely"
+CANDIDATE_VALIDATION = "validation_candidate"
+CANDIDATE_UNCERTAIN = "uncertain"
 
 _VALID_CONFIDENCE = {"high", "medium", "low"}
 
@@ -179,6 +203,400 @@ def _crop_ref(source: dict, rendered_png: Optional[str]) -> str:
     return ""
 
 
+# ─── candidate selection v2 (entity-aware) ───────────────────────────────────
+#
+# Урок real vision pilot ИОС1.1: position-based block matching сводит РАЗНЫЕ
+# сущности (схема ВРУ-1 ↔ план ТП, ВРУ-3 ↔ ВРУ-2, ЯК ↔ ЩО-3). Слепой отбор
+# «всех send_to_vision» тратит vision-бюджет на пары, где честный ответ —
+# «это разные объекты». Scoring v2 ранжирует кандидатов по entity-идентичности
+# (имя листа/маркировки оборудования) и разводит enrichment / link_validation.
+
+_ENTITY_FAMILIES = ("ВРУ", "ГРЩ", "ЩЭ", "ЩАО", "ЩА", "ЩО", "ЩР", "ЩС", "ЩК",
+                    "ЯК", "АВР", "РУСН", "ИТП", "ВРП", "ШУ", "ЩУ", "ГЗШ",
+                    "РП", "ТП")
+# family + СЛИТНЫЙ/дефисный хвост; пробельные хвосты («АВР 100А») намеренно
+# не захватываются — после family через пробел чаще номинал/количество,
+# чем номер единицы (та же логика, что в stamp_matching для «0,4кВ»)
+_ENTITY_TOKEN_RE = re.compile(
+    r"(?<![А-ЯЁа-яёA-Za-z0-9])(" + "|".join(_ENTITY_FAMILIES) + r")"
+    r"([0-9А-ЯЁа-яёA-Za-z.\-–—]*)",
+    re.IGNORECASE,
+)
+_TAIL_FAMILY_RE = re.compile(
+    "|".join(_ENTITY_FAMILIES), re.IGNORECASE)
+_SHEET_KIND_MARKERS = [
+    ("scheme", ("однолинейн", "схема", "принципиальн")),
+    ("plan", ("план",)),
+    ("table", ("спецификац", "таблиц", "ведомост", "экспликац", "перечень")),
+    ("detail", ("узел", "узлы", "разрез", "деталь")),
+]
+
+
+def _entity_id_from_match(fam_raw: str, tail: str) -> Optional[str]:
+    """Нормализованный id из совпадения или None (ложное срабатывание).
+
+    Анти-false-positive правила (ревью: «вручную»→ВРУ, «шум»→ШУ, «ТПУ»→ТП):
+
+    * приклеенный буквенный хвост допустим только у ЗАГЛАВНОЙ family и
+      только короткий строчный суффикс серии («ВРУа», «ЩРа-1»);
+    * строчная/смешанная family принимается лишь bare или с дефис-хвостом
+      («вру», «щр-1а» из MD-текста) — «вручную»/«Якорь»/«щуп» отбрасываются.
+    """
+    fam = fam_raw.upper().replace("Ё", "Е")
+    norm = (tail or "").replace("–", "-").replace("—", "-")
+    m = re.match(r"[А-ЯЁа-яёA-Za-z]+", norm)
+    attached = m.group(0) if m else ""
+    if attached:
+        if not fam_raw.isupper():
+            return None          # часть обычного слова: «вручную», «Якорь»
+        if attached.isupper() and not any(ch.isdigit() for ch in norm):
+            return None          # аббревиатурный хвост: «ТПУ», «ВРУЧНУЮ»
+        if len(attached) > 2 and not any(ch.isdigit() for ch in norm):
+            return None
+    # «ВРУ2-РП1» — фидерная метка: РП1 это назначение, не идентичность
+    # листа; хвост обрезается до вложенной family (leak guard)
+    m2 = _TAIL_FAMILY_RE.search(norm)
+    if m2:
+        norm = norm[:m2.start()]
+    norm = norm.strip("-. ").lower()
+    return f"{fam}-{norm}" if norm else fam
+
+
+def extract_entity_ids(*texts: Any) -> set[str]:
+    """Извлечь маркировки сущностей (ВРУ-1, ГРЩ, ЩО-3, ЯК5, ЩР-ТХ1…)."""
+    out: set[str] = set()
+    for t in texts:
+        if isinstance(t, (list, tuple, set)):
+            out |= extract_entity_ids(*t)
+            continue
+        s = str(t or "")
+        for m in _ENTITY_TOKEN_RE.finditer(s):
+            eid = _entity_id_from_match(m.group(1), m.group(2))
+            if eid:
+                out.add(eid)
+    return out
+
+
+def _entity_families_of(ids: set[str]) -> set[str]:
+    return {i.split("-", 1)[0] for i in ids}
+
+
+def entity_identity_signal(left_ids: set[str],
+                           right_ids: set[str]) -> str:
+    """match | family_only_match | numbered_conflict | family_conflict | none.
+
+    * match — общая НУМЕРОВАННАЯ маркировка (ВРУ-2 ↔ ВРУ-2);
+    * numbered_conflict — общая family, нумерованные ids обеих сторон не
+      пересекаются (ВРУ-3 ↔ ВРУ-2) — проверяется РАНЬШЕ bare-пересечения:
+      generic-токен «вру» на обеих сторонах не подтверждает идентичность
+      (critical-находка ревью на реальных дескрипторах);
+    * family_only_match — пересечение только на уровне family/bare
+      (ГРЩ ↔ ГРЩ, {ВРУ} ↔ {ВРУ-2}) — слабое подтверждение;
+    * family_conflict — families не пересекаются (ЯК ↔ ЩО);
+    * none — хотя бы одна сторона без распознанных маркировок.
+    """
+    if not left_ids or not right_ids:
+        return "none"
+    numbered_common = {i for i in left_ids & right_ids if "-" in i}
+    if numbered_common:
+        return "match"
+    lf, rf = _entity_families_of(left_ids), _entity_families_of(right_ids)
+    common = lf & rf
+    if common:
+        for fam in common:
+            ln = {i for i in left_ids if "-" in i
+                  and i.split("-", 1)[0] == fam}
+            rn = {i for i in right_ids if "-" in i
+                  and i.split("-", 1)[0] == fam}
+            if ln and rn and not (ln & rn):
+                return "numbered_conflict"
+        return "family_only_match"
+    return "family_conflict"
+
+
+def sheet_kind_of(sheet_name: Any) -> Optional[str]:
+    """Вид листа по самому РАННЕМУ маркеру в имени («План ТП и схема
+    вентиляции» → plan, а не scheme)."""
+    s = str(sheet_name or "").lower()
+    best: tuple[int, Optional[str]] = (len(s) + 1, None)
+    for kind, markers in _SHEET_KIND_MARKERS:
+        for m in markers:
+            idx = s.find(m)
+            if idx >= 0 and idx < best[0]:
+                best = (idx, kind)
+    return best[1]
+
+
+def _equipment_token_informative(tok: Any) -> bool:
+    """Токен equipment содержателен? Bare family-слово («вру») — нет;
+    family с дискриминатором («ВРУ2-РП1») и не-family токены («QF1») — да."""
+    s = str(tok or "").strip()
+    if not s:
+        return False
+    m = _ENTITY_TOKEN_RE.fullmatch(s)
+    if m is None:
+        return True
+    eid = _entity_id_from_match(m.group(1), m.group(2))
+    return bool(eid and "-" in eid)
+
+
+def _matched_graphic_index(graphic_matched_report: Any) -> dict:
+    """(left_block_id, right_block_id) → matched-graphic entry."""
+    entries = []
+    if isinstance(graphic_matched_report, list):
+        entries = graphic_matched_report
+    elif isinstance(graphic_matched_report, dict):
+        entries = graphic_matched_report.get("matched_graphic_blocks") or []
+    out: dict = {}
+    for e in entries:
+        if isinstance(e, dict) and e.get("left_block_id") and e.get("right_block_id"):
+            out[(e["left_block_id"], e["right_block_id"])] = e
+    return out
+
+
+def score_vision_candidate(pair: dict, *, left_desc: dict, right_desc: dict,
+                           matched_entry: Optional[dict] = None) -> dict:
+    """Оценить пару gate как кандидата на vision (score/kind/reasons/risks)."""
+    reasons: list[str] = []
+    risks: list[str] = []
+    score = 0.5
+
+    if pair.get("decision") == "send_to_vision":
+        score += 0.1
+        reasons.append("gate:send_to_vision")
+    if pair.get("status") == "changed_visual":
+        score += 0.05
+        reasons.append("gate:changed_visual")
+
+    lt = left_desc.get("tokens") if isinstance(left_desc.get("tokens"), dict) else {}
+    rt = right_desc.get("tokens") if isinstance(right_desc.get("tokens"), dict) else {}
+    left_ids = extract_entity_ids(left_desc.get("sheet_name"),
+                                  lt.get("equipment"),
+                                  lt.get("raw_key_entities"))
+    right_ids = extract_entity_ids(right_desc.get("sheet_name"),
+                                   rt.get("equipment"),
+                                   rt.get("raw_key_entities"))
+    identity = entity_identity_signal(left_ids, right_ids)
+    # primary-идентичность листа (только sheet_name) перебивает mention-pool:
+    # упоминание ГРЩ/РП-1 на схеме ВРУ-2 не должно ни подтверждать, ни
+    # маскировать конфликт ВРУ-3↔ВРУ-2 (находка ревью на real data)
+    primary = entity_identity_signal(
+        extract_entity_ids(left_desc.get("sheet_name")),
+        extract_entity_ids(right_desc.get("sheet_name")))
+    if primary in ("match", "numbered_conflict", "family_conflict"):
+        identity = primary
+    if identity == "match":
+        score += 0.2
+        reasons.append("entity_id_match")
+    elif identity == "family_only_match":
+        score += 0.05
+        reasons.append("entity_family_match")
+    elif identity == "numbered_conflict":
+        score -= 0.35
+        risks.append("entity_id_conflict")
+    elif identity == "family_conflict":
+        score -= 0.3
+        risks.append("entity_family_conflict")
+
+    lk, rk = sheet_kind_of(left_desc.get("sheet_name")), \
+        sheet_kind_of(right_desc.get("sheet_name"))
+    if lk and rk:
+        if lk == rk:
+            score += 0.1
+            reasons.append(f"sheet_kind_match:{lk}")
+        else:
+            score -= 0.3
+            risks.append(f"sheet_kind_mismatch:{lk}/{rk}")
+
+    lg_t, rg_t = left_desc.get("graphic_type"), right_desc.get("graphic_type")
+    me = matched_entry or {}
+    type_match = me.get("graphic_type_match")
+    if type_match is None and lg_t and rg_t:
+        type_match = (lg_t == rg_t)
+    if type_match is True:
+        score += 0.1
+        reasons.append("graphic_type_match")
+    elif type_match is False:
+        score -= 0.1
+        risks.append("graphic_type_mismatch")
+
+    disc_match = me.get("discipline_match")
+    if disc_match is None:
+        ld_d, rd_d = left_desc.get("discipline"), right_desc.get("discipline")
+        if ld_d and rd_d:
+            disc_match = (ld_d == rd_d)
+    if disc_match is True:
+        score += 0.05
+        reasons.append("discipline_match")
+    elif disc_match is False:
+        score -= 0.15
+        risks.append("discipline_mismatch")
+
+    overlap = (me.get("token_overlap") or {}).get("equipment")
+    if isinstance(overlap, (int, float)):
+        # informativeness guard: overlap=1.0 на списках из одних generic
+        # family-слов (['вру'] ↔ ['вру']) — бессодержателен, бонус не даётся
+        informative = any(
+            _equipment_token_informative(tok)
+            for tok in (lt.get("equipment") or []) + (rt.get("equipment") or []))
+        if overlap >= 0.5 and informative:
+            score += 0.15
+            reasons.append(f"equipment_overlap:{overlap:.2f}")
+        elif overlap >= 0.2 and informative:
+            score += 0.1
+            reasons.append(f"equipment_overlap:{overlap:.2f}")
+        elif overlap == 0 and lt.get("equipment") and rt.get("equipment"):
+            score -= 0.1
+            risks.append("equipment_overlap_zero")
+
+    quality = me.get("match_quality")
+    if quality == "strong":
+        score += 0.05
+        reasons.append("match_quality:strong")
+    elif quality == "weak":
+        score -= 0.05
+        risks.append("match_quality:weak")
+    for f in me.get("risk_flags") or []:
+        if f in ("low_token_overlap", "one_side_not_usable") and f not in risks:
+            risks.append(f)
+            score -= 0.05
+
+    metrics = pair.get("metrics") if isinstance(pair.get("metrics"), dict) else {}
+    iou = metrics.get("mask_iou")
+    ncc = metrics.get("normalized_correlation")
+    if (isinstance(iou, (int, float)) and iou >= 0.05) or \
+            (isinstance(ncc, (int, float)) and ncc >= 0.2):
+        score += 0.05
+        reasons.append("visual_structure_overlap")
+
+    if "duplicate_candidate" in (pair.get("risk_flags") or []):
+        score -= 0.1
+        risks.append("duplicate_candidate")
+
+    # штамп — та же сущность, но низкая ценность для vision-enrichment
+    # (дельты штампа ловит текстовый слой); инженерная графика приоритетнее
+    if "stamp" in (str(left_desc.get("graphic_type") or "").lower(),
+                   str(right_desc.get("graphic_type") or "").lower()):
+        score -= 0.35
+        risks.append("stamp_block_low_vision_value")
+
+    score = max(0.0, min(1.0, round(score, 3)))
+
+    hard_mismatch = any(r.startswith(("entity_id_conflict",
+                                      "entity_family_conflict",
+                                      "sheet_kind_mismatch")) for r in risks)
+    # SAME требует корроборации (entity/вид листа), не только score:
+    # blank-дескрипторные пары не должны проходить в enrichment по одним
+    # gate-бонусам (ревью: позиционный срез reasons[2:] был артефактом)
+    if hard_mismatch:
+        kind = CANDIDATE_MISMATCH
+    elif score >= 0.6 and (identity in ("match", "family_only_match")
+                           or (lk and lk == rk)):
+        kind = CANDIDATE_SAME
+    elif risks:
+        kind = CANDIDATE_VALIDATION
+    else:
+        kind = CANDIDATE_UNCERTAIN
+
+    return {
+        "candidate_score": score,
+        "candidate_kind": kind,
+        "candidate_reasons": reasons,
+        "candidate_risk_flags": risks,
+    }
+
+
+def select_vision_candidates_v2(visual_gate_report: Any, *,
+                                left_graphic_report: Any = None,
+                                right_graphic_report: Any = None,
+                                graphic_matched_report: Any = None,
+                                options: Optional[dict] = None
+                                ) -> tuple[list[dict], dict, list[str]]:
+    """Entity-aware отбор: score → режим (enrichment/link_validation) → cap.
+
+    Возвращает (selected_pairs_с_candidate_полями, stats, warnings).
+    enrichment: same_entity_likely по score desc, затем uncertain, затем
+    validation_candidate при недоборе; mismatch_likely исключаются при
+    exclude_mismatch_likely=true (default). link_validation: сначала
+    mismatch_likely + validation_candidate (самые подозрительные — то, что
+    нужно проверить), затем остальные.
+    """
+    warnings: list[str] = []
+    r = visual_gate_report if isinstance(visual_gate_report, dict) else {}
+    pairs = [bp for bp in r.get("block_pairs") or [] if isinstance(bp, dict)]
+    include_manual = _opt(options, "include_manual_review") is not False
+    include_excluded = _opt(options, "include_exclude_from_vision") is True
+    mode = str(_opt(options, "selection_mode") or "enrichment").lower()
+    if mode not in ("enrichment", "link_validation"):
+        warnings.append(f"unknown selection_mode {mode!r} — "
+                        "falling back to 'enrichment'")
+        mode = "enrichment"
+    exclude_mismatch = _opt(options, "exclude_mismatch_likely") is not False
+
+    matched_idx = _matched_graphic_index(graphic_matched_report)
+    stats = {"candidates_total": len(pairs), "excluded_by_visual_gate": 0,
+             "manual_review_included": 0, "manual_review_skipped": 0,
+             "other_skipped": 0, "dropped_by_cap": 0,
+             "by_candidate_kind": {}, "mismatch_excluded": 0,
+             "selection_mode": mode}
+
+    eligible: list[dict] = []
+    for bp in pairs:
+        decision = bp.get("decision")
+        if decision == "exclude_from_vision":
+            stats["excluded_by_visual_gate"] += 1
+            if not include_excluded:
+                continue
+        elif decision == "manual_review":
+            if not include_manual:
+                stats["manual_review_skipped"] += 1
+                continue
+        elif decision != "send_to_vision":
+            stats["other_skipped"] += 1
+            continue
+        lid, rid = bp.get("left_block_id"), bp.get("right_block_id")
+        verdict = score_vision_candidate(
+            bp,
+            left_desc=_descriptor_for(left_graphic_report, lid),
+            right_desc=_descriptor_for(right_graphic_report, rid),
+            matched_entry=matched_idx.get((lid, rid)))
+        eligible.append({**bp, **verdict})
+        k = verdict["candidate_kind"]
+        stats["by_candidate_kind"][k] = stats["by_candidate_kind"].get(k, 0) + 1
+
+    if mode == "link_validation":
+        # цель — проверить подозрительные связи: mismatch/validation первыми
+        prio = {CANDIDATE_MISMATCH: 0, CANDIDATE_VALIDATION: 1,
+                CANDIDATE_UNCERTAIN: 2, CANDIDATE_SAME: 3}
+        eligible.sort(key=lambda c: (prio.get(c["candidate_kind"], 9),
+                                     -c["candidate_score"]))
+    else:
+        if exclude_mismatch:
+            kept = [c for c in eligible
+                    if c["candidate_kind"] != CANDIDATE_MISMATCH]
+            stats["mismatch_excluded"] = len(eligible) - len(kept)
+            eligible = kept
+        prio = {CANDIDATE_SAME: 0, CANDIDATE_UNCERTAIN: 1,
+                CANDIDATE_VALIDATION: 2, CANDIDATE_MISMATCH: 3}
+        eligible.sort(key=lambda c: (prio.get(c["candidate_kind"], 9),
+                                     -c["candidate_score"]))
+
+    for rank, c in enumerate(eligible, start=1):
+        c["candidate_rank"] = rank
+
+    max_items = _safe_int(_opt(options, "max_items"), 5)
+    selected = eligible
+    if max_items > 0 and len(selected) > max_items:
+        stats["dropped_by_cap"] = len(selected) - max_items
+        warnings.append(f"selection truncated by max_items={max_items}: "
+                        f"{len(selected) - max_items} of {len(selected)} "
+                        f"candidates dropped")
+        selected = selected[:max_items]
+    stats["manual_review_included"] = sum(
+        1 for bp in selected if bp.get("decision") == "manual_review")
+    return selected, stats, warnings
+
+
 # ─── selection ───────────────────────────────────────────────────────────────
 
 
@@ -268,6 +686,7 @@ def build_vision_prompt_for_block_pair(pair: dict, *,
 def build_graphic_vision_enrichment_plan(
         left_model: Any, right_model: Any, visual_gate_report: Any, *,
         left_graphic_report: Any = None, right_graphic_report: Any = None,
+        graphic_matched_report: Any = None,
         options: Optional[dict] = None) -> dict:
     """Построить план (items без vision-результатов) из готовых артефактов.
 
@@ -288,7 +707,14 @@ def build_graphic_vision_enrichment_plan(
                          "skipped"],
         }
 
-    selected, stats, sel_warnings = select_blocks_for_vision(gate, options)
+    if str(_opt(options, "candidate_selection") or "legacy") == "entity_aware":
+        selected, stats, sel_warnings = select_vision_candidates_v2(
+            gate, left_graphic_report=left_graphic_report,
+            right_graphic_report=right_graphic_report,
+            graphic_matched_report=graphic_matched_report,
+            options=options)
+    else:
+        selected, stats, sel_warnings = select_blocks_for_vision(gate, options)
     warnings.extend(sel_warnings)
 
     left_blocks = _blocks_by_id(left_model)
@@ -340,8 +766,13 @@ def build_graphic_vision_enrichment_plan(
         # полный prompt строится ВСЕГДА (runner получает его независимо от
         # write_prompts); write_prompts управляет только персистенцией
         prompts_by_item_id[item_id] = prompt
+        candidate_fields = {
+            k: bp[k] for k in ("candidate_score", "candidate_rank",
+                               "candidate_kind", "candidate_reasons",
+                               "candidate_risk_flags") if k in bp}
         items.append({
             "item_id": item_id,
+            **candidate_fields,
             "left_block_id": lid,
             "right_block_id": rid,
             "left_page_number": left_page,
@@ -439,6 +870,52 @@ def normalize_vision_runner_result(raw: Any) -> tuple[Optional[dict], list[str]]
     return result, warnings
 
 
+# ─── render options ──────────────────────────────────────────────────────────
+
+
+_VALID_RENDER_MODES = ("normal", "high_res", "tiled")
+
+
+def _render_options(options: Optional[dict]) -> tuple[dict, list[str]]:
+    """Слить options["render"] с defaults (+legacy render_long_side).
+
+    Возвращает (opts, warnings); ``opts["mode"]`` — ЭФФЕКТИВНЫЙ режим:
+    tiled (зарезервированный контракт) деградирует к high_res с warning'ом
+    уже здесь — независимо от того, дойдёт ли прогон до рендера; неизвестный
+    режим честно warn'ится и падает в normal (не молча).
+    """
+    warnings: list[str] = []
+    out = dict(_DEFAULT_RENDER_OPTIONS)
+    legacy = _opt(options, "render_long_side")
+    if legacy:
+        out["long_side"] = _safe_int(legacy, out["long_side"])
+    raw = (options or {}).get("render")
+    if isinstance(raw, dict):
+        for k in out:
+            if k in raw:
+                out[k] = raw[k] if k == "mode" else _safe_int(raw[k], out[k])
+    mode = str(out.get("mode") or "normal").strip().lower()
+    if mode not in _VALID_RENDER_MODES:
+        warnings.append(f"invalid render mode {out.get('mode')!r} → normal")
+        mode = "normal"
+    out["mode_requested"] = mode
+    if mode == "tiled":
+        warnings.append("render mode 'tiled' not implemented yet — "
+                        "falling back to high_res")
+        mode = "high_res"
+    out["mode"] = mode
+    return out, warnings
+
+
+def _item_render_long_side(item: dict, render_opts: dict) -> int:
+    """long_side рендера для item'а (mode уже эффективный)."""
+    base = _safe_int(render_opts.get("long_side"), 1600)
+    if (render_opts.get("mode") == "high_res"
+            and (item.get("graphic_type") or "") in _DENSE_GRAPHIC_TYPES):
+        return _safe_int(render_opts.get("dense_long_side"), 2400)
+    return base
+
+
 # ─── crop rendering (только при наличии runner'а) ────────────────────────────
 
 
@@ -495,6 +972,7 @@ def _render_crop_png(block: Optional[dict], pages: dict,
 def run_graphic_vision_enrichment(
         left_model: Any, right_model: Any, visual_gate_report: Any, *,
         left_graphic_report: Any = None, right_graphic_report: Any = None,
+        graphic_matched_report: Any = None,
         options: Optional[dict] = None,
         vision_runner: Optional[VisionRunner] = None,
         crops_dir: Optional[str | Path] = None) -> dict:
@@ -508,14 +986,21 @@ def run_graphic_vision_enrichment(
         left_model, right_model, visual_gate_report,
         left_graphic_report=left_graphic_report,
         right_graphic_report=right_graphic_report,
+        graphic_matched_report=graphic_matched_report,
         options=options)
 
     warnings = list(plan.get("warnings") or [])
     items = plan.get("items") or []
     stats = plan.get("stats") or {}
+    render_opts, render_warnings = _render_options(options)
+    if items:
+        # render-warnings (tiled fallback / invalid mode) релевантны и для
+        # plan-only прогонов (skipped_no_runner) — оператор должен видеть,
+        # что запрошенный режим не реализован, до реального запуска
+        warnings.extend(render_warnings)
     runner_options = {"model": _opt(options, "runner_model"),
-                      "render_long_side": _safe_int(
-                          _opt(options, "render_long_side"), 1600)}
+                      "render_long_side": render_opts["long_side"],
+                      "render_mode": render_opts["mode"]}
     render_crops = _opt(options, "render_crops") is not False
 
     attempted = succeeded = failed = skipped = 0
@@ -530,6 +1015,10 @@ def run_graphic_vision_enrichment(
 
         prompts = plan.get("prompts_by_item_id") or {}
         for item in items:
+            # планируемая геометрия рендера — у ВСЕХ items (и plan-only):
+            # консьюмер отчёта может восстановить, чем рендерили бы
+            long_side = _item_render_long_side(item, render_opts)
+            item["render_long_side_used"] = long_side
             if vision_runner is None:
                 item["vision_status"] = "skipped_no_runner"
                 skipped += 1
@@ -547,11 +1036,11 @@ def run_graphic_vision_enrichment(
                     left_png, lerr = _render_crop_png(
                         left_blocks.get(item["left_block_id"]), left_pages,
                         left_pdf, base / f"{item['item_id']}_left.png",
-                        runner_options["render_long_side"])
+                        long_side)
                     right_png, rerr = _render_crop_png(
                         right_blocks.get(item["right_block_id"]), right_pages,
                         right_pdf, base / f"{item['item_id']}_right.png",
-                        runner_options["render_long_side"])
+                        long_side)
                     for err in (lerr, rerr):
                         if err:
                             item["warnings"].append(err)
@@ -576,8 +1065,10 @@ def run_graphic_vision_enrichment(
                           graphic_type=item.get("graphic_type") or "unknown",
                           discipline=item.get("discipline") or "unknown"))
             try:
+                # per-item эффективный long_side (dense high_res ≠ base)
                 raw = vision_runner(prompt, left_png, right_png,
-                                    dict(runner_options))
+                                    {**runner_options,
+                                     "render_long_side": long_side})
             except Exception as exc:  # noqa: BLE001 — runner не валит отчёт
                 item["vision_status"] = "failed"
                 item["warnings"].append(f"vision runner error: "
@@ -630,6 +1121,14 @@ def run_graphic_vision_enrichment(
             "vision_calls_failed": failed,
             "skipped_no_runner": skipped,
             "runner_model": runner_options["model"],
+            "candidate_selection": str(_opt(options, "candidate_selection")
+                                       or "legacy"),
+            "selection_mode": stats.get("selection_mode"),
+            "by_candidate_kind": stats.get("by_candidate_kind") or {},
+            "mismatch_excluded": stats.get("mismatch_excluded", 0),
+            "render_mode": render_opts["mode"],
+            "render_mode_requested": render_opts.get("mode_requested",
+                                                     render_opts["mode"]),
         },
         "items": items,
         "warnings": warnings,
@@ -660,6 +1159,15 @@ __all__ = [
     "REPORT_VERSION",
     "REPORT_KIND",
     "VISION_PROMPT_TEMPLATE",
+    "CANDIDATE_SAME",
+    "CANDIDATE_MISMATCH",
+    "CANDIDATE_VALIDATION",
+    "CANDIDATE_UNCERTAIN",
+    "extract_entity_ids",
+    "entity_identity_signal",
+    "sheet_kind_of",
+    "score_vision_candidate",
+    "select_vision_candidates_v2",
     "select_blocks_for_vision",
     "build_vision_prompt_for_block_pair",
     "build_graphic_vision_enrichment_plan",

@@ -487,6 +487,11 @@ def _graphic_vision_section(gv_report: Any, gv_enabled: bool,
         "manual_review_skipped": s.get("manual_review_skipped", 0),
         "dropped_by_cap": s.get("dropped_by_cap", 0),
         "runner_model": s.get("runner_model"),
+        "candidate_selection": s.get("candidate_selection", "legacy"),
+        "selection_mode": s.get("selection_mode"),
+        "by_candidate_kind": s.get("by_candidate_kind") or {},
+        "mismatch_excluded": s.get("mismatch_excluded", 0),
+        "render_mode": s.get("render_mode", "normal"),
     }
     if gv_error:
         sec["error"] = gv_error
@@ -837,6 +842,13 @@ def write_pipeline_v2_summary_md(out_path: str | Path, summary: dict,
                  f"succeeded={gv.get('vision_calls_succeeded', 0)}, "
                  f"failed={gv.get('vision_calls_failed', 0)}, "
                  f"skipped_no_runner={gv.get('skipped_no_runner', 0)}")
+    if gv.get("candidate_selection") == "entity_aware":
+        kinds = ", ".join(f"{k}={v}" for k, v in
+                          (gv.get("by_candidate_kind") or {}).items()) or "—"
+        lines.append(f"- Candidate selection: entity_aware/"
+                     f"{gv.get('selection_mode')}, "
+                     f"mismatch_excluded={gv.get('mismatch_excluded', 0)}, "
+                     f"render_mode={gv.get('render_mode')}; kinds: {kinds}")
     if gv.get("status") == "disabled":
         lines.append("- ℹ Слой отключён (graphic_vision.enabled=false — default).")
     elif gv.get("status") == "skipped_no_runner":
@@ -1075,6 +1087,7 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
                     left_model, right_model, ve_report,
                     left_graphic_report=left_graphic,
                     right_graphic_report=right_graphic,
+                    graphic_matched_report=matched_graphic,
                     options=gv_opts, vision_runner=vision_runner,
                     crops_dir=gv_crops_dir)
                 write_graphic_vision_enrichment_report(
