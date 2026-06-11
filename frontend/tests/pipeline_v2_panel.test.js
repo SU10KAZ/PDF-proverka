@@ -757,3 +757,90 @@ describe('Pipeline V2 — grounding → block link jump', () => {
     expect(j.state.activePairId).toBe('pXYZ');
   });
 });
+
+// ── Grounded evidence badges (зеркало scPv2GeBadgeStyle / scPv2GeAnchorText /
+//    scPv2GeInterestingCards из app.js) ────────────────────────────────────
+
+function scPv2GeBadgeStyle(level) {
+  const L = (level || '').toLowerCase();
+  if (L === 'grounded') return {emoji: '✅', text: 'Grounded vision',
+    bg: '#dcfce7', fg: '#166534', border: '#86efac'};
+  if (L === 'weak') return {emoji: '🟡', text: 'Weak vision',
+    bg: '#fef9c3', fg: '#854d0e', border: '#fde047'};
+  if (L === 'conflict' || L === 'rejected_only')
+    return {emoji: '⚠', text: 'Rejected/conflict', bg: '#ffedd5',
+      fg: '#9a3412', border: '#fdba74'};
+  return null;
+}
+function scPv2GeAnchorText(a) {
+  if (!a) return '';
+  const parts = [];
+  if (a.designator) parts.push(String(a.designator).toUpperCase());
+  const ov = a.old_anchor || '';
+  const nv = a.new_anchor || '';
+  if (ov || nv) parts.push((ov || '—') + ' → ' + (nv || '—'));
+  return parts.join(': ');
+}
+function scPv2GeInterestingCards(ge) {
+  const cards = (ge && Array.isArray(ge.cards)) ? ge.cards : [];
+  return cards.filter(c => c && c.evidence_level && c.evidence_level !== 'none');
+}
+
+describe('Pipeline V2 — grounded evidence badges', () => {
+  it('3. grounded badge renders (green ✅)', () => {
+    const b = scPv2GeBadgeStyle('grounded');
+    expect(b).not.toBeNull();
+    expect(b.emoji).toBe('✅');
+    expect(b.text).toBe('Grounded vision');
+    expect(b.bg).toBe('#dcfce7');
+  });
+
+  it('4. weak badge renders (yellow 🟡)', () => {
+    const b = scPv2GeBadgeStyle('weak');
+    expect(b.emoji).toBe('🟡');
+    expect(b.text).toBe('Weak vision');
+  });
+
+  it('5. conflict/rejected warning renders (orange ⚠)', () => {
+    const c = scPv2GeBadgeStyle('conflict');
+    const r = scPv2GeBadgeStyle('rejected_only');
+    expect(c.emoji).toBe('⚠');
+    expect(c.text).toBe('Rejected/conflict');
+    expect(r.text).toBe('Rejected/conflict');   // оба → один warning-стиль
+  });
+
+  it('6. none / missing level → no badge (neutral)', () => {
+    expect(scPv2GeBadgeStyle('none')).toBeNull();
+    expect(scPv2GeBadgeStyle('')).toBeNull();
+    expect(scPv2GeBadgeStyle(undefined)).toBeNull();
+  });
+
+  it('7. interesting cards filter drops "none" (rejected/grounded kept)', () => {
+    const ge = {cards: [
+      {delta_id: 'a', evidence_level: 'grounded'},
+      {delta_id: 'b', evidence_level: 'none'},
+      {delta_id: 'c', evidence_level: 'rejected_only'},
+      {delta_id: 'd', evidence_level: 'weak'},
+    ]};
+    const out = scPv2GeInterestingCards(ge).map(c => c.delta_id);
+    expect(out).toEqual(['a', 'c', 'd']);
+  });
+
+  it('8. anchor text renders designator + old→new', () => {
+    const t = scPv2GeAnchorText({designator: 'qf5', old_anchor: 'QF5 (400А)',
+      new_anchor: 'QF5 (200А)'});
+    expect(t).toContain('QF5');
+    expect(t).toContain('QF5 (400А) → QF5 (200А)');
+  });
+
+  it('9. missing grounded_evidence → empty interesting list, no crash', () => {
+    expect(scPv2GeInterestingCards(null)).toEqual([]);
+    expect(scPv2GeInterestingCards({})).toEqual([]);
+    expect(scPv2GeInterestingCards({cards: null})).toEqual([]);
+  });
+
+  it('10. anchor text tolerates empty anchor', () => {
+    expect(scPv2GeAnchorText(null)).toBe('');
+    expect(scPv2GeAnchorText({})).toBe('');
+  });
+});

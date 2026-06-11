@@ -455,3 +455,136 @@ def test_score_changed_requires_both_sides():
 def test_normalize_section_token():
     assert ge.normalize_evidence_token("4х185") == "4x185"
     assert ge.normalize_evidence_token("4×185") == "4x185"
+
+
+# ─── UI badges: ui_payload per-delta evidence + compact cards ─────────────────
+
+def _ui_inputs():
+    """diff с дельтами на grounding-блоке + summary + ge-report."""
+    from backend.app.services.stage_comparison import pipeline_v2_dry_run as dr
+    deltas = [
+        _delta("qf5", "changed", "400А", "200А"),
+        _delta("qf6", "changed", "800А", "630А"),
+        _delta("noop", "changed", "4х2,5", "4х2,5", etype="cable"),
+        _delta("ghost", "changed", "999А", "888А"),
+    ]
+    diff = _diff_report(deltas)
+    ge_rep = ge.build_grounded_evidence_report(diff, _grounding_report(),
+                                               visual_gate_report=_gate())
+    sec = dr._grounded_evidence_section(ge_rep, True, None)
+    # делаем все 4 дельты секционными карточками (selection=all через fake de)
+    de_rep = de.explain_entity_diff_report(
+        diff, options={"selection_strategy": "all"}, llm_runner=None)
+    summary = {"status": "ok", "stages": {"entity_diff": {"deltas_total": len(deltas)}},
+               "grounded_evidence": sec,
+               "delta_sections": dr.build_delta_sections(diff, de_rep)}
+    return summary, diff, de_rep, ge_rep
+
+
+# spec-1: UI payload contains grounded_evidence summary
+
+def test_ui_1_payload_contains_ge_summary():
+    from backend.app.services.stage_comparison import pipeline_v2_ui_payload as up
+    summary, diff, de_rep, ge_rep = _ui_inputs()
+    payload = up.build_pipeline_v2_ui_payload(
+        summary, entity_diff_report=diff, delta_explanation_report=de_rep,
+        grounded_evidence_report=ge_rep)
+    g = payload["grounded_evidence"]
+    assert g["available"] is True
+    assert g["deltas_with_grounded_evidence"] >= 2     # qf5 + qf6
+    assert isinstance(g["cards"], list) and g["cards"]
+    # cards содержат badge + label + top_anchors
+    grounded = [c for c in g["cards"] if c["evidence_level"] == "grounded"]
+    assert grounded and grounded[0]["badge"] == "grounded"
+    assert grounded[0]["label"] == "Grounded vision evidence"
+
+
+# spec-2: UI payload attaches grounded_evidence to matching delta card
+
+def test_ui_2_attaches_to_delta_card():
+    from backend.app.services.stage_comparison import pipeline_v2_ui_payload as up
+    summary, diff, de_rep, ge_rep = _ui_inputs()
+    payload = up.build_pipeline_v2_ui_payload(
+        summary, entity_diff_report=diff, delta_explanation_report=de_rep,
+        grounded_evidence_report=ge_rep)
+    cards = [c for sec in payload["sections"] for c in sec["cards"]
+             if c.get("delta_id") == "qf5"]
+    assert cards, "qf5 delta card must exist"
+    ge_attached = cards[0].get("grounded_evidence")
+    assert ge_attached and ge_attached["evidence_level"] == "grounded"
+    assert ge_attached["badge"] == "grounded"
+    assert ge_attached["top_anchors"]
+    # attached_to_cards счётчик в секции
+    assert payload["grounded_evidence"].get("attached_to_cards", 0) >= 1
+
+
+# spec-6: missing grounded_evidence не ломает старые карточки
+
+def test_ui_6_missing_ge_does_not_break():
+    from backend.app.services.stage_comparison import pipeline_v2_ui_payload as up
+    summary, diff, de_rep, ge_rep = _ui_inputs()
+    summary.pop("grounded_evidence", None)
+    payload = up.build_pipeline_v2_ui_payload(
+        summary, entity_diff_report=diff, delta_explanation_report=de_rep)
+    # секции есть, payload валиден, grounded_evidence отсутствует
+    assert payload["status"] in ("ok", "completed_with_warnings")
+    assert "grounded_evidence" not in payload
+    assert any(sec["cards"] for sec in payload["sections"])
+    for sec in payload["sections"]:
+        for c in sec["cards"]:
+            assert "grounded_evidence" not in c   # ничего не приклеено
+
+
+# spec-7: rejected evidence не отдаётся как факт (нет top_anchors)
+
+def test_ui_7_rejected_not_shown_as_fact():
+    from backend.app.services.stage_comparison import pipeline_v2_ui_payload as up
+    summary, diff, de_rep, ge_rep = _ui_inputs()
+    payload = up.build_pipeline_v2_ui_payload(
+        summary, entity_diff_report=diff, delta_explanation_report=de_rep,
+        grounded_evidence_report=ge_rep)
+    cards = {c["delta_id"]: c for c in payload["grounded_evidence"]["cards"]}
+    noop = cards.get("noop")
+    assert noop is not None
+    assert noop["evidence_level"] in ("conflict", "rejected_only")
+    assert noop["use_in_critic"] is False
+    assert noop["top_anchors"] == []   # rejected — НЕ факт, anchors не отдаём
+
+
+# compact helpers unit-level
+
+def test_ui_compact_badge_and_label():
+    from backend.app.services.stage_comparison import pipeline_v2_ui_payload as up
+    assert up._ge_badge("grounded") == "grounded"
+    assert up._ge_badge("weak") == "weak"
+    assert up._ge_badge("conflict") == "conflict"
+    assert up._ge_badge("rejected_only") == "conflict"
+    assert up._ge_badge("none") == "none"
+    assert up._ge_label("grounded") == "Grounded vision evidence"
+    assert up._ge_label("none") == ""
+
+
+def test_ui_compact_card_no_raw_or_fulltext():
+    from backend.app.services.stage_comparison import pipeline_v2_ui_payload as up
+    card = {"evidence_level": "grounded", "use_in_critic": True,
+            "evidence": [{"fact_level": "confirmed", "status": "grounded",
+                          "old_anchor": "QF5 (400А)" + " x" * 200,  # длинный
+                          "new_anchor": "QF5 (200А)", "match_score": 0.97}]}
+    compact = up.build_grounded_evidence_compact(card)
+    assert compact["badge"] == "grounded"
+    assert len(compact["top_anchors"]) == 1
+    # длинный anchor обрезан
+    assert len(compact["top_anchors"][0]["old_anchor"]) <= up._GE_ANCHOR_TEXT_MAX + 1
+
+
+def test_ui_cards_capped_interesting_first():
+    """cap=100, но grounded/weak/conflict не отрезаются (сортировка вперёд)."""
+    from backend.app.services.stage_comparison import pipeline_v2_ui_payload as up
+    # 120 none + 1 grounded в хвосте
+    deltas = [_delta(f"n{i}", "changed", "111А", "222А") for i in range(120)]
+    diff = _diff_report(deltas + [_delta("qf5", "changed", "400А", "200А")])
+    ge_rep = ge.build_grounded_evidence_report(diff, _grounding_report())
+    sec = up.build_grounded_evidence_ui(ge_rep)
+    assert len(sec["cards"]) <= up._GE_CARDS_MAX
+    ids = {c["delta_id"] for c in sec["cards"]}
+    assert "qf5" in ids   # grounded не отрезан несмотря на 120 none перед ним

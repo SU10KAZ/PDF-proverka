@@ -7489,6 +7489,47 @@
                             </div>
                         </div>
 
+                        <!-- Grounded vision evidence (per-delta связка, mark-only) -->
+                        <div v-if="scPv2GroundedEvidence" style="margin-top:14px; padding:10px 12px; border:1px solid var(--border,#e5e7eb); border-radius:8px; background:var(--card-bg,#fff)">
+                            <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px">
+                                <strong style="color:#3730a3">🔗 Grounded evidence</strong>
+                                <span v-if="!scPv2GeAvailable" style="font-size:11px; color:#9ca3af">(нет grounding-связки)</span>
+                            </div>
+                            <div v-if="scPv2GeAvailable">
+                                <div style="display:flex; gap:14px; flex-wrap:wrap; font-size:13px">
+                                    <span style="color:#166534">✅ с подтверждением: <b>{{ scPv2GroundedEvidence.deltas_with_grounded_evidence || 0 }}</b></span>
+                                    <span style="color:#854d0e">🟡 слабое: <b>{{ scPv2GroundedEvidence.deltas_with_weak_evidence || 0 }}</b></span>
+                                    <span style="color:#9a3412">⚠ conflicts/rejected: <b>{{ scPv2GroundedEvidence.deltas_with_rejected_conflicts || 0 }}</b></span>
+                                    <span style="color:#6b7280">⚪ без подтверждения: <b>{{ scPv2GroundedEvidence.deltas_without_evidence || 0 }}</b></span>
+                                </div>
+                                <!-- компактный список интересных дельт -->
+                                <div v-if="scPv2GeInterestingCards.length" style="margin-top:8px; display:flex; flex-direction:column; gap:4px; max-height:260px; overflow:auto">
+                                    <div v-for="c in scPv2GeInterestingCards.slice(0,20)" :key="'ge'+c.delta_id"
+                                         style="display:flex; align-items:center; gap:8px; font-size:12px; padding:3px 0; border-top:1px solid #f1f5f9">
+                                        <span v-if="scPv2GeBadgeStyle(c.evidence_level)"
+                                              :style="{background: scPv2GeBadgeStyle(c.evidence_level).bg, color: scPv2GeBadgeStyle(c.evidence_level).fg, border:'1px solid '+scPv2GeBadgeStyle(c.evidence_level).border, borderRadius:'10px', padding:'1px 8px', fontSize:'11px', whiteSpace:'nowrap'}">
+                                            {{ scPv2GeBadgeStyle(c.evidence_level).emoji }} {{ scPv2GeBadgeStyle(c.evidence_level).text }}
+                                        </span>
+                                        <span style="color:#374151">{{ c.old_value || '—' }} → {{ c.new_value || '—' }}</span>
+                                        <span v-if="c.top_anchors && c.top_anchors.length" style="color:#6b7280">
+                                            · anchor: {{ scPv2GeAnchorText(c.top_anchors[0]) }}
+                                        </span>
+                                        <span v-if="c.page_numbers && (c.page_numbers.left != null || c.page_numbers.right != null)" style="color:#9ca3af; margin-left:auto; white-space:nowrap">
+                                            OLD {{ c.page_numbers.left != null ? c.page_numbers.left : '—' }} → NEW {{ c.page_numbers.right != null ? c.page_numbers.right : '—' }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div style="font-size:11px; color:#6b7280; margin-top:6px">
+                                    Grounded vision evidence подтверждает deterministic delta по текстовым anchors.
+                                    Weak evidence — только подсказка для ручной проверки.
+                                    Rejected/ungrounded не используются как факт.
+                                </div>
+                            </div>
+                            <div v-else style="color:#9ca3af; font-size:12px">
+                                Связка дельт с grounded vision пока не построена для этой пары.
+                            </div>
+                        </div>
+
                         <!-- Grounding detail drawer (read-only) -->
                         <div v-if="scPv2GdOpen"
                              style="position:fixed; inset:0; background:rgba(15,23,42,.45); z-index:1000; display:flex; justify-content:flex-end"
@@ -7620,7 +7661,13 @@
                                         <span style="opacity:.6"> → </span>
                                         <code style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:4px; padding:1px 5px">{{ card.new_value || '∅' }}</code>
                                     </div>
-                                    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; font-size:10.5px">
+                                    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; font-size:10.5px; align-items:center">
+                                        <!-- grounded vision evidence badge (mark-only) -->
+                                        <span v-if="card.grounded_evidence && scPv2GeBadgeStyle(card.grounded_evidence.evidence_level)"
+                                              :style="{background: scPv2GeBadgeStyle(card.grounded_evidence.evidence_level).bg, color: scPv2GeBadgeStyle(card.grounded_evidence.evidence_level).fg, border:'1px solid '+scPv2GeBadgeStyle(card.grounded_evidence.evidence_level).border, borderRadius:'8px', padding:'0 7px', fontWeight:600}"
+                                              :title="(card.grounded_evidence.warnings||[]).join('; ')">
+                                            {{ scPv2GeBadgeStyle(card.grounded_evidence.evidence_level).emoji }} {{ scPv2GeBadgeStyle(card.grounded_evidence.evidence_level).text }}
+                                        </span>
                                         <span v-if="card.risk_level" style="border:1px solid #e5e7eb; border-radius:8px; padding:0 7px">риск: {{ card.risk_level }}</span>
                                         <span style="border:1px solid #e5e7eb; border-radius:8px; padding:0 7px">{{ card.critic_verdict || 'нет объяснения' }}</span>
                                         <span v-if="card.confidence != null" style="border:1px solid #e5e7eb; border-radius:8px; padding:0 7px">confidence: {{ card.confidence }}</span>
@@ -7629,6 +7676,22 @@
                                     </div>
                                     <div v-if="card.summary" style="font-size:12px; margin-top:6px">{{ card.summary }}</div>
                                     <div v-if="card.contractor_impact" style="font-size:11.5px; color:#6b7280; margin-top:3px">Влияние: {{ card.contractor_impact }}</div>
+                                    <!-- grounded evidence detail (top anchors + use_in_critic) -->
+                                    <div v-if="card.grounded_evidence && card.grounded_evidence.evidence_level !== 'none'"
+                                         style="font-size:11px; margin-top:6px; padding:5px 8px; border-radius:6px; background:#f8fafc; border:1px solid #eef2f7">
+                                        <div style="color:#475569">
+                                            <b>{{ card.grounded_evidence.label }}</b>
+                                            · use_in_critic: {{ card.grounded_evidence.use_in_critic ? 'да' : 'нет' }}
+                                        </div>
+                                        <div v-for="(a, ai) in (card.grounded_evidence.top_anchors||[])" :key="'gea'+ai" style="color:#6b7280; margin-top:2px">
+                                            anchor: {{ scPv2GeAnchorText(a) }}
+                                            <span v-if="a.left_page_number != null || a.right_page_number != null">· OLD {{ a.left_page_number != null ? a.left_page_number : '—' }} → NEW {{ a.right_page_number != null ? a.right_page_number : '—' }}</span>
+                                            <span v-if="a.match_score != null">· score {{ a.match_score }}</span>
+                                        </div>
+                                        <div v-if="(card.grounded_evidence.warnings||[]).length" style="color:#9a3412; margin-top:2px">
+                                            ⚠ {{ card.grounded_evidence.warnings.join('; ') }}
+                                        </div>
+                                    </div>
                                     <div style="font-size:10.5px; color:#9ca3af; margin-top:6px">
                                         <template v-if="card.page_numbers">стр. A: {{ card.page_numbers.left != null ? card.page_numbers.left : '—' }} · стр. B: {{ card.page_numbers.right != null ? card.page_numbers.right : '—' }}</template>
                                         <template v-if="card.block_ids && (card.block_ids.left || card.block_ids.right)"> · блоки: {{ card.block_ids.left || '—' }} / {{ card.block_ids.right || '—' }}</template>

@@ -13946,6 +13946,42 @@ const app = createApp({
             return n(g.artificial_series_rejected) + n(g.designator_range_rejected)
                 + n(g.noop_changes_rejected);
         });
+        // ─── Grounded vision evidence (per-delta badges + summary) ──────────
+        // payload.grounded_evidence: {available, counts…, cards:[…]}. Связь
+        // deterministic-дельты с подтверждённой графикой (mark-only).
+        const scPv2GroundedEvidence = computed(() =>
+            (scPv2Payload.value && scPv2Payload.value.grounded_evidence) || null);
+        const scPv2GeAvailable = computed(() => {
+            const g = scPv2GroundedEvidence.value;
+            return !!(g && g.available);
+        });
+        // карточки с подтверждением/конфликтом вперёд; «none» не показываем
+        const scPv2GeInterestingCards = computed(() => {
+            const g = scPv2GroundedEvidence.value;
+            const cards = (g && Array.isArray(g.cards)) ? g.cards : [];
+            return cards.filter(c => c && c.evidence_level && c.evidence_level !== 'none');
+        });
+        // визуальный стиль badge по уровню evidence
+        function scPv2GeBadgeStyle(level) {
+            const L = (level || '').toLowerCase();
+            if (L === 'grounded') return {emoji: '✅', text: 'Grounded vision',
+                bg: '#dcfce7', fg: '#166534', border: '#86efac'};
+            if (L === 'weak') return {emoji: '🟡', text: 'Weak vision',
+                bg: '#fef9c3', fg: '#854d0e', border: '#fde047'};
+            if (L === 'conflict' || L === 'rejected_only')
+                return {emoji: '⚠', text: 'Rejected/conflict', bg: '#ffedd5',
+                    fg: '#9a3412', border: '#fdba74'};
+            return null;   // none / unknown — badge не показываем
+        }
+        function scPv2GeAnchorText(a) {
+            if (!a) return '';
+            const parts = [];
+            if (a.designator) parts.push(String(a.designator).toUpperCase());
+            const ov = a.old_anchor || '';
+            const nv = a.new_anchor || '';
+            if (ov || nv) parts.push((ov || '—') + ' → ' + (nv || '—'));
+            return parts.join(': ');
+        }
         // ─── Grounding detail drawer (read-only) ────────────────────────────
         // Грузит GET …/pipeline-v2/{sid}/graphic-vision-grounding?pair_id=…
         // Один fetch (limit 500) → клиентская фильтрация по табам.
@@ -14772,6 +14808,8 @@ const app = createApp({
             scPv2Open, scPv2Filters, scPv2Payload, scPv2Sections,
             scPv2Headline, scPv2GraphicVision, scPv2GraphicGrounding,
             scPv2GroundingRejectedTotal,
+            scPv2GroundedEvidence, scPv2GeAvailable, scPv2GeInterestingCards,
+            scPv2GeBadgeStyle, scPv2GeAnchorText,
             scPv2GdOpen, scPv2GdLoading, scPv2GdError, scPv2GdResp,
             scPv2GdFilter, scPv2GdFilteredCards, scPv2GdPagination,
             scPv2GdStatusColor, scPv2GdOpenDrawer, scPv2GdClose,

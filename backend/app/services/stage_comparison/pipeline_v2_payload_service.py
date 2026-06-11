@@ -61,6 +61,7 @@ RIGHT_MODEL_FILENAME = "right_normalized_document_model.json"
 BLOCK_MATCHING_FILENAME = "block_matching_report.json"
 VISUAL_GATE_FILENAME = "visual_equivalence_gate_report.json"
 BLOCK_LINK_PREVIEW_FILENAME = "block_link_preview_report.json"
+GROUNDED_EVIDENCE_FILENAME = "grounded_evidence_report.json"
 
 NOT_FOUND_MESSAGE = "Pipeline V2 artifacts not found for this session."
 BLP_NOT_FOUND_MESSAGE = "Pipeline V2 block link preview artifacts not found."
@@ -215,6 +216,11 @@ def _build_from_artifacts(art_dir: Path, session_id: str,
     right_g, err = _read_json(art_dir / RIGHT_GRAPHIC_FILENAME)
     if err:
         warnings.append(err)
+    # grounded evidence (optional) — per-delta badges/cards; отсутствие не
+    # ломает payload (build_pipeline_v2_ui_payload деградирует на counts/нет)
+    ge, err = _read_json(art_dir / GROUNDED_EVIDENCE_FILENAME)
+    if err:
+        warnings.append(err)
 
     gdr = None
     if isinstance(left_g, dict) or isinstance(right_g, dict):
@@ -225,6 +231,7 @@ def _build_from_artifacts(art_dir: Path, session_id: str,
         diff if isinstance(diff, dict) else None,
         de if isinstance(de, dict) else None,
         graphic_descriptor_reports=gdr,
+        grounded_evidence_report=ge if isinstance(ge, dict) else None,
     )
 
 

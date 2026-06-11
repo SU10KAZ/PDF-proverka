@@ -109,6 +109,159 @@ _WEAK_READINESS = ("low", "not_usable")
 
 _FILTER_KEYS = ("entity_types", "risk_levels", "critic_verdicts", "delta_types")
 
+# grounded evidence (compact для UI)
+_GE_CARDS_MAX = 100
+_GE_TOP_ANCHORS_MAX = 3
+_GE_ANCHOR_TEXT_MAX = 80
+_GE_BADGE_BY_LEVEL = {
+    "grounded": "grounded",
+    "weak": "weak",
+    "conflict": "conflict",
+    "rejected_only": "conflict",
+    "none": "none",
+}
+_GE_LABEL_BY_LEVEL = {
+    "grounded": "Grounded vision evidence",
+    "weak": "Weak vision evidence",
+    "conflict": "Rejected/conflict evidence",
+    "rejected_only": "Rejected/conflict evidence",
+    "none": "",
+}
+
+
+def _ge_badge(level: str) -> str:
+    return _GE_BADGE_BY_LEVEL.get((level or "").strip().lower(), "none")
+
+
+def _ge_label(level: str) -> str:
+    return _GE_LABEL_BY_LEVEL.get((level or "").strip().lower(), "")
+
+
+def _compact_ge_anchor(ev: dict) -> dict:
+    """Компактный top-anchor: короткие строки, без raw/full-text."""
+    ev = ev if isinstance(ev, dict) else {}
+    return {
+        "status": _clean(ev.get("status")) or None,
+        "old_anchor": truncate_ui_text(ev.get("old_anchor"), _GE_ANCHOR_TEXT_MAX),
+        "new_anchor": truncate_ui_text(ev.get("new_anchor"), _GE_ANCHOR_TEXT_MAX),
+        "designator": _clean(ev.get("designator")) or None,
+        "left_page_number": ev.get("left_page_number"),
+        "right_page_number": ev.get("right_page_number"),
+        "left_block_id": _clean(ev.get("left_block_id")) or None,
+        "right_block_id": _clean(ev.get("right_block_id")) or None,
+        "match_score": ev.get("match_score"),
+    }
+
+
+def build_grounded_evidence_compact(card: dict) -> dict:
+    """Компактный per-delta evidence-блок для UI-карточки.
+
+    Берёт ТОЛЬКО usable (confirmed/weak) top-anchors как факт; для
+    conflict/rejected_only anchors-факты НЕ отдаются (только badge+warnings).
+    Никакого raw vision-ответа / full-text — лишь короткие якоря.
+    """
+    card = card if isinstance(card, dict) else {}
+    level = (card.get("evidence_level") or "none").strip().lower()
+    evidence = card.get("evidence") if isinstance(card.get("evidence"), list) else []
+    if level in ("grounded", "weak"):
+        usable = [e for e in evidence if isinstance(e, dict)
+                  and e.get("fact_level") in ("confirmed", "weak")]
+    else:
+        usable = []   # rejected/conflict/none → не отдаём anchors как факт
+    return {
+        "evidence_level": level,
+        "badge": _ge_badge(level),
+        "label": _ge_label(level),
+        "use_in_critic": bool(card.get("use_in_critic")),
+        "top_anchors": [_compact_ge_anchor(e) for e in usable[:_GE_TOP_ANCHORS_MAX]],
+        "warnings": _str_list(card.get("warnings")),
+    }
+
+
+def build_grounded_evidence_ui(report: Any, summary_section: Any = None) -> Optional[dict]:
+    """Собрать UI-блок grounded_evidence (summary + compact cards).
+
+    ``report`` — `grounded_evidence_report` (dict) или None. ``summary_section``
+    — секция `grounded_evidence` из pipeline_v2_summary (fallback на counts,
+    если полный report не передан). Возвращает None, если слой недоступен
+    (старый payload не ломается).
+    """
+    rep = report if isinstance(report, dict) else None
+    sec = summary_section if isinstance(summary_section, dict) else None
+
+    # источник counts: предпочитаем report.summary, иначе summary-секцию
+    rep_sum = (rep.get("summary") if rep and isinstance(rep.get("summary"), dict)
+               else {})
+    if not rep and not (sec and sec.get("enabled")):
+        return None
+
+    status = _clean((rep or {}).get("status")) or _clean((sec or {}).get("status")) \
+        or "unknown"
+    available = status not in ("disabled", "not_run", "unknown",
+                               "skipped_no_grounding")
+
+    def _count(key: str) -> int:
+        if key in rep_sum:
+            return _safe_count(rep_sum.get(key))
+        return _safe_count((sec or {}).get(key))
+
+    cards: list[dict] = []
+    if rep:
+        # сортируем «интересные» (grounded/weak/conflict/rejected) ВПЕРЁД, чтобы
+        # cap=100 не отрезал подтверждённые/конфликтные дельты в пользу «none»
+        _LEVEL_ORDER = {"grounded": 0, "weak": 1, "conflict": 2,
+                        "rejected_only": 3, "none": 4}
+        ordered = sorted(
+            (c for c in (rep.get("delta_evidence") or []) if isinstance(c, dict)),
+            key=lambda c: _LEVEL_ORDER.get(
+                (c.get("evidence_level") or "none").strip().lower(), 9))
+        for c in ordered[:_GE_CARDS_MAX]:
+            if not isinstance(c, dict):
+                continue
+            compact = build_grounded_evidence_compact(c)
+            pages = {"left": c.get("left_page_number"),
+                     "right": c.get("right_page_number")}
+            cards.append({
+                "delta_id": _clean(c.get("delta_id")) or None,
+                "entity_type": _clean(c.get("entity_type")) or None,
+                "delta_type": _clean(c.get("delta_type")) or None,
+                "old_value": truncate_ui_text(c.get("old_value"), _CARD_TEXT_MAX),
+                "new_value": truncate_ui_text(c.get("new_value"), _CARD_TEXT_MAX),
+                "evidence_level": compact["evidence_level"],
+                "use_in_critic": compact["use_in_critic"],
+                "badge": compact["badge"],
+                "label": compact["label"],
+                "page_numbers": pages,
+                "top_anchors": compact["top_anchors"],
+                "warnings": compact["warnings"],
+            })
+
+    out = {
+        "available": available,
+        "status": status,
+        "deltas_with_grounded_evidence": _count("deltas_with_grounded_evidence"),
+        "deltas_with_weak_evidence": _count("deltas_with_weak_evidence"),
+        "deltas_without_evidence": _count("deltas_without_evidence"),
+        "deltas_with_rejected_conflicts": _count("deltas_with_rejected_conflicts"),
+        "cards": cards,
+    }
+    err = _clean((rep or {}).get("status") == "failed" and "report_failed") \
+        or _clean((sec or {}).get("error"))
+    if err:
+        out["error"] = err
+    return out
+
+
+def grounded_evidence_compact_by_delta_id(report: Any) -> dict:
+    """Индекс delta_id → compact evidence-блок (для attach к delta cards)."""
+    out: dict = {}
+    if not isinstance(report, dict):
+        return out
+    for c in report.get("delta_evidence") or []:
+        if isinstance(c, dict) and c.get("delta_id"):
+            out[c["delta_id"]] = build_grounded_evidence_compact(c)
+    return out
+
 
 def _opt(options: Optional[dict], key: str, default: Any = None) -> Any:
     if isinstance(options, dict) and key in options:
@@ -349,12 +502,18 @@ def build_pipeline_v2_ui_payload(summary: dict,
                                  entity_diff_report: Optional[dict] = None,
                                  delta_explanation_report: Optional[dict] = None,
                                  graphic_descriptor_reports: Any = None,
-                                 options: Optional[dict] = None) -> dict:
+                                 options: Optional[dict] = None,
+                                 grounded_evidence_report: Optional[dict] = None) -> dict:
     """Собрать UI payload из готовых артефактов Pipeline V2 (offline).
 
     ``summary`` — обязательный вход (``pipeline_v2_summary.json``);
     остальные отчёты опциональны: без них payload строится по счётчикам
     summary, карточки деградируют (warning, не падение).
+
+    ``grounded_evidence_report`` (optional) — `grounded_evidence_report.json`;
+    если передан, payload получает per-delta compact evidence (badges,
+    top-anchors) на карточках дельт + блок `grounded_evidence.cards`. Без него
+    блок строится по counts из summary (или отсутствует) — старый UI не ломается.
     """
     adapter_warnings: list[str] = []
     s = summary if isinstance(summary, dict) else {}
@@ -557,27 +716,35 @@ def build_pipeline_v2_ui_payload(summary: dict,
         if gvg.get("error"):
             graphic_vision_grounding_section["error"] = str(gvg["error"])
 
-    # grounded vision evidence — сводка связки дельт с grounded vision;
-    # добавляется ТОЛЬКО если секция есть в summary и слой включён
-    ge = s.get("grounded_evidence")
+    # grounded vision evidence — сводка + compact per-delta cards. Источник:
+    # полный grounded_evidence_report (предпочтительно) ИЛИ counts из summary.
+    # Добавляется ТОЛЬКО если report передан ИЛИ summary-секция включена;
+    # старый payload без обоих не меняется.
+    ge_summary_section = s.get("grounded_evidence")
+    ge_summary_enabled = (isinstance(ge_summary_section, dict)
+                          and ge_summary_section.get("enabled"))
     grounded_evidence_section = None
-    if isinstance(ge, dict) and ge.get("enabled"):
-        ge_status = _clean(ge.get("status")) or "unknown"
-        grounded_evidence_section = {
-            "available": ge_status not in ("disabled", "not_run", "unknown",
-                                           "skipped_no_grounding"),
-            "status": ge_status,
-            "deltas_with_grounded_evidence": _safe_count(
-                ge.get("deltas_with_grounded_evidence")),
-            "deltas_with_weak_evidence": _safe_count(
-                ge.get("deltas_with_weak_evidence")),
-            "deltas_without_evidence": _safe_count(
-                ge.get("deltas_without_evidence")),
-            "deltas_with_rejected_conflicts": _safe_count(
-                ge.get("deltas_with_rejected_conflicts")),
-        }
-        if ge.get("error"):
-            grounded_evidence_section["error"] = str(ge["error"])
+    if isinstance(grounded_evidence_report, dict) or ge_summary_enabled:
+        grounded_evidence_section = build_grounded_evidence_ui(
+            grounded_evidence_report,
+            ge_summary_section if ge_summary_enabled else None)
+
+    # per-delta compact evidence → attach к карточкам дельт (по delta_id).
+    # Успешный attach — НЕ warning (не деградирует статус); счётчик кладём
+    # в саму grounded_evidence-секцию для прозрачности.
+    ge_compact_by_id = grounded_evidence_compact_by_delta_id(grounded_evidence_report)
+    if ge_compact_by_id:
+        attached = 0
+        for sec in sections:
+            for card in sec.get("cards") or []:
+                if not isinstance(card, dict):
+                    continue
+                comp = ge_compact_by_id.get(card.get("delta_id"))
+                if comp:
+                    card["grounded_evidence"] = comp
+                    attached += 1
+        if isinstance(grounded_evidence_section, dict):
+            grounded_evidence_section["attached_to_cards"] = attached
 
     summary_warnings = _str_list(s.get("warnings"))
     if s.get("warnings") and not summary_warnings:
