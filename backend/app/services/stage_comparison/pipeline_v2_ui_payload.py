@@ -514,6 +514,24 @@ def build_pipeline_v2_ui_payload(summary: dict,
             ve_sec["error"] = str(ve["error"])
         graphic_readiness["visual_equivalence"] = ve_sec
 
+    # graphic vision enrichment — добавляется ТОЛЬКО если секция есть в
+    # summary и слой был включён (старые payload'ы полностью совместимы)
+    gv = s.get("graphic_vision")
+    graphic_vision_section = None
+    if isinstance(gv, dict) and gv.get("enabled"):
+        gv_status = _clean(gv.get("status")) or "unknown"
+        graphic_vision_section = {
+            "available": gv_status not in ("disabled", "not_run", "unknown"),
+            "status": gv_status,
+            "selected_total": _safe_count(gv.get("selected_total")),
+            "vision_calls_succeeded": _safe_count(
+                gv.get("vision_calls_succeeded")),
+            "vision_calls_failed": _safe_count(gv.get("vision_calls_failed")),
+            "skipped_no_runner": _safe_count(gv.get("skipped_no_runner")),
+        }
+        if gv.get("error"):
+            graphic_vision_section["error"] = str(gv["error"])
+
     summary_warnings = _str_list(s.get("warnings"))
     if s.get("warnings") and not summary_warnings:
         adapter_warnings.append("summary_warnings_invalid_ignored")
@@ -537,6 +555,8 @@ def build_pipeline_v2_ui_payload(summary: dict,
         "warnings": adapter_warnings + summary_warnings,
         "artifact_refs": {str(k): str(v) for k, v in artifacts.items()},
     }
+    if graphic_vision_section is not None:
+        payload["graphic_vision"] = graphic_vision_section
     payload["filters"] = build_ui_filters(payload)
     return payload
 

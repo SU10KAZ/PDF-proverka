@@ -749,3 +749,51 @@ def test_weak_graphic_flags_match_coverage_notes_definition():
     )
     assert ui._WEAK_GRAPHIC_FLAGS == de_mod._WEAK_GRAPHIC_FLAGS
     assert "graphic_without_text_layer" in ui._WEAK_GRAPHIC_FLAGS
+
+
+def test_graphic_vision_section_contract_pins():
+    """Контракт graphic_vision секции: not_run → available=False;
+    failed → error passthrough + available=True; junk коэрцирован."""
+    diff, de = _full_reports()
+    summary = _summary(diff, de)
+
+    # not_run (конвейер упал до слоя) → секция есть, available=False
+    summary["graphic_vision"] = {"enabled": True, "status": "not_run"}
+    payload = ui.build_pipeline_v2_ui_payload(summary, diff, de)
+    sec = payload["graphic_vision"]
+    assert sec["available"] is False
+    assert sec["status"] == "not_run"
+
+    # failed → available=True (есть что показать) + error прокинут
+    summary["graphic_vision"] = {"enabled": True, "status": "failed",
+                                 "error": "boom"}
+    sec2 = ui.build_pipeline_v2_ui_payload(summary, diff, de)["graphic_vision"]
+    assert sec2["available"] is True
+    assert sec2["error"] == "boom"
+
+    # junk-значения не валят builder и коэрцируются
+    summary["graphic_vision"] = {"enabled": True, "status": "  ok  ",
+                                 "selected_total": "7",
+                                 "vision_calls_succeeded": None,
+                                 "vision_calls_failed": "junk",
+                                 "skipped_no_runner": True}
+    p3 = ui.build_pipeline_v2_ui_payload(summary, diff, de)
+    sec3 = p3["graphic_vision"]
+    assert sec3["status"] == "ok" and sec3["available"] is True
+    assert sec3["selected_total"] == 7
+    assert sec3["vision_calls_succeeded"] == 0
+    assert sec3["vision_calls_failed"] == 0
+    # top-level секция не загрязняет фильтры карточек
+    assert all(not v or isinstance(v, list) for v in p3["filters"].values())
+    json.dumps(p3, ensure_ascii=False)
+
+
+def test_graphic_vision_section_absent_when_disabled_or_missing():
+    diff, de = _full_reports()
+    summary = _summary(diff, de)
+    summary["graphic_vision"] = {"enabled": False, "status": "disabled"}
+    assert "graphic_vision" not in ui.build_pipeline_v2_ui_payload(
+        summary, diff, de)
+    summary.pop("graphic_vision")
+    assert "graphic_vision" not in ui.build_pipeline_v2_ui_payload(
+        summary, diff, de)

@@ -112,6 +112,12 @@ block_id/страницей) для прямых ссылок из UI. Weak-на
 из `pipeline_v2_delta_explanation` (тот же, что строит `coverage_notes`),
 поэтому preview и `coverage_notes_total` не расходятся.
 
+Опциональная top-level секция `graphic_vision` (только при включённом слое
+graphic vision enrichment в summary): `{available, status, selected_total,
+vision_calls_succeeded, vision_calls_failed, skipped_no_runner}` — старые
+payload'ы без неё полностью совместимы (см.
+stage_comparison_pipeline_v2_graphic_vision_enrichment.md).
+
 Карточки секции ограничены cap'ом (default 100, override через
 `options.max_cards_per_section`): `count`/`delta_ids` остаются полными.
 Срез ДЕФОЛТНЫМ cap'ом честно репортится warning'ом

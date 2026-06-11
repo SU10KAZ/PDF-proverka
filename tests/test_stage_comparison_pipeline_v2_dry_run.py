@@ -242,7 +242,7 @@ def test_artifact_paths(tmp_path: Path):
     assert paths["left_graphic"].name == "left_graphic_descriptor_report.json"
     assert paths["graphic_matched"].name == "graphic_descriptor_matched_report.json"
     assert paths["delta_explanation"].name == "delta_explanation_report.json"
-    assert len(paths) == 14  # + visual_gate + block_link_preview
+    assert len(paths) == 15  # + visual_gate + block_link_preview + graphic_vision
 
 
 # ─── graphic descriptor в dry-run ────────────────────────────────────────────

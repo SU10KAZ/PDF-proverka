@@ -32,6 +32,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import shutil
 import tempfile
 from pathlib import Path
 from typing import Any, Optional
@@ -69,6 +70,10 @@ from backend.app.services.stage_comparison.pipeline_v2_block_link_preview import
     build_block_link_preview,
     write_block_link_preview_report,
 )
+from backend.app.services.stage_comparison.pipeline_v2_graphic_vision_enrichment import (
+    run_graphic_vision_enrichment,
+    write_graphic_vision_enrichment_report,
+)
 
 SUMMARY_VERSION = 1
 SUMMARY_KIND = "stage_comparison_pipeline_v2_dry_run_summary"
@@ -86,6 +91,7 @@ _ARTIFACT_FILENAMES = {
     "graphic_matched": "graphic_descriptor_matched_report.json",
     "visual_gate": "visual_equivalence_gate_report.json",
     "block_link_preview": "block_link_preview_report.json",
+    "graphic_vision": "graphic_vision_enrichment_report.json",
     "entity_extraction": "entity_extraction_report.json",
     "entity_diff": "entity_diff_report.json",
     "delta_explanation": "delta_explanation_report.json",
@@ -97,7 +103,7 @@ _ARTIFACT_FILENAMES = {
 _MANIFEST_ARTIFACT_KEYS = [
     "left_model", "right_model", "block_matching",
     "left_graphic", "right_graphic", "graphic_matched", "visual_gate",
-    "block_link_preview",
+    "block_link_preview", "graphic_vision",
     "entity_extraction", "entity_diff", "delta_explanation",
     "summary_json", "summary_md",
 ]
@@ -461,6 +467,32 @@ def build_delta_sections(entity_diff_report: Any, delta_explanation_report: Any,
     return sections
 
 
+def _graphic_vision_section(gv_report: Any, gv_enabled: bool,
+                            gv_error: Optional[str]) -> dict:
+    s = (gv_report.get("summary") if isinstance(gv_report, dict) else {}) or {}
+    sec = {
+        "enabled": bool(gv_enabled),
+        "status": ("disabled" if not gv_enabled else
+                   "failed" if gv_error else
+                   (gv_report or {}).get("status", "not_run")
+                   if isinstance(gv_report, dict) else "not_run"),
+        "candidates_total": s.get("candidates_total", 0),
+        "selected_total": s.get("selected_total", 0),
+        "excluded_by_visual_gate": s.get("excluded_by_visual_gate", 0),
+        "manual_review_included": s.get("manual_review_included", 0),
+        "vision_calls_attempted": s.get("vision_calls_attempted", 0),
+        "vision_calls_succeeded": s.get("vision_calls_succeeded", 0),
+        "vision_calls_failed": s.get("vision_calls_failed", 0),
+        "skipped_no_runner": s.get("skipped_no_runner", 0),
+        "manual_review_skipped": s.get("manual_review_skipped", 0),
+        "dropped_by_cap": s.get("dropped_by_cap", 0),
+        "runner_model": s.get("runner_model"),
+    }
+    if gv_error:
+        sec["error"] = gv_error
+    return sec
+
+
 def _block_link_preview_section(blp_report: Any, blp_enabled: bool,
                                 blp_error: Optional[str]) -> dict:
     s = (blp_report.get("summary") if isinstance(blp_report, dict) else {}) or {}
@@ -521,7 +553,9 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
                               ve_report: Any = None, ve_enabled: bool = True,
                               ve_error: Optional[str] = None,
                               blp_report: Any = None, blp_enabled: bool = True,
-                              blp_error: Optional[str] = None) -> dict:
+                              blp_error: Optional[str] = None,
+                              gv_report: Any = None, gv_enabled: bool = False,
+                              gv_error: Optional[str] = None) -> dict:
     """Собрать ``pipeline_v2_summary`` из артефактов этапов 1–4."""
     lm, rm = _summary_of(left_model), _summary_of(right_model)
     bm, em, dm = _summary_of(block_report), _summary_of(entity_report), _summary_of(diff_report)
@@ -577,6 +611,8 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
                                                         ve_error),
         "block_link_preview": _block_link_preview_section(blp_report, blp_enabled,
                                                           blp_error),
+        "graphic_vision": _graphic_vision_section(gv_report, gv_enabled,
+                                                  gv_error),
         "delta_explanation": _delta_explanation_section(de_report, de_enabled, de_error),
         "delta_sections": build_delta_sections(diff_report, de_report),
         "warnings": warnings,
@@ -790,6 +826,29 @@ def write_pipeline_v2_summary_md(out_path: str | Path, summary: dict,
         lines.append(f"- ⚠ Ошибка block link preview: {blp['error']}")
     lines.append("")
 
+    gv = summary.get("graphic_vision", {}) or {}
+    lines.append("## Graphic vision enrichment (после visual gate)")
+    lines.append(f"- Status: `{gv.get('status', 'unknown')}`")
+    lines.append(f"- Selected: {gv.get('selected_total', 0)} из "
+                 f"{gv.get('candidates_total', 0)} candidates "
+                 f"(excluded_by_visual_gate={gv.get('excluded_by_visual_gate', 0)}, "
+                 f"manual_review_included={gv.get('manual_review_included', 0)})")
+    lines.append(f"- Vision calls: attempted={gv.get('vision_calls_attempted', 0)}, "
+                 f"succeeded={gv.get('vision_calls_succeeded', 0)}, "
+                 f"failed={gv.get('vision_calls_failed', 0)}, "
+                 f"skipped_no_runner={gv.get('skipped_no_runner', 0)}")
+    if gv.get("status") == "disabled":
+        lines.append("- ℹ Слой отключён (graphic_vision.enabled=false — default).")
+    elif gv.get("status") == "skipped_no_runner":
+        lines.append("- ℹ Vision runner не передан: кандидаты и prompt'ы "
+                     "записаны, реальных вызовов не было.")
+    elif gv.get("status") == "not_run" and gv.get("enabled"):
+        lines.append("- ℹ Этап не выполнялся: конвейер упал раньше "
+                     "(см. error выше).")
+    if gv.get("error"):
+        lines.append(f"- ⚠ Ошибка graphic vision: {gv['error']}")
+    lines.append("")
+
     de = summary.get("delta_explanation", {}) or {}
     lines.append("## Delta explanation / critic")
     lines.append(f"- Status: `{de.get('status', 'unknown')}`")
@@ -879,7 +938,8 @@ def write_pipeline_v2_manifest(out_path: str | Path, artifact_paths: dict) -> Pa
 
 
 def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str | Path,
-                            options: Optional[dict] = None, llm_runner: Any = None) -> dict:
+                            options: Optional[dict] = None, llm_runner: Any = None,
+                            vision_runner: Any = None) -> dict:
     """Прогнать этапы 1–5 (+ delta explanation) offline и записать артефакты.
 
     Возвращает summary-словарь (status ok/completed_with_warnings/failed).
@@ -911,6 +971,10 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     blp_opts = options.get("block_link_preview") or {}
     blp_enabled = blp_opts.get("enabled", True) is not False
 
+    # graphic vision по умолчанию ВЫКЛЮЧЕН в dry-run (включается явно)
+    gv_opts = options.get("graphic_vision") or {}
+    gv_enabled = gv_opts.get("enabled", False) is True
+
     status = "ok"
     error: Optional[str] = None
     left_model = right_model = block_report = entity_report = diff_report = None
@@ -921,6 +985,8 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     ve_error: Optional[str] = None
     blp_report = None
     blp_error: Optional[str] = None
+    gv_report = None
+    gv_error: Optional[str] = None
     de_report = None
     de_error: Optional[str] = None
 
@@ -993,6 +1059,29 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
             except Exception as bexc:  # noqa: BLE001 — preview не критичен
                 blp_error = f"{type(bexc).__name__}: {bexc}"
 
+        # [3d] graphic vision enrichment — mark-only слой описания
+        #      send_to_vision/manual_review блоков; default OFF; fail-soft:
+        #      падение НЕ валит этапы 4-6, downstream его не читает.
+        #      vision_runner ИНЪЕКТИРУЕТСЯ (None → skipped_no_runner),
+        #      реальные vision-модели здесь не создаются.
+        if gv_enabled:
+            try:
+                gv_crops_dir = out_dir / "vision_crops"
+                if vision_runner is not None:
+                    # кропы прошлого прогона не должны переживать новую
+                    # селекцию (refs отчёта указывали бы мимо)
+                    shutil.rmtree(gv_crops_dir, ignore_errors=True)
+                gv_report = run_graphic_vision_enrichment(
+                    left_model, right_model, ve_report,
+                    left_graphic_report=left_graphic,
+                    right_graphic_report=right_graphic,
+                    options=gv_opts, vision_runner=vision_runner,
+                    crops_dir=gv_crops_dir)
+                write_graphic_vision_enrichment_report(
+                    paths["graphic_vision"], gv_report)
+            except Exception as gvexc:  # noqa: BLE001 — слой не критичен
+                gv_error = f"{type(gvexc).__name__}: {gvexc}"
+
         # [4] entity extraction
         entity_report = extract_entities_for_matched_documents(
             left_model, right_model, block_report, options.get("extraction"))
@@ -1040,6 +1129,15 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
             warnings.append(f"block_link_preview: {w}")
     if blp_error:
         warnings.append(f"block_link_preview: {blp_error}")
+    if isinstance(gv_report, dict):
+        for w in gv_report.get("warnings", []) or []:
+            # benign «selection truncated by max_items» (штатный cap, уже
+            # отражён в report status/summary) НЕ деградирует статус dry-run
+            if str(w).startswith("selection truncated by max_items"):
+                continue
+            warnings.append(f"graphic_vision: {w}")
+    if gv_error:
+        warnings.append(f"graphic_vision: {gv_error}")
     if isinstance(de_report, dict):
         # benign «no_llm_runner» (offline skip) НЕ повышаем до dry-run warning
         for w in de_report.get("warnings", []) or []:
@@ -1060,7 +1158,8 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
         matched_graphic=matched_graphic, graphic_error=graphic_error,
         de_report=de_report, de_enabled=de_enabled, de_error=de_error,
         ve_report=ve_report, ve_enabled=ve_enabled, ve_error=ve_error,
-        blp_report=blp_report, blp_enabled=blp_enabled, blp_error=blp_error)
+        blp_report=blp_report, blp_enabled=blp_enabled, blp_error=blp_error,
+        gv_report=gv_report, gv_enabled=gv_enabled, gv_error=gv_error)
 
     # summary + manifest пишем всегда (best-effort, атомарно)
     write_pipeline_v2_summary_json(paths["summary_json"], summary)
