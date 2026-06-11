@@ -13930,6 +13930,22 @@ const app = createApp({
             (scPv2Payload.value && scPv2Payload.value.sections) || []);
         const scPv2Headline = computed(() =>
             (scPv2Payload.value && scPv2Payload.value.headline) || null);
+        // Графика / Vision grounding — read-only сводка из ui-payload
+        // (backend пишет graphic_vision / graphic_vision_grounding). Если поля
+        // нет — секции просто не рендерятся (empty state), панель не падает.
+        const scPv2GraphicVision = computed(() =>
+            (scPv2Payload.value && scPv2Payload.value.graphic_vision) || null);
+        const scPv2GraphicGrounding = computed(() =>
+            (scPv2Payload.value && scPv2Payload.value.graphic_vision_grounding) || null);
+        // суммарно «отклонено как галлюцинация»: artificial ряды +
+        // designator-range + no-op изменения
+        const scPv2GroundingRejectedTotal = computed(() => {
+            const g = scPv2GraphicGrounding.value;
+            if (!g) return 0;
+            const n = (x) => (typeof x === 'number' && x > 0 ? x : 0);
+            return n(g.artificial_series_rejected) + n(g.designator_range_rejected)
+                + n(g.noop_changes_rejected);
+        });
         const scPv2FilterOptions = computed(() => {
             const f = (scPv2Payload.value && scPv2Payload.value.filters) || {};
             return {
@@ -14551,7 +14567,9 @@ const app = createApp({
             // Pipeline V2 (β) — read-only панель
             scPv2Loading, scPv2Error, scPv2Resp, scPv2PairId,
             scPv2Open, scPv2Filters, scPv2Payload, scPv2Sections,
-            scPv2Headline, scPv2FilterOptions, scPv2HasFilterOptions,
+            scPv2Headline, scPv2GraphicVision, scPv2GraphicGrounding,
+            scPv2GroundingRejectedTotal,
+            scPv2FilterOptions, scPv2HasFilterOptions,
             scPv2FiltersActive, scPv2SectionEmoji, scPv2CardsFor,
             scPv2ResetFilters, scPv2ToggleSection, scPv2StatusBadge,
             scPv2AllWarnings, scPv2Load, scPv2EnsureLoaded, scPv2OpenPair,

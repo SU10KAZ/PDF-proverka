@@ -7430,6 +7430,54 @@
                             <div v-if="scPv2Headline.coverage_notes_total" style="opacity:.7">⚑ coverage notes: {{ scPv2Headline.coverage_notes_total }}</div>
                         </div>
 
+                        <!-- Графика / Vision grounding (read-only сводка) -->
+                        <div class="sc-card" style="padding:10px 14px; margin-bottom:8px; background:var(--card-bg,#fff); border:1px solid var(--border,#e5e7eb); border-radius:8px; font-size:12.5px">
+                            <div style="font-weight:600; margin-bottom:8px; color:#3730a3">📐 Графика / Vision grounding</div>
+
+                            <!-- Vision -->
+                            <div v-if="scPv2GraphicVision" style="display:flex; gap:14px; flex-wrap:wrap; align-items:center; margin-bottom:8px">
+                                <span style="color:#6b7280">Vision:</span>
+                                <span>обработано блоков: <b>{{ scPv2GraphicVision.selected_total != null ? scPv2GraphicVision.selected_total : '—' }}</b></span>
+                                <span style="color:#15803d">✅ vision-вызовов: <b>{{ scPv2GraphicVision.vision_calls_succeeded || 0 }}</b></span>
+                                <span v-if="scPv2GraphicVision.vision_calls_failed" style="color:#b91c1c">🔴 ошибок: <b>{{ scPv2GraphicVision.vision_calls_failed }}</b></span>
+                                <span v-if="scPv2GraphicVision.skipped_no_runner" style="color:#6b7280">⏭ skipped: <b>{{ scPv2GraphicVision.skipped_no_runner }}</b></span>
+                                <span style="font-size:11px; color:#9ca3af; border:1px solid #e5e7eb; border-radius:8px; padding:0 7px">{{ scPv2GraphicVision.status }}</span>
+                            </div>
+                            <div v-else style="color:#9ca3af; margin-bottom:8px">
+                                Vision-описание графики ещё не запускалось для этой пары.
+                            </div>
+
+                            <!-- Grounding -->
+                            <div v-if="scPv2GraphicGrounding">
+                                <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center; margin-bottom:6px">
+                                    <span style="color:#6b7280">Сущности ({{ scPv2GraphicGrounding.entities_total != null ? scPv2GraphicGrounding.entities_total : (scPv2GraphicGrounding.entities_grounded || 0) + (scPv2GraphicGrounding.entities_weakly_grounded || 0) + (scPv2GraphicGrounding.entities_ungrounded || 0) }}):</span>
+                                    <span style="color:#15803d">✅ подтверждено: <b>{{ scPv2GraphicGrounding.entities_grounded || 0 }}</b></span>
+                                    <span style="color:#a16207">🟡 частично: <b>{{ scPv2GraphicGrounding.entities_weakly_grounded || 0 }}</b></span>
+                                    <span style="color:#6b7280">⚪ не подтверждено: <b>{{ scPv2GraphicGrounding.entities_ungrounded || 0 }}</b></span>
+                                    <span style="color:#b91c1c">🔴 отклонено: <b>{{ scPv2GroundingRejectedTotal }}</b></span>
+                                </div>
+                                <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center; margin-bottom:6px; color:#6b7280">
+                                    <span>Изменения:</span>
+                                    <span style="color:#15803d">✅ подтверждено: <b>{{ scPv2GraphicGrounding.changes_grounded || 0 }}</b></span>
+                                    <span style="color:#a16207">🟡 частично: <b>{{ scPv2GraphicGrounding.changes_weakly_grounded || 0 }}</b></span>
+                                    <span style="color:#b91c1c">🔴 отклонено: <b>{{ scPv2GraphicGrounding.changes_rejected || 0 }}</b></span>
+                                </div>
+                                <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center; margin-bottom:6px; font-size:11.5px; color:#6b7280">
+                                    <span>Снято как галлюцинации:</span>
+                                    <span>искусственные ряды: <b>{{ scPv2GraphicGrounding.artificial_series_rejected || 0 }}</b></span>
+                                    <span>designator-range: <b>{{ scPv2GraphicGrounding.designator_range_rejected || 0 }}</b></span>
+                                    <span>no-op: <b>{{ scPv2GraphicGrounding.noop_changes_rejected || 0 }}</b></span>
+                                </div>
+                                <div style="font-size:11px; color:#6b7280; margin-top:4px">
+                                    Grounded / weakly grounded можно использовать как подтверждающий слой.
+                                    Ungrounded и rejected_* не используются как факт.
+                                </div>
+                            </div>
+                            <div v-else style="color:#9ca3af">
+                                Grounding ещё не выполнен.
+                            </div>
+                        </div>
+
                         <!-- Фильтры -->
                         <div v-if="scPv2HasFilterOptions" class="sc-card" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; padding:8px 12px; margin-bottom:8px; background:var(--card-bg,#fff); border:1px solid var(--border,#e5e7eb); border-radius:8px">
                             <select v-model="scPv2Filters.entity_type" class="form-control" style="padding:3px 6px; font-size:12px">

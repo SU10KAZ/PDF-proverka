@@ -354,3 +354,101 @@ describe('request sequence guard (race)', () => {
     expect(loader.state.resp).toBeNull();
   });
 });
+
+// ── Графика / Vision grounding (зеркало scPv2GraphicVision /
+//    scPv2GraphicGrounding / scPv2GroundingRejectedTotal из app.js) ──────────
+
+function scPv2GraphicVision(payload) {
+  return (payload && payload.graphic_vision) || null;
+}
+function scPv2GraphicGrounding(payload) {
+  return (payload && payload.graphic_vision_grounding) || null;
+}
+function scPv2GroundingRejectedTotal(payload) {
+  const g = scPv2GraphicGrounding(payload);
+  if (!g) return 0;
+  const n = (x) => (typeof x === 'number' && x > 0 ? x : 0);
+  return n(g.artificial_series_rejected) + n(g.designator_range_rejected)
+    + n(g.noop_changes_rejected);
+}
+
+function makeGroundingPayload() {
+  return {
+    status: 'completed_with_warnings',
+    sections: [],
+    graphic_vision: {
+      enabled: true, status: 'ok', selected_total: 3,
+      vision_calls_succeeded: 3, vision_calls_failed: 0, skipped_no_runner: 0,
+    },
+    graphic_vision_grounding: {
+      enabled: true, status: 'ok', entities_total: 262,
+      entities_grounded: 87, entities_weakly_grounded: 39,
+      entities_ungrounded: 126, changes_grounded: 8,
+      changes_weakly_grounded: 21, changes_rejected: 1,
+      artificial_series_rejected: 0, designator_range_rejected: 10,
+      noop_changes_rejected: 1,
+    },
+  };
+}
+
+describe('Pipeline V2 — Графика / Vision grounding', () => {
+  it('1. grounding присутствует → блок рендерится (computed не null)', () => {
+    const p = makeGroundingPayload();
+    expect(scPv2GraphicGrounding(p)).not.toBeNull();
+    expect(scPv2GraphicVision(p)).not.toBeNull();
+  });
+
+  it('2. counts отображаются (runtime ИОС1.1 значения)', () => {
+    const g = scPv2GraphicGrounding(makeGroundingPayload());
+    expect(g.entities_total).toBe(262);
+    expect(g.entities_grounded).toBe(87);
+    expect(g.entities_weakly_grounded).toBe(39);
+    expect(g.entities_ungrounded).toBe(126);
+    expect(g.changes_grounded).toBe(8);
+  });
+
+  it('3. missing graphic_vision не ломает панель → empty-state, grounding жив', () => {
+    const p = makeGroundingPayload();
+    delete p.graphic_vision;
+    expect(scPv2GraphicVision(p)).toBeNull();        // → empty msg в шаблоне
+    expect(scPv2GraphicGrounding(p)).not.toBeNull(); // grounding всё ещё есть
+  });
+
+  it('4. missing graphic_vision_grounding не ломает панель', () => {
+    const p = makeGroundingPayload();
+    delete p.graphic_vision_grounding;
+    expect(scPv2GraphicGrounding(p)).toBeNull();
+    expect(scPv2GroundingRejectedTotal(p)).toBe(0);  // не падает на отсутствии
+    expect(scPv2GraphicVision(p)).not.toBeNull();
+  });
+
+  it('5. rejected counts суммируются отдельно (artificial+designator+noop)', () => {
+    const p = makeGroundingPayload();
+    expect(scPv2GroundingRejectedTotal(p)).toBe(11); // 0 + 10 + 1
+    p.graphic_vision_grounding.artificial_series_rejected = 31;
+    expect(scPv2GroundingRejectedTotal(p)).toBe(42); // 31 + 10 + 1
+  });
+
+  it('6. нулевые counts показываются как 0, не падают', () => {
+    const p = {
+      status: 'ok', sections: [],
+      graphic_vision: { enabled: true, status: 'ok', selected_total: 0,
+        vision_calls_succeeded: 0, vision_calls_failed: 0 },
+      graphic_vision_grounding: { enabled: true, status: 'ok',
+        entities_total: 0, entities_grounded: 0, entities_weakly_grounded: 0,
+        entities_ungrounded: 0, changes_grounded: 0, changes_weakly_grounded: 0,
+        changes_rejected: 0, artificial_series_rejected: 0,
+        designator_range_rejected: 0, noop_changes_rejected: 0 },
+    };
+    expect(scPv2GraphicGrounding(p).entities_grounded).toBe(0);
+    expect(scPv2GroundingRejectedTotal(p)).toBe(0);
+  });
+
+  it('7. старые секции/headline не ломаются добавлением grounding-блока', () => {
+    const p = makePayload();                 // существующий payload без vision
+    expect(scPv2GraphicVision(p)).toBeNull();        // empty-state
+    expect(scPv2GraphicGrounding(p)).toBeNull();     // empty-state
+    expect((p.sections || []).length).toBeGreaterThan(0); // секции целы
+    expect(p.headline).toBeTruthy();                 // headline цел
+  });
+});
