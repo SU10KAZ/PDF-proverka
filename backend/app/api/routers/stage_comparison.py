@@ -44,6 +44,7 @@ from backend.app.services.stage_comparison import md_image_enrichment as md_enri
 from backend.app.services.stage_comparison import md_enrichment_jobs as md_enrichment_jobs_mod
 from backend.app.services.stage_comparison import large_sheet_enrichment as large_sheet_mod
 from backend.app.services.stage_comparison import pipeline_v2_payload_service as pipeline_v2_payload_mod
+from backend.app.services.stage_comparison import pipeline_v2_entity_mapping_overrides as entity_mapping_overrides_mod
 from backend.app.services.stage_comparison import large_sheet_enrichment_jobs as large_sheet_jobs_mod
 from backend.app.services.stage_comparison import auto_match_jobs as auto_match_jobs_mod
 from backend.app.services.stage_comparison import visual_block_equivalence_jobs as vbe_jobs_mod
@@ -181,6 +182,25 @@ class CreateManualPairRequest(BaseModel):
 
 class DeletePairRequest(BaseModel):
     hard: bool = False
+
+
+class EntityMappingItem(BaseModel):
+    """Один ручной override выравнивания сущности (mark-only)."""
+    left_entity_label: Optional[str] = None
+    right_entity_label: Optional[str] = None
+    left_block_id: Optional[str] = None
+    right_block_id: Optional[str] = None
+    left_page_number: Optional[int] = None
+    right_page_number: Optional[int] = None
+    source_classification: Optional[str] = None
+    pair_key: Optional[str] = None
+    manual_decision: str
+    comment: Optional[str] = None
+
+
+class EntityMappingUpsertRequest(BaseModel):
+    mapping: EntityMappingItem
+    created_by: Optional[str] = None
 
 
 class GraphicDiffJobItem(BaseModel):
@@ -3523,3 +3543,60 @@ async def get_pipeline_v2_entity_alignment_preview_endpoint(
     except ValueError as exc:
         # невалидный session_id/pair_id (path traversal и т.п.)
         raise HTTPException(400, str(exc)) from exc
+
+
+# ─── Pipeline V2: ручные override'ы выравнивания сущностей (write) ──────────
+#
+# Отдельный обратимый artifact entity_mapping_overrides.json. Endpoints НИЧЕГО
+# не запускают (ни vision/Qwen/Opus/Claude, ни jobs), не меняют block links,
+# entity_alignment_preview, сравнения или findings. Пишут ТОЛЬКО overrides
+# целевой пары. Дисковое I/O — в threadpool (sync write в event loop блокирует).
+
+
+@router.get("/pipeline-v2/{session_id}/entity-mapping-overrides")
+async def get_pipeline_v2_entity_mapping_overrides_endpoint(
+        session_id: str, pair_id: str):
+    """Read-only текущие ручные override'ы выравнивания сущностей пары.
+
+    Нет файла → пустой ok-результат (mappings=[]). Битый файл → status=error,
+    не 500. НИЧЕГО не запускает/не пишет.
+    """
+    try:
+        return await run_in_threadpool(
+            entity_mapping_overrides_mod.read_entity_mapping_overrides,
+            session_id, pair_id)
+    except entity_mapping_overrides_mod.EntityMappingValidationError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.put("/pipeline-v2/{session_id}/entity-mapping-overrides")
+async def put_pipeline_v2_entity_mapping_overrides_endpoint(
+        session_id: str, req: EntityMappingUpsertRequest, pair_id: str):
+    """Создать/обновить один ручной override (upsert, идемпотентно).
+
+    Пишет ТОЛЬКО entity_mapping_overrides.json целевой пары. НЕ запускает
+    vision/Qwen/Opus/Claude, НЕ применяет block links, НЕ создаёт замечаний,
+    НЕ продолжает очередь. Возвращает {ok, override, created, summary}.
+    """
+    try:
+        result = await run_in_threadpool(
+            entity_mapping_overrides_mod.upsert_entity_mapping,
+            session_id, pair_id, req.mapping.model_dump(),
+            created_by=req.created_by)
+    except entity_mapping_overrides_mod.EntityMappingValidationError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    return {"ok": True, **result}
+
+
+@router.delete("/pipeline-v2/{session_id}/entity-mapping-overrides/{mapping_id}")
+async def delete_pipeline_v2_entity_mapping_overrides_endpoint(
+        session_id: str, mapping_id: str, pair_id: str,
+        created_by: Optional[str] = None):
+    """Удалить один override по mapping_id (обратимо — overrides отдельный artifact)."""
+    try:
+        result = await run_in_threadpool(
+            entity_mapping_overrides_mod.delete_entity_mapping,
+            session_id, pair_id, mapping_id, created_by=created_by)
+    except entity_mapping_overrides_mod.EntityMappingValidationError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    return {"ok": True, **result}

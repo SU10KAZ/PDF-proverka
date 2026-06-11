@@ -71,6 +71,7 @@ BLOCK_LINK_PREVIEW_FILENAME = "block_link_preview_report.json"
 GROUNDED_EVIDENCE_FILENAME = "grounded_evidence_report.json"
 GRAPHIC_MATCHED_FILENAME = "graphic_descriptor_matched_report.json"
 ENTITY_ALIGNMENT_PREVIEW_FILENAME = "entity_alignment_preview_report.json"
+ENTITY_MAPPING_OVERRIDES_FILENAME = "entity_mapping_overrides.json"
 
 NOT_FOUND_MESSAGE = "Pipeline V2 artifacts not found for this session."
 BLP_NOT_FOUND_MESSAGE = "Pipeline V2 block link preview artifacts not found."
@@ -606,10 +607,25 @@ def discover_entity_alignment_preview(
             warnings=[f"{type(exc).__name__}: {exc}"])
 
 
+def _read_entity_mapping_overrides(art_dir: Path, warnings: list[str]) -> Optional[dict]:
+    """Прочитать entity_mapping_overrides.json пары (read-only, без mkdir).
+
+    Нет файла → None (manual_mapping не добавляется). Битый → warning + None.
+    Читается напрямую из art_dir, чтобы read-only discover не материализовал
+    дерево пары.
+    """
+    ov, err = _read_json(art_dir / ENTITY_MAPPING_OVERRIDES_FILENAME)
+    if err:
+        warnings.append(err)
+        return None
+    return ov if isinstance(ov, dict) else None
+
+
 def _discover_entity_alignment_preview(
         art_dir: Path, session_id: str, pair_id: Optional[str], *,
         classification: str, limit: int, offset: int) -> dict:
     warnings: list[str] = []
+    overrides = _read_entity_mapping_overrides(art_dir, warnings)
 
     # 1) готовый отчёт — отдать как есть (с фильтром/пагинацией)
     ready, err = _read_json(art_dir / ENTITY_ALIGNMENT_PREVIEW_FILENAME)
@@ -617,7 +633,7 @@ def _discover_entity_alignment_preview(
         detail = build_entity_alignment_detail(
             ready, session_id=session_id, pair_id=pair_id,
             classification=classification, limit=limit, offset=offset,
-            source="ready_report")
+            source="ready_report", overrides=overrides, extra_warnings=warnings)
         return _sanitize_payload(detail, detail.setdefault("warnings", [])) or detail
     if err:
         warnings.append(err)
@@ -677,7 +693,7 @@ def _discover_entity_alignment_preview(
     detail = build_entity_alignment_detail(
         report, session_id=session_id, pair_id=pair_id,
         classification=classification, limit=limit, offset=offset,
-        source="built_from_artifacts", extra_warnings=warnings)
+        source="built_from_artifacts", overrides=overrides, extra_warnings=warnings)
     return _sanitize_payload(detail, detail.setdefault("warnings", [])) or detail
 
 

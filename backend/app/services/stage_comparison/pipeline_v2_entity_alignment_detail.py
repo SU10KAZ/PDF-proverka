@@ -24,6 +24,11 @@ from backend.app.services.stage_comparison.pipeline_v2_entity_alignment_preview 
     ALIGN_SCOPE,
     REPORT_KIND,
 )
+from backend.app.services.stage_comparison.pipeline_v2_entity_mapping_overrides import (
+    _mapping_identity,
+    manual_status_for_decision,
+    summarize_overrides,
+)
 
 DETAIL_KIND = REPORT_KIND
 
@@ -151,12 +156,96 @@ def _report_version(report: Any) -> int:
     return v if isinstance(v, int) else 1
 
 
+def _manual_card(ov: Optional[dict]) -> dict:
+    """Компактное представление ручного override'а для карточки."""
+    if not isinstance(ov, dict):
+        return {"status": "none"}
+    decision = ov.get("manual_decision")
+    return {
+        "status": manual_status_for_decision(decision),
+        "decision": decision,
+        "mapping_id": ov.get("mapping_id"),
+        "comment": _trunc(ov.get("comment"), _SHEET_CAP),
+        "updated_at": ov.get("updated_at"),
+    }
+
+
+def _build_override_lookup(overrides: Any) -> dict:
+    """Индексы для привязки override'ов к карточкам: by_id / by block_id."""
+    by_id: dict = {}
+    by_left_block: dict = {}
+    by_right_block: dict = {}
+    mappings = (overrides.get("mappings") if isinstance(overrides, dict) else None) or []
+    for m in mappings:
+        if not isinstance(m, dict):
+            continue
+        mid = m.get("mapping_id")
+        if mid:
+            by_id[mid] = m
+        lb, rb = m.get("left_block_id"), m.get("right_block_id")
+        if lb:
+            by_left_block.setdefault(lb, m)
+        if rb:
+            by_right_block.setdefault(rb, m)
+    return {"by_id": by_id, "by_left_block": by_left_block,
+            "by_right_block": by_right_block}
+
+
+def _manual_for_pair(p: dict, lookup: dict) -> dict:
+    """Найти override для пары (по идентичности block-ids; иначе по меткам)."""
+    if not lookup:
+        return {"status": "none"}
+    mid = _mapping_identity({
+        "left_block_id": p.get("left_block_id"),
+        "right_block_id": p.get("right_block_id"),
+        "left_entity_label": p.get("left_entity_label"),
+        "right_entity_label": p.get("right_entity_label"),
+        "source_classification": p.get("classification"),
+    })
+    ov = lookup["by_id"].get(mid)
+    if ov is None and p.get("left_block_id"):
+        cand = lookup["by_left_block"].get(p.get("left_block_id"))
+        if cand and cand.get("right_block_id") == p.get("right_block_id"):
+            ov = cand
+    return _manual_card(ov)
+
+
+def _manual_for_unpaired(e: dict, side: str, lookup: dict) -> dict:
+    """Найти override для односторонней сущности (по её block_id на нужной стороне)."""
+    if not lookup:
+        return {"status": "none"}
+    idx = lookup["by_left_block"] if side == "left" else lookup["by_right_block"]
+    for bid in (e.get("block_ids") or []):
+        ov = idx.get(bid)
+        if ov is not None:
+            return _manual_card(ov)
+    return {"status": "none"}
+
+
+def _unpaired_side_with_overrides(value: Any, side: str, lookup: dict) -> list[dict]:
+    if not isinstance(value, list):
+        return []
+    out: list[dict] = []
+    for e in value:
+        if not isinstance(e, dict):
+            continue
+        card = _unpaired_card(e)
+        card["manual_mapping"] = _manual_for_unpaired(e, side, lookup)
+        out.append(card)
+    return out
+
+
 def build_entity_alignment_detail(
         report: Any, *, session_id: str, pair_id: Optional[str],
         classification: str = "all", limit: int = 100, offset: int = 0,
-        source: Optional[str] = None,
+        source: Optional[str] = None, overrides: Any = None,
         extra_warnings: Optional[list[str]] = None) -> dict:
-    """Собрать detail-ответ из entity alignment report-dict (read-only)."""
+    """Собрать detail-ответ из entity alignment report-dict (read-only).
+
+    ``overrides`` — прочитанный ``entity_mapping_overrides.json`` (или None);
+    если задан, к каждой карточке/сущности добавляется ``manual_mapping``, а в
+    summary — агрегат ``manual_mapping``. Отсутствие overrides не меняет вывод.
+    """
     classification = _norm_class(classification)
     try:
         limit = int(limit)
@@ -174,13 +263,17 @@ def build_entity_alignment_detail(
     unpaired_in = report.get("unpaired_entities") if isinstance(
         report.get("unpaired_entities"), dict) else {}
 
+    lookup = _build_override_lookup(overrides)
+
     cards: list[dict] = []
     for p in pairs_in:
         if not isinstance(p, dict):
             continue
         if classification != "all" and str(p.get("classification")) != classification:
             continue
-        cards.append(_pair_card(p))
+        card = _pair_card(p)
+        card["manual_mapping"] = _manual_for_pair(p, lookup)
+        cards.append(card)
     cards.sort(key=lambda c: (_CLASS_ORDER.get(c["classification"], 9),
                               str(c.get("left_page_number") or ""),
                               c.get("pair_key") or ""))
@@ -189,6 +282,10 @@ def build_entity_alignment_detail(
 
     warnings = [w for w in (report.get("warnings") or []) if isinstance(w, str)][:20]
     warnings += [w for w in (extra_warnings or []) if isinstance(w, str)][:20]
+
+    summary = {k: rsummary.get(k) for k in _SUMMARY_KEYS if k in rsummary}
+    if overrides is not None:
+        summary["manual_mapping"] = summarize_overrides(overrides)
 
     return {
         "version": _report_version(report),
@@ -199,12 +296,12 @@ def build_entity_alignment_detail(
         "pair_id": pair_id,
         "source": source,
         "report_status": str(report.get("status") or ""),
-        "summary": {k: rsummary.get(k) for k in _SUMMARY_KEYS if k in rsummary},
+        "summary": summary,
         "filters": {"classification": classification},
         "pairs": page,
         "unpaired_entities": {
-            "left": _unpaired_side(unpaired_in.get("left")),
-            "right": _unpaired_side(unpaired_in.get("right")),
+            "left": _unpaired_side_with_overrides(unpaired_in.get("left"), "left", lookup),
+            "right": _unpaired_side_with_overrides(unpaired_in.get("right"), "right", lookup),
         },
         "pagination": {"limit": limit, "offset": offset,
                        "returned": len(page), "total": total},

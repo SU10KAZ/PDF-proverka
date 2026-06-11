@@ -5792,9 +5792,14 @@
                         </button>
                         <button class="btn btn-sm btn-secondary" @click="scPv2EaVisible=false">Закрыть</button>
                     </div>
-                    <!-- read-only note: manual mapping confirmation is a future stage -->
+                    <!-- read-only note: ручные решения = отдельный обратимый override, авто-запуска нет -->
                     <div style="background:#f5f3ff; color:#5b21b6; border:1px solid #ddd6fe; border-radius:6px; padding:5px 10px; margin-bottom:8px">
-                        ℹ Ручное подтверждение/перепривязка маппинга будет добавлено отдельным этапом. Сейчас это только наблюдение.
+                        ℹ Ручные решения сохраняются как отдельный обратимый override и будут использованы в следующем этапе отбора vision-кандидатов. Block links и vision при этом НЕ трогаются.
+                    </div>
+                    <!-- save hint после сохранения mapping (auto-run нет) -->
+                    <div v-if="scPv2EaSaveHint" style="background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; border-radius:6px; padding:6px 10px; margin-bottom:8px; display:flex; gap:8px; align-items:center">
+                        <span>✅ {{ scPv2EaSaveHint }}</span>
+                        <button class="btn btn-sm btn-secondary" style="margin-left:auto; padding:1px 8px; font-size:11px" @click="scPv2EaSaveHint=''">✕</button>
                     </div>
                     <!-- transport / HTTP errors -->
                     <div v-if="scPv2EaError" style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; padding:6px 10px; margin-bottom:8px">
@@ -5870,6 +5875,32 @@
                                     ⚠ <span v-for="(rf, rfi) in p.risk_flags" :key="'pv2earf-'+i+'-'+rfi"
                                           style="background:#ffedd5; border-radius:8px; padding:1px 6px; font-size:11px; margin-right:4px">{{ rf }}</span>
                                 </div>
+                                <!-- Manual mapping decision (write; block links/vision НЕ трогаются) -->
+                                <div v-if="scPv2EaDrafts[scPv2EaPairKey(p)]" style="margin-top:6px; border-top:1px dashed #e5e7eb; padding-top:6px">
+                                    <div v-if="p.manual_mapping && p.manual_mapping.status && p.manual_mapping.status!=='none'"
+                                         style="margin-bottom:4px; display:flex; gap:6px; align-items:center; flex-wrap:wrap">
+                                        <span :style="{background:(scPv2EaManualMeta(p.manual_mapping.status)||{}).bg || '#f3f4f6', color:(scPv2EaManualMeta(p.manual_mapping.status)||{}).fg || '#374151', borderRadius:'8px', padding:'1px 8px', fontWeight:600}">
+                                            Manual: {{ p.manual_mapping.decision }}
+                                        </span>
+                                        <span v-if="p.manual_mapping.comment" style="opacity:.7">Комментарий: {{ p.manual_mapping.comment }}</span>
+                                        <span v-if="p.manual_mapping.updated_at" style="opacity:.45; font-size:11px">{{ p.manual_mapping.updated_at }}</span>
+                                    </div>
+                                    <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap">
+                                        <span style="opacity:.55">Решение:</span>
+                                        <select v-model="scPv2EaDrafts[scPv2EaPairKey(p)].decision" class="form-control" style="padding:2px 6px; font-size:11px; max-width:230px">
+                                            <option value="">— выбрать —</option>
+                                            <option v-for="d in SC_PV2_EA_DECISIONS" :key="'pv2d-'+i+'-'+d.key" :value="d.key">{{ d.label }}</option>
+                                        </select>
+                                        <input v-model="scPv2EaDrafts[scPv2EaPairKey(p)].comment" placeholder="Комментарий (необязательно)"
+                                               class="form-control" style="padding:2px 6px; font-size:11px; flex:1; min-width:140px" />
+                                        <button class="btn btn-sm btn-primary" style="padding:1px 10px; font-size:11px"
+                                                :disabled="scPv2EaSaving[scPv2EaPairKey(p)] || !scPv2EaDrafts[scPv2EaPairKey(p)].decision"
+                                                @click="scPv2EaSavePair(p)">
+                                            {{ scPv2EaSaving[scPv2EaPairKey(p)] ? 'Сохранение…' : '💾 Сохранить решение' }}
+                                        </button>
+                                    </div>
+                                    <div v-if="scPv2EaSaveErr[scPv2EaPairKey(p)]" style="color:#991b1b; font-size:11px; margin-top:3px">{{ scPv2EaSaveErr[scPv2EaPairKey(p)] }}</div>
+                                </div>
                             </div>
                             <div v-if="!scPv2EaFilteredPairs.length" style="padding:10px; opacity:.6; text-align:center">
                                 Нет пар в этой категории.
@@ -5888,6 +5919,25 @@
                                         <b>{{ e.entity_label }}</b>
                                         <span v-if="e.graphic_type" style="opacity:.6"> · {{ e.graphic_type }}</span>
                                         <div v-if="e.sheet_name" style="opacity:.7; font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis" :title="e.sheet_name">{{ e.sheet_name }}</div>
+                                        <div v-if="e.manual_mapping && e.manual_mapping.status && e.manual_mapping.status!=='none'"
+                                             :style="{color:(scPv2EaManualMeta(e.manual_mapping.status)||{}).fg || '#374151', fontSize:'11px', marginTop:'2px'}">
+                                            Manual: <b>{{ e.manual_mapping.decision }}</b>
+                                        </div>
+                                        <div v-if="scPv2EaDrafts[scPv2EaUnpairedKey(e,'left')]" style="margin-top:3px; display:flex; gap:4px; flex-wrap:wrap; align-items:center">
+                                            <select v-model="scPv2EaDrafts[scPv2EaUnpairedKey(e,'left')].decision" class="form-control" style="padding:1px 4px; font-size:11px; max-width:150px">
+                                                <option value="">— решение —</option>
+                                                <option v-for="d in SC_PV2_EA_DECISIONS" :key="'pv2dul-'+i+'-'+d.key" :value="d.key">{{ d.label }}</option>
+                                            </select>
+                                            <select v-if="['confirmed_same_entity','confirmed_rename','confirmed_reorganized'].includes(scPv2EaDrafts[scPv2EaUnpairedKey(e,'left')].decision)"
+                                                    v-model="scPv2EaDrafts[scPv2EaUnpairedKey(e,'left')].counterpart" class="form-control" style="padding:1px 4px; font-size:11px; max-width:150px">
+                                                <option value="">→ NEW counterpart</option>
+                                                <option v-for="(c, ci) in scPv2EaUnpairedCounterparts('left')" :key="'pv2cpl-'+i+'-'+ci" :value="(c.block_ids&&c.block_ids[0])||c.entity_label">{{ c.entity_label }}</option>
+                                            </select>
+                                            <button class="btn btn-sm btn-primary" style="padding:0 8px; font-size:11px"
+                                                    :disabled="scPv2EaSaving[scPv2EaUnpairedKey(e,'left')] || !scPv2EaDrafts[scPv2EaUnpairedKey(e,'left')].decision"
+                                                    @click="scPv2EaSaveUnpaired(e,'left')">{{ scPv2EaSaving[scPv2EaUnpairedKey(e,'left')] ? '…' : '💾' }}</button>
+                                            <span v-if="scPv2EaSaveErr[scPv2EaUnpairedKey(e,'left')]" style="color:#991b1b; font-size:10px; width:100%">{{ scPv2EaSaveErr[scPv2EaUnpairedKey(e,'left')] }}</span>
+                                        </div>
                                     </div>
                                     <div v-if="!(scPv2EaUnpaired.left||[]).length" style="padding:8px; opacity:.6">Нет</div>
                                 </div>
@@ -5897,6 +5947,25 @@
                                         <b>{{ e.entity_label }}</b>
                                         <span v-if="e.graphic_type" style="opacity:.6"> · {{ e.graphic_type }}</span>
                                         <div v-if="e.sheet_name" style="opacity:.7; font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis" :title="e.sheet_name">{{ e.sheet_name }}</div>
+                                        <div v-if="e.manual_mapping && e.manual_mapping.status && e.manual_mapping.status!=='none'"
+                                             :style="{color:(scPv2EaManualMeta(e.manual_mapping.status)||{}).fg || '#374151', fontSize:'11px', marginTop:'2px'}">
+                                            Manual: <b>{{ e.manual_mapping.decision }}</b>
+                                        </div>
+                                        <div v-if="scPv2EaDrafts[scPv2EaUnpairedKey(e,'right')]" style="margin-top:3px; display:flex; gap:4px; flex-wrap:wrap; align-items:center">
+                                            <select v-model="scPv2EaDrafts[scPv2EaUnpairedKey(e,'right')].decision" class="form-control" style="padding:1px 4px; font-size:11px; max-width:150px">
+                                                <option value="">— решение —</option>
+                                                <option v-for="d in SC_PV2_EA_DECISIONS" :key="'pv2dur-'+i+'-'+d.key" :value="d.key">{{ d.label }}</option>
+                                            </select>
+                                            <select v-if="['confirmed_same_entity','confirmed_rename','confirmed_reorganized'].includes(scPv2EaDrafts[scPv2EaUnpairedKey(e,'right')].decision)"
+                                                    v-model="scPv2EaDrafts[scPv2EaUnpairedKey(e,'right')].counterpart" class="form-control" style="padding:1px 4px; font-size:11px; max-width:150px">
+                                                <option value="">→ OLD counterpart</option>
+                                                <option v-for="(c, ci) in scPv2EaUnpairedCounterparts('right')" :key="'pv2cpr-'+i+'-'+ci" :value="(c.block_ids&&c.block_ids[0])||c.entity_label">{{ c.entity_label }}</option>
+                                            </select>
+                                            <button class="btn btn-sm btn-primary" style="padding:0 8px; font-size:11px"
+                                                    :disabled="scPv2EaSaving[scPv2EaUnpairedKey(e,'right')] || !scPv2EaDrafts[scPv2EaUnpairedKey(e,'right')].decision"
+                                                    @click="scPv2EaSaveUnpaired(e,'right')">{{ scPv2EaSaving[scPv2EaUnpairedKey(e,'right')] ? '…' : '💾' }}</button>
+                                            <span v-if="scPv2EaSaveErr[scPv2EaUnpairedKey(e,'right')]" style="color:#991b1b; font-size:10px; width:100%">{{ scPv2EaSaveErr[scPv2EaUnpairedKey(e,'right')] }}</span>
+                                        </div>
                                     </div>
                                     <div v-if="!(scPv2EaUnpaired.right||[]).length" style="padding:8px; opacity:.6">Нет</div>
                                 </div>

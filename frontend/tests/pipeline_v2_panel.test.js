@@ -1173,28 +1173,170 @@ describe('Pipeline V2 — Entity Alignment read-only contract (files)', () => {
     expect(blk).toContain('mismatch:');
     expect(blk).toContain('без пары:');
   });
-  it('2. НЕТ кнопок apply/confirm/rebind (только наблюдение)', () => {
+  it('2. есть decision UI, но НЕТ авто-применения к block links / vision', () => {
     const blk = eaPanelBlock();
-    for (const forbidden of ['Подтвердить', 'Перепривязать', 'Применить', 'Принять связь']) {
+    // ручные решения теперь есть (write-слой)
+    expect(blk).toContain('Решение:');
+    expect(blk).toContain('SC_PV2_EA_DECISIONS');
+    expect(blk).toContain('scPv2EaSavePair');
+    // но НЕТ кнопок авто-применения связей / автозапуска
+    for (const forbidden of ['Применить', 'Принять связь', 'Запустить vision',
+                             'Запустить распознавание']) {
       expect(blk).not.toContain(forbidden);
     }
-    // явная пометка, что ручной маппинг — будущий этап
-    expect(blk).toContain('будет добавлено отдельным этапом');
+    // явная подсказка, что vision/links не трогаются
+    expect(blk).toContain('НЕ трогаются');
   });
   it('3. есть read-only jump «Открыть связь блоков»', () => {
     expect(eaPanelBlock()).toContain('Открыть связь блоков');
   });
-  it('4. fetch — это GET к entity-alignment-preview, без POST/PUT/DELETE', () => {
+  it('4. чтение = GET preview; запись = PUT ТОЛЬКО в entity-mapping-overrides', () => {
     const blk = eaJsBlock();
     expect(blk).toContain("/entity-alignment-preview?pair_id=");
-    expect(blk).not.toMatch(/method:\s*['"](POST|PUT|DELETE|PATCH)['"]/);
+    // единственный write — PUT в overrides-эндпоинт
+    expect(blk).toContain("/entity-mapping-overrides?pair_id=");
+    expect(blk).toContain("method: 'PUT'");
+    // никаких вызовов, запускающих vision/Qwen/Opus/jobs/сравнение
     expect(blk).not.toContain('md-enrichment-jobs');
     expect(blk).not.toContain('unified-analysis');
+    expect(blk).not.toContain('graphic-diff-jobs');
+    expect(blk).not.toMatch(/method:\s*['"]POST['"]/);   // overrides — это PUT, не POST-job
   });
   it('5. старые панели не тронуты (block link preview + ui-payload живы)', () => {
     expect(appJs).toContain('scPv2LpToggle');         // block link preview
     expect(appJs).toContain('/block-link-preview?pair_id=');
     expect(indexHtml).toContain('🔗 Pipeline V2 связи');
     expect(appJs).toContain('/ui-payload');           // основная панель Pipeline V2 жива
+  });
+});
+
+// ── Pipeline V2 — Manual Entity Mapping (write-слой) ─────────────────────────
+//
+// Зеркало pure-логики decision-сохранения (scPv2Ea* write) + контрактные
+// проверки по файлам: PUT только в overrides, без авто-применения к links/vision.
+
+const SC_PV2_EA_DECISIONS = [
+  { key: 'confirmed_same_entity', label: '✅ Та же сущность' },
+  { key: 'confirmed_rename', label: '🔁 Переименование' },
+  { key: 'confirmed_reorganized', label: '🟠 Реорганизация' },
+  { key: 'rejected_mapping', label: '❌ Отклонить связь' },
+  { key: 'no_match', label: '⚪ Нет пары' },
+];
+function eaManualStatusForDecision(decision) {
+  if (['confirmed_same_entity', 'confirmed_rename', 'confirmed_reorganized'].includes(decision))
+    return 'mapped';
+  if (decision === 'rejected_mapping') return 'rejected';
+  if (decision === 'no_match') return 'no_match';
+  return 'none';
+}
+function eaPairKey(p) {
+  return (p && (p.pair_key || ((p.left_block_id || '') + '__' + (p.right_block_id || '')))) || '';
+}
+function eaUnpairedKey(e, side) {
+  const b = (e && e.block_ids && e.block_ids[0]) || '';
+  return side + ':' + ((e && e.entity_label) || '') + ':' + b;
+}
+// зеркало применения ответа PUT к карточке
+function eaApplyManual(targetObj, override) {
+  targetObj.manual_mapping = {
+    status: eaManualStatusForDecision(override.manual_decision),
+    decision: override.manual_decision,
+    mapping_id: override.mapping_id,
+    comment: override.comment || null,
+    updated_at: override.updated_at,
+  };
+  return targetObj;
+}
+
+describe('Pipeline V2 — Manual Entity Mapping logic', () => {
+  it('1. decision → manual status маппинг', () => {
+    expect(eaManualStatusForDecision('confirmed_same_entity')).toBe('mapped');
+    expect(eaManualStatusForDecision('confirmed_reorganized')).toBe('mapped');
+    expect(eaManualStatusForDecision('rejected_mapping')).toBe('rejected');
+    expect(eaManualStatusForDecision('no_match')).toBe('no_match');
+    expect(eaManualStatusForDecision(undefined)).toBe('none');
+  });
+  it('2. 5 решений доступны', () => {
+    expect(SC_PV2_EA_DECISIONS.map((d) => d.key)).toEqual([
+      'confirmed_same_entity', 'confirmed_rename', 'confirmed_reorganized',
+      'rejected_mapping', 'no_match']);
+  });
+  it('3. ключи карточек стабильны (pair / unpaired)', () => {
+    expect(eaPairKey({ pair_key: 'A__B' })).toBe('A__B');
+    expect(eaPairKey({ left_block_id: 'L', right_block_id: 'R' })).toBe('L__R');
+    expect(eaUnpairedKey({ entity_label: 'ЯК-5', block_ids: ['6XLX'] }, 'left'))
+      .toBe('left:ЯК-5:6XLX');
+  });
+  it('4. ответ PUT обновляет manual_mapping карточки', () => {
+    const card = { pair_key: 'EYMU__PNNH', manual_mapping: { status: 'none' } };
+    eaApplyManual(card, { mapping_id: 'm_x', manual_decision: 'confirmed_reorganized',
+                          comment: 'c', updated_at: 't' });
+    expect(card.manual_mapping.status).toBe('mapped');
+    expect(card.manual_mapping.decision).toBe('confirmed_reorganized');
+    expect(card.manual_mapping.mapping_id).toBe('m_x');
+    expect(card.manual_mapping.comment).toBe('c');
+  });
+  it('5. rejected/no_match отражаются на карточке', () => {
+    const c1 = { manual_mapping: { status: 'none' } };
+    eaApplyManual(c1, { mapping_id: 'm1', manual_decision: 'rejected_mapping' });
+    expect(c1.manual_mapping.status).toBe('rejected');
+    const c2 = { manual_mapping: { status: 'none' } };
+    eaApplyManual(c2, { mapping_id: 'm2', manual_decision: 'no_match' });
+    expect(c2.manual_mapping.status).toBe('no_match');
+  });
+});
+
+describe('Pipeline V2 — Manual Entity Mapping contract (files)', () => {
+  const indexHtml = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  const appJs = fs.readFileSync(path.join(__dirname, '..', 'static', 'js', 'app.js'), 'utf8');
+  function eaPanel() {
+    const s = indexHtml.indexOf('Pipeline V2 — выравнивание сущностей');
+    const e = indexHtml.indexOf('One-click авто-сопоставление листов: ошибка', s);
+    return indexHtml.slice(s, e);
+  }
+
+  it('1. карточка пары показывает decision UI + кнопку сохранить', () => {
+    const blk = eaPanel();
+    expect(blk).toContain('Решение:');
+    expect(blk).toContain('scPv2EaSavePair');
+    expect(blk).toContain('Сохранить решение');
+  });
+  it('2. save шлёт PUT в правильный endpoint', () => {
+    expect(appJs).toContain("/entity-mapping-overrides?pair_id=");
+    expect(appJs).toContain("method: 'PUT'");
+    expect(appJs).toContain('_scPv2EaPutMapping');
+  });
+  it('3. успешный save обновляет card.manual_mapping (есть applier)', () => {
+    expect(appJs).toContain('_scPv2EaApplyManual');
+    expect(appJs).toContain('targetObj.manual_mapping');
+  });
+  it('4. ошибка save показывается (scPv2EaSaveErr)', () => {
+    expect(eaPanel()).toContain('scPv2EaSaveErr');
+    expect(appJs).toContain('scPv2EaSaveErr[key]');
+  });
+  it('5. unpaired section всё ещё рендерится + имеет decision UI', () => {
+    const blk = eaPanel();
+    expect(blk).toContain('Сущности без пары');
+    expect(blk).toContain('scPv2EaSaveUnpaired');
+    expect(blk).toContain('scPv2EaUnpairedCounterparts');
+  });
+  it('6. НЕТ кнопки авто-применения/автозапуска vision', () => {
+    const blk = eaPanel();
+    for (const forbidden of ['Применить к связям', 'Применить', 'Запустить vision',
+                             'Принять связь']) {
+      expect(blk).not.toContain(forbidden);
+    }
+    // подсказка о no-auto-run присутствует в JS
+    expect(appJs).toContain('сейчас ничего не');
+  });
+  it('7. старые панели Pipeline V2 не сломаны', () => {
+    expect(appJs).toContain('scPv2LpToggle');
+    expect(appJs).toContain('scPv2EaToggle');
+    expect(indexHtml).toContain('🔗 Pipeline V2 связи');
+    expect(indexHtml).toContain('🧩 Pipeline V2 сущности');
+  });
+  it('8. block link preview jump не сломан (мост переиспользован)', () => {
+    expect(appJs).toContain('scPv2OpenBlockLinkFromGrounding');
+    expect(eaPanel()).toContain('Открыть связь блоков');
   });
 });

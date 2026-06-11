@@ -14682,6 +14682,23 @@ const app = createApp({
                 const j = await r.json();
                 if (myReq !== scPv2EaReqSeq) return;   // устаревший ответ
                 scPv2EaResp.value = j;
+                // инициализировать draft-объекты решений (seed из manual_mapping)
+                for (const k of Object.keys(scPv2EaDrafts)) delete scPv2EaDrafts[k];
+                for (const k of Object.keys(scPv2EaSaveErr)) delete scPv2EaSaveErr[k];
+                scPv2EaSaveHint.value = '';
+                for (const p of (j.pairs || [])) {
+                    scPv2EaDraft(scPv2EaPairKey(p),
+                                 (p.manual_mapping && p.manual_mapping.decision) || '');
+                }
+                const un = j.unpaired_entities || {};
+                for (const e of (un.left || [])) {
+                    scPv2EaDraft(scPv2EaUnpairedKey(e, 'left'),
+                                 (e.manual_mapping && e.manual_mapping.decision) || '');
+                }
+                for (const e of (un.right || [])) {
+                    scPv2EaDraft(scPv2EaUnpairedKey(e, 'right'),
+                                 (e.manual_mapping && e.manual_mapping.decision) || '');
+                }
             } catch (e) {
                 if (myReq !== scPv2EaReqSeq) return;
                 scPv2EaResp.value = null;
@@ -14729,6 +14746,174 @@ const app = createApp({
                 value: (p.left_entity_label || p.right_entity_label
                         || p.entity_family || ''),
             });
+        }
+
+        // ── Manual entity mapping (write-слой поверх preview) ─────────────────
+        // PUT .../entity-mapping-overrides — отдельный обратимый artifact. НЕ
+        // применяет block links, НЕ запускает vision/Qwen/Opus, НЕ создаёт
+        // замечаний. Только сохраняет ручное решение и обновляет UI-state.
+        const SC_PV2_EA_DECISIONS = [
+            { key: 'confirmed_same_entity', label: '✅ Та же сущность' },
+            { key: 'confirmed_rename', label: '🔁 Переименование' },
+            { key: 'confirmed_reorganized', label: '🟠 Реорганизация' },
+            { key: 'rejected_mapping', label: '❌ Отклонить связь' },
+            { key: 'no_match', label: '⚪ Нет пары' },
+        ];
+        const SC_PV2_EA_MANUAL_META = {
+            mapped:   { label: 'Подтверждено', color: '#16a34a', bg: '#dcfce7', fg: '#166534' },
+            rejected: { label: 'Отклонено', color: '#dc2626', bg: '#fee2e2', fg: '#991b1b' },
+            no_match: { label: 'Нет пары', color: '#6b7280', bg: '#f3f4f6', fg: '#374151' },
+        };
+        // decision → цвет (для бейджа сохранённого решения)
+        const SC_PV2_EA_DECISION_META = {
+            confirmed_same_entity: { label: 'confirmed_same_entity', color: '#16a34a' },
+            confirmed_rename:      { label: 'confirmed_rename', color: '#2563eb' },
+            confirmed_reorganized: { label: 'confirmed_reorganized', color: '#ea580c' },
+            rejected_mapping:      { label: 'rejected_mapping', color: '#dc2626' },
+            no_match:              { label: 'no_match', color: '#6b7280' },
+        };
+        const scPv2EaDrafts = reactive({});     // key → {decision, comment, counterpart}
+        const scPv2EaSaving = reactive({});      // key → bool
+        const scPv2EaSaveErr = reactive({});     // key → string
+        const scPv2EaSaveHint = ref('');         // глобальная подсказка после сохранения
+
+        function scPv2EaPairKey(p) {
+            return (p && (p.pair_key
+                || ((p.left_block_id || '') + '__' + (p.right_block_id || '')))) || '';
+        }
+        function scPv2EaUnpairedKey(e, side) {
+            const b = (e && e.block_ids && e.block_ids[0]) || '';
+            return side + ':' + ((e && e.entity_label) || '') + ':' + b;
+        }
+        function scPv2EaDraft(key, initDecision) {
+            if (!scPv2EaDrafts[key]) {
+                scPv2EaDrafts[key] = { decision: initDecision || '', comment: '',
+                                       counterpart: '' };
+            }
+            return scPv2EaDrafts[key];
+        }
+        function scPv2EaDecisionMeta(decision) {
+            return SC_PV2_EA_DECISION_META[decision]
+                || { label: decision || '', color: '#6b7280' };
+        }
+        function scPv2EaManualMeta(status) {
+            return SC_PV2_EA_MANUAL_META[status] || null;
+        }
+        async function _scPv2EaPutMapping(mapping) {
+            const sid = scSession.value && scSession.value.id;
+            const pid = (scPv2EaResp.value && scPv2EaResp.value.pair_id)
+                || scPv2EaEffectivePairId();
+            if (!sid || !pid) throw new Error('Нет активной пары');
+            const url = '/api/stage-comparison/pipeline-v2/'
+                + encodeURIComponent(sid) + '/entity-mapping-overrides?pair_id='
+                + encodeURIComponent(pid);
+            const by = (typeof currentUserName === 'function' ? currentUserName() : '')
+                || usersLoggedInUsername.value || '';
+            const r = await fetch(url, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mapping, created_by: by }),
+            });
+            if (r.status === 401 || r.status === 403) {
+                throw new Error('Доступ запрещён (' + r.status + ')');
+            }
+            if (!r.ok) {
+                let msg = 'HTTP ' + r.status;
+                try { const j = await r.json(); if (j && j.detail) msg = j.detail; }
+                catch (_) { /* no-op */ }
+                throw new Error(msg);
+            }
+            return r.json();
+        }
+        function _scPv2EaApplyManual(targetObj, override, summary) {
+            if (override) {
+                targetObj.manual_mapping = {
+                    status: override.manual_decision
+                        && (['confirmed_same_entity', 'confirmed_rename', 'confirmed_reorganized']
+                            .includes(override.manual_decision) ? 'mapped'
+                            : override.manual_decision === 'rejected_mapping' ? 'rejected'
+                            : override.manual_decision === 'no_match' ? 'no_match' : 'none'),
+                    decision: override.manual_decision,
+                    mapping_id: override.mapping_id,
+                    comment: override.comment || null,
+                    updated_at: override.updated_at,
+                };
+            }
+            if (summary && scPv2EaResp.value && scPv2EaResp.value.summary) {
+                scPv2EaResp.value.summary.manual_mapping = summary;
+            }
+            scPv2EaSaveHint.value = 'Ручной mapping сохранён. Он будет использован в '
+                + 'следующем этапе отбора vision-кандидатов, но сейчас ничего не '
+                + 'запускается (block links и vision не трогаются).';
+        }
+        async function scPv2EaSavePair(p) {
+            if (!p) return;
+            const key = scPv2EaPairKey(p);
+            const draft = scPv2EaDraft(key);
+            if (!draft.decision) { scPv2EaSaveErr[key] = 'Выберите решение'; return; }
+            scPv2EaSaving[key] = true;
+            scPv2EaSaveErr[key] = '';
+            try {
+                const res = await _scPv2EaPutMapping({
+                    left_entity_label: p.left_entity_label,
+                    right_entity_label: p.right_entity_label,
+                    left_block_id: p.left_block_id,
+                    right_block_id: p.right_block_id,
+                    left_page_number: p.left_page_number,
+                    right_page_number: p.right_page_number,
+                    source_classification: p.classification,
+                    pair_key: p.pair_key,
+                    manual_decision: draft.decision,
+                    comment: draft.comment || null,
+                });
+                _scPv2EaApplyManual(p, res.override, res.summary);
+            } catch (e) {
+                scPv2EaSaveErr[key] = String((e && e.message) || e);
+            } finally {
+                scPv2EaSaving[key] = false;
+            }
+        }
+        // Кандидаты-counterpart для unpaired-сущности (с противоположной стороны).
+        function scPv2EaUnpairedCounterparts(side) {
+            const u = scPv2EaUnpaired.value || {};
+            const other = side === 'left' ? (u.right || []) : (u.left || []);
+            return other;
+        }
+        async function scPv2EaSaveUnpaired(e, side) {
+            if (!e) return;
+            const key = scPv2EaUnpairedKey(e, side);
+            const draft = scPv2EaDraft(key);
+            if (!draft.decision) { scPv2EaSaveErr[key] = 'Выберите решение'; return; }
+            const myBlock = (e.block_ids && e.block_ids[0]) || null;
+            // counterpart нужен только для confirmed_*
+            const isConfirmed = ['confirmed_same_entity', 'confirmed_rename',
+                                 'confirmed_reorganized'].includes(draft.decision);
+            let cp = null;
+            if (isConfirmed) {
+                const list = scPv2EaUnpairedCounterparts(side);
+                cp = list.find((x) => ((x.block_ids && x.block_ids[0]) || x.entity_label)
+                    === draft.counterpart);
+                if (!cp) { scPv2EaSaveErr[key] = 'Выберите counterpart с другой стороны'; return; }
+            }
+            const cpBlock = cp ? ((cp.block_ids && cp.block_ids[0]) || null) : null;
+            const mapping = side === 'left'
+                ? { left_entity_label: e.entity_label, left_block_id: myBlock,
+                    right_entity_label: cp ? cp.entity_label : null, right_block_id: cpBlock }
+                : { right_entity_label: e.entity_label, right_block_id: myBlock,
+                    left_entity_label: cp ? cp.entity_label : null, left_block_id: cpBlock };
+            mapping.manual_decision = draft.decision;
+            mapping.comment = draft.comment || null;
+            mapping.source_classification = 'unpaired';
+            scPv2EaSaving[key] = true;
+            scPv2EaSaveErr[key] = '';
+            try {
+                const res = await _scPv2EaPutMapping(mapping);
+                _scPv2EaApplyManual(e, res.override, res.summary);
+            } catch (err) {
+                scPv2EaSaveErr[key] = String((err && err.message) || err);
+            } finally {
+                scPv2EaSaving[key] = false;
+            }
         }
 
         return {
@@ -15021,6 +15206,11 @@ const app = createApp({
             scPv2EaShowUnpaired, scPv2EaShowPairs, scPv2EaFilteredPairs,
             scPv2EaClassMeta, scPv2EaConfPct, scPv2EaLoad, scPv2EaToggle,
             scPv2EaOpenBlockLink, SC_PV2_EA_FILTERS,
+            // Pipeline V2 Manual Entity Mapping (write-слой)
+            SC_PV2_EA_DECISIONS, scPv2EaDrafts, scPv2EaSaving, scPv2EaSaveErr,
+            scPv2EaSaveHint, scPv2EaPairKey, scPv2EaUnpairedKey, scPv2EaDraft,
+            scPv2EaDecisionMeta, scPv2EaManualMeta, scPv2EaSavePair,
+            scPv2EaUnpairedCounterparts, scPv2EaSaveUnpaired,
             // Saved canonical config (one-click apply/save)
             scSavedConfig, scSavedConfigSaving, scSavedConfigMsg,
             scLoadSavedConfig, scApplySavedConfig, scSaveCurrentAsCanonical,

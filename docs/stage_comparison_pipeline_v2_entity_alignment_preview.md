@@ -201,6 +201,72 @@ pipeline). `options.entity_alignment_preview.enabled=false` отключает.
 (10 backend-кейсов), [frontend/tests/pipeline_v2_panel.test.js](../frontend/tests/pipeline_v2_panel.test.js)
 (блок «Entity Alignment …»: summary/cards/filters/states + read-only contract).
 
+## Manual entity mapping overrides (write-слой)
+
+Поверх read-only preview инженер сохраняет ручные решения по парам/сущностям —
+отдельный **обратимый** artifact, который НЕ меняет ни preview, ни связи блоков,
+ни сравнение/findings, и НЕ запускает vision/Qwen/Opus/Claude/jobs.
+
+**Модуль:** [pipeline_v2_entity_mapping_overrides.py](../backend/app/services/stage_comparison/pipeline_v2_entity_mapping_overrides.py).
+**Artifact:** `entity_mapping_overrides.json` в `pipeline_v2/` пары:
+
+```json
+{
+  "version": 1, "kind": "stage_comparison_pipeline_v2_entity_mapping_overrides",
+  "status": "ok", "session_id": "...", "pair_id": "...", "updated_at": "...",
+  "mappings": [{
+    "mapping_id": "m_<sha1>", "left_entity_label": "ВРУ-3",
+    "right_entity_label": "ВРУ-2", "left_block_id": "...", "right_block_id": "...",
+    "left_page_number": 28, "right_page_number": 26,
+    "source_classification": "scope_reorganized",
+    "manual_decision": "confirmed_same_entity|confirmed_rename|confirmed_reorganized|rejected_mapping|no_match",
+    "confidence": "manual_confirmed", "comment": "...",
+    "created_at": "...", "created_by": "...", "updated_at": "..."
+  }],
+  "rejected": [], "no_match": [], "history": []
+}
+```
+
+`mapping_id` детерминирован по идентичности пары (приоритет block-ids, иначе
+метки+класс) → **upsert идемпотентен** (повторное сохранение обновляет на месте,
+не дублирует). `rejected`/`no_match` — derived-вью из canonical `mappings`;
+`history` — append-only лог (cap). Запись atomic (tmp+`os.replace`), read
+fail-soft (битый файл → пустой ok+warning). Path traversal обрезается (`_safe_id`,
+строгая проверка id). confirmed_* требует обе стороны; no_match/rejected — одна.
+
+**Endpoints** (read/write, в threadpool, mark-only):
+
+| Метод | Путь | Действие |
+|---|---|---|
+| GET | `/pipeline-v2/{sid}/entity-mapping-overrides?pair_id=` | текущие override'ы (пустой ok если нет) |
+| PUT | `/pipeline-v2/{sid}/entity-mapping-overrides?pair_id=` | upsert одного решения (`{mapping, created_by}`) → `{ok, override, created, summary}` |
+| DELETE | `/pipeline-v2/{sid}/entity-mapping-overrides/{mapping_id}?pair_id=` | удалить override (обратимо) |
+
+Невалидный decision → 422; невалидный id → 400. GET резолвит путь без `mkdir`.
+
+**Интеграция в preview.** `discover_entity_alignment_preview` читает overrides
+(fail-soft, без mkdir) и `build_entity_alignment_detail` добавляет к КАЖДОЙ
+карточке/сущности `manual_mapping`:
+
+```json
+"manual_mapping": {"status": "mapped|rejected|no_match|none",
+  "decision": "confirmed_reorganized", "mapping_id": "...",
+  "comment": "...", "updated_at": "..."}
+```
+
+и в summary — агрегат `manual_mapping: {total, confirmed, rejected, no_match}`.
+Нет overrides → `status:"none"` на карточках, агрегат не добавляется (как раньше).
+
+**Frontend.** В панели «🧩 Pipeline V2 сущности β» каждая карточка пары и каждая
+unpaired-сущность получают select решения + комментарий + «💾 Сохранить решение»
+(unpaired confirmed_* — ещё counterpart-picker с другой стороны). После
+сохранения показывается статус и подсказка, что block links/vision НЕ
+запускаются. Кнопок «Применить к связям»/«Запустить vision» НЕТ.
+
+Тесты: [tests/test_stage_comparison_pipeline_v2_entity_mapping_overrides.py](../tests/test_stage_comparison_pipeline_v2_entity_mapping_overrides.py)
+(10 backend-кейсов), блок «Manual Entity Mapping» в
+[frontend/tests/pipeline_v2_panel.test.js](../frontend/tests/pipeline_v2_panel.test.js).
+
 ## Будущий wiring в graphic vision selection (НЕ в этой задаче)
 
 `pipeline_v2_graphic_vision_enrichment` может опционально читать
