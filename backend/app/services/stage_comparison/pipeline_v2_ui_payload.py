@@ -549,6 +549,8 @@ def build_pipeline_v2_ui_payload(summary: dict,
             "changes_rejected": _safe_count(gvg.get("changes_rejected")),
             "artificial_series_rejected": _safe_count(
                 gvg.get("artificial_series_rejected")),
+            "designator_range_rejected": _safe_count(
+                gvg.get("designator_range_rejected")),
             "noop_changes_rejected": _safe_count(
                 gvg.get("noop_changes_rejected")),
         }

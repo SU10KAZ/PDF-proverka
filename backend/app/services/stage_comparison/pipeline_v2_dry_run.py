@@ -522,7 +522,9 @@ def _graphic_vision_grounding_section(gvg_report: Any, gvg_enabled: bool,
         "changes_weakly_grounded": s.get("changes_weakly_grounded", 0),
         "changes_rejected": s.get("changes_rejected", 0),
         "artificial_series_rejected": s.get("artificial_series_rejected", 0),
+        "designator_range_rejected": s.get("designator_range_rejected", 0),
         "noop_changes_rejected": s.get("noop_changes_rejected", 0),
+        "anchor_source_counts": s.get("anchor_source_counts") or {},
     }
     if gvg_error:
         sec["error"] = gvg_error
@@ -910,6 +912,7 @@ def write_pipeline_v2_summary_md(out_path: str | Path, summary: dict,
                      f"(всего {gvg.get('changes_total', 0)})")
         lines.append(f"- Снято галлюцинаций: "
                      f"artificial_series={gvg.get('artificial_series_rejected', 0)}, "
+                     f"designator_range={gvg.get('designator_range_rejected', 0)}, "
                      f"noop={gvg.get('noop_changes_rejected', 0)}")
         if gvg.get("error"):
             lines.append(f"- ⚠ Ошибка grounding: {gvg['error']}")

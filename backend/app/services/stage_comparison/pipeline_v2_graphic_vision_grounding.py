@@ -45,9 +45,20 @@ GROUNDED = "grounded"
 WEAKLY_GROUNDED = "weakly_grounded"
 UNGROUNDED = "ungrounded"
 REJECTED_ARTIFICIAL_SERIES = "rejected_artificial_series"
+REJECTED_DESIGNATOR_RANGE = "rejected_designator_range"
 REJECTED_NOOP = "rejected_noop"
 REJECTED_INVALID_FORMAT = "rejected_invalid_format"
 NO_ANCHOR_AVAILABLE = "no_anchor_available"
+
+# Понятные reason-коды (в дополнение к status; backward-compat не ломают).
+REASON_RATING_LADDER = "artificial_rating_ladder"
+REASON_REPEATED_RATING = "repeated_same_rating"
+REASON_DESIGNATOR_RANGE = "artificial_designator_range"
+REASON_NOOP = "noop_change"
+REASON_NOT_FOUND = "not_found_in_anchors"
+REASON_NO_ANCHOR = "no_anchor_available"
+REASON_GROUNDED = "grounded"
+REASON_PARTIAL = "partial_match"
 
 # ─── нормализация ────────────────────────────────────────────────────────────
 
@@ -144,27 +155,47 @@ def _rating_amps(token: str) -> Optional[float]:
 # ─── anchors ─────────────────────────────────────────────────────────────────
 
 # Поля блока normalized model, несущие текстовый/векторный слой (anchors).
+# В самой normalized model хранятся ТОЛЬКО excerpt'ы (600 симв.) — полный
+# текст-слой берётся отдельно из result.json (см. _load_full_block_texts) и
+# передаётся в collect_block_text_anchors как full_texts (приоритетный).
 _ANCHOR_TEXT_FIELDS = (
     "pdfplumber_text", "pdfplumber_text_excerpt",
     "ocr_text", "text", "text_excerpt",
 )
+# Жёсткий cap полного текст-слоя ВНУТРИ grounding (в report не сохраняется —
+# там только короткие matched-snippets/наборы). Защита от патологий.
+_FULL_ANCHOR_CAP = 40000
 
 
-def _block_anchor_strings(block: Any) -> list[str]:
-    """Собрать сырые anchor-строки блока (без нормализации)."""
-    if not isinstance(block, dict):
-        return []
+def _block_anchor_strings(block: Any,
+                          full_texts: Optional[list] = None) -> tuple[list, str]:
+    """Собрать сырые anchor-строки блока (без нормализации) + метку источника.
+
+    Приоритет: полный текст-слой (full_texts: full pdfplumber → full OCR) →
+    excerpt'ы блока → key_entities → stamp. Возвращает (strings, source).
+    """
     out: list[str] = []
+    source = "none"
+    for v in (full_texts or []):
+        if isinstance(v, str) and v.strip():
+            out.append(v[:_FULL_ANCHOR_CAP])
+            source = "full_text"
+    if not isinstance(block, dict):
+        return out, source
     for f in _ANCHOR_TEXT_FIELDS:
         v = block.get(f)
         if isinstance(v, str) and v.strip():
             out.append(v)
+            if source == "none":
+                source = "excerpt"
     raw = block.get("raw")
     if isinstance(raw, dict):
         for f in _ANCHOR_TEXT_FIELDS:
             v = raw.get(f)
             if isinstance(v, str) and v.strip():
                 out.append(v)
+                if source == "none":
+                    source = "excerpt"
     ocr = block.get("ocr_json_summary")
     if isinstance(ocr, dict):
         for f in ("content_summary", "detailed_description"):
@@ -174,23 +205,28 @@ def _block_anchor_strings(block: Any) -> list[str]:
         ke = ocr.get("key_entities")
         if isinstance(ke, list):
             out.extend(str(x) for x in ke if x)
+            if source == "none" and ke:
+                source = "key_entities"
     stamp = block.get("stamp_data")
     if isinstance(stamp, dict):
         for f in ("sheet_name", "document_code"):
             v = stamp.get(f)
             if isinstance(v, str) and v.strip():
                 out.append(v)
-    return out
+                if source == "none":
+                    source = "stamp"
+    return out, source
 
 
 class BlockAnchors:
     """Нормализованный anchor-корпус блока + предвычисленные value-наборы."""
 
     __slots__ = ("block_id", "available", "blob", "compact", "ratings",
-                 "sections", "powers", "raw_count", "char_count")
+                 "sections", "powers", "raw_count", "char_count", "source")
 
-    def __init__(self, block_id: str, strings: list[str]):
+    def __init__(self, block_id: str, strings: list[str], *, source: str = "none"):
         self.block_id = block_id
+        self.source = source
         self.raw_count = len(strings)
         # spaced blob — для извлечения номиналов (нужны границы токенов);
         # «|»-сепаратор не даёт соседним токенам слипнуться через regex.
@@ -218,7 +254,10 @@ class BlockAnchors:
         return bool(token) and token.replace(" ", "") in self.compact
 
     def to_diag(self) -> dict:
+        # короткая диагностика: НИКАКОГО полного текста — только метка
+        # источника, счётчики и наборы значений (cap 40)
         return {"block_id": self.block_id, "available": self.available,
+                "source": self.source,
                 "anchor_strings": self.raw_count, "anchor_chars": self.char_count,
                 "ratings": sorted(self.ratings)[:40],
                 "sections": sorted(self.sections)[:40]}
@@ -240,13 +279,20 @@ class BlockAnchors:
         m.ratings = set().union(*(a.ratings for a in anchors)) if anchors else set()
         m.sections = set().union(*(a.sections for a in anchors)) if anchors else set()
         m.powers = set().union(*(a.powers for a in anchors)) if anchors else set()
+        m.source = "+".join(sorted({a.source for a in anchors if a.source != "none"})) or "none"
         return m
 
 
-def collect_block_text_anchors(block: Any, *, block_id: str = "") -> BlockAnchors:
-    """Построить :class:`BlockAnchors` из блока normalized document model."""
+def collect_block_text_anchors(block: Any, *, block_id: str = "",
+                               full_texts: Optional[list] = None) -> BlockAnchors:
+    """Построить :class:`BlockAnchors` из блока normalized model + полного текста.
+
+    ``full_texts`` (приоритетный): полный pdfplumber_text / OCR-текст блока из
+    result.json. Если не передан — fallback на excerpt'ы блока (текущая логика).
+    """
     bid = block_id or (block.get("block_id") if isinstance(block, dict) else "") or ""
-    return BlockAnchors(str(bid), _block_anchor_strings(block))
+    strings, source = _block_anchor_strings(block, full_texts)
+    return BlockAnchors(str(bid), strings, source=source)
 
 
 # ─── grounding одной сущности ────────────────────────────────────────────────
@@ -465,6 +511,7 @@ def detect_artificial_series(values: Any, anchors: Optional[BlockAnchors] = None
 
     artificial: set[str] = set()
     reasons: list[str] = []
+    token_reasons: dict[str, str] = {}   # token → понятный reason-код
 
     # 1) повторяющееся ОДИНАКОВОЕ ungrounded значение ≥ _REPEAT_MIN
     from collections import Counter
@@ -472,6 +519,7 @@ def detect_artificial_series(values: Any, anchors: Optional[BlockAnchors] = None
     for tok, c in counts.items():
         if c >= _REPEAT_MIN:
             artificial.add(tok)
+            token_reasons[tok] = REASON_REPEATED_RATING
             reasons.append(f"repeated_value:{tok}x{c}")
 
     # 2) монотонная стандартная лесенка ≥ _SERIES_MIN_LEN среди ungrounded
@@ -501,9 +549,64 @@ def detect_artificial_series(values: Any, anchors: Optional[BlockAnchors] = None
     if len(best) >= _SERIES_MIN_LEN:
         for _, tok in best:
             artificial.add(tok)
+            token_reasons.setdefault(tok, REASON_RATING_LADDER)
         reasons.append(f"standard_ladder:len={len(best)}")
 
-    return {"artificial_tokens": artificial, "reasons": reasons}
+    return {"artificial_tokens": artificial, "reasons": reasons,
+            "token_reasons": token_reasons}
+
+
+# ─── designator-range hallucination ──────────────────────────────────────────
+
+# Диапазон дизайнаторов: «QF1...QF100», «QF1-QF1000», «KM1…KM10», «1ТТ1...1ТТ19».
+# Допускаем опциональный второй префикс и разные разделители диапазона.
+_RE_DESIGNATOR_RANGE = re.compile(
+    r"([a-zщцшгджзфйюяё]{1,6})\s*(\d+)\s*"
+    r"(?:\.{2,3}|…|—|–|-|\bдо\b)\s*"
+    r"([a-zщцшгджзфйюяё]{0,6})\s*(\d+)")
+# Подозрительный охват диапазона: реальные щиты МКД редко имеют >_RANGE_SUSPECT
+# подряд идущих отходящих линий одной серии; фабрикации дают 50/100/1000.
+_RANGE_SUSPECT_SPAN = 8
+
+
+def detect_artificial_designator_range(text: Any,
+                                       anchors: Optional[BlockAnchors] = None
+                                       ) -> dict:
+    """Найти галлюцинированные диапазоны дизайнаторов («QF1...QF100»).
+
+    Возвращает ``{is_artificial, ranges:[...], reason}``. Длинный диапазон
+    (span ≥ _RANGE_SUSPECT_SPAN), верхний конец которого НЕ найден в anchors,
+    считается достроенной enumeration-галлюцинацией. Короткие валидные
+    диапазоны («TA1-TA3», «QF1-QF6») и любые, чей верхний конец есть в anchors,
+    НЕ отвергаются.
+    """
+    s = text if isinstance(text, str) else json.dumps(text or "", ensure_ascii=False)
+    norm = normalize_engineering_token(s)
+    ranges: list[dict] = []
+    artificial = False
+    for m in _RE_DESIGNATOR_RANGE.finditer(norm):
+        pfx1, n1, pfx2, n2 = m.group(1), m.group(2), m.group(3), m.group(4)
+        # второй префикс, если есть, должен совпадать с первым (QF1...QF100),
+        # иначе это не диапазон одной серии (QF1-TA3 — две разные сущности)
+        if pfx2 and pfx2 != pfx1:
+            continue
+        try:
+            lo, hi = int(n1), int(n2)
+        except ValueError:
+            continue
+        span = hi - lo
+        if span < _RANGE_SUSPECT_SPAN:
+            continue   # короткий валидный диапазон — не трогаем
+        # верхний конец диапазона есть в anchors? (реальная длинная серия)
+        hi_tok = f"{pfx1}{hi}"
+        anchored = bool(anchors and anchors.available
+                        and (anchors.has_text(hi_tok) or anchors.has_text(f"{pfx1}{n2}")))
+        ranges.append({"prefix": pfx1, "lo": lo, "hi": hi, "span": span,
+                       "anchored": anchored})
+        if not anchored:
+            artificial = True
+    return {"is_artificial": artificial, "ranges": ranges,
+            "reason": REASON_DESIGNATOR_RANGE if artificial else None}
 
 
 # ─── item + report ───────────────────────────────────────────────────────────
@@ -542,15 +645,77 @@ def _entity_entries(result: dict, key: str, *, atomize: bool = True) -> list[str
     return out
 
 
-_REJECTED_STATUSES = {REJECTED_ARTIFICIAL_SERIES, REJECTED_NOOP,
-                      REJECTED_INVALID_FORMAT}
+_REJECTED_STATUSES = {REJECTED_ARTIFICIAL_SERIES, REJECTED_DESIGNATOR_RANGE,
+                      REJECTED_NOOP, REJECTED_INVALID_FORMAT}
+
+# Поля result.json (block-level), несущие ПОЛНЫЙ текст-слой (не excerpt).
+_FULL_TEXT_FIELDS = ("pdfplumber_text", "ocr_text", "ocr_clean")
 
 
-def _ground_item(item: dict, left_blocks: dict, right_blocks: dict) -> dict:
+def _load_full_block_texts(model: Any) -> dict:
+    """Прочитать полный текст-слой блоков из source.result_json_path.
+
+    Возвращает ``{block_id: [pdfplumber_text, ocr_text, ...]}``. Fail-soft:
+    нет пути / файла / ошибка чтения → пустой dict (fallback на excerpt).
+    Используется ТОЛЬКО внутри grounding; в артефакты полный текст не пишется.
+    """
+    if not isinstance(model, dict):
+        return {}
+    src = model.get("source") if isinstance(model.get("source"), dict) else {}
+    rjp = src.get("result_json_path")
+    if not rjp or not isinstance(rjp, str):
+        return {}
+    try:
+        p = Path(rjp)
+        if not p.exists():
+            return {}
+        data = json.loads(p.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001 — fail-soft
+        return {}
+    out: dict[str, list] = {}
+    pages = data.get("pages") if isinstance(data, dict) else None
+    for pg in (pages or []):
+        blocks = pg.get("blocks") if isinstance(pg, dict) else None
+        for b in (blocks or []):
+            if not isinstance(b, dict):
+                continue
+            bid = b.get("id") or b.get("block_id")
+            if not bid:
+                continue
+            texts = [b.get(f) for f in _FULL_TEXT_FIELDS
+                     if isinstance(b.get(f), str) and b.get(f).strip()]
+            if texts:
+                out[str(bid)] = texts
+    return out
+
+
+def _entity_reason(g: dict) -> str:
+    """Понятный reason-код по статусу заземления сущности/изменения."""
+    st = g.get("status")
+    if st == GROUNDED:
+        return REASON_GROUNDED
+    if st == WEAKLY_GROUNDED:
+        return REASON_PARTIAL
+    if st == UNGROUNDED:
+        return REASON_NOT_FOUND
+    if st == NO_ANCHOR_AVAILABLE:
+        return REASON_NO_ANCHOR
+    if st == REJECTED_NOOP:
+        return REASON_NOOP
+    return g.get("reason") or st
+
+
+def _ground_item(item: dict, left_blocks: dict, right_blocks: dict,
+                 left_full: Optional[dict] = None,
+                 right_full: Optional[dict] = None) -> dict:
     lid = item.get("left_block_id")
     rid = item.get("right_block_id")
-    left_anchors = collect_block_text_anchors(left_blocks.get(lid), block_id=lid or "")
-    right_anchors = collect_block_text_anchors(right_blocks.get(rid), block_id=rid or "")
+    left_anchors = collect_block_text_anchors(
+        left_blocks.get(lid), block_id=lid or "",
+        full_texts=(left_full or {}).get(lid))
+    right_anchors = collect_block_text_anchors(
+        right_blocks.get(rid), block_id=rid or "",
+        full_texts=(right_full or {}).get(rid))
     result = item.get("result") if isinstance(item.get("result"), dict) else {}
     warnings: list[str] = []
 
@@ -563,6 +728,7 @@ def _ground_item(item: dict, left_blocks: dict, right_blocks: dict) -> dict:
     combined = BlockAnchors.merge(left_anchors, right_anchors)
     art = detect_artificial_series(ent_new + ent_old, combined)
     art_tokens = art["artificial_tokens"]
+    art_token_reasons = art.get("token_reasons", {})
 
     def _ground_entities(entries: list[str], anchors: BlockAnchors,
                          artificial: set) -> tuple[list, list]:
@@ -570,11 +736,20 @@ def _ground_item(item: dict, left_blocks: dict, right_blocks: dict) -> dict:
         for e in entries:
             g = ground_vision_entity(e, anchors)
             e_ratings = _salient_values(g["normalized"])["ratings"]
-            # rejected только если ВСЕ номиналы сущности из артефактного ряда
-            # и ни один не подтверждён напрямую (защита реальных значений)
-            if (artificial and e_ratings and e_ratings <= artificial
+            # (a) designator-range галлюцинация («QF1...QF100») без anchor
+            dr = detect_artificial_designator_range(e, combined)
+            if dr["is_artificial"]:
+                g["status"] = REJECTED_DESIGNATOR_RANGE
+                g["reason"] = REASON_DESIGNATOR_RANGE
+                g["designator_ranges"] = dr["ranges"]
+            # (b) rejected только если ВСЕ номиналы сущности из артефактного ряда
+            #     и ни один не подтверждён напрямую (защита реальных значений)
+            elif (artificial and e_ratings and e_ratings <= artificial
                     and not (set(g["matched_values"]) & e_ratings)):
                 g["status"] = REJECTED_ARTIFICIAL_SERIES
+                g["reason"] = next((art_token_reasons[t] for t in e_ratings
+                                    if t in art_token_reasons), REASON_RATING_LADDER)
+            g.setdefault("reason", _entity_reason(g))
             (rejected if g["status"] in _REJECTED_STATUSES else grounded).append(g)
         return grounded, rejected
 
@@ -585,6 +760,12 @@ def _ground_item(item: dict, left_blocks: dict, right_blocks: dict) -> dict:
     for c in changes:
         gc = ground_observed_change(c, left_anchors, right_anchors,
                                     artificial_values=art_tokens)
+        dr = detect_artificial_designator_range(c, combined)
+        if dr["is_artificial"] and gc["status"] not in (GROUNDED, WEAKLY_GROUNDED):
+            gc["status"] = REJECTED_DESIGNATOR_RANGE
+            gc["reason"] = REASON_DESIGNATOR_RANGE
+            gc["designator_ranges"] = dr["ranges"]
+        gc.setdefault("reason", _entity_reason(gc))
         (r_changes if gc["status"] in _REJECTED_STATUSES else g_changes).append(gc)
 
     if not left_anchors.available:
@@ -613,13 +794,32 @@ def _count_status(items: list, key: str, status: str) -> int:
     return sum(1 for it in items for g in it.get(key, []) if g.get("status") == status)
 
 
+def _anchor_source_counts(items: list) -> dict:
+    """Сколько блоков (сторон) грунтовалось по full_text / excerpt / … ."""
+    from collections import Counter
+    c: Counter = Counter()
+    for it in items:
+        for side in ("left_anchors", "right_anchors"):
+            src = (it.get(side) or {}).get("source")
+            if src:
+                c[src] += 1
+    return dict(c)
+
+
 def build_graphic_vision_grounding_report(vision_report: Any, *,
                                           left_model: Any = None,
-                                          right_model: Any = None) -> dict:
+                                          right_model: Any = None,
+                                          left_full_texts: Optional[dict] = None,
+                                          right_full_texts: Optional[dict] = None,
+                                          use_full_text: bool = True) -> dict:
     """Построить grounding-отчёт по vision enrichment report + normalized models.
 
-    Сырой vision report НЕ изменяется. fail-soft: ошибка по item'у не валит
-    отчёт; отсутствие vision report → status=failed с диагностикой.
+    Полный текст-слой блоков (full pdfplumber/OCR) подтягивается из
+    ``source.result_json_path`` для повышения recall; ``left_full_texts`` /
+    ``right_full_texts`` — явная подмена (для тестов). ``use_full_text=False``
+    отключает подтяжку (fallback на excerpt). Сырой vision report НЕ
+    изменяется. fail-soft: ошибка по item'у не валит отчёт; отсутствие vision
+    report → status=failed с диагностикой.
     """
     warnings: list[str] = []
     if not isinstance(vision_report, dict):
@@ -632,6 +832,15 @@ def build_graphic_vision_grounding_report(vision_report: Any, *,
     left_blocks = _blocks_by_id(left_model)
     right_blocks = _blocks_by_id(right_model)
 
+    # полный текст-слой (fail-soft, в артефакты не пишется) — приоритетный anchor
+    left_full = dict(left_full_texts) if left_full_texts else {}
+    right_full = dict(right_full_texts) if right_full_texts else {}
+    if use_full_text:
+        if not left_full:
+            left_full = _load_full_block_texts(left_model)
+        if not right_full:
+            right_full = _load_full_block_texts(right_model)
+
     out_items: list[dict] = []
     for item in items_in:
         if not isinstance(item, dict):
@@ -639,7 +848,8 @@ def build_graphic_vision_grounding_report(vision_report: Any, *,
         if not isinstance(item.get("result"), dict):
             continue   # нет vision-результата — нечего грунтовать
         try:
-            out_items.append(_ground_item(item, left_blocks, right_blocks))
+            out_items.append(_ground_item(item, left_blocks, right_blocks,
+                                          left_full, right_full))
         except Exception as exc:  # noqa: BLE001 — item не валит отчёт
             warnings.append(
                 f"grounding failed for item {item.get('item_id')}: "
@@ -666,7 +876,10 @@ def build_graphic_vision_grounding_report(vision_report: Any, *,
         "changes_rejected": sum(len(it.get("rejected_changes", [])) for it in out_items),
         "artificial_series_rejected": (_count_status(out_items, "rejected_entities", REJECTED_ARTIFICIAL_SERIES)
                                        + _count_status(out_items, "rejected_changes", REJECTED_ARTIFICIAL_SERIES)),
+        "designator_range_rejected": (_count_status(out_items, "rejected_entities", REJECTED_DESIGNATOR_RANGE)
+                                      + _count_status(out_items, "rejected_changes", REJECTED_DESIGNATOR_RANGE)),
         "noop_changes_rejected": _count_status(out_items, "rejected_changes", REJECTED_NOOP),
+        "anchor_source_counts": _anchor_source_counts(out_items),
     }
     for it in out_items:
         for w in it.get("warnings", []):
@@ -699,7 +912,8 @@ def _empty_report(status: str, warnings: list[str]) -> dict:
             "entities_weakly_grounded": 0, "entities_ungrounded": 0,
             "changes_total": 0, "changes_grounded": 0,
             "changes_weakly_grounded": 0, "changes_rejected": 0,
-            "artificial_series_rejected": 0, "noop_changes_rejected": 0,
+            "artificial_series_rejected": 0, "designator_range_rejected": 0,
+            "noop_changes_rejected": 0, "anchor_source_counts": {},
         },
         "items": [],
         "warnings": warnings,
@@ -720,11 +934,13 @@ def write_graphic_vision_grounding_report(out_path: str | Path, report: dict) ->
 __all__ = [
     "REPORT_VERSION", "REPORT_KIND",
     "GROUNDED", "WEAKLY_GROUNDED", "UNGROUNDED",
-    "REJECTED_ARTIFICIAL_SERIES", "REJECTED_NOOP", "REJECTED_INVALID_FORMAT",
+    "REJECTED_ARTIFICIAL_SERIES", "REJECTED_DESIGNATOR_RANGE",
+    "REJECTED_NOOP", "REJECTED_INVALID_FORMAT",
     "NO_ANCHOR_AVAILABLE", "STANDARD_RATINGS",
     "normalize_engineering_token", "collect_block_text_anchors",
     "ground_vision_entity", "ground_observed_change",
-    "detect_artificial_series", "detect_noop_change",
+    "detect_artificial_series", "detect_artificial_designator_range",
+    "detect_noop_change",
     "build_graphic_vision_grounding_report",
     "write_graphic_vision_grounding_report",
 ]
