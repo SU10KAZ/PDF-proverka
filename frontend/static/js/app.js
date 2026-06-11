@@ -13982,6 +13982,53 @@ const app = createApp({
             if (ov || nv) parts.push((ov || '—') + ' → ' + (nv || '—'));
             return parts.join(': ');
         }
+        // Цвет/подпись чипа вердикта критика. evidence ≠ critic — это РАЗНЫЕ
+        // сигналы (grounded vision может идти с needs_human_review). null →
+        // вызывающий показывает серое «нет объяснения».
+        function scPv2CriticVerdictStyle(v) {
+            const V = (v || '').toLowerCase();
+            if (V === 'accept') return {text: 'accept',
+                bg: '#dcfce7', fg: '#166534', border: '#86efac'};
+            if (V === 'needs_human_review') return {text: 'на проверку',
+                bg: '#fef9c3', fg: '#854d0e', border: '#fde047'};
+            if (V === 'possible_weak_graphic') return {text: 'слабая графика',
+                bg: '#ffedd5', fg: '#9a3412', border: '#fdba74'};
+            if (V === 'possible_ocr_noise') return {text: 'возможно OCR-шум',
+                bg: '#f1f5f9', fg: '#475569', border: '#cbd5e1'};
+            if (V === 'reject') return {text: 'отклонено',
+                bg: '#fee2e2', fg: '#991b1b', border: '#fecaca'};
+            if (V === 'failed' || V === 'skipped') return {text: 'сбой/пропуск',
+                bg: '#fee2e2', fg: '#991b1b', border: '#fecaca'};
+            return null;   // missing
+        }
+        // «Показать инженеру» из should_show_to_engineer (true/false/—).
+        function scPv2ShowText(v) {
+            if (v === true) return 'да';
+            if (v === false) return 'нет';
+            return '—';
+        }
+        // Breakdown grounded-evidence карточек по вердикту критика (join по
+        // секционным карточкам, где есть и grounded_evidence, и critic_verdict).
+        const scPv2GeVerdictBreakdown = computed(() => {
+            const out = {accept: 0, needs_review: 0, weak_other: 0, total: 0};
+            for (const sec of (scPv2Sections.value || [])) {
+                for (const c of ((sec && sec.cards) || [])) {
+                    const ge = c && c.grounded_evidence;
+                    if (!ge || !ge.evidence_level || ge.evidence_level === 'none') continue;
+                    out.total++;
+                    const lvl = ge.evidence_level;
+                    const v = (c.critic_verdict || '').toLowerCase();
+                    if (lvl === 'conflict' || lvl === 'rejected_only' || lvl === 'weak') {
+                        out.weak_other++;            // не-grounded evidence
+                    } else if (v === 'accept') {
+                        out.accept++;                // grounded + критик принял
+                    } else {
+                        out.needs_review++;          // grounded, но на проверку/прочее
+                    }
+                }
+            }
+            return out;
+        });
         // ─── Grounding detail drawer (read-only) ────────────────────────────
         // Грузит GET …/pipeline-v2/{sid}/graphic-vision-grounding?pair_id=…
         // Один fetch (limit 500) → клиентская фильтрация по табам.
@@ -14810,6 +14857,7 @@ const app = createApp({
             scPv2GroundingRejectedTotal,
             scPv2GroundedEvidence, scPv2GeAvailable, scPv2GeInterestingCards,
             scPv2GeBadgeStyle, scPv2GeAnchorText,
+            scPv2CriticVerdictStyle, scPv2ShowText, scPv2GeVerdictBreakdown,
             scPv2GdOpen, scPv2GdLoading, scPv2GdError, scPv2GdResp,
             scPv2GdFilter, scPv2GdFilteredCards, scPv2GdPagination,
             scPv2GdStatusColor, scPv2GdOpenDrawer, scPv2GdClose,

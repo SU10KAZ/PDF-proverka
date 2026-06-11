@@ -844,3 +844,128 @@ describe('Pipeline V2 — grounded evidence badges', () => {
     expect(scPv2GeAnchorText({})).toBe('');
   });
 });
+
+// ── Evidence + critic verdict chips (зеркало scPv2CriticVerdictStyle /
+//    scPv2ShowText / scPv2GeVerdictBreakdown / rejected-not-fact из app.js) ──
+
+function scPv2CriticVerdictStyle(v) {
+  const V = (v || '').toLowerCase();
+  if (V === 'accept') return {text:'accept', bg:'#dcfce7', fg:'#166534', border:'#86efac'};
+  if (V === 'needs_human_review') return {text:'на проверку', bg:'#fef9c3', fg:'#854d0e', border:'#fde047'};
+  if (V === 'possible_weak_graphic') return {text:'слабая графика', bg:'#ffedd5', fg:'#9a3412', border:'#fdba74'};
+  if (V === 'possible_ocr_noise') return {text:'возможно OCR-шум', bg:'#f1f5f9', fg:'#475569', border:'#cbd5e1'};
+  if (V === 'reject') return {text:'отклонено', bg:'#fee2e2', fg:'#991b1b', border:'#fecaca'};
+  if (V === 'failed' || V === 'skipped') return {text:'сбой/пропуск', bg:'#fee2e2', fg:'#991b1b', border:'#fecaca'};
+  return null;
+}
+function scPv2ShowText(v) {
+  if (v === true) return 'да';
+  if (v === false) return 'нет';
+  return '—';
+}
+function scPv2GeVerdictBreakdown(sections) {
+  const out = {accept: 0, needs_review: 0, weak_other: 0, total: 0};
+  for (const sec of (sections || [])) {
+    for (const c of ((sec && sec.cards) || [])) {
+      const ge = c && c.grounded_evidence;
+      if (!ge || !ge.evidence_level || ge.evidence_level === 'none') continue;
+      out.total++;
+      const lvl = ge.evidence_level;
+      const v = (c.critic_verdict || '').toLowerCase();
+      if (lvl === 'conflict' || lvl === 'rejected_only' || lvl === 'weak') out.weak_other++;
+      else if (v === 'accept') out.accept++;
+      else out.needs_review++;
+    }
+  }
+  return out;
+}
+const isRejectedNotFact = (lvl) => lvl === 'rejected_only' || lvl === 'conflict';
+
+describe('Pipeline V2 — evidence + critic verdict chips', () => {
+  it('1. grounded badge style green (card-level)', () => {
+    const card = {grounded_evidence: {evidence_level: 'grounded'}};
+    const b = scPv2GeBadgeStyle(card.grounded_evidence.evidence_level);
+    expect(b.bg).toBe('#dcfce7');
+  });
+
+  it('2. weak badge style yellow', () => {
+    expect(scPv2GeBadgeStyle('weak').bg).toBe('#fef9c3');
+  });
+
+  it('3. conflict/rejected → warning badge + "not a fact" line', () => {
+    expect(scPv2GeBadgeStyle('rejected_only').emoji).toBe('⚠');
+    expect(isRejectedNotFact('rejected_only')).toBe(true);
+    expect(isRejectedNotFact('conflict')).toBe(true);
+    expect(isRejectedNotFact('grounded')).toBe(false);
+    expect(isRejectedNotFact('weak')).toBe(false);
+  });
+
+  it('4. critic_verdict=accept → green accept chip', () => {
+    const s = scPv2CriticVerdictStyle('accept');
+    expect(s).not.toBeNull();
+    expect(s.text).toBe('accept');
+    expect(s.bg).toBe('#dcfce7');
+  });
+
+  it('5. critic_verdict=needs_human_review → yellow review chip', () => {
+    const s = scPv2CriticVerdictStyle('needs_human_review');
+    expect(s.text).toBe('на проверку');
+    expect(s.bg).toBe('#fef9c3');
+  });
+
+  it('5b. other critic verdicts mapped', () => {
+    expect(scPv2CriticVerdictStyle('possible_weak_graphic').bg).toBe('#ffedd5');
+    expect(scPv2CriticVerdictStyle('possible_ocr_noise').bg).toBe('#f1f5f9');
+    expect(scPv2CriticVerdictStyle('reject').bg).toBe('#fee2e2');
+  });
+
+  it('6. grounded + needs_review render as TWO separate chips (evidence ≠ critic)', () => {
+    const card = {grounded_evidence: {evidence_level: 'grounded'}, critic_verdict: 'needs_human_review'};
+    const ev = scPv2GeBadgeStyle(card.grounded_evidence.evidence_level);
+    const cr = scPv2CriticVerdictStyle(card.critic_verdict);
+    expect(ev.text).toBe('Grounded vision');   // evidence stays grounded
+    expect(cr.text).toBe('на проверку');        // critic separate verdict
+    expect(ev.bg).not.toBe(cr.bg);              // not conflated
+  });
+
+  it('7. missing grounded_evidence → no badge, no crash', () => {
+    const card = {critic_verdict: 'accept'};
+    expect(card.grounded_evidence == null).toBe(true);
+    expect(scPv2CriticVerdictStyle(card.critic_verdict)).not.toBeNull();
+  });
+
+  it('8. missing critic verdict → null (UI shows "нет объяснения")', () => {
+    expect(scPv2CriticVerdictStyle(undefined)).toBeNull();
+    expect(scPv2CriticVerdictStyle('')).toBeNull();
+    expect(scPv2CriticVerdictStyle(null)).toBeNull();
+  });
+
+  it('9. should_show text mapping', () => {
+    expect(scPv2ShowText(true)).toBe('да');
+    expect(scPv2ShowText(false)).toBe('нет');
+    expect(scPv2ShowText(undefined)).toBe('—');
+    expect(scPv2ShowText(null)).toBe('—');
+  });
+
+  it('10. verdict breakdown joins evidence × critic over section cards', () => {
+    const sections = [{cards: [
+      {grounded_evidence: {evidence_level: 'grounded'}, critic_verdict: 'accept'},
+      {grounded_evidence: {evidence_level: 'grounded'}, critic_verdict: 'needs_human_review'},
+      {grounded_evidence: {evidence_level: 'weak'}, critic_verdict: 'needs_human_review'},
+      {grounded_evidence: {evidence_level: 'rejected_only'}, critic_verdict: 'needs_human_review'},
+      {grounded_evidence: {evidence_level: 'none'}, critic_verdict: 'accept'},  // skipped
+      {critic_verdict: 'accept'},  // no evidence → skipped
+    ]}];
+    const b = scPv2GeVerdictBreakdown(sections);
+    expect(b.total).toBe(4);          // none + no-evidence excluded
+    expect(b.accept).toBe(1);          // grounded+accept
+    expect(b.needs_review).toBe(1);    // grounded+review
+    expect(b.weak_other).toBe(2);      // weak + rejected
+  });
+
+  it('11. breakdown empty when no grounded evidence cards (no crash)', () => {
+    expect(scPv2GeVerdictBreakdown([]).total).toBe(0);
+    expect(scPv2GeVerdictBreakdown(null).total).toBe(0);
+    expect(scPv2GeVerdictBreakdown([{cards: null}]).total).toBe(0);
+  });
+});

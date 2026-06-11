@@ -7502,6 +7502,13 @@
                                     <span style="color:#9a3412">⚠ conflicts/rejected: <b>{{ scPv2GroundedEvidence.deltas_with_rejected_conflicts || 0 }}</b></span>
                                     <span style="color:#6b7280">⚪ без подтверждения: <b>{{ scPv2GroundedEvidence.deltas_without_evidence || 0 }}</b></span>
                                 </div>
+                                <!-- breakdown по вердикту критика (по объяснённым дельтам с evidence) -->
+                                <div v-if="scPv2GeVerdictBreakdown.total" style="margin-top:6px; font-size:12px; color:#475569">
+                                    <span style="color:#6b7280">Grounded evidence по критику:</span>
+                                    <span style="color:#166534; margin-left:6px">✅ accept: <b>{{ scPv2GeVerdictBreakdown.accept }}</b></span>
+                                    <span style="color:#854d0e; margin-left:8px">🟡 на проверку: <b>{{ scPv2GeVerdictBreakdown.needs_review }}</b></span>
+                                    <span style="color:#9a3412; margin-left:8px">⚠ weak/rejected: <b>{{ scPv2GeVerdictBreakdown.weak_other }}</b></span>
+                                </div>
                                 <!-- компактный список интересных дельт -->
                                 <div v-if="scPv2GeInterestingCards.length" style="margin-top:8px; display:flex; flex-direction:column; gap:4px; max-height:260px; overflow:auto">
                                     <div v-for="c in scPv2GeInterestingCards.slice(0,20)" :key="'ge'+c.delta_id"
@@ -7661,18 +7668,29 @@
                                         <span style="opacity:.6"> → </span>
                                         <code style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:4px; padding:1px 5px">{{ card.new_value || '∅' }}</code>
                                     </div>
+                                    <!-- Evidence + critic: ДВА разных сигнала (графика ≠ вердикт критика) -->
                                     <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; font-size:10.5px; align-items:center">
-                                        <!-- grounded vision evidence badge (mark-only) -->
+                                        <!-- 1) grounded vision evidence badge (mark-only) -->
                                         <span v-if="card.grounded_evidence && scPv2GeBadgeStyle(card.grounded_evidence.evidence_level)"
                                               :style="{background: scPv2GeBadgeStyle(card.grounded_evidence.evidence_level).bg, color: scPv2GeBadgeStyle(card.grounded_evidence.evidence_level).fg, border:'1px solid '+scPv2GeBadgeStyle(card.grounded_evidence.evidence_level).border, borderRadius:'8px', padding:'0 7px', fontWeight:600}"
                                               :title="(card.grounded_evidence.warnings||[]).join('; ')">
                                             {{ scPv2GeBadgeStyle(card.grounded_evidence.evidence_level).emoji }} {{ scPv2GeBadgeStyle(card.grounded_evidence.evidence_level).text }}
                                         </span>
-                                        <span v-if="card.risk_level" style="border:1px solid #e5e7eb; border-radius:8px; padding:0 7px">риск: {{ card.risk_level }}</span>
-                                        <span style="border:1px solid #e5e7eb; border-radius:8px; padding:0 7px">{{ card.critic_verdict || 'нет объяснения' }}</span>
-                                        <span v-if="card.confidence != null" style="border:1px solid #e5e7eb; border-radius:8px; padding:0 7px">confidence: {{ card.confidence }}</span>
-                                        <span v-if="card.groundedness" style="border:1px solid #e5e7eb; border-radius:8px; padding:0 7px">{{ card.groundedness }}</span>
-                                        <span v-if="card.should_show_to_engineer === false" style="border:1px solid #fde68a; background:#fffbeb; color:#92400e; border-radius:8px; padding:0 7px">скрыто для инженера</span>
+                                        <!-- 2) critic verdict — отдельный цветной чип -->
+                                        <span style="color:#6b7280">Critic:</span>
+                                        <span v-if="scPv2CriticVerdictStyle(card.critic_verdict)"
+                                              :style="{background: scPv2CriticVerdictStyle(card.critic_verdict).bg, color: scPv2CriticVerdictStyle(card.critic_verdict).fg, border:'1px solid '+scPv2CriticVerdictStyle(card.critic_verdict).border, borderRadius:'8px', padding:'0 7px', fontWeight:600}">
+                                            {{ scPv2CriticVerdictStyle(card.critic_verdict).text }}
+                                        </span>
+                                        <span v-else style="border:1px solid #e5e7eb; background:#f8fafc; color:#9ca3af; border-radius:8px; padding:0 7px">нет объяснения</span>
+                                        <!-- 3) risk + show -->
+                                        <span v-if="card.risk_level && card.risk_level !== 'unknown'" style="border:1px solid #e5e7eb; border-radius:8px; padding:0 7px">Риск: {{ card.risk_level }}</span>
+                                        <span v-if="card.should_show_to_engineer != null"
+                                              :style="{border:'1px solid '+(card.should_show_to_engineer ? '#e5e7eb' : '#fde68a'), background:(card.should_show_to_engineer ? 'transparent' : '#fffbeb'), color:(card.should_show_to_engineer ? '#374151' : '#92400e'), borderRadius:'8px', padding:'0 7px'}">
+                                            Показать: {{ scPv2ShowText(card.should_show_to_engineer) }}
+                                        </span>
+                                        <span v-if="card.confidence != null" style="border:1px solid #e5e7eb; border-radius:8px; padding:0 7px; color:#9ca3af">confidence: {{ card.confidence }}</span>
+                                        <span v-if="card.groundedness" style="border:1px solid #e5e7eb; border-radius:8px; padding:0 7px; color:#9ca3af">{{ card.groundedness }}</span>
                                     </div>
                                     <div v-if="card.summary" style="font-size:12px; margin-top:6px">{{ card.summary }}</div>
                                     <div v-if="card.contractor_impact" style="font-size:11.5px; color:#6b7280; margin-top:3px">Влияние: {{ card.contractor_impact }}</div>
@@ -7690,6 +7708,16 @@
                                         </div>
                                         <div v-if="(card.grounded_evidence.warnings||[]).length" style="color:#9a3412; margin-top:2px">
                                             ⚠ {{ card.grounded_evidence.warnings.join('; ') }}
+                                        </div>
+                                        <!-- rejected/conflict — НЕ факт -->
+                                        <div v-if="card.grounded_evidence.evidence_level === 'rejected_only' || card.grounded_evidence.evidence_level === 'conflict'"
+                                             style="color:#9a3412; margin-top:2px; font-weight:600">
+                                            Rejected/ungrounded vision не используется как факт.
+                                        </div>
+                                        <!-- подсказка: evidence ≠ critic -->
+                                        <div style="color:#94a3b8; margin-top:4px; font-size:10.5px">
+                                            Grounded vision подтверждает данные по текстовым anchors. Critic verdict
+                                            показывает, принял ли критик изменение или отправил на ручную проверку.
                                         </div>
                                     </div>
                                     <div style="font-size:10.5px; color:#9ca3af; margin-top:6px">
