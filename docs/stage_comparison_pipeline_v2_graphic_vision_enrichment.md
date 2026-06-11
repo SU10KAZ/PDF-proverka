@@ -134,11 +134,33 @@ failed` в summary, этапы 4–6 работают. `vision_runner` — от�
   "skipped_no_runner": 0}
 ```
 
-## Что дальше (отдельная задача)
+## Реальный local vision runner (pilot 2026-06-11)
 
-Реальный vision runner (Qwen/Gemma через существующую LM Studio
-инфраструктуру) подключается снаружи по контракту `VisionRunner` — controlled
-pilot на 3–5 блоках, без изменения этого модуля.
+[pipeline_v2_local_vision_runner.py](../backend/app/services/stage_comparison/pipeline_v2_local_vision_runner.py)
+— тонкий адаптер контракта поверх существующей локальной инфраструктуры
+(`graphic_llm_local.compare_images_local`: OpenAI-compatible LM Studio
+endpoint, **two-image input в одном сообщении** — OLD первой картинкой, NEW
+второй, basic auth, timeout/image_long_side из env-конфига).
+
+```python
+from backend.app.services.stage_comparison.pipeline_v2_local_vision_runner import (
+    build_local_vision_runner)
+runner = build_local_vision_runner()          # env-конфиг; sync-only
+report = run_graphic_vision_enrichment(..., vision_runner=runner, crops_dir=...)
+```
+
+Свойства: обе стороны обязательны (односторонний item → ValueError → gv
+failed); transport error/timeout → RuntimeError (gv failed, отчёт жив);
+непарсабельный ответ → salvage JSON, иначе только `raw_text` (gv пометит
+failed); `model_used`/`duration_sec` добавляются в result. Перед прогоном
+рекомендуется `ensure_lmstudio_model_loaded(cfg.model)` (fast-profile JIT).
+
+Controlled pilot на 5 инженерных блоках ИОС 1.1 (qwen/qwen3.6-35b-a3b):
+5/5 ok, JSON contract соблюдён, OLD/NEW не перепутаны, конкретные номиналы
+(T1N1600→T1N2000, 63А→20А, кабели/серии буквально), честные «[нечитаемо]» на
+мелком тексте; vision честно вскрывает false block matches (схема↔план,
+ВРУ-3↔ВРУ-2). Детали — diagnostics
+`smoke_ios11_real_vision_pilot_*/PILOT_SUMMARY.md`.
 
 ## Тесты
 
