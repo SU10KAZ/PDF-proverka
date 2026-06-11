@@ -729,6 +729,28 @@ def build_pipeline_v2_ui_payload(summary: dict,
             grounded_evidence_report,
             ge_summary_section if ge_summary_enabled else None)
 
+    # entity alignment preview — компактная сводка mark-only классификации
+    # выравнивания граф. сущностей; добавляется ТОЛЬКО если секция есть в
+    # summary и слой включён (старые payload'ы полностью совместимы)
+    eap = s.get("entity_alignment_preview")
+    entity_alignment_section = None
+    if isinstance(eap, dict) and eap.get("enabled"):
+        eap_status = _clean(eap.get("status")) or "unknown"
+        entity_alignment_section = {
+            "available": eap_status not in ("disabled", "not_run", "unknown"),
+            "status": eap_status,
+            "graphic_pairs_total": _safe_count(eap.get("graphic_pairs_total")),
+            "same_entity_likely": _safe_count(eap.get("same_entity_likely")),
+            "possible_rename": _safe_count(eap.get("possible_rename")),
+            "scope_reorganized": _safe_count(eap.get("scope_reorganized")),
+            "mismatch_likely": _safe_count(eap.get("mismatch_likely")),
+            "link_validation_candidate": _safe_count(
+                eap.get("link_validation_candidate")),
+            "needs_manual_mapping": _safe_count(eap.get("needs_manual_mapping")),
+        }
+        if eap.get("error"):
+            entity_alignment_section["error"] = str(eap["error"])
+
     # per-delta compact evidence → attach к карточкам дельт (по delta_id).
     # Успешный attach — НЕ warning (не деградирует статус); счётчик кладём
     # в саму grounded_evidence-секцию для прозрачности.
@@ -775,6 +797,8 @@ def build_pipeline_v2_ui_payload(summary: dict,
         payload["graphic_vision_grounding"] = graphic_vision_grounding_section
     if grounded_evidence_section is not None:
         payload["grounded_evidence"] = grounded_evidence_section
+    if entity_alignment_section is not None:
+        payload["entity_alignment_preview"] = entity_alignment_section
     payload["filters"] = build_ui_filters(payload)
     return payload
 

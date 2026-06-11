@@ -223,3 +223,19 @@ graphic_readiness + weak_blocks_preview, деградация на неполн�
 - [pipeline_v2_grounded_evidence.py](../backend/app/services/stage_comparison/pipeline_v2_grounded_evidence.py) — источник `grounded_evidence` summary
 - [stage_comparison_pipeline_v2_dry_run.md](stage_comparison_pipeline_v2_dry_run.md) — приоритет секций
 - [stage_comparison_pipeline_v2_delta_explanation.md](stage_comparison_pipeline_v2_delta_explanation.md) — формат explanation/critic
+
+## `entity_alignment_preview` summary (2026-06-12)
+
+Если в summary есть секция `entity_alignment_preview` со `enabled=true`, payload
+получает блок (mark-only, frontend не менялся):
+
+```json
+"entity_alignment_preview": {
+  "available": true, "same_entity_likely": 0, "possible_rename": 0,
+  "scope_reorganized": 0, "mismatch_likely": 0, "needs_manual_mapping": 0
+}
+```
+
+`available=false` при `disabled`/`not_run`/`unknown`. Блок добавляется ТОЛЬКО
+когда слой включён — старые payload'ы без секции совместимы. Подробно —
+[stage_comparison_pipeline_v2_entity_alignment_preview.md](stage_comparison_pipeline_v2_entity_alignment_preview.md).

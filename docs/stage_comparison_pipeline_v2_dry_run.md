@@ -319,3 +319,16 @@ graphic_vision_grounding [3e] → entity_diff [5] → grounded_evidence [5b] →
 - [pipeline_v2_entity_extraction.py](../backend/app/services/stage_comparison/pipeline_v2_entity_extraction.py) — этап 3
 - [pipeline_v2_block_matching.py](../backend/app/services/stage_comparison/pipeline_v2_block_matching.py) — этап 2
 - [pipeline_v2_prepared_ingest.py](../backend/app/services/stage_comparison/pipeline_v2_prepared_ingest.py) — этап 1
+
+## Этап [3c2] entity_alignment_preview (2026-06-12)
+
+После block_link_preview [3c] и до graphic_vision [3d] добавлен опциональный
+этап **entity_alignment_preview** (mark-only): классифицирует пары графических
+блоков по тому, одна ли это сущность — `same_entity_likely` / `possible_rename`
+/ `scope_reorganized` / `mismatch_likely` / `link_validation_candidate`. Пишет
+`entity_alignment_preview_report.json` (добавлен в `_ARTIFACT_FILENAMES` и
+манифест), summary получает секцию `entity_alignment_preview`. Default ON,
+fail-soft (`options.entity_alignment_preview.enabled=false` отключает). Ничего не
+применяет; downstream selection пока не читает (wiring — следующий шаг). Подробно
+— [stage_comparison_pipeline_v2_entity_alignment_preview.md](stage_comparison_pipeline_v2_entity_alignment_preview.md).
+- [pipeline_v2_entity_alignment_preview.py](../backend/app/services/stage_comparison/pipeline_v2_entity_alignment_preview.py) — этап [3c2]

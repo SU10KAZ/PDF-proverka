@@ -313,3 +313,22 @@ ungrounded, плюс `rejected_artificial_series` и `rejected_noop`. Этот �
 ничего не удаляет из vision report — пишет отдельный
 `graphic_vision_grounding_report.json`. См.
 [stage_comparison_pipeline_v2_graphic_vision_grounding.md](stage_comparison_pipeline_v2_graphic_vision_grounding.md).
+
+## Entity Alignment Preview (mapping-aware отбор, 2026-06-12)
+
+Базовый entity-aware отбор кандидатов (`select_vision_candidates_v2` /
+`score_vision_candidate`) схлопывает «ВРУ-3 ↔ ВРУ-2» в `mismatch_likely`, не
+отличая переименование от реорганизации состава. Отдельный mark-only слой
+[entity_alignment_preview](stage_comparison_pipeline_v2_entity_alignment_preview.md)
+классифицирует пары тоньше: `same_entity_likely` / `possible_rename` /
+`scope_reorganized` / `mismatch_likely` / `link_validation_candidate` — переиспользуя
+здешние `extract_entity_ids` / `entity_identity_signal` / `sheet_kind_of` /
+`score_vision_candidate`.
+
+**Будущий wiring (НЕ в текущей задаче):** enrichment может опционально читать
+`entity_alignment_preview_report.json` (`options.use_entity_alignment_preview`)
+и фильтровать кандидатов — `same_entity_likely` в enrichment, `possible_rename`
+по флагу/confidence, `scope_reorganized`/`mismatch_likely` исключать,
+`link_validation_candidate` только в `selection_mode=link_validation`. Индекс —
+`entity_alignment_by_pair_key(report)`. Сейчас слой report-only, selection не
+меняет.

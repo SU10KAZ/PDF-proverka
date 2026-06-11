@@ -82,6 +82,10 @@ from backend.app.services.stage_comparison.pipeline_v2_grounded_evidence import 
     build_grounded_evidence_report,
     write_grounded_evidence_report,
 )
+from backend.app.services.stage_comparison.pipeline_v2_entity_alignment_preview import (
+    build_entity_alignment_preview_report,
+    write_entity_alignment_preview_report,
+)
 
 SUMMARY_VERSION = 1
 SUMMARY_KIND = "stage_comparison_pipeline_v2_dry_run_summary"
@@ -99,6 +103,7 @@ _ARTIFACT_FILENAMES = {
     "graphic_matched": "graphic_descriptor_matched_report.json",
     "visual_gate": "visual_equivalence_gate_report.json",
     "block_link_preview": "block_link_preview_report.json",
+    "entity_alignment_preview": "entity_alignment_preview_report.json",
     "graphic_vision": "graphic_vision_enrichment_report.json",
     "graphic_vision_grounding": "graphic_vision_grounding_report.json",
     "entity_extraction": "entity_extraction_report.json",
@@ -113,7 +118,8 @@ _ARTIFACT_FILENAMES = {
 _MANIFEST_ARTIFACT_KEYS = [
     "left_model", "right_model", "block_matching",
     "left_graphic", "right_graphic", "graphic_matched", "visual_gate",
-    "block_link_preview", "graphic_vision", "graphic_vision_grounding",
+    "block_link_preview", "entity_alignment_preview",
+    "graphic_vision", "graphic_vision_grounding",
     "entity_extraction", "entity_diff", "grounded_evidence", "delta_explanation",
     "summary_json", "summary_md",
 ]
@@ -561,6 +567,30 @@ def _grounded_evidence_section(ge_report: Any, ge_enabled: bool,
     return sec
 
 
+def _entity_alignment_preview_section(eap_report: Any, eap_enabled: bool,
+                                      eap_error: Optional[str]) -> dict:
+    s = (eap_report.get("summary") if isinstance(eap_report, dict) else {}) or {}
+    sec = {
+        "enabled": bool(eap_enabled),
+        "status": ("disabled" if not eap_enabled else
+                   "failed" if eap_error else
+                   (eap_report or {}).get("status", "not_run")
+                   if isinstance(eap_report, dict) else "not_run"),
+        "graphic_pairs_total": s.get("graphic_pairs_total", 0),
+        "same_entity_likely": s.get("same_entity_likely", 0),
+        "possible_rename": s.get("possible_rename", 0),
+        "scope_reorganized": s.get("scope_reorganized", 0),
+        "mismatch_likely": s.get("mismatch_likely", 0),
+        "link_validation_candidate": s.get("link_validation_candidate", 0),
+        "needs_manual_mapping": s.get("needs_manual_mapping", 0),
+        "unpaired_left": s.get("unpaired_left", 0),
+        "unpaired_right": s.get("unpaired_right", 0),
+    }
+    if eap_error:
+        sec["error"] = eap_error
+    return sec
+
+
 def _block_link_preview_section(blp_report: Any, blp_enabled: bool,
                                 blp_error: Optional[str]) -> dict:
     s = (blp_report.get("summary") if isinstance(blp_report, dict) else {}) or {}
@@ -627,7 +657,9 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
                               gvg_report: Any = None, gvg_enabled: bool = False,
                               gvg_error: Optional[str] = None,
                               ge_report: Any = None, ge_enabled: bool = False,
-                              ge_error: Optional[str] = None) -> dict:
+                              ge_error: Optional[str] = None,
+                              eap_report: Any = None, eap_enabled: bool = False,
+                              eap_error: Optional[str] = None) -> dict:
     """Собрать ``pipeline_v2_summary`` из артефактов этапов 1–4."""
     lm, rm = _summary_of(left_model), _summary_of(right_model)
     bm, em, dm = _summary_of(block_report), _summary_of(entity_report), _summary_of(diff_report)
@@ -683,6 +715,8 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
                                                         ve_error),
         "block_link_preview": _block_link_preview_section(blp_report, blp_enabled,
                                                           blp_error),
+        "entity_alignment_preview": _entity_alignment_preview_section(
+            eap_report, eap_enabled, eap_error),
         "graphic_vision": _graphic_vision_section(gv_report, gv_enabled,
                                                   gv_error),
         "graphic_vision_grounding": _graphic_vision_grounding_section(
@@ -1074,6 +1108,12 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     blp_opts = options.get("block_link_preview") or {}
     blp_enabled = blp_opts.get("enabled", True) is not False
 
+    # entity alignment preview: mark-only классификация выравнивания граф.
+    # сущностей (same/rename/scope/mismatch). Default ON, fail-soft, ничего не
+    # применяет; downstream пока не читает (wiring — следующий шаг).
+    eap_opts = options.get("entity_alignment_preview") or {}
+    eap_enabled = eap_opts.get("enabled", True) is not False
+
     # graphic vision по умолчанию ВЫКЛЮЧЕН в dry-run (включается явно)
     gv_opts = options.get("graphic_vision") or {}
     gv_enabled = gv_opts.get("enabled", False) is True
@@ -1100,6 +1140,8 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     ve_error: Optional[str] = None
     blp_report = None
     blp_error: Optional[str] = None
+    eap_report = None
+    eap_error: Optional[str] = None
     gv_report = None
     gv_error: Optional[str] = None
     gvg_report = None
@@ -1179,6 +1221,26 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
                                                 blp_report)
             except Exception as bexc:  # noqa: BLE001 — preview не критичен
                 blp_error = f"{type(bexc).__name__}: {bexc}"
+
+        # [3c2] entity alignment preview — mark-only классификация выравнивания
+        #       графических сущностей (same/rename/scope/mismatch) поверх gate +
+        #       descriptors + grounding. fail-soft, ничего не применяет; помогает
+        #       решить, какие пары безопасно слать в vision enrichment.
+        if eap_enabled:
+            try:
+                eap_report = build_entity_alignment_preview_report(
+                    left_model, right_model, ve_report,
+                    block_matching_report=block_report,
+                    block_link_preview_report=blp_report,
+                    left_graphic_report=left_graphic,
+                    right_graphic_report=right_graphic,
+                    graphic_matched_report=matched_graphic,
+                    grounding_report=None,
+                    options=eap_opts)
+                write_entity_alignment_preview_report(
+                    paths["entity_alignment_preview"], eap_report)
+            except Exception as eaexc:  # noqa: BLE001 — preview не критичен
+                eap_error = f"{type(eaexc).__name__}: {eaexc}"
 
         # [3d] graphic vision enrichment — mark-only слой описания
         #      send_to_vision/manual_review блоков; default OFF; fail-soft:
@@ -1287,6 +1349,15 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
             warnings.append(f"block_link_preview: {w}")
     if blp_error:
         warnings.append(f"block_link_preview: {blp_error}")
+    if isinstance(eap_report, dict):
+        for w in eap_report.get("warnings", []) or []:
+            # benign «gate unavailable / labels degrade» — диагностика, не
+            # деградация (preview опционален и mark-only)
+            if str(w).startswith(("visual gate report unavailable",)):
+                continue
+            warnings.append(f"entity_alignment_preview: {w}")
+    if eap_error:
+        warnings.append(f"entity_alignment_preview: {eap_error}")
     if isinstance(gv_report, dict):
         for w in gv_report.get("warnings", []) or []:
             # benign «selection truncated by max_items» (штатный cap, уже
@@ -1337,7 +1408,8 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
         blp_report=blp_report, blp_enabled=blp_enabled, blp_error=blp_error,
         gv_report=gv_report, gv_enabled=gv_enabled, gv_error=gv_error,
         gvg_report=gvg_report, gvg_enabled=gvg_enabled, gvg_error=gvg_error,
-        ge_report=ge_report, ge_enabled=ge_enabled, ge_error=ge_error)
+        ge_report=ge_report, ge_enabled=ge_enabled, ge_error=ge_error,
+        eap_report=eap_report, eap_enabled=eap_enabled, eap_error=eap_error)
 
     # summary + manifest пишем всегда (best-effort, атомарно)
     write_pipeline_v2_summary_json(paths["summary_json"], summary)

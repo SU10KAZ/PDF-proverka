@@ -120,7 +120,8 @@ def test_4_manifest_has_sha256_and_sizes(dry_run_result):
     manifest = json.loads((out / "pipeline_v2_manifest.json").read_text(encoding="utf-8"))
     assert manifest["kind"] == dr.MANIFEST_KIND
     existing = [e for e in manifest["artifacts"] if e["exists"]]
-    assert len(existing) == 13  # всё, кроме самого манифеста (вкл. visual_gate + block_link_preview)
+    assert len(existing) == 14  # всё, кроме самого манифеста (вкл. visual_gate +
+    #                             block_link_preview + entity_alignment_preview)
     for e in existing:
         assert isinstance(e["size_bytes"], int) and e["size_bytes"] > 0
         assert isinstance(e["sha256"], str) and len(e["sha256"]) == 64
@@ -245,9 +246,11 @@ def test_artifact_paths(tmp_path: Path):
     assert paths["graphic_vision_grounding"].name == \
         "graphic_vision_grounding_report.json"
     assert paths["grounded_evidence"].name == "grounded_evidence_report.json"
+    assert paths["entity_alignment_preview"].name == \
+        "entity_alignment_preview_report.json"
     # + visual_gate + block_link_preview + graphic_vision + grounding
-    #   + grounded_evidence
-    assert len(paths) == 17
+    #   + grounded_evidence + entity_alignment_preview
+    assert len(paths) == 18
 
 
 # ─── graphic descriptor в dry-run ────────────────────────────────────────────
