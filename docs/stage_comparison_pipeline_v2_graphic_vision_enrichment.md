@@ -301,3 +301,15 @@ dedup/min-confidence, max_tiles/overlap, одна плитка упала ≠ it
 упали → failed), dry-run (артефакт+manifest+MD, default OFF, fail-soft,
 инвариантность deterministic deltas), ui_payload
 (секция + backward compat), офлайн-гарантии (source scan + socket-patch).
+
+## Grounding (downstream-фильтр)
+
+Сырой vision-output (особенно tiled на плотных схемах) содержит И реальные
+номиналы, И галлюцинации (достроенные стандартные ряды, no-op «изменения»).
+Перед подмешиванием в delta/critic он проходит **Graphic Vision Grounding** —
+проверку каждого значения/изменения по anchor-тексту блока
+(`pdfplumber_text` / OCR `key_entities`): grounded / weakly_grounded /
+ungrounded, плюс `rejected_artificial_series` и `rejected_noop`. Этот слой
+ничего не удаляет из vision report — пишет отдельный
+`graphic_vision_grounding_report.json`. См.
+[stage_comparison_pipeline_v2_graphic_vision_grounding.md](stage_comparison_pipeline_v2_graphic_vision_grounding.md).

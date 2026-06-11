@@ -532,6 +532,29 @@ def build_pipeline_v2_ui_payload(summary: dict,
         if gv.get("error"):
             graphic_vision_section["error"] = str(gv["error"])
 
+    # graphic vision grounding — сводка проверки vision по anchor-тексту;
+    # добавляется ТОЛЬКО если секция есть в summary и слой включён
+    gvg = s.get("graphic_vision_grounding")
+    graphic_vision_grounding_section = None
+    if isinstance(gvg, dict) and gvg.get("enabled"):
+        gvg_status = _clean(gvg.get("status")) or "unknown"
+        graphic_vision_grounding_section = {
+            "available": gvg_status not in ("disabled", "not_run", "unknown"),
+            "status": gvg_status,
+            "entities_grounded": _safe_count(gvg.get("entities_grounded")),
+            "entities_weakly_grounded": _safe_count(
+                gvg.get("entities_weakly_grounded")),
+            "entities_ungrounded": _safe_count(gvg.get("entities_ungrounded")),
+            "changes_grounded": _safe_count(gvg.get("changes_grounded")),
+            "changes_rejected": _safe_count(gvg.get("changes_rejected")),
+            "artificial_series_rejected": _safe_count(
+                gvg.get("artificial_series_rejected")),
+            "noop_changes_rejected": _safe_count(
+                gvg.get("noop_changes_rejected")),
+        }
+        if gvg.get("error"):
+            graphic_vision_grounding_section["error"] = str(gvg["error"])
+
     summary_warnings = _str_list(s.get("warnings"))
     if s.get("warnings") and not summary_warnings:
         adapter_warnings.append("summary_warnings_invalid_ignored")
@@ -557,6 +580,8 @@ def build_pipeline_v2_ui_payload(summary: dict,
     }
     if graphic_vision_section is not None:
         payload["graphic_vision"] = graphic_vision_section
+    if graphic_vision_grounding_section is not None:
+        payload["graphic_vision_grounding"] = graphic_vision_grounding_section
     payload["filters"] = build_ui_filters(payload)
     return payload
 

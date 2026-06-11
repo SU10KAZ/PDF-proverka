@@ -118,6 +118,15 @@ vision_calls_succeeded, vision_calls_failed, skipped_no_runner}` — стары�
 payload'ы без неё полностью совместимы (см.
 stage_comparison_pipeline_v2_graphic_vision_enrichment.md).
 
+Опциональная top-level секция `graphic_vision_grounding` (только если слой
+grounding включён в summary): `{available, status, entities_grounded,
+entities_weakly_grounded, entities_ungrounded, changes_grounded,
+changes_rejected, artificial_series_rejected, noop_changes_rejected}` —
+сводка проверки vision-результата по anchor-тексту блока (сколько номиналов
+подтверждено векторным/OCR-слоем, сколько достроенных рядов и no-op снято).
+Старые payload'ы без неё полностью совместимы (см.
+stage_comparison_pipeline_v2_graphic_vision_grounding.md).
+
 Карточки секции ограничены cap'ом (default 100, override через
 `options.max_cards_per_section`): `count`/`delta_ids` остаются полными.
 Срез ДЕФОЛТНЫМ cap'ом честно репортится warning'ом

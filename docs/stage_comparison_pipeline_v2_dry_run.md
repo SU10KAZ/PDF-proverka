@@ -32,6 +32,11 @@ left_package / right_package
          (vision-описание send_to_vision/manual_review блоков; default OFF;
          vision_runner ИНЪЕКТИРУЕТСЯ (None → skipped_no_runner); fail-soft;
          см. stage_comparison_pipeline_v2_graphic_vision_enrichment.md)
+  → [3e] build_graphic_vision_grounding_report → graphic_vision_grounding_report.json
+         (проверка vision-результата по anchor-тексту блока: grounded/weakly/
+         ungrounded, снятие достроенных рядов и no-op; авто-ON если [3d] дал
+         items с результатами; сырой vision report НЕ меняется; fail-soft;
+         см. stage_comparison_pipeline_v2_graphic_vision_grounding.md)
   → [4] extract_entities_for_matched_documents → entity_extraction_report.json
   → [5] diff_entity_extraction_report          → entity_diff_report.json
   → [6] explain_entity_diff_report             → delta_explanation_report.json
@@ -73,6 +78,7 @@ graphic_descriptor_matched_report.json  # graphic descriptor (matched pairs)
 visual_equivalence_gate_report.json     # visual gate (mark-only, до vision)
 block_link_preview_report.json          # block link preview (read-only, UI «Связь блоков»)
 graphic_vision_enrichment_report.json   # graphic vision enrichment (default OFF)
+graphic_vision_grounding_report.json    # vision grounding по anchor-тексту (авто-ON при [3d])
 entity_extraction_report.json           # этап 3
 entity_diff_report.json                 # этап 4
 delta_explanation_report.json           # delta explanation / critic

@@ -74,6 +74,10 @@ from backend.app.services.stage_comparison.pipeline_v2_graphic_vision_enrichment
     run_graphic_vision_enrichment,
     write_graphic_vision_enrichment_report,
 )
+from backend.app.services.stage_comparison.pipeline_v2_graphic_vision_grounding import (
+    build_graphic_vision_grounding_report,
+    write_graphic_vision_grounding_report,
+)
 
 SUMMARY_VERSION = 1
 SUMMARY_KIND = "stage_comparison_pipeline_v2_dry_run_summary"
@@ -92,6 +96,7 @@ _ARTIFACT_FILENAMES = {
     "visual_gate": "visual_equivalence_gate_report.json",
     "block_link_preview": "block_link_preview_report.json",
     "graphic_vision": "graphic_vision_enrichment_report.json",
+    "graphic_vision_grounding": "graphic_vision_grounding_report.json",
     "entity_extraction": "entity_extraction_report.json",
     "entity_diff": "entity_diff_report.json",
     "delta_explanation": "delta_explanation_report.json",
@@ -103,7 +108,7 @@ _ARTIFACT_FILENAMES = {
 _MANIFEST_ARTIFACT_KEYS = [
     "left_model", "right_model", "block_matching",
     "left_graphic", "right_graphic", "graphic_matched", "visual_gate",
-    "block_link_preview", "graphic_vision",
+    "block_link_preview", "graphic_vision", "graphic_vision_grounding",
     "entity_extraction", "entity_diff", "delta_explanation",
     "summary_json", "summary_md",
 ]
@@ -498,6 +503,32 @@ def _graphic_vision_section(gv_report: Any, gv_enabled: bool,
     return sec
 
 
+def _graphic_vision_grounding_section(gvg_report: Any, gvg_enabled: bool,
+                                      gvg_error: Optional[str]) -> dict:
+    s = (gvg_report.get("summary") if isinstance(gvg_report, dict) else {}) or {}
+    sec = {
+        "enabled": bool(gvg_enabled),
+        "status": ("disabled" if not gvg_enabled else
+                   "failed" if gvg_error else
+                   (gvg_report or {}).get("status", "not_run")
+                   if isinstance(gvg_report, dict) else "not_run"),
+        "items_total": s.get("items_total", 0),
+        "entities_total": s.get("entities_total", 0),
+        "entities_grounded": s.get("entities_grounded", 0),
+        "entities_weakly_grounded": s.get("entities_weakly_grounded", 0),
+        "entities_ungrounded": s.get("entities_ungrounded", 0),
+        "changes_total": s.get("changes_total", 0),
+        "changes_grounded": s.get("changes_grounded", 0),
+        "changes_weakly_grounded": s.get("changes_weakly_grounded", 0),
+        "changes_rejected": s.get("changes_rejected", 0),
+        "artificial_series_rejected": s.get("artificial_series_rejected", 0),
+        "noop_changes_rejected": s.get("noop_changes_rejected", 0),
+    }
+    if gvg_error:
+        sec["error"] = gvg_error
+    return sec
+
+
 def _block_link_preview_section(blp_report: Any, blp_enabled: bool,
                                 blp_error: Optional[str]) -> dict:
     s = (blp_report.get("summary") if isinstance(blp_report, dict) else {}) or {}
@@ -560,7 +591,9 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
                               blp_report: Any = None, blp_enabled: bool = True,
                               blp_error: Optional[str] = None,
                               gv_report: Any = None, gv_enabled: bool = False,
-                              gv_error: Optional[str] = None) -> dict:
+                              gv_error: Optional[str] = None,
+                              gvg_report: Any = None, gvg_enabled: bool = False,
+                              gvg_error: Optional[str] = None) -> dict:
     """Собрать ``pipeline_v2_summary`` из артефактов этапов 1–4."""
     lm, rm = _summary_of(left_model), _summary_of(right_model)
     bm, em, dm = _summary_of(block_report), _summary_of(entity_report), _summary_of(diff_report)
@@ -618,6 +651,8 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
                                                           blp_error),
         "graphic_vision": _graphic_vision_section(gv_report, gv_enabled,
                                                   gv_error),
+        "graphic_vision_grounding": _graphic_vision_grounding_section(
+            gvg_report, gvg_enabled, gvg_error),
         "delta_explanation": _delta_explanation_section(de_report, de_enabled, de_error),
         "delta_sections": build_delta_sections(diff_report, de_report),
         "warnings": warnings,
@@ -861,6 +896,25 @@ def write_pipeline_v2_summary_md(out_path: str | Path, summary: dict,
         lines.append(f"- ⚠ Ошибка graphic vision: {gv['error']}")
     lines.append("")
 
+    gvg = summary.get("graphic_vision_grounding", {}) or {}
+    if gvg.get("enabled") or gvg.get("status") not in (None, "disabled"):
+        lines.append("## Graphic vision grounding (проверка vision по anchor-тексту)")
+        lines.append(f"- Status: `{gvg.get('status', 'unknown')}`")
+        lines.append(f"- Entities: grounded={gvg.get('entities_grounded', 0)}, "
+                     f"weak={gvg.get('entities_weakly_grounded', 0)}, "
+                     f"ungrounded={gvg.get('entities_ungrounded', 0)} "
+                     f"(всего {gvg.get('entities_total', 0)})")
+        lines.append(f"- Changes: grounded={gvg.get('changes_grounded', 0)}, "
+                     f"weak={gvg.get('changes_weakly_grounded', 0)}, "
+                     f"rejected={gvg.get('changes_rejected', 0)} "
+                     f"(всего {gvg.get('changes_total', 0)})")
+        lines.append(f"- Снято галлюцинаций: "
+                     f"artificial_series={gvg.get('artificial_series_rejected', 0)}, "
+                     f"noop={gvg.get('noop_changes_rejected', 0)}")
+        if gvg.get("error"):
+            lines.append(f"- ⚠ Ошибка grounding: {gvg['error']}")
+        lines.append("")
+
     de = summary.get("delta_explanation", {}) or {}
     lines.append("## Delta explanation / critic")
     lines.append(f"- Status: `{de.get('status', 'unknown')}`")
@@ -987,6 +1041,12 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     gv_opts = options.get("graphic_vision") or {}
     gv_enabled = gv_opts.get("enabled", False) is True
 
+    # vision grounding: проверка vision-результата по anchor-тексту блока.
+    # Включается только если есть graphic_vision (нечего грунтовать иначе);
+    # явно отключается graphic_vision_grounding.enabled=false.
+    gvg_opts = options.get("graphic_vision_grounding") or {}
+    gvg_requested = gvg_opts.get("enabled", True) is not False
+
     status = "ok"
     error: Optional[str] = None
     left_model = right_model = block_report = entity_report = diff_report = None
@@ -999,6 +1059,9 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     blp_error: Optional[str] = None
     gv_report = None
     gv_error: Optional[str] = None
+    gvg_report = None
+    gvg_enabled = False
+    gvg_error: Optional[str] = None
     de_report = None
     de_error: Optional[str] = None
 
@@ -1095,6 +1158,21 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
             except Exception as gvexc:  # noqa: BLE001 — слой не критичен
                 gv_error = f"{type(gvexc).__name__}: {gvexc}"
 
+        # [3e] graphic vision grounding — проверка vision-результата по
+        #      anchor-тексту блоков (pdfplumber/OCR key_entities). Сырой vision
+        #      report НЕ меняется. Включается только если vision дал items с
+        #      результатами; fail-soft, downstream его не читает.
+        gvg_enabled = bool(gvg_requested and isinstance(gv_report, dict)
+                           and gv_report.get("items"))
+        if gvg_enabled:
+            try:
+                gvg_report = build_graphic_vision_grounding_report(
+                    gv_report, left_model=left_model, right_model=right_model)
+                write_graphic_vision_grounding_report(
+                    paths["graphic_vision_grounding"], gvg_report)
+            except Exception as ggexc:  # noqa: BLE001 — слой не критичен
+                gvg_error = f"{type(ggexc).__name__}: {ggexc}"
+
         # [4] entity extraction
         entity_report = extract_entities_for_matched_documents(
             left_model, right_model, block_report, options.get("extraction"))
@@ -1151,6 +1229,15 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
             warnings.append(f"graphic_vision: {w}")
     if gv_error:
         warnings.append(f"graphic_vision: {gv_error}")
+    if isinstance(gvg_report, dict):
+        for w in gvg_report.get("warnings", []) or []:
+            # benign «no anchors»/«no items» — диагностика, не деградация
+            if str(w).startswith(("no anchors", "no vision items")) or \
+                    "no anchors for" in str(w):
+                continue
+            warnings.append(f"graphic_vision_grounding: {w}")
+    if gvg_error:
+        warnings.append(f"graphic_vision_grounding: {gvg_error}")
     if isinstance(de_report, dict):
         # benign «no_llm_runner» (offline skip) НЕ повышаем до dry-run warning
         for w in de_report.get("warnings", []) or []:
@@ -1172,7 +1259,8 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
         de_report=de_report, de_enabled=de_enabled, de_error=de_error,
         ve_report=ve_report, ve_enabled=ve_enabled, ve_error=ve_error,
         blp_report=blp_report, blp_enabled=blp_enabled, blp_error=blp_error,
-        gv_report=gv_report, gv_enabled=gv_enabled, gv_error=gv_error)
+        gv_report=gv_report, gv_enabled=gv_enabled, gv_error=gv_error,
+        gvg_report=gvg_report, gvg_enabled=gvg_enabled, gvg_error=gvg_error)
 
     # summary + manifest пишем всегда (best-effort, атомарно)
     write_pipeline_v2_summary_json(paths["summary_json"], summary)
