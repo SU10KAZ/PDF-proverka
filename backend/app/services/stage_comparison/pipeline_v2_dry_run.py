@@ -93,6 +93,10 @@ from backend.app.services.stage_comparison.pipeline_v2_exclusion_preview import 
     build_exclusion_preview_report,
     write_exclusion_preview_report,
 )
+from backend.app.services.stage_comparison.pipeline_v2_skip_readiness import (
+    build_skip_readiness_report,
+    write_skip_readiness_report,
+)
 
 SUMMARY_VERSION = 1
 SUMMARY_KIND = "stage_comparison_pipeline_v2_dry_run_summary"
@@ -119,6 +123,7 @@ _ARTIFACT_FILENAMES = {
     "grounded_evidence": "grounded_evidence_report.json",
     "delta_explanation": "delta_explanation_report.json",
     "exclusion_preview": "exclusion_preview_v2_report.json",
+    "skip_readiness": "skip_readiness_report.json",
     "summary_json": "pipeline_v2_summary.json",
     "summary_md": "pipeline_v2_summary.md",
     "manifest": "pipeline_v2_manifest.json",
@@ -131,6 +136,7 @@ _MANIFEST_ARTIFACT_KEYS = [
     "graphic_vision", "graphic_vision_grounding", "link_validation",
     "entity_extraction", "entity_diff", "grounded_evidence", "delta_explanation",
     "exclusion_preview",
+    "skip_readiness",
     "summary_json", "summary_md",
 ]
 
@@ -701,6 +707,31 @@ def _visual_gate_section(ve_report: Any, ve_enabled: bool,
     return sec
 
 
+def _skip_readiness_section(sr_report: Any, sr_enabled: bool,
+                            sr_error: Optional[str]) -> dict:
+    s = (sr_report.get("summary") if isinstance(sr_report, dict) else {}) or {}
+    sec = {
+        "enabled": bool(sr_enabled),
+        "status": ("disabled" if not sr_enabled else
+                   "failed" if sr_error else
+                   (sr_report or {}).get("status", "not_run")
+                   if isinstance(sr_report, dict) else "not_run"),
+        "items_total": s.get("items_total", 0),
+        "ready_to_skip": s.get("ready_to_skip", 0),
+        "blocked": s.get("blocked", 0),
+        "needs_review": s.get("needs_review", 0),
+        "keep": s.get("keep", 0),
+        "operator_approved": s.get("operator_approved", 0),
+        "operator_rejected": s.get("operator_rejected", 0),
+        "missing_operator_decision": s.get("missing_operator_decision", 0),
+        # HARD INVARIANT: всегда False в summary
+        "auto_enforce_enabled": False,
+    }
+    if sr_error:
+        sec["error"] = sr_error
+    return sec
+
+
 def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report: Any,
                               entity_report: Any, diff_report: Any, inputs: dict,
                               artifact_paths: dict, warnings: list[str], status: str,
@@ -723,7 +754,9 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
                               lv_report: Any = None, lv_enabled: bool = False,
                               lv_error: Optional[str] = None,
                               xp_report: Any = None, xp_enabled: bool = False,
-                              xp_error: Optional[str] = None) -> dict:
+                              xp_error: Optional[str] = None,
+                              sr_report: Any = None, sr_enabled: bool = False,
+                              sr_error: Optional[str] = None) -> dict:
     """Собрать ``pipeline_v2_summary`` из артефактов этапов 1–4."""
     lm, rm = _summary_of(left_model), _summary_of(right_model)
     bm, em, dm = _summary_of(block_report), _summary_of(entity_report), _summary_of(diff_report)
@@ -785,6 +818,7 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
             lv_report, lv_enabled, lv_error),
         "exclusion_preview_v2": _exclusion_preview_section(
             xp_report, xp_enabled, xp_error),
+        "skip_readiness_v2": _skip_readiness_section(sr_report, sr_enabled, sr_error),
         "graphic_vision": _graphic_vision_section(gv_report, gv_enabled,
                                                   gv_error),
         "graphic_vision_grounding": _graphic_vision_grounding_section(
@@ -1231,6 +1265,12 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     xp_opts = options.get("exclusion_preview") or {}
     xp_enabled = xp_opts.get("enabled", False) is True
 
+    # skip readiness: mark-only слой — объединяет exclusion_preview + operator
+    # overrides и показывает, что *теоретически* можно пропустить. Default OFF.
+    # Запускается только после exclusion_preview. Enforce НЕ делает.
+    sr_opts = options.get("skip_readiness") or {}
+    sr_enabled = sr_opts.get("enabled", False) is True
+
     # vision grounding: проверка vision-результата по anchor-тексту блока.
     # Включается только если есть graphic_vision (нечего грунтовать иначе);
     # явно отключается graphic_vision_grounding.enabled=false.
@@ -1259,6 +1299,8 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     lv_error: Optional[str] = None
     xp_report = None
     xp_error: Optional[str] = None
+    sr_report = None
+    sr_error: Optional[str] = None
     gv_report = None
     gv_error: Optional[str] = None
     gvg_report = None
@@ -1493,6 +1535,31 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
             except Exception as xpexc:  # noqa: BLE001 — слой не критичен
                 xp_error = f"{type(xpexc).__name__}: {xpexc}"
 
+        # [8] skip readiness preview — mark-only, Default OFF. Объединяет
+        #     exclusion_preview + operator overrides и показывает, что теоретически
+        #     может быть пропущено при явном одобрении оператора. Не пропускает
+        #     реальных блоков, enforce не делает.
+        if sr_enabled:
+            try:
+                # Читаем operator overrides из диска (могут быть обновлены после xp)
+                sr_overrides: Optional[dict] = None
+                ov_path_sr = out_dir / "exclusion_review_overrides.json"
+                if ov_path_sr.is_file():
+                    try:
+                        sr_overrides = json.loads(
+                            ov_path_sr.read_text(encoding="utf-8"))
+                    except Exception:  # noqa: BLE001
+                        sr_overrides = None
+                sr_report = build_skip_readiness_report(
+                    session_id=str(out_dir.name), pair_id=None,
+                    exclusion_preview_report=xp_report,
+                    overrides_report=sr_overrides,
+                    link_validation_report=lv_report,
+                    options=sr_opts)
+                write_skip_readiness_report(paths["skip_readiness"], sr_report)
+            except Exception as srexc:  # noqa: BLE001 — слой не критичен
+                sr_error = f"{type(srexc).__name__}: {srexc}"
+
     except Exception as exc:  # fail-soft: фиксируем, не роняем процесс
         status = "failed"
         error = f"{type(exc).__name__}: {exc}"
@@ -1575,6 +1642,14 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
             warnings.append(f"exclusion_preview: {w}")
     if xp_error:
         warnings.append(f"exclusion_preview: {xp_error}")
+    if isinstance(sr_report, dict):
+        for w in sr_report.get("warnings", []) or []:
+            # benign «not available» — диагностика mark-only слоя
+            if "not available" in str(w):
+                continue
+            warnings.append(f"skip_readiness: {w}")
+    if sr_error:
+        warnings.append(f"skip_readiness: {sr_error}")
 
     if status != "failed" and warnings:
         status = "completed_with_warnings"
@@ -1593,7 +1668,8 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
         ge_report=ge_report, ge_enabled=ge_enabled, ge_error=ge_error,
         eap_report=eap_report, eap_enabled=eap_enabled, eap_error=eap_error,
         lv_report=lv_report, lv_enabled=lv_enabled, lv_error=lv_error,
-        xp_report=xp_report, xp_enabled=xp_enabled, xp_error=xp_error)
+        xp_report=xp_report, xp_enabled=xp_enabled, xp_error=xp_error,
+        sr_report=sr_report, sr_enabled=sr_enabled, sr_error=sr_error)
 
     # summary + manifest пишем всегда (best-effort, атомарно)
     write_pipeline_v2_summary_json(paths["summary_json"], summary)

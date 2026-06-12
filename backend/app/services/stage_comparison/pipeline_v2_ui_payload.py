@@ -794,6 +794,27 @@ def build_pipeline_v2_ui_payload(summary: dict,
         if xp.get("error"):
             exclusion_preview_section["error"] = str(xp["error"])
 
+    sr = s.get("skip_readiness_v2")
+    skip_readiness_section = None
+    if isinstance(sr, dict) and sr.get("enabled"):
+        sr_status = _clean(sr.get("status")) or "unknown"
+        skip_readiness_section = {
+            "available": sr_status not in ("disabled", "not_run", "unknown",
+                                           "missing_input"),
+            "status": sr_status,
+            "ready_to_skip": _safe_count(sr.get("ready_to_skip")),
+            "blocked": _safe_count(sr.get("blocked")),
+            "needs_review": _safe_count(sr.get("needs_review")),
+            "keep": _safe_count(sr.get("keep")),
+            "operator_approved": _safe_count(sr.get("operator_approved")),
+            "operator_rejected": _safe_count(sr.get("operator_rejected")),
+            "missing_operator_decision": _safe_count(sr.get("missing_operator_decision")),
+            # HARD INVARIANT: всегда False
+            "auto_enforce_enabled": False,
+        }
+        if sr.get("error"):
+            skip_readiness_section["error"] = str(sr["error"])
+
     # per-delta compact evidence → attach к карточкам дельт (по delta_id).
     # Успешный attach — НЕ warning (не деградирует статус); счётчик кладём
     # в саму grounded_evidence-секцию для прозрачности.
@@ -846,6 +867,8 @@ def build_pipeline_v2_ui_payload(summary: dict,
         payload["link_validation"] = link_validation_section
     if exclusion_preview_section is not None:
         payload["exclusion_preview_v2"] = exclusion_preview_section
+    if skip_readiness_section is not None:
+        payload["skip_readiness"] = skip_readiness_section
     payload["filters"] = build_ui_filters(payload)
     return payload
 
