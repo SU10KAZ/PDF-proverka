@@ -5992,6 +5992,91 @@
                         </template>
                     </div>
 
+                    <!-- ─── Skip Readiness (read-only, mark-only, observe) ─── -->
+                    <div v-if="scPv2SrAvailable || scPv2SrNotFound || scPv2SrRespError"
+                         style="border:1px solid #e2e8f0; border-radius:8px; padding:8px 10px; margin-bottom:10px; background:#f8fafc">
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:6px">
+                            <strong style="color:#334155">🛡 Skip Readiness</strong>
+                            <span style="opacity:.6; font-size:11px">read-only · mark-only · observe · план пропуска (без применения)</span>
+                        </div>
+                        <!-- mark-only warning -->
+                        <div style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; border-radius:6px; padding:4px 8px; margin-bottom:6px; font-size:11px">
+                            ℹ Skip Readiness is mark-only / observe. На данном этапе никакие блоки не пропускаются. Пропуск требует явного одобрения оператора на следующем этапе (auto_enforce_enabled=false).
+                        </div>
+                        <div v-if="scPv2SrRespError" style="color:#991b1b; font-size:11px">Отчёт нечитаем: {{ scPv2SrRespError }}</div>
+                        <div v-else-if="scPv2SrNotFound" style="opacity:.6; font-size:11px">
+                            Skip Readiness report ещё не построен для этой пары.
+                        </div>
+                        <template v-else-if="scPv2SrAvailable && scPv2SrSummary">
+                            <!-- summary chips -->
+                            <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:6px; font-size:11px">
+                                <span style="background:#eef2ff; color:#3730a3; border-radius:10px; padding:1px 8px">items: {{ scPv2SrSummary.items_total }}</span>
+                                <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px">✅ к пропуску: {{ scPv2SrSummary.ready_to_skip }}</span>
+                                <span style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:1px 8px">🔴 blocked: {{ scPv2SrSummary.blocked }}</span>
+                                <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:1px 8px">🟡 review: {{ scPv2SrSummary.needs_review }}</span>
+                                <span style="background:#f0fdf4; color:#166534; border-radius:10px; padding:1px 8px">🟢 keep: {{ scPv2SrSummary.keep }}</span>
+                                <span v-if="scPv2SrSummary.operator_approved"
+                                      style="background:#d1fae5; color:#065f46; border-radius:10px; padding:1px 8px">✓ одобрено: {{ scPv2SrSummary.operator_approved }}</span>
+                                <span v-if="scPv2SrSummary.operator_rejected"
+                                      style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:1px 8px">✕ отклонено: {{ scPv2SrSummary.operator_rejected }}</span>
+                                <span v-if="scPv2SrSummary.missing_operator_decision"
+                                      style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">⏳ без решения: {{ scPv2SrSummary.missing_operator_decision }}</span>
+                                <span style="background:#fef3c7; color:#92400e; border-radius:10px; padding:1px 8px">enforce: off</span>
+                            </div>
+                            <!-- item cards -->
+                            <div v-for="(it, i) in scPv2SrItems" :key="'pv2sr-'+i"
+                                 style="background:#fff; border:1px solid #e2e8f0; border-radius:6px; padding:6px 8px; margin-bottom:5px; font-size:11px">
+                                <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-bottom:3px">
+                                    <!-- readiness badge -->
+                                    <span :style="{background: scPv2SrReadinessMeta(it.readiness_status).bg,
+                                                   color: scPv2SrReadinessMeta(it.readiness_status).fg,
+                                                   borderRadius:'10px', padding:'1px 8px', fontWeight:'600'}">
+                                        {{ scPv2SrReadinessMeta(it.readiness_status).icon }}
+                                        {{ it.readiness_status }}
+                                    </span>
+                                    <!-- classification -->
+                                    <span style="background:#eef2ff; color:#3730a3; border-radius:10px; padding:1px 6px; font-size:10px">
+                                        {{ it.classification }}
+                                    </span>
+                                    <!-- blocked/review reason -->
+                                    <span v-if="it.blocked_reason" style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:1px 6px; font-size:10px">
+                                        🔒 {{ it.blocked_reason }}
+                                    </span>
+                                    <span v-if="it.review_reason" style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:1px 6px; font-size:10px">
+                                        🔎 {{ it.review_reason }}
+                                    </span>
+                                    <!-- confidence -->
+                                    <span style="opacity:.6">{{ scPv2SrConfPct(it) }}</span>
+                                </div>
+                                <!-- entity labels OLD → NEW -->
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:3px">
+                                    <div style="background:#f8fafc; border-radius:4px; padding:3px 6px">
+                                        <div style="opacity:.5; font-size:10px">OLD</div>
+                                        <div style="font-weight:500">{{ it.left_entity_label || it.left_block_id || '—' }}</div>
+                                    </div>
+                                    <div style="background:#f8fafc; border-radius:4px; padding:3px 6px">
+                                        <div style="opacity:.5; font-size:10px">NEW</div>
+                                        <div style="font-weight:500">{{ it.right_entity_label || it.right_block_id || '—' }}</div>
+                                    </div>
+                                </div>
+                                <!-- skip scope -->
+                                <div v-if="it.skip_scope" style="opacity:.7; font-size:10px; margin-bottom:2px">
+                                    enrichment: {{ it.skip_scope.exclude_from_enrichment ? 'skip' : 'run' }}
+                                    · evidence: {{ it.skip_scope.exclude_from_grounded_evidence ? 'skip' : 'run' }}
+                                    · delta: {{ it.skip_scope.exclude_from_delta_explanation ? 'skip' : 'run' }}
+                                    · findings: {{ it.skip_scope.exclude_from_findings ? 'skip' : 'run' }}
+                                </div>
+                                <!-- operator decision (if any) -->
+                                <div v-if="it.operator_decision"
+                                     style="display:inline-block; background:#f0fdf4; color:#166534; border-radius:6px; padding:1px 7px; font-size:10px; margin-top:2px">
+                                    operator: {{ it.operator_decision }}
+                                    <span v-if="it.operator_comment" style="opacity:.7"> · "{{ it.operator_comment.slice(0,40) }}"</span>
+                                </div>
+                                <!-- mark-only reminder: NO action buttons -->
+                            </div>
+                        </template>
+                    </div>
+
 
                     <!-- transport / HTTP errors -->
                     <div v-if="scPv2EaError" style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; padding:6px 10px; margin-bottom:8px">

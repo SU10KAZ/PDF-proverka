@@ -3612,6 +3612,29 @@ async def get_pipeline_v2_exclusion_preview_endpoint(
         raise HTTPException(400, str(exc)) from exc
 
 
+@router.get("/pipeline-v2/{session_id}/skip-readiness")
+async def get_pipeline_v2_skip_readiness_endpoint(
+        session_id: str, pair_id: Optional[str] = None,
+        readiness: str = "all",
+        limit: int = 100, offset: int = 0):
+    """Read-only mark-only Skip Readiness report Pipeline V2.
+
+    Отдаёт готовый skip_readiness_report.json. Не запускает модели, не пишет.
+    Отсутствие отчёта — {"status":"not_found"} (runner НЕ запускается), битый —
+    {"status":"error"}, не 404/500. Фильтр readiness + пагинация (limit clamp
+    ≤500). Mark-only: auto_apply/enforce_allowed/requires_explicit_operator_approval
+    форсируются на всех items. auto_enforce_enabled=false гарантировано.
+    """
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_payload_mod.discover_skip_readiness,
+            session_id, pair_id,
+            readiness=readiness,
+            limit=limit, offset=offset)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
 # ─── Pipeline V2: ручные override'ы выравнивания сущностей (write) ──────────
 #
 # Отдельный обратимый artifact entity_mapping_overrides.json. Endpoints НИЧЕГО
