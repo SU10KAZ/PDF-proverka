@@ -1645,3 +1645,146 @@ describe('Pipeline V2 Exclusion Preview v2 — HTML panel', () => {
     expect(indexHtml).toContain('scPv2LvItems');
   });
 });
+
+// ─── Controlled Enforce Preflight — JS логика (read-only / observe-only) ─────
+//
+// Зеркало pure-логики scPv2Ce* из app.js + контрактные проверки по файлам:
+// панель observe-only, НИЧЕГО не применяет/не enforce'ит, нет apply/skip-кнопок.
+
+const SC_PV2_CE_STATUS_META = {
+  blocked:           { icon: '🔴', label: 'enforce заблокирован' },
+  preflight_ok:      { icon: '🟢', label: 'preflight ok (не применяется)' },
+  no_eligible_items: { icon: '🟡', label: 'нет eligible' },
+};
+function scPv2CeStatusMeta(status) {
+  return SC_PV2_CE_STATUS_META[status]
+    || { icon: '⚪', label: status || '—' };
+}
+function scPv2CeViewState(resp) {
+  if (!resp) return 'idle';
+  if (resp.status === 'ok' && resp.available) return 'available';
+  if (resp.status === 'not_found') return 'not_found';
+  if (resp.status === 'error') return 'error';
+  return 'idle';
+}
+function makeCeReport(overrides) {
+  return Object.assign({
+    version: 1,
+    kind: 'stage_comparison_pipeline_v2_controlled_enforce_preflight',
+    status: 'ok', available: true, report_status: 'blocked',
+    summary: {
+      ready_to_skip_items: 0, eligible_items: 0, blocked_items: 2,
+      fatal_blocks: 1, would_apply: false, enforce_enabled: false,
+    },
+    global_guards: { active_runtime_root_confirmed: true, ready_to_skip_present: false },
+    runtime_root: { active: '/x/comparison', confirmed: true, source: '/api/info' },
+    fatal_blocks: ['ready_to_skip_zero'],
+    eligible_items: [],
+    blocked_items: [
+      { item_id: 'a', reason: 'missing_operator_approval', source_readiness: 'blocked' },
+      { item_id: 'b', reason: 'needs_review', source_readiness: 'needs_review' },
+    ],
+    would_apply: false, enforce_enabled: false,
+    auto_apply: false, enforce_allowed: false,
+  }, overrides || {});
+}
+
+describe('Pipeline V2 Controlled Enforce Preflight — JS logic', () => {
+  it('1. available report → view-state available, summary читается', () => {
+    const r = makeCeReport();
+    expect(scPv2CeViewState(r)).toBe('available');
+    expect(r.summary.ready_to_skip_items).toBe(0);
+  });
+  it('2. blocked status имеет meta-иконку', () => {
+    expect(scPv2CeStatusMeta('blocked').icon).toBe('🔴');
+    expect(scPv2CeStatusMeta('preflight_ok').icon).toBe('🟢');
+  });
+  it('3. fatal block ready_to_skip_zero присутствует', () => {
+    const r = makeCeReport();
+    expect(r.fatal_blocks).toContain('ready_to_skip_zero');
+  });
+  it('4. would_apply=false и enforce_enabled=false', () => {
+    const r = makeCeReport();
+    expect(r.summary.would_apply).toBe(false);
+    expect(r.summary.enforce_enabled).toBe(false);
+    expect(r.would_apply).toBe(false);
+    expect(r.enforce_enabled).toBe(false);
+  });
+  it('5. active runtime root confirmed читается', () => {
+    const r = makeCeReport();
+    expect(r.runtime_root.confirmed).toBe(true);
+    expect(r.global_guards.active_runtime_root_confirmed).toBe(true);
+  });
+  it('6. not_found не ломает view-state', () => {
+    expect(scPv2CeViewState({ status: 'not_found', available: false })).toBe('not_found');
+    expect(scPv2CeViewState(null)).toBe('idle');
+  });
+  it('7. unknown status → нейтральная иконка, не падает', () => {
+    expect(scPv2CeStatusMeta('weird_future').icon).toBe('⚪');
+  });
+});
+
+describe('Pipeline V2 Controlled Enforce Preflight — HTML panel (files)', () => {
+  const indexHtml = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  const appJs = fs.readFileSync(path.join(__dirname, '..', 'static', 'js', 'app.js'), 'utf8');
+  function ceBlock() {
+    const s = indexHtml.indexOf('scPv2CeAvailable || scPv2CeNotFound || scPv2CeRespError');
+    expect(s).toBeGreaterThan(0);
+    const e = indexHtml.indexOf('transport / HTTP errors', s);
+    expect(e).toBeGreaterThan(s);
+    return indexHtml.slice(s, e);
+  }
+
+  it('1. summary панель с заголовком 🧯 и chips рендерится', () => {
+    const blk = ceBlock();
+    expect(blk).toContain('🧯 Controlled Enforce Preflight');
+    expect(blk).toContain('scPv2CeSummary');
+    expect(blk).toContain('ready_to_skip');
+    expect(blk).toContain('eligible');
+    expect(blk).toContain('blocked');
+  });
+  it('2. blocked status рендерится через scPv2CeReportStatus', () => {
+    expect(ceBlock()).toContain('scPv2CeReportStatus');
+  });
+  it('3. fatal block ready_to_skip_zero рендерится (scPv2CeFatalBlocks)', () => {
+    const blk = ceBlock();
+    expect(blk).toContain('scPv2CeFatalBlocks');
+    expect(blk).toContain('Fatal blocks:');
+  });
+  it('4. would_apply=false рендерится', () => {
+    expect(ceBlock()).toContain('would_apply: false');
+  });
+  it('5. enforce_enabled=false рендерится', () => {
+    expect(ceBlock()).toContain('enforce_enabled: false');
+  });
+  it('6. active runtime root confirmed рендерится', () => {
+    const blk = ceBlock();
+    expect(blk).toContain('scPv2CeRuntimeRoot');
+    expect(blk).toContain('active root confirmed');
+  });
+  it('7. observe-only warning присутствует', () => {
+    expect(ceBlock()).toContain(
+      'Controlled Enforce Preflight is observe-only. It does not skip, exclude, enforce, change links, or create findings.');
+  });
+  it('8. missing report не ломает UI (not_found ветка есть)', () => {
+    expect(ceBlock()).toContain('scPv2CeNotFound');
+    expect(ceBlock()).toContain('ещё не построен');
+  });
+  it('9. НЕТ кнопок apply/enforce/skip/исключить/создать замечание', () => {
+    const blk = ceBlock();
+    for (const forbidden of ['Применить', 'Запустить enforce', 'Запустить skip',
+                             'Исключить сейчас', 'Создать замечание', 'Изменить block links']) {
+      expect(blk).not.toContain(forbidden);
+    }
+  });
+  it('10. старые панели (exclusion/skip/link/entity) не сломаны', () => {
+    expect(indexHtml).toContain('🚫 Exclusion Preview v2');
+    expect(indexHtml).toContain('🛡 Skip Readiness');
+    expect(indexHtml).toContain('🔎 Link validation');
+    expect(indexHtml).toContain('🧩 Pipeline V2 сущности');
+    // endpoint wiring jolts
+    expect(appJs).toContain('/controlled-enforce-preflight?pair_id=');
+    expect(appJs).toContain('scPv2CeLoad');
+    expect(appJs).toContain('scPv2SrLoad');
+  });
+});

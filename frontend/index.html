@@ -6077,6 +6077,90 @@
                         </template>
                     </div>
 
+                    <!-- ─── Controlled Enforce Preflight (read-only, observe-only) ─── -->
+                    <div v-if="scPv2CeAvailable || scPv2CeNotFound || scPv2CeRespError"
+                         style="border:1px solid #e2e8f0; border-radius:8px; padding:8px 10px; margin-bottom:10px; background:#f8fafc">
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:6px">
+                            <strong style="color:#334155">🧯 Controlled Enforce Preflight</strong>
+                            <span style="opacity:.6; font-size:11px">read-only · observe-only · preflight (без enforce)</span>
+                        </div>
+                        <!-- observe-only warning -->
+                        <div style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; border-radius:6px; padding:4px 8px; margin-bottom:6px; font-size:11px">
+                            ℹ Controlled Enforce Preflight is observe-only. It does not skip, exclude, enforce, change links, or create findings. (would_apply=false, enforce_enabled=false)
+                        </div>
+                        <div v-if="scPv2CeRespError" style="color:#991b1b; font-size:11px">Отчёт нечитаем: {{ scPv2CeRespError }}</div>
+                        <div v-else-if="scPv2CeNotFound" style="opacity:.6; font-size:11px">
+                            Controlled Enforce Preflight report ещё не построен для этой пары.
+                        </div>
+                        <template v-else-if="scPv2CeAvailable && scPv2CeSummary">
+                            <!-- status chip -->
+                            <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:6px; font-size:11px">
+                                <span :style="{background: scPv2CeStatusMeta(scPv2CeReportStatus).bg,
+                                               color: scPv2CeStatusMeta(scPv2CeReportStatus).fg,
+                                               borderRadius:'10px', padding:'1px 8px', fontWeight:'600'}">
+                                    {{ scPv2CeStatusMeta(scPv2CeReportStatus).icon }}
+                                    {{ scPv2CeReportStatus }}
+                                </span>
+                                <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px">✅ ready_to_skip: {{ scPv2CeSummary.ready_to_skip_items }}</span>
+                                <span style="background:#eef2ff; color:#3730a3; border-radius:10px; padding:1px 8px">eligible: {{ scPv2CeSummary.eligible_items }}</span>
+                                <span style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:1px 8px">🔴 blocked: {{ scPv2CeSummary.blocked_items }}</span>
+                                <span style="background:#fef3c7; color:#92400e; border-radius:10px; padding:1px 8px">fatal: {{ scPv2CeSummary.fatal_blocks }}</span>
+                                <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">would_apply: false</span>
+                                <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">enforce_enabled: false</span>
+                                <span v-if="scPv2CeRuntimeRoot && scPv2CeRuntimeRoot.confirmed"
+                                      style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px">✓ active root confirmed</span>
+                                <span v-else style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:1px 8px">⚠ active root not confirmed</span>
+                            </div>
+                            <!-- fatal blocks -->
+                            <div v-if="scPv2CeFatalBlocks.length"
+                                 style="background:#fff1f2; border:1px solid #fecdd3; border-radius:6px; padding:5px 8px; margin-bottom:6px; font-size:11px">
+                                <div style="color:#9f1239; font-weight:600; margin-bottom:2px">Fatal blocks:</div>
+                                <div v-for="(fb, i) in scPv2CeFatalBlocks" :key="'pv2ce-fb-'+i"
+                                     style="color:#9f1239">- {{ fb }}</div>
+                            </div>
+                            <!-- eligible items (preflight only — НЕ применяются) -->
+                            <div v-if="scPv2CeEligibleItems.length" style="margin-bottom:4px">
+                                <div style="font-size:10px; opacity:.6; margin-bottom:2px">eligible (would_skip — без применения):</div>
+                                <div v-for="(it, i) in scPv2CeEligibleItems" :key="'pv2ce-el-'+i"
+                                     style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:4px 8px; margin-bottom:4px; font-size:11px">
+                                    <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 7px; font-weight:600">eligible</span>
+                                    <span style="opacity:.7"> {{ it.item_id }}</span>
+                                    <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 6px; font-size:10px; margin-left:4px">applied: false</span>
+                                </div>
+                            </div>
+                            <!-- blocked items -->
+                            <div v-for="(it, i) in scPv2CeBlockedItems" :key="'pv2ce-bl-'+i"
+                                 style="background:#fff; border:1px solid #e2e8f0; border-radius:6px; padding:6px 8px; margin-bottom:5px; font-size:11px">
+                                <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-bottom:3px">
+                                    <span :style="{background: scPv2CeBlockMeta(it.source_readiness).bg,
+                                                   color: scPv2CeBlockMeta(it.source_readiness).fg,
+                                                   borderRadius:'10px', padding:'1px 8px', fontWeight:'600'}">
+                                        {{ scPv2CeBlockMeta(it.source_readiness).icon }}
+                                        {{ it.source_readiness || '—' }}
+                                    </span>
+                                    <span v-if="it.reason" style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:1px 6px; font-size:10px">
+                                        🔒 {{ it.reason }}
+                                    </span>
+                                    <span v-if="it.operator_decision" style="background:#f0fdf4; color:#166534; border-radius:10px; padding:1px 6px; font-size:10px">
+                                        operator: {{ it.operator_decision }}
+                                    </span>
+                                    <span style="opacity:.5; font-size:10px">{{ it.item_id }}</span>
+                                </div>
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px">
+                                    <div style="background:#f8fafc; border-radius:4px; padding:3px 6px">
+                                        <div style="opacity:.5; font-size:10px">OLD</div>
+                                        <div style="font-weight:500">{{ it.left_entity_label || it.left_block_id || '—' }}</div>
+                                    </div>
+                                    <div style="background:#f8fafc; border-radius:4px; padding:3px 6px">
+                                        <div style="opacity:.5; font-size:10px">NEW</div>
+                                        <div style="font-weight:500">{{ it.right_entity_label || it.right_block_id || '—' }}</div>
+                                    </div>
+                                </div>
+                                <!-- observe-only: NO action buttons -->
+                            </div>
+                        </template>
+                    </div>
+
 
                     <!-- transport / HTTP errors -->
                     <div v-if="scPv2EaError" style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; padding:6px 10px; margin-bottom:8px">

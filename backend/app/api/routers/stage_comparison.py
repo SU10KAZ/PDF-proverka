@@ -3635,6 +3635,32 @@ async def get_pipeline_v2_skip_readiness_endpoint(
         raise HTTPException(400, str(exc)) from exc
 
 
+@router.get("/pipeline-v2/{session_id}/controlled-enforce-preflight")
+async def get_pipeline_v2_controlled_enforce_preflight_endpoint(
+        session_id: str, pair_id: Optional[str] = None,
+        status: str = "all",
+        limit: int = 100, offset: int = 0):
+    """Read-only observe-only Controlled Enforce Preflight report Pipeline V2.
+
+    Отдаёт готовый controlled_enforce_preflight_report.json. Это НЕ enforce:
+    ничего не пропускает/исключает, не создаёт jobs, не вызывает модели, не
+    пишет на диск. Отсутствие отчёта — {"status":"not_found"} (НИЧЕГО не
+    строится), битый — {"status":"error"}, не 404/500. Фильтр status
+    (blocked|preflight_ok|no_eligible_items|all) + пагинация blocked_items
+    (limit clamp ≤500). Observe-only инварианты форсируются в ответе:
+    auto_apply=false, enforce_allowed=false, would_apply=false,
+    enforce_enabled=false. Raw/debug-поля не отдаются.
+    """
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_payload_mod.discover_controlled_enforce_preflight,
+            session_id, pair_id,
+            status=status,
+            limit=limit, offset=offset)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
 # ─── Pipeline V2: ручные override'ы выравнивания сущностей (write) ──────────
 #
 # Отдельный обратимый artifact entity_mapping_overrides.json. Endpoints НИЧЕГО

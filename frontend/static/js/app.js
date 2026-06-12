@@ -14699,10 +14699,12 @@ const app = createApp({
                     scPv2EaDraft(scPv2EaUnpairedKey(e, 'right'),
                                  (e.manual_mapping && e.manual_mapping.decision) || '');
                 }
-                // подгрузить link validation, exclusion preview и skip readiness для той же пары (read-only)
+                // подгрузить link validation, exclusion preview, skip readiness
+                // и controlled enforce preflight для той же пары (read-only)
                 scPv2LvLoad();
                 scPv2XpLoad();
                 scPv2SrLoad();
+                scPv2CeLoad();
             } catch (e) {
                 if (myReq !== scPv2EaReqSeq) return;
                 scPv2EaResp.value = null;
@@ -14730,6 +14732,7 @@ const app = createApp({
             scPv2LvReset();
             scPv2XpReset();
             scPv2SrReset();
+            scPv2CeReset();
         }
         watch(() => (scSession.value && scSession.value.id) || '', scPv2EaReset);
         watch(() => (scActivePair.value && scActivePair.value.id) || '', scPv2EaReset);
@@ -14741,6 +14744,7 @@ const app = createApp({
             scPv2LvReset();
             scPv2XpReset();
             scPv2SrReset();
+            scPv2CeReset();
         });
         // Read-only jump: карточка выравнивания сущностей → block link preview.
         // Переиспользует существующий мост (scPv2OpenBlockLinkFromGrounding):
@@ -14990,6 +14994,98 @@ const app = createApp({
             scPv2SrResp.value = null;
             scPv2SrError.value = '';
             scPv2SrLoading.value = false;
+        }
+
+        // ── Controlled Enforce Preflight (read-only, observe-only) ───────────
+        // ТОЛЬКО чтение GET .../controlled-enforce-preflight. Это НЕ enforce:
+        // НЕ пропускает/исключает, НЕ применяет, НЕ запускает модели/jobs,
+        // НЕ создаёт замечаний, НЕ меняет block links. Observe / preflight-only.
+
+        const scPv2CeResp = ref(null);          // detail {status, summary, …}
+        const scPv2CeLoading = ref(false);
+        const scPv2CeError = ref('');
+        let scPv2CeReqSeq = 0;
+
+        const SC_PV2_CE_STATUS_META = {
+            blocked:          { icon: '🔴', bg: '#fee2e2', fg: '#991b1b', label: 'enforce заблокирован' },
+            preflight_ok:     { icon: '🟢', bg: '#dcfce7', fg: '#166534', label: 'preflight ok (не применяется)' },
+            no_eligible_items:{ icon: '🟡', bg: '#fef9c3', fg: '#854d0e', label: 'нет eligible' },
+        };
+        const SC_PV2_CE_BLOCK_META = {
+            blocked:      { icon: '🔴', bg: '#fee2e2', fg: '#991b1b', label: 'заблокирован' },
+            needs_review: { icon: '🟡', bg: '#fef9c3', fg: '#854d0e', label: 'нужна проверка' },
+            keep:         { icon: '🟢', bg: '#f0fdf4', fg: '#166534', label: 'оставить' },
+            ready_to_skip:{ icon: '✅', bg: '#dcfce7', fg: '#166534', label: 'к пропуску' },
+        };
+
+        const scPv2CeSummary = computed(() =>
+            (scPv2CeResp.value && scPv2CeResp.value.summary) || null);
+        const scPv2CeGuards = computed(() =>
+            (scPv2CeResp.value && scPv2CeResp.value.global_guards) || null);
+        const scPv2CeRuntimeRoot = computed(() =>
+            (scPv2CeResp.value && scPv2CeResp.value.runtime_root) || null);
+        const scPv2CeFatalBlocks = computed(() =>
+            (scPv2CeResp.value && scPv2CeResp.value.fatal_blocks) || []);
+        const scPv2CeBlockedItems = computed(() =>
+            (scPv2CeResp.value && scPv2CeResp.value.blocked_items) || []);
+        const scPv2CeEligibleItems = computed(() =>
+            (scPv2CeResp.value && scPv2CeResp.value.eligible_items) || []);
+        const scPv2CeReportStatus = computed(() =>
+            (scPv2CeResp.value && scPv2CeResp.value.report_status) || '');
+        const scPv2CeAvailable = computed(() =>
+            !!scPv2CeResp.value && scPv2CeResp.value.status === 'ok'
+            && scPv2CeResp.value.available);
+        const scPv2CeNotFound = computed(() =>
+            !!scPv2CeResp.value && scPv2CeResp.value.status === 'not_found');
+        const scPv2CeRespError = computed(() =>
+            (scPv2CeResp.value && scPv2CeResp.value.status === 'error')
+                ? ((scPv2CeResp.value.warnings || []).join('; ')
+                   || scPv2CeResp.value.message || 'error')
+                : '');
+        function scPv2CeStatusMeta(status) {
+            return SC_PV2_CE_STATUS_META[status]
+                || { icon: '⚪', bg: '#f3f4f6', fg: '#374151', label: status || '—' };
+        }
+        function scPv2CeBlockMeta(status) {
+            return SC_PV2_CE_BLOCK_META[status]
+                || { icon: '⚪', bg: '#f3f4f6', fg: '#374151', label: status || '—' };
+        }
+        async function scPv2CeLoad() {
+            const sid = scSession.value && scSession.value.id;
+            const pid = scPv2EaEffectivePairId();
+            if (!sid || !pid) return;
+            const myReq = ++scPv2CeReqSeq;
+            scPv2CeLoading.value = true;
+            scPv2CeError.value = '';
+            const url = '/api/stage-comparison/pipeline-v2/'
+                + encodeURIComponent(sid)
+                + '/controlled-enforce-preflight?pair_id='
+                + encodeURIComponent(pid) + '&limit=200';
+            try {
+                const r = await fetch(url);
+                if (myReq !== scPv2CeReqSeq) return;
+                if (r.status === 401 || r.status === 403) {
+                    scPv2CeResp.value = null;
+                    scPv2CeError.value = 'Доступ запрещён (' + r.status + ').';
+                    return;
+                }
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const j = await r.json();
+                if (myReq !== scPv2CeReqSeq) return;
+                scPv2CeResp.value = j;
+            } catch (e) {
+                if (myReq !== scPv2CeReqSeq) return;
+                scPv2CeResp.value = null;
+                scPv2CeError.value = String((e && e.message) || e);
+            } finally {
+                if (myReq === scPv2CeReqSeq) scPv2CeLoading.value = false;
+            }
+        }
+        function scPv2CeReset() {
+            scPv2CeReqSeq++;
+            scPv2CeResp.value = null;
+            scPv2CeError.value = '';
+            scPv2CeLoading.value = false;
         }
 
         // ── Operator review write-layer для Exclusion Preview v2 ─────────────
@@ -15580,6 +15676,13 @@ const app = createApp({
             scPv2SrSummary, scPv2SrItems, scPv2SrAvailable, scPv2SrNotFound, scPv2SrRespError,
             scPv2SrReadinessMeta, scPv2SrConfPct, scPv2SrLoad, scPv2SrReset,
             SC_PV2_SR_READINESS_META,
+            // Pipeline V2 Controlled Enforce Preflight (read-only / observe-only)
+            scPv2CeResp, scPv2CeLoading, scPv2CeError,
+            scPv2CeSummary, scPv2CeGuards, scPv2CeRuntimeRoot,
+            scPv2CeFatalBlocks, scPv2CeBlockedItems, scPv2CeEligibleItems,
+            scPv2CeReportStatus, scPv2CeAvailable, scPv2CeNotFound, scPv2CeRespError,
+            scPv2CeStatusMeta, scPv2CeBlockMeta, scPv2CeLoad, scPv2CeReset,
+            SC_PV2_CE_STATUS_META, SC_PV2_CE_BLOCK_META,
             // Pipeline V2 Manual Entity Mapping (write-слой)
             SC_PV2_EA_DECISIONS, scPv2EaDrafts, scPv2EaSaving, scPv2EaSaveErr,
             scPv2EaSaveHint, scPv2EaPairKey, scPv2EaUnpairedKey, scPv2EaDraft,

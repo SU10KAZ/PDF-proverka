@@ -1027,6 +1027,146 @@ def discover_skip_readiness(
             warnings=[f"{type(exc).__name__}: {exc}"])
 
 
+CONTROLLED_ENFORCE_PREFLIGHT_FILENAME = "controlled_enforce_preflight_report.json"
+CE_NOT_FOUND_MESSAGE = "Controlled enforce preflight report not found for this pair."
+_CE_STATUS_VALUES = frozenset({"blocked", "preflight_ok", "no_eligible_items"})
+_CE_REPORT_KIND = "stage_comparison_pipeline_v2_controlled_enforce_preflight"
+
+
+def _ce_detail_envelope(status: str, *, session_id: str,
+                        pair_id: Optional[str], message: str,
+                        warnings: Optional[list[str]] = None) -> dict:
+    """not_found/error ответ controlled-enforce-preflight endpoint'а."""
+    return {
+        "version": 1, "kind": _CE_REPORT_KIND, "status": status,
+        "available": False, "session_id": session_id, "pair_id": pair_id,
+        "source": None, "summary": {}, "global_guards": {},
+        "runtime_root": {}, "fatal_blocks": [],
+        "eligible_items": [], "blocked_items": [],
+        "total_count": 0, "filtered_count": 0,
+        # HARD INVARIANTS
+        "would_apply": False, "enforce_enabled": False,
+        "auto_apply": False, "enforce_allowed": False,
+        "message": message, "warnings": warnings or [],
+    }
+
+
+def discover_controlled_enforce_preflight(
+        session_id: str, pair_id: Optional[str] = None, *,
+        status: str = "all",
+        limit: int = 100, offset: int = 0) -> dict:
+    """Найти controlled_enforce_preflight_report для пары (read-only, fail-soft).
+
+    Статусы ответа: ``ok`` (готовый отчёт), ``not_found`` (отчёта нет — НИЧЕГО
+    не строится и не запускается), ``error`` (битый JSON / неверный kind).
+    Фильтр ``status`` (по статусу отчёта) и пагинация (``limit`` clamp ≤500)
+    применяются к ``blocked_items``; ``eligible_items`` отдаётся целиком (их
+    обычно мало, и они важны для observe). НИЧЕГО не пишет, не создаёт jobs, не
+    вызывает модели. Mark-only / observe-only инварианты
+    (``auto_apply=False``, ``enforce_allowed=False``, ``would_apply=False``,
+    ``enforce_enabled=False``) форсируются в ответе. ``ValueError`` — только на
+    невалидный id.
+    """
+    if pair_id and _safe_id(pair_id) != pair_id:
+        raise ValueError(f"invalid pair_id: {pair_id!r}")
+    art_dir = pipeline_v2_artifacts_dir(session_id, pair_id)
+    try:
+        report, err = _read_json(art_dir / CONTROLLED_ENFORCE_PREFLIGHT_FILENAME)
+        if err:
+            return _ce_detail_envelope(
+                "error", session_id=session_id, pair_id=pair_id,
+                message="Controlled enforce preflight report could not be read.",
+                warnings=[err])
+        if report is None:
+            return _ce_detail_envelope(
+                "not_found", session_id=session_id, pair_id=pair_id,
+                message=CE_NOT_FOUND_MESSAGE)
+        if (not isinstance(report, dict)
+                or report.get("kind") != _CE_REPORT_KIND):
+            return _ce_detail_envelope(
+                "error", session_id=session_id, pair_id=pair_id,
+                message="Controlled enforce preflight report is not a valid report.",
+                warnings=[f"{CONTROLLED_ENFORCE_PREFLIGHT_FILENAME}: unexpected kind "
+                          f"{report.get('kind') if isinstance(report, dict) else type(report).__name__!r}"])
+
+        # optional report-status filter (по статусу всего отчёта, не item'а)
+        report_status = report.get("status")
+        if status != "all":
+            if status not in _CE_STATUS_VALUES:
+                return _ce_detail_envelope(
+                    "error", session_id=session_id, pair_id=pair_id,
+                    message=f"Invalid status filter: {status!r}")
+            if report_status != status:
+                # отчёт есть, но не подходит под фильтр → пустой ok-ответ
+                return {
+                    "version": 1, "kind": _CE_REPORT_KIND, "status": "ok",
+                    "available": True, "session_id": session_id, "pair_id": pair_id,
+                    "source": "ready_report", "report_status": report_status,
+                    "filter_status": status, "filtered_out": True,
+                    "summary": dict(report.get("summary") or {}),
+                    "global_guards": dict(report.get("global_guards") or {}),
+                    "runtime_root": dict(report.get("runtime_root") or {}),
+                    "fatal_blocks": list(report.get("fatal_blocks") or []),
+                    "eligible_items": [], "blocked_items": [],
+                    "total_count": len(report.get("blocked_items") or []),
+                    "filtered_count": 0, "limit": limit, "offset": offset,
+                    "would_apply": False, "enforce_enabled": False,
+                    "auto_apply": False, "enforce_allowed": False,
+                    "warnings": [],
+                }
+
+        blocked_items = list(report.get("blocked_items") or [])
+        eligible_items = list(report.get("eligible_items") or [])
+        total_count = len(blocked_items)
+
+        # clamp + paginate blocked_items
+        limit = min(max(0, limit), 500)
+        page_blocked = blocked_items[offset:offset + limit]
+
+        # force observe-only flags + strip raw/debug from every returned item
+        def _scrub(it: Any) -> Any:
+            if not isinstance(it, dict):
+                return it
+            it["auto_apply"] = False
+            it["enforce_allowed"] = False
+            it["would_apply"] = False
+            for key in _XP_RAW_STRIP_KEYS:
+                it.pop(key, None)
+            return it
+
+        page_blocked = [_scrub(it) for it in page_blocked]
+        eligible_items = [_scrub(it) for it in eligible_items]
+
+        detail: dict[str, Any] = {
+            "version": 1, "kind": _CE_REPORT_KIND, "status": "ok",
+            "available": True, "session_id": session_id, "pair_id": pair_id,
+            "source": "ready_report", "report_status": report_status,
+            "summary": dict(report.get("summary") or {}),
+            "global_guards": dict(report.get("global_guards") or {}),
+            "runtime_root": dict(report.get("runtime_root") or {}),
+            "fatal_blocks": list(report.get("fatal_blocks") or []),
+            "eligible_items": eligible_items,
+            "blocked_items": page_blocked,
+            "total_count": total_count,
+            "filtered_count": len(page_blocked),
+            "limit": limit, "offset": offset,
+            # HARD INVARIANTS — observe-only
+            "would_apply": False, "enforce_enabled": False,
+            "auto_apply": False, "enforce_allowed": False,
+            "warnings": [],
+        }
+        san_warns: list[str] = []
+        detail = _sanitize_payload(detail, san_warns) or detail
+        if san_warns:
+            detail["warnings"] = list(detail.get("warnings") or []) + san_warns
+        return detail
+    except Exception as exc:  # noqa: BLE001 — endpoint не должен дать 500
+        return _ce_detail_envelope(
+            "error", session_id=session_id, pair_id=pair_id,
+            message="Controlled enforce preflight report could not be read.",
+            warnings=[f"{type(exc).__name__}: {exc}"])
+
+
 __all__ = [
     "PIPELINE_V2_DIRNAME",
     "UI_PAYLOAD_FILENAME",
@@ -1044,6 +1184,7 @@ __all__ = [
     "EXCLUSION_PREVIEW_FILENAME",
     "EXCLUSION_REVIEW_OVERRIDES_FILENAME",
     "SKIP_READINESS_FILENAME",
+    "CONTROLLED_ENFORCE_PREFLIGHT_FILENAME",
     "discover_pipeline_v2_payload",
     "discover_block_link_preview",
     "discover_graphic_vision_grounding_detail",
@@ -1051,6 +1192,7 @@ __all__ = [
     "discover_link_validation",
     "discover_exclusion_preview",
     "discover_skip_readiness",
+    "discover_controlled_enforce_preflight",
     "pipeline_v2_artifacts_dir",
     "list_pairs_with_artifacts",
     "resolve_session_dir",
