@@ -261,3 +261,15 @@ skip_scope MVP, build_from_dir, write, empty items.
 - [pipeline_v2_ui_payload.py](../backend/app/services/stage_comparison/pipeline_v2_ui_payload.py) — UI-секция `skip_readiness`
 - [pipeline_v2_exclusion_preview.py](../backend/app/services/stage_comparison/pipeline_v2_exclusion_preview.py) — входной слой (обязателен)
 - [pipeline_v2_exclusion_review_overrides.py](../backend/app/services/stage_comparison/pipeline_v2_exclusion_review_overrides.py) — operator decisions (опционально)
+
+## Runtime artifact roots (guardrail)
+
+`skip_readiness_report.json` пишется в дерево пары `comparison/sessions/<sid>/
+pairs/<pid>/pipeline_v2/`. Production backend читает это дерево из worktree,
+**из которого запущен uvicorn** (в production — deploy worktree), а не из main
+worktree. В задаче skip-readiness отчёт пришлось зеркалировать в deploy root,
+иначе endpoint отдавал `not_found`. Перед runtime-write обязательно определить
+активный root (`GET /api/info` → `base_dir`), сделать backup, проверить
+protected hashes и сделать endpoint smoke. Полный checklist и диагностика
+рассинхрона —
+[stage_comparison_pipeline_v2_runtime_artifact_roots.md](stage_comparison_pipeline_v2_runtime_artifact_roots.md).

@@ -226,3 +226,15 @@ enabled-writes, ui_payload, отсутствие импортов/вызовов
 * [pipeline_v2_link_validation.py](../backend/app/services/stage_comparison/pipeline_v2_link_validation.py) — главный входной сигнал
 * [stage_comparison_pipeline_v2_dry_run.md](stage_comparison_pipeline_v2_dry_run.md)
 * [stage_comparison_pipeline_v2_ui_contract.md](stage_comparison_pipeline_v2_ui_contract.md)
+* [stage_comparison_pipeline_v2_runtime_artifact_roots.md](stage_comparison_pipeline_v2_runtime_artifact_roots.md)
+
+## Runtime artifact roots (guardrail)
+
+`exclusion_preview_v2_report.json` и `exclusion_review_overrides.json` —
+защищённые runtime-артефакты пары. Production backend читает их из worktree,
+**из которого запущен uvicorn** (в production — deploy worktree), а не из main
+worktree. Перед любой runtime-write задачей, затрагивающей exclusion preview /
+review overrides, определи активный root (`GET /api/info` → `base_dir`), сними
+их sha256 ДО и ПОСЛЕ (должны совпасть, если запись их не трогает) и не пиши в
+неактивный root без явного зафиксированного зеркалирования. Полный checklist —
+[stage_comparison_pipeline_v2_runtime_artifact_roots.md](stage_comparison_pipeline_v2_runtime_artifact_roots.md).

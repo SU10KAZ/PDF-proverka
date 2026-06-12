@@ -345,3 +345,13 @@ summary получает секцию `exclusion_preview_v2`. Default **OFF**
 запускает, входы не меняет, enforce не делает (`auto_apply=false`,
 `enforce_allowed=false`, `auto_enforce_enabled=false`). Подробно —
 [stage_comparison_pipeline_v2_exclusion_preview.md](stage_comparison_pipeline_v2_exclusion_preview.md).
+
+## Runtime artifact roots (guardrail)
+
+Перед любой runtime-write задачей (запись dry-run артефактов, controlled
+enforce/skip) сверься с активным `comparison/` root: production backend читает
+артефакты из того worktree, **из которого запущен uvicorn** (в production —
+deploy worktree), а не обязательно из main worktree. Mandatory checklist (active
+root / backup / protected hashes / endpoint smoke / no inactive-root writes) и
+диагностика рассинхрона —
+[stage_comparison_pipeline_v2_runtime_artifact_roots.md](stage_comparison_pipeline_v2_runtime_artifact_roots.md).
