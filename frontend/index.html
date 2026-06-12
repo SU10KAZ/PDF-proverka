@@ -5893,6 +5893,20 @@
                                 <span v-if="scPv2XpSummary.manual_vision_conflict"
                                       style="background:#fde68a; color:#92400e; border-radius:10px; padding:1px 8px">⚠ conflict: {{ scPv2XpSummary.manual_vision_conflict }}</span>
                                 <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">enforce: off</span>
+                                <!-- operator review summary -->
+                                <template v-if="scPv2XpSummary.operator_review && scPv2XpSummary.operator_review.total">
+                                    <span style="background:#f0fdf4; color:#166534; border-radius:10px; padding:1px 8px">
+                                        ✓ reviewed: {{ scPv2XpSummary.operator_review.total }}
+                                    </span>
+                                    <span v-if="scPv2XpSummary.operator_review.approve_exclude"
+                                          style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px">
+                                        ✅ approve: {{ scPv2XpSummary.operator_review.approve_exclude }}
+                                    </span>
+                                    <span v-if="scPv2XpSummary.operator_review.reject_exclude"
+                                          style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:1px 8px">
+                                        🚫 reject: {{ scPv2XpSummary.operator_review.reject_exclude }}
+                                    </span>
+                                </template>
                             </div>
                             <!-- item cards -->
                             <div v-for="(it, i) in scPv2XpItems" :key="'pv2xp-'+i"
@@ -5934,6 +5948,45 @@
                                 <div v-if="it.recommended_action"
                                      style="display:inline-block; background:#eef2ff; color:#3730a3; border-radius:6px; padding:1px 7px">
                                     → {{ it.recommended_action }}
+                                </div>
+                                <!-- operator review badge (already saved) -->
+                                <div v-if="it.operator_review && it.operator_review.status === 'reviewed'"
+                                     style="margin-top:4px; display:flex; gap:5px; align-items:center; flex-wrap:wrap">
+                                    <span :style="scPv2XrDecisionMeta(it.operator_review.operator_decision).style"
+                                          style="border-radius:8px; padding:1px 8px; font-size:10px; font-weight:600">
+                                        ✓ {{ scPv2XrDecisionMeta(it.operator_review.operator_decision).label }}
+                                    </span>
+                                    <span v-if="it.operator_review.comment" style="opacity:.6; font-size:10px">
+                                        "{{ it.operator_review.comment.slice(0,60) }}{{ it.operator_review.comment.length > 60 ? '…' : '' }}"
+                                    </span>
+                                    <span style="opacity:.4; font-size:10px">{{ it.operator_review.updated_at ? it.operator_review.updated_at.slice(0,16) : '' }}</span>
+                                    <button @click="scPv2XrDeleteDecision(it)"
+                                            :disabled="scPv2XrSaving[it.item_id]"
+                                            style="background:none; border:none; cursor:pointer; color:#ef4444; font-size:10px; padding:0 3px" title="Удалить решение">✕</button>
+                                </div>
+                                <!-- operator review inline form -->
+                                <div style="margin-top:4px; display:flex; gap:4px; align-items:flex-start; flex-wrap:wrap">
+                                    <select v-model="scPv2XrGetDraft(it).decision"
+                                            style="font-size:11px; border:1px solid #cbd5e1; border-radius:4px; padding:1px 4px; background:#fff">
+                                        <option value="">— решение оператора —</option>
+                                        <option value="approve_exclude">✅ approve_exclude</option>
+                                        <option value="reject_exclude">🚫 reject_exclude</option>
+                                        <option value="needs_review">🔎 needs_review</option>
+                                        <option value="keep">✓ keep</option>
+                                        <option value="run_link_validation">🔗 run_link_validation</option>
+                                    </select>
+                                    <input v-model="scPv2XrGetDraft(it).comment"
+                                           placeholder="комментарий (опц.)"
+                                           style="font-size:11px; border:1px solid #cbd5e1; border-radius:4px; padding:1px 5px; width:160px; flex:1; min-width:80px; max-width:240px" />
+                                    <button @click="scPv2XrSaveDecision(it)"
+                                            :disabled="!scPv2XrGetDraft(it).decision || scPv2XrSaving[it.item_id]"
+                                            style="font-size:11px; padding:1px 8px; border-radius:4px; border:1px solid #3b82f6; background:#eff6ff; color:#1d4ed8; cursor:pointer; white-space:nowrap">
+                                        {{ scPv2XrSaving[it.item_id] ? '…' : '💾 Сохранить' }}
+                                    </button>
+                                </div>
+                                <div v-if="scPv2XrSaveErr[it.item_id]"
+                                     style="color:#991b1b; font-size:10px; margin-top:2px">
+                                    {{ scPv2XrSaveErr[it.item_id] }}
                                 </div>
                             </div>
                         </template>

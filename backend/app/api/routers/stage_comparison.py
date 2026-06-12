@@ -45,6 +45,7 @@ from backend.app.services.stage_comparison import md_enrichment_jobs as md_enric
 from backend.app.services.stage_comparison import large_sheet_enrichment as large_sheet_mod
 from backend.app.services.stage_comparison import pipeline_v2_payload_service as pipeline_v2_payload_mod
 from backend.app.services.stage_comparison import pipeline_v2_entity_mapping_overrides as entity_mapping_overrides_mod
+from backend.app.services.stage_comparison import pipeline_v2_exclusion_review_overrides as excl_review_mod
 from backend.app.services.stage_comparison import large_sheet_enrichment_jobs as large_sheet_jobs_mod
 from backend.app.services.stage_comparison import auto_match_jobs as auto_match_jobs_mod
 from backend.app.services.stage_comparison import visual_block_equivalence_jobs as vbe_jobs_mod
@@ -200,6 +201,24 @@ class EntityMappingItem(BaseModel):
 
 class EntityMappingUpsertRequest(BaseModel):
     mapping: EntityMappingItem
+    created_by: Optional[str] = None
+
+
+class ExclusionReviewDecisionItem(BaseModel):
+    """Одно решение оператора по exclusion preview item (mark-only)."""
+    exclusion_item_id: Optional[str] = None
+    left_block_id: Optional[str] = None
+    right_block_id: Optional[str] = None
+    left_entity_label: Optional[str] = None
+    right_entity_label: Optional[str] = None
+    preview_classification: Optional[str] = None
+    preview_severity: Optional[str] = None
+    operator_decision: str
+    comment: Optional[str] = None
+
+
+class ExclusionReviewUpsertRequest(BaseModel):
+    decision: ExclusionReviewDecisionItem
     created_by: Optional[str] = None
 
 
@@ -3646,5 +3665,71 @@ async def delete_pipeline_v2_entity_mapping_overrides_endpoint(
             entity_mapping_overrides_mod.delete_entity_mapping,
             session_id, pair_id, mapping_id, created_by=created_by)
     except entity_mapping_overrides_mod.EntityMappingValidationError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    return {"ok": True, **result}
+
+
+# ─── Pipeline V2: решения оператора по Exclusion Preview v2 (write) ──────────
+#
+# Отдельный обратимый artifact exclusion_review_overrides.json. Endpoints НИЧЕГО
+# не запускают (ни Qwen/Opus/Claude/jobs), не меняют block links, не меняют
+# exclusion_preview_v2_report.json, не создают замечаний. Пишут ТОЛЬКО overrides
+# целевой пары. mark-only layer: решение сохраняется для будущего enforce.
+
+
+@router.get("/pipeline-v2/{session_id}/exclusion-review-overrides")
+async def get_pipeline_v2_exclusion_review_overrides_endpoint(
+        session_id: str, pair_id: str):
+    """Read-only текущие решения оператора по Exclusion Preview v2.
+
+    Нет файла → пустой ok-результат (decisions=[]). Битый файл → status=error,
+    не 500. НИЧЕГО не запускает/не пишет. mark-only: decisions не применяются
+    автоматически.
+    """
+    try:
+        data = await run_in_threadpool(
+            excl_review_mod.read_exclusion_review_overrides,
+            session_id, pair_id)
+    except excl_review_mod.ExclusionReviewValidationError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    data["summary"] = excl_review_mod.summarize_decisions(data)
+    return data
+
+
+@router.put("/pipeline-v2/{session_id}/exclusion-review-overrides")
+async def put_pipeline_v2_exclusion_review_overrides_endpoint(
+        session_id: str, req: ExclusionReviewUpsertRequest, pair_id: str):
+    """Создать/обновить одно решение оператора (upsert, идемпотентно).
+
+    Пишет ТОЛЬКО exclusion_review_overrides.json целевой пары. НЕ запускает
+    Qwen/Opus/Claude, НЕ применяет block links, НЕ создаёт замечаний,
+    НЕ продолжает очередь, НЕ меняет exclusion_preview_v2_report.json.
+    mark-only: решение будет учтено в будущем контролируемом enforce/skip,
+    который здесь НЕ реализован. Возвращает {ok, decision, created, summary}.
+    """
+    try:
+        result = await run_in_threadpool(
+            excl_review_mod.upsert_exclusion_review_decision,
+            session_id, pair_id, req.decision.model_dump(),
+            created_by=req.created_by)
+    except excl_review_mod.ExclusionReviewValidationError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    return {"ok": True, **result}
+
+
+@router.delete("/pipeline-v2/{session_id}/exclusion-review-overrides/{decision_id}")
+async def delete_pipeline_v2_exclusion_review_overrides_endpoint(
+        session_id: str, decision_id: str, pair_id: str,
+        created_by: Optional[str] = None):
+    """Удалить одно решение оператора по decision_id (обратимо).
+
+    Возвращает {ok, deleted, summary}. Несуществующий decision_id → deleted=false,
+    не 404. НЕ запускает модели/jobs.
+    """
+    try:
+        result = await run_in_threadpool(
+            excl_review_mod.delete_exclusion_review_decision,
+            session_id, pair_id, decision_id, created_by=created_by)
+    except excl_review_mod.ExclusionReviewValidationError as exc:
         raise HTTPException(400, str(exc)) from exc
     return {"ok": True, **result}

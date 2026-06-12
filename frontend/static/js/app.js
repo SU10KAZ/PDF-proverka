@@ -14914,6 +14914,123 @@ const app = createApp({
             scPv2XpLoading.value = false;
         }
 
+        // ── Operator review write-layer для Exclusion Preview v2 ─────────────
+        // PUT .../exclusion-review-overrides — отдельный обратимый artifact.
+        // mark-only: НЕ применяет исключения, НЕ запускает jobs/Qwen/Opus/Claude,
+        // НЕ меняет exclusion_preview_v2_report.json, НЕ создаёт замечаний.
+
+        const scPv2XrDrafts = reactive({});       // item_id → { decision, comment }
+        const scPv2XrSaving = reactive({});        // item_id → bool
+        const scPv2XrSaveErr = reactive({});       // item_id → string
+
+        const SC_PV2_XR_DECISION_META = {
+            approve_exclude:    { label: 'approve_exclude', style: 'background:#dcfce7; color:#166534' },
+            reject_exclude:     { label: 'reject_exclude',  style: 'background:#fee2e2; color:#991b1b' },
+            needs_review:       { label: 'needs_review',    style: 'background:#fef9c3; color:#854d0e' },
+            keep:               { label: 'keep',            style: 'background:#f0fdf4; color:#15803d' },
+            run_link_validation:{ label: 'run_link_valid.', style: 'background:#ede9fe; color:#4c1d95' },
+        };
+
+        function scPv2XrDecisionMeta(decision) {
+            return SC_PV2_XR_DECISION_META[decision]
+                || { label: decision || '—', style: 'background:#f3f4f6; color:#374151' };
+        }
+
+        function scPv2XrGetDraft(it) {
+            const key = it && (it.item_id || it.left_block_id || String(it._index || ''));
+            if (!key) return { decision: '', comment: '' };
+            if (!scPv2XrDrafts[key]) {
+                // pre-fill from existing decision if present
+                const rev = it.operator_review;
+                scPv2XrDrafts[key] = reactive({
+                    decision: (rev && rev.status === 'reviewed' && rev.operator_decision) || '',
+                    comment:  (rev && rev.comment) || '',
+                });
+            }
+            return scPv2XrDrafts[key];
+        }
+
+        async function scPv2XrSaveDecision(it) {
+            const key = it && (it.item_id || it.left_block_id || '');
+            if (!key) return;
+            const draft = scPv2XrGetDraft(it);
+            if (!draft.decision) return;
+            const sid = scSession.value && scSession.value.id;
+            const pid = scPv2EaEffectivePairId();
+            if (!sid || !pid) return;
+            scPv2XrSaving[key] = true;
+            scPv2XrSaveErr[key] = '';
+            try {
+                const body = {
+                    decision: {
+                        exclusion_item_id:   it.item_id || null,
+                        left_block_id:       it.left_block_id || null,
+                        right_block_id:      it.right_block_id || null,
+                        left_entity_label:   it.left_entity_label || null,
+                        right_entity_label:  it.right_entity_label || null,
+                        preview_classification: it.classification || null,
+                        preview_severity:    it.severity || null,
+                        operator_decision:   draft.decision,
+                        comment:             draft.comment || null,
+                    },
+                    created_by: null,
+                };
+                const r = await fetch(
+                    '/api/stage-comparison/pipeline-v2/'
+                    + encodeURIComponent(sid)
+                    + '/exclusion-review-overrides?pair_id='
+                    + encodeURIComponent(pid),
+                    { method: 'PUT',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(body) });
+                if (!r.ok) {
+                    const t = await r.text().catch(() => '');
+                    throw new Error('HTTP ' + r.status + ': ' + t);
+                }
+                // reload preview to get fresh operator_review in items
+                await scPv2XpLoad();
+            } catch (e) {
+                scPv2XrSaveErr[key] = String((e && e.message) || e);
+            } finally {
+                scPv2XrSaving[key] = false;
+            }
+        }
+
+        async function scPv2XrDeleteDecision(it) {
+            const rev = it && it.operator_review;
+            if (!rev || !rev.decision_id) return;
+            const sid = scSession.value && scSession.value.id;
+            const pid = scPv2EaEffectivePairId();
+            if (!sid || !pid) return;
+            const key = it.item_id || it.left_block_id || '';
+            scPv2XrSaving[key] = true;
+            scPv2XrSaveErr[key] = '';
+            try {
+                const r = await fetch(
+                    '/api/stage-comparison/pipeline-v2/'
+                    + encodeURIComponent(sid)
+                    + '/exclusion-review-overrides/'
+                    + encodeURIComponent(rev.decision_id)
+                    + '?pair_id=' + encodeURIComponent(pid),
+                    { method: 'DELETE' });
+                if (!r.ok) {
+                    const t = await r.text().catch(() => '');
+                    throw new Error('HTTP ' + r.status + ': ' + t);
+                }
+                // clear local draft and reload
+                const draftKey = it.item_id || it.left_block_id || '';
+                if (scPv2XrDrafts[draftKey]) {
+                    scPv2XrDrafts[draftKey].decision = '';
+                    scPv2XrDrafts[draftKey].comment = '';
+                }
+                await scPv2XpLoad();
+            } catch (e) {
+                scPv2XrSaveErr[key] = String((e && e.message) || e);
+            } finally {
+                scPv2XrSaving[key] = false;
+            }
+        }
+
         // ── Manual entity mapping (write-слой поверх preview) ─────────────────
         // PUT .../entity-mapping-overrides — отдельный обратимый artifact. НЕ
         // применяет block links, НЕ запускает vision/Qwen/Opus, НЕ создаёт

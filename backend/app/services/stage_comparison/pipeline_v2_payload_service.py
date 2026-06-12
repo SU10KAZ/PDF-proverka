@@ -63,6 +63,7 @@ from backend.app.services.stage_comparison.pipeline_v2_exclusion_preview import 
 )
 from backend.app.services.stage_comparison import (
     pipeline_v2_grounding_detail as _grounding_detail_mod,
+    pipeline_v2_exclusion_review_overrides as _excl_review_mod,
 )
 
 PIPELINE_V2_DIRNAME = "pipeline_v2"
@@ -83,6 +84,7 @@ ENTITY_ALIGNMENT_PREVIEW_FILENAME = "entity_alignment_preview_report.json"
 ENTITY_MAPPING_OVERRIDES_FILENAME = "entity_mapping_overrides.json"
 LINK_VALIDATION_FILENAME = "link_validation_report.json"
 EXCLUSION_PREVIEW_FILENAME = "exclusion_preview_v2_report.json"
+EXCLUSION_REVIEW_OVERRIDES_FILENAME = "exclusion_review_overrides.json"
 
 NOT_FOUND_MESSAGE = "Pipeline V2 artifacts not found for this session."
 BLP_NOT_FOUND_MESSAGE = "Pipeline V2 block link preview artifacts not found."
@@ -869,11 +871,36 @@ def discover_exclusion_preview(
             for key in _XP_RAW_STRIP_KEYS:
                 it.pop(key, None)
 
+        # load operator review overrides (fail-soft) and wire into items
+        operator_summary: dict = {
+            "total": 0,
+            "approve_exclude": 0,
+            "reject_exclude": 0,
+            "needs_review": 0,
+            "keep": 0,
+            "run_link_validation": 0,
+        }
+        try:
+            if session_id and pair_id:
+                ov_data = _excl_review_mod.read_exclusion_review_overrides(
+                    session_id, pair_id)
+                if ov_data.get("status") == "ok":
+                    for it in items:
+                        rev = _excl_review_mod.operator_review_for_item(ov_data, it)
+                        it["operator_review"] = rev
+                    op_sum = _excl_review_mod.summarize_decisions(ov_data)
+                    operator_summary = op_sum
+        except Exception:  # noqa: BLE001 — operator_review is fail-soft
+            pass
+
+        base_summary = dict(ready.get("summary") or {})
+        base_summary["operator_review"] = operator_summary
+
         detail: dict[str, Any] = {
             "version": 1, "kind": EXCLUSION_PREVIEW_KIND, "status": "ok",
             "available": True, "session_id": session_id, "pair_id": pair_id,
             "source": "ready_report",
-            "summary": ready.get("summary") or {},
+            "summary": base_summary,
             "items": items,
             "total_count": total_count,
             "filtered_count": filtered_count,
@@ -907,6 +934,7 @@ __all__ = [
     "ENTITY_ALIGNMENT_PREVIEW_FILENAME",
     "LINK_VALIDATION_FILENAME",
     "EXCLUSION_PREVIEW_FILENAME",
+    "EXCLUSION_REVIEW_OVERRIDES_FILENAME",
     "discover_pipeline_v2_payload",
     "discover_block_link_preview",
     "discover_graphic_vision_grounding_detail",
