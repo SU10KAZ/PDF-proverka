@@ -238,3 +238,13 @@ review overrides, определи активный root (`GET /api/info` → `b
 их sha256 ДО и ПОСЛЕ (должны совпасть, если запись их не трогает) и не пиши в
 неактивный root без явного зафиксированного зеркалирования. Полный checklist —
 [stage_comparison_pipeline_v2_runtime_artifact_roots.md](stage_comparison_pipeline_v2_runtime_artifact_roots.md).
+
+## Controlled enforce preflight (downstream)
+
+`exclusion_preview_v2_report.json` и `exclusion_review_overrides.json` —
+защищённые входы слоя **controlled_enforce_preflight** (он снимает их sha256 в
+protected-hashes baseline и НЕ меняет). Preflight ещё на шаг строже: он не
+позволит enforce, пока exclusion candidate не получит явный operator
+`approve_exclude` и не станет `ready_to_skip`. Это финальный mark-only guard
+перед реальным skip. См.
+[stage_comparison_pipeline_v2_controlled_enforce.md](stage_comparison_pipeline_v2_controlled_enforce.md).

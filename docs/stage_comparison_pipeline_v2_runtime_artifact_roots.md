@@ -128,11 +128,21 @@ Helper-скрипт прогона (read-only, пишет только в `diagn
 * ❌ включать skip/enforce до подтверждённого active root + согласованных
   артефактов в нём.
 
+## Использование в controlled enforce preflight
+
+Runtime-root guard этого аудита переиспользуется слоем
+**controlled_enforce_preflight**: его `detect_active_runtime_root` подтверждает
+active root, и при `runtime_root_unconfirmed` preflight даёт fatal-блок (enforce
+запрещён). Это первая точка, где active-root проверка реально влияет на
+решение о enforce. См.
+[stage_comparison_pipeline_v2_controlled_enforce.md](stage_comparison_pipeline_v2_controlled_enforce.md).
+
 ## Связанные документы
 
 * [stage_comparison_pipeline_v2_dry_run.md](stage_comparison_pipeline_v2_dry_run.md)
 * [stage_comparison_pipeline_v2_skip_readiness.md](stage_comparison_pipeline_v2_skip_readiness.md)
 * [stage_comparison_pipeline_v2_exclusion_preview.md](stage_comparison_pipeline_v2_exclusion_preview.md)
+* [stage_comparison_pipeline_v2_controlled_enforce.md](stage_comparison_pipeline_v2_controlled_enforce.md)
 * [stage_comparison_pipeline_v2_readonly_endpoint.md](stage_comparison_pipeline_v2_readonly_endpoint.md)
 
 ## Тесты

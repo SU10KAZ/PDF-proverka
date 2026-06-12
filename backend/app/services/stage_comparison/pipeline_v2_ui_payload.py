@@ -815,6 +815,24 @@ def build_pipeline_v2_ui_payload(summary: dict,
         if sr.get("error"):
             skip_readiness_section["error"] = str(sr["error"])
 
+    ce = s.get("controlled_enforce_preflight")
+    controlled_enforce_section = None
+    if isinstance(ce, dict) and ce.get("enabled"):
+        ce_status = _clean(ce.get("status")) or "unknown"
+        controlled_enforce_section = {
+            "available": ce_status not in ("disabled", "not_run", "unknown"),
+            "status": ce_status,
+            "ready_to_skip_items": _safe_count(ce.get("ready_to_skip_items")),
+            "eligible_items": _safe_count(ce.get("eligible_items")),
+            "blocked_items": _safe_count(ce.get("blocked_items")),
+            "fatal_blocks": _safe_count(ce.get("fatal_blocks")),
+            # HARD INVARIANTS: всегда False в preflight
+            "would_apply": False,
+            "enforce_enabled": False,
+        }
+        if ce.get("error"):
+            controlled_enforce_section["error"] = str(ce["error"])
+
     # per-delta compact evidence → attach к карточкам дельт (по delta_id).
     # Успешный attach — НЕ warning (не деградирует статус); счётчик кладём
     # в саму grounded_evidence-секцию для прозрачности.
@@ -869,6 +887,8 @@ def build_pipeline_v2_ui_payload(summary: dict,
         payload["exclusion_preview_v2"] = exclusion_preview_section
     if skip_readiness_section is not None:
         payload["skip_readiness"] = skip_readiness_section
+    if controlled_enforce_section is not None:
+        payload["controlled_enforce_preflight"] = controlled_enforce_section
     payload["filters"] = build_ui_filters(payload)
     return payload
 

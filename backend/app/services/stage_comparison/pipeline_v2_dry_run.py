@@ -93,6 +93,11 @@ from backend.app.services.stage_comparison.pipeline_v2_exclusion_preview import 
     build_exclusion_preview_report,
     write_exclusion_preview_report,
 )
+from backend.app.services.stage_comparison.pipeline_v2_controlled_enforce import (
+    build_controlled_enforce_preflight,
+    write_controlled_enforce_preflight_report,
+    snapshot_protected_hashes,
+)
 from backend.app.services.stage_comparison.pipeline_v2_skip_readiness import (
     build_skip_readiness_report,
     write_skip_readiness_report,
@@ -124,6 +129,7 @@ _ARTIFACT_FILENAMES = {
     "delta_explanation": "delta_explanation_report.json",
     "exclusion_preview": "exclusion_preview_v2_report.json",
     "skip_readiness": "skip_readiness_report.json",
+    "controlled_enforce_preflight": "controlled_enforce_preflight_report.json",
     "summary_json": "pipeline_v2_summary.json",
     "summary_md": "pipeline_v2_summary.md",
     "manifest": "pipeline_v2_manifest.json",
@@ -137,6 +143,7 @@ _MANIFEST_ARTIFACT_KEYS = [
     "entity_extraction", "entity_diff", "grounded_evidence", "delta_explanation",
     "exclusion_preview",
     "skip_readiness",
+    "controlled_enforce_preflight",
     "summary_json", "summary_md",
 ]
 
@@ -732,6 +739,28 @@ def _skip_readiness_section(sr_report: Any, sr_enabled: bool,
     return sec
 
 
+def _controlled_enforce_section(ce_report: Any, ce_enabled: bool,
+                                ce_error: Optional[str]) -> dict:
+    s = (ce_report.get("summary") if isinstance(ce_report, dict) else {}) or {}
+    sec = {
+        "enabled": bool(ce_enabled),
+        "status": ("disabled" if not ce_enabled else
+                   "failed" if ce_error else
+                   (ce_report or {}).get("status", "not_run")
+                   if isinstance(ce_report, dict) else "not_run"),
+        "ready_to_skip_items": s.get("ready_to_skip_items", 0),
+        "eligible_items": s.get("eligible_items", 0),
+        "blocked_items": s.get("blocked_items", 0),
+        "fatal_blocks": s.get("fatal_blocks", 0),
+        # HARD INVARIANTS: всегда False в preflight
+        "would_apply": False,
+        "enforce_enabled": False,
+    }
+    if ce_error:
+        sec["error"] = ce_error
+    return sec
+
+
 def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report: Any,
                               entity_report: Any, diff_report: Any, inputs: dict,
                               artifact_paths: dict, warnings: list[str], status: str,
@@ -756,7 +785,9 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
                               xp_report: Any = None, xp_enabled: bool = False,
                               xp_error: Optional[str] = None,
                               sr_report: Any = None, sr_enabled: bool = False,
-                              sr_error: Optional[str] = None) -> dict:
+                              sr_error: Optional[str] = None,
+                              ce_report: Any = None, ce_enabled: bool = False,
+                              ce_error: Optional[str] = None) -> dict:
     """Собрать ``pipeline_v2_summary`` из артефактов этапов 1–4."""
     lm, rm = _summary_of(left_model), _summary_of(right_model)
     bm, em, dm = _summary_of(block_report), _summary_of(entity_report), _summary_of(diff_report)
@@ -819,6 +850,8 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
         "exclusion_preview_v2": _exclusion_preview_section(
             xp_report, xp_enabled, xp_error),
         "skip_readiness_v2": _skip_readiness_section(sr_report, sr_enabled, sr_error),
+        "controlled_enforce_preflight": _controlled_enforce_section(
+            ce_report, ce_enabled, ce_error),
         "graphic_vision": _graphic_vision_section(gv_report, gv_enabled,
                                                   gv_error),
         "graphic_vision_grounding": _graphic_vision_grounding_section(
@@ -1271,6 +1304,13 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     sr_opts = options.get("skip_readiness") or {}
     sr_enabled = sr_opts.get("enabled", False) is True
 
+    # controlled enforce preflight: защитный слой ПЕРЕД реальным skip/enforce.
+    # Default OFF. Читает skip_readiness + overrides + exclusion_preview, делает
+    # preflight-вывод (eligible/blocked/fatal) и runtime-root guard. Ничего НЕ
+    # применяет, никакой enforce, никаких изменений входов pipeline.
+    ce_opts = options.get("controlled_enforce_preflight") or {}
+    ce_enabled = ce_opts.get("enabled", False) is True
+
     # vision grounding: проверка vision-результата по anchor-тексту блока.
     # Включается только если есть graphic_vision (нечего грунтовать иначе);
     # явно отключается graphic_vision_grounding.enabled=false.
@@ -1301,6 +1341,8 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     xp_error: Optional[str] = None
     sr_report = None
     sr_error: Optional[str] = None
+    ce_report = None
+    ce_error: Optional[str] = None
     gv_report = None
     gv_error: Optional[str] = None
     gvg_report = None
@@ -1560,6 +1602,43 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
             except Exception as srexc:  # noqa: BLE001 — слой не критичен
                 sr_error = f"{type(srexc).__name__}: {srexc}"
 
+        # [9] controlled enforce preflight — mark-only, Default OFF. Защитный
+        #     слой ПЕРЕД реальным skip/enforce: читает skip_readiness + overrides
+        #     + exclusion_preview, runtime-root guard, protected-hashes baseline,
+        #     и выводит eligible/blocked/fatal. НИЧЕГО не применяет (enabled=false,
+        #     mode=preflight_only, would_apply=false). Запускается после
+        #     skip_readiness.
+        if ce_enabled:
+            try:
+                ce_overrides: Optional[dict] = None
+                ov_path_ce = out_dir / "exclusion_review_overrides.json"
+                if ov_path_ce.is_file():
+                    try:
+                        ce_overrides = json.loads(
+                            ov_path_ce.read_text(encoding="utf-8"))
+                    except Exception:  # noqa: BLE001
+                        ce_overrides = None
+                # active runtime root + confirmation подаются опционально через
+                # options (offline-resolve), иначе остаются unconfirmed (fatal).
+                ce_active_root = ce_opts.get("active_runtime_root")
+                ce_root_confirmed = ce_opts.get("runtime_root_confirmed")
+                ce_root_source = ce_opts.get("runtime_root_source")
+                ce_protected = snapshot_protected_hashes(out_dir)
+                ce_report = build_controlled_enforce_preflight(
+                    session_id=str(out_dir.name), pair_id=None,
+                    skip_readiness_report=sr_report,
+                    overrides_report=ce_overrides,
+                    exclusion_preview_report=xp_report,
+                    active_runtime_root=ce_active_root,
+                    runtime_root_confirmed=ce_root_confirmed,
+                    runtime_root_source=ce_root_source,
+                    protected_hashes=ce_protected,
+                    protected_hashes_match=True)
+                write_controlled_enforce_preflight_report(
+                    paths["controlled_enforce_preflight"], ce_report)
+            except Exception as ceexc:  # noqa: BLE001 — слой не критичен
+                ce_error = f"{type(ceexc).__name__}: {ceexc}"
+
     except Exception as exc:  # fail-soft: фиксируем, не роняем процесс
         status = "failed"
         error = f"{type(exc).__name__}: {exc}"
@@ -1650,6 +1729,11 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
             warnings.append(f"skip_readiness: {w}")
     if sr_error:
         warnings.append(f"skip_readiness: {sr_error}")
+    if isinstance(ce_report, dict):
+        for w in ce_report.get("warnings", []) or []:
+            warnings.append(f"controlled_enforce_preflight: {w}")
+    if ce_error:
+        warnings.append(f"controlled_enforce_preflight: {ce_error}")
 
     if status != "failed" and warnings:
         status = "completed_with_warnings"
@@ -1669,7 +1753,8 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
         eap_report=eap_report, eap_enabled=eap_enabled, eap_error=eap_error,
         lv_report=lv_report, lv_enabled=lv_enabled, lv_error=lv_error,
         xp_report=xp_report, xp_enabled=xp_enabled, xp_error=xp_error,
-        sr_report=sr_report, sr_enabled=sr_enabled, sr_error=sr_error)
+        sr_report=sr_report, sr_enabled=sr_enabled, sr_error=sr_error,
+        ce_report=ce_report, ce_enabled=ce_enabled, ce_error=ce_error)
 
     # summary + manifest пишем всегда (best-effort, атомарно)
     write_pipeline_v2_summary_json(paths["summary_json"], summary)

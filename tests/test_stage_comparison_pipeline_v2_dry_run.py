@@ -250,10 +250,13 @@ def test_artifact_paths(tmp_path: Path):
         "entity_alignment_preview_report.json"
     assert paths["link_validation"].name == "link_validation_report.json"
     assert paths["exclusion_preview"].name == "exclusion_preview_v2_report.json"
+    assert paths["skip_readiness"].name == "skip_readiness_report.json"
+    assert paths["controlled_enforce_preflight"].name == \
+        "controlled_enforce_preflight_report.json"
     # + visual_gate + block_link_preview + graphic_vision + grounding
     #   + grounded_evidence + entity_alignment_preview + link_validation
-    #   + exclusion_preview
-    assert len(paths) == 20
+    #   + exclusion_preview + skip_readiness + controlled_enforce_preflight
+    assert len(paths) == 22
 
 
 # ─── graphic descriptor в dry-run ────────────────────────────────────────────

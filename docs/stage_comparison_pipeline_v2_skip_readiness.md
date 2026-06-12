@@ -273,3 +273,15 @@ worktree. В задаче skip-readiness отчёт пришлось зерка�
 protected hashes и сделать endpoint smoke. Полный checklist и диагностика
 рассинхрона —
 [stage_comparison_pipeline_v2_runtime_artifact_roots.md](stage_comparison_pipeline_v2_runtime_artifact_roots.md).
+
+## Controlled enforce preflight (downstream guard)
+
+skip_readiness отвечает «item теоретически готов к skip». Это **не** разрешение
+на enforce. Поверх него работает отдельный защитный слой
+**controlled_enforce_preflight** — он добавляет глобальные fatal-блоки
+(`ready_to_skip_zero`, `runtime_root_unconfirmed`, `protected_hashes_missing`,
+`operator_approval_missing`) и runtime-root guard, и решает, можно ли вообще
+включать enforce. По-прежнему ничего не применяет (`enabled=false`,
+`mode=preflight_only`, `would_apply=false`). Для текущей ИОС 1.1 он
+`blocked` (`ready_to_skip=0`). См.
+[stage_comparison_pipeline_v2_controlled_enforce.md](stage_comparison_pipeline_v2_controlled_enforce.md).
