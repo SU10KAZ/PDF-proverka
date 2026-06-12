@@ -3570,6 +3570,29 @@ async def get_pipeline_v2_link_validation_endpoint(
         raise HTTPException(400, str(exc)) from exc
 
 
+@router.get("/pipeline-v2/{session_id}/exclusion-preview-v2")
+async def get_pipeline_v2_exclusion_preview_endpoint(
+        session_id: str, pair_id: Optional[str] = None,
+        classification: str = "all", severity: str = "all",
+        limit: int = 100, offset: int = 0):
+    """Read-only mark-only Exclusion Preview v2 report Pipeline V2.
+
+    Отдаёт готовый exclusion_preview_v2_report.json. Не запускает модели.
+    Отсутствие отчёта — {"status":"not_found"} (runner НЕ запускается), битый —
+    {"status":"error"}, не 404/500. НИЧЕГО не пишет. Фильтры
+    classification/severity + пагинация (limit clamp ≤500). Mark-only:
+    auto_apply/enforce_allowed/use_as_grounded_fact=false на всех items.
+    """
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_payload_mod.discover_exclusion_preview,
+            session_id, pair_id,
+            classification=classification, severity=severity,
+            limit=limit, offset=offset)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
 # ─── Pipeline V2: ручные override'ы выравнивания сущностей (write) ──────────
 #
 # Отдельный обратимый artifact entity_mapping_overrides.json. Endpoints НИЧЕГО

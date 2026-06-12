@@ -1514,3 +1514,134 @@ describe('Pipeline V2 — Link Validation read-only contract (files)', () => {
     expect(appJs).toContain('/ui-payload');                   // основная панель жива
   });
 });
+
+// ─── Exclusion Preview v2 — JS логика ─────────────────────────────────────
+
+describe('Pipeline V2 Exclusion Preview v2 — JS logic', () => {
+  const appJs = fs.readFileSync(path.join(__dirname, '..', 'static', 'js', 'app.js'), 'utf8');
+
+  it('1. реактивное состояние scPv2XpResp/Loading/Error/ReqSeq декларировано', () => {
+    expect(appJs).toContain('scPv2XpResp = ref(null)');
+    expect(appJs).toContain('scPv2XpLoading = ref(false)');
+    expect(appJs).toContain("scPv2XpError = ref('')");
+    expect(appJs).toContain('scPv2XpReqSeq = 0');
+  });
+
+  it('2. SC_PV2_XP_CLASS_META содержит все 4 классификации', () => {
+    expect(appJs).toContain('candidate_exclude');
+    expect(appJs).toContain('review_only');
+    expect(appJs).toContain('link_validation_required');
+    // keep в meta
+    const metaStart = appJs.indexOf('SC_PV2_XP_CLASS_META');
+    const metaEnd = appJs.indexOf('};', metaStart);
+    const meta = appJs.slice(metaStart, metaEnd);
+    expect(meta).toContain('keep');
+  });
+
+  it('3. computeds scPv2XpSummary/Items/Available/NotFound/RespError декларированы', () => {
+    expect(appJs).toContain('scPv2XpSummary');
+    expect(appJs).toContain('scPv2XpItems');
+    expect(appJs).toContain('scPv2XpAvailable');
+    expect(appJs).toContain('scPv2XpNotFound');
+    expect(appJs).toContain('scPv2XpRespError');
+  });
+
+  it('4. scPv2XpLoad читает GET /exclusion-preview-v2 — никаких write/job вызовов', () => {
+    expect(appJs).toContain('/exclusion-preview-v2?pair_id=');
+    const s = appJs.indexOf('async function scPv2XpLoad');
+    const e = appJs.indexOf('function scPv2XpReset', s);
+    const fnBody = appJs.slice(s, e);
+    expect(fnBody).not.toMatch(/method:\s*['"](POST|PUT|DELETE)['"]/);
+    expect(fnBody).not.toContain('md-enrichment-jobs');
+    expect(fnBody).not.toContain('unified-analysis');
+    expect(fnBody).not.toContain('entity-mapping-overrides');
+    expect(fnBody).not.toContain('link-validation');
+  });
+
+  it('5. scPv2XpLoad вызывается вместе с scPv2LvLoad (после EA успешного load)', () => {
+    // должны стоять рядом в одном try-блоке EA
+    const lvIdx = appJs.indexOf('scPv2LvLoad();');
+    const xpIdx = appJs.indexOf('scPv2XpLoad();');
+    expect(xpIdx).toBeGreaterThan(0);
+    // XP load вызывается в той же области что LV load (разница ≤ 200 chars)
+    expect(Math.abs(xpIdx - lvIdx)).toBeLessThan(200);
+  });
+
+  it('6. scPv2XpReset вызывается из scPv2EaReset и watch(scPv2EaPairId)', () => {
+    expect(appJs.split('scPv2XpReset()').length - 1).toBeGreaterThanOrEqual(2);
+  });
+
+  it('7. функции экспортированы в return-объект Vue', () => {
+    const retStart = appJs.lastIndexOf('return {');
+    const retSection = appJs.slice(retStart);
+    expect(retSection).toContain('scPv2XpLoad');
+    expect(retSection).toContain('scPv2XpReset');
+    expect(retSection).toContain('scPv2XpClassMeta');
+    expect(retSection).toContain('scPv2XpSummary');
+  });
+});
+
+// ─── Exclusion Preview v2 — HTML панель ────────────────────────────────────
+
+describe('Pipeline V2 Exclusion Preview v2 — HTML panel', () => {
+  const indexHtml = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  function xpBlock() {
+    const s = indexHtml.indexOf('scPv2XpAvailable || scPv2XpNotFound || scPv2XpRespError');
+    expect(s).toBeGreaterThan(0);
+    const e = indexHtml.indexOf('</div>', indexHtml.lastIndexOf('scPv2XpItems', s + 5000)) + 6;
+    expect(e).toBeGreaterThan(s);
+    return indexHtml.slice(s, e);
+  }
+
+  it('1. панель присутствует с заголовком и summary chips', () => {
+    const blk = xpBlock();
+    expect(blk).toContain('🚫 Exclusion Preview v2');
+    expect(blk).toContain('scPv2XpSummary');
+    expect(blk).toContain('scPv2XpItems');
+    expect(blk).toContain('candidate_exclude');
+    expect(blk).toContain('keep');
+  });
+
+  it('2. mark-only предупреждение присутствует', () => {
+    const blk = xpBlock();
+    expect(blk).toContain(
+      'Exclusion Preview v2 is mark-only. Nothing is excluded, applied, or enforced.');
+  });
+
+  it('3. НЕТ кнопок применить/исключить/принять/запустить', () => {
+    const blk = xpBlock();
+    for (const forbidden of ['Применить', 'Исключить', 'Принять', 'Запустить',
+                             'Создать замечание']) {
+      expect(blk).not.toContain(forbidden);
+    }
+  });
+
+  it('4. risk_flags показываются как ⚑-бейджи', () => {
+    const blk = xpBlock();
+    expect(blk).toContain('risk_flags');
+    expect(blk).toContain('⚑');
+  });
+
+  it('5. панель расположена ПОСЛЕ link-validation и ДО transport/HTTP errors', () => {
+    const lvEnd = indexHtml.lastIndexOf('🔎 Link validation');
+    const xpStart = indexHtml.indexOf('🚫 Exclusion Preview v2');
+    // Find the transport comment that comes AFTER the XP panel (there is an earlier one before LV)
+    const transportStart = indexHtml.indexOf('<!-- transport / HTTP errors -->', xpStart);
+    expect(xpStart).toBeGreaterThan(lvEnd);
+    expect(xpStart).toBeLessThan(transportStart);
+  });
+
+  it('6. OLD/NEW grid использует left_entity_label/right_entity_label', () => {
+    // xpBlock() ends before the entity label grid — check the full XP panel region directly
+    const xpPanelStart = indexHtml.indexOf('🚫 Exclusion Preview v2');
+    const xpRegion = indexHtml.slice(xpPanelStart, xpPanelStart + 10000);
+    expect(xpRegion).toContain('left_entity_label');
+    expect(xpRegion).toContain('right_entity_label');
+  });
+
+  it('7. старые LV и EA панели не сломаны', () => {
+    expect(indexHtml).toContain('🔎 Link validation');
+    expect(indexHtml).toContain('🧩 Pipeline V2 сущности');
+    expect(indexHtml).toContain('scPv2LvItems');
+  });
+});

@@ -14699,8 +14699,9 @@ const app = createApp({
                     scPv2EaDraft(scPv2EaUnpairedKey(e, 'right'),
                                  (e.manual_mapping && e.manual_mapping.decision) || '');
                 }
-                // подгрузить link validation для той же пары (read-only)
+                // подгрузить link validation и exclusion preview для той же пары (read-only)
                 scPv2LvLoad();
+                scPv2XpLoad();
             } catch (e) {
                 if (myReq !== scPv2EaReqSeq) return;
                 scPv2EaResp.value = null;
@@ -14726,6 +14727,7 @@ const app = createApp({
             scPv2EaPairId.value = '';
             scPv2EaFilter.value = 'all';
             scPv2LvReset();
+            scPv2XpReset();
         }
         watch(() => (scSession.value && scSession.value.id) || '', scPv2EaReset);
         watch(() => (scActivePair.value && scActivePair.value.id) || '', scPv2EaReset);
@@ -14735,6 +14737,7 @@ const app = createApp({
             scPv2EaError.value = '';
             scPv2EaLoading.value = false;
             scPv2LvReset();
+            scPv2XpReset();
         });
         // Read-only jump: карточка выравнивания сущностей → block link preview.
         // Переиспользует существующий мост (scPv2OpenBlockLinkFromGrounding):
@@ -14836,6 +14839,79 @@ const app = createApp({
                 right_page_number: it.right_page_number,
                 value: (it.left_entity_label || it.right_entity_label || ''),
             });
+        }
+
+        // ── Exclusion Preview v2 (read-only, mark-only) ─────────────────────
+
+        const scPv2XpResp = ref(null);          // detail {status, summary, items, …}
+        const scPv2XpLoading = ref(false);
+        const scPv2XpError = ref('');
+        let scPv2XpReqSeq = 0;
+
+        const SC_PV2_XP_CLASS_META = {
+            candidate_exclude:       { icon: '🔴', bg: '#fee2e2', fg: '#991b1b', label: 'исключить' },
+            review_only:             { icon: '🟡', bg: '#fef9c3', fg: '#854d0e', label: 'ручная проверка' },
+            keep:                    { icon: '🟢', bg: '#dcfce7', fg: '#166534', label: 'оставить' },
+            link_validation_required:{ icon: '🔵', bg: '#ede9fe', fg: '#4c1d95', label: 'нужна LV' },
+        };
+
+        const scPv2XpSummary = computed(() =>
+            (scPv2XpResp.value && scPv2XpResp.value.summary) || null);
+        const scPv2XpItems = computed(() =>
+            (scPv2XpResp.value && scPv2XpResp.value.items) || []);
+        const scPv2XpAvailable = computed(() =>
+            !!scPv2XpResp.value && scPv2XpResp.value.status === 'ok'
+            && scPv2XpResp.value.available);
+        const scPv2XpNotFound = computed(() =>
+            !!scPv2XpResp.value && scPv2XpResp.value.status === 'not_found');
+        const scPv2XpRespError = computed(() =>
+            (scPv2XpResp.value && scPv2XpResp.value.status === 'error')
+                ? ((scPv2XpResp.value.warnings || []).join('; ')
+                   || scPv2XpResp.value.message || 'error')
+                : '');
+        function scPv2XpClassMeta(cls) {
+            return SC_PV2_XP_CLASS_META[cls]
+                || { icon: '⚪', bg: '#f3f4f6', fg: '#374151', label: cls || '—' };
+        }
+        function scPv2XpConfPct(it) {
+            const c = it && it.confidence;
+            return (typeof c === 'number') ? Math.round(c * 100) + '%' : '';
+        }
+        async function scPv2XpLoad() {
+            const sid = scSession.value && scSession.value.id;
+            const pid = scPv2EaEffectivePairId();
+            if (!sid || !pid) return;
+            const myReq = ++scPv2XpReqSeq;
+            scPv2XpLoading.value = true;
+            scPv2XpError.value = '';
+            const url = '/api/stage-comparison/pipeline-v2/'
+                + encodeURIComponent(sid)
+                + '/exclusion-preview-v2?pair_id=' + encodeURIComponent(pid) + '&limit=200';
+            try {
+                const r = await fetch(url);
+                if (myReq !== scPv2XpReqSeq) return;
+                if (r.status === 401 || r.status === 403) {
+                    scPv2XpResp.value = null;
+                    scPv2XpError.value = 'Доступ запрещён (' + r.status + ').';
+                    return;
+                }
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const j = await r.json();
+                if (myReq !== scPv2XpReqSeq) return;
+                scPv2XpResp.value = j;
+            } catch (e) {
+                if (myReq !== scPv2XpReqSeq) return;
+                scPv2XpResp.value = null;
+                scPv2XpError.value = String((e && e.message) || e);
+            } finally {
+                if (myReq === scPv2XpReqSeq) scPv2XpLoading.value = false;
+            }
+        }
+        function scPv2XpReset() {
+            scPv2XpReqSeq++;
+            scPv2XpResp.value = null;
+            scPv2XpError.value = '';
+            scPv2XpLoading.value = false;
         }
 
         // ── Manual entity mapping (write-слой поверх preview) ─────────────────
@@ -15300,6 +15376,10 @@ const app = createApp({
             scPv2LvResp, scPv2LvLoading, scPv2LvError, scPv2LvSummary,
             scPv2LvItems, scPv2LvAvailable, scPv2LvNotFound, scPv2LvRespError,
             scPv2LvDecisionMeta, scPv2LvConfPct, scPv2LvLoad, scPv2LvOpenBlockLink,
+            // Pipeline V2 Exclusion Preview v2 (read-only, mark-only)
+            scPv2XpResp, scPv2XpLoading, scPv2XpError,
+            scPv2XpSummary, scPv2XpItems, scPv2XpAvailable, scPv2XpNotFound, scPv2XpRespError,
+            scPv2XpClassMeta, scPv2XpConfPct, scPv2XpLoad, scPv2XpReset,
             // Pipeline V2 Manual Entity Mapping (write-слой)
             SC_PV2_EA_DECISIONS, scPv2EaDrafts, scPv2EaSaving, scPv2EaSaveErr,
             scPv2EaSaveHint, scPv2EaPairKey, scPv2EaUnpairedKey, scPv2EaDraft,

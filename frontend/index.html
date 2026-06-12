@@ -5865,6 +5865,81 @@
                         </template>
                     </div>
 
+                    <!-- ─── Exclusion Preview v2 (read-only, mark-only) ─── -->
+                    <div v-if="scPv2XpAvailable || scPv2XpNotFound || scPv2XpRespError"
+                         style="border:1px solid #e2e8f0; border-radius:8px; padding:8px 10px; margin-bottom:10px; background:#f8fafc">
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:6px">
+                            <strong style="color:#334155">🚫 Exclusion Preview v2</strong>
+                            <span style="opacity:.6; font-size:11px">read-only · mark-only · агрегатор сигналов исключения</span>
+                        </div>
+                        <!-- mark-only warning -->
+                        <div style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; border-radius:6px; padding:4px 8px; margin-bottom:6px; font-size:11px">
+                            ℹ Exclusion Preview v2 is mark-only. Nothing is excluded, applied, or enforced. All decisions require human confirmation.
+                        </div>
+                        <div v-if="scPv2XpRespError" style="color:#991b1b; font-size:11px">Отчёт нечитаем: {{ scPv2XpRespError }}</div>
+                        <div v-else-if="scPv2XpNotFound" style="opacity:.6; font-size:11px">
+                            Exclusion Preview v2 report ещё не построен для этой пары.
+                        </div>
+                        <template v-else-if="scPv2XpAvailable && scPv2XpSummary">
+                            <!-- summary chips -->
+                            <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:6px; font-size:11px">
+                                <span style="background:#eef2ff; color:#3730a3; border-radius:10px; padding:1px 8px">items: {{ scPv2XpSummary.items_total }}</span>
+                                <span style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:1px 8px">🔴 exclude: {{ scPv2XpSummary.candidate_exclude }}</span>
+                                <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:1px 8px">🟡 review: {{ scPv2XpSummary.review_only }}</span>
+                                <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px">🟢 keep: {{ scPv2XpSummary.keep }}</span>
+                                <span style="background:#ede9fe; color:#4c1d95; border-radius:10px; padding:1px 8px">🔵 need LV: {{ scPv2XpSummary.link_validation_required }}</span>
+                                <span v-if="scPv2XpSummary.repeated_reject_transitions"
+                                      style="background:#ffedd5; color:#9a3412; border-radius:10px; padding:1px 8px">↩ repeated: {{ scPv2XpSummary.repeated_reject_transitions }}</span>
+                                <span v-if="scPv2XpSummary.manual_vision_conflict"
+                                      style="background:#fde68a; color:#92400e; border-radius:10px; padding:1px 8px">⚠ conflict: {{ scPv2XpSummary.manual_vision_conflict }}</span>
+                                <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">enforce: off</span>
+                            </div>
+                            <!-- item cards -->
+                            <div v-for="(it, i) in scPv2XpItems" :key="'pv2xp-'+i"
+                                 style="background:#fff; border:1px solid #e2e8f0; border-radius:6px; padding:6px 8px; margin-bottom:5px; font-size:11px">
+                                <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-bottom:3px">
+                                    <!-- classification badge -->
+                                    <span :style="{background: scPv2XpClassMeta(it.classification).bg,
+                                                   color: scPv2XpClassMeta(it.classification).fg,
+                                                   borderRadius:'10px', padding:'1px 8px', fontWeight:'600'}">
+                                        {{ scPv2XpClassMeta(it.classification).icon }}
+                                        {{ it.classification }}
+                                    </span>
+                                    <!-- severity -->
+                                    <span v-if="it.severity === 'high'" style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:1px 6px">▲ high</span>
+                                    <span v-else-if="it.severity === 'medium'" style="background:#ffedd5; color:#9a3412; border-radius:10px; padding:1px 6px">▼ medium</span>
+                                    <!-- confidence -->
+                                    <span style="opacity:.6">{{ scPv2XpConfPct(it) }}</span>
+                                    <!-- risk flags -->
+                                    <span v-for="rf in (it.risk_flags||[])" :key="rf"
+                                          style="background:#fef3c7; color:#92400e; border-radius:10px; padding:1px 6px">
+                                        ⚑ {{ rf }}
+                                    </span>
+                                </div>
+                                <!-- entity labels OLD → NEW -->
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:3px">
+                                    <div style="background:#f8fafc; border-radius:4px; padding:3px 6px">
+                                        <div style="opacity:.5; font-size:10px">OLD</div>
+                                        <div style="font-weight:500">{{ it.left_entity_label || it.left_block_id || '—' }}</div>
+                                    </div>
+                                    <div style="background:#f8fafc; border-radius:4px; padding:3px 6px">
+                                        <div style="opacity:.5; font-size:10px">NEW</div>
+                                        <div style="font-weight:500">{{ it.right_entity_label || it.right_block_id || '—' }}</div>
+                                    </div>
+                                </div>
+                                <!-- reasons + recommended action -->
+                                <div v-if="it.reasons && it.reasons.length" style="opacity:.7; margin-bottom:2px">
+                                    {{ it.reasons.join(' · ') }}
+                                </div>
+                                <div v-if="it.recommended_action"
+                                     style="display:inline-block; background:#eef2ff; color:#3730a3; border-radius:6px; padding:1px 7px">
+                                    → {{ it.recommended_action }}
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+
                     <!-- transport / HTTP errors -->
                     <div v-if="scPv2EaError" style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; padding:6px 10px; margin-bottom:8px">
                         {{ scPv2EaError }}

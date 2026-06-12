@@ -58,6 +58,9 @@ from backend.app.services.stage_comparison.pipeline_v2_link_validation import (
 from backend.app.services.stage_comparison.pipeline_v2_link_validation_detail import (
     build_link_validation_detail,
 )
+from backend.app.services.stage_comparison.pipeline_v2_exclusion_preview import (
+    REPORT_KIND as EXCLUSION_PREVIEW_KIND,
+)
 from backend.app.services.stage_comparison import (
     pipeline_v2_grounding_detail as _grounding_detail_mod,
 )
@@ -79,6 +82,7 @@ GRAPHIC_MATCHED_FILENAME = "graphic_descriptor_matched_report.json"
 ENTITY_ALIGNMENT_PREVIEW_FILENAME = "entity_alignment_preview_report.json"
 ENTITY_MAPPING_OVERRIDES_FILENAME = "entity_mapping_overrides.json"
 LINK_VALIDATION_FILENAME = "link_validation_report.json"
+EXCLUSION_PREVIEW_FILENAME = "exclusion_preview_v2_report.json"
 
 NOT_FOUND_MESSAGE = "Pipeline V2 artifacts not found for this session."
 BLP_NOT_FOUND_MESSAGE = "Pipeline V2 block link preview artifacts not found."
@@ -764,6 +768,130 @@ def discover_link_validation(
             warnings=[f"{type(exc).__name__}: {exc}"])
 
 
+# ─── exclusion preview v2 (read-only, mark-only) ─────────────────────────────
+
+XP_NOT_FOUND_MESSAGE = "Exclusion Preview v2 report not found for this pair."
+
+_XP_CLASSIFICATIONS = {"candidate_exclude", "review_only", "keep",
+                       "link_validation_required"}
+_XP_SEVERITIES = {"high", "medium", "low"}
+
+# поля, которые никогда не отдаются клиенту (сырые трассировки, debug-дампы)
+_XP_RAW_STRIP_KEYS = frozenset({
+    "raw_qwen_description", "raw_qwen_text", "reasoning_trace",
+    "debug_dump", "raw_full_response", "raw_image_b64",
+    "raw_prompt", "raw_response", "trace",
+})
+
+
+def _xp_detail_envelope(status: str, *, session_id: str,
+                        pair_id: Optional[str], message: str,
+                        warnings: Optional[list[str]] = None) -> dict:
+    """not_found/error ответ exclusion-preview endpoint'а (detail-формат)."""
+    return {
+        "version": 1, "kind": EXCLUSION_PREVIEW_KIND, "status": status,
+        "available": False, "session_id": session_id, "pair_id": pair_id,
+        "source": None, "summary": {}, "items": [],
+        "total_count": 0, "filtered_count": 0,
+        "message": message, "warnings": warnings or [],
+    }
+
+
+def discover_exclusion_preview(
+        session_id: str, pair_id: Optional[str] = None, *,
+        classification: str = "all", severity: str = "all",
+        limit: int = 100, offset: int = 0) -> dict:
+    """Найти Exclusion Preview v2 report для пары (read-only, fail-soft).
+
+    Статусы: ``ok`` (готовый отчёт), ``not_found`` (отчёта нет — runner НЕ
+    запускается), ``error`` (битый JSON), не 404/500. Фильтры
+    ``classification`` / ``severity`` и пагинация (``limit`` clamp ≤500)
+    применяются к ``items``; summary отдаётся целиком. НИЧЕГО не пишет, не
+    запускает, не вызывает модели. Mark-only инварианты
+    (auto_apply/enforce_allowed/use_as_grounded_fact=false) гарантированы на
+    всех item'ах ответа. ``ValueError`` — только на невалидный id.
+    """
+    if pair_id and _safe_id(pair_id) != pair_id:
+        raise ValueError(f"invalid pair_id: {pair_id!r}")
+    art_dir = pipeline_v2_artifacts_dir(session_id, pair_id)
+    try:
+        ready, err = _read_json(art_dir / EXCLUSION_PREVIEW_FILENAME)
+        if err:
+            return _xp_detail_envelope(
+                "error", session_id=session_id, pair_id=pair_id,
+                message="Exclusion Preview v2 report could not be read.",
+                warnings=[err])
+        if ready is None:
+            return _xp_detail_envelope(
+                "not_found", session_id=session_id, pair_id=pair_id,
+                message=XP_NOT_FOUND_MESSAGE)
+        if (not isinstance(ready, dict)
+                or ready.get("kind") != EXCLUSION_PREVIEW_KIND):
+            return _xp_detail_envelope(
+                "error", session_id=session_id, pair_id=pair_id,
+                message="Exclusion Preview v2 report is not a valid report.",
+                warnings=[f"{EXCLUSION_PREVIEW_FILENAME}: unexpected kind "
+                          f"{ready.get('kind') if isinstance(ready, dict) else type(ready).__name__!r}"])
+
+        warnings: list[str] = []
+        items = list(ready.get("items") or [])
+        total_count = len(items)
+
+        # filter by classification
+        if classification != "all":
+            if classification not in _XP_CLASSIFICATIONS:
+                return _xp_detail_envelope(
+                    "error", session_id=session_id, pair_id=pair_id,
+                    message=f"Invalid classification filter: {classification!r}")
+            items = [it for it in items if it.get("classification") == classification]
+
+        # filter by severity
+        if severity != "all":
+            if severity not in _XP_SEVERITIES:
+                return _xp_detail_envelope(
+                    "error", session_id=session_id, pair_id=pair_id,
+                    message=f"Invalid severity filter: {severity!r}")
+            items = [it for it in items if it.get("severity") == severity]
+
+        filtered_count = len(items)
+
+        # clamp limit
+        limit = min(max(0, limit), 500)
+
+        # paginate
+        items = items[offset:offset + limit]
+
+        # force mark-only on every returned item + strip raw/debug fields
+        for it in items:
+            it["use_as_grounded_fact"] = False
+            it["auto_apply"] = False
+            it["enforce_allowed"] = False
+            for key in _XP_RAW_STRIP_KEYS:
+                it.pop(key, None)
+
+        detail: dict[str, Any] = {
+            "version": 1, "kind": EXCLUSION_PREVIEW_KIND, "status": "ok",
+            "available": True, "session_id": session_id, "pair_id": pair_id,
+            "source": "ready_report",
+            "summary": ready.get("summary") or {},
+            "items": items,
+            "total_count": total_count,
+            "filtered_count": filtered_count,
+            "limit": limit, "offset": offset,
+            "warnings": warnings,
+        }
+        san_warns: list[str] = []
+        detail = _sanitize_payload(detail, san_warns) or detail
+        if san_warns:
+            detail["warnings"] = list(detail.get("warnings") or []) + san_warns
+        return detail
+    except Exception as exc:  # noqa: BLE001 — endpoint не должен дать 500
+        return _xp_detail_envelope(
+            "error", session_id=session_id, pair_id=pair_id,
+            message="Exclusion Preview v2 report could not be read.",
+            warnings=[f"{type(exc).__name__}: {exc}"])
+
+
 __all__ = [
     "PIPELINE_V2_DIRNAME",
     "UI_PAYLOAD_FILENAME",
@@ -778,11 +906,13 @@ __all__ = [
     "GROUNDING_REPORT_FILENAME",
     "ENTITY_ALIGNMENT_PREVIEW_FILENAME",
     "LINK_VALIDATION_FILENAME",
+    "EXCLUSION_PREVIEW_FILENAME",
     "discover_pipeline_v2_payload",
     "discover_block_link_preview",
     "discover_graphic_vision_grounding_detail",
     "discover_entity_alignment_preview",
     "discover_link_validation",
+    "discover_exclusion_preview",
     "pipeline_v2_artifacts_dir",
     "list_pairs_with_artifacts",
     "resolve_session_dir",
