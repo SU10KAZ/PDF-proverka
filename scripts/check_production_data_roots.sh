@@ -45,10 +45,13 @@ trap 'rm -f "$TMP_JSON"' EXIT
 } > "$TMP_JSON"
 
 REPO_ROOT="$REPO_ROOT" python3 - "$TMP_JSON" <<'PYEOF'
-import json, os, sys
+import contextlib, json, os, sys
 sys.path.insert(0, os.environ.get("REPO_ROOT", "/home/coder/projects/PDF-proverka-deploy"))
-from backend.app.services.stage_comparison.production_root_health import (
-    evaluate_production_data_roots, STATUS_OK, STATUS_WARNING, STATUS_DANGEROUS)
+# backend.app.core.config печатает баннер на stdout при импорте — уводим в
+# stderr, чтобы stdout скрипта оставался ЧИСТЫМ JSON (для downstream-парсинга).
+with contextlib.redirect_stdout(sys.stderr):
+    from backend.app.services.stage_comparison.production_root_health import (
+        evaluate_production_data_roots, STATUS_OK, STATUS_WARNING, STATUS_DANGEROUS)
 
 with open(sys.argv[1], encoding="utf-8") as fh:
     blob = json.load(fh)
