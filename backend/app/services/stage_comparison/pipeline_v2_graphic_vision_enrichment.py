@@ -784,6 +784,25 @@ def select_vision_candidates_v2(visual_gate_report: Any, *,
         eligible.sort(key=lambda c: (prio.get(c["candidate_kind"], 9),
                                      -c["candidate_score"]))
 
+    # controlled enforce state hook (Default OFF). Если
+    # use_controlled_enforce_state=true И передан controlled_enforce_state со
+    # active-исключениями (scope exclude_from_enrichment=true), такие block-pairs
+    # выкидываются из enrichment-кандидатов. По умолчанию (опция отсутствует/
+    # false) поведение НЕ меняется — старый путь полностью сохраняется.
+    if _opt(options, "use_controlled_enforce_state") is True:
+        from backend.app.services.stage_comparison.pipeline_v2_controlled_enforce_executor import (
+            filter_candidates_by_controlled_enforce_state,
+        )
+        _ce_state = _opt(options, "controlled_enforce_state")
+        eligible, _ce_removed = filter_candidates_by_controlled_enforce_state(
+            eligible, _ce_state, enabled=True)
+        stats["controlled_enforce_enabled"] = True
+        stats["controlled_enforce_excluded"] = len(_ce_removed)
+        if _ce_removed:
+            warnings.append(
+                f"controlled_enforce_state excluded {len(_ce_removed)} "
+                "block-pair(s) from enrichment candidates")
+
     for rank, c in enumerate(eligible, start=1):
         c["candidate_rank"] = rank
 

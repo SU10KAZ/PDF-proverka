@@ -206,3 +206,11 @@ ui_payload summary, no model/LLM imports, ИОС 1.1 fixture (54 items, ready=0)
 * [stage_comparison_pipeline_v2_skip_readiness.md](stage_comparison_pipeline_v2_skip_readiness.md)
 * [stage_comparison_pipeline_v2_runtime_artifact_roots.md](stage_comparison_pipeline_v2_runtime_artifact_roots.md)
 * [stage_comparison_pipeline_v2_exclusion_preview.md](stage_comparison_pipeline_v2_exclusion_preview.md)
+
+## Downstream-слои (после preflight)
+
+preflight (этот документ) → **dry-run** (impact preview) → **executor v0**
+(execution plan / future-state preview / runtime-guards / protected-hash
+sentinel / rollback — code-only, `apply=False`, real skip не реализован). См.
+[stage_comparison_pipeline_v2_first_controlled_skip_protocol.md](stage_comparison_pipeline_v2_first_controlled_skip_protocol.md)
+и [stage_comparison_pipeline_v2_controlled_enforce_executor.md](stage_comparison_pipeline_v2_controlled_enforce_executor.md).

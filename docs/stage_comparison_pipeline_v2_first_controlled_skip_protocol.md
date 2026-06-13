@@ -162,6 +162,12 @@ config disabled / mode != enforce_one_logical_transition
 5. сверить protected-hash sentinel ПОСЛЕ (до == после) — иначе rollback;
 6. записать audit-trail (кто/когда/какой переход/токен) + rollback-инструкцию.
 
+> **Реализовано (code-only, 2026-06-14):** «сухой» аппарат шагов 1-3,5-6 уже
+> есть в **Controlled Enforce Executor v0** — execution plan, future-state
+> preview (`active=false`), runtime-guards, protected-hash sentinel, rollback
+> plan. Сам write-шаг 4 (`apply=True`) НЕ реализован (raise). См.
+> [stage_comparison_pipeline_v2_controlled_enforce_executor.md](stage_comparison_pipeline_v2_controlled_enforce_executor.md).
+
 ## Безопасность
 
 Этот слой — **только схема + валидация**. Модуль ничего не применяет, не пишет
