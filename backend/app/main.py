@@ -152,8 +152,23 @@ async def ws_global(websocket: WebSocket):
 # ─── API Info ───────────────────────────────────────────────
 @app.get("/api/info")
 async def api_info():
-    """Информация о сервере."""
-    from backend.app.core.config import ROOT_DIR, PROJECTS_DIR, get_claude_cli
+    """Информация о сервере.
+
+    ``data_roots`` явно раскрывает, какие РУНТАЙМ-data-роуты реально читает
+    backend (а не только ``base_dir`` = worktree кода). Это нужно для
+    диагностики active-root drift: ``base_dir`` может указывать на deploy
+    worktree, тогда как данные (projects / app_data / comparison) редиректятся
+    в MAIN через env (AUDIT_DATA_DIR / COMPARISON_ROOT). Только пути — без
+    секретов, токенов и env целиком.
+    """
+    from backend.app.core.config import (
+        ROOT_DIR, PROJECTS_DIR, DATA_DIR, APP_DATA_DIR, get_claude_cli,
+    )
+    from backend.app.services.stage_comparison.paths import comparison_root_path
+    try:
+        comparison_root = str(comparison_root_path())
+    except Exception:  # noqa: BLE001 — /api/info обязан оставаться быстрым/живым
+        comparison_root = None
     return {
         "app": "Audit Manager",
         "version": "1.0.0",
@@ -161,6 +176,13 @@ async def api_info():
         "projects_dir": str(PROJECTS_DIR),
         "claude_cli": get_claude_cli(),
         "ws_connections": ws_manager.total_connections,
+        # явные runtime data-роуты (для root-drift диагностики)
+        "data_roots": {
+            "audit_data_dir": str(DATA_DIR),
+            "audit_app_data_dir": str(APP_DATA_DIR),
+            "projects_dir": str(PROJECTS_DIR),
+            "comparison_root": comparison_root,
+        },
     }
 
 

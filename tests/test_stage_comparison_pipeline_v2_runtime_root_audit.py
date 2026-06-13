@@ -138,20 +138,69 @@ class TestRuntimeRootAudit:
         d0 = next(d for d in mm if d["name"] == "skip_readiness_report.json")
         assert d0["hashes"]["main_worktree"] != d0["hashes"]["deploy_worktree"]
 
-    def test_active_root_from_api_info(self, tmp_path):
-        """detect active root из /api/info base_dir → high confidence."""
+    def test_active_root_prefers_data_roots_comparison_root(self, tmp_path, monkeypatch):
+        """detector предпочитает api_info.data_roots.comparison_root, НЕ base_dir.
+
+        base_dir = deploy (код), но comparison_root = main (данные). Должен
+        выбраться main с high confidence + drift_from_base_dir=True.
+        """
+        for v in ("COMPARISON_ROOT", "AUDIT_DATA_DIR", "AUDIT_ROOT_DIR", "AUDIT_BASE_DIR"):
+            monkeypatch.delenv(v, raising=False)
         main = tmp_path / "main"
         deploy = tmp_path / "deploy"
-        _make_pair_dir(deploy / "comparison")
         roots = _roots(main, deploy)
-        r = build_runtime_root_audit(
-            SID, PID, roots=roots,
-            api_info={"base_dir": str(deploy)})
-        active = r["active_runtime_root"]
+        roots_recs = build_runtime_root_audit(SID, PID, roots=roots)["roots"]
+        active = detect_active_runtime_root(roots_recs, api_info={
+            "base_dir": str(deploy),
+            "data_roots": {"comparison_root": str(main / "comparison")},
+        })
         assert active["confidence"] == "high"
+        assert active["detected"] == str((main / "comparison").resolve())
+        assert active["detected_root_name"] == "main_worktree"
+        assert active["drift_from_base_dir"] is True
+        assert any(e["source"] == "api_info.data_roots.comparison_root"
+                   for e in active["evidence"])
+
+    def test_active_root_prefers_comparison_root_env(self, tmp_path, monkeypatch):
+        """(1) detector prefers COMPARISON_ROOT env over base_dir."""
+        monkeypatch.setenv("COMPARISON_ROOT", str(tmp_path / "main" / "comparison"))
+        main = tmp_path / "main"
+        deploy = tmp_path / "deploy"
+        roots_recs = build_runtime_root_audit(SID, PID, roots=_roots(main, deploy))["roots"]
+        active = detect_active_runtime_root(roots_recs, api_info={"base_dir": str(deploy)})
+        assert active["confidence"] == "high"
+        assert active["detected"] == str((main / "comparison").resolve())
+        assert active["drift_from_base_dir"] is True
+
+    def test_active_root_falls_back_to_audit_data_dir(self, tmp_path, monkeypatch):
+        """(2) detector falls back to AUDIT_DATA_DIR/comparison."""
+        for v in ("COMPARISON_ROOT", "AUDIT_ROOT_DIR", "AUDIT_BASE_DIR"):
+            monkeypatch.delenv(v, raising=False)
+        monkeypatch.setenv("AUDIT_DATA_DIR", str(tmp_path / "main"))
+        main = tmp_path / "main"
+        deploy = tmp_path / "deploy"
+        roots_recs = build_runtime_root_audit(SID, PID, roots=_roots(main, deploy))["roots"]
+        active = detect_active_runtime_root(roots_recs, api_info={"base_dir": str(deploy)})
+        assert active["detected"] == str((main / "comparison").resolve())
+        assert active["confidence"] == "medium"
+
+    def test_active_root_base_dir_only_last_fallback(self, tmp_path, monkeypatch):
+        """(3) detector uses base_dir/comparison only as LAST fallback (low)."""
+        for v in ("COMPARISON_ROOT", "AUDIT_DATA_DIR", "AUDIT_ROOT_DIR", "AUDIT_BASE_DIR"):
+            monkeypatch.delenv(v, raising=False)
+        # kill the backend helper so only base_dir remains
+        monkeypatch.setattr(
+            "backend.app.services.stage_comparison.pipeline_v2_runtime_root_audit."
+            "_backend_comparison_root", lambda: None)
+        deploy = tmp_path / "deploy"
+        roots_recs = build_runtime_root_audit(SID, PID, roots=_roots(tmp_path / "main", deploy))["roots"]
+        active = detect_active_runtime_root(roots_recs, api_info={"base_dir": str(deploy)})
         assert active["detected"] == str((deploy / "comparison").resolve())
-        assert active["detected_root_name"] == "deploy_worktree"
-        assert any(e["source"] == "api_info.base_dir" for e in active["evidence"])
+        assert active["confidence"] == "low"
+        assert active["drift_from_base_dir"] is False
+        # base_dir evidence is marked fallback-only
+        bd_ev = [e for e in active["evidence"] if e["source"] == "api_info.base_dir"]
+        assert bd_ev and "fallback only" in bd_ev[0].get("note", "")
 
     def test_no_writes_to_artifact_roots(self, tmp_path):
         """Audit не создаёт и не меняет ничего под artifact roots."""

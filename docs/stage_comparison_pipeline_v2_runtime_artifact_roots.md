@@ -137,6 +137,17 @@ active root, и при `runtime_root_unconfirmed` preflight даёт fatal-бл�
 решение о enforce. См.
 [stage_comparison_pipeline_v2_controlled_enforce.md](stage_comparison_pipeline_v2_controlled_enforce.md).
 
+## ⚠️ Detector fix (2026-06-14): не определять root по base_dir
+
+`detect_active_runtime_root` РАНЬШЕ выбирал active root по `api_info.base_dir`
+(= worktree кода) с high-confidence. Это неверно: `base_dir` = DEPLOY (код), а
+данные читаются из MAIN через `COMPARISON_ROOT`/`AUDIT_DATA_DIR` env. После
+инцидента приоритет исправлен: сперва **явный** `comparison_root`
+(`api_info.data_roots.comparison_root` → env `COMPARISON_ROOT` → `AUDIT_DATA_DIR`
+→ helper), и только в самом конце fallback на `base_dir/comparison`. Добавлен
+`drift_from_base_dir`. `/api/info` теперь отдаёт блок `data_roots`. Полный
+контекст и production-чек — [production_data_root_guardrails.md](production_data_root_guardrails.md).
+
 ## Связанные документы
 
 * [stage_comparison_pipeline_v2_dry_run.md](stage_comparison_pipeline_v2_dry_run.md)

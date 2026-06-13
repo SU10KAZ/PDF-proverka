@@ -254,11 +254,24 @@ def detect_active_runtime_root(roots: list[dict[str, Any]], *,
                                ) -> dict[str, Any]:
     """Определить, какой comparison root реально активен для production backend.
 
-    Источники evidence (по убыванию надёжности):
-      1. ``api_info["base_dir"]`` от живого ``/api/info`` → ``base_dir/comparison``;
+    Приоритет источников (по убыванию надёжности). **Ключевой инвариант:**
+    активный comparison root определяется по ЯВНОМУ ``comparison_root``, а НЕ по
+    ``base_dir`` (= worktree кода). ``base_dir`` может указывать на deploy
+    worktree, тогда как данные читаются из MAIN через ``COMPARISON_ROOT`` env —
+    инцидент 2026-06-14. ``base_dir/comparison`` остаётся ТОЛЬКО последним
+    fallback'ом.
+
+      1. ``api_info["data_roots"]["comparison_root"]`` — явный runtime-root от
+         живого ``/api/info`` (самый авторитетный);
       2. env ``COMPARISON_ROOT``;
-      3. env ``AUDIT_ROOT_DIR`` / ``AUDIT_BASE_DIR`` → ``.../comparison``;
-      4. backend path-helper ``comparison_root_path()`` (текущий процесс).
+      3. env ``AUDIT_DATA_DIR`` → ``.../comparison``;
+      4. env ``AUDIT_ROOT_DIR`` / ``AUDIT_BASE_DIR`` → ``.../comparison``;
+      5. backend path-helper ``comparison_root_path()`` (текущий процесс);
+      6. ``api_info["base_dir"]`` → ``base_dir/comparison`` — ТОЛЬКО fallback.
+
+    Дополнительно сверяет выбранный root с ``base_dir/comparison``: если они
+    различаются, это active-root drift (``drift_from_base_dir=True``) — именно
+    та ситуация, где старая логика «по base_dir» давала неверный ответ.
     """
     evidence: list[dict[str, Any]] = []
     candidate: Optional[str] = None
@@ -272,49 +285,68 @@ def detect_active_runtime_root(roots: list[dict[str, Any]], *,
         except OSError:
             return p
 
-    # 1. /api/info base_dir
-    if isinstance(api_info, dict):
-        base_dir = api_info.get("base_dir")
-        if isinstance(base_dir, str) and base_dir:
-            comp = _norm(str(Path(base_dir) / "comparison"))
-            evidence.append({
-                "source": "api_info.base_dir",
-                "value": base_dir,
-                "implied_comparison_root": comp,
-            })
+    def _take(comp: str, source: str, *, conf: str, value: Optional[str] = None) -> None:
+        nonlocal candidate, confidence
+        rec = {"source": source, "implied_comparison_root": comp}
+        if value is not None:
+            rec["value"] = value
+        evidence.append(rec)
+        if candidate is None:
             candidate = comp
-            confidence = "high"
+            confidence = conf
+
+    # base_dir/comparison — вычисляем сразу для drift-сверки, но как кандидат
+    # используем ТОЛЬКО последним (fallback).
+    base_dir_comp: Optional[str] = None
+    base_dir_val: Optional[str] = None
+    if isinstance(api_info, dict):
+        bd = api_info.get("base_dir")
+        if isinstance(bd, str) and bd:
+            base_dir_val = bd
+            base_dir_comp = _norm(str(Path(bd) / "comparison"))
+
+    # 1. api_info.data_roots.comparison_root (ЯВНЫЙ runtime-root)
+    if isinstance(api_info, dict):
+        dr = api_info.get("data_roots")
+        if isinstance(dr, dict):
+            cr = dr.get("comparison_root")
+            if isinstance(cr, str) and cr:
+                _take(_norm(cr), "api_info.data_roots.comparison_root",
+                      conf="high", value=cr)
 
     # 2. COMPARISON_ROOT env
     env_comp = os.environ.get("COMPARISON_ROOT", "").strip()
     if env_comp:
-        comp = _norm(env_comp)
-        evidence.append({"source": "env.COMPARISON_ROOT", "value": env_comp,
-                         "implied_comparison_root": comp})
-        if candidate is None:
-            candidate = comp
-            confidence = "high"
+        _take(_norm(env_comp), "env.COMPARISON_ROOT", conf="high", value=env_comp)
 
-    # 3. AUDIT_ROOT_DIR / AUDIT_BASE_DIR env
+    # 3. AUDIT_DATA_DIR env → .../comparison
+    audit_data = os.environ.get("AUDIT_DATA_DIR", "").strip()
+    if audit_data:
+        _take(_norm(str(Path(audit_data) / "comparison")), "env.AUDIT_DATA_DIR",
+              conf="medium", value=audit_data)
+
+    # 4. AUDIT_ROOT_DIR / AUDIT_BASE_DIR env → .../comparison
     for env_name in ("AUDIT_ROOT_DIR", "AUDIT_BASE_DIR"):
         val = os.environ.get(env_name, "").strip()
         if val:
-            comp = _norm(str(Path(val) / "comparison"))
-            evidence.append({"source": f"env.{env_name}", "value": val,
-                             "implied_comparison_root": comp})
-            if candidate is None:
-                candidate = comp
-                confidence = "medium"
+            _take(_norm(str(Path(val) / "comparison")), f"env.{env_name}",
+                  conf="medium", value=val)
 
-    # 4. backend path-helper в текущем процессе
+    # 5. backend path-helper в текущем процессе
     helper = _backend_comparison_root()
     if helper:
-        comp = _norm(helper)
-        evidence.append({"source": "backend.comparison_root_path",
-                         "implied_comparison_root": comp})
+        _take(_norm(helper), "backend.comparison_root_path", conf="medium")
+
+    # 6. api_info base_dir/comparison — ТОЛЬКО последний fallback
+    if base_dir_comp:
+        evidence.append({"source": "api_info.base_dir",
+                         "value": base_dir_val,
+                         "implied_comparison_root": base_dir_comp,
+                         "note": "fallback only — base_dir is the CODE worktree, "
+                                 "not necessarily the data root"})
         if candidate is None:
-            candidate = comp
-            confidence = "medium"
+            candidate = base_dir_comp
+            confidence = "low"
 
     matched_root_name = root_by_path.get(candidate) if candidate else None
     # сверим candidate с известными root'ами для дружелюбного имени
@@ -324,11 +356,17 @@ def detect_active_runtime_root(roots: list[dict[str, Any]], *,
                 matched_root_name = rn
                 break
 
+    # active-root drift: выбранный root != base_dir/comparison
+    drift_from_base_dir = bool(
+        candidate and base_dir_comp and candidate != base_dir_comp)
+
     return {
         "detected": candidate,
         "detected_root_name": matched_root_name,
         "confidence": confidence if candidate else "unknown",
         "evidence": evidence,
+        "base_dir_implied_comparison_root": base_dir_comp,
+        "drift_from_base_dir": drift_from_base_dir,
     }
 
 
