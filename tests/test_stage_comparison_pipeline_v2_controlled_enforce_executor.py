@@ -223,13 +223,114 @@ class TestExecutor:
         assert res["state_preview"]["status"] == "preview"
         assert res["plan"]["summary"]["block_pairs"] == 2
 
-    def test_apply_true_blocked(self, tmp_path):
-        """(11) apply=True without valid config blocked (v0 not implemented)."""
+    def test_apply_true_refused_when_guards_invalid(self, tmp_path):
+        """(11) apply=True с невалидным config → graceful refusal, НИЧЕГО не пишет."""
         d = self._dir(tmp_path)
-        with pytest.raises(ControlledEnforceNotImplemented):
-            run_controlled_enforce_executor(
-                d, config=_enforce_config(), session_id=SID, pair_id=PID,
-                root_guard_status="ok", apply=True)
+
+        def snap():
+            return {str(p): (p.stat().st_size, p.stat().st_mtime_ns)
+                    for p in sorted(d.rglob("*")) if p.is_file()}
+        before = snap()
+        c = _enforce_config(); c["enabled"] = False  # config-deny
+        res = run_controlled_enforce_executor(
+            d, config=c, session_id=SID, pair_id=PID,
+            root_guard_status="ok", apply=True)
+        assert snap() == before                      # никаких записей
+        assert res["apply"] is True
+        assert res["applied"] is False
+        assert res["refused"] is True
+        assert res["runtime_changed"] is False
+        assert not (d / STATE_FILENAME).is_file()
+
+    def test_apply_true_refused_when_root_guard_not_ok(self, tmp_path):
+        """apply=True при root_guard != ok → refusal, нет записи."""
+        d = self._dir(tmp_path)
+        res = run_controlled_enforce_executor(
+            d, config=_enforce_config(), session_id=SID, pair_id=PID,
+            root_guard_status="warning", apply=True)
+        assert res["applied"] is False and res["refused"] is True
+        assert not (d / STATE_FILENAME).is_file()
+
+    def test_apply_true_writes_active_state_when_allowed(self, tmp_path):
+        """STATE-APPLY: apply=True + все guard'ы ok → пишет ТОЛЬКО state, active=true."""
+        d = self._dir(tmp_path)
+
+        def files():
+            return {p.name for p in d.rglob("*") if p.is_file()}
+        before_files = files()
+        before_hashes = snapshot_protected_hashes(d)
+
+        res = run_controlled_enforce_executor(
+            d, config=_enforce_config(), session_id=SID, pair_id=PID,
+            root_guard_status="ok", apply=True)
+
+        assert res["apply"] is True
+        assert res["applied"] is True
+        assert res.get("refused") is False
+        assert res["runtime_changed"] is True
+        assert res["protected_sentinel_ok"] is True
+        assert res["run_id"].startswith("ce_run_")
+        assert res["rollback_id"].startswith("ce_rb_")
+
+        # записан РОВНО ОДИН новый файл — controlled_enforce_state.json
+        new_files = files() - before_files
+        assert new_files == {STATE_FILENAME}
+
+        # protected отчёты байт-в-байт не изменились
+        assert snapshot_protected_hashes(d) == before_hashes
+
+        st = json.loads((d / STATE_FILENAME).read_text(encoding="utf-8"))
+        assert st["kind"] == STATE_KIND
+        assert st["status"] == "active"
+        assert len(st["applied_exclusions"]) == 1
+        ex = st["applied_exclusions"][0]
+        assert ex["active"] is True
+        assert ex["transition_id"] == "ВРУ-3→ВРУ-2"
+        assert ex["item_ids"] == _IDS
+        assert ex["scope"]["exclude_from_enrichment"] is True
+        assert ex["scope"]["exclude_from_grounded_evidence"] is False
+        assert ex["scope"]["exclude_from_delta_explanation"] is False
+        assert ex["scope"]["exclude_from_findings"] is False
+        assert ex["rollback_id"] == res["rollback_id"]
+        assert ex["operator_decision_id"] == "xrd_8f25b282daf5"
+
+    def test_apply_true_idempotent_refuses_double_apply(self, tmp_path):
+        """Повторный apply поверх active state → refusal active_state_already_exists."""
+        d = self._dir(tmp_path)
+        first = run_controlled_enforce_executor(
+            d, config=_enforce_config(), session_id=SID, pair_id=PID,
+            root_guard_status="ok", apply=True)
+        assert first["applied"] is True
+        st_before = (d / STATE_FILENAME).read_text(encoding="utf-8")
+
+        second = run_controlled_enforce_executor(
+            d, config=_enforce_config(), session_id=SID, pair_id=PID,
+            root_guard_status="ok", apply=True)
+        assert second["applied"] is False
+        assert second["refused"] is True
+        assert second["refused_reason"] == "active_state_already_exists"
+        # state не перезаписан
+        assert (d / STATE_FILENAME).read_text(encoding="utf-8") == st_before
+
+    def test_active_state_excluded_by_selection_hook(self, tmp_path):
+        """Записанный active state реально исключает block-pairs при enabled=True."""
+        d = self._dir(tmp_path)
+        run_controlled_enforce_executor(
+            d, config=_enforce_config(), session_id=SID, pair_id=PID,
+            root_guard_status="ok", apply=True)
+        state = json.loads((d / STATE_FILENAME).read_text(encoding="utf-8"))
+        cands = [{"left_block_id": "A", "right_block_id": "B"},
+                 {"left_block_id": "C", "right_block_id": "D"},
+                 {"left_block_id": "E", "right_block_id": "F"}]
+        # default OFF — без изменений
+        out_off, removed_off = filter_candidates_by_controlled_enforce_state(
+            cands, state, enabled=False)
+        assert out_off == cands and removed_off == []
+        # enabled — исключает 2 block-pairs ВРУ-3→ВРУ-2 (A__B, C__D)
+        out_on, removed_on = filter_candidates_by_controlled_enforce_state(
+            cands, state, enabled=True)
+        assert len(out_on) == 1 and out_on[0]["left_block_id"] == "E"
+        assert set(removed_on) == {"A__B", "C__D"}
 
     def test_protected_hash_sentinel_snapshot(self, tmp_path):
         d = self._dir(tmp_path)

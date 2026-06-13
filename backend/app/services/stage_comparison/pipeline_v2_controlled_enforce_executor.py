@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Pipeline V2 — controlled enforce EXECUTOR v0 (code-only / diagnostics-only).
+"""Pipeline V2 — controlled enforce EXECUTOR v0 + v0 STATE-APPLY.
 
 Executor умеет:
 
@@ -11,15 +11,28 @@ Executor умеет:
 * снимать **protected-hash sentinel**;
 * готовить **rollback plan**.
 
-В v0 (эта задача) executor НИЧЕГО не применяет:
+``apply=False`` (default) — НИЧЕГО не применяет: runtime не меняется, active
+state не пишется, selection по умолчанию не меняется.
 
-* ``apply=False`` по умолчанию → runtime не меняется, active state не пишется,
-  selection по умолчанию не меняется;
-* ``apply=True`` в v0 **не реализован** → ``run_controlled_enforce_executor``
-  поднимает ``ControlledEnforceNotImplemented`` (real skip — отдельная задача).
+``apply=True`` (**STATE-APPLY ONLY**, 2026-06-14) — записывает РОВНО ОДИН
+артефакт ``controlled_enforce_state.json`` со ``status=active`` (active=true),
+если и только если ВСЕ guard'ы пройдены (``guards.apply_allowed=true``). Это
+единственная мутация. Executor при apply=True:
 
-Read-only, offline: не вызывает модели/джобы/сеть/subprocess. Единственный
+* re-валидирует config + runtime guards; при ``apply_allowed=false`` —
+  **graceful refusal** (``refused=true``, никаких записей, БЕЗ исключения);
+* idempotency-guard: если active state уже есть → refusal
+  (``active_state_already_exists``), без двойного применения;
+* снимает protected-hash sentinel ДО и ПОСЛЕ записи; при mismatch — откатывает
+  собственную запись и отказывает (``protected_hash_mismatch_after_write``);
+* НЕ трогает findings / block links / delta_explanation / grounded_evidence /
+  entity_diff / любые protected-отчёты; НЕ пересчитывает pipeline; НЕ пишет
+  execution plan / ui / summary / manifest (это делает вызывающий слой).
+
+Read-only-ish, offline: не вызывает модели/джобы/сеть/subprocess. Единственный
 backend-импорт — config-валидатор + KIND/статус-константы preflight/dry-run.
+Единственная файловая запись — атомарная запись ``controlled_enforce_state.json``
+при ``apply=True`` + пройденных guard'ах.
 
 Связано: [[stage_comparison_pipeline_v2_first_controlled_skip_protocol]],
 [[stage_comparison_pipeline_v2_controlled_enforce_executor]].
@@ -28,6 +41,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
@@ -66,7 +80,13 @@ PLAN_STATUS_BLOCKED = "blocked"
 
 
 class ControlledEnforceNotImplemented(RuntimeError):
-    """apply=True в v0 не реализован — real skip это отдельная задача."""
+    """Сохранён для обратной совместимости.
+
+    Раньше ``apply=True`` поднимал это исключение (v0 code-only). Начиная с
+    state-apply (2026-06-14) ``apply=True`` реализован и при неудовлетворённых
+    guard'ах делает graceful refusal вместо исключения. Класс оставлен для
+    импортов/тестов и на случай будущих по-настоящему нереализованных режимов.
+    """
 
 
 # ─── helpers ─────────────────────────────────────────────────────────────────
@@ -83,6 +103,30 @@ def _safe_load_json(path: Path) -> Optional[dict]:
         return json.loads(path.read_text(encoding="utf-8"))
     except Exception:  # noqa: BLE001 — fail-soft
         return None
+
+
+def _atomic_write_json(path: Path, data: dict) -> None:
+    """Атомарная запись JSON (temp + ``os.replace``). Единственная мутация."""
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    os.replace(tmp, path)
+
+
+def _generate_run_ids(session_id: str, pair_id: Optional[str]) -> tuple[str, str]:
+    """Детерминированно-уникальные run_id / rollback_id (timestamp + short hash)."""
+    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    h = hashlib.sha256(f"{session_id}|{pair_id}|{ts}".encode("utf-8")).hexdigest()[:8]
+    return f"ce_run_{ts}_{h}", f"ce_rb_{ts}_{h}"
+
+
+def _has_active_exclusions(state: Any) -> bool:
+    """True, если в state уже есть хотя бы одна active=True запись."""
+    if not isinstance(state, dict):
+        return False
+    for ex in state.get("applied_exclusions") or []:
+        if isinstance(ex, dict) and ex.get("active") is True:
+            return True
+    return False
 
 
 def _sha256_file(path: Path) -> Optional[str]:
@@ -234,18 +278,17 @@ def build_controlled_enforce_execution_plan(
 # ─── future state preview ────────────────────────────────────────────────────
 
 
-def build_controlled_enforce_state_preview(
+def _build_state_entries(
         *,
-        session_id: str,
-        pair_id: Optional[str],
         dry_run_report: Optional[dict],
         config: dict,
-        run_id: str = "PREVIEW",
-        rollback_id: str = "PREVIEW") -> dict[str, Any]:
-    """Построить PREVIEW будущего controlled_enforce_state.
+        run_id: str,
+        rollback_id: str,
+        active: bool) -> list[dict]:
+    """Собрать applied_exclusions[] из logical_transitions dry-run'а.
 
-    Инвариант: ``active=False`` (active state не создаётся без apply=True).
-    ``status="preview"`` — это не активный артефакт.
+    ``active`` управляет полем ``active`` каждой записи: preview → False,
+    real state-apply → True. Логика группировки идентична для обоих.
     """
     dr = dry_run_report if isinstance(dry_run_report, dict) else {}
     transitions = list(dr.get("logical_transitions") or [])
@@ -259,7 +302,7 @@ def build_controlled_enforce_state_preview(
             op_decision_id = w["operator_decision_id"]
             break
 
-    applied_exclusions = []
+    entries: list[dict] = []
     for t in transitions:
         t_items = list(t.get("items") or [])
         left_blocks, right_blocks = [], []
@@ -269,7 +312,7 @@ def build_controlled_enforce_state_preview(
                     left_blocks.append(w["left_block_id"])
                 if w.get("right_block_id"):
                     right_blocks.append(w["right_block_id"])
-        applied_exclusions.append({
+        entries.append({
             "run_id": run_id,
             "transition_id": t.get("transition_id"),
             "item_ids": t_items,
@@ -279,13 +322,30 @@ def build_controlled_enforce_state_preview(
             "right_block_ids": right_blocks,
             "operator_decision_id": op_decision_id,
             "scope": scope,
-            # HARD INVARIANT: preview не активен (active state требует apply=True)
-            "active": False,
+            "active": bool(active),
             "created_at": _now_iso(),
             "created_by": "controlled_enforce_v0",
             "rollback_id": rollback_id,
         })
+    return entries
 
+
+def build_controlled_enforce_state_preview(
+        *,
+        session_id: str,
+        pair_id: Optional[str],
+        dry_run_report: Optional[dict],
+        config: dict,
+        run_id: str = "PREVIEW",
+        rollback_id: str = "PREVIEW") -> dict[str, Any]:
+    """Построить PREVIEW будущего controlled_enforce_state.
+
+    Инвариант: ``active=False`` (active state не создаётся без apply=True).
+    ``status="preview"`` — это не активный артефакт.
+    """
+    applied_exclusions = _build_state_entries(
+        dry_run_report=dry_run_report, config=config,
+        run_id=run_id, rollback_id=rollback_id, active=False)
     return {
         "version": STATE_VERSION,
         "kind": STATE_KIND,
@@ -295,6 +355,46 @@ def build_controlled_enforce_state_preview(
         "updated_at": _now_iso(),
         "applied_exclusions": applied_exclusions,
         "history": [],
+    }
+
+
+def build_controlled_enforce_active_state(
+        *,
+        session_id: str,
+        pair_id: Optional[str],
+        dry_run_report: Optional[dict],
+        config: dict,
+        run_id: str,
+        rollback_id: str) -> dict[str, Any]:
+    """Построить АКТИВНЫЙ controlled_enforce_state (status=active, active=true).
+
+    Используется ТОЛЬКО на apply=True пути после прохождения всех guard'ов.
+    Содержит audit-trail (token / mode / run_id / rollback_id).
+    """
+    applied_exclusions = _build_state_entries(
+        dry_run_report=dry_run_report, config=config,
+        run_id=run_id, rollback_id=rollback_id, active=True)
+    cfg = config if isinstance(config, dict) else {}
+    return {
+        "version": STATE_VERSION,
+        "kind": STATE_KIND,
+        "status": "active",
+        "session_id": session_id,
+        "pair_id": pair_id,
+        "created_at": _now_iso(),
+        "updated_at": _now_iso(),
+        "run_id": run_id,
+        "rollback_id": rollback_id,
+        "mode": cfg.get("mode"),
+        "human_confirmation_token": cfg.get("human_confirmation_token"),
+        "created_by": "controlled_enforce_v0_state_apply",
+        "applied_exclusions": applied_exclusions,
+        "history": [{
+            "run_id": run_id,
+            "rollback_id": rollback_id,
+            "action": "state_apply",
+            "at": _now_iso(),
+        }],
     }
 
 
@@ -321,7 +421,7 @@ def build_controlled_enforce_rollback_plan(
     }
 
 
-# ─── executor (apply=False) ──────────────────────────────────────────────────
+# ─── executor (apply=False diagnostics / apply=True state-write) ──────────────
 
 
 def run_controlled_enforce_executor(
@@ -333,16 +433,17 @@ def run_controlled_enforce_executor(
         root_guard_status: Optional[str] = None,
         queue_active: bool = False,
         apply: bool = False) -> dict[str, Any]:
-    """Прогнать executor v0. ``apply=False`` (default) → НИЧЕГО не пишет.
+    """Прогнать executor.
 
-    Возвращает ``{plan, state_preview, rollback_plan, guards, protected_hashes_before}``.
-    ``apply=True`` в v0 НЕ реализован → ``ControlledEnforceNotImplemented``.
+    ``apply=False`` (default) → НИЧЕГО не пишет; возвращает
+    ``{plan, state_preview, rollback_plan, guards, protected_hashes_before}``.
+
+    ``apply=True`` (STATE-APPLY) → записывает РОВНО ОДИН артефакт
+    ``controlled_enforce_state.json`` (status=active) ТОЛЬКО при
+    ``guards.apply_allowed=true``. Иначе — graceful refusal (без записи, без
+    исключения). После записи сверяет protected-hash sentinel; при mismatch
+    откатывает собственную запись и отказывает.
     """
-    if apply:
-        raise ControlledEnforceNotImplemented(
-            "controlled enforce executor v0 does NOT implement real apply; "
-            "real skip is a separate task with backup + sentinel + audit-trail")
-
     d = Path(pipeline_v2_dir)
     skip_readiness = _safe_load_json(d / SKIP_READINESS_FILENAME)
     preflight = _safe_load_json(d / PREFLIGHT_FILENAME)
@@ -357,20 +458,104 @@ def run_controlled_enforce_executor(
     plan = build_controlled_enforce_execution_plan(
         session_id=session_id, pair_id=pair_id, config=config,
         dry_run_report=dry_run, guards=guards,
-        protected_hashes_before=protected_before, apply_requested=False)
-    state_preview = build_controlled_enforce_state_preview(
-        session_id=session_id, pair_id=pair_id, dry_run_report=dry_run, config=config)
-    rollback_plan = build_controlled_enforce_rollback_plan()
+        protected_hashes_before=protected_before, apply_requested=apply)
 
+    # ── apply=False: diagnostics only, никаких записей ──
+    if not apply:
+        state_preview = build_controlled_enforce_state_preview(
+            session_id=session_id, pair_id=pair_id, dry_run_report=dry_run, config=config)
+        rollback_plan = build_controlled_enforce_rollback_plan()
+        return {
+            "apply": False,
+            "applied": False,
+            "runtime_changed": False,
+            "guards": guards,
+            "plan": plan,
+            "state_preview": state_preview,
+            "rollback_plan": rollback_plan,
+            "protected_hashes_before": protected_before,
+        }
+
+    # ── apply=True: STATE-WRITE-ONLY, полностью под guard'ами ──
+    if not guards.get("apply_allowed"):
+        # graceful refusal — НИКАКИХ записей (без исключения)
+        return {
+            "apply": True,
+            "applied": False,
+            "runtime_changed": False,
+            "refused": True,
+            "refused_reason": "guards_not_allowed",
+            "blocked_reasons": guards.get("blocked_reasons", []),
+            "guards": guards,
+            "plan": plan,
+            "protected_hashes_before": protected_before,
+        }
+
+    state_path = d / STATE_FILENAME
+    existing = _safe_load_json(state_path)
+    if _has_active_exclusions(existing):
+        # idempotency-guard: не применять повторно поверх active state
+        return {
+            "apply": True,
+            "applied": False,
+            "runtime_changed": False,
+            "refused": True,
+            "refused_reason": "active_state_already_exists",
+            "blocked_reasons": ["active_state_already_exists"],
+            "guards": guards,
+            "plan": plan,
+            "existing_state_path": str(state_path),
+            "protected_hashes_before": protected_before,
+        }
+
+    run_id, rollback_id = _generate_run_ids(session_id, pair_id)
+    active_state = build_controlled_enforce_active_state(
+        session_id=session_id, pair_id=pair_id, dry_run_report=dry_run, config=config,
+        run_id=run_id, rollback_id=rollback_id)
+
+    # ЕДИНСТВЕННАЯ мутация: атомарная запись controlled_enforce_state.json
+    _atomic_write_json(state_path, active_state)
+
+    # protected-hash sentinel ПОСЛЕ (state не входит в PROTECTED_REPORTS)
+    protected_after = snapshot_protected_hashes(d)
+    sentinel_ok = (protected_before == protected_after)
+    if not sentinel_ok:
+        # консервативно: откатываем собственную запись (protected отчёт изменился)
+        try:
+            state_path.unlink()
+        except Exception:  # noqa: BLE001
+            pass
+        return {
+            "apply": True,
+            "applied": False,
+            "runtime_changed": False,
+            "refused": True,
+            "refused_reason": "protected_hash_mismatch_after_write",
+            "blocked_reasons": ["protected_hash_mismatch"],
+            "guards": guards,
+            "plan": plan,
+            "protected_hashes_before": protected_before,
+            "protected_hashes_after": protected_after,
+            "protected_sentinel_ok": False,
+        }
+
+    rollback_plan = build_controlled_enforce_rollback_plan(
+        run_id=run_id, rollback_id=rollback_id)
     return {
-        "apply": False,
-        "applied": False,
-        "runtime_changed": False,
+        "apply": True,
+        "applied": True,
+        "runtime_changed": True,
+        "refused": False,
+        "run_id": run_id,
+        "rollback_id": rollback_id,
         "guards": guards,
         "plan": plan,
-        "state_preview": state_preview,
-        "rollback_plan": rollback_plan,
+        "state": active_state,
+        "state_path": str(state_path),
         "protected_hashes_before": protected_before,
+        "protected_hashes_after": protected_after,
+        "protected_sentinel_ok": True,
+        "rollback_plan": rollback_plan,
     }
 
 
@@ -451,6 +636,7 @@ __all__ = [
     "validate_controlled_enforce_runtime_guards",
     "build_controlled_enforce_execution_plan",
     "build_controlled_enforce_state_preview",
+    "build_controlled_enforce_active_state",
     "build_controlled_enforce_rollback_plan",
     "run_controlled_enforce_executor",
     "filter_candidates_by_controlled_enforce_state",

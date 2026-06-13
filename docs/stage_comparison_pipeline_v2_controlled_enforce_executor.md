@@ -1,7 +1,10 @@
-# Pipeline V2 — Controlled Enforce Executor v0 (code-only / diagnostics)
+# Pipeline V2 — Controlled Enforce Executor v0 + STATE-APPLY
 
 **Дата:** 2026-06-14
-**Статус:** code-only / diagnostics-only. **Реальный skip НЕ применяется.**
+**Статус:** diagnostics (`apply=False`, default) **+ STATE-APPLY** (`apply=True`):
+пишет ТОЛЬКО `controlled_enforce_state.json` (active) под полными guard'ами.
+Findings / block links / delta / grounded / protected reports / pipeline —
+**не трогаются**.
 **Модуль:** [backend/app/services/stage_comparison/pipeline_v2_controlled_enforce_executor.py](../backend/app/services/stage_comparison/pipeline_v2_controlled_enforce_executor.py)
 
 ## Что executor v0 делает
@@ -18,17 +21,47 @@
 * снимает **protected-hash sentinel** (sha256 protected_reports ДО);
 * готовит **rollback plan**.
 
-## Что executor v0 НЕ делает
+## Что executor НЕ делает (даже при apply=True)
 
-* НЕ применяет skip, НЕ пишет active runtime state;
-* НЕ меняет selection по умолчанию;
-* НЕ включает enforce;
-* НЕ трогает findings / block links / delta_explanation / grounded_evidence;
+* НЕ меняет selection по умолчанию (selection hook default OFF);
+* НЕ пересчитывает pipeline;
+* НЕ трогает findings / block links / delta_explanation / grounded_evidence /
+  entity_diff / любые protected-отчёты;
+* НЕ пишет execution plan / ui / summary / manifest (это вызывающий слой);
 * НЕ вызывает модели / джобы / сеть / subprocess.
 
-`apply=False` по умолчанию → runtime не меняется. **`apply=True` в v0 НЕ
-реализован**: `run_controlled_enforce_executor(..., apply=True)` поднимает
-`ControlledEnforceNotImplemented` (реальный skip — отдельная задача).
+При `apply=False` дополнительно: НЕ применяет skip, НЕ пишет active runtime
+state, НЕ включает enforce.
+
+`apply=False` по умолчанию → runtime не меняется.
+
+## `apply=True` — STATE-APPLY (2026-06-14)
+
+`run_controlled_enforce_executor(..., apply=True)` записывает **РОВНО ОДИН**
+артефакт `controlled_enforce_state.json` (`status=active`, записи `active=true`)
+тогда и только тогда, когда `guards.apply_allowed=true`. Это **единственная**
+мутация executor'а. Шаги apply:
+
+1. re-валидация config + runtime guards (`validate_controlled_enforce_runtime_guards`);
+   при `apply_allowed=false` → **graceful refusal** (`refused=true`,
+   `refused_reason=guards_not_allowed`, **никаких записей**, без исключения);
+2. idempotency-guard: если active state уже есть → refusal
+   (`active_state_already_exists`), без двойного применения и без перезаписи;
+3. генерация `run_id` / `rollback_id` (timestamp + short hash);
+4. `build_controlled_enforce_active_state(...)` (status=active, audit-trail:
+   token / mode / run_id / rollback_id / history);
+5. **атомарная** запись `controlled_enforce_state.json` (temp + `os.replace`);
+6. protected-hash sentinel ПОСЛЕ; при mismatch → откат собственной записи
+   (`unlink`) + refusal `protected_hash_mismatch_after_write`.
+
+Результат apply=True: `{applied, runtime_changed, run_id, rollback_id, state,
+state_path, protected_hashes_before/after, protected_sentinel_ok, rollback_plan}`
+или refusal-форма с `refused_reason`.
+
+Что apply=True **НЕ** делает: не пишет execution plan / ui / summary / manifest
+(это вызывающий слой), не пересчитывает pipeline, не трогает findings / block
+links / delta_explanation / grounded_evidence / entity_diff / любые
+protected-отчёты, не вызывает модели/джобы/сеть.
 
 ## Execution plan (`controlled_enforce_execution_plan.json`)
 
@@ -102,8 +135,10 @@ false**. Артефакты — только в `diagnostics_pipeline_v2/...` (g
 
 ## Безопасность
 
-read-only / offline; `apply=False` default; `apply=True` не реализован
-(raise); selection hook default OFF; no model/job/network/subprocess.
+offline; `apply=False` default → read-only; `apply=True` пишет ТОЛЬКО
+`controlled_enforce_state.json` под полными guard'ами (graceful refusal иначе) +
+protected-hash sentinel до/после с откатом при mismatch; selection hook default
+OFF; no model/job/network/subprocess.
 
 ## Связанные документы
 
@@ -116,5 +151,8 @@ read-only / offline; `apply=False` default; `apply=True` не реализова
 [tests/test_stage_comparison_pipeline_v2_controlled_enforce_executor.py](../tests/test_stage_comparison_pipeline_v2_controlled_enforce_executor.py)
 — guards (config/token/preflight/dry_run/root/queue/protected/ready), plan
 группирует 1 transition / 2 block-pairs, state preview active=false, rollback,
-apply=False ничего не пишет, apply=True → NotImplemented, лимиты v0, selection
-hook default-off/on, no model/subprocess imports.
+apply=False ничего не пишет, **apply=True пишет ТОЛЬКО state (active=true) при
+ok-guard'ах**, refusal при невалидном config / root!=ok, idempotency (повторный
+apply не перезаписывает), protected-hash sentinel неизменен, записанный state
+исключает 2 block-pairs через selection hook, лимиты v0, no model/subprocess
+imports.
