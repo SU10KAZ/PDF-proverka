@@ -1788,3 +1788,107 @@ describe('Pipeline V2 Controlled Enforce Preflight — HTML panel (files)', () =
     expect(appJs).toContain('scPv2SrLoad');
   });
 });
+
+// ─── Controlled Enforce Dry-run — JS логика + HTML панель (observe-only) ─────
+
+function makeCdrReport(overrides) {
+  return Object.assign({
+    version: 1,
+    kind: 'stage_comparison_pipeline_v2_controlled_enforce_dry_run',
+    status: 'ok', available: true, report_status: 'ok',
+    summary: {
+      eligible_items: 2, logical_transitions: 1, would_skip_block_pairs: 2,
+      would_exclude_from_enrichment: 2, would_apply: false, enforce_enabled: false,
+    },
+    logical_transitions: [
+      { transition_id: 'ВРУ-3→ВРУ-2', item_count: 2, operator_decision: 'approve_exclude',
+        link_validation_decisions: ['reject_mapping'], confidence: 0.99,
+        recommended_scope: { exclude_from_enrichment: true, exclude_from_grounded_evidence: false,
+                             exclude_from_delta_explanation: false, exclude_from_findings: false } }],
+    would_skip_items: [
+      { item_id: 'xp_bp::A__B', would_apply: false, enforce_allowed: false, runtime_write_allowed: false }],
+    would_apply: false, enforce_enabled: false,
+  }, overrides || {});
+}
+function scPv2CdrViewState(resp) {
+  if (!resp) return 'idle';
+  if (resp.status === 'ok' && resp.available) return 'available';
+  if (resp.status === 'not_found') return 'not_found';
+  if (resp.status === 'error') return 'error';
+  return 'idle';
+}
+
+describe('Pipeline V2 Controlled Enforce Dry-run — JS logic', () => {
+  it('1. available report → view-state available, summary читается', () => {
+    const r = makeCdrReport();
+    expect(scPv2CdrViewState(r)).toBe('available');
+    expect(r.summary.eligible_items).toBe(2);
+    expect(r.summary.logical_transitions).toBe(1);
+  });
+  it('2. logical transition содержит ВРУ-3→ВРУ-2 с item_count=2', () => {
+    const t = makeCdrReport().logical_transitions[0];
+    expect(t.transition_id).toBe('ВРУ-3→ВРУ-2');
+    expect(t.item_count).toBe(2);
+    expect(t.operator_decision).toBe('approve_exclude');
+    expect(t.link_validation_decisions).toContain('reject_mapping');
+  });
+  it('3. would_apply=false и enforce_enabled=false', () => {
+    const r = makeCdrReport();
+    expect(r.summary.would_apply).toBe(false);
+    expect(r.summary.enforce_enabled).toBe(false);
+    expect(r.would_apply).toBe(false);
+    expect(r.would_skip_items[0].runtime_write_allowed).toBe(false);
+  });
+  it('4. not_found/idle не ломают view-state', () => {
+    expect(scPv2CdrViewState({ status: 'not_found', available: false })).toBe('not_found');
+    expect(scPv2CdrViewState(null)).toBe('idle');
+  });
+});
+
+describe('Pipeline V2 Controlled Enforce Dry-run — HTML panel (files)', () => {
+  const indexHtml = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  const appJs = fs.readFileSync(path.join(__dirname, '..', 'static', 'js', 'app.js'), 'utf8');
+  function cdrBlock() {
+    const s = indexHtml.indexOf('scPv2CdrAvailable || scPv2CdrNotFound || scPv2CdrRespError');
+    expect(s).toBeGreaterThan(0);
+    const e = indexHtml.indexOf('transport / HTTP errors', s);
+    expect(e).toBeGreaterThan(s);
+    return indexHtml.slice(s, e);
+  }
+  it('1. Controlled Enforce Dry-run panel renders (заголовок + summary)', () => {
+    const blk = cdrBlock();
+    expect(blk).toContain('🧪 Controlled Enforce Dry-run');
+    expect(blk).toContain('scPv2CdrSummary');
+    expect(blk).toContain('eligible');
+    expect(blk).toContain('logical transitions');
+    expect(blk).toContain('would_skip block-pairs');
+  });
+  it('2. logical transition card renders', () => {
+    const blk = cdrBlock();
+    expect(blk).toContain('scPv2CdrTransitions');
+    expect(blk).toContain('transition_id');
+    expect(blk).toContain('block-pairs');
+  });
+  it('3. would_apply=false renders + dry-run only warning', () => {
+    const blk = cdrBlock();
+    expect(blk).toContain('would_apply: false');
+    expect(blk).toContain('enforce_enabled: false');
+    expect(blk).toContain('Dry-run only. Nothing is skipped or written.');
+  });
+  it('4. НЕТ кнопок apply/enforce/skip/finding/block-links', () => {
+    const blk = cdrBlock();
+    for (const forbidden of ['Apply', 'Run enforce', 'Skip now', 'Create finding',
+                             'Change block links', 'Применить', 'Запустить enforce',
+                             'Запустить skip', 'Исключить сейчас', 'Создать замечание']) {
+      expect(blk).not.toContain(forbidden);
+    }
+  });
+  it('5. старые CE preflight / skip readiness / exclusion панели не сломаны + wiring', () => {
+    expect(indexHtml).toContain('🧯 Controlled Enforce Preflight');
+    expect(indexHtml).toContain('🛡 Skip Readiness');
+    expect(indexHtml).toContain('🚫 Exclusion Preview v2');
+    expect(appJs).toContain('/controlled-enforce-dry-run?pair_id=');
+    expect(appJs).toContain('scPv2CdrLoad');
+    expect(appJs).toContain('scPv2CeLoad');
+  });
+});

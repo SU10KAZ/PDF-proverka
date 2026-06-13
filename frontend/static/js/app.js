@@ -14705,6 +14705,7 @@ const app = createApp({
                 scPv2XpLoad();
                 scPv2SrLoad();
                 scPv2CeLoad();
+                scPv2CdrLoad();
             } catch (e) {
                 if (myReq !== scPv2EaReqSeq) return;
                 scPv2EaResp.value = null;
@@ -14733,6 +14734,7 @@ const app = createApp({
             scPv2XpReset();
             scPv2SrReset();
             scPv2CeReset();
+            scPv2CdrReset();
         }
         watch(() => (scSession.value && scSession.value.id) || '', scPv2EaReset);
         watch(() => (scActivePair.value && scActivePair.value.id) || '', scPv2EaReset);
@@ -14745,6 +14747,7 @@ const app = createApp({
             scPv2XpReset();
             scPv2SrReset();
             scPv2CeReset();
+            scPv2CdrReset();
         });
         // Read-only jump: карточка выравнивания сущностей → block link preview.
         // Переиспользует существующий мост (scPv2OpenBlockLinkFromGrounding):
@@ -15086,6 +15089,71 @@ const app = createApp({
             scPv2CeResp.value = null;
             scPv2CeError.value = '';
             scPv2CeLoading.value = false;
+        }
+
+        // ── Controlled Enforce Dry-run (read-only, observe-only) ─────────────
+        // ТОЛЬКО чтение GET .../controlled-enforce-dry-run. Показывает «что было
+        // бы пропущено», но НИЧЕГО не применяет/не пишет. Dry-run only.
+
+        const scPv2CdrResp = ref(null);
+        const scPv2CdrLoading = ref(false);
+        const scPv2CdrError = ref('');
+        let scPv2CdrReqSeq = 0;
+
+        const scPv2CdrSummary = computed(() =>
+            (scPv2CdrResp.value && scPv2CdrResp.value.summary) || null);
+        const scPv2CdrTransitions = computed(() =>
+            (scPv2CdrResp.value && scPv2CdrResp.value.logical_transitions) || []);
+        const scPv2CdrItems = computed(() =>
+            (scPv2CdrResp.value && scPv2CdrResp.value.would_skip_items) || []);
+        const scPv2CdrReportStatus = computed(() =>
+            (scPv2CdrResp.value && scPv2CdrResp.value.report_status) || '');
+        const scPv2CdrAvailable = computed(() =>
+            !!scPv2CdrResp.value && scPv2CdrResp.value.status === 'ok'
+            && scPv2CdrResp.value.available);
+        const scPv2CdrNotFound = computed(() =>
+            !!scPv2CdrResp.value && scPv2CdrResp.value.status === 'not_found');
+        const scPv2CdrRespError = computed(() =>
+            (scPv2CdrResp.value && scPv2CdrResp.value.status === 'error')
+                ? ((scPv2CdrResp.value.warnings || []).join('; ')
+                   || scPv2CdrResp.value.message || 'error')
+                : '');
+        async function scPv2CdrLoad() {
+            const sid = scSession.value && scSession.value.id;
+            const pid = scPv2EaEffectivePairId();
+            if (!sid || !pid) return;
+            const myReq = ++scPv2CdrReqSeq;
+            scPv2CdrLoading.value = true;
+            scPv2CdrError.value = '';
+            const url = '/api/stage-comparison/pipeline-v2/'
+                + encodeURIComponent(sid)
+                + '/controlled-enforce-dry-run?pair_id='
+                + encodeURIComponent(pid) + '&limit=200';
+            try {
+                const r = await fetch(url);
+                if (myReq !== scPv2CdrReqSeq) return;
+                if (r.status === 401 || r.status === 403) {
+                    scPv2CdrResp.value = null;
+                    scPv2CdrError.value = 'Доступ запрещён (' + r.status + ').';
+                    return;
+                }
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const j = await r.json();
+                if (myReq !== scPv2CdrReqSeq) return;
+                scPv2CdrResp.value = j;
+            } catch (e) {
+                if (myReq !== scPv2CdrReqSeq) return;
+                scPv2CdrResp.value = null;
+                scPv2CdrError.value = String((e && e.message) || e);
+            } finally {
+                if (myReq === scPv2CdrReqSeq) scPv2CdrLoading.value = false;
+            }
+        }
+        function scPv2CdrReset() {
+            scPv2CdrReqSeq++;
+            scPv2CdrResp.value = null;
+            scPv2CdrError.value = '';
+            scPv2CdrLoading.value = false;
         }
 
         // ── Operator review write-layer для Exclusion Preview v2 ─────────────
@@ -15683,6 +15751,11 @@ const app = createApp({
             scPv2CeReportStatus, scPv2CeAvailable, scPv2CeNotFound, scPv2CeRespError,
             scPv2CeStatusMeta, scPv2CeBlockMeta, scPv2CeLoad, scPv2CeReset,
             SC_PV2_CE_STATUS_META, SC_PV2_CE_BLOCK_META,
+            // Pipeline V2 Controlled Enforce Dry-run (read-only / observe-only)
+            scPv2CdrResp, scPv2CdrLoading, scPv2CdrError,
+            scPv2CdrSummary, scPv2CdrTransitions, scPv2CdrItems,
+            scPv2CdrReportStatus, scPv2CdrAvailable, scPv2CdrNotFound, scPv2CdrRespError,
+            scPv2CdrLoad, scPv2CdrReset,
             // Pipeline V2 Manual Entity Mapping (write-слой)
             SC_PV2_EA_DECISIONS, scPv2EaDrafts, scPv2EaSaving, scPv2EaSaveErr,
             scPv2EaSaveHint, scPv2EaPairKey, scPv2EaUnpairedKey, scPv2EaDraft,

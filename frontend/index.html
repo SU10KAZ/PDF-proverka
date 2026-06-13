@@ -6161,6 +6161,55 @@
                         </template>
                     </div>
 
+                    <!-- ─── Controlled Enforce Dry-run (read-only, observe-only) ─── -->
+                    <div v-if="scPv2CdrAvailable || scPv2CdrNotFound || scPv2CdrRespError"
+                         style="border:1px solid #e2e8f0; border-radius:8px; padding:8px 10px; margin-bottom:10px; background:#f8fafc">
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:6px">
+                            <strong style="color:#334155">🧪 Controlled Enforce Dry-run</strong>
+                            <span style="opacity:.6; font-size:11px">read-only · observe-only · impact preview (без enforce)</span>
+                        </div>
+                        <!-- dry-run only warning -->
+                        <div style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; border-radius:6px; padding:4px 8px; margin-bottom:6px; font-size:11px">
+                            ℹ Dry-run only. Nothing is skipped or written. (would_apply=false, enforce_enabled=false)
+                        </div>
+                        <div v-if="scPv2CdrRespError" style="color:#991b1b; font-size:11px">Отчёт нечитаем: {{ scPv2CdrRespError }}</div>
+                        <div v-else-if="scPv2CdrNotFound" style="opacity:.6; font-size:11px">
+                            Controlled Enforce Dry-run report ещё не построен для этой пары.
+                        </div>
+                        <template v-else-if="scPv2CdrAvailable && scPv2CdrSummary">
+                            <!-- summary chips -->
+                            <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:6px; font-size:11px">
+                                <span style="background:#eef2ff; color:#3730a3; border-radius:10px; padding:1px 8px; font-weight:600">{{ scPv2CdrReportStatus }}</span>
+                                <span style="background:#eef2ff; color:#3730a3; border-radius:10px; padding:1px 8px">eligible: {{ scPv2CdrSummary.eligible_items }}</span>
+                                <span style="background:#e0e7ff; color:#3730a3; border-radius:10px; padding:1px 8px">logical transitions: {{ scPv2CdrSummary.logical_transitions }}</span>
+                                <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:1px 8px">would_skip block-pairs: {{ scPv2CdrSummary.would_skip_block_pairs }}</span>
+                                <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">would_apply: false</span>
+                                <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">enforce_enabled: false</span>
+                            </div>
+                            <!-- logical transition cards -->
+                            <div v-for="(t, i) in scPv2CdrTransitions" :key="'pv2cdr-t-'+i"
+                                 style="background:#fff; border:1px solid #e2e8f0; border-radius:6px; padding:6px 8px; margin-bottom:5px; font-size:11px">
+                                <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-bottom:3px">
+                                    <span style="background:#e0e7ff; color:#3730a3; border-radius:10px; padding:1px 8px; font-weight:600">
+                                        {{ t.transition_id }}
+                                    </span>
+                                    <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:1px 6px; font-size:10px">items: {{ t.item_count }} block-pairs</span>
+                                    <span v-if="t.operator_decision" style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 6px; font-size:10px">operator: {{ t.operator_decision }}</span>
+                                    <span v-for="(lv, j) in (t.link_validation_decisions || [])" :key="'pv2cdr-lv-'+i+'-'+j"
+                                          style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:1px 6px; font-size:10px">link validation: {{ lv }}</span>
+                                </div>
+                                <div v-if="t.recommended_scope" style="opacity:.7; font-size:10px">
+                                    scope: exclude_from_enrichment only
+                                    (enrichment: {{ t.recommended_scope.exclude_from_enrichment ? 'skip' : 'run' }}
+                                    · evidence: {{ t.recommended_scope.exclude_from_grounded_evidence ? 'skip' : 'run' }}
+                                    · delta: {{ t.recommended_scope.exclude_from_delta_explanation ? 'skip' : 'run' }}
+                                    · findings: {{ t.recommended_scope.exclude_from_findings ? 'skip' : 'run' }})
+                                </div>
+                                <!-- dry-run only: NO action buttons -->
+                            </div>
+                        </template>
+                    </div>
+
 
                     <!-- transport / HTTP errors -->
                     <div v-if="scPv2EaError" style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; padding:6px 10px; margin-bottom:8px">

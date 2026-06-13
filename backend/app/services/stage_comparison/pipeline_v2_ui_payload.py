@@ -833,6 +833,23 @@ def build_pipeline_v2_ui_payload(summary: dict,
         if ce.get("error"):
             controlled_enforce_section["error"] = str(ce["error"])
 
+    cedr = s.get("controlled_enforce_dry_run")
+    controlled_enforce_dry_run_section = None
+    if isinstance(cedr, dict) and cedr.get("enabled"):
+        cedr_status = _clean(cedr.get("status")) or "unknown"
+        controlled_enforce_dry_run_section = {
+            "available": cedr_status not in ("disabled", "not_run", "unknown"),
+            "status": cedr_status,
+            "eligible_items": _safe_count(cedr.get("eligible_items")),
+            "logical_transitions": _safe_count(cedr.get("logical_transitions")),
+            "would_skip_block_pairs": _safe_count(cedr.get("would_skip_block_pairs")),
+            # HARD INVARIANTS: всегда False в dry-run
+            "would_apply": False,
+            "enforce_enabled": False,
+        }
+        if cedr.get("error"):
+            controlled_enforce_dry_run_section["error"] = str(cedr["error"])
+
     # per-delta compact evidence → attach к карточкам дельт (по delta_id).
     # Успешный attach — НЕ warning (не деградирует статус); счётчик кладём
     # в саму grounded_evidence-секцию для прозрачности.
@@ -889,6 +906,8 @@ def build_pipeline_v2_ui_payload(summary: dict,
         payload["skip_readiness"] = skip_readiness_section
     if controlled_enforce_section is not None:
         payload["controlled_enforce_preflight"] = controlled_enforce_section
+    if controlled_enforce_dry_run_section is not None:
+        payload["controlled_enforce_dry_run"] = controlled_enforce_dry_run_section
     payload["filters"] = build_ui_filters(payload)
     return payload
 

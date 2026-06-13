@@ -98,6 +98,10 @@ from backend.app.services.stage_comparison.pipeline_v2_controlled_enforce import
     write_controlled_enforce_preflight_report,
     snapshot_protected_hashes,
 )
+from backend.app.services.stage_comparison.pipeline_v2_controlled_enforce_dry_run import (
+    build_controlled_enforce_dry_run,
+    write_controlled_enforce_dry_run_report,
+)
 from backend.app.services.stage_comparison.pipeline_v2_skip_readiness import (
     build_skip_readiness_report,
     write_skip_readiness_report,
@@ -130,6 +134,7 @@ _ARTIFACT_FILENAMES = {
     "exclusion_preview": "exclusion_preview_v2_report.json",
     "skip_readiness": "skip_readiness_report.json",
     "controlled_enforce_preflight": "controlled_enforce_preflight_report.json",
+    "controlled_enforce_dry_run": "controlled_enforce_dry_run_report.json",
     "summary_json": "pipeline_v2_summary.json",
     "summary_md": "pipeline_v2_summary.md",
     "manifest": "pipeline_v2_manifest.json",
@@ -144,6 +149,7 @@ _MANIFEST_ARTIFACT_KEYS = [
     "exclusion_preview",
     "skip_readiness",
     "controlled_enforce_preflight",
+    "controlled_enforce_dry_run",
     "summary_json", "summary_md",
 ]
 
@@ -761,6 +767,27 @@ def _controlled_enforce_section(ce_report: Any, ce_enabled: bool,
     return sec
 
 
+def _controlled_enforce_dry_run_section(cedr_report: Any, cedr_enabled: bool,
+                                        cedr_error: Optional[str]) -> dict:
+    s = (cedr_report.get("summary") if isinstance(cedr_report, dict) else {}) or {}
+    sec = {
+        "enabled": bool(cedr_enabled),
+        "status": ("disabled" if not cedr_enabled else
+                   "failed" if cedr_error else
+                   (cedr_report or {}).get("status", "not_run")
+                   if isinstance(cedr_report, dict) else "not_run"),
+        "eligible_items": s.get("eligible_items", 0),
+        "logical_transitions": s.get("logical_transitions", 0),
+        "would_skip_block_pairs": s.get("would_skip_block_pairs", 0),
+        # HARD INVARIANTS: всегда False в dry-run
+        "would_apply": False,
+        "enforce_enabled": False,
+    }
+    if cedr_error:
+        sec["error"] = cedr_error
+    return sec
+
+
 def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report: Any,
                               entity_report: Any, diff_report: Any, inputs: dict,
                               artifact_paths: dict, warnings: list[str], status: str,
@@ -787,7 +814,9 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
                               sr_report: Any = None, sr_enabled: bool = False,
                               sr_error: Optional[str] = None,
                               ce_report: Any = None, ce_enabled: bool = False,
-                              ce_error: Optional[str] = None) -> dict:
+                              ce_error: Optional[str] = None,
+                              cedr_report: Any = None, cedr_enabled: bool = False,
+                              cedr_error: Optional[str] = None) -> dict:
     """Собрать ``pipeline_v2_summary`` из артефактов этапов 1–4."""
     lm, rm = _summary_of(left_model), _summary_of(right_model)
     bm, em, dm = _summary_of(block_report), _summary_of(entity_report), _summary_of(diff_report)
@@ -852,6 +881,8 @@ def build_pipeline_v2_summary(*, left_model: Any, right_model: Any, block_report
         "skip_readiness_v2": _skip_readiness_section(sr_report, sr_enabled, sr_error),
         "controlled_enforce_preflight": _controlled_enforce_section(
             ce_report, ce_enabled, ce_error),
+        "controlled_enforce_dry_run": _controlled_enforce_dry_run_section(
+            cedr_report, cedr_enabled, cedr_error),
         "graphic_vision": _graphic_vision_section(gv_report, gv_enabled,
                                                   gv_error),
         "graphic_vision_grounding": _graphic_vision_grounding_section(
@@ -1311,6 +1342,12 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     ce_opts = options.get("controlled_enforce_preflight") or {}
     ce_enabled = ce_opts.get("enabled", False) is True
 
+    # controlled enforce dry-run: слой НАД preflight. Показывает «что было бы
+    # пропущено» (would_skip_items + logical_transitions), но НИЧЕГО не применяет.
+    # Default OFF. Запускается после controlled_enforce_preflight.
+    cedr_opts = options.get("controlled_enforce_dry_run") or {}
+    cedr_enabled = cedr_opts.get("enabled", False) is True
+
     # vision grounding: проверка vision-результата по anchor-тексту блока.
     # Включается только если есть graphic_vision (нечего грунтовать иначе);
     # явно отключается graphic_vision_grounding.enabled=false.
@@ -1343,6 +1380,8 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
     sr_error: Optional[str] = None
     ce_report = None
     ce_error: Optional[str] = None
+    cedr_report = None
+    cedr_error: Optional[str] = None
     gv_report = None
     gv_error: Optional[str] = None
     gvg_report = None
@@ -1639,6 +1678,24 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
             except Exception as ceexc:  # noqa: BLE001 — слой не критичен
                 ce_error = f"{type(ceexc).__name__}: {ceexc}"
 
+        # [10] controlled enforce dry-run — mark-only, Default OFF. Слой НАД
+        #      preflight: показывает «что было бы пропущено» (would_skip_items +
+        #      logical_transitions), но НИЧЕГО не применяет (would_apply=false,
+        #      enforce_enabled=false, runtime_write_allowed=false). Запускается
+        #      после preflight, читает уже записанные артефакты.
+        if cedr_enabled:
+            try:
+                cedr_report = build_controlled_enforce_dry_run(
+                    session_id=str(out_dir.name), pair_id=None,
+                    preflight_report=ce_report,
+                    skip_readiness_report=sr_report,
+                    overrides_report=None,
+                    exclusion_preview_report=xp_report)
+                write_controlled_enforce_dry_run_report(
+                    paths["controlled_enforce_dry_run"], cedr_report)
+            except Exception as cedrexc:  # noqa: BLE001 — слой не критичен
+                cedr_error = f"{type(cedrexc).__name__}: {cedrexc}"
+
     except Exception as exc:  # fail-soft: фиксируем, не роняем процесс
         status = "failed"
         error = f"{type(exc).__name__}: {exc}"
@@ -1734,6 +1791,11 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
             warnings.append(f"controlled_enforce_preflight: {w}")
     if ce_error:
         warnings.append(f"controlled_enforce_preflight: {ce_error}")
+    if isinstance(cedr_report, dict):
+        for w in cedr_report.get("warnings", []) or []:
+            warnings.append(f"controlled_enforce_dry_run: {w}")
+    if cedr_error:
+        warnings.append(f"controlled_enforce_dry_run: {cedr_error}")
 
     if status != "failed" and warnings:
         status = "completed_with_warnings"
@@ -1754,7 +1816,8 @@ def run_pipeline_v2_dry_run(left_package: Any, right_package: Any, out_dir: str 
         lv_report=lv_report, lv_enabled=lv_enabled, lv_error=lv_error,
         xp_report=xp_report, xp_enabled=xp_enabled, xp_error=xp_error,
         sr_report=sr_report, sr_enabled=sr_enabled, sr_error=sr_error,
-        ce_report=ce_report, ce_enabled=ce_enabled, ce_error=ce_error)
+        ce_report=ce_report, ce_enabled=ce_enabled, ce_error=ce_error,
+        cedr_report=cedr_report, cedr_enabled=cedr_enabled, cedr_error=cedr_error)
 
     # summary + manifest пишем всегда (best-effort, атомарно)
     write_pipeline_v2_summary_json(paths["summary_json"], summary)

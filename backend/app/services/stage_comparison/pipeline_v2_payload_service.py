@@ -1167,6 +1167,108 @@ def discover_controlled_enforce_preflight(
             warnings=[f"{type(exc).__name__}: {exc}"])
 
 
+CONTROLLED_ENFORCE_DRY_RUN_FILENAME = "controlled_enforce_dry_run_report.json"
+CEDR_NOT_FOUND_MESSAGE = "Controlled enforce dry-run report not found for this pair."
+_CEDR_REPORT_KIND = "stage_comparison_pipeline_v2_controlled_enforce_dry_run"
+
+
+def _cedr_detail_envelope(status: str, *, session_id: str,
+                          pair_id: Optional[str], message: str,
+                          warnings: Optional[list[str]] = None) -> dict:
+    """not_found/error ответ controlled-enforce-dry-run endpoint'а."""
+    return {
+        "version": 1, "kind": _CEDR_REPORT_KIND, "status": status,
+        "available": False, "session_id": session_id, "pair_id": pair_id,
+        "source": None, "summary": {},
+        "logical_transitions": [], "would_skip_items": [],
+        "protected_artifacts": {}, "runtime_root": {},
+        "total_count": 0, "filtered_count": 0,
+        # HARD INVARIANTS
+        "would_apply": False, "enforce_enabled": False,
+        "message": message, "warnings": warnings or [],
+    }
+
+
+def discover_controlled_enforce_dry_run(
+        session_id: str, pair_id: Optional[str] = None, *,
+        limit: int = 100, offset: int = 0) -> dict:
+    """Найти controlled_enforce_dry_run_report для пары (read-only, fail-soft).
+
+    Статусы ответа: ``ok`` (готовый отчёт), ``not_found`` (отчёта нет — НИЧЕГО
+    не строится), ``error`` (битый JSON / неверный kind). Пагинация (``limit``
+    clamp ≤500) применяется к ``would_skip_items``; ``logical_transitions``
+    отдаётся целиком. НИЧЕГО не пишет, не создаёт jobs, не вызывает модели.
+    Observe-only инварианты (``would_apply=False``, ``enforce_enabled=False``,
+    per-item ``runtime_write_allowed=False``/``enforce_allowed=False``)
+    форсируются. Raw/debug-поля вырезаются. ``ValueError`` — только на
+    невалидный id.
+    """
+    if pair_id and _safe_id(pair_id) != pair_id:
+        raise ValueError(f"invalid pair_id: {pair_id!r}")
+    art_dir = pipeline_v2_artifacts_dir(session_id, pair_id)
+    try:
+        report, err = _read_json(art_dir / CONTROLLED_ENFORCE_DRY_RUN_FILENAME)
+        if err:
+            return _cedr_detail_envelope(
+                "error", session_id=session_id, pair_id=pair_id,
+                message="Controlled enforce dry-run report could not be read.",
+                warnings=[err])
+        if report is None:
+            return _cedr_detail_envelope(
+                "not_found", session_id=session_id, pair_id=pair_id,
+                message=CEDR_NOT_FOUND_MESSAGE)
+        if (not isinstance(report, dict)
+                or report.get("kind") != _CEDR_REPORT_KIND):
+            return _cedr_detail_envelope(
+                "error", session_id=session_id, pair_id=pair_id,
+                message="Controlled enforce dry-run report is not a valid report.",
+                warnings=[f"{CONTROLLED_ENFORCE_DRY_RUN_FILENAME}: unexpected kind "
+                          f"{report.get('kind') if isinstance(report, dict) else type(report).__name__!r}"])
+
+        items = list(report.get("would_skip_items") or [])
+        total_count = len(items)
+        limit = min(max(0, limit), 500)
+        page_items = items[offset:offset + limit]
+
+        def _scrub(it: Any) -> Any:
+            if not isinstance(it, dict):
+                return it
+            it["would_apply"] = False
+            it["enforce_allowed"] = False
+            it["runtime_write_allowed"] = False
+            for key in _XP_RAW_STRIP_KEYS:
+                it.pop(key, None)
+            return it
+
+        page_items = [_scrub(it) for it in page_items]
+
+        detail: dict[str, Any] = {
+            "version": 1, "kind": _CEDR_REPORT_KIND, "status": "ok",
+            "available": True, "session_id": session_id, "pair_id": pair_id,
+            "source": "ready_report", "report_status": report.get("status"),
+            "summary": dict(report.get("summary") or {}),
+            "logical_transitions": list(report.get("logical_transitions") or []),
+            "would_skip_items": page_items,
+            "protected_artifacts": dict(report.get("protected_artifacts") or {}),
+            "runtime_root": dict(report.get("runtime_root") or {}),
+            "total_count": total_count, "filtered_count": len(page_items),
+            "limit": limit, "offset": offset,
+            # HARD INVARIANTS — observe-only
+            "would_apply": False, "enforce_enabled": False,
+            "warnings": [],
+        }
+        san_warns: list[str] = []
+        detail = _sanitize_payload(detail, san_warns) or detail
+        if san_warns:
+            detail["warnings"] = list(detail.get("warnings") or []) + san_warns
+        return detail
+    except Exception as exc:  # noqa: BLE001 — endpoint не должен дать 500
+        return _cedr_detail_envelope(
+            "error", session_id=session_id, pair_id=pair_id,
+            message="Controlled enforce dry-run report could not be read.",
+            warnings=[f"{type(exc).__name__}: {exc}"])
+
+
 __all__ = [
     "PIPELINE_V2_DIRNAME",
     "UI_PAYLOAD_FILENAME",
@@ -1193,6 +1295,8 @@ __all__ = [
     "discover_exclusion_preview",
     "discover_skip_readiness",
     "discover_controlled_enforce_preflight",
+    "discover_controlled_enforce_dry_run",
+    "CONTROLLED_ENFORCE_DRY_RUN_FILENAME",
     "pipeline_v2_artifacts_dir",
     "list_pairs_with_artifacts",
     "resolve_session_dir",

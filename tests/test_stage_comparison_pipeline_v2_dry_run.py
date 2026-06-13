@@ -253,10 +253,13 @@ def test_artifact_paths(tmp_path: Path):
     assert paths["skip_readiness"].name == "skip_readiness_report.json"
     assert paths["controlled_enforce_preflight"].name == \
         "controlled_enforce_preflight_report.json"
+    assert paths["controlled_enforce_dry_run"].name == \
+        "controlled_enforce_dry_run_report.json"
     # + visual_gate + block_link_preview + graphic_vision + grounding
     #   + grounded_evidence + entity_alignment_preview + link_validation
     #   + exclusion_preview + skip_readiness + controlled_enforce_preflight
-    assert len(paths) == 22
+    #   + controlled_enforce_dry_run
+    assert len(paths) == 23
 
 
 # ─── graphic descriptor в dry-run ────────────────────────────────────────────

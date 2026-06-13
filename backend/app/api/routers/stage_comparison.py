@@ -3661,6 +3661,30 @@ async def get_pipeline_v2_controlled_enforce_preflight_endpoint(
         raise HTTPException(400, str(exc)) from exc
 
 
+@router.get("/pipeline-v2/{session_id}/controlled-enforce-dry-run")
+async def get_pipeline_v2_controlled_enforce_dry_run_endpoint(
+        session_id: str, pair_id: Optional[str] = None,
+        limit: int = 100, offset: int = 0):
+    """Read-only observe-only Controlled Enforce DRY-RUN / impact report Pipeline V2.
+
+    Отдаёт готовый controlled_enforce_dry_run_report.json. Это НЕ enforce и НЕ
+    real skip: показывает «что было бы пропущено» (would_skip_items +
+    logical_transitions), но ничего не применяет, не создаёт jobs, не вызывает
+    модели, не пишет на диск. Отсутствие отчёта — {"status":"not_found"} (НИЧЕГО
+    не строится), битый — {"status":"error"}, не 404/500. Пагинация
+    would_skip_items (limit clamp ≤500). Observe-only инварианты форсируются:
+    would_apply=false, enforce_enabled=false, per-item runtime_write_allowed=false,
+    enforce_allowed=false. Raw/debug-поля не отдаются.
+    """
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_payload_mod.discover_controlled_enforce_dry_run,
+            session_id, pair_id,
+            limit=limit, offset=offset)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
 # ─── Pipeline V2: ручные override'ы выравнивания сущностей (write) ──────────
 #
 # Отдельный обратимый artifact entity_mapping_overrides.json. Endpoints НИЧЕГО
