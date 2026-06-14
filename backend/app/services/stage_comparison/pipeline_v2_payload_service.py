@@ -1399,15 +1399,18 @@ def _eso_envelope(status: str, *, session_id: str,
                   warnings: Optional[list[str]] = None) -> dict:
     """not_found/error ответ enrichment-selection-observe endpoint'а."""
     return {
-        "version": 1, "kind": _ESO_REPORT_KIND, "status": status,
+        "version": 2, "kind": _ESO_REPORT_KIND, "status": status,
         "available": False, "session_id": session_id, "pair_id": pair_id,
         "summary": {
-            "default_candidates_total": None, "state_on_candidates_total": None,
-            "excluded_by_state": 0, "excluded_logical_transitions": 0,
-            "qwen_calls": 0, "runtime_modified": False,
-            "protected_reports_modified": False,
+            "real_default_candidates_total": None, "real_state_on_candidates_total": None,
+            "real_excluded_by_state": 0, "gate_only_excluded_by_state": 0,
+            "mismatch_excluded_before_state": 0, "redundant_state_pairs": 0,
+            "effective_state_pairs": 0, "qwen_calls": 0,
+            "runtime_modified": False, "protected_reports_modified": False,
         },
-        "excluded_by_state": [], "remaining_candidates_sample": [],
+        "real_path": {}, "gate_only_diagnostic": {},
+        "redundant_state_matches": [], "effective_state_matches": [],
+        "remaining_candidates_sample": [],
         "message": message, "warnings": warnings or [],
     }
 
@@ -1452,8 +1455,10 @@ def discover_enrichment_selection_observe(
                 it.pop(key, None)
             return it
 
-        excluded = [_scrub(dict(it) if isinstance(it, dict) else it)
-                    for it in (report.get("excluded_by_state") or [])]
+        redundant = [_scrub(dict(it) if isinstance(it, dict) else it)
+                     for it in (report.get("redundant_state_matches") or [])]
+        effective = [_scrub(dict(it) if isinstance(it, dict) else it)
+                     for it in (report.get("effective_state_matches") or [])]
         sample = [_scrub(dict(it) if isinstance(it, dict) else it)
                   for it in (report.get("remaining_candidates_sample") or [])]
         summary = dict(report.get("summary") or {})
@@ -1463,13 +1468,17 @@ def discover_enrichment_selection_observe(
         summary["protected_reports_modified"] = False
 
         detail: dict[str, Any] = {
-            "version": 1, "kind": _ESO_REPORT_KIND, "status": "ok",
+            "version": report.get("version", 2), "kind": _ESO_REPORT_KIND, "status": "ok",
             "available": True, "session_id": session_id, "pair_id": pair_id,
             "created_at": report.get("created_at"),
             "controlled_enforce_run_id": report.get("controlled_enforce_run_id"),
-            "selection_source": report.get("selection_source"),
             "summary": summary,
-            "excluded_by_state": excluded,
+            # real production path = основной источник
+            "real_path": dict(report.get("real_path") or {}),
+            # gate-only — вспомогательная диагностика
+            "gate_only_diagnostic": dict(report.get("gate_only_diagnostic") or {}),
+            "redundant_state_matches": redundant,
+            "effective_state_matches": effective,
             "remaining_candidates_sample": sample,
             "invariants": dict(report.get("invariants") or {}),
             "warnings": [],

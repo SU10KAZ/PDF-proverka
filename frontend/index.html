@@ -6251,29 +6251,49 @@
                         <!-- observe-only: NO action buttons -->
                     </div>
 
-                    <!-- ─── Enrichment Selection Observe (read-only observe-plan, no Qwen) ─── -->
+                    <!-- ─── Enrichment Selection Observe (real production path, no Qwen) ─── -->
                     <div v-if="scPv2EsoAvailable"
                          style="border:1px solid #bfdbfe; border-radius:8px; padding:8px 10px; margin-bottom:10px; background:#eff6ff">
                         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:6px">
                             <strong style="color:#1e40af">🧭 Enrichment Selection Observe</strong>
-                            <span style="opacity:.6; font-size:11px">read-only · observe-plan (default vs controlled state)</span>
+                            <span style="opacity:.6; font-size:11px">read-only · real production selection path</span>
                         </div>
-                        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:6px; font-size:11px">
-                            <span style="background:#dbeafe; color:#1e40af; border-radius:10px; padding:1px 8px">Default selection: {{ scPv2EsoSection.default_candidates_total }}</span>
-                            <span style="background:#dbeafe; color:#1e40af; border-radius:10px; padding:1px 8px">With controlled state: {{ scPv2EsoSection.state_on_candidates_total }}</span>
-                            <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:1px 8px; font-weight:600">Excluded by state: {{ scPv2EsoSection.excluded_by_state }}</span>
-                            <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:1px 8px">Logical transitions excluded: {{ scPv2EsoSection.excluded_logical_transitions }}</span>
-                            <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px">Qwen calls: {{ scPv2EsoSection.qwen_calls }}</span>
+                        <!-- Production selection (real path) — основной результат -->
+                        <div style="margin-bottom:6px">
+                            <div style="font-size:11px; font-weight:600; color:#1e40af; margin-bottom:3px">Production selection (real path):</div>
+                            <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; font-size:11px">
+                                <span style="background:#dbeafe; color:#1e40af; border-radius:10px; padding:1px 8px">OFF: {{ scPv2EsoSection.real_default_candidates_total }}</span>
+                                <span style="background:#dbeafe; color:#1e40af; border-radius:10px; padding:1px 8px">ON: {{ scPv2EsoSection.real_state_on_candidates_total }}</span>
+                                <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:1px 8px; font-weight:600">Excluded by controlled state in real path: {{ scPv2EsoSection.real_excluded_by_state }}</span>
+                                <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px">Qwen calls: {{ scPv2EsoSection.qwen_calls }}</span>
+                            </div>
                         </div>
-                        <!-- excluded transition cards -->
-                        <div v-for="(p, i) in scPv2EsoExcludedPairs" :key="'pv2eso-ex-'+i"
+                        <!-- Already excluded before state -->
+                        <div style="margin-bottom:6px; font-size:11px">
+                            <span style="font-weight:600; color:#9a3412">Already excluded before state:</span>
+                            <span style="background:#ffedd5; color:#9a3412; border-radius:10px; padding:1px 8px; margin-left:4px">mismatch_likely: {{ scPv2EsoSection.mismatch_excluded_before_state }}</span>
+                            <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px; margin-left:4px">redundant state pairs: {{ scPv2EsoSection.redundant_state_pairs }}</span>
+                        </div>
+                        <!-- redundant state cards -->
+                        <div v-for="(p, i) in scPv2EsoRedundant" :key="'pv2eso-rd-'+i"
                              style="background:#fff; border:1px solid #e2e8f0; border-radius:6px; padding:6px 8px; margin-bottom:5px; font-size:11px">
                             <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap">
                                 <span style="background:#e0e7ff; color:#3730a3; border-radius:10px; padding:1px 8px; font-weight:600">{{ p.transition_id }}</span>
                                 <span style="background:#f1f5f9; color:#475569; border-radius:10px; padding:1px 6px; font-size:10px">{{ p.left_block_id }} → {{ p.right_block_id }}</span>
-                                <span style="background:#ecfccb; color:#3f6212; border-radius:10px; padding:1px 6px; font-size:10px">scope: enrichment only</span>
-                                <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 6px; font-size:10px">reason: {{ p.reason }}</span>
+                                <span style="background:#ffedd5; color:#9a3412; border-radius:10px; padding:1px 6px; font-size:10px">already excluded by: {{ p.already_excluded_by }}</span>
+                                <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 6px; font-size:10px">{{ p.controlled_state_effect }}</span>
                             </div>
+                        </div>
+                        <!-- Gate-only diagnostic (вспомогательная) -->
+                        <div style="margin-bottom:6px; font-size:11px; opacity:.85">
+                            <span style="font-weight:600; color:#6b7280">Gate-only diagnostic:</span>
+                            <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px; margin-left:4px">OFF: {{ scPv2EsoSection.gate_only_default_candidates_total }}</span>
+                            <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">ON: {{ scPv2EsoSection.gate_only_state_on_candidates_total }}</span>
+                            <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">controlled state would exclude: {{ scPv2EsoSection.gate_only_excluded_by_state }}</span>
+                        </div>
+                        <!-- Conclusion -->
+                        <div style="background:#eef2ff; color:#3730a3; border:1px solid #c7d2fe; border-radius:6px; padding:4px 8px; margin-bottom:6px; font-size:11px">
+                            Conclusion: Controlled state is currently a safety-net; these pairs are already excluded by mismatch_likely before the hook.
                         </div>
                         <!-- mandatory observe hint -->
                         <div style="background:#fffbeb; color:#92400e; border:1px solid #fde68a; border-radius:6px; padding:4px 8px; font-size:11px">

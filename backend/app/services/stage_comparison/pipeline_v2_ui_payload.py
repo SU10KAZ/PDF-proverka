@@ -890,27 +890,37 @@ def build_pipeline_v2_ui_payload(summary: dict,
         if ceso.get("error"):
             controlled_enforce_selection_observe_section["error"] = str(ceso["error"])
 
-    # Enrichment Selection Observe — формальный observe-план enrichment-selection
-    # под controlled state (default vs state ON, что НЕ уйдёт в future Qwen).
+    # Enrichment Selection Observe — ВЫРОВНЕН под РЕАЛЬНЫЙ production path.
+    # real_* — основные счётчики (для UI); gate_only_* — вспомогательная
+    # диагностика; redundant_state_pairs — пары, уже исключённые до хука.
     eso = s.get("enrichment_selection_observe")
     enrichment_selection_observe_section = None
     if isinstance(eso, dict) and eso.get("available"):
         enrichment_selection_observe_section = {
             "available": True,
-            "default_candidates_total": _safe_count(eso.get("default_candidates_total")),
-            "state_on_candidates_total": _safe_count(eso.get("state_on_candidates_total")),
-            "excluded_by_state": _safe_count(eso.get("excluded_by_state")),
-            "excluded_logical_transitions":
-                _safe_count(eso.get("excluded_logical_transitions")),
+            "real_default_candidates_total":
+                _safe_count(eso.get("real_default_candidates_total")),
+            "real_state_on_candidates_total":
+                _safe_count(eso.get("real_state_on_candidates_total")),
+            "real_excluded_by_state": _safe_count(eso.get("real_excluded_by_state")),
+            "gate_only_excluded_by_state":
+                _safe_count(eso.get("gate_only_excluded_by_state")),
+            "gate_only_default_candidates_total":
+                _safe_count(eso.get("gate_only_default_candidates_total")),
+            "gate_only_state_on_candidates_total":
+                _safe_count(eso.get("gate_only_state_on_candidates_total")),
+            "mismatch_excluded_before_state":
+                _safe_count(eso.get("mismatch_excluded_before_state")),
+            "redundant_state_pairs": _safe_count(eso.get("redundant_state_pairs")),
             "qwen_calls": _safe_count(eso.get("qwen_calls")),
-            "transition": _clean(eso.get("transition")) or None,
+            "controlled_state_effective": bool(eso.get("controlled_state_effective")),
             # HARD INVARIANTS — observe-only
             "runtime_modified": False,
             "protected_reports_modified": False,
         }
-        excluded = eso.get("excluded_pairs")
-        if isinstance(excluded, list):
-            enrichment_selection_observe_section["excluded_pairs"] = excluded
+        redundant = eso.get("redundant_state_matches")
+        if isinstance(redundant, list):
+            enrichment_selection_observe_section["redundant_state_matches"] = redundant
         if eso.get("error"):
             enrichment_selection_observe_section["error"] = str(eso["error"])
 

@@ -1350,45 +1350,56 @@ function scPv2EsoAvailable(payload) {
   const s = scPv2EsoSection(payload);
   return !!(s && s.available);
 }
-function scPv2EsoExcludedPairs(payload) {
+function scPv2EsoRedundant(payload) {
   const s = scPv2EsoSection(payload);
-  return (s && s.excluded_pairs) || [];
+  return (s && s.redundant_state_matches) || [];
 }
 
+// real-path aligned payload (real 32/32, gate-only 54/52, redundant 2)
 function makeEsoPayload() {
   return {
     status: 'ok', sections: [],
     enrichment_selection_observe: {
-      available: true, default_candidates_total: 54, state_on_candidates_total: 52,
-      excluded_by_state: 2, excluded_logical_transitions: 1, qwen_calls: 0,
-      transition: 'ВРУ-3→ВРУ-2', runtime_modified: false, protected_reports_modified: false,
-      excluded_pairs: [
+      available: true,
+      real_default_candidates_total: 32, real_state_on_candidates_total: 32,
+      real_excluded_by_state: 0, controlled_state_effective: false,
+      gate_only_default_candidates_total: 54, gate_only_state_on_candidates_total: 52,
+      gate_only_excluded_by_state: 2,
+      mismatch_excluded_before_state: 22, redundant_state_pairs: 2, qwen_calls: 0,
+      runtime_modified: false, protected_reports_modified: false,
+      redundant_state_matches: [
         { transition_id: 'ВРУ-3→ВРУ-2', left_block_id: '6XDP-JLWQ-KNX',
-          right_block_id: '3T6X-4PHG-D96', reason: 'controlled_enforce_state_active' },
+          right_block_id: '3T6X-4PHG-D96', already_excluded_by: 'mismatch_likely',
+          controlled_state_effect: 'redundant_safety_net' },
         { transition_id: 'ВРУ-3→ВРУ-2', left_block_id: 'EYMU-MPAP-R4Y',
-          right_block_id: 'PNNH-CY3H-XMD', reason: 'controlled_enforce_state_active' },
+          right_block_id: 'PNNH-CY3H-XMD', already_excluded_by: 'mismatch_likely',
+          controlled_state_effect: 'redundant_safety_net' },
       ],
     },
   };
 }
 
-describe('Pipeline V2 — Enrichment Selection Observe (pure)', () => {
-  it('1. panel renders (computed не null при available)', () => {
-    const p = makeEsoPayload();
-    expect(scPv2EsoAvailable(p)).toBe(true);
-    expect(scPv2EsoSection(p).default_candidates_total).toBe(54);
-    expect(scPv2EsoSection(p).state_on_candidates_total).toBe(52);
-  });
-  it('2. default/state counts render', () => {
+describe('Pipeline V2 — Enrichment Selection Observe real-path (pure)', () => {
+  it('1. real_path OFF/ON counts are primary (32/32)', () => {
     const s = scPv2EsoSection(makeEsoPayload());
-    expect(s.excluded_by_state).toBe(2);
-    expect(s.excluded_logical_transitions).toBe(1);
+    expect(scPv2EsoAvailable(makeEsoPayload())).toBe(true);
+    expect(s.real_default_candidates_total).toBe(32);
+    expect(s.real_state_on_candidates_total).toBe(32);
+    expect(s.real_excluded_by_state).toBe(0);
+    expect(s.controlled_state_effective).toBe(false);
   });
-  it('3. excluded_by_state cards render (2 pairs)', () => {
-    const pairs = scPv2EsoExcludedPairs(makeEsoPayload());
-    expect(pairs.length).toBe(2);
-    expect(pairs.every(p => p.transition_id === 'ВРУ-3→ВРУ-2')).toBe(true);
-    expect(pairs.every(p => p.reason === 'controlled_enforce_state_active')).toBe(true);
+  it('2. gate-only diagnostic separated (54/52, excluded 2)', () => {
+    const s = scPv2EsoSection(makeEsoPayload());
+    expect(s.gate_only_default_candidates_total).toBe(54);
+    expect(s.gate_only_state_on_candidates_total).toBe(52);
+    expect(s.gate_only_excluded_by_state).toBe(2);
+  });
+  it('3. redundant_state_matches (already excluded by mismatch_likely)', () => {
+    const rd = scPv2EsoRedundant(makeEsoPayload());
+    expect(rd.length).toBe(2);
+    expect(rd.every(p => p.already_excluded_by === 'mismatch_likely')).toBe(true);
+    expect(rd.every(p => p.controlled_state_effect === 'redundant_safety_net')).toBe(true);
+    expect(scPv2EsoSection(makeEsoPayload()).mismatch_excluded_before_state).toBe(22);
   });
   it('4. qwen_calls=0 visible', () => {
     expect(scPv2EsoSection(makeEsoPayload()).qwen_calls).toBe(0);
@@ -1396,7 +1407,7 @@ describe('Pipeline V2 — Enrichment Selection Observe (pure)', () => {
   it('5. missing section → panel hidden, не падает', () => {
     expect(scPv2EsoAvailable(makePayload())).toBe(false);
     expect(scPv2EsoSection(null)).toBeNull();
-    expect(scPv2EsoExcludedPairs(makePayload())).toEqual([]);
+    expect(scPv2EsoRedundant(makePayload())).toEqual([]);
   });
 });
 
@@ -1412,20 +1423,26 @@ describe('Pipeline V2 — Enrichment Selection Observe read-only contract (files
     return indexHtml.slice(start, end);
   }
 
-  it('1. Enrichment Selection Observe panel присутствует', () => {
-    expect(esoPanelBlock()).toContain('🧭 Enrichment Selection Observe');
-  });
-  it('2. default/state counts + qwen_calls видны', () => {
+  it('1. UI shows Production selection (real path)', () => {
     const blk = esoPanelBlock();
-    expect(blk).toContain('Default selection:');
-    expect(blk).toContain('With controlled state:');
-    expect(blk).toContain('Excluded by state:');
+    expect(blk).toContain('🧭 Enrichment Selection Observe');
+    expect(blk).toContain('Production selection');
+    expect(blk).toContain('real_default_candidates_total');
+    expect(blk).toContain('real_state_on_candidates_total');
+  });
+  it('2. UI shows real OFF/ON + excluded-in-real-path + Qwen calls', () => {
+    const blk = esoPanelBlock();
+    expect(blk).toContain('OFF:');
+    expect(blk).toContain('ON:');
+    expect(blk).toContain('Excluded by controlled state in real path:');
     expect(blk).toContain('Qwen calls:');
   });
-  it('3. excluded_pairs cards + обязательная observe-подсказка', () => {
+  it('3. UI shows gate-only diagnostic separately + mismatch + conclusion', () => {
     const blk = esoPanelBlock();
-    expect(blk).toContain('scPv2EsoExcludedPairs');
-    expect(blk).toContain('scope: enrichment only');
+    expect(blk).toContain('Gate-only diagnostic:');
+    expect(blk).toContain('Already excluded before state');
+    expect(blk).toContain('mismatch_likely');
+    expect(blk).toContain('safety-net');   // conclusion
     expect(blk).toContain(
       'Observe only. No Qwen was called and no pipeline artifacts were recalculated');
   });

@@ -15179,8 +15179,9 @@ const app = createApp({
              && scPv2Payload.value.enrichment_selection_observe) || null);
         const scPv2EsoAvailable = computed(() =>
             !!(scPv2EsoSection.value && scPv2EsoSection.value.available));
-        const scPv2EsoExcludedPairs = computed(() =>
-            (scPv2EsoSection.value && scPv2EsoSection.value.excluded_pairs) || []);
+        // redundant_state_matches — пары, уже исключённые ДО хука (real path)
+        const scPv2EsoRedundant = computed(() =>
+            (scPv2EsoSection.value && scPv2EsoSection.value.redundant_state_matches) || []);
 
         // ── Operator review write-layer для Exclusion Preview v2 ─────────────
         // PUT .../exclusion-review-overrides — отдельный обратимый artifact.
@@ -15786,7 +15787,7 @@ const app = createApp({
             scPv2CesSection, scPv2CesAvailable,
             scPv2CesoSection, scPv2CesoAvailable,
             // Pipeline V2 Enrichment Selection Observe (read-only observe-plan)
-            scPv2EsoSection, scPv2EsoAvailable, scPv2EsoExcludedPairs,
+            scPv2EsoSection, scPv2EsoAvailable, scPv2EsoRedundant,
             // Pipeline V2 Manual Entity Mapping (write-слой)
             SC_PV2_EA_DECISIONS, scPv2EaDrafts, scPv2EaSaving, scPv2EaSaveErr,
             scPv2EaSaveHint, scPv2EaPairKey, scPv2EaUnpairedKey, scPv2EaDraft,
