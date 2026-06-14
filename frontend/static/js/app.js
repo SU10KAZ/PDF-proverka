@@ -15183,6 +15183,85 @@ const app = createApp({
         const scPv2EsoRedundant = computed(() =>
             (scPv2EsoSection.value && scPv2EsoSection.value.redundant_state_matches) || []);
 
+        // ── Controlled Enforce State DEACTIVATE (rollback, write-слой) ───────
+        // POST .../controlled-enforce-state/deactivate — пишет ТОЛЬКО state
+        // (active=false + audit + history). Требует точного confirmation.
+        // Никаких enforce/qwen/jobs/findings/links. Жёсткий confirm.
+        const SC_PV2_CDS_PHRASE = 'DEACTIVATE_CONTROLLED_STATE';
+        const scPv2CdsOpen = ref(false);
+        const scPv2CdsConfirmText = ref('');
+        const scPv2CdsComment = ref('');
+        const scPv2CdsRunId = ref('');
+        const scPv2CdsBusy = ref(false);
+        const scPv2CdsError = ref('');
+        const scPv2CdsDone = ref(false);
+        const scPv2CdsConfirmOk = computed(() =>
+            scPv2CdsConfirmText.value === SC_PV2_CDS_PHRASE);
+
+        async function scPv2CdsBegin() {
+            scPv2CdsOpen.value = true;
+            scPv2CdsConfirmText.value = '';
+            scPv2CdsComment.value = '';
+            scPv2CdsError.value = '';
+            scPv2CdsDone.value = false;
+            scPv2CdsRunId.value = (scPv2CesSection.value && scPv2CesSection.value.run_id) || '';
+            // авторитетный run_id — из read-only GET state endpoint
+            const sid = scSession.value && scSession.value.id;
+            const pid = scPv2EaEffectivePairId();
+            if (!sid || !pid) return;
+            try {
+                const r = await fetch('/api/stage-comparison/pipeline-v2/'
+                    + encodeURIComponent(sid) + '/controlled-enforce-state?pair_id='
+                    + encodeURIComponent(pid));
+                if (r.ok) {
+                    const j = await r.json();
+                    if (j && j.run_id) scPv2CdsRunId.value = j.run_id;
+                }
+            } catch (e) { /* run_id может остаться из секции */ }
+        }
+        function scPv2CdsCancel() {
+            scPv2CdsOpen.value = false;
+            scPv2CdsConfirmText.value = '';
+            scPv2CdsError.value = '';
+        }
+        async function scPv2CdsSubmit() {
+            if (!scPv2CdsConfirmOk.value || scPv2CdsBusy.value) return;
+            const sid = scSession.value && scSession.value.id;
+            const pid = scPv2EaEffectivePairId();
+            if (!sid || !pid) { scPv2CdsError.value = 'Нет сессии/пары'; return; }
+            if (!scPv2CdsRunId.value) { scPv2CdsError.value = 'run_id не загружен'; return; }
+            scPv2CdsBusy.value = true;
+            scPv2CdsError.value = '';
+            try {
+                const r = await fetch('/api/stage-comparison/pipeline-v2/'
+                    + encodeURIComponent(sid)
+                    + '/controlled-enforce-state/deactivate?pair_id='
+                    + encodeURIComponent(pid), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        run_id: scPv2CdsRunId.value,
+                        confirmation: SC_PV2_CDS_PHRASE,
+                        comment: scPv2CdsComment.value
+                            || 'manual rollback / deactivate controlled state',
+                        updated_by: 'operator',
+                    }),
+                });
+                if (!r.ok) {
+                    let msg = 'HTTP ' + r.status;
+                    try { const j = await r.json(); msg = (j && (j.detail || j.message)) || msg; } catch (e) {}
+                    throw new Error(msg);
+                }
+                scPv2CdsDone.value = true;
+                scPv2CdsOpen.value = false;
+                scPv2Load();   // перечитать ui-payload — панель отразит inactive
+            } catch (e) {
+                scPv2CdsError.value = String((e && e.message) || e);
+            } finally {
+                scPv2CdsBusy.value = false;
+            }
+        }
+
         // ── Operator review write-layer для Exclusion Preview v2 ─────────────
         // PUT .../exclusion-review-overrides — отдельный обратимый artifact.
         // mark-only: НЕ применяет исключения, НЕ запускает jobs/Qwen/Opus/Claude,
@@ -15788,6 +15867,10 @@ const app = createApp({
             scPv2CesoSection, scPv2CesoAvailable,
             // Pipeline V2 Enrichment Selection Observe (read-only observe-plan)
             scPv2EsoSection, scPv2EsoAvailable, scPv2EsoRedundant,
+            // Pipeline V2 Controlled Enforce State deactivate (rollback, write)
+            SC_PV2_CDS_PHRASE, scPv2CdsOpen, scPv2CdsConfirmText, scPv2CdsComment,
+            scPv2CdsRunId, scPv2CdsBusy, scPv2CdsError, scPv2CdsDone, scPv2CdsConfirmOk,
+            scPv2CdsBegin, scPv2CdsCancel, scPv2CdsSubmit,
             // Pipeline V2 Manual Entity Mapping (write-слой)
             SC_PV2_EA_DECISIONS, scPv2EaDrafts, scPv2EaSaving, scPv2EaSaveErr,
             scPv2EaSaveHint, scPv2EaPairKey, scPv2EaUnpairedKey, scPv2EaDraft,

@@ -862,6 +862,7 @@ def build_pipeline_v2_ui_payload(summary: dict,
             "active_block_pairs": _safe_count(ces.get("active_block_pairs")),
             "scope_enrichment_only": bool(ces.get("scope_enrichment_only", True)),
             "transition": _clean(ces.get("transition")) or None,
+            "run_id": _clean(ces.get("run_id")) or None,
             "rollback_id": _clean(ces.get("rollback_id")) or None,
             # HARD INVARIANTS — это видимость, не enforce/apply
             "would_apply": False,

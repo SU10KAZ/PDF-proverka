@@ -45,6 +45,7 @@ from backend.app.services.stage_comparison import md_enrichment_jobs as md_enric
 from backend.app.services.stage_comparison import large_sheet_enrichment as large_sheet_mod
 from backend.app.services.stage_comparison import pipeline_v2_payload_service as pipeline_v2_payload_mod
 from backend.app.services.stage_comparison import pipeline_v2_entity_mapping_overrides as entity_mapping_overrides_mod
+from backend.app.services.stage_comparison import pipeline_v2_controlled_enforce_state as pipeline_v2_ce_state_mod
 from backend.app.services.stage_comparison import pipeline_v2_exclusion_review_overrides as excl_review_mod
 from backend.app.services.stage_comparison import large_sheet_enrichment_jobs as large_sheet_jobs_mod
 from backend.app.services.stage_comparison import auto_match_jobs as auto_match_jobs_mod
@@ -3704,6 +3705,29 @@ async def get_pipeline_v2_controlled_enforce_state_endpoint(
             session_id, pair_id)
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
+
+
+@router.post("/pipeline-v2/{session_id}/controlled-enforce-state/deactivate")
+async def post_pipeline_v2_controlled_enforce_state_deactivate_endpoint(
+        session_id: str, payload: dict, pair_id: str):
+    """Деактивировать active controlled enforce state (ручной rollback оператора).
+
+    Пишет ТОЛЬКО controlled_enforce_state.json: помечает записи run_id'а
+    ``active=false`` + audit (deactivated_at/by/comment) + запись в history.
+    Запись НЕ удаляется (обратимо). НЕ запускает jobs/models, НЕ меняет protected
+    reports / findings / block links / delta / grounded, НЕ трогает другие пары,
+    НЕ продолжает очередь. Требует точного
+    ``confirmation="DEACTIVATE_CONTROLLED_STATE"`` — иначе 422 без записи.
+    Неизвестный/уже неактивный run_id → 422 без записи. Нет state → not_found.
+    Возвращает updated summary.
+    """
+    art_dir = pipeline_v2_payload_mod.pipeline_v2_artifacts_dir(session_id, pair_id)
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_ce_state_mod.run_deactivate_controlled_enforce_state,
+            art_dir, payload)
+    except pipeline_v2_ce_state_mod.ControlledEnforceStateError as exc:
+        raise HTTPException(422, str(exc)) from exc
 
 
 @router.get("/pipeline-v2/{session_id}/enrichment-selection-observe")

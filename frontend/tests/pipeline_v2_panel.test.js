@@ -1310,18 +1310,19 @@ describe('Pipeline V2 — Controlled Enforce State read-only contract (files)', 
     expect(blk).toContain(
       'No existing findings, links, deltas, or grounded evidence were changed');
   });
-  it('4. НЕТ action-кнопок (apply/enforce/qwen/pipeline/finding/links/rollback)', () => {
+  it('4. есть ТОЛЬКО deactivate-кнопка; НЕТ enforce/qwen/apply/recalc/finding/links', () => {
     const blk = statePanelBlock();
-    expect(blk).not.toContain('<button');     // у read-only панелей кнопок нет вовсе
-    for (const forbidden of ['Run enforce', 'Run Qwen', 'Run pipeline',
-                             'Create finding', 'Change block links',
-                             'Откатить', 'Применить']) {
+    expect(blk).toContain('Деактивировать state');   // rollback-кнопка есть (write-слой)
+    for (const forbidden of ['Run enforce', 'Run Qwen', 'Run pipeline', 'Run enrichment',
+                             'Recalculate', 'Apply skip', 'Create finding',
+                             'Change block links', 'Применить']) {
       expect(blk).not.toContain(forbidden);
     }
   });
-  it('5. источник — ui-payload (read-only), без своих fetch/POST/PUT', () => {
+  it('5. visibility computeds — ui-payload (read-only), без своих fetch/POST', () => {
+    // slice ТОЛЬКО read-only visibility computeds (до deactivate write-слоя)
     const start = appJs.indexOf('Controlled Enforce STATE (read-only');
-    const end = appJs.indexOf('Operator review write-layer', start);
+    const end = appJs.indexOf('Controlled Enforce State DEACTIVATE', start);
     expect(start).toBeGreaterThan(0);
     expect(end).toBeGreaterThan(start);
     const blk = appJs.slice(start, end);
@@ -1455,9 +1456,11 @@ describe('Pipeline V2 — Enrichment Selection Observe read-only contract (files
     }
   });
   it('5. источник — ui-payload (read-only), без своих fetch/POST/PUT', () => {
+    // slice ТОЛЬКО observe computed (до deactivate write-слоя)
     const start = appJs.indexOf('Enrichment Selection Observe (read-only');
-    const end = appJs.indexOf('Operator review write-layer', start);
+    const end = appJs.indexOf('Controlled Enforce State DEACTIVATE', start);
     expect(start).toBeGreaterThan(0);
+    expect(end).toBeGreaterThan(start);
     const blk = appJs.slice(start, end);
     expect(blk).toContain('scPv2Payload.value');
     expect(blk).toContain('enrichment_selection_observe');
@@ -1468,6 +1471,76 @@ describe('Pipeline V2 — Enrichment Selection Observe read-only contract (files
     expect(indexHtml).toContain('🟢 Controlled Enforce State');
     expect(indexHtml).toContain('👁 Selection observe');
     expect(indexHtml).toContain('🧪 Controlled Enforce Dry-run');
+    expect(appJs).toContain('/ui-payload');
+  });
+});
+
+// ── Pipeline V2 — Controlled Enforce State DEACTIVATE / rollback UI ──────────
+
+// зеркало гейта подтверждения (scPv2CdsConfirmOk из app.js)
+const SC_PV2_CDS_PHRASE = 'DEACTIVATE_CONTROLLED_STATE';
+function scPv2CdsConfirmOk(text) { return text === SC_PV2_CDS_PHRASE; }
+
+describe('Pipeline V2 — Controlled Enforce State deactivate (pure gate)', () => {
+  it('1. confirm gate requires exact phrase', () => {
+    expect(scPv2CdsConfirmOk('')).toBe(false);
+    expect(scPv2CdsConfirmOk('deactivate')).toBe(false);
+    expect(scPv2CdsConfirmOk('DEACTIVATE_CONTROLLED_STATE ')).toBe(false);
+    expect(scPv2CdsConfirmOk(SC_PV2_CDS_PHRASE)).toBe(true);
+  });
+});
+
+describe('Pipeline V2 — Controlled Enforce State deactivate contract (files)', () => {
+  const indexHtml = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  const appJs = fs.readFileSync(path.join(__dirname, '..', 'static', 'js', 'app.js'), 'utf8');
+
+  function statePanelBlock() {
+    const start = indexHtml.indexOf('🟢 Controlled Enforce State');
+    const end = indexHtml.indexOf('<!-- transport / HTTP errors -->', start);
+    return indexHtml.slice(start, end);
+  }
+
+  it('1. state panel renders active state fields', () => {
+    const blk = statePanelBlock();
+    expect(blk).toContain('active exclusions:');
+    expect(blk).toContain('transition:');
+    expect(blk).toContain('run_id:');
+    expect(blk).toContain('rollback_id:');
+  });
+  it('2. deactivate UI exists (кнопка + confirm form)', () => {
+    const blk = statePanelBlock();
+    expect(blk).toContain('Деактивировать state');
+    expect(blk).toContain('scPv2CdsBegin');
+    expect(blk).toContain('scPv2CdsSubmit');
+    expect(blk).toContain('scPv2CdsComment');
+  });
+  it('3. confirmation text required (button disabled until match)', () => {
+    const blk = statePanelBlock();
+    expect(blk).toContain('scPv2CdsConfirmText');
+    expect(blk).toContain(':disabled="!scPv2CdsConfirmOk');   // gate на подтверждение
+    expect(blk).toContain('SC_PV2_CDS_PHRASE');
+    // pure gate
+    expect(appJs).toContain("=== SC_PV2_CDS_PHRASE");
+    expect(appJs).toContain("'DEACTIVATE_CONTROLLED_STATE'");
+  });
+  it('4. POST endpoint path correct', () => {
+    expect(appJs).toContain('/controlled-enforce-state/deactivate?pair_id=');
+    expect(appJs).toMatch(/method:\s*'POST'/);
+    expect(appJs).toContain('confirmation: SC_PV2_CDS_PHRASE');
+  });
+  it('5. no apply/enforce/qwen/recalculate buttons in state panel', () => {
+    const blk = statePanelBlock();
+    for (const forbidden of ['Run enforce', 'Run Qwen', 'Run enrichment',
+                             'Recalculate', 'Apply skip', 'Create finding',
+                             'Change block links']) {
+      expect(blk).not.toContain(forbidden);
+    }
+  });
+  it('6. success message present + old panels live', () => {
+    const blk = statePanelBlock();
+    expect(blk).toContain('Controlled state deactivated. No findings, links, deltas, grounded evidence were changed');
+    expect(indexHtml).toContain('🧪 Controlled Enforce Dry-run');
+    expect(indexHtml).toContain('🧭 Enrichment Selection Observe');
     expect(appJs).toContain('/ui-payload');
   });
 });
