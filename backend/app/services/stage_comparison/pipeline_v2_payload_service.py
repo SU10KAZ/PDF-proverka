@@ -1269,6 +1269,122 @@ def discover_controlled_enforce_dry_run(
             warnings=[f"{type(exc).__name__}: {exc}"])
 
 
+# ─── controlled enforce STATE (read-only видимость active state) ─────────────
+
+CONTROLLED_ENFORCE_STATE_FILENAME = "controlled_enforce_state.json"
+CES_NOT_FOUND_MESSAGE = "Controlled enforce state not found for this pair."
+_CES_REPORT_KIND = "stage_comparison_pipeline_v2_controlled_enforce_state"
+# поля, которые не отдаём наружу (на случай если в state попадёт debug/raw)
+_CES_RAW_STRIP_KEYS = frozenset({"raw", "debug", "_debug", "_raw"})
+
+
+def _ces_envelope(status: str, *, session_id: str,
+                  pair_id: Optional[str], message: str,
+                  warnings: Optional[list[str]] = None) -> dict:
+    """not_found/error ответ controlled-enforce-state endpoint'а."""
+    return {
+        "version": 1, "kind": _CES_REPORT_KIND, "status": status,
+        "available": False, "session_id": session_id, "pair_id": pair_id,
+        "summary": {
+            "active_exclusions": 0, "active_transitions": 0,
+            "active_block_pairs": 0, "scope_enrichment_only": True,
+        },
+        "applied_exclusions": [],
+        "message": message, "warnings": warnings or [],
+    }
+
+
+def _ces_active_summary(applied: list) -> dict:
+    """Сводка по active=True исключениям (active_exclusions/transitions/block_pairs)."""
+    active = [e for e in applied if isinstance(e, dict) and e.get("active") is True]
+    transitions = set()
+    block_pairs = 0
+    scope_ok = True
+    for e in active:
+        if e.get("transition_id"):
+            transitions.add(e["transition_id"])
+        lbs = e.get("left_block_ids") or []
+        rbs = e.get("right_block_ids") or []
+        block_pairs += min(len(lbs), len(rbs)) or max(len(lbs), len(rbs))
+        scope = e.get("scope") or {}
+        if not (bool(scope.get("exclude_from_enrichment")) is True
+                and not scope.get("exclude_from_grounded_evidence")
+                and not scope.get("exclude_from_delta_explanation")
+                and not scope.get("exclude_from_findings")):
+            scope_ok = False
+    return {
+        "active_exclusions": len(active),
+        "active_transitions": len(transitions),
+        "active_block_pairs": block_pairs,
+        "scope_enrichment_only": scope_ok if active else True,
+    }
+
+
+def discover_controlled_enforce_state(
+        session_id: str, pair_id: Optional[str] = None) -> dict:
+    """Найти controlled_enforce_state.json пары (read-only, fail-soft).
+
+    Статусы ответа: ``ok`` (state есть), ``not_found`` (state'а нет — НИЧЕГО не
+    строится), ``error`` (битый JSON / неверный kind). НИЧЕГО не пишет, не
+    создаёт jobs, не вызывает модели, **не меняет state**. Raw/debug-поля
+    вырезаются. ``ValueError`` — только на невалидный id.
+    """
+    if pair_id and _safe_id(pair_id) != pair_id:
+        raise ValueError(f"invalid pair_id: {pair_id!r}")
+    art_dir = pipeline_v2_artifacts_dir(session_id, pair_id)
+    try:
+        report, err = _read_json(art_dir / CONTROLLED_ENFORCE_STATE_FILENAME)
+        if err:
+            return _ces_envelope(
+                "error", session_id=session_id, pair_id=pair_id,
+                message="Controlled enforce state could not be read.",
+                warnings=[err])
+        if report is None:
+            return _ces_envelope(
+                "not_found", session_id=session_id, pair_id=pair_id,
+                message=CES_NOT_FOUND_MESSAGE)
+        if (not isinstance(report, dict)
+                or report.get("kind") != _CES_REPORT_KIND):
+            return _ces_envelope(
+                "error", session_id=session_id, pair_id=pair_id,
+                message="Controlled enforce state is not a valid state file.",
+                warnings=[f"{CONTROLLED_ENFORCE_STATE_FILENAME}: unexpected kind "
+                          f"{report.get('kind') if isinstance(report, dict) else type(report).__name__!r}"])
+
+        applied = list(report.get("applied_exclusions") or [])
+
+        def _scrub(it: Any) -> Any:
+            if not isinstance(it, dict):
+                return it
+            for key in _CES_RAW_STRIP_KEYS:
+                it.pop(key, None)
+            return it
+
+        applied = [_scrub(dict(it) if isinstance(it, dict) else it) for it in applied]
+
+        detail: dict[str, Any] = {
+            "version": 1, "kind": _CES_REPORT_KIND, "status": "ok",
+            "available": True, "session_id": session_id, "pair_id": pair_id,
+            "state_status": report.get("status"),
+            "run_id": report.get("run_id"),
+            "rollback_id": report.get("rollback_id"),
+            "mode": report.get("mode"),
+            "summary": _ces_active_summary(applied),
+            "applied_exclusions": applied,
+            "warnings": [],
+        }
+        san_warns: list[str] = []
+        detail = _sanitize_payload(detail, san_warns) or detail
+        if san_warns:
+            detail["warnings"] = list(detail.get("warnings") or []) + san_warns
+        return detail
+    except Exception as exc:  # noqa: BLE001 — endpoint не должен дать 500
+        return _ces_envelope(
+            "error", session_id=session_id, pair_id=pair_id,
+            message="Controlled enforce state could not be read.",
+            warnings=[f"{type(exc).__name__}: {exc}"])
+
+
 __all__ = [
     "PIPELINE_V2_DIRNAME",
     "UI_PAYLOAD_FILENAME",
@@ -1297,6 +1413,8 @@ __all__ = [
     "discover_controlled_enforce_preflight",
     "discover_controlled_enforce_dry_run",
     "CONTROLLED_ENFORCE_DRY_RUN_FILENAME",
+    "discover_controlled_enforce_state",
+    "CONTROLLED_ENFORCE_STATE_FILENAME",
     "pipeline_v2_artifacts_dir",
     "list_pairs_with_artifacts",
     "resolve_session_dir",

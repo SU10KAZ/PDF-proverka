@@ -15156,6 +15156,22 @@ const app = createApp({
             scPv2CdrLoading.value = false;
         }
 
+        // ── Controlled Enforce STATE (read-only видимость active state) ──────
+        // Источник — ui-payload (controlled_enforce_state section). Это ВИДИМОСТЬ
+        // active controlled exclusion state, НЕ enforce/apply. Никаких действий.
+        const scPv2CesSection = computed(() =>
+            (scPv2Payload.value && scPv2Payload.value.controlled_enforce_state) || null);
+        const scPv2CesAvailable = computed(() =>
+            !!(scPv2CesSection.value && scPv2CesSection.value.available));
+
+        // ── Selection Observe (read-only observe-mode, Qwen НЕ вызывался) ────
+        // Источник — ui-payload (controlled_enforce_selection_observe section).
+        const scPv2CesoSection = computed(() =>
+            (scPv2Payload.value
+             && scPv2Payload.value.controlled_enforce_selection_observe) || null);
+        const scPv2CesoAvailable = computed(() =>
+            !!(scPv2CesoSection.value && scPv2CesoSection.value.available));
+
         // ── Operator review write-layer для Exclusion Preview v2 ─────────────
         // PUT .../exclusion-review-overrides — отдельный обратимый artifact.
         // mark-only: НЕ применяет исключения, НЕ запускает jobs/Qwen/Opus/Claude,
@@ -15756,6 +15772,9 @@ const app = createApp({
             scPv2CdrSummary, scPv2CdrTransitions, scPv2CdrItems,
             scPv2CdrReportStatus, scPv2CdrAvailable, scPv2CdrNotFound, scPv2CdrRespError,
             scPv2CdrLoad, scPv2CdrReset,
+            // Pipeline V2 Controlled Enforce State + Selection Observe (read-only)
+            scPv2CesSection, scPv2CesAvailable,
+            scPv2CesoSection, scPv2CesoAvailable,
             // Pipeline V2 Manual Entity Mapping (write-слой)
             SC_PV2_EA_DECISIONS, scPv2EaDrafts, scPv2EaSaving, scPv2EaSaveErr,
             scPv2EaSaveHint, scPv2EaPairKey, scPv2EaUnpairedKey, scPv2EaDraft,

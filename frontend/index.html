@@ -6210,6 +6210,47 @@
                         </template>
                     </div>
 
+                    <!-- ─── Controlled Enforce State (read-only visibility, NOT enforce) ─── -->
+                    <div v-if="scPv2CesAvailable"
+                         style="border:1px solid #bbf7d0; border-radius:8px; padding:8px 10px; margin-bottom:10px; background:#f0fdf4">
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:6px">
+                            <strong style="color:#166534">🟢 Controlled Enforce State</strong>
+                            <span style="opacity:.6; font-size:11px">read-only · active state visibility (НЕ enforce)</span>
+                        </div>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:6px; font-size:11px">
+                            <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px; font-weight:600">active exclusions: {{ scPv2CesSection.active_exclusions }}</span>
+                            <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px">active transitions: {{ scPv2CesSection.active_transitions }}</span>
+                            <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px">active block-pairs: {{ scPv2CesSection.active_block_pairs }}</span>
+                            <span style="background:#ecfccb; color:#3f6212; border-radius:10px; padding:1px 8px">scope: enrichment only</span>
+                            <span v-if="scPv2CesSection.transition" style="background:#e0e7ff; color:#3730a3; border-radius:10px; padding:1px 8px; font-weight:600">transition: {{ scPv2CesSection.transition }}</span>
+                            <span v-if="scPv2CesSection.rollback_id" style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">rollback_id: {{ scPv2CesSection.rollback_id }}</span>
+                        </div>
+                        <!-- mandatory clarification hint -->
+                        <div style="background:#fffbeb; color:#92400e; border:1px solid #fde68a; border-radius:6px; padding:4px 8px; font-size:11px">
+                            State is active, but it only affects future selection when explicitly enabled.
+                            No existing findings, links, deltas, or grounded evidence were changed.
+                        </div>
+                        <!-- read-only panel: intentionally NO action buttons (visibility only) -->
+                    </div>
+
+                    <!-- ─── Selection Observe (read-only observe-mode, no Qwen) ─── -->
+                    <div v-if="scPv2CesoAvailable"
+                         style="border:1px solid #c7d2fe; border-radius:8px; padding:8px 10px; margin-bottom:10px; background:#eef2ff">
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:6px">
+                            <strong style="color:#3730a3">👁 Selection observe</strong>
+                            <span style="opacity:.6; font-size:11px">read-only · default OFF vs state ON (Qwen НЕ вызывался)</span>
+                        </div>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; font-size:11px">
+                            <span style="background:#e0e7ff; color:#3730a3; border-radius:10px; padding:1px 8px">default selected: {{ scPv2CesoSection.default_selected }}</span>
+                            <span style="background:#e0e7ff; color:#3730a3; border-radius:10px; padding:1px 8px">state ON selected: {{ scPv2CesoSection.state_on_selected }}</span>
+                            <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:1px 8px; font-weight:600">excluded_by_state: {{ scPv2CesoSection.excluded_by_state }}</span>
+                            <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:1px 8px">excluded logical transitions: {{ scPv2CesoSection.excluded_logical_transitions }}</span>
+                            <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px">qwen_calls: {{ scPv2CesoSection.qwen_calls }}</span>
+                            <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">runtime_not_modified_by_selection: true</span>
+                        </div>
+                        <!-- observe-only: NO action buttons -->
+                    </div>
+
 
                     <!-- transport / HTTP errors -->
                     <div v-if="scPv2EaError" style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; padding:6px 10px; margin-bottom:8px">

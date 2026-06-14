@@ -287,10 +287,18 @@ def test_4_no_network_during_discovery(comparison_root, monkeypatch):
 def test_4b_service_has_no_llm_or_job_imports():
     svc = _svc()
     src = Path(svc.__file__).read_text(encoding="utf-8")
+    # Запрещены КОНКРЕТНЫЕ provider/job/network модули и invocation-паттерны.
+    # Голые подстроки "qwen"/"opus"/"jobs"/"queue" исключены: они дают
+    # false-positive на легитимных strip-key'ах (``raw_qwen_description`` —
+    # ключ, который сервис ВЫРЕЗАЕТ) и в докстрингах вида «не создаёт jobs / не
+    # трогает queue». Реальную инвокацию ловят специфичные токены ниже
+    # (md_enrichment_jobs / unified_analysis_jobs / pipeline_queue / graphic_llm
+    # / text_llm / llm_runner / ClaudeCodeProvider / subprocess / httpx / …).
     for forbidden in ("graphic_llm", "text_llm", "llm_runner",
-                      "ClaudeCodeProvider", "claude -p", "qwen", "opus",
+                      "ClaudeCodeProvider", "claude -p",
+                      "import qwen", "qwen_runner", "opus_runner",
                       "md_enrichment_jobs", "unified_analysis_jobs",
-                      "pipeline_queue", "jobs", "queue", "subprocess",
+                      "pipeline_queue", "subprocess",
                       "httpx", "requests", "urllib"):
         assert forbidden.lower() not in src.lower(), \
             f"service references {forbidden!r}"

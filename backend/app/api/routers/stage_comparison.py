@@ -3685,6 +3685,27 @@ async def get_pipeline_v2_controlled_enforce_dry_run_endpoint(
         raise HTTPException(400, str(exc)) from exc
 
 
+@router.get("/pipeline-v2/{session_id}/controlled-enforce-state")
+async def get_pipeline_v2_controlled_enforce_state_endpoint(
+        session_id: str, pair_id: Optional[str] = None):
+    """Read-only видимость active controlled_enforce_state.json пары.
+
+    Отдаёт активное controlled exclusion state (что первый controlled skip
+    пометил исключённым из будущего enrichment). Это НЕ enforce и НЕ изменение:
+    ничего не применяет, не создаёт jobs, не вызывает модели, **не меняет
+    state**, не пишет на диск. Отсутствие state'а — {"status":"not_found"}
+    (НИЧЕГО не строится), битый — {"status":"error"}, не 404/500. Raw/debug-поля
+    не отдаются. summary: active_exclusions / active_transitions /
+    active_block_pairs / scope_enrichment_only.
+    """
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_payload_mod.discover_controlled_enforce_state,
+            session_id, pair_id)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
 # ─── Pipeline V2: ручные override'ы выравнивания сущностей (write) ──────────
 #
 # Отдельный обратимый artifact entity_mapping_overrides.json. Endpoints НИЧЕГО

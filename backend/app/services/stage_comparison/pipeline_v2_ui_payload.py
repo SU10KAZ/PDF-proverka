@@ -850,6 +850,46 @@ def build_pipeline_v2_ui_payload(summary: dict,
         if cedr.get("error"):
             controlled_enforce_dry_run_section["error"] = str(cedr["error"])
 
+    # Controlled Enforce STATE — read-only видимость active state (что первый
+    # controlled skip пометил исключённым из будущего enrichment). Это НЕ enforce.
+    ces = s.get("controlled_enforce_state")
+    controlled_enforce_state_section = None
+    if isinstance(ces, dict) and ces.get("available"):
+        controlled_enforce_state_section = {
+            "available": True,
+            "active_exclusions": _safe_count(ces.get("active_exclusions")),
+            "active_transitions": _safe_count(ces.get("active_transitions")),
+            "active_block_pairs": _safe_count(ces.get("active_block_pairs")),
+            "scope_enrichment_only": bool(ces.get("scope_enrichment_only", True)),
+            "transition": _clean(ces.get("transition")) or None,
+            "rollback_id": _clean(ces.get("rollback_id")) or None,
+            # HARD INVARIANTS — это видимость, не enforce/apply
+            "would_apply": False,
+            "enforce_enabled": False,
+        }
+        if ces.get("error"):
+            controlled_enforce_state_section["error"] = str(ces["error"])
+
+    # Controlled Enforce SELECTION OBSERVE — observe-only сравнение
+    # default OFF vs state ON (Qwen НЕ вызывался).
+    ceso = s.get("controlled_enforce_selection_observe")
+    controlled_enforce_selection_observe_section = None
+    if isinstance(ceso, dict) and ceso.get("available"):
+        controlled_enforce_selection_observe_section = {
+            "available": True,
+            "default_selected": _safe_count(ceso.get("default_selected")),
+            "state_on_selected": _safe_count(ceso.get("state_on_selected")),
+            "excluded_by_state": _safe_count(ceso.get("excluded_by_state")),
+            "excluded_logical_transitions":
+                _safe_count(ceso.get("excluded_logical_transitions")),
+            "qwen_calls": _safe_count(ceso.get("qwen_calls")),
+            # HARD INVARIANTS — observe-only
+            "would_modify_runtime": False,
+            "runtime_not_modified_by_selection": True,
+        }
+        if ceso.get("error"):
+            controlled_enforce_selection_observe_section["error"] = str(ceso["error"])
+
     # per-delta compact evidence → attach к карточкам дельт (по delta_id).
     # Успешный attach — НЕ warning (не деградирует статус); счётчик кладём
     # в саму grounded_evidence-секцию для прозрачности.
@@ -908,6 +948,11 @@ def build_pipeline_v2_ui_payload(summary: dict,
         payload["controlled_enforce_preflight"] = controlled_enforce_section
     if controlled_enforce_dry_run_section is not None:
         payload["controlled_enforce_dry_run"] = controlled_enforce_dry_run_section
+    if controlled_enforce_state_section is not None:
+        payload["controlled_enforce_state"] = controlled_enforce_state_section
+    if controlled_enforce_selection_observe_section is not None:
+        payload["controlled_enforce_selection_observe"] = \
+            controlled_enforce_selection_observe_section
     payload["filters"] = build_ui_filters(payload)
     return payload
 

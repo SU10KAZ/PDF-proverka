@@ -410,10 +410,16 @@ def test_14_no_network_during_build(monkeypatch):
 
 def test_14b_no_provider_imports():
     src = Path(ui.__file__).read_text(encoding="utf-8")
+    # Запрещены реальные provider/network/import паттерны. Голые подстроки
+    # "qwen"/"opus" исключены: ui_payload теперь легитимно surface'ит
+    # observe-метрику ``qwen_calls`` (всегда 0) — это НЕ вызов модели. Настоящую
+    # инвокацию ловят токены ниже (llm_runner / graphic_llm / text_llm_provider /
+    # ClaudeCodeProvider / subprocess / httpx / requests / socket).
     for forbidden in ("import requests", "import httpx", "urllib.request",
                       "import socket", "import subprocess", "graphic_llm",
                       "text_llm_provider", "ClaudeCodeProvider", "claude -p",
-                      "qwen", "opus", "llm_runner", "fastapi", "router"):
+                      "import qwen", "qwen_runner", "opus_runner",
+                      "llm_runner", "fastapi", "router"):
         assert forbidden.lower() not in src.lower(), \
             f"module references {forbidden!r}"
 

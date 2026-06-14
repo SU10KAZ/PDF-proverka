@@ -1210,6 +1210,137 @@ describe('Pipeline V2 — Entity Alignment read-only contract (files)', () => {
   });
 });
 
+// ── Pipeline V2 — Controlled Enforce State + Selection Observe (read-only) ───
+//
+// Зеркало pure-логики scPv2Ces*/scPv2Ceso* из app.js + контрактные проверки
+// read-only / отсутствия action-кнопок по index.html / app.js.
+
+function scPv2CesSection(payload) {
+  return (payload && payload.controlled_enforce_state) || null;
+}
+function scPv2CesAvailable(payload) {
+  const s = scPv2CesSection(payload);
+  return !!(s && s.available);
+}
+function scPv2CesoSection(payload) {
+  return (payload && payload.controlled_enforce_selection_observe) || null;
+}
+function scPv2CesoAvailable(payload) {
+  const s = scPv2CesoSection(payload);
+  return !!(s && s.available);
+}
+
+function makeControlledStatePayload() {
+  return {
+    status: 'ok', sections: [],
+    controlled_enforce_state: {
+      available: true, active_exclusions: 1, active_transitions: 1,
+      active_block_pairs: 2, scope_enrichment_only: true,
+      transition: 'ВРУ-3→ВРУ-2', rollback_id: 'ce_rb_X',
+      would_apply: false, enforce_enabled: false,
+    },
+    controlled_enforce_selection_observe: {
+      available: true, default_selected: 5, state_on_selected: 3,
+      excluded_by_state: 2, excluded_logical_transitions: 1, qwen_calls: 0,
+      would_modify_runtime: false, runtime_not_modified_by_selection: true,
+    },
+  };
+}
+
+describe('Pipeline V2 — Controlled Enforce State + Selection Observe (pure)', () => {
+  it('1. state panel renders (computed не null при available)', () => {
+    const p = makeControlledStatePayload();
+    expect(scPv2CesAvailable(p)).toBe(true);
+    expect(scPv2CesSection(p).active_exclusions).toBe(1);
+    expect(scPv2CesSection(p).active_block_pairs).toBe(2);
+    expect(scPv2CesSection(p).transition).toBe('ВРУ-3→ВРУ-2');
+  });
+  it('2. selection observe panel renders', () => {
+    const p = makeControlledStatePayload();
+    expect(scPv2CesoAvailable(p)).toBe(true);
+    expect(scPv2CesoSection(p).excluded_by_state).toBe(2);
+    expect(scPv2CesoSection(p).excluded_logical_transitions).toBe(1);
+  });
+  it('3. enrichment-only scope visible', () => {
+    expect(scPv2CesSection(makeControlledStatePayload()).scope_enrichment_only).toBe(true);
+  });
+  it('4. qwen_calls=0 visible', () => {
+    expect(scPv2CesoSection(makeControlledStatePayload()).qwen_calls).toBe(0);
+  });
+  it('5. missing sections → panels hidden, не падает', () => {
+    const p = makePayload();   // обычный payload без controlled sections
+    expect(scPv2CesAvailable(p)).toBe(false);
+    expect(scPv2CesoAvailable(p)).toBe(false);
+    expect(scPv2CesSection(p)).toBeNull();
+    expect(scPv2CesoSection(null)).toBeNull();
+  });
+  it('6. available=false → panel скрыта', () => {
+    const p = makeControlledStatePayload();
+    p.controlled_enforce_state.available = false;
+    expect(scPv2CesAvailable(p)).toBe(false);
+  });
+});
+
+describe('Pipeline V2 — Controlled Enforce State read-only contract (files)', () => {
+  const indexHtml = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  const appJs = fs.readFileSync(path.join(__dirname, '..', 'static', 'js', 'app.js'), 'utf8');
+
+  function statePanelBlock() {
+    const start = indexHtml.indexOf('🟢 Controlled Enforce State');
+    const end = indexHtml.indexOf('<!-- transport / HTTP errors -->', start);
+    expect(start).toBeGreaterThan(0);
+    expect(end).toBeGreaterThan(start);
+    return indexHtml.slice(start, end);
+  }
+
+  it('1. State panel + Selection observe panel присутствуют', () => {
+    const blk = statePanelBlock();
+    expect(blk).toContain('🟢 Controlled Enforce State');
+    expect(blk).toContain('👁 Selection observe');
+  });
+  it('2. enrichment-only scope + qwen_calls видны', () => {
+    const blk = statePanelBlock();
+    expect(blk).toContain('scope: enrichment only');
+    expect(blk).toContain('qwen_calls');
+    expect(blk).toContain('excluded_by_state');
+  });
+  it('3. обязательная подсказка про future selection присутствует', () => {
+    const blk = statePanelBlock();
+    expect(blk).toContain('only affects future selection when explicitly enabled');
+    expect(blk).toContain(
+      'No existing findings, links, deltas, or grounded evidence were changed');
+  });
+  it('4. НЕТ action-кнопок (apply/enforce/qwen/pipeline/finding/links/rollback)', () => {
+    const blk = statePanelBlock();
+    expect(blk).not.toContain('<button');     // у read-only панелей кнопок нет вовсе
+    for (const forbidden of ['Run enforce', 'Run Qwen', 'Run pipeline',
+                             'Create finding', 'Change block links',
+                             'Откатить', 'Применить']) {
+      expect(blk).not.toContain(forbidden);
+    }
+  });
+  it('5. источник — ui-payload (read-only), без своих fetch/POST/PUT', () => {
+    const start = appJs.indexOf('Controlled Enforce STATE (read-only');
+    const end = appJs.indexOf('Operator review write-layer', start);
+    expect(start).toBeGreaterThan(0);
+    expect(end).toBeGreaterThan(start);
+    const blk = appJs.slice(start, end);
+    expect(blk).toContain('scPv2Payload.value');
+    expect(blk).toContain('controlled_enforce_state');
+    expect(blk).toContain('controlled_enforce_selection_observe');
+    expect(blk).not.toMatch(/fetch\(/);
+    expect(blk).not.toMatch(/method:\s*['"](POST|PUT|DELETE)['"]/);
+  });
+  it('6. старые CE dry-run/preflight/skip-readiness/exclusion панели живы', () => {
+    expect(indexHtml).toContain('🧪 Controlled Enforce Dry-run');
+    expect(appJs).toContain('/controlled-enforce-dry-run?pair_id=');
+    expect(appJs).toContain('/controlled-enforce-preflight?pair_id=');
+    expect(appJs).toContain('/skip-readiness?pair_id=');
+    expect(appJs).toContain('exclusion-preview');   // exclusion preview panel wiring
+    expect(appJs).toContain('/ui-payload');
+  });
+});
+
 // ── Pipeline V2 — Manual Entity Mapping (write-слой) ─────────────────────────
 //
 // Зеркало pure-логики decision-сохранения (scPv2Ea* write) + контрактные
