@@ -15172,6 +15172,16 @@ const app = createApp({
         const scPv2CesoAvailable = computed(() =>
             !!(scPv2CesoSection.value && scPv2CesoSection.value.available));
 
+        // ── Enrichment Selection Observe (read-only observe-plan, Qwen НЕ зван) ──
+        // Источник — ui-payload (enrichment_selection_observe section).
+        const scPv2EsoSection = computed(() =>
+            (scPv2Payload.value
+             && scPv2Payload.value.enrichment_selection_observe) || null);
+        const scPv2EsoAvailable = computed(() =>
+            !!(scPv2EsoSection.value && scPv2EsoSection.value.available));
+        const scPv2EsoExcludedPairs = computed(() =>
+            (scPv2EsoSection.value && scPv2EsoSection.value.excluded_pairs) || []);
+
         // ── Operator review write-layer для Exclusion Preview v2 ─────────────
         // PUT .../exclusion-review-overrides — отдельный обратимый artifact.
         // mark-only: НЕ применяет исключения, НЕ запускает jobs/Qwen/Opus/Claude,
@@ -15775,6 +15785,8 @@ const app = createApp({
             // Pipeline V2 Controlled Enforce State + Selection Observe (read-only)
             scPv2CesSection, scPv2CesAvailable,
             scPv2CesoSection, scPv2CesoAvailable,
+            // Pipeline V2 Enrichment Selection Observe (read-only observe-plan)
+            scPv2EsoSection, scPv2EsoAvailable, scPv2EsoExcludedPairs,
             // Pipeline V2 Manual Entity Mapping (write-слой)
             SC_PV2_EA_DECISIONS, scPv2EaDrafts, scPv2EaSaving, scPv2EaSaveErr,
             scPv2EaSaveHint, scPv2EaPairKey, scPv2EaUnpairedKey, scPv2EaDraft,

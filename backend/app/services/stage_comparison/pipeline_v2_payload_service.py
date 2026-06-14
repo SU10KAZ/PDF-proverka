@@ -1385,6 +1385,107 @@ def discover_controlled_enforce_state(
             warnings=[f"{type(exc).__name__}: {exc}"])
 
 
+# ─── enrichment-selection observe (read-only видимость observe-плана) ─────────
+
+ENRICHMENT_SELECTION_OBSERVE_FILENAME = (
+    "controlled_enforce_enrichment_selection_observe_report.json")
+ESO_NOT_FOUND_MESSAGE = "Enrichment selection observe report not found for this pair."
+_ESO_REPORT_KIND = "stage_comparison_pipeline_v2_enrichment_selection_observe"
+_ESO_RAW_STRIP_KEYS = frozenset({"raw", "debug", "_debug", "_raw"})
+
+
+def _eso_envelope(status: str, *, session_id: str,
+                  pair_id: Optional[str], message: str,
+                  warnings: Optional[list[str]] = None) -> dict:
+    """not_found/error ответ enrichment-selection-observe endpoint'а."""
+    return {
+        "version": 1, "kind": _ESO_REPORT_KIND, "status": status,
+        "available": False, "session_id": session_id, "pair_id": pair_id,
+        "summary": {
+            "default_candidates_total": None, "state_on_candidates_total": None,
+            "excluded_by_state": 0, "excluded_logical_transitions": 0,
+            "qwen_calls": 0, "runtime_modified": False,
+            "protected_reports_modified": False,
+        },
+        "excluded_by_state": [], "remaining_candidates_sample": [],
+        "message": message, "warnings": warnings or [],
+    }
+
+
+def discover_enrichment_selection_observe(
+        session_id: str, pair_id: Optional[str] = None) -> dict:
+    """Найти controlled_enforce_enrichment_selection_observe_report.json пары.
+
+    Read-only, fail-soft. ``ok`` (отчёт есть), ``not_found`` (нет — НИЧЕГО не
+    строится), ``error`` (битый JSON / неверный kind). НИЧЕГО не пишет, не
+    запускает jobs/models, **не меняет state**. Raw/debug вырезаются.
+    Observe-инварианты (``qwen_calls=0``, ``runtime_modified=false``,
+    ``protected_reports_modified=false``) форсируются. ``ValueError`` — только
+    на невалидный id.
+    """
+    if pair_id and _safe_id(pair_id) != pair_id:
+        raise ValueError(f"invalid pair_id: {pair_id!r}")
+    art_dir = pipeline_v2_artifacts_dir(session_id, pair_id)
+    try:
+        report, err = _read_json(art_dir / ENRICHMENT_SELECTION_OBSERVE_FILENAME)
+        if err:
+            return _eso_envelope(
+                "error", session_id=session_id, pair_id=pair_id,
+                message="Enrichment selection observe report could not be read.",
+                warnings=[err])
+        if report is None:
+            return _eso_envelope(
+                "not_found", session_id=session_id, pair_id=pair_id,
+                message=ESO_NOT_FOUND_MESSAGE)
+        if (not isinstance(report, dict)
+                or report.get("kind") != _ESO_REPORT_KIND):
+            return _eso_envelope(
+                "error", session_id=session_id, pair_id=pair_id,
+                message="Enrichment selection observe report is not a valid report.",
+                warnings=[f"{ENRICHMENT_SELECTION_OBSERVE_FILENAME}: unexpected kind "
+                          f"{report.get('kind') if isinstance(report, dict) else type(report).__name__!r}"])
+
+        def _scrub(it: Any) -> Any:
+            if not isinstance(it, dict):
+                return it
+            for key in _ESO_RAW_STRIP_KEYS:
+                it.pop(key, None)
+            return it
+
+        excluded = [_scrub(dict(it) if isinstance(it, dict) else it)
+                    for it in (report.get("excluded_by_state") or [])]
+        sample = [_scrub(dict(it) if isinstance(it, dict) else it)
+                  for it in (report.get("remaining_candidates_sample") or [])]
+        summary = dict(report.get("summary") or {})
+        # HARD INVARIANTS — observe-only
+        summary["qwen_calls"] = 0
+        summary["runtime_modified"] = False
+        summary["protected_reports_modified"] = False
+
+        detail: dict[str, Any] = {
+            "version": 1, "kind": _ESO_REPORT_KIND, "status": "ok",
+            "available": True, "session_id": session_id, "pair_id": pair_id,
+            "created_at": report.get("created_at"),
+            "controlled_enforce_run_id": report.get("controlled_enforce_run_id"),
+            "selection_source": report.get("selection_source"),
+            "summary": summary,
+            "excluded_by_state": excluded,
+            "remaining_candidates_sample": sample,
+            "invariants": dict(report.get("invariants") or {}),
+            "warnings": [],
+        }
+        san_warns: list[str] = []
+        detail = _sanitize_payload(detail, san_warns) or detail
+        if san_warns:
+            detail["warnings"] = list(detail.get("warnings") or []) + san_warns
+        return detail
+    except Exception as exc:  # noqa: BLE001 — endpoint не должен дать 500
+        return _eso_envelope(
+            "error", session_id=session_id, pair_id=pair_id,
+            message="Enrichment selection observe report could not be read.",
+            warnings=[f"{type(exc).__name__}: {exc}"])
+
+
 __all__ = [
     "PIPELINE_V2_DIRNAME",
     "UI_PAYLOAD_FILENAME",
@@ -1415,6 +1516,8 @@ __all__ = [
     "CONTROLLED_ENFORCE_DRY_RUN_FILENAME",
     "discover_controlled_enforce_state",
     "CONTROLLED_ENFORCE_STATE_FILENAME",
+    "discover_enrichment_selection_observe",
+    "ENRICHMENT_SELECTION_OBSERVE_FILENAME",
     "pipeline_v2_artifacts_dir",
     "list_pairs_with_artifacts",
     "resolve_session_dir",

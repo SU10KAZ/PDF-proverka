@@ -3706,6 +3706,28 @@ async def get_pipeline_v2_controlled_enforce_state_endpoint(
         raise HTTPException(400, str(exc)) from exc
 
 
+@router.get("/pipeline-v2/{session_id}/enrichment-selection-observe")
+async def get_pipeline_v2_enrichment_selection_observe_endpoint(
+        session_id: str, pair_id: Optional[str] = None):
+    """Read-only enrichment-selection observe plan под controlled state.
+
+    Отдаёт готовый controlled_enforce_enrichment_selection_observe_report.json:
+    какой enrichment-selection список ушёл бы дальше, какие пары исключены active
+    controlled state, какие остались. Это observe-only: НЕ enforce, НЕ запускает
+    Qwen/jobs/models, **не меняет state**, не пересчитывает pipeline, не пишет на
+    диск. Отсутствие отчёта — {"status":"not_found"} (НИЧЕГО не строится), битый —
+    {"status":"error"}, не 404/500. Observe-инварианты (qwen_calls=0,
+    runtime_modified=false, protected_reports_modified=false) форсируются.
+    Raw/debug не отдаются.
+    """
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_payload_mod.discover_enrichment_selection_observe,
+            session_id, pair_id)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
 # ─── Pipeline V2: ручные override'ы выравнивания сущностей (write) ──────────
 #
 # Отдельный обратимый artifact entity_mapping_overrides.json. Endpoints НИЧЕГО

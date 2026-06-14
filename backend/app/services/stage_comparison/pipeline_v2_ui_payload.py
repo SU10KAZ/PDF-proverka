@@ -890,6 +890,30 @@ def build_pipeline_v2_ui_payload(summary: dict,
         if ceso.get("error"):
             controlled_enforce_selection_observe_section["error"] = str(ceso["error"])
 
+    # Enrichment Selection Observe — формальный observe-план enrichment-selection
+    # под controlled state (default vs state ON, что НЕ уйдёт в future Qwen).
+    eso = s.get("enrichment_selection_observe")
+    enrichment_selection_observe_section = None
+    if isinstance(eso, dict) and eso.get("available"):
+        enrichment_selection_observe_section = {
+            "available": True,
+            "default_candidates_total": _safe_count(eso.get("default_candidates_total")),
+            "state_on_candidates_total": _safe_count(eso.get("state_on_candidates_total")),
+            "excluded_by_state": _safe_count(eso.get("excluded_by_state")),
+            "excluded_logical_transitions":
+                _safe_count(eso.get("excluded_logical_transitions")),
+            "qwen_calls": _safe_count(eso.get("qwen_calls")),
+            "transition": _clean(eso.get("transition")) or None,
+            # HARD INVARIANTS — observe-only
+            "runtime_modified": False,
+            "protected_reports_modified": False,
+        }
+        excluded = eso.get("excluded_pairs")
+        if isinstance(excluded, list):
+            enrichment_selection_observe_section["excluded_pairs"] = excluded
+        if eso.get("error"):
+            enrichment_selection_observe_section["error"] = str(eso["error"])
+
     # per-delta compact evidence → attach к карточкам дельт (по delta_id).
     # Успешный attach — НЕ warning (не деградирует статус); счётчик кладём
     # в саму grounded_evidence-секцию для прозрачности.
@@ -953,6 +977,8 @@ def build_pipeline_v2_ui_payload(summary: dict,
     if controlled_enforce_selection_observe_section is not None:
         payload["controlled_enforce_selection_observe"] = \
             controlled_enforce_selection_observe_section
+    if enrichment_selection_observe_section is not None:
+        payload["enrichment_selection_observe"] = enrichment_selection_observe_section
     payload["filters"] = build_ui_filters(payload)
     return payload
 

@@ -6251,6 +6251,37 @@
                         <!-- observe-only: NO action buttons -->
                     </div>
 
+                    <!-- ─── Enrichment Selection Observe (read-only observe-plan, no Qwen) ─── -->
+                    <div v-if="scPv2EsoAvailable"
+                         style="border:1px solid #bfdbfe; border-radius:8px; padding:8px 10px; margin-bottom:10px; background:#eff6ff">
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:6px">
+                            <strong style="color:#1e40af">🧭 Enrichment Selection Observe</strong>
+                            <span style="opacity:.6; font-size:11px">read-only · observe-plan (default vs controlled state)</span>
+                        </div>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:6px; font-size:11px">
+                            <span style="background:#dbeafe; color:#1e40af; border-radius:10px; padding:1px 8px">Default selection: {{ scPv2EsoSection.default_candidates_total }}</span>
+                            <span style="background:#dbeafe; color:#1e40af; border-radius:10px; padding:1px 8px">With controlled state: {{ scPv2EsoSection.state_on_candidates_total }}</span>
+                            <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:1px 8px; font-weight:600">Excluded by state: {{ scPv2EsoSection.excluded_by_state }}</span>
+                            <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:1px 8px">Logical transitions excluded: {{ scPv2EsoSection.excluded_logical_transitions }}</span>
+                            <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px">Qwen calls: {{ scPv2EsoSection.qwen_calls }}</span>
+                        </div>
+                        <!-- excluded transition cards -->
+                        <div v-for="(p, i) in scPv2EsoExcludedPairs" :key="'pv2eso-ex-'+i"
+                             style="background:#fff; border:1px solid #e2e8f0; border-radius:6px; padding:6px 8px; margin-bottom:5px; font-size:11px">
+                            <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap">
+                                <span style="background:#e0e7ff; color:#3730a3; border-radius:10px; padding:1px 8px; font-weight:600">{{ p.transition_id }}</span>
+                                <span style="background:#f1f5f9; color:#475569; border-radius:10px; padding:1px 6px; font-size:10px">{{ p.left_block_id }} → {{ p.right_block_id }}</span>
+                                <span style="background:#ecfccb; color:#3f6212; border-radius:10px; padding:1px 6px; font-size:10px">scope: enrichment only</span>
+                                <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 6px; font-size:10px">reason: {{ p.reason }}</span>
+                            </div>
+                        </div>
+                        <!-- mandatory observe hint -->
+                        <div style="background:#fffbeb; color:#92400e; border:1px solid #fde68a; border-radius:6px; padding:4px 8px; font-size:11px">
+                            Observe only. No Qwen was called and no pipeline artifacts were recalculated.
+                        </div>
+                        <!-- observe-only: NO action buttons -->
+                    </div>
+
 
                     <!-- transport / HTTP errors -->
                     <div v-if="scPv2EaError" style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; padding:6px 10px; margin-bottom:8px">

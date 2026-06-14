@@ -1341,6 +1341,120 @@ describe('Pipeline V2 — Controlled Enforce State read-only contract (files)', 
   });
 });
 
+// ── Pipeline V2 — Enrichment Selection Observe (read-only observe-plan) ──────
+
+function scPv2EsoSection(payload) {
+  return (payload && payload.enrichment_selection_observe) || null;
+}
+function scPv2EsoAvailable(payload) {
+  const s = scPv2EsoSection(payload);
+  return !!(s && s.available);
+}
+function scPv2EsoExcludedPairs(payload) {
+  const s = scPv2EsoSection(payload);
+  return (s && s.excluded_pairs) || [];
+}
+
+function makeEsoPayload() {
+  return {
+    status: 'ok', sections: [],
+    enrichment_selection_observe: {
+      available: true, default_candidates_total: 54, state_on_candidates_total: 52,
+      excluded_by_state: 2, excluded_logical_transitions: 1, qwen_calls: 0,
+      transition: 'ВРУ-3→ВРУ-2', runtime_modified: false, protected_reports_modified: false,
+      excluded_pairs: [
+        { transition_id: 'ВРУ-3→ВРУ-2', left_block_id: '6XDP-JLWQ-KNX',
+          right_block_id: '3T6X-4PHG-D96', reason: 'controlled_enforce_state_active' },
+        { transition_id: 'ВРУ-3→ВРУ-2', left_block_id: 'EYMU-MPAP-R4Y',
+          right_block_id: 'PNNH-CY3H-XMD', reason: 'controlled_enforce_state_active' },
+      ],
+    },
+  };
+}
+
+describe('Pipeline V2 — Enrichment Selection Observe (pure)', () => {
+  it('1. panel renders (computed не null при available)', () => {
+    const p = makeEsoPayload();
+    expect(scPv2EsoAvailable(p)).toBe(true);
+    expect(scPv2EsoSection(p).default_candidates_total).toBe(54);
+    expect(scPv2EsoSection(p).state_on_candidates_total).toBe(52);
+  });
+  it('2. default/state counts render', () => {
+    const s = scPv2EsoSection(makeEsoPayload());
+    expect(s.excluded_by_state).toBe(2);
+    expect(s.excluded_logical_transitions).toBe(1);
+  });
+  it('3. excluded_by_state cards render (2 pairs)', () => {
+    const pairs = scPv2EsoExcludedPairs(makeEsoPayload());
+    expect(pairs.length).toBe(2);
+    expect(pairs.every(p => p.transition_id === 'ВРУ-3→ВРУ-2')).toBe(true);
+    expect(pairs.every(p => p.reason === 'controlled_enforce_state_active')).toBe(true);
+  });
+  it('4. qwen_calls=0 visible', () => {
+    expect(scPv2EsoSection(makeEsoPayload()).qwen_calls).toBe(0);
+  });
+  it('5. missing section → panel hidden, не падает', () => {
+    expect(scPv2EsoAvailable(makePayload())).toBe(false);
+    expect(scPv2EsoSection(null)).toBeNull();
+    expect(scPv2EsoExcludedPairs(makePayload())).toEqual([]);
+  });
+});
+
+describe('Pipeline V2 — Enrichment Selection Observe read-only contract (files)', () => {
+  const indexHtml = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  const appJs = fs.readFileSync(path.join(__dirname, '..', 'static', 'js', 'app.js'), 'utf8');
+
+  function esoPanelBlock() {
+    const start = indexHtml.indexOf('🧭 Enrichment Selection Observe');
+    const end = indexHtml.indexOf('<!-- transport / HTTP errors -->', start);
+    expect(start).toBeGreaterThan(0);
+    expect(end).toBeGreaterThan(start);
+    return indexHtml.slice(start, end);
+  }
+
+  it('1. Enrichment Selection Observe panel присутствует', () => {
+    expect(esoPanelBlock()).toContain('🧭 Enrichment Selection Observe');
+  });
+  it('2. default/state counts + qwen_calls видны', () => {
+    const blk = esoPanelBlock();
+    expect(blk).toContain('Default selection:');
+    expect(blk).toContain('With controlled state:');
+    expect(blk).toContain('Excluded by state:');
+    expect(blk).toContain('Qwen calls:');
+  });
+  it('3. excluded_pairs cards + обязательная observe-подсказка', () => {
+    const blk = esoPanelBlock();
+    expect(blk).toContain('scPv2EsoExcludedPairs');
+    expect(blk).toContain('scope: enrichment only');
+    expect(blk).toContain(
+      'Observe only. No Qwen was called and no pipeline artifacts were recalculated');
+  });
+  it('4. НЕТ run/apply/qwen/rollback кнопок', () => {
+    const blk = esoPanelBlock();
+    expect(blk).not.toContain('<button');
+    for (const forbidden of ['Run Qwen', 'Run enrichment', 'Recalculate',
+                             'Create finding', 'Откатить', 'Применить']) {
+      expect(blk).not.toContain(forbidden);
+    }
+  });
+  it('5. источник — ui-payload (read-only), без своих fetch/POST/PUT', () => {
+    const start = appJs.indexOf('Enrichment Selection Observe (read-only');
+    const end = appJs.indexOf('Operator review write-layer', start);
+    expect(start).toBeGreaterThan(0);
+    const blk = appJs.slice(start, end);
+    expect(blk).toContain('scPv2Payload.value');
+    expect(blk).toContain('enrichment_selection_observe');
+    expect(blk).not.toMatch(/fetch\(/);
+    expect(blk).not.toMatch(/method:\s*['"](POST|PUT|DELETE)['"]/);
+  });
+  it('6. старые controlled state / dry-run / preflight панели живы', () => {
+    expect(indexHtml).toContain('🟢 Controlled Enforce State');
+    expect(indexHtml).toContain('👁 Selection observe');
+    expect(indexHtml).toContain('🧪 Controlled Enforce Dry-run');
+    expect(appJs).toContain('/ui-payload');
+  });
+});
+
 // ── Pipeline V2 — Manual Entity Mapping (write-слой) ─────────────────────────
 //
 // Зеркало pure-логики decision-сохранения (scPv2Ea* write) + контрактные
