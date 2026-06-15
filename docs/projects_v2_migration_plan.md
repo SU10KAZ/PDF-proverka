@@ -233,6 +233,54 @@ python scripts/projects_v2/rename_object_folders.py --dry-run  --v2-root .../pro
 python scripts/projects_v2/rename_object_folders.py --execute  --v2-root .../projects_v2
 ```
 
+### Этап 2.5 — legacy drift и безопасный refresh snapshot ✅
+
+**Что такое legacy drift.** Миграция в projects_v2 — это снимок legacy на момент
+копирования (sha записаны в `old_to_new_map.json`). Если legacy-файл изменится
+ПОСЛЕ миграции, `validate_migration.py` помечает его `LEGACY CHANGED`.
+
+**Почему возникает.** Backend-аудит работает на живом сервере и продолжает
+писать в legacy `_output/` (`pipeline_log.json`, `audit_log.jsonl`,
+`optimization_pre_review.json`) и иногда в входные файлы (`_document.md` при
+ре-OCR) уже после того, как документ мигрирован. Это видно по `mtime` файлов.
+
+**Почему это НЕ ошибка миграции.** Копии в projects_v2 целы (у validate нет
+ошибок `checksum drift (new copy)`), запись в карте консистентна — расходится
+только живой источник. То есть дрейфует legacy, а не наш снимок.
+
+**Как безопасно делать refresh одного мигрированного snapshot.**
+`scripts/projects_v2/refresh_migrated_snapshot.py` пере-снимает ОДИН уже
+мигрированный документ/версию из `old_to_new_map.json`:
+
+```bash
+python scripts/projects_v2/refresh_migrated_snapshot.py --dry-run \
+    --document "13АВ-РД-АР3-К6" --version v002 \
+    --v2-root .../projects_v2 --stable-seconds 120
+# затем --execute, потом validate_migration.py
+```
+
+Гарантии:
+- **stability-check**: два снимка legacy с паузой `--stable-seconds`; если файлы
+  меняются между снимками (аудит ещё идёт) — refresh **прерывается**, ничего не
+  трогая. Обновляем только стабильный legacy;
+- работает строго по записи в `old_to_new_map.json` (не создаёт новую миграцию,
+  не делает массовый обход);
+- архивирует старую v2-копию в `_system/refresh_archive/<doc>/<version>/<ts>/`
+  перед перезаписью; обновляет sha/size в карте; пишет
+  `_system/refresh_report.{json,csv}`;
+- legacy `projects/` и `comparison/` не трогаются (legacy только читается).
+
+**Почему запрещён общий `--force`.** Массовый/безусловный refresh «затихни и
+перезапиши всё» опасен: он может затереть снимок документом, который прямо сейчас
+активно пишется живым аудитом (гонка), и скрыть реальные расхождения. Поэтому
+refresh — только по одному документу и только при доказанной стабильности
+legacy; глобального `--force` нет by design.
+
+> Замечание: legacy может дрейфовать по РАЗНЫМ документам по мере работы
+> аудита. Refresh целевого документа устраняет его drift; если в окне операции
+> «уехал» другой документ — это новый отдельный drift того же класса, лечится
+> тем же инструментом по этому документу, когда его аудит устаканится.
+
 ### Этап 3 — storage adapter + feature flag (план, НЕ в этом PR)
 
 - Тонкий `StorageAdapter` в backend, отдающий пути `projects_v2` для версии.
