@@ -54,6 +54,7 @@ from backend.app.api.routers import (
     external_register,
     stage_comparison,
     auth,
+    projects_v2_shadow,
 )
 from backend.app.ws.manager import ws_manager
 
@@ -109,6 +110,10 @@ app.include_router(critic_v2_assisted_round1.router)
 app.include_router(external_register.router)
 app.include_router(stage_comparison.router)
 app.include_router(auth.router)
+# Read-only shadow API над projects_v2. Все endpoint'ы gated флагом
+# AUDIT_PROJECTS_V2_SHADOW_API_ENABLED (default false → 404). При выключенном
+# флаге роутер инертен, production/UI не меняется.
+app.include_router(projects_v2_shadow.router)
 # migrated_findings уже подключён выше — повторно не подключаем.
 
 # ─── WebSocket Endpoints ────────────────────────────────────

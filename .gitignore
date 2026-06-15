@@ -64,8 +64,9 @@ Desktop.ini
 *.bak
 *_temp.py
 check_*.py
-# committed tool (exception to the scratch check_*.py rule above)
+# committed tools (exceptions to the scratch check_*.py rule above)
 !scripts/projects_v2/check_backend_parity.py
+!scripts/projects_v2/check_shadow_api.py
 find_sections*.py
 .codex_test_tmp/
 tmp_write_probe/

@@ -383,6 +383,67 @@ none / source_only / legacy_partial / versioned / King&Sons preserve). v2
 4. Прогон backend-тестов и ручная проверка UI на shadow-объекте под флагом.
 5. Только потом — переключение флага в проде (с быстрым откатом в `legacy`).
 
+## Read-only shadow API (подготовлен, выключен по умолчанию)
+
+[backend/app/api/routers/projects_v2_shadow.py](../backend/app/api/routers/projects_v2_shadow.py)
+— тонкий **read-only** REST-слой над `ProjectsV2Adapter` для проверки чтения
+`projects_v2` через backend, БЕЗ подключения к основному UI/API. Это НЕ cutover:
+основной backend по-прежнему работает с legacy `projects/`.
+
+### Endpoints (префикс `/api/projects-v2-shadow`)
+
+| Endpoint | Назначение |
+|---|---|
+| `GET /health` | статус adapter, `object_count`, `document_count`, `read_only`, default backend |
+| `GET /objects` | список объектов |
+| `GET /documents` | список документов (фильтры `object_folder`/`discipline`/`analysis_status`/`limit`) |
+| `GET /documents/{code}` | document.json + summary |
+| `GET /documents/{code}/versions` | версии + metadata (`analysis_status`, legacy-preserve флаги) |
+| `GET /documents/{code}/snapshot` | полный снимок (версии, статусы, findings_count, pipeline_log) |
+| `GET /parity/sample` | существующий parity-отчёт (read-only, не пересчитывает) |
+
+### Почему выключен по умолчанию
+
+Флаг `AUDIT_PROJECTS_V2_SHADOW_API_ENABLED` (default `false`). При выключенном
+флаге КАЖДЫЙ endpoint возвращает **404** (как будто роутера нет). Флаг читается
+на каждый запрос. Роутер всегда `include`-ится в app, но при `false` инертен →
+production/UI поведение идентично сборке без него (проверено: существующие
+endpoint'ы работают одинаково при любом значении флага). Это безопасный rollout:
+включение не трогает основной поток.
+
+### Read-only
+
+Все endpoint'ы читают только через `ProjectsV2Adapter` (без записи/создания/
+удаления, без fallback в legacy). Сам shadow-роутер ничего не пишет в
+`projects_v2`. Тест `test_adapter_read_only_via_api` фиксирует, что прогон всех
+endpoint'ов не меняет файлы `projects_v2`.
+
+### Как включить локально (НЕ в проде)
+
+```bash
+AUDIT_PROJECTS_V2_SHADOW_API_ENABLED=true \
+  uvicorn backend.app.main:app --port 8082   # отдельный порт, не трогая prod :8081
+curl -s localhost:8082/api/projects-v2-shadow/health | jq
+```
+
+### Как проверить endpoints без живого сервера
+
+[scripts/projects_v2/check_shadow_api.py](../scripts/projects_v2/check_shadow_api.py)
+— `--in-process` поднимает TestClient в отдельном процессе (флаг ON, auth OFF,
+`startup`/lifespan НЕ запускается → нет побочных эффектов на prod), гоняет health
++ снимки документов всех типов (complete/partial/none/source_only/legacy_partial/
+versioned/King&Sons), сверяет с parity и пишет
+`projects_v2/_system/shadow_api_check_report.{json,md}`. Режим по умолчанию —
+HTTP против `--base-url` (для локального backend с включённым флагом).
+
+### Почему это не cutover / условия следующего этапа
+
+Shadow API только ЧИТАЕТ v2 в изолированном namespace — основной backend его не
+использует. Следующий этап (НЕ здесь): подключить adapter к реальным read-path
+за `AUDIT_STORAGE_BACKEND` с двойным чтением на shadow-объекте, прогнать
+backend-тесты и UI, и лишь затем — переключение флага в проде (см. «Предусловия
+будущего cutover» выше).
+
 ## Инварианты безопасности
 
 1. legacy `projects/` и `comparison/` — **только чтение**, никогда не изменяются.

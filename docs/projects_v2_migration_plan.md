@@ -622,7 +622,37 @@ legacy_partial/versioned/King&Sons), **16/16 passed**, findings v2/legacy
 (включая обнаружение потери findings). Доп. файл `backend/app/services/storage/__init__.py`
 (package marker, как у соседних сервис-пакетов).
 
-### Этап 4 — подключение adapter за флагом (план, НЕ в этом PR)
+### Этап 3.5 — read-only shadow API (ВЫПОЛНЕНО, выключено по умолчанию)
+
+Adapter подключён к изолированному **read-only shadow API** для проверки чтения
+`projects_v2` через backend, БЕЗ переключения основного UI/API:
+
+- [backend/app/api/routers/projects_v2_shadow.py](../backend/app/api/routers/projects_v2_shadow.py)
+  — endpoints `/api/projects-v2-shadow/{health,objects,documents,documents/{code},
+  …/versions,…/snapshot,parity/sample}`, все только через `ProjectsV2Adapter`
+  (read-only, без fallback). Gated флагом `AUDIT_PROJECTS_V2_SHADOW_API_ENABLED`
+  (default `false` → каждый endpoint 404). Роутер всегда include-ится, но при
+  выключенном флаге инертен → production/UI не меняется.
+- Регистрация: один include в [backend/app/main.py](../backend/app/main.py)
+  (import + `app.include_router(projects_v2_shadow.router)` с пояснением). Префикс
+  `/api/projects-v2-shadow` не конфликтует с catch-all `/api/projects/{id:path}`
+  (дефис, не слеш). `project_service` и прочие read-path НЕ изменены.
+- [scripts/projects_v2/check_shadow_api.py](../scripts/projects_v2/check_shadow_api.py)
+  — проверка без UI: HTTP против `--base-url` или `--in-process` (TestClient в
+  отдельном процессе, без живого сервера и без рестарта). Отчёт
+  `projects_v2/_system/shadow_api_check_report.{json,md}`.
+
+**Прогон shadow check (in-process, реальный projects_v2):** 10/10 checks,
+**12/12 документов**, ok=true, покрыты все типы (complete/partial/none/
+source_only/legacy_partial/versioned/King&Sons preserve). Тесты —
+`tests/test_projects_v2_shadow_api.py` (router disabled by default → 404; при
+флаге работает; snapshot содержит analysis_status; source_only/legacy_partial не
+падают; adapter read-only через API; production endpoint не зависит от флага).
+
+Доп. изменён `backend/app/main.py` (регистрация роутера, gated) и `.gitignore`
+(исключение для `check_shadow_api.py` — правило `check_*.py` ловит scratch).
+
+### Этап 4 — подключение adapter за флагом к основным read-path (план, НЕ в этом PR)
 
 - Подключить adapter к реальным read-path (project list / findings / pipeline
   summary / versions) за `AUDIT_STORAGE_BACKEND`, двойное чтение (v2 +
@@ -631,7 +661,7 @@ legacy_partial/versioned/King&Sons), **16/16 passed**, findings v2/legacy
 - Backend restart / deploy — **только** после явного подтверждения (см. правила
   проекта).
 
-### Этап 4 — cutover (план)
+### Этап 5 — cutover (план)
 
 - Включить `STORAGE_BACKEND=v2` для одного объекта, наблюдать.
 - Постепенно расширить на все объекты.
