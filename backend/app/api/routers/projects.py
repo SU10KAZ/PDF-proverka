@@ -699,10 +699,12 @@ async def set_pipeline_version(project_id: str, req: PipelineVersionRequest):
 
 
 @router.delete("/{project_id:path}/clean")
-async def clean_project(project_id: str):
-    """Очистить все результаты аудита (сохраняет PDF, MD, project_info.json).
+async def clean_project(project_id: str, version_id: Optional[str] = None):
+    """Очистить результаты аудита ТОЛЬКО активной версии.
 
-    Удаляет всю папку _output/ и сбрасывает авто-поля в project_info.json.
+    Удаляет `_output/` версии (`version_id`; при None — активной/latest) и
+    сбрасывает авто-поля в её project_info.json. Другие версии проекта
+    остаются нетронутыми. PDF, MD, project_info.json сохраняются.
     """
     # Проверка что аудит не запущен
     from backend.app.pipeline.manager import pipeline_manager
@@ -710,7 +712,7 @@ async def clean_project(project_id: str):
         raise HTTPException(409, f"Аудит проекта '{project_id}' сейчас выполняется. Сначала отмените.")
 
     try:
-        result = project_service.clean_project_data(project_id)
+        result = project_service.clean_project_data(project_id, version_id=version_id)
         return {"status": "ok", "project_id": project_id, **result}
     except ValueError as e:
         raise HTTPException(404, str(e))

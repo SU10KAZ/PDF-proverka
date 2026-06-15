@@ -3862,11 +3862,20 @@ const app = createApp({
 
         async function cleanProject(projectId) {
             const name = currentProject.value?.name || projectId;
-            if (!confirm(`Очистить все результаты проекта "${name}"?\n\nБудут удалены:\n- Все блоки и нарезки\n- Все JSON-этапы (00-03)\n- Батчи и логи\n- Отчёты\n\nPDF и MD файлы сохраняются.`)) {
+            // Очистка затрагивает только активную версию (её _output/),
+            // остальные версии проекта не трогаются.
+            const verEntry = activeVersionEntry.value;
+            const verLabel = verEntry
+                ? (verEntry.label || verEntry.version_id)
+                : (activeVersionId.value || '');
+            const verLine = verLabel ? ` (версия ${verLabel})` : '';
+            if (!confirm(`Очистить результаты проекта "${name}"${verLine}?\n\nБудут удалены данные ТОЛЬКО этой версии:\n- Все блоки и нарезки\n- Все JSON-этапы (00-03)\n- Батчи и логи\n- Отчёты\n\nДругие версии, PDF и MD файлы сохраняются.`)) {
                 return;
             }
             try {
-                const resp = await fetch(`/api/projects/${encodeURIComponent(projectId)}/clean`, { method: 'DELETE' });
+                // _apiUrl автоматически подмешивает ?version_id из activeVersionId,
+                // чтобы бэкенд чистил именно активную версию.
+                const resp = await fetch(_apiUrl(`/projects/${encodeURIComponent(projectId)}/clean`), { method: 'DELETE' });
                 const data = await resp.json();
                 if (!resp.ok) {
                     alert(data.detail || 'Ошибка очистки');

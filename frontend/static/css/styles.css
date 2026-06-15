@@ -820,10 +820,13 @@ td:has(> .sev-badge--sm) { vertical-align: middle; text-align: center; }
 .sev-opt-simpler { background: rgba(230,126,34,0.12); color: #e67e22; border: 1px solid rgba(230,126,34,0.2); }
 .sev-opt-lifecycle { background: rgba(142,68,173,0.12); color: #8e44ad; border: 1px solid rgba(142,68,173,0.2); }
 .findings-total { font-size: 12px; font-weight: 700; color: var(--text2); padding: 0 4px; font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
-.project-card__badges-row { display: grid; grid-template-columns: 1fr 92px 18px; align-items: center; margin-top: 2px; column-gap: 6px; }
-.project-card__badges-row .severity-badges { flex-wrap: nowrap; min-width: 0; }
-.project-card__badges-row .btn-sm { padding: 2px 8px; font-size: 10px; line-height: 1.3; border-radius: 5px; width: 92px; text-align: center; }
-.project-card__badges-row .project-card__row-status { width: 18px; text-align: center; margin-left: 0; }
+.project-card__badges-row { display: grid; grid-template-columns: 1fr 74px 16px; align-items: center; margin-top: 2px; column-gap: 5px; }
+.project-card__badges-row .severity-badges { flex-wrap: nowrap; min-width: 0; overflow: hidden; gap: 3px; }
+/* Чуть уже квадратики счётчиков внутри карточки, чтобы строка не переполнялась */
+.project-card__badges-row .sev-badge { padding: 2px 4px; font-size: 9px; }
+.project-card__badges-row .findings-total { padding: 0 2px; font-size: 11px; }
+.project-card__badges-row .btn-sm { padding: 2px 6px; font-size: 10px; line-height: 1.3; border-radius: 5px; width: 74px; text-align: center; }
+.project-card__badges-row .project-card__row-status { width: 16px; text-align: center; margin-left: 0; }
 .opt-type-badge { display: inline-block; padding: 2px 8px; border-radius: 5px; font-size: 10px; font-weight: 700; color: #fff; white-space: nowrap; }
 
 /* ══════════════════════════════════════════════════════════════
