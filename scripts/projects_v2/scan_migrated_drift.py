@@ -39,7 +39,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import v2lib                          # noqa: E402
 import refresh_migrated_snapshot as rms  # noqa: E402
 
-DRIFT_TYPES = ("legacy_changed_v2_old", "v2_changed", "missing_legacy", "missing_v2")
+DRIFT_TYPES = ("legacy_changed_v2_old", "legacy_new_file_not_in_map",
+               "v2_changed", "missing_legacy", "missing_v2")
+# типы, которые refresh умеет безопасно закрыть
+_SAFE_DRIFT_TYPES = {"legacy_changed_v2_old", "legacy_new_file_not_in_map"}
 REC_REFRESH_SAFE = "refresh_safe"
 REC_WAIT_BACKEND = "wait_backend"
 REC_MANUAL_REVIEW = "manual_review"
@@ -84,9 +87,9 @@ def classify_file(f: dict) -> Optional[dict]:
 
 
 def _recommendation(drift_types: set, stable: bool) -> str:
-    if drift_types - {"legacy_changed_v2_old"}:
+    if drift_types - _SAFE_DRIFT_TYPES:
         return REC_MANUAL_REVIEW  # есть v2_changed / missing_*
-    # только legacy_changed_v2_old
+    # только safe-типы (legacy_changed_v2_old / legacy_new_file_not_in_map)
     return REC_REFRESH_SAFE if stable else REC_WAIT_BACKEND
 
 
@@ -110,6 +113,16 @@ def run_scan(*, v2_root: Path, stable_seconds: int, map_path: Optional[Path] = N
                 "current_legacy_sha": d["current_legacy_sha"],
                 "current_v2_sha": d["current_v2_sha"],
                 "drift_type": d["drift_type"],
+            })
+        # новые whitelist-файлы в legacy, которых нет в карте
+        for nf in rms.detect_new_files(rec):
+            drift_files.append({
+                "file": nf["basename"],
+                "old_path": nf["legacy_path"], "new_path": "",
+                "recorded_sha": None,
+                "current_legacy_sha": nf["current_legacy_sha"],
+                "current_v2_sha": None,
+                "drift_type": "legacy_new_file_not_in_map",
             })
         if not drift_files:
             continue

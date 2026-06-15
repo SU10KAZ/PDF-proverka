@@ -157,6 +157,42 @@ objects/214_Alia_ASTERUS/
 
 `run_id` детерминирован: `run_<YYYYMMDDThhmmss>` по mtime `pipeline_log.json`.
 
+### Live-дописанный анализ: `run_refresh_<timestamp>` + `analysis_status`
+
+Если backend проводит аудит документа уже ПОСЛЕ миграции, в legacy `_output/`
+появляются новые analysis-файлы, которых нет в snapshot (drift-тип
+`legacy_new_file_not_in_map`). Их добавляют контролируемо
+(`refresh_migrated_snapshot.py --include-new-files`, только whitelist, со
+stability-check):
+
+- новые файлы кладутся в **отдельный** `03_analysis/runs/run_refresh_<timestamp>/`
+  (verbatim), чтобы не смешивать старый snapshot с live-дописанным анализом;
+- критичные/основные analysis-файлы (`01_text_analysis.json`,
+  `02_blocks_analysis.json`, `03_findings.json`, `norm_checks.json`,
+  `03a_norms_verified.json`, `optimization.json`) дублируются в
+  `03_analysis/latest/`;
+- в `version.json` проставляется состояние анализа:
+
+```json
+{
+  "analysis_status": "none | partial | complete",
+  "analysis_refreshed_at": "...",
+  "analysis_refresh_reason": "legacy_new_analysis_artifacts"
+}
+```
+
+`complete` — есть все три `01/02/03`; `partial` — часть; `none` — ни одного.
+Отсутствие анализа — НЕ ошибка: входные данные мигрируются всегда, анализ
+помечается явным статусом.
+
+### `_ocr.html` — optional
+
+`_ocr.html` считается **опциональным** входным файлом. Если есть
+`.pdf + _document.md + _result.json`, отсутствие `_ocr.html` не блокирует
+перенос: `02_work/ocr.html` не создаётся, а в `input_manifest.json`
+фиксируется `missing_optional_files: ["ocr_html"]` (детальная политика для
+warning-проектов — на этапе разбора `WARNINGS_NEED_POLICY`).
+
 ## Сравнение версий (этап 2, зарезервировано)
 
 `documents/<document_code>/comparisons/<vA>_vs_<vB>/comparison_link.json` будет

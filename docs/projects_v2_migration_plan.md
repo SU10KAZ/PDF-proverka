@@ -335,6 +335,64 @@ projects_v2 должно быть доказуемо чистым (validate PASS
 Чистый validate — это базовая линия, относительно которой оценивается следующий
 этап.
 
+### Этап 2.7 — новый класс drift: `legacy_new_file_not_in_map` ✅
+
+**Что это.** legacy получил НОВЫЕ файлы после миграции, которых нет ни в snapshot,
+ни в `old_to_new_map.json`. Частный случай — V2-документ был мигрирован без
+анализа (`analysis_status=none`), а затем живой backend-аудит дописал в legacy
+`_output/` `01_text_analysis.json` / `02_blocks_analysis.json` / `03_findings.json`
+и др. Тогда validate падает на `CRITICAL artifact lost` (файл есть в legacy, нет
+в v2).
+
+**Почему возникает.** Backend работает на живом сервере и продолжает аудит
+документов уже после их миграции — это нормальная гонка, а не ошибка миграции
+(копии в v2 целы).
+
+**Почему ловится отдельно.** Старый `scan_migrated_drift.py` сравнивал только
+файлы из карты, поэтому НОВЫЕ файлы не видел. Теперь scan дополнительно ищет
+whitelist-файлы в legacy, которых нет в карте → `legacy_new_file_not_in_map`.
+
+**Whitelist новых файлов** (только они добавляются автоматически):
+`01_text_analysis.json`, `02_blocks_analysis.json`, `03_findings.json`,
+`03_findings_review.json`, `norm_checks.json`, `03a_norms_verified.json`,
+`optimization.json`, `optimization_review.json`, `pipeline_log.json`,
+`audit_log.jsonl` (все в `_output/`). НЕ добавляются: backup-папки
+(`_bench_backup_*`), `cache/raw/prompts`, debug-файлы, любое вне whitelist.
+Это защита от затягивания мусора в snapshot.
+
+**Как добавлять безопасно** (`refresh_migrated_snapshot.py --include-new-files`):
+по одному document/version, после stability-check; нестабильный legacy →
+прерывание; legacy только читается.
+
+```bash
+python scripts/projects_v2/scan_migrated_drift.py --v2-root .../projects_v2 --stable-seconds 120
+# для каждого refresh_safe документа с legacy_new_file_not_in_map:
+python scripts/projects_v2/refresh_migrated_snapshot.py --execute --include-new-files \
+    --document "<code>" --version "<vid>" --v2-root .../projects_v2 --stable-seconds 120
+python scripts/projects_v2/validate_migration.py --v2-root .../projects_v2   # -> PASS
+```
+
+**Куда кладутся новые файлы.** Новые analysis-артефакты — это live-дописанный
+анализ, его нельзя смешивать со старым snapshot. Поэтому создаётся отдельный
+`03_analysis/runs/run_refresh_<timestamp>/` (verbatim-копии), а критичные/основные
+analysis-файлы дублируются в `03_analysis/latest/`. Отдельный run, а не запись в
+существующий — чтобы старый и новый (live) анализ не перемешались.
+
+**`analysis_status` в `version.json`** (выставляется при refresh):
+`complete` (есть 01+02+03), `partial` (часть), `none` (нет). Плюс
+`analysis_refreshed_at` и `analysis_refresh_reason=legacy_new_analysis_artifacts`.
+
+**Почему это НЕ новая миграция проекта.** Документ уже мигрирован и есть в
+`old_to_new_map`; refresh лишь до-снимает добавленные legacy-файлы в его же
+версию (по whitelist, со stability-check, с архивом). Новый проект/версия не
+создаётся, массового обхода нет.
+
+**Пауза backend.** Существует штатный механизм (`POST /api/audit/pause`
+`finish_current` + `POST /api/audit/resume`, in-memory, обратимый). Использовать
+его опционально: если backend активно пишет — можно поставить на паузу и
+обязательно затем возобновить; если backend idle — достаточно stability-check
+самого refresh. Убивать процесс/делать restart нельзя.
+
 ### Этап 3 — storage adapter + feature flag (план, НЕ в этом PR)
 
 - Тонкий `StorageAdapter` в backend, отдающий пути `projects_v2` для версии.
