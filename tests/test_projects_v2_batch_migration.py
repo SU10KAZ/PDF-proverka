@@ -82,12 +82,21 @@ def test_manual_forbidden_even_with_allow_warnings():
 
 
 def test_warnings_class_needs_allow_flag():
+    # CAN_MIGRATE_WITH_WARNINGS теперь требует И --warning-policy, И --allow-warnings.
+    # без warning_policy -> ошибка даже с allow_warnings
     with pytest.raises(batch.BatchRequestError):
         batch.validate_request(readiness.CAN_MIGRATE_WITH_WARNINGS, execute=False,
-                               dry_run=True, allow_warnings=False, force=False)
-    # с флагом — ок (не бросает)
+                               dry_run=True, allow_warnings=True, force=False,
+                               warning_policy=None)
+    # с warning_policy, но без allow_warnings -> ошибка
+    with pytest.raises(batch.BatchRequestError):
+        batch.validate_request(readiness.CAN_MIGRATE_WITH_WARNINGS, execute=False,
+                               dry_run=True, allow_warnings=False, force=False,
+                               warning_policy=readiness.WARNINGS_AUTO_CANDIDATE)
+    # с обоими — ок (не бросает)
     batch.validate_request(readiness.CAN_MIGRATE_WITH_WARNINGS, execute=False,
-                           dry_run=True, allow_warnings=True, force=False)
+                           dry_run=True, allow_warnings=True, force=False,
+                           warning_policy=readiness.WARNINGS_AUTO_CANDIDATE)
 
 
 def test_force_forbidden():
@@ -232,3 +241,161 @@ def test_missing_legacy_path_is_error(tmp_path):
                           objects_map=OBJECTS_MAP)
     assert res["summary"]["errors"] == 1
     assert res["rows"][0]["error_message"] == "legacy_path_missing"
+
+
+# ===========================================================================
+# warning-policy фильтр (--warning-policy WARNINGS_AUTO_CANDIDATE)
+# ===========================================================================
+
+CWW = readiness.CAN_MIGRATE_WITH_WARNINGS
+WAC = readiness.WARNINGS_AUTO_CANDIDATE
+WNP = readiness.WARNINGS_NEED_POLICY
+WB = readiness.WARNINGS_BLOCKED
+
+
+def _wp_row(policy_group, recommendation, legacy_path, document_code, *,
+            object_id="o1", discipline="EOM", kind="plain", version_count=1):
+    return {
+        "policy_group": policy_group, "recommendation": recommendation,
+        "object": "OBJ", "object_id": object_id, "discipline": discipline,
+        "document_code": document_code, "kind": kind,
+        "readiness_group": CWW, "warning_tags": [], "blockers": [], "reason": "",
+        "legacy_path": str(legacy_path), "version_count": version_count,
+    }
+
+
+@pytest.fixture
+def wp_env(tmp_path):
+    """legacy + warning-policy report со смешанными policy_group."""
+    legacy = tmp_path / "projects"
+    disc = legacy / "OBJ" / "EOM"
+    disc.mkdir(parents=True)
+    auto = [make_plain(disc, f"W{i}") for i in range(1, 4)]   # W1..W3 auto-candidate
+    need = make_plain(disc, "N1")
+    blocked = make_plain(disc, "B1")
+    v2_root = tmp_path / "projects_v2"
+    v2lib.ensure_v2_skeleton(v2_root)
+    rows = [
+        _wp_row(WAC, readiness.REC_CAN_BATCH, auto[0], "W1"),
+        _wp_row(WAC, readiness.REC_CAN_BATCH, auto[1], "W2"),
+        _wp_row(WNP, readiness.REC_NEEDS_POLICY, need, "N1"),
+        _wp_row(WB, readiness.REC_MANUAL_ONLY, blocked, "B1"),
+        _wp_row(WAC, readiness.REC_CAN_BATCH, auto[2], "W3"),
+    ]
+    report_path = v2_root / "_system" / "migration_warning_policy_report.json"
+    report_path.write_text(json.dumps({"projects": rows}, ensure_ascii=False), encoding="utf-8")
+    return legacy, v2_root, report_path
+
+
+# --- validate_request ---
+
+
+def test_warnings_class_requires_warning_policy():
+    with pytest.raises(batch.BatchRequestError):
+        batch.validate_request(CWW, execute=False, dry_run=True,
+                               allow_warnings=True, force=False, warning_policy=None)
+
+
+def test_warning_policy_auto_candidate_requires_allow_warnings():
+    with pytest.raises(batch.BatchRequestError):
+        batch.validate_request(CWW, execute=False, dry_run=True,
+                               allow_warnings=False, force=False, warning_policy=WAC)
+
+
+def test_warning_policy_need_policy_forbidden():
+    with pytest.raises(batch.BatchRequestError):
+        batch.validate_request(CWW, execute=True, dry_run=False,
+                               allow_warnings=True, force=False, warning_policy=WNP)
+
+
+def test_warning_policy_blocked_forbidden():
+    with pytest.raises(batch.BatchRequestError):
+        batch.validate_request(CWW, execute=True, dry_run=False,
+                               allow_warnings=True, force=False, warning_policy=WB)
+
+
+def test_warning_policy_only_with_warnings_class():
+    with pytest.raises(batch.BatchRequestError):
+        batch.validate_request(readiness.AUTO_SAFE, execute=True, dry_run=False,
+                               allow_warnings=True, force=False, warning_policy=WAC)
+
+
+def test_warning_policy_auto_candidate_ok():
+    # не бросает
+    batch.validate_request(CWW, execute=True, dry_run=False,
+                           allow_warnings=True, force=False, warning_policy=WAC)
+
+
+# --- run_batch с warning-policy ---
+
+
+def test_run_batch_warning_policy_selects_auto_candidate_only(wp_env):
+    legacy, v2_root, report_path = wp_env
+    before = snapshot(legacy)
+    res = batch.run_batch(report_path=report_path, v2_root=v2_root, klass=CWW,
+                          limit=10, skip_already_migrated=True, execute=False,
+                          objects_map=OBJECTS_MAP, warning_policy=WAC)
+    codes = [r["document_code"] for r in res["rows"]]
+    assert codes == ["W1", "W2", "W3"]           # только auto-candidate, в порядке
+    assert "N1" not in codes and "B1" not in codes  # need_policy/blocked исключены
+    assert res["summary"]["planned"] == 3
+    assert res["summary"]["copied_files_total"] == 0
+    assert res["summary"]["errors"] == 0
+    assert snapshot(legacy) == before            # dry-run ничего не трогает
+
+
+def test_run_batch_warning_policy_limit(wp_env):
+    legacy, v2_root, report_path = wp_env
+    res = batch.run_batch(report_path=report_path, v2_root=v2_root, klass=CWW,
+                          limit=2, skip_already_migrated=True, execute=False,
+                          objects_map=OBJECTS_MAP, warning_policy=WAC)
+    assert res["summary"]["selected"] == 2
+    assert [r["document_code"] for r in res["rows"]] == ["W1", "W2"]
+
+
+def test_run_batch_warning_policy_excludes_need_and_blocked(wp_env):
+    legacy, v2_root, report_path = wp_env
+    res = batch.run_batch(report_path=report_path, v2_root=v2_root, klass=CWW,
+                          limit=10, skip_already_migrated=True, execute=True,
+                          objects_map=OBJECTS_MAP, warning_policy=WAC)
+    migrated_docs = {r["document_code"] for r in res["rows"]}
+    assert migrated_docs == {"W1", "W2", "W3"}
+    assert res["summary"]["migrated"] == 3
+    assert res["summary"]["errors"] == 0
+    # N1 (need_policy) и B1 (blocked) НЕ мигрированы
+    docs = {p.parent.name for p in (v2_root / "objects").rglob("document.json")}
+    assert "N1" not in docs and "B1" not in docs
+
+
+def test_run_batch_warning_policy_recommendation_filter(tmp_path):
+    # AUTO_CANDIDATE policy_group, но recommendation != can_batch_migrate -> не выбирается
+    legacy = tmp_path / "projects"
+    disc = legacy / "OBJ" / "EOM"
+    disc.mkdir(parents=True)
+    good = make_plain(disc, "G1")
+    bad = make_plain(disc, "X1")
+    v2_root = tmp_path / "projects_v2"
+    v2lib.ensure_v2_skeleton(v2_root)
+    rows = [
+        _wp_row(WAC, readiness.REC_CAN_BATCH, good, "G1"),
+        _wp_row(WAC, readiness.REC_NEEDS_POLICY, bad, "X1"),  # несогласованная рекомендация
+    ]
+    report_path = v2_root / "_system" / "migration_warning_policy_report.json"
+    report_path.write_text(json.dumps({"projects": rows}, ensure_ascii=False), encoding="utf-8")
+    res = batch.run_batch(report_path=report_path, v2_root=v2_root, klass=CWW,
+                          limit=10, skip_already_migrated=True, execute=False,
+                          objects_map=OBJECTS_MAP, warning_policy=WAC)
+    assert [r["document_code"] for r in res["rows"]] == ["G1"]
+
+
+def test_run_batch_warning_policy_execute_then_skip(wp_env):
+    legacy, v2_root, report_path = wp_env
+    batch.run_batch(report_path=report_path, v2_root=v2_root, klass=CWW,
+                    limit=10, skip_already_migrated=True, execute=True,
+                    objects_map=OBJECTS_MAP, warning_policy=WAC)
+    res2 = batch.run_batch(report_path=report_path, v2_root=v2_root, klass=CWW,
+                           limit=10, skip_already_migrated=True, execute=True,
+                           objects_map=OBJECTS_MAP, warning_policy=WAC)
+    assert res2["summary"]["selected"] == 0
+    assert res2["summary"]["skipped_already_migrated"] == 3
+    assert res2["summary"]["migrated"] == 0

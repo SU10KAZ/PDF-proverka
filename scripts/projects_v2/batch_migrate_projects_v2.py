@@ -48,7 +48,8 @@ class BatchRequestError(Exception):
 
 
 def validate_request(klass: Optional[str], *, execute: bool, dry_run: bool,
-                     allow_warnings: bool, force: bool) -> None:
+                     allow_warnings: bool, force: bool,
+                     warning_policy: Optional[str] = None) -> None:
     """Бросает BatchRequestError при нарушении safety-инвариантов."""
     if force:
         raise BatchRequestError("--force не реализован и запрещён на этом этапе")
@@ -62,6 +63,25 @@ def validate_request(klass: Optional[str], *, execute: bool, dry_run: bool,
         raise BatchRequestError("MANUAL_REVIEW_REQUIRED мигрировать нельзя")
     if klass == readiness.SKIP_EMPTY_OR_INVALID:
         raise BatchRequestError("SKIP_EMPTY_OR_INVALID мигрировать нельзя")
+    if klass == readiness.ALREADY_MIGRATED:
+        raise BatchRequestError("ALREADY_MIGRATED мигрировать повторно нельзя")
+
+    # --- warning-policy ---
+    if klass == readiness.CAN_MIGRATE_WITH_WARNINGS:
+        if not warning_policy:
+            raise BatchRequestError(
+                "--class CAN_MIGRATE_WITH_WARNINGS требует --warning-policy")
+        if warning_policy == readiness.WARNINGS_BLOCKED:
+            raise BatchRequestError("WARNINGS_BLOCKED мигрировать нельзя никогда")
+        if warning_policy == readiness.WARNINGS_NEED_POLICY:
+            raise BatchRequestError(
+                "WARNINGS_NEED_POLICY требует отдельного флага (пока не реализован)")
+        if warning_policy != readiness.WARNINGS_AUTO_CANDIDATE:
+            raise BatchRequestError(f"неподдерживаемый --warning-policy: {warning_policy}")
+    elif warning_policy:
+        raise BatchRequestError(
+            "--warning-policy допустим только с --class CAN_MIGRATE_WITH_WARNINGS")
+
     if klass != readiness.AUTO_SAFE and not allow_warnings:
         raise BatchRequestError(
             f"класс {klass} требует явного --allow-warnings")
@@ -74,16 +94,22 @@ def validate_request(klass: Optional[str], *, execute: bool, dry_run: bool,
 
 def select_candidates(report_projects: list[dict], klass: str, *,
                       limit: Optional[int], skip_already_migrated: bool,
-                      is_migrated: Callable[[dict], bool]) -> tuple[list[dict], list[dict]]:
+                      is_migrated: Callable[[dict], bool],
+                      group_field: str = "group",
+                      extra_predicate: Optional[Callable[[dict], bool]] = None
+                      ) -> tuple[list[dict], list[dict]]:
     """Возвращает (to_migrate, skipped_already_migrated).
 
-    Берёт проекты класса в порядке отчёта; при skip_already_migrated
-    пропускает уже мигрированные; останавливается, набрав `limit` к миграции.
+    Берёт проекты, у которых `group_field == klass` (и `extra_predicate`, если
+    задан), в порядке отчёта; при skip_already_migrated пропускает уже
+    мигрированные; останавливается, набрав `limit` к миграции.
     """
     to_migrate: list[dict] = []
     skipped: list[dict] = []
     for p in report_projects:
-        if p.get("group") != klass:
+        if p.get(group_field) != klass:
+            continue
+        if extra_predicate is not None and not extra_predicate(p):
             continue
         if skip_already_migrated and is_migrated(p):
             skipped.append(p)
@@ -183,15 +209,29 @@ def _migrate_and_record(project: dict, v2_root: Path, objects_map: dict,
 
 def run_batch(*, report_path: Path, v2_root: Path, klass: str,
               limit: Optional[int], skip_already_migrated: bool,
-              execute: bool, objects_map: Optional[dict] = None) -> dict:
-    """Выполняет (или планирует) батч. Пишет batch_migration_report.{json,csv}."""
+              execute: bool, objects_map: Optional[dict] = None,
+              warning_policy: Optional[str] = None) -> dict:
+    """Выполняет (или планирует) батч. Пишет batch_migration_report.{json,csv}.
+
+    Без warning_policy читает readiness report и фильтрует по `group == klass`.
+    С warning_policy читает warning-policy report и берёт только
+    `policy_group == warning_policy` И `recommendation == can_batch_migrate`.
+    """
     report = json.loads(report_path.read_text(encoding="utf-8"))
     projects = report.get("projects", [])
 
-    to_migrate, skipped = select_candidates(
-        projects, klass, limit=limit,
-        skip_already_migrated=skip_already_migrated,
-        is_migrated=_live_is_migrated(v2_root))
+    if warning_policy:
+        to_migrate, skipped = select_candidates(
+            projects, warning_policy, limit=limit,
+            skip_already_migrated=skip_already_migrated,
+            is_migrated=_live_is_migrated(v2_root),
+            group_field="policy_group",
+            extra_predicate=lambda p: p.get("recommendation") == readiness.REC_CAN_BATCH)
+    else:
+        to_migrate, skipped = select_candidates(
+            projects, klass, limit=limit,
+            skip_already_migrated=skip_already_migrated,
+            is_migrated=_live_is_migrated(v2_root))
 
     if objects_map is None:
         objects_map = v2lib.load_objects_map()
@@ -214,6 +254,7 @@ def run_batch(*, report_path: Path, v2_root: Path, klass: str,
     summary = {
         "mode": "execute" if execute else "dry_run",
         "class": klass,
+        "warning_policy": warning_policy,
         "limit": limit,
         "skip_already_migrated": skip_already_migrated,
         "selected": len(to_migrate),
@@ -252,6 +293,8 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description="Batch migrate legacy projects to projects_v2")
     parser.add_argument("--class", dest="klass", default=None,
                         help="readiness class (AUTO_SAFE | CAN_MIGRATE_WITH_WARNINGS)")
+    parser.add_argument("--warning-policy", dest="warning_policy", default=None,
+                        help="warning-policy подгруппа (только WARNINGS_AUTO_CANDIDATE)")
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--execute", action="store_true")
@@ -267,26 +310,31 @@ def main(argv=None) -> int:
 
     try:
         validate_request(args.klass, execute=args.execute, dry_run=args.dry_run,
-                         allow_warnings=args.allow_warnings, force=args.force)
+                         allow_warnings=args.allow_warnings, force=args.force,
+                         warning_policy=args.warning_policy)
     except BatchRequestError as exc:
         print(f"[ERROR] {exc}", file=sys.stderr)
         return 2
 
     v2_root = Path(args.v2_root).resolve() if args.v2_root else v2lib.projects_v2_root()
+    # warning-policy режим читает warning-policy report, иначе — readiness report
+    default_report = ("migration_warning_policy_report.json" if args.warning_policy
+                      else "migration_readiness_report.json")
     report_path = (Path(args.report_path).resolve() if args.report_path
-                   else v2_root / "_system" / "migration_readiness_report.json")
+                   else v2_root / "_system" / default_report)
     if not report_path.exists():
-        print(f"[ERROR] readiness report not found: {report_path}\n"
+        print(f"[ERROR] report not found: {report_path}\n"
               f"        run report_migration_readiness.py first", file=sys.stderr)
         return 2
 
     execute = args.execute  # dry-run по умолчанию (если не --execute)
     result = run_batch(report_path=report_path, v2_root=v2_root, klass=args.klass,
                        limit=args.limit, skip_already_migrated=args.skip_already_migrated,
-                       execute=execute)
+                       execute=execute, warning_policy=args.warning_policy)
     s = result["summary"]
 
-    print(f"=== batch migration ({s['mode']}) class={s['class']} limit={s['limit']} ===")
+    print(f"=== batch migration ({s['mode']}) class={s['class']} "
+          f"policy={s.get('warning_policy')} limit={s['limit']} ===")
     print(f"selected:                 {s['selected']}")
     print(f"skipped already_migrated: {s['skipped_already_migrated']}")
     if execute:

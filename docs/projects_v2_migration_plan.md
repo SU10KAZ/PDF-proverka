@@ -160,6 +160,52 @@ python scripts/projects_v2/validate_migration.py --v2-root .../projects_v2
 (`classify_readiness`, `classify_warning_policy`, `is_already_migrated`),
 покрыта `tests/test_projects_v2_warning_policy.py`.
 
+### Этап 2.3 — миграция warning-проектов (WARNINGS_AUTO_CANDIDATE) ✅
+
+**Почему нельзя мигрировать весь `CAN_MIGRATE_WITH_WARNINGS` одной партией.**
+Группа неоднородна (см. этап 2.2): `WARNINGS_AUTO_CANDIDATE` безопасна для
+батча, `WARNINGS_NEED_POLICY` требует решения по каждому типу warning,
+`WARNINGS_BLOCKED` фактически заблокирована. Гнать их вместе = протащить
+неоднозначные/битые проекты без разбора.
+
+**Почему нужен `--warning-policy`.** Это явный «предохранитель»: чтобы
+мигрировать warnings, оператор обязан указать КОНКРЕТНУЮ безопасную подгруппу.
+`batch_migrate_projects_v2.py` тогда читает
+`migration_warning_policy_report.json` и берёт только проекты с
+`policy_group == WARNINGS_AUTO_CANDIDATE` И `recommendation == can_batch_migrate`.
+
+**Запуск пилота `WARNINGS_AUTO_CANDIDATE`:**
+
+```bash
+# dry-run:
+python scripts/projects_v2/batch_migrate_projects_v2.py \
+    --dry-run --class CAN_MIGRATE_WITH_WARNINGS \
+    --warning-policy WARNINGS_AUTO_CANDIDATE --allow-warnings \
+    --limit 10 --skip-already-migrated \
+    --legacy-root .../projects --v2-root .../projects_v2
+
+# execute (после проверки dry-run) — те же флаги с --execute, затем:
+python scripts/projects_v2/validate_migration.py --v2-root .../projects_v2
+```
+
+**Запрещённые/защищённые случаи (`validate_request`):**
+
+| Запрос | Результат |
+|---|---|
+| `--class CAN_MIGRATE_WITH_WARNINGS` без `--warning-policy` | ошибка |
+| `--warning-policy WARNINGS_AUTO_CANDIDATE` без `--allow-warnings` | ошибка |
+| `--warning-policy WARNINGS_NEED_POLICY` | ошибка (нужен отдельный флаг, пока не реализован) |
+| `--warning-policy WARNINGS_BLOCKED` | ошибка (никогда) |
+| `--warning-policy` с не-warnings классом | ошибка |
+| `MANUAL_REVIEW_REQUIRED` / `ALREADY_MIGRATED` как `--class` | ошибка |
+| `--force` | ошибка (не реализован) |
+| target exists без force | per-project status=error |
+
+Все остальные safety-инварианты этапа 2.1 сохранены (dry-run по умолчанию,
+skip-already-migrated по факту наличия `document.json`, fail-soft).
+
+`WARNINGS_NEED_POLICY` и `WARNINGS_BLOCKED` в этом этапе **не мигрируются**.
+
 ### Этап 3 — storage adapter + feature flag (план, НЕ в этом PR)
 
 - Тонкий `StorageAdapter` в backend, отдающий пути `projects_v2` для версии.
