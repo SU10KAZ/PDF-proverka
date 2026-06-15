@@ -4597,15 +4597,30 @@ class PipelineManager:
                 pid for pid in project_ids
                 if pid not in existing_pending and pid not in self.active_jobs
             ]
-            new_items = [
-                BatchQueueItem(
-                    project_id=pid,
-                    action=action,
-                    status="pending",
-                    job_id=str(uuid4()),
+            # Версионность очереди: фиксируем effective_version_id на каждый
+            # item ОДИН раз при enqueue (как это делает _enqueue_single для
+            # single-start). Иначе version_id=None заставляет prefetch/resolve
+            # резолвить проект к PRIMARY (V1) папке, и для проекта, чья latest =
+            # V2, V1-состояние «протекает» в V2-прогон (Gemma помечается как
+            # prefetched по V1 → main worker пропускает её для V2).
+            from backend.app.services.common import version_service as _vs
+            new_items = []
+            for pid in filtered:
+                try:
+                    eff_vid = _vs.resolve_effective_version_id(
+                        resolve_project_dir(pid), pid, None,
+                    )
+                except Exception:
+                    eff_vid = None
+                new_items.append(
+                    BatchQueueItem(
+                        project_id=pid,
+                        version_id=eff_vid,
+                        action=action,
+                        status="pending",
+                        job_id=str(uuid4()),
+                    )
                 )
-                for pid in filtered
-            ]
 
             queue = self._ensure_batch_worker(action_for_label=action)
             queue.items.extend(new_items)
@@ -4764,7 +4779,16 @@ class PipelineManager:
             if item.gemma_prefetch_status in ("running", "done", "skipped", "failed"):
                 continue
 
-            proj_dir = resolve_project_dir(item.project_id)
+            # Version-aware: резолвим ПАПКУ ВЕРСИИ item'а, а не PRIMARY (V1).
+            # Иначе для V2-проекта проверялся бы V1 _output: его валидная Gemma
+            # помечала бы V2-item как prefetched/skipped, и main worker пропускал
+            # бы Gemma для V2 (V2 оставался без enrichment, лог пуст).
+            base_dir = resolve_project_dir(item.project_id)
+            try:
+                from backend.app.services.common import version_service as _vs
+                proj_dir = _vs.get_version_dir(base_dir, item.project_id, item.version_id)
+            except Exception:
+                proj_dir = base_dir
             index_file = _gemma_blocks_index_path(proj_dir)
             if not index_file.exists():
                 # PNG crop ещё не готов (V2 skip / pre-crop отстаёт) — НЕ залипаем,
