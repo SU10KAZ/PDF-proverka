@@ -56,6 +56,65 @@
 - Решить судьбу `comparison/` (вероятно остаётся отдельным деревом, только
   линкуется из документов).
 
+### Этап 2.1 — batch migration + пилот AUTO_SAFE (выполнено) ✅
+
+`scripts/projects_v2/batch_migrate_projects_v2.py` — пакетная миграция по
+`migration_readiness_report.json`. Чистые функции `validate_request` /
+`select_candidates` покрыты `tests/test_projects_v2_batch_migration.py`.
+
+**Safety-инварианты (по умолчанию всё запрещено):**
+
+- без `--execute` — **DRY-RUN**, ничего не копируется (план в отчёте);
+- `--class` обязателен; неизвестный класс → ошибка;
+- `MANUAL_REVIEW_REQUIRED` и `SKIP_EMPTY_OR_INVALID` — миграция запрещена всегда;
+- класс ≠ `AUTO_SAFE` требует явного `--allow-warnings`;
+- `--skip-already-migrated` пропускает уже мигрированные (проверка по факту —
+  наличие `document.json` в projects_v2, не по отчёту);
+- перед копированием проверяется существование legacy-path;
+- перезапись существующего документа запрещена → `--force` (намеренно **НЕ
+  реализован**, всегда ошибка);
+- fail-soft: ошибка одного проекта не валит весь батч (status=error в отчёте).
+
+**Dry-run → pilot:**
+
+```bash
+# 1) dry-run (ничего не копирует):
+python scripts/projects_v2/batch_migrate_projects_v2.py \
+    --dry-run --class AUTO_SAFE --limit 5 --skip-already-migrated \
+    --legacy-root .../projects --v2-root .../projects_v2
+
+# 2) реальный пилот (после проверки dry-run):
+python scripts/projects_v2/batch_migrate_projects_v2.py \
+    --execute --class AUTO_SAFE --limit 5 --skip-already-migrated \
+    --legacy-root .../projects --v2-root .../projects_v2
+
+# 3) проверка:
+python scripts/projects_v2/validate_migration.py --v2-root .../projects_v2
+```
+
+**Почему сначала только `AUTO_SAFE`:** это проекты с полным входным комплектом,
+`project_info.json`, без конфликтов `document_code` и без `.pdf`-папок версий —
+миграция детерминирована и не требует решений. `CAN_MIGRATE_WITH_WARNINGS`
+мигрируется отдельно (осознанно, с `--allow-warnings`), `MANUAL_REVIEW_REQUIRED`
+— только после ручного разбора.
+
+**Почему `--limit 5`:** контролируемый пилот. Малая партия проверяется validate +
+ручным осмотром дерева до масштабирования на все 42 `AUTO_SAFE`. Партиями легче
+ловить регрессии и считать дисковый объём.
+
+**Как читать `batch_migration_report.{json,csv}`** (в `projects_v2/_system/`):
+
+- `summary`: `mode` (dry_run|execute), `class`, `selected`,
+  `skipped_already_migrated`, `migrated`, `planned`, `errors`,
+  `copied_files_total`, `checksum_checked_total`;
+- `projects[]`: per-project `status` (`planned`|`migrated`|`error`), `old_path`,
+  `new_path`, `object_id`, `discipline`, `document_code`, `version_count`,
+  `copied_files_count`, `checksum_checked_count`, `error_message`;
+- `skipped_already_migrated[]`: что пропущено как уже мигрированное.
+
+После пилота: `validate_migration.py` должен дать PASS по всем новым документам;
+повторный `--execute --skip-already-migrated` обязан давать `selected=0`.
+
 ### Этап 3 — storage adapter + feature flag (план, НЕ в этом PR)
 
 - Тонкий `StorageAdapter` в backend, отдающий пути `projects_v2` для версии.
