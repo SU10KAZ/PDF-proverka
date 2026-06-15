@@ -118,6 +118,16 @@ def test_run_status_unknown_job_404(client):
     assert r.status_code == 404
 
 
+def test_invalid_id_returns_400_not_500(client, monkeypatch):
+    # _safe_id отвергает '..'/'/' (empty after sanitize) → ValueError в store;
+    # endpoint должен отдать 400, а не 500.
+    def raise_invalid(_sid):
+        raise ValueError("invalid id")
+    monkeypatch.setattr(store_mod, "get_session", raise_invalid)
+    r = client.post(RUN_EP, json=_body())
+    assert r.status_code == 400
+
+
 def test_run_active_reports_lock(client):
     job_id = client.post(RUN_EP, json=_body()).json()["job_id"]
     r = client.get(f"/api/stage-comparison/pipeline-v2/{SID}/pairs/{PID}/run-active")

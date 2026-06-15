@@ -3786,6 +3786,8 @@ async def post_pipeline_v2_run_endpoint(
         raise HTTPException(409, str(exc)) from exc
     except pipeline_v2_run_jobs_mod.PipelineV2RunError as exc:
         raise HTTPException(400, str(exc)) from exc
+    except ValueError as exc:  # невалидный session_id/pair_id (_safe_id отверг)
+        raise HTTPException(400, str(exc)) from exc
     pipeline_v2_run_jobs_mod.start_job_in_background(session_id, job["id"])
     return _pipeline_v2_run_payload(job)
 
@@ -3794,8 +3796,11 @@ async def post_pipeline_v2_run_endpoint(
 async def get_pipeline_v2_run_status_endpoint(
         session_id: str, pair_id: str, job_id: str):
     """Статус controlled Pipeline V2 run job'а (для polling'а UI)."""
-    job = await run_in_threadpool(
-        pipeline_v2_run_jobs_mod.get_job, session_id, job_id)
+    try:
+        job = await run_in_threadpool(
+            pipeline_v2_run_jobs_mod.get_job, session_id, job_id)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
     if job is None or job.get("pair_id") != pair_id:
         raise HTTPException(404, "run_job_not_found")
     return job
@@ -3805,8 +3810,11 @@ async def get_pipeline_v2_run_status_endpoint(
 async def get_pipeline_v2_run_active_endpoint(
         session_id: str, pair_id: str):
     """Активный (running/queued) run job по паре — для восстановления UI."""
-    job = await run_in_threadpool(
-        pipeline_v2_run_jobs_mod.find_active_pair_job, session_id, pair_id)
+    try:
+        job = await run_in_threadpool(
+            pipeline_v2_run_jobs_mod.find_active_pair_job, session_id, pair_id)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
     return {"job": job}
 
 
