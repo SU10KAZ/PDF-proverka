@@ -493,8 +493,8 @@ def schema_document() -> dict:
         "description": "projects_v2 storage standard (этап 1, не подключён к backend)",
         "tree": {
             "_system/": "служебные файлы: schema.json, migration_inventory.*, old_to_new_map.json",
-            "objects/obj_<object_id>/": "объект (object_id из backend/app/data/objects.json)",
-            "objects/obj_<object_id>/object.json": "метаданные объекта + legacy-имя",
+            "objects/<readable_object_folder>/": "объект, человекочитаемая папка (напр. 214_Alia_ASTERUS); object_id хранится в object.json, не в имени папки",
+            "objects/<readable_object_folder>/object.json": "метаданные объекта: object_id, display_name, folder_name, legacy_path",
             ".../disciplines/<discipline_code>/": "дисциплина (EOM, AR, OV, ...)",
             ".../documents/<document_code>/": "стабильная папка документа (раздела)",
             ".../documents/<document_code>/document.json": "метаданные документа + список версий",
@@ -543,10 +543,104 @@ import shutil  # noqa: E402  (local to migration section)
 _SHA_TRACK_EXT = {".json", ".md", ".txt", ".html", ".csv", ".xlsx", ".jsonl"}
 
 
+# --- человекочитаемые имена папок объектов ---
+
+_TRANSLIT = {
+    "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "e",
+    "ж": "zh", "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m",
+    "н": "n", "о": "o", "п": "p", "р": "r", "с": "s", "т": "t", "у": "u",
+    "ф": "f", "х": "h", "ц": "ts", "ч": "ch", "ш": "sh", "щ": "sch",
+    "ъ": "", "ы": "y", "ь": "", "э": "e", "ю": "yu", "я": "ya",
+}
+# uppercase варианты
+_TRANSLIT.update({k.upper(): (v.capitalize() if v else "") for k, v in list(_TRANSLIT.items())})
+
+
+def _transliterate(s: str) -> str:
+    return "".join(_TRANSLIT.get(ch, ch) for ch in s)
+
+
+def make_object_folder_name(display_name: str, object_id: str = "") -> str:
+    """Человекочитаемое имя папки объекта (стабильное, FS-safe, латиница).
+
+    `214. Alia (ASTERUS)` -> `214_Alia_ASTERUS`
+    `213. Мосфильмовская 31А "King&Sons"` -> `213_Mosfilmovskaya_31A_KingSons`
+
+    Конфликт имён НЕ разрешается здесь (это делает вызывающий код, добавляя
+    суффикс `_<object_id>` только при реальном конфликте).
+    """
+    s = _transliterate(display_name or "")
+    s = s.replace("&", "").replace("'", "").replace("’", "")  # King&Sons -> KingSons
+    s = re.sub(r"[^A-Za-z0-9]+", "_", s)   # всё прочее -> _
+    s = re.sub(r"_+", "_", s).strip("_")
+    if not s:
+        s = f"obj_{object_id}" if object_id else "object"
+    return s
+
+
+def _read_object_id(object_dir: Path) -> Optional[str]:
+    oj = object_dir / "object.json"
+    if not oj.exists():
+        return None
+    try:
+        return str(json.loads(oj.read_text(encoding="utf-8")).get("object_id") or "") or None
+    except Exception:
+        return None
+
+
+def resolve_object_folder(v2_root: Path, object_id: str,
+                          display_name: Optional[str] = None) -> Path:
+    """Возвращает путь к папке объекта в projects_v2.
+
+    Приоритет:
+    1. читаемая папка `make_object_folder_name(display_name)` если существует;
+    2. любая папка objects/*, чей object.json совпадает по object_id;
+    3. legacy `obj_<object_id>` если существует;
+    4. (для новой миграции) читаемое имя, иначе `obj_<object_id>`.
+    """
+    objects_root = v2_root / "objects"
+    if display_name:
+        cand = objects_root / make_object_folder_name(display_name, object_id)
+        if cand.exists():
+            return cand
+    if objects_root.is_dir():
+        for d in sorted(objects_root.iterdir()):
+            if d.is_dir() and _read_object_id(d) == object_id:
+                return d
+    legacy = objects_root / f"obj_{object_id}"
+    if legacy.exists():
+        return legacy
+    if display_name:
+        return objects_root / make_object_folder_name(display_name, object_id)
+    return objects_root / f"obj_{object_id}"
+
+
+def allocate_object_folder(v2_root: Path, object_id: str, display_name: str) -> Path:
+    """Папка объекта для НОВОЙ миграции (с разрешением конфликта имён).
+
+    Если читаемое имя занято другим object_id — добавляет суффикс `_<object_id>`.
+    Если занято нашим object_id (повторная миграция) — переиспользует.
+    """
+    objects_root = v2_root / "objects"
+    # уже существует папка этого объекта (читаемая/legacy) — переиспользуем
+    existing = resolve_object_folder(v2_root, object_id, display_name)
+    if existing.exists():
+        return existing
+    base = make_object_folder_name(display_name, object_id)
+    target = objects_root / base
+    if not target.exists():
+        return target
+    other = _read_object_id(target)
+    if other == object_id:
+        return target
+    return objects_root / f"{base}_{object_id}"  # конфликт с другим объектом
+
+
 def document_dir_in_v2(v2_root: Path, object_id: str, discipline: str,
-                       document_code: str) -> Path:
+                       document_code: str, *, display_name: Optional[str] = None) -> Path:
+    obj_dir = resolve_object_folder(v2_root, object_id, display_name)
     return (
-        v2_root / "objects" / f"obj_{object_id}" / "disciplines"
+        obj_dir / "disciplines"
         / safe_component(discipline) / "documents" / safe_component(document_code)
     )
 
@@ -700,18 +794,24 @@ def migrate_project(project_path: Path, v2_root: Path, *,
     objects_map = objects_map if objects_map is not None else load_objects_map()
     object_id = object_id_for(object_dir, objects_map)
     document_code = document_code_for(project_path)
+    display_name = object_dir.name
 
-    doc_dir = document_dir_in_v2(v2_root, object_id, discipline, document_code)
+    # читаемая папка объекта (obj_<hash> не используется как имя)
+    obj_root = allocate_object_folder(v2_root, object_id, display_name)
+    folder_name = obj_root.name
+    doc_dir = obj_root / "disciplines" / safe_component(discipline) / "documents" / safe_component(document_code)
     doc_dir.mkdir(parents=True, exist_ok=True)
 
-    # object.json (на уровне obj_<id>)
-    obj_json_path = doc_dir.parents[3] / "object.json"  # .../obj_<id>/object.json
+    # object.json (на уровне читаемой папки объекта)
+    obj_json_path = obj_root / "object.json"
     if not obj_json_path.exists():
         obj_json_path.parent.mkdir(parents=True, exist_ok=True)
         obj_json_path.write_text(json.dumps({
             "schema_version": 1,
             "object_id": object_id,
-            "legacy_name": object_dir.name,
+            "display_name": display_name,
+            "folder_name": folder_name,
+            "legacy_name": display_name,
             "legacy_path": str(object_dir),
             "created_at": utc_now_iso(),
         }, ensure_ascii=False, indent=2), encoding="utf-8")

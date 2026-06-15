@@ -25,8 +25,8 @@ projects_v2/
     old_to_new_map.json       # карта old_path -> new_path + checksum по версиям
 
   objects/
-    obj_<object_id>/                     # object_id из backend/app/data/objects.json
-      object.json                        # метаданные объекта + legacy-имя/путь
+    <readable_object_folder>/            # напр. 214_Alia_ASTERUS (object_id — в object.json, НЕ в имени)
+      object.json                        # object_id + display_name + folder_name + legacy_path
       disciplines/
         <discipline_code>/               # EOM, AR, OV, VK, SS, KJ, KM, GP, TX, ...
           documents/
@@ -60,6 +60,44 @@ projects_v2/
                 v001_vs_v002/
                   comparison_link.json   # ссылка на сессию/пару сравнения
 ```
+
+## Имена папок объектов (человекочитаемые)
+
+Папка объекта в `projects_v2/objects/` **обязана** быть человекочитаемой.
+Технический `object_id` хранится только внутри `object.json`, **не** в имени
+папки. Использовать `obj_<hash>` как имя папки **запрещено** (допустимо лишь как
+legacy/runtime до переименования скриптом `rename_object_folders.py`).
+
+Правильные имена:
+
+```text
+objects/213_Mosfilmovskaya_31A_KingSons/
+objects/214_Alia_ASTERUS/
+```
+
+Имя строит `make_object_folder_name(display_name, object_id)`:
+
+- ведущий номер объекта остаётся первым сегментом (`214. …` → `214_…`);
+- кириллица транслитерируется в латиницу (`Мосфильмовская` → `Mosfilmovskaya`);
+- `&` удаляется (`King&Sons` → `KingSons`);
+- пробелы/точки/кавычки/скобки/слэши → `_`; повторные `_` схлопываются;
+- ведущие/хвостовые `_` убираются;
+- при конфликте имён добавляется суффикс `_<object_id>` (только при конфликте).
+
+`object.json` хранит и id, и человекочитаемые поля:
+
+```json
+{
+  "object_id": "73a0e59a",
+  "display_name": "214. Alia (ASTERUS)",
+  "folder_name": "214_Alia_ASTERUS",
+  "legacy_path": ".../projects/214. Alia (ASTERUS)"
+}
+```
+
+Резолв пути к объекту (`resolve_object_folder`) идёт по читаемому имени, затем
+по `object_id` из `object.json`, затем по legacy `obj_<id>` — поэтому код не
+ломается ни до, ни после переименования.
 
 ## Уровни сущностей
 

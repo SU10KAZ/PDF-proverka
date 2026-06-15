@@ -310,7 +310,8 @@ def build_signal(object_dir: Path, discipline: str, project_path: Path,
 
     v2_migrated = False
     if v2_root is not None:
-        doc_dir = v2lib.document_dir_in_v2(v2_root, object_id, discipline, document_code)
+        doc_dir = v2lib.document_dir_in_v2(v2_root, object_id, discipline, document_code,
+                                           display_name=object_dir.name)
         v2_migrated = (doc_dir / "document.json").exists()
     recorded_in_map = bool(migrated_keys is not None
                            and (object_id, document_code) in migrated_keys)

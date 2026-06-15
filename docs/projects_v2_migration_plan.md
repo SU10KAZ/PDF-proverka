@@ -206,6 +206,33 @@ skip-already-migrated по факту наличия `document.json`, fail-soft)
 
 `WARNINGS_NEED_POLICY` и `WARNINGS_BLOCKED` в этом этапе **не мигрируются**.
 
+### Этап 2.4 — человекочитаемые папки объектов ✅
+
+Папки объектов переведены с технических `obj_<hash>` на читаемые имена
+(`make_object_folder_name`): `obj_0b540226 → 213_Mosfilmovskaya_31A_KingSons`,
+`obj_73a0e59a → 214_Alia_ASTERUS`. Правила именования — см.
+[projects_v2_storage_standard.md](projects_v2_storage_standard.md) («Имена папок
+объектов»). `object_id` сохраняется только в `object.json`; `obj_<hash>` как имя
+папки запрещён (кроме legacy/runtime до переименования).
+
+- Новые миграции сразу создают читаемую папку (`allocate_object_folder`,
+  конфликт → суффикс `_<object_id>`), `object.json` несёт `display_name` +
+  `folder_name`.
+- Уже созданные папки переименованы скриптом
+  `scripts/projects_v2/rename_object_folders.py` (dry-run по умолчанию;
+  `--execute` для реального переименования; конфликт → остановка). Скрипт
+  переименовывает папку, обновляет `object.json`, `old_to_new_map.json` и
+  generated reports/архивы в `_system/`; legacy `projects/` и `comparison/` не
+  трогает.
+- `resolve_object_folder` находит путь по читаемому имени → по `object_id` из
+  `object.json` → по legacy `obj_<id>`, поэтому downstream работает и до, и после
+  переименования.
+
+```bash
+python scripts/projects_v2/rename_object_folders.py --dry-run  --v2-root .../projects_v2
+python scripts/projects_v2/rename_object_folders.py --execute  --v2-root .../projects_v2
+```
+
 ### Этап 3 — storage adapter + feature flag (план, НЕ в этом PR)
 
 - Тонкий `StorageAdapter` в backend, отдающий пути `projects_v2` для версии.

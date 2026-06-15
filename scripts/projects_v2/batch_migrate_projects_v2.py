@@ -124,7 +124,8 @@ def _live_is_migrated(v2_root: Path) -> Callable[[dict], bool]:
     """Проверяет фактическое наличие document.json в projects_v2 (не доверяя отчёту)."""
     def _check(p: dict) -> bool:
         doc_dir = v2lib.document_dir_in_v2(
-            v2_root, p["object_id"], p["discipline"], p["document_code"])
+            v2_root, p["object_id"], p["discipline"], p["document_code"],
+            display_name=p.get("object"))
         return (doc_dir / "document.json").exists()
     return _check
 
@@ -161,7 +162,8 @@ def _migrate_and_record(project: dict, v2_root: Path, objects_map: dict,
 
     # pre-copy: целевой документ уже существует? (перезапись запрещена без --force)
     doc_dir = v2lib.document_dir_in_v2(
-        v2_root, project["object_id"], project["discipline"], project["document_code"])
+        v2_root, project["object_id"], project["discipline"], project["document_code"],
+        display_name=project.get("object"))
     if (doc_dir / "document.json").exists():
         return {**base, "new_path": str(doc_dir), "status": "error",
                 "error_message": "target_exists_without_force"}
