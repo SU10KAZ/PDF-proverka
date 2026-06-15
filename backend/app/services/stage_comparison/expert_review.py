@@ -224,7 +224,139 @@ def _per_pair_status(session_id: str, decisions: dict) -> dict:
     return per_pair
 
 
+def _prune_decisions(session_id: str, decisions: dict) -> tuple[dict, dict]:
+    """Разделить решения на (kept, removed_orphans). НИКОГДА не вызывается с
+    диска автоматически — только из явного `prune_orphans` (см. инцидент ниже).
+
+    Orphan — составной ключ `<pid>::<raw>`, где пара `pid` СЕЙЧАС done и
+    перечислена `_iter_session_pair_changes`, но `raw` уже не встречается среди
+    её изменений (остался от прошлой регенерации сравнения — id'шники `chg_…`
+    переgenerировались).
+
+    КРИТИЧЕСКИЙ guard «zero-overlap» (после инцидента 2026-06-04, когда пара была
+    стёрта целиком): если у пары НИ ОДНО сохранённое решение не совпадает с
+    текущими id её changes, пара НЕ чистится — это сигнатура того, что
+    comparison пары прямо сейчас регенерируется / id полностью переgenerированы
+    (race), и стирать всю разметку пары недопустимо. Чистим пару только при
+    ЧАСТИЧНОМ совпадении (есть и совпавшие, и пропавшие id) — тогда пропавшие
+    действительно orphan'ы. Пары, которые не удалось перечислить (не done /
+    удалена), и legacy-ключи (без `::`) не трогаем.
+    """
+    valid_by_pair: dict[str, set[str]] = {}
+    try:
+        for pid, rid in _iter_session_pair_changes(session_id):
+            if not pid:
+                continue
+            valid_by_pair.setdefault(pid, set())
+            if rid:
+                valid_by_pair[pid].add(rid)
+    except Exception:  # noqa: BLE001 — prune не должен ронять чтение
+        return dict(decisions or {}), {}
+
+    # Группируем сохранённые составные ключи по паре.
+    stored_by_pair: dict[str, list[str]] = {}
+    kept: dict = {}
+    removed: dict = {}
+    for key, entry in (decisions or {}).items():
+        skey = str(key)
+        if _is_legacy_key(skey):
+            kept[skey] = entry           # legacy → миграция, не трогаем
+            continue
+        pid = skey.split(_KEY_SEP, 1)[0]
+        stored_by_pair.setdefault(pid, []).append(skey)
+
+    for pid, keys in stored_by_pair.items():
+        valid_ids = valid_by_pair.get(pid)
+        if not valid_ids:
+            # Пара не перечислена ИЛИ дала 0 валидных id (не done / race) →
+            # сохраняем всю разметку пары как есть.
+            for k in keys:
+                kept[k] = decisions[k]
+            continue
+        matched = [k for k in keys if k.split(_KEY_SEP, 1)[1] in valid_ids]
+        if not matched:
+            # zero-overlap guard: вероятно id полностью переgenerированы /
+            # пара регенерируется прямо сейчас. НЕ стираем пару целиком.
+            for k in keys:
+                kept[k] = decisions[k]
+            continue
+        for k in keys:
+            raw = k.split(_KEY_SEP, 1)[1]
+            if raw in valid_ids:
+                kept[k] = decisions[k]
+            else:
+                removed[k] = decisions[k]
+    return kept, removed
+
+
+def prune_orphans(session_id: str, dry_run: bool = False) -> dict:
+    """Удалить решения по `raw_id`, которых больше нет в текущих changes пары.
+
+    ЯВНОЕ действие (endpoint/скрипт), НЕ авто-триггер на чтении. Безопасно:
+    чистит только пары, что сейчас done, перечислимы и имеют частичное
+    совпадение id (см. zero-overlap guard в `_prune_decisions`). `dry_run=True`
+    — только посчитать, ничего не писать. Возвращает отчёт.
+    """
+    with _lock:
+        data = load(session_id)
+        decisions = data.get("decisions") or {}
+        kept, removed = _prune_decisions(session_id, decisions)
+        if removed and not dry_run:
+            data["decisions"] = kept
+            data["updated_at"] = _utc_now()
+            data["version"] = VERSION
+            _atomic_write_json(paths_mod.expert_review_path(session_id), data)
+        return {
+            "session_id": session_id,
+            "removed_count": len(removed),
+            "removed_keys": sorted(removed.keys()),
+            "kept_count": len(kept),
+            "dry_run": bool(dry_run),
+        }
+
+
+def clear_pairs(session_id: str, pair_ids: list[str]) -> dict:
+    """Удалить ВСЕ экспертные решения, относящиеся к указанным парам.
+
+    Хранилище session-level (`<pair>::<raw>`), поэтому очистка по паре — это
+    выборочное удаление ключей с префиксом `<pid>::`. Решения по другим парам
+    и legacy-ключи (без `::`) НЕ трогаются. Под общим `_lock` (как
+    prune_orphans), чтобы не гонять с конкурентной записью. Возвращает отчёт.
+    """
+    targets = {str(p).strip() for p in (pair_ids or []) if str(p).strip()}
+    with _lock:
+        data = load(session_id)
+        decisions = data.get("decisions") or {}
+        if not targets:
+            return {"session_id": session_id, "removed_count": 0,
+                    "removed_keys": [], "kept_count": len(decisions)}
+        kept: dict = {}
+        removed: list[str] = []
+        for key, entry in decisions.items():
+            skey = str(key)
+            if _KEY_SEP in skey and skey.split(_KEY_SEP, 1)[0] in targets:
+                removed.append(skey)
+            else:
+                kept[skey] = entry
+        if removed:
+            data["decisions"] = kept
+            data["updated_at"] = _utc_now()
+            data["version"] = VERSION
+            _atomic_write_json(paths_mod.expert_review_path(session_id), data)
+        return {
+            "session_id": session_id,
+            "removed_count": len(removed),
+            "removed_keys": sorted(removed),
+            "kept_count": len(kept),
+        }
+
+
 def get_with_summary(session_id: str, include_pairs: bool = False) -> dict:
+    # ВАЖНО: чтение НЕ мутирует хранилище. Orphan-решения не накручивают
+    # счётчик за счёт скоупинга на фронте (только видимые changes), а реальная
+    # чистка диска — отдельное явное действие `prune_orphans`. Авто-prune на
+    # каждом GET был убран после инцидента 2026-06-04 (race с регенерацией пары
+    # стёр разметку пары целиком).
     data = load(session_id)
     decisions = data.get("decisions") or {}
     out = {
@@ -289,4 +421,83 @@ def apply_batch(
             "decisions": store,
             "summary": _summary(store),
             "updated_at": now,
+        }
+
+
+def apply_transfer(session_id: str, transfers: Iterable[dict]) -> dict:
+    """Применить перенос решений (из «Расхождений» в V2) с пометкой конфликтов.
+
+    Каждый элемент `transfers`:
+      - `key` — СОСТАВНОЙ ключ `<pair_id>::<raw_id>` цели (обычно v2_id);
+      - `decision` ("accepted" | "rejected");
+      - `rejection_reason` (optional);
+      - `method` ("exact" | "semantic"), `source_raw_id`, `confidence` —
+        метаданные переноса;
+      - `needs_review` (bool) — флаг «проверить» для неуверенных совпадений.
+
+    Политика конфликта — НЕ перезаписывать существующее решение: если у ключа
+    уже есть вердикт, он сохраняется. Совпадающий вердикт считается
+    «consistent», расходящийся — конфликтом (помечается на записи флагом
+    `conflict` + историей `transfer_conflicts`). Идемпотентно: повторный
+    перенос того же не плодит дублей.
+    """
+    with _lock:
+        data = load(session_id)
+        store = data.get("decisions") or {}
+        now = _utc_now()
+        applied = 0
+        consistent = 0
+        needs_review = 0
+        conflicts: list[dict] = []
+        for t in transfers or ():
+            if not isinstance(t, dict):
+                continue
+            key = str(t.get("key") or "").strip()
+            decision = str(t.get("decision") or "").strip().lower()
+            if not key or decision not in ("accepted", "rejected"):
+                continue
+            existing = store.get(key)
+            if isinstance(existing, dict) and (existing.get("decision") or "").lower() in ("accepted", "rejected"):
+                if (existing.get("decision") or "").lower() == decision:
+                    consistent += 1
+                    continue
+                # Расхождение вердиктов — конфликт. Существующее не трогаем.
+                src_raw = str(t.get("source_raw_id") or "")
+                conflicts.append({
+                    "key": key,
+                    "existing_decision": (existing.get("decision") or "").lower(),
+                    "incoming_decision": decision,
+                    "source_raw_id": src_raw,
+                })
+                existing["conflict"] = True
+                hist = existing.setdefault("transfer_conflicts", [])
+                entry_c = {"incoming_decision": decision, "source_raw_id": src_raw}
+                if entry_c not in hist:
+                    hist.append(entry_c)
+                continue
+            entry = {
+                "decision": decision,
+                "rejection_reason": str(t.get("rejection_reason") or "")[:1000],
+                "reviewer": "transfer",
+                "timestamp": now,
+                "transferred": True,
+                "transfer_method": str(t.get("method") or "exact"),
+                "transfer_source_raw_id": str(t.get("source_raw_id") or ""),
+                "transfer_confidence": round(float(t.get("confidence") or 0.0), 3),
+            }
+            if t.get("needs_review"):
+                entry["needs_review"] = True
+                needs_review += 1
+            store[key] = entry
+            applied += 1
+        data["decisions"] = store
+        data["updated_at"] = now
+        data["version"] = VERSION
+        _atomic_write_json(paths_mod.expert_review_path(session_id), data)
+        return {
+            "applied": applied,
+            "consistent_existing": consistent,
+            "needs_review": needs_review,
+            "conflicts": conflicts,
+            "total_decisions": len(store),
         }

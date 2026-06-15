@@ -8153,13 +8153,22 @@ const app = createApp({
             }
         }
 
+        // Канонический project_id для API экспертной разметки: реальные папки
+        // проектов/контейнеров — без `.pdf`. В id из version-имени V2 может
+        // протечь `.pdf` (отображается в `name`), и тогда backend резолвит путь
+        // на корень объекта → orphan `_output`. Срезаем хвостовой `.pdf` (вторая
+        // линия защиты; основная — на backend resolve_project_dir/save).
+        function expertReviewProjectId() {
+            return String(currentProjectId.value || '').replace(/\.pdf$/i, '');
+        }
+
         async function loadExpertDecisions() {
             if (!currentProjectId.value) return;
             const map = {};
             try {
                 const vid = activeVersionId.value;
                 const vq = vid ? `?version_id=${encodeURIComponent(vid)}` : '';
-                const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}${vq}`);
+                const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(expertReviewProjectId())}${vq}`);
                 const data = await resp.json();
                 if (data.has_review && data.data && data.data.decisions) {
                     for (const d of data.data.decisions) {
@@ -8232,7 +8241,7 @@ const app = createApp({
                 }
                 const vidPost = activeVersionId.value;
                 const vqPost = vidPost ? `?version_id=${encodeURIComponent(vidPost)}` : '';
-                const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}${vqPost}`, {
+                const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(expertReviewProjectId())}${vqPost}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ decisions, removed_ids: removedIds, reviewer: currentUserName() }),
@@ -8490,7 +8499,7 @@ const app = createApp({
                     try {
                         const vidUp = activeVersionId.value;
                         const vqUp = vidUp ? `?version_id=${encodeURIComponent(vidUp)}` : '';
-                        const revResp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}${vqUp}`);
+                        const revResp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(expertReviewProjectId())}${vqUp}`);
                         const revData = await revResp.json();
                         if (revData.has_review && revData.data && revData.data.decisions) {
                             const map = {};
@@ -8598,9 +8607,12 @@ const app = createApp({
         // ──────────────────────────────────────────────────────────────────
         const scTab            = ref('upload');     // upload | links | diffs
         const scDiffSubtab     = ref('unified');    // unified (primary) | text (debug) | graphic (debug)
-        // ─── V2 режим вкладки «Расхождения» (pair-scoped ручная верификация) ───
-        // scV2View: 'current' (классический unified) | 'v2' (новый список текущей пары).
-        const scV2View         = ref('current');
+        // ─── Вкладка «Расхождения» построена на V2-алгоритме (pair-scoped) ───
+        // scV2View: 'v2' (основной и единственный пользовательский режим —
+        // список текущей PDF-пары + ручная верификация) | 'current'
+        // (классический unified-список, оставлен ТОЛЬКО для отладки за
+        // scDevTools; переключатель [Расхождения][V2] из UI убран).
+        const scV2View         = ref('v2');
         const scV2Data         = ref(null);          // {session_id, pair_id, summary, items}
         const scV2Loading      = ref(false);
         const scV2Error        = ref('');
@@ -8608,8 +8620,11 @@ const app = createApp({
         const scV2Selected     = reactive({});       // {[change_id]: true}
         const scV2Filters      = reactive({
             severity: '', source_layer: '', quality_label: '',
-            review_status: '', cost_impact: '', search: '',
+            review_status: '', cost_impact: '', impact_class: '', search: '',
         });
+        // Исключённые (админ/оформление/шум) изменения в V2-ведомости не
+        // показываются: бэкенд по умолчанию (include_excluded=false) уже
+        // отдаёт только инженерно значимые строки.
         // Опции ручного статуса (значение + человекочитаемая метка). Покрывают
         // все действия инженера: подтвердить/отклонить/уточнить/стоимость/маршрут.
         const scV2StatusOptions = [
@@ -8820,9 +8835,11 @@ const app = createApp({
         // Экспертная оценка расхождений: ключ хранения — стабильный raw `id`
         // (chg_…/uf_…). Решения по группам агрегируются из source_finding_ids.
         const scExpertReviewMode      = ref(false);
-        const scExpertDecisions       = ref({});   // {raw_id: {decision, rejection_reason}}
+        const scExpertDecisions       = ref({});   // {raw_id: {decision, rejection_reason, needs_review, conflict, transferred}}
         const scExpertReviewSaving    = ref(false);
         const scExpertReviewLoaded    = ref(false);
+        // Перенос решений из «Расхождений» в V2 (на всю сессию, с участием Claude).
+        const scV2TransferBusy        = ref(false);
         // Per-pair статус разметки для колонки «Проверено экспертом» на этапе
         // «1. Загрузка документации»: {pair_id: {total, decided, fully_verified}}.
         const scExpertPerPair         = ref({});
@@ -8892,7 +8909,13 @@ const app = createApp({
         const scQOConfirm = ref(null);                // preflight payload for confirm modal
         const scQORunning = ref(false);               // start request in flight / job running
         const scQOPreflighting = ref(false);          // preflight request in flight → button feedback
+        const scQOClearBeforeRun = ref(false);        // confirm modal: clear findings+review before run
+        const scQOClearing = ref(false);              // clear-analysis request in flight
         let scQOPollTimer = null;
+        const scQOClock = ref(Date.now());            // 1s tick → live elapsed timers
+        let scQOClockTimer = null;
+        const scQOActiveRecog = ref(null);            // live md-enrichment aggregate of the running Qwen pair
+        const scQODetailsOpen = ref(true);            // expand per-pair live timeline
         const scQOSelectedCount = computed(() => scPairs.value.filter(p => scQOSelected[p.id]).length);
         const scQOAllSelected = computed(() => {
             const sel = scPairs.value.filter(p => p.left && p.right);
@@ -9159,6 +9182,7 @@ const app = createApp({
                 scAutoLoadInfo.value = null;
                 try { await scRecogRestoreActive(); } catch (_) {}
                 try { await scOpusRestoreActive(); } catch (_) {}
+                try { await scQORestoreActive(); } catch (_) {}
                 try { await scLoadPairCompareStatuses(); } catch (_) {}
                 try { await scOpusLoadPreflight(); } catch (_) {}
                 return true;
@@ -9248,6 +9272,7 @@ const app = createApp({
                             };
                             try { await scRecogRestoreActive(); } catch (_) {}
                             try { await scOpusRestoreActive(); } catch (_) {}
+                            try { await scQORestoreActive(); } catch (_) {}
                             try { await scLoadPairCompareStatuses(); } catch (_) {}
                             try { await scOpusLoadPreflight(); } catch (_) {}
                             return;
@@ -9407,6 +9432,7 @@ const app = createApp({
                 try { await scOpusRestoreActive(); } catch (_) {}
                 // Re-attach к запущенному Qwen→Opus pipeline job после F5, иначе
                 // панель «Pipeline Qwen→Opus» пропадает, хотя job ещё работает.
+                try { await scQORestoreActive(); } catch (_) {}
                 try { await scLoadPairCompareStatuses(); } catch (_) {}
                 try { await scOpusLoadPreflight(); } catch (_) {}
                 // Per-pair статус «Проверено экспертом» для таблицы загрузки.
@@ -9442,6 +9468,214 @@ const app = createApp({
             else { label = '…'; color = '#6b7280'; title = 'В очереди'; }
             return { label, color, title };
         }
+
+        // ── live timing / dynamics for the running Qwen→Opus pipeline ────────
+        // All durations tick via scQOClock (1s), so the panel shows live elapsed
+        // for running items and frozen totals for finished ones.
+        function scQOParseTs(s) {
+            if (!s) return null;
+            const ms = Date.parse(s);              // ISO "...Z" → UTC ms
+            return Number.isFinite(ms) ? ms : null;
+        }
+        function scQOClockStart() {
+            if (scQOClockTimer) return;
+            scQOClock.value = Date.now();
+            scQOClockTimer = setInterval(() => { scQOClock.value = Date.now(); }, 1000);
+        }
+        function scQOClockStop() {
+            if (scQOClockTimer) { clearInterval(scQOClockTimer); scQOClockTimer = null; }
+        }
+        function scQOItemFor(pid) {
+            const job = scQOJob.value;
+            if (!job || !pid) return null;
+            return (job.items || []).find(i => i.pair_id === pid) || null;
+        }
+        // Overall job elapsed: from the first Qwen start (else created_at) to now
+        // while live, frozen at updated_at once terminal.
+        function scQOElapsedMs() {
+            const job = scQOJob.value;
+            if (!job) return 0;
+            let startMs = null;
+            for (const it of job.items || []) {
+                const t = scQOParseTs(it.qwen_started_at);
+                if (t != null && (startMs == null || t < startMs)) startMs = t;
+            }
+            if (startMs == null) startMs = scQOParseTs(job.created_at);
+            if (startMs == null) return 0;
+            const live = ['running', 'queued'].includes(job.status);
+            const endMs = live ? scQOClock.value : (scQOParseTs(job.updated_at) || scQOClock.value);
+            return Math.max(0, endMs - startMs);
+        }
+        // Duration (ms) of one lane (qwen|opus) of a pair. Finished → fixed;
+        // running → live; not started → null.
+        function scQOItemLaneMs(it, lane) {
+            if (!it) return null;
+            const st = scQOParseTs(it[lane + '_started_at']);
+            if (st == null) return null;
+            const fin = scQOParseTs(it[lane + '_finished_at']);
+            return Math.max(0, (fin != null ? fin : scQOClock.value) - st);
+        }
+        function scQOItemLaneLabel(it, lane) {
+            const ms = scQOItemLaneMs(it, lane);
+            if (ms == null) return '';
+            return formatDuration(ms) || '0с';
+        }
+        // Compact lane cell for the per-pair timeline: status glyph + duration.
+        function scQOLaneCell(it, lane) {
+            if (!it) return '—';
+            const st = it[lane + '_status'];
+            const dur = scQOItemLaneLabel(it, lane);
+            if (st === 'done') return '✓ ' + (dur || '0с');
+            if (st === 'running') {
+                // Qwen-дорожка обрабатываемой сейчас пары: показать прогресс по
+                // блокам «… N/M» (живой из активной md-enrichment job), иначе —
+                // длительность.
+                if (lane === 'qwen') {
+                    const job = scQOJob.value;
+                    const curPid = job && job.qwen_worker && job.qwen_worker.current_pair_id;
+                    if (curPid && curPid === it.pair_id && typeof scQOCurrentBlock === 'function') {
+                        const cb = scQOCurrentBlock();
+                        if (cb && cb.total) return '… ' + cb.index + '/' + cb.total;
+                    }
+                }
+                return '… ' + (dur || '0с');
+            }
+            if (st === 'failed') return '✗' + (dur ? ' ' + dur : '');
+            if (st === 'queued') return '⏱';
+            if (st === 'skipped') return '⊘';
+            return '—';  // waiting_qwen / waiting / not run
+        }
+        function scQOLaneColor(it, lane) {
+            if (!it) return '#9ca3af';
+            const st = it[lane + '_status'];
+            if (st === 'running') return '#2563eb';
+            if (st === 'done') return '#16a34a';
+            if (st === 'failed') return '#b91c1c';
+            return '#9ca3af';
+        }
+        // Total wall-clock for a pair across both lanes (min start → max finish,
+        // live if still in flight).
+        function scQOItemTotalLabel(it) {
+            if (!it) return '';
+            const starts = [scQOParseTs(it.qwen_started_at), scQOParseTs(it.opus_started_at)]
+                .filter(x => x != null);
+            if (!starts.length) return '';
+            const start = Math.min(...starts);
+            const terminal = ['done', 'failed', 'skipped'].includes(it.status);
+            let end = scQOClock.value;
+            if (terminal) {
+                const fins = [scQOParseTs(it.qwen_finished_at), scQOParseTs(it.opus_finished_at)]
+                    .filter(x => x != null);
+                if (fins.length) end = Math.max(...fins);
+            }
+            return formatDuration(Math.max(0, end - start)) || '0с';
+        }
+        // Live image-block detail of the Qwen lane's current pair, taken from the
+        // active md-enrichment aggregate (refreshed during polling).
+        function scQOCurrentBlock() {
+            const job = scQOJob.value;
+            const curPid = job && job.qwen_worker && job.qwen_worker.current_pair_id;
+            if (!curPid) return null;
+            const agg = scQOActiveRecog.value && scQOActiveRecog.value.aggregate;
+            if (!agg) return null;
+            if (agg.current_pair_id && agg.current_pair_id !== curPid) return null;
+            const tot = Number(agg.current_total_blocks || 0);
+            if (!tot) return null;
+            return {
+                index: Number(agg.current_block_index || 0), total: tot,
+                page: agg.current_page, side: agg.current_side,
+                avg_sec: (agg.diagnostics && agg.diagnostics.avg_duration_sec) || 0,
+                eta_sec: agg.eta_sec, message: agg.current_status_message || '',
+            };
+        }
+        // Job-wide image-block totals: how many image blocks Qwen must process
+        // across ALL pairs in this run, and how many are already processed.
+        // Per-pair totals come from the on-disk recognition metrics
+        // (scRecogPairBlocks — block counts are stable across re-runs, so they
+        // are a reliable estimate of the work). "Готово" counts the full block
+        // total of every pair whose Qwen lane already finished, plus the live
+        // in-flight progress of the pair Qwen is processing right now. Returns
+        // null until at least one pair's block total is known.
+        function scQOBlocksOverall() {
+            const job = scQOJob.value;
+            if (!job || !Array.isArray(job.items)) return null;
+            const curPid = job.qwen_worker && job.qwen_worker.current_pair_id;
+            const cur = scQOCurrentBlock();
+            let total = 0, done = 0, known = false;
+            for (const it of job.items) {
+                const pb = (typeof scRecogPairBlocks === 'function') ? scRecogPairBlocks(it.pair_id) : null;
+                const pairTotal = (pb && pb.available) ? Number(pb.total || 0) : 0;
+                if (pairTotal > 0) known = true;
+                total += pairTotal;
+                if (it.qwen_status === 'done') {
+                    done += pairTotal;
+                } else if (curPid && it.pair_id === curPid && cur) {
+                    done += Math.min(Number(cur.index || 0), pairTotal || Number(cur.index || 0));
+                }
+            }
+            if (!known) return null;
+            return {
+                total, done,
+                pairsDone: Number((job.qwen_worker && job.qwen_worker.done) || 0),
+                pairsTotal: Number((job.qwen_worker && job.qwen_worker.total) || job.items.length),
+            };
+        }
+        // Remaining-time estimate. Lanes are decoupled, so the wall-clock floor is
+        // the slower of the two remaining workloads (avg finished lane duration ×
+        // pairs still needing that lane, minus already-elapsed for in-flight ones).
+        function scQOEtaSec() {
+            const job = scQOJob.value;
+            if (!job || !['running', 'queued'].includes(job.status)) return null;
+            const items = job.items || [];
+            const avg = (lane) => {
+                const ds = items
+                    .filter(it => scQOParseTs(it[lane + '_finished_at']) != null
+                                  && scQOParseTs(it[lane + '_started_at']) != null)
+                    .map(it => scQOItemLaneMs(it, lane))
+                    .filter(ms => ms != null && ms > 0);
+                return ds.length ? ds.reduce((a, b) => a + b, 0) / ds.length / 1000 : null;
+            };
+            const laneRemain = (lane, avgSec) => {
+                if (avgSec == null) return 0;
+                let rem = 0;
+                for (const it of items) {
+                    const st = it[lane + '_status'];
+                    if (st === 'running') {
+                        const elapsed = (scQOItemLaneMs(it, lane) || 0) / 1000;
+                        rem += Math.max(0, avgSec - elapsed);
+                    } else if (!['done', 'failed', 'skipped'].includes(st)) {
+                        rem += avgSec;
+                    }
+                }
+                return rem;
+            };
+            const eta = Math.max(laneRemain('qwen', avg('qwen')), laneRemain('opus', avg('opus')));
+            return eta > 0 ? Math.round(eta) : null;
+        }
+        async function scQORefreshActiveRecog() {
+            // Pull the running internal md-enrichment job for live image-block
+            // detail. Merge ONLY the active pair's status into scRecogJob so the
+            // "Блоки" column stays live for the running pair without dropping the
+            // already-recognised pairs (the active job is pair-scoped).
+            if (!scSession.value || !scSession.value.id) return;
+            const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/md-enrichment-jobs/active`;
+            const data = await fetch(url).then(r => r.json());
+            const job = data && data.job;
+            if (!job) return;
+            scQOActiveRecog.value = job;
+            const agg = job.aggregate;
+            if (!agg || !agg.pair_statuses) return;
+            if (!scRecogJob.value || !scRecogJob.value.aggregate) {
+                scRecogJob.value = job;
+                return;
+            }
+            const merged = { ...(scRecogJob.value.aggregate.pair_statuses || {}), ...agg.pair_statuses };
+            scRecogJob.value = {
+                ...scRecogJob.value,
+                aggregate: { ...scRecogJob.value.aggregate, pair_statuses: merged },
+            };
+        }
+
         async function scQOPreflight(pairIds) {
             const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pipeline-qwen-opus/preflight`;
             const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -9451,6 +9685,7 @@ const app = createApp({
         async function scQOOpenConfirm() {
             const ids = scPairs.value.filter(p => scQOSelected[p.id]).map(p => p.id);
             if (!ids.length || scQOPreflighting.value) return;
+            scQOClearBeforeRun.value = false;  // safe default each open
             scQOPreflighting.value = true;
             try { scQOConfirm.value = await scQOPreflight(ids); }
             catch (e) { alert('Не удалось подготовить прогон (preflight): ' + ((e && e.message) || e)); }
@@ -9458,15 +9693,52 @@ const app = createApp({
         }
         async function scQOProcessPair(pid) {
             if (scQOPreflighting.value) return;
+            scQOClearBeforeRun.value = false;  // safe default each open
             scQOPreflighting.value = true;
             try { scQOConfirm.value = await scQOPreflight([pid]); }
             catch (e) { alert('Не удалось подготовить прогон (preflight): ' + ((e && e.message) || e)); }
             finally { scQOPreflighting.value = false; }
         }
+        // POST clear-analysis (backup → удалить найденные расхождения + ручные
+        // отметки проверки по выбранным парам). Возвращает ответ backend'а.
+        async function scQOClearAnalysis(pairIds) {
+            if (!scSession.value || !scSession.value.id || !pairIds || !pairIds.length)
+                return { ok: true, cleared_pairs: 0, skipped: [] };
+            const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/clear-analysis`;
+            const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pair_ids: pairIds, clear_findings: true, clear_review: true, clear_enrichment: false }) });
+            if (!r.ok) throw new Error('clear-analysis HTTP ' + r.status);
+            return await r.json();
+        }
         async function scQOStartConfirmed() {
             const ids = (scQOConfirm.value && scQOConfirm.value.pair_ids) || [];
             if (!ids.length) { scQOConfirm.value = null; return; }
+            // Режим «Очистить и запустить»: 1) clear-analysis, 2) дождаться успеха,
+            // 3) обновить статусы пар, 4) обычный pipeline. Очистка молча НЕ идёт.
+            if (scQOClearBeforeRun.value) {
+                scQOClearing.value = true;
+                try {
+                    const res = await scQOClearAnalysis(ids);
+                    const blocked = ((res && res.skipped) || [])
+                        .filter(s => /running job/.test(s.reason || '')).map(s => s.pair_id);
+                    if (blocked.length) {
+                        scQOClearing.value = false;
+                        alert('Очистка пропущена для пар с активным прогоном: ' + blocked.join(', ') +
+                            '.\nОстановите job и повторите.');
+                        return;  // не запускаем — пусть пользователь разрулит
+                    }
+                    // cleared пары должны выглядеть как непроверенные
+                    if (typeof scLoadPairCompareStatuses === 'function') { try { await scLoadPairCompareStatuses(); } catch (e) {} }
+                    if (typeof scLoadUnifiedFlat === 'function') { try { await scLoadUnifiedFlat(); } catch (e) {} }
+                } catch (e) {
+                    scQOClearing.value = false;
+                    alert('Не удалось очистить анализ выбранных пар: ' + ((e && e.message) || e));
+                    return;
+                }
+                scQOClearing.value = false;
+            }
             await scQOStart(ids);
+            scQOClearBeforeRun.value = false;
             scQOConfirm.value = null;
         }
         async function scQOStart(pairIds) {
@@ -9477,10 +9749,58 @@ const app = createApp({
                 const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ scope: 'selected', pair_ids: pairIds, force_qwen: true, force_opus: true, prebuild_large_sheets: true, confirm: true }) });
                 const job = await r.json();
+                // Health-gate: backend заблокировал старт (LLM/ngrok недоступен).
+                if (job && job.status === 'rejected_llm_unavailable') {
+                    scQORunning.value = false;
+                    alert('Запуск заблокирован: локальный LLM/ngrok недоступен (' +
+                        (job.reason || 'unknown') + ').\nВосстановите ngrok-туннель и загрузите модель в LM Studio, затем повторите.');
+                    return;
+                }
                 scQOJob.value = job;
-                if (job && job.job_id) scQOPollJob(job.job_id);
+                if (job && job.job_id) { scQORemember(job.job_id); scQOPollJob(job.job_id); }
                 else scQORunning.value = false;
             } catch (e) { scQORunning.value = false; }
+        }
+        // Persist the running pipeline job id per-session so an F5 / tab reopen
+        // can re-attach to it (the panel state lives only in memory otherwise,
+        // so without this a reload makes the whole "Pipeline Qwen→Opus" box
+        // vanish even though the backend job keeps running).
+        function scQOJobKey() {
+            return scSession.value && scSession.value.id ? ('sc_qo_job:' + scSession.value.id) : null;
+        }
+        function scQORemember(jobId) {
+            const k = scQOJobKey();
+            if (k && jobId) { try { localStorage.setItem(k, jobId); } catch (_) {} }
+        }
+        function scQOForget() {
+            const k = scQOJobKey();
+            if (k) { try { localStorage.removeItem(k); } catch (_) {} }
+        }
+        // Re-attach to a still-running pipeline job after a page reload. Called
+        // from scLoadSession. Frontend-only: reads the remembered job id and
+        // resumes polling via the existing status endpoint.
+        async function scQORestoreActive() {
+            const k = scQOJobKey();
+            if (!k) return;
+            let jobId = null;
+            try { jobId = localStorage.getItem(k); } catch (_) {}
+            if (!jobId) return;
+            const terminal = ['done', 'partial', 'failed', 'cancelled', 'rejected_no_confirm', 'failed_interrupted'];
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pipeline-qwen-opus/${encodeURIComponent(jobId)}`;
+                const r = await fetch(url);
+                if (!r.ok) { scQOForget(); return; }
+                const job = await r.json();
+                if (!job || !job.job_id) { scQOForget(); return; }
+                scQOJob.value = job;
+                if (terminal.includes(job.status)) {
+                    // finished while the page was closed — show the last run once,
+                    // then stop tracking it so it doesn't keep re-appearing.
+                    scQOForget();
+                } else {
+                    scQOPollJob(job.job_id);  // resume live polling
+                }
+            } catch (_) { /* keep pointer; transient network error */ }
         }
         function scQOPollJob(jobId) {
             if (scQOPollTimer) { clearTimeout(scQOPollTimer); scQOPollTimer = null; }
@@ -9490,8 +9810,15 @@ const app = createApp({
                     const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pipeline-qwen-opus/${encodeURIComponent(jobId)}`;
                     const job = await fetch(url).then(r => r.json());
                     scQOJob.value = job;
+                    // live image-block detail while Qwen is enriching a pair
+                    if (job.qwen_worker && job.qwen_worker.current_pair_id) {
+                        try { await scQORefreshActiveRecog(); } catch (e) {}
+                    }
                     if (terminal.includes(job.status)) {
                         scQORunning.value = false;
+                        scQOClockStop();
+                        scQOActiveRecog.value = null;
+                        scQOForget();
                         if (typeof scLoadPairCompareStatuses === 'function') { try { await scLoadPairCompareStatuses(); } catch (e) {} }
                         if (typeof scLoadUnifiedFlat === 'function') { try { await scLoadUnifiedFlat(); } catch (e) {} }
                         return;
@@ -9500,6 +9827,7 @@ const app = createApp({
                 } catch (e) { scQOPollTimer = setTimeout(tick, 5000); }
             };
             scQORunning.value = true;
+            scQOClockStart();
             tick();
         }
         async function scQOCancel() {
@@ -10680,7 +11008,8 @@ const app = createApp({
         // и только для нужной пары (?pair_id=…), не всю сессию разом.
         const _SC_REPORT_SEV_RANK = { high: 0, medium: 1, low: 2, unknown: 3 };
 
-        // Число accepted по каждой паре — прямо из ключей `<pair_id>::<raw_id>`.
+        // Сырое число accepted-ключей по паре (без дедупа V1/V2). Используется
+        // как fallback до того, как построена сверка scReportReconciledCounts.
         const scReportApprovedCountByPair = computed(() => {
             const counts = {};
             for (const [key, entry] of Object.entries(scExpertDecisions.value || {})) {
@@ -10692,27 +11021,116 @@ const app = createApp({
             }
             return counts;
         });
-        function scReportApprovedCountFor(pairId) {
-            return scReportApprovedCountByPair.value[String(pairId)] || 0;
-        }
-        const scReportTotalApproved = computed(() =>
-            Object.values(scReportApprovedCountByPair.value).reduce((n, c) => n + c, 0)
-        );
-        const scReportPairsWithApprovedCount = computed(() =>
-            Object.values(scReportApprovedCountByPair.value).filter(c => c > 0).length
-        );
 
-        // accepted по составному ключу напрямую (не через scGetExpertDecision —
-        // там scope-хелпер переклеивает pair_id на активную пару).
-        function _scReportItemAccepted(it) {
-            if (!it) return false;
-            const pid = String(it.pair_id || '');
-            if (!pid) return false;
-            const raws = (Array.isArray(it.source_finding_ids) && it.source_finding_ids.length)
-                ? it.source_finding_ids.filter(Boolean).map(String)
-                : (it.id ? [String(it.id)] : []);
-            return raws.some(r => ((scExpertDecisions.value[`${pid}::${r}`] || {}).decision) === 'accepted');
+        // ── Сверка V1 («Расхождения») ↔ V2 ──────────────────────────────────
+        // В expert_review.json одно и то же расхождение может быть согласовано
+        // дважды: под классическим id `chg_X` (вид «Расхождения») и под его
+        // V2-двойником `v2_<sha1(pid::chg_X)>` (вид «V2»). Без дедупа бейдж
+        // «N согласовано» задваивается. Считаем V2-id так же, как backend
+        // make_v2_id, и схлопываем двойники в одну находку.
+        // Чистый JS SHA-1 (синхронный). Не зависит от crypto.subtle, который
+        // доступен только в secure-context (HTTPS/localhost) — портал могут
+        // открыть и по голому HTTP на IP сервера. TextEncoder даёт UTF-8 байты
+        // и доступен везде. Результат побайтно совпадает с hashlib.sha1.
+        function _scSha1Hex(str) {
+            const bytes = new TextEncoder().encode(String(str));
+            const l = bytes.length;
+            const total = (((l + 8) >>> 6) + 1) << 6;   // кратно 64, оставляя 8 байт под длину
+            const msg = new Uint8Array(total);
+            msg.set(bytes);
+            msg[l] = 0x80;
+            const dv = new DataView(msg.buffer);
+            const bitLen = l * 8;
+            dv.setUint32(total - 4, bitLen >>> 0, false);
+            dv.setUint32(total - 8, Math.floor(bitLen / 0x100000000) >>> 0, false);
+            let h0 = 0x67452301, h1 = 0xEFCDAB89, h2 = 0x98BADCFE, h3 = 0x10325476, h4 = 0xC3D2E1F0;
+            const w = new Int32Array(80);
+            for (let i = 0; i < total; i += 64) {
+                for (let j = 0; j < 16; j++) w[j] = dv.getInt32(i + j * 4, false);
+                for (let j = 16; j < 80; j++) { const n = w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16]; w[j] = (n << 1) | (n >>> 31); }
+                let a = h0, b = h1, c = h2, d = h3, e = h4;
+                for (let j = 0; j < 80; j++) {
+                    let f, k;
+                    if (j < 20) { f = (b & c) | ((~b) & d); k = 0x5A827999; }
+                    else if (j < 40) { f = b ^ c ^ d; k = 0x6ED9EBA1; }
+                    else if (j < 60) { f = (b & c) | (b & d) | (c & d); k = 0x8F1BBCDC; }
+                    else { f = b ^ c ^ d; k = 0xCA62C1D6; }
+                    const t = (((a << 5) | (a >>> 27)) + f + e + k + w[j]) | 0;
+                    e = d; d = c; c = (b << 30) | (b >>> 2); b = a; a = t;
+                }
+                h0 = (h0 + a) | 0; h1 = (h1 + b) | 0; h2 = (h2 + c) | 0; h3 = (h3 + d) | 0; h4 = (h4 + e) | 0;
+            }
+            const hx = (n) => ('00000000' + ((n >>> 0).toString(16))).slice(-8);
+            return hx(h0) + hx(h1) + hx(h2) + hx(h3) + hx(h4);
         }
+        // Зеркало backend v2_review.make_v2_id: база = стабильный chg_-id, иначе
+        // (uf_/без id) — хэш контента.
+        function _scV2IdForItem(pairId, it) {
+            const raw = String((it && it.id) || '').trim();
+            let base;
+            if (raw && !raw.startsWith('uf_')) {
+                base = raw;
+            } else {
+                const ql = (it && it.evidence_left && it.evidence_left.quote) || '';
+                const qr = (it && it.evidence_right && it.evidence_right.quote) || '';
+                base = String((it && it.title) || '') + String((it && it.old_value) || '')
+                     + String((it && it.new_value) || '') + String(ql) + String(qr);
+            }
+            return 'v2_' + _scSha1Hex(`${pairId}::${base}`).slice(0, 16);
+        }
+        function _scKeyAccepted(key) {
+            return ((scExpertDecisions.value[key] || {}).decision) === 'accepted';
+        }
+        // Строит scReportReconciledCounts: для каждого accepted-классического
+        // ключа считаем находку и помечаем его V2-двойника как «покрытого»;
+        // accepted-V2-ключи, чей двойник не покрыт классическим, — это уникальные
+        // V2-находки и добавляются отдельно.
+        function _scBuildReconciledCounts() {
+            const dec = scExpertDecisions.value || {};
+            const classic = [];
+            const v2keys = [];
+            for (const [key, entry] of Object.entries(dec)) {
+                if (!entry || entry.decision !== 'accepted') continue;
+                const sep = String(key).indexOf('::');
+                if (sep < 0) continue;
+                const pid = String(key).slice(0, sep);
+                const rid = String(key).slice(sep + 2);
+                if (rid.startsWith('v2_')) v2keys.push({ pid, rid, key });
+                else classic.push({ pid, rid, key });
+            }
+            const counts = {};
+            const twinSet = new Set();   // `${pid}::${v2id}` для accepted-классики
+            for (const { pid, rid } of classic) {
+                counts[pid] = (counts[pid] || 0) + 1;   // каждая классика = находка
+                if (rid && !rid.startsWith('uf_')) {
+                    twinSet.add(`${pid}::v2_${_scSha1Hex(`${pid}::${rid}`).slice(0, 16)}`);
+                }
+            }
+            for (const { pid, key } of v2keys) {
+                if (!twinSet.has(key)) counts[pid] = (counts[pid] || 0) + 1;   // V2-only
+            }
+            scReportReconciledCounts.value = counts;
+        }
+
+        function scReportApprovedCountFor(pairId) {
+            const pid = String(pairId);
+            // Точный счёт по загруженной паре: дедуп V1/V2 уже применён к строкам,
+            // и осиротевшие решения (id из старого прогона) сюда не попадают.
+            // Прямой доступ к свойству — чтобы computed пересчитался при загрузке.
+            const loaded = scReportPairItems[pid];
+            if (Array.isArray(loaded)) return loaded.length;
+            const rc = scReportReconciledCounts.value || {};
+            if (Object.prototype.hasOwnProperty.call(rc, pid)) return rc[pid];
+            return scReportApprovedCountByPair.value[pid] || 0;   // до сверки
+        }
+        const scReportTotalApproved = computed(() => {
+            let n = 0;
+            for (const p of (scPairs.value || [])) n += scReportApprovedCountFor(p.id);
+            return n;
+        });
+        const scReportPairsWithApprovedCount = computed(() =>
+            (scPairs.value || []).filter(p => scReportApprovedCountFor(p.id) > 0).length
+        );
         // Кэш лениво загруженных согласованных расхождений по паре.
         function scReportApprovedFor(pairId) {
             return scReportPairItems[String(pairId)] || [];
@@ -10736,8 +11154,28 @@ const app = createApp({
                     throw new Error(j.detail || ('HTTP ' + r.status));
                 }
                 const data = await r.json();
-                const items = ((data && data.items) || []).filter(_scReportItemAccepted);
-                items.sort((a, b) => {
+                const all = (data && data.items) || [];
+                // Сверка с решениями эксперта: V1 (классический id) и V2-двойник.
+                const rows = [];
+                for (const it of all) {
+                    if (!it || typeof it !== 'object') continue;
+                    it._v2id = _scV2IdForItem(pid, it);
+                    const v1 = _scKeyAccepted(`${pid}::${it.id}`);
+                    const v2 = _scKeyAccepted(`${pid}::${it._v2id}`);
+                    if (!v1 && !v2) continue;
+                    // both → консенсус (основной список); v1/v2 → уникальное (в конец).
+                    it._approvedIn = (v1 && v2) ? 'both' : (v1 ? 'v1' : 'v2');
+                    rows.push(it);
+                }
+                const groupRank = (it) => (it._approvedIn === 'both' ? 0 : 1);
+                rows.sort((a, b) => {
+                    const ga = groupRank(a), gb = groupRank(b);
+                    if (ga !== gb) return ga - gb;                  // консенсус выше уникальных
+                    if (ga === 1) {                                 // внутри уникальных: V1, потом V2
+                        const oa = a._approvedIn === 'v1' ? 0 : 1;
+                        const ob = b._approvedIn === 'v1' ? 0 : 1;
+                        if (oa !== ob) return oa - ob;
+                    }
                     const ra = _SC_REPORT_SEV_RANK[a.severity] ?? 3;
                     const rb = _SC_REPORT_SEV_RANK[b.severity] ?? 3;
                     if (ra !== rb) return ra - rb;
@@ -10745,7 +11183,12 @@ const app = createApp({
                     const pb = Array.isArray(b.page) ? (b.page[0] || 0) : (b.page || 0);
                     return pa - pb;
                 });
-                scReportPairItems[pid] = items;
+                // Флаг первой уникальной строки — под неё рисуется разделитель.
+                rows.forEach((it, i) => {
+                    it._firstUnique = it._approvedIn !== 'both'
+                        && (i === 0 || rows[i - 1]._approvedIn === 'both');
+                });
+                scReportPairItems[pid] = rows;
             } catch (e) {
                 scReportError.value = String(e.message || e);
                 scReportPairItems[pid] = [];
@@ -10770,7 +11213,7 @@ const app = createApp({
         function scReportExportUrl() {
             if (!scSession.value) return '';
             const sid = encodeURIComponent(scSession.value.id);
-            return `/api/stage-comparison/sessions/${sid}/unified-diff-flat/export.xlsx?accepted_only=true`;
+            return `/api/stage-comparison/sessions/${sid}/unified-diff-flat/export.xlsx?accepted_only=true&grouped=true`;
         }
 
         // Фоновая предзагрузка расхождений всех пар (только тех, где есть
@@ -10807,6 +11250,8 @@ const app = createApp({
                 // Грузим только решения эксперта — этого хватает для счётчиков,
                 // вкладка открывается мгновенно.
                 await scLoadExpertDecisions();
+                // Сверяем V1/V2-двойники → дедуплицированные счётчики бейджей.
+                await _scBuildReconciledCounts();
             } catch (e) {
                 scReportError.value = String(e.message || e);
             } finally {
@@ -11010,6 +11455,7 @@ const app = createApp({
         const SC_STAMP_TYPE_LABELS = {
             exact_name: 'точное',
             exact_canonical_name: 'каноническое',
+            equipment_canonical_match: '⚡ по оборудованию',
             exact_multipart_group: '📑 многостр. лист',
             multipart_group: '📑 многостр. часть',
             multipart_continuation: '📑 продолжение',
@@ -11044,7 +11490,7 @@ const app = createApp({
         function scStampTypeLabel(mt) { return SC_STAMP_TYPE_LABELS[mt] || 'похожее'; }
         function scStampRiskLabel(f) { return SC_STAMP_RISK_LABELS[f] || f; }
         function scStampTypeColor(it) {
-            if (['exact_name', 'exact_canonical_name', 'exact_multipart_group', 'multipart_group'].includes(it.match_type)) return '#15803d';
+            if (['exact_name', 'exact_canonical_name', 'equipment_canonical_match', 'exact_multipart_group', 'multipart_group'].includes(it.match_type)) return '#15803d';
             if (it.match_type === 'llm_semantic') return '#6d28d9';
             if (it.match_type === 'derived_name_match') return '#0e7490';
             if (it.match_type === 'positional_alignment') return '#0891b2';
@@ -11748,6 +12194,22 @@ const app = createApp({
         function scDirectionLabel(d) {
             return _SC_DIRECTION_LABELS[d || 'unknown'] || '—';
         }
+        // Денежный эффект изменения для чипа в колонке «№»:
+        // increase → удорожание, decrease → удешевление, иначе → нейтрально.
+        const _SC_COST_DIRECTION_LABELS = {
+            increase: 'удорожание',
+            decrease: 'удешевление',
+            unknown: 'нейтрально',
+            neutral: 'нейтрально',
+        };
+        function scCostDirectionLabel(d) {
+            return _SC_COST_DIRECTION_LABELS[d || 'unknown'] || 'нейтрально';
+        }
+        function scCostDirectionStyle(d) {
+            if (d === 'increase') return 'background:#fee2e2; color:#991b1b';
+            if (d === 'decrease') return 'background:#dcfce7; color:#166534';
+            return 'background:#f1f5f9; color:#475569';
+        }
         async function scLoadUnifiedFlat() {
             if (!scSession.value) return;
             scUnifiedFlatLoading.value = true;
@@ -11798,7 +12260,7 @@ const app = createApp({
                 if (!r.ok) throw new Error('HTTP ' + r.status);
                 scV2Data.value = await r.json();
             } catch (e) {
-                scV2Error.value = 'Не удалось загрузить V2-расхождения: ' + String(e.message || e);
+                scV2Error.value = 'Не удалось загрузить расхождения: ' + String(e.message || e);
                 scV2Data.value = null;
             } finally {
                 scV2Loading.value = false;
@@ -11815,6 +12277,7 @@ const app = createApp({
                 if (f.quality_label && String(it.quality_label || '') !== f.quality_label) return false;
                 if (f.review_status && String(it.review_status || '') !== f.review_status) return false;
                 if (f.cost_impact && String(it.cost_impact || '') !== f.cost_impact) return false;
+                if (f.impact_class && String(it.impact_class || '') !== f.impact_class) return false;
                 if (q) {
                     const hay = [it.title, it.summary, it.old_value, it.new_value,
                                  it.evidence_left, it.evidence_right, it.sheet]
@@ -11852,9 +12315,48 @@ const app = createApp({
             ];
         }
         function scV2SourceLabel(s) { return scUnifiedSourceLabel(s); }
+        // ─── Impact class (инженерная значимость) ───
+        const _scV2ImpactLabels = {
+            construction_cost_impact: 'стоимость',
+            construction_technical_impact: 'строительство',
+            procurement_impact: 'закупка',
+            schedule_or_risk_impact: 'сроки/риск',
+            design_solution_impact: 'проектное решение',
+            engineering_system_impact: 'инж. система',
+            manual_review_required: 'на проверку',
+            admin_only: 'административное',
+            documentation_only: 'оформление',
+            cosmetic_or_noise: 'косметика/шум',
+            unknown: 'не классиф.',
+        };
+        const _scV2ExcludedClasses = ['admin_only', 'documentation_only', 'cosmetic_or_noise'];
+        function scV2ImpactLabel(cls) { return _scV2ImpactLabels[cls] || cls || '—'; }
+        function scV2IsExcludedClass(cls) { return _scV2ExcludedClasses.includes(cls); }
+        function scV2ImpactBadgeStyle(cls) {
+            if (_scV2ExcludedClasses.includes(cls)) return 'background:#e5e7eb; color:#4b5563';
+            if (cls === 'construction_cost_impact' || cls === 'procurement_impact') return 'background:#fef3c7; color:#92400e';
+            if (cls === 'manual_review_required') return 'background:#fef9c3; color:#854d0e';
+            if (cls === 'unknown') return 'background:#f1f5f9; color:#475569';
+            return 'background:#dcfce7; color:#166534';
+        }
+        const scV2ImpactClassOptions = [
+            { v: '', l: 'Impact: все' },
+            { v: 'construction_technical_impact', l: 'строительство' },
+            { v: 'construction_cost_impact', l: 'стоимость' },
+            { v: 'procurement_impact', l: 'закупка' },
+            { v: 'schedule_or_risk_impact', l: 'сроки/риск' },
+            { v: 'design_solution_impact', l: 'проектное решение' },
+            { v: 'engineering_system_impact', l: 'инж. система' },
+            { v: 'manual_review_required', l: 'на проверку' },
+            { v: 'admin_only', l: 'административное' },
+            { v: 'documentation_only', l: 'оформление' },
+            { v: 'cosmetic_or_noise', l: 'косметика/шум' },
+            { v: 'unknown', l: 'не классиф.' },
+        ];
         function scV2ExportXlsxUrl() {
             const base = _scV2Base();
-            return base ? `${base}/export.xlsx` : '';
+            if (!base) return '';
+            return `${base}/export.xlsx`;
         }
         // Локально применяет статус/комментарий к строке (оптимистично), затем
         // перечитывает список, чтобы summary совпадал с сервером.
@@ -11990,6 +12492,20 @@ const app = createApp({
             }
             return reasons.join(' / ');
         }
+        // Флаги переноса для значка в ячейке «Решение»: была ли отметка
+        // перенесена из «Расхождений», нужна ли ручная проверка, есть ли конфликт.
+        function scExpertItemFlags(itemOrGroup) {
+            const ids = _scExpertRawIds(itemOrGroup);
+            const out = { transferred: false, needs_review: false, conflict: false };
+            for (const rid of ids) {
+                const e = scExpertDecisions.value[rid];
+                if (!e) continue;
+                if (e.transferred) out.transferred = true;
+                if (e.needs_review) out.needs_review = true;
+                if (e.conflict) out.conflict = true;
+            }
+            return out;
+        }
         function scSetExpertDecision(itemOrGroup, decision) {
             const ids = _scExpertRawIds(itemOrGroup);
             if (!ids.length) return;
@@ -12035,9 +12551,45 @@ const app = createApp({
             }
             return out;
         }
+        // Составные ключи `<pair>::<raw>`, у которых СЕЙЧАС есть строка в
+        // таблице «Расхождения» (из загруженного scUnifiedFlat). Решения по
+        // raw_id, которого уже нет в changes (остался от прошлой регенерации
+        // сравнения), снять галочкой нечем — поэтому в счётчик они не входят.
+        // Возвращает null (= не скоупим, legacy) для V2-вида (там строки
+        // хранятся отдельно), пока flat не загружен, или когда flat загружен
+        // для другой пары (момент переключения).
+        function _scSummaryKnownKeys() {
+            if (scV2View.value === 'v2') return null;
+            const flat = scUnifiedFlat.value;
+            if (!flat || !Array.isArray(flat.items)) return null;
+            if (!scUnifiedShowAllPairs.value && scActivePair.value
+                && scUnifiedFlatScopePairId.value
+                && String(scUnifiedFlatScopePairId.value) !== String(scActivePair.value.id)) {
+                return null;
+            }
+            const keys = new Set();
+            for (const it of flat.items) {
+                for (const k of _scExpertRawIds(it)) keys.add(k);
+            }
+            return keys;
+        }
         function scExpertReviewSummary() {
-            // Счётчики «Принято/Отклонено» — только по текущей паре, а не по всей сессии.
-            const vals = _scExpertDecisionsForActivePair().map(([, d]) => d);
+            // Счётчики «Принято/Отклонено» — только по текущей паре, а не по всей
+            // сессии. Учитываем лишь ключи активного представления: V2 хранит
+            // решения по `v2_…`, классические «Расхождения» — по `chg_…/uf_…`.
+            // Иначе после переноса оценок (chg_ + v2_ на одну пару) счётчик
+            // удвоился бы.
+            const v2view = (scV2View.value === 'v2');
+            const known = _scSummaryKnownKeys();   // не-null только для классического вида
+            const vals = _scExpertDecisionsForActivePair()
+                .filter(([k]) => {
+                    const raw = String(k).split('::').slice(1).join('::');
+                    const viewOk = v2view ? raw.startsWith('v2_') : !raw.startsWith('v2_');
+                    if (!viewOk) return false;
+                    // orphan-решения по исчезнувшим raw_id счётчик не накручивают.
+                    return known === null || known.has(k);
+                })
+                .map(([, d]) => d);
             return {
                 accepted: vals.filter(d => d.decision === 'accepted').length,
                 rejected: vals.filter(d => d.decision === 'rejected').length,
@@ -12058,6 +12610,10 @@ const app = createApp({
                         map[rid] = {
                             decision: entry.decision,
                             rejection_reason: entry.rejection_reason || '',
+                            // Метаданные переноса из «Расхождений» (если есть).
+                            needs_review: !!entry.needs_review,
+                            conflict: !!entry.conflict,
+                            transferred: !!entry.transferred,
                         };
                     }
                 }
@@ -12142,6 +12698,48 @@ const app = createApp({
                 alert('Ошибка сохранения: ' + (e.message || e));
             } finally {
                 scExpertReviewSaving.value = false;
+            }
+        }
+        // Перенести решения «принято/отклонено» + комментарии из классических
+        // «Расхождений» в V2 по ВСЕЙ сессии. Точные совпадения — мгновенно,
+        // переименованные/слитые находки сопоставляет Claude (может занять
+        // пару минут на пары, перепрогнанные Opus).
+        async function scV2TransferReviews() {
+            if (!scSession.value || scV2TransferBusy.value) return;
+            if (!confirm('Перенести экспертные оценки из «Расхождений» в V2 по всей сессии?\n\nТочные совпадения переносятся сразу; переименованные находки сверяет Claude — это может занять пару минут.')) return;
+            scV2TransferBusy.value = true;
+            try {
+                const sid = encodeURIComponent(scSession.value.id);
+                const r = await fetch(`/api/stage-comparison/sessions/${sid}/v2-review/transfer`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ use_claude: true }),
+                });
+                if (!r.ok) {
+                    const err = await r.json().catch(() => ({}));
+                    throw new Error(err.detail || ('HTTP ' + r.status));
+                }
+                const rep = await r.json();
+                const t = rep.totals || {};
+                // Перезагрузить решения и список V2, показать оценку.
+                scExpertReviewLoaded.value = false;
+                await scLoadExpertDecisions();
+                scExpertReviewMode.value = true;
+                try { await scLoadV2Changes(); } catch (_) {}
+                try { await scLoadExpertPerPair(); } catch (_) {}
+                let msg = `Перенос завершён по ${t.pairs_processed || 0} парам.\n`
+                    + `Перенесено: ${t.applied || 0} (точных ${t.exact || 0}, по смыслу ${t.semantic || 0}).\n`
+                    + `Совпало с уже отмеченным: ${t.consistent_existing || 0}.\n`
+                    + `Конфликтов: ${t.conflicts || 0} · «проверить»: ${t.needs_review || 0} · не сопоставлено: ${t.unmatched_source || 0}.`;
+                if (!rep.claude_available && (t.unmatched_source || 0) > 0) {
+                    msg += `\n\n⚠ Claude был недоступен (${rep.claude_unavailable_reason || 'причина неизвестна'}) — перенесены только точные совпадения.`;
+                }
+                alert(msg);
+            } catch (e) {
+                console.error('SC v2 transfer error:', e);
+                alert('Ошибка переноса: ' + (e.message || e));
+            } finally {
+                scV2TransferBusy.value = false;
             }
         }
         async function scUnifiedToggleShowAllPairs() {
@@ -12568,6 +13166,7 @@ const app = createApp({
                 if (!scSession.value || !scSession.value.id) return;
                 scRecogRestoreActive();
                 scOpusRestoreActive();
+                scQORestoreActive();
                 scOpusLoadPreflight();
                 // Возврат с «3. Расхождения» — обновить колонку «Проверено экспертом».
                 scLoadExpertPerPair();
@@ -12611,6 +13210,8 @@ const app = createApp({
             if (newPid === oldPid) return;
             if (scTab.value !== 'diffs') return;
             if (scDiffSubtab.value !== 'unified') return;
+            // V2 — основной режим вкладки: всегда перегружаем список новой пары.
+            if (scV2View.value === 'v2') scLoadV2Changes();
             if (scUnifiedShowAllPairs.value) return;
             scUnifiedFilterPair.value = '';
             scLoadUnifiedFlat();
@@ -13444,18 +14045,21 @@ const app = createApp({
             scSetV2View, scLoadV2Changes, scV2FilteredItems, scV2SelectedIds,
             scV2AllSelected, scV2ToggleAll, scV2ToggleOne, scV2SummaryCards,
             scV2SourceLabel, scV2ExportXlsxUrl, scV2SetStatus, scV2SaveComment,
+            scV2ImpactLabel,
+            scV2IsExcludedClass, scV2ImpactBadgeStyle, scV2ImpactClassOptions,
             scV2BulkStatus, scV2Goto,
             // Expert review для расхождений (per-session)
             scExpertReviewMode, scExpertDecisions, scExpertReviewSaving,
             scToggleExpertReview, scLoadExpertDecisions,
             scSetExpertDecision, scSetExpertReason,
             scGetExpertDecision, scGetExpertReason, scExpertReviewSummary,
+            scExpertItemFlags, scV2TransferBusy, scV2TransferReviews,
             scSubmitExpertReview,
             scLoadUnifiedConfig, scLoadUnifiedPairStatus, scLoadUnifiedFlat,
             scOpenUnifiedPairPreflight, scOpenUnifiedSessionPreflight, scCloseUnifiedPreflight,
             scRunUnifiedPair, scRunUnifiedSession, scPollUnifiedJob, scCancelUnifiedJob,
             scUnifiedSourceLabel, scUnifiedLines, scGotoUnifiedChange,
-            scDirectionLabel,
+            scDirectionLabel, scCostDirectionLabel, scCostDirectionStyle,
             scSwitchDiffSubtab, scGotoTextChange,
             scHumanizeDuration,
             scTextLLMTypeLabel, scTextLLMCategoryLabel, scTextLLMSeverityLabel, scTextLLMStatusLabel,
@@ -13488,8 +14092,11 @@ const app = createApp({
             scScanFolders, scOpenProject, scLoadSessionsList, scFetchSessionsList, scLoadSession,
             scOpenPair, scLoadPairData, scLoadAlignment,
             scQOSelected, scQOJob, scQOConfirm, scQORunning, scQOPreflighting, scQOSelectedCount, scQOAllSelected,
+            scQOClearBeforeRun, scQOClearing, scQOClearAnalysis,
             scQOToggleAll, scQOPairLabel, scQOPairBadge, scQOOpenConfirm, scQOProcessPair,
             scQOStartConfirmed, scQOStart, scQOCancel,
+            scQODetailsOpen, scQOElapsedMs, scQOEtaSec, scQOItemFor, scQOItemLaneLabel,
+            scQOLaneCell, scQOLaneColor, scQOItemTotalLabel, scQOCurrentBlock, scQOBlocksOverall,
             scFailedPopoverPairId, scFailedBlocks, scFailedBlocksLoading, scFailedBlocksError,
             scToggleFailedPopover, scLoadFailedBlocks, scGotoFailedBlock, scFocusBlock,
             scPageImageUrl, scOnImageLoad, scOnPageImageLoad,

@@ -5023,9 +5023,12 @@
             <!-- Tab 1: Upload -->
             <div v-if="scTab==='upload'">
                 <div class="sc-card" style="background:var(--card-bg,#fff); border:1px solid var(--border,#e5e7eb); border-radius:8px; padding:6px 12px; margin-bottom:8px">
-                    <!-- Автовыбор объекта (Задача: автоматические пути) -->
-                    <div v-if="scObjects.length || scObjectsLoading || scObjectsError"
-                         style="margin-bottom:6px; padding:6px 10px; background:#f8fafc; border:1px solid #e5e7eb; border-radius:6px">
+                    <!-- Автовыбор объекта (Задача: автоматические пути).
+                         Блок всегда виден: пути стадий теперь задаются ТОЛЬКО
+                         выбором «Стадия A / Стадия B», ручной ввод папок убран
+                         (остался лишь в dev-режиме), поэтому empty-state и ⟳
+                         должны быть доступны даже при нуле найденных объектов. -->
+                    <div style="margin-bottom:6px; padding:6px 10px; background:#f8fafc; border:1px solid #e5e7eb; border-radius:6px">
                         <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap">
                             <div style="flex:1; min-width:240px">
                                 <label style="display:block; font-size:12px; font-weight:600; margin-bottom:2px">
@@ -5067,18 +5070,21 @@
                         </div>
                     </div>
 
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:6px">
+                    <!-- Папки стадий больше не вводятся вручную: они подставляются
+                         из выбора «Стадия A / Стадия B» выше (scApplySelectedObject).
+                         Ручной ввод путей оставлен только в dev-режиме (?scdev=1). -->
+                    <div v-if="scDevTools" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:6px">
                         <div>
                             <label style="display:block; font-size:12px; font-weight:600; margin-bottom:2px">
                                 Папка первой стадии
-                                <span v-if="scSelectedObject" style="opacity:.6; font-weight:400">· подставлено из объекта</span>
+                                <span style="opacity:.6; font-weight:400">· debug, ручной ввод</span>
                             </label>
                             <input v-model="scStageAPath" class="form-control" placeholder="/path/to/stage_A" style="width:100%; padding:6px 8px; font-family:monospace; font-size:13px" />
                         </div>
                         <div>
                             <label style="display:block; font-size:12px; font-weight:600; margin-bottom:2px">
                                 Папка второй стадии
-                                <span v-if="scSelectedObject" style="opacity:.6; font-weight:400">· подставлено из объекта</span>
+                                <span style="opacity:.6; font-weight:400">· debug, ручной ввод</span>
                             </label>
                             <input v-model="scStageBPath" class="form-control" placeholder="/path/to/stage_B" style="width:100%; padding:6px 8px; font-family:monospace; font-size:13px" />
                         </div>
@@ -5271,9 +5277,23 @@
                                 <span v-if="scQOConfirm.health && !scQOConfirm.health.ok" style="display:block; margin-top:4px; color:#dc2626; font-weight:600">✗ LLM/ngrok недоступен: {{ scQOConfirm.health.reason }} — старт заблокирован. Восстановите туннель/модель.</span>
                                 <span style="display:block; margin-top:6px; color:#6b7280">Будет сделан backup артефактов пар. Запустятся Qwen (локально) и Opus (Claude Code).</span>
                             </div>
+                            <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; font-size:12px; margin:2px 0 10px; padding:8px 10px; background:#fff7ed; border:1px solid #fed7aa; border-radius:6px">
+                                <input type="checkbox" v-model="scQOClearBeforeRun" style="margin-top:2px">
+                                <span>
+                                    <strong>Очистить найденные и отмеченные изменения перед запуском</strong>
+                                    <span v-if="scQOClearBeforeRun" style="display:block; margin-top:6px; color:#9a3412; line-height:1.6">
+                                        Будут удалены найденные расхождения и ручные отметки проверки по выбранным парам.
+                                        Исходные PDF, OCR, Qwen-cache и page_enriched.json не удаляются.
+                                        Перед очисткой будет создан backup.
+                                    </span>
+                                    <span v-else style="display:block; margin-top:4px; color:#6b7280; line-height:1.5">
+                                        По умолчанию — обработка без очистки (продолжить). Включите, чтобы сбросить старые расхождения и отметки проверки и сравнить заново.
+                                    </span>
+                                </span>
+                            </label>
                             <div class="retry-dialog__buttons">
-                                <button class="btn btn-secondary" @click="scQOConfirm=null">Отмена</button>
-                                <button class="btn btn-primary" :disabled="scQORunning || (scQOConfirm.health && !scQOConfirm.health.ok)" @click="scQOStartConfirmed()">Запустить обработку</button>
+                                <button class="btn btn-secondary" @click="scQOConfirm=null" :disabled="scQOClearing">Отмена</button>
+                                <button class="btn btn-primary" :disabled="scQORunning || scQOClearing || (scQOConfirm.health && !scQOConfirm.health.ok)" @click="scQOStartConfirmed()">{{ scQOClearing ? 'Очистка…' : (scQOClearBeforeRun ? 'Очистить и запустить' : 'Запустить обработку') }}</button>
                             </div>
                         </div>
                     </div>
@@ -5481,23 +5501,8 @@
                 </div>
                 <!-- Компактный toolbar (zoom + sync + действия в одной строке) -->
                 <div class="sc-card" style="background:#f8fafc; border:1px solid #e5e7eb; border-radius:6px; padding:8px 12px; margin-bottom:10px; display:flex; gap:12px; flex-wrap:wrap; align-items:center; font-size:13px">
-                    <div style="display:flex; gap:4px; align-items:center"
-                         title="Ctrl + колесо мыши над листом — масштаб от курсора; зажатие ЛКМ — рука (как в Adobe Acrobat)">
-                        <button class="btn btn-sm btn-secondary" @click="scZoomBy(0.85)" title="Уменьшить">−</button>
-                        <span style="min-width:60px; text-align:center; font-weight:600">Масштаб: {{ Math.round(scZoom*100) }}%</span>
-                        <button class="btn btn-sm btn-secondary" @click="scZoomBy(1.18)" title="Увеличить">+</button>
-                        <button class="btn btn-sm btn-secondary" @click="scZoomReset()" title="Сброс">100%</button>
-                        <span style="margin-left:6px; font-size:11px; opacity:.55; white-space:nowrap" title="Ctrl + колесо — зум от курсора, ЛКМ — рука">⌨ Ctrl+колесо · 🖐 ЛКМ</span>
-                    </div>
-                    <label style="display:flex; gap:4px; align-items:center; cursor:pointer">
-                        <input type="checkbox" v-model="scSyncScroll" /> Синхронизировать прокрутку
-                    </label>
-                    <div style="opacity:.7; font-size:12px">
-                        Slots: {{ scAlignmentItems.length }} ·
-                        Связей: {{ scPairData && scPairData.links ? scPairData.links.length : 0 }}
-                        <span v-if="scSelectedLeft || scSelectedRight" style="color:#2563eb">
-                            · Выбрано: {{ scSelectedLeft ? 'L' : '' }}{{ scSelectedLeft && scSelectedRight ? '+' : '' }}{{ scSelectedRight ? 'R' : '' }}
-                        </span>
+                    <div v-if="scSelectedLeft || scSelectedRight" style="opacity:.7; font-size:12px; color:#2563eb">
+                        Выбрано: {{ scSelectedLeft ? 'L' : '' }}{{ scSelectedLeft && scSelectedRight ? '+' : '' }}{{ scSelectedRight ? 'R' : '' }}
                     </div>
                     <div style="flex:1"></div>
                     <button class="btn"
@@ -5515,13 +5520,8 @@
                     </button>
                     <button class="btn btn-secondary" @click="scSuggestByStamp()" :disabled="scStampLoading"
                             title="Сопоставить листы старой и новой стадии по имени листа из штампа и предложить поставить их напротив друг друга (находит листы, уехавшие далеко между стадиями)">
-                        {{ scStampLoading ? (scStampUseLlm ? 'Сопоставление + ИИ…' : 'Сопоставление…') : '🏷 Сопоставить листы' }}
+                        {{ scStampLoading ? 'Сопоставление…' : '🏷 Сопоставить листы' }}
                     </button>
-                    <label style="display:inline-flex; align-items:center; gap:4px; font-size:12px; color:#374151; cursor:pointer"
-                           title="После точного/нечёткого матчинга доматчить остаток через нейросеть Haiku: ловит листы с одинаковым смыслом, но разными названиями («Однолинейная расчетная схема ГРЩ» = «Однолинейная схема ГРЩ»)">
-                        <input type="checkbox" v-model="scStampUseLlm" :disabled="scStampLoading" />
-                        🧠 ИИ-доматчинг
-                    </label>
                     <button class="btn btn-primary" @click="scAutoMatchApplySheets(false)"
                             :disabled="scAutoMatchApplyLoading || scStampLoading"
                             title="One-click: умно сопоставить листы и СРАЗУ применить надёжные пары; сомнительные — на проверку; результат сохраняется в page_alignment.json. Связи блоков не удаляются (только stale-пометка).">
@@ -5755,14 +5755,6 @@
                     <div v-for="side in ['left','right']" :key="'pane-tb-'+side" class="sc-pane-toolbar"
                          :title="side==='left' ? 'Действия для левой стадии (slot ' + scCurrentSlotForSide('left') + ')' : 'Действия для правой стадии (slot ' + scCurrentSlotForSide('right') + ')'"
                          style="display:flex; gap:6px; align-items:center; padding:4px 8px; border:1px solid #e5e7eb; border-radius:6px; background:#fff; font-size:13px">
-                        <span style="font-size:11px; opacity:.65; margin-right:4px">
-                            {{ side==='left' ? 'Левая стадия' : 'Правая стадия' }}
-                            · slot <strong>{{ scCurrentSlotForSide(side) || '—' }}</strong>
-                        </span>
-                        <button class="btn btn-sm btn-secondary sc-pane-icon-btn"
-                                :disabled="!scCanInsertBlankSide(side) || scAlignmentActionRunning"
-                                @click="scInsertBlankSide(side)"
-                                title="Добавить пустой лист">⊕</button>
                         <button class="btn btn-sm btn-secondary sc-pane-icon-btn"
                                 :disabled="!scCanMovePageSide(side, 'up') || scAlignmentActionRunning"
                                 @click="scMovePageSide(side, 'up')"
@@ -5771,7 +5763,18 @@
                                 :disabled="!scCanMovePageSide(side, 'down') || scAlignmentActionRunning"
                                 @click="scMovePageSide(side, 'down')"
                                 title="Переместить страницу ниже">↓</button>
-                        <span v-if="scAlignmentActionError" style="color:#b91c1c; font-size:11px; margin-left:8px">{{ scAlignmentActionError }}</span>
+                        <button class="btn btn-sm btn-secondary sc-pane-icon-btn"
+                                :disabled="!scCanInsertBlankSide(side) || scAlignmentActionRunning"
+                                @click="scInsertBlankSide(side)"
+                                title="Добавить пустой лист">⊕</button>
+                        <template v-if="side==='left'">
+                            <span style="width:1px; background:#e5e7eb; align-self:stretch; margin:0 2px"></span>
+                            <button class="btn btn-sm btn-secondary" @click="scZoomBy(0.85)" title="Уменьшить (Ctrl+колесо)">−</button>
+                            <span style="min-width:44px; text-align:center; font-weight:600; font-size:12px">{{ Math.round(scZoom*100) }}%</span>
+                            <button class="btn btn-sm btn-secondary" @click="scZoomBy(1.18)" title="Увеличить (Ctrl+колесо)">+</button>
+                            <button class="btn btn-sm btn-secondary" @click="scZoomReset()" title="Сброс масштаба">100%</button>
+                        </template>
+                        <span v-if="scAlignmentActionError && side==='left'" style="color:#b91c1c; font-size:11px; margin-left:8px">{{ scAlignmentActionError }}</span>
                     </div>
                 </div>
 
@@ -5960,16 +5963,18 @@
                     <button v-if="scDevTools" class="btn btn-secondary" style="opacity:.85" :class="{'btn-primary': scDiffSubtab==='text'}" @click="scSwitchDiffSubtab('text')" title="Dev: текстовый LLM-анализ отдельно (для отладки)">Текст (debug)</button>
                     <button v-if="scDevTools" class="btn btn-secondary" style="opacity:.85" :class="{'btn-primary': scDiffSubtab==='graphic'}" @click="scDiffSubtab='graphic'; scLoadGraphicSummary()" title="Dev: графическое сравнение блоков (для отладки)">Графика (debug)</button>
                     <template v-if="scDiffSubtab==='unified'">
-                        <!-- Переключатель режима списка: классический unified ↔ V2
-                             (только текущая PDF-пара, ручная верификация инженера). -->
-                        <button class="btn btn-sm"
-                                :class="scV2View!=='v2' ? 'btn-primary' : 'btn-secondary'"
-                                @click="scSetV2View('current')"
-                                title="Классический список расхождений">Расхождения</button>
-                        <button class="btn btn-sm"
-                                :class="scV2View==='v2' ? 'btn-primary' : 'btn-secondary'"
-                                @click="scSetV2View('v2')"
-                                title="V2 — расхождения текущей PDF-пары по новому алгоритму с ручной верификацией инженера">V2</button>
+                        <!-- Единый режим «Расхождения» построен на V2-алгоритме
+                             (pair-scoped, impact_class, ручная верификация
+                             инженера). Переключатель [Расхождения][V2] убран —
+                             V2 теперь основной и единственный пользовательский
+                             режим. Классический unified-список оставлен ТОЛЬКО
+                             для отладки (scDevTools) и виден лишь в dev-режиме. -->
+                        <button v-if="scDevTools" class="btn btn-sm"
+                                :class="scV2View==='v2' ? 'btn-secondary' : 'btn-primary'"
+                                @click="scSetV2View(scV2View==='v2' ? 'current' : 'v2')"
+                                :title="scV2View==='v2' ? 'Dev: открыть классический unified-список (для отладки)' : 'Dev: вернуться к основному режиму V2'">
+                            {{ scV2View==='v2' ? 'Классический вид (debug)' : '← Вернуться к V2' }}
+                        </button>
                         <div style="flex:1"></div>
                         <!-- Раздел «Расхождения» — read-only просмотр. Основной
                              запуск Opus batch перенесён на этап «1. Загрузка
@@ -5998,15 +6003,60 @@
                 </div>
 
                 <!-- ════════════════════════════════════════════════════════
-                     V2 режим: расхождения ТОЛЬКО текущей PDF-пары + ручная
-                     верификация инженера. Read-only к comparison_result.json,
-                     статусы — в pairs/<pid>/v2_review_status.json.
+                     Основной режим вкладки «Расхождения» (V2-алгоритм):
+                     расхождения ТОЛЬКО текущей PDF-пары + ручная верификация
+                     инженера. Read-only к comparison_result.json, статусы —
+                     в pairs/<pid>/v2_review_status.json (canonical), с fallback
+                     на legacy expert_review.json.
                      ════════════════════════════════════════════════════════ -->
                 <div v-if="scDiffSubtab==='unified' && scV2View==='v2'" class="sc-v2">
+                    <!-- Панель действий вкладки «Расхождения».
+                         При включённой оценке слева от триггера по очереди появляются:
+                         Сохранить решение · Принято/Отклонено. Повторный клик по
+                         «Экспертная оценка» выключает режим. -->
+                    <div class="sc-unified-mode" style="display:flex; gap:6px; align-items:center; justify-content:flex-end; flex-wrap:wrap; margin-bottom:8px; font-size:12px">
+                        <!-- Dev/миграция: разово перенести legacy-оценки эксперта в
+                             canonical-хранилище. Старые решения и так видны через
+                             read-time fallback, поэтому кнопка скрыта от обычного
+                             пользователя (scDevTools). -->
+                        <button v-if="scDevTools" class="btn btn-sm btn-secondary" style="margin-right:auto"
+                                @click="scV2TransferReviews()"
+                                :disabled="scV2TransferBusy"
+                                title="Dev: разово перенести уже проставленные «принято/отклонено» + комментарии из legacy expert_review в canonical V2-хранилище по всей сессии. Старые решения и так показываются через fallback; перенос только закрепляет их.">
+                            {{ scV2TransferBusy ? '⏳ Перенос… (до пары минут)' : '⇄ Перенести legacy-оценки (debug)' }}
+                        </button>
+                        <template v-if="scExpertReviewMode">
+                            <button class="btn btn-sm btn-primary"
+                                    @click="scSubmitExpertReview()"
+                                    :disabled="scExpertReviewSaving || scExpertReviewSummary().total === 0">
+                                {{ scExpertReviewSaving ? 'Сохранение…' : '💾 Сохранить решение' }}
+                            </button>
+                            <span style="font-size:12px; opacity:.85; white-space:nowrap">
+                                Принято: <b style="color:#22c55e">{{ scExpertReviewSummary().accepted }}</b>
+                                · Отклонено: <b style="color:#ef4444">{{ scExpertReviewSummary().rejected }}</b>
+                            </span>
+                        </template>
+                        <!-- Триггер экспертной оценки -->
+                        <button class="btn btn-sm btn-primary"
+                                @click="scToggleExpertReview()"
+                                title="Подтверждать или опровергать расхождения текущей пары. Повторный клик скрывает оценку. Решения хранятся на сервере.">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px; margin-right:3px"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                            Экспертная оценка
+                        </button>
+                        <!-- Экспорт в Excel — правый край ряда -->
+                        <a v-if="scV2Data && (scV2Data.items || []).length"
+                           class="btn btn-sm btn-secondary"
+                           :href="scV2ExportXlsxUrl()"
+                           target="_blank" rel="noopener"
+                           title="Скачать ведомость расхождений текущей PDF-пары в Excel">
+                            ⬇ Экспорт в Excel
+                        </a>
+                    </div>
+
                     <!-- Scope badge: всегда только текущая PDF-пара -->
                     <div class="sc-card"
                          style="display:flex; gap:10px; align-items:baseline; flex-wrap:wrap; padding:8px 12px; border-radius:6px; margin-bottom:10px; font-size:12px; background:#eef2ff; border:1px solid #c7d2fe; color:#1e3a8a">
-                        <strong>V2 · текущая PDF-пара</strong>
+                        <strong>Расхождения · текущая PDF-пара</strong>
                         <span v-if="scActivePair">
                             <code>{{ (scActivePair.left && scActivePair.left.filename) || scActivePair.id }}</code>
                             ↔ <code>{{ (scActivePair.right && scActivePair.right.filename) || '' }}</code>
@@ -6016,127 +6066,148 @@
                     <div v-if="scV2Error"
                          style="background:#fee2e2; color:#991b1b; padding:8px 12px; border-radius:6px; margin-bottom:10px; font-size:13px">{{ scV2Error }}</div>
 
-                    <div v-if="scV2Loading" class="empty-state" style="padding:14px 0; font-size:13px">Загрузка V2-расхождений…</div>
+                    <div v-if="scV2Loading" class="empty-state" style="padding:14px 0; font-size:13px">Загрузка расхождений…</div>
 
-                    <!-- Summary cards (только по текущей паре) -->
-                    <div v-if="!scV2Loading && scV2Data" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px">
-                        <div v-for="c in scV2SummaryCards()" :key="c.key"
-                             class="sc-card"
-                             :style="{ padding:'6px 10px', borderRadius:'6px', fontSize:'12px', minWidth:'92px', textAlign:'center', background:c.bg, border:'1px solid '+c.border, color:c.fg }">
-                            <div style="font-size:18px; font-weight:700">{{ c.value }}</div>
-                            <div style="opacity:.85">{{ c.label }}</div>
-                        </div>
-                    </div>
 
-                    <!-- Фильтры -->
-                    <div v-if="!scV2Loading && scV2Data" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:8px; font-size:12px">
-                        <select v-model="scV2Filters.severity" class="sc-input" style="font-size:12px">
-                            <option value="">важность: все</option>
-                            <option value="high">high</option><option value="medium">medium</option>
-                            <option value="low">low</option><option value="unknown">unknown</option>
-                        </select>
-                        <select v-model="scV2Filters.source_layer" class="sc-input" style="font-size:12px">
-                            <option value="">источник: все</option>
-                            <option value="text">текст</option><option value="image_enrichment">описание изобр.</option>
-                            <option value="scheme_analysis">схема</option><option value="table">таблица</option>
-                            <option value="stamp">штамп</option><option value="mixed">текст+изобр.</option>
-                        </select>
-                        <select v-model="scV2Filters.quality_label" class="sc-input" style="font-size:12px">
-                            <option value="">качество: все</option>
-                            <option value="good">good</option>
-                            <option value="needs_human_review">needs_human_review</option>
-                            <option value="questionable">questionable</option>
-                        </select>
-                        <select v-model="scV2Filters.review_status" class="sc-input" style="font-size:12px">
-                            <option value="">статус: все</option>
-                            <option v-for="o in scV2StatusOptions" :key="o.v" :value="o.v">{{ o.l }}</option>
-                        </select>
-                        <select v-model="scV2Filters.cost_impact" class="sc-input" style="font-size:12px">
-                            <option value="">стоимость: все</option>
-                            <option value="likely">likely</option><option value="possible">possible</option>
-                            <option value="none">none</option><option value="unknown">unknown</option>
-                        </select>
-                        <input v-model="scV2Filters.search" class="sc-input" style="font-size:12px; min-width:160px" placeholder="поиск по тексту…">
-                        <span style="opacity:.7">показано {{ scV2FilteredItems.length }} / {{ (scV2Data.items||[]).length }}</span>
-                    </div>
-
-                    <!-- Массовые действия + экспорт -->
-                    <div v-if="!scV2Loading && scV2Data" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:10px; font-size:12px">
-                        <span>Выбрано: <b>{{ scV2SelectedIds.length }}</b></span>
-                        <button class="btn btn-sm btn-secondary" :disabled="!scV2SelectedIds.length || scV2SaveBusy" @click="scV2BulkStatus('confirmed')">✓ Подтвердить</button>
-                        <button class="btn btn-sm btn-secondary" :disabled="!scV2SelectedIds.length || scV2SaveBusy" @click="scV2BulkStatus('rejected')">✗ Отклонить</button>
-                        <button class="btn btn-sm btn-secondary" :disabled="!scV2SelectedIds.length || scV2SaveBusy" @click="scV2BulkStatus('needs_clarification')">? Уточнить</button>
-                        <button class="btn btn-sm btn-secondary" :disabled="!scV2SelectedIds.length || scV2SaveBusy" @click="scV2BulkStatus('cost_impact')">₽ Влияет</button>
-                        <button class="btn btn-sm btn-secondary" :disabled="!scV2SelectedIds.length || scV2SaveBusy" @click="scV2BulkStatus('no_cost_impact')">Не влияет</button>
-                        <button class="btn btn-sm btn-secondary" :disabled="!scV2SelectedIds.length || scV2SaveBusy" @click="scV2BulkStatus('send_to_designer')">→ Проектировщику</button>
-                        <button class="btn btn-sm btn-secondary" :disabled="!scV2SelectedIds.length || scV2SaveBusy" @click="scV2BulkStatus('send_to_estimate')">→ В смету</button>
-                        <div style="flex:1"></div>
-                        <a v-if="scV2Data && (scV2Data.items||[]).length" class="btn btn-sm btn-secondary"
-                           :href="scV2ExportXlsxUrl()" target="_blank" rel="noopener"
-                           title="Скачать V2-таблицу текущей PDF-пары в Excel">⬇ Экспорт V2</a>
-                    </div>
+                    <!-- Summary-карточки, фильтры и массовые действия убраны по запросу:
+                         V2 показывает только карточный список (как «Расхождения»),
+                         ревью идёт построчно (статус/комментарий в строке). Экспорт
+                         перенесён в строку-бейдж текущей пары выше. -->
 
                     <!-- Empty -->
                     <div v-if="!scV2Loading && scV2Data && !(scV2Data.items||[]).length"
                          class="empty-state" style="padding:14px 0; font-size:13px; opacity:.85">
-                        Для текущей PDF-пары V2-расхождений нет. Запустите анализ на этапе «1. Загрузка документации».
+                        Для текущей PDF-пары расхождений нет. Запустите анализ на этапе «1. Загрузка документации».
                     </div>
 
-                    <!-- Таблица V2 -->
+                    <!-- Таблица V2 — карточный вид как у «Расхождений» + ревью в строке.
+                         Структура строки 1-в-1 с классическим sc-unified-table:
+                         №(+бейджи) · Место · Изменение(+детали+ревью) · Было · Стало · Влияние · →
+                         Отличие только в содержимом: чекбокс выбора, чип «Качество»
+                         и блок «Статус проверки / Комментарий» внутри ячейки «Изменение». -->
                     <div v-if="!scV2Loading && scV2FilteredItems.length" class="table-container sc-unified-table-wrap">
-                        <table class="findings-table sc-unified-table sc-v2-table">
+                        <table class="findings-table sc-unified-table">
                             <thead>
                                 <tr>
-                                    <th style="width:30px; text-align:center"><input type="checkbox" :checked="scV2AllSelected" @change="scV2ToggleAll($event)"></th>
-                                    <th style="width:40px">№</th>
-                                    <th style="width:90px">Лист</th>
-                                    <th style="width:84px">Источник</th>
-                                    <th style="width:90px">Тип</th>
-                                    <th style="width:90px">Категория</th>
-                                    <th style="width:70px">Важн.</th>
-                                    <th>Изменение</th>
-                                    <th>Было</th>
-                                    <th>Стало</th>
-                                    <th>Влияние</th>
-                                    <th>Evidence A</th>
-                                    <th>Evidence B</th>
-                                    <th style="width:110px">Качество</th>
-                                    <th style="width:150px">Статус проверки</th>
-                                    <th style="width:140px">Комментарий</th>
-                                    <th style="width:90px">Действия</th>
+                                    <th style="width:76px; text-align:center">№</th>
+                                    <th style="width:130px">Место</th>
+                                    <th style="width:28%">Изменение</th>
+                                    <th class="sc-col-was" style="width:18%">Было</th>
+                                    <th class="sc-col-became" style="width:18%">Стало</th>
+                                    <th class="sc-col-impact" style="width:16%">Влияние</th>
+                                    <th v-if="scExpertReviewMode" style="width:84px; text-align:center">Решение</th>
+                                    <th v-if="scExpertReviewMode" style="width:150px">Причина</th>
+                                    <th style="width:36px"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="(it, idx) in scV2FilteredItems" :key="it.id"
-                                    :class="{ 'sc-v2-row-confirmed': it.review_status==='confirmed', 'sc-v2-row-rejected': it.review_status==='rejected' }">
-                                    <td style="text-align:center"><input type="checkbox" :checked="!!scV2Selected[it.id]" @change="scV2ToggleOne(it.id)"></td>
-                                    <td>{{ idx + 1 }}</td>
-                                    <td>{{ it.sheet }}</td>
-                                    <td>{{ scV2SourceLabel(it.source_layer) }}</td>
-                                    <td>{{ it.type }}</td>
-                                    <td>{{ it.category }}</td>
-                                    <td><span class="sc-sev-badge" :class="'sc-sev-' + (it.severity||'unknown')">{{ it.severity }}</span></td>
-                                    <td>
-                                        <div style="font-weight:600">{{ it.title }}</div>
-                                        <div style="opacity:.8; font-size:11px">{{ it.summary }}</div>
+                                    :class="['sc-row', 'sc-row--' + (it.severity || 'unknown'), { 'row-accepted': (scExpertReviewMode && scGetExpertDecision(it) === 'accepted') || it.review_status === 'confirmed', 'row-rejected': (scExpertReviewMode && scGetExpertDecision(it) === 'rejected') || it.review_status === 'rejected' }]"
+                                    :style="it.excluded_from_main ? 'background:#f9fafb; opacity:.8' : ''">
+                                    <!-- Источник сравнения (текст/изображение) + влияние на стоимость -->
+                                    <td class="sc-cell-no">
+                                        <span class="sc-chip sc-chip--source sc-chip--source-in-no"
+                                              style="display:block"
+                                              :title="'Источник сравнения: ' + scUnifiedSourceLabel(it.source_layer)">{{ scUnifiedSourceLabel(it.source_layer) }}</span>
+                                        <span :style="'display:block; margin-top:4px; font-size:9px; padding:1px 6px; border-radius:999px; font-weight:600; white-space:nowrap; ' + scCostDirectionStyle(it.cost_direction)"
+                                              :title="'Влияние на стоимость строительства: ' + scCostDirectionLabel(it.cost_direction)">{{ scCostDirectionLabel(it.cost_direction) }}</span>
                                     </td>
-                                    <td class="sc-cell-was">{{ it.old_value }}</td>
-                                    <td class="sc-cell-became">{{ it.new_value }}</td>
-                                    <td>{{ it.construction_impact }}</td>
-                                    <td style="font-size:11px; opacity:.85">{{ it.evidence_left }}</td>
-                                    <td style="font-size:11px; opacity:.85">{{ it.evidence_right }}</td>
-                                    <td><span class="sc-v2-quality" :class="'sc-v2-quality-' + it.quality_label">{{ it.quality_label }}</span></td>
-                                    <td>
-                                        <select :value="it.review_status" @change="scV2SetStatus(it, $event.target.value)" class="sc-input" style="font-size:11px; width:100%">
-                                            <option v-for="o in scV2StatusOptions" :key="o.v" :value="o.v">{{ o.l }}</option>
-                                        </select>
+                                    <!-- Место (лист / страница / пара) -->
+                                    <td class="sc-cell-place">
+                                        <div v-if="it.sheet" class="sc-place-sheet"><strong>{{ it.sheet }}</strong></div>
+                                        <div v-if="it.page" class="sc-place-page">стр. PDF: {{ Array.isArray(it.page) ? it.page.join(', ') : it.page }}</div>
+                                        <div v-if="it.pair_label" class="sc-place-pair" :title="it.pair_label">{{ it.pair_label }}</div>
                                     </td>
-                                    <td>
-                                        <input :value="it.review_comment" @change="scV2SaveComment(it, $event.target.value)"
-                                               class="sc-input" style="font-size:11px; width:100%" placeholder="комментарий…">
+                                    <!-- Изменение: title + summary + детали + ревью в строке -->
+                                    <td class="sc-cell-change">
+                                        <div class="sc-change-title">
+                                            <span v-if="it.is_new" title="Новая находка свежего сравнения" style="display:inline-block; font-size:9px; font-weight:700; color:#fff; background:#16a34a; border-radius:3px; padding:1px 5px; margin-right:6px; vertical-align:middle">NEW</span>
+                                            <span v-else-if="it.change_origin==='previous'" title="Находка из предыдущего сравнения, сохранена (в свежем не воспроизведена)" style="display:inline-block; font-size:9px; font-weight:700; color:#4b5563; background:#e5e7eb; border-radius:3px; padding:1px 5px; margin-right:6px; vertical-align:middle">прежнее</span>
+                                            {{ it.title || '—' }}</div>
+                                        <div v-if="it.summary" class="sc-change-summary">{{ it.summary }}</div>
+                                        <details v-if="it.type || it.category || it.evidence_left || it.evidence_right"
+                                                 class="sc-change-details">
+                                            <summary>Технические детали</summary>
+                                            <div class="sc-change-details__grid">
+                                                <span class="muted">Тип:</span><span>{{ it.type || '—' }}</span>
+                                                <span class="muted">Категория:</span><span>{{ it.category || '—' }}</span>
+                                                <template v-if="it.evidence_left">
+                                                    <span class="muted">Evidence A:</span><span>{{ it.evidence_left }}</span>
+                                                </template>
+                                                <template v-if="it.evidence_right">
+                                                    <span class="muted">Evidence B:</span><span>{{ it.evidence_right }}</span>
+                                                </template>
+                                            </div>
+                                        </details>
                                     </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-secondary" style="font-size:11px" @click="scV2Goto(it)" title="Открыть пару и перейти к листу/слоту (или показать evidence)">Перейти</button>
+                                    <!-- Было -->
+                                    <td class="sc-cell-was">
+                                        <template v-if="scUnifiedLines(it.old_value).length">
+                                            <div v-for="(ln, li) in scUnifiedLines(it.old_value)" :key="li">{{ ln }}</div>
+                                        </template>
+                                        <template v-else>—</template>
+                                    </td>
+                                    <!-- Стало -->
+                                    <td class="sc-cell-became">
+                                        <template v-if="scUnifiedLines(it.new_value).length">
+                                            <div v-for="(ln, li) in scUnifiedLines(it.new_value)" :key="li">{{ ln }}</div>
+                                        </template>
+                                        <template v-else>—</template>
+                                    </td>
+                                    <!-- Влияние -->
+                                    <td class="sc-cell-impact">
+                                        <div v-if="it.construction_impact" class="sc-impact-text">{{ it.construction_impact }}</div>
+                                        <div v-else class="sc-impact-text muted">—</div>
+                                    </td>
+                                    <!-- Экспертное решение -->
+                                    <td v-if="scExpertReviewMode" class="decision-cell" style="text-align:center">
+                                        <div class="decision-toggle">
+                                            <button class="btn-decision btn-accept btn-sm"
+                                                    :class="{ active: scGetExpertDecision(it) === 'accepted' }"
+                                                    @click.stop="scSetExpertDecision(it, 'accepted')" title="Принять">
+                                                <span v-if="scGetExpertDecision(it) === 'accepted'" class="decision-glyph">✓</span>
+                                            </button>
+                                            <button class="btn-decision btn-reject btn-sm"
+                                                    :class="{ active: scGetExpertDecision(it) === 'rejected' }"
+                                                    @click.stop="scSetExpertDecision(it, 'rejected')" title="Отклонить">
+                                                <span v-if="scGetExpertDecision(it) === 'rejected'" class="decision-glyph">✗</span>
+                                            </button>
+                                        </div>
+                                        <!-- Метки переноса из «Расхождений» -->
+                                        <div v-if="scExpertItemFlags(it).conflict || scExpertItemFlags(it).needs_review || scExpertItemFlags(it).transferred"
+                                             style="margin-top:4px; display:flex; flex-direction:column; gap:2px; align-items:center">
+                                            <span v-if="scExpertItemFlags(it).conflict"
+                                                  style="font-size:9px; padding:1px 5px; border-radius:999px; background:#fee2e2; color:#991b1b; font-weight:600"
+                                                  title="Конфликт: перенесённое решение отличается от уже выставленного на этой находке. Проверьте вручную.">⚠ конфликт</span>
+                                            <span v-else-if="scExpertItemFlags(it).needs_review"
+                                                  style="font-size:9px; padding:1px 5px; border-radius:999px; background:#fef9c3; color:#854d0e; font-weight:600"
+                                                  title="Совпадение найдено Claude неуверенно — проверьте, что это та же находка.">проверить</span>
+                                            <span v-else-if="scExpertItemFlags(it).transferred"
+                                                  style="font-size:9px; padding:1px 5px; border-radius:999px; background:#eef2ff; color:#3730a3"
+                                                  title="Решение перенесено из классических «Расхождений».">⇄ перенесено</span>
+                                        </div>
+                                    </td>
+                                    <!-- Причина -->
+                                    <td v-if="scExpertReviewMode" class="reason-cell">
+                                        <textarea v-if="scGetExpertDecision(it)"
+                                                  class="rejection-reason-input"
+                                                  :value="scGetExpertReason(it)"
+                                                  @input="scSetExpertReason(it, $event.target.value)"
+                                                  :placeholder="scGetExpertDecision(it) === 'accepted' ? 'Почему подтверждено…' : 'Почему отклонено…'"
+                                                  rows="2"></textarea>
+                                    </td>
+                                    <!-- Перейти к месту -->
+                                    <td class="sc-cell-goto">
+                                        <button class="sc-goto-btn"
+                                                @click="scV2Goto(it)"
+                                                title="Открыть PDF-пару и перейти к листу/странице (или показать evidence)">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2"
+                                                 stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M5 12h14"></path>
+                                                <path d="M13 6l6 6-6 6"></path>
+                                            </svg>
+                                        </button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -7101,12 +7172,24 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(it, i) in scReportApprovedFor(p.id)" :key="it.id"
-                                            :class="['sc-row', 'sc-row--' + (it.severity || 'unknown'), 'row-accepted']">
+                                        <template v-for="(it, i) in scReportApprovedFor(p.id)" :key="it.id">
+                                        <!-- Разделитель: ниже идут расхождения, согласованные только в одном из видов (V1/V2). -->
+                                        <tr v-if="it._firstUnique" class="sc-report-unique-divider">
+                                            <td colspan="6">
+                                                ↓ Согласовано только в одном источнике (V1 «Расхождения» или V2)
+                                            </td>
+                                        </tr>
+                                        <tr :class="['sc-row', 'sc-row--' + (it.severity || 'unknown'), 'row-accepted', it._approvedIn !== 'both' ? 'sc-row--unique' : '']">
                                             <td class="sc-cell-no">
                                                 <div class="sc-cell-no__num">№{{ i + 1 }}</div>
                                                 <span :class="'sc-sev-chip sc-sev-chip--' + (it.severity || 'unknown')"
                                                       :title="'Важность: ' + (it.severity || '—')">{{ it.severity || '—' }}</span>
+                                                <span v-if="it._approvedIn === 'v1'"
+                                                      class="sc-chip sc-chip--source-in-no" style="background:#e0e7ff;color:#3730a3;border:1px solid #c7d2fe"
+                                                      title="Согласовано только в V1 («Расхождения»), в V2 не отмечено">только в V1</span>
+                                                <span v-else-if="it._approvedIn === 'v2'"
+                                                      class="sc-chip sc-chip--source-in-no" style="background:#fae8ff;color:#86198f;border:1px solid #f5d0fe"
+                                                      title="Согласовано только в V2, в V1 («Расхождения») не отмечено">только в V2</span>
                                                 <span v-if="it.change_direction && it.change_direction !== 'unknown'"
                                                       :class="'sc-grouped-dir-chip sc-grouped-dir-chip--' + it.change_direction"
                                                       :title="'Характер изменения: ' + scDirectionLabel(it.change_direction)">{{ scDirectionLabel(it.change_direction) }}</span>
@@ -7139,6 +7222,7 @@
                                                 <div v-else class="sc-impact-text muted">—</div>
                                             </td>
                                         </tr>
+                                        </template>
                                     </tbody>
                                 </table>
                             </div>
