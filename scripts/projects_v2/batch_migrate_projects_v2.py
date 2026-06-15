@@ -49,7 +49,8 @@ class BatchRequestError(Exception):
 
 def validate_request(klass: Optional[str], *, execute: bool, dry_run: bool,
                      allow_warnings: bool, force: bool,
-                     warning_policy: Optional[str] = None) -> None:
+                     warning_policy: Optional[str] = None,
+                     need_policy_approved: bool = False) -> None:
     """Бросает BatchRequestError при нарушении safety-инвариантов."""
     if force:
         raise BatchRequestError("--force не реализован и запрещён на этом этапе")
@@ -66,23 +67,33 @@ def validate_request(klass: Optional[str], *, execute: bool, dry_run: bool,
     if klass == readiness.ALREADY_MIGRATED:
         raise BatchRequestError("ALREADY_MIGRATED мигрировать повторно нельзя")
 
-    # --- warning-policy ---
+    if need_policy_approved and warning_policy:
+        raise BatchRequestError(
+            "нельзя одновременно --need-policy-approved и --warning-policy")
+    if need_policy_approved and klass != readiness.CAN_MIGRATE_WITH_WARNINGS:
+        raise BatchRequestError(
+            "--need-policy-approved допустим только с --class CAN_MIGRATE_WITH_WARNINGS")
+
+    # --- warning-policy / need-policy ---
     if klass == readiness.CAN_MIGRATE_WITH_WARNINGS:
-        if not warning_policy:
+        if need_policy_approved:
+            pass  # одобренный need-policy режим — собственный gate (analysis report)
+        elif not warning_policy:
             raise BatchRequestError(
-                "--class CAN_MIGRATE_WITH_WARNINGS требует --warning-policy")
-        if warning_policy == readiness.WARNINGS_BLOCKED:
+                "--class CAN_MIGRATE_WITH_WARNINGS требует --warning-policy или --need-policy-approved")
+        elif warning_policy == readiness.WARNINGS_BLOCKED:
             raise BatchRequestError("WARNINGS_BLOCKED мигрировать нельзя никогда")
-        if warning_policy == readiness.WARNINGS_NEED_POLICY:
+        elif warning_policy == readiness.WARNINGS_NEED_POLICY:
             raise BatchRequestError(
-                "WARNINGS_NEED_POLICY требует отдельного флага (пока не реализован)")
-        if warning_policy != readiness.WARNINGS_AUTO_CANDIDATE:
+                "WARNINGS_NEED_POLICY мигрируется только через --need-policy-approved")
+        elif warning_policy != readiness.WARNINGS_AUTO_CANDIDATE:
             raise BatchRequestError(f"неподдерживаемый --warning-policy: {warning_policy}")
     elif warning_policy:
         raise BatchRequestError(
             "--warning-policy допустим только с --class CAN_MIGRATE_WITH_WARNINGS")
 
-    if klass != readiness.AUTO_SAFE and not allow_warnings:
+    # need-policy approved — это явное одобрение, --allow-warnings не требуется
+    if klass != readiness.AUTO_SAFE and not allow_warnings and not need_policy_approved:
         raise BatchRequestError(
             f"класс {klass} требует явного --allow-warnings")
 
@@ -124,7 +135,7 @@ def _live_is_migrated(v2_root: Path) -> Callable[[dict], bool]:
     """Проверяет фактическое наличие document.json в projects_v2 (не доверяя отчёту)."""
     def _check(p: dict) -> bool:
         doc_dir = v2lib.document_dir_in_v2(
-            v2_root, p["object_id"], p["discipline"], p["document_code"],
+            v2_root, p.get("object_id"), p["discipline"], p["document_code"],
             display_name=p.get("object"))
         return (doc_dir / "document.json").exists()
     return _check
@@ -136,21 +147,40 @@ def _live_is_migrated(v2_root: Path) -> Callable[[dict], bool]:
 
 REPORT_FIELDS = [
     "status", "old_path", "new_path", "object_id", "discipline", "document_code",
-    "version_count", "copied_files_count", "checksum_checked_count", "error_message",
+    "version_count", "policy_group", "copied_files_count", "checksum_checked_count",
+    "error_message",
 ]
+
+# одобренные policy-группы для миграции NEED_POLICY (после анализа)
+NEED_POLICY_APPROVED_SUBGROUPS = {
+    "POLICY_READY_SINGLE_PDF_NAMED_FOLDER",
+    "POLICY_READY_MISSING_OCR_HTML",
+    "POLICY_READY_LEGACY_KB_PRESERVE",
+    "POLICY_READY_GROUPED_VERSIONS_WITHOUT_MAIN",
+}
+
+
+def _policy_overrides(subgroup: str) -> Optional[dict]:
+    """version.json overrides для конкретной policy-группы."""
+    if subgroup == "POLICY_READY_LEGACY_KB_PRESERVE":
+        return {"analysis_status": "legacy_partial", "analysis_generation": "legacy",
+                "preserve_reason": "legacy_algorithm_with_kb_findings"}
+    return None
 
 
 def _migrate_and_record(project: dict, v2_root: Path, objects_map: dict,
-                        map_obj: dict, *, execute: bool) -> dict:
+                        map_obj: dict, *, execute: bool,
+                        policy: Optional[dict] = None) -> dict:
     """Мигрирует один проект (или планирует при dry-run). Возвращает строку отчёта."""
     legacy_path = Path(project["legacy_path"])
     base = {
         "old_path": str(legacy_path),
         "new_path": "",
-        "object_id": project["object_id"],
+        "object_id": project.get("object_id"),
         "discipline": project["discipline"],
         "document_code": project["document_code"],
         "version_count": project.get("version_count", 0),
+        "policy_group": project.get("subgroup", ""),
         "copied_files_count": 0,
         "checksum_checked_count": 0,
         "error_message": "",
@@ -162,7 +192,7 @@ def _migrate_and_record(project: dict, v2_root: Path, objects_map: dict,
 
     # pre-copy: целевой документ уже существует? (перезапись запрещена без --force)
     doc_dir = v2lib.document_dir_in_v2(
-        v2_root, project["object_id"], project["discipline"], project["document_code"],
+        v2_root, project.get("object_id"), project["discipline"], project["document_code"],
         display_name=project.get("object"))
     if (doc_dir / "document.json").exists():
         return {**base, "new_path": str(doc_dir), "status": "error",
@@ -173,7 +203,7 @@ def _migrate_and_record(project: dict, v2_root: Path, objects_map: dict,
 
     try:
         result = v2lib.migrate_project(legacy_path, v2_root,
-                                       objects_map=objects_map, run_id=None)
+                                       objects_map=objects_map, run_id=None, policy=policy)
     except Exception as exc:  # fail-soft: одна ошибка не валит весь батч
         return {**base, "new_path": str(doc_dir), "status": "error",
                 "error_message": f"{type(exc).__name__}: {exc}"}
@@ -212,17 +242,28 @@ def _migrate_and_record(project: dict, v2_root: Path, objects_map: dict,
 def run_batch(*, report_path: Path, v2_root: Path, klass: str,
               limit: Optional[int], skip_already_migrated: bool,
               execute: bool, objects_map: Optional[dict] = None,
-              warning_policy: Optional[str] = None) -> dict:
+              warning_policy: Optional[str] = None,
+              need_policy_approved: bool = False) -> dict:
     """Выполняет (или планирует) батч. Пишет batch_migration_report.{json,csv}.
 
-    Без warning_policy читает readiness report и фильтрует по `group == klass`.
-    С warning_policy читает warning-policy report и берёт только
-    `policy_group == warning_policy` И `recommendation == can_batch_migrate`.
+    Режимы выбора:
+    - default: readiness report, `group == klass`;
+    - warning_policy: warning-policy report, `policy_group == warning_policy` И
+      `recommendation == can_batch_migrate`;
+    - need_policy_approved: need_policy_analysis report,
+      `can_migrate_auto_after_policy == true` И subgroup в одобренном списке.
     """
     report = json.loads(report_path.read_text(encoding="utf-8"))
     projects = report.get("projects", [])
 
-    if warning_policy:
+    if need_policy_approved:
+        to_migrate, skipped = select_candidates(
+            projects, True, limit=limit,
+            skip_already_migrated=skip_already_migrated,
+            is_migrated=_live_is_migrated(v2_root),
+            group_field="can_migrate_auto_after_policy",
+            extra_predicate=lambda p: p.get("subgroup") in NEED_POLICY_APPROVED_SUBGROUPS)
+    elif warning_policy:
         to_migrate, skipped = select_candidates(
             projects, warning_policy, limit=limit,
             skip_already_migrated=skip_already_migrated,
@@ -242,7 +283,9 @@ def run_batch(*, report_path: Path, v2_root: Path, klass: str,
 
     rows: list[dict] = []
     for p in to_migrate:
-        rows.append(_migrate_and_record(p, v2_root, objects_map, map_obj, execute=execute))
+        policy = _policy_overrides(p.get("subgroup")) if need_policy_approved else None
+        rows.append(_migrate_and_record(p, v2_root, objects_map, map_obj,
+                                        execute=execute, policy=policy))
 
     if execute:
         v2lib.save_old_to_new_map(map_obj, map_path)
@@ -257,6 +300,7 @@ def run_batch(*, report_path: Path, v2_root: Path, klass: str,
         "mode": "execute" if execute else "dry_run",
         "class": klass,
         "warning_policy": warning_policy,
+        "need_policy_approved": need_policy_approved,
         "limit": limit,
         "skip_already_migrated": skip_already_migrated,
         "selected": len(to_migrate),
@@ -302,6 +346,8 @@ def main(argv=None) -> int:
     parser.add_argument("--execute", action="store_true")
     parser.add_argument("--skip-already-migrated", action="store_true")
     parser.add_argument("--allow-warnings", action="store_true")
+    parser.add_argument("--need-policy-approved", dest="need_policy_approved", action="store_true",
+                        help="мигрировать одобренные WARNINGS_NEED_POLICY (из need_policy_analysis_report)")
     parser.add_argument("--force", action="store_true",
                         help="НЕ реализован — всегда ошибка (safety)")
     parser.add_argument("--legacy-root", default=None)
@@ -313,30 +359,38 @@ def main(argv=None) -> int:
     try:
         validate_request(args.klass, execute=args.execute, dry_run=args.dry_run,
                          allow_warnings=args.allow_warnings, force=args.force,
-                         warning_policy=args.warning_policy)
+                         warning_policy=args.warning_policy,
+                         need_policy_approved=args.need_policy_approved)
     except BatchRequestError as exc:
         print(f"[ERROR] {exc}", file=sys.stderr)
         return 2
 
     v2_root = Path(args.v2_root).resolve() if args.v2_root else v2lib.projects_v2_root()
-    # warning-policy режим читает warning-policy report, иначе — readiness report
-    default_report = ("migration_warning_policy_report.json" if args.warning_policy
-                      else "migration_readiness_report.json")
+    # выбор отчёта-источника по режиму
+    if args.need_policy_approved:
+        default_report = "need_policy_analysis_report.json"
+    elif args.warning_policy:
+        default_report = "migration_warning_policy_report.json"
+    else:
+        default_report = "migration_readiness_report.json"
     report_path = (Path(args.report_path).resolve() if args.report_path
                    else v2_root / "_system" / default_report)
     if not report_path.exists():
         print(f"[ERROR] report not found: {report_path}\n"
-              f"        run report_migration_readiness.py first", file=sys.stderr)
+              f"        run report_migration_readiness.py / analyze_need_policy_projects.py first",
+              file=sys.stderr)
         return 2
 
     execute = args.execute  # dry-run по умолчанию (если не --execute)
     result = run_batch(report_path=report_path, v2_root=v2_root, klass=args.klass,
                        limit=args.limit, skip_already_migrated=args.skip_already_migrated,
-                       execute=execute, warning_policy=args.warning_policy)
+                       execute=execute, warning_policy=args.warning_policy,
+                       need_policy_approved=args.need_policy_approved)
     s = result["summary"]
 
     print(f"=== batch migration ({s['mode']}) class={s['class']} "
-          f"policy={s.get('warning_policy')} limit={s['limit']} ===")
+          f"policy={s.get('warning_policy')} need_policy={s.get('need_policy_approved')} "
+          f"limit={s['limit']} ===")
     print(f"selected:                 {s['selected']}")
     print(f"skipped already_migrated: {s['skipped_already_migrated']}")
     if execute:

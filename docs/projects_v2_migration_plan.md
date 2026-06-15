@@ -445,6 +445,47 @@ analysis-файлы дублируются в `03_analysis/latest/`. Отдел�
 > RED — это не блокирует READ-ONLY анализ, но блокирует саму миграцию (сначала
 > drift scan → refresh refresh_safe → validate PASS).
 
+### Этап 2.9 — пилотная миграция approved WARNINGS_NEED_POLICY
+
+Инструмент готов (`batch_migrate_projects_v2.py --need-policy-approved`),
+протестирован hermetic-тестами и dry-run; **фактический execute выполняется
+только при чистом baseline** (validate PASS).
+
+**Селектор `--need-policy-approved`** читает `need_policy_analysis_report.json` и
+берёт только проекты с `can_migrate_auto_after_policy=true` И subgroup из
+одобренного списка: `POLICY_READY_SINGLE_PDF_NAMED_FOLDER`,
+`POLICY_READY_MISSING_OCR_HTML`, `POLICY_READY_LEGACY_KB_PRESERVE`,
+`POLICY_READY_GROUPED_VERSIONS_WITHOUT_MAIN`. Подгруппы
+`POLICY_NEEDS_MANUAL_VERSION_GROUPING` / `POLICY_RECHECK_AS_BLOCKED`, а также
+`WARNINGS_BLOCKED` / `MANUAL_REVIEW_REQUIRED` — **не выбираются**.
+
+Safety: без `--need-policy-approved` проекты NEED_POLICY не мигрируются;
+`--need-policy-approved` несовместим с `--warning-policy` и требует
+`--class CAN_MIGRATE_WITH_WARNINGS` (но не требует `--allow-warnings` — это
+собственный явный gate одобрения); already-migrated пропускаются; target exists
+без force → ошибка; общего `--force` нет.
+
+**Правила миграции по policy-группам** (применяются `migrate_version`):
+- `MISSING_OCR_HTML` — переносится без `_ocr.html`; фейковый `ocr.html` не
+  создаётся; `input_manifest.json.missing_optional_files=["ocr_html"]`.
+- `SINGLE_PDF_NAMED_FOLDER` — `... V1.pdf/` → `versions/v001`, старое имя в
+  `version.json.legacy_folder_name` и `input_manifest.json`.
+- `LEGACY_KB_PRESERVE` — legacy-снимок: `version.json` →
+  `analysis_status=legacy_partial`, `analysis_generation=legacy`,
+  `preserve_reason=legacy_algorithm_with_kb_findings`.
+- Дополнительно `migrate_version` теперь ВСЕГДА пишет `analysis_status`
+  (none/partial/complete) и `missing_analysis_files`, а `input_manifest.json` —
+  `missing_optional_files` (generic, для всех миграций).
+
+**Почему сначала пилот 10.** Контролируемая партия проверяется validate +
+ручным осмотром до масштабирования на все 44; партиями легче ловить регрессии.
+
+**Почему нужен validate PASS перед миграцией.** Если baseline RED (живой
+backend-аудит дрейфит ALREADY_MIGRATED-документы), нельзя отличить эффект новой
+миграции от накопленного drift. Поэтому Stage A: `scan → refresh refresh_safe →
+validate PASS`, и только потом execute. Если на Stage A документ `unstable`
+(backend пишет прямо сейчас) — refresh прерывается, execute не выполняется.
+
 ### Этап 3 — storage adapter + feature flag (план, НЕ в этом PR)
 
 - Тонкий `StorageAdapter` в backend, отдающий пути `projects_v2` для версии.

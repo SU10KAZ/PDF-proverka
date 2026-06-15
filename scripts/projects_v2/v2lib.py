@@ -683,12 +683,20 @@ def _copytree_tracked(src_dir: Path, dst_dir: Path, role: str) -> list[dict]:
     return files
 
 
+_CRITICAL_ANALYSIS_NAMES = ("01_text_analysis.json", "02_blocks_analysis.json", "03_findings.json")
+
+
 def migrate_version(version: VersionRec, doc_dir: Path, *,
-                    run_id: Optional[str] = None) -> dict:
+                    run_id: Optional[str] = None,
+                    policy: Optional[dict] = None) -> dict:
     """Мигрирует одну версию в `documents/<code>/versions/<version_id>/`.
 
     Возвращает запись для old_to_new_map (files[], legacy-имена, run_id).
     Старые файлы только читаются и копируются (copy2), никогда не меняются.
+
+    `policy` (необязательно) — переопределения для version.json
+    (`analysis_status`, `analysis_generation`, `preserve_reason`), напр. для
+    POLICY_READY_LEGACY_KB_PRESERVE.
     """
     vroot = doc_dir / "versions" / version.version_id
     for sub in VERSION_SUBDIRS:
@@ -745,6 +753,17 @@ def migrate_version(version: VersionRec, doc_dir: Path, *,
                                      role=f"classified:{bucket}")
             files.append(rec)
 
+    # analysis_status из реально перенесённых критичных артефактов (latest)
+    latest_dir = vroot / "03_analysis" / "latest"
+    present_crit = [c for c in _CRITICAL_ANALYSIS_NAMES if (latest_dir / c).exists()]
+    if len(present_crit) == len(_CRITICAL_ANALYSIS_NAMES):
+        analysis_status = "complete"
+    elif present_crit:
+        analysis_status = "partial"
+    else:
+        analysis_status = "none"
+    missing_analysis = [c for c in _CRITICAL_ANALYSIS_NAMES if c not in present_crit]
+
     version_json = {
         "schema_version": 1,
         "version_id": version.version_id,
@@ -755,16 +774,26 @@ def migrate_version(version: VersionRec, doc_dir: Path, *,
         "source": version.source,
         "status": version.status,
         "analysis_run_id": rid if output_dir.is_dir() else None,
+        "analysis_status": analysis_status,
+        "missing_analysis_files": missing_analysis,
         "migrated_at": utc_now_iso(),
     }
+    # policy-переопределения (напр. legacy_kb_preserve)
+    if policy:
+        for k in ("analysis_status", "analysis_generation", "preserve_reason"):
+            if policy.get(k) is not None:
+                version_json[k] = policy[k]
     (vroot / "version.json").write_text(
         json.dumps(version_json, ensure_ascii=False, indent=2), encoding="utf-8")
 
+    # optional входные файлы, которых нет (ocr_html — опциональный)
+    missing_optional = [k for k in ("ocr_html",) if quad.get(k) is None]
     input_manifest = {
         "schema_version": 1,
         "version_id": version.version_id,
         "legacy_folder_name": version.legacy_name,
         "input_quad": input_manifest_entries,
+        "missing_optional_files": missing_optional,
         "note": "Файлы в 01_input неизменяемы. Рабочие копии — в 02_work/.",
     }
     (vroot / "01_input" / "input_manifest.json").write_text(
@@ -782,11 +811,13 @@ def migrate_version(version: VersionRec, doc_dir: Path, *,
 
 def migrate_project(project_path: Path, v2_root: Path, *,
                     objects_map: Optional[dict] = None,
-                    run_id: Optional[str] = None) -> dict:
+                    run_id: Optional[str] = None,
+                    policy: Optional[dict] = None) -> dict:
     """Мигрирует один legacy-проект или контейнер `(main)` в projects_v2.
 
     Read-only по отношению к `projects/`. Идемпотентно перезаписывает копии
-    внутри projects_v2 (legacy не трогает).
+    внутри projects_v2 (legacy не трогает). `policy` пробрасывается в
+    `migrate_version` (version.json overrides, напр. legacy_kb_preserve).
     """
     project_path = project_path.resolve()
     discipline = project_path.parent.name
@@ -817,7 +848,7 @@ def migrate_project(project_path: Path, v2_root: Path, *,
         }, ensure_ascii=False, indent=2), encoding="utf-8")
 
     versions = enumerate_versions(project_path)
-    version_records = [migrate_version(v, doc_dir, run_id=run_id) for v in versions]
+    version_records = [migrate_version(v, doc_dir, run_id=run_id, policy=policy) for v in versions]
 
     # current_version: latest_version_id из манифеста, иначе max version_no
     current_version = versions[-1].version_id

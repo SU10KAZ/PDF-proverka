@@ -222,6 +222,13 @@ stability-check):
   решения) — переносится как legacy-снимок, ничего не теряя. Отсутствие новых
   файлов для таких проектов НЕ повод блокировать миграцию.
 
+> `analysis_status` и `missing_analysis_files` пишутся `migrate_version` при
+> КАЖДОЙ миграции (вычисляются из перенесённых `01/02/03` в `03_analysis/latest`);
+> `legacy_partial` + `analysis_generation`/`preserve_reason` ставятся, только
+> когда миграция запущена с соответствующей policy (`LEGACY_KB_PRESERVE`).
+> `input_manifest.json.missing_optional_files` тоже пишется всегда (сейчас —
+> `["ocr_html"]`, если OCR-HTML отсутствует).
+
 ## Сравнение версий (этап 2, зарезервировано)
 
 `documents/<document_code>/comparisons/<vA>_vs_<vB>/comparison_link.json` будет
