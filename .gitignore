@@ -132,3 +132,14 @@ experiments/qwen_problem_block_recognition/
 
 # === projects_v2 runtime/generated data (миграция, не для git) ===
 /projects_v2/
+
+# === Папка дисциплин для сравнения (локальная, не для git) ===
+дисциплины для сравнения/
+
+# === Локальные бэкапы, диагностика и одноразовые артефакты (не для git) ===
+_clean_test_backup_*/
+diagnostics_ab/
+graphify-out/
+kb_orphans_*.md
+*.bak_*
+*.json.bak_*
