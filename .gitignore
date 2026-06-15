@@ -129,3 +129,6 @@ comparison_sources/**/*
 
 # heavy local experiment workspace (renders, ~1.2G) — not for git
 experiments/qwen_problem_block_recognition/
+
+# === projects_v2 runtime/generated data (миграция, не для git) ===
+projects_v2/
