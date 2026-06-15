@@ -8128,13 +8128,22 @@ const app = createApp({
             }
         }
 
+        // Канонический project_id для API экспертной разметки: реальные папки
+        // проектов/контейнеров — без `.pdf`. В id из version-имени V2 может
+        // протечь `.pdf` (отображается в `name`), и тогда backend резолвит путь
+        // на корень объекта → orphan `_output`. Срезаем хвостовой `.pdf` (вторая
+        // линия защиты; основная — на backend resolve_project_dir/save).
+        function expertReviewProjectId() {
+            return String(currentProjectId.value || '').replace(/\.pdf$/i, '');
+        }
+
         async function loadExpertDecisions() {
             if (!currentProjectId.value) return;
             const map = {};
             try {
                 const vid = activeVersionId.value;
                 const vq = vid ? `?version_id=${encodeURIComponent(vid)}` : '';
-                const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}${vq}`);
+                const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(expertReviewProjectId())}${vq}`);
                 const data = await resp.json();
                 if (data.has_review && data.data && data.data.decisions) {
                     for (const d of data.data.decisions) {
@@ -8207,7 +8216,7 @@ const app = createApp({
                 }
                 const vidPost = activeVersionId.value;
                 const vqPost = vidPost ? `?version_id=${encodeURIComponent(vidPost)}` : '';
-                const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}${vqPost}`, {
+                const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(expertReviewProjectId())}${vqPost}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ decisions, removed_ids: removedIds, reviewer: currentUserName() }),
@@ -8465,7 +8474,7 @@ const app = createApp({
                     try {
                         const vidUp = activeVersionId.value;
                         const vqUp = vidUp ? `?version_id=${encodeURIComponent(vidUp)}` : '';
-                        const revResp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}${vqUp}`);
+                        const revResp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(expertReviewProjectId())}${vqUp}`);
                         const revData = await revResp.json();
                         if (revData.has_review && revData.data && revData.data.decisions) {
                             const map = {};

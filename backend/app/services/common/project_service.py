@@ -40,6 +40,15 @@ class AmbiguousProjectError(RuntimeError):
     """project_id существует в нескольких объектах, и scope не задан."""
 
 
+class ProjectNotResolvedError(RuntimeError):
+    """project_id не резолвится в существующую папку проекта/контейнера.
+
+    Бросается только при `resolve_project_dir(..., must_exist=True)` — для
+    writer-ов (expert_review, audit output), чтобы они НЕ создавали `_output`
+    по несуществующему `direct = projects_dir / project_id` на корне объекта
+    (источник orphan-папок)."""
+
+
 class ProjectByPdfError(RuntimeError):
     """Не удалось однозначно разрешить проект по имени PDF."""
 
@@ -337,6 +346,7 @@ def resolve_project_dir(
     *,
     object_id: Optional[str] = None,
     strict: bool = False,
+    must_exist: bool = False,
 ) -> Path:
     """Найти папку проекта по ID.
 
@@ -348,6 +358,12 @@ def resolve_project_dir(
     strict=True: если project_id существует в НЕСКОЛЬКИХ объектах и scope
     (object_id / binding) не задан — поднимаем `AmbiguousProjectError`. По
     умолчанию strict=False, чтобы не ломать существующие read-эндпоинты.
+
+    must_exist=True: для writer-ов. Если ни один реальный путь не найден —
+    поднимаем `ProjectNotResolvedError` вместо возврата несуществующего
+    `direct = projects_dir / project_id` (иначе writer молча создаёт orphan
+    `_output` на корне объекта). Перед ошибкой пробуется fallback со снятием
+    суффикса `.pdf` (id вида `<база>.pdf` → реальный `<база>`).
     """
     explicit_scope = False
     if object_id is not None:
@@ -419,7 +435,27 @@ def resolve_project_dir(
                     inner = child / project_id
                     if inner.exists():
                         return inner
-    return direct  # fallback
+
+    # Fallback: id вида `<база>.pdf` (приходит из version-имени V2 `… .pdf`).
+    # Реальные папки проектов/контейнеров — без `.pdf`. Пробуем снять суффикс
+    # и резолвить штатно; принимаем результат ТОЛЬКО если он существует и
+    # отличается от исходного id (без рекурсии в бесконечность — у stripped
+    # уже нет `.pdf`). Не трогаем легитимные `.pdf`-id: для них `direct`
+    # существует и мы бы вернули его раньше (см. `direct.exists()`).
+    if project_id.endswith(".pdf"):
+        stripped = project_id[:-4]
+        if stripped and stripped != project_id:
+            alt = resolve_project_dir(
+                stripped, object_id=object_id, strict=strict,
+            )
+            if alt.exists():
+                return alt
+
+    if must_exist:
+        raise ProjectNotResolvedError(
+            f"Project directory not resolved for project_id={project_id!r}"
+        )
+    return direct  # fallback (legacy: допускает несуществующий путь для read/create-new)
 
 
 def resolve_active_project_dir(

@@ -16,9 +16,13 @@ from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
 
 
-def _version_dir(project_id: str) -> Path:
-    """Активная версия проекта (из ContextVar bound_version_id, fallback на latest)."""
-    project_dir = resolve_project_dir(project_id)
+def _version_dir(project_id: str, *, must_exist: bool = False) -> Path:
+    """Активная версия проекта (из ContextVar bound_version_id, fallback на latest).
+
+    must_exist=True: для writer-ов — `resolve_project_dir` бросит
+    `ProjectNotResolvedError`, если project_id не резолвится в реальную папку
+    (вместо возврата несуществующего пути на корне объекта → orphan)."""
+    project_dir = resolve_project_dir(project_id, must_exist=must_exist)
     vid = version_service.get_bound_version_id()
     try:
         return version_service.get_version_dir(project_dir, project_id, vid)
@@ -26,8 +30,8 @@ def _version_dir(project_id: str) -> Path:
         return project_dir
 
 
-def _output_dir(project_id: str) -> Path:
-    return _version_dir(project_id) / "_output"
+def _output_dir(project_id: str, *, must_exist: bool = False) -> Path:
+    return _version_dir(project_id, must_exist=must_exist) / "_output"
 
 
 def _ensure_kb_dir():
@@ -70,7 +74,10 @@ def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewe
     2. Обогащает решения контекстом из findings/optimization
     3. Добавляет записи в глобальный decisions_log.json
     """
-    output_dir = _output_dir(project_id)
+    # must_exist=True: не создаём orphan `_output` на несуществующем пути —
+    # если project_id не резолвится в реальный проект/контейнер, поднимется
+    # ProjectNotResolvedError (роутер вернёт 404).
+    output_dir = _output_dir(project_id, must_exist=True)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # 1. Сохранить per-project файл (merge с существующими решениями)
