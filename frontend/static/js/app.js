@@ -9910,6 +9910,135 @@ const app = createApp({
             try { await fetch(url, { method: 'POST' }); } catch (e) {}
         }
 
+        // ─── Pipeline V2 controlled run («Запустить V2» в «Связь блоков») ──
+        // Кнопка POST'ит на /pipeline-v2/{sid}/pairs/{pid}/run (state-changing
+        // controlled endpoint), затем polling'ит run-status. ui-payload —
+        // read-only, его не трогаем. Прогон offline (без моделей).
+        const scPv2RunByPair = reactive({});        // pid -> job {status, ...}
+        const scPv2RunArtifactPairs = reactive({}); // pid -> true (артефакты есть)
+        const scPv2RunModal = ref(null);            // confirm-модалка
+        let scPv2RunTimers = {};                    // pid -> setTimeout id
+
+        function scPv2RunState(pid) {
+            const j = scPv2RunByPair[pid];
+            const s = j && j.status;
+            if (s === 'queued' || s === 'running') return 'running';
+            if (s === 'completed') return 'completed';
+            if (s === 'failed' || s === 'failed_interrupted' || s === 'cancelled') return 'failed';
+            if (scPv2RunArtifactPairs[pid]) return 'has_artifacts';
+            return 'idle';
+        }
+        function scPv2RunBtnLabel(pid) {
+            const st = scPv2RunState(pid);
+            if (st === 'running') return '⏳ V2…';
+            if (st === 'failed') return '↻ V2';
+            if (st === 'has_artifacts' || st === 'completed') return '↻ V2';
+            return '▶ V2';
+        }
+        function scPv2RunBtnTitle(pid) {
+            const st = scPv2RunState(pid);
+            if (st === 'running') return 'Pipeline V2 выполняется…';
+            if (st === 'failed') return 'Повторить Pipeline V2 (последний прогон не удался)';
+            if (st === 'has_artifacts' || st === 'completed') return 'Перезапустить Pipeline V2 (создаст backup существующих артефактов)';
+            return 'Запустить backend Pipeline V2 и создать артефакты для этой пары';
+        }
+        function scPv2RunErrorFor(pid) {
+            const j = scPv2RunByPair[pid];
+            return (j && (j.status === 'failed' || j.status === 'failed_interrupted') && j.error) ? j.error : '';
+        }
+        async function scPv2RunLoadArtifactPairs() {
+            if (!scSession.value || !scSession.value.id) return;
+            try {
+                const url = `/api/stage-comparison/pipeline-v2/${encodeURIComponent(scSession.value.id)}/ui-payload`;
+                const data = await fetch(url).then(r => r.ok ? r.json() : null);
+                const list = (data && (data.available_pairs
+                    || (data.payload && data.payload.available_pairs))) || [];
+                Object.keys(scPv2RunArtifactPairs).forEach(k => delete scPv2RunArtifactPairs[k]);
+                list.forEach(pid => { scPv2RunArtifactPairs[pid] = true; });
+            } catch (e) { /* read-only best-effort */ }
+        }
+        function scPv2RunOpenModal(p) {
+            if (!p || !p.left || !p.right) return;
+            if (scPv2RunState(p.id) === 'running') return;
+            const st = scPv2RunState(p.id);
+            scPv2RunModal.value = {
+                pair_id: p.id,
+                left_name: (p.left && p.left.filename) || '?',
+                right_name: (p.right && p.right.filename) || '?',
+                is_rerun: (st === 'has_artifacts' || st === 'completed' || st === 'failed'),
+                typed: '', busy: false, error: ''
+            };
+        }
+        function scPv2RunStopPoll(pid) {
+            if (scPv2RunTimers[pid]) { clearTimeout(scPv2RunTimers[pid]); delete scPv2RunTimers[pid]; }
+        }
+        function scPv2RunPoll(pid, jobId) {
+            scPv2RunStopPoll(pid);
+            const terminal = ['completed', 'failed', 'cancelled', 'failed_interrupted'];
+            const tick = async () => {
+                if (!scSession.value || !scSession.value.id) return;
+                try {
+                    const url = `/api/stage-comparison/pipeline-v2/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(pid)}/run-status/${encodeURIComponent(jobId)}`;
+                    const r = await fetch(url);
+                    if (r.ok) {
+                        const job = await r.json();
+                        scPv2RunByPair[pid] = job;
+                        if (terminal.includes(job.status)) {
+                            scPv2RunStopPoll(pid);
+                            if (job.status === 'completed') scPv2RunArtifactPairs[pid] = true;
+                            try { await scPv2RunLoadArtifactPairs(); } catch (e) {}
+                            if (typeof scPv2LpLoad === 'function' && scPv2LpVisible.value
+                                && scPv2LpPairId.value === pid) {
+                                try { await scPv2LpLoad(); } catch (e) {}
+                            }
+                            return;
+                        }
+                    }
+                    scPv2RunTimers[pid] = setTimeout(tick, 3000);
+                } catch (e) { scPv2RunTimers[pid] = setTimeout(tick, 5000); }
+            };
+            tick();
+        }
+        async function scPv2RunSubmit() {
+            const mdl = scPv2RunModal.value;
+            if (!mdl || !scSession.value || !scSession.value.id) return;
+            if (mdl.typed !== mdl.pair_id) {
+                mdl.error = 'Введите точный pair_id для подтверждения'; return;
+            }
+            mdl.busy = true; mdl.error = '';
+            const pid = mdl.pair_id;
+            try {
+                const url = `/api/stage-comparison/pipeline-v2/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(pid)}/run`;
+                const r = await fetch(url, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        mode: 'dry_run', confirm: true,
+                        confirm_session_id: scSession.value.id, confirm_pair_id: pid,
+                        rerun_existing: !!mdl.is_rerun, create_backup: true
+                    })
+                });
+                if (!r.ok) {
+                    let msg = 'HTTP ' + r.status;
+                    try { const e = await r.json(); if (e && e.detail) msg = e.detail; } catch (x) {}
+                    if (r.status === 409) msg = 'Уже есть артефакты или идёт прогон (' + msg + ')';
+                    mdl.busy = false; mdl.error = msg; return;
+                }
+                const data = await r.json();
+                scPv2RunByPair[pid] = { status: 'queued', job_id: data.job_id };
+                scPv2RunModal.value = null;
+                scPv2RunPoll(pid, data.job_id);
+            } catch (e) {
+                mdl.busy = false; mdl.error = (e && e.message) || String(e);
+            }
+        }
+        // Подгрузить пары с артефактами при смене сессии (бейдж «Запустить» vs
+        // «Перезапустить»).
+        watch(() => scSession.value && scSession.value.id, (sid) => {
+            Object.keys(scPv2RunByPair).forEach(k => delete scPv2RunByPair[k]);
+            Object.keys(scPv2RunArtifactPairs).forEach(k => delete scPv2RunArtifactPairs[k]);
+            if (sid) { scPv2RunLoadArtifactPairs(); }
+        });
+
         async function scOpenPair(pair) {
             if (!pair || !pair.left || !pair.right) return;
             scActivePair.value = pair;
@@ -16007,6 +16136,8 @@ const app = createApp({
             scQOClearBeforeRun, scQOMode, scQOClearing, scQOClearAnalysis, scQOStartOpusOnly,
             scQOToggleAll, scQOPairLabel, scQOPairBadge, scQOOpenConfirm, scQOProcessPair,
             scQOStartConfirmed, scQOStart, scQOCancel,
+            scPv2RunByPair, scPv2RunModal, scPv2RunState, scPv2RunBtnLabel,
+            scPv2RunBtnTitle, scPv2RunErrorFor, scPv2RunOpenModal, scPv2RunSubmit,
             scQODetailsOpen, scQOElapsedMs, scQOEtaSec, scQOItemFor, scQOItemLaneLabel,
             scQOPairTimings, scQOLoadPairTimings,
             scQOLaneCell, scQOLaneColor, scQOItemTotalLabel, scQOCurrentBlock, scQOBlocksOverall,

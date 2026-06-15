@@ -47,6 +47,7 @@ from backend.app.services.stage_comparison import pipeline_v2_payload_service as
 from backend.app.services.stage_comparison import pipeline_v2_entity_mapping_overrides as entity_mapping_overrides_mod
 from backend.app.services.stage_comparison import pipeline_v2_controlled_enforce_state as pipeline_v2_ce_state_mod
 from backend.app.services.stage_comparison import pipeline_v2_exclusion_review_overrides as excl_review_mod
+from backend.app.services.stage_comparison import pipeline_v2_run_jobs as pipeline_v2_run_jobs_mod
 from backend.app.services.stage_comparison import large_sheet_enrichment_jobs as large_sheet_jobs_mod
 from backend.app.services.stage_comparison import auto_match_jobs as auto_match_jobs_mod
 from backend.app.services.stage_comparison import visual_block_equivalence_jobs as vbe_jobs_mod
@@ -3728,6 +3729,85 @@ async def post_pipeline_v2_controlled_enforce_state_deactivate_endpoint(
             art_dir, payload)
     except pipeline_v2_ce_state_mod.ControlledEnforceStateError as exc:
         raise HTTPException(422, str(exc)) from exc
+
+
+# ─── Pipeline V2: controlled operator-triggered run («Запустить V2») ──────
+# State-changing: запускает существующий dry-run runner в фоновом job'е.
+# read-only ui-payload сервис этим НЕ затрагивается.
+
+class PipelineV2RunRequest(BaseModel):
+    """Тело POST .../pairs/{pair_id}/run."""
+    mode: str = Field(default="dry_run")
+    confirm: bool = Field(default=False)
+    confirm_session_id: Optional[str] = Field(default=None)
+    confirm_pair_id: Optional[str] = Field(default=None)
+    rerun_existing: bool = Field(default=False)
+    create_backup: bool = Field(default=True)
+    operator_note: Optional[str] = Field(default=None)
+
+
+def _pipeline_v2_run_payload(job: dict) -> dict:
+    """Компактный accepted-ответ для UI."""
+    return {
+        "ok": True,
+        "job_id": job.get("id"),
+        "session_id": job.get("session_id"),
+        "pair_id": job.get("pair_id"),
+        "status": job.get("status"),
+        "status_url": pipeline_v2_run_jobs_mod.status_url(
+            job.get("session_id"), job.get("pair_id"), job.get("id")),
+        "message": "Pipeline V2 run accepted",
+    }
+
+
+@router.post("/pipeline-v2/{session_id}/pairs/{pair_id}/run")
+async def post_pipeline_v2_run_endpoint(
+        session_id: str, pair_id: str, req: PipelineV2RunRequest):
+    """Запустить controlled Pipeline V2 run для пары (operator-triggered).
+
+    Запускает СУЩЕСТВУЮЩИЙ ``run_pipeline_v2_dry_run`` в фоновом job'е
+    (offline: ``llm_runner=None``/``vision_runner=None`` → модели НЕ
+    задействуются). Гейты: confirm + confirm_session_id/pair_id (422);
+    сессия/пара существуют (404); артефакты уже есть без ``rerun_existing``
+    (409); уже идёт run на эту пару (409). При rerun создаётся backup
+    ``pipeline_v2_backup_before_ui_run_<TS>``. Пишет ТОЛЬКО артефакты
+    pipeline_v2 этой пары + job-статус + manifest. ui-payload остаётся
+    read-only.
+    """
+    payload = req.model_dump()
+    try:
+        job = await run_in_threadpool(
+            pipeline_v2_run_jobs_mod.create_run_job, session_id, pair_id, payload)
+    except pipeline_v2_run_jobs_mod.PipelineV2RunConfirmError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    except pipeline_v2_run_jobs_mod.PipelineV2RunNotFound as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except pipeline_v2_run_jobs_mod.PipelineV2RunConflict as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except pipeline_v2_run_jobs_mod.PipelineV2RunError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    pipeline_v2_run_jobs_mod.start_job_in_background(session_id, job["id"])
+    return _pipeline_v2_run_payload(job)
+
+
+@router.get("/pipeline-v2/{session_id}/pairs/{pair_id}/run-status/{job_id}")
+async def get_pipeline_v2_run_status_endpoint(
+        session_id: str, pair_id: str, job_id: str):
+    """Статус controlled Pipeline V2 run job'а (для polling'а UI)."""
+    job = await run_in_threadpool(
+        pipeline_v2_run_jobs_mod.get_job, session_id, job_id)
+    if job is None or job.get("pair_id") != pair_id:
+        raise HTTPException(404, "run_job_not_found")
+    return job
+
+
+@router.get("/pipeline-v2/{session_id}/pairs/{pair_id}/run-active")
+async def get_pipeline_v2_run_active_endpoint(
+        session_id: str, pair_id: str):
+    """Активный (running/queued) run job по паре — для восстановления UI."""
+    job = await run_in_threadpool(
+        pipeline_v2_run_jobs_mod.find_active_pair_job, session_id, pair_id)
+    return {"job": job}
 
 
 @router.get("/pipeline-v2/{session_id}/enrichment-selection-observe")

@@ -5491,10 +5491,57 @@
                                     <button class="btn btn-sm btn-primary" :disabled="!p.left || !p.right || scQORunning || scQOPreflighting"
                                             @click="scQOProcessPair(p.id)" title="Запустить Qwen→Opus для этой пары">{{ scQOPreflighting ? '…' : 'Обработать' }}</button>
                                     <button class="btn btn-sm" :disabled="!p.left || !p.right" @click="scOpenPair(p)">Открыть</button>
+                                    <button class="btn btn-sm"
+                                            :class="scPv2RunState(p.id)==='idle' ? 'btn-secondary' : ''"
+                                            :disabled="!p.left || !p.right || scPv2RunState(p.id)==='running'"
+                                            @click="scPv2RunOpenModal(p)"
+                                            :title="scPv2RunBtnTitle(p.id)"
+                                            style="margin-left:4px">{{ scPv2RunBtnLabel(p.id) }}</button>
+                                    <div v-if="scPv2RunErrorFor(p.id)"
+                                         style="color:#b91c1c; font-size:10px; max-width:170px; white-space:normal; margin-top:2px; text-align:right">{{ scPv2RunErrorFor(p.id) }}</div>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+
+                    <!-- Pipeline V2 controlled-run confirm modal (typed confirmation) -->
+                    <div v-if="scPv2RunModal" class="retry-dialog-overlay" @click.self="scPv2RunModal=null">
+                        <div class="retry-dialog" @click.stop>
+                            <h3 class="retry-dialog__title">
+                                {{ scPv2RunModal.is_rerun ? 'Перезапустить Pipeline V2' : 'Запустить Pipeline V2' }}
+                            </h3>
+                            <div style="font-size:12px; color:#374151; line-height:1.7; margin-bottom:10px">
+                                Пара <code>{{ scPv2RunModal.pair_id }}</code>:
+                                <strong>{{ scPv2RunModal.left_name }}</strong> ↔ <strong>{{ scPv2RunModal.right_name }}</strong>
+                                <ul style="margin:8px 0 0 16px; padding:0; color:#4b5563">
+                                    <li>Будет запущен <b>backend Pipeline V2</b> (offline dry-run). Это <b>не read-only</b> операция.</li>
+                                    <li>Операция может занять время; артефакты пишутся в
+                                        <code>comparison/sessions/&lt;sid&gt;/pairs/{{ scPv2RunModal.pair_id }}/pipeline_v2/</code>.</li>
+                                    <li>По умолчанию модели (Qwen/Gemma/Opus/Claude) <b>не вызываются</b>; если stage-runner'ы их используют — это будет отражено в manifest.</li>
+                                    <li v-if="scPv2RunModal.is_rerun" style="color:#b45309">
+                                        ⚠ Существующие артефакты будут сохранены в
+                                        <code>pipeline_v2_backup_before_ui_run_&lt;TS&gt;</code> перед перезаписью.</li>
+                                </ul>
+                            </div>
+                            <div style="font-size:12px; color:#374151; margin-bottom:6px">
+                                Для подтверждения введите pair_id: <code>{{ scPv2RunModal.pair_id }}</code>
+                            </div>
+                            <input v-model="scPv2RunModal.typed" type="text"
+                                   :placeholder="scPv2RunModal.pair_id"
+                                   :disabled="scPv2RunModal.busy"
+                                   style="width:100%; padding:6px 8px; font-size:12px; border:1px solid #d1d5db; border-radius:6px; box-sizing:border-box"
+                                   @keyup.enter="scPv2RunSubmit()">
+                            <div v-if="scPv2RunModal.error" style="color:#b91c1c; font-size:11px; margin-top:6px">{{ scPv2RunModal.error }}</div>
+                            <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:14px">
+                                <button class="btn btn-sm btn-secondary" :disabled="scPv2RunModal.busy" @click="scPv2RunModal=null">Отмена</button>
+                                <button class="btn btn-sm btn-primary"
+                                        :disabled="scPv2RunModal.busy || scPv2RunModal.typed !== scPv2RunModal.pair_id"
+                                        @click="scPv2RunSubmit()">
+                                    {{ scPv2RunModal.busy ? 'Запуск…' : (scPv2RunModal.is_rerun ? 'Перезапустить' : 'Запустить') }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     <div v-if="scPairOrderSaving" style="margin-top:4px; font-size:11px; opacity:.7">
                         Сохраняю новый порядок…
                     </div>
