@@ -486,6 +486,57 @@ backend-аудит дрейфит ALREADY_MIGRATED-документы), нель
 validate PASS`, и только потом execute. Если на Stage A документ `unstable`
 (backend пишет прямо сейчас) — refresh прерывается, execute не выполняется.
 
+### Этап 2.10 — manual/blocked King&Sons: legacy-findings-preserve (анализ, без миграции)
+
+Оставшиеся 4 проекта `WARNINGS_BLOCKED` / `MANUAL_REVIEW_REQUIRED` — все объекта
+`213. Мосфильмовская 31А "King&Sons"`, анализированы старыми алгоритмами:
+`EOM/133_23-ГК-ЭМ2`, `EOM/Фасадное освещение`, `ITP/133_23-ГК-ИТП.ТМ`,
+`SS/133_23-ГК-АК`. Для них блокеры (multiple PDF/MD/result, incomplete quad) НЕ
+должны блокировать перенос — главное сохранить найденные замечания и связь с KB.
+
+**Политика `POLICY_READY_LEGACY_FINDINGS_PRESERVE`** (не угадывать «основной» PDF,
+переносить как legacy-снимок, ничего не теряя). Read-only анализ:
+`scripts/projects_v2/analyze_blocked_manual_projects.py` →
+`_system/blocked_manual_analysis_report.{json,csv}`. **Миграция этих 4 проектов
+выполняется только после отдельного подтверждения.**
+
+Целевая структура (для будущей миграции):
+
+```text
+versions/v001/
+  01_input/legacy_bundle/     # ВСЕ найденные pdf/md/ocr/result как есть (без выбора primary)
+  03_analysis/latest/         # 03_findings.json / 01 / 02 / pipeline_log если есть
+  99_service/legacy_output/   # полная копия legacy _output/ (контекст)
+```
+
+`version.json`:
+```json
+{
+  "analysis_status": "legacy_partial",
+  "analysis_generation": "legacy",
+  "preserve_reason": "king_sons_legacy_findings_preserve",
+  "source_files_strategy": "legacy_bundle",
+  "primary_goal": "preserve_findings_and_kb_links"
+}
+```
+
+**Результат анализа (4/4 → LEGACY_FINDINGS_PRESERVE):**
+
+| Документ | blockers | 03_findings | KB-записи | source-файлов |
+|---|---|---|---|---|
+| EOM/133_23-ГК-ЭМ2 | multiple pdf/md/result | ✅ (+01/02/pipeline_log) | 0 | 15 |
+| EOM/Фасадное освещение | multiple pdf/md/result | — | 0 | 9 |
+| ITP/133_23-ГК-ИТП.ТМ | incomplete_input_quad | — | 0 | 3 (только PDF) |
+| SS/133_23-ГК-АК | multiple pdf/md/result | ✅ (+01/02/pipeline_log) | **4** | 17 |
+
+Все source-файлы (включая неоднозначные дубли ролей) сохраняются в
+`legacy_bundle` без выбора primary; `_output` целиком — в `legacy_output`;
+найденные `03_findings`/анализ — в `03_analysis/latest`; KB-связь (по
+`source_project` в `decisions_log.json`) фиксируется в отчёте. `unclassified`
+файлы тоже попадают в `legacy_bundle` (ничего не теряем). Чистые функции —
+`analyze_blocked_manual_projects.py`, тесты —
+`tests/test_projects_v2_blocked_manual_analysis.py`.
+
 ### Этап 3 — storage adapter + feature flag (план, НЕ в этом PR)
 
 - Тонкий `StorageAdapter` в backend, отдающий пути `projects_v2` для версии.

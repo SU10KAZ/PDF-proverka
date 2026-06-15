@@ -229,6 +229,29 @@ stability-check):
 > `input_manifest.json.missing_optional_files` тоже пишется всегда (сейчас —
 > `["ocr_html"]`, если OCR-HTML отсутствует).
 
+### legacy-bundle снимок (King&Sons blocked/manual)
+
+Для проектов ранних алгоритмов с блокерами (несколько PDF/MD/result, неполный
+комплект), где НЕ нужно добиваться идеальной новой структуры, применяется
+снимок «как есть» (`POLICY_READY_LEGACY_FINDINGS_PRESERVE`): primary PDF не
+выбирается, ничего не теряется.
+
+```text
+versions/v001/
+  01_input/legacy_bundle/     # ВСЕ pdf/md/ocr/result/прочее как есть
+  03_analysis/latest/         # 03_findings.json / 01 / 02 / pipeline_log если есть
+  99_service/legacy_output/   # полная копия legacy _output/
+```
+
+`version.json`: `analysis_status=legacy_partial`, `analysis_generation=legacy`,
+`preserve_reason=king_sons_legacy_findings_preserve`,
+`source_files_strategy=legacy_bundle`,
+`primary_goal=preserve_findings_and_kb_links`.
+
+Главный приоритет — сохранить найденные замечания (`03_findings.json` и др.) и
+связь с `knowledge_base/decisions_log.json`. Неоднозначные/непонятные файлы тоже
+кладутся в `legacy_bundle` (zero data loss).
+
 ## Сравнение версий (этап 2, зарезервировано)
 
 `documents/<document_code>/comparisons/<vA>_vs_<vB>/comparison_link.json` будет
