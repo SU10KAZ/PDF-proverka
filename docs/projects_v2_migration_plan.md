@@ -281,6 +281,60 @@ legacy; глобального `--force` нет by design.
 > «уехал» другой документ — это новый отдельный drift того же класса, лечится
 > тем же инструментом по этому документу, когда его аудит устаканится.
 
+### Этап 2.6 — глобальный drift scan → refresh_safe → validate PASS ✅
+
+Вместо ручной гонки за одним документом — сначала **глобальная диагностика**
+дрейфа по всем уже мигрированным документам, потом точечный refresh только
+стабильных.
+
+**drift scan** (`scripts/projects_v2/scan_migrated_drift.py`, READ-ONLY) идёт по
+`old_to_new_map.json`, сравнивает по каждому tracked-файлу recorded sha ↔ текущий
+legacy sha ↔ текущий v2 sha и классифицирует:
+
+| drift_type | смысл | recommendation |
+|---|---|---|
+| `legacy_changed_v2_old` | legacy ушёл вперёд, v2 = recorded (живой-аудит drift) | `refresh_safe` если legacy стабилен, иначе `wait_backend` |
+| `v2_changed` | изменилась копия в projects_v2 | `manual_review` |
+| `missing_legacy` | legacy-файл пропал | `manual_review` |
+| `missing_v2` | копия в projects_v2 пропала | `manual_review` |
+
+Для каждого drift-документа выполняется stability-check (два снимка legacy с
+паузой `--stable-seconds`): меняется → `unstable`/`wait_backend`, не меняется →
+`stable`. Отчёты: `_system/migrated_drift_scan_report.{json,csv}`. Скан ничего
+не копирует и не меняет.
+
+**Отличие ошибки миграции от живого изменения legacy.** Ошибка миграции = копия
+в projects_v2 неверна (`v2_changed` / `checksum drift (new copy)` у validate).
+Живой drift = legacy ушёл вперёд после снимка (`legacy_changed_v2_old`), а копия
+цела. Первое — баг, второе — нормальная гонка с работающим backend-аудитом.
+
+**Почему нельзя refresh-ить нестабильный документ.** Если legacy всё ещё
+пишется (аудит идёт), refresh снимет промежуточное состояние и может тут же
+снова разойтись (или поймать полузаписанный файл). Поэтому refresh — только при
+`stable=True` (`refresh_safe`); `wait_backend` оставляем до завершения аудита.
+
+**Порядок: scan → refresh_safe → validate.**
+
+```bash
+# 1) глобальный скан
+python scripts/projects_v2/scan_migrated_drift.py --v2-root .../projects_v2 --stable-seconds 120
+# 2) для КАЖДОГО документа с recommendation=refresh_safe:
+python scripts/projects_v2/refresh_migrated_snapshot.py --execute \
+    --document "<code>" --version "<vid>" --v2-root .../projects_v2 --stable-seconds 120
+# 3) полный validate -> PASS
+python scripts/projects_v2/validate_migration.py --v2-root .../projects_v2
+```
+
+Массовый refresh без списка из scan не делается; `unstable`/`v2_changed`/`missing_*`
+требуют ручного разбора.
+
+**Почему перед миграцией `WARNINGS_NEED_POLICY` нужен полный validate PASS.**
+`NEED_POLICY` — следующий рискованный класс. Прежде чем его трогать, состояние
+projects_v2 должно быть доказуемо чистым (validate PASS): иначе нельзя отличить
+новый эффект миграции от уже накопленного drift, и регрессии будет не видно.
+Чистый validate — это базовая линия, относительно которой оценивается следующий
+этап.
+
 ### Этап 3 — storage adapter + feature flag (план, НЕ в этом PR)
 
 - Тонкий `StorageAdapter` в backend, отдающий пути `projects_v2` для версии.
