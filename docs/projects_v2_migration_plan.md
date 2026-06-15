@@ -595,11 +595,38 @@ legacy `projects/` не читается). Результат: проверен�
 `projects_v2/_system/version_metadata_normalization_report.{json,csv}`. Тесты —
 `tests/test_projects_v2_version_metadata_normalization.py`.
 
-### Этап 3 — storage adapter + feature flag (план, НЕ в этом PR)
+### Этап 3 — read-only backend adapter + parity (ВЫПОЛНЕНО, подготовка; НЕ подключён)
 
-- Тонкий `StorageAdapter` в backend, отдающий пути `projects_v2` для версии.
-- Feature flag `STORAGE_BACKEND=legacy|v2` (default `legacy`).
-- Переходный режим: чтение из v2 с fallback на legacy.
+Подготовлен read-only слой чтения `projects_v2` без переключения production:
+
+- [backend/app/services/storage/projects_v2_adapter.py](../backend/app/services/storage/projects_v2_adapter.py)
+  — `ProjectsV2Adapter`: объекты/дисциплины/документы/версии, `document.json`/
+  `version.json`, `01_input`, `03_analysis/latest` (01/02/03), findings с тем же
+  приоритетом, что и legacy (`03a_norms_verified > 03_findings > pre_merge`),
+  `pipeline_log` из latest/99_service/runs. **Только чтение**: ни записи, ни
+  `mkdir`, ни fallback в legacy. Feature flag `AUDIT_STORAGE_BACKEND`
+  (default `legacy`) — читается в самом модуле, в `core/config.py` не вносится;
+  ни один production read-path его пока не проверяет → поведение не меняется.
+- [scripts/projects_v2/check_backend_parity.py](../scripts/projects_v2/check_backend_parity.py)
+  — сравнивает legacy ↔ v2 (v2 через adapter, legacy read-only) по выборке всех
+  типов; главный инвариант — `findings_no_loss`; симметричный подсчёт findings.
+  Отчёт `projects_v2/_system/backend_parity_report.{json,md,csv}`.
+
+**Прогон parity:** проверено 16 документов (complete/partial/none/source_only/
+legacy_partial/versioned/King&Sons), **16/16 passed**, findings v2/legacy
+**607/607 (потери нет)**, `parity_ok=true`. Расхождение версий King&Sons
+ЭМ2 (v2=1 / legacy-контейнер=2) помечено `expected_difference` (snapshot).
+
+Тесты — `tests/test_projects_v2_backend_adapter.py` (включая
+`test_adapter_writes_nothing`), `tests/test_projects_v2_backend_parity.py`
+(включая обнаружение потери findings). Доп. файл `backend/app/services/storage/__init__.py`
+(package marker, как у соседних сервис-пакетов).
+
+### Этап 4 — подключение adapter за флагом (план, НЕ в этом PR)
+
+- Подключить adapter к реальным read-path (project list / findings / pipeline
+  summary / versions) за `AUDIT_STORAGE_BACKEND`, двойное чтение (v2 +
+  логирование расхождений) на shadow-объекте.
 - Прогон тестов backend на shadow-объекте до включения флага в prod.
 - Backend restart / deploy — **только** после явного подтверждения (см. правила
   проекта).

@@ -300,20 +300,88 @@ input-quad (source-only допустим), но checksum/legacy-неизменн
 ссылаться на существующее дерево `comparison/sessions/<sid>/pairs/<pid>/`
 (сравнение НЕ дублируется, только связывается). На этапе 1 не заполняется.
 
-## Будущий storage adapter + feature flag (НЕ включать на этапе 1)
+## Read-only backend adapter (подготовлен, НЕ подключён)
 
-Когда структура будет валидирована на полном объёме, планируется тонкий
-адаптер путей в backend (НЕ реализуется в этом этапе):
+[backend/app/services/storage/projects_v2_adapter.py](../backend/app/services/storage/projects_v2_adapter.py)
+— тонкий **read-only** слой чтения `projects_v2`. Подготовительный этап: код
+есть, но production его НЕ вызывает (никакой read-path backend на него не
+переключён), поэтому поведение системы не меняется.
 
-- `StorageAdapter.version_dir(object_id, discipline, document_code, version_id)`
-  → путь активной версии в `projects_v2`;
-- `input_path(...)` → `02_work/` (нормализованные копии, не `01_input`);
-- `analysis_path(...)` → `03_analysis/latest/`.
-- Переключение через feature flag, например `STORAGE_BACKEND=v2` (default `legacy`),
-  с двойным чтением (read v2, fallback legacy) на переходный период.
+`ProjectsV2Adapter` умеет читать:
 
-Адаптер и флаг на этом этапе **только спроектированы**, в код backend не
-вносятся. См. `docs/projects_v2_migration_plan.md`.
+- список объектов / дисциплин / документов (`list_objects`,
+  `list_disciplines`, `list_documents`, `find_document`);
+- `document.json` + версии + `current_version` (`get_document`, `list_versions`,
+  `current_version_id`);
+- `version.json` и metadata (`version_metadata`: `analysis_status`,
+  `missing_analysis_files`, `migration_kind`, `preserve_reason`, флаги
+  `is_legacy_preserve / is_source_only / is_legacy_partial`);
+- входные файлы версии (`input_files` — `01_input`, включая `legacy_bundle`);
+- `03_analysis/latest` артефакты (`latest_analysis_files`, `read_text_analysis`,
+  `read_blocks_analysis`);
+- замечания с тем же приоритетом, что и legacy findings_service
+  (`03a_norms_verified.json > 03_findings.json > 03_findings_pre_merge.json`):
+  `findings_path / read_findings / findings_count / findings_by_severity`;
+- `pipeline_log.json` из нескольких возможных мест (`03_analysis/latest/` для
+  legacy-снимков, `99_service/` и `03_analysis/runs/<run>/` для обычных
+  миграций): `pipeline_log_path / has_pipeline_log / read_pipeline_log`;
+- сводный `document_snapshot(...)`.
+
+### Почему adapter ничего не пишет
+
+Это слой ЧТЕНИЯ для подготовки cutover. Любая запись (создание/удаление файлов,
+`mkdir`, правка metadata, запуск анализа) запрещена by design — adapter не
+содержит таких операций. Это гарантирует, что включение/тестирование адаптера
+не может повредить ни `projects_v2`, ни legacy. Тест
+`test_adapter_writes_nothing` фиксирует инвариант (байт/множество файлов до и
+после полного прогона read-поверхности идентичны).
+
+### Никакого fallback в legacy
+
+При чтении v2 adapter **не** обращается к legacy `projects/`. Если чего-то нет в
+`projects_v2` — возвращается `None`/пусто, а не «подмешивание» старого
+хранилища. Это нужно, чтобы parity-проверка и будущий cutover работали с
+честным состоянием v2, а не маскировали пробелы старыми данными.
+
+### Feature flag `AUDIT_STORAGE_BACKEND`
+
+- значения: `legacy` (default) | `projects_v2`;
+- читается `get_storage_backend()` / `is_v2_backend_enabled()` в самом модуле
+  адаптера (env), в `core/config.py` НЕ выносится, чтобы не трогать production;
+- **default остаётся `legacy`**, и пока ни один production read-path этот флаг
+  не проверяет → поведение backend/UI идентично сборке без адаптера. Флаг —
+  только подготовка к будущему переключению.
+
+### Parity report (как читать)
+
+[scripts/projects_v2/check_backend_parity.py](../scripts/projects_v2/check_backend_parity.py)
+сравнивает legacy ↔ v2 по выборке документов всех типов (complete / partial /
+none / source_only / legacy_partial / versioned / King&Sons preserve). v2
+читается ТОЛЬКО через adapter, legacy — напрямую (read-only «сверка»). Отчёт —
+`projects_v2/_system/backend_parity_report.{json,md,csv}`:
+
+- `parity_ok` — нет hard-расхождений;
+- per-doc checks: `document_exists`, `version_count`, `current_version`,
+  `analysis_status_present`, `findings_no_loss` (ГЛАВНЫЙ инвариант),
+  `findings_exact_match`, `artifacts_01_02_03_parity`, `pipeline_log_present`;
+- подсчёт findings **симметричный** (один приоритет файла и в legacy `_output`,
+  и в v2 `latest`), поэтому числа сопоставимы;
+- расхождение числа версий у King&Sons legacy-preserve (v2=1 vs legacy-контейнер
+  с несколькими папками) помечается `expected_difference` и НЕ роняет parity.
+
+### Предусловия будущего cutover
+
+Перед переключением `AUDIT_STORAGE_BACKEND=projects_v2` в проде:
+
+1. `validate_migration.py` — `[PASS]`; drift scan — 0; readiness —
+   `ALREADY_MIGRATED=N, MANUAL_REVIEW_REQUIRED=0`.
+2. `check_backend_parity.py` — `parity_ok=true`, `findings_no_loss=true` на
+   широкой выборке (в идеале на всех документах).
+3. Подключить adapter к реальным read-path (project list, findings, pipeline
+   summary, versions) за флагом + двойное чтение (v2 с логированием расхождений)
+   на shadow-объекте.
+4. Прогон backend-тестов и ручная проверка UI на shadow-объекте под флагом.
+5. Только потом — переключение флага в проде (с быстрым откатом в `legacy`).
 
 ## Инварианты безопасности
 
