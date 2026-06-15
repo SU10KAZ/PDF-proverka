@@ -393,6 +393,58 @@ analysis-файлы дублируются в `03_analysis/latest/`. Отдел�
 обязательно затем возобновить; если backend idle — достаточно stability-check
 самого refresh. Убивать процесс/делать restart нельзя.
 
+### Этап 2.8 — разбор WARNINGS_NEED_POLICY + политика миграции ✅ (анализ, без миграции)
+
+`scripts/projects_v2/analyze_need_policy_projects.py` (READ-ONLY) разбирает
+проекты `policy_group=WARNINGS_NEED_POLICY / recommendation=needs_policy` и
+делит их на подгруппы (`classify_need_policy`, приоритет worst-first). Отчёты:
+`_system/need_policy_analysis_report.{json,csv}`. Миграция НЕ выполняется.
+
+| Подгруппа | Когда | next_class | auto после политики |
+|---|---|---|---|
+| `POLICY_RECHECK_AS_BLOCKED` | blocker (multiple_pdf/md/result, нет project_info, конфликт document_code, неполный комплект) | WARNINGS_BLOCKED | нет |
+| `POLICY_READY_LEGACY_KB_PRESERVE` | legacy-объект (King&Sons) + KB-связь/старый анализ, новый pipeline неполный | WARNINGS_AUTO_CANDIDATE | да (`analysis_status=legacy_partial`) |
+| `POLICY_READY_SINGLE_PDF_NAMED_FOLDER` | `... V1.pdf/` без `version_group` и без sibling-версий | WARNINGS_AUTO_CANDIDATE | да (как `v001`, старое имя в metadata) |
+| `POLICY_READY_GROUPED_VERSIONS_WITHOUT_MAIN` | `... V1/V2/V3.pdf/` без `(main)`, однозначно один logical document | WARNINGS_AUTO_CANDIDATE | да (объединить в `versions/v001..v00N`) |
+| `POLICY_NEEDS_MANUAL_VERSION_GROUPING` | похожие V1/V2/V3, но связь неоднозначна | MANUAL_REVIEW_REQUIRED | нет |
+| `POLICY_READY_MISSING_OCR_HTML` | есть `.pdf+_document.md+_result.json+project_info`, нет `_ocr.html` | WARNINGS_AUTO_CANDIDATE | да (`missing_optional_files:["ocr_html"]`) |
+| `POLICY_READY_NO_ANALYSIS` | комплект полный, анализа нет | WARNINGS_AUTO_CANDIDATE | да (`analysis_status=none`) |
+| `POLICY_READY_PARTIAL_ANALYSIS` | часть analysis-файлов | WARNINGS_AUTO_CANDIDATE | да (`analysis_status=partial` + `missing_analysis_files`) |
+
+**Политики (утверждены пользователем):**
+
+- **`_ocr.html` — optional.** Если есть `.pdf+_document.md+_result.json`,
+  отсутствие `_ocr.html` не блокирует. При миграции: фейковый `ocr.html` не
+  создаётся, в `input_manifest.json` пишется `missing_optional_files:["ocr_html"]`.
+- **Все документы в projects_v2 — контейнеры версий** (`documents/<code>/versions/vNNN`),
+  даже если в legacy не было `(main)`.
+- **`... V1.pdf/`/`... V2.pdf/` без `(main)`:** одиночная → один document с `v001`
+  (старое имя в metadata); несколько с однозначной нумерацией → объединить в один
+  document с `versions/v001..v00N`; неоднозначно → manual.
+- **Анализ:** нет → `analysis_status=none`; неполный → `partial` +
+  `missing_analysis_files`; всё переносить, ничего не терять.
+- **Legacy King&Sons (старые алгоритмы):** отсутствие файлов нового pipeline НЕ
+  блокирует. Главное — сохранить найденное (`03_findings.json`/`01`/`02`/
+  `pipeline_log` если есть, legacy batch/block-файлы, связь с
+  `knowledge_base/decisions_log.json`, экспертные решения). Такие проекты —
+  `POLICY_READY_LEGACY_KB_PRESERVE`, в `version.json`:
+  `analysis_status=legacy_partial`, `analysis_generation=legacy`,
+  `preserve_reason=legacy_algorithm_with_kb_findings`. KB-связь определяется по
+  `source_project` в `decisions_log.json` (по logical base документа).
+
+**Результат разбора (44 NEED_POLICY, на текущих данных):**
+`POLICY_READY_SINGLE_PDF_NAMED_FOLDER` 28, `POLICY_READY_MISSING_OCR_HTML` 15,
+`POLICY_READY_LEGACY_KB_PRESERVE` 1 (King&Sons `133_23-ГК-СОТ V1`, kb_linked),
+остальные подгруппы 0. **Все 44 — кандидаты на следующий пилот после
+утверждения политики; 0 manual; 0 в blocked.** Чистые функции — в
+`analyze_need_policy_projects.py`, тесты —
+`tests/test_projects_v2_need_policy_analysis.py`.
+
+> ⚠️ Перед фактической миграцией NEED_POLICY нужен полный `validate PASS`. Если
+> живой backend-аудит дрейфит ALREADY_MIGRATED-документы, baseline временно
+> RED — это не блокирует READ-ONLY анализ, но блокирует саму миграцию (сначала
+> drift scan → refresh refresh_safe → validate PASS).
+
 ### Этап 3 — storage adapter + feature flag (план, НЕ в этом PR)
 
 - Тонкий `StorageAdapter` в backend, отдающий пути `projects_v2` для версии.

@@ -190,8 +190,37 @@ stability-check):
 `_ocr.html` считается **опциональным** входным файлом. Если есть
 `.pdf + _document.md + _result.json`, отсутствие `_ocr.html` не блокирует
 перенос: `02_work/ocr.html` не создаётся, а в `input_manifest.json`
-фиксируется `missing_optional_files: ["ocr_html"]` (детальная политика для
-warning-проектов — на этапе разбора `WARNINGS_NEED_POLICY`).
+фиксируется `missing_optional_files: ["ocr_html"]`.
+
+### Документ всегда контейнер версий
+
+В projects_v2 каждый документ имеет `documents/<code>/versions/vNNN/`, даже если
+в legacy не было `(main)`-контейнера. Папки legacy вида `... V1.pdf/ / V2.pdf/`
+без `(main)`/`version_group.json`: одиночная → один document с `v001` (старое имя
+в metadata); несколько однозначно связанных → объединить в `versions/v001..v00N`;
+неоднозначные → manual review (не объединять автоматически).
+
+### `analysis_status`, `missing_analysis_files`, legacy-generation
+
+`version.json` фиксирует состояние анализа явно (отсутствие/неполнота — НЕ ошибка):
+
+```json
+{
+  "analysis_status": "none | partial | complete | legacy_partial",
+  "missing_analysis_files": ["02_blocks_analysis.json", "norm_checks.json"],
+  "analysis_generation": "legacy",                 // только для legacy-снимков
+  "preserve_reason": "legacy_algorithm_with_kb_findings"
+}
+```
+
+- `none` — анализа нет, перенесён только вход;
+- `partial` — часть analysis-файлов (перечислены отсутствующие в `missing_analysis_files`);
+- `complete` — есть `01+02+03`;
+- `legacy_partial` — проект ранних алгоритмов (напр. King&Sons): полного набора
+  файлов нового pipeline нет, но есть ценные данные (`03_findings.json` и/или
+  старый анализ, связь с `knowledge_base/decisions_log.json`, экспертные
+  решения) — переносится как legacy-снимок, ничего не теряя. Отсутствие новых
+  файлов для таких проектов НЕ повод блокировать миграцию.
 
 ## Сравнение версий (этап 2, зарезервировано)
 
