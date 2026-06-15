@@ -222,12 +222,37 @@ stability-check):
   решения) — переносится как legacy-снимок, ничего не теряя. Отсутствие новых
   файлов для таких проектов НЕ повод блокировать миграцию.
 
+- `source_only` — legacy-снимок, в котором сохранены ТОЛЬКО исходники, без
+  анализа (напр. один PDF). `preserve_reason=king_sons_source_only_legacy_bundle`.
+
 > `analysis_status` и `missing_analysis_files` пишутся `migrate_version` при
 > КАЖДОЙ миграции (вычисляются из перенесённых `01/02/03` в `03_analysis/latest`);
 > `legacy_partial` + `analysis_generation`/`preserve_reason` ставятся, только
 > когда миграция запущена с соответствующей policy (`LEGACY_KB_PRESERVE`).
 > `input_manifest.json.missing_optional_files` тоже пишется всегда (сейчас —
 > `["ocr_html"]`, если OCR-HTML отсутствует).
+
+#### Metadata-only нормализация (`normalize_version_metadata.py`)
+
+`version.json` ранних прогонов миграции мог не содержать `analysis_status`
+(старая схема). Перед read-only storage adapter metadata приводится к единому
+виду инструментом
+[scripts/projects_v2/normalize_version_metadata.py](../scripts/projects_v2/normalize_version_metadata.py):
+
+- проходит ВСЕ `version.json`, классифицирует `analysis_status` строго по
+  фактически существующим файлам в `03_analysis/latest`
+  (`complete/partial/none`; для legacy-снимков `legacy_partial`, если есть
+  analysis-файлы, иначе `source_only`);
+- `--dry-run` (default) ничего не меняет; `--execute` пишет ТОЛЬКО `version.json`
+  (никаких копий/удалений/правок analysis-артефактов; legacy `projects/` не
+  читается);
+- по умолчанию **заполняет только отсутствующий** `analysis_status`
+  (+ `missing_analysis_files`) и не перезаписывает уже выставленный статус —
+  расхождение «existing≠proposed» лишь репортится (напр. документ с findings в
+  KB, но без файлов в `latest`, осознанно остаётся `legacy_partial`).
+  `--correct-existing` (default OFF) форсит перерасчёт существующих;
+- идемпотентно; отчёт —
+  `projects_v2/_system/version_metadata_normalization_report.{json,csv}`.
 
 ### legacy-bundle снимок (King&Sons blocked/manual)
 

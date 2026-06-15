@@ -571,6 +571,30 @@ versions/v001/
 **ALREADY_MIGRATED = 184, MANUAL_REVIEW_REQUIRED = 0**, validate `[PASS]`.
 Тесты — `tests/test_projects_v2_legacy_findings_preserve.py`.
 
+### Этап 2.12 — финальная приёмка + metadata-only нормализация (ВЫПОЛНЕНО)
+
+**Приёмка** (`scripts/projects_v2/generate_final_acceptance_report.py`, read-only):
+184 документа, validate `[PASS]` (842 ok), drift 0, ALREADY_MIGRATED 184,
+MANUAL_REVIEW_REQUIRED 0, WARNINGS_BLOCKED 0, 0 папок `obj_*`. Отчёт —
+`projects_v2/_system/final_migration_acceptance_report.{json,md}`. Проверено
+адверсариально (7/7 claims confirmed). Тесты —
+`tests/test_projects_v2_final_acceptance.py`.
+
+**Остаточный риск приёмки:** 160 `version.json` ранней схемы без `analysis_status`.
+
+**Нормализация** (`scripts/projects_v2/normalize_version_metadata.py`,
+metadata-only): классифицирует `analysis_status` строго по файлам в
+`03_analysis/latest`, в `--execute` пишет ТОЛЬКО `version.json` (copy/delete нет,
+legacy `projects/` не читается). Результат: проверено 218, без `analysis_status`
+было 160, заполнено 160, у 8 добавлено только `missing_analysis_files`, 49
+без изменений, 1 расхождение (`133_23-ГК-СОТ V1`: findings в KB, но без файлов в
+`latest` → осознанно остаётся `legacy_partial`, не перезаписан). Распределение
+после: complete 135, partial 33, none 45, legacy_partial 3, source_only 2 (= 218,
+0 без статуса). validate `[PASS]` (842 ok), legacy `projects/` не изменена
+(12744 файла), идемпотентно. Отчёт —
+`projects_v2/_system/version_metadata_normalization_report.{json,csv}`. Тесты —
+`tests/test_projects_v2_version_metadata_normalization.py`.
+
 ### Этап 3 — storage adapter + feature flag (план, НЕ в этом PR)
 
 - Тонкий `StorageAdapter` в backend, отдающий пути `projects_v2` для версии.
