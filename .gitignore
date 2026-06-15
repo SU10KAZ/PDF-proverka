@@ -131,4 +131,4 @@ comparison_sources/**/*
 experiments/qwen_problem_block_recognition/
 
 # === projects_v2 runtime/generated data (миграция, не для git) ===
-projects_v2/
+/projects_v2/

@@ -27,11 +27,29 @@
 5. Тестовая миграция **одного небольшого проекта**.
 6. Тесты (`tests/test_projects_v2.py`).
 
+### Этап 1.5 — readiness report (выполнено) ✅
+
+`scripts/projects_v2/report_migration_readiness.py` — read-only отчёт готовности
+по всем legacy-проектам (на базе legacy + `migration_inventory.json`). Пишет
+`projects_v2/_system/migration_readiness_report.{json,csv}`. Делит проекты на:
+
+| Группа | Смысл |
+|---|---|
+| `AUTO_SAFE` | полный комплект + `project_info`, plain/валидный контейнер, без конфликтов и `.pdf`-папок — мигрировать автоматически |
+| `CAN_MIGRATE_WITH_WARNINGS` | мигрируется, но есть мелкие warning (`.pdf` в имени папки версии при наличии `version_group`, нет анализа у V2, нет `_ocr.html`, грязные legacy-артефакты, уже мигрирован, объект не в реестре) |
+| `MANUAL_REVIEW_REQUIRED` | блокеры: неполный комплект, несколько PDF/MD/JSON в папке, нет `project_info.json`, конфликт `document_code`, контейнер без `version_group.json` |
+| `SKIP_EMPTY_OR_INVALID` | пусто/мусор/не проект |
+
+Чистая логика классификации — в `scripts/projects_v2/readiness.py`
+(`classify_readiness`), покрыта `tests/test_projects_v2_readiness.py`.
+
 ### Этап 2 — пакетная миграция (план)
 
-- По `migration_inventory.json` мигрировать проекты батчами (по объекту/дисциплине).
-- Приоритет — проекты без warnings; проблемные (`.pdf` в имени, отсутствующий
-  `version_group`, missing quad) — отдельным разбором.
+- По `migration_readiness_report.json` мигрировать сначала `AUTO_SAFE`, затем
+  `CAN_MIGRATE_WITH_WARNINGS`; `MANUAL_REVIEW_REQUIRED` — отдельным разбором;
+  `SKIP_EMPTY_OR_INVALID` — пропуск.
+- Проблемные (`.pdf` в имени, отсутствующий `version_group`, missing quad,
+  несколько PDF/MD/JSON) — ручной разбор.
 - После каждого батча — `validate_migration.py`.
 - Связать сравнения: заполнить `comparisons/<vA>_vs_<vB>/comparison_link.json`
   ссылками на `comparison/sessions/...` (без копирования сессий).
@@ -82,6 +100,9 @@
 # Инвентарь (read-only):
 python scripts/projects_v2/inventory_legacy_projects.py
 
+# Readiness report (read-only, после inventory):
+python scripts/projects_v2/report_migration_readiness.py
+
 # Миграция одного проекта или (main)-контейнера:
 python scripts/projects_v2/migrate_one_project_to_v2.py "projects/<obj>/<disc>/<project>"
 
@@ -89,5 +110,5 @@ python scripts/projects_v2/migrate_one_project_to_v2.py "projects/<obj>/<disc>/<
 python scripts/projects_v2/validate_migration.py [--document <document_code>]
 
 # Тесты:
-python -m pytest tests/test_projects_v2.py -q
+python -m pytest tests/test_projects_v2.py tests/test_projects_v2_readiness.py -q
 ```
