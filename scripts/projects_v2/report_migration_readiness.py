@@ -81,7 +81,13 @@ def main(argv=None) -> int:
     plain = sum(1 for r in rows if r["kind"] == "plain")
     containers = sum(1 for r in rows if r["kind"] == "container")
     versions_total = sum(r["version_count"] for r in rows)
-    migrated = sum(1 for r in rows if r["v2_already_migrated"])
+
+    already_migrated_count = group_counts.get(readiness.ALREADY_MIGRATED, 0)
+    remaining_candidates = group_counts.get(readiness.AUTO_SAFE, 0)
+    not_migrated_warning_count = group_counts.get(readiness.CAN_MIGRATE_WITH_WARNINGS, 0)
+    # v2-папки без записи в old_to_new_map (несогласованность)
+    v2_present_not_in_map = sum(
+        1 for r in rows if r["v2_already_migrated"] and not r.get("recorded_in_map"))
 
     warn_counter = Counter()
     for r in rows:
@@ -109,8 +115,11 @@ def main(argv=None) -> int:
         "plain_projects": plain,
         "containers_main": containers,
         "versions_total": versions_total,
-        "already_migrated_in_v2": migrated,
         "group_counts": {g: group_counts.get(g, 0) for g in readiness.READINESS_GROUPS},
+        "remaining_candidates": remaining_candidates,
+        "already_migrated_count": already_migrated_count,
+        "not_migrated_warning_count": not_migrated_warning_count,
+        "v2_present_not_in_map": v2_present_not_in_map,
         "top_warnings": top_warnings,
         "document_code_conflicts": conflict_list,
         "pdf_named_version_folders": pdf_named,
@@ -140,16 +149,80 @@ def main(argv=None) -> int:
         for r in rows:
             writer.writerow(_row_for_csv(r))
 
+    # --- warning-policy report (только НЕ-мигрированные, НЕ-AUTO_SAFE, НЕ-пустые) ---
+    policy_scope = [
+        r for r in rows
+        if r["group"] in (readiness.CAN_MIGRATE_WITH_WARNINGS,
+                          readiness.MANUAL_REVIEW_REQUIRED)
+    ]
+    policy_rows = []
+    for r in policy_scope:
+        verdict = readiness.classify_warning_policy(r)
+        policy_rows.append({
+            "policy_group": verdict["policy_group"],
+            "recommendation": verdict["recommendation"],
+            "object": r["object"],
+            "object_id": r["object_id"],
+            "discipline": r["discipline"],
+            "document_code": r["document_code"],
+            "kind": r["kind"],
+            "readiness_group": r["group"],
+            "warning_tags": verdict["warning_tags"],
+            "blockers": verdict["blockers"],
+            "reason": verdict["reason"],
+            "legacy_path": r["legacy_path"],
+        })
+    policy_counts = Counter(p["policy_group"] for p in policy_rows)
+    policy_summary = {
+        "total_legacy_projects": len(rows),
+        "already_migrated_count": already_migrated_count,
+        "not_migrated_warning_count": not_migrated_warning_count,
+        "policy_scope_count": len(policy_rows),
+        "policy_counts": {g: policy_counts.get(g, 0) for g in readiness.WARNING_POLICY_GROUPS},
+    }
+    policy_json = out_dir / "migration_warning_policy_report.json"
+    policy_csv = out_dir / "migration_warning_policy_report.csv"
+    policy_json.write_text(json.dumps({
+        "schema_version": 1,
+        "generated_at": v2lib.utc_now_iso(),
+        "summary": policy_summary,
+        "projects": policy_rows,
+    }, ensure_ascii=False, indent=2), encoding="utf-8")
+    _POLICY_CSV_FIELDS = [
+        "policy_group", "recommendation", "readiness_group", "object", "object_id",
+        "discipline", "document_code", "kind", "warning_tags", "blockers", "reason",
+        "legacy_path",
+    ]
+    with open(policy_csv, "w", newline="", encoding="utf-8") as fh:
+        writer = csv.DictWriter(fh, fieldnames=_POLICY_CSV_FIELDS)
+        writer.writeheader()
+        for p in policy_rows:
+            row = dict(p)
+            row["warning_tags"] = ";".join(p["warning_tags"])
+            row["blockers"] = ";".join(p["blockers"])
+            writer.writerow(row)
+
     # --- печать (step 5) ---
     print("=== projects_v2 migration readiness ===")
     print(f"total legacy projects:        {summary['total_projects']}")
     print(f"  plain projects:             {plain}")
     print(f"  (main) containers:          {containers}")
     print(f"  versions total:             {versions_total}")
-    print(f"  already migrated in v2:     {migrated}")
     print()
     for g in readiness.READINESS_GROUPS:
         print(f"  {g:<28} {group_counts.get(g, 0)}")
+    print()
+    print(f"remaining_candidates (AUTO_SAFE):   {remaining_candidates}")
+    print(f"already_migrated_count:             {already_migrated_count}")
+    print(f"not_migrated_warning_count:         {not_migrated_warning_count}")
+    if v2_present_not_in_map:
+        print(f"[WARN] v2 present but not in map:    {v2_present_not_in_map}")
+    print()
+    print("warning-policy split (not-migrated, not AUTO_SAFE):")
+    for g in readiness.WARNING_POLICY_GROUPS:
+        print(f"  {g:<28} {policy_counts.get(g, 0)}")
+    print(f"  -> {policy_json}")
+    print(f"  -> {policy_csv}")
     print()
     print("top warnings/blockers (freq):")
     for tag, cnt in top_warnings:

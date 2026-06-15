@@ -115,6 +115,51 @@ python scripts/projects_v2/validate_migration.py --v2-root .../projects_v2
 После пилота: `validate_migration.py` должен дать PASS по всем новым документам;
 повторный `--execute --skip-already-migrated` обязан давать `selected=0`.
 
+### Этап 2.2 — разбор CAN_MIGRATE_WITH_WARNINGS + ALREADY_MIGRATED (выполнено) ✅
+
+После миграции всех `AUTO_SAFE` **нельзя сразу гнать все warnings одной партией**:
+группа `CAN_MIGRATE_WITH_WARNINGS` неоднородна — часть проектов безопасна для
+батча, часть требует решения, часть фактически заблокирована. Поэтому warnings
+разбираются по типам предупреждений отдельной политикой.
+
+**Новая группа `ALREADY_MIGRATED`.** Проект считается мигрированным, только если
+выполнены ОБА условия: есть `document.json` в `projects_v2` И запись в
+`old_to_new_map.json` (`is_already_migrated`). Такие проекты выводятся в
+отдельную группу и больше **не загрязняют** статистику `CAN_MIGRATE_WITH_WARNINGS`
+и не считаются кандидатами на повторную миграцию. Если v2-папка есть, а записи в
+карте нет — это несогласованность (`v2_present_not_in_map`, warning), проект
+остаётся в warnings для разбора, не в `ALREADY_MIGRATED`.
+
+Свежая сводка readiness теперь печатает 5 групп + три явных числа:
+`remaining_candidates` (AUTO_SAFE), `already_migrated_count`,
+`not_migrated_warning_count`.
+
+**Warning-policy report** (`migration_warning_policy_report.{json,csv}`) делит
+НЕ-мигрированные, НЕ-AUTO_SAFE проекты на три подгруппы
+(`classify_warning_policy`, приоритет blocker > need_policy > auto_candidate):
+
+| Подгруппа | recommendation | Критерии |
+|---|---|---|
+| `WARNINGS_AUTO_CANDIDATE` | `can_batch_migrate` | только безопасные warnings: `messy_legacy_artifacts`, `no_analysis` (полный комплект → пустой `03_analysis`), `pdf_in_version_folder_name` **при наличии `version_group.json`**; их сочетания без blocker |
+| `WARNINGS_NEED_POLICY` | `needs_policy` | `missing_ocr_html` (есть PDF+MD+result, нет `_ocr.html`); `.pdf` в имени папки версии **без** `version_group`; объект не в реестре; `v2_present_not_in_map`; любой неизвестный warning |
+| `WARNINGS_BLOCKED` | `manual_only` | blocker-сигналы: `multiple_pdf/md/result`, `incomplete_input_quad`, нет `project_info.json`, конфликт `document_code`, контейнер без `version_group.json` — backend fallback может выбрать не тот файл |
+
+**Как принимать решение по следующему пилоту warning-проектов:**
+
+1. Брать только `WARNINGS_AUTO_CANDIDATE` (`recommendation=can_batch_migrate`) —
+   эти warnings не меняют детерминизма миграции (полный комплект, корректный
+   `version_group`, отсутствие анализа переносится честно пустым `03_analysis`).
+2. Запускать батчами по 10 с `--allow-warnings`, как и `AUTO_SAFE`, с validate
+   после каждой партии.
+3. `WARNINGS_NEED_POLICY` — не трогать до отдельного решения по каждому типу
+   (например: достраивать ли `_ocr.html`; как трактовать plain-папку с `.pdf` в
+   имени без `version_group`).
+4. `WARNINGS_BLOCKED` / `MANUAL_REVIEW_REQUIRED` — только ручной разбор.
+
+Чистая логика — `scripts/projects_v2/readiness.py`
+(`classify_readiness`, `classify_warning_policy`, `is_already_migrated`),
+покрыта `tests/test_projects_v2_warning_policy.py`.
+
 ### Этап 3 — storage adapter + feature flag (план, НЕ в этом PR)
 
 - Тонкий `StorageAdapter` в backend, отдающий пути `projects_v2` для версии.

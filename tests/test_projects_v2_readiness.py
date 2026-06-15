@@ -228,8 +228,21 @@ def test_v2_already_migrated_flag(tmp_path):
     # до миграции — не migrated
     s0 = readiness.build_signal(disc.parent, "EOM", proj, objects_map, v2_root=v2_root)
     assert s0["v2_already_migrated"] is False
-    # мигрируем и пересчитываем
+    assert s0["recorded_in_map"] is False
+    # мигрируем
     v2lib.migrate_project(proj, v2_root, objects_map=objects_map, run_id="run_test")
+
+    # v2 есть, но карты (old_to_new_map) ещё нет -> несогласованность, НЕ ALREADY_MIGRATED
     s1 = readiness.build_signal(disc.parent, "EOM", proj, objects_map, v2_root=v2_root)
     assert s1["v2_already_migrated"] is True
-    assert "already_migrated" in readiness.classify_readiness(s1)["warnings"]
+    assert s1["recorded_in_map"] is False
+    v1 = readiness.classify_readiness(s1)
+    assert v1["group"] == readiness.CAN_MIGRATE_WITH_WARNINGS
+    assert "v2_present_not_in_map" in v1["warnings"]
+
+    # запись в карте присутствует -> ALREADY_MIGRATED
+    keys = {(s1["object_id"], s1["document_code"])}
+    s2 = readiness.build_signal(disc.parent, "EOM", proj, objects_map,
+                                v2_root=v2_root, migrated_keys=keys)
+    assert s2["recorded_in_map"] is True
+    assert readiness.classify_readiness(s2)["group"] == readiness.ALREADY_MIGRATED
