@@ -537,6 +537,40 @@ versions/v001/
 `analyze_blocked_manual_projects.py`, тесты —
 `tests/test_projects_v2_blocked_manual_analysis.py`.
 
+### Этап 2.11 — migrate King&Sons legacy snapshot (ВЫПОЛНЕНО, по подтверждению)
+
+После отдельного подтверждения 4 проекта мигрированы как legacy snapshot
+инструментом `scripts/projects_v2/migrate_legacy_findings_preserve.py`
+(обязательный флаг `--legacy-findings-preserve`, без `--execute` — dry-run;
+отказывается мигрировать не-King&Sons). Раскладка `v001`:
+
+```text
+versions/v001/
+  01_input/legacy_bundle/<rel>            # все исходники как есть (структура версий сохранена)
+  03_analysis/latest/<name>               # 03_findings/01/02/pipeline_log/norm_checks/optimization — если есть
+  03_analysis/runs/run_legacy_preserve_<ts>/<rel>  # значимые .json/.jsonl из каждого _output
+  04_review/kb_decisions_link.json        # только если есть связь с KB (база НЕ меняется)
+  99_service/legacy_output/<rel>          # ПОЛНАЯ копия каждого legacy _output/ (вкл. бэкапы/png)
+```
+
+`version.json`: `legacy_partial` (ЭМ2, АК — есть findings) или `source_only`
+(Фасадное, ИТП.ТМ — только исходники, без fake-файлов:
+`preserve_reason=king_sons_source_only_legacy_bundle`).
+
+| Документ | analysis_status | files | checksum | KB-link |
+|---|---|---|---|---|
+| EOM/133_23-ГК-ЭМ2 | legacy_partial | 156 | 93 | — |
+| EOM/Фасадное освещение | source_only | 9 | 7 | — |
+| ITP/133_23-ГК-ИТП.ТМ | source_only | 3 | 2 | — |
+| SS/133_23-ГК-АК | legacy_partial | 389 | 142 | `04_review/kb_decisions_link.json` (4 записи) |
+
+Итог: **557 файлов, 244 checksum-сверки, 0 ошибок**; `old_to_new_map.json` +
+4 записи (`migration_kind=legacy_findings_preserve`, `v001`). `validate_migration.py`
+для таких записей пропускает строгий quad (source-only допустим), checksum и
+критичные артефакты проверяются как обычно. После миграции:
+**ALREADY_MIGRATED = 184, MANUAL_REVIEW_REQUIRED = 0**, validate `[PASS]`.
+Тесты — `tests/test_projects_v2_legacy_findings_preserve.py`.
+
 ### Этап 3 — storage adapter + feature flag (план, НЕ в этом PR)
 
 - Тонкий `StorageAdapter` в backend, отдающий пути `projects_v2` для версии.

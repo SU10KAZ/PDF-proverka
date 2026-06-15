@@ -66,15 +66,25 @@ def validate_map(map_obj: dict, document_filter: str | None = None) -> tuple[lis
         for m in versions:
             vtag = f"{tag} {m['version_id']}"
             files = m.get("files", [])
+            legacy_preserve = m.get("migration_kind") == "legacy_findings_preserve"
 
             # (1)+(2) входной комплект + checksum
-            input_files = [f for f in files if str(f.get("role", "")).startswith("input:")]
-            roles_present = {f["role"].split(":", 1)[1] for f in input_files}
-            for req in ("document_md", "result_json"):
-                if req not in roles_present:
-                    errors.append(f"{vtag} missing required input in map: {req}")
-            if "pdf" not in roles_present:
-                notes.append(f"{vtag} note: no .pdf in input (check source)")
+            if legacy_preserve:
+                # legacy snapshot (King&Sons): источники сохранены как legacy_bundle,
+                # строгий quad не гарантируется (допустим source-only). Проверяем
+                # лишь, что bundle непустой; checksum/критичные артефакты — как обычно.
+                if not files:
+                    errors.append(f"{vtag} legacy_findings_preserve: empty file set in map")
+                else:
+                    notes.append(f"{vtag} legacy_findings_preserve bundle: {len(files)} files")
+            else:
+                input_files = [f for f in files if str(f.get("role", "")).startswith("input:")]
+                roles_present = {f["role"].split(":", 1)[1] for f in input_files}
+                for req in ("document_md", "result_json"):
+                    if req not in roles_present:
+                        errors.append(f"{vtag} missing required input in map: {req}")
+                if "pdf" not in roles_present:
+                    notes.append(f"{vtag} note: no .pdf in input (check source)")
 
             for f in files:
                 new_path = Path(f["new_path"])

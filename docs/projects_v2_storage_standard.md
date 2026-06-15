@@ -238,19 +238,36 @@ stability-check):
 
 ```text
 versions/v001/
-  01_input/legacy_bundle/     # ВСЕ pdf/md/ocr/result/прочее как есть
-  03_analysis/latest/         # 03_findings.json / 01 / 02 / pipeline_log если есть
-  99_service/legacy_output/   # полная копия legacy _output/
+  01_input/legacy_bundle/<rel>            # ВСЕ pdf/md/ocr/result/прочее как есть (структура версий сохранена)
+  03_analysis/latest/<name>               # 03_findings.json / 01 / 02 / pipeline_log / norm_checks / optimization если есть
+  03_analysis/runs/run_legacy_preserve_<ts>/<rel>   # значимые .json/.jsonl из каждого _output
+  04_review/kb_decisions_link.json        # только если есть связь с KB (база НЕ меняется)
+  99_service/legacy_output/<rel>          # полная копия КАЖДОГО legacy _output/ (вкл. бэкапы/png)
 ```
 
-`version.json`: `analysis_status=legacy_partial`, `analysis_generation=legacy`,
-`preserve_reason=king_sons_legacy_findings_preserve`,
-`source_files_strategy=legacy_bundle`,
-`primary_goal=preserve_findings_and_kb_links`.
+`version.json` — два варианта:
+
+- есть findings/анализ → `analysis_status=legacy_partial`,
+  `preserve_reason=king_sons_legacy_findings_preserve`,
+  `primary_goal=preserve_findings_and_kb_links`;
+- только исходники (напр. один PDF, без анализа) → `analysis_status=source_only`,
+  `preserve_reason=king_sons_source_only_legacy_bundle` (БЕЗ fake-файлов).
+
+Общее: `analysis_generation=legacy`, `source_files_strategy=legacy_bundle`,
+`migration_kind=legacy_findings_preserve`.
 
 Главный приоритет — сохранить найденные замечания (`03_findings.json` и др.) и
 связь с `knowledge_base/decisions_log.json`. Неоднозначные/непонятные файлы тоже
-кладутся в `legacy_bundle` (zero data loss).
+кладутся в `legacy_bundle` (zero data loss). KB-связь — это отдельный
+metadata-файл `04_review/kb_decisions_link.json` (`source_project` + список
+записей); сама база знаний не изменяется.
+
+Инструмент — `scripts/projects_v2/migrate_legacy_findings_preserve.py`
+(обязательный флаг `--legacy-findings-preserve`, dry-run без `--execute`,
+отказывается мигрировать не-King&Sons; checksum по каждой копии). `validate_migration.py`
+для записей `migration_kind=legacy_findings_preserve` пропускает строгий
+input-quad (source-only допустим), но checksum/legacy-неизменность/критичные
+артефакты проверяет как обычно.
 
 ## Сравнение версий (этап 2, зарезервировано)
 
