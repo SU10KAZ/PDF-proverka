@@ -3,7 +3,7 @@ REST API для проектов.
 """
 from pathlib import Path
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
 from pydantic import BaseModel
 from typing import Optional
 import backend.app.services.common.project_service as project_service
@@ -131,8 +131,16 @@ async def delete_group(section: str, group_id: str, object_id: Optional[str] = N
 # ─── Статичные роуты (ПЕРЕД динамическими /{project_id}/...) ───
 
 @router.get("")
-async def list_projects():
-    """Список всех проектов с их статусом."""
+async def list_projects(request: Request):
+    """Список всех проектов с их статусом.
+
+    opt-in read canary: при `?storage=projects_v2` (или header
+    `X-Audit-Storage: projects_v2`) И включённом `AUDIT_PROJECTS_V2_READ_CANARY_ENABLED`
+    список отдаётся из projects_v2 (read-only). Без opt-in — legacy как прежде.
+    """
+    from backend.app.services.storage import read_canary
+    if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
+        return read_canary.v2_projects_list()
     from backend.app.services.common.object_service import get_current_object
     current_obj = get_current_object()
     object_name = current_obj["name"] if current_obj else "Объект"
