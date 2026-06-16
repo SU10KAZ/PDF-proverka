@@ -436,6 +436,27 @@ versioned/King&Sons), сверяет с parity и пишет
 `projects_v2/_system/shadow_api_check_report.{json,md}`. Режим по умолчанию —
 HTTP против `--base-url` (для локального backend с включённым флагом).
 
+### Controlled HTTP smoke (реальный сокет, без рестарта prod)
+
+[scripts/projects_v2/http_smoke_shadow_api.py](../scripts/projects_v2/http_smoke_shadow_api.py)
+— поднимает **минимальный** app (только shadow-router + один read-only legacy
+router) на ЭФЕМЕРНОМ порту через uvicorn и бьёт по реальному HTTP-сокету. Важно:
+он НЕ импортирует `backend.app.main` и НЕ запускает его `lifespan`
+(`cleanup_zombies` / `load_persisted_queue` / recover-stale) — поэтому никаких
+побочных эффектов на общий state и на production backend (тот живёт отдельно на
+:8081 и не трогается). Флаг читается на запрос → один сервер, тумблер env между
+фазами.
+
+```bash
+python scripts/projects_v2/http_smoke_shadow_api.py   # порт 0 (эфемерный), НЕ 8081
+```
+
+Проверяет за один прогон: (1) без флага `/health`→404; (2) с флагом
+health/objects/documents/snapshot/parity→200; (3) legacy `/api/objects`→200 и без
+флага, и с флагом; (4) `storage_backend_default=legacy`; (5) read-only
+(snapshot `objects/` до/после идентичен); (6) тумблер обратно→404. Отчёт —
+`projects_v2/_system/shadow_api_http_smoke_report.{json,md}`.
+
 ### Почему это не cutover / условия следующего этапа
 
 Shadow API только ЧИТАЕТ v2 в изолированном namespace — основной backend его не

@@ -652,6 +652,17 @@ source_only/legacy_partial/versioned/King&Sons preserve). Тесты —
 Доп. изменён `backend/app/main.py` (регистрация роутера, gated) и `.gitignore`
 (исключение для `check_shadow_api.py` — правило `check_*.py` ловит scratch).
 
+**Controlled HTTP smoke (реальный сокет).**
+[scripts/projects_v2/http_smoke_shadow_api.py](../scripts/projects_v2/http_smoke_shadow_api.py)
+поднимает минимальный app (shadow + один legacy router) на эфемерном порту через
+uvicorn — БЕЗ `backend.app.main` и без lifespan, поэтому не трогает общий state и
+production (:8081). Прогон: **15/15 checks, 8/8 документов, ok=true** —
+404 без флага, все shadow endpoints 200 с флагом, legacy `/api/objects` 200,
+backend default legacy, read-only (54503 файла `objects/` без изменений), 404
+после выключения. Production не перезапускался (тот же PID, `/api/info`→200).
+Отчёт `projects_v2/_system/shadow_api_http_smoke_report.{json,md}`. Тесты —
+`tests/test_projects_v2_shadow_http_smoke.py` (вкл. реальный uvicorn-сокет).
+
 ### Этап 4 — подключение adapter за флагом к основным read-path (план, НЕ в этом PR)
 
 - Подключить adapter к реальным read-path (project list / findings / pipeline
