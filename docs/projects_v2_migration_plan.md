@@ -780,6 +780,68 @@ base smoke 15/15, cutover/dual-read smoke 13/13, default→404, backend default 
 `production_shadow_rollout_report.{json,md}`, `full_corpus_parity_report.{json,md,csv}`,
 `cutover_readiness_report.{json,md}`.
 
+### Этап 3.9 — robust legacy matcher в parity (tooling-fix, 2026-06-16) ✅
+
+`check_ui_contract_parity.py` давал **ложные** `MISSING_IN_LEGACY` (а на
+versioned-доках — `MISMATCH`) из-за хрупкого сопоставления legacy↔v2:
+
+- `projects_root` брался из `v2lib.legacy_projects_root()` = `repo_root()/projects`
+  (code-relative). В worktree-деплое это НЕ совпадает с реальными данными
+  (`AUDIT_DATA_DIR/projects`), поэтому `Path(legacy_project_path).relative_to(projects_root)`
+  падал → `legacy_object/discipline` = null → весь корпус как `MISSING_IN_LEGACY`;
+- `document_code` сравнивался с именем legacy-папки as-is: `13АВ-РД-ВК1-К2.pdf`
+  (хвостовой `.pdf`) и `133_23-ГК-АР2 V2` (версионный суффикс) не нормализовались
+  → `MISMATCH`, хотя `old_to_new_map` авторитетно связывает их по `document_code`.
+
+**Исправлено:**
+
+1. `projects_root` по умолчанию = **sibling** `--v2-root/../projects`; добавлен
+   флаг `--legacy-root` (override). Больше не зависит от code-relative пути.
+2. Robust-резолвер `_resolve_legacy` — приоритет источников:
+   `old_to_new_map` (object_name/discipline/legacy_folder_name/legacy_folder_path,
+   document_code — авторитетная связь) → `document.json.legacy_project_path` →
+   вывод object/discipline из пути → скан `projects_root/<obj>/<disc>` по
+   нормализованному имени. Существование папки проверяется на диске.
+3. Новая категория **`EXPECTED_NAMING_DIFFERENCE`** (не блокирует cutover, как
+   `EXPECTED_DIFFERENCE`): legacy-папка существует и связана с v2, но её имя
+   отличается от чистого `document_code` лишь `.pdf` / `(main)` / ` V{N}`.
+
+**Результат full-corpus (184 дока):** `MATCH 117 / EXPECTED_DIFFERENCE 2 /
+EXPECTED_NAMING_DIFFERENCE 65 / MISSING_IN_LEGACY 0 / MISSING_IN_V2 0 / MISMATCH 0`;
+`findings_loss 0`, `version_loss 0`, `missing_in_legacy_real []`, `contract_ok=True`
+(184 ложных доко-флага устранены). Реальные потери ловятся по-прежнему:
+`findings_loss` (v2 < legacy), `version_loss` (version_count MISMATCH вне King&Sons),
+genuinely missing legacy → `MISSING_IN_LEGACY` + `missing_in_legacy_real`.
+
+#### Known naming artifacts (почему `.pdf` в legacy project_id — НЕ потеря данных)
+
+Часть legacy-папок исторически названа с артефактами, которых нет в чистом v2
+`document_code`:
+
+| Артефакт | Пример legacy-папки | v2 document_code | Почему норма |
+|---|---|---|---|
+| хвостовой `.pdf` | `13АВ-РД-ВК1-К2.pdf` | `13АВ-РД-ВК1-К2` | имя папки оканчивается на `.pdf` (legacy-конвенция); содержимое то же |
+| контейнер `(main)` | `133_23-ГК-ЭМ1(main)` | `133_23-ГК-ЭМ1` | версионный контейнер; `document_code_for` берёт `logical_project_id` |
+| версионный суффикс | `133_23-ГК-АР2 V2` | `133_23-ГК-АР2` | legacy хранит версии sibling-папками `<base> V{N}`; v2 — под `versions/` |
+
+Это артефакты ИМЕНОВАНИЯ, а не данных: `old_to_new_map` связывает каждую такую
+папку с её v2 `document_code`, findings/versions сохранены (0 loss), а UI/adapter
+резолвят документ по basename. Parity помечает их `EXPECTED_NAMING_DIFFERENCE` и
+НЕ блокирует cutover. Полное устранение рассинхрона имён — отдельная необязательная
+нормализация (не потеря).
+
+**Как parity matcher должен сопоставлять legacy ↔ v2 (контракт):**
+по `old_to_new_map` (приоритет, авторитетная связь по `document_code`), затем по
+`legacy_project_path`/`legacy_folder_name`, затем по нормализованному basename
+(`document_code_for` снимает `.pdf`/`(main)`; ` V{N}` снимается дополнительно), с
+проверкой существования папки. MATCH/EXPECTED при совпадении кода и сохранности
+findings/versions; `EXPECTED_NAMING_DIFFERENCE` для имени-артефакта; `MISMATCH`/
+`MISSING_IN_LEGACY` — только при реальной потере или отсутствии.
+
+Тесты: `tests/test_projects_v2_ui_contract_parity.py` (+8 кейсов: `.pdf`/`(main)`/
+` V{N}` → не false-positive; `old_to_new_map` priority; legacy_folder_name matching;
+реальные missing/findings_loss/version_loss всё ещё ловятся).
+
 ### Этап 4 — подключение adapter за флагом к основным read-path (план, НЕ в этом PR)
 
 - Подключить adapter к реальным read-path (project list / findings / pipeline

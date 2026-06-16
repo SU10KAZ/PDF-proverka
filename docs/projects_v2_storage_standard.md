@@ -499,9 +499,22 @@ loss 0.
 
 ### Классификация (на поле и на документ)
 
-`MATCH` | `EXPECTED_DIFFERENCE` | `MISMATCH` | `MISSING_IN_V2` | `MISSING_IN_LEGACY`.
-Подсчёт findings — **симметричный** (один приоритет файла
-`03a_norms_verified > 03_findings` и в legacy `_output`, и в v2 `latest`).
+`MATCH` | `EXPECTED_DIFFERENCE` | `EXPECTED_NAMING_DIFFERENCE` | `MISMATCH` |
+`MISSING_IN_V2` | `MISSING_IN_LEGACY`. Подсчёт findings — **симметричный** (один
+приоритет файла `03a_norms_verified > 03_findings` и в legacy `_output`, и в v2
+`latest`). `EXPECTED_NAMING_DIFFERENCE` не блокирует cutover (как `EXPECTED_DIFFERENCE`).
+
+### Как сопоставляется legacy ↔ v2 (robust matcher, 2026-06-16)
+
+Legacy-папка резолвится по приоритету: **`old_to_new_map`** (авторитетная связь по
+`document_code` + `object_name`/`discipline`/`legacy_folder_name`/`legacy_folder_path`)
+→ `document.json.legacy_project_path` → вывод object/discipline из пути относительно
+`projects_root` → скан `projects_root/<obj>/<disc>` по нормализованному имени
+(`document_code_for` снимает `.pdf`/`(main)`, дополнительно снимается ` V{N}`).
+`projects_root` по умолчанию = sibling `<v2-root>/../projects` (НЕ code-relative),
+переопределяется `--legacy-root`. Существование папки проверяется на диске; битый
+`legacy_project_path` без записи в map и без папки → честный `MISSING_IN_LEGACY`
+(не фабрикуется ложный `MISMATCH`).
 
 ### Какие расхождения считаются EXPECTED
 
@@ -514,7 +527,14 @@ loss 0.
   документов, чьи findings лежат в KB, а не файлами) → `EXPECTED_DIFFERENCE`;
 - **иной формат legacy version container** при равном нормализованном
   `version_count` → `MATCH`; расхождение числа версий допускается только для
-  King&Sons.
+  King&Sons;
+- **naming artifacts** (`EXPECTED_NAMING_DIFFERENCE`) — legacy-папка существует и
+  связана с v2, но её имя отличается от чистого `document_code` лишь:
+  хвостовым `.pdf` (`13АВ-РД-ВК1-К2.pdf`), контейнером `(main)`
+  (`133_23-ГК-ЭМ1(main)`) или версионным суффиксом (`133_23-ГК-АР2 V2`). Это
+  артефакт ИМЕНОВАНИЯ, НЕ потеря данных: `old_to_new_map` связывает папку с v2
+  `document_code`, findings/versions сохранены, UI/adapter резолвят по basename.
+  Полная нормализация имён — отдельный необязательный этап.
 
 ### Что блокирует будущий cutover
 
