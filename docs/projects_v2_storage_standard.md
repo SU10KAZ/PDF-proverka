@@ -631,12 +631,50 @@ backend parity, UI contract parity, live dual-read sample → рекоменда
 6. **full cutover** — после стабильной канарейки переключить чтение на
    `projects_v2`, legacy оставить архивом.
 
+## Контракт записи (write facade, Step 8/10 — подготовка)
+
+Модуль [backend/app/services/storage/storage_write_facade.py](../backend/app/services/storage/storage_write_facade.py)
+— подготовительный фасад записи данных проекта в `projects_v2`. **По умолчанию
+ничего не пишет в v2** и **не подключён** к production-endpoint'ам.
+
+**Режим записи — env `AUDIT_PROJECTS_V2_WRITE_MODE` (default `legacy`):**
+
+| Режим | Поведение |
+|---|---|
+| `legacy` (default, prod) | фасад — no-op для v2; авторитетна только legacy-запись |
+| `dual_write_shadow` | legacy ПЕРВОЙ (авторитетна) → затем v2-тень; сбой v2 fail-soft, не ломает legacy |
+| `projects_v2_primary` | v2 primary → затем legacy как архив (будущее) |
+
+Значение читается из env на КАЖДЫЙ вызов; неизвестное/пустое → `legacy`
+(fail-safe: непонятный конфиг никогда не включает запись в v2).
+
+**Инварианты записи:**
+1. production default = `legacy`;
+2. в `dual_write_shadow` v2-запись происходит ТОЛЬКО после успешной legacy;
+3. сбой v2-записи в shadow логируется и НЕ ломает legacy (никакой silent loss);
+4. деструктивные операции в v2 (`clean_project_data`, `delete_pair(hard)`, rmtree
+   версии) **заблокированы** (`DestructiveWriteBlocked`) до появления контракта
+   backup + явного подтверждения (Step 9/10);
+5. имена входных файлов/артефактов санируются до basename (нет выхода за пределы
+   `01_input` / `03_analysis`).
+
+**Безопасные методы (реализованы):** `save_version_metadata` (`version.json` +
+каркас документа), `save_input_bundle` (`01_input/`), `save_analysis_artifact`
+(`03_analysis/latest/` + опц. `runs/<run>/`). Dry-run симулятор:
+[scripts/projects_v2/simulate_write_cutover.py](../scripts/projects_v2/simulate_write_cutover.py).
+
+Карта всех путей записи backend (где что пишется, какие chokepoint'ы заводить
+через фасад) — runtime-отчёт `projects_v2/_system/write_path_audit_report.{json,md}`
++ Этап 6 в [projects_v2_migration_plan.md](projects_v2_migration_plan.md).
+
 ## Инварианты безопасности
 
 1. legacy `projects/` и `comparison/` — **только чтение**, никогда не изменяются.
 2. Все записи только в `projects_v2/`.
 3. Миграция идемпотентна; verbatim run-копия гарантирует отсутствие потерь.
 4. backend/UI к `projects_v2` на этапе 1 **не подключены**.
+5. Запись в `projects_v2` управляется `AUDIT_PROJECTS_V2_WRITE_MODE` (default
+   `legacy` → запись выключена); см. «Контракт записи» выше.
 
 ## Связанные файлы
 

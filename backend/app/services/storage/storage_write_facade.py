@@ -1,0 +1,446 @@
+"""
+storage_write_facade.py — подготовительный фасад ЗАПИСИ данных проекта в
+`projects_v2` (Step 8/10 «prepare write/upload cutover»).
+
+⚠️ ВАЖНО: на этом этапе фасад **НЕ подключён** ни к одному production-endpoint'у
+и по умолчанию **ничего не пишет в projects_v2**. Это скелет + 1-2 безопасных
+метода записи, чтобы подготовить (но не включить) write-cutover. Production-режим
+по умолчанию `legacy` — legacy `projects/` остаётся единственным авторитетным
+хранилищем записи.
+
+------------------------------------------------------------------------------
+РЕЖИМЫ ЗАПИСИ (env `AUDIT_PROJECTS_V2_WRITE_MODE`, default `legacy`)
+------------------------------------------------------------------------------
+
+* `legacy` (default, production):
+    фасад — прозрачный no-op для v2. Авторитетна ТОЛЬКО legacy-запись (callable
+    от вызывающего кода). В projects_v2 ничего не пишется. Поведение системы
+    идентично сборке без фасада.
+
+* `dual_write_shadow` (контролируемый rollout, НЕ на проде):
+    1) сначала выполняется legacy-запись (АВТОРИТЕТНА, исключение пробрасывается);
+    2) ТОЛЬКО ПОСЛЕ успешной legacy-записи фасад зеркалит данные в projects_v2;
+    3) ошибка v2-записи логируется и НЕ ломает legacy (fail-soft). Никакой
+       «тихой» потери данных: legacy всегда записан, v2 — best-effort тень.
+
+* `projects_v2_primary` (будущее, НЕ на проде):
+    1) сначала v2-запись (primary, исключение пробрасывается);
+    2) затем legacy как архив (fail-soft, ошибка логируется).
+    Симметрично shadow, меняется только порядок и какая сторона авторитетна.
+
+ИНВАРИАНТЫ:
+  * production default = `legacy`;
+  * в `dual_write_shadow` v2-запись происходит ТОЛЬКО после успешной legacy;
+  * сбой v2-записи в shadow НЕ ломает legacy (логируется);
+  * деструктивные операции в projects_v2 ЗАПРЕЩЕНЫ на этом этапе
+    (`DestructiveWriteBlocked`), независимо от режима;
+  * никакой silent data loss: фасад либо пишет, либо явно сообщает об ошибке.
+
+Раскладка projects_v2 (см. docs/projects_v2_storage_standard.md):
+  objects/<folder>/disciplines/<disc>/documents/<code>/document.json
+  objects/<folder>/disciplines/<disc>/documents/<code>/current_version.txt
+  .../versions/<vid>/version.json
+  .../versions/<vid>/01_input/                  (исходные PDF/MD)
+  .../versions/<vid>/03_analysis/latest/        (01/02/03 .json)
+  .../versions/<vid>/03_analysis/runs/<run>/    (исторические прогоны)
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+import os
+import re
+import tempfile
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Callable, Optional, Union
+
+logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# режимы записи
+# ---------------------------------------------------------------------------
+
+WRITE_MODE_LEGACY = "legacy"
+WRITE_MODE_DUAL_SHADOW = "dual_write_shadow"
+WRITE_MODE_V2_PRIMARY = "projects_v2_primary"
+
+_VALID_WRITE_MODES = {WRITE_MODE_LEGACY, WRITE_MODE_DUAL_SHADOW, WRITE_MODE_V2_PRIMARY}
+
+_WRITE_MODE_ENV = "AUDIT_PROJECTS_V2_WRITE_MODE"
+_V2_DIR_ENV = "AUDIT_PROJECTS_V2_DIR"
+
+
+def get_write_mode() -> str:
+    """Текущий режим записи. Default `legacy`. Читается из env на КАЖДЫЙ вызов.
+
+    Любое неизвестное / пустое значение → `legacy` (fail-safe: непонятный конфиг
+    НИКОГДА не включает запись в v2).
+    """
+    val = (os.environ.get(_WRITE_MODE_ENV) or "").strip().lower()
+    return val if val in _VALID_WRITE_MODES else WRITE_MODE_LEGACY
+
+
+def v2_writes_enabled() -> bool:
+    """True только если режим явно разрешает писать в projects_v2."""
+    return get_write_mode() in (WRITE_MODE_DUAL_SHADOW, WRITE_MODE_V2_PRIMARY)
+
+
+def v2_is_primary() -> bool:
+    return get_write_mode() == WRITE_MODE_V2_PRIMARY
+
+
+# ---------------------------------------------------------------------------
+# исключения
+# ---------------------------------------------------------------------------
+
+class StorageWriteError(Exception):
+    """Базовая ошибка записи фасада."""
+
+
+class DestructiveWriteBlocked(StorageWriteError):
+    """Деструктивная операция в projects_v2 запрещена на этом этапе."""
+
+
+# ---------------------------------------------------------------------------
+# целевой адрес документа/версии в projects_v2
+# ---------------------------------------------------------------------------
+
+_VID_RE = re.compile(r"^v0*(\d+)$", re.IGNORECASE)
+
+
+def normalize_vid_for_disk(version_id: str) -> str:
+    """`v1`/`V1`/`v001` → `v001` (формат каталога версии на диске).
+
+    Любой нераспознанный формат возвращается как есть (с lower), чтобы фасад не
+    «угадывал» и не создавал кривые каталоги молча.
+    """
+    s = (version_id or "").strip()
+    m = _VID_RE.match(s)
+    if m:
+        return f"v{int(m.group(1)):03d}"
+    return s.lower()
+
+
+@dataclass(frozen=True)
+class V2Target:
+    """Куда писать в projects_v2 (нормализованный адрес одной версии документа)."""
+
+    object_folder: str
+    discipline: str
+    document_code: str
+    version_id: str  # любой ввод; на диск пойдёт normalize_vid_for_disk()
+
+    def vid_disk(self) -> str:
+        return normalize_vid_for_disk(self.version_id)
+
+    def doc_dir(self, v2_root: Path) -> Path:
+        return (Path(v2_root) / "objects" / self.object_folder / "disciplines"
+                / self.discipline / "documents" / self.document_code)
+
+    def version_dir(self, v2_root: Path) -> Path:
+        return self.doc_dir(v2_root) / "versions" / self.vid_disk()
+
+
+# ---------------------------------------------------------------------------
+# результат одной операции записи (для диагностики / симуляции / тестов)
+# ---------------------------------------------------------------------------
+
+@dataclass
+class WriteResult:
+    op: str
+    mode: str
+    legacy_ok: Optional[bool] = None      # None = legacy-writer не передан
+    legacy_authoritative: bool = True
+    v2_ok: Optional[bool] = None          # None = v2-запись не выполнялась (legacy mode)
+    v2_attempted: bool = False
+    v2_paths: list[str] = field(default_factory=list)
+    v2_error: Optional[str] = None
+    legacy_result: Any = None
+
+    def to_dict(self) -> dict:
+        return {
+            "op": self.op,
+            "mode": self.mode,
+            "legacy_ok": self.legacy_ok,
+            "legacy_authoritative": self.legacy_authoritative,
+            "v2_ok": self.v2_ok,
+            "v2_attempted": self.v2_attempted,
+            "v2_paths": list(self.v2_paths),
+            "v2_error": self.v2_error,
+        }
+
+
+# ---------------------------------------------------------------------------
+# атомарная запись (write tmp → os.replace), как в остальном коде проекта
+# ---------------------------------------------------------------------------
+
+def _atomic_write_bytes(path: Path, data: bytes) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=str(path.parent), prefix=".wtmp_")
+    try:
+        with os.fdopen(fd, "wb") as f:
+            f.write(data)
+        os.replace(tmp, path)
+    except BaseException:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
+
+
+def _atomic_write_json(path: Path, payload: Any) -> None:
+    _atomic_write_bytes(path, json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8"))
+
+
+def _as_bytes(payload: Union[dict, list, str, bytes]) -> bytes:
+    if isinstance(payload, bytes):
+        return payload
+    if isinstance(payload, str):
+        return payload.encode("utf-8")
+    return json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
+
+
+# ---------------------------------------------------------------------------
+# фасад
+# ---------------------------------------------------------------------------
+
+class StorageWriteFacade:
+    """Подготовительный фасад записи. По умолчанию (`legacy`) НИЧЕГО не пишет в v2.
+
+    На этом этапе НЕ подключён к production endpoint'ам. Используется тестами и
+    `scripts/projects_v2/simulate_write_cutover.py` (dry-run на temp-фикстурах).
+    """
+
+    def __init__(self, v2_root: Optional[Union[str, Path]] = None):
+        self._v2_root_override = Path(v2_root).resolve() if v2_root else None
+
+    # -- v2 root ----------------------------------------------------------
+    def v2_root(self) -> Optional[Path]:
+        """Корень projects_v2. Override (тесты/симуляция) > env > config.DATA_DIR."""
+        if self._v2_root_override is not None:
+            return self._v2_root_override
+        env = os.environ.get(_V2_DIR_ENV)
+        if env:
+            return Path(env).resolve()
+        try:
+            from backend.app.core.config import DATA_DIR
+            return Path(DATA_DIR) / "projects_v2"
+        except Exception:
+            return None
+
+    # -- деструктив (запрещено на этом этапе) -----------------------------
+    def block_destructive(self, op: str) -> None:
+        """Любая деструктивная операция в projects_v2 на этом этапе запрещена.
+
+        clean_project_data / delete_pair(hard) / rmtree версии и пр. не должны
+        иметь v2-плеча, пока не появятся backup + явное подтверждение (Step 9/10).
+        """
+        raise DestructiveWriteBlocked(
+            f"destructive v2 op '{op}' blocked at prepare stage "
+            f"(no backup/confirmation contract yet)"
+        )
+
+    # -- ядро: диспетчер режимов -----------------------------------------
+    def _execute(
+        self,
+        op: str,
+        *,
+        legacy_write: Optional[Callable[[], Any]],
+        v2_write: Callable[[], list[Path]],
+    ) -> WriteResult:
+        """Выполнить запись согласно режиму.
+
+        legacy_write — callable существующего legacy-кода (может быть None в
+        тестах/симуляции). v2_write — callable, возвращающий список записанных
+        v2-путей (вызывается только когда v2 разрешена режимом).
+        """
+        mode = get_write_mode()
+        res = WriteResult(op=op, mode=mode)
+
+        if mode == WRITE_MODE_LEGACY:
+            # production default: только legacy, v2 не трогаем.
+            if legacy_write is not None:
+                res.legacy_result = legacy_write()
+                res.legacy_ok = True
+            res.legacy_authoritative = True
+            res.v2_ok = None
+            return res
+
+        if mode == WRITE_MODE_DUAL_SHADOW:
+            # 1) legacy авторитетна и идёт ПЕРВОЙ (исключение пробрасывается).
+            if legacy_write is not None:
+                res.legacy_result = legacy_write()
+                res.legacy_ok = True
+            res.legacy_authoritative = True
+            # 2) v2 — тень, ТОЛЬКО после успешной legacy, fail-soft.
+            res.v2_attempted = True
+            try:
+                paths = v2_write() or []
+                res.v2_paths = [str(p) for p in paths]
+                res.v2_ok = True
+            except Exception as exc:  # noqa: BLE001 — намеренный fail-soft
+                res.v2_ok = False
+                res.v2_error = f"{type(exc).__name__}: {exc}"
+                logger.warning("[storage_write_facade] shadow v2 write failed op=%s: %s",
+                               op, res.v2_error)
+            return res
+
+        if mode == WRITE_MODE_V2_PRIMARY:
+            # 1) v2 primary (исключение пробрасывается).
+            res.v2_attempted = True
+            paths = v2_write() or []
+            res.v2_paths = [str(p) for p in paths]
+            res.v2_ok = True
+            res.legacy_authoritative = False
+            # 2) legacy как архив, fail-soft.
+            if legacy_write is not None:
+                try:
+                    res.legacy_result = legacy_write()
+                    res.legacy_ok = True
+                except Exception as exc:  # noqa: BLE001
+                    res.legacy_ok = False
+                    logger.warning("[storage_write_facade] v2_primary legacy archive failed op=%s: %s",
+                                   op, exc)
+            return res
+
+        # недостижимо (get_write_mode нормализует), но fail-safe → legacy
+        if legacy_write is not None:
+            res.legacy_result = legacy_write()
+            res.legacy_ok = True
+        return res
+
+    # -- v2-writers (вызываются только при разрешённой записи) ------------
+    def _ensure_document_scaffold(self, v2_root: Path, target: V2Target) -> list[Path]:
+        """Создать минимальный каркас документа/версии в v2 (idempotent)."""
+        written: list[Path] = []
+        doc_dir = target.doc_dir(v2_root)
+        doc_json = doc_dir / "document.json"
+        if not doc_json.exists():
+            _atomic_write_json(doc_json, {
+                "schema_version": 1,
+                "document_code": target.document_code,
+                "object_folder": target.object_folder,
+                "discipline": target.discipline,
+            })
+            written.append(doc_json)
+        cur = doc_dir / "current_version.txt"
+        if not cur.exists():
+            _atomic_write_bytes(cur, target.vid_disk().encode("utf-8"))
+            written.append(cur)
+        return written
+
+    # -- безопасный метод #1: метаданные версии --------------------------
+    def save_version_metadata(
+        self,
+        target: V2Target,
+        version_json: dict,
+        *,
+        legacy_write: Optional[Callable[[], Any]] = None,
+    ) -> WriteResult:
+        """Записать version.json версии в projects_v2 (+ каркас документа).
+
+        В legacy-режиме v2 не трогается; авторитетна legacy_write.
+        """
+        def _v2() -> list[Path]:
+            root = self.v2_root()
+            if root is None:
+                raise StorageWriteError("projects_v2 root not resolvable")
+            written = self._ensure_document_scaffold(root, target)
+            vj = dict(version_json)
+            vj.setdefault("version_id", target.vid_disk())
+            vpath = target.version_dir(root) / "version.json"
+            _atomic_write_json(vpath, vj)
+            written.append(vpath)
+            return written
+
+        return self._execute("save_version_metadata", legacy_write=legacy_write, v2_write=_v2)
+
+    # -- безопасный метод #2: входной бандл (PDF/MD) ---------------------
+    def save_input_bundle(
+        self,
+        target: V2Target,
+        files: list[tuple[str, bytes]],
+        *,
+        legacy_write: Optional[Callable[[], Any]] = None,
+    ) -> WriteResult:
+        """Записать исходные файлы версии в `versions/<vid>/01_input/`.
+
+        files — список (filename, bytes). Имена файлов санируются до basename,
+        чтобы исключить выход за пределы 01_input.
+        """
+        def _v2() -> list[Path]:
+            root = self.v2_root()
+            if root is None:
+                raise StorageWriteError("projects_v2 root not resolvable")
+            self._ensure_document_scaffold(root, target)
+            inp = target.version_dir(root) / "01_input"
+            written: list[Path] = []
+            for name, data in files:
+                safe = os.path.basename((name or "").strip())
+                if not safe or safe in (".", ".."):
+                    raise StorageWriteError(f"unsafe input filename: {name!r}")
+                dst = inp / safe
+                _atomic_write_bytes(dst, data if isinstance(data, bytes) else _as_bytes(data))
+                written.append(dst)
+            return written
+
+        return self._execute("save_input_bundle", legacy_write=legacy_write, v2_write=_v2)
+
+    # -- безопасный метод #3: analysis-артефакт --------------------------
+    def save_analysis_artifact(
+        self,
+        target: V2Target,
+        artifact_name: str,
+        payload: Union[dict, list, str, bytes],
+        *,
+        run_id: Optional[str] = None,
+        legacy_write: Optional[Callable[[], Any]] = None,
+    ) -> WriteResult:
+        """Записать analysis-артефакт (03_findings.json, 02_blocks_analysis.json, …).
+
+        Пишется в `03_analysis/latest/<artifact_name>`. Если задан run_id —
+        дополнительно в `03_analysis/runs/<run_id>/<artifact_name>` (история).
+        """
+        safe = os.path.basename((artifact_name or "").strip())
+        if not safe or safe in (".", ".."):
+            raise StorageWriteError(f"unsafe artifact name: {artifact_name!r}")
+
+        def _v2() -> list[Path]:
+            root = self.v2_root()
+            if root is None:
+                raise StorageWriteError("projects_v2 root not resolvable")
+            self._ensure_document_scaffold(root, target)
+            vdir = target.version_dir(root)
+            data = _as_bytes(payload)
+            written: list[Path] = []
+            latest = vdir / "03_analysis" / "latest" / safe
+            _atomic_write_bytes(latest, data)
+            written.append(latest)
+            if run_id:
+                rsafe = os.path.basename(run_id.strip())
+                if rsafe and rsafe not in (".", ".."):
+                    rpath = vdir / "03_analysis" / "runs" / rsafe / safe
+                    _atomic_write_bytes(rpath, data)
+                    written.append(rpath)
+            return written
+
+        return self._execute("save_analysis_artifact", legacy_write=legacy_write, v2_write=_v2)
+
+
+# ---------------------------------------------------------------------------
+# module-level singleton helper (для будущего подключения к endpoint'ам)
+# ---------------------------------------------------------------------------
+
+_default_facade: Optional[StorageWriteFacade] = None
+
+
+def get_write_facade() -> StorageWriteFacade:
+    """Глобальный фасад (lazy). Production-режим читается из env на каждый вызов
+    метода, поэтому singleton безопасен."""
+    global _default_facade
+    if _default_facade is None:
+        _default_facade = StorageWriteFacade()
+    return _default_facade

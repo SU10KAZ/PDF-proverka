@@ -857,6 +857,82 @@ findings/versions; `EXPECTED_NAMING_DIFFERENCE` для имени-артефак
 - Постепенно расширить на все объекты.
 - legacy `projects/` сохранить как архив до полной верификации.
 
+### Этап 6 — подготовка write/upload cutover (Step 8/10) ✅ (подготовка; запись на проде НЕ включена)
+
+**Цель:** подготовить backend к записи новых данных в `projects_v2`, **не включая
+запись на production**. На этом этапе создан скелет фасада записи + симулятор +
+тесты + документация. `AUDIT_STORAGE_BACKEND=legacy` сохранён, новые загрузки
+инженерами не переключаются, ни один production-endpoint не вызывает фасад.
+
+**Preflight gate (PASS, 2026-06-16):** validate_migration PASS (849 ok); parity
+`contract_ok=True` (MISMATCH=0, MISSING_real=0, findings_loss=0, version_loss=0);
+drift=1 — единственный документ `13АВ-РД-СОУЭ-ПА V1` (`missing_legacy`, `stable`,
+legacy-папка названа `…V1.pdf`) — это известный `.pdf`-naming артефакт из
+`EXPECTED_NAMING_DIFFERENCE`, без потери данных (см. Этап 3.9 → «Known naming
+artifacts»). Реальные интеграционные гейты зелёные.
+
+**Карта путей записи (runtime-отчёт `projects_v2/_system/write_path_audit_report.{json,md}`).**
+~Все записи данных проекта проходят через **6 chokepoint'ов**, и достаточно
+завести их через фасад (стейдж-раннеры переписывать не нужно):
+
+1. `version_service.resolve_version_output_dir / get_version_dir` (output_dir + version dir)
+2. `manager._resolve_job_paths` / `PipelineStageContext.output_dir` (pipeline `_output`)
+3. `project_service.register_project / register_external_project` (новая загрузка)
+4. `version_service.save_files_to_version / create_next_version / create_version_from_existing_files / merge_project_as_version`
+5. `project_service.save_project_info` (`project_info.json`)
+6. `knowledge_base_service.save_expert_review` (per-project `expert_review.json`)
+
+Категории записи: **project data** (→ v2; `_output/`, `project_info.json`,
+version-манифесты, входные PDF/MD) · **runtime queue** (остаётся в
+`APP_DATA_DIR`: prepare/batch queue, usage/cost) · **knowledge base** (общие
+файлы `decisions_log.json` / `missing_norms_vault.json` — НЕ форкать на документ)
+· **app registries** (`objects/groups/hidden`, `disciplines/_registry`) ·
+**comparison** (вне scope) · **export** (xlsx в `REPORTS_DIR`, read-only) ·
+**destructive** (`clean_project_data`, `delete_pair(hard)` — без бэкапа → для v2
+**заблокированы**).
+
+**Выбор стратегии (A/B/C/D):**
+
+| Вариант | Суть | Вердикт |
+|---|---|---|
+| A — legacy + delta-sync | писать в legacy, периодически синкать в v2 | отложенная консистентность, гонки с регеном; ❌ |
+| **B — dual-write shadow** | legacy ПЕРВОЙ (авторитетна), затем v2-тень fail-soft | ✅ **рекомендуется**: legacy всегда цел, v2 наполняется на реальной нагрузке без риска |
+| C — v2-primary + legacy-archive | v2 авторитетна, legacy архив | для будущего после валидации shadow |
+| D — v2-only | только v2 | преждевременно, нет точки отката |
+
+Рекомендация — **B (dual_write_shadow)** для новых загрузок: v2 нормализуется
+сразу при записи (а не пакетной миграцией постфактум), legacy остаётся fallback,
+деструктив в v2 выключен.
+
+**Фасад записи** [backend/app/services/storage/storage_write_facade.py](../backend/app/services/storage/storage_write_facade.py):
+флаг `AUDIT_PROJECTS_V2_WRITE_MODE ∈ {legacy, dual_write_shadow, projects_v2_primary}`,
+**default `legacy`** (читается из env на каждый вызов; неизвестное значение →
+legacy fail-safe). Инварианты: в `dual_write_shadow` v2 пишется ТОЛЬКО после
+успешной legacy; сбой v2 в shadow логируется и не ломает legacy; деструктив в v2
+→ `DestructiveWriteBlocked`; никакой silent data loss. Реализованы 3 безопасных
+метода (`save_version_metadata`, `save_input_bundle`, `save_analysis_artifact`) +
+`block_destructive`. **Не подключён** ни к одному endpoint'у (гарантируется
+тестом `test_write_facade_not_wired_to_routers`).
+
+**Симулятор** [scripts/projects_v2/simulate_write_cutover.py](../scripts/projects_v2/simulate_write_cutover.py):
+dry-run на tempfile-фикстурах, прогоняет все 3 режима + forced v2-fail +
+destructive-guard, проверяет инварианты, exit 0; production `projects/` и
+`projects_v2/` не трогает (жёсткая страховка «temp вне репозитория»).
+
+**Что на Этапе 9/10 (НЕ в этом этапе):** подключить фасад к 6 chokepoint'ам за
+флагом на shadow-объекте; включить `dual_write_shadow` на одной новой загрузке и
+сверить v2-результат с legacy через parity; политика run_id/ретеншена прогонов;
+version-aware ключи `decisions_log`/`expert_review`; контракт backup+подтверждение
+для деструктива до любого v2-плеча. Включение записи на проде требует явного
+подтверждения + restart (правила проекта).
+
+**Откат Этапа 6:** ничего откатывать не нужно — фасад инертен (default legacy,
+не подключён). Полное отключение записи в будущем — `AUDIT_PROJECTS_V2_WRITE_MODE=legacy`
++ restart.
+
+**Тесты:** [tests/test_projects_v2_write_facade.py](../tests/test_projects_v2_write_facade.py),
+[tests/test_projects_v2_write_cutover_simulation.py](../tests/test_projects_v2_write_cutover_simulation.py).
+
 ## Открытые вопросы (решить до этапа 3)
 
 1. **Запись результатов.** Куда новый pipeline пишет результаты — в
