@@ -32,9 +32,17 @@ def _validate_version_id(project_id: str, version_id: Optional[str]) -> None:
 @router.get("/{project_id:path}/block-map")
 async def get_finding_block_map(
     project_id: str,
+    request: Request,
     version_id: Optional[str] = Query(None, description="Конкретная версия (v1/v2/...), по умолчанию latest"),
 ):
-    """Маппинг finding_id → [block_ids] для подсветки блоков при наведении."""
+    """Маппинг finding_id → [block_ids] для подсветки блоков при наведении.
+
+    opt-in/default read canary: при v2-backend строится из projects_v2
+    (read-only, та же строгая логика). `?storage=legacy` форсит legacy.
+    """
+    from backend.app.services.storage import read_canary
+    if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
+        return read_canary.v2_block_map(request, project_id)
     _validate_version_id(project_id, version_id)
     result = findings_service.get_finding_block_map(project_id, version_id=version_id)
     if result is None:

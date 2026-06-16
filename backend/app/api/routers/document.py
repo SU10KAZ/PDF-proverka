@@ -3,7 +3,7 @@ REST API для просмотра MD-документа проекта (пос�
 """
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 import backend.app.services.common.project_service as project_service
 from backend.app.services.common import version_service
 
@@ -25,9 +25,17 @@ def _validate_version(project_id: str, version_id: Optional[str]) -> None:
 @router.get("/{project_id:path}/pages")
 async def get_document_pages(
     project_id: str,
+    request: Request,
     version_id: Optional[str] = Query(None, description="Конкретная версия, по умолчанию latest"),
 ):
-    """Оглавление MD-документа: список страниц с метаданными (без содержимого блоков)."""
+    """Оглавление MD-документа: список страниц с метаданными (без содержимого блоков).
+
+    opt-in/default read canary: при v2-backend читается из projects_v2 MD
+    (read-only). `?storage=legacy` форсит legacy.
+    """
+    from backend.app.services.storage import read_canary
+    if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
+        return read_canary.v2_document_pages(request, project_id)
     _validate_version(project_id, version_id)
     doc = project_service.parse_md_document(project_id, version_id=version_id)
     if not doc:
@@ -54,9 +62,17 @@ async def get_document_pages(
 async def get_document_page(
     project_id: str,
     page_num: int,
+    request: Request,
     version_id: Optional[str] = Query(None),
 ):
-    """Содержимое одной страницы MD-документа (все блоки)."""
+    """Содержимое одной страницы MD-документа (все блоки).
+
+    opt-in/default read canary: при v2-backend читается из projects_v2 MD
+    (read-only). `?storage=legacy` форсит legacy.
+    """
+    from backend.app.services.storage import read_canary
+    if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
+        return read_canary.v2_document_page(request, project_id, page_num)
     _validate_version(project_id, version_id)
     page = project_service.get_document_page(project_id, page_num, version_id=version_id)
     if not page:

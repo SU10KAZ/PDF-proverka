@@ -416,3 +416,106 @@ def v2_version_files(request, project_id: str, version_id: str) -> dict:
         "file_count": len(files),
         "files": files,
     }
+
+
+# ---------------------------------------------------------------------------
+# UI-read completion: block-map + document pages/page (read-only)
+# ---------------------------------------------------------------------------
+
+
+def v2_block_map(request, project_id: str) -> dict:
+    """finding_id → [block_ids] + block_info + text_evidence из projects_v2
+    (canary для GET /api/findings/{id}/block-map).
+
+    Переиспользует чистые компьют-функции findings_service (одинаковая строгая
+    логика, без ложных привязок). Данных нет → корректный пустой map, не 500.
+    """
+    from backend.app.services.findings import findings_service as fs
+    a, doc, doc_dir, cur = _resolve_doc_or_404(request, project_id)
+    ver = _resolve_version(a, doc_dir, cur, _req_version(request))
+    findings = a.findings_list(doc_dir, ver)
+    _bp, block_info, all_block_ids = fs.blocks_data_from_sources(
+        a.read_blocks_analysis(doc_dir, ver), a.read_blocks_index(doc_dir, ver))
+    block_map = fs.compute_finding_block_map(findings, all_block_ids)
+    graph = a.read_document_graph(doc_dir, ver) or {}
+    try:
+        ocr_index = fs._build_ocr_html_index(a.input_dir(doc_dir, ver))
+    except Exception:
+        ocr_index = {}
+    text_evidence = fs.compute_text_evidence(graph, ocr_index, findings)
+    return {
+        "storage_backend": BACKEND_V2,
+        "canary": True,
+        "project_id": project_id,
+        "document_code": doc["document_code"],
+        "version_id": ver,
+        "block_map": block_map,
+        "block_info": block_info,
+        "text_evidence": text_evidence,
+    }
+
+
+def _v2_parse_pages(a, doc, doc_dir, ver):
+    """(parsed_doc | None). Читает MD из v2 и парсит общим parse_md_text."""
+    from backend.app.services.common import project_service as ps
+    md, md_file = a.md_text(doc_dir, ver)
+    if not md:
+        return None
+    return ps.parse_md_text(md, project_id=doc["document_code"], md_file=md_file or "")
+
+
+def v2_document_pages(request, project_id: str) -> dict:
+    """Оглавление MD-документа из projects_v2 (canary для GET /api/document/{id}/pages).
+
+    Зеркалит legacy: страницы без содержимого блоков (только счётчики). MD нет
+    (source_only и т.п.) → 404 canary-error (как legacy 'MD не найден'), без 500.
+    """
+    a, doc, doc_dir, cur = _resolve_doc_or_404(request, project_id)
+    ver = _resolve_version(a, doc_dir, cur, _req_version(request))
+    parsed = _v2_parse_pages(a, doc, doc_dir, ver)
+    if parsed is None:
+        raise HTTPException(
+            status_code=404,
+            detail=(f"projects_v2 canary: MD document not found for "
+                    f"'{doc['document_code']}' (no silent legacy fallback)"))
+    pages_light = [{
+        "page_num": p["page_num"], "sheet_info": p["sheet_info"],
+        "sheet_label": p["sheet_label"], "text_blocks": p["text_blocks"],
+        "image_blocks": p["image_blocks"],
+    } for p in parsed["pages"]]
+    return {
+        "storage_backend": BACKEND_V2,
+        "canary": True,
+        "project_id": doc["document_code"],
+        "md_file": parsed["md_file"],
+        "total_pages": parsed["total_pages"],
+        "version_id": ver,
+        "pages": pages_light,
+    }
+
+
+def v2_document_page(request, project_id: str, page_num: int) -> dict:
+    """Содержимое одной страницы MD из projects_v2 (canary для .../page/{n}).
+
+    Зеркалит legacy: все блоки страницы. Нет MD/страницы → 404 canary, без 500.
+    """
+    a, doc, doc_dir, cur = _resolve_doc_or_404(request, project_id)
+    ver = _resolve_version(a, doc_dir, cur, _req_version(request))
+    parsed = _v2_parse_pages(a, doc, doc_dir, ver)
+    if parsed is not None:
+        for page in parsed["pages"]:
+            if page["page_num"] == page_num:
+                return {
+                    "storage_backend": BACKEND_V2,
+                    "canary": True,
+                    "project_id": doc["document_code"],
+                    "version_id": ver,
+                    "page_num": page["page_num"],
+                    "sheet_info": page["sheet_info"],
+                    "sheet_label": page["sheet_label"],
+                    "blocks": page["blocks"],
+                }
+    raise HTTPException(
+        status_code=404,
+        detail=(f"projects_v2 canary: page {page_num} not found for "
+                f"'{doc['document_code']}' (no silent legacy fallback)"))

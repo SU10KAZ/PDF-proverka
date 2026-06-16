@@ -1951,7 +1951,21 @@ def parse_md_document(project_id: str, *, version_id: Optional[str] = None) -> O
     except Exception:
         return None
 
-    # Разбиваем по страницам
+    result = parse_md_text(md_text, project_id=project_id, md_file=md_file_name)
+    if result is None:
+        return None
+
+    _document_cache[cache_key] = {"ts": time.time(), "data": result}
+    return result
+
+
+def parse_md_text(md_text: str, *, project_id: str, md_file: str) -> Optional[dict]:
+    """Чистый парсер MD-текста по страницам/блокам (без резолва путей/кеша).
+
+    Выделено из parse_md_document, чтобы тот же парсер можно было применить к MD
+    из projects_v2 (read canary), гарантируя идентичный контракт. Возвращает None,
+    если в тексте нет ни одного маркера `## СТРАНИЦА N`.
+    """
     page_splits = list(_PAGE_RE.finditer(md_text))
     if not page_splits:
         return None
@@ -2004,15 +2018,12 @@ def parse_md_document(project_id: str, *, version_id: Optional[str] = None) -> O
             "blocks": blocks,
         })
 
-    result = {
+    return {
         "project_id": project_id,
-        "md_file": md_file_name,
+        "md_file": md_file,
         "total_pages": len(pages),
         "pages": pages,
     }
-
-    _document_cache[cache_key] = {"ts": time.time(), "data": result}
-    return result
 
 
 def get_document_page(

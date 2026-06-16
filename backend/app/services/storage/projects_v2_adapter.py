@@ -308,6 +308,40 @@ class ProjectsV2Adapter:
         bd = self.blocks_dir(doc_dir, version_id)
         return _read_json(bd / "index.json") if bd else None
 
+    def read_document_graph(self, doc_dir: Path, version_id: str) -> Optional[dict]:
+        """document_graph.json версии (read-only): latest, иначе King&Sons-бандл."""
+        p = self._latest_file(doc_dir, version_id, "document_graph.json")
+        if p:
+            return _read_json(p)
+        legacy_out = self.version_dir(doc_dir, version_id) / "99_service" / "legacy_output"
+        if legacy_out.is_dir():
+            for g in sorted(legacy_out.glob("*/_output/document_graph.json")):
+                return _read_json(g)
+        return None
+
+    def input_dir(self, doc_dir: Path, version_id: str) -> Path:
+        """Папка 01_input версии (там же лежит *_ocr.html для text_evidence)."""
+        return self.version_dir(doc_dir, version_id) / "01_input"
+
+    def md_text(self, doc_dir: Path, version_id: str) -> tuple[Optional[str], Optional[str]]:
+        """(текст MD, имя MD-файла) для версии (read-only).
+
+        Приоритет: 02_work/document.md → 01_input/*_document.md → 01_input/*.md.
+        Возвращает (None, None), если MD не найден/нечитаем.
+        """
+        vdir = self.version_dir(doc_dir, version_id)
+        candidates = [vdir / "02_work" / "document.md"]
+        inp = vdir / "01_input"
+        if inp.is_dir():
+            candidates += sorted(inp.glob("*_document.md")) + sorted(inp.glob("*.md"))
+        for p in candidates:
+            if p.is_file():
+                try:
+                    return p.read_text(encoding="utf-8"), p.name
+                except Exception:
+                    continue
+        return None, None
+
     def findings_path(self, doc_dir: Path, version_id: str) -> Optional[Path]:
         """Лучший файл замечаний в latest (приоритет как в findings_service)."""
         latest = self.latest_dir(doc_dir, version_id)
