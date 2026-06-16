@@ -89,6 +89,52 @@ def _adapter():
     return ProjectsV2Adapter()
 
 
+def _resolve_version(a, doc_dir, cur, requested):
+    """Сопоставить запрошенный version_id с реальным v2-id; по умолчанию current.
+
+    Принимает как v2-форму (`v001`), так и legacy-форму (`v1` → `v001`). Неизвестный
+    id → current (canary мягкий, не 500). Никакого fallback в legacy-хранилище.
+    """
+    if not requested:
+        return cur
+    vids = [v.get("version_id") for v in a.list_versions(doc_dir)]
+    r = str(requested).strip().lower()
+    if r in vids:
+        return r
+    if r.startswith("v") and r[1:].isdigit():
+        cand = "v%03d" % int(r[1:])
+        if cand in vids:
+            return cand
+    return cur
+
+
+def _resolve_doc_or_404(request, project_id):
+    """(adapter, doc, doc_dir, current_version) или 404. Общий резолвер canary-билдеров.
+
+    `project_id` (legacy путь/идентификатор) → v2 document_code по basename
+    (срез `(main)`); `?object_id=` уточняет объект. Не найден → 404 canary-error
+    (НЕ silent fallback в legacy).
+    """
+    a = _adapter()
+    if not a.is_available():
+        raise HTTPException(status_code=404,
+                            detail="projects_v2 storage not available")
+    object_id = request.query_params.get("object_id") if request is not None else None
+    document_code = Path(project_id).name.replace("(main)", "").strip()
+    doc = a.find_document(document_code, object_id=object_id)
+    if doc is None:
+        raise HTTPException(
+            status_code=404,
+            detail=(f"projects_v2 canary: document '{document_code}' not found in "
+                    "projects_v2 (no silent legacy fallback)"),
+        )
+    return a, doc, Path(doc["doc_dir"]), doc["current_version"]
+
+
+def _req_version(request):
+    return request.query_params.get("version_id") if request is not None else None
+
+
 def v2_projects_list() -> dict:
     """Read-only список документов из projects_v2 (canary-ответ для /api/projects)."""
     a = _adapter()
@@ -111,21 +157,8 @@ def v2_findings(request, project_id: str) -> dict:
     basename. Опциональный `?object_id=` уточняет объект при неоднозначности.
     Документ не найден → 404 canary-error (НЕ fallback в legacy).
     """
-    a = _adapter()
-    if not a.is_available():
-        raise HTTPException(status_code=404,
-                            detail="projects_v2 storage not available")
-    object_id = request.query_params.get("object_id") if request is not None else None
-    document_code = Path(project_id).name.replace("(main)", "").strip()
-    doc = a.find_document(document_code, object_id=object_id)
-    if doc is None:
-        raise HTTPException(
-            status_code=404,
-            detail=(f"projects_v2 canary: document '{document_code}' not found in "
-                    "projects_v2 (no silent legacy fallback)"),
-        )
-    doc_dir = Path(doc["doc_dir"])
-    cur = doc["current_version"]
+    a, doc, doc_dir, cur = _resolve_doc_or_404(request, project_id)
+    ver = _resolve_version(a, doc_dir, cur, _req_version(request))
     return {
         "storage_backend": BACKEND_V2,
         "canary": True,
@@ -133,10 +166,111 @@ def v2_findings(request, project_id: str) -> dict:
         "object_id": doc["object_id"],
         "object_folder": doc["object_folder"],
         "discipline": doc["discipline"],
-        "version_id": cur,
+        "version_id": ver,
         "version_count": doc["version_count"],
-        "analysis_status": a.analysis_status(doc_dir, cur),
-        "findings_count": a.findings_count(doc_dir, cur),
-        "findings_by_severity": a.findings_by_severity(doc_dir, cur),
-        "findings": a.findings_list(doc_dir, cur),
+        "analysis_status": a.analysis_status(doc_dir, ver),
+        "findings_count": a.findings_count(doc_dir, ver),
+        "findings_by_severity": a.findings_by_severity(doc_dir, ver),
+        "findings": a.findings_list(doc_dir, ver),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Расширенные canary-билдеры (read-only) для UI-просмотра результатов
+# ---------------------------------------------------------------------------
+
+
+def v2_project_details(request, project_id: str) -> dict:
+    """Детали проекта/документа из projects_v2 (canary для GET /api/projects/{id})."""
+    a, doc, doc_dir, cur = _resolve_doc_or_404(request, project_id)
+    ver = _resolve_version(a, doc_dir, cur, _req_version(request))
+    meta = a.version_metadata(doc_dir, ver)
+    art = a.latest_analysis_files(doc_dir, ver)
+    return {
+        "storage_backend": BACKEND_V2,
+        "canary": True,
+        "document_code": doc["document_code"],
+        "object_id": doc["object_id"],
+        "object_folder": doc["object_folder"],
+        "discipline": doc["discipline"],
+        "kind": doc.get("kind"),
+        "migration_kind": doc.get("migration_kind"),
+        "current_version": cur,
+        "version_id": ver,
+        "version_count": doc["version_count"],
+        "analysis_status": meta.get("analysis_status") or a.analysis_status(doc_dir, ver),
+        "has_01_text_analysis": art["has_01_text_analysis"],
+        "has_02_blocks_analysis": art["has_02_blocks_analysis"],
+        "has_03_findings": art["has_03_findings"],
+        "findings_count": a.findings_count(doc_dir, ver),
+        "findings_by_severity": a.findings_by_severity(doc_dir, ver),
+        "has_pipeline_log": a.has_pipeline_log(doc_dir, ver),
+        "version_metadata": meta,
+    }
+
+
+def v2_project_versions(request, project_id: str) -> dict:
+    """Сводка версий документа из projects_v2 (canary для .../versions)."""
+    a, doc, doc_dir, cur = _resolve_doc_or_404(request, project_id)
+    versions = []
+    for v in a.list_versions(doc_dir):
+        vid = v.get("version_id")
+        versions.append({"version_id": vid, **a.version_metadata(doc_dir, vid)})
+    return {
+        "storage_backend": BACKEND_V2,
+        "canary": True,
+        "document_code": doc["document_code"],
+        "current_version": cur,
+        "version_count": len(versions),
+        "versions": versions,
+    }
+
+
+def v2_finding_by_id(request, project_id: str, finding_id: str) -> dict:
+    """Одно замечание по id из projects_v2 (canary для .../finding/{finding_id})."""
+    a, doc, doc_dir, cur = _resolve_doc_or_404(request, project_id)
+    ver = _resolve_version(a, doc_dir, cur, _req_version(request))
+    for f in a.findings_list(doc_dir, ver):
+        if not isinstance(f, dict):
+            continue
+        fid = f.get("id") or f.get("finding_id") or f.get("number")
+        if str(fid) == str(finding_id):
+            return {
+                "storage_backend": BACKEND_V2,
+                "canary": True,
+                "document_code": doc["document_code"],
+                "version_id": ver,
+                "finding": f,
+            }
+    raise HTTPException(
+        status_code=404,
+        detail=(f"projects_v2 canary: finding '{finding_id}' not found in document "
+                f"'{doc['document_code']}' (no silent legacy fallback)"),
+    )
+
+
+def v2_blocks_analysis(request, project_id: str) -> dict:
+    """Анализ блоков (02_blocks_analysis) из projects_v2 (canary для .../blocks/analysis)."""
+    a, doc, doc_dir, cur = _resolve_doc_or_404(request, project_id)
+    ver = _resolve_version(a, doc_dir, cur, _req_version(request))
+    data = a.read_blocks_analysis(doc_dir, ver)
+    if data is None:
+        return {
+            "storage_backend": BACKEND_V2,
+            "canary": True,
+            "document_code": doc["document_code"],
+            "version_id": ver,
+            "has_02_blocks_analysis": False,
+            "block_count": 0,
+            "blocks_analysis": None,
+        }
+    blocks = data.get("blocks_reviewed") or data.get("block_analyses") or []
+    return {
+        "storage_backend": BACKEND_V2,
+        "canary": True,
+        "document_code": doc["document_code"],
+        "version_id": ver,
+        "has_02_blocks_analysis": True,
+        "block_count": len(blocks),
+        "blocks_analysis": data,
     }

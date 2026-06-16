@@ -46,9 +46,17 @@ async def get_finding_block_map(
 async def get_finding(
     project_id: str,
     finding_id: str,
+    request: Request,
     version_id: Optional[str] = Query(None),
 ):
-    """Одно замечание по ID."""
+    """Одно замечание по ID.
+
+    opt-in read canary: `?storage=projects_v2` (или header) + флаг → замечание из
+    projects_v2 (read-only). Без opt-in — legacy как прежде.
+    """
+    from backend.app.services.storage import read_canary
+    if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
+        return read_canary.v2_finding_by_id(request, project_id, finding_id)
     _validate_version_id(project_id, version_id)
     finding = findings_service.get_finding_by_id(project_id, finding_id, version_id=version_id)
     if finding is None:

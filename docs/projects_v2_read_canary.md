@@ -15,17 +15,49 @@
 Это НЕ full cutover: `AUDIT_STORAGE_BACKEND` остаётся `legacy`, основной
 read-path не подключается к `projects_v2`, UI не меняется.
 
-## Подключённые endpoint'ы (ровно 2)
+## Подключённые endpoint'ы (7)
+
+Первый этап (2):
 
 | Endpoint | legacy (без opt-in) | canary (opt-in + флаг) |
 |---|---|---|
 | `GET /api/projects` | список legacy-проектов | список документов `projects_v2` (`v2_projects_list`) |
-| `GET /api/findings/{project_id}` | legacy findings | findings/counts документа из `projects_v2` (`v2_findings`) |
+| `GET /api/findings/{project_id}` | legacy findings | findings/counts документа (`v2_findings`) |
+
+Расширение (ещё 5 → 4 подключены, 1 not_ready):
+
+| Endpoint | canary-билдер | статус |
+|---|---|---|
+| `GET /api/projects/{project_id}` | `v2_project_details` (snapshot: status, findings_count, 01/02/03, pipeline_log) | ✅ |
+| `GET /api/projects/{project_id}/versions` | `v2_project_versions` (list_versions + metadata) | ✅ |
+| `GET /api/findings/{project_id}/finding/{finding_id}` | `v2_finding_by_id` (findings_list filter) | ✅ |
+| `GET /api/tiles/{project_id}/blocks/analysis` | `v2_blocks_analysis` (02_blocks_analysis) | ✅ |
+| `GET /api/projects/{project_id}/config` | — | **not_ready**: маршрут перекрыт catch-all `/{project_id:path}` (зарегистрирован раньше), недостижим как отдельный route без смены порядка маршрутов |
 
 Выбор обоснован: только GET, не запускают pipeline, ничего не пишут, не меняют
 статусы, не используются для destructive-действий, и имеют чистый v2-эквивалент в
-`ProjectsV2Adapter`. **`/api/objects` намеренно НЕ подключён** — у него разная
-семантика legacy↔v2 (legacy 3 объекта vs v2 2), сравнивать нечестно.
+`ProjectsV2Adapter`.
+
+### Намеренно НЕ подключены (not_ready, с причинами)
+
+- **`/api/objects`** — разная семантика legacy↔v2 (legacy 3 объекта vs v2 2);
+- **`GET /api/tiles/{id}/blocks`** + **`/blocks/image/{block_id}`** — индекс/картинки Gemma-кропов; v2-адаптер их не отдаёт (binary вне scope);
+- **`GET /api/findings/{id}/block-map`** — finding→block_ids выводится из evidence; нет adapter-метода, деривация рискует контрактом;
+- **`GET /api/document/{id}/pages`**, **`/page/{n}`** — рендер страниц PDF; адаптер не рендерит;
+- **`GET /api/audit/{id}/log`** — `audit_log.jsonl` (event-лог); v2 хранит `pipeline_log.json` (другой артефакт);
+- **`GET /api/audit/{id}/status`** — смешивает live pipeline-manager job state с данными (не чистый read);
+- **`GET /api/audit/{id}/resume-info`** — состояние продолжения pipeline (вне scope canary);
+- **`GET /api/projects/{id}/versions/{version_id}/files`** — листинг файлов; раскладка версии v2 отличается;
+- **`GET /api/projects/{id}/config`** — см. выше (route shadowing).
+
+Все POST/PUT/DELETE, reset/clear/re-run, upload, expert-review save, queue/pipeline
+start, comparison-write endpoints — **не трогались**.
+
+### version_id в canary
+
+Билдеры принимают `?version_id=` и сопоставляют как v2-форму (`v001`), так и
+legacy-форму (`v1`→`v001`); неизвестный id → current (мягко, без 500, без
+fallback в legacy).
 
 ## Opt-in механизм
 

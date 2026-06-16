@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import FileResponse
 
 from backend.app.services.common import version_service
@@ -551,11 +551,19 @@ async def get_blocks(
 @router.get("/{project_id:path}/blocks/analysis")
 async def get_blocks_analysis(
     project_id: str,
+    request: Request,
     version_id: Optional[str] = Query(None),
 ):
     """Агрегированные данные анализа блоков из 02_blocks_analysis.json
     (текущий production-pipeline) с fallback на legacy block_batch_*.json /
-    typed_facts_batch_*.json (v4)."""
+    typed_facts_batch_*.json (v4).
+
+    opt-in read canary: `?storage=projects_v2` (или header) + флаг → block-анализ
+    из projects_v2 (read-only). Без opt-in — legacy как прежде.
+    """
+    from backend.app.services.storage import read_canary
+    if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
+        return read_canary.v2_blocks_analysis(request, project_id)
     output_dir = _version_output(project_id, version_id)
 
     blocks_map = {}

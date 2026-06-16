@@ -348,12 +348,18 @@ async def flat_create_version_from_candidate(req: FlatVersionFromCandidateReques
 # ─── Динамические роуты /{project_id}/... ───
 
 @router.get("/{project_id:path}/versions")
-async def list_project_versions(project_id: str):
+async def list_project_versions(project_id: str, request: Request):
     """Список версий проекта.
 
     Для legacy-проектов (без project_versions.json) возвращает синтетическую
     единственную версию V1, указывающую на корневую папку проекта.
+
+    opt-in read canary: `?storage=projects_v2` (или header) + флаг → versions
+    из projects_v2 (read-only). Без opt-in — legacy как прежде.
     """
+    from backend.app.services.storage import read_canary
+    if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
+        return read_canary.v2_project_versions(request, project_id)
     from backend.app.services.common import version_service
     proj_dir = project_service.resolve_project_dir(project_id)
     if not proj_dir.exists():
@@ -648,13 +654,19 @@ async def create_version_from_project(
 
 
 @router.get("/{project_id:path}")
-async def get_project(project_id: str, version_id: Optional[str] = None):
+async def get_project(project_id: str, request: Request, version_id: Optional[str] = None):
     """Детали одного проекта.
 
     Query param `version_id` (опционально): получить статус конкретной версии.
     По умолчанию возвращается latest. Для legacy-проектов без манифеста
     допустим только `v1` (это и есть корень проекта).
+
+    opt-in read canary: `?storage=projects_v2` (или header) + флаг → детали из
+    projects_v2 (read-only). Без opt-in — legacy как прежде.
     """
+    from backend.app.services.storage import read_canary
+    if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
+        return read_canary.v2_project_details(request, project_id)
     from backend.app.services.common import version_service
     # Заранее проверяем валидность version_id, чтобы 404 не путал
     # «проекта нет» и «версии нет».
