@@ -30,6 +30,8 @@ from fastapi.testclient import TestClient
 import backend.app.main as _main_mod
 from backend.app.main import app
 import backend.app.services.common.object_service as object_service
+import backend.app.services.storage.read_canary as RC
+from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
 
 client = TestClient(app, raise_server_exceptions=False)
 
@@ -302,3 +304,188 @@ def test_canary_only_in_get_handlers():
             if "resolve_read_backend" in ln and cur_method not in (None, "get"):
                 offenders.append(f"{pyf.name}: resolve_read_backend под @{cur_method}")
     assert not offenders, offenders
+
+
+# ---------------------------------------------------------------------------
+# gap-closure (2026-06-16): v2 read responses подтягивают РЕАЛЬНЫЕ значения
+# (optimization / review-statuses / batches / pipeline / pdf-md / audit_date)
+# из v2-источников; safe-default только когда источника реально нет.
+# ---------------------------------------------------------------------------
+
+
+def _gap_doc(v2, disc, code, *, findings=3, optimization=None, opt_meta=None,
+             expert_decisions=None, batches=None, pipeline_stages=None,
+             status="complete", kingsons=False):
+    """Один v2-документ с управляемым набором gap-источников. kingsons=True кладёт
+    всё в `99_service/legacy_output/<code>/_output` бандл (как legacy-preserve)."""
+    doc = v2 / "objects" / OBJF / "disciplines" / disc / "documents" / code
+    dj = {"document_code": code, "object_id": OBJID, "discipline": disc, "kind": "plain",
+          "versions": [{"version_id": "v001", "version_no": 1}], "current_version": "v001"}
+    if kingsons:
+        dj["migration_kind"] = "legacy_findings_preserve"
+    _wj(doc / "document.json", dj)
+    (doc / "current_version.txt").write_text("v001\n", encoding="utf-8")
+    v = doc / "versions" / "v001"
+    vj = {"version_id": "v001", "version_no": 1, "label": "V1", "analysis_status": status}
+    if kingsons:
+        vj["migration_kind"] = "legacy_findings_preserve"
+    _wj(v / "version.json", vj)
+    inp = v / "01_input"
+    inp.mkdir(parents=True, exist_ok=True)
+    (inp / f"{code}.pdf").write_text("%PDF-1.4\n" + "x" * 2048, encoding="utf-8")
+    (inp / f"{code}_document.md").write_text("# md\n" + "y" * 1024, encoding="utf-8")
+    if kingsons:
+        latest = review = svc = v / "99_service" / "legacy_output" / code / "_output"
+        latest.mkdir(parents=True, exist_ok=True)
+    else:
+        latest = v / "03_analysis" / "latest"
+        review = v / "04_review"
+        svc = v / "99_service"
+        for d in (latest, review, svc):
+            d.mkdir(parents=True, exist_ok=True)
+    if findings is not None:
+        _wj(latest / "03_findings.json", {"meta": {"audit_completed": "2026-06-01T12:00:00"},
+            "findings": [{"id": f"F-{i}", "severity": "Критическое", "item_type": "finding"}
+                         for i in range(findings)]})
+    if optimization is not None:
+        _wj(latest / "optimization.json", {"meta": opt_meta or {
+            "total_items": optimization, "by_type": {"cheaper_analog": optimization},
+            "estimated_savings_pct": 7.5}})
+    if expert_decisions is not None:
+        _wj(review / "expert_review.json", {"decisions": expert_decisions})
+    if batches is not None:
+        _wj(svc / "block_batches.json", {"total_batches": batches})
+        for i in range(1, batches + 1):
+            _wj(svc / ("block_batch_%03d.json" % i), {"blocks": [{"id": j} for j in range(20)]})
+    if pipeline_stages is not None:
+        _wj(svc / "pipeline_log.json", {"stages": pipeline_stages})
+    return doc
+
+
+def _status(v2, code):
+    a = ProjectsV2Adapter(v2)
+    return RC._v2_project_status(a, a.find_document(code))
+
+
+@pytest.fixture
+def gap_v2(tmp_path):
+    v2 = tmp_path / "projects_v2"
+    _wj(v2 / "objects" / OBJF / "object.json",
+        {"object_id": OBJID, "display_name": "999 Test", "folder_name": OBJF})
+    return v2
+
+
+def test_optimization_from_v2_when_file_present(gap_v2):
+    _gap_doc(gap_v2, "EOM", "opt-doc", findings=4,
+             optimization=6, opt_meta={"total_items": 6,
+                                       "by_type": {"cheaper_analog": 2, "lifecycle": 4},
+                                       "estimated_savings_pct": 9.0})
+    s = _status(gap_v2, "opt-doc")
+    assert s["optimization_count"] == 6
+    assert s["optimization_by_type"] == {"cheaper_analog": 2, "lifecycle": 4}
+    assert s["optimization_savings_pct"] == 9.0
+
+
+def test_optimization_review_status_from_v2(gap_v2):
+    # 2 findings + 2 optimizations; все 4 reviewed → complete; opt отдельно complete
+    _gap_doc(gap_v2, "EOM", "rev-doc", findings=2, optimization=2,
+             expert_decisions=[
+                 {"item_type": "finding", "decision": "accepted"},
+                 {"item_type": "finding", "decision": "rejected"},
+                 {"item_type": "optimization", "decision": "accepted"},
+                 {"item_type": "optimization", "decision": "accepted"}])
+    s = _status(gap_v2, "rev-doc")
+    assert s["expert_review_status"] == "complete"
+    assert s["findings_review_status"] == "complete"
+    assert s["optimization_review_status"] == "complete"
+
+
+def test_expert_review_partial_from_v2(gap_v2):
+    _gap_doc(gap_v2, "EOM", "rev-partial", findings=3, optimization=0,
+             expert_decisions=[{"item_type": "finding", "decision": "accepted"}])
+    s = _status(gap_v2, "rev-partial")
+    assert s["findings_review_status"] == "partial"
+    assert s["expert_review_status"] == "partial"
+    assert s["optimization_review_status"] == ""  # нет оптимизаций → пусто
+
+
+def test_kingsons_bundle_optimization_and_review(gap_v2):
+    # King&Sons legacy-preserve: optimization.json + expert_review.json только в
+    # legacy_output бандле (нет latest/04_review) → read_optimization/read_review
+    # должны взять их из бандла.
+    _gap_doc(gap_v2, "SS", "ks-doc", findings=None, optimization=3, kingsons=True,
+             status="legacy_partial",
+             expert_decisions=[{"item_type": "optimization", "decision": "accepted"},
+                               {"item_type": "optimization", "decision": "accepted"},
+                               {"item_type": "optimization", "decision": "rejected"}])
+    s = _status(gap_v2, "ks-doc")
+    assert s["optimization_count"] == 3                 # из бандла optimization.json
+    assert s["optimization_review_status"] == "complete"  # 3/3 opt, из бандла expert_review.json
+
+
+def test_batches_from_v2(gap_v2):
+    _gap_doc(gap_v2, "EOM", "batch-doc", findings=1, batches=3)
+    s = _status(gap_v2, "batch-doc")
+    assert s["total_batches"] == 3 and s["completed_batches"] == 3
+
+
+def test_pipeline_from_pipeline_log(gap_v2):
+    _gap_doc(gap_v2, "EOM", "pl-doc", findings=2, pipeline_stages={
+        "text_analysis": {"status": "done"}, "block_analysis": {"status": "done"},
+        "findings_merge": {"status": "done"}, "norm_verify": {"status": "done"},
+        "optimization": {"status": "error", "error": "boom"}})
+    s = _status(gap_v2, "pl-doc")
+    assert s["pipeline"]["text_analysis"] == "done"
+    assert s["pipeline"]["norms_verified"] == "done"        # norm_verify → norms_verified
+    assert s["pipeline"]["optimization"] == "error"
+    assert any("optimization" in i for i in s["pipeline_issues"])
+
+
+def test_safe_default_only_when_source_absent(gap_v2):
+    # никаких optimization/expert_review/batches/pipeline_log → дефолты
+    _gap_doc(gap_v2, "OV", "bare-doc", findings=None, status="none")
+    s = _status(gap_v2, "bare-doc")
+    assert s["optimization_count"] == 0 and s["optimization_by_type"] == {}
+    assert s["expert_review_status"] == "" and s["optimization_review_status"] == ""
+    assert s["total_batches"] == 0 and s["completed_batches"] == 0
+    assert s["pipeline_issues"] == []
+    # has_pdf/md по-прежнему реальные (01_input есть)
+    assert s["has_pdf"] is True and s["has_md_file"] is True
+    # frontend-critical keys сохранены
+    assert isinstance(s["pipeline"], dict) and "gemma_enrichment" in s["pipeline"]
+
+
+def test_pdf_md_audit_date_from_inputs(gap_v2):
+    _gap_doc(gap_v2, "EOM", "io-doc", findings=2)
+    s = _status(gap_v2, "io-doc")
+    assert s["has_pdf"] is True and s["pdf_files"] == ["io-doc.pdf"]
+    assert s["pdf_size_mb"] >= 0 and s["has_md_file"] is True
+    assert s["last_audit_date"] == "2026-06-01T12:00:00"  # из meta.audit_completed
+
+
+def test_gap_closure_storage_legacy_and_readonly(gap_v2, monkeypatch, tmp_path):
+    # ?storage=legacy → legacy; default-v2 не пишет в projects_v2
+    (tmp_path / "projects").mkdir(parents=True, exist_ok=True)
+    _gap_doc(gap_v2, "EOM", "ro-doc", findings=2, optimization=2,
+             expert_decisions=[{"item_type": "finding", "decision": "accepted"}])
+    import hashlib
+    def h():
+        m = hashlib.sha256()
+        for p in sorted((gap_v2 / "objects").rglob("*")):
+            if p.is_file():
+                m.update(str(p.relative_to(gap_v2)).encode()); m.update(p.read_bytes())
+        return m.hexdigest()
+    before = h()
+    monkeypatch.setenv("AUDIT_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", str(gap_v2))
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_READ_CANARY_ENABLED", "true")
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_READ_DEFAULT_ENABLED", "true")
+    monkeypatch.delenv("AUDIT_STORAGE_BACKEND", raising=False)
+    monkeypatch.setattr(object_service, "get_current_object",
+                        lambda: {"id": OBJID, "name": "999 Test",
+                                 "projects_dir": str(tmp_path / "projects")})
+    r = client.get("/api/projects?storage=legacy")
+    assert r.json().get("storage_backend") != "projects_v2"
+    r2 = client.get("/api/projects")  # default v2
+    assert r2.json().get("storage_backend") == "projects_v2"
+    assert h() == before, "default-v2 read must NOT write projects_v2"

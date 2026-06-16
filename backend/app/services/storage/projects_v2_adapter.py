@@ -361,6 +361,99 @@ class ProjectsV2Adapter:
                 return _read_json(g)
         return None
 
+    # -- gap-closure readers (optimization / review / batches / inputs) -------
+    def _legacy_bundle_output(self, doc_dir: Path, version_id: str) -> Optional[Path]:
+        """King&Sons legacy_findings_preserve: единый `_output`-снимок
+        `99_service/legacy_output/<code>/_output` (там лежат ВСЕ артефакты)."""
+        legacy_out = self.version_dir(doc_dir, version_id) / "99_service" / "legacy_output"
+        if legacy_out.is_dir():
+            for o in sorted(legacy_out.glob("*/_output")):
+                if o.is_dir():
+                    return o
+        return None
+
+    def review_dir(self, doc_dir: Path, version_id: str) -> Optional[Path]:
+        """Папка 04_review версии (expert_review/optimization_review/findings_review)."""
+        d = self.version_dir(doc_dir, version_id) / "04_review"
+        return d if d.is_dir() else None
+
+    def read_optimization(self, doc_dir: Path, version_id: str) -> Optional[dict]:
+        """optimization.json: latest → King&Sons-бандл (read-only)."""
+        p = self._latest_file(doc_dir, version_id, "optimization.json")
+        if p:
+            return _read_json(p)
+        b = self._legacy_bundle_output(doc_dir, version_id)
+        if b and (b / "optimization.json").is_file():
+            return _read_json(b / "optimization.json")
+        return None
+
+    def read_review(self, doc_dir: Path, version_id: str, name: str) -> Optional[dict]:
+        """Файл ревью по имени (expert_review.json / optimization_review.json /
+        03_findings_review.json): 04_review → latest → King&Sons-бандл (read-only)."""
+        rd = self.review_dir(doc_dir, version_id)
+        if rd and (rd / name).is_file():
+            return _read_json(rd / name)
+        p = self._latest_file(doc_dir, version_id, name)
+        if p:
+            return _read_json(p)
+        b = self._legacy_bundle_output(doc_dir, version_id)
+        if b and (b / name).is_file():
+            return _read_json(b / name)
+        return None
+
+    def block_batches_dir(self, doc_dir: Path, version_id: str) -> Optional[Path]:
+        """Папка с block_batches.json + block_batch_*.json (для подсчёта батчей):
+        99_service → King&Sons-бандл → latest → последний run. None, если нет."""
+        vdir = self.version_dir(doc_dir, version_id)
+        for cand in (vdir / "99_service", vdir / "03_analysis" / "latest"):
+            if (cand / "block_batches.json").is_file():
+                return cand
+        b = self._legacy_bundle_output(doc_dir, version_id)
+        if b and (b / "block_batches.json").is_file():
+            return b
+        runs = vdir / "03_analysis" / "runs"
+        if runs.is_dir():
+            for r in sorted((p for p in runs.iterdir() if p.is_dir()), reverse=True):
+                if (r / "block_batches.json").is_file():
+                    return r
+        return None
+
+    def input_pdf_files(self, doc_dir: Path, version_id: str) -> list[tuple[str, int]]:
+        """[(имя, размер)] исходных PDF в 01_input (read-only)."""
+        inp = self.version_dir(doc_dir, version_id) / "01_input"
+        out: list[tuple[str, int]] = []
+        if inp.is_dir():
+            for p in sorted(inp.glob("*.pdf")):
+                if p.is_file():
+                    try:
+                        out.append((p.name, p.stat().st_size))
+                    except Exception:
+                        out.append((p.name, 0))
+        return out
+
+    def input_md_files(self, doc_dir: Path, version_id: str) -> list[tuple[str, int]]:
+        """[(имя, размер)] MD-файлов версии: 01_input/*.md или 02_work/document.md."""
+        vdir = self.version_dir(doc_dir, version_id)
+        out: list[tuple[str, int]] = []
+        inp = vdir / "01_input"
+        if inp.is_dir():
+            seen = set()
+            for pat in ("*_document.md", "*.md"):
+                for p in sorted(inp.glob(pat)):
+                    if p.is_file() and p.name not in seen:
+                        seen.add(p.name)
+                        try:
+                            out.append((p.name, p.stat().st_size))
+                        except Exception:
+                            out.append((p.name, 0))
+        w = vdir / "02_work" / "document.md"
+        if not out and w.is_file():
+            try:
+                out.append((w.name, w.stat().st_size))
+            except Exception:
+                out.append((w.name, 0))
+        return out
+
     def input_dir(self, doc_dir: Path, version_id: str) -> Path:
         """Папка 01_input версии (там же лежит *_ocr.html для text_evidence)."""
         return self.version_dir(doc_dir, version_id) / "01_input"

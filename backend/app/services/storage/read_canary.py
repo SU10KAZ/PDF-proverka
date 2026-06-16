@@ -303,31 +303,184 @@ def _v2_versions_summary(a, doc, doc_dir, cur) -> dict:
     }
 
 
+# pipeline_log stage key → PipelineStatus поле (зеркало legacy _get_pipeline_status)
+_PIPELINE_LOG_MAP = {
+    "crop_blocks": "crop_blocks", "gemma_enrichment": "gemma_enrichment",
+    "text_analysis": "text_analysis", "block_analysis": "blocks_analysis",
+    "block_retry": "block_retry", "findings_merge": "findings",
+    "findings_critic": "findings_critic", "findings_corrector": "findings_corrector",
+    "norm_verify": "norms_verified", "optimization": "optimization",
+    "optimization_critic": "optimization_critic",
+    "optimization_corrector": "optimization_corrector", "excel": "excel",
+    "prepare": "crop_blocks", "tile_audit": "blocks_analysis", "main_audit": "findings",
+}
+_PIPELINE_VALID = {"done", "error", "partial", "running", "skipped", "interrupted"}
+
+
+def _v2_pipeline_status(a, doc_dir, vid, art):
+    """PipelineStatus из pipeline_log.json stages (primary, зеркало legacy);
+    fallback — наличие 01/02/03. running/interrupted → error (read-only снимок,
+    без проверки live-job)."""
+    from backend.app.models.project import PipelineStatus
+    log = a.read_pipeline_log(doc_dir, vid)
+    if isinstance(log, dict) and isinstance(log.get("stages"), dict):
+        stages = log["stages"]
+        fields = {}
+        for log_key, field in _PIPELINE_LOG_MAP.items():
+            s = (stages.get(log_key) or {}).get("status", "pending")
+            if s in _PIPELINE_VALID:
+                if s in ("interrupted", "running"):
+                    s = "error"
+                fields[field] = s
+        if fields:
+            return PipelineStatus(**fields)
+    def _st(flag):
+        return "done" if flag else "pending"
+    return PipelineStatus(
+        text_analysis=_st(art["has_01_text_analysis"]),
+        blocks_analysis=_st(art["has_02_blocks_analysis"]),
+        findings=_st(art["has_03_findings"]),
+    )
+
+
+def _v2_pipeline_issues(a, doc_dir, vid):
+    """pipeline_issues из pipeline_log error/interrupted stages (зеркало legacy,
+    основной сигнал — упавшие этапы)."""
+    log = a.read_pipeline_log(doc_dir, vid)
+    if not (isinstance(log, dict) and isinstance(log.get("stages"), dict)):
+        return []
+    issues = []
+    for key, info in log["stages"].items():
+        if not isinstance(info, dict):
+            continue
+        if info.get("status") in ("error", "interrupted"):
+            err = info.get("error", "")
+            if err and len(err) > 80:
+                err = err[:77] + "..."
+            issues.append(f"{key}: {err}" if err else f"{key}: ошибка")
+    return issues
+
+
+def _v2_optimization(a, doc_dir, vid):
+    """(count, by_type, savings_pct) из optimization.json meta (зеркало legacy)."""
+    odata = a.read_optimization(doc_dir, vid)
+    if isinstance(odata, dict) and isinstance(odata.get("meta"), dict):
+        m = odata["meta"]
+        return (int(m.get("total_items", 0) or 0),
+                m.get("by_type", {}) or {},
+                m.get("estimated_savings_pct", 0) or 0)
+    return 0, {}, 0
+
+
+def _v2_review_statuses(a, doc_dir, vid, findings_count, optimization_count):
+    """(expert, findings_review, optimization_review) из 04_review/expert_review.json
+    (зеркало legacy: decisions[] accepted/rejected vs total). Нет файла → пусто."""
+    expert = freview = oreview = ""
+    total_items = findings_count + optimization_count
+    if total_items <= 0:
+        return expert, freview, oreview
+    rdata = a.read_review(doc_dir, vid, "expert_review.json")
+    if not (isinstance(rdata, dict) and isinstance(rdata.get("decisions"), list)):
+        return expert, freview, oreview
+    decisions = [d for d in rdata["decisions"] if isinstance(d, dict)]
+
+    def _reviewed(pred):
+        return len([d for d in decisions
+                    if pred(d) and d.get("decision") in ("accepted", "rejected")])
+
+    rc = _reviewed(lambda d: True)
+    if rc >= total_items:
+        expert = "complete"
+    elif rc > 0:
+        expert = "partial"
+    if findings_count > 0:
+        fr = _reviewed(lambda d: d.get("item_type") == "finding")
+        freview = "complete" if fr >= findings_count else ("partial" if fr > 0 else "")
+    if optimization_count > 0:
+        orv = _reviewed(lambda d: d.get("item_type") == "optimization")
+        oreview = "complete" if orv >= optimization_count else ("partial" if orv > 0 else "")
+    return expert, freview, oreview
+
+
+def _v2_batch_counts(a, doc_dir, vid):
+    """(total_batches, completed_batches) из block_batches.json + block_batch_*.json
+    (зеркало legacy: total из манифеста, completed = batch-файлы > 100 байт)."""
+    bd = a.block_batches_dir(doc_dir, vid)
+    if bd is None:
+        return 0, 0
+    import json as _json
+    try:
+        bf = bd / "block_batches.json"
+        data = _json.loads(bf.read_text(encoding="utf-8")) if bf.is_file() else None
+    except Exception:
+        data = None
+    if not isinstance(data, dict):
+        return 0, 0
+    total = int(data.get("total_batches", len(data.get("batches", []) or [])) or 0)
+    completed = 0
+    for i in range(1, total + 1):
+        f = bd / ("block_batch_%03d.json" % i)
+        try:
+            if f.is_file() and f.stat().st_size > 100:
+                completed += 1
+        except Exception:
+            pass
+    return total, completed
+
+
 def _v2_project_status(a, doc, ver=None) -> dict:
     """Legacy ProjectStatus (model_dump dict) из v2-документа.
 
-    Гарантирует ту же форму, что и legacy /api/projects[] и /api/projects/{id}:
-    переиспользуется сама модель ProjectStatus, поэтому ВСЕ ключи присутствуют
-    с совместимыми типами — включая `pipeline` (иначе шаблон index.html падает
-    на currentProject.pipeline.gemma_enrichment). Значения берутся из адаптера
-    где есть; источники, которых нет в read-only v2 (optimization, экспертные
-    review-статусы, batches) — безопасные дефолты модели.
+    Та же форма, что и legacy /api/projects[] и /api/projects/{id} (модель
+    ProjectStatus → все ключи + совместимые типы, включая `pipeline`). Реальные
+    значения подтягиваются из v2-источников где они есть (optimization.json,
+    04_review/expert_review.json, block_batches, pipeline_log, 01_input); там, где
+    источника нет — безопасный дефолт модели (см. read_default_gap_closure_report).
+    БЕЗ silent fallback в legacy, БЕЗ записи в projects_v2.
     """
-    from backend.app.models.project import ProjectStatus, PipelineStatus
+    from backend.app.models.project import ProjectStatus
     doc_dir = Path(doc["doc_dir"])
     cur = doc.get("current_version")
     vid_raw = ver or cur or "v1"
     art = a.latest_analysis_files(doc_dir, vid_raw)
     meta = a.version_metadata(doc_dir, vid_raw)
 
-    def _st(flag):
-        return "done" if flag else "pending"
+    # findings (count + severity + audit_date) — один проход по файлу замечаний
+    fdata = a.read_findings(doc_dir, vid_raw) or {}
+    fitems = fdata.get("findings", fdata.get("items", [])) if isinstance(fdata, dict) else []
+    if not isinstance(fitems, list):
+        fitems = []
+    findings_count = len(fitems)
+    findings_by_severity: dict = {}
+    for it in fitems:
+        if isinstance(it, dict):
+            sev = str(it.get("severity") or it.get("category") or "unknown")
+            findings_by_severity[sev] = findings_by_severity.get(sev, 0) + 1
+    # legacy читает только top-level audit_date/generated_at (которых в этих файлах
+    # нет → legacy сам даёт None); реальная дата лежит в meta.audit_completed →
+    # подтягиваем её как fallback (v2-superset, не сравнивается parity).
+    audit_date = None
+    if isinstance(fdata, dict):
+        _meta_f = fdata.get("meta") if isinstance(fdata.get("meta"), dict) else {}
+        audit_date = (fdata.get("audit_date") or fdata.get("generated_at")
+                      or _meta_f.get("audit_completed") or _meta_f.get("generated_at"))
 
-    pipeline = PipelineStatus(
-        text_analysis=_st(art["has_01_text_analysis"]),
-        blocks_analysis=_st(art["has_02_blocks_analysis"]),
-        findings=_st(art["has_03_findings"]),
-    )
+    opt_count, opt_by_type, opt_savings = _v2_optimization(a, doc_dir, vid_raw)
+    expert_status, freview_status, oreview_status = _v2_review_statuses(
+        a, doc_dir, vid_raw, findings_count, opt_count)
+    total_batches, completed_batches = _v2_batch_counts(a, doc_dir, vid_raw)
+    pipeline = _v2_pipeline_status(a, doc_dir, vid_raw, art)
+    pipeline_issues = _v2_pipeline_issues(a, doc_dir, vid_raw)
+
+    pdfs = a.input_pdf_files(doc_dir, vid_raw)
+    has_pdf = bool(pdfs)
+    pdf_files = [n for n, _ in pdfs]
+    pdf_size_mb = round(sum(s for _, s in pdfs) / 1024 / 1024, 1) if pdfs else 0.0
+    mds = a.input_md_files(doc_dir, vid_raw)
+    has_md = bool(mds)
+    md_file_name = mds[0][0] if mds else None
+    md_size_kb = round(mds[0][1] / 1024, 1) if mds else 0.0
+
     vsum = _v2_versions_summary(a, doc, doc_dir, cur)
     idx = a.read_blocks_index(doc_dir, vid_raw) or {}
     return ProjectStatus(
@@ -335,14 +488,30 @@ def _v2_project_status(a, doc, ver=None) -> dict:
         name=doc["document_code"],
         section=(doc.get("discipline") or "EOM"),
         description="",
+        has_pdf=has_pdf,
+        pdf_size_mb=pdf_size_mb,
+        pdf_files=pdf_files,
+        has_md_file=has_md,
+        md_file_name=md_file_name,
+        md_file_size_kb=md_size_kb,
+        text_source=("md" if has_md else "none"),
         pipeline=pipeline,
-        findings_count=a.findings_count(doc_dir, vid_raw),
-        findings_by_severity=a.findings_by_severity(doc_dir, vid_raw),
-        last_audit_date=(meta.get("analysis_generation") if isinstance(meta, dict) else None),
+        findings_count=findings_count,
+        findings_by_severity=findings_by_severity,
+        optimization_count=opt_count,
+        optimization_by_type=opt_by_type,
+        optimization_savings_pct=opt_savings,
+        last_audit_date=audit_date,
+        total_batches=total_batches,
+        completed_batches=completed_batches,
         has_ocr=bool(idx.get("blocks")),
         block_count=int(idx.get("total_blocks") or 0),
         block_expected=int(idx.get("total_expected") or 0),
         block_errors=int(idx.get("errors") or 0),
+        pipeline_issues=pipeline_issues,
+        expert_review_status=expert_status,
+        findings_review_status=freview_status,
+        optimization_review_status=oreview_status,
         version_id=_denorm_vid(vid_raw),
         version_no=(meta.get("version_no") or _vno(vid_raw)),
         version_label=(meta.get("label") or ("V%d" % _vno(vid_raw))),
