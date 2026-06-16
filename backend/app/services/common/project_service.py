@@ -801,9 +801,27 @@ def get_project_info(project_id: str, *, version_id: Optional[str] = None) -> Op
     return _load_json(proj_dir / "project_info.json")
 
 
-def save_project_info(project_id: str, data: dict) -> bool:
-    """Сохранить project_info.json."""
-    path = resolve_project_dir(project_id) / "project_info.json"
+def save_project_info(
+    project_id: str, data: dict, *, version_id: Optional[str] = None,
+) -> bool:
+    """Сохранить project_info.json.
+
+    При `version_id` (или активном bind_version) пишет в папку версии;
+    fallback — корневой info проекта (legacy V1).
+    """
+    root_dir = resolve_project_dir(project_id)
+    path = root_dir / "project_info.json"
+    target_vid = version_service.resolve_effective_version_id(
+        root_dir, project_id, version_id,
+    )
+    try:
+        version_dir = version_service.get_version_dir(root_dir, project_id, target_vid)
+        # Пишем в версию только если её папка реально существует (для legacy
+        # V1 version_dir == root_dir, поведение не меняется).
+        if version_dir.exists():
+            path = version_dir / "project_info.json"
+    except version_service.VersionNotFoundError:
+        pass
     try:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
@@ -1751,7 +1769,7 @@ def register_project(folder: str, pdf_file: str, pdf_files: list[str] | None = N
     return info
 
 
-def clean_project_data(project_id: str) -> dict:
+def clean_project_data(project_id: str, *, version_id: Optional[str] = None) -> dict:
     """Очистить все результаты аудита, сохранив только исходные документы.
 
     Сохраняет (исходные файлы пользователя):
@@ -1766,12 +1784,30 @@ def clean_project_data(project_id: str) -> dict:
     - Папку _output/ целиком
     - client.log, extracted_text.txt и другие генерируемые файлы
 
+    Очищаются данные ТОЛЬКО указанной версии (`version_id`; при None —
+    активной/latest). Папка `_output/` лежит внутри папки версии, поэтому
+    другие версии проекта не затрагиваются.
+
     Returns:
         dict с описанием удалённого
     """
-    proj_dir = resolve_project_dir(project_id)
-    if not proj_dir.exists():
+    root_dir = resolve_project_dir(project_id)
+    if not root_dir.exists():
         raise ValueError(f"Проект '{project_id}' не найден")
+
+    # Папка конкретной версии (V1 → корень проекта; старшие → братская папка
+    # версии в контейнере). Так очистка не задевает соседние версии.
+    target_vid = version_service.resolve_effective_version_id(
+        root_dir, project_id, version_id,
+    )
+    try:
+        proj_dir = version_service.get_version_dir(root_dir, project_id, target_vid)
+    except version_service.VersionNotFoundError:
+        proj_dir = root_dir
+    if not proj_dir.exists():
+        raise ValueError(
+            f"Версия '{target_vid}' проекта '{project_id}' не найдена"
+        )
 
     result = {"deleted_files": 0, "deleted_dirs": 0, "freed_mb": 0.0}
     total_size = 0
@@ -1813,8 +1849,8 @@ def clean_project_data(project_id: str) -> dict:
 
     result["freed_mb"] = round(total_size / 1024 / 1024, 1)
 
-    # 3. Сбрасываем авто-поля в project_info.json
-    info = get_project_info(project_id)
+    # 3. Сбрасываем авто-поля в project_info.json (той же версии)
+    info = get_project_info(project_id, version_id=target_vid)
     if info:
         auto_fields = [
             "tile_config_source", "text_source",
@@ -1824,8 +1860,9 @@ def clean_project_data(project_id: str) -> dict:
         for field in auto_fields:
             info.pop(field, None)
         info["tile_config"] = {}
-        save_project_info(project_id, info)
+        save_project_info(project_id, info, version_id=target_vid)
         result["project_info_reset"] = True
+    result["version_id"] = target_vid
 
     # 4. Пересоздаём пустую _output/
     output_dir.mkdir(exist_ok=True)

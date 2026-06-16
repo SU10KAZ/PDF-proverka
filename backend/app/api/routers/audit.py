@@ -9,7 +9,7 @@ import traceback
 from pathlib import Path
 from typing import Optional
 from fastapi import APIRouter, Body, HTTPException, Query
-from backend.app.pipeline.manager import pipeline_manager
+from backend.app.pipeline.manager import pipeline_manager, BatchResumeBlockedError
 import backend.app.services.common.project_service as project_service
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.core.config import (
@@ -346,10 +346,19 @@ async def get_batch_status():
     active=True  — очередь работает прямо сейчас.
     active=False — очередь есть, но не запущена (история/прервана/завершена).
     queue=None   — очереди нет вовсе.
+
+    diagnostics — разделяет состояние очереди / текущего проекта / worker'а,
+    чтобы UI не показывал ложный «полный сбой», пока текущий проект ещё идёт:
+      current_project_running, batch_worker_lost, resume_available, display_status.
     """
     queue = pipeline_manager.get_batch_queue()
     active = bool(queue and queue.status == "running")
-    return {"active": active, "queue": queue.model_dump() if queue else None}
+    diagnostics = pipeline_manager.get_batch_diagnostics()
+    return {
+        "active": active,
+        "queue": queue.model_dump() if queue else None,
+        "diagnostics": diagnostics,
+    }
 
 
 @router.delete("/batch/history")
@@ -367,10 +376,20 @@ async def clear_batch_history():
 
 @router.post("/batch/resume")
 async def resume_batch():
-    """Продолжить прерванную batch-очередь."""
+    """Продолжить прерванную batch-очередь.
+
+    Если текущий проект ещё выполняется — возвращаем 409 с
+    reason=current_project_running (resume будет доступен после его завершения).
+    Идемпотентно: если worker уже жив, вернётся текущая очередь без дублей.
+    """
     try:
         queue = await pipeline_manager.resume_interrupted_batch()
         return {"status": "resumed", "queue": queue.model_dump()}
+    except BatchResumeBlockedError as e:
+        raise HTTPException(
+            409,
+            detail={"reason": "current_project_running", "message": str(e)},
+        )
     except RuntimeError as e:
         raise HTTPException(409, str(e))
 

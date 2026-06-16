@@ -5576,23 +5576,8 @@
                 </div>
                 <!-- Компактный toolbar (zoom + sync + действия в одной строке) -->
                 <div class="sc-card" style="background:#f8fafc; border:1px solid #e5e7eb; border-radius:6px; padding:8px 12px; margin-bottom:10px; display:flex; gap:12px; flex-wrap:wrap; align-items:center; font-size:13px">
-                    <div style="display:flex; gap:4px; align-items:center"
-                         title="Ctrl + колесо мыши над листом — масштаб от курсора; зажатие ЛКМ — рука (как в Adobe Acrobat)">
-                        <button class="btn btn-sm btn-secondary" @click="scZoomBy(0.85)" title="Уменьшить">−</button>
-                        <span style="min-width:60px; text-align:center; font-weight:600">Масштаб: {{ Math.round(scZoom*100) }}%</span>
-                        <button class="btn btn-sm btn-secondary" @click="scZoomBy(1.18)" title="Увеличить">+</button>
-                        <button class="btn btn-sm btn-secondary" @click="scZoomReset()" title="Сброс">100%</button>
-                        <span style="margin-left:6px; font-size:11px; opacity:.55; white-space:nowrap" title="Ctrl + колесо — зум от курсора, ЛКМ — рука">⌨ Ctrl+колесо · 🖐 ЛКМ</span>
-                    </div>
-                    <label style="display:flex; gap:4px; align-items:center; cursor:pointer">
-                        <input type="checkbox" v-model="scSyncScroll" /> Синхронизировать прокрутку
-                    </label>
-                    <div style="opacity:.7; font-size:12px">
-                        Slots: {{ scAlignmentItems.length }} ·
-                        Связей: {{ scPairData && scPairData.links ? scPairData.links.length : 0 }}
-                        <span v-if="scSelectedLeft || scSelectedRight" style="color:#2563eb">
-                            · Выбрано: {{ scSelectedLeft ? 'L' : '' }}{{ scSelectedLeft && scSelectedRight ? '+' : '' }}{{ scSelectedRight ? 'R' : '' }}
-                        </span>
+                    <div v-if="scSelectedLeft || scSelectedRight" style="opacity:.7; font-size:12px; color:#2563eb">
+                        Выбрано: {{ scSelectedLeft ? 'L' : '' }}{{ scSelectedLeft && scSelectedRight ? '+' : '' }}{{ scSelectedRight ? 'R' : '' }}
                     </div>
                     <div style="flex:1"></div>
                     <button class="btn"
@@ -5610,13 +5595,8 @@
                     </button>
                     <button class="btn btn-secondary" @click="scSuggestByStamp()" :disabled="scStampLoading"
                             title="Сопоставить листы старой и новой стадии по имени листа из штампа и предложить поставить их напротив друг друга (находит листы, уехавшие далеко между стадиями)">
-                        {{ scStampLoading ? (scStampUseLlm ? 'Сопоставление + ИИ…' : 'Сопоставление…') : '🏷 Сопоставить листы' }}
+                        {{ scStampLoading ? 'Сопоставление…' : '🏷 Сопоставить листы' }}
                     </button>
-                    <label style="display:inline-flex; align-items:center; gap:4px; font-size:12px; color:#374151; cursor:pointer"
-                           title="После точного/нечёткого матчинга доматчить остаток через нейросеть Haiku: ловит листы с одинаковым смыслом, но разными названиями («Однолинейная расчетная схема ГРЩ» = «Однолинейная схема ГРЩ»)">
-                        <input type="checkbox" v-model="scStampUseLlm" :disabled="scStampLoading" />
-                        🧠 ИИ-доматчинг
-                    </label>
                     <button class="btn btn-primary" @click="scAutoMatchApplySheets(false)"
                             :disabled="scAutoMatchApplyLoading || scStampLoading"
                             title="One-click: умно сопоставить листы и СРАЗУ применить надёжные пары; сомнительные — на проверку; результат сохраняется в page_alignment.json. Связи блоков не удаляются (только stale-пометка).">
@@ -6774,14 +6754,6 @@
                     <div v-for="side in ['left','right']" :key="'pane-tb-'+side" class="sc-pane-toolbar"
                          :title="side==='left' ? 'Действия для левой стадии (slot ' + scCurrentSlotForSide('left') + ')' : 'Действия для правой стадии (slot ' + scCurrentSlotForSide('right') + ')'"
                          style="display:flex; gap:6px; align-items:center; padding:4px 8px; border:1px solid #e5e7eb; border-radius:6px; background:#fff; font-size:13px">
-                        <span style="font-size:11px; opacity:.65; margin-right:4px">
-                            {{ side==='left' ? 'Левая стадия' : 'Правая стадия' }}
-                            · slot <strong>{{ scCurrentSlotForSide(side) || '—' }}</strong>
-                        </span>
-                        <button class="btn btn-sm btn-secondary sc-pane-icon-btn"
-                                :disabled="!scCanInsertBlankSide(side) || scAlignmentActionRunning"
-                                @click="scInsertBlankSide(side)"
-                                title="Добавить пустой лист">⊕</button>
                         <button class="btn btn-sm btn-secondary sc-pane-icon-btn"
                                 :disabled="!scCanMovePageSide(side, 'up') || scAlignmentActionRunning"
                                 @click="scMovePageSide(side, 'up')"
@@ -6790,7 +6762,18 @@
                                 :disabled="!scCanMovePageSide(side, 'down') || scAlignmentActionRunning"
                                 @click="scMovePageSide(side, 'down')"
                                 title="Переместить страницу ниже">↓</button>
-                        <span v-if="scAlignmentActionError" style="color:#b91c1c; font-size:11px; margin-left:8px">{{ scAlignmentActionError }}</span>
+                        <button class="btn btn-sm btn-secondary sc-pane-icon-btn"
+                                :disabled="!scCanInsertBlankSide(side) || scAlignmentActionRunning"
+                                @click="scInsertBlankSide(side)"
+                                title="Добавить пустой лист">⊕</button>
+                        <template v-if="side==='left'">
+                            <span style="width:1px; background:#e5e7eb; align-self:stretch; margin:0 2px"></span>
+                            <button class="btn btn-sm btn-secondary" @click="scZoomBy(0.85)" title="Уменьшить (Ctrl+колесо)">−</button>
+                            <span style="min-width:44px; text-align:center; font-weight:600; font-size:12px">{{ Math.round(scZoom*100) }}%</span>
+                            <button class="btn btn-sm btn-secondary" @click="scZoomBy(1.18)" title="Увеличить (Ctrl+колесо)">+</button>
+                            <button class="btn btn-sm btn-secondary" @click="scZoomReset()" title="Сброс масштаба">100%</button>
+                        </template>
+                        <span v-if="scAlignmentActionError && side==='left'" style="color:#b91c1c; font-size:11px; margin-left:8px">{{ scAlignmentActionError }}</span>
                     </div>
                 </div>
 

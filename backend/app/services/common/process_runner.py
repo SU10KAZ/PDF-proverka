@@ -55,6 +55,28 @@ def unregister_process(project_id: str, proc) -> None:
             del _active_processes[project_id]
 
 
+def has_live_processes(project_id: str) -> bool:
+    """True если у проекта есть хотя бы один живой дочерний процесс.
+
+    Это ground-truth сигнал живости аудита, который НЕ зависит от in-memory
+    job/heartbeat трекинга (его может ошибочно сбросить cleanup_zombies). Пока
+    выполняется хотя бы один claude/script subprocess проекта — аудит реально
+    идёт, и очередь нельзя считать прерванной.
+    """
+    procs = _active_processes.get(project_id)
+    if not procs:
+        return False
+    for proc in procs:
+        if getattr(proc, "returncode", 0) is None:  # ещё жив
+            return True
+    return False
+
+
+def active_process_pids() -> set[str]:
+    """project_id, у которых есть хотя бы один живой дочерний процесс."""
+    return {pid for pid in list(_active_processes.keys()) if has_live_processes(pid)}
+
+
 async def kill_all_processes(project_id: str) -> int:
     """Убить все активные процессы проекта. Возвращает количество убитых."""
     procs = _active_processes.pop(project_id, set())

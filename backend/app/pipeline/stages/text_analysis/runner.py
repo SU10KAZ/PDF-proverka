@@ -13,15 +13,24 @@ Stage runner для этапа text_analysis (анализ текста MD че�
 """
 from __future__ import annotations
 
+import asyncio
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import backend.app.services.llm.claude_runner as claude_runner
 from backend.app.pipeline.stage_result import StageResult
 from backend.app.services.common.cli_utils import is_cancelled, is_rate_limited
+from backend.app.pipeline.stages.text_analysis.rate_limit_retry import (
+    load_rate_limit_config,
+    compute_fallback_backoff,
+    REASON_RATE_LIMIT_EXHAUSTED,
+)
 
 if TYPE_CHECKING:
     from backend.app.pipeline.context import PipelineStageContext
+
+# Инъектируемая точка сна (тесты подменяют, чтобы не ждать реально).
+_SLEEP = asyncio.sleep
 
 
 def _error_detail(exit_code: int, output: str, max_len: int = 120) -> str:
@@ -98,48 +107,88 @@ async def run_text_analysis(
         ctx.update_pipeline_log(log_stage, "error", error=error)
         return StageResult.fail(error)
 
-    # ── Запуск LLM ──
+    # ── Запуск LLM с bounded rate-limit retry ──
     _runner = claude_runner.run_triage if use_triage else claude_runner.run_text_analysis
     _usage_label = "triage" if use_triage else "text_analysis"
+    label = "Триаж" if use_triage else "Текстовый анализ"
+    human = "триаже" if use_triage else "текстовом анализе"
 
-    exit_code, output, cli_result = await _runner(
-        project_info, pid,
-        on_output=ctx.log,
-    )
-    ctx.record_cli_usage(cli_result, _usage_label)
+    cfg = load_rate_limit_config()
+    rl_attempt = 0  # сколько rate-limit ожиданий уже выполнено
 
-    if is_cancelled(exit_code):
-        return StageResult.cancel()
-
-    # ── Rate limit retry (опционально) ──
-    if with_rate_limit_retry and is_rate_limited(exit_code, output or "", ""):
-        await ctx.log(
-            f"Rate limit при {'триаже' if use_triage else 'текстовом анализе'}, ожидание...",
-            "warn",
-        )
-        can_continue = await ctx.wait_for_rate_limit(
-            f"rate limit при {'триаже' if use_triage else 'текстовом анализе'}",
-            output or "",
-        )
-        if not can_continue:
-            error = "Rate limit: ожидание превышено или отменено"
-            ctx.update_pipeline_log(log_stage, "error", error=error)
-            return StageResult.fail(error)
-
+    while True:
         exit_code, output, cli_result = await _runner(
             project_info, pid,
             on_output=ctx.log,
         )
-        ctx.record_cli_usage(cli_result, f"{_usage_label}_retry")
+        ctx.record_cli_usage(
+            cli_result,
+            _usage_label if rl_attempt == 0 else f"{_usage_label}_retry{rl_attempt}",
+        )
 
         if is_cancelled(exit_code):
             return StageResult.cancel()
 
-    if exit_code != 0:
-        error = _error_detail(exit_code, output or "")
-        ctx.update_pipeline_log(log_stage, "error", error=error)
-        label = "Триаж" if use_triage else "Текстовый анализ"
-        return StageResult.fail(f"{label}: код {exit_code}")
+        if exit_code == 0:
+            break  # успех
+
+        rate_limited = with_rate_limit_retry and is_rate_limited(exit_code, output or "", "")
+        if not rate_limited:
+            # Обычная (НЕ rate-limit) ошибка — hard fail как раньше.
+            error = _error_detail(exit_code, output or "")
+            ctx.update_pipeline_log(log_stage, "error", error=error)
+            return StageResult.fail(f"{label}: код {exit_code}")
+
+        # ── Rate limit: bounded retry с fallback backoff ──
+        rl_attempt += 1
+        if rl_attempt > cfg.max_retries:
+            error = (
+                f"rate_limit_exhausted: лимит Claude сохраняется после "
+                f"{cfg.max_retries} попыток ожидания ({label.lower()})"
+            )
+            await ctx.log(
+                f"Rate limit при {human}: исчерпаны retry "
+                f"({cfg.max_retries}) → {REASON_RATE_LIMIT_EXHAUSTED} (retry_later)",
+                "error",
+            )
+            ctx.update_pipeline_log(
+                log_stage, "error", error=error,
+                detail={"reason": REASON_RATE_LIMIT_EXHAUSTED, "rate_limit_retries": cfg.max_retries},
+            )
+            return StageResult.fail(
+                error,
+                reason=REASON_RATE_LIMIT_EXHAUSTED,
+                pause_on_rate_limit=cfg.pause_on_exhausted,
+            )
+
+        try:
+            parsed = claude_runner.parse_rate_limit_reset(output or "")
+        except Exception:
+            parsed = None
+        fallback = compute_fallback_backoff(rl_attempt, cfg)
+        await ctx.log(
+            f"Rate limit при {human}: попытка {rl_attempt}/{cfg.max_retries}; "
+            + (f"reset из CLI ~{parsed}с" if parsed
+               else f"reset не распарсился → fallback backoff {fallback}с"),
+            "warn",
+        )
+
+        can_continue = await ctx.wait_for_rate_limit(
+            f"rate limit при {human} (попытка {rl_attempt}/{cfg.max_retries})",
+            output or "",
+        )
+        if not can_continue:
+            # Отмена пользователем — выходим.
+            if ctx.is_cancelled and ctx.is_cancelled():
+                return StageResult.cancel()
+            # Не отмена: wait не определил время сброса → bounded fallback backoff.
+            await ctx.log(
+                f"wait_for_rate_limit не дождался сброса → fallback backoff {fallback}с "
+                f"(попытка {rl_attempt}/{cfg.max_retries})",
+                "warn",
+            )
+            await _SLEEP(fallback)
+        # Повторяем запуск LLM (следующая итерация while).
 
     # ── Проверка выходного файла ──
     output_path = output_dir / "01_text_analysis.json"
