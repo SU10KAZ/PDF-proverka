@@ -3,6 +3,7 @@
 Сканирование, чтение project_info.json, определение статуса конвейера.
 """
 import contextvars
+import hashlib
 import json
 import os
 import re
@@ -1753,6 +1754,195 @@ def _v2_document_exists(object_id: str, project_name: str) -> bool:
         return False
 
 
+def _sha256_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def _classify_upload_files(files: list[tuple[str, bytes]]) -> dict:
+    """(имя, байты)[] → {pdfs, mds, results, ocrs, ignored}. Бросает UploadFolderError
+    на небезопасном имени (path-traversal). Общая логика для save и precheck."""
+    pdfs: list[tuple[str, bytes]] = []
+    mds: list[tuple[str, bytes]] = []
+    results: list[tuple[str, bytes]] = []
+    ocrs: list[tuple[str, bytes]] = []
+    ignored: list[str] = []
+    for fname, data in files:
+        safe = _safe_upload_basename(fname)  # бросает на traversal
+        ext = os.path.splitext(safe)[1].lower()
+        low = safe.lower()
+        if ext not in _ALLOWED_UPLOAD_EXTS:
+            ignored.append(safe)
+            continue
+        if ext == ".pdf":
+            pdfs.append((safe, data))
+        elif ext == ".md":
+            mds.append((safe, data))
+        elif ext == ".json" and low.endswith("_result.json"):
+            results.append((safe, data))
+        elif ext in (".html", ".htm") and low.endswith("_ocr.html"):
+            ocrs.append((safe, data))
+        else:
+            ignored.append(safe)
+    return {"pdfs": pdfs, "mds": mds, "results": results, "ocrs": ocrs, "ignored": ignored}
+
+
+def _compute_upload_fingerprint(cls: dict) -> dict:
+    """pdf_sha256 + bundle_fingerprint. bundle учитывает pdf/md/result/ocr и их
+    sha256 (имя+роль+хэш) — `*_ocr.html` входит в отпечаток."""
+    files_manifest: list[dict] = []
+    pdf_sha: Optional[str] = None
+    for role, items in (("pdf", cls["pdfs"]), ("md", cls["mds"]),
+                        ("result", cls["results"]), ("ocr", cls["ocrs"])):
+        for name, data in items:
+            h = _sha256_bytes(data)
+            files_manifest.append({"role": role, "name": name, "sha256": h, "size": len(data)})
+            if role == "pdf" and pdf_sha is None:
+                pdf_sha = h
+    canon = "\n".join(sorted(f"{m['role']}:{m['name']}:{m['sha256']}" for m in files_manifest))
+    bundle_fp = hashlib.sha256(canon.encode("utf-8")).hexdigest() if files_manifest else None
+    return {"pdf_sha256": pdf_sha, "bundle_fingerprint": bundle_fp, "files": files_manifest}
+
+
+def _normalize_name_for_similarity(name: str) -> str:
+    """Нормализация имени проекта для детекта похожих (снимает ревизии/копии/даты)."""
+    n = (name or "").strip().lower()
+    n = re.sub(r"\(main\)$", "", n)
+    n = re.sub(r"\.pdf$", "", n)
+    n = re.sub(r"^\d{2}\.\d{2}\.\d{2}_", "", n)            # дата-префикс
+    n = re.sub(r"\s*\((?:изм\.?\s*\d+|\d+)\)", "", n)      # (1) (2) (Изм.1)
+    n = re.sub(r"\s*v\d+$", "", n)                          # V2
+    n = re.sub(r"_в\d+$", "", n)                            # _в2
+    n = re.sub(r"\s+", " ", n).strip()
+    return n
+
+
+def _scan_object_fingerprints(obj_projects_dir) -> dict:
+    """Скан project_info.json объекта → индексы fingerprint'ов + нормализованных имён.
+
+    Только legacy (авторитетно, зеркалится в v2). Старые проекты без fingerprint
+    участвуют лишь в name-индексе (checksum-дедуп — forward-looking).
+    """
+    pdf_idx: dict[str, list[str]] = {}
+    bundle_idx: dict[str, list[str]] = {}
+    names_list: list[dict] = []
+    try:
+        for pi in Path(obj_projects_dir).rglob("project_info.json"):
+            try:
+                info = json.loads(pi.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            pid = info.get("project_id") or pi.parent.name
+            nm = info.get("name") or pi.parent.name
+            sect = info.get("section") or ""
+            ps = info.get("pdf_sha256")
+            bf = info.get("bundle_fingerprint")
+            if ps:
+                pdf_idx.setdefault(ps, []).append(pid)
+            if bf:
+                bundle_idx.setdefault(bf, []).append(pid)
+            names_list.append({"pid": pid, "discipline": sect,
+                               "norm": _normalize_name_for_similarity(nm)})
+    except Exception:
+        pass
+    return {"pdf": pdf_idx, "bundle": bundle_idx, "names_list": names_list}
+
+
+# error-коды precheck, означающие «нельзя загрузить вообще» (не дубль)
+_PRECHECK_ERROR_CODES = {
+    "no_pdf", "multiple_pdf", "bad_name", "bad_discipline",
+    "object_not_found", "unsafe_filename",
+}
+
+
+def precheck_uploaded_project_folder(*, object_id: str, discipline: str,
+                                     project_name: str,
+                                     files: list[tuple[str, bytes]]) -> dict:
+    """Dry-run проверка загрузки папки — НИЧЕГО не пишет. Возвращает verdict со
+    статусом ready/warning/duplicate/error, blocks[] и warnings[].
+
+    Проверки: имя в legacy/v2 (hard block), точный bundle-дубль (hard block),
+    дубль PDF по checksum (warning), похожее имя (warning), no/multi PDF (error).
+    """
+    from backend.app.services.common.object_service import (
+        get_object_by_id, get_projects_dir_for,
+    )
+    discipline = (discipline or "").strip()
+    project_name = (project_name or "").strip()
+    blocks: list[dict] = []
+    warnings: list[dict] = []
+
+    name_invalid = (not project_name or project_name.startswith("_")
+                    or any(s in project_name for s in ("/", "\\", "..", "\x00")))
+    disc_invalid = (not discipline or discipline.startswith("_")
+                    or any(s in discipline for s in ("/", "\\", "..", "\x00")))
+    obj = get_object_by_id(object_id)
+    obj_dir = get_projects_dir_for(object_id) if obj else None
+
+    try:
+        cls = _classify_upload_files(files)
+    except UploadFolderError as e:
+        blocks.append({"code": "unsafe_filename", "message": str(e)})
+        cls = {"pdfs": [], "mds": [], "results": [], "ocrs": [], "ignored": []}
+    fp = _compute_upload_fingerprint(cls)
+
+    npdf = len(cls["pdfs"])
+    if npdf == 0:
+        blocks.append({"code": "no_pdf", "message": "В папке не найден PDF. Нужен ровно один PDF проекта."})
+    elif npdf > 1:
+        blocks.append({"code": "multiple_pdf", "message": "В папке найдено несколько PDF. Оставьте один PDF на проект."})
+    if name_invalid:
+        blocks.append({"code": "bad_name", "message": "Недопустимое название проекта (пустое, с '_' или спецсимволами)."})
+    if disc_invalid:
+        blocks.append({"code": "bad_discipline", "message": "Недопустимая дисциплина."})
+    if obj is None:
+        blocks.append({"code": "object_not_found", "message": f"Объект не найден: {object_id!r}"})
+
+    project_id = f"{discipline}/{project_name}" if (project_name and discipline and not name_invalid and not disc_invalid) else None
+
+    if obj_dir is not None and project_id:
+        dest = obj_dir / discipline / project_name
+        if dest.exists() and (dest / "project_info.json").exists():
+            blocks.append({"code": "legacy_name_exists", "message": f"Проект «{project_id}» уже существует в projects/."})
+        if _v2_document_exists(object_id, project_name):
+            blocks.append({"code": "v2_name_exists", "message": f"Проект «{project_id}» уже существует в projects_v2."})
+
+        idx = _scan_object_fingerprints(obj_dir)
+        bf = fp.get("bundle_fingerprint")
+        ps = fp.get("pdf_sha256")
+        if bf and bf in idx["bundle"]:
+            dup = idx["bundle"][bf]
+            blocks.append({"code": "bundle_exact_duplicate",
+                           "message": f"Точный комплект уже загружался: {', '.join(dup[:3])}"})
+        elif ps and ps in idx["pdf"]:
+            dup = idx["pdf"][ps]
+            warnings.append({"code": "pdf_checksum_duplicate",
+                             "message": f"Такой PDF уже загружался: {', '.join(dup[:3])}"})
+        norm = _normalize_name_for_similarity(project_name)
+        sim = [r["pid"] for r in idx["names_list"]
+               if r["discipline"] == discipline and r["norm"] == norm and r["pid"] != project_id]
+        if sim:
+            warnings.append({"code": "similar_name",
+                             "message": f"Похожее имя проекта найдено: {', '.join(sim[:3])}"})
+
+    if blocks:
+        status = "error" if any(b["code"] in _PRECHECK_ERROR_CODES for b in blocks) else "duplicate"
+    elif warnings:
+        status = "warning"
+    else:
+        status = "ready"
+
+    return {
+        "project_id": project_id, "object_id": object_id, "discipline": discipline,
+        "project_name": project_name,
+        "pdf_sha256": fp.get("pdf_sha256"), "bundle_fingerprint": fp.get("bundle_fingerprint"),
+        "pdf_count": npdf, "pdf_name": (cls["pdfs"][0][0] if cls["pdfs"] else None),
+        "has_md": bool(cls["mds"]), "has_result": bool(cls["results"]), "has_ocr": bool(cls["ocrs"]),
+        "ignored_files": cls["ignored"],
+        "status": status, "blocks": blocks, "warnings": warnings,
+        "bundle_warnings": _upload_bundle_warnings(bool(cls["mds"]), bool(cls["results"]), bool(cls["ocrs"])),
+    }
+
+
 def save_uploaded_project_folder(*, object_id: str, discipline: str,
                                  project_name: str,
                                  files: list[tuple[str, bytes]],
@@ -1802,29 +1992,10 @@ def save_uploaded_project_folder(*, object_id: str, discipline: str,
         raise UploadFolderError(f"Не удалось определить папку объекта: {object_id!r}")
 
     # --- классификация файлов (project_info.json и прочее — игнор) ------------
-    pdfs: list[tuple[str, bytes]] = []
-    mds: list[tuple[str, bytes]] = []
-    results: list[tuple[str, bytes]] = []
-    ocrs: list[tuple[str, bytes]] = []
-    ignored: list[str] = []
-    for fname, data in files:
-        safe = _safe_upload_basename(fname)  # бросает на traversal
-        ext = os.path.splitext(safe)[1].lower()
-        low = safe.lower()
-        if ext not in _ALLOWED_UPLOAD_EXTS:
-            ignored.append(safe)
-            continue
-        if ext == ".pdf":
-            pdfs.append((safe, data))
-        elif ext == ".md":
-            mds.append((safe, data))
-        elif ext == ".json" and low.endswith("_result.json"):
-            results.append((safe, data))
-        elif ext in (".html", ".htm") and low.endswith("_ocr.html"):
-            ocrs.append((safe, data))
-        else:
-            # project_info.json, прочие .json/.html — не сохраняем
-            ignored.append(safe)
+    cls = _classify_upload_files(files)
+    pdfs, mds, results, ocrs, ignored = (
+        cls["pdfs"], cls["mds"], cls["results"], cls["ocrs"], cls["ignored"]
+    )
 
     if len(pdfs) == 0:
         raise UploadFolderError("В папке не найден PDF. Нужен ровно один PDF проекта.")
@@ -1833,13 +2004,23 @@ def save_uploaded_project_folder(*, object_id: str, discipline: str,
             "В папке найдено несколько PDF. Выберите папку одного проекта."
         )
 
-    # --- проверка дубля (legacy авторитетно + best-effort v2) ----------------
+    fp = _compute_upload_fingerprint(cls)
+
+    # --- проверка дубля (legacy авторитетно + best-effort v2). Повторяется и
+    #     здесь (не только в precheck) для защиты от race condition. -----------
     project_id = f"{discipline}/{project_name}"
     dest = obj_projects_dir / discipline / project_name
     if dest.exists() and (dest / "project_info.json").exists():
         raise UploadFolderConflict(f"Проект '{project_id}' уже существует в projects/")
     if _v2_document_exists(object_id, project_name):
         raise UploadFolderConflict(f"Проект '{project_id}' уже существует в projects_v2")
+    # точный bundle-дубль (тот же комплект файлов) — hard block
+    bf = fp.get("bundle_fingerprint")
+    if bf:
+        idx = _scan_object_fingerprints(obj_projects_dir)
+        if bf in idx["bundle"]:
+            dup = ", ".join(idx["bundle"][bf][:3])
+            raise UploadFolderConflict(f"Точный комплект уже загружался: {dup}")
 
     # --- запись в legacy (авторитетно, первым) -------------------------------
     dest.mkdir(parents=True, exist_ok=True)
@@ -1868,6 +2049,9 @@ def save_uploaded_project_folder(*, object_id: str, discipline: str,
         "pdf_files": [n for n, _ in pdfs],
         "object_id": object_id,
         "source": "upload-folder",
+        # fingerprint для дедупа (precheck сканирует именно эти поля)
+        "pdf_sha256": fp.get("pdf_sha256"),
+        "bundle_fingerprint": fp.get("bundle_fingerprint"),
         "tile_config": {},
     }
     if md_names:
@@ -1876,6 +2060,20 @@ def save_uploaded_project_folder(*, object_id: str, discipline: str,
 
     (dest / "project_info.json").write_text(
         json.dumps(info, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    # input_manifest.json — расширенный отпечаток (per-file sha256). Зеркалится в
+    # v2 01_input вместе с прочими input-файлами.
+    manifest = {
+        "schema_version": 1,
+        "source": "upload-folder",
+        "project_id": project_id,
+        "object_id": object_id,
+        "pdf_sha256": fp.get("pdf_sha256"),
+        "bundle_fingerprint": fp.get("bundle_fingerprint"),
+        "files": fp.get("files", []),
+    }
+    (dest / "input_manifest.json").write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     (dest / "_output").mkdir(exist_ok=True)
 

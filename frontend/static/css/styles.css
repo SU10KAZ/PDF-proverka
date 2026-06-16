@@ -3928,3 +3928,34 @@ tr.row-rejected td.sc-cell-goto {
 .upload-success__files ul { margin: 0 0 8px 0; padding-left: 18px; font-size: 12px; color: var(--text2); }
 .upload-warnings { margin-top: 6px; }
 .upload-warning { color: #92400e; font-size: 12px; margin-top: 2px; }
+
+/* ─── Upload precheck (дубли) + multi-folder ─── */
+.upload-precheck { margin-top: 8px; border-radius: var(--radius); padding: 8px 10px; font-size: 12px; border: 1px solid var(--border2); }
+.upload-precheck--pending { color: var(--text3); }
+.upload-precheck--ready { border-color: #16a34a; background: #f0fdf4; }
+.upload-precheck--warning { border-color: #f59e0b; background: #fffbeb; }
+.upload-precheck--duplicate, .upload-precheck--error { border-color: #ef4444; background: #fef2f2; }
+.upload-precheck__block { color: #b91c1c; font-weight: 600; }
+.upload-precheck__warn { color: #92400e; }
+.upload-precheck__ok { color: #15803d; font-weight: 600; }
+.upload-override { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 12px; color: #92400e; cursor: pointer; }
+.upload-multi-wrap { margin-top: 10px; max-height: 340px; overflow: auto; border: 1px solid var(--border2); border-radius: var(--radius); }
+.upload-multi-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.upload-multi-table th, .upload-multi-table td { padding: 5px 8px; border-bottom: 1px solid var(--border2); text-align: left; vertical-align: top; }
+.upload-multi-table th { position: sticky; top: 0; background: var(--bg2, #f8f9fa); z-index: 1; font-size: 11px; text-transform: uppercase; color: var(--text3); }
+.upload-multi-table .form-input--sm { padding: 2px 6px; font-size: 12px; width: 100%; min-width: 140px; }
+.cand--duplicate, .cand--error { background: #fef2f2; }
+.cand--warning { background: #fffbeb; }
+.cand--done { background: #f0fdf4; opacity: 0.7; }
+.cand-status { font-weight: 600; white-space: nowrap; }
+.cand-status--ready { color: #15803d; }
+.cand-status--warning { color: #92400e; }
+.cand-status--duplicate, .cand-status--error { color: #b91c1c; }
+.cand-status--done { color: #15803d; }
+.cand-msg { font-weight: 400; color: var(--text3); font-size: 11px; margin-top: 2px; }
+.cand-bundle { white-space: nowrap; color: var(--text2); }
+.upload-multi-counts { padding: 6px 10px; font-size: 11px; color: var(--text3); }
+.upload-batch-summary { display: flex; gap: 12px; margin: 6px 0 10px; font-size: 13px; font-weight: 600; }
+.ubs--ok { color: #15803d; }
+.ubs--skip { color: #92400e; }
+.ubs--err { color: #b91c1c; }

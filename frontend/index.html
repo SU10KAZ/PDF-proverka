@@ -930,13 +930,17 @@
                 <!-- Шаг 4: Загрузить папку с компьютера (browser folder upload) -->
                 <template v-if="addProjectStep === 'upload'">
                     <h3>Загрузить папку проекта с компьютера</h3>
-                    <p class="modal-subtitle">
-                        Выберите папку одного проекта. Нужен один PDF; *_document.md,
-                        *_result.json, *_ocr.html — желательны.
-                    </p>
 
-                    <!-- Успешная загрузка -->
-                    <template v-if="uploadResult">
+                    <!-- Переключатель: одна папка / несколько -->
+                    <div class="source-tabs" v-if="!uploadResult && !uploadBatchResult">
+                        <button class="source-tab" :class="{active: uploadMode==='single'}"
+                                @click="setUploadMode('single')" :disabled="uploadLoading">Одна папка</button>
+                        <button class="source-tab" :class="{active: uploadMode==='multi'}"
+                                @click="setUploadMode('multi')" :disabled="uploadLoading">Несколько папок</button>
+                    </div>
+
+                    <!-- ═══ SINGLE: успех ═══ -->
+                    <template v-if="uploadMode==='single' && uploadResult">
                         <div class="upload-success">
                             <div class="upload-success__title">✅ Проект загружен</div>
                             <div class="upload-success__id">{{ uploadResult.project_id }}</div>
@@ -957,7 +961,111 @@
                         </div>
                     </template>
 
+                    <!-- ═══ MULTI: итог batch ═══ -->
+                    <template v-else-if="uploadMode==='multi' && uploadBatchResult">
+                        <div class="upload-success">
+                            <div class="upload-success__title">📦 Загрузка завершена</div>
+                            <div class="upload-batch-summary">
+                                <span class="ubs ubs--ok">Загружено: {{ uploadBatchResult.uploaded.length }}</span>
+                                <span class="ubs ubs--skip">Пропущено (дубли): {{ uploadBatchResult.skipped.length }}</span>
+                                <span class="ubs ubs--err">Ошибки: {{ uploadBatchResult.failed.length }}</span>
+                            </div>
+                            <div v-if="uploadBatchResult.uploaded.length" class="upload-success__files">
+                                <div class="upload-files-label">Загруженные проекты:</div>
+                                <ul>
+                                    <li v-for="r in uploadBatchResult.uploaded" :key="r.project_id">
+                                        <a href="#" @click.prevent="openProjectById(r.project_id)">{{ r.project_id }}</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div v-if="uploadBatchResult.failed.length" class="upload-warnings">
+                                <div v-for="r in uploadBatchResult.failed" :key="r.folder" class="upload-warning">
+                                    ⛔ {{ r.folder }}: {{ r.error }}
+                                </div>
+                            </div>
+                            <div class="form-actions" style="margin-top:14px">
+                                <button class="btn btn-outline btn-sm" @click="resetUploadFolder">Загрузить ещё</button>
+                                <button class="btn btn-success btn-sm" @click="closeAddProject">Готово</button>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- ═══ MULTI: выбор и таблица кандидатов ═══ -->
+                    <template v-else-if="uploadMode==='multi'">
+                        <p class="modal-subtitle">
+                            Выберите родительскую папку. Каждая подпапка 1-го уровня = отдельный проект
+                            (ровно один PDF). Загрузка последовательная, дубли блокируются.
+                        </p>
+                        <div class="upload-form">
+                            <div class="form-row">
+                                <label>Объект</label>
+                                <select class="form-input" v-model="uploadObjectId" :disabled="uploadLoading">
+                                    <option value="" disabled>— выберите объект —</option>
+                                    <option v-for="o in objectsList" :key="o.id" :value="o.id">{{ o.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <label>Дисциплина (для всех)</label>
+                                <select class="form-input" v-model="uploadDiscipline" :disabled="uploadLoading"
+                                        @change="recheckAllCandidates">
+                                    <option value="" disabled>— выберите дисциплину —</option>
+                                    <option v-for="d in supportedDisciplines" :key="d.code" :value="d.code">
+                                        {{ d.short_name }} — {{ d.name }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <label>Родительская папка</label>
+                                <input type="file" webkitdirectory directory multiple
+                                       :disabled="uploadLoading"
+                                       @change="onMultiFolderSelected" class="form-input">
+                            </div>
+                        </div>
+
+                        <div v-if="uploadCandidates.length" class="upload-multi-wrap">
+                            <table class="upload-multi-table">
+                                <thead><tr>
+                                    <th></th><th>Папка</th><th>PDF</th><th>md/res/ocr</th>
+                                    <th>Название проекта</th><th>Статус</th>
+                                </tr></thead>
+                                <tbody>
+                                    <tr v-for="c in uploadCandidates" :key="c.folder" :class="'cand--'+c.status">
+                                        <td><input type="checkbox" v-model="c.checked"
+                                                   :disabled="uploadLoading || !candUploadable(c)"></td>
+                                        <td :title="c.folder">{{ c.folder }}</td>
+                                        <td>{{ c.pdfName || '— нет —' }}<template v-if="c.pdfCount>1"> ({{ c.pdfCount }} PDF!)</template></td>
+                                        <td class="cand-bundle">{{ c.hasMd?'md':'·' }} / {{ c.hasResult?'res':'·' }} / {{ c.hasOcr?'ocr':'·' }}</td>
+                                        <td><input class="form-input form-input--sm" v-model="c.name"
+                                                   :disabled="uploadLoading"></td>
+                                        <td><span class="cand-status" :class="'cand-status--'+c.status">{{ candStatusLabel(c) }}</span>
+                                            <div v-if="c.message" class="cand-msg">{{ c.message }}</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="upload-multi-counts">
+                                Готово: {{ candCount('ready') }} · предупреждений: {{ candCount('warning') }} ·
+                                дублей: {{ candCount('duplicate') }} · ошибок: {{ candCount('error') }}
+                            </div>
+                        </div>
+                        <div v-if="uploadError" class="upload-preview__err" style="margin-top:8px">⛔ {{ uploadError }}</div>
+
+                        <div class="form-actions" style="margin-top:14px">
+                            <button class="btn btn-outline btn-sm" @click="addProjectStep='choose'" :disabled="uploadLoading">Назад</button>
+                            <button class="btn btn-outline btn-sm" @click="recheckAllCandidates"
+                                    :disabled="uploadLoading || !uploadCandidates.length">Проверить заново</button>
+                            <button class="btn btn-success btn-sm" @click="submitMultiUpload"
+                                    :disabled="uploadLoading || selectedCandidateCount===0">
+                                {{ uploadLoading ? ('Загрузка ' + uploadBatchProgress + '…') : ('Загрузить выбранные (' + selectedCandidateCount + ')') }}
+                            </button>
+                        </div>
+                    </template>
+
+                    <!-- ═══ SINGLE: форма ═══ -->
                     <template v-else>
+                        <p class="modal-subtitle">
+                            Выберите папку одного проекта. Нужен один PDF; *_document.md,
+                            *_result.json, *_ocr.html — желательны.
+                        </p>
                         <div class="upload-form">
                             <div class="form-row">
                                 <label>Объект</label>
@@ -1026,6 +1134,17 @@
                             <div v-if="uploadScanError" class="upload-preview__err">⛔ {{ uploadScanError }}</div>
                             <div v-for="w in uploadScanWarnings" :key="w" class="upload-preview__warn">⚠ {{ w }}</div>
                         </div>
+
+                        <!-- Результат precheck (дубли) -->
+                        <div v-if="uploadPrecheckLoading" class="upload-precheck upload-precheck--pending">Проверка дублей…</div>
+                        <div v-else-if="uploadPrecheck" class="upload-precheck" :class="'upload-precheck--'+uploadPrecheck.status">
+                            <div v-for="b in uploadPrecheck.blocks" :key="b.code" class="upload-precheck__block">⛔ {{ b.message }}</div>
+                            <div v-for="w in uploadPrecheck.warnings" :key="w.code" class="upload-precheck__warn">⚠ {{ w.message }}</div>
+                            <div v-if="uploadPrecheck.status==='ready'" class="upload-precheck__ok">✓ Дублей не найдено</div>
+                        </div>
+                        <label v-if="uploadPrecheck && uploadPrecheck.status==='warning'" class="upload-override">
+                            <input type="checkbox" v-model="uploadOverrideWarning"> Всё равно загрузить
+                        </label>
 
                         <div v-if="uploadError" class="upload-preview__err" style="margin-top:8px">⛔ {{ uploadError }}</div>
 

@@ -264,6 +264,43 @@ async def upload_folder(
     return {"status": "ok", **result}
 
 
+@router.post("/upload-folder/precheck")
+async def upload_folder_precheck(
+    discipline: str = Form(...),
+    project_name: str = Form(...),
+    object_id: Optional[str] = Form(None),
+    object_name: Optional[str] = Form(None),
+    files: list[UploadFile] = File(..., description="Файлы папки проекта"),
+):
+    """Dry-run проверка папки перед загрузкой — НИЧЕГО не пишет.
+
+    Возвращает verdict: status (ready|warning|duplicate|error) + blocks[] +
+    warnings[] + fingerprint. Дубли по имени/bundle — hard block; дубль PDF по
+    checksum и похожее имя — warning. Backend всё равно повторяет hard-проверки
+    при фактической загрузке (race-condition guard).
+    """
+    oid = object_id
+    if not oid and object_name:
+        from backend.app.services.common import object_service
+        for o in object_service.list_objects():
+            if o.get("name") == object_name:
+                oid = o.get("id")
+                break
+    if not oid:
+        raise HTTPException(422, "Не указан объект (object_id или object_name)")
+    if not files:
+        raise HTTPException(422, "Не передан ни один файл")
+
+    payload: list[tuple[str, bytes]] = []
+    for f in files:
+        payload.append((f.filename or "", await f.read()))
+
+    verdict = project_service.precheck_uploaded_project_folder(
+        object_id=oid, discipline=discipline, project_name=project_name, files=payload,
+    )
+    return {"status": "ok", "precheck": verdict}
+
+
 # ─── Flat endpoints (target_project_id в body) — ДО динамических роутов ───
 # Эти роуты нужны для проектов со слешами в project_id (`KJ/M31A`): URL-форма
 # `/{p:path}/versions/from-project` после encodeURIComponent даёт `%2F`,
