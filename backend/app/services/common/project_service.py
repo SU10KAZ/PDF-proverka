@@ -1646,6 +1646,216 @@ def scan_external_folder(folder_path: str) -> list[dict]:
     return result
 
 
+# ── Browser folder upload (Добавить проект → Из папки на компьютере) ──────────
+# Инженер загружает папку проекта со своего компьютера через сайт. Браузер не
+# отдаёт абсолютный путь, поэтому мы получаем список (имя_файла, байты) и сами
+# раскладываем их в legacy projects/, генерируем project_info.json (клиентский
+# не доверяем) и запускаем dual_write_shadow зеркало.
+
+_ALLOWED_UPLOAD_EXTS = {".pdf", ".md", ".json", ".html", ".htm"}
+
+
+class UploadFolderError(ValueError):
+    """Невалидный запрос загрузки папки (маппится в HTTP 422)."""
+
+
+class UploadFolderConflict(FileExistsError):
+    """Проект с таким именем уже существует (маппится в HTTP 409)."""
+
+
+def _safe_upload_basename(name: str) -> str:
+    """Безопасный basename без path-traversal.
+
+    Браузер кладёт в webkitRelativePath относительный путь (`folder/sub/file.pdf`).
+    Берём только basename, отбрасываем директории, запрещаем `..`/абсолютные/NUL.
+    """
+    raw = (name or "").replace("\\", "/")
+    base = os.path.basename(raw).strip()
+    if not base or base in (".", "..") or "/" in base or "\x00" in base:
+        raise UploadFolderError(f"Небезопасное имя файла: {name!r}")
+    return base
+
+
+def _v2_document_exists(object_id: str, project_name: str) -> bool:
+    """Best-effort проверка дубля в projects_v2 (по object_id + document_code).
+
+    Никогда не бросает: недоступный/сбойный v2 → False (legacy-проверка
+    остаётся авторитетной).
+    """
+    try:
+        from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+        adapter = ProjectsV2Adapter()
+        if not adapter.is_available():
+            return False
+        return adapter.find_document(project_name, object_id=object_id) is not None
+    except Exception:
+        return False
+
+
+def save_uploaded_project_folder(*, object_id: str, discipline: str,
+                                 project_name: str,
+                                 files: list[tuple[str, bytes]],
+                                 description: str = "") -> dict:
+    """Сохранить папку проекта, загруженную инженером через браузер.
+
+    Args:
+        object_id: id объекта (резолвится в его projects_dir).
+        discipline: код дисциплины (EOM/OV/…), служит подпапкой.
+        project_name: имя проекта = basename папки версии (project_id без слеша).
+        files: список (имя_файла, байты). project_info.json игнорируется
+               (генерируем сами). Принимаются только pdf/md/json(*_result)/html(*_ocr).
+        description: опциональное описание.
+
+    Returns: словарь с project_id/saved_files/ignored_files/has_* и project_info.
+
+    Raises:
+        UploadFolderError (→422): нет/несколько PDF, кривое имя/дисциплина,
+            небезопасное имя файла, объект не найден.
+        UploadFolderConflict (→409): проект уже есть в legacy или projects_v2.
+    """
+    from backend.app.services.common.object_service import (
+        get_object_by_id, get_projects_dir_for,
+    )
+
+    discipline = (discipline or "").strip()
+    project_name = (project_name or "").strip()
+
+    # --- валидация имён (path-traversal / служебные префиксы) -----------------
+    if not project_name:
+        raise UploadFolderError("Не указано название проекта")
+    if project_name.startswith("_"):
+        raise UploadFolderError("Название проекта не может начинаться с '_'")
+    if any(s in project_name for s in ("/", "\\", "..", "\x00")):
+        raise UploadFolderError("Недопустимое название проекта")
+    if not discipline:
+        raise UploadFolderError("Не указана дисциплина")
+    if any(s in discipline for s in ("/", "\\", "..", "\x00")) or discipline.startswith("_"):
+        raise UploadFolderError("Недопустимая дисциплина")
+
+    # --- резолв объекта ------------------------------------------------------
+    obj = get_object_by_id(object_id)
+    if obj is None:
+        raise UploadFolderError(f"Объект не найден: {object_id!r}")
+    obj_projects_dir = get_projects_dir_for(object_id)
+    if obj_projects_dir is None:
+        raise UploadFolderError(f"Не удалось определить папку объекта: {object_id!r}")
+
+    # --- классификация файлов (project_info.json и прочее — игнор) ------------
+    pdfs: list[tuple[str, bytes]] = []
+    mds: list[tuple[str, bytes]] = []
+    results: list[tuple[str, bytes]] = []
+    ocrs: list[tuple[str, bytes]] = []
+    ignored: list[str] = []
+    for fname, data in files:
+        safe = _safe_upload_basename(fname)  # бросает на traversal
+        ext = os.path.splitext(safe)[1].lower()
+        low = safe.lower()
+        if ext not in _ALLOWED_UPLOAD_EXTS:
+            ignored.append(safe)
+            continue
+        if ext == ".pdf":
+            pdfs.append((safe, data))
+        elif ext == ".md":
+            mds.append((safe, data))
+        elif ext == ".json" and low.endswith("_result.json"):
+            results.append((safe, data))
+        elif ext in (".html", ".htm") and low.endswith("_ocr.html"):
+            ocrs.append((safe, data))
+        else:
+            # project_info.json, прочие .json/.html — не сохраняем
+            ignored.append(safe)
+
+    if len(pdfs) == 0:
+        raise UploadFolderError("В папке не найден PDF. Нужен ровно один PDF проекта.")
+    if len(pdfs) > 1:
+        raise UploadFolderError(
+            "В папке найдено несколько PDF. Выберите папку одного проекта."
+        )
+
+    # --- проверка дубля (legacy авторитетно + best-effort v2) ----------------
+    project_id = f"{discipline}/{project_name}"
+    dest = obj_projects_dir / discipline / project_name
+    if dest.exists() and (dest / "project_info.json").exists():
+        raise UploadFolderConflict(f"Проект '{project_id}' уже существует в projects/")
+    if _v2_document_exists(object_id, project_name):
+        raise UploadFolderConflict(f"Проект '{project_id}' уже существует в projects_v2")
+
+    # --- запись в legacy (авторитетно, первым) -------------------------------
+    dest.mkdir(parents=True, exist_ok=True)
+    saved: list[str] = []
+
+    def _write_all(items: list[tuple[str, bytes]]) -> None:
+        for safe, data in items:
+            (dest / safe).write_bytes(data)
+            saved.append(safe)
+
+    _write_all(pdfs)
+    _write_all(mds)
+    _write_all(results)
+    _write_all(ocrs)
+
+    md_names = [n for n, _ in mds]
+    md_doc = next((n for n in md_names if n.lower().endswith("_document.md")), None)
+    md_primary = md_doc or (md_names[0] if md_names else None)
+
+    info: dict = {
+        "project_id": project_id,
+        "name": project_name,
+        "section": discipline,
+        "description": description or "",
+        "pdf_file": pdfs[0][0],
+        "pdf_files": [n for n, _ in pdfs],
+        "object_id": object_id,
+        "source": "upload-folder",
+        "tile_config": {},
+    }
+    if md_names:
+        info["md_file"] = md_primary
+        info["md_files"] = md_names
+
+    (dest / "project_info.json").write_text(
+        json.dumps(info, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    (dest / "_output").mkdir(exist_ok=True)
+
+    # --- dual_write_shadow зеркало (no-op в legacy, fail-soft) ----------------
+    # *_ocr.html попадёт в v2 01_input/02_work автоматически: find_input_quad
+    # распознаёт _ocr.html. try/except гарантирует, что сбой v2 не ломает legacy.
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        _swf.shadow_mirror_project_path_safe(dest)
+    except Exception:
+        pass
+
+    return {
+        "project_id": project_id,
+        "name": project_name,
+        "section": discipline,
+        "object_id": object_id,
+        "dest": str(dest),
+        "saved_files": saved,
+        "ignored_files": ignored,
+        "has_pdf": True,
+        "has_md": bool(md_names),
+        "has_result": bool(results),
+        "has_ocr": bool(ocrs),
+        "warnings": _upload_bundle_warnings(bool(md_names), bool(results), bool(ocrs)),
+        "project_info": info,
+    }
+
+
+def _upload_bundle_warnings(has_md: bool, has_result: bool, has_ocr: bool) -> list[str]:
+    """Человекочитаемые предупреждения о недостающих (не блокирующих) файлах."""
+    warns: list[str] = []
+    if not has_md:
+        warns.append("Не найден *_document.md — текстовый анализ потребует OCR/Chandra.")
+    if not has_result:
+        warns.append("Не найден *_result.json — кроп блоков потребует подготовки.")
+    if not has_ocr:
+        warns.append("Не найден *_ocr.html — text_evidence будет ограничен.")
+    return warns
+
+
 def register_external_project(source_path: str, pdf_file: str,
                               pdf_files: list[str] | None = None,
                               md_file: Optional[str] = None,
@@ -1689,6 +1899,12 @@ def register_external_project(source_path: str, pdf_file: str,
     # Копируем *_result.json (нужен для blocks.py crop)
     for rj in source.glob("*_result.json"):
         shutil.copy2(str(rj), str(dest / rj.name))
+
+    # Копируем *_ocr.html (нужен для text_evidence; фикс 2026-06-17 — раньше не
+    # копировался). v2-зеркало подхватит его автоматически (find_input_quad
+    # распознаёт _ocr.html и кладёт в 01_input/02_work).
+    for oh in source.glob("*_ocr.html"):
+        shutil.copy2(str(oh), str(dest / oh.name))
 
     # Создаём project_info.json
     project_id = folder_name

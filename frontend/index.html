@@ -727,6 +727,11 @@
                             <div class="add-choose-card__title">Проект</div>
                             <div class="add-choose-card__desc">Добавить PDF из папки projects/</div>
                         </div>
+                        <div class="add-choose-card" @click="goToUploadFolder">
+                            <div class="add-choose-card__icon">&#x1F4BB;</div>
+                            <div class="add-choose-card__title">Из папки на компьютере</div>
+                            <div class="add-choose-card__desc">Загрузить папку проекта со своего ПК через браузер</div>
+                        </div>
                     </div>
                 </template>
 
@@ -920,6 +925,119 @@
                     <div class="form-actions" style="margin-top:12px">
                         <button class="btn btn-outline btn-sm" @click="addProjectStep = 'choose'">Назад</button>
                     </div>
+                </template>
+
+                <!-- Шаг 4: Загрузить папку с компьютера (browser folder upload) -->
+                <template v-if="addProjectStep === 'upload'">
+                    <h3>Загрузить папку проекта с компьютера</h3>
+                    <p class="modal-subtitle">
+                        Выберите папку одного проекта. Нужен один PDF; *_document.md,
+                        *_result.json, *_ocr.html — желательны.
+                    </p>
+
+                    <!-- Успешная загрузка -->
+                    <template v-if="uploadResult">
+                        <div class="upload-success">
+                            <div class="upload-success__title">✅ Проект загружен</div>
+                            <div class="upload-success__id">{{ uploadResult.project_id }}</div>
+                            <div class="upload-success__files">
+                                <div class="upload-files-label">Сохранённые файлы:</div>
+                                <ul>
+                                    <li v-for="fn in uploadResult.saved_files" :key="fn">{{ fn }}</li>
+                                </ul>
+                            </div>
+                            <div v-if="uploadResult.warnings && uploadResult.warnings.length"
+                                 class="upload-warnings">
+                                <div v-for="w in uploadResult.warnings" :key="w" class="upload-warning">⚠ {{ w }}</div>
+                            </div>
+                            <div class="form-actions" style="margin-top:14px">
+                                <button class="btn btn-outline btn-sm" @click="resetUploadFolder">Загрузить ещё</button>
+                                <button class="btn btn-success btn-sm" @click="openUploadedProject">Открыть проект</button>
+                            </div>
+                        </div>
+                    </template>
+
+                    <template v-else>
+                        <div class="upload-form">
+                            <div class="form-row">
+                                <label>Объект</label>
+                                <select class="form-input" v-model="uploadObjectId" :disabled="uploadLoading">
+                                    <option value="" disabled>— выберите объект —</option>
+                                    <option v-for="o in objectsList" :key="o.id" :value="o.id">{{ o.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <label>Дисциплина</label>
+                                <select class="form-input" v-model="uploadDiscipline" :disabled="uploadLoading">
+                                    <option value="" disabled>— выберите дисциплину —</option>
+                                    <option v-for="d in supportedDisciplines" :key="d.code" :value="d.code">
+                                        {{ d.short_name }} — {{ d.name }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <label>Название проекта</label>
+                                <input type="text" class="form-input" v-model="uploadProjectName"
+                                       :disabled="uploadLoading"
+                                       placeholder="Напр. 133-23-ГК-ЭМ1">
+                            </div>
+                            <div class="form-row">
+                                <label>Папка проекта</label>
+                                <input type="file" webkitdirectory directory multiple
+                                       :disabled="uploadLoading"
+                                       @change="onUploadFolderSelected" class="form-input">
+                            </div>
+                        </div>
+
+                        <!-- Превью содержимого папки -->
+                        <div v-if="uploadScan" class="upload-preview">
+                            <div class="upload-preview__row" :class="{'is-ok': uploadScan.pdf, 'is-bad': !uploadScan.pdf}">
+                                <span class="upload-preview__k">PDF</span>
+                                <span class="upload-preview__v">
+                                    <template v-if="uploadScan.pdf">{{ uploadScan.pdf.name }} ({{ fmtSize(uploadScan.pdf.size) }})</template>
+                                    <template v-else>не найден — обязателен</template>
+                                </span>
+                            </div>
+                            <div class="upload-preview__row" :class="{'is-ok': uploadScan.md}">
+                                <span class="upload-preview__k">*_document.md</span>
+                                <span class="upload-preview__v">
+                                    <template v-if="uploadScan.md">{{ uploadScan.md.name }} ({{ fmtSize(uploadScan.md.size) }})</template>
+                                    <template v-else>не найден</template>
+                                </span>
+                            </div>
+                            <div class="upload-preview__row" :class="{'is-ok': uploadScan.result}">
+                                <span class="upload-preview__k">*_result.json</span>
+                                <span class="upload-preview__v">
+                                    <template v-if="uploadScan.result">{{ uploadScan.result.name }} ({{ fmtSize(uploadScan.result.size) }})</template>
+                                    <template v-else>не найден</template>
+                                </span>
+                            </div>
+                            <div class="upload-preview__row" :class="{'is-ok': uploadScan.ocr}">
+                                <span class="upload-preview__k">*_ocr.html</span>
+                                <span class="upload-preview__v">
+                                    <template v-if="uploadScan.ocr">{{ uploadScan.ocr.name }} ({{ fmtSize(uploadScan.ocr.size) }})</template>
+                                    <template v-else>не найден</template>
+                                </span>
+                            </div>
+                            <div v-if="uploadScan.ignored.length" class="upload-preview__row">
+                                <span class="upload-preview__k">Игнорируется</span>
+                                <span class="upload-preview__v upload-preview__v--muted">{{ uploadScan.ignored.length }} файл(ов)</span>
+                            </div>
+                            <div v-if="uploadScanError" class="upload-preview__err">⛔ {{ uploadScanError }}</div>
+                            <div v-for="w in uploadScanWarnings" :key="w" class="upload-preview__warn">⚠ {{ w }}</div>
+                        </div>
+
+                        <div v-if="uploadError" class="upload-preview__err" style="margin-top:8px">⛔ {{ uploadError }}</div>
+
+                        <div class="form-actions" style="margin-top:14px">
+                            <button class="btn btn-outline btn-sm" @click="addProjectStep = 'choose'"
+                                    :disabled="uploadLoading">Назад</button>
+                            <button class="btn btn-success btn-sm" @click="submitUploadFolder"
+                                    :disabled="uploadLoading || !canSubmitUpload">
+                                {{ uploadLoading ? 'Загрузка…' : 'Загрузить' }}
+                            </button>
+                        </div>
+                    </template>
                 </template>
             </div>
         </div>

@@ -4570,6 +4570,131 @@ const app = createApp({
         const externalPath = ref('');
         const projectSource = ref('local'); // 'local' | 'external'
 
+        // ─── Upload folder from computer (browser folder upload) ───
+        const uploadObjectId = ref('');
+        const uploadDiscipline = ref('');
+        const uploadProjectName = ref('');
+        const uploadFiles = ref([]);          // raw File[] из <input webkitdirectory>
+        const uploadScan = ref(null);         // {pdf, md, result, ocr, ignored:[]}
+        const uploadScanError = ref('');      // блокирующая проблема (нет/неск. PDF)
+        const uploadScanWarnings = ref([]);   // не блокирует (нет md/result/ocr)
+        const uploadError = ref('');          // ошибка сервера
+        const uploadLoading = ref(false);
+        const uploadResult = ref(null);       // ответ сервера при успехе
+
+        function fmtSize(bytes) {
+            if (!bytes && bytes !== 0) return '';
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        const canSubmitUpload = computed(() =>
+            !!uploadObjectId.value && !!uploadDiscipline.value &&
+            !!uploadProjectName.value.trim() && !!uploadScan.value &&
+            !!uploadScan.value.pdf && !uploadScanError.value
+        );
+
+        function goToUploadFolder() {
+            addProjectStep.value = 'upload';
+            resetUploadFolder();
+            // предзаполнить текущим объектом
+            uploadObjectId.value = currentObjectId.value || '';
+            if (!objectsList.value.length) loadObjects();
+            if (!supportedDisciplines.value.length) loadDisciplines();
+        }
+
+        function resetUploadFolder() {
+            uploadDiscipline.value = '';
+            uploadProjectName.value = '';
+            uploadFiles.value = [];
+            uploadScan.value = null;
+            uploadScanError.value = '';
+            uploadScanWarnings.value = [];
+            uploadError.value = '';
+            uploadResult.value = null;
+        }
+
+        function onUploadFolderSelected(ev) {
+            uploadError.value = '';
+            const all = Array.from(ev.target.files || []);
+            uploadFiles.value = all;
+            if (!all.length) { uploadScan.value = null; return; }
+
+            const pdfs = [], mds = [], results = [], ocrs = [], ignored = [];
+            for (const f of all) {
+                const name = (f.name || '').toLowerCase();
+                if (name.endsWith('.pdf')) pdfs.push(f);
+                else if (name.endsWith('_document.md')) mds.push(f);
+                else if (name.endsWith('.md')) mds.push(f);
+                else if (name.endsWith('_result.json')) results.push(f);
+                else if (name.endsWith('_ocr.html') || name.endsWith('_ocr.htm')) ocrs.push(f);
+                else ignored.push(f);
+            }
+
+            uploadScanError.value = '';
+            uploadScanWarnings.value = [];
+            if (pdfs.length === 0) {
+                uploadScanError.value = 'В папке не найден PDF. Нужен ровно один PDF проекта.';
+            } else if (pdfs.length > 1) {
+                uploadScanError.value = 'В папке найдено несколько PDF. Выберите папку одного проекта.';
+            } else {
+                // автоназвание из имени PDF (без расширения), если поле пустое
+                if (!uploadProjectName.value.trim()) {
+                    uploadProjectName.value = pdfs[0].name.replace(/\.pdf$/i, '');
+                }
+            }
+            const md = mds.find(m => (m.name || '').toLowerCase().endsWith('_document.md')) || mds[0] || null;
+            if (!md) uploadScanWarnings.value.push('Нет *_document.md — текстовый анализ потребует OCR.');
+            if (!results.length) uploadScanWarnings.value.push('Нет *_result.json — кроп блоков потребует подготовки.');
+            if (!ocrs.length) uploadScanWarnings.value.push('Нет *_ocr.html — text_evidence будет ограничен.');
+
+            uploadScan.value = {
+                pdf: pdfs.length === 1 ? pdfs[0] : null,
+                md, result: results[0] || null, ocr: ocrs[0] || null,
+                ignored,
+            };
+        }
+
+        async function submitUploadFolder() {
+            if (!canSubmitUpload.value || uploadLoading.value) return;
+            uploadError.value = '';
+            uploadLoading.value = true;
+            try {
+                const fd = new FormData();
+                fd.append('object_id', uploadObjectId.value);
+                fd.append('discipline', uploadDiscipline.value);
+                fd.append('project_name', uploadProjectName.value.trim());
+                // отправляем только релевантные файлы (pdf + md + result + ocr)
+                const wanted = [];
+                const s = uploadScan.value;
+                if (s.pdf) wanted.push(s.pdf);
+                if (s.md) wanted.push(s.md);
+                if (s.result) wanted.push(s.result);
+                if (s.ocr) wanted.push(s.ocr);
+                for (const f of wanted) fd.append('files', f, f.name);
+
+                const resp = await fetch('/api/projects/upload-folder', { method: 'POST', body: fd });
+                const data = await resp.json().catch(() => ({}));
+                if (!resp.ok) {
+                    uploadError.value = data.detail || ('Ошибка загрузки (HTTP ' + resp.status + ')');
+                    return;
+                }
+                uploadResult.value = data;
+                await refreshProjects();
+            } catch (e) {
+                uploadError.value = 'Сбой загрузки: ' + (e && e.message ? e.message : e);
+            } finally {
+                uploadLoading.value = false;
+            }
+        }
+
+        function openUploadedProject() {
+            const pid = uploadResult.value && uploadResult.value.project_id;
+            closeAddProject();
+            if (pid) navigate('/project/' + encodeURIComponent(pid));
+        }
+
         function openAddModal() {
             addProjectStep.value = 'choose';
             showAddProject.value = true;
@@ -15801,6 +15926,11 @@ const app = createApp({
             newSectionName, newSectionCode, newSectionColor,
             scanFolders, scanExternalFolder, registerProject, registerAllProjects, closeAddProject,
             externalPath, projectSource,
+            // Upload folder from computer
+            uploadObjectId, uploadDiscipline, uploadProjectName, uploadScan,
+            uploadScanError, uploadScanWarnings, uploadError, uploadLoading, uploadResult,
+            canSubmitUpload, fmtSize, goToUploadFolder, resetUploadFolder,
+            onUploadFolderSelected, submitUploadFolder, openUploadedProject,
             // Add project — version-of-existing mode
             onCandidatePrimaryAction, registerProjectAsVersion,
             candidateTargetOptions, candidateTargetName, candidateNextVersionLabel,

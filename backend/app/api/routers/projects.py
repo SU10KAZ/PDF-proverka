@@ -215,6 +215,55 @@ async def register_external(req: RegisterExternalRequest):
         raise HTTPException(400, str(e))
 
 
+@router.post("/upload-folder")
+async def upload_folder(
+    discipline: str = Form(...),
+    project_name: str = Form(...),
+    object_id: Optional[str] = Form(None),
+    object_name: Optional[str] = Form(None),
+    description: str = Form(""),
+    files: list[UploadFile] = File(..., description="Файлы папки проекта"),
+):
+    """Загрузить папку проекта с компьютера инженера (browser folder upload).
+
+    Принимает multipart: pdf (ровно один) + опц. *_document.md / *_result.json /
+    *_ocr.html. Клиентский project_info.json игнорируется (генерируем сами).
+    Сначала пишем в legacy projects/ (авторитетно), затем dual_write_shadow
+    зеркалит в projects_v2 (no-op в legacy-режиме, fail-soft).
+    """
+    # Резолв объекта: object_id приоритетнее, иначе по имени.
+    oid = object_id
+    if not oid and object_name:
+        from backend.app.services.common import object_service
+        for o in object_service.list_objects():
+            if o.get("name") == object_name:
+                oid = o.get("id")
+                break
+    if not oid:
+        raise HTTPException(422, "Не указан объект (object_id или object_name)")
+
+    if not files:
+        raise HTTPException(422, "Не передан ни один файл")
+
+    payload: list[tuple[str, bytes]] = []
+    for f in files:
+        payload.append((f.filename or "", await f.read()))
+
+    try:
+        result = project_service.save_uploaded_project_folder(
+            object_id=oid,
+            discipline=discipline,
+            project_name=project_name,
+            files=payload,
+            description=description,
+        )
+    except project_service.UploadFolderConflict as e:
+        raise HTTPException(409, str(e))
+    except project_service.UploadFolderError as e:
+        raise HTTPException(422, str(e))
+    return {"status": "ok", **result}
+
+
 # ─── Flat endpoints (target_project_id в body) — ДО динамических роутов ───
 # Эти роуты нужны для проектов со слешами в project_id (`KJ/M31A`): URL-форма
 # `/{p:path}/versions/from-project` после encodeURIComponent даёт `%2F`,

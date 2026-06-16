@@ -3909,3 +3909,22 @@ tr.row-rejected td.sc-cell-goto {
 .sc-v2-status--rejected            { border-color: #ef4444; color: #b91c1c; font-weight: 600; }
 .sc-v2-status--needs_clarification { border-color: #f59e0b; color: #92400e; }
 .sc-v2-status--cost_impact         { border-color: #6366f1; color: #4338ca; }
+
+/* ─── Upload folder from computer (browser folder upload) ─── */
+.upload-form { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
+.upload-preview { border: 1px solid var(--border2); border-radius: var(--radius); padding: 10px 12px; margin-top: 6px; font-size: 12px; }
+.upload-preview__row { display: flex; gap: 8px; padding: 3px 0; }
+.upload-preview__k { flex: 0 0 130px; color: var(--text3); font-weight: 600; }
+.upload-preview__v { color: var(--text2); word-break: break-all; }
+.upload-preview__v--muted { color: var(--text3); }
+.upload-preview__row.is-ok .upload-preview__v { color: #15803d; }
+.upload-preview__row.is-bad .upload-preview__v { color: #b91c1c; font-weight: 600; }
+.upload-preview__err { color: #b91c1c; font-weight: 600; margin-top: 6px; }
+.upload-preview__warn { color: #92400e; margin-top: 4px; }
+.upload-success { border: 1px solid var(--teal-border); background: var(--teal-light); border-radius: var(--radius); padding: 14px 16px; }
+.upload-success__title { font-size: 15px; font-weight: 700; color: #15803d; margin-bottom: 4px; }
+.upload-success__id { font-size: 13px; font-weight: 600; margin-bottom: 10px; word-break: break-all; }
+.upload-files-label { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; margin-bottom: 4px; }
+.upload-success__files ul { margin: 0 0 8px 0; padding-left: 18px; font-size: 12px; color: var(--text2); }
+.upload-warnings { margin-top: 6px; }
+.upload-warning { color: #92400e; font-size: 12px; margin-top: 2px; }
