@@ -8,6 +8,7 @@ import json
 import os
 import re
 import shutil
+import tempfile
 import time
 from contextlib import contextmanager
 from pathlib import Path
@@ -1854,27 +1855,39 @@ _PRECHECK_ERROR_CODES = {
 }
 
 
-def precheck_uploaded_project_folder(*, object_id: str, discipline: str,
-                                     project_name: str,
-                                     files: list[tuple[str, bytes]]) -> dict:
-    """Dry-run проверка загрузки папки — НИЧЕГО не пишет. Возвращает verdict со
-    статусом ready/warning/duplicate/error, blocks[] и warnings[].
+def _suggested_version_label(obj_projects_dir, object_id: str, target_pid: str) -> str:
+    """«V{N+1}» для target-проекта (best-effort, для подсказки в UI)."""
+    try:
+        from backend.app.services.common import version_service as _vs
+        tdir = resolve_project_dir(target_pid, object_id=object_id)
+        summ = _vs.get_versions_summary(tdir, target_pid)
+        return f"V{int(summ.get('version_count', 1)) + 1}"
+    except Exception:
+        return "V2"
 
-    Проверки: имя в legacy/v2 (hard block), точный bundle-дубль (hard block),
-    дубль PDF по checksum (warning), похожее имя (warning), no/multi PDF (error).
+
+def precheck_uploaded_project_folder(*, object_id: str, discipline: Optional[str] = None,
+                                     project_name: str,
+                                     files: list[tuple[str, bytes]],
+                                     folder_name: Optional[str] = None) -> dict:
+    """Dry-run проверка загрузки папки — НИЧЕГО не пишет. Возвращает verdict
+    (ready/warning/duplicate/error) + авто-дисциплину + предложение версии.
+
+    Дисциплина: если не передана — определяется (имя папки → имя PDF → текст
+    document.md → fallback EOM) через discipline_service. Дубли проверяются под
+    эффективной дисциплиной. Предложение версии: точное совпадение
+    нормализованного имени с существующим проектом того же раздела.
     """
     from backend.app.services.common.object_service import (
         get_object_by_id, get_projects_dir_for,
     )
-    discipline = (discipline or "").strip()
+    from backend.app.services.common import discipline_service as _ds
+
+    provided_discipline = (discipline or "").strip()
     project_name = (project_name or "").strip()
     blocks: list[dict] = []
     warnings: list[dict] = []
 
-    name_invalid = (not project_name or project_name.startswith("_")
-                    or any(s in project_name for s in ("/", "\\", "..", "\x00")))
-    disc_invalid = (not discipline or discipline.startswith("_")
-                    or any(s in discipline for s in ("/", "\\", "..", "\x00")))
     obj = get_object_by_id(object_id)
     obj_dir = get_projects_dir_for(object_id) if obj else None
 
@@ -1884,6 +1897,23 @@ def precheck_uploaded_project_folder(*, object_id: str, discipline: str,
         blocks.append({"code": "unsafe_filename", "message": str(e)})
         cls = {"pdfs": [], "mds": [], "results": [], "ocrs": [], "ignored": []}
     fp = _compute_upload_fingerprint(cls)
+
+    # --- авто-определение дисциплины -----------------------------------------
+    pdf_name = cls["pdfs"][0][0] if cls["pdfs"] else ""
+    doc_text = ""
+    if cls["mds"]:
+        try:
+            doc_text = cls["mds"][0][1].decode("utf-8", "ignore")[:8000]
+        except Exception:
+            doc_text = ""
+    det = _ds.detect_discipline_detailed(folder_name or "", pdf_name, doc_text)
+    detected_discipline = det["code"]
+    effective_discipline = provided_discipline or detected_discipline
+
+    name_invalid = (not project_name or project_name.startswith("_")
+                    or any(s in project_name for s in ("/", "\\", "..", "\x00")))
+    disc_invalid = (not effective_discipline or effective_discipline.startswith("_")
+                    or any(s in effective_discipline for s in ("/", "\\", "..", "\x00")))
 
     npdf = len(cls["pdfs"])
     if npdf == 0:
@@ -1897,10 +1927,16 @@ def precheck_uploaded_project_folder(*, object_id: str, discipline: str,
     if obj is None:
         blocks.append({"code": "object_not_found", "message": f"Объект не найден: {object_id!r}"})
 
-    project_id = f"{discipline}/{project_name}" if (project_name and discipline and not name_invalid and not disc_invalid) else None
+    project_id = (f"{effective_discipline}/{project_name}"
+                  if (project_name and effective_discipline and not name_invalid and not disc_invalid)
+                  else None)
+    normalized_project_name = _normalize_name_for_similarity(project_name)
+    suggested_target = None
+    suggested_target_name = None
+    suggested_version_label = None
 
     if obj_dir is not None and project_id:
-        dest = obj_dir / discipline / project_name
+        dest = obj_dir / effective_discipline / project_name
         if dest.exists() and (dest / "project_info.json").exists():
             blocks.append({"code": "legacy_name_exists", "message": f"Проект «{project_id}» уже существует в projects/."})
         if _v2_document_exists(object_id, project_name):
@@ -1917,12 +1953,16 @@ def precheck_uploaded_project_folder(*, object_id: str, discipline: str,
             dup = idx["pdf"][ps]
             warnings.append({"code": "pdf_checksum_duplicate",
                              "message": f"Такой PDF уже загружался: {', '.join(dup[:3])}"})
-        norm = _normalize_name_for_similarity(project_name)
+        # совпадение нормализованного имени в том же разделе → предложение версии
         sim = [r["pid"] for r in idx["names_list"]
-               if r["discipline"] == discipline and r["norm"] == norm and r["pid"] != project_id]
+               if r["discipline"] == effective_discipline
+               and r["norm"] == normalized_project_name and r["pid"] != project_id]
         if sim:
+            suggested_target = sim[0]
+            suggested_target_name = suggested_target.split("/")[-1]
+            suggested_version_label = _suggested_version_label(obj_dir, object_id, suggested_target)
             warnings.append({"code": "similar_name",
-                             "message": f"Похожее имя проекта найдено: {', '.join(sim[:3])}"})
+                             "message": f"Похоже на новую версию проекта: {', '.join(sim[:3])}"})
 
     if blocks:
         status = "error" if any(b["code"] in _PRECHECK_ERROR_CODES for b in blocks) else "duplicate"
@@ -1932,8 +1972,16 @@ def precheck_uploaded_project_folder(*, object_id: str, discipline: str,
         status = "ready"
 
     return {
-        "project_id": project_id, "object_id": object_id, "discipline": discipline,
+        "project_id": project_id, "object_id": object_id,
+        "discipline": effective_discipline,
+        "detected_discipline": detected_discipline,
+        "discipline_source": det["source"], "discipline_reason": det["reason"],
+        "discipline_was_provided": bool(provided_discipline),
         "project_name": project_name,
+        "normalized_project_name": normalized_project_name,
+        "suggested_target_project": suggested_target,
+        "suggested_target_name": suggested_target_name,
+        "suggested_version_label": suggested_version_label,
         "pdf_sha256": fp.get("pdf_sha256"), "bundle_fingerprint": fp.get("bundle_fingerprint"),
         "pdf_count": npdf, "pdf_name": (cls["pdfs"][0][0] if cls["pdfs"] else None),
         "has_md": bool(cls["mds"]), "has_result": bool(cls["results"]), "has_ocr": bool(cls["ocrs"]),
@@ -1943,10 +1991,98 @@ def precheck_uploaded_project_folder(*, object_id: str, discipline: str,
     }
 
 
+def _save_uploaded_as_new_version(*, object_id: str, discipline: str,
+                                  target_project_id: str,
+                                  files: list[tuple[str, bytes]]) -> dict:
+    """Загрузить папку как НОВУЮ ВЕРСИЮ существующего проекта.
+
+    Переиспользует проверенный `create_version_from_existing_files`: in-memory
+    байты пишутся во временную папку, оттуда копируются в новую версию target.
+    Валидация (target существует, тот же раздел) — внутри version_service.
+    Привязка к объекту обеспечивается object-bound резолвером. Orphan не
+    создаётся (нет source-проекта). После — пере-зеркаливание target в v2.
+    """
+    from backend.app.services.common import version_service as _vs
+
+    target_project_id = (target_project_id or "").strip()
+    if not target_project_id:
+        raise UploadFolderError("Не указан target_project_id для режима new_version")
+
+    cls = _classify_upload_files(files)
+    if len(cls["pdfs"]) == 0:
+        raise UploadFolderError("В папке не найден PDF. Нужен ровно один PDF проекта.")
+    if len(cls["pdfs"]) > 1:
+        raise UploadFolderError("В папке найдено несколько PDF. Оставьте один PDF на проект.")
+
+    # object-bound резолвер: target обязан быть в ЭТОМ объекте (иначе not found)
+    def _resolver(pid, **kw):
+        return resolve_project_dir(pid, object_id=object_id)
+
+    with tempfile.TemporaryDirectory(prefix="upload_ver_") as tmp:
+        tmpd = Path(tmp)
+        def _w(items):
+            out = []
+            for name, data in items:
+                p = tmpd / name
+                p.write_bytes(data)
+                out.append(str(p))
+            return out
+        pdf_paths = _w(cls["pdfs"])
+        md_paths = _w(cls["mds"])
+        result_paths = _w(cls["results"])
+        ocr_paths = _w(cls["ocrs"])
+        try:
+            res = _vs.create_version_from_existing_files(
+                target_project_id,
+                candidate_files={
+                    "pdf": pdf_paths[0],
+                    "md": md_paths[0] if md_paths else None,
+                    "result_json": result_paths[0] if result_paths else None,
+                    "extra": ocr_paths,  # *_ocr.html едет в версию
+                },
+                expected_section=discipline or None,
+                comment="Загружено как версия из «Из папки на компьютере»",
+                source="upload_folder_modal",
+                allowed_roots=[tmpd],
+                resolve_project_dir_fn=_resolver,
+            )
+        except _vs.VersionFileConflictError as e:
+            raise UploadFolderConflict(str(e))
+        except _vs.VersionFileError as e:
+            raise UploadFolderError(str(e))
+        except ValueError as e:
+            # несовпадение раздела target и т.п.
+            raise UploadFolderError(str(e))
+
+    # пере-зеркалить target в v2 (project_info версии правится после mirror) —
+    # как в merge_project_as_version; no-op в legacy, fail-soft.
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        _swf.shadow_mirror_project_id_safe(target_project_id)
+    except Exception:
+        pass
+
+    return {
+        "mode": "new_version",
+        "project_id": target_project_id,
+        "name": target_project_id.split("/")[-1],
+        "section": discipline,
+        "object_id": object_id,
+        "version": res.get("version"),
+        "version_id": (res.get("version") or {}).get("version_id"),
+        "saved_files": res.get("saved", []),
+        "warnings": res.get("warnings", []),
+        "versions_summary": res.get("versions_summary"),
+        "has_md": bool(cls["mds"]), "has_result": bool(cls["results"]), "has_ocr": bool(cls["ocrs"]),
+    }
+
+
 def save_uploaded_project_folder(*, object_id: str, discipline: str,
                                  project_name: str,
                                  files: list[tuple[str, bytes]],
-                                 description: str = "") -> dict:
+                                 description: str = "",
+                                 upload_mode: str = "new_project",
+                                 target_project_id: Optional[str] = None) -> dict:
     """Сохранить папку проекта, загруженную инженером через браузер.
 
     Args:
@@ -1956,13 +2092,17 @@ def save_uploaded_project_folder(*, object_id: str, discipline: str,
         files: список (имя_файла, байты). project_info.json игнорируется
                (генерируем сами). Принимаются только pdf/md/json(*_result)/html(*_ocr).
         description: опциональное описание.
+        upload_mode: `new_project` (default) или `new_version`.
+        target_project_id: для `new_version` — проект-основание (в этом объекте).
 
-    Returns: словарь с project_id/saved_files/ignored_files/has_* и project_info.
+    Returns: словарь с project_id/saved_files/ignored_files/has_* и project_info
+        (new_project) либо version/versions_summary (new_version).
 
     Raises:
         UploadFolderError (→422): нет/несколько PDF, кривое имя/дисциплина,
-            небезопасное имя файла, объект не найден.
-        UploadFolderConflict (→409): проект уже есть в legacy или projects_v2.
+            небезопасное имя файла, объект не найден, раздел target не совпал.
+        UploadFolderConflict (→409): проект уже есть в legacy/v2 или версия-дубль.
+        FileNotFoundError (→404): target для new_version не найден.
     """
     from backend.app.services.common.object_service import (
         get_object_by_id, get_projects_dir_for,
@@ -1970,6 +2110,15 @@ def save_uploaded_project_folder(*, object_id: str, discipline: str,
 
     discipline = (discipline or "").strip()
     project_name = (project_name or "").strip()
+
+    if upload_mode == "new_version":
+        # резолв объекта (для проверки существования) делается внутри резолвера
+        if get_object_by_id(object_id) is None:
+            raise UploadFolderError(f"Объект не найден: {object_id!r}")
+        return _save_uploaded_as_new_version(
+            object_id=object_id, discipline=discipline,
+            target_project_id=target_project_id or "", files=files,
+        )
 
     # --- валидация имён (path-traversal / служебные префиксы) -----------------
     if not project_name:

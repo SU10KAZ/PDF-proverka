@@ -1026,7 +1026,7 @@
                             <table class="upload-multi-table">
                                 <thead><tr>
                                     <th></th><th>Папка</th><th>PDF</th><th>md/res/ocr</th>
-                                    <th>Название проекта</th><th>Статус</th>
+                                    <th>Дисциплина</th><th>Название / режим</th><th>Статус</th>
                                 </tr></thead>
                                 <tbody>
                                     <tr v-for="c in uploadCandidates" :key="c.folder" :class="'cand--'+c.status">
@@ -1035,8 +1035,33 @@
                                         <td :title="c.folder">{{ c.folder }}</td>
                                         <td>{{ c.pdfName || '— нет —' }}<template v-if="c.pdfCount>1"> ({{ c.pdfCount }} PDF!)</template></td>
                                         <td class="cand-bundle">{{ c.hasMd?'md':'·' }} / {{ c.hasResult?'res':'·' }} / {{ c.hasOcr?'ocr':'·' }}</td>
-                                        <td><input class="form-input form-input--sm" v-model="c.name"
-                                                   :disabled="uploadLoading"></td>
+                                        <td>
+                                            <select class="form-input form-input--sm" v-model="c.discipline"
+                                                    :disabled="uploadLoading" @change="recheckCandidate(c)">
+                                                <option v-for="d in supportedDisciplines" :key="d.code" :value="d.code">{{ d.code }}</option>
+                                            </select>
+                                            <div v-if="c.disciplineSource" class="cand-msg">авто: {{ disciplineSourceLabel(c.disciplineSource) }}</div>
+                                        </td>
+                                        <td>
+                                            <input class="form-input form-input--sm" v-model="c.name"
+                                                   :disabled="uploadLoading || c.addMode==='new_version'"
+                                                   @change="recheckCandidate(c)">
+                                            <div class="cand-mode-row">
+                                                <label><input type="radio" :value="'new_project'" v-model="c.addMode"> новый</label>
+                                                <label><input type="radio" :value="'new_version'" v-model="c.addMode"
+                                                              :disabled="!candTargetOptions(c).length"> версия</label>
+                                            </div>
+                                            <div v-if="c.addMode==='new_version'" class="cand-target-row">
+                                                <select class="form-input form-input--sm" v-model="c.targetProjectId" :disabled="uploadLoading">
+                                                    <option value="" disabled>— основание —</option>
+                                                    <option v-for="p in candTargetOptions(c)" :key="p.project_id" :value="p.project_id"
+                                                            :style="p._suggested ? {color:'#c0392b',fontWeight:'600'} : {}">
+                                                        {{ p.name || p.project_id }}<template v-if="p._suggested"> ·совпад.</template>
+                                                    </option>
+                                                </select>
+                                                <span v-if="c.targetProjectId" class="addmode-version-badge">→ {{ candVersionLabel(c) }}</span>
+                                            </div>
+                                        </td>
                                         <td><span class="cand-status" :class="'cand-status--'+c.status">{{ candStatusLabel(c) }}</span>
                                             <div v-if="c.message" class="cand-msg">{{ c.message }}</div></td>
                                     </tr>
@@ -1075,8 +1100,17 @@
                                 </select>
                             </div>
                             <div class="form-row">
-                                <label>Дисциплина</label>
-                                <select class="form-input" v-model="uploadDiscipline" :disabled="uploadLoading">
+                                <label>
+                                    Дисциплина
+                                    <span v-if="uploadDetectedDiscipline" class="disc-auto-badge"
+                                          :style="{borderColor: getDisciplineColor(uploadDetectedDiscipline)}"
+                                          :title="'Определено ' + disciplineSourceLabel(uploadDisciplineSource)">
+                                        авто: {{ uploadDetectedDiscipline }}
+                                        <template v-if="uploadDisciplineSource==='fallback'"> (по умолчанию)</template>
+                                    </span>
+                                </label>
+                                <select class="form-input" v-model="uploadDiscipline" :disabled="uploadLoading"
+                                        @change="runSinglePrecheck">
                                     <option value="" disabled>— выберите дисциплину —</option>
                                     <option v-for="d in supportedDisciplines" :key="d.code" :value="d.code">
                                         {{ d.short_name }} — {{ d.name }}
@@ -1087,6 +1121,7 @@
                                 <label>Название проекта</label>
                                 <input type="text" class="form-input" v-model="uploadProjectName"
                                        :disabled="uploadLoading"
+                                       @change="runSinglePrecheck"
                                        placeholder="Напр. 133-23-ГК-ЭМ1">
                             </div>
                             <div class="form-row">
@@ -1142,9 +1177,41 @@
                             <div v-for="w in uploadPrecheck.warnings" :key="w.code" class="upload-precheck__warn">⚠ {{ w.message }}</div>
                             <div v-if="uploadPrecheck.status==='ready'" class="upload-precheck__ok">✓ Дублей не найдено</div>
                         </div>
-                        <label v-if="uploadPrecheck && uploadPrecheck.status==='warning'" class="upload-override">
+                        <label v-if="uploadPrecheck && uploadPrecheck.status==='warning' && uploadAddMode==='new_project'" class="upload-override">
                             <input type="checkbox" v-model="uploadOverrideWarning"> Всё равно загрузить
                         </label>
+
+                        <!-- Режим: новый проект / новая версия существующего -->
+                        <div v-if="uploadScan && uploadScan.pdf && uploadDiscipline" class="upload-addmode">
+                            <div v-if="uploadPrecheck && uploadPrecheck.suggested_target_project && uploadAddMode==='new_version'"
+                                 class="upload-addmode__hint">
+                                💡 Похоже, это новая версия существующего проекта
+                                «{{ uploadPrecheck.suggested_target_name || uploadPrecheck.suggested_target_project }}».
+                            </div>
+                            <div class="addmode-row">
+                                <span class="addmode-label">Добавить как:</span>
+                                <label class="addmode-option">
+                                    <input type="radio" value="new_project" v-model="uploadAddMode"> Новый проект
+                                </label>
+                                <label class="addmode-option">
+                                    <input type="radio" value="new_version" v-model="uploadAddMode"
+                                           :disabled="!uploadTargetOptions.length"> Новая версия существующего
+                                </label>
+                            </div>
+                            <div v-if="uploadAddMode==='new_version'" class="addmode-version-row">
+                                <label class="addmode-target-label">Проект-основание:</label>
+                                <select class="form-input" v-model="uploadTargetProjectId" :disabled="uploadLoading">
+                                    <option value="" disabled>— выберите проект —</option>
+                                    <option v-for="p in uploadTargetOptions" :key="p.project_id" :value="p.project_id"
+                                            :style="p._suggested ? {color:'#c0392b',fontWeight:'600'} : {}">
+                                        {{ p.name || p.project_id }}<template v-if="p._suggested"> · совпадение</template>
+                                    </option>
+                                </select>
+                                <span v-if="uploadTargetProjectId" class="addmode-version-badge">
+                                    → {{ versionLabelForTarget(uploadTargetProjectId) }}
+                                </span>
+                            </div>
+                        </div>
 
                         <div v-if="uploadError" class="upload-preview__err" style="margin-top:8px">⛔ {{ uploadError }}</div>
 
@@ -1153,7 +1220,11 @@
                                     :disabled="uploadLoading">Назад</button>
                             <button class="btn btn-success btn-sm" @click="submitUploadFolder"
                                     :disabled="uploadLoading || !canSubmitUpload">
-                                {{ uploadLoading ? 'Загрузка…' : 'Загрузить' }}
+                                <template v-if="uploadLoading">Загрузка…</template>
+                                <template v-else-if="uploadAddMode==='new_version' && uploadTargetProjectId">
+                                    Добавить как {{ versionLabelForTarget(uploadTargetProjectId) }}
+                                </template>
+                                <template v-else>Загрузить проект</template>
                             </button>
                         </div>
                     </template>

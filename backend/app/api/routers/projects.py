@@ -222,16 +222,17 @@ async def upload_folder(
     object_id: Optional[str] = Form(None),
     object_name: Optional[str] = Form(None),
     description: str = Form(""),
+    upload_mode: str = Form("new_project"),
+    target_project_id: Optional[str] = Form(None),
     files: list[UploadFile] = File(..., description="Файлы папки проекта"),
 ):
     """Загрузить папку проекта с компьютера инженера (browser folder upload).
 
-    Принимает multipart: pdf (ровно один) + опц. *_document.md / *_result.json /
-    *_ocr.html. Клиентский project_info.json игнорируется (генерируем сами).
-    Сначала пишем в legacy projects/ (авторитетно), затем dual_write_shadow
-    зеркалит в projects_v2 (no-op в legacy-режиме, fail-soft).
+    `upload_mode=new_project` (default) — создать новый проект. `new_version` —
+    добавить новую версию существующего `target_project_id` (в этом же объекте/
+    разделе) через проверенный version-flow (без orphan, с пере-зеркалированием
+    target в projects_v2). Сначала legacy (авторитетно), затем dual_write_shadow.
     """
-    # Резолв объекта: object_id приоритетнее, иначе по имени.
     oid = object_id
     if not oid and object_name:
         from backend.app.services.common import object_service
@@ -241,9 +242,15 @@ async def upload_folder(
                 break
     if not oid:
         raise HTTPException(422, "Не указан объект (object_id или object_name)")
-
     if not files:
         raise HTTPException(422, "Не передан ни один файл")
+
+    if upload_mode == "new_version":
+        if not target_project_id:
+            raise HTTPException(422, "Не указан target_project_id для режима new_version")
+        from backend.app.pipeline.manager import pipeline_manager
+        if pipeline_manager.is_running(target_project_id):
+            raise HTTPException(409, f"Проект-основание «{target_project_id}» сейчас в аудите. Сначала отмените.")
 
     payload: list[tuple[str, bytes]] = []
     for f in files:
@@ -256,9 +263,13 @@ async def upload_folder(
             project_name=project_name,
             files=payload,
             description=description,
+            upload_mode=upload_mode,
+            target_project_id=target_project_id,
         )
     except project_service.UploadFolderConflict as e:
         raise HTTPException(409, str(e))
+    except FileNotFoundError as e:
+        raise HTTPException(404, str(e))
     except project_service.UploadFolderError as e:
         raise HTTPException(422, str(e))
     return {"status": "ok", **result}
@@ -266,18 +277,20 @@ async def upload_folder(
 
 @router.post("/upload-folder/precheck")
 async def upload_folder_precheck(
-    discipline: str = Form(...),
     project_name: str = Form(...),
+    discipline: Optional[str] = Form(None),
     object_id: Optional[str] = Form(None),
     object_name: Optional[str] = Form(None),
+    folder_name: Optional[str] = Form(None),
     files: list[UploadFile] = File(..., description="Файлы папки проекта"),
 ):
     """Dry-run проверка папки перед загрузкой — НИЧЕГО не пишет.
 
-    Возвращает verdict: status (ready|warning|duplicate|error) + blocks[] +
-    warnings[] + fingerprint. Дубли по имени/bundle — hard block; дубль PDF по
-    checksum и похожее имя — warning. Backend всё равно повторяет hard-проверки
-    при фактической загрузке (race-condition guard).
+    Если `discipline` не передана — определяется автоматически (имя папки → имя
+    PDF → текст document.md → fallback). Возвращает verdict (ready|warning|
+    duplicate|error) + blocks[]/warnings[] + fingerprint + detected_discipline/
+    source + suggested_target_project/version (предложение версии). Backend всё
+    равно повторяет hard-проверки при фактической загрузке (race guard).
     """
     oid = object_id
     if not oid and object_name:
@@ -296,7 +309,8 @@ async def upload_folder_precheck(
         payload.append((f.filename or "", await f.read()))
 
     verdict = project_service.precheck_uploaded_project_folder(
-        object_id=oid, discipline=discipline, project_name=project_name, files=payload,
+        object_id=oid, discipline=discipline, project_name=project_name,
+        files=payload, folder_name=folder_name,
     )
     return {"status": "ok", "precheck": verdict}
 

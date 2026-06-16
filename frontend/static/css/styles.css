@@ -3959,3 +3959,18 @@ tr.row-rejected td.sc-cell-goto {
 .ubs--ok { color: #15803d; }
 .ubs--skip { color: #92400e; }
 .ubs--err { color: #b91c1c; }
+
+/* ─── Upload: авто-дисциплина + предложение версии ─── */
+.disc-auto-badge { display: inline-block; margin-left: 6px; padding: 0 6px; font-size: 10px; font-weight: 700;
+    border: 1px solid var(--border2); border-radius: 8px; color: var(--text2); text-transform: none; letter-spacing: 0; }
+.upload-addmode { margin-top: 10px; border: 1px solid var(--border2); border-radius: var(--radius); padding: 8px 10px; }
+.upload-addmode__hint { font-size: 12px; color: #c0392b; margin-bottom: 6px; }
+.addmode-row { display: flex; align-items: center; gap: 14px; font-size: 13px; flex-wrap: wrap; }
+.addmode-label { color: var(--text3); font-weight: 600; }
+.addmode-option { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+.addmode-version-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.addmode-target-label { font-size: 12px; color: var(--text3); white-space: nowrap; }
+.addmode-version-badge { font-weight: 700; color: #c0392b; white-space: nowrap; }
+.cand-mode-row { display: flex; gap: 8px; font-size: 11px; margin-top: 3px; color: var(--text2); }
+.cand-mode-row label { display: inline-flex; align-items: center; gap: 3px; cursor: pointer; }
+.cand-target-row { display: flex; align-items: center; gap: 5px; margin-top: 3px; }

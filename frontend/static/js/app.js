@@ -4623,6 +4623,31 @@ const app = createApp({
         const uploadCandidates = ref([]);     // multi: [{folder, pdf, name, status, ...}]
         const uploadBatchResult = ref(null);  // multi: {uploaded, skipped, failed}
         const uploadBatchProgress = ref('');
+        // авто-дисциплина + предложение версии (single)
+        const uploadDetectedDiscipline = ref('');
+        const uploadDisciplineSource = ref('');   // folder_name|pdf_name|document_text|fallback
+        const uploadFolderName = ref('');         // имя выбранной папки (для детекции)
+        const uploadAddMode = ref('new_project'); // 'new_project' | 'new_version'
+        const uploadTargetProjectId = ref('');
+
+        const _DISC_SOURCE_LABEL = {
+            folder_name: 'по имени папки', pdf_name: 'по имени PDF',
+            document_text: 'по тексту', fallback: 'по умолчанию',
+        };
+        function disciplineSourceLabel(src) { return _DISC_SOURCE_LABEL[src] || src || ''; }
+
+        // следующая версия у target-проекта (переиспат. логику candidateNextVersionLabel)
+        function versionLabelForTarget(pid) {
+            const t = (projects.value || []).find(p => p.project_id === pid);
+            if (!t) return 'V?';
+            if (Array.isArray(t.versions_summary)) {
+                const latest = t.versions_summary.find(v => v.is_latest);
+                if (latest && latest.version_id !== 'v1' && (latest.pdf_count || 0) === 0) {
+                    return (latest.label || 'V' + latest.version_no) + ' (пустая)';
+                }
+            }
+            return 'V' + ((t.version_count || 1) + 1);
+        }
 
         function fmtSize(bytes) {
             if (!bytes && bytes !== 0) return '';
@@ -4641,9 +4666,29 @@ const app = createApp({
             return out;
         }
 
+        // существующие проекты выбранного раздела — варианты «привязать как версию»
+        const uploadTargetOptions = computed(() => {
+            const sec = uploadDiscipline.value;
+            if (!sec) return [];
+            const cand = normalizeProjectName(uploadProjectName.value || '');
+            const out = (projects.value || []).filter(p => p.section === sec).map(p =>
+                Object.assign({}, p, {
+                    _suggested: !!cand && normalizeProjectName(p.name || p.project_id) === cand,
+                }));
+            out.sort((a, b) => (a._suggested === b._suggested)
+                ? String(a.name || a.project_id).localeCompare(String(b.name || b.project_id))
+                : (a._suggested ? -1 : 1));
+            return out;
+        });
+
         const canSubmitUpload = computed(() => {
-            if (!uploadObjectId.value || !uploadDiscipline.value || !uploadProjectName.value.trim()) return false;
+            if (!uploadObjectId.value || !uploadDiscipline.value) return false;
             if (!uploadScan.value || !uploadScan.value.pdf || uploadScanError.value) return false;
+            if (uploadAddMode.value === 'new_version') {
+                // версия: нужен target; имя-дубли не блокируют (это и есть версия)
+                return !!uploadTargetProjectId.value;
+            }
+            if (!uploadProjectName.value.trim()) return false;
             const pc = uploadPrecheck.value;
             if (pc) {
                 if (pc.status === 'duplicate' || pc.status === 'error') return false;
@@ -4658,6 +4703,8 @@ const app = createApp({
             uploadScanError.value = ''; uploadScanWarnings.value = [];
             uploadCandidates.value = []; uploadBatchResult.value = null;
             uploadResult.value = null; uploadError.value = '';
+            uploadAddMode.value = 'new_project'; uploadTargetProjectId.value = '';
+            uploadDetectedDiscipline.value = ''; uploadDisciplineSource.value = '';
         }
 
         function goToUploadFolder() {
@@ -4690,8 +4737,13 @@ const app = createApp({
             uploadError.value = '';
             uploadPrecheck.value = null;
             uploadOverrideWarning.value = false;
+            uploadAddMode.value = 'new_project';
+            uploadTargetProjectId.value = '';
+            uploadDetectedDiscipline.value = '';
+            uploadDisciplineSource.value = '';
             const all = Array.from(ev.target.files || []);
             uploadFiles.value = all;
+            uploadFolderName.value = (all[0] && (all[0].webkitRelativePath || '').split('/')[0]) || '';
             if (!all.length) { uploadScan.value = null; return; }
 
             const pdfs = [], mds = [], results = [], ocrs = [], ignored = [];
@@ -4732,20 +4784,35 @@ const app = createApp({
 
         async function runSinglePrecheck() {
             const s = uploadScan.value;
-            if (!s || !s.pdf || !uploadObjectId.value || !uploadDiscipline.value
-                || !uploadProjectName.value.trim()) {
+            if (!s || !s.pdf || !uploadObjectId.value || !uploadProjectName.value.trim()) {
                 uploadPrecheck.value = null; return;
             }
             uploadPrecheckLoading.value = true;
             try {
                 const fd = new FormData();
                 fd.append('object_id', uploadObjectId.value);
-                fd.append('discipline', uploadDiscipline.value);
+                // дисциплину НЕ форсим — backend определит сам, если поле пустое
+                if (uploadDiscipline.value) fd.append('discipline', uploadDiscipline.value);
+                if (uploadFolderName.value) fd.append('folder_name', uploadFolderName.value);
                 fd.append('project_name', uploadProjectName.value.trim());
                 for (const f of _uploadBundleFiles(s)) fd.append('files', f, f.name);
                 const resp = await fetch('/api/projects/upload-folder/precheck', { method: 'POST', body: fd });
                 const data = await resp.json().catch(() => ({}));
-                uploadPrecheck.value = (resp.ok && data.precheck) ? data.precheck : null;
+                const pc = (resp.ok && data.precheck) ? data.precheck : null;
+                uploadPrecheck.value = pc;
+                if (pc) {
+                    uploadDetectedDiscipline.value = pc.detected_discipline || '';
+                    uploadDisciplineSource.value = pc.discipline_source || '';
+                    // если пользователь ещё не выбрал дисциплину — подставить определённую
+                    if (!uploadDiscipline.value && pc.discipline) uploadDiscipline.value = pc.discipline;
+                    // авто-предложение версии: если нашёлся target и пользователь не
+                    // переключал режим вручную — предложить «новая версия»
+                    if (pc.suggested_target_project && uploadAddMode.value === 'new_project'
+                        && !uploadTargetProjectId.value) {
+                        uploadAddMode.value = 'new_version';
+                        uploadTargetProjectId.value = pc.suggested_target_project;
+                    }
+                }
             } catch (e) {
                 uploadPrecheck.value = null;
             } finally {
@@ -4757,27 +4824,38 @@ const app = createApp({
             if (uploadLoading.value) return;
             const s = uploadScan.value;
             if (!s || !s.pdf) { uploadError.value = 'Выберите папку с одним PDF.'; return; }
-            if (!uploadObjectId.value || !uploadDiscipline.value || !uploadProjectName.value.trim()) {
-                uploadError.value = 'Заполните объект, дисциплину и название.'; return;
+            if (!uploadObjectId.value || !uploadDiscipline.value) {
+                uploadError.value = 'Заполните объект и дисциплину.'; return;
+            }
+            const isVersion = uploadAddMode.value === 'new_version';
+            if (isVersion && !uploadTargetProjectId.value) {
+                uploadError.value = 'Выберите проект-основание для новой версии.'; return;
+            }
+            if (!isVersion && !uploadProjectName.value.trim()) {
+                uploadError.value = 'Укажите название проекта.'; return;
             }
             uploadError.value = '';
             uploadLoading.value = true;
             try {
-                // свежий precheck перед загрузкой (race-aware)
-                await runSinglePrecheck();
-                const pc = uploadPrecheck.value;
-                if (pc && (pc.status === 'duplicate' || pc.status === 'error')) {
-                    uploadError.value = (pc.blocks[0] && pc.blocks[0].message) || 'Загрузка заблокирована (дубль).';
-                    return;
-                }
-                if (pc && pc.status === 'warning' && !uploadOverrideWarning.value) {
-                    uploadError.value = 'Найдено предупреждение — отметьте «Всё равно загрузить».';
-                    return;
+                if (!isVersion) {
+                    // новый проект: свежий precheck перед загрузкой (race-aware)
+                    await runSinglePrecheck();
+                    const pc = uploadPrecheck.value;
+                    if (pc && (pc.status === 'duplicate' || pc.status === 'error')) {
+                        uploadError.value = (pc.blocks[0] && pc.blocks[0].message) || 'Загрузка заблокирована (дубль).';
+                        return;
+                    }
+                    if (pc && pc.status === 'warning' && !uploadOverrideWarning.value) {
+                        uploadError.value = 'Найдено предупреждение — отметьте «Всё равно загрузить».';
+                        return;
+                    }
                 }
                 const fd = new FormData();
                 fd.append('object_id', uploadObjectId.value);
                 fd.append('discipline', uploadDiscipline.value);
-                fd.append('project_name', uploadProjectName.value.trim());
+                fd.append('project_name', uploadProjectName.value.trim() || (s.pdf.name || '').replace(/\.pdf$/i, ''));
+                fd.append('upload_mode', isVersion ? 'new_version' : 'new_project');
+                if (isVersion) fd.append('target_project_id', uploadTargetProjectId.value);
                 for (const f of _uploadBundleFiles(s)) fd.append('files', f, f.name);
 
                 const resp = await fetch('/api/projects/upload-folder', { method: 'POST', body: fd });
@@ -4833,6 +4911,8 @@ const app = createApp({
                     pdfName: pdf ? pdf.name : (pdfs[0] ? pdfs[0].name : null), pdfCount: pdfs.length,
                     md, result, ocr, hasMd: !!md, hasResult: !!result, hasOcr: !!ocr,
                     name: pdf ? pdf.name.replace(/\.pdf$/i, '') : sub,
+                    discipline: '', detectedDiscipline: '', disciplineSource: '',
+                    addMode: 'new_project', targetProjectId: '',
                     status: 'pending', message: '', checked: false, precheck: null,
                 });
             }
@@ -4840,39 +4920,79 @@ const app = createApp({
             recheckAllCandidates();
         }
 
-        async function recheckAllCandidates() {
-            if (!uploadCandidates.value.length) return;
-            if (!uploadObjectId.value || !uploadDiscipline.value) {
-                for (const c of uploadCandidates.value) {
-                    c.status = 'error'; c.message = 'Выберите объект и дисциплину'; c.checked = false;
+        // precheck одной строки. discipline берётся per-row (c.discipline) либо,
+        // если пусто, глобальный uploadDiscipline; если и он пуст — авто-детект.
+        async function recheckCandidate(c) {
+            if (!uploadObjectId.value) { c.status = 'error'; c.message = 'Выберите объект'; c.checked = false; return; }
+            if (c.pdfCount === 0) { c.status = 'error'; c.message = 'Нет PDF'; c.checked = false; return; }
+            if (c.pdfCount > 1) { c.status = 'error'; c.message = 'Несколько PDF — оставьте один PDF на проект'; c.checked = false; return; }
+            c.status = 'pending'; c.message = 'проверка…';
+            try {
+                const fd = new FormData();
+                fd.append('object_id', uploadObjectId.value);
+                const disc = c.discipline || uploadDiscipline.value || '';
+                if (disc) fd.append('discipline', disc);
+                fd.append('folder_name', c.folder);
+                fd.append('project_name', (c.name || '').trim());
+                for (const f of _uploadBundleFiles(c)) fd.append('files', f, f.name);
+                const resp = await fetch('/api/projects/upload-folder/precheck', { method: 'POST', body: fd });
+                const data = await resp.json().catch(() => ({}));
+                const pc = (resp.ok && data.precheck) ? data.precheck : null;
+                if (!pc) { c.status = 'error'; c.message = 'ошибка проверки'; c.checked = false; return; }
+                c.precheck = pc; c.status = pc.status;
+                c.detectedDiscipline = pc.detected_discipline || '';
+                c.disciplineSource = pc.discipline_source || '';
+                if (!c.discipline && pc.discipline) c.discipline = pc.discipline;  // авто
+                // авто-предложение версии (если режим ещё не трогали вручную)
+                if (pc.suggested_target_project && c.addMode === 'new_project' && !c.targetProjectId) {
+                    c.addMode = 'new_version';
+                    c.targetProjectId = pc.suggested_target_project;
                 }
-                return;
-            }
-            for (const c of uploadCandidates.value) {
-                if (c.pdfCount === 0) { c.status = 'error'; c.message = 'Нет PDF'; c.checked = false; continue; }
-                if (c.pdfCount > 1) { c.status = 'error'; c.message = 'Несколько PDF — оставьте один PDF на проект'; c.checked = false; continue; }
-                c.status = 'pending'; c.message = 'проверка…';
-                try {
-                    const fd = new FormData();
-                    fd.append('object_id', uploadObjectId.value);
-                    fd.append('discipline', uploadDiscipline.value);
-                    fd.append('project_name', (c.name || '').trim());
-                    for (const f of _uploadBundleFiles(c)) fd.append('files', f, f.name);
-                    const resp = await fetch('/api/projects/upload-folder/precheck', { method: 'POST', body: fd });
-                    const data = await resp.json().catch(() => ({}));
-                    const pc = (resp.ok && data.precheck) ? data.precheck : null;
-                    if (!pc) { c.status = 'error'; c.message = 'ошибка проверки'; c.checked = false; continue; }
-                    c.precheck = pc; c.status = pc.status;
-                    c.message = (pc.blocks[0] && pc.blocks[0].message)
-                        || (pc.warnings[0] && pc.warnings[0].message) || '';
+                c.message = (pc.blocks[0] && pc.blocks[0].message)
+                    || (pc.warnings[0] && pc.warnings[0].message) || '';
+                // для new_version имя-дубли не мешают; считаем строку готовой к загрузке
+                if (c.addMode === 'new_version' && c.targetProjectId) {
+                    c.checked = true;
+                } else {
                     c.checked = (pc.status === 'ready' || pc.status === 'warning');
-                } catch (e) {
-                    c.status = 'error'; c.message = 'ошибка проверки'; c.checked = false;
                 }
+            } catch (e) {
+                c.status = 'error'; c.message = 'ошибка проверки'; c.checked = false;
             }
         }
 
+        async function recheckAllCandidates() {
+            if (!uploadCandidates.value.length) return;
+            // последовательно, чтобы не залить backend параллельными precheck'ами
+            for (const c of uploadCandidates.value) {
+                await recheckCandidate(c);
+            }
+        }
+
+        // варианты target для строки (проекты раздела строки), с пометкой совпадения
+        function candTargetOptions(c) {
+            const sec = c.discipline || uploadDiscipline.value;
+            if (!sec) return [];
+            const cand = normalizeProjectName(c.name || '');
+            const out = (projects.value || []).filter(p => p.section === sec).map(p =>
+                Object.assign({}, p, {
+                    _suggested: !!cand && normalizeProjectName(p.name || p.project_id) === cand,
+                }));
+            out.sort((a, b) => (a._suggested === b._suggested)
+                ? String(a.name || a.project_id).localeCompare(String(b.name || b.project_id))
+                : (a._suggested ? -1 : 1));
+            return out;
+        }
+        function candVersionLabel(c) {
+            return c.targetProjectId ? versionLabelForTarget(c.targetProjectId) : 'V?';
+        }
+        function candUploadableRow(c) {
+            if (c.addMode === 'new_version') return !!c.targetProjectId && c.status !== 'error';
+            return c.status === 'ready' || c.status === 'warning';
+        }
+
         function candUploadable(c) {
+            if (c.addMode === 'new_version') return !!c.targetProjectId && c.status !== 'error';
             return c.status === 'ready' || c.status === 'warning';
         }
         function candStatusLabel(c) {
@@ -4899,8 +5019,11 @@ const app = createApp({
                     i++; uploadBatchProgress.value = i + '/' + toUpload.length;
                     const fd = new FormData();
                     fd.append('object_id', uploadObjectId.value);
-                    fd.append('discipline', uploadDiscipline.value);
+                    fd.append('discipline', c.discipline || uploadDiscipline.value || '');
                     fd.append('project_name', (c.name || '').trim());
+                    const isVer = c.addMode === 'new_version';
+                    fd.append('upload_mode', isVer ? 'new_version' : 'new_project');
+                    if (isVer) fd.append('target_project_id', c.targetProjectId);
                     for (const f of _uploadBundleFiles(c)) fd.append('files', f, f.name);
                     try {
                         const resp = await fetch('/api/projects/upload-folder', { method: 'POST', body: fd });
@@ -16168,6 +16291,9 @@ const app = createApp({
             setUploadMode, runSinglePrecheck, openProjectById, onMultiFolderSelected,
             recheckAllCandidates, candUploadable, candStatusLabel, candCount,
             selectedCandidateCount, submitMultiUpload,
+            uploadDetectedDiscipline, uploadDisciplineSource, uploadAddMode,
+            uploadTargetProjectId, uploadTargetOptions, versionLabelForTarget,
+            disciplineSourceLabel, recheckCandidate, candTargetOptions, candVersionLabel,
             // Add project — version-of-existing mode
             onCandidatePrimaryAction, registerProjectAsVersion,
             candidateTargetOptions, candidateTargetName, candidateNextVersionLabel,

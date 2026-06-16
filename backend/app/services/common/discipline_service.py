@@ -151,6 +151,43 @@ def detect_discipline(folder_name: str, text_sample: str = "") -> str:
     return "EOM"
 
 
+def detect_discipline_detailed(folder_name: str = "", pdf_name: str = "",
+                               doc_text: str = "") -> dict:
+    """Как detect_discipline, но возвращает источник детекции.
+
+    Приоритет: имя папки → имя PDF → текст document.md (порог keywords >= 2) →
+    fallback EOM. Возвращает {code, source, reason}, где source ∈
+    {folder_name, pdf_name, document_text, fallback}.
+    """
+    registry = _load_registry()
+    disciplines = registry.get("disciplines", {})
+
+    def _match_name(name: str):
+        up = (name or "").upper()
+        for code, disc in disciplines.items():
+            for pattern in disc.get("folder_patterns", []):
+                if pattern and pattern.upper() in up:
+                    return code, pattern
+        return None, None
+
+    code, pat = _match_name(folder_name)
+    if code:
+        return {"code": code, "source": "folder_name", "reason": f"паттерн «{pat}» в имени папки"}
+    code, pat = _match_name(pdf_name)
+    if code:
+        return {"code": code, "source": "pdf_name", "reason": f"паттерн «{pat}» в имени PDF"}
+    if doc_text:
+        tl = doc_text.lower()
+        scores = {c: sum(1 for kw in d.get("text_keywords", []) if kw.lower() in tl)
+                  for c, d in disciplines.items()}
+        if scores:
+            best = max(scores, key=scores.get)
+            if scores[best] >= 2:
+                return {"code": best, "source": "document_text",
+                        "reason": f"{scores[best]} ключевых слов в тексте"}
+    return {"code": "EOM", "source": "fallback", "reason": "не определено — по умолчанию EOM"}
+
+
 def get_supported_disciplines() -> list[dict]:
     """Список поддерживаемых дисциплин для UI, отсортированный по order."""
     registry = _load_registry()
