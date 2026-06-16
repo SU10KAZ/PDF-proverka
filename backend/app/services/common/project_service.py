@@ -524,7 +524,10 @@ def delete_project(project_id: str) -> dict:
     Raises:
         ValueError: проект не найден.
     """
-    proj_dir = resolve_project_dir(project_id, must_exist=True)
+    try:
+        proj_dir = resolve_project_dir(project_id, must_exist=True)
+    except (ProjectNotResolvedError, AmbiguousProjectError, FileNotFoundError) as e:
+        raise ValueError(f"Проект '{project_id}' не найден") from e
 
     # верхнеуровневая запись: контейнер `(main)` (удалит все версии) или plain
     root_entry = Path(proj_dir)

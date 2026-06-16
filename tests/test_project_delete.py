@@ -127,9 +127,11 @@ def test_delete_project_removes_legacy_and_calls_v2(tmp_path, monkeypatch):
     assert calls and calls[0].endswith("MISTAKE")  # v2-remove вызван
 
 
-def test_delete_project_missing_raises(tmp_path, monkeypatch):
+def test_delete_project_missing_raises_valueerror(tmp_path, monkeypatch):
+    """resolve поднимает ProjectNotResolvedError (RuntimeError) → delete_project
+    конвертит в ValueError, чтобы endpoint вернул 404, а не 500."""
     def _raise(pid, **kw):
-        raise ValueError(f"not found: {pid}")
+        raise project_service.ProjectNotResolvedError(f"not found: {pid}")
     monkeypatch.setattr(project_service, "resolve_project_dir", _raise)
     with pytest.raises(ValueError):
         project_service.delete_project("AR/NOPE")
