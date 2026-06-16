@@ -430,6 +430,97 @@ class StorageWriteFacade:
         return self._execute("save_analysis_artifact", legacy_write=legacy_write, v2_write=_v2)
 
 
+    # -- production mirror: целый проект через проверенную миграцию ----------
+    def _load_v2lib(self):
+        """Lazy-import scripts/projects_v2/v2lib.py (только при разрешённой v2-записи).
+
+        В legacy-режиме НИКОГДА не вызывается, поэтому prod-путь полностью
+        развязан от scripts/. Импорт кэшируется на инстанс.
+        """
+        cached = getattr(self, "_v2lib", None)
+        if cached is not None:
+            return cached
+        import importlib.util
+        # storage_write_facade.py → parents[4] = корень репозитория (код)
+        repo_root = Path(__file__).resolve().parents[4]
+        v2lib_path = repo_root / "scripts" / "projects_v2" / "v2lib.py"
+        if not v2lib_path.is_file():
+            raise StorageWriteError(f"v2lib not found at {v2lib_path}")
+        spec = importlib.util.spec_from_file_location("projects_v2_v2lib", v2lib_path)
+        mod = importlib.util.module_from_spec(spec)
+        import sys as _sys
+        _sys.modules.setdefault("projects_v2_v2lib", mod)
+        spec.loader.exec_module(mod)
+        self._v2lib = mod
+        return mod
+
+    def _project_root_entry(self, legacy_project_dir: Path, v2lib) -> Path:
+        """Нормализовать путь к ВЕРХНЕУРОВНЕВОЙ записи проекта (контейнер `(main)`
+        или plain-проект) — именно её ожидает migrate_project."""
+        p = Path(legacy_project_dir).resolve()
+        try:
+            from backend.app.services.common.version_service import container_dir_for
+            c = container_dir_for(p)
+            if c is not None:
+                return Path(c).resolve()
+        except Exception:
+            pass
+        # ручной фолбэк (без version_service): родитель — контейнер (main)?
+        parent = p.parent
+        if parent.name.endswith("(main)") and (parent / "version_group.json").exists():
+            return parent
+        return p
+
+    def shadow_mirror_project(self, legacy_project_dir, *, run_id: Optional[str] = None) -> WriteResult:
+        """Зеркалировать ВЕСЬ legacy-проект в projects_v2 через проверенную
+        миграцию (parity-faithful, идемпотентно, обновляет old_to_new_map).
+
+        В режиме legacy (default) — ничего не делает (no-op для v2).
+        В shadow — legacy уже записан вызывающим (legacy-first); сбой v2 fail-soft.
+        """
+        legacy_project_dir = Path(legacy_project_dir)
+
+        def _v2() -> list[Path]:
+            v2root = self.v2_root()
+            if v2root is None:
+                raise StorageWriteError("projects_v2 root not resolvable")
+            v2lib = self._load_v2lib()
+            root_entry = self._project_root_entry(legacy_project_dir, v2lib)
+            # objects.json лежит в <DATA>/backend/app/data; <DATA> = parent от projects_v2
+            objects_map = v2lib.load_objects_map(root=v2root.parent)
+            rec = v2lib.migrate_project(root_entry, v2root, objects_map=objects_map, run_id=run_id)
+            map_path = v2root / "_system" / "old_to_new_map.json"
+            mp = v2lib.load_old_to_new_map(map_path)
+            for vrec in rec["versions"]:
+                v2lib.upsert_migration(mp, {
+                    "object_id": rec["object_id"],
+                    "object_name": rec["object_name"],
+                    "discipline": rec["discipline"],
+                    "document_code": rec["document_code"],
+                    "kind": rec["kind"],
+                    "version_id": vrec["version_id"],
+                    "version_no": vrec["version_no"],
+                    "legacy_folder_name": vrec["legacy_folder_name"],
+                    "legacy_folder_path": vrec["legacy_folder_path"],
+                    "analysis_run_id": vrec["analysis_run_id"],
+                    "v2_document_dir": rec["v2_document_dir"],
+                    "files": vrec["files"],
+                })
+            v2lib.save_old_to_new_map(mp, map_path)
+            return [Path(rec["v2_document_dir"])]
+
+        return self._execute("shadow_mirror_project", legacy_write=None, v2_write=_v2)
+
+    def shadow_mirror_project_by_id(self, project_id: str, *, run_id: Optional[str] = None) -> WriteResult:
+        """Как shadow_mirror_project, но резолвит legacy-путь по project_id.
+
+        Вызывается только когда v2-запись разрешена (через safe-обёртку), поэтому
+        резолв здесь не нарушает legacy no-op."""
+        from backend.app.services.common.project_service import resolve_project_dir
+        d = resolve_project_dir(project_id, must_exist=True)
+        return self.shadow_mirror_project(d, run_id=run_id)
+
+
 # ---------------------------------------------------------------------------
 # module-level singleton helper (для будущего подключения к endpoint'ам)
 # ---------------------------------------------------------------------------
@@ -444,3 +535,58 @@ def get_write_facade() -> StorageWriteFacade:
     if _default_facade is None:
         _default_facade = StorageWriteFacade()
     return _default_facade
+
+
+# ---------------------------------------------------------------------------
+# safe-обёртки для подключения к production write-chokepoints
+#
+# ГЛАВНАЯ ГАРАНТИЯ: в режиме legacy (default) обе функции выходят НЕМЕДЛЕННО,
+# не импортируя v2lib, не резолвя пути, не трогая projects_v2 — поведение
+# chokepoint'а байт-в-байт прежнее. Любое исключение в v2-плече ловится и
+# логируется (никогда не пробрасывается в legacy-путь вызывающего).
+# ---------------------------------------------------------------------------
+
+def _record_shadow_error(op: str, target: str, exc: BaseException) -> None:
+    """Записать ошибку shadow-записи в отдельный JSONL-отчёт (best-effort)."""
+    try:
+        facade = get_write_facade()
+        root = facade.v2_root()
+        if root is None:
+            return
+        rep = root / "_system" / "dual_write_shadow_errors.jsonl"
+        rep.parent.mkdir(parents=True, exist_ok=True)
+        line = json.dumps({
+            "op": op, "target": str(target),
+            "error": f"{type(exc).__name__}: {exc}",
+        }, ensure_ascii=False)
+        with open(rep, "a", encoding="utf-8") as f:
+            f.write(line + "\n")
+    except Exception:
+        pass
+
+
+def shadow_mirror_project_path_safe(legacy_project_dir, *, run_id: Optional[str] = None):
+    """Хук после legacy-записи: зеркалит проект в v2 (no-op в legacy, fail-soft).
+
+    Передаётся явный legacy-путь (для register_*). НИКОГДА не бросает наружу.
+    """
+    if not v2_writes_enabled():
+        return None
+    try:
+        return get_write_facade().shadow_mirror_project(legacy_project_dir, run_id=run_id)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("[storage_write_facade] shadow mirror (path) failed: %s", exc)
+        _record_shadow_error("shadow_mirror_project_path", legacy_project_dir, exc)
+        return None
+
+
+def shadow_mirror_project_id_safe(project_id: str, *, run_id: Optional[str] = None):
+    """Хук после legacy-записи: зеркалит проект по project_id (no-op в legacy, fail-soft)."""
+    if not v2_writes_enabled():
+        return None
+    try:
+        return get_write_facade().shadow_mirror_project_by_id(project_id, run_id=run_id)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("[storage_write_facade] shadow mirror (id=%s) failed: %s", project_id, exc)
+        _record_shadow_error("shadow_mirror_project_id", project_id, exc)
+        return None

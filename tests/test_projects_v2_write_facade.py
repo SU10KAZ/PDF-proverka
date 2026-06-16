@@ -254,3 +254,94 @@ def test_empty_input_filename_raises_in_shadow_but_keeps_legacy(monkeypatch, tmp
     assert res.legacy_ok is True
     assert res.v2_ok is False
     assert "StorageWriteError" in (res.v2_error or "")
+
+
+# ==========================================================================
+# Step 9/10 — shadow_mirror_project (production mirror через миграцию)
+# ==========================================================================
+
+def _make_legacy_project(data_root):
+    """Создать синтетический legacy-проект + objects.json в temp DATA root."""
+    import json as _json
+    obj_name = "214. Alia (ASTERUS)"
+    proj = data_root / "projects" / obj_name / "EOM" / "13АВ-РД-ЭО-К3"
+    proj.mkdir(parents=True)
+    (data_root / "backend" / "app" / "data").mkdir(parents=True)
+    (data_root / "backend" / "app" / "data" / "objects.json").write_text(
+        _json.dumps({"objects": [
+            {"id": "aliaobj01", "name": obj_name,
+             "projects_dir": str(data_root / "projects" / obj_name)}
+        ]}, ensure_ascii=False), encoding="utf-8")
+    (proj / "document.pdf").write_bytes(b"%PDF-1.4 canary")
+    (proj / "13АВ-РД-ЭО-К3_document.md").write_text("# md", encoding="utf-8")
+    (proj / "project_info.json").write_text(
+        _json.dumps({"project_id": "13АВ-РД-ЭО-К3", "name": "13АВ-РД-ЭО-К3",
+                     "section": "EOM", "pdf_file": "document.pdf"}, ensure_ascii=False),
+        encoding="utf-8")
+    (proj / "_output").mkdir()
+    return proj
+
+
+def test_shadow_mirror_path_legacy_noop(monkeypatch, tmp_path):
+    proj = _make_legacy_project(tmp_path)
+    v2root = tmp_path / "projects_v2"
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", str(v2root))
+    monkeypatch.delenv(ENV, raising=False)            # legacy
+    swf._default_facade = None                         # reset singleton → подхватит env
+    res = swf.shadow_mirror_project_path_safe(proj)
+    assert res is None
+    assert not v2root.exists()                         # v2 не создан в legacy
+
+
+def test_shadow_mirror_path_shadow_writes_v2(monkeypatch, tmp_path):
+    proj = _make_legacy_project(tmp_path)
+    v2root = tmp_path / "projects_v2"
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", str(v2root))
+    monkeypatch.setenv(ENV, WRITE_MODE_DUAL_SHADOW)
+    swf._default_facade = None
+    res = swf.shadow_mirror_project_path_safe(proj)
+    assert res is not None and res.v2_ok is True
+    docdir = (v2root / "objects" / "214_Alia_ASTERUS" / "disciplines" / "EOM"
+              / "documents" / "13АВ-РД-ЭО-К3")
+    assert (docdir / "document.json").exists()
+    v001 = docdir / "versions" / "v001"
+    names = sorted(p.name for p in (v001 / "01_input").glob("*"))
+    assert any(n.endswith(".pdf") for n in names)
+    assert any(n.endswith(".md") for n in names)
+    # old_to_new_map обновлён
+    mp = json.loads((v2root / "_system" / "old_to_new_map.json").read_text(encoding="utf-8"))
+    assert any(m["document_code"] == "13АВ-РД-ЭО-К3" for m in mp["migrations"])
+
+
+def test_shadow_mirror_idempotent_single_map_entry(monkeypatch, tmp_path):
+    proj = _make_legacy_project(tmp_path)
+    v2root = tmp_path / "projects_v2"
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", str(v2root))
+    monkeypatch.setenv(ENV, WRITE_MODE_DUAL_SHADOW)
+    swf._default_facade = None
+    swf.shadow_mirror_project_path_safe(proj)
+    swf.shadow_mirror_project_path_safe(proj)          # повтор
+    mp = json.loads((v2root / "_system" / "old_to_new_map.json").read_text(encoding="utf-8"))
+    hits = [m for m in mp["migrations"] if m["document_code"] == "13АВ-РД-ЭО-К3"]
+    assert len(hits) == 1
+
+
+def test_shadow_mirror_v2_failure_is_fail_soft(monkeypatch, tmp_path):
+    proj = _make_legacy_project(tmp_path)
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", "/proc/nonexistent_xyz/projects_v2")
+    monkeypatch.setenv(ENV, WRITE_MODE_DUAL_SHADOW)
+    swf._default_facade = None
+    # не бросает наружу; результат — None или WriteResult с v2_ok False
+    res = swf.shadow_mirror_project_path_safe(proj)
+    assert res is None or res.v2_ok is False
+
+
+def test_shadow_mirror_path_safe_never_raises_on_garbage(monkeypatch, tmp_path):
+    monkeypatch.setenv(ENV, WRITE_MODE_DUAL_SHADOW)
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", str(tmp_path / "v2"))
+    swf._default_facade = None
+    # Главная гарантия safe-обёртки: НИКОГДА не бросает наружу (fail-soft).
+    # На «мусорном» пути миграция может отработать вхолостую — допустимо; важно
+    # лишь, что вызов вернулся без исключения.
+    res = swf.shadow_mirror_project_path_safe(tmp_path / "does_not_exist")
+    assert res is None or isinstance(res, swf.WriteResult)

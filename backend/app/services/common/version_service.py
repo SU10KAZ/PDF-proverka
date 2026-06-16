@@ -628,6 +628,14 @@ def create_next_version(
     _write_group_manifest(container, manifest)
     _invalidate_project_cache()
 
+    # Step 9/10 dual-write canary: shadow-зеркало контейнера в v2 после создания
+    # новой версии (no-op в legacy, fail-soft).
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        _swf.shadow_mirror_project_id_safe(project_id)
+    except Exception:
+        pass
+
     return new_entry
 
 
@@ -985,6 +993,14 @@ def save_files_to_version(
     info = _update_version_project_info(
         version_dir, project_id, saved_names, comment=comment,
     )
+
+    # Step 9/10 dual-write canary: shadow-зеркало проекта в v2 после сохранения
+    # входного комплекта версии (no-op в legacy, fail-soft).
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        _swf.shadow_mirror_project_id_safe(project_id)
+    except Exception:
+        pass
 
     return {
         "project_id": project_id,

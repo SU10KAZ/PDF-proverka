@@ -634,8 +634,20 @@ backend parity, UI contract parity, live dual-read sample → рекоменда
 ## Контракт записи (write facade, Step 8/10 — подготовка)
 
 Модуль [backend/app/services/storage/storage_write_facade.py](../backend/app/services/storage/storage_write_facade.py)
-— подготовительный фасад записи данных проекта в `projects_v2`. **По умолчанию
-ничего не пишет в v2** и **не подключён** к production-endpoint'ам.
+— фасад записи данных проекта в `projects_v2`. **По умолчанию (`legacy`) ничего
+не пишет в v2.** С Step 9/10 фасад **подключён** к write-chokepoints (см. ниже),
+но это no-op в режиме legacy.
+
+**Подключение (Step 9/10).** Safe-обёртки `shadow_mirror_project_path_safe` /
+`shadow_mirror_project_id_safe` вызываются ПОСЛЕ успешной legacy-записи в:
+`project_service.register_external_project / register_project / save_project_info`,
+`version_service.save_files_to_version / create_next_version`,
+`knowledge_base_service.save_expert_review`, и в `pipeline/manager` на завершении
+аудита. В режиме legacy обёртки выходят немедленно (no-op, без импорта v2lib и
+резолва путей); в `dual_write_shadow` — зеркалят проект через проверенную
+`v2lib.migrate_project` (идемпотентно, обновляет `old_to_new_map`). Каждый хук
+обёрнут в `try/except` → legacy байт-идентичен даже при сбое импорта хука.
+Canary-валидация: `projects_v2/_system/dual_write_canary_report.{json,md}`.
 
 **Режим записи — env `AUDIT_PROJECTS_V2_WRITE_MODE` (default `legacy`):**
 

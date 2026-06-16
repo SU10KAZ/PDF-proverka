@@ -95,33 +95,40 @@ def test_simulation_does_not_touch_production(monkeypatch):
 
 
 # --------------------------------------------------------------------------
-# регрессия: фасад НЕ подключён к production (read endpoints не задеты)
+# Step 9/10: фасад ПОДКЛЮЧЁН к write-chokepoints (но default legacy → no-op)
 # --------------------------------------------------------------------------
 
-def test_write_facade_not_wired_to_routers():
-    """Ни один router/endpoint не должен импортировать storage_write_facade на
-    этом этапе — write cutover ещё не включён, read-путь не может регрессировать."""
+def test_write_facade_wired_to_expected_chokepoints():
+    """Step 9/10: write-facade подключён к ожидаемым write-chokepoints через
+    safe-обёртки (shadow_mirror_project_*_safe)."""
+    expected = {
+        "backend/app/services/common/project_service.py":
+            ["shadow_mirror_project_path_safe"],
+        "backend/app/services/common/version_service.py":
+            ["shadow_mirror_project_id_safe"],
+        "backend/app/services/knowledge_base/knowledge_base_service.py":
+            ["shadow_mirror_project_id_safe"],
+        "backend/app/pipeline/manager.py":
+            ["shadow_mirror_project_id_safe"],
+    }
+    missing = []
+    for rel, needles in expected.items():
+        txt = (_REPO_ROOT / rel).read_text(encoding="utf-8", errors="ignore")
+        if "storage_write_facade" not in txt:
+            missing.append(f"{rel}: facade not imported")
+        for n in needles:
+            if n not in txt:
+                missing.append(f"{rel}: missing {n}")
+    assert missing == [], f"chokepoints not wired: {missing}"
+
+
+def test_routers_do_not_directly_wire_write_facade():
+    """Запись идёт через сервисы, не напрямую из routers — фасад не должен
+    вызываться прямо в HTTP-слое (GET read-эндпоинты гарантированно не задеты)."""
     routers_dir = _REPO_ROOT / "backend" / "app" / "api" / "routers"
-    offenders = []
-    for py in routers_dir.glob("*.py"):
-        txt = py.read_text(encoding="utf-8", errors="ignore")
-        if "storage_write_facade" in txt:
-            offenders.append(py.name)
-    assert offenders == [], f"storage_write_facade wired into routers: {offenders}"
-
-
-def test_write_facade_not_wired_to_pipeline_or_services():
-    """Pipeline manager / common services тоже не вызывают фасад (не включён)."""
-    targets = [
-        _REPO_ROOT / "backend" / "app" / "pipeline" / "manager.py",
-        _REPO_ROOT / "backend" / "app" / "services" / "common" / "project_service.py",
-        _REPO_ROOT / "backend" / "app" / "services" / "common" / "version_service.py",
-    ]
-    offenders = []
-    for t in targets:
-        if t.is_file() and "storage_write_facade" in t.read_text(encoding="utf-8", errors="ignore"):
-            offenders.append(t.name)
-    assert offenders == [], f"storage_write_facade wired into: {offenders}"
+    offenders = [py.name for py in routers_dir.glob("*.py")
+                 if "storage_write_facade" in py.read_text(encoding="utf-8", errors="ignore")]
+    assert offenders == [], f"facade wired directly into routers: {offenders}"
 
 
 def test_storage_backend_default_unchanged(monkeypatch):
@@ -135,3 +142,26 @@ def test_storage_backend_default_unchanged(monkeypatch):
     assert adp.is_v2_backend_enabled() is False
     assert swf.get_write_mode() == "legacy"
     assert swf.v2_writes_enabled() is False
+
+
+def test_wired_chokepoint_legacy_mode_no_v2_write(monkeypatch, tmp_path):
+    """Интеграция: реальный wired chokepoint (save_project_info) в режиме legacy
+    работает как раньше и НЕ создаёт projects_v2 (read/write не регрессируют)."""
+    import json as _json
+    from backend.app.services.common import project_service as ps
+
+    projects_dir = tmp_path / "projects"
+    proj = projects_dir / "PRJ1"           # resolve_project_dir → projects_dir/<id>
+    proj.mkdir(parents=True)
+    (proj / "project_info.json").write_text(_json.dumps({"project_id": "PRJ1"}), encoding="utf-8")
+
+    monkeypatch.setattr(ps, "_get_projects_dir", lambda: projects_dir)
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", str(tmp_path / "projects_v2"))
+    monkeypatch.delenv("AUDIT_PROJECTS_V2_WRITE_MODE", raising=False)  # legacy
+
+    ok = ps.save_project_info("PRJ1", {"project_id": "PRJ1", "name": "PRJ1", "x": 1})
+    assert ok is True
+    # legacy-файл записан
+    assert _json.loads((proj / "project_info.json").read_text(encoding="utf-8"))["x"] == 1
+    # v2 НЕ создан (legacy mode → hook no-op)
+    assert not (tmp_path / "projects_v2").exists()

@@ -1606,6 +1606,17 @@ class PipelineManager:
 
         job.status = JobStatus.COMPLETED
 
+        # Step 9/10 dual-write canary: после успешного аудита зеркалим проект
+        # (включая analysis artifacts из _output) в projects_v2.
+        # no-op в режиме legacy, fail-soft — не влияет на статус аудита.
+        try:
+            from backend.app.services.storage import storage_write_facade as _swf
+            _swf.shadow_mirror_project_id_safe(
+                job.project_id, run_id=getattr(job, "job_id", None),
+            )
+        except Exception:
+            pass
+
     def _record_findings_only_usage(self, job: AuditJob, summary: dict) -> None:
         """Учесть стоимость stage 02 в режиме findings_only_gemma_pair в usage tracker.
 

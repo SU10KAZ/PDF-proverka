@@ -933,6 +933,57 @@ version-aware ключи `decisions_log`/`expert_review`; контракт backu
 **Тесты:** [tests/test_projects_v2_write_facade.py](../tests/test_projects_v2_write_facade.py),
 [tests/test_projects_v2_write_cutover_simulation.py](../tests/test_projects_v2_write_cutover_simulation.py).
 
+### Этап 7 — controlled dual-write canary (Step 9/10) ✅ (запись на проде НЕ включена)
+
+**Цель:** подключить подготовленный write-facade к реальным write-chokepoints и
+проверить `dual_write_shadow` на ОДНОМ контролируемом canary-кейсе, не включая
+запись на production. `AUDIT_STORAGE_BACKEND=legacy` и
+`AUDIT_PROJECTS_V2_WRITE_MODE=legacy` (default) сохранены; production-процесс не
+перезапускался; wired-код на проде НЕ активен (активируется только при
+подтверждённом рестарте — Step 10/10).
+
+**Preflight gate (PASS):** idle (batch absent / prepare idle / 0 workers / 0
+comparison jobs); validate PASS (849 ok); parity contract_ok=True (MISMATCH=0,
+findings_loss=0, version_loss=0); drift=1 — известный `.pdf` naming артефакт
+`13АВ-РД-СОУЭ-ПА V1` (без потери данных).
+
+**Подключённые chokepoints (6 категорий / 7 сайтов):** `register_external_project`,
+`register_project`, `save_project_info` (project_service); `save_files_to_version`,
+`create_next_version` (version_service); `save_expert_review` (knowledge_base);
+audit-completion (pipeline/manager). Все вызывают safe-обёртки
+`shadow_mirror_project_path_safe` / `shadow_mirror_project_id_safe`, которые в
+режиме legacy — **no-op**, а в `dual_write_shadow` после успешной legacy-записи
+зеркалят проект в v2 через проверенную `v2lib.migrate_project` (идемпотентно,
+parity-faithful, обновляет `old_to_new_map`). Каждый хук обёрнут в `try/except`
+→ legacy байт-идентичен даже при сбое импорта хука. v2lib импортируется лениво
+только при разрешённой v2-записи.
+
+**Canary (out-of-process, изолированный tempdir, реальный wired chokepoint
+`save_project_info`):**
+- legacy mode → v2 не создаётся (no-op);
+- `dual_write_shadow` → legacy записан первым и авторитетен; v2 shadow-копия
+  создана (`01_input` pdf/md/result/project_info, `02_work`); `project_info.json`
+  **байт-идентичен** legacy↔v2; `old_to_new_map` обновлён (1 запись);
+- v2 shadow errors: нет (forced-fail отдельно подтвердил fail-soft);
+- validate canary-doc **PASS**; parity canary-tree **contract_ok=True**.
+
+Production `projects/` и `projects_v2/` каноническим прогоном НЕ менялись (всё в
+tempdir). Артефакт прогона: `projects_v2/_system/dual_write_canary_report.{json,md}`.
+
+**Адверсариальное ревью (Workflow, 6 линз):** 33 находки, **0 подтверждённых**
+(≥medium = 0). LOW-замечания (bare import вне try/except; `return True` вне try)
+устранены hardening'ом.
+
+**Решение:** оставить production в `legacy`. Live-canary в реальный `projects_v2`
+и включение shadow для загрузок инженеров требуют подтверждённого рестарта
+(флаг читается из env процесса) — это Step 10/10. Загрузки инженеров на паузе,
+поэтому live-включение сейчас не даёт выгоды и добавляет риск.
+
+**Откат:** wired-хуки инертны при `AUDIT_PROJECTS_V2_WRITE_MODE=legacy` (default);
+выключение shadow = вернуть legacy + restart; полный откат = `git revert` коммита
+Step 9/10. Shadow только ДОБАВЛЯЕТ идемпотентные зеркала в v2; legacy `projects/`
+не мутируется; деструктив не включён.
+
 ## Открытые вопросы (решить до этапа 3)
 
 1. **Запись результатов.** Куда новый pipeline пишет результаты — в

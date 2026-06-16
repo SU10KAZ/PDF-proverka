@@ -825,9 +825,19 @@ def save_project_info(
     try:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
-        return True
     except Exception:
         return False
+
+    # Step 9/10 dual-write canary: shadow-зеркало проекта в v2 после успешной
+    # legacy-записи project_info.json (no-op в legacy, fail-soft). try/except —
+    # чтобы путь `return True` оставался байт-идентичным прежнему поведению.
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        _swf.shadow_mirror_project_path_safe(root_dir)
+    except Exception:
+        pass
+
+    return True
 
 
 def set_project_section(project_id: str, section: str) -> dict:
@@ -1703,6 +1713,15 @@ def register_external_project(source_path: str, pdf_file: str,
     with open(info_path, "w", encoding="utf-8") as f:
         json.dump(info, f, ensure_ascii=False, indent=2)
 
+    # Step 9/10 dual-write canary: после успешной legacy-записи зеркалим проект в
+    # projects_v2 (no-op в режиме legacy, fail-soft — никогда не ломает legacy).
+    # try/except гарантирует байт-идентичность legacy даже при сбое импорта хука.
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        _swf.shadow_mirror_project_path_safe(dest)
+    except Exception:
+        pass
+
     return info
 
 
@@ -1765,6 +1784,14 @@ def register_project(folder: str, pdf_file: str, pdf_files: list[str] | None = N
     info_path = proj_dir / "project_info.json"
     with open(info_path, "w", encoding="utf-8") as f:
         json.dump(info, f, ensure_ascii=False, indent=2)
+
+    # Step 9/10 dual-write canary: legacy-first, затем shadow-зеркало в v2
+    # (no-op в legacy, fail-soft).
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        _swf.shadow_mirror_project_path_safe(proj_dir)
+    except Exception:
+        pass
 
     return info
 
