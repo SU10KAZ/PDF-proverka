@@ -25,10 +25,18 @@ _REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(_REPO))
 from backend.app.main import app  # noqa: E402
 from backend.app.services.storage import read_canary as RC  # noqa: E402
+import backend.app.services.common.object_service as object_service  # noqa: E402
 
 OBJF = "213_Mosfilmovskaya_31A_KingSons"
+OBJID = "0b540226"
 client = TestClient(app)
 Q = lambda s: urllib.parse.quote(s, safe="")
+
+
+def _scope(mp):
+    """Сделать тестовый объект текущим — /api/projects strictly scoped к нему."""
+    mp.setattr(object_service, "get_current_object",
+               lambda: {"id": OBJID, "name": "213", "projects_dir": "/tmp/none"})
 
 
 def _wj(p: Path, data):
@@ -152,11 +160,14 @@ def test_default_off_optin_still_v2(monkeypatch, v2tree):
 # --- default ON: approved endpoints read v2 by default ----------------------
 
 def test_default_on_list_is_v2(monkeypatch, v2tree):
-    _default_on(monkeypatch)
+    _default_on(monkeypatch); _scope(monkeypatch)
     r = client.get("/api/projects")
     assert r.status_code == 200
-    assert r.json()["storage_backend"] == "projects_v2"
-    assert r.json()["count"] == 4
+    b = r.json()
+    # LEGACY-форма: projects (массив) + object_name, НЕ v2-native documents/count
+    assert isinstance(b["projects"], list) and len(b["projects"]) == 4
+    assert b["object_name"] == "213"
+    assert "documents" not in b  # старый v2-native ключ больше не подменяет projects
 
 def test_default_on_findings_is_v2(monkeypatch, v2tree):
     _default_on(monkeypatch)
@@ -170,7 +181,9 @@ def test_default_on_details_is_v2(monkeypatch, v2tree):
     _default_on(monkeypatch)
     b = client.get("/api/projects/doc-complete").json()
     assert b["storage_backend"] == "projects_v2"
-    assert b["analysis_status"] == "complete"
+    # LEGACY ProjectStatus-форма: pipeline-объект обязателен (иначе краш шаблона)
+    assert isinstance(b["pipeline"], dict) and "gemma_enrichment" in b["pipeline"]
+    assert b["findings_count"] == 7 and b["project_id"] == "doc-complete"
 
 def test_default_on_versions_is_v2(monkeypatch, v2tree):
     _default_on(monkeypatch)
@@ -182,13 +195,16 @@ def test_default_on_finding_by_id_is_v2(monkeypatch, v2tree):
     _default_on(monkeypatch)
     b = client.get("/api/findings/doc-complete/finding/F-002").json()
     assert b["storage_backend"] == "projects_v2"
-    assert b["finding"]["id"] == "F-002"
+    # LEGACY: поля замечания на верхнем уровне (не вложены под finding)
+    assert b["id"] == "F-002"
 
 def test_default_on_blocks_analysis_is_v2(monkeypatch, v2tree):
     _default_on(monkeypatch)
     b = client.get("/api/tiles/doc-complete/blocks/analysis").json()
     assert b["storage_backend"] == "projects_v2"
-    assert b["block_count"] == 5
+    # LEGACY: классифицированный dict blocks (frontend → Object.entries(data.blocks))
+    assert isinstance(b["blocks"], dict) and len(b["blocks"]) == 5
+    assert b["total_analyzed"] == 5 and isinstance(b["counts"], dict)
 
 
 # --- force-legacy override --------------------------------------------------
@@ -245,7 +261,9 @@ def test_default_on_all_types_ok(monkeypatch, v2tree, code, status):
     _default_on(monkeypatch)
     r = client.get(f"/api/projects/{code}")
     assert r.status_code == 200
-    assert r.json()["analysis_status"] == status
+    # LEGACY ProjectStatus-форма для всех типов (no 500), pipeline всегда есть
+    b = r.json()
+    assert isinstance(b.get("pipeline"), dict) and b["project_id"] == code
 
 def test_default_on_read_only(monkeypatch, v2tree):
     _default_on(monkeypatch)

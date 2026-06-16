@@ -319,6 +319,48 @@ class ProjectsV2Adapter:
                 return _read_json(g)
         return None
 
+    def read_block_batches(self, doc_dir: Path, version_id: str) -> Optional[dict]:
+        """block_batches.json версии (read-only) для классификации merged_into блоков.
+
+        Приоритет: тот же run, что и blocks index (чтобы merged-карта совпадала с
+        index.json) → 99_service → 03_analysis/latest → King&Sons legacy-бандл.
+        Возвращает None, если файла нет (тогда merged_into просто не строится).
+        """
+        candidates: list[Path] = []
+        bd = self.blocks_dir(doc_dir, version_id)
+        if bd is not None:
+            candidates.append(bd.parent / "block_batches.json")  # run папки index'а
+        vdir = self.version_dir(doc_dir, version_id)
+        candidates += [
+            vdir / "99_service" / "block_batches.json",
+            vdir / "03_analysis" / "latest" / "block_batches.json",
+        ]
+        legacy_out = vdir / "99_service" / "legacy_output"
+        if legacy_out.is_dir():
+            candidates += sorted(legacy_out.glob("*/_output/block_batches.json"))
+        for p in candidates:
+            if p and p.is_file():
+                data = _read_json(p)
+                if data is not None:
+                    return data
+        return None
+
+    def read_findings_03(self, doc_dir: Path, version_id: str) -> Optional[dict]:
+        """Именно 03_findings.json из latest (read-only).
+
+        В отличие от read_findings (priority chain c 03a_norms_verified), здесь
+        нужен конкретно 03_findings.json — так legacy get_blocks_analysis строит
+        blocks_in_findings. King&Sons-бандл — fallback.
+        """
+        p = self._latest_file(doc_dir, version_id, "03_findings.json")
+        if p:
+            return _read_json(p)
+        legacy_out = self.version_dir(doc_dir, version_id) / "99_service" / "legacy_output"
+        if legacy_out.is_dir():
+            for g in sorted(legacy_out.glob("*/_output/03_findings.json")):
+                return _read_json(g)
+        return None
+
     def input_dir(self, doc_dir: Path, version_id: str) -> Path:
         """Папка 01_input версии (там же лежит *_ocr.html для text_evidence)."""
         return self.version_dir(doc_dir, version_id) / "01_input"

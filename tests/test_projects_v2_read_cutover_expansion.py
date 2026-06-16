@@ -163,14 +163,16 @@ def test_version_files_default_on_v2(monkeypatch, v2tree):
     b = r.json()
     assert b["storage_backend"] == "projects_v2"
     assert b["file_count"] >= 2
-    assert any(f.endswith(".pdf") for f in b["files"])
+    # LEGACY-форма: files[] — объекты {name,type,size,updated_at}, не строки
+    assert all(isinstance(f, dict) and "name" in f for f in b["files"])
+    assert any(f["name"].endswith(".pdf") for f in b["files"])
 
 def test_version_files_legacy_form_v1(monkeypatch, v2tree):
-    """legacy-форма v1 маппится в v001."""
+    """legacy-форма v1 на входе резолвится (v001) и отдаётся в legacy-форме v1."""
     _default_on(monkeypatch)
     r = client.get("/api/projects/doc-complete/versions/v1/files")
     assert r.status_code == 200
-    assert r.json()["version_id"] == "v001"
+    assert r.json()["version_id"] == "v1"  # denorm выхода: v00N → vN
 
 def test_version_files_force_legacy(monkeypatch, v2tree):
     _default_on(monkeypatch)

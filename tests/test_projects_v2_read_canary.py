@@ -31,6 +31,7 @@ _REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(_REPO))
 from backend.app.main import app  # noqa: E402
 from backend.app.services.storage import read_canary as RC  # noqa: E402
+import backend.app.services.common.object_service as object_service  # noqa: E402
 
 OBJF = "213_Mosfilmovskaya_31A_KingSons"
 client = TestClient(app)
@@ -144,13 +145,18 @@ def test_projects_list_optin_flag_off_403(monkeypatch, v2tree):
 
 def test_projects_list_optin_flag_on_serves_v2(monkeypatch, v2tree):
     _on(monkeypatch)
+    # /api/projects strictly scoped к текущему объекту → делаем тестовый текущим
+    monkeypatch.setattr(object_service, "get_current_object",
+                        lambda: {"id": "0b540226", "name": "213",
+                                 "projects_dir": "/tmp/none"})
     r = client.get("/api/projects?storage=projects_v2")
     assert r.status_code == 200
     body = r.json()
     assert body["storage_backend"] == "projects_v2"
     assert body["canary"] is True
-    assert body["count"] == 6
-    assert {d["document_code"] for d in body["documents"]} >= {
+    # LEGACY-форма: projects (массив), НЕ v2-native documents/count
+    assert isinstance(body["projects"], list) and len(body["projects"]) == 6
+    assert {p["project_id"] for p in body["projects"]} >= {
         "doc-complete", "doc-versioned", "doc-source", "doc-legacy"}
 
 

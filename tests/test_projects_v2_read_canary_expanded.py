@@ -128,10 +128,11 @@ def test_details_optin_v2(monkeypatch, v2tree):
     assert r.status_code == 200
     b = r.json()
     assert b["storage_backend"] == "projects_v2" and b["canary"] is True
-    assert b["analysis_status"] == "complete"
+    # LEGACY ProjectStatus-форма: pipeline-объект обязателен (нет краша шаблона)
+    assert isinstance(b["pipeline"], dict) and "gemma_enrichment" in b["pipeline"]
     assert b["findings_count"] == 7
-    assert b["has_02_blocks_analysis"] is True
-    assert b["version_count"] == 1
+    assert b["pipeline"]["blocks_analysis"] == "done"  # has_02 → pipeline.blocks_analysis
+    assert b["version_count"] == 1 and b["project_id"] == "doc-complete"
 
 
 def test_details_optin_flag_off_403(monkeypatch, v2tree):
@@ -142,7 +143,8 @@ def test_details_optin_flag_off_403(monkeypatch, v2tree):
 def test_details_versioned(monkeypatch, v2tree):
     _on(monkeypatch)
     b = client.get(f"/api/projects/doc-versioned{OPTIN}").json()
-    assert b["version_count"] == 2 and b["current_version"] == "v002"
+    # LEGACY ProjectStatus: latest_version_id (denorm) вместо v2-native current_version
+    assert b["version_count"] == 2 and b["latest_version_id"] == "v2"
     assert b["findings_count"] == 9
 
 
@@ -163,7 +165,9 @@ def test_versions_optin_v2(monkeypatch, v2tree):
     b = r.json()
     assert b["storage_backend"] == "projects_v2"
     assert b["version_count"] == 2
-    assert {v["version_id"] for v in b["versions"]} == {"v001", "v002"}
+    # LEGACY-форма version_id: denorm v00N → vN (frontend сравнивает с 'v1')
+    assert {v["version_id"] for v in b["versions"]} == {"v1", "v2"}
+    assert b["latest_version_id"] == "v2"
 
 def test_versions_flag_off_403(monkeypatch, v2tree):
     _off(monkeypatch)
@@ -192,7 +196,8 @@ def test_finding_by_id_optin_v2(monkeypatch, v2tree):
     assert r.status_code == 200
     b = r.json()
     assert b["storage_backend"] == "projects_v2"
-    assert b["finding"]["id"] == "F-003"
+    # LEGACY: поля замечания на верхнем уровне (не вложены под finding)
+    assert b["id"] == "F-003"
 
 def test_finding_by_id_missing_404(monkeypatch, v2tree):
     _on(monkeypatch)
@@ -213,15 +218,18 @@ def test_blocks_analysis_optin_v2(monkeypatch, v2tree):
     assert r.status_code == 200
     b = r.json()
     assert b["storage_backend"] == "projects_v2"
-    assert b["has_02_blocks_analysis"] is True
-    assert b["block_count"] == 5
+    # LEGACY: классифицированный dict blocks (frontend → Object.entries(data.blocks))
+    assert isinstance(b["blocks"], dict) and len(b["blocks"]) == 5
+    assert b["total_analyzed"] == 5 and isinstance(b["counts"], dict)
 
 def test_blocks_analysis_none_doc(monkeypatch, v2tree):
-    """doc-none без 02_blocks_analysis не падает."""
+    """doc-none без 02_blocks_analysis не падает (пустой dict, не 500)."""
     _on(monkeypatch)
     r = client.get(f"/api/tiles/doc-none/blocks/analysis{OPTIN}")
     assert r.status_code == 200
-    assert r.json()["has_02_blocks_analysis"] is False
+    b = r.json()
+    assert isinstance(b["blocks"], dict) and b["blocks"] == {}
+    assert b["total_analyzed"] == 0
 
 def test_blocks_analysis_flag_off_403(monkeypatch, v2tree):
     _off(monkeypatch)
@@ -238,7 +246,9 @@ def test_details_all_types_ok(monkeypatch, v2tree, code, status):
     _on(monkeypatch)
     r = client.get(f"/api/projects/{code}{OPTIN}")
     assert r.status_code == 200
-    assert r.json()["analysis_status"] == status
+    # LEGACY ProjectStatus-форма (no 500 для всех типов); pipeline всегда есть
+    b = r.json()
+    assert isinstance(b.get("pipeline"), dict) and b["project_id"] == code
 
 def test_expanded_canary_read_only(monkeypatch, v2tree):
     _on(monkeypatch)

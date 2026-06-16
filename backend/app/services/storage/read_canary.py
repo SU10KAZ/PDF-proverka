@@ -32,6 +32,7 @@ read_canary.py — opt-in read-only canary для `projects_v2` на ОТДЕЛ�
 from __future__ import annotations
 
 import os
+import re
 from pathlib import Path
 from typing import Optional
 
@@ -176,18 +177,309 @@ def _req_version(request):
     return request.query_params.get("version_id") if request is not None else None
 
 
+# ---------------------------------------------------------------------------
+# Legacy-compatibility helpers
+#
+# Цель: v2 read-canary ответы должны быть SHAPE-СОВМЕСТИМЫ с legacy, чтобы
+# фронтенд (frontend/static/js/app.js + index.html) не ломался при
+# AUDIT_PROJECTS_V2_READ_DEFAULT_ENABLED=true. Инцидент 2026-06-16: /api/projects
+# отдавал v2-native {documents,count} вместо legacy {projects,object_name} →
+# data.projects=undefined → весь UI падал. Здесь v2-ответы приводятся к тем же
+# top-level/per-item ключам, что и legacy. storage_backend/canary остаются как
+# инертные диагностические extra-ключи (frontend их игнорирует), НЕ вместо
+# legacy-ключей.
+# ---------------------------------------------------------------------------
+
+_VID_RE = re.compile(r"^v0*(\d+)$")
+
+
+def _denorm_vid(vid):
+    """v001 → v1 (legacy-форма version_id, которую ждёт фронтенд).
+
+    Фронтенд строит ids-Set и activeVersionId из versions[].version_id и
+    latest_version_id и сравнивает с литералом 'v1' (гейтинг, URL ?version_id=).
+    v2 хранит zero-padded 'v001' — без денормализации single-version документ
+    трактуется как НЕ-v1 (неверная активная версия, лишний migrated-fetch).
+    Нераспознанный id возвращается как есть.
+    """
+    if not vid:
+        return vid
+    m = _VID_RE.match(str(vid).strip())
+    return ("v%d" % int(m.group(1))) if m else str(vid)
+
+
+def _vno(vid) -> int:
+    """Порядковый номер версии из id ('v003' → 3); по умолчанию 1."""
+    m = _VID_RE.match(str(vid or "").strip())
+    return int(m.group(1)) if m else 1
+
+
+def _file_type(name: str) -> str:
+    n = (name or "").lower()
+    if n.endswith(".pdf"):
+        return "pdf"
+    if n.endswith(".md"):
+        return "md"
+    if n.endswith((".html", ".htm")):
+        return "html"
+    if n.endswith(".json"):
+        return "json"
+    if n.endswith(".txt"):
+        return "txt"
+    return "other"
+
+
+def _current_object_folder(a):
+    """(folder_name | None, object_name) текущего активного объекта в projects_v2.
+
+    Сопоставляет get_current_object().id с object_id адаптера, чтобы
+    /api/projects был STRICTLY SCOPED к текущему объекту (как legacy
+    list_projects), а не отдавал документы всех объектов.
+
+    Контракт (folder важнее name):
+      * текущий объект найден в v2     → (folder_name, name);
+      * текущий объект есть, но НЕ в v2 → (None, name) → caller отдаёт пустой
+        список (НЕ кросс-объектную свалку — это и был баг, замеченный ревью);
+      * текущего объекта нет, но в v2 есть объекты → (first_folder, first_name)
+        (degenerate, как legacy fallback на первый объект);
+      * совсем пусто → (None, None).
+    """
+    try:
+        from backend.app.services.common.object_service import get_current_object
+        cur = get_current_object()
+    except Exception:
+        cur = None
+    objs = a.list_objects()
+    if cur:
+        oid = cur.get("id")
+        name = cur.get("name")
+        for o in objs:
+            if o.get("object_id") == oid:
+                return o.get("folder_name"), name
+        # текущий объект известен, но в v2 его нет → пусто, без кросс-объекта
+        return None, name
+    if objs:
+        return objs[0].get("folder_name"), objs[0].get("display_name")
+    return None, None
+
+
+def _v2_versions_summary(a, doc, doc_dir, cur) -> dict:
+    """Сводка версий в legacy-форме version_service.get_versions_summary.
+
+    version_id денормализуется v00N→vN (frontend сравнивает с 'v1'). Поля
+    per-version совпадают с legacy enriched-записью (label/is_latest/
+    has_source_files/can_run_audit/...).
+    """
+    latest = _denorm_vid(cur)
+    versions = a.list_versions(doc_dir)
+    enriched = []
+    for v in versions:
+        rawv = v.get("version_id")
+        no = v.get("version_no") or _vno(rawv)
+        files = a.input_files(doc_dir, rawv)
+        pdf_n = sum(1 for f in files if f.lower().endswith(".pdf"))
+        md_n = sum(1 for f in files if f.lower().endswith(".md"))
+        enriched.append({
+            "version_id": _denorm_vid(rawv),
+            "version_no": no,
+            "label": v.get("label") or ("V%d" % no),
+            "folder": v.get("folder") or ".",
+            "status": v.get("status", "active"),
+            "source": v.get("source", "manual"),
+            "created_at": v.get("created_at"),
+            "comment": v.get("comment"),
+            "is_latest": rawv == cur,
+            "has_source_files": (pdf_n > 0 or md_n > 0),
+            "pdf_count": pdf_n,
+            "md_count": md_n,
+            "source_files_count": len(files),
+            "can_run_audit": pdf_n > 0,
+        })
+    return {
+        "latest_version_id": latest,
+        "version_count": len(versions),
+        "has_versions": len(versions) > 1,
+        "versions": enriched,
+    }
+
+
+def _v2_project_status(a, doc, ver=None) -> dict:
+    """Legacy ProjectStatus (model_dump dict) из v2-документа.
+
+    Гарантирует ту же форму, что и legacy /api/projects[] и /api/projects/{id}:
+    переиспользуется сама модель ProjectStatus, поэтому ВСЕ ключи присутствуют
+    с совместимыми типами — включая `pipeline` (иначе шаблон index.html падает
+    на currentProject.pipeline.gemma_enrichment). Значения берутся из адаптера
+    где есть; источники, которых нет в read-only v2 (optimization, экспертные
+    review-статусы, batches) — безопасные дефолты модели.
+    """
+    from backend.app.models.project import ProjectStatus, PipelineStatus
+    doc_dir = Path(doc["doc_dir"])
+    cur = doc.get("current_version")
+    vid_raw = ver or cur or "v1"
+    art = a.latest_analysis_files(doc_dir, vid_raw)
+    meta = a.version_metadata(doc_dir, vid_raw)
+
+    def _st(flag):
+        return "done" if flag else "pending"
+
+    pipeline = PipelineStatus(
+        text_analysis=_st(art["has_01_text_analysis"]),
+        blocks_analysis=_st(art["has_02_blocks_analysis"]),
+        findings=_st(art["has_03_findings"]),
+    )
+    vsum = _v2_versions_summary(a, doc, doc_dir, cur)
+    idx = a.read_blocks_index(doc_dir, vid_raw) or {}
+    return ProjectStatus(
+        project_id=doc["document_code"],
+        name=doc["document_code"],
+        section=(doc.get("discipline") or "EOM"),
+        description="",
+        pipeline=pipeline,
+        findings_count=a.findings_count(doc_dir, vid_raw),
+        findings_by_severity=a.findings_by_severity(doc_dir, vid_raw),
+        last_audit_date=(meta.get("analysis_generation") if isinstance(meta, dict) else None),
+        has_ocr=bool(idx.get("blocks")),
+        block_count=int(idx.get("total_blocks") or 0),
+        block_expected=int(idx.get("total_expected") or 0),
+        block_errors=int(idx.get("errors") or 0),
+        version_id=_denorm_vid(vid_raw),
+        version_no=(meta.get("version_no") or _vno(vid_raw)),
+        version_label=(meta.get("label") or ("V%d" % _vno(vid_raw))),
+        latest_version_id=vsum["latest_version_id"],
+        version_count=vsum["version_count"],
+        has_versions=vsum["has_versions"],
+        is_latest_version=(_denorm_vid(vid_raw) == vsum["latest_version_id"]),
+        versions_summary=vsum["versions"],
+    ).model_dump()
+
+
+def _classify_blocks_analysis(project_id, blocks_analysis, index_data,
+                              block_batches, findings_data) -> dict:
+    """Зеркало legacy get_blocks_analysis: {project_id,total_analyzed,counts,blocks}.
+
+    Та же классификация has_findings/no_findings/merged_into/skipped по тем же
+    источникам (02_blocks_analysis + block_batches + 03_findings + blocks index).
+    Чистая функция (без ФС). Пустые источники → {blocks:{}, counts: нули,
+    total_analyzed:0} — фронтенд делает Object.entries(data.blocks), пустой dict
+    не падает. legacy-only fallback'и (block_batch_*.json / typed_facts) тут не
+    нужны: v2 всегда имеет 02_blocks_analysis.json.
+    """
+    try:
+        from backend.app.api.routers.blocks import _normalize_block_info
+    except Exception:
+        def _normalize_block_info(b):
+            return b
+
+    blocks_map: dict = {}
+    block_list = []
+    if isinstance(blocks_analysis, dict):
+        block_list = (blocks_analysis.get("blocks_reviewed")
+                      or blocks_analysis.get("block_analyses") or [])
+    for bi in block_list:
+        if isinstance(bi, dict):
+            bid = bi.get("block_id", "")
+            if bid:
+                blocks_map[bid] = bi
+
+    merged_parent_map: dict = {}
+    batches = (block_batches or {}).get("batches", []) if isinstance(block_batches, dict) else []
+    for batch in batches:
+        for blk in (batch.get("blocks", []) or []):
+            parent_bid = blk.get("block_id", "")
+            for child_bid in (blk.get("merged_block_ids") or []):
+                if child_bid:
+                    merged_parent_map[child_bid] = parent_bid
+
+    blocks_in_findings: set = set()
+    flist = (findings_data or {}).get("findings", []) if isinstance(findings_data, dict) else []
+    for f in flist:
+        if not isinstance(f, dict):
+            continue
+        for bid in (f.get("source_block_ids") or []):
+            if bid:
+                blocks_in_findings.add(bid)
+        for bid in (f.get("related_block_ids") or []):
+            if bid:
+                blocks_in_findings.add(bid)
+        for ev in (f.get("evidence") or []):
+            if isinstance(ev, dict):
+                bid = ev.get("block_id")
+                if bid:
+                    blocks_in_findings.add(bid)
+
+    for bid, block in blocks_map.items():
+        has = (block.get("findings") or []) or (bid in blocks_in_findings)
+        block["status"] = "has_findings" if has else "no_findings"
+
+    index_blocks = (index_data or {}).get("blocks", []) if isinstance(index_data, dict) else []
+    for ib in index_blocks:
+        if not isinstance(ib, dict):
+            continue
+        bid = ib.get("block_id", "")
+        if not bid or bid in blocks_map:
+            continue
+        parent_bid = merged_parent_map.get(bid)
+        if parent_bid:
+            parent = blocks_map.get(parent_bid, {})
+            blocks_map[bid] = {
+                "block_id": bid, "page": ib.get("page"),
+                "sheet": parent.get("sheet"),
+                "sheet_type": parent.get("sheet_type", "other"),
+                "summary": parent.get("summary") or "Разобран в составе родительского листа",
+                "key_values_read": [], "findings": [],
+                "status": "merged_into", "parent_block_id": parent_bid,
+                "original_ocr_label": ib.get("ocr_label", ""),
+            }
+        else:
+            blocks_map[bid] = {
+                "block_id": bid, "page": ib.get("page"),
+                "sheet": None, "sheet_type": "other",
+                "summary": "Без значимого содержимого",
+                "key_values_read": [], "findings": [],
+                "status": "skipped", "is_empty_scope": True,
+                "original_ocr_label": ib.get("ocr_label", ""),
+            }
+
+    for block in blocks_map.values():
+        _normalize_block_info(block)
+
+    counts = {"has_findings": 0, "no_findings": 0, "merged_into": 0, "skipped": 0}
+    for block in blocks_map.values():
+        s = block.get("status")
+        if s in counts:
+            counts[s] += 1
+
+    return {
+        "project_id": project_id,
+        "total_analyzed": len(blocks_map),
+        "counts": counts,
+        "blocks": blocks_map,
+    }
+
+
 def v2_projects_list() -> dict:
-    """Read-only список документов из projects_v2 (canary-ответ для /api/projects)."""
+    """Список проектов из projects_v2 в LEGACY-форме для GET /api/projects.
+
+    Возвращает {projects, object_name} — shape-совместимо с legacy (frontend
+    читает data.projects + data.object_name). SCOPED к текущему объекту (как
+    legacy list_projects), а не ко всем объектам. storage_backend/canary —
+    инертные диагностические extra-ключи, НЕ вместо legacy-ключей.
+    """
     a = _adapter()
     if not a.is_available():
         raise HTTPException(status_code=404,
                             detail="projects_v2 storage not available")
-    docs = a.list_documents()
+    folder, object_name = _current_object_folder(a)
+    # STRICT scope: текущий объект не найден в v2 → пустой список (а НЕ документы
+    # всех объектов под именем текущего — это был баг кросс-объектной свалки).
+    docs = a.list_documents(object_folder=folder) if folder else []
+    projects = [_v2_project_status(a, d) for d in docs]
     return {
+        "projects": projects,
+        "object_name": object_name or "Объект",
         "storage_backend": BACKEND_V2,
         "canary": True,
-        "count": len(docs),
-        "documents": docs,
     }
 
 
@@ -222,53 +514,50 @@ def v2_findings(request, project_id: str) -> dict:
 
 
 def v2_project_details(request, project_id: str) -> dict:
-    """Детали проекта/документа из projects_v2 (canary для GET /api/projects/{id})."""
+    """Детали проекта из projects_v2 (canary для GET /api/projects/{id}).
+
+    Возвращает LEGACY ProjectStatus.model_dump() (та же модель, что legacy
+    get_project_status), поэтому присутствуют ВСЕ ключи, включая `pipeline` —
+    без него index.html падает на currentProject.pipeline.gemma_enrichment.
+    storage_backend/canary добавлены как инертные extra-ключи.
+    """
     a, doc, doc_dir, cur = _resolve_doc_or_404(request, project_id)
     ver = _resolve_version(a, doc_dir, cur, _req_version(request))
-    meta = a.version_metadata(doc_dir, ver)
-    art = a.latest_analysis_files(doc_dir, ver)
-    return {
-        "storage_backend": BACKEND_V2,
-        "canary": True,
-        "document_code": doc["document_code"],
-        "object_id": doc["object_id"],
-        "object_folder": doc["object_folder"],
-        "discipline": doc["discipline"],
-        "kind": doc.get("kind"),
-        "migration_kind": doc.get("migration_kind"),
-        "current_version": cur,
-        "version_id": ver,
-        "version_count": doc["version_count"],
-        "analysis_status": meta.get("analysis_status") or a.analysis_status(doc_dir, ver),
-        "has_01_text_analysis": art["has_01_text_analysis"],
-        "has_02_blocks_analysis": art["has_02_blocks_analysis"],
-        "has_03_findings": art["has_03_findings"],
-        "findings_count": a.findings_count(doc_dir, ver),
-        "findings_by_severity": a.findings_by_severity(doc_dir, ver),
-        "has_pipeline_log": a.has_pipeline_log(doc_dir, ver),
-        "version_metadata": meta,
-    }
+    status = _v2_project_status(a, doc, ver)
+    status["storage_backend"] = BACKEND_V2
+    status["canary"] = True
+    return status
 
 
 def v2_project_versions(request, project_id: str) -> dict:
-    """Сводка версий документа из projects_v2 (canary для .../versions)."""
+    """Сводка версий из projects_v2 (canary для .../versions) в LEGACY-форме.
+
+    Зеркалит version_service.get_versions_summary: top-level latest_version_id +
+    versions[] с denorm version_id (v00N→vN). Frontend читает data.versions и
+    data.latest_version_id и сравнивает version_id с 'v1' — zero-padded форма
+    ломала выбор активной версии.
+    """
     a, doc, doc_dir, cur = _resolve_doc_or_404(request, project_id)
-    versions = []
-    for v in a.list_versions(doc_dir):
-        vid = v.get("version_id")
-        versions.append({"version_id": vid, **a.version_metadata(doc_dir, vid)})
+    vsum = _v2_versions_summary(a, doc, doc_dir, cur)
     return {
+        "project_id": doc["document_code"],
+        "logical_project_id": doc["document_code"],
+        "latest_version_id": vsum["latest_version_id"],
+        "version_count": vsum["version_count"],
+        "has_versions": vsum["has_versions"],
+        "versions": vsum["versions"],
         "storage_backend": BACKEND_V2,
         "canary": True,
-        "document_code": doc["document_code"],
-        "current_version": cur,
-        "version_count": len(versions),
-        "versions": versions,
     }
 
 
 def v2_finding_by_id(request, project_id: str, finding_id: str) -> dict:
-    """Одно замечание по id из projects_v2 (canary для .../finding/{finding_id})."""
+    """Одно замечание по id из projects_v2 (canary для .../finding/{finding_id}).
+
+    Зеркалит legacy get_finding_by_id: поля замечания на ВЕРХНЕМ уровне ответа
+    (не вложены под `finding`). storage_backend/canary — инертные extra-ключи
+    (у замечаний таких ключей нет, коллизии не будет).
+    """
     a, doc, doc_dir, cur = _resolve_doc_or_404(request, project_id)
     ver = _resolve_version(a, doc_dir, cur, _req_version(request))
     for f in a.findings_list(doc_dir, ver):
@@ -276,13 +565,7 @@ def v2_finding_by_id(request, project_id: str, finding_id: str) -> dict:
             continue
         fid = f.get("id") or f.get("finding_id") or f.get("number")
         if str(fid) == str(finding_id):
-            return {
-                "storage_backend": BACKEND_V2,
-                "canary": True,
-                "document_code": doc["document_code"],
-                "version_id": ver,
-                "finding": f,
-            }
+            return {**f, "storage_backend": BACKEND_V2, "canary": True}
     raise HTTPException(
         status_code=404,
         detail=(f"projects_v2 canary: finding '{finding_id}' not found in document "
@@ -291,30 +574,27 @@ def v2_finding_by_id(request, project_id: str, finding_id: str) -> dict:
 
 
 def v2_blocks_analysis(request, project_id: str) -> dict:
-    """Анализ блоков (02_blocks_analysis) из projects_v2 (canary для .../blocks/analysis)."""
+    """Анализ блоков из projects_v2 (canary для .../blocks/analysis) в LEGACY-форме.
+
+    Frontend делает Object.entries(data.blocks) и читает an.status /
+    an.parent_block_id — поэтому нужен КЛАССИФИЦИРОВАННЫЙ dict `blocks`
+    (как legacy get_blocks_analysis), а не сырой 02_blocks_analysis.json.
+    Источники классификации (02 + block_batches + 03_findings + blocks index)
+    читаются из адаптера. Нет данных → blocks:{}, counts: нули (не падает).
+    """
     a, doc, doc_dir, cur = _resolve_doc_or_404(request, project_id)
     ver = _resolve_version(a, doc_dir, cur, _req_version(request))
-    data = a.read_blocks_analysis(doc_dir, ver)
-    if data is None:
-        return {
-            "storage_backend": BACKEND_V2,
-            "canary": True,
-            "document_code": doc["document_code"],
-            "version_id": ver,
-            "has_02_blocks_analysis": False,
-            "block_count": 0,
-            "blocks_analysis": None,
-        }
-    blocks = data.get("blocks_reviewed") or data.get("block_analyses") or []
-    return {
-        "storage_backend": BACKEND_V2,
-        "canary": True,
-        "document_code": doc["document_code"],
-        "version_id": ver,
-        "has_02_blocks_analysis": True,
-        "block_count": len(blocks),
-        "blocks_analysis": data,
-    }
+    result = _classify_blocks_analysis(
+        doc["document_code"],
+        a.read_blocks_analysis(doc_dir, ver),
+        a.read_blocks_index(doc_dir, ver),
+        a.read_block_batches(doc_dir, ver),
+        a.read_findings_03(doc_dir, ver),
+    )
+    result["storage_backend"] = BACKEND_V2
+    result["canary"] = True
+    result["version_id"] = _denorm_vid(ver)
+    return result
 
 
 def v2_blocks(request, project_id: str) -> dict:
@@ -407,14 +687,25 @@ def v2_version_files(request, project_id: str, version_id: str) -> dict:
     """
     a, doc, doc_dir, cur = _resolve_doc_or_404(request, project_id)
     ver = _resolve_version(a, doc_dir, cur, version_id)
-    files = a.input_files(doc_dir, ver)
+    raw = a.input_files(doc_dir, ver)
+    inp = a.input_dir(doc_dir, ver)
+    files = []
+    for n in raw:
+        size = None
+        try:
+            p = inp / n
+            if p.is_file():
+                size = p.stat().st_size
+        except Exception:
+            size = None
+        files.append({"name": n, "type": _file_type(n), "size": size, "updated_at": None})
     return {
-        "storage_backend": BACKEND_V2,
-        "canary": True,
-        "document_code": doc["document_code"],
-        "version_id": ver,
+        "project_id": doc["document_code"],
+        "version_id": _denorm_vid(ver),
         "file_count": len(files),
         "files": files,
+        "storage_backend": BACKEND_V2,
+        "canary": True,
     }
 
 
