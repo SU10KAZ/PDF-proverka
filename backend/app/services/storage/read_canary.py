@@ -38,8 +38,10 @@ from typing import Optional
 from fastapi import HTTPException
 
 _CANARY_FLAG = "AUDIT_PROJECTS_V2_READ_CANARY_ENABLED"
+_DEFAULT_FLAG = "AUDIT_PROJECTS_V2_READ_DEFAULT_ENABLED"
 _TRUE = {"1", "true", "yes", "on"}
 _OPT_IN_VALUE = "projects_v2"
+_OPT_OUT_VALUE = "legacy"
 
 QUERY_KEY = "storage"
 HEADER_KEY = "x-audit-storage"
@@ -49,8 +51,18 @@ BACKEND_V2 = "projects_v2"
 
 
 def canary_flag_enabled() -> bool:
-    """True только если оператор ЯВНО включил canary (env, default false)."""
+    """True только если оператор ЯВНО включил opt-in canary (env, default false)."""
     return (os.environ.get(_CANARY_FLAG) or "").strip().lower() in _TRUE
+
+
+def default_read_enabled() -> bool:
+    """True только если оператор ЯВНО включил default-read cutover (env, default false).
+
+    Когда True — approved GET-endpoint'ы (те, что зовут resolve_read_backend) читают
+    projects_v2 ПО УМОЛЧАНИЮ, без `?storage=projects_v2`. Остальные endpoint'ы и
+    AUDIT_STORAGE_BACKEND не затрагиваются.
+    """
+    return (os.environ.get(_DEFAULT_FLAG) or "").strip().lower() in _TRUE
 
 
 def opt_in_requested(query_value: Optional[str], header_value: Optional[str]) -> bool:
@@ -67,21 +79,49 @@ def opt_in_from_request(request) -> bool:
     return opt_in_requested(q, h)
 
 
-def resolve_read_backend(request) -> str:
-    """'legacy' (нет opt-in) | 'projects_v2' (opt-in + флаг).
+def storage_preference(request) -> Optional[str]:
+    """Явное предпочтение storage из query/header: 'projects_v2' | 'legacy' | None."""
+    if request is None:
+        return None
+    for v in (request.query_params.get(QUERY_KEY), request.headers.get(HEADER_KEY)):
+        s = (v or "").strip().lower()
+        if s == _OPT_IN_VALUE:
+            return _OPT_IN_VALUE
+        if s == _OPT_OUT_VALUE:
+            return _OPT_OUT_VALUE
+    return None
 
-    Поднимает 403, если opt-in запрошен, но canary-флаг выключен. Без opt-in —
-    всегда 'legacy' (никакого 403, обычные запросы не затрагиваются).
+
+def resolve_read_backend(request) -> str:
+    """Решает backend чтения для approved canary-endpoint'а: 'legacy' | 'projects_v2'.
+
+    Приоритеты:
+      1. явный `?storage=legacy` / header → LEGACY (безопасный force для отката/
+         сравнения, всегда honored, без флага);
+      2. явный `?storage=projects_v2` / header → V2, но gated canary-флагом
+         (флаг OFF → HTTP 403, явный отказ, не silent);
+      3. без явного предпочтения:
+           - default-read флаг ON  → V2 (limited default read cutover);
+           - default-read флаг OFF → LEGACY (обычное поведение, production не меняется).
+
+    AUDIT_STORAGE_BACKEND здесь НЕ читается. Функцию зовут ТОЛЬКО approved
+    GET-endpoint'ы, поэтому default-read распространяется только на них.
     """
-    if not opt_in_from_request(request):
+    pref = storage_preference(request)
+    if pref == _OPT_OUT_VALUE:
         return BACKEND_LEGACY
-    if not canary_flag_enabled():
-        raise HTTPException(
-            status_code=403,
-            detail=("projects_v2 read canary disabled: set "
-                    "AUDIT_PROJECTS_V2_READ_CANARY_ENABLED=true to opt in"),
-        )
-    return BACKEND_V2
+    if pref == _OPT_IN_VALUE:
+        if not canary_flag_enabled():
+            raise HTTPException(
+                status_code=403,
+                detail=("projects_v2 read canary disabled: set "
+                        "AUDIT_PROJECTS_V2_READ_CANARY_ENABLED=true to opt in"),
+            )
+        return BACKEND_V2
+    # нет явного предпочтения
+    if default_read_enabled():
+        return BACKEND_V2
+    return BACKEND_LEGACY
 
 
 def _adapter():
