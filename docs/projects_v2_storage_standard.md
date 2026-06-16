@@ -474,6 +474,20 @@ backend-тесты и UI, и лишь затем — переключение ф
 переключается, `AUDIT_STORAGE_BACKEND` остаётся `legacy`. Отчёт —
 `projects_v2/_system/ui_contract_parity_report.{json,md,csv}`.
 
+**Режим `--all` (весь корпус):** по умолчанию проверяется выборка по типам; флаг
+`--all` сверяет ВЕСЬ корпус (все документы), отчёт пишется в
+`full_corpus_parity_report.{json,md,csv}`. `cutover_readiness` предпочитает
+полнокорпусный отчёт (если есть) → при зелёном полном прогоне рекомендация может
+дорасти до `ready_for_read_only_canary`. Полный прогон 184 документа: MATCH 179 /
+EXPECTED_DIFFERENCE 5 (только King&Sons + СОТ V1) / MISMATCH 0, findings/version
+loss 0.
+
+> **production code/data split:** adapter `_default_v2_root` использует
+> `config.DATA_DIR/projects_v2` (а не путь к файлу модуля). В production код живёт
+> в `…-deploy`, данные — в основном репо через `AUDIT_DATA_DIR`, поэтому
+> code-relative путь указывал бы на несуществующий `…-deploy/projects_v2`.
+> Переопределение — env `AUDIT_PROJECTS_V2_DIR`.
+
 ### Какие поля сравниваются
 
 `object_display_name`, `discipline`, `document_code`, `current_version_no`,

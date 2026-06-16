@@ -326,7 +326,9 @@ def cutover_readiness(adapter: ProjectsV2Adapter, *,
     sysd = adapter.v2_root / "_system"
 
     drift = (_read_json(sysd / "migrated_drift_scan_report.json") or {}).get("summary", {})
-    contract = _read_json(sysd / "ui_contract_parity_report.json") or {}
+    # предпочитаем полнокорпусный отчёт (если есть) — он даёт full_corpus=True
+    contract = (_read_json(sysd / "full_corpus_parity_report.json")
+                or _read_json(sysd / "ui_contract_parity_report.json") or {})
     bparity = _read_json(sysd / "backend_parity_report.json") or {}
 
     drift_docs = drift.get("drift_documents")

@@ -269,7 +269,8 @@ def _legacy_pipeline_log(legacy_out: Optional[Path]) -> Optional[Path]:
 
 def run_contract_parity(adapter: ProjectsV2Adapter, *, per_type: int = 3,
                         explicit_codes: Optional[list[str]] = None,
-                        projects_root: Optional[Path] = None) -> dict:
+                        projects_root: Optional[Path] = None,
+                        all_docs: bool = False) -> dict:
     migrations = (_read_json(adapter.v2_root / "_system" / "old_to_new_map.json")
                   or {}).get("migrations", [])
     kb_file = adapter.v2_root.parent / "knowledge_base" / "decisions_log.json"
@@ -278,6 +279,8 @@ def run_contract_parity(adapter: ProjectsV2Adapter, *, per_type: int = 3,
 
     if explicit_codes:
         docs = [d for c in explicit_codes for d in [adapter.find_document(c)] if d]
+    elif all_docs:
+        docs = adapter.list_documents()  # ВЕСЬ корпус (184), не выборка
     else:
         docs = BP.select_documents(adapter, per_type)
 
@@ -368,12 +371,12 @@ def render_md(rep: dict) -> str:
     return "\n".join(out)
 
 
-def write_reports(rep: dict, v2_root: Path) -> tuple[Path, Path, Path]:
+def write_reports(rep: dict, v2_root: Path, stem: str = "ui_contract_parity_report") -> tuple[Path, Path, Path]:
     sys_dir = v2_root / "_system"
     sys_dir.mkdir(parents=True, exist_ok=True)
-    jp = sys_dir / "ui_contract_parity_report.json"
-    mp = sys_dir / "ui_contract_parity_report.md"
-    cp = sys_dir / "ui_contract_parity_report.csv"
+    jp = sys_dir / f"{stem}.json"
+    mp = sys_dir / f"{stem}.md"
+    cp = sys_dir / f"{stem}.csv"
     jp.write_text(json.dumps(rep, ensure_ascii=False, indent=2), encoding="utf-8")
     mp.write_text(render_md(rep), encoding="utf-8")
     with open(cp, "w", newline="", encoding="utf-8") as fh:
@@ -395,14 +398,22 @@ def main(argv=None) -> int:
     ap.add_argument("--v2-root", default=None)
     ap.add_argument("--per-type", type=int, default=3)
     ap.add_argument("--documents", default=None, help="явные document_code через запятую")
+    ap.add_argument("--all", action="store_true",
+                    help="проверить ВЕСЬ корпус (все документы), а не выборку; "
+                         "отчёт пишется в full_corpus_parity_report.*")
+    ap.add_argument("--report-stem", default=None,
+                    help="имя файла отчёта без расширения (по умолчанию зависит от --all)")
     args = ap.parse_args(argv)
 
     v2_root = Path(args.v2_root).resolve() if args.v2_root else v2lib.projects_v2_root()
     adapter = ProjectsV2Adapter(v2_root)
     codes = [c.strip() for c in args.documents.split(",")] if args.documents else None
 
-    rep = run_contract_parity(adapter, per_type=args.per_type, explicit_codes=codes)
-    jp, mp, cp = write_reports(rep, v2_root)
+    rep = run_contract_parity(adapter, per_type=args.per_type, explicit_codes=codes,
+                              all_docs=args.all)
+    stem = args.report_stem or ("full_corpus_parity_report" if args.all
+                                else "ui_contract_parity_report")
+    jp, mp, cp = write_reports(rep, v2_root, stem=stem)
 
     print("=== UI/API contract parity (legacy ↔ projects_v2) ===")
     print(f"checked: {rep['documents_checked']}  by_type: {rep['by_type']}")

@@ -740,6 +740,46 @@ dual-read → read-only canary → rollback flag → full cutover) — см.
 `scripts/projects_v2/http_smoke_shadow_api.py` (cutover smoke), `.gitignore`
 (исключение для `check_cutover_readiness.py`).
 
+### Этап 3.8 — production shadow rollout + full-corpus parity (parity ВЫПОЛНЕНА; deploy ЗАБЛОКИРОВАН)
+
+Подготовка к production shadow rollout. **Cutover НЕ выполнялся**, backend/UI не
+переключались, `AUDIT_STORAGE_BACKEND` остаётся `legacy`.
+
+**Production deploy ЗАБЛОКИРОВАН (deploy НЕ выполнен, restart НЕ выполнен):**
+production backend (PID 1537521, cwd `PDF-proverka-deploy`, ветка `deploy/main-live`
+@ `b860f15`) НЕ содержит shadow-кода. Деплой не выполнен по двум блокерам:
+1. **дивергенция веток** — `deploy/main-live` +117 коммитов, feature +40
+   (merge-base `bfa0a2c`): нет чистого ff/merge;
+2. **некоммиченные production hotfix'ы** в deploy worktree (9 modified +
+   untracked, вкл. `start_server_deploy.sh`, `rate_limit_retry.py`,
+   `md_resolver.py`) — git-deploy риск затереть их (правило «НЕ трогать
+   некоммиченные hotfix'ы»).
+→ Требуется командный deploy (коммит/согласование hotfix'ов, приведение веток
+main→deploy/main-live), а не автономная операция.
+
+**Подготовка к production-совместимости (выполнено в коде):**
+`projects_v2_adapter._default_v2_root` теперь берёт `config.DATA_DIR/projects_v2`
+(а не code-relative путь) — в production код в `-deploy`, данные через
+`AUDIT_DATA_DIR=/…/PDF-proverka`, поэтому code-relative путь был бы неверным.
+
+**Full-corpus parity (ВЕСЬ корпус 184 документа, read-only, в WIP):**
+`check_ui_contract_parity.py --all` → отчёт `full_corpus_parity_report.{json,md,csv}`.
+Результат: **doc_status MATCH 179 / EXPECTED_DIFFERENCE 5 / MISMATCH 0 / MISSING 0**;
+field-level MISMATCH 0; **findings_loss 0, version_loss 0**, contract_ok=True. 5
+EXPECTED_DIFFERENCE — только разрешённые: 4 King&Sons preserve (ЭМ2/АК/Фасадное/
+ИТП.ТМ) + 1 legacy_partial (СОТ V1).
+
+**Cutover readiness:** теперь читает full-corpus отчёт → **`ready_for_read_only_canary`**
+(validate PASS 842 ok, drift 0, backend parity ok, ui_contract 184 checked,
+dual-read ok, 0 mismatches).
+
+**Shadow endpoints** проверены на ephemeral uvicorn (production не трогали):
+base smoke 15/15, cutover/dual-read smoke 13/13, default→404, backend default legacy.
+
+Тесты: полный projects_v2 suite **246 passed**. Отчёты —
+`production_shadow_rollout_report.{json,md}`, `full_corpus_parity_report.{json,md,csv}`,
+`cutover_readiness_report.{json,md}`.
+
 ### Этап 4 — подключение adapter за флагом к основным read-path (план, НЕ в этом PR)
 
 - Подключить adapter к реальным read-path (project list / findings / pipeline

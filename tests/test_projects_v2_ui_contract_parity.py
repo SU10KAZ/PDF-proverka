@@ -218,6 +218,25 @@ def test_full_run_no_loss_contract_ok(tmp_path):
     assert rep["doc_status_counts"][UC.MISMATCH] == 0
 
 
+def test_all_docs_mode_checks_whole_corpus(tmp_path):
+    v2, legacy = _build(tmp_path)
+    a = ProjectsV2Adapter(v2)
+    total = len(a.list_documents())
+    rep = UC.run_contract_parity(a, projects_root=legacy, all_docs=True)
+    assert rep["documents_checked"] == total  # весь корпус, не выборка
+    assert rep["doc_status_counts"][UC.MISMATCH] == 0
+    assert rep["any_findings_loss"] is False and rep["any_version_loss"] is False
+
+
+def test_write_reports_custom_stem(tmp_path):
+    v2, legacy = _build(tmp_path)
+    a = ProjectsV2Adapter(v2)
+    rep = UC.run_contract_parity(a, projects_root=legacy, all_docs=True)
+    jp, mp, cp = UC.write_reports(rep, v2, stem="full_corpus_parity_report")
+    assert jp.name == "full_corpus_parity_report.json"
+    assert jp.exists() and mp.exists() and cp.exists()
+
+
 def test_read_only_projects_v2_unchanged(tmp_path):
     v2, legacy = _build(tmp_path)
     before = {p: (p.stat().st_mtime_ns, p.read_bytes())

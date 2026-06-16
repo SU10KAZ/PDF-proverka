@@ -128,6 +128,19 @@ def test_flag_explicit_v2(monkeypatch):
     assert A.is_v2_backend_enabled() is True
 
 
+def test_default_v2_root_uses_config_data_dir(monkeypatch):
+    # без AUDIT_PROJECTS_V2_DIR берём config.DATA_DIR/projects_v2 (а не code-relative),
+    # чтобы в production (код в -deploy, данные через AUDIT_DATA_DIR) путь был верным
+    monkeypatch.delenv("AUDIT_PROJECTS_V2_DIR", raising=False)
+    from backend.app.core import config
+    assert A._default_v2_root() == Path(config.DATA_DIR) / "projects_v2"
+
+
+def test_default_v2_root_env_override(monkeypatch, tmp_path):
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", str(tmp_path / "custom_v2"))
+    assert A._default_v2_root() == (tmp_path / "custom_v2").resolve()
+
+
 # ---------------------------------------------------------------------------
 # navigation + metadata
 # ---------------------------------------------------------------------------

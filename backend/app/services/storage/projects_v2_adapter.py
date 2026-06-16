@@ -62,8 +62,15 @@ def _default_v2_root() -> Path:
     env = os.environ.get(_V2_DIR_ENV)
     if env:
         return Path(env).resolve()
-    # backend/app/services/storage/projects_v2_adapter.py -> repo root = parents[4]
-    return Path(__file__).resolve().parents[4] / "projects_v2"
+    # Должно совпадать с РАЗМЕЩЕНИЕМ ДАННЫХ, а не кода. В production code и data
+    # разнесены (код в …-deploy, данные в основном репо через AUDIT_DATA_DIR),
+    # поэтому берём config.DATA_DIR (= AUDIT_DATA_DIR или авто-root), а не путь к
+    # файлу модуля. Fallback на code-relative parents[4] — если config недоступен.
+    try:
+        from backend.app.core.config import DATA_DIR
+        return Path(DATA_DIR) / "projects_v2"
+    except Exception:
+        return Path(__file__).resolve().parents[4] / "projects_v2"
 
 
 # приоритет файла замечаний (как в findings_service._get_findings_path)
