@@ -36,6 +36,7 @@ from pathlib import Path
 from typing import Optional
 
 from fastapi import HTTPException
+from fastapi.responses import FileResponse
 
 _CANARY_FLAG = "AUDIT_PROJECTS_V2_READ_CANARY_ENABLED"
 _DEFAULT_FLAG = "AUDIT_PROJECTS_V2_READ_DEFAULT_ENABLED"
@@ -313,4 +314,105 @@ def v2_blocks_analysis(request, project_id: str) -> dict:
         "has_02_blocks_analysis": True,
         "block_count": len(blocks),
         "blocks_analysis": data,
+    }
+
+
+def v2_blocks(request, project_id: str) -> dict:
+    """Список image-блоков (canary для GET /api/tiles/{id}/blocks), сгруппирован по страницам.
+
+    Зеркалит legacy-контракт. Индекс блоков не найден → 404 canary-error (без
+    silent fallback в legacy).
+    """
+    a, doc, doc_dir, cur = _resolve_doc_or_404(request, project_id)
+    ver = _resolve_version(a, doc_dir, cur, _req_version(request))
+    idx = a.read_blocks_index(doc_dir, ver)
+    if idx is None:
+        raise HTTPException(
+            status_code=404,
+            detail=(f"projects_v2 canary: blocks index not found for "
+                    f"'{doc['document_code']}' (no silent legacy fallback)"),
+        )
+    pages_map: dict = {}
+    for block in idx.get("blocks", []):
+        pages_map.setdefault(block.get("page", 0), []).append(block)
+    pages = [{"page_num": pn, "block_count": len(pages_map[pn]), "blocks": pages_map[pn]}
+             for pn in sorted(pages_map.keys())]
+    return {
+        "storage_backend": BACKEND_V2,
+        "canary": True,
+        "project_id": project_id,
+        "document_code": doc["document_code"],
+        "version_id": ver,
+        "total_blocks": idx.get("total_blocks", 0),
+        "total_expected": idx.get("total_expected", 0),
+        "errors": idx.get("errors", 0),
+        "pages": pages,
+    }
+
+
+def v2_block_image(request, project_id: str, block_id: str):
+    """PNG кропа блока (canary для .../blocks/image/{block_id}).
+
+    Файл резолвится через blocks index по block_id (или по имени `block_<id>.png`)
+    и ОБЯЗАТЕЛЬНО проверяется на принадлежность папке блоков версии (анти-traversal).
+    Возвращает FileResponse с заголовком X-Storage-Backend: projects_v2.
+    Не найден → 404 canary-error (без silent fallback).
+    """
+    a, doc, doc_dir, cur = _resolve_doc_or_404(request, project_id)
+    ver = _resolve_version(a, doc_dir, cur, _req_version(request))
+    bd = a.blocks_dir(doc_dir, ver)
+    if bd is None:
+        raise HTTPException(status_code=404,
+                            detail="projects_v2 canary: blocks dir not found")
+    bd_resolved = bd.resolve()
+
+    def _norm(b):
+        return b[6:] if b and b.startswith("block_") else (b or "")
+
+    # 1) точное имя файла из индекса (надёжнее, чем угадывать)
+    target = None
+    idx = a.read_blocks_index(doc_dir, ver) or {}
+    want = _norm(block_id)
+    for blk in idx.get("blocks", []):
+        if _norm(blk.get("block_id", "")) == want:
+            fn = blk.get("file")
+            if fn:
+                target = bd / fn
+            break
+    # 2) фолбэк на конвенцию block_<id>.png
+    if target is None:
+        target = bd / f"block_{want}.png"
+    # анти-traversal: файл обязан лежать ВНУТРИ папки блоков версии
+    try:
+        target_resolved = target.resolve()
+    except Exception:
+        target_resolved = None
+    if (target_resolved is None
+            or bd_resolved not in target_resolved.parents
+            or not target_resolved.is_file()):
+        raise HTTPException(
+            status_code=404,
+            detail=(f"projects_v2 canary: block image '{block_id}' not found for "
+                    f"'{doc['document_code']}' (no silent legacy fallback)"),
+        )
+    return FileResponse(str(target_resolved), media_type="image/png",
+                        headers={"X-Storage-Backend": BACKEND_V2})
+
+
+def v2_version_files(request, project_id: str, version_id: str) -> dict:
+    """Список исходных файлов версии из projects_v2 01_input (canary для .../versions/{vid}/files).
+
+    `version_id` — path-параметр endpoint'а (legacy-форма vN маппится в v00N).
+    Не silent fallback: документ/версия не в v2 → 404.
+    """
+    a, doc, doc_dir, cur = _resolve_doc_or_404(request, project_id)
+    ver = _resolve_version(a, doc_dir, cur, version_id)
+    files = a.input_files(doc_dir, ver)
+    return {
+        "storage_backend": BACKEND_V2,
+        "canary": True,
+        "document_code": doc["document_code"],
+        "version_id": ver,
+        "file_count": len(files),
+        "files": files,
     }

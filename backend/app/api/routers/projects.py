@@ -431,12 +431,18 @@ async def create_project_version(project_id: str, req: CreateVersionRequest):
 
 
 @router.get("/{project_id:path}/versions/{version_id}/files")
-async def list_version_files_endpoint(project_id: str, version_id: str):
+async def list_version_files_endpoint(project_id: str, version_id: str, request: Request):
     """Список исходных файлов конкретной версии проекта.
 
     Не включает `_output/`, манифест и `project_info.json`. Возвращает также
     текущий `project_info.json` версии.
+
+    opt-in/default read canary: при v2-backend список берётся из projects_v2
+    01_input (read-only). `?storage=legacy` форсит legacy.
     """
+    from backend.app.services.storage import read_canary
+    if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
+        return read_canary.v2_version_files(request, project_id, version_id)
     from backend.app.services.common import version_service
     proj_dir = project_service.resolve_project_dir(project_id)
     if not proj_dir.exists():

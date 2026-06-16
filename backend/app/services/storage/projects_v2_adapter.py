@@ -278,6 +278,36 @@ class ProjectsV2Adapter:
         p = self._latest_file(doc_dir, version_id, "02_blocks_analysis.json")
         return _read_json(p) if p else None
 
+    def blocks_dir(self, doc_dir: Path, version_id: str) -> Optional[Path]:
+        """Папка кропнутых блоков версии (read-only).
+
+        В projects_v2 кропы лежат под `03_analysis/latest/blocks/` либо (чаще)
+        под последним `03_analysis/runs/<run>/blocks/`. Возвращает первую папку,
+        где есть `index.json`, иначе None.
+        """
+        vdir = self.version_dir(doc_dir, version_id)
+        analysis = vdir / "03_analysis"
+        cand = analysis / "latest" / "blocks"
+        if (cand / "index.json").is_file():
+            return cand
+        runs = analysis / "runs"
+        if runs.is_dir():
+            for run in sorted((p for p in runs.iterdir() if p.is_dir()), reverse=True):
+                bd = run / "blocks"
+                if (bd / "index.json").is_file():
+                    return bd
+        # King&Sons legacy_findings_preserve: блоки лежат в сохранённом legacy-бандле
+        # `99_service/legacy_output/<...>/_output/blocks/` (read-only).
+        legacy_out = vdir / "99_service" / "legacy_output"
+        if legacy_out.is_dir():
+            for idx in sorted(legacy_out.glob("*/_output/blocks/index.json")):
+                return idx.parent
+        return None
+
+    def read_blocks_index(self, doc_dir: Path, version_id: str) -> Optional[dict]:
+        bd = self.blocks_dir(doc_dir, version_id)
+        return _read_json(bd / "index.json") if bd else None
+
     def findings_path(self, doc_dir: Path, version_id: str) -> Optional[Path]:
         """Лучший файл замечаний в latest (приоритет как в findings_service)."""
         latest = self.latest_dir(doc_dir, version_id)

@@ -508,9 +508,17 @@ def _version_output(project_id: str, version_id: Optional[str]):
 @router.get("/{project_id:path}/blocks")
 async def get_blocks(
     project_id: str,
+    request: Request,
     version_id: Optional[str] = Query(None, description="Конкретная версия, по умолчанию latest"),
 ):
-    """Список image-блоков, сгруппированных по страницам."""
+    """Список image-блоков, сгруппированных по страницам.
+
+    opt-in/default read canary: `?storage=projects_v2`/header или default-флаг →
+    список блоков из projects_v2 (read-only). `?storage=legacy` форсит legacy.
+    """
+    from backend.app.services.storage import read_canary
+    if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
+        return read_canary.v2_blocks(request, project_id)
     output_dir = _version_output(project_id, version_id)
     index_path = gemma_blocks_index_path(output_dir.parent)
     if not index_path.exists():
@@ -781,9 +789,17 @@ async def get_blocks_analysis(
 async def get_block_image(
     project_id: str,
     block_id: str,
+    request: Request,
     version_id: Optional[str] = Query(None),
 ):
-    """PNG-файл кропнутого блока."""
+    """PNG-файл кропнутого блока.
+
+    opt-in/default read canary: при v2-backend кроп берётся из projects_v2
+    (path-safe). `?storage=legacy` форсит legacy.
+    """
+    from backend.app.services.storage import read_canary
+    if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
+        return read_canary.v2_block_image(request, project_id, block_id)
     output_dir = _version_output(project_id, version_id)
     block_path = gemma_blocks_dir(output_dir.parent) / f"block_{block_id}.png"
     if not block_path.exists():
