@@ -513,6 +513,64 @@ def unhide_project(project_id: str) -> None:
     _save_hidden_projects(hidden)
 
 
+def delete_project(project_id: str) -> dict:
+    """Жёстко удалить проект: legacy-папку (контейнер версий или plain) + его
+    документ(ы) в projects_v2 + записи old_to_new_map + запись в hidden_projects.
+
+    Семантика — безвозвратное удаление (выбор оператора). Сначала убираем v2
+    (fail-soft, пока legacy ещё на месте для резолва по map), затем удаляем
+    legacy-папку (авторитетно). Гард «не во время аудита» — на уровне endpoint.
+
+    Raises:
+        ValueError: проект не найден.
+    """
+    proj_dir = resolve_project_dir(project_id, must_exist=True)
+
+    # верхнеуровневая запись: контейнер `(main)` (удалит все версии) или plain
+    root_entry = Path(proj_dir)
+    try:
+        c = version_service.container_dir_for(proj_dir)
+        if c is not None:
+            root_entry = Path(c)
+    except Exception:
+        pass
+    root_entry = root_entry.resolve()
+
+    if not root_entry.exists():
+        raise ValueError(f"Проект '{project_id}' не найден")
+
+    # 1) убрать v2-документ(ы) (no-op в legacy-режиме, fail-soft). Делается до
+    #    rmtree, но сопоставление с map идёт по строке пути — переживает удаление.
+    v2_info = None
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        wr = _swf.remove_project_from_v2_safe(root_entry)
+        v2_info = wr.to_dict() if wr is not None else None
+    except Exception:
+        v2_info = None
+
+    # 2) жёсткое удаление legacy (авторитетно)
+    shutil.rmtree(root_entry)
+
+    # 3) очистить запись из hidden_projects (если была)
+    try:
+        unhide_project(project_id)
+    except Exception:
+        pass
+
+    # 4) инвалидировать кеш списка проектов (иначе удалённый висит ~30с по TTL)
+    try:
+        invalidate_project_cache()
+    except Exception:
+        pass
+
+    return {
+        "project_id": project_id,
+        "deleted_legacy": str(root_entry),
+        "v2": v2_info,
+    }
+
+
 def list_projects() -> list[ProjectStatus]:
     """Получить список всех проектов с их статусом."""
     hidden = _load_hidden_projects()

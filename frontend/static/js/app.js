@@ -3006,6 +3006,40 @@ const app = createApp({
                 editProjectsLoading.value = false;
             }
         }
+        async function deleteSelectedProjects() {
+            const ids = Array.from(selectedProjects.value);
+            if (ids.length === 0) return;
+            const names = ids.slice(0, 8).join('\n  • ');
+            const extra = ids.length > 8 ? `\n  …и ещё ${ids.length - 8}` : '';
+            if (!confirm(
+                `БЕЗВОЗВРАТНО удалить ${ids.length} проект(ов)?\n\n  • ${names}${extra}\n\n` +
+                `Будут удалены папка проекта и его документ в projects_v2. Это действие нельзя отменить.`
+            )) return;
+            editProjectsLoading.value = true;
+            try {
+                let failed = 0;
+                const failedIds = [];
+                for (const pid of ids) {
+                    try {
+                        const resp = await fetch(`/api/projects/${encodeURIComponent(pid)}`, { method: 'DELETE' });
+                        if (!resp.ok) { failed += 1; failedIds.push(pid); }
+                    } catch (e) {
+                        failed += 1; failedIds.push(pid);
+                    }
+                }
+                if (failed > 0) {
+                    alert(`Не удалось удалить ${failed} из ${ids.length} проектов:\n${failedIds.join('\n')}\n` +
+                          `(возможно, идёт аудит — сначала отмените его)`);
+                }
+                selectedProjects.value = new Set();
+                selectAllChecked.value = false;
+                showEditProjectsModal.value = false;
+                await refreshProjects();
+            } finally {
+                editProjectsLoading.value = false;
+            }
+        }
+
         async function hideSelectedFromUI() {
             const ids = Array.from(selectedProjects.value);
             if (ids.length === 0) return;
@@ -15889,7 +15923,7 @@ const app = createApp({
             // Edit projects (смена раздела / скрытие)
             showEditProjectsModal, editProjectsNewSection, editProjectsLoading,
             editProjectsSelected, openEditProjectsModal,
-            applyNewSectionToSelected, hideSelectedFromUI,
+            applyNewSectionToSelected, hideSelectedFromUI, deleteSelectedProjects,
             // Edit projects — merge as version of existing (per-row)
             editProjectsMergeMap, editProjectsMergeReadyCount,
             mergeTargetsFor, mergeNextLabelFor, mergeTargetNameFor,

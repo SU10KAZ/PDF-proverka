@@ -1533,6 +1533,23 @@ def merge_project_as_version(
         # Инвалидируем кеш списка проектов, иначе удалённый source ещё ~30 сек
         # будет висеть в `/api/projects` из-за TTL.
         _invalidate_project_cache()
+        # Убрать v2-документ source: иначе после привязки версии остаётся
+        # orphan-карточка в projects_v2 (read-default = v2). no-op в legacy,
+        # fail-soft. map-сопоставление по строке пути переживает rmtree.
+        try:
+            from backend.app.services.storage import storage_write_facade as _swf
+            _swf.remove_project_from_v2_safe(source_dir)
+        except Exception:
+            pass
+
+    # project_info новой версии отредактирован ПОСЛЕ внутреннего mirror в
+    # save_files_to_version → пере-зеркалим target-контейнер, иначе validate
+    # видит "LEGACY CHANGED since migration" по project_info.json новой версии.
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        _swf.shadow_mirror_project_id_safe(target_project_id)
+    except Exception:
+        pass
 
     return {
         "status": "ok",

@@ -822,3 +822,21 @@ async def unhide_project_endpoint(project_id: str):
     """Вернуть скрытый проект в UI."""
     project_service.unhide_project(project_id)
     return {"status": "ok", "project_id": project_id, "hidden": False}
+
+
+# Жёсткое удаление проекта. Зарегистрировано ПОСЛЕ `/{project_id:path}/clean`,
+# чтобы жадный path-конвертер не перехватывал `…/clean` (тот матчится первым).
+@router.delete("/{project_id:path}")
+async def delete_project_endpoint(project_id: str):
+    """Безвозвратно удалить проект: legacy-папку (все версии, если контейнер) +
+    документ(ы) в projects_v2 + записи old_to_new_map. Гард: нельзя во время
+    запущенного аудита.
+    """
+    from backend.app.pipeline.manager import pipeline_manager
+    if pipeline_manager.is_running(project_id):
+        raise HTTPException(409, f"Аудит проекта '{project_id}' сейчас выполняется. Сначала отмените.")
+    try:
+        result = project_service.delete_project(project_id)
+    except ValueError as e:
+        raise HTTPException(404, str(e))
+    return {"status": "ok", **result}

@@ -51,6 +51,7 @@ import json
 import logging
 import os
 import re
+import shutil
 import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -520,6 +521,62 @@ class StorageWriteFacade:
         d = resolve_project_dir(project_id, must_exist=True)
         return self.shadow_mirror_project(d, run_id=run_id)
 
+    def remove_project_from_v2(self, legacy_root_entry, *, run_id: Optional[str] = None) -> WriteResult:
+        """Удалить v2-документ(ы), относящиеся к legacy-проекту (контейнер или
+        plain), и их записи из old_to_new_map.
+
+        `legacy_root_entry` — путь к ВЕРХНЕУРОВНЕВОЙ записи проекта (контейнер
+        `(main)` или plain-папка). Сопоставление с map идёт по `legacy_folder_path`
+        строго по границе сегмента (==root или startswith root+os.sep), чтобы
+        `…/X` не зацепил `…/X V1`. Несколько версий контейнера обычно делят один
+        `v2_document_dir` — он удаляется один раз.
+
+        В режиме legacy (default) — no-op (см. safe-обёртку). Идемпотентно:
+        отсутствие совпадений = пустой результат.
+        """
+        legacy_root_entry = Path(legacy_root_entry)
+
+        def _v2() -> list[Path]:
+            v2root = self.v2_root()
+            if v2root is None:
+                raise StorageWriteError("projects_v2 root not resolvable")
+            v2lib = self._load_v2lib()
+            root = str(legacy_root_entry.resolve())
+            map_path = v2root / "_system" / "old_to_new_map.json"
+            mp = v2lib.load_old_to_new_map(map_path)
+            migs = mp.get("migrations", [])
+
+            def _match(e) -> bool:
+                lp = e.get("legacy_folder_path") or ""
+                try:
+                    lp = str(Path(lp).resolve())
+                except Exception:
+                    lp = str(lp)
+                return lp == root or lp.startswith(root + os.sep)
+
+            matched = [e for e in migs if _match(e)]
+            doc_dirs: list[str] = []
+            for e in matched:
+                dd = e.get("v2_document_dir")
+                if dd and dd not in doc_dirs:
+                    doc_dirs.append(dd)
+            removed: list[Path] = []
+            for dd in doc_dirs:
+                p = Path(dd)
+                # защита: удаляем только внутри objects/ этого v2root
+                try:
+                    inside = str(p.resolve()).startswith(str((v2root / "objects").resolve()) + os.sep)
+                except Exception:
+                    inside = False
+                if inside and p.is_dir():
+                    shutil.rmtree(p)
+                    removed.append(p)
+            mp["migrations"] = [e for e in migs if not _match(e)]
+            v2lib.save_old_to_new_map(mp, map_path)
+            return removed
+
+        return self._execute("remove_project_from_v2", legacy_write=None, v2_write=_v2)
+
 
 # ---------------------------------------------------------------------------
 # module-level singleton helper (для будущего подключения к endpoint'ам)
@@ -589,4 +646,21 @@ def shadow_mirror_project_id_safe(project_id: str, *, run_id: Optional[str] = No
     except Exception as exc:  # noqa: BLE001
         logger.warning("[storage_write_facade] shadow mirror (id=%s) failed: %s", project_id, exc)
         _record_shadow_error("shadow_mirror_project_id", project_id, exc)
+        return None
+
+
+def remove_project_from_v2_safe(legacy_root_entry, *, run_id: Optional[str] = None):
+    """Хук удаления: убрать v2-документ(ы) проекта (no-op в legacy, fail-soft).
+
+    Вызывается из delete_project и merge_project_as_version (удаление source).
+    В режиме legacy (default) — немедленный no-op (v2 не трогаем). Любая ошибка
+    логируется и не пробрасывается — удаление legacy остаётся авторитетным.
+    """
+    if not v2_writes_enabled():
+        return None
+    try:
+        return get_write_facade().remove_project_from_v2(legacy_root_entry, run_id=run_id)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("[storage_write_facade] remove from v2 (%s) failed: %s", legacy_root_entry, exc)
+        _record_shadow_error("remove_project_from_v2", str(legacy_root_entry), exc)
         return None

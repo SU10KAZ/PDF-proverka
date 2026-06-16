@@ -1077,8 +1077,9 @@
                 <button class="modal-close" @click="showEditProjectsModal = false">&times;</button>
                 <h3>Изменить выбранные проекты ({{ editProjectsSelected.length }})</h3>
                 <p class="modal-subtitle">
-                    Сменить дисциплину или скрыть проекты из UI. Файлы на диске не перемещаются и не удаляются —
-                    меняется только запись <code>section</code> в <code>project_info.json</code>.
+                    Сменить дисциплину, привязать как версию, скрыть из UI или
+                    <strong>удалить</strong>. «Скрыть» оставляет файлы на диске; «🗑 Удалить» —
+                    безвозвратно убирает папку проекта и его документ в projects_v2.
                 </p>
                 <div class="edit-projects-list">
                     <div v-for="p in editProjectsSelected" :key="p.project_id"
@@ -1124,6 +1125,11 @@
                             :disabled="editProjectsLoading"
                             title="Скрыть выбранные проекты из UI (файлы остаются на диске)">
                         Скрыть из UI
+                    </button>
+                    <button class="btn btn-danger" @click="deleteSelectedProjects"
+                            :disabled="editProjectsLoading"
+                            title="Безвозвратно удалить выбранные проекты (папка + projects_v2)">
+                        🗑 Удалить
                     </button>
                     <div style="flex:1"></div>
                     <button class="btn btn-outline" @click="showEditProjectsModal = false">Отмена</button>
