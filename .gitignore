@@ -64,10 +64,18 @@ Desktop.ini
 *.bak
 *_temp.py
 check_*.py
+# committed projects_v2 CLI tools (exceptions to the scratch check_*.py rule above)
+!scripts/projects_v2/check_backend_parity.py
+!scripts/projects_v2/check_shadow_api.py
+!scripts/projects_v2/check_ui_contract_parity.py
+!scripts/projects_v2/check_cutover_readiness.py
 find_sections*.py
 .codex_test_tmp/
 tmp_write_probe/
 autonomous_audit/
+
+# === projects_v2 runtime data (NEVER commit) ===
+/projects_v2/
 
 # === Keep project_info.json and project structure ===
 # (PDF and _output are ignored, but config files are tracked)
