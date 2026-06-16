@@ -188,3 +188,70 @@ async def parity_sample():
             for r in data.get("results", [])
         ],
     }
+
+
+def _doc_kind(adapter: ProjectsV2Adapter, doc: dict) -> str:
+    if doc.get("migration_kind") == "legacy_findings_preserve":
+        return "king_sons_legacy_preserve"
+    if doc.get("version_count", 0) > 1:
+        return "versioned"
+    cur = doc.get("current_version")
+    return (adapter.analysis_status(Path(doc["doc_dir"]), cur) if cur else None) or "none"
+
+
+def _v2_contract_view(adapter: ProjectsV2Adapter, doc: dict, objects_by_folder: dict) -> dict:
+    """UI/API-контракт ТОЛЬКО по данным v2 (без legacy). Read-only."""
+    doc_dir = Path(doc["doc_dir"])
+    cur = doc["current_version"]
+    meta = adapter.version_metadata(doc_dir, cur)
+    art = adapter.latest_analysis_files(doc_dir, cur)
+    obj = objects_by_folder.get(doc["object_folder"], {})
+    kb_link = doc_dir / "versions" / str(cur) / "04_review" / "kb_decisions_link.json"
+    kb_count = None
+    if kb_link.is_file():
+        import json as _json
+        try:
+            kb_count = _json.loads(kb_link.read_text(encoding="utf-8")).get("entry_count")
+        except Exception:
+            kb_count = None
+    return {
+        "document_code": doc["document_code"],
+        "type": _doc_kind(adapter, doc),
+        "object_display_name": obj.get("display_name"),
+        "discipline": doc["discipline"],
+        "current_version": cur,
+        "version_count": doc["version_count"],
+        "analysis_status": meta.get("analysis_status"),
+        "has_01_text_analysis": art["has_01_text_analysis"],
+        "has_02_blocks_analysis": art["has_02_blocks_analysis"],
+        "has_03_findings": art["has_03_findings"],
+        "findings_count": adapter.findings_count(doc_dir, cur),
+        "findings_by_severity": adapter.findings_by_severity(doc_dir, cur),
+        "has_pipeline_log": adapter.has_pipeline_log(doc_dir, cur),
+        "is_legacy_preserve": meta.get("is_legacy_preserve"),
+        "is_source_only": meta.get("is_source_only"),
+        "is_legacy_partial": meta.get("is_legacy_partial"),
+        "kb_link_entry_count": kb_count,
+    }
+
+
+@router.get("/ui-contract/sample", dependencies=[Depends(_gate)])
+async def ui_contract_sample(per_type: int = Query(2, ge=1, le=10)):
+    """Sample UI/API-контракта ТОЛЬКО из adapter (v2-сторона), без записи отчётов.
+
+    Полную legacy↔v2 сверку делает CLI check_ui_contract_parity.py — здесь только
+    то, что v2 СМОЖЕТ отдать в UI-контракте, по выборке разных типов.
+    """
+    a = _adapter()
+    objects_by_folder = {o["folder_name"]: o for o in a.list_objects()}
+    buckets: dict[str, int] = {}
+    sample = []
+    for d in a.list_documents():
+        t = _doc_kind(a, d)
+        cap = max(per_type, 3) if t == "king_sons_legacy_preserve" else per_type
+        if buckets.get(t, 0) < cap:
+            sample.append(_v2_contract_view(a, d, objects_by_folder))
+            buckets[t] = buckets.get(t, 0) + 1
+    return {"count": len(sample), "by_type": buckets,
+            "note": "v2-only contract sample; full legacy↔v2 parity via CLI",
+            "sample": sample}

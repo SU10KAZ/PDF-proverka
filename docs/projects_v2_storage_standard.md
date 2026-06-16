@@ -465,6 +465,65 @@ Shadow API только ЧИТАЕТ v2 в изолированном namespace 
 backend-тесты и UI, и лишь затем — переключение флага в проде (см. «Предусловия
 будущего cutover» выше).
 
+## UI/API contract parity (read-only, НЕ cutover)
+
+[scripts/projects_v2/check_ui_contract_parity.py](../scripts/projects_v2/check_ui_contract_parity.py)
+сравнивает то, что отдаёт legacy `projects/`, с тем, что СМОЖЕТ отдать
+`projects_v2` (через `ProjectsV2Adapter`), по полям, важным для UI/API. v2
+читается только через adapter, legacy — напрямую (read-only сверка). Backend НЕ
+переключается, `AUDIT_STORAGE_BACKEND` остаётся `legacy`. Отчёт —
+`projects_v2/_system/ui_contract_parity_report.{json,md,csv}`.
+
+### Какие поля сравниваются
+
+`object_display_name`, `discipline`, `document_code`, `current_version_no`,
+`version_count`, `analysis_status`, наличие `01_text_analysis.json` /
+`02_blocks_analysis.json` / `03_findings.json`, `findings_count`,
+`findings_by_severity` (soft), `pipeline_log_present` + `pipeline_log_stage_count`
+(soft), `has_blocks_analysis`, флаги `v2_legacy_preserve` / `source_only`, и
+`kb_link_entry_count` (только для King&Sons legacy preserve).
+
+### Классификация (на поле и на документ)
+
+`MATCH` | `EXPECTED_DIFFERENCE` | `MISMATCH` | `MISSING_IN_V2` | `MISSING_IN_LEGACY`.
+Подсчёт findings — **симметричный** (один приоритет файла
+`03a_norms_verified > 03_findings` и в legacy `_output`, и в v2 `latest`).
+
+### Какие расхождения считаются EXPECTED
+
+- **King&Sons legacy preserve** — v2 намеренно хранит legacy snapshot:
+  `version_count` / `current_version` отличаются (коллапс в один `v001`),
+  `analysis_status` = `legacy_partial` / `source_only`, флаги legacy/source_only —
+  v2-only;
+- **source_only / проекты без анализа** — отсутствие `01/02/03` нормально с обеих
+  сторон (→ `MATCH`); `analysis_status` v2-специфичный (`legacy_partial` для
+  документов, чьи findings лежат в KB, а не файлами) → `EXPECTED_DIFFERENCE`;
+- **иной формат legacy version container** при равном нормализованном
+  `version_count` → `MATCH`; расхождение числа версий допускается только для
+  King&Sons.
+
+### Что блокирует будущий cutover
+
+- `MISMATCH` по `findings_count` (потеря/искажение замечаний);
+- `MISMATCH` по `version_count` вне King&Sons (потеря версий);
+- `MISMATCH` по `analysis_status` для обычных документов;
+- `MISMATCH` по наличию `01/02/03` или `object/discipline/code`;
+- `MISSING_IN_V2` для KB-link у King&Sons (потеря связи с базой знаний).
+
+### Почему это ещё не cutover
+
+Сравнение только читает обе стороны и пишет отчёт. Реальные read-path backend
+по-прежнему используют legacy; переключение произойдёт отдельным этапом после
+`contract_ok=true` на широкой выборке (в идеале на всех 184 документах) и
+двойного чтения на shadow-объекте.
+
+### Shadow endpoint (gated, read-only)
+
+`GET /api/projects-v2-shadow/ui-contract/sample` (default 404 без флага) отдаёт
+**только v2-сторону** UI-контракта по выборке типов (без legacy, без записи
+отчётов) — быстрый просмотр того, что v2 сможет отдать. Полную legacy↔v2 сверку
+делает CLI.
+
 ## Инварианты безопасности
 
 1. legacy `projects/` и `comparison/` — **только чтение**, никогда не изменяются.

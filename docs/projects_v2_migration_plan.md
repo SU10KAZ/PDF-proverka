@@ -663,6 +663,35 @@ backend default legacy, read-only (54503 файла `objects/` без измен
 Отчёт `projects_v2/_system/shadow_api_http_smoke_report.{json,md}`. Тесты —
 `tests/test_projects_v2_shadow_http_smoke.py` (вкл. реальный uvicorn-сокет).
 
+### Этап 3.6 — UI/API contract parity (ВЫПОЛНЕНО, read-only)
+
+Read-only сверка контракта UI/API между legacy и `projects_v2`, БЕЗ переключения
+backend:
+
+- [scripts/projects_v2/check_ui_contract_parity.py](../scripts/projects_v2/check_ui_contract_parity.py)
+  — по выборке всех типов сравнивает UI-поля (object/discipline/code,
+  current_version, version_count, analysis_status, наличие 01/02/03,
+  findings_count, severity, pipeline_log, blocks analysis, legacy/source_only
+  флаги, KB-link для King&Sons). Классификация
+  `MATCH/EXPECTED_DIFFERENCE/MISMATCH/MISSING_IN_V2/MISSING_IN_LEGACY`; подсчёт
+  findings симметричный. Переиспользует helpers из `check_backend_parity.py`.
+  Отчёт `projects_v2/_system/ui_contract_parity_report.{json,md,csv}`.
+- Gated read-only endpoint `GET /api/projects-v2-shadow/ui-contract/sample`
+  (default 404) — v2-сторона контракта по выборке, без legacy и без записи
+  отчётов (добавлено в `backend/app/api/routers/projects_v2_shadow.py`).
+
+**Прогон (реальный projects_v2):** 16 документов — **MATCH 12,
+EXPECTED_DIFFERENCE 4, MISMATCH 0, MISSING 0**; field-level MATCH 216 / EXPECTED
+11 / MISMATCH 0. **Потерь findings нет** (174/174, 67/67, 62/62, 21/21…),
+**потерь версий нет**. EXPECTED_DIFFERENCE — это King&Sons preserve (snapshot
+collapse, legacy_partial/source_only) и СОТ V1 (findings в KB). Тесты —
+`tests/test_projects_v2_ui_contract_parity.py` (вкл. обнаружение потери
+findings → MISMATCH).
+
+Доп. изменён `backend/app/api/routers/projects_v2_shadow.py` (новый gated
+endpoint) и `.gitignore` (исключение для `check_ui_contract_parity.py` — правило
+`check_*.py`).
+
 ### Этап 4 — подключение adapter за флагом к основным read-path (план, НЕ в этом PR)
 
 - Подключить adapter к реальным read-path (project list / findings / pipeline
