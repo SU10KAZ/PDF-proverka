@@ -75,6 +75,13 @@ def main() -> int:
     ap.add_argument("--no-drift", action="store_true")
     ap.add_argument("--write-report", action="store_true")
     ap.add_argument("--stable-seconds", default="120")
+    ap.add_argument("--phase", choices=["ready", "post_batch"], default="ready",
+                    help="ready = до приёма загрузок (статус READY_FOR_ENGINEER_UPLOADS); "
+                         "post_batch = после реальной партии (статус PASS только если есть новые загрузки)")
+    ap.add_argument("--baseline-docs", type=int, default=None,
+                    help="projects_v2 documents ДО партии (для post_batch — детект новых загрузок)")
+    ap.add_argument("--baseline-map", type=int, default=None,
+                    help="old_to_new_map migrations ДО партии (для post_batch)")
     args = ap.parse_args()
 
     v2 = Path(args.v2_root).resolve()
@@ -131,16 +138,54 @@ def main() -> int:
     result["projects_v2_documents"] = _count_docs(v2)
     result["old_to_new_map_migrations"] = _map_count(v2)
 
-    # overall verdict
-    overall = (validate_pass and parity_ok
-               and result["checks"]["parity"]["mismatch"] == 0
-               and not result["checks"]["parity"]["findings_loss"]
-               and not result["checks"]["parity"]["version_loss"]
-               and se == 0 and drift_ok)
-    result["overall"] = "PASS" if overall else "FAIL"
-    result["recommendation"] = ("продолжать инженерские загрузки под мониторингом"
-                                if overall else
-                                "ОСТАНОВИТЬ новые загрузки, разобрать причину (см. checks)")
+    # system_health = технические проверки (НЕ равно "загрузки прошли")
+    system_health = (validate_pass and parity_ok
+                     and result["checks"]["parity"]["mismatch"] == 0
+                     and not result["checks"]["parity"]["findings_loss"]
+                     and not result["checks"]["parity"]["version_loss"]
+                     and se == 0 and drift_ok)
+    result["system_health"] = "PASS" if system_health else "FAIL"
+    result["phase"] = args.phase
+
+    # детект новых загрузок (только если передан baseline)
+    new_uploads = None
+    if args.baseline_docs is not None:
+        new_uploads = result["projects_v2_documents"] - args.baseline_docs
+        result["baseline_docs"] = args.baseline_docs
+        result["new_documents_vs_baseline"] = new_uploads
+    if args.baseline_map is not None:
+        result["baseline_map"] = args.baseline_map
+        result["new_map_entries_vs_baseline"] = result["old_to_new_map_migrations"] - args.baseline_map
+
+    # СТАТУС: readiness vs реальный PASS после партии
+    if args.phase == "ready":
+        if system_health:
+            status = "READY_FOR_ENGINEER_UPLOADS"
+            rec = ("система готова принимать инженерские загрузки (dual_write_shadow ON, "
+                   "shadow-errors=0). НОВЫХ загрузок ещё не было — это НЕ PASS. После первой "
+                   "реальной партии запустить --phase post_batch --baseline-docs/--baseline-map.")
+        else:
+            status = "NOT_READY"
+            rec = "система НЕ готова — устранить FAIL (см. checks) до открытия загрузок."
+    else:  # post_batch
+        if not system_health:
+            status = "FAIL"
+            rec = "ОСТАНОВИТЬ новые загрузки, разобрать причину (см. checks/shadow_write_errors)."
+        elif new_uploads is None:
+            status = "INCONCLUSIVE_NO_BASELINE"
+            rec = "передайте --baseline-docs/--baseline-map (значения ДО партии), чтобы подтвердить новые загрузки."
+        elif new_uploads <= 0:
+            status = "NO_NEW_UPLOADS"
+            rec = ("новых документов в projects_v2 НЕ обнаружено — это НЕ PASS. Дождаться "
+                   "реальных инженерских загрузок, затем перезапустить.")
+        else:
+            status = "PASS"
+            rec = (f"новые загрузки ({new_uploads}) прошли в legacy+v2, проверки зелёные, "
+                   "shadow-errors=0 → продолжать загрузки под мониторингом.")
+    result["status"] = status
+    result["recommendation"] = rec
+    result["note"] = ("system_health отражает только технические проверки целостности; "
+                      "сам по себе НЕ означает, что инженерские загрузки прошли.")
 
     # report
     if args.write_report:
@@ -150,8 +195,9 @@ def main() -> int:
         result["report_path"] = str(rep)
 
     print(json.dumps(result, ensure_ascii=False, indent=2))
-    print(f"\nOVERALL: {result['overall']} — {result['recommendation']}")
-    return 0 if overall else 1
+    print(f"\nSTATUS: {status}  (system_health={result['system_health']})\n{rec}")
+    # exit 0 для здоровых состояний (ready/pass); 1 — для проблем
+    return 0 if status in ("READY_FOR_ENGINEER_UPLOADS", "PASS") else 1
 
 
 if __name__ == "__main__":
