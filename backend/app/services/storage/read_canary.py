@@ -627,6 +627,34 @@ def _classify_blocks_analysis(project_id, blocks_analysis, index_data,
     }
 
 
+def _v2_load_hidden_set() -> set:
+    """hidden_projects.json как у legacy (basename project_id). Fail-soft → пусто."""
+    try:
+        from backend.app.services.common.project_service import _load_hidden_projects
+        return _load_hidden_projects()
+    except Exception:
+        return set()
+
+
+def _v2_doc_hidden(doc: dict, hidden_set: set) -> bool:
+    """Зеркалит legacy-скрытие из iter_project_dirs для v2-списка `/api/projects`:
+
+    * `_`-prefix на уровне документа (leaf) ИЛИ дисциплины — скрыт (как
+      `entry.name.startswith("_")` / `sub.name.startswith("_")` в legacy);
+    * project_id в hidden_projects.json — скрыт (legacy ключует по basename;
+      проверяем и `document_code`, и `discipline/document_code` для надёжности).
+
+    НЕ удаляет с диска; прямой служебный доступ (details/findings) остаётся.
+    """
+    code = (doc.get("document_code") or "")
+    disc = (doc.get("discipline") or "")
+    if code.startswith("_") or disc.startswith("_"):
+        return True
+    if code in hidden_set or (disc and f"{disc}/{code}" in hidden_set):
+        return True
+    return False
+
+
 def v2_projects_list() -> dict:
     """Список проектов из projects_v2 в LEGACY-форме для GET /api/projects.
 
@@ -634,6 +662,10 @@ def v2_projects_list() -> dict:
     читает data.projects + data.object_name). SCOPED к текущему объекту (как
     legacy list_projects), а не ко всем объектам. storage_backend/canary —
     инертные диагностические extra-ключи, НЕ вместо legacy-ключей.
+
+    Скрытие зеркалит legacy iter_project_dirs (`_`-prefix + hidden_projects.json),
+    чтобы default-v2 список совпадал с legacy и `_smoke_*`/скрытые проекты не
+    протекали к экспертам.
     """
     a = _adapter()
     if not a.is_available():
@@ -643,6 +675,8 @@ def v2_projects_list() -> dict:
     # STRICT scope: текущий объект не найден в v2 → пустой список (а НЕ документы
     # всех объектов под именем текущего — это был баг кросс-объектной свалки).
     docs = a.list_documents(object_folder=folder) if folder else []
+    hidden_set = _v2_load_hidden_set()
+    docs = [d for d in docs if not _v2_doc_hidden(d, hidden_set)]
     projects = [_v2_project_status(a, d) for d in docs]
     return {
         "projects": projects,
