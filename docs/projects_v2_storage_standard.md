@@ -524,6 +524,79 @@ backend-тесты и UI, и лишь затем — переключение ф
 отчётов) — быстрый просмотр того, что v2 сможет отдать. Полную legacy↔v2 сверку
 делает CLI.
 
+## Dual-read shadow + storage read facade + cutover readiness (подготовка, НЕ cutover)
+
+Подготовительный слой для будущего read-only cutover. Ничего не переключает:
+`AUDIT_STORAGE_BACKEND` остаётся `legacy`, production read-path не подключён.
+
+### Dual-read service
+
+[backend/app/services/storage/projects_v2_dual_read.py](../backend/app/services/storage/projects_v2_dual_read.py)
+— `DualReadService`: для документа собирает legacy-snapshot (из `projects/` через
+`old_to_new_map`, read-only) и v2-snapshot (через adapter), сравнивает поля
+(object/discipline/code, versions, current version, analysis_status, 01/02/03,
+findings_count, severity, pipeline_log, blocks analysis, KB-link King&Sons) и
+возвращает статус: `match | expected_difference | mismatch | missing_legacy |
+missing_v2`. Только чтение, без fallback из v2 в legacy, без записи. `sample()`
+прогоняет выборку типов.
+
+### Storage read facade
+
+[backend/app/services/storage/storage_read_facade.py](../backend/app/services/storage/storage_read_facade.py)
+— `StorageReadFacade` инкапсулирует выбор backend:
+`legacy` (default) | `projects_v2` | `dual_read_shadow` (env `AUDIT_STORAGE_BACKEND`).
+**Default всегда `legacy`**; в legacy-режиме фасад — no-op (обслуживание остаётся
+за существующими сервисами, v2 не читается). Фасад НЕ подключён к production
+endpoints — это подготовленный класс. `production_uses_v2()` всегда возвращает
+`False` на этом этапе.
+
+### Canary/cutover endpoints (gated, read-only)
+
+В shadow-роутере (default 404 без флага):
+- `GET /api/projects-v2-shadow/dual-read/sample`
+- `GET /api/projects-v2-shadow/dual-read/document/{document_code}`
+- `GET /api/projects-v2-shadow/cutover-readiness`
+
+Ничего не пишут в `projects_v2`.
+
+### Cutover readiness
+
+[scripts/projects_v2/check_cutover_readiness.py](../scripts/projects_v2/check_cutover_readiness.py)
++ `projects_v2_dual_read.cutover_readiness()` (единая логика для CLI и endpoint).
+Собирает validate (CLI — subprocess; endpoint — из последнего отчёта), drift,
+backend parity, UI contract parity, live dual-read sample → рекомендация:
+
+- `not_ready` — hard-проблема (validate FAIL / drift>0 / mismatch / потеря
+  findings|versions) ИЛИ validate/drift не определены;
+- `ready_for_shadow_prod` — базово зелено, но contract parity покрыт по ВЫБОРКЕ
+  (не по всему корпусу) → можно включить shadow API в prod для наблюдения;
+- `ready_for_read_only_canary` — всё зелено И contract parity по ВСЕМУ корпусу И
+  без потерь → read-only канарейка.
+
+Отчёт `projects_v2/_system/cutover_readiness_report.{json,md}`.
+
+### Почему default остаётся legacy
+
+Ни один production read-path не читает `projects_v2`. Включение
+`AUDIT_STORAGE_BACKEND=projects_v2` сейчас лишь подготавливает фасад, но не
+меняет существующие endpoints (они продолжают читать legacy). Это гарантирует
+нулевой риск для production до отдельного, явно авторизованного этапа подключения.
+
+### Порядок будущего production cutover
+
+1. **deploy flags off** — выкатить код с `AUDIT_STORAGE_BACKEND=legacy` и shadow
+   API выключенным (поведение не меняется);
+2. **enable shadow API** — `AUDIT_PROJECTS_V2_SHADOW_API_ENABLED=true` на проде,
+   наблюдать `/cutover-readiness` и `/dual-read/*`;
+3. **monitor dual-read** — гонять dual-read по всему корпусу, добиться
+   `mismatch=0`, отсутствия потерь, `ready_for_read_only_canary`;
+4. **read-only canary** — подключить v2-чтение к части read-path за флагом на
+   shadow-объекте, сверять с legacy;
+5. **rollback flag** — при любом расхождении мгновенно вернуть
+   `AUDIT_STORAGE_BACKEND=legacy` (откат без миграции данных);
+6. **full cutover** — после стабильной канарейки переключить чтение на
+   `projects_v2`, legacy оставить архивом.
+
 ## Инварианты безопасности
 
 1. legacy `projects/` и `comparison/` — **только чтение**, никогда не изменяются.

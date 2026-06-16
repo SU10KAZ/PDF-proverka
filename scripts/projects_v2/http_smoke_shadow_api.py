@@ -221,6 +221,137 @@ def run_smoke(v2_root: Path, port: int = 0) -> dict:
     }
 
 
+def _serve(app, port: int):
+    """Запускает uvicorn в фоне на эфемерном порту. Возвращает (base_url, stop)."""
+    import uvicorn
+    config = uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning")
+    server = uvicorn.Server(config)
+    thread = threading.Thread(target=server.run, daemon=True)
+    thread.start()
+    t0 = time.time()
+    while not getattr(server, "started", False) and time.time() - t0 < 20:
+        time.sleep(0.05)
+    if not getattr(server, "started", False):
+        raise RuntimeError("uvicorn smoke server did not start")
+    actual_port = server.servers[0].sockets[0].getsockname()[1]
+
+    def stop():
+        server.should_exit = True
+        thread.join(timeout=10)
+    return f"http://127.0.0.1:{actual_port}", stop
+
+
+def run_cutover_smoke(v2_root: Path, port: int = 0) -> dict:
+    """HTTP smoke для dual-read / cutover-readiness endpoints (ephemeral app)."""
+    os.environ["PORTAL_AUTH_ENABLED"] = "false"
+    os.environ.pop("AUDIT_STORAGE_BACKEND", None)
+    os.environ.pop(FLAG, None)
+
+    app = build_smoke_app()
+    base, stop = _serve(app, port)
+    checks: list[dict] = []
+
+    def add(name, ok, detail):
+        checks.append({"check": name, "ok": bool(ok), "detail": str(detail)})
+
+    try:
+        before = _snapshot(v2_root / "objects")
+
+        # flag OFF → dual-read/cutover endpoints 404
+        os.environ.pop(FLAG, None)
+        add("dual_read_sample_404_without_flag",
+            _http_get(base, f"{SHADOW}/dual-read/sample")[0] == 404, "")
+        add("cutover_readiness_404_without_flag",
+            _http_get(base, f"{SHADOW}/cutover-readiness")[0] == 404, "")
+        add("legacy_objects_without_flag_200",
+            _http_get(base, "/api/objects")[0] == 200, "")
+
+        # flag ON
+        os.environ[FLAG] = "true"
+        st, dj = _http_get(base, f"{SHADOW}/dual-read/sample?per_type=2")
+        add("dual_read_sample_200", st == 200 and isinstance(dj, dict) and "results" in dj,
+            f"status={st} checked={(dj or {}).get('documents_checked')} ok={(dj or {}).get('ok')}")
+        add("dual_read_no_findings_loss", not (dj or {}).get("findings_losses"),
+            f"losses={(dj or {}).get('findings_losses')}")
+        add("dual_read_no_version_loss", not (dj or {}).get("version_losses"),
+            f"losses={(dj or {}).get('version_losses')}")
+
+        # per-document dual-read (берём первый из sample)
+        sample_results = (dj or {}).get("results", [])
+        if sample_results:
+            code = sample_results[0]["document_code"]
+            ds, dd = _http_get(base, f"{SHADOW}/dual-read/document/{urllib.parse.quote(code, safe='')}")
+            add("dual_read_document_200", ds == 200 and isinstance(dd, dict) and "fields" in dd,
+                f"status={ds} code={code} doc_status={(dd or {}).get('status')}")
+        st_cr, cr = _http_get(base, f"{SHADOW}/cutover-readiness")
+        add("cutover_readiness_200", st_cr == 200 and isinstance(cr, dict)
+            and "recommendation" in cr,
+            f"status={st_cr} recommendation={(cr or {}).get('recommendation')}")
+        add("cutover_backend_default_legacy",
+            (cr or {}).get("storage_backend_default") == "legacy",
+            f"default={(cr or {}).get('storage_backend_default')}")
+        add("legacy_objects_with_flag_200",
+            _http_get(base, "/api/objects")[0] == 200, "")
+
+        # flag OFF again → 404
+        os.environ[FLAG] = "false"
+        add("cutover_readiness_404_after_disable",
+            _http_get(base, f"{SHADOW}/cutover-readiness")[0] == 404, "")
+
+        after = _snapshot(v2_root / "objects")
+        add("read_only_objects_unchanged", before == after,
+            f"files_before={len(before)} files_after={len(after)}")
+    finally:
+        os.environ.pop(FLAG, None)
+        stop()
+
+    from backend.app.services.storage.storage_read_facade import get_storage_mode
+    add("storage_mode_default_legacy", get_storage_mode() == "legacy",
+        f"mode={get_storage_mode()}")
+
+    ok = all(c["ok"] for c in checks)
+    return {
+        "schema_version": 1,
+        "generated_at": v2lib.utc_now_iso(),
+        "transport": "http",
+        "base_url": base,
+        "scope": "cutover_dual_read",
+        "ok": ok,
+        "checks": checks,
+        "summary": {"checks_total": len(checks),
+                    "checks_passed": sum(1 for c in checks if c["ok"])},
+    }
+
+
+def render_cutover_md(rep: dict) -> str:
+    out = []
+    A = out.append
+    A("# Cutover/dual-read shadow — controlled HTTP smoke")
+    A("")
+    A(f"**Сгенерировано:** {rep.get('generated_at')}  ")
+    A(f"**Transport:** HTTP (ephemeral uvicorn, без lifespan)  ")
+    A(f"**Итог:** {'✅ OK' if rep['ok'] else '❌ FAIL'}  ")
+    A(f"- Проверок: {rep['summary']['checks_passed']}/{rep['summary']['checks_total']}")
+    A("")
+    A("| check | ok | detail |")
+    A("|---|---|---|")
+    for c in rep["checks"]:
+        A(f"| {c['check']} | {'✅' if c['ok'] else '❌'} | {c['detail']} |")
+    A("")
+    A("> production (:8081) не затрагивался; AUDIT_STORAGE_BACKEND остаётся legacy.")
+    return "\n".join(out)
+
+
+def write_cutover_reports(rep: dict, v2_root: Path) -> tuple[Path, Path]:
+    sysd = v2_root / "_system"
+    sysd.mkdir(parents=True, exist_ok=True)
+    jp = sysd / "cutover_shadow_http_smoke_report.json"
+    mp = sysd / "cutover_shadow_http_smoke_report.md"
+    jp.write_text(json.dumps(rep, ensure_ascii=False, indent=2), encoding="utf-8")
+    mp.write_text(render_cutover_md(rep), encoding="utf-8")
+    return jp, mp
+
+
 def render_md(rep: dict) -> str:
     L, A = [], None
     out = []
@@ -270,12 +401,24 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Controlled HTTP smoke для projects_v2 shadow API")
     ap.add_argument("--v2-root", default=None)
     ap.add_argument("--port", type=int, default=0, help="порт (0 = эфемерный, НЕ 8081)")
+    ap.add_argument("--cutover", action="store_true",
+                    help="smoke dual-read/cutover endpoints (отчёт cutover_shadow_http_smoke_report)")
     args = ap.parse_args(argv)
     if args.port == 8081:
         print("[REFUSED] порт 8081 — production; выберите другой или 0", file=sys.stderr)
         return 2
 
     v2_root = Path(args.v2_root).resolve() if args.v2_root else v2lib.projects_v2_root()
+    if args.cutover:
+        rep = run_cutover_smoke(v2_root, port=args.port)
+        jp, mp = write_cutover_reports(rep, v2_root)
+        print("=== cutover/dual-read HTTP smoke ===")
+        print(f"base_url: {rep['base_url']}  ok: {rep['ok']}  "
+              f"checks: {rep['summary']['checks_passed']}/{rep['summary']['checks_total']}")
+        for c in rep["checks"]:
+            print(f"  [{'OK ' if c['ok'] else 'FAIL'}] {c['check']}: {c['detail']}")
+        print(f"-> {jp}\n-> {mp}")
+        return 0 if rep["ok"] else 1
     rep = run_smoke(v2_root, port=args.port)
     jp, mp = write_reports(rep, v2_root)
 

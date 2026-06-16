@@ -68,6 +68,7 @@ check_*.py
 !scripts/projects_v2/check_backend_parity.py
 !scripts/projects_v2/check_shadow_api.py
 !scripts/projects_v2/check_ui_contract_parity.py
+!scripts/projects_v2/check_cutover_readiness.py
 find_sections*.py
 .codex_test_tmp/
 tmp_write_probe/

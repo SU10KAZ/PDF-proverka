@@ -255,3 +255,38 @@ async def ui_contract_sample(per_type: int = Query(2, ge=1, le=10)):
     return {"count": len(sample), "by_type": buckets,
             "note": "v2-only contract sample; full legacy↔v2 parity via CLI",
             "sample": sample}
+
+
+# ---------------------------------------------------------------------------
+# dual-read / canary (gated, read-only)
+# ---------------------------------------------------------------------------
+
+
+@router.get("/dual-read/sample", dependencies=[Depends(_gate)])
+async def dual_read_sample(per_type: int = Query(2, ge=1, le=10)):
+    """Dual-read legacy↔v2 по выборке типов (read-only, без записи отчётов)."""
+    from backend.app.services.storage.projects_v2_dual_read import DualReadService
+    return DualReadService(_adapter().v2_root).sample(per_type=per_type)
+
+
+@router.get("/dual-read/document/{document_code:path}", dependencies=[Depends(_gate)])
+async def dual_read_document(document_code: str,
+                             object_id: Optional[str] = Query(None)):
+    """Dual-read legacy↔v2 одного документа (read-only)."""
+    from backend.app.services.storage.projects_v2_dual_read import DualReadService
+    res = DualReadService(_adapter().v2_root).compare_document(document_code, object_id=object_id)
+    if res.get("status") == "missing_v2" and not res.get("fields"):
+        raise HTTPException(status_code=404, detail="document not found in projects_v2")
+    return res
+
+
+@router.get("/cutover-readiness", dependencies=[Depends(_gate)])
+async def cutover_readiness_endpoint(per_type: int = Query(2, ge=1, le=10)):
+    """Сводка готовности к cutover из последних runtime-отчётов + live dual-read.
+
+    READ-ONLY: ничего не пишет в projects_v2 (отчёты пишет только CLI
+    check_cutover_readiness.py). validate в реквесте не запускается — берётся из
+    последнего cutover-отчёта, если он есть.
+    """
+    from backend.app.services.storage.projects_v2_dual_read import cutover_readiness
+    return cutover_readiness(_adapter(), per_type=per_type)

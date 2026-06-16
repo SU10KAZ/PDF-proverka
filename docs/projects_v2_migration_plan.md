@@ -692,6 +692,54 @@ findings → MISMATCH).
 endpoint) и `.gitignore` (исключение для `check_ui_contract_parity.py` — правило
 `check_*.py`).
 
+### Этап 3.7 — dual-read shadow + storage facade + cutover readiness (ВЫПОЛНЕНО, подготовка)
+
+Объединённый подготовительный этап к будущему read-only cutover. Backend/UI не
+переключаются, `AUDIT_STORAGE_BACKEND` остаётся `legacy`.
+
+**Preflight gate (с refresh дрейфа):** drift scan нашёл 3 дрейфнувших документа
+объекта 214 (`13АВ-РД-АР4.1-К6` v002, `13АВ-РД-АР1.2-К6` v001,
+`13АВ-РД-СОУЭ-ПА V1` v001) — production live-переаудитил их после миграции. Все
+`stable + refresh_safe` → выполнен `refresh_migrated_snapshot.py --execute
+--include-new-files` для каждого (по 4 файла, со стабилизацией 120с, старые
+версии в `_system/refresh_archive`). После refresh: **validate PASS (842 ok),
+drift 0**.
+
+**Реализовано:**
+- [projects_v2_dual_read.py](../backend/app/services/storage/projects_v2_dual_read.py)
+  — `DualReadService` (per-document legacy↔v2 сравнение, статусы
+  match/expected_difference/mismatch/missing_legacy/missing_v2, read-only) +
+  `cutover_readiness()` (рекомендация not_ready / ready_for_shadow_prod /
+  ready_for_read_only_canary);
+- [storage_read_facade.py](../backend/app/services/storage/storage_read_facade.py)
+  — `StorageReadFacade` (legacy/projects_v2/dual_read_shadow, default legacy, не
+  подключён к production; `production_uses_v2()`==False);
+- [projects_v2_shadow.py](../backend/app/api/routers/projects_v2_shadow.py) —
+  gated endpoints `/dual-read/sample`, `/dual-read/document/{code}`,
+  `/cutover-readiness` (default 404);
+- [check_cutover_readiness.py](../scripts/projects_v2/check_cutover_readiness.py)
+  — CLI (validate subprocess + dual-read + reports);
+- [http_smoke_shadow_api.py](../scripts/projects_v2/http_smoke_shadow_api.py)
+  `--cutover` — ephemeral HTTP smoke dual-read/cutover endpoints.
+
+**Прогон (реальный projects_v2):** cutover readiness = **ready_for_shadow_prod**
+(validate PASS, drift 0, backend parity ok, UI contract ok 16 checked, dual-read
+sample match 12 / expected 4, **0 mismatches, 0 потерь findings/versions**, 184
+docs). HTTP smoke (ephemeral, без lifespan, не трогая prod :8081): **13/13
+checks**, dual-read 404 без флага / 200 с флагом, backend default legacy,
+read-only (54503 файла без изменений). Тесты —
+`tests/test_projects_v2_dual_read.py`,
+`tests/test_projects_v2_cutover_readiness.py`,
+`tests/test_projects_v2_storage_read_facade.py` (полный projects_v2 suite: 242 passed).
+
+**Порядок будущего cutover** (deploy flags off → enable shadow API → monitor
+dual-read → read-only canary → rollback flag → full cutover) — см.
+[docs/projects_v2_storage_standard.md](projects_v2_storage_standard.md).
+
+Доп. изменён `backend/app/api/routers/projects_v2_shadow.py` (canary endpoints),
+`scripts/projects_v2/http_smoke_shadow_api.py` (cutover smoke), `.gitignore`
+(исключение для `check_cutover_readiness.py`).
+
 ### Этап 4 — подключение adapter за флагом к основным read-path (план, НЕ в этом PR)
 
 - Подключить adapter к реальным read-path (project list / findings / pipeline
