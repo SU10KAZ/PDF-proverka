@@ -10,6 +10,8 @@
 """
 import os
 
+import pytest
+
 os.environ["PORTAL_AUTH_ENABLED"] = "false"
 
 # Rollout-флаги stage_comparison (могут быть включены в prod `.env` для
@@ -25,3 +27,29 @@ for _rollout_flag in (
     "STAGE_COMPARISON_BLOCK_EQUIVALENCE_SKIP_QWEN",
 ):
     os.environ[_rollout_flag] = "false"
+
+
+@pytest.fixture(autouse=True)
+def _isolate_batch_queue_file(tmp_path, monkeypatch):
+    """НИ ОДИН тест не должен писать в реальный backend/app/data/batch_queue.json.
+
+    Тесты, дёргающие реальный PipelineManager (start_batch / add_to_batch /
+    resume_interrupted_batch / _persist_queue), без изоляции перезаписывают
+    прод-файл очереди в общей data-папке — инцидент: фантомная M31A-очередь
+    попала в production batch_queue.json. Перенаправляем module-global
+    BATCH_QUEUE_FILE в per-test tmp для КАЖДОГО теста (autouse, future-proof).
+
+    Тест, которому нужен собственный путь (напр. restart-recovery), может
+    переопределить значение повторным monkeypatch.setattr — его значение
+    победит, оба корректно откатятся (LIFO).
+
+    Только тестовая изоляция: runtime-логика и API не меняются.
+    """
+    try:
+        import backend.app.pipeline.manager as _mgr
+    except Exception:
+        # Тесты, не импортирующие backend (если такие есть) — изоляция не нужна.
+        return
+    monkeypatch.setattr(
+        _mgr, "BATCH_QUEUE_FILE", tmp_path / "batch_queue.json", raising=False
+    )

@@ -464,6 +464,40 @@ def test_start_batch_pins_latest_version_id(v2_created):
     assert item.version_id == "v2"
 
 
+def test_start_batch_does_not_touch_real_queue_file(v2_created):
+    """Регрессия изоляции: прогон start_batch НЕ пишет в реальный
+    backend/app/data/batch_queue.json (conftest autouse перенаправляет
+    BATCH_QUEUE_FILE в tmp). Иначе тесты загрязняют прод-очередь — инцидент с
+    фантомной M31A-очередью в production.
+
+    Дискриминирующий: без autouse-guard `manager.BATCH_QUEUE_FILE` == реальному
+    пути конфига → первый assert упадёт; а если бы guard сняли, но путь совпал —
+    start_batch перезаписал бы реальный файл → упал бы второй assert.
+    """
+    import asyncio as _aio
+    from pathlib import Path
+    from backend.app.core import config
+    import backend.app.pipeline.manager as mgr
+
+    real = Path(config.BATCH_QUEUE_FILE)  # канонический реальный путь (не патчится)
+    # guard активен: module-global перенаправлен в tmp, не в реальную data-папку
+    assert Path(mgr.BATCH_QUEUE_FILE) != real, "conftest autouse-guard не активен"
+    before = real.read_bytes() if real.exists() else None
+
+    pm = mgr.PipelineManager()
+
+    async def _noop(*a, **k):
+        return None
+    pm._run_batch_queue = _noop
+
+    _aio.run(pm.start_batch(["M31A"], "full"))
+
+    after = real.read_bytes() if real.exists() else None
+    assert after == before, "start_batch не должен трогать реальный batch_queue.json"
+    # запись действительно ушла в изолированный tmp-файл
+    assert Path(mgr.BATCH_QUEUE_FILE).exists(), "очередь должна сохраниться в tmp"
+
+
 def test_select_pregemma_candidate_is_version_aware(v2_created, monkeypatch):
     """Для V2-item кандидат-селектор инспектирует ПАПКУ ВЕРСИИ (V2), а НЕ V1.
 
