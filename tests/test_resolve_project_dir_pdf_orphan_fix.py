@@ -136,3 +136,132 @@ def test_output_dir_valid_id_points_inside_project(projects_dir):
     # сам путь _output ещё может не существовать (создаётся при записи) —
     # важно, что он ВНУТРИ реального проекта, а не на корне объекта.
     assert out.parent == v1
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Обратный `.pdf`-fallback: legacy-папка названа `<id>.pdf`, а project_id пришёл
+# БЕЗ `.pdf` (из projects_v2 read-cutover). resolve должен найти `.pdf`-папку.
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+@pytest.fixture
+def projects_dir_pdf_folder(tmp_path, monkeypatch):
+    """projects/ с дисциплиной KJ и flat-проектом, чья ПАПКА названа `<id>.pdf`:
+        KJ/13АВ-РД-КЖ5.35.1-К1 V1.pdf/   ← реальная папка (с .pdf в имени)
+    Эмулирует кейс продакшна: projects_v2 отдаёт id без `.pdf`.
+    """
+    p = tmp_path / "projects"
+    p.mkdir()
+    kj = p / "KJ"
+    kj.mkdir()
+    base_no_pdf = "13АВ-РД-КЖ5.35.1-К1 V1"
+    folder = kj / f"{base_no_pdf}.pdf"
+    folder.mkdir()
+    (folder / "project_info.json").write_text(
+        json.dumps({"project_id": f"{base_no_pdf}.pdf", "name": f"{base_no_pdf}.pdf"},
+                   ensure_ascii=False),
+        encoding="utf-8",
+    )
+    out = folder / "_output"
+    out.mkdir()
+    (out / "03_findings.json").write_text(
+        json.dumps({"findings": [{"id": "F-001"}]}, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(ps, "_get_projects_dir", lambda: p)
+    monkeypatch.setattr(ps, "_PROJECT_DIRS_CACHE", [])
+    monkeypatch.setattr(ps, "_PROJECT_DIRS_CACHE_TIME", 0.0)
+    return p, base_no_pdf, folder
+
+
+def test_reverse_fallback_no_pdf_id_finds_pdf_folder(projects_dir_pdf_folder):
+    """id БЕЗ `.pdf` → находим реальную папку `<id>.pdf`."""
+    p, base_no_pdf, folder = projects_dir_pdf_folder
+    got = resolve_project_dir(base_no_pdf)
+    assert got == folder, f"ожидали {folder}, получили {got}"
+    assert (got / "_output" / "03_findings.json").exists()
+
+
+def test_reverse_fallback_must_exist_resolves(projects_dir_pdf_folder):
+    """must_exist=True тоже резолвит `.pdf`-папку (а не бросает ошибку)."""
+    p, base_no_pdf, folder = projects_dir_pdf_folder
+    got = resolve_project_dir(base_no_pdf, must_exist=True)
+    assert got == folder
+
+
+def test_reverse_fallback_pdf_id_still_works(projects_dir_pdf_folder):
+    """project_id уже С `.pdf` продолжает резолвиться напрямую (без регресса)."""
+    p, base_no_pdf, folder = projects_dir_pdf_folder
+    got = resolve_project_dir(f"{base_no_pdf}.pdf")
+    assert got == folder
+
+
+def test_reverse_fallback_prefers_plain_folder_over_pdf(tmp_path, monkeypatch):
+    """Если существует папка БЕЗ `.pdf` — берём её, а не `.pdf`-fallback."""
+    p = tmp_path / "projects"
+    p.mkdir()
+    kj = p / "KJ"
+    kj.mkdir()
+    base = "13АВ-РД-КЖ-ДВЕ"
+    plain = kj / base
+    plain.mkdir()
+    (plain / "project_info.json").write_text("{}", encoding="utf-8")
+    pdf_folder = kj / f"{base}.pdf"   # «двойник» с .pdf — НЕ должен побеждать
+    pdf_folder.mkdir()
+    (pdf_folder / "project_info.json").write_text("{}", encoding="utf-8")
+
+    monkeypatch.setattr(ps, "_get_projects_dir", lambda: p)
+    monkeypatch.setattr(ps, "_PROJECT_DIRS_CACHE", [])
+    monkeypatch.setattr(ps, "_PROJECT_DIRS_CACHE_TIME", 0.0)
+
+    got = resolve_project_dir(base)
+    assert got == plain, f"прямой путь должен иметь приоритет, получили {got}"
+
+
+def test_reverse_fallback_ambiguous_pdf_folders_no_guess(tmp_path, monkeypatch):
+    """`<id>.pdf` существует в ДВУХ дисциплинах → не угадываем (None-fallback)."""
+    p = tmp_path / "projects"
+    p.mkdir()
+    base = "13АВ-РД-ДУБЛЬ"
+    for disc in ("KJ", "OV"):
+        d = p / disc
+        d.mkdir()
+        folder = d / f"{base}.pdf"
+        folder.mkdir()
+        (folder / "project_info.json").write_text("{}", encoding="utf-8")
+
+    monkeypatch.setattr(ps, "_get_projects_dir", lambda: p)
+    monkeypatch.setattr(ps, "_PROJECT_DIRS_CACHE", [])
+    monkeypatch.setattr(ps, "_PROJECT_DIRS_CACHE_TIME", 0.0)
+
+    # must_exist → прежняя ошибка (не угадали), без must_exist → direct (несущ.)
+    with pytest.raises(ProjectNotResolvedError):
+        resolve_project_dir(base, must_exist=True)
+    got = resolve_project_dir(base)
+    assert got == p / base and not got.exists()
+
+
+def test_reverse_fallback_no_traversal(projects_dir_pdf_folder):
+    """Path traversal через id невозможен: `../<id>` + суффикс не уводит наружу
+    projects_dir (кандидат вне projects_dir отбрасывается)."""
+    p, base_no_pdf, folder = projects_dir_pdf_folder
+    # снаружи projects_dir кладём «приманку» с .pdf
+    outside = p.parent / "evil"
+    outside.mkdir()
+    (outside / "x.pdf").mkdir()
+    # id, который при добавлении .pdf указывал бы наружу
+    got = resolve_project_dir("../evil/x")
+    # fallback не должен вернуть путь вне projects_dir
+    assert outside not in [got, *got.parents] or not got.exists(), (
+        f"traversal-кандидат не должен приниматься, получили {got}"
+    )
+
+
+def test_reverse_fallback_missing_no_pdf_folder_no_regression(projects_dir_pdf_folder):
+    """id без соответствия (нет ни папки, ни `<id>.pdf`) → прежнее поведение."""
+    p, base_no_pdf, folder = projects_dir_pdf_folder
+    with pytest.raises(ProjectNotResolvedError):
+        resolve_project_dir("совсем-нет-такого", must_exist=True)
+    got = resolve_project_dir("совсем-нет-такого")
+    assert got == p / "совсем-нет-такого" and not got.exists()
