@@ -361,6 +361,22 @@ def _v2_pipeline_issues(a, doc_dir, vid):
     return issues
 
 
+def _v2_pipeline_summary(a, doc_dir, vid):
+    """pipeline_summary из pipeline_log (зеркало _build_pipeline_summary из project_service).
+
+    Передаём родительскую папку pipeline_log.json как output_dir, так как
+    _build_pipeline_summary ищет pipeline_log.json именно там. Fail-soft.
+    """
+    try:
+        from backend.app.services.common.project_service import _build_pipeline_summary
+        log_path = a.pipeline_log_path(doc_dir, vid)
+        if log_path and log_path.is_file():
+            return _build_pipeline_summary(log_path.parent)
+    except Exception:
+        pass
+    return []
+
+
 def _v2_optimization(a, doc_dir, vid):
     """(count, by_type, savings_pct) из optimization.json meta (зеркало legacy)."""
     odata = a.read_optimization(doc_dir, vid)
@@ -471,6 +487,7 @@ def _v2_project_status(a, doc, ver=None) -> dict:
     total_batches, completed_batches = _v2_batch_counts(a, doc_dir, vid_raw)
     pipeline = _v2_pipeline_status(a, doc_dir, vid_raw, art)
     pipeline_issues = _v2_pipeline_issues(a, doc_dir, vid_raw)
+    pipeline_summary = _v2_pipeline_summary(a, doc_dir, vid_raw)
 
     pdfs = a.input_pdf_files(doc_dir, vid_raw)
     has_pdf = bool(pdfs)
@@ -509,6 +526,7 @@ def _v2_project_status(a, doc, ver=None) -> dict:
         block_expected=int(idx.get("total_expected") or 0),
         block_errors=int(idx.get("errors") or 0),
         pipeline_issues=pipeline_issues,
+        pipeline_summary=pipeline_summary,
         expert_review_status=expert_status,
         findings_review_status=freview_status,
         optimization_review_status=oreview_status,
